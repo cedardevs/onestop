@@ -3,7 +3,7 @@ import AppBar from 'material-ui/lib/app-bar';
 import TextSearchField from './TextSearchField.jsx';
 
 const Root = () => (
-    <AppBar title="Evan's OneStop Sandbox!" showMenuIconButton={false}>
+    <AppBar title="Evan's Fancy OneStop Sandbox" showMenuIconButton={false}>
       <TextSearchField/>
     </AppBar>
 );
