@@ -1,9 +1,11 @@
 import React from 'react'
+import AppBar from 'material-ui/lib/app-bar';
+import TextSearchField from './TextSearchField.jsx';
 
 const Root = () => (
-    <div>
-      <p>Hello, world!</p>
-    </div>
+    <AppBar title="Evan's OneStop Sandbox!" showMenuIconButton={false}>
+      <TextSearchField/>
+    </AppBar>
 );
 
 export default Root
