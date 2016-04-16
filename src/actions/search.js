@@ -1,3 +1,5 @@
+import fetch from 'isomorphic-fetch'
+
 export const SEARCH = 'search';
 export const SEARCH_COMPLETE = 'search_complete';
 
@@ -25,16 +27,9 @@ export const textSearch = (searchText) => {
 
     dispatch(startSearch(searchText));
 
-    // simulate calling a server
-    setTimeout(() => {
-      dispatch(completeSearch(searchText, [
-        {name: 'Test result 1', thumbnail: '//blog.cloudera.com/wp-content/uploads/2015/12/docker-logo.png'},
-        {name: 'Test result 2', thumbnail: '//blog.cloudera.com/wp-content/uploads/2015/12/docker-logo.png'},
-        {name: 'Test result 3', thumbnail: '//blog.cloudera.com/wp-content/uploads/2015/12/docker-logo.png'},
-        {name: 'Test result 4', thumbnail: '//blog.cloudera.com/wp-content/uploads/2015/12/docker-logo.png'},
-        {name: 'Test result 5', thumbnail: '//blog.cloudera.com/wp-content/uploads/2015/12/docker-logo.png'},
-        {name: 'Test result 6', thumbnail: '//blog.cloudera.com/wp-content/uploads/2015/12/docker-logo.png'}
-      ]))
-    }, 1000);
+    const apiRoot = '//data.nodc.noaa.gov/geoportal/rest/find/document';
+    return fetch(`${apiRoot}?searchText=${searchText}&f=json&max=30`)
+        .then(response => response.json())
+        .then(json => dispatch(completeSearch(searchText, json.records)));
   };
 };
