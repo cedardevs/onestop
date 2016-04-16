@@ -1,24 +1,26 @@
-import {Map, List} from 'immutable';
-import {SEARCH} from '../actions/search.js';
+import Immutable from 'immutable';
+import {SEARCH, SEARCH_COMPLETE} from '../actions/search.js';
 
-const initialState = Map({
-  message: 'Hello, world',
-  search: {
-    text: ''
-  },
-  resultsBySearch: {
-    '': {
-      items: []
-    }
-  }
+const initialState = Immutable.Map({
+  search: '',
+  inFlight: false,
+  results: []
 });
 
 const reducer = (state = initialState, action) => {
-  console.dir(action);
   switch (action.type) {
     case SEARCH:
-      console.log(`reducing for search with text: ${action.params.text}`);
-      return state.search = Map(action.params);
+      return state.merge({
+        search: action.searchText,
+        inFlight: true
+      });
+
+    case SEARCH_COMPLETE:
+      return state.merge({
+        results: action.items,
+        inFlight: false
+      });
+
     default:
       return state;
   }
