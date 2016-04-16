@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import {SEARCH, SEARCH_COMPLETE} from '../actions/search.js';
 
-const initialState = Immutable.Map({
+const initialState = Immutable.fromJS({
   search: '',
   inFlight: false,
   results: []
