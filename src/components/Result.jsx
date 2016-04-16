@@ -12,15 +12,17 @@ const Result = ({record}) => {
   const thumbnailLink = record.links.find(link => link.type === 'thumbnail');
   const thumbnailHref = thumbnailLink && thumbnailLink.href;
 
-  const actions = record.links.map(link => (
-      <RaisedButton
-          label={link.type}
-          linkButton={true}
-          href={link.href}
-          key={link.href}
-          primary={true}
-      />
-  ));
+  const actions = record.links
+      .filter(link => link.type !== 'thumbnail')
+      .map(link => (
+          <RaisedButton
+              label={link.type}
+              linkButton={true}
+              href={link.href}
+              key={link.href}
+              primary={true}
+          />
+      ));
 
   const titleMaxLength = 150;
   const title = record.title.length < titleMaxLength
