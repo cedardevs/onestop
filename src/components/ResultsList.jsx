@@ -3,7 +3,7 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import List from 'material-ui/lib/lists/list';
 import Result from './Result';
 
-const ResultsList = ({results, loading}) => {
+const ResultsList = ({results, loading, onResultClick}) => {
   const styles = {
     spinner: {
       display: loading ? 'flex' : 'none',
@@ -12,17 +12,15 @@ const ResultsList = ({results, loading}) => {
       paddingTop: 24
     },
     list: {
-      position: 'fixed',
-      top: 64,
-      bottom: 0,
-      width: 400,
+      width: '100%',
+      height: '100%',
       overflowY: 'auto'
     }
   };
 
   return <List style={styles.list} zDepth={3}>
     <div style={styles.spinner}><CircularProgress/></div>
-    {results.map(r => <Result key={r.id} record={r}/>)}
+    {results.map(r => <Result key={r.id} record={r} onClick={onResultClick}/>)}
   </List>
 };
 

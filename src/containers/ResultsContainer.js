@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import ResultsList from '../components/ResultsList'
+import { getDetails } from '../actions/detail'
 
 const mapStateToProps = (state) => {
   return {
@@ -9,7 +10,9 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+  return {
+    onResultClick: (id) => dispatch(getDetails(id))
+  };
 };
 
 const ResultsContainer = connect(
