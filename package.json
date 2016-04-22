@@ -4,6 +4,9 @@
   "description": "An experiment in creating a OneStop web app",
   "repository": "ssh://git@stash.ngdc.noaa.gov:7999/~emcquinn/onestop-sandbox.git",
   "license": "WTFPL",
+  "scripts": {
+    "dev": "webpack-dev-server --inline"
+  },
   "dependencies": {
     "history": "^1.17.0",
     "immutable": "^3.7.6",
