@@ -12,7 +12,7 @@ const Detail = (props) => {
   const styles = {
     base: {
       display: props.id ? 'block' : 'none',
-      margin: 20,
+      margin: 20
     }
   };
 
