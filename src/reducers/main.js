@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 import {SEARCH, SEARCH_COMPLETE} from '../actions/search.js';
 import {FETCH_DETAILS, RECEIVE_DETAILS} from '../actions/detail.js';
 
-const initialState = Immutable.fromJS({
+export const initialState = Immutable.fromJS({
   search: '',
   inFlight: false,
   results: [],
@@ -19,6 +19,7 @@ const reducer = (state = initialState, action) => {
 
     case SEARCH_COMPLETE:
       return state.merge({
+        search: action.searchText,
         results: action.items,
         inFlight: false
       });
