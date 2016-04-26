@@ -1,12 +1,12 @@
 import React from 'react'
 import AppBar from 'material-ui/lib/app-bar';
-import TextSearchField from './TextSearchField.jsx';
 import ResultsContainer from '../containers/ResultsContainer';
 import DetailContainer from '../containers/DetailContainer';
+import SearchFacetContainer from '../containers/SearchFacetContainer';
 
 const styles = {
   header: {
-    height: 64
+    height: 64,
   },
   results: {
     position: 'fixed',
@@ -29,7 +29,7 @@ const Root = () => (
           showMenuIconButton={false}
           style={styles.header}
           zDepth={3}>
-        <TextSearchField/>
+        <SearchFacetContainer/>
       </AppBar>
       <div style={styles.results}>
         <ResultsContainer/>

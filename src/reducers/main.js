@@ -1,9 +1,11 @@
 import Immutable from 'immutable';
-import {SEARCH, SEARCH_COMPLETE} from '../actions/search.js';
+import {INDEX_CHANGE, SEARCH, SEARCH_COMPLETE} from '../actions/search.js';
 import {FETCH_DETAILS, RECEIVE_DETAILS} from '../actions/detail.js';
 
 const initialState = Immutable.fromJS({
   search: '',
+  indexIndex: '0',
+  indexText: '',
   inFlight: false,
   results: [],
   details: {}
@@ -11,6 +13,11 @@ const initialState = Immutable.fromJS({
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    case INDEX_CHANGE:
+      return state.merge({
+        indexIndex: action.indexIndex,
+        indexText: action.indexText
+      });
     case SEARCH:
       return state.merge({
         search: action.searchText,
