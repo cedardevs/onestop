@@ -21,14 +21,16 @@ const reducer = (state = initialState, action) => {
     case SEARCH:
       return state.merge({
         search: action.searchText,
-        inFlight: true
+        inFlight: true,
+        details: {}
       });
 
     case SEARCH_COMPLETE:
       return state.merge({
         search: action.searchText,
         results: action.items,
-        inFlight: false
+        inFlight: false,
+        details: {}
       });
 
     case FETCH_DETAILS:
