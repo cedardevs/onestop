@@ -13,7 +13,7 @@ describe('The main reducer', function() {
   });
 
   it('has a default state', function() {
-    initialState.should.have.keys('search', 'inFlight', 'results', 'details');
+    initialState.should.have.keys('search', 'indexText', 'inFlight', 'results', 'details');
     const initialAction = {type: 'init'};
     const result = reducer(initialState, initialAction);
     result.should.equal(initialState);

@@ -37,10 +37,9 @@ export const textSearch = (searchText) => {
   };
 };
 
-export const indexChange = (indexIndex, indexText) => {
+export const indexChange = (indexText) => {
   return {
     type: INDEX_CHANGE,
-    indexIndex,
     indexText
   };
 };

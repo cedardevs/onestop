@@ -4,15 +4,21 @@ import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import Colors from 'material-ui/lib/styles/colors';
 
+const facets = [
+  {value: '', label: 'Full Text'},
+  {value: 'title', label: 'Title'},
+  {value: 'people', label: 'People'},
+  {value: 'fileIdentifier', label: 'File Identifier'},
+  {value: 'enddate', label: 'End Date'},
+  {value: 'startdate', label: 'Start Date'}
+];
 
-const facetText = ["title", "people", "fileIdentifier", "enddate", "startdate"];//TODO determine how to let them select nothing.
-const dropDownEntries = [];
-for (let i = 0; i < facetText.length; i++ ) {
-  dropDownEntries.push(
-      <MenuItem value={i} key={i} label={`${facetText[i]}`} primaryText={`${facetText[i]}`}/>);
-}
+let i = 0;
+const dropDownEntries = facets.map((facet) => {
+  return <MenuItem value={facet.value} key={i++} label={facet.label} primaryText={facet.label}/>
+});
 
-const IndexDropDown = ({index, onChange}) => {
+const IndexDropDown = ({indexName, onChange}) => {
   const styles = {
     root: {
       boxShadow: '2px 1px 2px 0px #888888',
@@ -35,17 +41,17 @@ const IndexDropDown = ({index, onChange}) => {
     underlineStyle: {
       borderColor: Colors.white,
       border: '2px'
-    },
-  }
+    }
+  };
 
-  const handleChange = (event, index) => {
-    console.log("Changing index to "+ index+" with value "+ facetText[index]);
-    onChange(index, facetText[index]);
-  }
+  const handleChange = (event, index, value) => {
+    console.debug("Changing index to "+ index+" with value "+ facets[index].value);
+    onChange(value);
+  };
 
   return <DropDownMenu
       maxHeight={300}
-      value={index}
+      value={indexName}
       onChange={handleChange}
       autoWidth={true}
       style={styles.root}

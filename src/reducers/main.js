@@ -4,7 +4,6 @@ import {FETCH_DETAILS, RECEIVE_DETAILS} from '../actions/detail.js';
 
 export const initialState = Immutable.fromJS({
   search: '',
-  indexIndex: '0',
   indexText: '',
   inFlight: false,
   results: [],
@@ -15,9 +14,9 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case INDEX_CHANGE:
       return state.merge({
-        indexIndex: action.indexIndex,
         indexText: action.indexText
       });
+
     case SEARCH:
       return state.merge({
         search: action.searchText,

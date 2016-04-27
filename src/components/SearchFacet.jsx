@@ -3,7 +3,7 @@ import IndexDropDown from '../components/IndexDropDown'
 import TextSearchField from '../components/TextSearchField'
 import Colors from 'material-ui/lib/styles/colors';
 
-const SearchFacet = ({indexIndex, submit, handleIndexChange}) => {
+const SearchFacet = ({indexName, submit, handleIndexChange}) => {
   const styles = {
     divStyle: {
       margin: 'auto',
@@ -24,7 +24,7 @@ const SearchFacet = ({indexIndex, submit, handleIndexChange}) => {
       <TextSearchField onEnterKeyDown={submit}/>
     </div>
     <div style={styles.dropDown}>
-      <IndexDropDown index={indexIndex} onChange={handleIndexChange}/>
+      <IndexDropDown indexName={indexName} onChange={handleIndexChange}/>
     </div>
     </div>
 };

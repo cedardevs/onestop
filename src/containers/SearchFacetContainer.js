@@ -4,14 +4,14 @@ import { textSearch, indexChange } from '../actions/search'
 
 const mapStateToProps = (state) => {
   return {
-    indexIndex: state.get('indexIndex')
+    indexName: state.get('indexText')
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     submit: (text) => dispatch(textSearch(text)),
-    handleIndexChange: (index, text) => dispatch(indexChange(index, text))
+    handleIndexChange: (text) => dispatch(indexChange(text))
   };
 };
 
