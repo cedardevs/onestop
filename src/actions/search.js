@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch'
 
+export const INDEX_CHANGE = 'index_change';
 export const SEARCH = 'search';
 export const SEARCH_COMPLETE = 'search_complete';
 
@@ -27,9 +28,19 @@ export const textSearch = (searchText) => {
 
     dispatch(startSearch(searchText));
 
+    console.log("Searching: searchText="+getState().get('indexText')+":"+searchText);
+
     const apiRoot = '//data.nodc.noaa.gov/geoportal/rest/find/document';
-    return fetch(`${apiRoot}?searchText=${searchText}&f=json&max=30`)
+    return fetch(`${apiRoot}?searchText=${getState().get('indexText')}:${searchText}&f=json&max=30`)
         .then(response => response.json())
         .then(json => dispatch(completeSearch(searchText, json.records)));
+  };
+};
+
+export const indexChange = (indexIndex, indexText) => {
+  return {
+    type: INDEX_CHANGE,
+    indexIndex,
+    indexText
   };
 };
