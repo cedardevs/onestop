@@ -40,13 +40,17 @@ const styles = {
     bottom: 0,
     left: 0
   },
-    paper: {
-        height: 64,
+  paper: {
+    height: 64,
+    float: 'left'
 //        width: 100,
 //        margin: 20,
 //        textAlign: 'center',
 //        display: 'inline-block'
-    }
+  },
+  searchFacet: {
+    float: 'left'
+  }
 };
 
 const Root = () => (
@@ -55,12 +59,12 @@ const Root = () => (
           <Header/>
       </div>
       <div style={styles.appbar}>
-          <Paper style={styles.paper} zDepth={3}>
+          <div style={styles.paper} zDepth={3}>
           <img src="./BS_noaalogo1.jpg" width="258" height="57" alt="NOAA Logo"  />
-          </Paper>
+          </div>
+          <SearchFacetContainer style={styles.searchFacet}/>
       </div>
       <div>
-        <SearchFacetContainer />
       </div>
       <div style={styles.results}>
         <ResultsContainer/>

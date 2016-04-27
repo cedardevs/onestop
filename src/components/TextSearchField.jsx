@@ -6,14 +6,19 @@ import Colors from 'material-ui/lib/styles/colors';
 const TextSearchField = ({onEnterKeyDown}) => {
   const styles = {
     inputStyle: {
-      color: Colors.white
+      color: Colors.black
     },
     underlineStyle: {
-      borderColor: Colors.white
+      borderColor: '#ffffff'
     },
     underlineFocusStyle: {
       borderColor: Colors.indigo400
+    },
+    root: {
+      borderColor: Colors.black,
+      border: '1px'
     }
+
   };
 
   const handleSubmit = (e) => onEnterKeyDown(e.target.value);
@@ -21,11 +26,13 @@ const TextSearchField = ({onEnterKeyDown}) => {
   return <div>
       <TextField
           hintText="Search for NCEI data"
+          hintStyle={styles.inputStyle}
           fullWidth={true}
+          onEnterKeyDown={handleSubmit}
+          style={styles.root}
           underlineStyle={styles.underlineStyle}
           underlineFocusStyle={styles.underlineFocusStyle}
           inputStyle={styles.inputStyle}
-          onEnterKeyDown={handleSubmit}
       /></div>
 };
 
