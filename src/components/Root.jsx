@@ -1,71 +1,68 @@
 import React from 'react'
-import AppBar from 'material-ui/lib/app-bar';
+import Paper from 'material-ui/lib/paper';
 import ResultsContainer from '../containers/ResultsContainer';
 import DetailContainer from '../containers/DetailContainer';
 import SearchFacetContainer from '../containers/SearchFacetContainer';
-//import FooterContainer from '../containers/FooterContainer';
 import Footer from './Footer.jsx';
 import Header from './Header.jsx';
-import Paper from 'material-ui/lib/paper';
+
+const HEADER_HEIGHT = 24;
+const APP_BAR_HEIGHT = 84;
+const RESULTS_WIDTH = 400;
+const FOOTER_HEIGHT = 24;
 
 const styles = {
   header: {
-      height: 24
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    height: HEADER_HEIGHT,
+    width: '100%'
   },
   appbar: {
-      //border: '3px solid #01568D',
-      //right: 500,
-      //left: 258,
-      top:24,
-      height: 84,
-      alignVertical:"top"
-      //verticalAlign:"top"
-      //alignItems: 'center'
+    position: 'fixed',
+    top: HEADER_HEIGHT,
+    height: APP_BAR_HEIGHT,
+    width: '100%'
+  },
+  logo: {
+    height: APP_BAR_HEIGHT,
+    float: 'left'
   },
   results: {
     position: 'fixed',
-    top: 64 + 40,
-    bottom: 0,
-    width: 400
+    top: HEADER_HEIGHT + APP_BAR_HEIGHT,
+    bottom: FOOTER_HEIGHT,
+    width: RESULTS_WIDTH
   },
   details: {
     position: 'fixed',
-    top: 64 + 40,
-    left: 400,
-    bottom: 0
+    top: HEADER_HEIGHT + APP_BAR_HEIGHT,
+    left: RESULTS_WIDTH,
+    bottom: FOOTER_HEIGHT
   },
   footer: {
-    position: 'absolute',
+    position: 'fixed',
     right: 0,
     bottom: 0,
     left: 0
   },
-  paper: {
-    height: 64,
-    float: 'left'
-//        width: 100,
-//        margin: 20,
-//        textAlign: 'center',
-//        display: 'inline-block'
-  },
   searchFacet: {
-    float: 'left'
+    float: 'right'
   }
 };
 
 const Root = () => (
     <div>
       <div style={styles.header}>
-          <Header/>
+        <Header/>
       </div>
-      <div style={styles.appbar}>
-          <div style={styles.paper} zDepth={3}>
-          <img src="./BS_noaalogo1.jpg" width="258" height="57" alt="NOAA Logo"  />
-          </div>
-          <SearchFacetContainer style={styles.searchFacet}/>
-      </div>
-      <div>
-      </div>
+      <Paper style={styles.appbar} rounded={false}>
+        <img style={styles.logo} src="./BS_noaalogo1.jpg" alt="NOAA Logo"/>
+        <div style={styles.searchFacet}>
+          <SearchFacetContainer/>
+        </div>
+      </Paper>
       <div style={styles.results}>
         <ResultsContainer/>
       </div>

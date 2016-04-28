@@ -18,7 +18,7 @@ const ResultsList = ({results, loading, onResultClick}) => {
     }
   };
 
-  return <List style={styles.list} zDepth={3}>
+  return <List style={styles.list} zDepth={3} rounded={false}>
     <div style={styles.spinner}><CircularProgress/></div>
     {results.map(r => <Result key={r.id} record={r} onClick={onResultClick}/>)}
   </List>

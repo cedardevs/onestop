@@ -13,7 +13,7 @@ const styles = {
 let Footer = ({dispatch}) => {
   return (
   <div style={styles.footer}>
-    This Geoportal was built using the Geoportal Server.
+    Powered by NCEI-MD GeoPortal
   </div>
   );
 };

@@ -6,16 +6,16 @@ import Colors from 'material-ui/lib/styles/colors';
 const SearchFacet = ({indexName, submit, handleIndexChange}) => {
   const styles = {
     divStyle: {
-      margin: 'auto',
-      width: 800
+      paddingRight: 20
     },
     textField: {
-      float: 'left',
-      width: '20%'
+      display: 'inline-block',
+      width: 300
     },
     dropDown: {
-      float: 'left',
-      width: '50%'
+      display: 'inline-block',
+      width: 200,
+      paddingLeft: 10
     }
   };
 
@@ -26,7 +26,7 @@ const SearchFacet = ({indexName, submit, handleIndexChange}) => {
     <div style={styles.dropDown}>
       <IndexDropDown indexName={indexName} onChange={handleIndexChange}/>
     </div>
-    </div>
+  </div>
 };
 
 export default SearchFacet
