@@ -5,8 +5,8 @@
   "repository": "ssh://git@stash.ngdc.noaa.gov:7999/~emcquinn/onestop-sandbox.git",
   "license": "WTFPL",
   "scripts": {
-    "dev": "webpack-dev-server --inline & mocha --compilers js:babel-core/register --watch",
-    "test": "mocha --compilers js:babel-core/register"
+    "dev": "webpack-dev-server --inline & mocha --watch",
+    "test": "mocha"
   },
   "dependencies": {
     "history": "^1.17.0",
