@@ -4,7 +4,7 @@ import { textSearch, indexChange } from '../actions/search'
 
 const mapStateToProps = (state) => {
   return {
-    indexName: state.get('indexText')
+    indexName: state.getIn(['search', 'index'])
   };
 };
 

@@ -22,16 +22,17 @@ export const completeSearch = (searchText, items) => {
 export const textSearch = (searchText) => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
-    if (getState().get('inFlight') === true) {
+    if (getState().getIn(['search', 'inFlight']) === true) {
       return Promise.resolve();
     }
 
     dispatch(startSearch(searchText));
 
-    console.log("Searching: searchText="+getState().get('indexText')+":"+searchText);
+    const index = getState().getIn(['search', 'index']);
+    console.log(`Searching: searchText="${index}":"${searchText}`);
 
     const apiRoot = '//data.nodc.noaa.gov/geoportal/rest/find/document';
-    return fetch(`${apiRoot}?searchText=${getState().get('indexText')}:${searchText}&f=json&max=30`)
+    return fetch(`${apiRoot}?searchText=${index}:${searchText}&f=json&max=30`)
         .then(response => response.json())
         .then(json => dispatch(completeSearch(searchText, json.records)));
   };

@@ -19,7 +19,7 @@ export const completeDetails = (id, details) => {
 export const getDetails = (id) => {
   return (dispatch, getState) => {
     // if a request is already in flight, let the calling code know there's nothing to wait for
-    if (getState().get('inFlight') === true) {
+    if (getState().getIn(['search', 'inFlight']) === true) {
       return Promise.resolve();
     }
 
