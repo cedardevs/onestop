@@ -2,7 +2,9 @@ import Immutable from 'immutable';
 import {SEARCH, SEARCH_COMPLETE} from '../actions/search';
 import {FETCH_DETAILS, RECEIVE_DETAILS} from '../actions/detail';
 
-const details = (state = Immutable.Map(), action) => {
+export const initialState = Immutable.Map();
+
+export const details = (state = initialState, action) => {
   switch (action.type) {
     case SEARCH:
     case SEARCH_COMPLETE:
