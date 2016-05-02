@@ -7,12 +7,18 @@ module.exports = {
     './src/index.jsx'
   ],
   module: {
+    preLoaders: [{
+      test: /\.js$/,
+      loader: "eslint-loader",
+      exclude: /node_modules/
+    }],
     loaders: [{
       test: /\.jsx?$/,
       exclude: /node_modules/,
       loader: 'react-hot!babel'
     }, {
       test: /\.css$/,
+      exclude: /node_modules/,
       loader: 'style!css!postcss'
     }]
   },
