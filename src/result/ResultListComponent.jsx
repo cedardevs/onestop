@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react'
-import CircularProgress from 'material-ui/lib/circular-progress';
-import List from 'material-ui/lib/lists/list';
-import Result from './Result';
+import CircularProgress from '../../node_modules/material-ui/lib/circular-progress';
+import List from '../../node_modules/material-ui/lib/lists/list';
+import Result from './ResultComponent';
 
 const ResultsList = ({results, loading, onResultClick}) => {
   const styles = {

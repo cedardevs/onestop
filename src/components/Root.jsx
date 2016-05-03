@@ -1,8 +1,8 @@
 import React from 'react'
 import Paper from 'material-ui/lib/paper';
-import ResultsContainer from '../containers/ResultsContainer';
-import DetailContainer from '../containers/DetailContainer';
-import SearchFacetContainer from '../containers/SearchFacetContainer';
+import ResultsContainer from '../result/ResultContainer';
+import DetailContainer from '../detail/DetailContainer';
+import SearchFacetContainer from '../search/SearchContainer';
 import Footer from './Footer.jsx';
 import Header from './Header.jsx';
 

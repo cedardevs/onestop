@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import {INDEX_CHANGE, SEARCH, SEARCH_COMPLETE} from '../actions/search.js';
+import {INDEX_CHANGE, SEARCH, SEARCH_COMPLETE} from './SearchActions';
 
 export const initialState = Immutable.Map({
   text: '',

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
-import ResultsList from '../components/ResultsList'
-import { getDetails } from '../actions/detail'
+import ResultsList from './ResultListComponent'
+import { getDetails } from '../detail/DetailActions'
 
 const mapStateToProps = (state) => {
   return {

@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import SelectField from 'material-ui/lib/select-field';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import Colors from 'material-ui/lib/styles/colors';
+import SelectField from '../../node_modules/material-ui/lib/select-field';
+import MenuItem from '../../node_modules/material-ui/lib/menus/menu-item';
+import Colors from '../../node_modules/material-ui/lib/styles/colors';
 
 const IndexDropDown = ({indexName, onChange}) => {
   const styles = {

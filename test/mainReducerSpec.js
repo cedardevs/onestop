@@ -1,8 +1,8 @@
 import './specHelper'
 import Immutable from 'immutable';
 import reducer from '../src/reducers/main';
-import { SEARCH, SEARCH_COMPLETE, startSearch, completeSearch } from '../src/actions/search';
-import { FETCH_DETAILS, RECEIVE_DETAILS, startDetails, completeDetails} from '../src/actions/detail';
+import { SEARCH, SEARCH_COMPLETE, startSearch, completeSearch } from '../src/search/SearchActions';
+import { FETCH_DETAILS, RECEIVE_DETAILS, startDetails, completeDetails} from '../src/detail/DetailActions';
 
 describe('The main reducer', function() {
 

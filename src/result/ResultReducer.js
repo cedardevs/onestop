@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import {SEARCH_COMPLETE} from '../actions/search.js';
+import {SEARCH_COMPLETE} from '../search/SearchActions';
 
 export const initialState = Immutable.List();
 

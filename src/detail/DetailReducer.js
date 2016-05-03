@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
-import {SEARCH, SEARCH_COMPLETE} from '../actions/search';
-import {FETCH_DETAILS, RECEIVE_DETAILS} from '../actions/detail';
+import {SEARCH, SEARCH_COMPLETE} from '../search/SearchActions';
+import {FETCH_DETAILS, RECEIVE_DETAILS} from './DetailActions';
 
 export const initialState = Immutable.Map();
 

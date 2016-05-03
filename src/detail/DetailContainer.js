@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import Detail from '../components/Detail'
+import Detail from './DetailComponent'
 
 const mapStateToProps = (state) => {
   return state.get('details').toJS();

@@ -1,7 +1,7 @@
 import React from 'react'
-import IndexDropDown from '../components/IndexDropDown'
-import TextSearchField from '../components/TextSearchField'
-import Colors from 'material-ui/lib/styles/colors';
+import IndexDropDown from './IndexDropDownComponent'
+import TextSearchField from './TextSearchFieldComponent'
+import Colors from '../../node_modules/material-ui/lib/styles/colors';
 
 const SearchFacet = ({indexName, submit, handleIndexChange}) => {
   const styles = {

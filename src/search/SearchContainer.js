@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
-import SearchFacet from '../components/SearchFacet'
-import { textSearch, indexChange } from '../actions/search'
+import SearchFacet from './SearchComponent'
+import { textSearch, indexChange } from './SearchActions'
 
 const mapStateToProps = (state) => {
   return {

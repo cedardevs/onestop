@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
-import ListItem from 'material-ui/lib/lists/list-item';
-import Avatar from 'material-ui/lib/avatar';
+import ListItem from '../../node_modules/material-ui/lib/lists/list-item';
+import Avatar from '../../node_modules/material-ui/lib/avatar';
 
 const Result = ({record, onClick}) => {
   const thumbnailLink = record.links.find(link => link.type === 'thumbnail');

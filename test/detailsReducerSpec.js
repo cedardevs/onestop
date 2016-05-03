@@ -1,7 +1,7 @@
 import './specHelper'
 import Immutable from 'immutable';
-import { details, initialState } from '../src/reducers/details';
-import { startDetails, completeDetails } from '../src/actions/detail';
+import { details, initialState } from '../src/detail/DetailReducer';
+import { startDetails, completeDetails } from '../src/detail/DetailActions';
 
 describe('The details reducer', function () {
 
