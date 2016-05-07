@@ -6,7 +6,9 @@
   "license": "WTFPL",
   "scripts": {
     "dev": "webpack-dev-server --inline & mocha --watch",
-    "test": "mocha"
+    "test": "mocha",
+    "build": "npm install && npm test && webpack",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "history": "^1.17.0",
@@ -37,6 +39,7 @@
     "eslint": "^2.9.0",
     "eslint-loader": "^1.3.0",
     "file-loader": "^0.8.5",
+    "html-webpack-plugin": "^2.16.1",
     "img-loader": "^1.2.2",
     "mocha": "^2.4.5",
     "node-sass": "^3.4.2",

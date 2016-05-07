@@ -1,3 +1,6 @@
+require('../style/normalize-3.0.3.css');
+require('../style/roboto-400-300-500.css');
+
 import 'babel-polyfill'
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import React from 'react';
@@ -22,9 +25,13 @@ const routes =
       <Route path="/" component={Root}/>
     </Route>;
 
-render(
+const body =
     <Provider store={store}>
       <Router history={hashHistory}>{routes}</Router>
-    </Provider>,
-    document.getElementById('app')
-);
+    </Provider>;
+
+var appDiv = document.createElement('div');
+appDiv.setAttribute('id', 'app');
+document.body.appendChild(appDiv);
+
+render(body, appDiv);

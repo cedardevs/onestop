@@ -1,3 +1,5 @@
+const logoPath = require('../../img/BS_noaalogo1.jpg');
+
 import React from 'react'
 import Paper from 'material-ui/lib/paper';
 import ResultsContainer from '../result/ResultContainer';
@@ -58,7 +60,7 @@ const Root = () => (
         <Header/>
       </div>
       <Paper style={styles.appbar} rounded={false}>
-        <img style={styles.logo} src="./BS_noaalogo1.jpg" alt="NOAA Logo"/>
+        <img style={styles.logo} src={logoPath} alt="NOAA Logo"/>
         <div style={styles.searchFacet}>
           <SearchFacetContainer/>
         </div>

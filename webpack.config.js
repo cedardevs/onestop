@@ -1,4 +1,5 @@
 var webpack = require('webpack');
+var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: [
@@ -20,6 +21,10 @@ module.exports = {
       test: /\.css$/,
       exclude: /node_modules/,
       loader: 'style!css!postcss'
+    }, {
+      test: /\.jpg$/,
+      exclude: /node_modules/,
+      loader: 'file?name=[path][name]-[hash].[ext]'
     }]
   },
   resolve: {
@@ -28,7 +33,7 @@ module.exports = {
   output: {
     path: __dirname + '/dist',
     publicPath: '/',
-    filename: 'bundle.js'
+    filename: 'bundle-[hash].js'
   },
   devtool: 'source-map',
   devServer: {
@@ -37,6 +42,9 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.optimize.UglifyJsPlugin()
+    new webpack.optimize.UglifyJsPlugin(),
+    new HtmlWebpackPlugin({
+      title: 'NOAA OneStop'
+    })
   ]
 };
