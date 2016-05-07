@@ -1,3 +1,6 @@
+### Build outputs
+dist/
+
 ### IntelliJ
 .idea/
 .idea_modules/
