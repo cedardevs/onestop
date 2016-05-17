@@ -1,0 +1,45 @@
+ElasticSearches.txt
+
+Some basic searches
+
+// Get number of documents
+curl 'localhost:9200/_cat/indices/metadata_v1?v'
+
+// Find matching bounding box containing center point
+GET _search
+    {
+        "fields": ["envelope_cen_pt", "title",
+
+        "query" : {
+            "bool" : {
+                "must" : {
+                    "match_all" : {}
+                },
+                "filter" : {
+                    "geo_bounding_box" : {
+                        "envelope_cen_pt" : {
+                            "top_left" : {
+                                "lat" : 60,
+                                "lon" : -10
+                            },
+                            "bottom_right" : {
+                                "lat" : 40,
+                                "lon" : 10
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+// Find a term which is not analyzed. Search for exact term
+GET _search
+    {
+        "query" : {
+            "match" : {
+                "contact_people_s" : "Peter Miller"
+            }
+        }
+    }
+
