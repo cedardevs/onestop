@@ -1,0 +1,23 @@
+import groovy.json.JsonSlurper
+
+task 'downloadGHRSSTCollections' << {
+  def outputDir = file("${buildDir}/testMetadata/GHRSST/")
+  outputDir.mkdirs()
+
+  def apiUrl = new URL('http://data.nodc.noaa.gov/geoportal/rest/find/document' +
+      '?searchText=title:GHRSST%20NOT%20title:Documentation&start=1&max=100&f=json')
+
+  def json = new JsonSlurper().parse(apiUrl)
+  json.records.each { record ->
+    record.links.each { link ->
+      if (link.type.contains("metadata")) {
+        def linkString = link.href
+        def name = linkString.substring(linkString.indexOf("=") + 1)
+        name = name.replace('%7B', '')
+        name = name.replace('%7D', '')
+        println("name:${name}")
+        file("${outputDir}/${name}.xml") << new URL(link.href).text
+      }
+    }
+  }
+}
