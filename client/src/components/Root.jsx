@@ -4,7 +4,7 @@ import React from 'react'
 import Paper from 'material-ui/lib/paper';
 import ResultsContainer from '../result/ResultContainer';
 import DetailContainer from '../detail/DetailContainer';
-import SearchFacetContainer from '../search/SearchContainer';
+import SearchContainer from '../search/SearchContainer';
 import Footer from './Footer.jsx';
 import Header from './Header.jsx';
 
@@ -62,7 +62,7 @@ const Root = () => (
       <Paper style={styles.appbar} rounded={false}>
         <img style={styles.logo} src={logoPath} alt="NOAA Logo"/>
         <div style={styles.searchFacet}>
-          <SearchFacetContainer/>
+          <SearchContainer/>
         </div>
       </Paper>
       <div style={styles.results}>
