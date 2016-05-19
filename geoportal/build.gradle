@@ -1,6 +1,12 @@
 import groovy.json.JsonSlurper
+import com.wiredforcode.gradle.spawn.SpawnProcessTask
+import com.wiredforcode.gradle.spawn.KillProcessTask
 
-task 'downloadGHRSSTCollections' << {
+plugins {
+  id "com.wiredforcode.spawn" version "0.6.0"
+}
+
+task downloadGHRSSTCollections << {
   def outputDir = file("${buildDir}/testMetadata/GHRSST/")
   outputDir.mkdirs()
 
@@ -21,3 +27,31 @@ task 'downloadGHRSSTCollections' << {
     }
   }
 }
+
+task installJettyRunner(type: DownloadTask) {
+  url = 'http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.10.v20130312/jetty-runner-8.1.10.v20130312.jar'
+  targetDir = "${buildDir}/jetty"
+}
+
+task installGeoPortal(type: DownloadTask) {
+  dependsOn 'installJettyRunner'
+  finalizedBy 'extractGeoPortal'
+
+  url = 'https://github.com/Esri/geoportal-server-catalog/releases/download/v2.0.0/geoportal-server-2.0.0.zip'
+  targetDir = "${buildDir}/geoportal"
+}
+
+task extractGeoPortal(type: Copy) {
+  from zipTree(installGeoPortal.targetFile)
+  into installGeoPortal.targetFile.parentFile
+}
+
+task start(type: SpawnProcessTask) {
+  dependsOn 'installGeoPortal', ':elasticsearch:start'
+
+  command "java -jar ${installJettyRunner.targetFile} ${installGeoPortal.targetDir}/geoportal.war"
+  ready 'initialization completed'
+  directory projectDir.absolutePath
+}
+
+task stop(type: KillProcessTask)
