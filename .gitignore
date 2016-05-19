@@ -47,7 +47,9 @@ jspm_packages
 ### Gradle template
 .gradle
 build/
-.pid.lock # pid files from the spawn plugin
+
+# pid files from the spawn plugin
+.pid.lock
 
 # Ignore Gradle GUI config
 gradle-app.setting
