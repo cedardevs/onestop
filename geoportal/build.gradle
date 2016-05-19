@@ -48,6 +48,7 @@ task extractGeoPortal(type: Copy) {
 
 task start(type: SpawnProcessTask) {
   dependsOn 'installGeoPortal', ':elasticsearch:start'
+  onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
 
   command "java -jar ${installJettyRunner.targetFile} ${installGeoPortal.targetDir}/geoportal.war"
   ready 'initialization completed'

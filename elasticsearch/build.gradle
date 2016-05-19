@@ -21,6 +21,7 @@ task extractElasticSearch(type: Copy) {
 
 task start(type: SpawnProcessTask) {
   dependsOn 'installElasticSearch'
+  onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
 
   directory projectDir.absolutePath
   command "${buildDir}/elasticsearch/elasticsearch-${esVersion}/bin/elasticsearch"
