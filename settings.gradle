@@ -1,4 +1,5 @@
 rootProject.name = 'onestop'
 
 include 'client'
+include 'elasticsearch'
 include 'geoportal'

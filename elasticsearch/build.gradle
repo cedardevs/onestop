@@ -1,0 +1,30 @@
+import com.wiredforcode.gradle.spawn.SpawnProcessTask
+import com.wiredforcode.gradle.spawn.KillProcessTask
+
+plugins {
+  id "com.wiredforcode.spawn" version "0.6.0"
+}
+
+def esVersion = '2.3.2'
+
+task installElasticSearch(type: DownloadTask) {
+  url = "https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${esVersion}/elasticsearch-${esVersion}.tar.gz"
+  targetDir = "${buildDir}/elasticsearch"
+
+  finalizedBy 'extractElasticSearch'
+}
+
+task extractElasticSearch(type: Copy) {
+  from tarTree(installElasticSearch.targetFile)
+  into installElasticSearch.targetFile.parentFile
+}
+
+task start(type: SpawnProcessTask) {
+  dependsOn 'installElasticSearch'
+
+  directory projectDir.absolutePath
+  command "${buildDir}/elasticsearch/elasticsearch-${esVersion}/bin/elasticsearch"
+  ready 'started'
+}
+
+task stop(type: KillProcessTask)
