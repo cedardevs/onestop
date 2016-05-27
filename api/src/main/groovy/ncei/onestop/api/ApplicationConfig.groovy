@@ -10,10 +10,10 @@ import org.elasticsearch.client.transport.TransportClient
 @Configuration
 class ApplicationConfig {
 
-    @Value('${elasticsearch.port:9300}')
+    @Value('${elasticsearch.port}')
     Integer elasticPort
 
-    @Value('${elasticsearch.host:localhost}')
+    @Value('${elasticsearch.host}')
     String elasticHost
 
     @Bean(destroyMethod = 'close')

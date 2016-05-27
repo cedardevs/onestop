@@ -18,3 +18,6 @@ logging:
       org.springframework: INFO
       org.springframework.amqp: WARN
       org.hibernate: WARN
+elasticsearch:
+  host: localhost
+  port: 9300
