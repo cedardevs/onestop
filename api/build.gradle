@@ -1,5 +1,5 @@
-group 'ncei.onestop'
-version '1.0-SNAPSHOT'
+import com.wiredforcode.gradle.spawn.SpawnProcessTask
+import com.wiredforcode.gradle.spawn.KillProcessTask
 
 buildscript {
     repositories {
@@ -10,9 +10,15 @@ buildscript {
     }
 }
 
+plugins {
+    id 'groovy'
+    id "com.wiredforcode.spawn" version "0.6.0"
+}
 
-apply plugin: 'groovy'
 apply plugin: 'spring-boot'
+
+group 'ncei.onestop'
+version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -29,3 +35,18 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.11'
 }
+
+bootRun {
+    dependsOn ':elasticsearch:start'
+}
+
+task start(type: SpawnProcessTask) {
+    dependsOn 'assemble'
+    onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
+
+    directory projectDir.absolutePath
+    command "java -jar ${buildDir}/libs/${project.name}-${project.version}.jar"
+    ready 'Started Application'
+}
+
+task stop(type: KillProcessTask)
