@@ -1,33 +1,32 @@
 package ncei.onestop.api.controller
 
+import groovy.util.logging.Slf4j
 import ncei.onestop.api.pojo.OneStopSearchRequest
 import ncei.onestop.api.pojo.OneStopSearchResponse
-import ncei.onestop.api.service.SearchRequestParserService
 import ncei.onestop.api.service.SearchService
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.RestController
 
-//@Controller or @RestController?
-@RequestMapping(value = "") // FIXME
+@Slf4j
+@RestController
+//@RequestMapping(value = "/")
 class SearchController {
 
     private SearchService searchService
 
     @Autowired
-    public SearchController(SearchRequestParserService searchParserService, SearchService searchService) {
-        this.searchParserService = searchParserService
+    public SearchController(SearchService searchService) {
         this.searchService = searchService
     }
 
-
-
-    // TODO method GET or POST?
-    @RequestMapping(value = "/search", method = RequestMethod.GET, consumes = "application/json")
+    // POST in order to support request body
+    @RequestMapping(value = "/search", method = RequestMethod.POST)//, consumes = "application/json")
     public @ResponseBody OneStopSearchResponse search(@RequestBody OneStopSearchRequest searchRequest) {
-
+        println("searchRequest:${searchRequest}")
         def response = searchService.search(searchRequest)
         response
     }

@@ -17,8 +17,7 @@ class SearchService {
 
     @Autowired
     public SearchService(Client client, SearchResponseParserService responseService,
-        SearchRequestParserService searchRequestParserService
-    ) {
+        SearchRequestParserService searchRequestParserService) {
         this.client = client
         this.responseService = responseService
         this.searchRequestParserService = searchRequestParserService
