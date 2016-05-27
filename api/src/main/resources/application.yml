@@ -1,13 +1,14 @@
+# classpath config is included in compiled application
 server:
   port: 8097
   context-path: /
-  # classpath config is included in compiled application
-processor.name: onestop
+
 spring:
   application:
     name: onestop
+
 logging:
-  file: /data/agile_apps/logs/ingest/${processor.name}_${hostname}.log
+  file: /data/agile_apps/logs/ingest/${spring.application.name}_${hostname}.log
   level:
       org.gradle: WARN
       org.apache.http: WARN
@@ -18,6 +19,7 @@ logging:
       org.springframework: INFO
       org.springframework.amqp: WARN
       org.hibernate: WARN
+
 elasticsearch:
   host: localhost
   port: 9300
