@@ -49,4 +49,7 @@ task start(type: SpawnProcessTask) {
     ready 'Started Application'
 }
 
-task stop(type: KillProcessTask)
+task stop(type: KillProcessTask) {
+    onlyIf { new File(projectDir, '.pid.lock').exists() }
+    directory projectDir.absolutePath
+}
