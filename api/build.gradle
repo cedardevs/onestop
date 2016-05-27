@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.4.6'
-    compile 'org.elasticsearch:elasticsearch-groovy:2.1.2'
+    compile 'org.elasticsearch:elasticsearch:2.3.3'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-tomcat'
 
