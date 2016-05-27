@@ -1,4 +1,4 @@
-group 'something.to.change'
+group 'ncei.onestop'
 version '1.0-SNAPSHOT'
 
 buildscript {
