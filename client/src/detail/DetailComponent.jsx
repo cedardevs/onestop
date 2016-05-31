@@ -8,12 +8,64 @@ import CardTitle from '../../node_modules/material-ui/lib/card/card-title';
 import RaisedButton from '../../node_modules/material-ui/lib/raised-button';
 import CardText from '../../node_modules/material-ui/lib/card/card-text';
 
+import FlipCard from '../../node_modules/react-flipcard/lib/main';
+
 const Detail = (props) => {
+
+
+  const cardHight = "300px";
+  const cardWidth = "300px";
+
   const styles = {
     base: {
       display: props.id ? 'block' : 'none',
       margin: 20
+    },
+    reactFlipCard: {
+      margin: "25px",
+      textAlign: "center"
+    },
+    reactFlipCard__Front: {
+      boxSizing: "border-box",
+      width: cardWidth,
+      height: cardHight,
+      borderRadius: "5px",
+      border: "1px solid #ccc",
+      padding: "25px"
+    },
+    reactFlipCard__Back: {
+      boxSizing: "border-box",
+      width: cardWidth,
+      height: cardHight,
+      borderRadius: "5px",
+      border: "1px solid #ccc",
+      padding: "25px"
     }
+
+  //
+  //ReactFlipCard,
+  //ReactFlipCard__Front,
+  //ReactFlipCard__Back {
+  //  box-sizing: border-box;
+  //  width: 250px;
+  //  height: 300px;
+  //}
+  //ReactFlipCard__Front,
+  //ReactFlipCard__Back {
+  //  border-radius: 10px;
+  //  border: 1px solid #ccc;
+  //  padding: 25px;
+  //}
+  //ReactFlipCard__Front {
+  //  background-color: #eee;
+  //}
+  //ReactFlipCard__Back {
+  //  background-color: #cef;
+  //}
+  //
+  //  #example {
+  //  text-align: center;
+  //}
   };
 
   const thumbnailLink = props.links.find(link => link.type === 'thumbnail');
@@ -32,13 +84,27 @@ const Detail = (props) => {
       ));
 
   return (
-      <Paper style={styles.base}>
-        <Card>
-          <CardHeader title={props.title}/>
-          <CardText>{props.summary}</CardText>
-          <CardActions>{actions}</CardActions>
-        </Card>
-      </Paper>
+      //<Paper style={styles.base}>
+      //  <Card>
+      //    <CardHeader title={props.title}/>
+      //    <CardText>{props.summary}</CardText>
+      //    <CardActions>{actions}</CardActions>
+      //  </Card>
+      //</Paper>
+
+      <div>
+        <FlipCard disabled={true} style={styles.reactFlipCard} >
+
+          <div style={styles.reactFlipCard__Front}>
+            <div>Front</div>
+            <div>Title: {props.title} </div>
+            <div></div>
+          </div>
+          <div style={styles.reactFlipCard__Back}>
+            <div>Summary: {props.summary}</div>
+          </div>
+        </FlipCard>
+      </div>
   )
 };
 
