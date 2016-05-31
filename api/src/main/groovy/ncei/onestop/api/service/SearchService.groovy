@@ -32,14 +32,14 @@ class SearchService {
         def geoportalIndex = 'metadata_v1'
         def itemTypeName = 'item'
         def query = parseSearchRequest(params)
-        def searchResult = client
+        def searchResponse = client
             .prepareSearch(geoportalIndex)
             .setTypes(itemTypeName)
             .setQuery(query)
             .execute()
             .actionGet()
 
-        return [items: searchResult.hits.hits*.source]
+        return responseService.searchResponseParser(searchResponse)
     }
 
     private static QueryBuilder parseSearchRequest(Map params) {
