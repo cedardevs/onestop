@@ -1,5 +1,9 @@
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
+var postcss = require("postcss");
+var precss = require ('precss');
+var autoprefixer = require ('autoprefixer');
+var postcssImport = require('postcss-import');
 
 module.exports = {
   entry: [
@@ -20,12 +24,18 @@ module.exports = {
     }, {
       test: /\.css$/,
       exclude: /node_modules/,
-      loader: 'style!css!postcss'
+      loaders: [
+        'style?sourceMap',
+        'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
+        'postcss']
     }, {
       test: /\.jpg$/,
       exclude: /node_modules/,
       loader: 'file?name=[path][name]-[hash].[ext]'
     }]
+  },
+  postcss: function(webpack){
+    return [precss, autoprefixer, postcssImport({addDependencyTo:webpack})]
   },
   resolve: {
     extensions: ['', '.js', '.jsx']
