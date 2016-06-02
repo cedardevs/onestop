@@ -40,6 +40,8 @@ class SearchRequestParserUtil {
         */
 
         def builder = QueryBuilders.boolQuery()
+        if (!filters) { return builder }
+
         def groupedFilters = filters.groupBy { it.type }
 
         // Temporal filters:
@@ -68,6 +70,8 @@ class SearchRequestParserUtil {
 
     private QueryBuilder assembleQuery(List<Map> queries) {
         def builder = QueryBuilders.boolQuery()
+        if (!queries) { return builder }
+
         def groupedQueries = queries.groupBy { it.type }
 
         groupedQueries.queryText.each {
