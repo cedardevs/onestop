@@ -3,8 +3,7 @@ import ListItem from '../../node_modules/material-ui/lib/lists/list-item';
 import Avatar from '../../node_modules/material-ui/lib/avatar';
 
 const Result = ({record, onClick}) => {
-  const thumbnailLink = record.links.find(link => link.type === 'thumbnail');
-  const thumbnailHref = thumbnailLink && thumbnailLink.href;
+  const thumbnailHref = record.thumbnail_s; //ES tag
 
   const styles = {
     title: {

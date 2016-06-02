@@ -9,15 +9,13 @@ import org.elasticsearch.client.Client
 class SearchService {
 
     private Client client
-   // private SearchResponseParserService responseService
     private SearchRequestParserUtility searchRequestParserService
 
 
     @Autowired
-    public SearchService(Client client, /*SearchResponseParserService responseService,*/
+    public SearchService(Client client,
                          SearchRequestParserUtility searchRequestParserService) {
         this.client = client
-        //this.responseService = responseService
         this.searchRequestParserService = searchRequestParserService
     }
 
@@ -30,14 +28,14 @@ class SearchService {
         def geoportalIndex = 'metadata_v1'
         def itemTypeName = 'item'
         def query = searchRequestParserService.parseSearchRequest(params)
-        def searchResult = client
+        def searchResponse = client
             .prepareSearch(geoportalIndex)
             .setTypes(itemTypeName)
             .setQuery(query)
             .execute()
             .actionGet()
 
-        return [items: searchResult.hits.hits*.source]
+        return SearchResponseParserUtil.searchResponseParser(searchResponse)
     }
 
 }
