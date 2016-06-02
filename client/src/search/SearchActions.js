@@ -31,18 +31,19 @@ export const textSearch = (searchText) => {
     const index = getState().getIn(['search', 'index']);
     console.log(`Searching: searchText="${index}":"${searchText}`);
 
-    var apiRoot = "http://localhost:8000/onestop/search";
-
-    return fetch(apiRoot, {
+    const apiRoot = "http://localhost:8000/onestop/search";
+    const fetchParams = {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        searchText: '${searchText}'
+        searchText: `${searchText}`
       })
-    })
+    };
+
+    return fetch(apiRoot, fetchParams)
         .then(response => response.json())
         .then(json => dispatch(completeSearch(searchText, json.items)));
 
