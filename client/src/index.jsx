@@ -14,22 +14,22 @@ import '../style/style.css'
 // Can go away when react 1.0 release
 // Check this repo:
 // https://github.com/zilverline/react-tap-event-plugin
-injectTapEventPlugin();
+injectTapEventPlugin()
 
-let store = createStore(reducer, applyMiddleware(thunk));
+let store = createStore(reducer, applyMiddleware(thunk))
 
 const routes =
     <Route component={Root}>
-      <Route path="/" component={Root}/>
-    </Route>;
+      <Route path="/" component={Root} />
+    </Route>
 
 const body =
     <Provider store={store}>
       <Router history={hashHistory}>{routes}</Router>
-    </Provider>;
+    </Provider>
 
-var appDiv = document.createElement('div');
-appDiv.setAttribute('id', 'app');
-document.body.appendChild(appDiv);
+var appDiv = document.createElement('div')
+appDiv.setAttribute('id', 'app')
+document.body.appendChild(appDiv)
 
-render(body, appDiv);
+render(body, appDiv)
