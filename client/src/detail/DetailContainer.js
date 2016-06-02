@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import {toggleFlipCard} from './DetailActions'
 import Detail from './DetailComponent'
 
 const mapStateToProps = (state) => {
@@ -6,7 +7,12 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => {
-  return {};
+
+  return {
+    onCardClick: (id) => {
+      dispatch(toggleFlipCard(id))
+    }
+  };
 };
 
 const DetailContainer = connect(
