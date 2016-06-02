@@ -39,7 +39,7 @@ export const textSearch = (searchText) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        searchText: '${searchText}'
+        searchText: `${searchText}`
       })
     };
 
