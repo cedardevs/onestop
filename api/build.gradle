@@ -36,7 +36,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
 
 bootRun {
