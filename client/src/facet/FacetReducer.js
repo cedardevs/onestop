@@ -1,8 +1,7 @@
 import Immutable from 'immutable';
 import {OPEN, CLOSED} from './FacetActions'
-
 export const initialState = Immutable.Map({
-    visible: true
+    visible: false
 });
 
 const facets = (state = initialState, action) => {

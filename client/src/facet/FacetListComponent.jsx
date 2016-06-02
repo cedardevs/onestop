@@ -1,29 +1,57 @@
 import React, { PropTypes } from 'react'
-import List from '../../node_modules/material-ui/lib/lists/list';
-import ListItem from '../../node_modules/material-ui/lib/lists/list-item';
 
 const ResultsList = ({opened, toggleVisibility}) => {
-    const styles = {
+    const FACET_MENU_WIDTH = 270;
+    const TRANSITION = '.3s ease-out';
 
-        content: {
-            display: opened ? 'block' : 'none',
+    const styles = {
+        topContainer: {
+            backgroundColor: 'blue',
+            transition: TRANSITION,
+            WebkitTransition: '-webkit-transform '+TRANSITION,
+
+            transform: opened ? '' : 'translate(-'+FACET_MENU_WIDTH+'px)',
+            WebkitTransform: opened ? '' : 'translate(-'+FACET_MENU_WIDTH+'px)', /* Safari */
+            MsTransform: opened ? '' : 'translate(-'+FACET_MENU_WIDTH+'px)', /* IE 9 */
+            willChange: 'transform',
+        },
+        handle: {
             position: 'absolute',
-            backgroundColor: 'grey',
-            width: '160px',
-            boxShadow: '0px 8px 16px 0px rgba(0,0,0,0.2)', 
-            padding: '12px 16px',
+            top: '0',
+            left: FACET_MENU_WIDTH + 'px',
+            width: '20px',
+            height: '20px',
+            border: '1px ridge black',
+            backgroundColor: '#3498DB',
+            color: 'white',
+            textAlign: 'center',
+            fontSize: '15px',
+        },
+        content: {
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            width: FACET_MENU_WIDTH+'px',
+            height: '400px',
+            backgroundColor: '#dddddd',
+            boxShadow: '0px 5px 8px 0px rgba(0,0,0,0.2)',
+            overflowY: 'auto',
         }
+
     };
 
     const handleClicking = () => toggleVisibility();
 
-    return <div>
-        <p onTouchTap={handleClicking}>Click me, Opened={opened ? 'true' : 'false'}</p>
-        {opened}
+    return <div style={styles.topContainer}>
         <div style={styles.content}>
-            This is a test.
-            </div>
         </div>
+        <div style={styles.handle}
+             onclick={handleClicking}
+             onTouchTap={handleClicking}
+             onHover={handleClicking}>
+            <b>=</b>
+        </div>
+    </div>
 };
 
 ResultsList.propTypes = {

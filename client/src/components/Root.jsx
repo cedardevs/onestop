@@ -2,6 +2,7 @@ const logoPath = require('../../img/BS_noaalogo1.jpg');
 
 import React from 'react'
 import Paper from 'material-ui/lib/paper';
+import ResultsContainer from '../result/ResultContainer';
 import DetailContainer from '../detail/DetailContainer';
 import SearchContainer from '../search/SearchContainer';
 import FacetContainer from '../facet/FacetContainer';
@@ -10,7 +11,6 @@ import Header from './Header.jsx';
 
 const HEADER_HEIGHT = 24;
 const APP_BAR_HEIGHT = 84;
-const FACETS_WIDTH = 400;
 const RESULTS_WIDTH = 400;
 const FOOTER_HEIGHT = 24;
 
@@ -33,14 +33,14 @@ const styles = {
     float: 'left'
   }, 
   facets: {
+    zIndex: '2',
     position: 'fixed',
     display: 'inline-block',
     top: HEADER_HEIGHT + APP_BAR_HEIGHT,
     bottom: FOOTER_HEIGHT,
-    width: FACETS_WIDTH,
-    height: '20px'
   },
   results: {
+    zIndex: '1',
     position: 'fixed',
     top: HEADER_HEIGHT + APP_BAR_HEIGHT,
     bottom: FOOTER_HEIGHT,
@@ -77,7 +77,9 @@ const Root = () => (
       <div style={styles.facets}>
         <FacetContainer/>
       </div>
-
+      <div style={styles.results}>
+        <ResultsContainer/>
+      </div>
       <div style={styles.details}>
         <DetailContainer/>
       </div>
