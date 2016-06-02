@@ -7,7 +7,11 @@ import org.springframework.stereotype.Service
 class SearchResponseParserService {
 
   Map searchResponseParser(SearchResponse response) {
-    [items: response.hits.hits*.source]
+    [
+        took: response.tookInMillis,
+        items: response.hits.hits.collect { it.source + [id: it.id] },
+        total: response.hits.totalHits,
+    ]
   }
 
 }
