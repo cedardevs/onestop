@@ -16,14 +16,10 @@ const Detail = (props) => {
     }
   };
 
-  const thumbnailLink = props.links.find(link => link.type === 'thumbnail');
-  const thumbnailHref = thumbnailLink && thumbnailLink.href || null;
-
   const actions = props.links
-      .filter(link => link.type !== 'thumbnail')
       .map(link => (
           <RaisedButton
-              label={link.type}
+              label={link.href}
               linkButton={true}
               href={link.href}
               key={link.href}
@@ -35,7 +31,7 @@ const Detail = (props) => {
       <Paper style={styles.base}>
         <Card>
           <CardHeader title={props.title}/>
-          <CardText>{props.summary}</CardText>
+          <CardText>{props.description}</CardText>
           <CardActions>{actions}</CardActions>
         </Card>
       </Paper>

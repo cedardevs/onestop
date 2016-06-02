@@ -18,7 +18,7 @@ class SearchApiIntegrationSpec extends Specification {
     String testPort = "8097"
     MediaType contentType = MediaType.APPLICATION_JSON
 
-    String searchBaseUrl = "http://localhost:${testPort}/search"
+    String searchBaseUrl = "http://localhost:${testPort}/onestop/search"
 
     private static RestTemplate setupRestClient() {
         RestTemplate restTemplate = new RestTemplate()

@@ -11,15 +11,12 @@ import org.elasticsearch.client.Client
 class SearchService {
 
     private Client client
-    private SearchResponseParserService responseService
     private SearchRequestParserService searchRequestParserService
 
 
     @Autowired
-    public SearchService(Client client, SearchResponseParserService responseService,
-        SearchRequestParserService searchRequestParserService) {
+    public SearchService(Client client, SearchRequestParserService searchRequestParserService) {
         this.client = client
-        this.responseService = responseService
         this.searchRequestParserService = searchRequestParserService
     }
 
@@ -39,7 +36,7 @@ class SearchService {
             .execute()
             .actionGet()
 
-        return responseService.searchResponseParser(searchResponse)
+        return SearchResponseParserUtil.searchResponseParser(searchResponse)
     }
 
     private static QueryBuilder parseSearchRequest(Map params) {
