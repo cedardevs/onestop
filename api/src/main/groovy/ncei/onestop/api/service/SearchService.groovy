@@ -9,12 +9,12 @@ import org.elasticsearch.client.Client
 class SearchService {
 
     private Client client
-    private SearchRequestParserUtility searchRequestParserService
+    private SearchRequestParserUtil searchRequestParserService
 
 
     @Autowired
     public SearchService(Client client,
-                         SearchRequestParserUtility searchRequestParserService) {
+                         SearchRequestParserUtil searchRequestParserService) {
         this.client = client
         this.searchRequestParserService = searchRequestParserService
     }

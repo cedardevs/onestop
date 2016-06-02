@@ -5,9 +5,9 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.stereotype.Service
 
 @Service
-class SearchRequestParserUtility {
+class SearchRequestParserUtil {
 
-    public SearchRequestParserUtility() {}
+    public SearchRequestParserUtil() {}
 
 
     public QueryBuilder parseSearchRequest(Map params) {
