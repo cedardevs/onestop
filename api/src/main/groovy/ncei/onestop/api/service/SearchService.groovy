@@ -1,7 +1,5 @@
 package ncei.onestop.api.service
 
-import org.elasticsearch.index.query.QueryBuilder
-import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -11,15 +9,15 @@ import org.elasticsearch.client.Client
 class SearchService {
 
     private Client client
-    private SearchResponseParserService responseService
-    private SearchRequestParserService searchRequestParserService
+   // private SearchResponseParserService responseService
+    private SearchRequestParserUtility searchRequestParserService
 
 
     @Autowired
-    public SearchService(Client client, SearchResponseParserService responseService,
-        SearchRequestParserService searchRequestParserService) {
+    public SearchService(Client client, /*SearchResponseParserService responseService,*/
+                         SearchRequestParserUtility searchRequestParserService) {
         this.client = client
-        this.responseService = responseService
+        //this.responseService = responseService
         this.searchRequestParserService = searchRequestParserService
     }
 
@@ -31,7 +29,7 @@ class SearchService {
     private Map queryElasticSearch(Map params) {
         def geoportalIndex = 'metadata_v1'
         def itemTypeName = 'item'
-        def query = parseSearchRequest(params)
+        def query = searchRequestParserService.parseSearchRequest(params)
         def searchResult = client
             .prepareSearch(geoportalIndex)
             .setTypes(itemTypeName)
@@ -40,15 +38,6 @@ class SearchService {
             .actionGet()
 
         return [items: searchResult.hits.hits*.source]
-    }
-
-    private static QueryBuilder parseSearchRequest(Map params) {
-        if (params.searchText instanceof String) {
-            return QueryBuilders.matchQuery('_all', params.searchText)
-        }
-        else {
-            return QueryBuilders.matchAllQuery()
-        }
     }
 
 }
