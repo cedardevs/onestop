@@ -1,14 +1,14 @@
-const logoPath = require('../../img/BS_noaalogo1.jpg');
+const logoPath = require('../../img/BS_noaalogo1.jpg')
 
 import React from 'react'
-import Paper from 'material-ui/lib/paper';
-import ResultsContainer from '../result/ResultContainer';
-import DetailContainer from '../detail/DetailContainer';
-import SearchContainer from '../search/SearchContainer';
-import Footer from './Footer.jsx';
-import Header from './Header.jsx';
-import CSSModules from 'react-css-modules';
-import styles from './root.css';
+import Paper from 'material-ui/lib/paper'
+import ResultsContainer from '../result/ResultContainer'
+import DetailContainer from '../detail/DetailContainer'
+import SearchContainer from '../search/SearchContainer'
+import Footer from './Footer.jsx'
+import Header from './Header.jsx'
+import CSSModules from 'react-css-modules'
+import styles from './root.css'
 
 
 const Root = () => (
