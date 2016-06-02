@@ -46,10 +46,6 @@ export const textSearch = (searchText) => {
         .then(response => response.json())
         .then(json => dispatch(completeSearch(searchText, json.items)));
 
-    // const apiRoot = '//data.nodc.noaa.gov/geoportal/rest/find/document';
-    // return fetch(`${apiRoot}?searchText=${index}:${searchText}&f=json&max=30`)
-    //     .then(response => response.json())
-    //     .then(json => dispatch(completeSearch(searchText, json.records)));
   };
 };
 
