@@ -10,6 +10,7 @@ spring:
 logging:
   file: /data/agile_apps/logs/ingest/${spring.application.name}_${hostname}.log
   level:
+      ncei.onestop.api: DEBUG
       org.gradle: WARN
       org.apache.http: WARN
       org.apache.http.wire: WARN
