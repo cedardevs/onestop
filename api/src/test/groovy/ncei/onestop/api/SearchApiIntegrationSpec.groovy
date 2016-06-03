@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.web.client.RestTemplate
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -67,6 +68,7 @@ class SearchApiIntegrationSpec extends Specification {
         }
     }
 
+    @IgnoreRest
     def 'valid search returns ok and results when search test is strange character'() {
         def restTemplate = setupRestClient()
         def requestEntity = RequestEntity
