@@ -13,7 +13,7 @@ import FlipCard from '../../node_modules/react-flipcard/lib/main';
 
 
 
-const Detail = (props, onCardClick) => {
+const Detail = (props, onClick) => {
 
 
   const cardHight = "300px";
@@ -96,32 +96,20 @@ const Detail = (props, onCardClick) => {
       //    <CardActions>{actions}</CardActions>
       //  </Card>
       //</Paper>
-      //
 
 
-      ///The `disabled` attribute allows turning off the auto-flip
-      //on hover, or focus. This allows manual control over flipping.
+        <FlipCard disabled={true} style={styles.reactFlipCard} flipped={props.flipped}>
 
-      //The `flipped` attribute indicates whether to show the front,
-      //or the back, with `true` meaning show the back.
-      <div>
-        <FlipCard
-            disabled={true}
-            style={styles.reactFlipCard}
-            flipped={props.flipped}
-            >
-
-
-          <div style={styles.reactFlipCard__Front}  onClick={onCardClick}>
+          <div style={styles.reactFlipCard__Front} onClick={onClick}>
             <div>Front</div>
             <div>Title: {props.title} </div>
             <div></div>
           </div>
-          <div style={styles.reactFlipCard__Back}>
+          <div style={styles.reactFlipCard__Back} onClick={onClick}>
             <div>Summary: {props.summary}</div>
           </div>
         </FlipCard>
-      </div>
+
   )
 };
 
@@ -134,7 +122,7 @@ Detail.propTypes = {
     type: PropTypes.string.isRequired
   })).isRequired,
   flipped: PropTypes.bool.isRequired,
-  onCardClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired
 };
 
 Detail.defaultProps = {
