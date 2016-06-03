@@ -1,0 +1,39 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 24px;
+  width: 100%;
+}
+.appbar {
+  position: fixed;
+  top: 24px;
+  height: 84px;
+  width: 100%;
+}
+.logo {
+  height: 84px;
+  float: left;
+}
+.results {
+  position: fixed;
+  top: 108px;
+  bottom: 24px;
+  width: 400px;
+}
+.details {
+  position: fixed;
+  top: 108px;
+  left: 400px;
+  bottom: 24px;
+}
+.footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.searchFacet {
+  float: right;
+}
+

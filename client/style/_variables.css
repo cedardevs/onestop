@@ -1,0 +1,25 @@
+$color-primary:              #277CB2;
+$color-primary-darker:       #2C3E50;
+$color-primary-darkest:      #1F2C38;
+
+$color-primary-alt:          #3498DB;
+$color-primary-alt-dark:     darken($color-primary-alt, 40%);
+$color-primary-alt-darkest:  darken($color-primary-alt, 70%);
+$color-primary-alt-light:    #F3736E;
+$color-primary-alt-lightest: lighten($color-primary-alt, 70%);
+
+$color-secondary:            #E74C3C;
+$color-secondary-dark:       #B0392E;
+$color-secondary-darkest:    darken($color-secondary, 75%);
+$color-secondary-light:      #3498DB;
+$color-secondary-lightest:   lighten($color-secondary, 75%);
+
+$color-focus:                $color-primary-alt;
+$color-visited:              #4c2c92;
+
+$color-gray:                 #595959;
+$color-gray-dark:            darken($color-gray, 20%);
+
+$color-base: $color-gray;
+$text-max-width:    660px;
+$site-max-width:    1040px;
