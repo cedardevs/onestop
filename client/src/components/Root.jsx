@@ -1,10 +1,10 @@
 const logoPath = require('../../img/BS_noaalogo1.jpg')
 
 import React from 'react'
-//import Paper from 'material-ui/lib/paper'
 import ResultsContainer from '../result/ResultContainer'
 import DetailContainer from '../detail/DetailContainer'
 import SearchContainer from '../search/SearchContainer'
+import FacetContainer from '../facet/FacetContainer'
 import Footer from './Footer.jsx'
 import Header from './Header.jsx'
 import CSSModules from 'react-css-modules'
@@ -21,6 +21,9 @@ const Root = () => (
         <div styleName='searchFacet'>
           <SearchContainer/>
         </div>
+      </div>
+      <div styleName="leftNav">
+        <FacetContainer/>
       </div>
       <div styleName='results'>
         <ResultsContainer/>
