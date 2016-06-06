@@ -16,7 +16,7 @@ class SearchRequestParserUtilTest extends Specification {
 
         when:
         def result = requestParser.parseSearchRequest(params)
-        /*
+        def expectedString = """\
         {
           "bool" : {
             "must" : {
@@ -26,10 +26,11 @@ class SearchRequestParserUtilTest extends Specification {
               "bool" : { }
             }
           }
-        }*/
+        }""".stripIndent()
 
         then:
         !result.toString().empty
+        result.toString().equals expectedString
     }
 
 
@@ -40,8 +41,17 @@ class SearchRequestParserUtilTest extends Specification {
 
         when:
         def result = requestParser.parseSearchRequest(params)
-        def expectedString =
-                "{\n  \"bool\" : {\n    \"must\" : {\n      \"bool\" : { }\n    },\n    \"filter\" : {\n      \"bool\" : { }\n    }\n  }\n}"
+        def expectedString = """\
+        {
+          "bool" : {
+            "must" : {
+              "bool" : { }
+            },
+            "filter" : {
+              "bool" : { }
+            }
+          }
+        }""".stripIndent()
 
         then:
         !result.toString().empty
@@ -56,9 +66,29 @@ class SearchRequestParserUtilTest extends Specification {
 
         when:
         def result = requestParser.parseSearchRequest(params)
-        println result.toString()
+        def expectedString = """\
+        {
+          "bool" : {
+            "must" : {
+              "bool" : {
+                "must" : {
+                  "match" : {
+                    "_all" : {
+                      "query" : "winter",
+                      "type" : "boolean"
+                    }
+                  }
+                }
+              }
+            },
+            "filter" : {
+              "bool" : { }
+            }
+          }
+        }""".stripIndent()
 
         then:
         !result.toString().empty
+        result.toString().equals expectedString
     }
 }

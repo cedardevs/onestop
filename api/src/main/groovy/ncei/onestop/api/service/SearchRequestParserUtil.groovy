@@ -1,9 +1,11 @@
 package ncei.onestop.api.service
 
+import groovy.util.logging.Slf4j
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.stereotype.Service
 
+@Slf4j
 @Service
 class SearchRequestParserUtil {
 
@@ -11,6 +13,9 @@ class SearchRequestParserUtil {
 
 
     public QueryBuilder parseSearchRequest(Map params) {
+
+        log.debug("Queries: ${params.queries}")
+        log.debug("Filters: ${params.filters}")
 
         def query = assembleQuery(params.queries)
         def filter = assembleFilter(params.filters)
@@ -25,7 +30,6 @@ class SearchRequestParserUtil {
          */
         def completeQuery = QueryBuilders.boolQuery().filter(filter).must(query)
         completeQuery
-
     }
 
 
