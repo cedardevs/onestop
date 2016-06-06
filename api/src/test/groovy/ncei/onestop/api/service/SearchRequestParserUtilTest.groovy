@@ -2,17 +2,17 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonSlurper
 import spock.lang.Specification
+import spock.lang.Unroll
 
-
+@Unroll
 class SearchRequestParserUtilTest extends Specification {
 
     private slurper = new JsonSlurper()
     private requestParser = new SearchRequestParserUtil()
 
-    def "Test completely empty params creates empty elasticsearch request" () {
+    def "request with #label creates empty elasticsearch request" () {
         given:
-        def emptyRequest = "{}"
-        def params = slurper.parseText(emptyRequest)
+        def params = slurper.parseText(json)
 
         when:
         def result = requestParser.parseSearchRequest(params)
@@ -30,38 +30,19 @@ class SearchRequestParserUtilTest extends Specification {
 
         then:
         !result.toString().empty
-        result.toString().equals expectedString
+        result.toString() == expectedString
+
+        where:
+        label                       | json
+        'nothing'                   | '{}'
+        'empty queries and filters' | '{"queries":[],"filters":[]}'
+        'only queries'              | '{"queries":[]}'
+        'only filters'              | '{"filters":[]}'
     }
-
-
-    def "Test empty but declared params creates empty elasticsearch request" () {
-        given:
-        def emptyRequest = "{\"queries\":[],\"filters\":[]}"
-        def params = slurper.parseText(emptyRequest)
-
-        when:
-        def result = requestParser.parseSearchRequest(params)
-        def expectedString = """\
-        {
-          "bool" : {
-            "must" : {
-              "bool" : { }
-            },
-            "filter" : {
-              "bool" : { }
-            }
-          }
-        }""".stripIndent()
-
-        then:
-        !result.toString().empty
-        result.toString().equals expectedString
-    }
-
 
     def "Test only queryText specified" () {
         given:
-        def request = "{\"queries\":[{\"type\":\"queryText\",\"value\":\"winter\"}]}"
+        def request = '{"queries":[{"type":"queryText","value":"winter"}]}'
         def params = slurper.parseText(request)
 
         when:
