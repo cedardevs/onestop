@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.web.client.RestTemplate
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -26,23 +27,46 @@ class SearchApiIntegrationSpec extends Specification {
         restTemplate
     }
 
-    def searches = [
-            notexistingwordsearch: [
-                    body: '{"searchText": "spork"}'
-            ],
-            baresearch           : [
-                    body: '{"searchText": "temperature"}'
-            ],
-            badjsonsearch        : [
-                    body: '{"searchText": temperature"}'
-            ],
-            blankjsonsearch      : [
-                    body: '{"searchText": ""}'
-            ],
-            strangecharjsonsearch: [
-                    body: '{"searchText": "~"}'
+    def notexistingwordsearch = """
+    {
+        "queries":
+            [
+                { "type": "queryText", "value": "spork"}
             ]
-    ]
+    }
+    """
+    def baresearch = """
+    {
+        "queries":
+            [
+                { "type": "queryText", "value": "temperature"}
+            ]
+    }
+    """
+    def strangecharjsonsearch = """
+    {
+        "queries":
+            [
+                { "type": "queryText", "value": "~"}
+            ]
+    }
+    """
+    def blankjsonsearch = """
+    {
+        "queries":
+            [
+                { "type": "queryText", "value": ""}
+            ]
+    }
+    """
+    def badjsonsearch = """
+    {
+        "queries":
+            [
+                { "type": "queryText", "value": "}
+            ]
+    }
+    """
 
     // -------- Test Cases --------
     def 'valid search returns ok and results'() {
@@ -50,7 +74,7 @@ class SearchApiIntegrationSpec extends Specification {
         def requestEntity = RequestEntity
                 .post(searchBaseUrl.toURI())
                 .contentType(contentType)
-                .body(searches.baresearch.body)
+                .body(baresearch)
 
         when:
         def result = restTemplate.exchange(requestEntity, Map)
@@ -72,7 +96,7 @@ class SearchApiIntegrationSpec extends Specification {
         def requestEntity = RequestEntity
                 .post(searchBaseUrl.toURI())
                 .contentType(contentType)
-                .body(searches.strangecharjsonsearch.body)
+                .body(strangecharjsonsearch)
 
         when:
         def result = restTemplate.exchange(requestEntity, Map)
@@ -89,7 +113,7 @@ class SearchApiIntegrationSpec extends Specification {
         def requestEntity = RequestEntity
                 .post(searchBaseUrl.toURI())
                 .contentType(contentType)
-                .body(searches.notexistingwordsearch.body)
+                .body(notexistingwordsearch)
 
         when:
         def result = restTemplate.exchange(requestEntity, Map)
@@ -106,7 +130,7 @@ class SearchApiIntegrationSpec extends Specification {
         def requestEntity = RequestEntity
                 .post(searchBaseUrl.toURI())
                 .contentType(contentType)
-                .body(searches.blankjsonsearch.body)
+                .body(blankjsonsearch)
 
         when:
         def result = restTemplate.exchange(requestEntity, Map)
@@ -123,7 +147,7 @@ class SearchApiIntegrationSpec extends Specification {
         def requestEntity = RequestEntity
                 .post(searchBaseUrl.toURI())
                 .contentType(contentType)
-                .body(searches.badjsonsearch.body)
+                .body(badjsonsearch)
 
         when:
         def result = restTemplate.exchange(requestEntity, Map)
@@ -138,7 +162,7 @@ class SearchApiIntegrationSpec extends Specification {
         def restTemplate = setupRestClient()
         def requestEntity = RequestEntity
                 .post(searchBaseUrl.toURI())
-                .body(searches.baresearch.body)
+                .body(baresearch)
 
         when:
         def result = restTemplate.exchange(requestEntity, Map)
