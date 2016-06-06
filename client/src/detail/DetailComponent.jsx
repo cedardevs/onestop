@@ -62,17 +62,17 @@ const Detail = (props, onCardClick) => {
       <div>
         <FlipCard
             disabled={true}
-            style={styles.reactFlipCard}
+            styleName='reactFlipCard'
             flipped={props.flipped}
             >
 
 
-          <div style={styles.reactFlipCard__Front}  onClick={onCardClick}>
+          <div styleName='reactFlipCard__Front' onClick={onCardClick}>
             <div>Front</div>
             <div>Title: {props.title} </div>
             <div></div>
           </div>
-          <div style={styles.reactFlipCard__Back}>
+          <div styleName='reactFlipCard__Back'>
             <div>Summary: {props.summary}</div>
           </div>
         </FlipCard>
