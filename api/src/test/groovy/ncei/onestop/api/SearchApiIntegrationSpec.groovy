@@ -7,25 +7,31 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.web.client.RestTemplate
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
-@WebIntegrationTest("server.port:8097")
+@WebIntegrationTest(randomPort = true)
 @SpringApplicationConfiguration(classes = Application)
 class SearchApiIntegrationSpec extends Specification {
     @Value('${local.server.port}')
-    String testPort = "8097"
-    MediaType contentType = MediaType.APPLICATION_JSON
+    String port
 
-    String searchBaseUrl = "http://localhost:${testPort}/onestop/search"
+    @Value('${server.context-path}')
+    String contextPath
 
-    private static RestTemplate setupRestClient() {
-        RestTemplate restTemplate = new RestTemplate()
-        restTemplate.setErrorHandler(new TestResponseErrorHandler())
-        restTemplate
+    static MediaType contentType = MediaType.APPLICATION_JSON
+
+    RestTemplate restTemplate
+    URI searchBaseUri
+
+    void setup() {
+        restTemplate = new RestTemplate()
+        restTemplate.errorHandler = new TestResponseErrorHandler()
+
+        searchBaseUri = "http://localhost:${port}/${contextPath}/search".toURI()
     }
+
 
     def notexistingwordsearch = """
     {
@@ -70,9 +76,8 @@ class SearchApiIntegrationSpec extends Specification {
 
     // -------- Test Cases --------
     def 'valid search returns ok and results'() {
-        def restTemplate = setupRestClient()
         def requestEntity = RequestEntity
-                .post(searchBaseUrl.toURI())
+                .post(searchBaseUri)
                 .contentType(contentType)
                 .body(baresearch)
 
@@ -92,9 +97,8 @@ class SearchApiIntegrationSpec extends Specification {
     }
 
     def 'valid search returns ok and results when search test is strange character'() {
-        def restTemplate = setupRestClient()
         def requestEntity = RequestEntity
-                .post(searchBaseUrl.toURI())
+                .post(searchBaseUri)
                 .contentType(contentType)
                 .body(strangecharjsonsearch)
 
@@ -109,9 +113,8 @@ class SearchApiIntegrationSpec extends Specification {
     }
 
     def 'valid search returns ok and results when search test is non existing word'() {
-        def restTemplate = setupRestClient()
         def requestEntity = RequestEntity
-                .post(searchBaseUrl.toURI())
+                .post(searchBaseUri)
                 .contentType(contentType)
                 .body(notexistingwordsearch)
 
@@ -126,9 +129,8 @@ class SearchApiIntegrationSpec extends Specification {
     }
 
     def 'valid search returns ok and results when search test is blank'() {
-        def restTemplate = setupRestClient()
         def requestEntity = RequestEntity
-                .post(searchBaseUrl.toURI())
+                .post(searchBaseUri)
                 .contentType(contentType)
                 .body(blankjsonsearch)
 
@@ -143,9 +145,8 @@ class SearchApiIntegrationSpec extends Specification {
     }
 
     def 'invalid search returns returns error, json not parseable'() {
-        def restTemplate = setupRestClient()
         def requestEntity = RequestEntity
-                .post(searchBaseUrl.toURI())
+                .post(searchBaseUri)
                 .contentType(contentType)
                 .body(badjsonsearch)
 
@@ -159,9 +160,8 @@ class SearchApiIntegrationSpec extends Specification {
     }
 
     def 'invalid search returns returns error, need to specify body is json content type'() {
-        def restTemplate = setupRestClient()
         def requestEntity = RequestEntity
-                .post(searchBaseUrl.toURI())
+                .post(searchBaseUri)
                 .body(baresearch)
 
         when:
@@ -174,9 +174,8 @@ class SearchApiIntegrationSpec extends Specification {
     }
 
     def 'invalid search returns returns error, need to specify json content'() {
-        def restTemplate = setupRestClient()
         def requestEntity = RequestEntity
-                .post(searchBaseUrl.toURI())
+                .post(searchBaseUri)
                 .contentType(contentType)
                 .body("")
 
@@ -190,9 +189,8 @@ class SearchApiIntegrationSpec extends Specification {
     }
 
     def 'valid search returns ok and results, if json is empty'() {
-        def restTemplate = setupRestClient()
         def requestEntity = RequestEntity
-                .post(searchBaseUrl.toURI())
+                .post(searchBaseUri)
                 .contentType(contentType)
                 .body("{}")
 
