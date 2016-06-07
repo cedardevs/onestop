@@ -1,4 +1,4 @@
-const logoPath = require('../../img/BS_noaalogo1.jpg')
+const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 
 import React from 'react'
 import ResultsContainer from '../result/ResultContainer'
@@ -6,28 +6,27 @@ import DetailContainer from '../detail/DetailContainer'
 import SearchContainer from '../search/SearchContainer'
 import Footer from './Footer.jsx'
 import Header from './Header.jsx'
-import CSSModules from 'react-css-modules'
-import './root.css'
+import styles from './root.css'
 
 
 const Root = () => (
     <div>
-      <div styleName='header' id='header'>
+      <div className={styles.header} id='header'>
         <Header/>
       </div>
-      <div styleName='appbar' id='appbar' rounded={false}>
-        <img styleName='logo' id='logo' src={logoPath} alt="NOAA Logo"/>
-        <div styleName='search-facet' id='search-facet'>
+      <div className={styles.appbar} id='appbar' rounded={false}>
+        <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
+        <div className={styles.searchFacet} id='search-facet'>
           <SearchContainer/>
         </div>
       </div>
-      <div styleName='results' id='results'>
+      <div className={styles.results} id='results'>
         <ResultsContainer/>
       </div>
-      <div styleName='details' id='details'>
+      <div className={styles.details} id='details'>
         <DetailContainer/>
       </div>
-      <div styleName='footer' id='footer'>
+      <div className={styles.footer} id='footer'>
         <Footer/>
       </div>
     </div>

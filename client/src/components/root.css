@@ -12,8 +12,9 @@
   width: 100%;
 }
 .logo {
-  height: 84px;
+  height: 64px;
   float: left;
+  margin: 10px;
 }
 .results {
   position: fixed;
