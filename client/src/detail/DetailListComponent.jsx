@@ -1,40 +1,44 @@
 import React, { PropTypes } from 'react'
 import Detail from './DetailComponent.jsx'
 
-const DetailList = ({details, onCardClick}) => (
-
-    <ul>
+const DetailList = ({details, onCardClick}) => {
+    console.dir(details);
+    return (<ul>
         <Detail
             key={details.id}
-            {...details}
+            {...details.details}
+            flipped={details.flipped}
             onClick={() => onCardClick(details.id)}
         />
-    </ul>
+    </ul>);
 
-)
 
-DetailList.propTypes = {
-    details: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
-        summary: PropTypes.string.isRequired,
-        links: PropTypes.arrayOf(PropTypes.shape({
-            href: PropTypes.string.isRequired,
-            type: PropTypes.string.isRequired
-        })).isRequired,
-        flipped: PropTypes.bool.isRequired
-    }).isRequired,
-    onCardClick: PropTypes.func.isRequired
+//{results.map(r => <Result key={r.id} record={r} onClick={onResultClick}/>)}
 }
 
+//DetailList.propTypes = {
+//    details: PropTypes.shape({
+//        id: PropTypes.string.isRequired,
+//        title: PropTypes.string.isRequired,
+//        summary: PropTypes.string.isRequired,
+//        links: PropTypes.arrayOf(PropTypes.shape({
+//            href: PropTypes.string.isRequired,
+//            type: PropTypes.string.isRequired
+//        })).isRequired
+//    }).isRequired,
+//    flipped: PropTypes.bool.isRequired,
+//    onCardClick: PropTypes.func.isRequired
+//}
+//
 DetailList.defaultProps = {
+    id: '',
     details: {
         id: '',
         title: '',
         summary: '',
-        links: [],
-        flipped: false
-    }
+        links: []
+    },
+    flipped: false
 }
 
 export default DetailList

@@ -13,7 +13,7 @@ import FlipCard from '../../node_modules/react-flipcard/lib/main';
 
 
 
-const Detail = (props, onClick) => {
+const Detail = (props) => {
 
 
   const cardHight = "300px";
@@ -26,7 +26,9 @@ const Detail = (props, onClick) => {
     },
     reactFlipCard: {
       margin: "25px",
-      textAlign: "center"
+      textAlign: "center",
+      width: cardWidth,
+      height: cardHight
     },
     reactFlipCard__Front: {
       boxSizing: "border-box",
@@ -73,20 +75,20 @@ const Detail = (props, onClick) => {
   //}
   };
 
-  const thumbnailLink = props.links.find(link => link.type === 'thumbnail');
-  const thumbnailHref = thumbnailLink && thumbnailLink.href || null;
-
-  const actions = props.links
-      .filter(link => link.type !== 'thumbnail')
-      .map(link => (
-          <RaisedButton
-              label={link.type}
-              linkButton={true}
-              href={link.href}
-              key={link.href}
-              primary={true}
-          />
-      ));
+  //const thumbnailLink = props.details.links.find(link => link.type === 'thumbnail');
+  //const thumbnailHref = thumbnailLink && thumbnailLink.href || null;
+  //
+  //const actions = props.details.links
+  //    .filter(link => link.type !== 'thumbnail')
+  //    .map(link => (
+  //        <RaisedButton
+  //            label={link.type}
+  //            linkButton={true}
+  //            href={link.href}
+  //            key={link.href}
+  //            primary={true}
+  //        />
+  //    ));
 
   return (
       //<Paper style={styles.base}>
@@ -100,36 +102,40 @@ const Detail = (props, onClick) => {
 
         <FlipCard disabled={true} style={styles.reactFlipCard} flipped={props.flipped}>
 
-          <div style={styles.reactFlipCard__Front} onClick={onClick}>
+          <div style={styles.reactFlipCard__Front} onClick={props.onClick}>
             <div>Front</div>
             <div>Title: {props.title} </div>
             <div></div>
           </div>
-          <div style={styles.reactFlipCard__Back} onClick={onClick}>
+          <div style={styles.reactFlipCard__Back} onClick={props.onClick}>
             <div>Summary: {props.summary}</div>
           </div>
         </FlipCard>
 
   )
 };
-
-Detail.propTypes = {
-  id: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  summary: PropTypes.string.isRequired,
-  links: PropTypes.arrayOf(PropTypes.shape({
-    href: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired
-  })).isRequired,
-  flipped: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired
-};
-
+//
+//Detail.propTypes = {
+//  id: PropTypes.string.isRequired,
+//  flipped: PropTypes.bool.isRequired,
+//  onClick: PropTypes.func.isRequired,
+//  details: PropTypes.shape({
+//    title: PropTypes.string.isRequired,
+//    summary: PropTypes.string.isRequired,
+//    links: PropTypes.arrayOf(PropTypes.shape({
+//      href: PropTypes.string.isRequired,
+//      type: PropTypes.string.isRequired
+//    })).isRequired
+//  })
+//};
+//
 Detail.defaultProps = {
   id: '',
-  title: '',
-  summary: '',
-  links: [],
+  details: {
+    title: '',
+    summary: '',
+    links: []
+  },
   flipped: false
 };
 

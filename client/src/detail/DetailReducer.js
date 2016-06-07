@@ -18,14 +18,17 @@ export const details = (state = initialState, action) => {
       return Immutable.fromJS({id: action.id});
 
     case RECEIVE_DETAILS:
-      return Immutable.fromJS(action.details);
+        console.log("Action Details is "+ action.details);
+      return state.merge({
+        details: action.details
+      });
 
     case FLIP_CARD:
-      if (state.id !== action.id){
+      if (state._root.entries[0][1]!== action.id){  //state.id == action.
         return state
       }
       return state.merge({
-        flipped: !state.flipped
+        flipped: state._root.entries[2][1] //state.flipped
       });
 
     default:
