@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import Immutable from 'immutable'
 import search from './../search/SearchReducer'
 import results from './../result/ResultReducer'
 import details from './../detail/DetailReducer'
@@ -11,5 +11,4 @@ const reducer = (state = Immutable.Map(), action) => {
   })
 };
 
-export default reducer;
-
+export default reducer
