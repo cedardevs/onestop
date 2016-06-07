@@ -1,19 +1,9 @@
 import React, { PropTypes } from 'react'
-import Paper from '../../node_modules/material-ui/lib/paper';
-import Card from '../../node_modules/material-ui/lib/card/card';
-import CardActions from '../../node_modules/material-ui/lib/card/card-actions';
-import CardHeader from '../../node_modules/material-ui/lib/card/card-header';
-import CardMedia from '../../node_modules/material-ui/lib/card/card-media';
-import CardTitle from '../../node_modules/material-ui/lib/card/card-title';
-import RaisedButton from '../../node_modules/material-ui/lib/raised-button';
-import CardText from '../../node_modules/material-ui/lib/card/card-text';
 
 import FlipCard from '../../node_modules/react-flipcard/lib/main';
 
 
-
-
-const Detail = (props, onCardClick) => {
+const Detail = (props) => {
 
 
   const cardHight = "300px";
@@ -26,7 +16,9 @@ const Detail = (props, onCardClick) => {
     },
     reactFlipCard: {
       margin: "25px",
-      textAlign: "center"
+      textAlign: "center",
+      width: cardWidth,
+      height: cardHight
     },
     reactFlipCard__Front: {
       boxSizing: "border-box",
@@ -46,102 +38,47 @@ const Detail = (props, onCardClick) => {
       padding: "25px",
       backgroundColor: "#cef"
     }
-
-  //
-  //ReactFlipCard,
-  //ReactFlipCard__Front,
-  //ReactFlipCard__Back {
-  //  box-sizing: border-box;
-  //  width: 250px;
-  //  height: 300px;
-  //}
-  //ReactFlipCard__Front,
-  //ReactFlipCard__Back {
-  //  border-radius: 10px;
-  //  border: 1px solid #ccc;
-  //  padding: 25px;
-  //}
-  //ReactFlipCard__Front {
-  //  background-color: #eee;
-  //}
-  //ReactFlipCard__Back {
-  //  background-color: #cef;
-  //}
-  //
-  //  #example {
-  //  text-align: center;
-  //}
   };
 
-  const thumbnailLink = props.links.find(link => link.type === 'thumbnail');
-  const thumbnailHref = thumbnailLink && thumbnailLink.href || null;
-
-  const actions = props.links
-      .filter(link => link.type !== 'thumbnail')
-      .map(link => (
-          <RaisedButton
-              label={link.type}
-              linkButton={true}
-              href={link.href}
-              key={link.href}
-              primary={true}
-          />
-      ));
 
   return (
-      //<Paper style={styles.base}>
-      //  <Card>
-      //    <CardHeader title={props.title}/>
-      //    <CardText>{props.summary}</CardText>
-      //    <CardActions>{actions}</CardActions>
-      //  </Card>
-      //</Paper>
-      //
 
+        <FlipCard disabled={true} style={styles.reactFlipCard} flipped={props.flipped}>
 
-      ///The `disabled` attribute allows turning off the auto-flip
-      //on hover, or focus. This allows manual control over flipping.
-
-      //The `flipped` attribute indicates whether to show the front,
-      //or the back, with `true` meaning show the back.
-      <div>
-        <FlipCard
-            disabled={true}
-            style={styles.reactFlipCard}
-            flipped={props.flipped}
-            >
-
-
-          <div style={styles.reactFlipCard__Front}  onClick={onCardClick}>
+          <div style={styles.reactFlipCard__Front} onClick={props.onClick}>
             <div>Front</div>
             <div>Title: {props.title} </div>
             <div></div>
           </div>
-          <div style={styles.reactFlipCard__Back}>
+          <div style={styles.reactFlipCard__Back} onClick={props.onClick}>
             <div>Summary: {props.summary}</div>
           </div>
         </FlipCard>
-      </div>
+
   )
 };
 
 Detail.propTypes = {
   id: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
-  summary: PropTypes.string.isRequired,
-  links: PropTypes.arrayOf(PropTypes.shape({
-    href: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired
-  })).isRequired,
   flipped: PropTypes.bool.isRequired,
-  onCardClick: PropTypes.func.isRequired
+  onClick: PropTypes.func.isRequired,
+  details: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    summary: PropTypes.string.isRequired,
+    links: PropTypes.arrayOf(PropTypes.shape({
+      href: PropTypes.string.isRequired,
+      type: PropTypes.string.isRequired
+    })).isRequired
+  })
 };
 
 Detail.defaultProps = {
   id: '',
-  title: '',
-  summary: '',
-  links: [],
+  details: {
+    title: '',
+    summary: '',
+    links: []
+  },
   flipped: false
 };
 

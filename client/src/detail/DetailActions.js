@@ -11,6 +11,7 @@ export const startDetails = (id) => {
 };
 
 export const completeDetails = (id, details) => {
+  console.log('the details are' + details);
   return {
     type: RECEIVE_DETAILS,
     id: id,
@@ -36,10 +37,7 @@ export const getDetails = (id) => {
     dispatch(startDetails(id));
 
     const details = getState().get('results').find(result => result.get('id') === id);
+    console.log ("details in getDetails method is " + details);
     dispatch(completeDetails(id, details));
   };
-};
-
-export const toggleFlipCard = (id) => {
-  return dispatch(flipCard(id));
 };
