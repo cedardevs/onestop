@@ -20,7 +20,7 @@ class SearchApiIntegrationSpec extends Specification {
     @Value('${server.context-path}')
     String contextPath
 
-    static MediaType contentType = MediaType.APPLICATION_JSON
+    static MediaType contentType = MediaType.APPLICATION_JSON_UTF8
 
     RestTemplate restTemplate
     URI searchBaseUri
@@ -33,46 +33,41 @@ class SearchApiIntegrationSpec extends Specification {
     }
 
 
-    def notexistingwordsearch = """
+    def notexistingwordsearch = """\
     {
         "queries":
             [
                 { "type": "queryText", "value": "spork"}
             ]
-    }
-    """
-    def baresearch = """
+    }""".stripIndent()
+    def baresearch = """\
     {
         "queries":
             [
                 { "type": "queryText", "value": "temperature"}
             ]
-    }
-    """
-    def strangecharjsonsearch = """
+    }""".stripIndent()
+    def strangecharjsonsearch = """\
     {
         "queries":
             [
                 { "type": "queryText", "value": "~"}
             ]
-    }
-    """
-    def blankjsonsearch = """
+    }""".stripIndent()
+    def blankjsonsearch = """\
     {
         "queries":
             [
                 { "type": "queryText", "value": ""}
             ]
-    }
-    """
-    def badjsonsearch = """
+    }""".stripIndent()
+    def badjsonsearch = """\
     {
         "queries":
             [
                 { "type": "queryText", "value": "}
             ]
-    }
-    """
+    }""".stripIndent()
 
     // -------- Test Cases --------
     def 'valid search returns ok and results'() {
@@ -86,8 +81,9 @@ class SearchApiIntegrationSpec extends Specification {
 
         then: "Search ok"
         result.statusCode == HttpStatus.OK
+        result.headers.getContentType() == contentType
         and: "result contains > 0 items"
-        def items = result.body.items
+        def items = result.body.data
         items
         items.size() > 0
         and: "each item has a title"
@@ -107,6 +103,7 @@ class SearchApiIntegrationSpec extends Specification {
 
         then: "Search ok"
         result.statusCode == HttpStatus.OK
+        result.headers.getContentType() == contentType
         and: "result contains > 0 items"
         def items = result.body.items
         items == []
@@ -123,6 +120,7 @@ class SearchApiIntegrationSpec extends Specification {
 
         then: "Search ok"
         result.statusCode == HttpStatus.OK
+        result.headers.getContentType() == contentType
         and: "result contains > 0 items"
         def items = result.body.items
         items == []
@@ -139,6 +137,7 @@ class SearchApiIntegrationSpec extends Specification {
 
         then: "Search ok"
         result.statusCode == HttpStatus.OK
+        result.headers.getContentType() == contentType
         and: "result contains > 0 items"
         def items = result.body.items
         items == []
@@ -155,6 +154,7 @@ class SearchApiIntegrationSpec extends Specification {
 
         then: "Bad request"
         result.statusCode == HttpStatus.BAD_REQUEST
+        result.headers.getContentType() == contentType
         and: "result contains no items"
         result.body.items == null
     }
@@ -169,6 +169,7 @@ class SearchApiIntegrationSpec extends Specification {
 
         then: "Bad request"
         result.statusCode == HttpStatus.UNSUPPORTED_MEDIA_TYPE
+        result.headers.getContentType() == contentType
         and: "result contains no items"
         result.body.items == null
     }
@@ -184,6 +185,7 @@ class SearchApiIntegrationSpec extends Specification {
 
         then: "Bad request"
         result.statusCode == HttpStatus.BAD_REQUEST
+        result.headers.getContentType() == contentType
         and: "result contains no items"
         result.body.items == null
     }
@@ -199,6 +201,7 @@ class SearchApiIntegrationSpec extends Specification {
 
         then: "Search ok"
         result.statusCode == HttpStatus.OK
+        result.headers.getContentType() == contentType
         and: "result contains > 0 items"
         def items = result.body.items
         items
