@@ -10,11 +10,12 @@ class SearchResponseParserService {
 
     Map searchResponseParser(SearchResponse response) {
         log.debug("Parsing elasticsearch response: ${response}")
-        def result = [
+        def data = response.hits.hits.collect({[type: 'collection', id: it.id, attributes: it.source]})
+        def metadata = [
           took : response.tookInMillis,
-          items: response.hits.hits.collect {it.source + [id: it.id]},
-          total: response.hits.totalHits,
+          total: response.hits.totalHits
         ]
+        def result = [data: data, meta: metadata]
         log.debug("Parsed result: ${result}")
         return result
     }
