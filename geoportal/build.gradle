@@ -20,7 +20,7 @@ task bootstrapGHRSST {
     def srcUrl = new URL('http://data.nodc.noaa.gov/geoportal/rest/find/document' +
         '?searchText=title:GHRSST%20NOT%20title:Documentation&start=1&max=100&f=json')
 
-    def geoportal = new HTTPBuilder('http://localhost:8080/rest/metadata/item')
+    def geoportal = new HTTPBuilder('http://localhost:8888/rest/metadata/item')
     geoportal.auth.basic('gptadmin', 'gptadmin')
 
     def json = new JsonSlurper().parse(srcUrl)
