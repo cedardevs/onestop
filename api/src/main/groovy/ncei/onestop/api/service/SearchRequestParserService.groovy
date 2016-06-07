@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
-class SearchRequestParserUtil {
+class SearchRequestParserService {
 
-    public SearchRequestParserUtil() {}
+    public SearchRequestParserService() {}
 
 
     public QueryBuilder parseSearchRequest(Map params) {
