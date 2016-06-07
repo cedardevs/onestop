@@ -15,7 +15,7 @@ export const details = (state = initialState, action) => {
       return Immutable.Map();
 
     case FETCH_DETAILS:
-      return Immutable.fromJS({id: action.id});
+      return Immutable.fromJS({id: action.id, flipped: false});
 
     case RECEIVE_DETAILS:
         console.log("Action Details is "+ action.details);
@@ -24,12 +24,11 @@ export const details = (state = initialState, action) => {
       });
 
     case FLIP_CARD:
-      if (state._root.entries[0][1]!== action.id){  //state.id == action.
-        return state
+      if (state.get('id') == action.id){
+        return state.merge({
+          flipped:  !state.get('flipped')
+        });
       }
-      return state.merge({
-        flipped: state._root.entries[2][1] //state.flipped
-      });
 
     default:
       return state;

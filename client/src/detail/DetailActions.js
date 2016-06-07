@@ -11,8 +11,7 @@ export const startDetails = (id) => {
 };
 
 export const completeDetails = (id, details) => {
-  console.log("the id in completeDetails is " + id);
-  console.log("this is a log");
+  console.log('the details are' + details);
   return {
     type: RECEIVE_DETAILS,
     id: id,
@@ -21,11 +20,10 @@ export const completeDetails = (id, details) => {
   };
 };
 
-export const flipCard = (id, flipped ) => {
+export const flipCard = (id) => {
   return{
     type: FLIP_CARD,
-    id: id,
-    flipped: flipped
+    id: id
   }
 };
 
@@ -42,14 +40,4 @@ export const getDetails = (id) => {
     console.log ("details in getDetails method is " + details);
     dispatch(completeDetails(id, details));
   };
-};
-
-export const toggleFlipCard = (id) => {
-  return (dispatch , getState) =>
-  {
-    console.dir (getState().get('details'));
-
-    const flipped = getState().get('details').find(result => result.get('flipped') === flipped);
-    return dispatch(flipCard(id, flipped));
-  }
 };

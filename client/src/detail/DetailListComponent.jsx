@@ -12,24 +12,22 @@ const DetailList = ({details, onCardClick}) => {
         />
     </ul>);
 
-
-//{results.map(r => <Result key={r.id} record={r} onClick={onResultClick}/>)}
 }
 
-//DetailList.propTypes = {
-//    details: PropTypes.shape({
-//        id: PropTypes.string.isRequired,
-//        title: PropTypes.string.isRequired,
-//        summary: PropTypes.string.isRequired,
-//        links: PropTypes.arrayOf(PropTypes.shape({
-//            href: PropTypes.string.isRequired,
-//            type: PropTypes.string.isRequired
-//        })).isRequired
-//    }).isRequired,
-//    flipped: PropTypes.bool.isRequired,
-//    onCardClick: PropTypes.func.isRequired
-//}
-//
+DetailList.propTypes = {
+    details: PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
+        summary: PropTypes.string.isRequired,
+        links: PropTypes.arrayOf(PropTypes.shape({
+            href: PropTypes.string.isRequired,
+            type: PropTypes.string.isRequired
+        })).isRequired
+    }).isRequired,
+    flipped: PropTypes.bool.isRequired,
+    onCardClick: PropTypes.func.isRequired
+}
+
 DetailList.defaultProps = {
     id: '',
     details: {
