@@ -12,7 +12,7 @@ const Result = ({record, onClick}) => {
       overflow: 'hidden',
       textOverflow: 'ellipsis'
     }
-  };
+  }
 
   const handleSelection = () => onClick(record.id);
 
@@ -21,7 +21,7 @@ const Result = ({record, onClick}) => {
       leftAvatar={<Avatar src={thumbnailHref || null}/>}
       onTouchTap={handleSelection}
   />
-};
+}
 
 Result.propTypes = {
   record: PropTypes.shape({
@@ -32,6 +32,6 @@ Result.propTypes = {
       type: PropTypes.string.isRequired
     })).isRequired
   })
-};
+}
 
 export default Result

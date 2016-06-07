@@ -1,28 +1,13 @@
 import React, { PropTypes } from 'react'
-import CircularProgress from '../../node_modules/material-ui/lib/circular-progress';
-import List from '../../node_modules/material-ui/lib/lists/list';
-import Result from './ResultComponent';
+import Result from './ResultComponent'
+import 'purecss'
+import styles from './result.css'
 
 const ResultsList = ({results, loading, onResultClick}) => {
-  const styles = {
-    spinner: {
-      display: loading ? 'flex' : 'none',
-      flexWrap: 'wrap',
-      justifyContent: 'space-around',
-      paddingTop: 24
-    },
-    list: {
-      width: '100%',
-      height: '100%',
-      overflowY: 'auto'
-    }
-  };
-
-  return <List style={styles.list} zDepth={3} rounded={false}>
-    <div style={styles.spinner}><CircularProgress/></div>
+  return <div className={`pure-menu-list ${styles.list}`} zDepth={3} rounded={false}>
     {results.map(r => <Result key={r.id} record={r} onClick={onResultClick}/>)}
-  </List>
-};
+  </div>
+}
 
 ResultsList.propTypes = {
   results: PropTypes.arrayOf(PropTypes.shape({

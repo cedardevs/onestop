@@ -1,12 +1,23 @@
 import React, { PropTypes } from 'react'
-import FlipCard from '../../node_modules/react-flipcard/lib/main'
-import RaisedButton from '../../node_modules/material-ui/lib/raised-button'
-import CSSModules from 'react-css-modules'
-import { buttons } from 'purecss'
+import Paper from '../../node_modules/material-ui/lib/paper';
+import Card from '../../node_modules/material-ui/lib/card/card';
+import CardActions from '../../node_modules/material-ui/lib/card/card-actions';
+import CardHeader from '../../node_modules/material-ui/lib/card/card-header';
+import CardMedia from '../../node_modules/material-ui/lib/card/card-media';
+import CardTitle from '../../node_modules/material-ui/lib/card/card-title';
+import RaisedButton from '../../node_modules/material-ui/lib/raised-button';
+import CardText from '../../node_modules/material-ui/lib/card/card-text';
+
+import FlipCard from '../../node_modules/react-flipcard/lib/main';
+
+
+
 
 const Detail = (props, onCardClick) => {
-  const cardHight = '300px'
-  const cardWidth = '300px'
+
+
+  const cardHight = "300px";
+  const cardWidth = "300px";
 
   const styles = {
     base: {
@@ -14,47 +25,81 @@ const Detail = (props, onCardClick) => {
       margin: 20
     },
     reactFlipCard: {
-      margin: '25px',
-      textAlign: 'center'
+      margin: "25px",
+      textAlign: "center"
     },
     reactFlipCard__Front: {
-      boxSizing: 'border-box',
+      boxSizing: "border-box",
       width: cardWidth,
       height: cardHight,
-      borderRadius: '5px',
-      border: '1px solid #ccc',
-      padding: '25px',
-      backgroundColor: '#eee'
+      borderRadius: "5px",
+      border: "1px solid #ccc",
+      padding: "25px",
+      backgroundColor: "#eee"
     },
     reactFlipCard__Back: {
-      boxSizing: 'border-box',
+      boxSizing: "border-box",
       width: cardWidth,
       height: cardHight,
-      borderRadius: '5px',
-      border: '1px solid #ccc',
-      padding: '25px',
-      backgroundColor: '#cef'
+      borderRadius: "5px",
+      border: "1px solid #ccc",
+      padding: "25px",
+      backgroundColor: "#cef"
     }
-  }
 
-  const thumbnailLink = props.links.find(link => link.type === 'thumbnail')
-  const thumbnailHref = thumbnailLink && thumbnailLink.href || null
+  //
+  //ReactFlipCard,
+  //ReactFlipCard__Front,
+  //ReactFlipCard__Back {
+  //  box-sizing: border-box;
+  //  width: 250px;
+  //  height: 300px;
+  //}
+  //ReactFlipCard__Front,
+  //ReactFlipCard__Back {
+  //  border-radius: 10px;
+  //  border: 1px solid #ccc;
+  //  padding: 25px;
+  //}
+  //ReactFlipCard__Front {
+  //  background-color: #eee;
+  //}
+  //ReactFlipCard__Back {
+  //  background-color: #cef;
+  //}
+  //
+  //  #example {
+  //  text-align: center;
+  //}
+  };
+
+  const thumbnailLink = props.links.find(link => link.type === 'thumbnail');
+  const thumbnailHref = thumbnailLink && thumbnailLink.href || null;
 
   const actions = props.links
       .filter(link => link.type !== 'thumbnail')
       .map(link => (
-          <div
-            styleName='pure-button'
+          <RaisedButton
               label={link.type}
               linkButton={true}
               href={link.href}
               key={link.href}
               primary={true}
           />
-      ))
+      ));
 
   return (
-      //The `disabled` attribute allows turning off the auto-flip
+      //<Paper style={styles.base}>
+      //  <Card>
+      //    <CardHeader title={props.title}/>
+      //    <CardText>{props.summary}</CardText>
+      //    <CardActions>{actions}</CardActions>
+      //  </Card>
+      //</Paper>
+      //
+
+
+      ///The `disabled` attribute allows turning off the auto-flip
       //on hover, or focus. This allows manual control over flipping.
 
       //The `flipped` attribute indicates whether to show the front,
@@ -62,23 +107,23 @@ const Detail = (props, onCardClick) => {
       <div>
         <FlipCard
             disabled={true}
-            styleName='reactFlipCard'
+            style={styles.reactFlipCard}
             flipped={props.flipped}
             >
 
 
-          <div styleName='reactFlipCard__Front' onClick={onCardClick}>
+          <div style={styles.reactFlipCard__Front}  onClick={onCardClick}>
             <div>Front</div>
             <div>Title: {props.title} </div>
             <div></div>
           </div>
-          <div styleName='reactFlipCard__Back'>
+          <div style={styles.reactFlipCard__Back}>
             <div>Summary: {props.summary}</div>
           </div>
         </FlipCard>
       </div>
   )
-}
+};
 
 Detail.propTypes = {
   id: PropTypes.string.isRequired,
@@ -90,7 +135,7 @@ Detail.propTypes = {
   })).isRequired,
   flipped: PropTypes.bool.isRequired,
   onCardClick: PropTypes.func.isRequired
-}
+};
 
 Detail.defaultProps = {
   id: '',
@@ -98,8 +143,8 @@ Detail.defaultProps = {
   summary: '',
   links: [],
   flipped: false
-}
+};
 
-Detail.shouldComponentUpdate = (nextProps, nextState) => typeof nextProps.id !== 'undefined'
+Detail.shouldComponentUpdate = (nextProps, nextState) => typeof nextProps.id !== 'undefined';
 
 export default Detail

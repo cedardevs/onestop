@@ -1,0 +1,12 @@
+spinner {
+    display: 'flex';
+    flexWrap: 'wrap';
+    justifyContent: 'space-around';
+    paddingTop: 24;
+}
+
+list {
+    width: '100%';
+    height: '100%';
+    overflowY: 'auto';
+}
