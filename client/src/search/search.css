@@ -1,0 +1,14 @@
+.divStyle {
+  padding-right: 20;
+}
+
+.textField {
+  display: inline-block;
+  width: 300;
+}
+
+.dropDown {
+  display: inline-block;
+  width: 200;
+  padding-left: 10;
+}

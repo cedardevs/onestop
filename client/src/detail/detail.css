@@ -1,0 +1,32 @@
+$cardHeight: 300px;
+$cardWidth: 300px;
+
+.base {
+    display: block;
+    margin: 20px;
+}
+
+.reactFlipCard {
+    margin: 25px;
+    text-align: center;
+}
+
+.reactFlipCard__Front {
+    box-sizing: border-box;
+    width: $cardWidth;
+    height: $cardHeight;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 25px;
+    background-color: #eee;
+}
+
+.reactFlipCard__Back {
+    box-sizing: border-box;
+    width: $cardWidth;
+    height: $cardHeight;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 25px;
+    background-color: #cef;
+}
