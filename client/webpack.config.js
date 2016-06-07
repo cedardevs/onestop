@@ -34,7 +34,7 @@ module.exports = {
     }]
   },
   postcss: function(webpack){
-    return [precss, autoprefixer, postcssImport({addDependencyTo:webpack})]
+    return [postcssImport({addDependencyTo:webpack}), precss, autoprefixer]
   },
   resolve: {
     extensions: ['', '.js', '.jsx']
