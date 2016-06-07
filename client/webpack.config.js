@@ -28,9 +28,11 @@ module.exports = {
         'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
         'postcss']
     }, {
-      test: /\.jpg$/,
-      exclude: /node_modules/,
-      loader: 'file?name=[path][name]-[hash].[ext]'
+      test: /\.(jpe?g|png|gif|svg)$/i,
+        loaders: [
+            'file?hash=sha512&digest=hex&name=[hash].[ext]',
+            'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+        ]
     }]
   },
   postcss: function(webpack){
