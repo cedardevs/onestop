@@ -8,15 +8,15 @@ import org.springframework.stereotype.Service
 @Service
 class SearchResponseParserService {
 
-  Map searchResponseParser(SearchResponse response) {
-    log.debug("Parsing elasticsearch response: ${response}")
-    def result = [
-        took: response.tookInMillis,
-        items: response.hits.hits.collect { it.source + [id: it.id] },
-        total: response.hits.totalHits,
-    ]
-    log.debug("Parsed result: ${result}")
-    return result
-  }
+    Map searchResponseParser(SearchResponse response) {
+        log.debug("Parsing elasticsearch response: ${response}")
+        def result = [
+          took : response.tookInMillis,
+          items: response.hits.hits.collect {it.source + [id: it.id]},
+          total: response.hits.totalHits,
+        ]
+        log.debug("Parsed result: ${result}")
+        return result
+    }
 
 }
