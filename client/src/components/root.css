@@ -27,7 +27,8 @@
 }
 .results {
   position: fixed;
-  top: 108px;
+  top: 168px;
+  position: relative;
   bottom: 24px;
   width: 400px;
 }

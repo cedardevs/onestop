@@ -1,6 +1,5 @@
 body {
   @mixin bgImage '../img/isabel1.jpg';
-  color: white;
 }
 
 img {

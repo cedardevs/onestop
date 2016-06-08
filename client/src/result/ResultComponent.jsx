@@ -10,7 +10,8 @@ const Result = ({record, onClick}) => {
     title: {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
-      textOverflow: 'ellipsis'
+      textOverflow: 'ellipsis',
+      color: 'white'
     }
   }
 
