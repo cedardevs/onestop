@@ -1,16 +1,17 @@
 import React from 'react'
-import IndexDropDown from './IndexDropDownComponent'
-import TextField from '../../node_modules/material-ui/lib/text-field';
-import Colors from '../../node_modules/material-ui/lib/styles/colors';
+import CSSModules from 'react-css-modules'
+let styles = {}
+import { buttons, forms, menus } from 'pure-css'
+Object.assign(styles, buttons, forms)
 
 const TextSearchField = ({onEnterKeyDown}) => {
   const handleSubmit = (e) => onEnterKeyDown(e.target.value);
 
-  return <TextField
+  return <input
       hintText="Enter Search Term"
       fullWidth={true}
-      onEnterKeyDown={handleSubmit}
+      onKeyDown={handleSubmit}
   />
-};
+}
 
 export default TextSearchField

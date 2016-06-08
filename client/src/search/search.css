@@ -5,10 +5,15 @@
 .textField {
   display: inline-block;
   width: 300;
+  color: black;
 }
 
 .dropDown {
   display: inline-block;
   width: 200;
   padding-left: 10;
+}
+
+.searchButton {
+  color: blue;
 }
