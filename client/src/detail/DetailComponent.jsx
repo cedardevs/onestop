@@ -49,7 +49,7 @@ const Detail = (props) => {
             <div></div>
           </div>
           <div style={styles.reactFlipCard__Back} onClick={props.onClick}>
-            <div>Summary: {props.summary}</div>
+            <div>Summary: {props.description}</div>
           </div>
         </FlipCard>
 
