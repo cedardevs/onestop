@@ -47,8 +47,14 @@ export const textSearch = (searchText) => {
 
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
-        .then(json => dispatch(completeSearch(searchText, json.items)));
+        .then(json => dispatch(completeSearch(searchText, flattenResourcesToItems(json.data))));
   };
+};
+
+const flattenResourcesToItems = (resourceList) => {
+  return resourceList.map(resource => {
+    return Object.assign({id: resource.id, type: resource.type}, resource.attributes);
+  });
 };
 
 export const indexChange = (indexText) => {
