@@ -33,8 +33,10 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-tomcat'
     compile 'org.springframework.boot:spring-boot-devtools'
+    compile(group: "com.github.fge", name: "json-schema-validator", version: "2.2.6")
 
     testCompile "org.spockframework:spock-spring:1.0-groovy-2.4"
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
 }

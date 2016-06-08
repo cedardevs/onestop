@@ -73,6 +73,15 @@ class SearchApiIntegrationSpec extends Specification {
             ]
     }
     """
+    def baresearch2filtersonebad = """
+    {
+        "filters":
+            [
+                { "type": "point", "value": "temperature"},
+                { "type": "dateTime", "before": "YYYY-MM-DD", "after": "YYYY-MM-DD"}
+            ]
+    }
+    """
 
     // -------- Test Cases --------
     def 'valid search returns ok and results'() {
@@ -94,6 +103,27 @@ class SearchApiIntegrationSpec extends Specification {
         items.each { item ->
             item.title
         }
+    }
+
+    def 'valid search returns errors when not conforming to schema'() {
+        def requestEntity = RequestEntity
+                .post(searchBaseUri)
+                .contentType(contentType)
+                .body(baresearch2filtersonebad)
+
+        when:
+        def result = restTemplate.exchange(requestEntity, Map)
+
+        then: "Search ok"
+        result.statusCode == HttpStatus.OK
+        and: "result contains > 0 items"
+        def errors = result.body
+        errors
+        errors.code == "400"
+        errors.detail
+        println "errors.detail:${errors.detail}"
+        errors.status == "Invalid Request"
+
     }
 
     def 'valid search returns ok and results when search test is strange character'() {

@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "OneStop Request schema",
+  "description": "Json Search Request",
+  "type": "object",
+  "description": "A specification of the algorithm that needs to run.",
+  "properties": {
+    "queries": {
+      "description": "Query definitions.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "queryText"
+            ]
+          }
+        }
+      },
+      "minItems": 0,
+      "additionalProperties": true
+    },
+    "filters": {
+      "description": "Filter definitions.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "datetime",
+              "point",
+              "facet"
+            ]
+          }
+        }
+      },
+      "minItems": 0,
+      "additionalProperties": true
+    },
+    "pagination": {
+      "description": "Pagination definitions.",
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "minItems": 0,
+      "additionalProperties": true
+    }
+  }
+}
