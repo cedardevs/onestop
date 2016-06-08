@@ -1,10 +1,13 @@
-@define-mixin card
-$depth {
-  @if $depth < 1 {
-    box-shadow: none;
-  } @else if $depth > 5 {
-    @warn "Invalid $depth `#{$depth}` for mixin `card`.";
-  } @else {
-    box-shadow: bottom-shadow($depth), top-shadow($depth);
+@define-mixin bgImage
+  $image,
+  $height: 100vh,
+  $grStart: rgba(0,0,0,.9),
+  $grEnd: rgba(0,0,0,.0),
+  $bgPos: center center {
+    background: linear-gradient( to bottom, $grStart, $grEnd), url($image);
+    background-repeat: no-repeat;
+    background-position: $bgPos;
+    background-size: cover;
+    height: $height;
+    max-height: $height;
   }
-}

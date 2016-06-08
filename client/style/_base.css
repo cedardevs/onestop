@@ -1,10 +1,8 @@
 body {
-  margin: 0;
-  padding: 0;
-  color: $color-primary;
-  background-color: $color-primary-darker;
+  @mixin bgImage '../img/isabel1.jpg';
+  color: white;
 }
 
 img {
-  max-width: 100%;
+  max-width: 90%;
 }
