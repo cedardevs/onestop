@@ -4,7 +4,7 @@ import FlipCard from '../../node_modules/react-flipcard/lib/main';
 
 
 const Detail = (props) => {
-  const cardHight = "300px";
+  const cardHeight = "300px";
   const cardWidth = "300px";
 
   const styles = {
@@ -16,12 +16,12 @@ const Detail = (props) => {
       margin: "25px",
       textAlign: "center",
       width: cardWidth,
-      height: cardHight
+      height: cardHeight
     },
     reactFlipCard__Front: {
       boxSizing: "border-box",
       width: cardWidth,
-      height: cardHight,
+      height: cardHeight,
       borderRadius: "5px",
       border: "1px solid #ccc",
       padding: "25px",
@@ -30,7 +30,7 @@ const Detail = (props) => {
     reactFlipCard__Back: {
       boxSizing: "border-box",
       width: cardWidth,
-      height: cardHight,
+      height: cardHeight,
       borderRadius: "5px",
       border: "1px solid #ccc",
       padding: "25px",
