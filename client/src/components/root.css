@@ -6,15 +6,24 @@
   width: 100%;
 }
 .appbar {
+  display: flex;
+  justify-content: space-between;
+  border: solid white 1px;
   position: fixed;
   top: 24px;
-  height: 84px;
+  height: 140px;
   width: 100%;
 }
 .logo {
-  height: 64px;
+  height: 74px;
   float: left;
   margin: 10px;
+}
+.noaaCaption {
+  color: white;
+  margin-right: auto;
+  font-size: 6em;
+  font-weight: normal;
 }
 .results {
   position: fixed;

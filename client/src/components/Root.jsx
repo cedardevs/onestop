@@ -16,6 +16,7 @@ const Root = () => (
       </div>
       <div className={styles.appbar} id='appbar' rounded={false}>
         <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
+        <div className={styles.noaaCaption}>NOAA</div>
         <div className={styles.searchFacet} id='search-facet'>
           <SearchContainer/>
         </div>
