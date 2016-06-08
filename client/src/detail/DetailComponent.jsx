@@ -27,7 +27,8 @@ const Detail = (props) => {
       borderRadius: "5px",
       border: "1px solid #ccc",
       padding: "25px",
-      backgroundColor: "#eee"
+      backgroundColor: "#eee",
+      color: "black"
     },
     reactFlipCard__Back: {
       boxSizing: "border-box",
@@ -36,7 +37,8 @@ const Detail = (props) => {
       borderRadius: "5px",
       border: "1px solid #ccc",
       padding: "25px",
-      backgroundColor: "#cef"
+      backgroundColor: "#cef",
+      color: "black"
     }
   };
 
