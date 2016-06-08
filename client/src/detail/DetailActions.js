@@ -1,19 +1,30 @@
 export const FETCH_DETAILS = 'fetch_details';
 export const RECEIVE_DETAILS = 'receive_details';
+export const FLIP_CARD = 'flip_card';
 
 export const startDetails = (id) => {
   return {
     type: FETCH_DETAILS,
-    id: id
+    id: id,
+    flipped: false
   };
 };
 
 export const completeDetails = (id, details) => {
+  console.log('the details are' + details);
   return {
     type: RECEIVE_DETAILS,
     id: id,
-    details: details
+    details: details,
+    flipped: false
   };
+};
+
+export const flipCard = (id) => {
+  return{
+    type: FLIP_CARD,
+    id: id
+  }
 };
 
 export const getDetails = (id) => {
@@ -26,6 +37,7 @@ export const getDetails = (id) => {
     dispatch(startDetails(id));
 
     const details = getState().get('results').find(result => result.get('id') === id);
+    console.log ("details in getDetails method is " + details);
     dispatch(completeDetails(id, details));
   };
 };

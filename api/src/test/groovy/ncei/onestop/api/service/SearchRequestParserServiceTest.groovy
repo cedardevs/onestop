@@ -5,10 +5,10 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
-class SearchRequestParserUtilTest extends Specification {
+class SearchRequestParserServiceTest extends Specification {
 
     private slurper = new JsonSlurper()
-    private requestParser = new SearchRequestParserUtil()
+    private requestParser = new SearchRequestParserService()
 
     def "request with #label creates empty elasticsearch request" () {
         given:

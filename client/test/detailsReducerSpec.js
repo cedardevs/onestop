@@ -11,7 +11,7 @@ describe('The details reducer', function () {
     const result = details(initialState, detailsAction);
 
     result.should.not.equal(initialState);
-    result.should.equal(Immutable.fromJS({id: id}));
+    result.should.equal(Immutable.fromJS({id: id, flipped: false}));
   });
 
   it('handles completed details request', function () {
