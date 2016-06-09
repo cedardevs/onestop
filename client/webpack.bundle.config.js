@@ -7,7 +7,7 @@ module.exports = {
   devtool: 'source-map',
   entry: {
     app: './src/index.jsx',
-    vendor: ['pure-css', 'react', 'react-dom', 'react-router', 'redux', 'redux-thunk',
+    vendor: ['purecss', 'react', 'react-dom', 'react-router', 'redux', 'redux-thunk',
       'react-tap-event-plugin']
   },
   module: {
