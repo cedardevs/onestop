@@ -7,7 +7,8 @@ module.exports = {
   devtool: 'source-map',
   entry: {
     app: './src/index.jsx',
-    vendor: ['pure-css', 'react']
+    vendor: ['pure-css', 'react', 'react-dom', 'react-router', 'redux', 'redux-thunk',
+      'react-tap-event-plugin']
   },
   module: {
     preLoaders: [{
@@ -51,13 +52,14 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        warnings: false
+      }
+    }),
     new HtmlWebpackPlugin({
       title: 'NOAA OneStop'
     }),
     new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js")
-  ],
-  node: {
-    fs: "empty"
-  }
-};
+  ]
+}

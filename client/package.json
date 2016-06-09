@@ -6,7 +6,7 @@
   "license": "WTFPL",
   "scripts": {
     "dev": "webpack-dev-server --inline & mocha --watch",
-    "hot-dev-server": "webpack-dev-server --config webpack.bundle.config.js --hot --progress --colors --port 8080 --inline",
+    "dev-alt": "webpack-dev-server --config webpack.bundle.config.js --hot --progress --colors --port 8080 --inline & mocha --watch",
     "test": "mocha",
     "build": "npm install && npm test && webpack",
     "clean": "rm -rf dist"
