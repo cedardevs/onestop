@@ -6,7 +6,8 @@ var autoprefixer = require('autoprefixer')
 module.exports = {
   devtool: 'source-map',
   entry: {
-    app: './src/index.jsx'
+    app: './src/index.jsx',
+    vendor: ['pure-css', 'react']
   },
   module: {
     preLoaders: [{
@@ -53,7 +54,8 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin(),
     new HtmlWebpackPlugin({
       title: 'NOAA OneStop'
-    })
+    }),
+    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js")
   ],
   node: {
     fs: "empty"
