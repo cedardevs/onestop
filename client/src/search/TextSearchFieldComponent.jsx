@@ -7,6 +7,7 @@ Object.assign(styles, buttons, forms, search)
 
 const TextSearchField = ({onEnterKeyDown}) => {
   const handleSubmit = (e) => onEnterKeyDown(e.target.value);
+  console.log("These are styles: " +  styles);
 
   return <input
       styleName="textField"

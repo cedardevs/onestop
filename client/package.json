@@ -6,6 +6,7 @@
   "license": "WTFPL",
   "scripts": {
     "dev": "webpack-dev-server --inline & mocha --watch",
+    "hot-dev-server": "webpack-dev-server --config webpack.bundle.config.js --hot --progress --colors --port 8080 --inline",
     "test": "mocha",
     "build": "npm install && npm test && webpack",
     "clean": "rm -rf dist"
@@ -44,7 +45,6 @@
     "img-loader": "^1.2.2",
     "mocha": "^2.4.5",
     "node-sass": "^3.4.2",
-    "postcss-import": "^8.1.2",
     "postcss-loader": "^0.8.2",
     "precss": "^1.4.0",
     "pure-css": "^1.0.4",
