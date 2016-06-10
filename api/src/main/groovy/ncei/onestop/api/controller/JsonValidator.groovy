@@ -8,7 +8,7 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory
 
 class JsonValidator {
 
-    public static Map validateSearcRequestSchema(Map request) {
+    public static Map validateSearchRequestSchema(Map request) {
         validateSchema(request, 'onestop-request-schema.json')
     }
 
