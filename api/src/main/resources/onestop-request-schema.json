@@ -7,48 +7,154 @@
   "properties": {
     "queries": {
       "description": "Query definitions.",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "queryText"
-            ]
-          }
+      "type": "object",
+      "properties": {
+        "queryText": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "value"
+          ],
+          "additionalProperties": false
         }
       },
-      "minItems": 0,
-      "additionalProperties": true
+      "additionalProperties": false
     },
     "filters": {
       "description": "Filter definitions.",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "enum": [
-              "datetime",
-              "point",
-              "facet"
-            ]
-          }
+      "type": "object",
+      "properties": {
+        "datetime": {
+          "type": "object",
+          "properties": {
+            "after": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "before": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "additionalProperties": false
+        },
+        "point": {
+          "type": "object",
+          "properties": {
+            "bbox": {
+              "title": "Bounding Box",
+              "type": "array",
+              "description": "To include information on the coordinate range for geometries, features, or feature collections, a GeoJSON object may have a member named `bbox`. The value of the bbox member must be a 2*n array where n is the number of dimensions represented in the contained geometries, with the lowest values for all axes followed by the highest values. The axes order of a bbox follows the axes order of geometries. In addition, the coordinate reference system for the bbox is assumed to match the coordinate reference system of the GeoJSON object of which it is a member.",
+              "minItems": 4,
+              "items": {
+                "type": "number"
+              }
+            },
+            "relation": {
+              "type": "string",
+              "enum": [
+                "intersects",
+                "within"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "facet": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "values": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
         }
       },
-      "minItems": 0,
-      "additionalProperties": true
+      "additionalProperties": false
     },
-    "pagination": {
-      "description": "Pagination definitions.",
-      "type": "array",
-      "items": {
-        "type": "object"
+    "formatting": {
+      "description": "Formatting definitions.",
+      "type": "object",
+      "properties": {
+        "pagination": {
+          "type": "object",
+          "properties": {
+            "from": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "size": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "from",
+            "size"
+          ]
+        },
+        "sortorder": {
+          "type": "object",
+          "properties": {
+            "by": {
+              "type": "string",
+              "enum": [
+                "relevance"
+              ]
+            },
+            "dir": {
+              "type": "string",
+              "enum": [
+                "ascending",
+                "descending"
+              ]
+            }
+          },
+          "required": [
+            "by",
+            "dir"
+          ]
+        }
       },
-      "minItems": 0,
-      "additionalProperties": true
+      "additionalProperties": false
+    }
+  },
+  "definitions": {
+    "point": {
+      "description": "A GeoJSON Point",
+      "type": "object",
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "Point"
+          ]
+        },
+        "coordinates": {
+          "$ref": "#/definitions/position"
+        }
+      }
+    },
+    "position": {
+      "description": "A GeoJSON Position",
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "number"
+      }
     }
   }
 }

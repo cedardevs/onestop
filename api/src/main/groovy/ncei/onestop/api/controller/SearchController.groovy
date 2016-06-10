@@ -24,6 +24,7 @@ class SearchController {
     Map search(@RequestBody Map params) {
         Map validation = JsonValidator.validateSearcRequestSchema(params)
         if (!validation.success) {
+            log.debug("validation:${validation}")
             return validation.errors            // 400 and report of error.
         }
         searchService.search(params)

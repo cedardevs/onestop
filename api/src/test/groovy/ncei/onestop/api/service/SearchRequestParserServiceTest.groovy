@@ -35,14 +35,14 @@ class SearchRequestParserServiceTest extends Specification {
         where:
         label                       | json
         'nothing'                   | '{}'
-        'empty queries and filters' | '{"queries":[],"filters":[]}'
-        'only queries'              | '{"queries":[]}'
-        'only filters'              | '{"filters":[]}'
+        'empty queries and filters' | '{"queries":{},"filters":{}}'
+        'only queries'              | '{"queries":{}}'
+        'only filters'              | '{"filters":{}}'
     }
 
     def "Test only queryText specified" () {
         given:
-        def request = '{"queries":[{"type":"queryText","value":"winter"}]}'
+        def request = '{"queries":{"queryText":{"value":"winter"}}'
         def params = slurper.parseText(request)
 
         when:

@@ -36,46 +36,69 @@ class SearchApiIntegrationSpec extends Specification {
     def notexistingwordsearch = """\
     {
         "queries":
-            [
-                { "type": "queryText", "value": "spork"}
-            ]
-    }""".stripIndent()
+            {
+                "queryText": {"value": "spork"}
+            }
+    }"""
+
     def baresearch = """\
     {
         "queries":
-            [
-                { "type": "queryText", "value": "temperature"}
-            ]
-    }""".stripIndent()
+            {
+                "queryText": {"value": "temperature"}
+            }
+    }"""
     def strangecharjsonsearch = """\
     {
         "queries":
-            [
-                { "type": "queryText", "value": "~"}
-            ]
-    }""".stripIndent()
+            {
+                "queryText": {"value": "~"}
+            }
+    }"""
+
     def blankjsonsearch = """\
     {
         "queries":
-            [
-                { "type": "queryText", "value": ""}
-            ]
-    }""".stripIndent()
+            {
+                "queryText": {"value": ""}
+            }
+    }"""
+
     def badjsonsearch = """\
     {
         "queries":
-            [
-                { "type": "queryText", "value": "}
-            ]
+            {
+                "queryText": {"value": "}
+            }
     }
     """
     def baresearch2filtersonebad = """
     {
         "filters":
-            [
-                { "type": "point", "value": "temperature"},
-                { "type": "dateTime", "before": "YYYY-MM-DD", "after": "YYYY-MM-DD"}
-            ]
+            {
+                "point": {"value": "temperature"},
+                "dateTime": {"before": "YYYY-MM-DD", "after": "YYYY-MM-DD"}
+            }
+    }
+    """
+
+    def searchqueriesfiltersformatting = """
+    {
+        "queries":
+            {
+                "queryText": {"value": "temperature"}
+            },
+        "filters":
+            {
+                "facet": {"name": "apiso_TopicCategory_s", "values": ["oceanography", "oceans"]},
+                "point": {"bbox": [-110.5024410624507,36.25063618524021,-104.7456054687466,41.382728733019135], "relation":"intersects"},
+                "datetime": {"before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
+            },
+        "formatting":
+            {
+                "sortorder": {"by": "relevance", "dir": "descending"},
+                "pagination": {"from": 0, "size": 10}
+            }
     }
     """
 
@@ -120,12 +143,14 @@ class SearchApiIntegrationSpec extends Specification {
         errors
         errors.code == "400"
         errors.detail
-        println "errors.detail:${errors.detail}"
+        println "errors.detail.values.message:${errors.detail.values.message}"
+        String message = errors.detail.values.message
+        message.contains("object instance has properties which are not allowed by the schema")
         errors.status == "Invalid Request"
 
     }
 
-    def 'valid search returns ok and results when search test is strange character'() {
+    def 'valid search returns ok and 0 results when queryText is strange character'() {
         def requestEntity = RequestEntity
                 .post(searchBaseUri)
                 .contentType(contentType)
@@ -137,12 +162,12 @@ class SearchApiIntegrationSpec extends Specification {
         then: "Search ok"
         result.statusCode == HttpStatus.OK
         result.headers.getContentType() == contentType
-        and: "result contains > 0 items"
+        and: "result contains == 0 items"
         def items = result.body.data
         items == []
     }
 
-    def 'valid search returns ok and results when search test is non existing word'() {
+    def 'valid search returns ok and 0 results when queryText is non existing word'() {
         def requestEntity = RequestEntity
                 .post(searchBaseUri)
                 .contentType(contentType)
@@ -154,12 +179,12 @@ class SearchApiIntegrationSpec extends Specification {
         then: "Search ok"
         result.statusCode == HttpStatus.OK
         result.headers.getContentType() == contentType
-        and: "result contains > 0 items"
+        and: "result contains == 0 items"
         def items = result.body.data
         items == []
     }
 
-    def 'valid search returns ok and results when search test is blank'() {
+    def 'valid search returns ok and 0 results when queryText is blank'() {
         def requestEntity = RequestEntity
                 .post(searchBaseUri)
                 .contentType(contentType)
@@ -171,12 +196,12 @@ class SearchApiIntegrationSpec extends Specification {
         then: "Search ok"
         result.statusCode == HttpStatus.OK
         result.headers.getContentType() == contentType
-        and: "result contains > 0 items"
+        and: "result contains == 0 items"
         def items = result.body.data
         items == []
     }
 
-    def 'invalid search returns returns error, json not parseable'() {
+    def 'invalid search returns returns error, json body not parseable'() {
         def requestEntity = RequestEntity
                 .post(searchBaseUri)
                 .contentType(contentType)
@@ -190,6 +215,8 @@ class SearchApiIntegrationSpec extends Specification {
         result.headers.getContentType() == contentType
         and: "result contains no items"
         result.body.data == null
+        String error = result.body.error
+        error.contains("Bad Request")
     }
 
     def 'invalid search returns returns error, need to specify body is json content type'() {
@@ -207,7 +234,7 @@ class SearchApiIntegrationSpec extends Specification {
         result.body.data == null
     }
 
-    def 'invalid search returns returns error, need to specify json content'() {
+    def 'invalid search returns returns error, need to specify json body'() {
         def requestEntity = RequestEntity
                 .post(searchBaseUri)
                 .contentType(contentType)
@@ -244,6 +271,30 @@ class SearchApiIntegrationSpec extends Specification {
             item.id instanceof String &&
               item.type instanceof String &&
               item.attributes instanceof Map
+        }
+    }
+
+    def 'valid search returns ok and results, if json has queries, filters, formatting'() {
+        def requestEntity = RequestEntity
+                .post(searchBaseUri)
+                .contentType(contentType)
+                .body(searchqueriesfiltersformatting)
+
+        when:
+        def result = restTemplate.exchange(requestEntity, Map)
+
+        then: "Search ok"
+        result.statusCode == HttpStatus.OK
+        result.headers.getContentType() == contentType
+        and: "result contains > 0 items"
+        def items = result.body.data
+        items
+        items.size() > 0
+        and: "each item has a type, id, and attributes"
+        items.every { item ->
+            item.id instanceof String &&
+                    item.type instanceof String &&
+                    item.attributes instanceof Map
         }
     }
 }
