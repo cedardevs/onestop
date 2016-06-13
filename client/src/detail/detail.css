@@ -9,6 +9,8 @@ $cardWidth: 300px;
 .reactFlipCard {
     margin: 25px;
     text-align: center;
+    width: $cardWidth;
+    height: $cardHeight;
 }
 
 .reactFlipCard__Front {
@@ -19,6 +21,7 @@ $cardWidth: 300px;
     border: 1px solid #ccc;
     padding: 25px;
     background-color: #eee;
+    color: black;
 }
 
 .reactFlipCard__Back {
@@ -29,4 +32,5 @@ $cardWidth: 300px;
     border: 1px solid #ccc;
     padding: 25px;
     background-color: #cef;
+    color: black;
 }
