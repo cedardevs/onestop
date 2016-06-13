@@ -1,3 +1,5 @@
+@import '../../style/style.css';
+
 spinner {
     display: 'flex';
     flexWrap: 'wrap';

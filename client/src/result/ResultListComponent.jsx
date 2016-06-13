@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react'
 import Result from './ResultComponent'
-import 'purecss'
 import styles from './result.css'
 
 const ResultsList = ({results, loading, onResultClick}) => {
