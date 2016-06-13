@@ -1,4 +1,4 @@
-@import "../../node_modules/purecss/build/pure.css";
+@import '../../style/style.css';
 
 .divStyle {
   padding-right: 20;
