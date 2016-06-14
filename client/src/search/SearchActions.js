@@ -31,7 +31,7 @@ export const textSearch = (searchText) => {
     const index = getState().getIn(['search', 'index']);
     console.log(`Searching: searchText="${index}":"${searchText}`);
 
-    const apiRoot = "http://localhost:8000/onestop/search";
+    const apiRoot = "/api/search";
     const fetchParams = {
       method: 'POST',
       headers: {
@@ -39,15 +39,22 @@ export const textSearch = (searchText) => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        searchText: `${searchText}`
+        queries: [
+          {type: 'queryText', value: searchText}
+        ]
       })
     };
 
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
-        .then(json => dispatch(completeSearch(searchText, json.items)));
-
+        .then(json => dispatch(completeSearch(searchText, flattenResourcesToItems(json.data))));
   };
+};
+
+const flattenResourcesToItems = (resourceList) => {
+  return resourceList.map(resource => {
+    return Object.assign({id: resource.id, type: resource.type}, resource.attributes);
+  });
 };
 
 export const indexChange = (indexText) => {

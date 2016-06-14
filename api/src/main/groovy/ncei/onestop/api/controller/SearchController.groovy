@@ -22,6 +22,11 @@ class SearchController {
     // POST in order to support request bodies from clients that won't send bodies with GETs
     @RequestMapping(path = "/search", method = [RequestMethod.POST, RequestMethod.GET])
     Map search(@RequestBody Map params) {
+        Map validation = JsonValidator.validateSearchRequestSchema(params)
+        if (!validation.success) {
+            log.debug("validation:${validation}")
+            return validation.errors            // 400 and report of error.
+        }
         searchService.search(params)
     }
 }

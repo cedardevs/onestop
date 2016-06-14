@@ -33,8 +33,9 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-tomcat'
     compile 'org.springframework.boot:spring-boot-devtools'
+    compile(group: "com.github.fge", name: "json-schema-validator", version: "2.2.6")
 
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile "org.spockframework:spock-spring:1.0-groovy-2.4"
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
@@ -61,3 +62,27 @@ task stop(type: KillProcessTask) {
     onlyIf { new File(projectDir, '.pid.lock').exists() }
     directory projectDir.absolutePath
 }
+
+configurations.configure {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+    integrationTest {
+        groovy.srcDir file('src/integrationTest/groovy')
+        //resources.srcDir file('src/integrationTest/resources')
+        compileClasspath += main.output + test.output + configurations.testRuntime
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
+    dependsOn ':elasticsearch:start'
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    reports.junitXml.destination = 'build/integration-test-results'
+    reports.html.destination = 'build/reports/integrationTests'
+}
+
+check.dependsOn integrationTest

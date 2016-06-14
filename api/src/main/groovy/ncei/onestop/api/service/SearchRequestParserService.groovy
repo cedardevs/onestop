@@ -1,16 +1,21 @@
 package ncei.onestop.api.service
 
+import groovy.util.logging.Slf4j
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.stereotype.Service
 
+@Slf4j
 @Service
-class SearchRequestParserUtil {
+class SearchRequestParserService {
 
-    public SearchRequestParserUtil() {}
+    public SearchRequestParserService() {}
 
 
     public QueryBuilder parseSearchRequest(Map params) {
+
+        log.debug("Queries: ${params.queries}")
+        log.debug("Filters: ${params.filters}")
 
         def query = assembleQuery(params.queries)
         def filter = assembleFilter(params.filters)
@@ -25,11 +30,10 @@ class SearchRequestParserUtil {
          */
         def completeQuery = QueryBuilders.boolQuery().filter(filter).must(query)
         completeQuery
-
     }
 
 
-    private QueryBuilder assembleFilter(List<Map> filters) {
+    private QueryBuilder assembleFilter(Map filters) {
 
         /*For filters:
              * union: A | B | A & B; intersection: A & B
@@ -41,13 +45,14 @@ class SearchRequestParserUtil {
 
         def builder = QueryBuilders.boolQuery()
         if (!filters) { return builder }
+        log.debug("filters:${filters}")
 
-        def groupedFilters = filters.groupBy { it.type }
+        def groupedFilters = filters.groupBy { it.key }
 
         // Temporal filters:
         groupedFilters.dateTime.each {
             // TODO date field name in ES document unknown -- calling it creationDate for now
-            builder.must(QueryBuilders.rangeQuery("creationDate").gte(it.start).lte(it.end)/*.format("")*/)
+            builder.must(QueryBuilders.rangeQuery("creationDate").gte(it.after).lte(it.before)/*.format("")*/)
         }
 
         // Spatial filters:
@@ -57,26 +62,23 @@ class SearchRequestParserUtil {
 
         // Facet filters:
         groupedFilters.facet.each {
-            def groupedFacets = it.groupEntriesBy { it.name }
-
-            groupedFacets.each {
-                builder.must(QueryBuilders.termsQuery(it.name, it.values))
-            }
+            builder.must(QueryBuilders.termsQuery(it.value.name, it.value.values))
         }
 
         return builder
     }
 
 
-    private QueryBuilder assembleQuery(List<Map> queries) {
+    private QueryBuilder assembleQuery(Map queries) {
         def builder = QueryBuilders.boolQuery()
         if (!queries) { return builder }
 
-        def groupedQueries = queries.groupBy { it.type }
+        log.debug("queries:${queries}")
+        def groupedQueries = queries.groupBy { it.key }
 
         groupedQueries.queryText.each {
             // TODO check string for double quotes -- term query for exact match? or is ES already doing this?
-            builder.must(QueryBuilders.matchQuery('_all', it.value))
+            builder.must(QueryBuilders.matchQuery('_all', it.value.value))
         }
 
         return builder
