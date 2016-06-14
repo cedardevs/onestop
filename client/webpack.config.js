@@ -22,11 +22,10 @@ module.exports = {
       exclude: /node_modules/,
       loader: 'style!css!postcss'
     }, {
-      test: /\.jpg$/,
+      test: /\.(jpe?g|png|gif|svg)$/,
       exclude: /node_modules/,
-      loader: 'file?name=[path][name]-[hash].[ext]'
-    }]
-  },
+      loader: 'file?name=[path][name]-[hash].[ext]'}
+    ]},
   resolve: {
     extensions: ['', '.js', '.jsx']
   },
