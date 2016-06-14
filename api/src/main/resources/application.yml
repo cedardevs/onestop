@@ -1,0 +1,26 @@
+# classpath config is included in compiled application
+server:
+  port: 8097
+  context-path: /onestop
+
+spring:
+  application:
+    name: onestop
+
+logging:
+  file: /data/agile_apps/logs/ingest/${spring.application.name}_${hostname}.log
+  level:
+      ncei.onestop.api: DEBUG
+      org.gradle: WARN
+      org.apache.http: WARN
+      org.apache.http.wire: WARN
+      org.apache.http.headers: WARN
+      groovyx.net.http: WARN
+      groovyx.net.http.HttpURLClient: WARN
+      org.springframework: INFO
+      org.springframework.amqp: WARN
+      org.hibernate: WARN
+
+elasticsearch:
+  host: localhost
+  port: 9300

@@ -31,10 +31,22 @@ export const textSearch = (searchText) => {
     const index = getState().getIn(['search', 'index']);
     console.log(`Searching: searchText="${index}":"${searchText}`);
 
-    const apiRoot = '//data.nodc.noaa.gov/geoportal/rest/find/document';
-    return fetch(`${apiRoot}?searchText=${index}:${searchText}&f=json&max=30`)
+    const apiRoot = "http://localhost:8000/onestop/search";
+    const fetchParams = {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        searchText: `${searchText}`
+      })
+    };
+
+    return fetch(apiRoot, fetchParams)
         .then(response => response.json())
-        .then(json => dispatch(completeSearch(searchText, json.records)));
+        .then(json => dispatch(completeSearch(searchText, json.items)));
+
   };
 };
 

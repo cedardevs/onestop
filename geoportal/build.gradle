@@ -65,9 +65,12 @@ task start(type: SpawnProcessTask) {
   dependsOn 'installGeoPortal', ':elasticsearch:start'
   onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
 
-  command "java -jar ${installJettyRunner.targetFile} ${installGeoPortal.targetDir}/geoportal.war"
+  command "java -jar ${installJettyRunner.targetFile} --port 8888 ${installGeoPortal.targetDir}/geoportal.war"
   ready 'initialization completed'
   directory projectDir.absolutePath
 }
 
-task stop(type: KillProcessTask)
+task stop(type: KillProcessTask) {
+  onlyIf { new File(projectDir, '.pid.lock').exists() }
+  directory projectDir.absolutePath
+}

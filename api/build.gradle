@@ -1,0 +1,63 @@
+import com.wiredforcode.gradle.spawn.SpawnProcessTask
+import com.wiredforcode.gradle.spawn.KillProcessTask
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
+    }
+}
+
+plugins {
+    id 'groovy'
+    id "com.wiredforcode.spawn" version "0.6.0"
+}
+
+apply plugin: 'spring-boot'
+
+group 'ncei.onestop'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.6'
+    compile 'org.elasticsearch:elasticsearch:2.3.3'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-tomcat'
+    compile 'org.springframework.boot:spring-boot-devtools'
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+    testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+bootRun {
+    dependsOn ':elasticsearch:start'
+}
+
+bootRepackage {
+    excludeDevtools = true
+}
+
+task start(type: SpawnProcessTask) {
+    dependsOn 'assemble'
+    onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
+
+    directory projectDir.absolutePath
+    command "java -jar ${buildDir}/libs/${project.name}-${project.version}.jar"
+    ready 'Started Application'
+}
+
+task stop(type: KillProcessTask) {
+    onlyIf { new File(projectDir, '.pid.lock').exists() }
+    directory projectDir.absolutePath
+}

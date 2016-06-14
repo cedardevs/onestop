@@ -4,6 +4,7 @@ import React from 'react'
 import ResultsContainer from '../result/ResultContainer'
 import DetailContainer from '../detail/DetailContainer'
 import SearchContainer from '../search/SearchContainer'
+import FacetContainer from '../facet/FacetContainer'
 import Footer from './Footer.jsx'
 import Header from './Header.jsx'
 import styles from './root.css'
@@ -21,7 +22,10 @@ const Root = () => (
           <SearchContainer/>
         </div>
       </div>
-      <div className={styles.results} id='results'>
+      <div className={styles.leftNav}>
+        <FacetContainer/>
+      </div>
+      <div styleName='results'>
         <ResultsContainer/>
       </div>
       <div className={styles.details} id='details'>

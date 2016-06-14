@@ -47,3 +47,10 @@
 .searchFacet {
   float: right;
 }
+.leftNav {
+  z-index: 2;
+  position: fixed;
+  display: inline-block;
+  top: 24px;
+  bottom: 24px;
+}
