@@ -1,9 +1,6 @@
 package ncei.onestop.api.controller
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.fge.jsonschema.core.report.ProcessingReport
-import com.github.fge.jsonschema.main.JsonSchema
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 
 class JsonValidator {
@@ -14,31 +11,31 @@ class JsonValidator {
 
     public static Map validateSchema(Map params, String schemaName) {
 
-        ObjectMapper mapper = new ObjectMapper()
-        JsonNode topologySchema = mapper.readTree(this.classLoader.getResource(schemaName).text)
-        JsonNode json = mapper.valueToTree(params)
+        final mapper = new ObjectMapper()
+        final factory = JsonSchemaFactory.byDefault()
+        final schemaJson = mapper.readTree(this.classLoader.getResource(schemaName).text)
+        final schema = factory.getJsonSchema(schemaJson)
+        final requestJson = mapper.valueToTree(params)
 
-        final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
-        final JsonSchema schema = factory.getJsonSchema(topologySchema)
-
-        ProcessingReport report = schema.validate(json);
-
-        def response = [:]
-        def errors = [:]
-        if (!report.success) {
-            response.put("success", report.success)
-            errors.put("status", "Invalid Request")
-            errors.put("code", "400")
-            errors.put("title", "Json request failed validation")
-            errors.put("detail", "${report?.messages[0]}")
-            response.put("errors", errors)
-
-        } else {
-            response.put("success", report.success)
-            response.put("status", "OK")
-            response.put("code", "200")
+        final report = schema.validate(requestJson)
+        if (report.success) {
+            return [
+              success: true,
+              status: "OK",
+              code: "200"
+            ]
         }
-        response
+        else {
+            return [
+              success: false,
+              errors: [
+                status: "Invalid Request",
+                code: "400",
+                title: 'Json request failed validation',
+                detail: "${report?.messages[0]}"
+              ]
+            ]
+        }
     }
 
 }
