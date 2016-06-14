@@ -50,7 +50,7 @@ bootRepackage {
 }
 
 task start(type: SpawnProcessTask) {
-    dependsOn 'assemble'
+    dependsOn 'assemble, :elasticsearch:start'
     onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
 
     directory projectDir.absolutePath
