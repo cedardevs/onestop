@@ -164,10 +164,11 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearch2filtersonebad)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Error returned"
         println("validation:${validation}")
         !validation.success
-        validation.errors
+        validation.errors instanceof List
     }
 
     def 'Test search request is not valid Json invalid format'() {
@@ -175,10 +176,11 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearchformattinginvalidformat)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Error returned"
         println("validation:${validation}")
         !validation.success
-        validation.errors
+        validation.errors instanceof List
     }
 
     def 'Test search request is valid Json for formatting'() {
@@ -186,6 +188,7 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearchformatting)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Success is returned"
         println("validation:${validation}")
         validation.success
@@ -196,6 +199,7 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearchformatmultiplesametypeok)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Success is returned"
         println("validation:${validation}")
         validation.success
@@ -206,6 +210,7 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearch3filters)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Success is returned"
         println("validation:${validation}")
         validation.success
@@ -216,6 +221,7 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(searchqueriesfiltersformatting)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Success is returned"
         println("validation:${validation}")
         validation.success
@@ -226,6 +232,7 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearchdatefilter)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Success is returned"
         println("validation:${validation}")
         validation.success
@@ -236,6 +243,7 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearchpointfilter)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Success is returned"
         println("validation:${validation}")
         validation.success
@@ -246,6 +254,7 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearchfacetfilter)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Success is returned"
         println("validation:${validation}")
         validation.success
@@ -256,6 +265,7 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearch2queries)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Success is returned"
         println("validation:${validation}")
         validation.success
@@ -266,14 +276,14 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearchextraproperty)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Error is returned"
         println("validation:${validation}")
         !validation.success
-        validation.errors
-        validation.errors.code == "400"
-        validation.errors.detail
-        validation.errors.status
-        validation.errors.title == "Json request failed validation"
+        validation.errors instanceof List
+        validation.errors.every { it.status == '400' }
+        validation.errors.every { it.detail instanceof String }
+        validation.errors.every { it.title == "JSON request failed validation" }
     }
 
     def 'Test search request is valid Json single query'() {
@@ -281,6 +291,7 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(baresearch)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Success is returned"
         println("validation:${validation}")
         validation.success
@@ -291,6 +302,7 @@ class JsonValidatorSpec extends Specification {
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(blanksearch)
         def validation = JsonValidator.validateSearchRequestSchema(params)
+
         then: "Success is returned"
         println("validation:${validation}")
         validation.success
