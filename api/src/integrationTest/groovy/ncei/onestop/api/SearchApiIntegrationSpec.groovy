@@ -72,7 +72,7 @@ class SearchApiIntegrationSpec extends Specification {
             }
     }
     """
-    def baresearch2filtersonebad = """
+    def invalidschemarequest = """
     {
         "filters":
             {
@@ -127,27 +127,23 @@ class SearchApiIntegrationSpec extends Specification {
         }
     }
 
-    def 'valid search returns errors when not conforming to schema'() {
+    def 'invalid search returns errors when not conforming to schema'() {
         def requestEntity = RequestEntity
                 .post(searchBaseUri)
                 .contentType(contentType)
-                .body(baresearch2filtersonebad)
+                .body(invalidschemarequest)
 
         when:
         def result = restTemplate.exchange(requestEntity, Map)
 
-        then: "Search ok"
-        result.statusCode == HttpStatus.OK
-        and: "result contains > 0 items"
-        def errors = result.body
-        errors
-        errors.code == "400"
-        errors.detail
-        println "errors.detail.values.message:${errors.detail.values.message}"
-        String message = errors.detail.values.message
-        message.contains("object instance has properties which are not allowed by the schema")
-        errors.status == "Invalid Request"
+        then: "Request invalid"
+        result.statusCode == HttpStatus.BAD_REQUEST
 
+        and: "result contains errors list"
+        result.body.errors instanceof List
+        result.body.errors.every { it.status == '400'}
+        result.body.errors.every { it.detail instanceof String }
+        result.body.errors.any { it.detail.contains('has properties which are not allowed by the schema') }
     }
 
     def 'valid search returns ok and 0 results when queryText is strange character'() {

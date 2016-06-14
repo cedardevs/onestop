@@ -1,3 +1,7 @@
+## Spring Boot local config
+*/application.yml
+*/application.properties
+
 ### Build outputs
 dist/
 
