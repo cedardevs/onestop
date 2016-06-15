@@ -48,7 +48,13 @@ module.exports = {
   devtool: 'source-map',
   devServer: {
     contentBase: './dist',
-    hot: true
+    hot: true,
+    proxy: {
+      '/api/*': {
+        target: 'http://localhost:8097/',
+        secure: false
+      }
+    }
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
