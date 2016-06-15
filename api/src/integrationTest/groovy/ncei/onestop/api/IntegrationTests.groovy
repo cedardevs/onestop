@@ -19,8 +19,8 @@ import spock.lang.Unroll
 @Unroll
 @WebIntegrationTest
 @ActiveProfiles("integration")
-@ContextConfiguration(loader = SpringApplicationContextLoader.class,
-        classes = [Application.class, IntegrationTestConfig.class])
+@ContextConfiguration(loader = SpringApplicationContextLoader,
+        classes = [Application, IntegrationTestConfig])
 class IntegrationTests extends Specification {
 
     @Autowired
@@ -42,22 +42,24 @@ class IntegrationTests extends Specification {
 
 
     void setup() {
+        def cl = ClassLoader.systemClassLoader
+
         // Initialize index:
-        client.admin().indices().prepareCreate(INDEX).execute().actionGet()
+        def indexSettings = cl.getResourceAsStream("config/index-settings.json").text
+        client.admin().indices().prepareCreate(INDEX).setSettings(indexSettings).execute().actionGet()
         client.admin().cluster().prepareHealth(INDEX).setWaitForActiveShards(1).execute().actionGet()
 
         // Initialize mapping & load data:
-        def cl = ClassLoader.systemClassLoader
-        def mapping = cl.getResourceAsStream("item-mapping.json").text
+        def mapping = cl.getResourceAsStream("config/item-mapping.json").text
         client.admin().indices().preparePutMapping(INDEX).setSource(mapping).setType(TYPE).execute().actionGet()
 
-        // >> TODO Use a lambda/closure/something here...???
-        def ghrsst1 = cl.getResourceAsStream("data/GHRSST_1.json").text
-        def ghrsst2 = cl.getResourceAsStream("data/GHRSST_2.json").text
-        // TODO need to include some DEM data too
-        client.prepareUpdate(INDEX, TYPE, UUID.randomUUID().toString()).setDoc(ghrsst1).setDocAsUpsert(true).execute().actionGet()
-        client.prepareUpdate(INDEX, TYPE, UUID.randomUUID().toString()).setDoc(ghrsst2).setDocAsUpsert(true).execute().actionGet()
-        // <<
+        def datasets = ['GHRSST', 'DEM']
+        for(e in datasets) {
+            for(i in 1..3) {
+                def resource = cl.getResourceAsStream("data/${e}/${i}.json").text
+                client.prepareIndex(INDEX, TYPE, UUID.randomUUID().toString()).setSource(resource).setRefresh(true).execute().actionGet()
+            }
+        }
 
         restTemplate = new RestTemplate()
         restTemplate.errorHandler = new TestResponseErrorHandler()
@@ -66,18 +68,6 @@ class IntegrationTests extends Specification {
 
     void cleanup() {
         client.admin().indices().prepareDelete(INDEX).execute().actionGet()
-    }
-
-
-    def "nothing test"() {
-        given:
-        Map params = [:]
-
-        when:
-        searchController.search(params)
-
-        then:
-        1 == 1
     }
 
 
@@ -103,13 +93,12 @@ class IntegrationTests extends Specification {
         result.headers.getContentType() == contentType
         and: "result contains > 0 items"
         def items = result.body.data
-        items.size() == 0
-/*        items.size() > 0
+        items.size() > 0
         and: "each item has id, type, and attributes"
         items.every { item ->
             item.id instanceof String &&
                     item.type instanceof String &&
                     item.attributes instanceof Map
-        }*/
+        }
     }
 }

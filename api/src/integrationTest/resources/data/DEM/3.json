@@ -1,0 +1,207 @@
+{
+  "fileid":"gov.noaa.ngdc.mgg.dem:4970",
+  "title":"U.S. Coastal Relief Model - Southern California Version 2",
+  "description":"NGDC's U.S. Coastal Relief Model (CRM) provides a comprehensive view of the U.S. coastal zone integrating offshore bathymetry with land topography into a seamless representation of the coast. The CRM spans the U.S. East and West Coasts, the northern coast of the Gulf of Mexico, Puerto Rico, and Hawaii, reaching out to, and in places even beyond, the continental slope. Bathymetric and topographic data sources include: NGDC's NOS hydrographic surveys and multibeam bathymetry; the U.S. Geological Survey (USGS); and other federal government agencies and academic institutions. Bathymetric contours from the International Bathymetric Chart of the Caribbean Sea and the Gulf of Mexico project were also used. Digital elevation models (DEMs) of the Great Lakes, Southern Alaska, and high-resolution DEMs of U.S. coastal communities and territories are also available.",
+  "keywords_s":[
+    "EARTH SCIENCE > OCEANS > Marine Geophysics > Continental Shelves",
+    "EARTH SCIENCE > OCEANS > Bathymetry > Seafloor Topography",
+    "EARTH SCIENCE > OCEANS > Marine Geophysics > Continental Rises/Slopes",
+    "EARTH SCIENCE > OCEANS > Bathymetry > Water Depths",
+    "EARTH SCIENCE > OCEANS > Coastal Processes > Coastal Elevation",
+    "INFOTERRA > Marine environments > Coastal Ecosystems > Coastal Areas",
+    "INFOTERRA > Subject disciplines > Geophysics > Geophysics",
+    "INFOTERRA > Subject disciplines > Geomorphology > Geomorphology",
+    "Coastal Bathymetry",
+    "Outer Continental Shelf",
+    "Coastal Topography",
+    "ICSU-WDS > International Council for Science - World Data System",
+    "Sea Floor",
+    "Pacific Ocean",
+    "North America",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "oceans",
+    "geoscientificInformation",
+    "elevation"
+  ],
+  "links_s":[
+    "http://www.epsg-registry.org/export.htm?gml=urn:ogc:def:crs:EPSG::4269",
+    "http://www.epsg-registry.org/",
+    "http://www.epsg-registry.org/export.htm?gml=urn:ogc:def:crs:EPSG::5715",
+    "http://www.epsg-registry.org/",
+    "http://gcmd.nasa.gov/MailComments/MailComments.jsf?rcpt=gcmduso",
+    "http://gcmd.nasa.gov/learn/keyword_list.html",
+    "http://gcmd.nasa.gov/MailComments/MailComments.jsf?rcpt=gcmduso",
+    "http://gcmd.nasa.gov/learn/keyword_list.html",
+    "http://www.ngdc.noaa.gov/dem/squareCellGrid/map",
+    "http://www.ngdc.noaa.gov/dem/squareCellGrid/search",
+    "http://www.ngdc.noaa.gov/mgg/coastal/grddas06/Southern_California_CRM_v.2.pdf",
+    "http://www.ngdc.noaa.gov/mgg/dem/demportal.html",
+    "http://maps.ngdc.noaa.gov/viewers/wcs-client/",
+    "http://www.ngdc.noaa.gov/mgg/bathymetry/hydro.html",
+    "http://www.ngdc.noaa.gov/mgg/bathymetry/multibeam.html",
+    "http://srtm.csi.cgiar.org/",
+    "http://www.gebco.net/data_and_products/gridded_bathymetry_data/",
+    "http://seamless.usgs.gov/",
+    "http://www.ngdc.noaa.gov/mgg/inundation/tsunami/"
+  ],
+  "contact_organizations_s":[
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "European Petroleum Survey Group",
+    "European Petroleum Survey Group",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "NASA",
+    "NASA",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "Nicole Calsbeek",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "NASA > National Aeronautics and Space Administration",
+    "British Oceanographic Data Centre, General Bathymetric Chart of the Oceans",
+    "USGS > United States Geological Survey",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce"
+  ],
+  "contact_people_s":[
+    "Barry W. Eakins",
+    "Matthew R. Love",
+    "Kelly Carignan",
+    "Anna Milan"
+  ],
+  "apiso_Identifier_s":"gov.noaa.ngdc.mgg.dem:4970",
+  "apiso_Title_txt":"U.S. Coastal Relief Model - Southern California Version 2",
+  "apiso_Abstract_txt":"NGDC's U.S. Coastal Relief Model (CRM) provides a comprehensive view of the U.S. coastal zone integrating offshore bathymetry with land topography into a seamless representation of the coast. The CRM spans the U.S. East and West Coasts, the northern coast of the Gulf of Mexico, Puerto Rico, and Hawaii, reaching out to, and in places even beyond, the continental slope. Bathymetric and topographic data sources include: NGDC's NOS hydrographic surveys and multibeam bathymetry; the U.S. Geological Survey (USGS); and other federal government agencies and academic institutions. Bathymetric contours from the International Bathymetric Chart of the Caribbean Sea and the Gulf of Mexico project were also used. Digital elevation models (DEMs) of the Great Lakes, Southern Alaska, and high-resolution DEMs of U.S. coastal communities and territories are also available.",
+  "apiso_OrganizationName_txt":"DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+  "apiso_Subject_txt":[
+    "EARTH SCIENCE > OCEANS > Marine Geophysics > Continental Shelves",
+    "EARTH SCIENCE > OCEANS > Bathymetry > Seafloor Topography",
+    "EARTH SCIENCE > OCEANS > Marine Geophysics > Continental Rises/Slopes",
+    "EARTH SCIENCE > OCEANS > Bathymetry > Water Depths",
+    "EARTH SCIENCE > OCEANS > Coastal Processes > Coastal Elevation",
+    "INFOTERRA > Marine environments > Coastal Ecosystems > Coastal Areas",
+    "INFOTERRA > Subject disciplines > Geophysics > Geophysics",
+    "INFOTERRA > Subject disciplines > Geomorphology > Geomorphology",
+    "Coastal Bathymetry",
+    "Outer Continental Shelf",
+    "Coastal Topography",
+    "ICSU-WDS > International Council for Science - World Data System",
+    "Sea Floor",
+    "Pacific Ocean",
+    "North America",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "oceans",
+    "geoscientificInformation",
+    "elevation"
+  ],
+  "apiso_TopicCategory_s":[
+    "oceans",
+    "geoscientificInformation",
+    "elevation"
+  ],
+  "apiso_KeywordType_s":[
+    "theme",
+    "theme",
+    "theme",
+    "project",
+    "place",
+    "dataCenter"
+  ],
+  "apiso_Type_s":"dataset",
+  "apiso_Modified_dt":"2015-09-03T00:00:00Z",
+  "apiso_AccessConstraints_s":[
+    "Not to be used for navigation. Although these data are of high quality and useful for planning and modeling purposes, they are not suitable for navigation. For navigation, please refer to the NOS nautical chart series.",
+    "Produced by the NOAA National Geophysical Data Center. Not subject to copyright protection within the United States.",
+    "While every effort has been made to ensure that these data are accurate and reliable within the limits of the current state of the art, NOAA cannot assume liability for any damages caused by any errors or omissions in the data, nor as a result of the failure of the data to function on a particular system. NOAA makes no warranty, expressed or implied, nor does the fact of distribution constitute such a warranty."
+  ],
+  "apiso_OtherConstraints_s":"Cite as: National Geophysical Data Center, 2012. U.S. Coastal Relief Model - Southern California vers. 2. National Geophysical Data Center, NOAA. doi:10.7289/V5V985ZM [access date].",
+  "apiso_HasSecurityConstraints_b":true,
+  "envelope_geo":{
+    "type":"envelope",
+    "coordinates":[
+      [
+        -128,
+        37
+      ],
+      [
+        -116,
+        30
+      ]
+    ]
+  },
+  "envelope_cen_pt":{
+    "lat":33.5,
+    "lon":-122
+  },
+  "apiso_CRS":{
+    "id_s":"urn:ogc:def:crs:EPSG::5715",
+    "authority_s":"Mean Sea Level depth"
+  },
+  "timeperiod_nst":[
+    {
+      "begin_dt":"1999-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":null,
+      "end_indeterminate_s":"now"
+    },
+    {
+      "begin_dt":"1933-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2008-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"1982-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2012-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"2000-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2000-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"2008-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2010-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"1999-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2013-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"2006-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2012-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    }
+  ],
+  "apiso_ConditionApplyingToAccessAndUse_txt":"Cite as: National Geophysical Data Center, 2012. U.S. Coastal Relief Model - Southern California vers. 2. National Geophysical Data Center, NOAA. doi:10.7289/V5V985ZM [access date].",
+  "apiso_ResponsiblePartyRole_txt":"pointOfContact",
+  "apiso_grid_dimensions_num_i":[
+    "3",
+    "3"
+  ],
+  "apiso_grid_cell_geometry_s":[
+    "area",
+    "area"
+  ],
+  "sys_created_dt":"2016-06-15T17:52:36.669Z",
+  "sys_modified_dt":"2016-06-15T17:52:36.669Z",
+  "sys_xmlmodified_dt":"2016-06-15T17:52:36.669Z",
+  "sys_owner_s":"gptadmin",
+  "sys_metadatatype_s":"iso19115-2"
+}
