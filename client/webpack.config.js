@@ -56,7 +56,6 @@ module.exports = {
     }
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.optimize.UglifyJsPlugin({
       compress: {warnings: false},
       sourceMap: false
