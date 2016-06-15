@@ -1,0 +1,117 @@
+@import '../../style/style.css';
+
+$twitterIconPath: '../../img/twitter_icon.png';
+$noaaIconPath: '../../img/NOAA_logo.png';
+$ICON_SIZE: 30px;
+
+.top {
+  background-color: $color-primary-darkest;
+  display: flex;
+  justify-content: space-around;
+  width: 100vw;
+  height: 220px;
+  font-family: Source Sans Pro Merriweather;
+  font-size: 20px;
+  line-height: 20px;
+  color: white;
+}
+
+.leftHalf {
+  text-align: left;
+  width: 35%;
+}
+
+.rightHalf {
+  text-align: right;
+  width: 55%;
+}
+
+.about: {
+  display: flex;
+  font-size: 25px;
+  line-height: 35px;
+  text-decoration: none;
+  color: white;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.icons {
+  display: inline-block;
+}
+
+.twitterLogo {
+  background-image: url($twitterIconPath);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: $ICON_SIZE;
+  height: $ICON_SIZE;
+  display: inline-block;
+  margin: 10px;
+}
+
+.facebookLogo {
+  background-image: url($twitterIconPath);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: $ICON_SIZE;
+  height: $ICON_SIZE;
+  display: inline-block;
+  margin: 10px;
+}
+
+.instagrammLogo {
+  background-image: url($twitterIconPath);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: $ICON_SIZE;
+  height: $ICON_SIZE;
+  display: inline-block;
+  margin: 10px;
+}
+
+.youtubeLogo {
+  background-image: url($twitterIconPath);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: $ICON_SIZE;
+  height: $ICON_SIZE;
+  display: inline-block;
+  margin: 10px;
+}
+
+.noaaLogo {
+  background-image: url($noaaIconPath);
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 50px;
+  height: 50px;
+  display: inline-block;
+  margin: 15px;
+}
+
+.feedbackButton {
+  background-color: grey;
+  margin: 10px;
+}
+
+.menu {
+  list-style-type: none;
+  margin: 10px;
+  line-height: 15px;
+  font-size: 15px;
+}
+
+.menuLi {
+  border-left: 2px solid white;
+  display: inline-block;
+  margin: 3px;
+  padding: 0px 0px 0px 5px;
+}
+
+.menuLiA {
+  color: white;
+  text-decoration: none;
+}

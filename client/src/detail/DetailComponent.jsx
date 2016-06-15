@@ -6,7 +6,6 @@ import styles from './detail.css'
 const Detail = (props) => {
 
   return (
-
         <FlipCard disabled={true} className={styles.reactFlipCard} flipped={props.flipped}>
 
           <div className={styles.reactFlipCard__Front} onClick={props.onClick}>
@@ -18,9 +17,8 @@ const Detail = (props) => {
             <div>Summary: {props.summary}</div>
           </div>
         </FlipCard>
-
   )
-};
+}
 
 Detail.propTypes = {
   id: PropTypes.string.isRequired,

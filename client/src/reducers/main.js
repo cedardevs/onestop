@@ -11,6 +11,6 @@ const reducer = (state = Immutable.Map(), action) => {
     results: results(state.get('results'), action),
     details: details(state.get('details'), action)
   })
-};
+}
 
 export default reducer

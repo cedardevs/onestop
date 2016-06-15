@@ -1,15 +1,14 @@
 .header {
-  position: fixed;
   top: 0;
   left: 0;
   height: 24px;
   width: 100%;
 }
 .appbar {
+  clear: both;
   display: flex;
   justify-content: space-between;
   border: solid white 1px;
-  position: fixed;
   top: 24px;
   height: 140px;
   width: 100%;
@@ -25,11 +24,15 @@
   font-size: 6em;
   font-weight: normal;
 }
-.results {
-  position: fixed;
-  top: 168px;
+.results,
+.leftNav {
   position: relative;
-  bottom: 24px;
+  width: 200px;
+  display: inline-block;
+  width: 100%;
+}
+.results {
+  float: right;
   width: 400px;
 }
 .details {
@@ -45,11 +48,11 @@
   left: 0;
 }
 .searchFacet {
-  float: right;
+  float: left;
 }
 .leftNav {
   z-index: 2;
-  position: fixed;
+  float: left;
   display: inline-block;
   top: 24px;
   bottom: 24px;

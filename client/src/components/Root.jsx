@@ -25,7 +25,7 @@ const Root = () => (
       <div className={styles.leftNav}>
         <FacetContainer/>
       </div>
-      <div styleName='results'>
+      <div styleName={styles.results}>
         <ResultsContainer/>
       </div>
       <div className={styles.details} id='details'>
