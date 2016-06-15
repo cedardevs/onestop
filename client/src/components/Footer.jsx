@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import styles from './footer.css'
 
-console.log("Stylez:" + JSON.stringify(styles)); 
 let Footer = ({dispatch}) => {
   return (
     <div className={styles.top}>
