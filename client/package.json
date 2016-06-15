@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "webpack-dev-server --hot --inline --progress --colors & mocha --watch",
     "test": "mocha",
-    "build": "npm install && npm test && webpack",
+    "build": "npm install && npm test && NODE_ENV=production webpack",
     "clean": "rm -rf dist"
   },
   "dependencies": {
