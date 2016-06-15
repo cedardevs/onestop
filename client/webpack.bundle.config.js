@@ -4,7 +4,6 @@ var precss = require('precss')
 var autoprefixer = require('autoprefixer')
 
 module.exports = {
-  devtool: 'source-map',
   entry: {
     app: './src/index.jsx',
     vendor: ['purecss', 'react', 'react-dom', 'react-router', 'redux', 'redux-thunk',
@@ -45,7 +44,7 @@ module.exports = {
     publicPath: '/',
     filename: 'bundle-[hash].js'
   },
-  devtool: 'source-map',
+  devtool: 'eval-cheap-module-source-map',
   devServer: {
     contentBase: './dist',
     hot: true,
@@ -59,9 +58,8 @@ module.exports = {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new webpack.optimize.UglifyJsPlugin({
-      compress: {
-        warnings: false
-      }
+      compress: {warnings: false},
+      sourceMap: false
     }),
     new HtmlWebpackPlugin({
       title: 'NOAA OneStop'
