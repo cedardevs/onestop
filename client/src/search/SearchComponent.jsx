@@ -3,7 +3,6 @@ import IndexDropDown from './IndexDropDownComponent'
 import TextSearchField from './TextSearchFieldComponent'
 import styles from './search.css'
 
-const handleSubmit = (e) => onEnterKeyDown(e.target.value)
 const SearchFacet = ({indexName, submit, handleIndexChange}) => {
   return <form className={styles['pure-form']}>
     <fieldset>
