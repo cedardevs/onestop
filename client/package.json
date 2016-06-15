@@ -5,8 +5,7 @@
   "repository": "ssh://git@stash.ngdc.noaa.gov:7999/~emcquinn/onestop-sandbox.git",
   "license": "WTFPL",
   "scripts": {
-    "dev": "webpack-dev-server --inline & mocha --watch",
-    "dev-alt": "webpack-dev-server --config webpack.bundle.config.js --hot --progress --colors --port 8080 --inline & mocha --watch",
+    "dev": "webpack-dev-server --hot --inline --progress --colors & mocha --watch",
     "test": "mocha",
     "build": "npm install && npm test && webpack",
     "clean": "rm -rf dist"

@@ -1,17 +1,14 @@
-var webpack = require('webpack');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var postcss = require("postcss");
-var precss = require ('precss');
-var autoprefixer = require ('autoprefixer');
-var postcssImport = require('postcss-import');
+var webpack = require('webpack')
+var HtmlWebpackPlugin = require('html-webpack-plugin')
+var precss = require('precss')
+var autoprefixer = require('autoprefixer')
 
 module.exports = {
-  devtool: 'source-map',
-  entry: [
-    'webpack-dev-server/client?http://localhost:8080',
-    'webpack/hot/only-dev-server',
-    './src/index.jsx'
-  ],
+  entry: {
+    app: './src/index.jsx',
+    vendor: ['purecss', 'react', 'react-dom', 'react-router', 'redux', 'redux-thunk',
+      'react-tap-event-plugin']
+  },
   module: {
     preLoaders: [{
       test: /\.js$/,
@@ -29,15 +26,15 @@ module.exports = {
         'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
         'postcss']
     }, {
-      test: /\.(jpe?g|png|gif|svg)$/i,
+      test: /\.(jpe?g|png|gif|svg)$/,
         loaders: [
             'file?hash=sha512&digest=hex&name=[hash].[ext]',
             'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
         ]
     }]
   },
-  postcss: function(webpack){
-    return [postcssImport({addDependencyTo:webpack}), precss, autoprefixer]
+  postcss: function(){
+    return [precss, autoprefixer]
   },
   resolve: {
     extensions: ['', '.js', '.jsx']
@@ -47,7 +44,7 @@ module.exports = {
     publicPath: '/',
     filename: 'bundle-[hash].js'
   },
-  devtool: 'source-map',
+  devtool: 'eval-cheap-module-source-map',
   devServer: {
     contentBase: './dist',
     hot: true,
@@ -60,9 +57,13 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.optimize.UglifyJsPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {warnings: false},
+      sourceMap: false
+    }),
     new HtmlWebpackPlugin({
       title: 'NOAA OneStop'
-    })
+    }),
+    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
   ]
-};
+}
