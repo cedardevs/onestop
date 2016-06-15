@@ -66,6 +66,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       title: 'NOAA OneStop'
     }),
-    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js")
+    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
   ]
 }
