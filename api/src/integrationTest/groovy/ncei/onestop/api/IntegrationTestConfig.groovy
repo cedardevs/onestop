@@ -1,6 +1,5 @@
 package ncei.onestop.api
 
-import org.elasticsearch.action.admin.indices.mapping.put.PutMappingResponse
 import org.elasticsearch.cluster.metadata.IndexMetaData
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.util.concurrent.EsExecutors
@@ -10,10 +9,10 @@ import org.elasticsearch.node.NodeBuilder
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
-import org.springframework.test.context.ActiveProfiles
+import org.springframework.context.annotation.Profile
 
 
-@ActiveProfiles("integration")
+@Profile("integration")
 @Configuration
 class IntegrationTestConfig {
 
