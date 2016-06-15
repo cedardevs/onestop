@@ -34,73 +34,59 @@ class SearchApiIntegrationSpec extends Specification {
 
 
     def notexistingwordsearch = """\
-    {
-        "queries":
-            {
-                "queryText": {"value": "spork"}
-            }
-    }"""
+{
+  "queries": [
+    {"type": "queryText", "value": "spork"}
+  ]
+}"""
 
     def baresearch = """\
-    {
-        "queries":
-            {
-                "queryText": {"value": "temperature"}
-            }
-    }"""
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ]
+}"""
     def strangecharjsonsearch = """\
-    {
-        "queries":
-            {
-                "queryText": {"value": "~"}
-            }
-    }"""
+{
+  "queries": [
+    {"type": "queryText", "value": "~"}
+  ]
+}"""
 
     def blankjsonsearch = """\
-    {
-        "queries":
-            {
-                "queryText": {"value": ""}
-            }
-    }"""
+{
+  "queries": [
+    {"type": "queryText", "value": ""}
+  ]
+}"""
 
     def badjsonsearch = """\
-    {
-        "queries":
-            {
-                "queryText": {"value": "}
-            }
-    }
-    """
-    def invalidschemarequest = """
-    {
-        "filters":
-            {
-                "point": {"value": "temperature"},
-                "dateTime": {"before": "YYYY-MM-DD", "after": "YYYY-MM-DD"}
-            }
-    }
-    """
+{
+  "queries": [
+     {"type": "queryText", "value": "}
+  ]
+}"""
 
-    def searchqueriesfiltersformatting = """
-    {
-        "queries":
-            {
-                "queryText": {"value": "temperature"}
-            },
-        "filters":
-            {
-                "facet": {"name": "apiso_TopicCategory_s", "values": ["oceanography", "oceans"]},
-                "point": {"bbox": [-110.5024410624507,36.25063618524021,-104.7456054687466,41.382728733019135], "relation":"intersects"},
-                "datetime": {"before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
-            },
-        "formatting":
-            {
-                "sortorder": {"by": "relevance", "dir": "descending"},
-                "pagination": {"from": 0, "size": 10}
-            }
-    }
-    """
+    def invalidschemarequest = """\
+{
+  "filters": [
+    {"type": "point", "value": "temperature"},
+    {"type": "dateTime", "before": "YYYY-MM-DD", "after": "YYYY-MM-DD"}
+  ]
+}"""
+
+    def searchqueriesfiltersformatting = """\
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ],
+  "filters":[
+    {"type": "facet", "name": "apiso_TopicCategory_s", "values": ["oceanography", "oceans"]},
+    {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
+  ],
+  "sort": "relevance",
+  "page": {"number": 1, "size": 10}
+}"""
 
     // -------- Test Cases --------
     def 'valid search returns ok and results'() {
@@ -143,7 +129,6 @@ class SearchApiIntegrationSpec extends Specification {
         result.body.errors instanceof List
         result.body.errors.every { it.status == '400'}
         result.body.errors.every { it.detail instanceof String }
-        result.body.errors.any { it.detail.contains('has properties which are not allowed by the schema') }
     }
 
     def 'valid search returns ok and 0 results when queryText is strange character'() {

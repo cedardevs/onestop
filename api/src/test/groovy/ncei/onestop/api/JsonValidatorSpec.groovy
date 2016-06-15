@@ -8,7 +8,9 @@ import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonSlurper
 import ncei.onestop.api.controller.JsonValidator
 import spock.lang.Specification
+import spock.lang.Unroll
 
+@Unroll
 class JsonValidatorSpec extends Specification {
 
     def 'OneStop schema is a valid schema'() {
@@ -27,284 +29,118 @@ class JsonValidatorSpec extends Specification {
         globalReport.success
     }
 
-    def blanksearch = """
-    {
-    }
-    """
 
-    def baresearch = """
-    {
-        "queries":
-            {
-                "queryText": {"value": "temperature"}
-            }
-    }
-    """
-
-    def searchqueriesfiltersformatting = """
-    {
-        "queries":
-            {
-                "queryText": {"value": "temperature"}
-            },
-        "filters":
-            {
-                "facet": {"name": "apiso_TopicCategory_s", "values": ["oceanography", "oceans"]},
-                "point": {"bbox": [-110.5024410624507,36.25063618524021,-104.7456054687466,41.382728733019135], "relation":"intersects"},
-                "datetime": {"before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
-            },
-        "formatting":
-            {
-                "sortorder": {"by": "relevance", "dir": "descending"},
-                "pagination": {"from": 0, "size": 10}
-            }
-    }
-    """
-
-    def baresearchextraproperty = """
-    {
-        "queries":
-            {
-                "queryText": {"value": "temperature", "poo": "xxx"}
-            }
-    }
-
-    """
-    def baresearch2queries = """
-    {
-        "queries":
-            {
-                "queryText": {"value": "temperature"},
-                "queryText": {"value": "temperature"}
-            }
-    }
-    """
-
-//    [yyyy-MM-dd'T'HH:mm:ssZ, yyyy-MM-dd'T'HH:mm:ss.SSSZ] requires
-    def baresearchdatefilter = """
-    {
-        "filters":
-            {
-                "datetime": {"before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
-            }
-    }
-    """
-
-    // Format bbox [southwestlong, southwestlat, northwestlong, northwestlat]
-    def baresearchpointfilter = """
-    {
-        "filters":
-            {
-                "point": {"bbox": [-110.5024410624507,36.25063618524021,-104.7456054687466,41.382728733019135], "relation":"within"}
-            }
-    }
-    """
-
-    def baresearchfacetfilter = """
-    {
-        "filters":
-            {
-                "facet": {"name": "name", "values": ["value1"]},
-                "facet": {"name": "name2", "values": ["value1", "value2"]}
-            }
-    }
-    """
-
-    def baresearch3filters = """
-    {
-        "filters":
-            {
-                "datetime": {"before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
-                "facet": {"name": "name", "values": ["value1"]},
-                "point": {"bbox": [-110.5024410624507,36.25063618524021,-104.7456054687466,41.382728733019135], "relation":"intersects"}
-            }
-    }
-    """
-
-    def baresearch2filtersonebad = """
-    {
-        "filters":
-            [
-                { "type": "point", "value": "temperature"},
-                { "type": "dateTime", "before": "YYYY-MM-DD", "after": "YYYY-MM-DD"}
-            ]
-    }
-    """
-
-    def baresearchformatting = """
-    {
-        "formatting": {
-                    "pagination": {"from": 0, "size": 10}
-                    }
-    }
-    """
-
-    def baresearchformatmultiplesametypeok = """
-    {
-        "formatting": {
-                    "sortorder": {"by": "relevance", "dir": "ascending"},
-                    "sortorder": {"by": "relevance", "dir": "descending"},
-                    "pagination": {"from": 0, "size": 10}
-                    }
-    }
-    """
-
-    def baresearchformattinginvalidformat = """
-    {
-        "formatting": {
-                    "sortorder": {"by": "relevance", "dir": "ascending"},
-                    "dateTime": {"before": "YYYY-MM-DD", "after": "YYYY-MM-DD"},
-                    "pagination": {"from": 0, "size": 10}
-                    }
-    }
-    """
-
-    def 'Test search request is not valid Json'() {
-        when: "Inalid json is validated"
+    def 'valid requests return success true and no errors'() {
+        when: 'valid json is validated'
         def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearch2filtersonebad)
+        def params = jsonSlurper.parseText(request)
         def validation = JsonValidator.validateSearchRequestSchema(params)
 
-        then: "Error returned"
+        then: 'success is true'
+        println("validation:${validation}")
+        validation.success
+
+        and: 'no errors are returned'
+        !validation.errors
+
+        where:
+        request << [
+          """\
+{
+}""",
+          """\
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ]
+}""",
+          """\
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature"},
+    {"type": "queryText", "value": "pressure"}
+  ]
+}""",
+          """\
+{
+  "filters": [
+    {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
+  ]
+}""",
+          """\
+{
+  "filters": [
+    {"type": "facet", "name": "platform", "values": ["Healy"]}
+  ]
+}""",
+          """\
+{
+  "filters": [
+    {"type": "facet", "name": "platform", "values": ["Healy"]},
+    {"type":"datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
+  ]
+}""",
+          """\
+{
+  "sort": "title",
+}""",
+          """\
+{
+  "page": { "number": 42, "size": 10 }
+}""",
+          """\
+{
+  "sort": "title",
+  "page": { "number": 42, "size": 10 }
+}""",
+          """\
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ],
+  "filters": [
+    {"type": "facet", "name": "apiso_TopicCategory_s", "values": ["oceans", "oceanography"]},
+    {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
+  ],
+  "sort": "title",
+  "page": { "number": 42, "size": 10 }
+}"""
+        ]
+    }
+
+    def 'invalid requests return success false and a list of errors'() {
+        when: "invalid json is validated"
+        def jsonSlurper = new JsonSlurper()
+        def params = jsonSlurper.parseText(request)
+        def validation = JsonValidator.validateSearchRequestSchema(params)
+
+        then: "success is false"
         println("validation:${validation}")
         !validation.success
-        validation.errors instanceof List
-    }
 
-    def 'Test search request is not valid Json invalid format'() {
-        when: "Inalid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearchformattinginvalidformat)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Error returned"
-        println("validation:${validation}")
-        !validation.success
-        validation.errors instanceof List
-    }
-
-    def 'Test search request is valid Json for formatting'() {
-        when: "Valid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearchformatting)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Success is returned"
-        println("validation:${validation}")
-        validation.success
-    }
-
-    def 'Test search request is valid Json for formatting containing 2 of same type'() {
-        when: "Valid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearchformatmultiplesametypeok)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Success is returned"
-        println("validation:${validation}")
-        validation.success
-    }
-
-    def 'Test search request is valid Json'() {
-        when: "Valid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearch3filters)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Success is returned"
-        println("validation:${validation}")
-        validation.success
-    }
-
-    def 'Test search request is valid Json search contains queries filters formatting'() {
-        when: "Valid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(searchqueriesfiltersformatting)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Success is returned"
-        println("validation:${validation}")
-        validation.success
-    }
-
-    def 'Test search request is valid Json datetime filter'() {
-        when: "Valid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearchdatefilter)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Success is returned"
-        println("validation:${validation}")
-        validation.success
-    }
-
-    def 'Test search request is valid Json point filter'() {
-        when: "Valid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearchpointfilter)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Success is returned"
-        println("validation:${validation}")
-        validation.success
-    }
-
-    def 'Test search request is valid Json facet filter'() {
-        when: "Valid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearchfacetfilter)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Success is returned"
-        println("validation:${validation}")
-        validation.success
-    }
-
-    def 'Test search request is not valid Json 2 queries ok'() {
-        when: "Invalid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearch2queries)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Success is returned"
-        println("validation:${validation}")
-        validation.success
-    }
-
-    def 'Test search request is not valid Json extra property not allowed'() {
-        when: "Invalid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearchextraproperty)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Error is returned"
-        println("validation:${validation}")
-        !validation.success
+        and: 'errors are returned'
         validation.errors instanceof List
         validation.errors.every { it.status == '400' }
         validation.errors.every { it.detail instanceof String }
         validation.errors.every { it.title == "JSON request failed validation" }
+
+        where:
+        request << [
+          """\
+{
+  "queries": {
+    "queryText": {"value": "temperature", "poo": "xxx"}
+  }
+}
+""",
+          """\
+{
+  "filters": [
+    { "type": "point", "value": "temperature"},
+    { "type": "datetime", "before": "YYYY-MM-DD", "after": "YYYY-MM-DD"}
+  ]
+}"""
+        ]
     }
 
-    def 'Test search request is valid Json single query'() {
-        when: "Valid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(baresearch)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Success is returned"
-        println("validation:${validation}")
-        validation.success
-    }
-
-    def 'Test search request is valid Json if blank'() {
-        when: "Valid json is validated"
-        def jsonSlurper = new JsonSlurper()
-        def params = jsonSlurper.parseText(blanksearch)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
-
-        then: "Success is returned"
-        println("validation:${validation}")
-        validation.success
-    }
 }

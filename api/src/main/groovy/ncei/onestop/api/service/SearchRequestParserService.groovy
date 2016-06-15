@@ -33,7 +33,7 @@ class SearchRequestParserService {
     }
 
 
-    private QueryBuilder assembleFilter(Map filters) {
+    private QueryBuilder assembleFilter(List<Map> filters) {
 
         /*For filters:
              * union: A | B | A & B; intersection: A & B
@@ -45,14 +45,13 @@ class SearchRequestParserService {
 
         def builder = QueryBuilders.boolQuery()
         if (!filters) { return builder }
-        log.debug("filters:${filters}")
 
-        def groupedFilters = filters.groupBy { it.key }
+        def groupedFilters = filters.groupBy { it.type }
 
         // Temporal filters:
         groupedFilters.dateTime.each {
             // TODO date field name in ES document unknown -- calling it creationDate for now
-            builder.must(QueryBuilders.rangeQuery("creationDate").gte(it.after).lte(it.before)/*.format("")*/)
+            builder.must(QueryBuilders.rangeQuery("creationDate").gte(it.start).lte(it.end)/*.format("")*/)
         }
 
         // Spatial filters:
@@ -62,23 +61,22 @@ class SearchRequestParserService {
 
         // Facet filters:
         groupedFilters.facet.each {
-            builder.must(QueryBuilders.termsQuery(it.value.name, it.value.values))
+            builder.must(QueryBuilders.termsQuery(it.name, it.values))
         }
 
         return builder
     }
 
 
-    private QueryBuilder assembleQuery(Map queries) {
+    private QueryBuilder assembleQuery(List<Map> queries) {
         def builder = QueryBuilders.boolQuery()
         if (!queries) { return builder }
 
-        log.debug("queries:${queries}")
-        def groupedQueries = queries.groupBy { it.key }
+        def groupedQueries = queries.groupBy { it.type }
 
         groupedQueries.queryText.each {
             // TODO check string for double quotes -- term query for exact match? or is ES already doing this?
-            builder.must(QueryBuilders.matchQuery('_all', it.value.value))
+            builder.must(QueryBuilders.matchQuery('_all', it.value))
         }
 
         return builder
