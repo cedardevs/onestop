@@ -2,7 +2,7 @@
 
 $twitterIconPath: '../../img/twitter_icon.png';
 $noaaIconPath: '../../img/NOAA_logo.png';
-$ICON_SIZE: 30px;
+$ICON_SIZE: 20px;
 
 .top {
   background-color: $color-primary-darkest;
@@ -26,9 +26,9 @@ $ICON_SIZE: 30px;
   width: 55%;
 }
 
-.about: {
+.about{
   display: flex;
-  font-size: 25px;
+  font-size: 15px;
   line-height: 35px;
   text-decoration: none;
   color: white;
@@ -101,6 +101,7 @@ $ICON_SIZE: 30px;
   list-style-type: none;
   margin: 10px;
   line-height: 15px;
+  line-width: 150px;
   font-size: 15px;
 }
 

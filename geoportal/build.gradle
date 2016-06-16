@@ -43,6 +43,38 @@ task bootstrapGHRSST {
   }
 }
 
+// DEM metadata
+
+task bootstrapDEM {
+  dependsOn 'start'
+  doLast {
+    def srcUrl = "https://www.ngdc.noaa.gov/metadata/published/NOAA/NESDIS/NGDC/MGG/DEM/iso/xml"
+    def http = new HTTPBuilder(srcUrl)
+    def geoportal = new HTTPBuilder('http://localhost:8888/rest/metadata/item')
+    geoportal.auth.basic('gptadmin', 'gptadmin')
+
+    def html = http.get([:])
+    html.each { record ->
+      def link = srcUrl.toString() + '/' + record
+
+        if (link.contains(".xml")) {
+          geoportal.request(Method.PUT) {
+            requestContentType = 'application/xml'
+            body = new URL(link)
+            response.success = { resp, data ->
+              println "${data.id}: ${data.status}"
+            }
+            response.failure = { resp, data ->
+              println "Error uploading metadata from ${link}: ${data.error.message}"
+            }
+          }
+
+      }
+    }
+  }
+}
+
+
 task installJettyRunner(type: DownloadTask) {
   url = 'http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.10.v20130312/jetty-runner-8.1.10.v20130312.jar'
   targetDir = "${buildDir}/jetty"
