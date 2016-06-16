@@ -150,7 +150,7 @@ class SearchIntegrationTests extends Specification {
         {
           "queries":
             [
-              { "type": "queryText", "value": "temperature"}
+              { "type": "queryText", "value": "temp*"}
             ],
           "filters":
             [

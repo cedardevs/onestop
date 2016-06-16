@@ -53,11 +53,8 @@ class SearchRequestParserServiceTest extends Specification {
             "must" : {
               "bool" : {
                 "must" : {
-                  "match" : {
-                    "_all" : {
-                      "query" : "winter",
-                      "type" : "boolean"
-                    }
+                  "query_string" : {
+                    "query" : "winter"
                   }
                 }
               }
