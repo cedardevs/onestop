@@ -106,7 +106,7 @@ class SearchIntegrationTests extends Specification {
         ])
     }
 
-    /* FIXME This certainly tests the code, but probably does not represent desired behavior as-is.
+    /* FIXME This certainly tests the code, but potentially does not represent desired behavior as-is.
              E.g., GP index settings require an exact, case-sensitive match for keywords & our code always
              represents a union for returned results when maybe we want an intersection (always/sometimes)...? */
     def 'Valid filter-only search returns OK with expected results'() {
@@ -143,8 +143,45 @@ class SearchIntegrationTests extends Specification {
         ])
     }
 
+
+    def 'Valid query-and-filter search returns OK with expected results'() {
+        setup:
+        def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "temperature"}
+            ],
+          "filters":
+            [
+              { "type": "facet", "name": "keywords_s", "values": ["Aleutian Islands", "Global"]}
+            ]
+        }""".stripIndent()
+
+        def requestEntity = RequestEntity
+                .post(searchBaseUri)
+                .contentType(contentType)
+                .body(request)
+
+        when:
+        def result = restTemplate.exchange(requestEntity, Map)
+
+        then: "Search returns OK"
+        result.statusCode == HttpStatus.OK
+        result.headers.getContentType() == contentType
+
+        and: "Result contains 1 item"
+        def items = result.body.data
+        items.size() == 1
+
+        and: "Expected result is returned"
+        def actualIds = items.collect { it.attributes.fileid }
+        actualIds.containsAll([
+                'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
+        ])
+    }
+
     /* TODO Happy path test cases:
-        'Valid query-and-filter search returns OK with expected results'
         'Valid search returns OK when sort and page elements specified with expected results'
 
             def searchqueriesfiltersformatting = """\
