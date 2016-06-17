@@ -1,0 +1,157 @@
+{
+    "fileid": "gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R",
+    "title": "GHRSST Level 2P Western Pacific Regional Skin Sea Surface Temperature from the Multifunctional Transport Satellite 1R (MTSAT-1R) (GDS version 1)",
+    "description": "Multi-functional Transport Satellites (MTSAT) are a series of geostationary weather satellites operated by the Japan Meteorological Agency (JMA). MTSAT carries an aeronautical mission to assist air navigation, plus a meteorological mission to provide imagery over the Asia-Pacific region for the hemisphere centered on 140 East. The meteorological mission includes an imager giving nominal hourly full Earth disk images in five spectral bands (one visible, four infrared). MTSAT are spin stabilised satellites. With this system images are built up by scanning with a mirror that is tilted in small successive steps from the north pole to south pole at a rate such that on each rotation of the satellite an adjacent strip of the Earth is scanned. It takes about 25 minutes to scan the full Earth's disk. This builds a picture 10,000 pixels for the visible images (1.25 km resolution) and 2,500 pixels (4 km resolution) for the infrared images. The MTSAT-1R (also known as Himawari 6) and it's radiometer (MTSAT-1R Imager) was successfully launched on 26 February 2005. For this Group for High Resolution Sea Surface Temperature (GHRSST) dataset, skin sea surface temperature (SST) measurements are calculated from the IR channels of the MTSAT-1R Imager full resolution data in satellite projection on a hourly basis. L2P datasets including Single Sensor Error Statistics (SSES) are then derived following the GHRSST Data Processing Specification (GDS) version 1.5.",
+    "keywords_s": [
+      "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+      "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "oceanography",
+      "GEOGRAPHIC REGION > GLOBAL OCEAN",
+      "Earth Science > Oceans > Ocean Temperature > Sea Surface Temperature > Skin Sea Surface Temperature",
+      "Western Pacific Ocean",
+      "environment",
+      "oceans",
+      "biota",
+      "climatologyMeteorologyAtmosphere"
+    ],
+    "links_s": [
+      "http://www.ncei.noaa.gov/",
+      "http://www.ncei.noaa.gov/",
+      "http://www.nodc.noaa.gov/",
+      "http://podaac.jpl.nasa.gov/index.html",
+      "http://www.ncei.noaa.gov/",
+      "http://gcmd.gsfc.nasa.gov/learn/keywords.html",
+      "http://gcmd.gsfc.nasa.gov/learn/keywords.html",
+      "http://gcmd.gsfc.nasa.gov/learn/keywords.html",
+      "http://gcmd.gsfc.nasa.gov/learn/keywords.html",
+      "http://ghrsst.jpl.nasa.gov",
+      "http://www.ghrsst.org",
+      "http://podaac.jpl.nasa.gov/ws/search/granule/?datasetId=PODAAC-GHMT1-2PO01",
+      "http://www.nodc.noaa.gov/geoportal/rest/find/document?searchText=fileIdentifier%3AGHRSST-OSDPD-L2P-MTSAT1R*%20OR%20fileIdentifier%3AOSDPD-L2P-MTSAT1R*&start=1&max=100&f=SearchPage",
+      "http://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R",
+      "http://data.nodc.noaa.gov/thredds/catalog/ghrsst/L2P/MTSAT1R/OSDPD/",
+      "http://data.nodc.noaa.gov/opendap/ghrsst/L2P/MTSAT1R/OSDPD/",
+      "http://data.nodc.noaa.gov/ghrsst/L2P/MTSAT1R/OSDPD/",
+      "ftp://ftp.nodc.noaa.gov/pub/data.nodc/ghrsst/L2P/MTSAT1R/OSDPD/",
+      "http://podaac.jpl.nasa.gov"
+    ],
+    "thumbnail_s": "http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R",
+    "contact_organizations_s": [
+      "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "OSDPD > NOAA Office of Satellite Data Processing and Distribution",
+      "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+      "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "OSDPD > NOAA Office of Satellite Data Processing and Distribution",
+      "Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)",
+      "Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)",
+      "Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)",
+      "Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)",
+      "NOAA/NESDIS",
+      "Group for High Resolution Sea Surface Temperature",
+      "Group for High Resolution Sea Surface Temperature",
+      "Group for High Resolution Sea Surface Temperature",
+      "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "NOAA/NESDIS/OSDPD",
+      "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
+    ],
+    "contact_people_s": [
+      "Robert Potash",
+      "Robert Potash",
+      "NOAA/NESDIS/OSDPD"
+    ],
+    "apiso_Identifier_s": "gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R",
+    "apiso_Title_txt": "GHRSST Level 2P Western Pacific Regional Skin Sea Surface Temperature from the Multifunctional Transport Satellite 1R (MTSAT-1R) (GDS version 1)",
+    "apiso_AlternateTitle_txt": "Sea Surface Temperature, 80E-180E and 55S-55N, at 0.05 degree resolution from MTSAT-1R Imager Sectors every 1.0 hour",
+    "apiso_Abstract_txt": "Multi-functional Transport Satellites (MTSAT) are a series of geostationary weather satellites operated by the Japan Meteorological Agency (JMA). MTSAT carries an aeronautical mission to assist air navigation, plus a meteorological mission to provide imagery over the Asia-Pacific region for the hemisphere centered on 140 East. The meteorological mission includes an imager giving nominal hourly full Earth disk images in five spectral bands (one visible, four infrared). MTSAT are spin stabilised satellites. With this system images are built up by scanning with a mirror that is tilted in small successive steps from the north pole to south pole at a rate such that on each rotation of the satellite an adjacent strip of the Earth is scanned. It takes about 25 minutes to scan the full Earth's disk. This builds a picture 10,000 pixels for the visible images (1.25 km resolution) and 2,500 pixels (4 km resolution) for the infrared images. The MTSAT-1R (also known as Himawari 6) and it's radiometer (MTSAT-1R Imager) was successfully launched on 26 February 2005. For this Group for High Resolution Sea Surface Temperature (GHRSST) dataset, skin sea surface temperature (SST) measurements are calculated from the IR channels of the MTSAT-1R Imager full resolution data in satellite projection on a hourly basis. L2P datasets including Single Sensor Error Statistics (SSES) are then derived following the GHRSST Data Processing Specification (GDS) version 1.5.",
+    "apiso_BrowseGraphic_s": "http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R",
+    "apiso_OrganizationName_txt": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "apiso_Subject_txt": [
+      "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+      "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "oceanography",
+      "GEOGRAPHIC REGION > GLOBAL OCEAN",
+      "Earth Science > Oceans > Ocean Temperature > Sea Surface Temperature > Skin Sea Surface Temperature",
+      "Western Pacific Ocean",
+      "environment",
+      "oceans",
+      "biota",
+      "climatologyMeteorologyAtmosphere"
+    ],
+    "apiso_TopicCategory_s": [
+      "environment",
+      "oceans",
+      "biota",
+      "climatologyMeteorologyAtmosphere"
+    ],
+    "apiso_KeywordType_s": [
+      "dataCenter",
+      "theme",
+      "instrument",
+      "theme",
+      "platform",
+      "dataCenter",
+      "dataCenter",
+      "project",
+      "place",
+      "theme",
+      "place",
+      "theme",
+      "place"
+    ],
+    "apiso_Type_s": "series",
+    "apiso_Modified_dt": "2016-04-24T22:38:49Z",
+    "apiso_Language_s": "eng",
+    "apiso_ResourceLanguage_s": "eng",
+    "apiso_AccessConstraints_s": "accessLevel: Public",
+    "apiso_OtherConstraints_s": [
+      "Cite as: US DOC; NOAA; NESDIS; Office of Satellite Data Processing and Distribution (OSDPD) (2009). GHRSST Level 2P Western Pacific Regional Skin Sea Surface Temperature from the Multifunctional Transport Satellite 1R (MTSAT-1R) (GDS version 1). National Oceanographic Data Center, NOAA. Dataset. [access date]",
+      "NOAA and NCEI cannot provide any warranty as to the accuracy, reliability, or completeness of furnished data. Users assume responsibility to determine the usability of these data. The user is responsible for the results of any application of this data for other than its intended purpose."
+    ],
+    "apiso_HasSecurityConstraints_b": true,
+    "envelope_geo": {
+      "type": "envelope",
+      "coordinates": [
+        [
+          60,
+          73
+        ],
+        [
+          -143,
+          -73
+        ]
+      ]
+    },
+    "envelope_cen_pt": {
+      "lat": 0,
+      "lon": -41.5
+    },
+    "timeperiod_nst": {
+      "begin_dt": "2009-11-22T00:00:00Z",
+      "begin_indeterminate_s": null,
+      "end_dt": "2012-12-26T23:59:59.999Z",
+      "end_indeterminate_s": null
+    },
+    "apiso_ConditionApplyingToAccessAndUse_txt": [
+      "Cite as: US DOC; NOAA; NESDIS; Office of Satellite Data Processing and Distribution (OSDPD) (2009). GHRSST Level 2P Western Pacific Regional Skin Sea Surface Temperature from the Multifunctional Transport Satellite 1R (MTSAT-1R) (GDS version 1). National Oceanographic Data Center, NOAA. Dataset. [access date]",
+      "NOAA and NCEI cannot provide any warranty as to the accuracy, reliability, or completeness of furnished data. Users assume responsibility to determine the usability of these data. The user is responsible for the results of any application of this data for other than its intended purpose."
+    ],
+    "apiso_ResponsiblePartyRole_txt": "pointOfContact",
+    "apiso_mdband_name_s": [
+      "lat",
+      "lon",
+      "time"
+    ],
+    "apiso_mdband_attrtype_s": [
+      "float",
+      "float",
+      "int"
+    ],
+    "apiso_grid_dimensions_num_i": "2",
+    "apiso_grid_cell_geometry_s": "area",
+    "sys_created_dt": "2016-06-07T17:39:02.112Z",
+    "sys_modified_dt": "2016-06-07T17:39:02.112Z",
+    "sys_xmlmodified_dt": "2016-06-07T17:39:02.112Z",
+    "sys_owner_s": "gptadmin",
+    "sys_metadatatype_s": "iso19115-2"
+  }
