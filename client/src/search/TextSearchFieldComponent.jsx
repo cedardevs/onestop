@@ -1,4 +1,5 @@
 import React from 'react'
+import styles from './search.css'
 
 const TextSearchField = ({onEnterKeyDown}) => {
   const handleKeyDown = (e) => {
@@ -9,6 +10,7 @@ const TextSearchField = ({onEnterKeyDown}) => {
   }
 
   return <input
+    className={styles.textField}
     placeholder="Enter Search Term"
     onKeyDown={handleKeyDown}
   />

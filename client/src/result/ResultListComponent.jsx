@@ -22,6 +22,6 @@ ResultsList.propTypes = {
   loading: PropTypes.bool.isRequired
 };
 
-ResultsList.defaultProps = {loading: false, results: []};
+ResultsList.defaultProps = {loading: false, results: []}
 
 export default ResultsList
