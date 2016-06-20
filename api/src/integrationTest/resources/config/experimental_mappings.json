@@ -1,0 +1,281 @@
+{
+  "metadata": {
+    //"include_in_all": false,
+    "properties": {
+      "fileIdentifier": {
+        "type": "string",
+        //"include_in_all": true,
+        "index": "not_analyzed"
+      },
+      "parentIdentifier": {
+        "type": "string",
+        "index": "not_analyzed"
+      },
+      "title": {
+        "type": "string"
+      },
+      "alternateTitle": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "keywords": {
+        "type": "nested",
+        "properties": {
+          "keywordText": {
+            "type": "string",
+            "fields": {
+              "raw": {
+                "type": "string",
+                "index": "not_analyzed"
+              },
+              "hierarchy": {
+                "type": "string",
+                "analyzer": "keyword_analyzer"
+              }
+            }
+          },
+          "keywordType": {
+            "type": "string",
+            "index": "not_analyzed"
+          },
+          "keywordNamespace": {
+            "type": "string",
+            "index": "not_analyzed"
+          }
+        }
+      },
+      "temporalBounding": {
+        "type": "nested", // FIXME there should be only one; maybe this is an object?
+        "properties": {
+          "beginDate": {
+            "type": "date"
+          },
+          "beginIndeterminate": {
+            "type": "string",
+            "index": "no"
+          },
+          "endDate": {
+            "type": "date"
+          },
+          "endIndeterminate": {
+            "type": "string",
+            "index": "no"
+          },
+          "instant": { // FIXME is this possible for boundingExtents?
+            "type": "date"
+          },
+          "instantIndeterminate": {
+            "type": "string",
+            "index": "no"
+          }
+        }
+      },
+      "spatialBounding": {
+        "type": "geo_shape" // FIXME XML needs to be parsed into a subtype; do we need the center_pt too?
+      },
+      "acquisitionInstrument": {
+        "type": "nested",
+        "properties": {
+          //"citation": {},
+          "instrumentIdentifier": { // seems to be of format: GOES-13 Imager > Geostationary Operational Environmental Satellite 13-Imager
+            "type": "string",
+            "fields": {
+              "hierarchy": {
+                "type": "string",
+                "analyzer": "keyword_analyzer"
+              }
+            }
+          },
+          "instrumentType": {
+            "type": "string",
+            "index": "not_analyzed"
+          },
+          "instrumentDescription": {
+              "type": "string"
+          }//,
+          //"mountedOn": {} // MI_Platform
+        }
+      },
+      "acquisitionOperation": {
+        "type": "nested",
+        "properties": {
+          "operationDescription": {
+            "type": "string"
+          },
+          //"citation": {},
+          "operationIdentifier": {
+            "type": "string"
+          },
+          "operationStatus": {
+            "type": "string",
+            "index": "no"
+          },
+          "operationType": {
+            "type": "string"
+          }//,
+          //"objective": { "type": "string" },
+          //"plan": {},
+          //"childOperation": {}, // same xml type -- MI_Operation
+          //"significantEvent": {},
+          //"platform": {} // MI_Platform
+        }
+      },
+      "acquisitionPlatform": {
+        "type": "nested",
+        "properties": {
+          "citation": {},
+          "platformIdentifier": {
+            "type": "string"
+          },
+          "platformDescription": {
+            "type": "string"
+          },
+          "platformSponsor": {
+            "type": "string" // just the organization name
+          }//,
+          //"platformInstrument": {}  // same as identifier text?
+        }
+      },
+      "links": {
+        "type": "nested",
+        "properties": {
+          "name": {
+            "type": "string",
+            "index": "no"
+          },
+          "url": {
+            "type": "string",
+            "index": "no"
+          },
+          "description": {
+            "type": "string",
+            "index": "no"
+          },
+          "function": {
+            "type": "string",
+            "index": "no"
+          }
+        }
+      },
+      "contacts": { // FIXME index & raw fields?
+        "type": "nested",
+        "properties": {
+          "individualName": {
+            "type": "string",
+            "fields": {
+              "raw": {
+                "type": "string",
+                "index": "not_analyzed"
+              }
+            }
+          },
+          "organizationName": {
+            "type": "string",
+            "fields": {
+              "raw": {
+                "type": "string",
+                "index": "not_analyzed"
+              }
+            }
+          },
+          "role": {
+            "type": "string",
+            "index": "no"
+          }
+        }
+      },
+      "thumbnail": {
+        "type": "string",
+        "index": "no"
+      },
+      "modifiedDate": {
+        "type": "date"
+      },
+      "creationDate": {
+        "type": "date"
+      },
+      "revisionDate": {
+        "type": "date"
+      },
+      "publicationDate": {
+        "type": "date"
+      },
+      "language": { // FIXME index this at all?
+        "type": "string",
+        "index": "no"
+      },
+      "resourceLanguage": { // FIXME index this at all?
+        "type": "string",
+        "index": "no"
+      },
+      "resourceConstraints": {
+        "type": "string",
+        "index": "no"
+      },
+      "securityConstraints": {
+        "type": "nested",
+        "properties": {
+          "classification": {
+            "type": "string",
+            "index": "no"
+          },
+          "userNote": {
+            "type": "string",
+            "index": "no"
+          },
+          "classificationSystem": {
+            "type": "string",
+            "index": "no"
+          },
+          "handlingDescription": {
+            "type": "string",
+            "index": "no"
+          }
+        }
+      },
+      //"band": {}, // fields essentially say "lat, lon, time" and "float, float, integer"
+      "grid": {
+        "type": "object",
+        "properties": {
+          "numberOfDimensions": {
+            "type": "integer",
+            "index": "no"
+          },
+          "axisDimensionProperties": {
+            "type": "nested",
+            "properties": {
+              "dimensionName": {
+                "type": "string",
+                "index": "no"
+              },
+              "dimensionSize": {
+                "type": "integer",
+                "index": "no"
+              },
+              "resolutionUnits": {
+                "type": "string",
+                "index": "no"
+              },
+              "resolutionSize": {
+                "type": "string", // or double/float?
+                "index": "no"
+              }
+            }
+          },
+          "cellGeometry": {
+            "type": "string",
+            "index": "no"
+          },
+          "transformationParameterAvailability": {
+            "type": "boolean",
+            "index": "no"
+          }
+        }
+      }//,
+      //"inspire": {},
+      //"service": {}
+    }
+  }
+}
