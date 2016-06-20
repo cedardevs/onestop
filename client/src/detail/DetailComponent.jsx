@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import FlipCard from '../../node_modules/react-flipcard/lib/main'
+import FlipCard from 'react-flipcard'
 import styles from './detail.css'
 
 
