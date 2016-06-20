@@ -1,6 +1,5 @@
 {
-  "settings": {
-    "analysis": {
+  "analysis": {
       "analyzer": {
         "case_insensitive_sort": {
           "tokenizer": "keyword",
@@ -8,5 +7,4 @@
         }
       }
     }
-  }
 }
