@@ -1,6 +1,6 @@
 @import '../../style/style.css';
 
-$ICON_SIZE: 20px;
+$ICON_SIZE: 25px;
 
 .container {
   background-color: $color-medium-blue;
@@ -12,7 +12,6 @@ $ICON_SIZE: 20px;
   line-height: 20px;
   color: white;
   font-family: proxima_nova,"Helvetica Neue";
-
 }
 
 .leftHalf {
@@ -48,6 +47,7 @@ $ICON_SIZE: 20px;
   font-weight: 100;
   line-height: 1.16667;
   color: white;
+  margin-right: 20px;
   font-size: 1.3rem;
   vertical-align: baseline;
 }
@@ -60,9 +60,10 @@ $ICON_SIZE: 20px;
   height: $ICON_SIZE;
   display: inline-block;
   margin-right: 20px;
-  line-height: 28px;
   font-size: 2.8rem;
   border-bottom: none;
+  margin-left: 5px;
+
 }
 
 .facebookLogo {
@@ -149,5 +150,4 @@ $ICON_SIZE: 20px;
   margin: 5px;
   font-size: 16px;
   line-height: 1.5;
-
 }
