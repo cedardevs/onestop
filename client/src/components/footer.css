@@ -3,13 +3,11 @@
 $ICON_SIZE: 20px;
 
 .container {
-  /*background-color: $color-primary-darkest;*/
   background-color: $color-medium-blue;
   display: flex;
   justify-content: space-around;
   width: 100vw;
   height: 250px;
-  /*font-family: Source Sans Pro Merriweather;*/
   font-size: 20px;
   line-height: 20px;
   color: white;
@@ -36,7 +34,7 @@ $ICON_SIZE: 20px;
   text-decoration: none;
   color: white;
   line-height: 1.5;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   vertical-align: baseline;
   font-weight: 100;
 }
@@ -62,7 +60,6 @@ $ICON_SIZE: 20px;
   height: $ICON_SIZE;
   display: inline-block;
   margin-right: 20px;
-  /*font-size: 28px;*/
   line-height: 28px;
   font-size: 2.8rem;
   border-bottom: none;
@@ -77,10 +74,6 @@ $ICON_SIZE: 20px;
   display: inline-block;
   margin: 5px;
   margin-right: 20px;
-  /*font-size: 28px;*/
-  /*line-height: 28px;*/
-  /*font-size: 2.8rem;*/
-  /*border-bottom: none;*/
 }
 
 .instagrammLogo {
@@ -92,10 +85,6 @@ $ICON_SIZE: 20px;
   display: inline-block;
   margin: 5px;
   margin-right: 20px;
-  /*font-size: 28px;*/
-  /*line-height: 28px;*/
-  /*font-size: 2.8rem;*/
-  /*border-bottom: none;*/
 }
 
 .youtubeLogo {
@@ -107,10 +96,6 @@ $ICON_SIZE: 20px;
   display: inline-block;
   margin: 5px;
   margin-right: 20px;
-  /*font-size: 28px;*/
-  /*line-height: 28px;*/
-  /*font-size: 2.8rem;*/
-  /*border-bottom: none;*/
 }
 
 .noaaLogo {
@@ -123,17 +108,17 @@ $ICON_SIZE: 20px;
   margin: 45px;
   vertical-align: middle;
   margin-right: 20px;
-  font-family: proxima_nova,"Helvetica Neue";
+  line-height: 1.5;
+  font-size: 1.5rem;
+  font-weight: 100;
 
 }
 
 .feedbackButton {
-  background-color: #2f6fad;
   margin: 35px;
-  /*line-height: 1.5;*/
   color: white;
   line-height: 1.5;
-  font-size: 1.3rem;
+  font-size: 16px;
   vertical-align: baseline;
   font-weight: 100;
 }
@@ -143,7 +128,8 @@ $ICON_SIZE: 20px;
   margin: 10px;
   line-height: 15px;
   line-width: 150px;
-  font-size: 15px;
+  font-size: 12px;
+
 }
 
 .menuLi {
@@ -158,3 +144,10 @@ $ICON_SIZE: 20px;
   text-decoration: none;
 }
 
+.button {
+  background-color: #2f6fad;
+  margin: 5px;
+  font-size: 16px;
+  line-height: 1.5;
+
+}

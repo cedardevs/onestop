@@ -27,8 +27,9 @@ let Footer = ({dispatch}) => {
             <a href="https://www.youtube.com/user/noaa" className={styles.youtubeLogo}>
               <span className={styles.hidden}>Share to Youtube</span></a>
           </div>
-          <div>
-            How are we doing? <button onclick="https://www8.nos.noaa.gov/survey/index.aspx?Location=ocea" className={styles.feedbackButton}>Feedback</button>
+          <div className={styles.feedbackButton}>
+            How are we doing?
+            <button className={styles.button}>Feedback</button>
           </div>
           <div>
             <ul className={styles.menu}>
