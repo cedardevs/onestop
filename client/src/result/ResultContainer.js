@@ -7,17 +7,17 @@ const mapStateToProps = (state) => {
     loading: state.getIn(['search', 'inFlight']),
     results: state.get('results').toJS()
   }
-};
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onResultClick: (id) => dispatch(getDetails(id))
-  };
-};
+    onCardClick: (id) => dispatch(getDetails(id))
+  }
+}
 
 const ResultsContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(ResultsList);
+)(ResultsList)
 
 export default ResultsContainer

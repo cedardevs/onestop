@@ -21,6 +21,7 @@ $cardWidth: 200px;
     padding: 5px;
     background-color: rgba(30,30,30,.8);
     color: white;
+    overflow: hidden;
 }
 
 .reactFlipCard__Back {
@@ -31,4 +32,5 @@ $cardWidth: 200px;
     padding: 5px;
     background-color: rgba(30,30,30,.9);
     color: white;
+    overflow: hidden;
 }

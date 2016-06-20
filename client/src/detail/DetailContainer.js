@@ -1,12 +1,13 @@
 import { connect } from 'react-redux'
 import { flipCard } from './DetailActions'
-import DetailList from './DetailListComponent'
+//import DetailList from './DetailListComponent'
+import ResultsList from '../result/ResultListComponent'
 
 const mapStateToProps = (state) => {
   return {
     details: state.get('details').toJS()
-  };
-};
+  }
+}
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -19,6 +20,6 @@ const mapDispatchToProps = (dispatch) => {
 const DetailContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(DetailList);
+)(ResultsList);
 
 export default DetailContainer

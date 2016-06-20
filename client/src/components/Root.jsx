@@ -2,7 +2,7 @@ const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 
 import React from 'react'
 import ResultsContainer from '../result/ResultContainer'
-import DetailContainer from '../detail/DetailContainer'
+//import DetailContainer from '../detail/DetailContainer'
 import SearchContainer from '../search/SearchContainer'
 import FacetContainer from '../facet/FacetContainer'
 import Footer from './Footer.jsx'
@@ -27,9 +27,6 @@ const Root = () => (
       </div>
       <div styleName={styles.results}>
         <ResultsContainer/>
-      </div>
-      <div className={styles.details} id='details'>
-        <DetailContainer/>
       </div>
       <div className={styles.footer} id='footer'>
         <Footer/>
