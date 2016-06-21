@@ -1,6 +1,10 @@
 @import '../../style/style.css';
 $gridHeight: 160px; /* Workaround until div can autoadjust height */
 
+.gridContainer {
+    width: 90%;
+    margin: 0 auto;
+}
 .spinner {
     display: 'flex';
     flexWrap: 'wrap';
