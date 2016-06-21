@@ -1,10 +1,8 @@
 {
   "metadata": {
-    //"include_in_all": false,
     "properties": {
       "fileIdentifier": {
         "type": "string",
-        //"include_in_all": true,
         "index": "not_analyzed"
       },
       "parentIdentifier": {
@@ -47,7 +45,7 @@
         }
       },
       "temporalBounding": {
-        "type": "nested", // FIXME there should be only one; maybe this is an object?
+        "type": "nested",
         "properties": {
           "beginDate": {
             "type": "date"
@@ -63,7 +61,7 @@
             "type": "string",
             "index": "no"
           },
-          "instant": { // FIXME is this possible for boundingExtents?
+          "instant": {
             "type": "date"
           },
           "instantIndeterminate": {
@@ -73,13 +71,12 @@
         }
       },
       "spatialBounding": {
-        "type": "geo_shape" // FIXME XML needs to be parsed into a subtype; do we need the center_pt too?
+        "type": "geo_shape"
       },
-      "acquisitionInstrument": {
+      "acquisitionInstruments": {
         "type": "nested",
         "properties": {
-          //"citation": {},
-          "instrumentIdentifier": { // seems to be of format: GOES-13 Imager > Geostationary Operational Environmental Satellite 13-Imager
+          "instrumentIdentifier": {
             "type": "string",
             "fields": {
               "hierarchy": {
@@ -94,17 +91,15 @@
           },
           "instrumentDescription": {
               "type": "string"
-          }//,
-          //"mountedOn": {} // MI_Platform
+          }
         }
       },
-      "acquisitionOperation": {
+      "acquisitionOperations": {
         "type": "nested",
         "properties": {
           "operationDescription": {
             "type": "string"
           },
-          //"citation": {},
           "operationIdentifier": {
             "type": "string"
           },
@@ -114,15 +109,10 @@
           },
           "operationType": {
             "type": "string"
-          }//,
-          //"objective": { "type": "string" },
-          //"plan": {},
-          //"childOperation": {}, // same xml type -- MI_Operation
-          //"significantEvent": {},
-          //"platform": {} // MI_Platform
+          }
         }
       },
-      "acquisitionPlatform": {
+      "acquisitionPlatforms": {
         "type": "nested",
         "properties": {
           "citation": {},
@@ -133,33 +123,32 @@
             "type": "string"
           },
           "platformSponsor": {
-            "type": "string" // just the organization name
-          }//,
-          //"platformInstrument": {}  // same as identifier text?
+            "type": "string"
+          }
         }
       },
       "links": {
         "type": "nested",
         "properties": {
-          "name": {
+          "linkName": {
             "type": "string",
             "index": "no"
           },
-          "url": {
+          "linkUrl": {
             "type": "string",
             "index": "no"
           },
-          "description": {
+          "linkDescription": {
             "type": "string",
             "index": "no"
           },
-          "function": {
+          "linkFunction": {
             "type": "string",
             "index": "no"
           }
         }
       },
-      "contacts": { // FIXME index & raw fields?
+      "contacts": {
         "type": "nested",
         "properties": {
           "individualName": {
@@ -202,11 +191,11 @@
       "publicationDate": {
         "type": "date"
       },
-      "language": { // FIXME index this at all?
+      "language": {
         "type": "string",
         "index": "no"
       },
-      "resourceLanguage": { // FIXME index this at all?
+      "resourceLanguage": {
         "type": "string",
         "index": "no"
       },
@@ -235,7 +224,6 @@
           }
         }
       },
-      //"band": {}, // fields essentially say "lat, lon, time" and "float, float, integer"
       "grid": {
         "type": "object",
         "properties": {
@@ -259,7 +247,7 @@
                 "index": "no"
               },
               "resolutionSize": {
-                "type": "string", // or double/float?
+                "type": "string",
                 "index": "no"
               }
             }
@@ -273,9 +261,7 @@
             "index": "no"
           }
         }
-      }//,
-      //"inspire": {},
-      //"service": {}
+      }
     }
   }
 }
