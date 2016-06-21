@@ -1,16 +1,16 @@
 {
-    "analysis": {
-      "analyzer": {
-        "keyword_analyzer": {
-          "tokenizer": "keyword_tokenizer",
-          "filter": ["trim", "lowercase"]
-        }
-      },
-      "tokenizer": {
-        "keyword_tokenizer": {
-          "type": "path_hierarchy",
-          "delimiter": ">"
-        }
+  "analysis": {
+    "analyzer": {
+      "keyword_analyzer": {
+        "tokenizer": "keyword_tokenizer",
+        "filter": ["trim", "lowercase"]
+      }
+    },
+    "tokenizer": {
+      "keyword_tokenizer": {
+        "type": "path_hierarchy",
+        "delimiter": ">"
       }
     }
+  }
 }
