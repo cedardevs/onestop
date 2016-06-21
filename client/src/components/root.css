@@ -21,16 +21,16 @@
 }
 
 .logo {
-  height: 84px;
+  height: 90px;
   float: left;
-  margin: 10px;
+  margin: 5px 10px;
 }
 
 .orgBox {
   display: block;
 }
 
-@media screen and (max-width:930px) {
+@media screen and (max-width:938px) {
   .orgBox {
     display: none;
   }
