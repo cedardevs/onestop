@@ -4,6 +4,7 @@ import React from 'react'
 import ResultsContainer from '../result/ResultContainer'
 import SearchContainer from '../search/SearchContainer'
 //import FacetContainer from '../facet/FacetContainer'
+import Favicon from 'react-favicon'
 import Footer from './Footer.jsx'
 import Header from './Header.jsx'
 import styles from './root.css'
@@ -11,6 +12,7 @@ import styles from './root.css'
 
 const Root = () => (
     <div>
+      <Favicon url={["http://www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
       <div className={styles.header} id='header'>
         <Header/>
       </div>
