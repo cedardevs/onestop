@@ -29,6 +29,13 @@
 .orgBox {
   display: block;
 }
+
+@media screen and (max-width:930px) {
+  .orgBox {
+    display: none;
+  }
+}
+
 .orgName,
 .deptName {
   text-decoration: none;
