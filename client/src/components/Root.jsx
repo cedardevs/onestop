@@ -2,9 +2,8 @@ const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 
 import React from 'react'
 import ResultsContainer from '../result/ResultContainer'
-//import DetailContainer from '../detail/DetailContainer'
 import SearchContainer from '../search/SearchContainer'
-import FacetContainer from '../facet/FacetContainer'
+//import FacetContainer from '../facet/FacetContainer'
 import Footer from './Footer.jsx'
 import Header from './Header.jsx'
 import styles from './root.css'
@@ -21,9 +20,6 @@ const Root = () => (
         <div className={styles.searchFacet} id='search-facet'>
           <SearchContainer/>
         </div>
-      </div>
-      <div className={styles.leftNav}>
-        <FacetContainer/>
       </div>
       <div styleName={styles.results}>
         <ResultsContainer/>
