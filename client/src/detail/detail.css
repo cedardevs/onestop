@@ -1,3 +1,4 @@
+@import '../../style/style.css';
 $cardHeight: 140px;
 $cardWidth: 310px;
 
@@ -17,9 +18,9 @@ $cardWidth: 310px;
     box-sizing: border-box;
     width: $cardWidth;
     height: $cardHeight;
-    border: 1px solid #111;
+    border: 2px solid $color-gray;
     padding: 5px;
-    background-color: rgba(30,30,30,.8);
+    background-color: rgba(10,10,10,.9);
     color: white;
     overflow: hidden;
 }
@@ -28,7 +29,7 @@ $cardWidth: 310px;
     box-sizing: border-box;
     width: $cardWidth;
     height: $cardHeight;
-    border: 1px solid #111;
+    border: 2px solid $color-gray;
     padding: 5px;
     background-color: rgba(30,30,30,.9);
     color: white;

@@ -15,8 +15,13 @@ const Root = () => (
         <Header/>
       </div>
       <div className={styles.appbar} id='appbar' rounded={false}>
-        <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
-        <div className={styles.noaaCaption}>NOAA</div>
+        <div className={styles.logoBox}>
+            <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
+            <div className={styles.orgBox}>
+                <a className={styles.orgName} href="/">National Oceanic and Atmospheric Administration</a>
+                <a className={styles.deptName} href="http://www.commerce.gov">U.S. Department of Commerce</a>
+            </div>
+        </div>
         <div className={styles.searchFacet} id='search-facet'>
           <SearchContainer/>
         </div>

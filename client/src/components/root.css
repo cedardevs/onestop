@@ -15,17 +15,38 @@
   height: 140px;
   width: 100%;
 }
+
+.logoBox {
+  margin: 0px 10px;
+}
+
 .logo {
-  height: 74px;
+  height: 84px;
   float: left;
   margin: 10px;
 }
-.noaaCaption {
+
+.orgBox {
+  display: block;
+}
+.orgName,
+.deptName {
+  text-decoration: none;
+  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
   color: white;
   margin-right: auto;
-  font-size: 6em;
   font-weight: normal;
+  display: block;
 }
+
+.orgName {
+  font-size: 2em;
+}
+
+.deptName {
+  font-size: 1em;
+}
+
 .results,
 .leftNav {
   position: relative;

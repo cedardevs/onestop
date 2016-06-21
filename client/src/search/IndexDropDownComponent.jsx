@@ -10,16 +10,16 @@ const IndexDropDown = ({indexName, onChange}) => {
     {value: 'fileIdentifier', label: 'File Identifier'},
     {value: 'enddate', label: 'End Date'},
     {value: 'startdate', label: 'Start Date'}
-  ];
+  ]
 
   let i = 0;
   const dropDownEntries = facets.map((facet) => {
     return <li className={styles['pure-menu-item']} key={i++}>
     <a href="#" className={styles['pure-menu-link']} label={facet.label} >{facet.label}</a>
     </li>
-  });
+  })
 
-  const handleChange = (e, i, v) => onChange(v);
+  const handleChange = (e, i, v) => onChange(v)
 
   return <div className={`${styles['pure-menu']} ${styles['pure-menu-horizontal']}`}>
       <ul className={styles['pure-menu-list']} id='searchField'>
@@ -31,6 +31,6 @@ const IndexDropDown = ({indexName, onChange}) => {
         </li>
       </ul>
   </div>
-};
+}
 
 export default IndexDropDown

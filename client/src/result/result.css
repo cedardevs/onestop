@@ -6,15 +6,15 @@ $gridHeight: 160px; /* Workaround until div can autoadjust height */
     margin: 0 auto;
 }
 .spinner {
-    display: 'flex';
-    flexWrap: 'wrap';
-    justifyContent: 'space-around';
-    paddingTop: 24;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding-top: 24;
 }
 
 .list {
-    width: '100%';
-    height: '100%';
+    width: 100%;
+    height: 100%;
 }
 
 .grid {
