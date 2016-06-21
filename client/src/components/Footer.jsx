@@ -27,10 +27,10 @@ let Footer = ({dispatch}) => {
             <a href="https://www.youtube.com/user/noaa" className={styles.youtubeLogo}>
               <span className={styles.hidden}>Share to Youtube</span></a>
           </div>
-          <div className={styles.feedbackButton}>
-            How are we doing?
-            <button className={styles.button}>Feedback</button>
-          </div>
+            <form className={styles.feedbackButton} method="link" action="https://www8.nos.noaa.gov/survey">
+              How are we doing?
+              <input  className={styles.button}  type="submit" value="Feedback"></input>
+            </form>
           <div>
             <ul className={styles.menu}>
               <li className={styles.menuLi}><a href="http://www.noaa.gov/protecting-your-privacy" className={styles.menuLiA}>Protecting your Privacy</a></li>
