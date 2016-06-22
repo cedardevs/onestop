@@ -106,7 +106,16 @@ class MetadataParser {
         temporalBounding.put('instantIndeterminate', instantIndeterminate)
 
         // Spatial bounding:
-        // TODO
+        def space = idInfo.extent.EX_Extent.'**'.find { e ->
+            e.@id.text() == 'boundingExtent'
+        }.geographicElement
+        def bbox = space.'**'.find { it -> it.name() == 'EX_GeographicBoundingBox'}
+        if(bbox) {
+            spatialBounding.put('type', 'envelope')
+            spatialBounding.put('coordinates', [
+                    [bbox.westBoundLongitude.Decimal.toFloat(), bbox.northBoundLatitude.Decimal.toFloat()],
+                    [bbox.eastBoundLongitude.Decimal.toFloat(), bbox.southBoundLatitude.Decimal.toFloat()]])
+        }
 
         // Acquisition instrument:
         def instruments = metadata.acquisitionInformation.MI_AcquisitionInformation.instrument
