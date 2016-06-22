@@ -1,5 +1,5 @@
 {
-  "metadata": {
+  "item": {
     "properties": {
       "fileIdentifier": {
         "type": "string",
@@ -115,7 +115,6 @@
       "acquisitionPlatforms": {
         "type": "nested",
         "properties": {
-          "citation": {},
           "platformIdentifier": {
             "type": "string"
           },

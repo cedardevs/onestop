@@ -5,13 +5,6 @@ import groovy.json.JsonBuilder
 
 class MetadataParser {
 
-    public static void main(String[] args) {
-        def cl = ClassLoader.systemClassLoader
-        def metadata = cl.getResourceAsStream("DEM_metadata.xml").text
-        //def metadata = cl.getResourceAsStream("GHRSST_metadata.xml").text
-        println parseXMLMetadata(metadata)
-    }
-
     public static String parseXMLMetadata(String xml) {
 
         def fileIdentifier
@@ -40,6 +33,12 @@ class MetadataParser {
 
         def metadata = new XmlSlurper().parseText(xml)
         def idInfo = metadata.identificationInfo.MD_DataIdentification
+        /*
+        TODO
+        idInfo points to only identificationInfo node with MD_DataIdentification child, but there are some (in DEM)
+        where child is SV_ServiceIdentification. Discuss with Anna -- should these be parsed as well? GP does, but
+        data is stored across several fields included & not included here.
+         */
 
         // Basic info:
         fileIdentifier = metadata.fileIdentifier.CharacterString.text()
@@ -66,6 +65,15 @@ class MetadataParser {
         }
 
         // Keywords:
+        /*
+         TODO
+         Some things noticed here:
+          - Some keywords are appearing under the path descriptiveKeywords.MD_Keywords.keyword.Anchor. GP does not
+            collect these, and maybe we don't want to either? These show up in DEM example as keyword objects with empty
+            keywordText and keywordType fields. In the XML they are in extreme numbers and appear to have inconsistent
+            value. Discuss with Anna?
+          - If we disregard these keywords, should we programmatically remove elements where keywordText is empty?
+         */
         def topicCategories = idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text()
         topicCategories.each {  e ->
             keywords.add( [ keywordText: e, keywordType: null, keywordNamespace: null ] )
@@ -88,14 +96,14 @@ class MetadataParser {
             e.@id.text() == 'boundingExtent'
         }.temporalElement.EX_TemporalExtent.extent
         def beginDate = time.TimePeriod.beginPosition.text() ?:
-                time.TimePeriod.begin.TimeInstant.timePosition.text()
+                time.TimePeriod.begin.TimeInstant.timePosition.text() ?: null
         def beginIndeterminate = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
                 time.TimePeriod.begin.TimeInstant.timePosition.@indeterminatePosition.text()
         def endDate = time.TimePeriod.endPosition.text() ?:
-                time.TimePeriod.end.TimeInstant.timePosition.text()
+                time.TimePeriod.end.TimeInstant.timePosition.text() ?: null
         def endIndeterminate = time.TimePeriod.endPosition.@indeterminatePosition.text() ?:
                 time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text()
-        def instant = time.TimeInstant.timePosition.text()
+        def instant = time.TimeInstant.timePosition.text() ?: null
         def instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text()
 
         temporalBounding.put('beginDate', beginDate)
