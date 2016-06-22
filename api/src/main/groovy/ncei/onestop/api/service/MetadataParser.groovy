@@ -1,12 +1,14 @@
 package ncei.onestop.api.service
 
+import groovy.json.JsonBuilder
+
 
 class MetadataParser {
 
     public static void main(String[] args) {
         def cl = ClassLoader.systemClassLoader
-        //def metadata = cl.getResourceAsStream("DEM_metadata.xml").text
-        def metadata = cl.getResourceAsStream("GHRSST_metadata.xml").text
+        def metadata = cl.getResourceAsStream("DEM_metadata.xml").text
+        //def metadata = cl.getResourceAsStream("GHRSST_metadata.xml").text
         println parseXMLMetadata(metadata)
     }
 
@@ -17,14 +19,14 @@ class MetadataParser {
         def title
         def alternateTitle
         def description
-        def keywords = []
+        def keywords = [] as Set
         def temporalBounding = [:]
         def spatialBounding = [:]
-        def acquisitionInstruments = []
-        def acquisitionOperations = []
-        def acquisitionPlatforms = []
-        def links = []
-        def contacts = []
+        def acquisitionInstruments = [] as Set
+        def acquisitionOperations = [] as Set
+        def acquisitionPlatforms = [] as Set
+        def links = [] as Set
+        def contacts = [] as Set
         def thumbnail
         def modifiedDate
         def creationDate
@@ -32,10 +34,9 @@ class MetadataParser {
         def publicationDate
         def language
         def resourceLanguage
-        def resourceConstraints = []
-        def securityConstraints = []
+        def resourceConstraints = [] as Set
+        def securityConstraints = [] as Set
         def grid = [:]
-
 
         def metadata = new XmlSlurper().parseText(xml)
         def idInfo = metadata.identificationInfo.MD_DataIdentification
@@ -47,8 +48,8 @@ class MetadataParser {
         alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text()
         description = idInfo.abstract.CharacterString.text()
         thumbnail = idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text()
-        language = metadata.language.LanguageCode.@codeListValue.text()
-        resourceLanguage = idInfo.language.LanguageCode.@codeListValue.text()
+        language = metadata.language.LanguageCode.@codeListValue.text() ?: metadata.language.CharacterString.text()
+        resourceLanguage = idInfo.language.LanguageCode.@codeListValue.text() ?: idInfo.language.CharacterString.text()
 
         // Miscellaneous dates:
         modifiedDate = metadata.dateStamp.Date.text() ?: metadata.dateStamp.DateTime.text()
@@ -66,24 +67,46 @@ class MetadataParser {
 
         // Keywords:
         def topicCategories = idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text()
-        topicCategories.each { e ->
+        topicCategories.each {  e ->
             keywords.add( [ keywordText: e, keywordType: null, keywordNamespace: null ] )
         }
 
         def descriptiveKeywords = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
         descriptiveKeywords.each { e ->
-            keywords.add( [
-                    keywordText: e.keyword.CharacterString.text(),
-                    keywordType: e.type.MD_KeywordTypeCode.@codeListValue.text(),
-                    keywordNamespace: e.thesaurusName.CI_Citation.title.CharacterString.text()
-            ] )
+            def keywordGroup = e.'**'.findAll { it.name() == 'keyword'}
+            keywordGroup.each { k ->
+                keywords.add([
+                        keywordText     : k.CharacterString.text(),
+                        keywordType     : e.type.MD_KeywordTypeCode.@codeListValue.text(),
+                        keywordNamespace: e.thesaurusName.CI_Citation.title.CharacterString.text()
+                ])
+            }
         }
 
         // Temporal bounding:
+        def time = idInfo.extent.EX_Extent.'**'.find { e ->
+            e.@id.text() == 'boundingExtent'
+        }.temporalElement.EX_TemporalExtent.extent
+        def beginDate = time.TimePeriod.beginPosition.text() ?:
+                time.TimePeriod.begin.TimeInstant.timePosition.text()
+        def beginIndeterminate = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
+                time.TimePeriod.begin.TimeInstant.timePosition.@indeterminatePosition.text()
+        def endDate = time.TimePeriod.endPosition.text() ?:
+                time.TimePeriod.end.TimeInstant.timePosition.text()
+        def endIndeterminate = time.TimePeriod.endPosition.@indeterminatePosition.text() ?:
+                time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text()
+        def instant = time.TimeInstant.timePosition.text()
+        def instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text()
 
+        temporalBounding.put('beginDate', beginDate)
+        temporalBounding.put('beginIndeterminate', beginIndeterminate)
+        temporalBounding.put('endDate', endDate)
+        temporalBounding.put('endIndeterminate', endIndeterminate)
+        temporalBounding.put('instant', instant)
+        temporalBounding.put('instantIndeterminate', instantIndeterminate)
 
         // Spatial bounding:
-
+        // TODO
 
         // Acquisition instrument:
         def instruments = metadata.acquisitionInformation.MI_AcquisitionInformation.instrument
@@ -135,9 +158,9 @@ class MetadataParser {
         def contactInfo = metadata.'**'.findAll { it.name() == 'CI_ResponsibleParty' }
         contactInfo.each { e ->
             contacts.add( [
-                    individualName: e.individualName.CharacterString.text(),
-                    organizationName: e.organisationName.CharacterString.text(),
-                    role: e.role.@codeListValue.text()
+                    individualName: e.individualName.CharacterString.text() ?: e.individualName.Anchor.text(),
+                    organizationName: e.organisationName.CharacterString.text() ?: e.organisationName.Anchor.text(),
+                    role: e.role.CI_RoleCode.@codeListValue.text()
             ] )
         }
 
@@ -165,15 +188,14 @@ class MetadataParser {
 
         // Grid info:
         def gridInfo = metadata.spatialRepresentationInfo.MD_GridSpatialRepresentation
-        def axisInfo = gridInfo.'**'.findAll { it.name == 'MD_Dimension'}
+       def axisInfo = gridInfo.'**'.findAll { it.name() == 'MD_Dimension'}
         def axisProps = []
         axisInfo.each { e ->
-            println 'debug axis dimension found'
             axisProps.add( [
                     dimensionName: e.dimensionName.MD_DimensionNameTypeCode.@codeListValue.text(),
-                    dimensionSize: e.dimensionSize.Integer.toInteger(),
+                    dimensionSize: e.dimensionSize.Integer.text() ? e.dimensionSize.Integer.toInteger() : e.dimensionSize.Integer.text(),
                     resolutionUnits: e.resolution.Measure.@uom.text(),
-                    resolutionSize: e.resolution.Measure.text() // FIXME toFloat()? not sure what this usually is
+                    resolutionSize: e.resolution.Measure.text()
             ] )
         }
         grid.put('numberOfDimensions', gridInfo.numberOfDimensions.Integer.toInteger())
@@ -181,7 +203,33 @@ class MetadataParser {
         grid.put('cellGeometry', gridInfo.cellGeometry.MD_CellGeometryCode.@codeListValue.text())
         grid.put('transformationParameterAvailability', gridInfo.transformationParameterAvailability.Boolean.toBoolean())
 
-        println grid
-        return "stringy string"
+
+        // Build JSON:
+        def json = new JsonBuilder()
+        json    fileIdentifier: fileIdentifier,
+                parentIdentifier: parentIdentifier,
+                title: title,
+                alternateTitle: alternateTitle,
+                description: description,
+                keywords: keywords,
+                temporalBounding: temporalBounding,
+                spatialBounding: spatialBounding,
+                acquisitionInstruments: acquisitionInstruments,
+                acquisitionOperations: acquisitionOperations,
+                acquisitionPlatforms: acquisitionPlatforms,
+                links: links,
+                contacts: contacts,
+                thumbnail: thumbnail,
+                modifiedDate: modifiedDate,
+                creationDate: creationDate,
+                revisionDate: revisionDate,
+                publicationDate: publicationDate,
+                language: language,
+                resourceLanguage: resourceLanguage,
+                resourceConstraints: resourceConstraints,
+                securityConstraints: securityConstraints,
+                grid: grid
+
+        return json.toPrettyString()
     }
 }
