@@ -45,7 +45,7 @@
         }
       },
       "temporalBounding": {
-        "type": "nested",
+        "type": "object",
         "properties": {
           "beginDate": {
             "type": "date"
