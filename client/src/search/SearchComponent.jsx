@@ -5,14 +5,14 @@ import styles from './search.css'
 
 const SearchFacet = ({indexName, submit, handleIndexChange}) => {
   return <form className={styles['pure-form']}>
-    <fieldset>
-      <div className={styles.textfield} id='search-text'>
+    <span className={styles.searchFields}>
+      <div className={styles.textField}>
         <TextSearchField onEnterKeyDown={submit}/>
       </div>
-      <div>
+      <div className={styles.dropDown}>
         <IndexDropDown indexName={indexName} onChange={handleIndexChange}/>
       </div>
-    </fieldset>
+    </span>
   </form>
 }
 

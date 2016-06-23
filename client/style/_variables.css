@@ -23,3 +23,4 @@ $color-gray-dark:            darken($color-gray, 20%);
 $color-base: $color-gray;
 $text-max-width:    660px;
 $site-max-width:    1040px;
+$color-medium-blue:     #0a4595;

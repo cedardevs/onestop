@@ -1,37 +1,41 @@
 @import '../../style/style.css';
 
-$twitterIconPath: '../../img/twitter_icon.png';
-$noaaIconPath: '../../img/NOAA_logo.png';
-$ICON_SIZE: 30px;
+$ICON_SIZE: 25px;
 
-.top {
-  background-color: $color-primary-darkest;
+.container {
+  background-color: $color-medium-blue;
   display: flex;
   justify-content: space-around;
   width: 100vw;
-  height: 220px;
-  font-family: Source Sans Pro Merriweather;
+  height: 250px;
   font-size: 20px;
   line-height: 20px;
   color: white;
+  font-family: proxima_nova,"Helvetica Neue";
 }
 
 .leftHalf {
+  padding-top: 20px;
   text-align: left;
+  letter-spacing: 0.05em;
   width: 35%;
 }
 
 .rightHalf {
+  padding-top: 20px;
   text-align: right;
+  letter-spacing: 0.05em;
   width: 55%;
 }
 
-.about: {
+.about {
   display: flex;
-  font-size: 25px;
-  line-height: 35px;
   text-decoration: none;
   color: white;
+  line-height: 1.5em;
+  font-size: 1.5rem;
+  vertical-align: baseline;
+  font-weight: 100;
 }
 
 .hidden {
@@ -40,68 +44,93 @@ $ICON_SIZE: 30px;
 
 .icons {
   display: inline-block;
+  font-weight: 100;
+  line-height: 1.16667;
+  color: white;
+  margin-right: 20px;
+  font-size: 1.3rem;
 }
 
 .twitterLogo {
-  background-image: url($twitterIconPath);
+  background-image: url( '../../img/twitter_icon.png');
   background-size: contain;
   background-repeat: no-repeat;
   width: $ICON_SIZE;
   height: $ICON_SIZE;
   display: inline-block;
-  margin: 10px;
+  margin-right: 20px;
+  font-size: 2.8rem;
+  border-bottom: none;
+  margin-left: 5px;
+  vertical-align: middle;
 }
 
 .facebookLogo {
-  background-image: url($twitterIconPath);
+  background-image: url('../../img/faceBook_icon.png');
   background-size: contain;
   background-repeat: no-repeat;
   width: $ICON_SIZE;
   height: $ICON_SIZE;
   display: inline-block;
-  margin: 10px;
+  margin: 5px;
+  margin-right: 20px;
+  vertical-align: middle;
 }
 
 .instagrammLogo {
-  background-image: url($twitterIconPath);
+  background-image: url('../../img/instagram_icon.png');
   background-size: contain;
   background-repeat: no-repeat;
   width: $ICON_SIZE;
   height: $ICON_SIZE;
   display: inline-block;
-  margin: 10px;
+  margin: 5px;
+  margin-right: 20px;
+  vertical-align: middle;
 }
 
 .youtubeLogo {
-  background-image: url($twitterIconPath);
+  background-image: url('../../img/youTube_icon.png');
   background-size: contain;
   background-repeat: no-repeat;
   width: $ICON_SIZE;
   height: $ICON_SIZE;
   display: inline-block;
-  margin: 10px;
+  margin: 5px;
+  margin-right: 20px;
+  vertical-align: middle;
 }
 
 .noaaLogo {
-  background-image: url($noaaIconPath);
+  background-image: url('../../img/NOAA_logo.png');
   background-size: contain;
   background-repeat: no-repeat;
   width: 50px;
   height: 50px;
   display: inline-block;
-  margin: 15px;
+  margin: 45px;
+  vertical-align: middle;
+  margin-right: 20px;
+  line-height: 1.5;
+  font-size: 1.5rem;
+  font-weight: 100;
 }
 
 .feedbackButton {
-  background-color: grey;
-  margin: 10px;
+  margin: 35px;
+  color: white;
+  line-height: 1.5;
+  font-size: 16px;
+  vertical-align: baseline;
+  font-weight: 100;
 }
 
 .menu {
   list-style-type: none;
   margin: 10px;
   line-height: 15px;
-  font-size: 15px;
+  line-width: 150px;
+  font-size: 12px;
 }
 
 .menuLi {
@@ -114,4 +143,11 @@ $ICON_SIZE: 30px;
 .menuLiA {
   color: white;
   text-decoration: none;
+}
+
+.button {
+  background-color: #2f6fad;
+  margin: 5px;
+  font-size: 16px;
+  line-height: 1.5;
 }

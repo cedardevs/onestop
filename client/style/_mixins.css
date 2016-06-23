@@ -1,8 +1,8 @@
 @define-mixin bgImage
   $image,
   $height: 100vh,
-  $grStart: rgba(0,0,0,.9),
-  $grEnd: rgba(0,0,0,.0),
+  $grStart: rgba(0,0,0,.95),
+  $grEnd: rgba(0,0,0,.65),
   $bgPos: center center {
     background: linear-gradient( to bottom, $grStart, $grEnd), url($image);
     background-repeat: no-repeat;

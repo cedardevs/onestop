@@ -1,3 +1,5 @@
+@import '../../style/style.css';
+
 .header {
   top: 0;
   left: 0;
@@ -8,22 +10,50 @@
   clear: both;
   display: flex;
   justify-content: space-between;
-  border: solid white 1px;
+  border-bottom: solid $color-gray 2px;
   top: 24px;
   height: 140px;
   width: 100%;
 }
-.logo {
-  height: 74px;
-  float: left;
-  margin: 10px;
+
+.logoBox {
+  margin: 0px 10px;
 }
-.noaaCaption {
+
+.logo {
+  height: 90px;
+  float: left;
+  margin: 5px 10px;
+}
+
+.orgBox {
+  display: block;
+}
+
+@media screen and (max-width:938px) {
+  .orgBox {
+    display: none;
+  }
+}
+
+.orgName,
+.deptName {
+  text-decoration: none;
+  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
   color: white;
   margin-right: auto;
-  font-size: 6em;
   font-weight: normal;
+  display: block;
 }
+
+.orgName {
+  font-size: 2em;
+}
+
+.deptName {
+  font-size: 1em;
+}
+
 .results,
 .leftNav {
   position: relative;

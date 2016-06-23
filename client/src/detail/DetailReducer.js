@@ -21,13 +21,13 @@ export const details = (state = initialState, action) => {
         console.log("Action Details is "+ action.details);
       return state.merge({
         details: action.details
-      });
+      })
 
     case FLIP_CARD:
       if (state.get('id') == action.id){
         return state.merge({
           flipped:  !state.get('flipped')
-        });
+        })
       }
 
     default:

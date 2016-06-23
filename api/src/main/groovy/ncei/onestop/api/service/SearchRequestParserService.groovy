@@ -75,8 +75,7 @@ class SearchRequestParserService {
         def groupedQueries = queries.groupBy { it.type }
 
         groupedQueries.queryText.each {
-            // TODO check string for double quotes -- term query for exact match? or is ES already doing this?
-            builder.must(QueryBuilders.matchQuery('_all', it.value))
+            builder.must(QueryBuilders.queryStringQuery(it.value))
         }
 
         return builder

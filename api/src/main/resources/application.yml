@@ -8,7 +8,7 @@ spring:
     name: onestop
 
 logging:
-  file: /data/agile_apps/logs/ingest/${spring.application.name}_${hostname}.log
+  file: /data/agile_apps/logs/agiletc/oneStop/${spring.application.name}_${hostname}.log
   level:
       ncei.onestop.api: DEBUG
       org.gradle: WARN

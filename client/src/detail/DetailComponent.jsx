@@ -4,17 +4,25 @@ import styles from './detail.css'
 
 
 const Detail = (props) => {
-
+  console.log("props: " + props)
+  // Thumbnails are dynamically assigned so style's applied via JS
+  var localStyles = {
+    background: 'url(' + props.thumbnail + ')',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center center'
+  }
   return (
-        <FlipCard disabled={true} className={styles.reactFlipCard} flipped={props.flipped}>
+        <FlipCard disabled={false} className={styles.reactFlipCard} flipped={props.flipped}>
 
+        <div style={localStyles} >
           <div className={styles.reactFlipCard__Front} onClick={props.onClick}>
-            <div>Front</div>
             <div>Title: {props.title} </div>
             <div></div>
           </div>
+        </div>
           <div className={styles.reactFlipCard__Back} onClick={props.onClick}>
-            <div>Summary: {props.summary}</div>
+            <div>Description: {props.description}</div>
           </div>
         </FlipCard>
   )
@@ -32,7 +40,7 @@ Detail.propTypes = {
       type: PropTypes.string.isRequired
     })).isRequired
   })
-};
+}
 
 Detail.defaultProps = {
   id: '',
@@ -42,8 +50,8 @@ Detail.defaultProps = {
     links: []
   },
   flipped: false
-};
+}
 
-Detail.shouldComponentUpdate = (nextProps, nextState) => typeof nextProps.id !== 'undefined';
+Detail.shouldComponentUpdate = (nextProps, nextState) => typeof nextProps.id !== 'undefined'
 
 export default Detail
