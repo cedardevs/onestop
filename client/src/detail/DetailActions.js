@@ -1,6 +1,11 @@
 export const FETCH_DETAILS = 'fetch_details'
 export const RECEIVE_DETAILS = 'receive_details'
-export const FLIP_CARD = 'flip_card'
+export const SET_CARD_STATUS = 'SET_CARD_STATUS'
+
+export const CardStatus = {
+  SHOW_FRONT: 'SHOW_FRONT',
+  SHOW_BACK: 'SHOW_BACK'
+}
 
 export const startDetails = (id) => {
   return {
@@ -19,9 +24,9 @@ export const completeDetails = (id, details) => {
   }
 }
 
-export const flipCard = (id) => {
-  return{
-    type: FLIP_CARD,
+export const setCardStatus = (id) => {
+  return {
+    type: SET_CARD_STATUS,
     id: id
   }
 }
