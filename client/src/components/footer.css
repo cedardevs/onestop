@@ -1,104 +1,48 @@
 @import '../../style/style.css';
 
-$ICON_SIZE: 25px;
+/*$ICON_SIZE: 25px;*/
 
 .container {
-  background-color: $color-medium-blue;
-  display: flex;
+  background: #0a4595;
+  display: inline-block;
   justify-content: space-around;
   width: 100vw;
-  height: 250px;
   font-size: 20px;
-  line-height: 20px;
   color: white;
   font-family: proxima_nova,"Helvetica Neue";
-}
-
-.leftHalf {
-  padding-top: 20px;
-  text-align: left;
-  letter-spacing: 0.05em;
-  width: 35%;
-}
-
-.rightHalf {
-  padding-top: 20px;
-  text-align: right;
-  letter-spacing: 0.05em;
-  width: 55%;
 }
 
 .about {
   display: flex;
   text-decoration: none;
   color: white;
-  line-height: 1.5em;
-  font-size: 1.5rem;
+  font-size: 20px;
+  vertical-align: baseline;
+  margin-left: 1em ;
+  margin-top: 1.0em;
+  font-weight: 100;
+}
+
+.feedbackButton {
+  line-height: 1.5;
+  font-size: 16px;
   vertical-align: baseline;
   font-weight: 100;
+  margin-top: 2.5em;
+  margin-left: 25em;
 }
 
-.hidden {
-  visibility: hidden;
-}
-
-.icons {
-  display: inline-block;
+.feedback{
+  margin-top: 0.5em;
+  line-height: 2.0em;
+  text-align: justify;
   font-weight: 100;
-  line-height: 1.16667;
-  color: white;
-  margin-right: 20px;
-  font-size: 1.3rem;
 }
 
-.twitterLogo {
-  background-image: url( '../../img/twitter_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: $ICON_SIZE;
-  height: $ICON_SIZE;
-  display: inline-block;
-  margin-right: 20px;
-  font-size: 2.8rem;
-  border-bottom: none;
-  margin-left: 5px;
-  vertical-align: middle;
-}
-
-.facebookLogo {
-  background-image: url('../../img/faceBook_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: $ICON_SIZE;
-  height: $ICON_SIZE;
-  display: inline-block;
-  margin: 5px;
-  margin-right: 20px;
-  vertical-align: middle;
-}
-
-.instagrammLogo {
-  background-image: url('../../img/instagram_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: $ICON_SIZE;
-  height: $ICON_SIZE;
-  display: inline-block;
-  margin: 5px;
-  margin-right: 20px;
-  vertical-align: middle;
-}
-
-.youtubeLogo {
-  background-image: url('../../img/youTube_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: $ICON_SIZE;
-  height: $ICON_SIZE;
-  display: inline-block;
-  margin: 5px;
-  margin-right: 20px;
-  vertical-align: middle;
+.item2 {
+  margin-top: 1.5em;
+  margin-left: 3em;
+  font-weight: 100;
 }
 
 .noaaLogo {
@@ -108,29 +52,75 @@ $ICON_SIZE: 25px;
   width: 50px;
   height: 50px;
   display: inline-block;
-  margin: 45px;
+  margin: 5px;
   vertical-align: middle;
-  margin-right: 20px;
-  line-height: 1.5;
-  font-size: 1.5rem;
-  font-weight: 100;
 }
 
-.feedbackButton {
-  margin: 35px;
+
+.twitterLogo {
+  background-image: url('../../img/twitter_icon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+  margin: 5px;
+  vertical-align: middle;
+}
+
+.facebookLogo {
+  background-image: url('../../img/faceBook_icon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+  margin: 5px;
+  vertical-align: middle;
+}
+
+.instagrammLogo {
+  background-image: url('../../img/instagram_icon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width:25px ;
+  height: 25px;
+  display: inline-block;
+  margin: 5px;
+  vertical-align: middle;
+}
+
+.youtubeLogo {
+  background-image: url('../../img/youTube_icon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.icons {
+  display: inline-block;
   color: white;
-  line-height: 1.5;
-  font-size: 16px;
-  vertical-align: baseline;
-  font-weight: 100;
+  margin-left: 10em;
+  vertical-align: middle;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.hidden {
+  visibility: hidden;
 }
 
 .menu {
   list-style-type: none;
-  margin: 10px;
+  margin-left: 35px;
   line-height: 15px;
-  line-width: 150px;
-  font-size: 12px;
+  font-weight: 100;
+  font-size: 14px;
+  display: inline-block;
 }
 
 .menuLi {
@@ -138,11 +128,13 @@ $ICON_SIZE: 25px;
   display: inline-block;
   margin: 3px;
   padding: 0px 0px 0px 5px;
+  font-weight: 100;
 }
 
 .menuLiA {
   color: white;
   text-decoration: none;
+  font-weight: 100;
 }
 
 .button {
