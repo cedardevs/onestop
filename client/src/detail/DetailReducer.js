@@ -7,10 +7,10 @@ const { SHOW_FRONT } = CardStatus
 export const initialState = {
   id: null,
   details: null,
-  flipped: false
+  cardStatus: CardStatus.SHOW_FRONT
 }
 
-export const card = (state = SHOW_FRONT, action) => {
+export const details = (state = initialState, action) => {
   switch (action.type) {
     case FLIP_CARD:
       console.log("+++++++++++++++++++++flip card: " + action.id)
@@ -19,13 +19,6 @@ export const card = (state = SHOW_FRONT, action) => {
           flipped:  !state.get('flipped')
         })
       }
-    default:
-      return state
-  }
-}
-
-export const data = (state = initialState, action) => {
-  switch (action.type) {
     case FETCH_DETAILS:
       return Immutable.fromJS({id: action.id, flipped: false})
     case RECEIVE_DETAILS:
@@ -36,10 +29,5 @@ export const data = (state = initialState, action) => {
       return state
   }
 }
-
-const details = combineReducers({
-  card,
-  data
-})
 
 export default details

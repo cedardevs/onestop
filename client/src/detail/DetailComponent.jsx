@@ -4,7 +4,6 @@ import styles from './detail.css'
 
 
 const Detail = (props) => {
-  console.log("props: " + props)
   // Thumbnails are dynamically assigned so style's applied via JS
   var localStyles = {
     background: 'url(' + props.thumbnail + ')',
