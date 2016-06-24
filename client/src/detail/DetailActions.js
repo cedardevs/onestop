@@ -40,9 +40,8 @@ export const getDetails = (id) => {
 
     dispatch(startDetails(id))
 
-    const details = getState().get('results').find(result => result.get('id') === id)
-    console.log ("details in getDetails method is " + details)
-    dispatch(completeDetails(id, details))
-    dispatch(flipCard(id))
+    var test = getState().get('results')
+    //dispatch(completeDetails(id, details))
+    dispatch(setCardStatus(id))
   }
 }

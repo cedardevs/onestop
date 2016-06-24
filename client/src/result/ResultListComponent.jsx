@@ -8,7 +8,7 @@ const ResultsList = ({results, loading, onCardClick}) => {
   results.forEach(function(val, key){
     details.push(<div key={key} className={`${styles['pure-u-1']} ${styles['pure-u-md-1-2']} ${styles['pure-u-lg-1-3']} ${styles['pure-u-xl-1-4']} ${styles.grid}`}>
       <Detail key={key}
-        onClick={() => onCardClick(val.id)}
+        onClick={() => onCardClick(key)}
         title={val.title}
         description={val.description}
         thumbnail={val.thumbnail_s}
