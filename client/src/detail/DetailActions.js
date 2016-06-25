@@ -38,7 +38,7 @@ export const getDetails = (id) => {
       return Promise.resolve()
     }
 
-    dispatch(startDetails(id))
+    //dispatch(startDetails(id))
 
     var test = getState().get('results')
     //dispatch(completeDetails(id, details))

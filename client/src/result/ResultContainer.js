@@ -5,7 +5,8 @@ import { getDetails } from '../detail/DetailActions'
 const mapStateToProps = (state) => {
   return {
     loading: state.getIn(['search', 'inFlight']),
-    results: state.get('results')
+    results: state.get('results'),
+    details: state.get('details').toJS()
   }
 }
 
