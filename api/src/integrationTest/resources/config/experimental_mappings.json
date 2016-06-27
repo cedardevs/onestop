@@ -48,21 +48,24 @@
         "type": "object",
         "properties": {
           "beginDate": {
-            "type": "date"
+            "type": "date",
+            "format": "date_optional_time"
           },
           "beginIndeterminate": {
             "type": "string",
             "index": "no"
           },
           "endDate": {
-            "type": "date"
+            "type": "date",
+            "format": "date_optional_time"
           },
           "endIndeterminate": {
             "type": "string",
             "index": "no"
           },
           "instant": {
-            "type": "date"
+            "type": "date",
+            "format": "date_optional_time"
           },
           "instantIndeterminate": {
             "type": "string",
@@ -179,16 +182,20 @@
         "index": "no"
       },
       "modifiedDate": {
-        "type": "date"
+        "type": "date",
+        "format": "date_optional_time"
       },
       "creationDate": {
-        "type": "date"
+        "type": "date",
+        "format": "date_optional_time"
       },
       "revisionDate": {
-        "type": "date"
+        "type": "date",
+        "format": "date_optional_time"
       },
       "publicationDate": {
-        "type": "date"
+        "type": "date",
+        "format": "date_optional_time"
       },
       "language": {
         "type": "string",
