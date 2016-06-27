@@ -1,5 +1,7 @@
 package ncei.onestop.api
 
+import org.springframework.http.HttpStatus
+
 import static ncei.onestop.api.IntegrationTestConfig.*
 import ncei.onestop.api.controller.SearchController
 import ncei.onestop.api.service.MetadataParser
@@ -59,7 +61,7 @@ class ExperimentalMappingsTest extends Specification {
             for(i in 1..3) {
                 def metadata = cl.getResourceAsStream("data/${e}/${i}.xml").text
                 def resource = MetadataParser.parseXMLMetadata(metadata)
-                client.prepareIndex(INDEX, TYPE, UUID.randomUUID().toString()).setSource(resource).setRefresh(true).execute().actionGet()
+                client.prepareIndex(INDEX, TYPE).setSource(resource).setRefresh(true).execute().actionGet()
             }
         }
 
@@ -95,5 +97,43 @@ class ExperimentalMappingsTest extends Specification {
 
         then:
         1 == 1
+    }
+
+
+    def 'Valid query and filter returns expected result'() {
+        setup:
+        def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "temperature"}
+            ],
+          "filters":
+            [
+              {"type": "datetime", "before": "2007-12-31T23:59:59.999Z", "after": "2007-01-01T00:00:00Z"}
+            ]
+        }""".stripIndent()
+
+        def requestEntity = RequestEntity
+                .post(searchBaseUri)
+                .contentType(contentType)
+                .body(request)
+
+        when:
+        def result = restTemplate.exchange(requestEntity, Map)
+
+        then: "Search returns OK"
+        result.statusCode == HttpStatus.OK
+        result.headers.getContentType() == contentType
+
+        and: "Result contains 1 item"
+        def items = result.body.data
+        items.size() == 1
+
+        and: "Expected result is returned"
+        def actualIds = items.collect { it.attributes.fileIdentifier }
+        actualIds.containsAll([
+                'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+        ])
     }
 }
