@@ -75,8 +75,22 @@ class JsonValidatorSpec extends Specification {
           """\
 {
   "filters": [
+    {"type": "geopoint", "coordinates": {"lat": 22.123, "lon": -45.245}}
+  ]
+}""",
+          """\
+{
+  "filters": [
+    {"type": "bbox", "topLeft": {"lat": 45.99, "lon": -5.99}, "bottomRight": {"lat": 30.01, "lon": 36.49}, "relation": "intersects"}
+  ]
+}""",
+          """\
+{
+  "filters": [
     {"type": "facet", "name": "platform", "values": ["Healy"]},
-    {"type":"datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
+    {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
+    {"type": "geopoint", "coordinates": {"lat": 22.123, "lon": -45.245}},
+    {"type": "bbox", "topLeft": {"lat": 45.99, "lon": -5.99}, "bottomRight": {"lat": 30.01, "lon": 36.49}, "relation": "within"}
   ]
 }""",
           """\
@@ -99,7 +113,8 @@ class JsonValidatorSpec extends Specification {
   ],
   "filters": [
     {"type": "facet", "name": "apiso_TopicCategory_s", "values": ["oceans", "oceanography"]},
-    {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
+    {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
+    {"type": "geopoint", "coordinates": {"lat": 22.123, "lon": -45.245}}
   ],
   "sort": "title",
   "page": { "number": 42, "size": 10 }
@@ -135,8 +150,37 @@ class JsonValidatorSpec extends Specification {
           """\
 {
   "filters": [
-    { "type": "point", "value": "temperature"},
-    { "type": "datetime", "before": "YYYY-MM-DD", "after": "YYYY-MM-DD"}
+    { "type": "datetime", "before": "2012-12-31", "after": "2012-01-01"}
+  ]
+}""",
+          """\
+{
+  "filters": [
+    { "type": "datetime", "before": "2016-06-15T20:20:58Z"}
+  ]
+}""",
+          """\
+{
+  "filters": [
+    { "type": "geopoint", "coordinates": {"lat": -100, "lon": -100}}
+  ]
+}""",
+          """\
+{
+  "filters": [
+    { "type": "geopoint", "coordinates": {"lat": 50, "lon": 200}}
+  ]
+}""",
+          """\
+{
+  "filters": [
+    { "type": "geopoint", "lat": -45.123, "lon": 75.245}
+  ]
+}""",
+          """\
+{
+  "filters": [
+    { "type": "bbox", "topLeft": {"lat": 45.99, "lon": -5.99}, "bottomRight": {"lat": 30.01, "lon": 36.49}}
   ]
 }"""
         ]

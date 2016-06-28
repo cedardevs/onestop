@@ -115,11 +115,11 @@
         "type": {
           "enum": ["geopoint"]
         },
-        "coordinate": {
-          "$ref": "#/definitions/coordinate"
+        "coordinates": {
+          "$ref": "#/definitions/coordinatePoint"
         }
       },
-      "required": ["type", "coordinate"],
+      "required": ["type", "coordinates"],
       "additionalProperties": false
     },
     "boundingBoxFilter": {
@@ -130,10 +130,10 @@
           "enum": ["bbox"]
         },
         "topLeft": {
-          "$ref": "#/definitions/coordinate"
+          "$ref": "#/definitions/coordinatePoint"
         },
         "bottomRight": {
-          "$ref": "#/definitions/coordinate"
+          "$ref": "#/definitions/coordinatePoint"
         },
         "relation": {
           "description": "How the dataset geometry relates to the given bounding box, e.g., return all datasets whose geometry contains the given bounding box.",
@@ -144,7 +144,7 @@
       "additionalProperties": false
     },
 
-    "coordinate": {
+    "coordinatePoint": {
       "type": "object",
       "properties": {
         "lat": {
