@@ -7,23 +7,6 @@ export const CardStatus = {
   SHOW_BACK: 'SHOW_BACK'
 }
 
-export const startDetails = (id) => {
-  return {
-    type: FETCH_DETAILS,
-    id: id,
-    flipped: false
-  }
-}
-
-export const completeDetails = (id, details) => {
-  return {
-    type: RECEIVE_DETAILS,
-    id: id,
-    details: details,
-    flipped: true
-  }
-}
-
 export const setCardStatus = (id) => {
   return {
     type: SET_CARD_STATUS,
@@ -38,10 +21,6 @@ export const getDetails = (id) => {
       return Promise.resolve()
     }
 
-    //dispatch(startDetails(id))
-
-    var test = getState().get('results')
-    //dispatch(completeDetails(id, details))
     dispatch(setCardStatus(id))
   }
 }

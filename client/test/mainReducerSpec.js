@@ -2,7 +2,7 @@ import './specHelper'
 import Immutable from 'immutable';
 import reducer from '../src/reducers/main';
 import { SEARCH, SEARCH_COMPLETE, startSearch, completeSearch } from '../src/search/SearchActions';
-import { FETCH_DETAILS, RECEIVE_DETAILS, startDetails, completeDetails} from '../src/detail/DetailActions';
+import* as actions from '../src/detail/DetailActions';
 
 describe('The main reducer', function() {
 
@@ -14,7 +14,7 @@ describe('The main reducer', function() {
     result.should.be.an.instanceOf(Immutable.Map);
     result.get('search').should.be.an.instanceOf(Immutable.Map);
     result.get('details').should.be.an.instanceOf(Immutable.Map);
-    result.get('results').should.be.an.instanceOf(Immutable.List);
+    result.get('results').should.be.an.instanceOf(Immutable.Map);
   });
 
 });
