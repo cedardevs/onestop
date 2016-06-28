@@ -144,7 +144,6 @@ class SearchIntegrationTests extends Specification {
         ])
     }
 
-
     def 'Valid query-and-filter search returns OK with expected result'() {
         setup:
         def request = """\
@@ -202,7 +201,7 @@ class SearchIntegrationTests extends Specification {
 
      */
 
-    def 'invalid search returns errors when not conforming to schema'() {
+    def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {
         setup:
         def invalidSchemaRequest = """\
         {
@@ -227,7 +226,7 @@ class SearchIntegrationTests extends Specification {
         result.body.errors.every { it.detail instanceof String }
     }
 
-    def 'invalid search returns returns error, need to specify body is json content type'() {
+    def 'Invalid search; returns UNSUPPORTED_MEDIA_TYPE error when request body not specified as json content'() {
         setup:
         def request = """\
         {
@@ -250,7 +249,7 @@ class SearchIntegrationTests extends Specification {
         result.body.data == null
     }
 
-    def 'invalid search returns returns error, need to specify json body'() {
+    def 'Invalid search; returns BAD_REQUEST error when no request body'() {
         def requestEntity = RequestEntity
                 .post(searchBaseUri)
                 .contentType(contentType)
@@ -266,7 +265,7 @@ class SearchIntegrationTests extends Specification {
         result.body.data == null
     }
 
-    def 'invalid search returns returns error, json body not parseable'() {
+    def 'Invalid search; returns BAD_REQUEST error when request body is invalid json'() {
         setup:
         def badJsonSearch = """\
         {

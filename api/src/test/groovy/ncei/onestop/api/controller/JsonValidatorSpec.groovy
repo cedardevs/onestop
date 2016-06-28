@@ -1,4 +1,4 @@
-package ncei.onestop.api
+package ncei.onestop.api.controller
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -6,7 +6,6 @@ import com.github.fge.jsonschema.core.report.ProcessingReport
 import com.github.fge.jsonschema.main.JsonSchema
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonSlurper
-import ncei.onestop.api.controller.JsonValidator
 import spock.lang.Specification
 import spock.lang.Unroll
 
