@@ -2,6 +2,10 @@
 
 /*$ICON_SIZE: 25px;*/
 
+.panel {
+  max-width: 90%;
+  margin: 40px auto;
+}
 .container {
   background: #0a4595;
   display: inline-block;
@@ -9,9 +13,8 @@
   width: 100%;
   font-size: 20px;
   color: white;
-  font-family: proxima_nova, "Helvetica Neue";
   position: absolute;
-  Bottom: 0;
+  bottom: 0;
 }
 
 .about {
@@ -25,13 +28,25 @@
   font-weight: 100;
 }
 
-.feedbackButton {
+.feedbackForm {
   line-height: 1.5;
   font-size: 16px;
   vertical-align: baseline;
   font-weight: 100;
   margin-top: 2.5em;
   margin-left: 25em;
+  float: right;
+}
+
+.logoPanel {
+  font-size: 16px;
+  float: left;
+}
+
+.externalLinksPanel {
+  font-size: 14px;
+  float: right;
+  text-align: right;
 }
 
 .feedback{
@@ -43,7 +58,6 @@
 
 .items {
   margin-top: 1.5em;
-  margin-left: 3em;
   font-weight: 100;
 }
 
@@ -59,57 +73,35 @@
 }
 
 
-.twitterLogo {
-  background-image: url('../../img/twitter_icon.png');
+.socialMediaLogo {
   background-size: contain;
   background-repeat: no-repeat;
-  width: 25px;
-  height: 25px;
+  width: 32px;
+  height: 32px;
   display: inline-block;
-  margin: 5px;
+  margin: 0 20px;
   vertical-align: middle;
+}
+.twitterLogo {
+  background-image: url('../../img/twitter42.png');
 }
 
 .facebookLogo {
-  background-image: url('../../img/faceBook_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 25px;
-  height: 25px;
-  display: inline-block;
-  margin: 5px;
-  vertical-align: middle;
+  background-image: url('../../img/facebook42.png');
 }
 
-.instagrammLogo {
-  background-image: url('../../img/instagram_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width:25px ;
-  height: 25px;
-  display: inline-block;
-  margin: 5px;
-  vertical-align: middle;
+.instagramLogo {
+  background-image: url('../../img/instagram42.png');
 }
 
 .youtubeLogo {
-  background-image: url('../../img/youTube_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 25px;
-  height: 25px;
-  margin: 5px;
-  display: inline-block;
-  vertical-align: middle;
+  background-image: url('../../img/youtube42.png');
 }
 
-.icons {
+.socialMedia {
   display: inline-block;
   color: white;
-  margin-left: 10em;
-  vertical-align: middle;
-  background-size: contain;
-  background-repeat: no-repeat;
+  float: right;
 }
 
 .hidden {

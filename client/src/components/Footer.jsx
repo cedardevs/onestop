@@ -5,7 +5,8 @@ import 'purecss'
 
 let Footer = ({dispatch}) => {
   return (
-      <div className={`${styles.container} ${styles['pure-menu']}`}>
+      <div className={styles.container}>
+      <div className={styles.panel}>
         <div className={`${styles['pure-g']} ${styles['pure-u-lg']}`}>
           <div className={`${styles['pure-u-1-2']}`}>
             <a href="http://www.noaa.gov/about-our-agency" className={styles.about}>About our agency</a>
@@ -13,33 +14,33 @@ let Footer = ({dispatch}) => {
             <a href="http://www.noaa.gov/our-work" className={styles.about}>Our work</a>
           </div>
           <div className= {`${styles.feedback} ${styles['pure-u-1-2']} ${styles['pure-u-md-1-2']}`}>
-            <div className={styles.icons}>
+            <div className={styles.socialMedia}>
               Stay connected:
-              <a href="https://twitter.com/NOAA?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor" className={styles.twitterLogo}>
+              <a href="https://twitter.com/NOAA" className={`${styles.socialMediaLogo} ${styles.twitterLogo}`}>
                 <span className={styles.hidden}>Share to Twitter</span></a>
-              <a href="https://www.facebook.com/NOAA" className={styles.facebookLogo}>
+              <a href="https://www.facebook.com/NOAA" className={`${styles.socialMediaLogo} ${styles.facebookLogo}`}>
                 <span className={styles.hidden}>Share to Facebook</span></a>
-              <a href="https://www.instagram.com/noaa" className={styles.instagrammLogo}>
+              <a href="https://www.instagram.com/noaa" className={`${styles.socialMediaLogo} ${styles.instagramLogo}`}>
                 <span className={styles.hidden}>Share to Instagramm</span></a>
-              <a href="https://www.youtube.com/user/noaa" className={styles.youtubeLogo}>
+              <a href="https://www.youtube.com/user/noaa" className={`${styles.socialMediaLogo} ${styles.youtubeLogo}`}>
                 <span className={styles.hidden}>Share to Youtube</span></a>
             </div>
 
-            <form className={`${styles.feedbackButton} ${styles['pure-form']}`} method="link" action="https://www8.nos.noaa.gov/survey">
+            <form className={`${styles.feedbackForm} ${styles['pure-form']}`} method="link" action="https://www8.nos.noaa.gov/survey">
               How are we doing?
               <button type="submit" className={`${styles['pure-button']} ${styles['pure-button-primary']}`}>Feedback</button>
             </form>
           </div>
         </div>
         <div className={`${styles.items} ${styles['pure-g']}`}>
-          <div className={`${styles['pure-u-1-4']}`}>
+          <div className={`${styles['pure-u-1-4']} ${styles.logoPanel}`}>
             <a href="http://www.noaa.gov/" className={styles.noaaLogo}>
               <span className={styles.hidden}>NOAA Home</span>
             </a>
             <span>Science. Service. Stewardship.</span>
           </div>
 
-          <div className={`${styles['pure-u-3-4']} ${styles['pure-menu']}`}>
+          <div className={`${styles['pure-u-3-4']} ${styles['pure-menu']} ${styles.externalLinksPanel}`}>
             <ul className = {`${styles['pure-menu-list']}`}>
               <li className={`${styles['pure-menu-item']}`}><a href="http://www.noaa.gov/protecting-your-privacy" className={`${styles['pure-menu-link']}`}>Protecting your Privacy</a></li>
               <li className={`${styles['pure-menu-item']}`}><a href="http://www.noaa.gov/foia-freedom-information-act" className={`${styles['pure-menu-link']}`}>FOIA</a></li>
@@ -54,10 +55,11 @@ let Footer = ({dispatch}) => {
               <li className={`${styles['pure-menu-item']}`}><a href="http://www.noaa.gov/need-help" className={`${styles['pure-menu-link']}`}>Need help?</a></li>
             </ul>
           </div>
+          </div>
         </div>
       </div>
-  );
-};
+  )
+}
 
-Footer = connect()(Footer);
+Footer = connect()(Footer)
 export default Footer
