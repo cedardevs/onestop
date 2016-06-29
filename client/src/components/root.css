@@ -5,12 +5,21 @@
   left: 0;
   height: 24px;
   width: 100%;
+  margin: 0 auto;
+}
+
+.panel {
+  max-width: 90%;
+  margin: 20px auto 0 auto;
+}
+
+.bottomBorder {
+  border-bottom: solid $color-gray 2px;
 }
 .appbar {
   clear: both;
   display: flex;
   justify-content: space-between;
-  border-bottom: solid $color-gray 2px;
   top: 24px;
   height: 140px;
   width: 100%;
@@ -27,6 +36,7 @@
 }
 
 .orgBox {
+  margin: 10px 0 0;
   display: block;
 }
 
@@ -39,8 +49,8 @@
 .orgName,
 .deptName {
   text-decoration: none;
-  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
-  color: white;
+  font-family: inherit;
+  color: inherit;
   margin-right: auto;
   font-weight: normal;
   display: block;
@@ -78,7 +88,7 @@
   left: 0;
 }
 .searchFacet {
-  float: left;
+  float: right;
 }
 .leftNav {
   z-index: 2;
