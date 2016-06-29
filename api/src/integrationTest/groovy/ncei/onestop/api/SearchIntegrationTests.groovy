@@ -109,14 +109,13 @@ class SearchIntegrationTests extends Specification {
         ])
     }
 
-    /* FIXME Does not work; should test filter other than datetime once implemented */
     def 'Valid filter-only search returns OK with expected results'() {
         setup:
         def request = """\
         {
           "filters":
             [
-              { "type": "facet", "name": "keywords.keywordText.raw", "values": ["Aleutian Islands", "Global"]}
+              { "type": "geopoint", "coordinates": {"lat": 12.34, "lon": 145.5}}
             ]
         }""".stripIndent()
 
@@ -139,8 +138,8 @@ class SearchIntegrationTests extends Specification {
         and: "Expected results are returned"
         def actualIds = items.collect { it.attributes.fileIdentifier }
         actualIds.containsAll([
-                'gov.noaa.ngdc.mgg.dem:258',
-                'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
+                'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
+                'gov.noaa.ngdc.mgg.dem:4870'
         ])
     }
 
