@@ -20,12 +20,10 @@ export const details = (state = initialState, action) => {
       let cardStatus = state.getIn([action.id, 'cardStatus'])
       switch (cardStatus) {
         case CardStatus.SHOW_FRONT:
-          state = state.setIn([action.id, 'cardStatus'], CardStatus.SHOW_BACK )
-          return state
+          return state.setIn([action.id, 'cardStatus'], CardStatus.SHOW_BACK )
         case CardStatus.SHOW_BACK:
         default:
-          state = state.setIn([action.id, 'cardStatus'], CardStatus.SHOW_FRONT )
-          return state
+          return state.setIn([action.id, 'cardStatus'], CardStatus.SHOW_FRONT )
       }
     default:
       return state
