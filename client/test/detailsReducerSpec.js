@@ -1,22 +1,19 @@
 import './specHelper'
-import Immutable from 'immutable';
 import * as  detail from '../src/detail/DetailReducer';
 
-describe('The details reducer', function () {
-  it('handles completed details request', function () {
-      // const id = 'a';
-      const initialState = Map({})
-      const initialAction =   {
-        "flipped": false,
-        "id": "a",
-        "type": "SET_CARD_STATUS"
-    }
+describe('The details reducer',() => {
+  it('handles search request',() => {
+    const initialState = detail.initialState;
+    const initalAction =  { type: 'search_complete',
+                              searchText: 'test',
+                              items: [{id:'1'}]}
 
+    const result = detail.details(initialState, initalAction);
 
-      const result = detail.details(detail.initialState, initialAction);
-      console.log(result)
-      // // result.should.not.equal(detail.initialState);
-      // result.should.equal(Immutable.fromJS(expectedResult));
+    // result.should.not.equal(initialState);
+
+    var str =result;
+    console.log(str.toString())
 
   });
 

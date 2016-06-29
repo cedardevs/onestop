@@ -1,7 +1,6 @@
-import { combineReducers } from 'redux'
 import { Map } from 'immutable'
 import {SEARCH_COMPLETE} from '../search/SearchActions'
-import {FETCH_DETAILS, RECEIVE_DETAILS, SET_CARD_STATUS, CardStatus} from './DetailActions'
+import {SET_CARD_STATUS, CardStatus} from './DetailActions'
 const { SHOW_FRONT } = CardStatus
 
 export const initialState = Map({})
@@ -21,7 +20,6 @@ export const details = (state = initialState, action) => {
       return mapState
     
     case SET_CARD_STATUS:
-      console.log("State: " + state)
       var tempState = state.toJS()
       switch (tempState[action.id].cardStatus) {
         case CardStatus.SHOW_FRONT:
