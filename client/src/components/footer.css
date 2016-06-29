@@ -4,24 +4,31 @@
 
 .panel {
   max-width: 90%;
-  margin: 40px auto;
+  margin: 20px auto;
 }
 .container {
   background: #0a4595;
-  display: inline-block;
   justify-content: space-around;
+  font-size: 12px;
   width: 100%;
-  font-size: 20px;
   color: white;
   position: absolute;
   bottom: 0;
+}
+
+.noaaLinks {
+  font-size: 1.5em;
+}
+
+.rowElement {
+  display: inline-block;
+  margin: 0 20px;
 }
 
 .about {
   display: flex;
   text-decoration: none;
   color: white;
-  font-size: 20px;
   vertical-align: baseline;
   margin-left: 1em ;
   margin-top: 1.0em;
@@ -30,21 +37,15 @@
 
 .feedbackForm {
   line-height: 1.5;
-  font-size: 16px;
-  vertical-align: baseline;
-  font-weight: 100;
-  margin-top: 2.5em;
-  margin-left: 25em;
-  float: right;
+  margin-top: 1.5em;
 }
 
 .logoPanel {
-  font-size: 16px;
   float: left;
 }
 
 .externalLinksPanel {
-  font-size: 14px;
+  font-size: .8em;
   float: right;
   text-align: right;
 }
@@ -52,7 +53,7 @@
 .feedback{
   margin-top: 0.5em;
   line-height: 2.0em;
-  text-align: justify;
+  text-align: right;
   font-weight: 100;
 }
 
@@ -70,6 +71,11 @@
   display: inline-block;
   margin: 5px;
   vertical-align: middle;
+}
+
+.slogan {
+  font-style: italic;
+  font-size: 1.2em;
 }
 
 
@@ -99,47 +105,41 @@
 }
 
 .socialMedia {
-  display: inline-block;
   color: white;
-  float: right;
 }
 
 .hidden {
   visibility: hidden;
 }
 
-.pure-menu-item {
+.externalResource {
   display:inline-block;
-  margin: 0px;
   padding: 0px 0px 0px 5px;
   font-weight: 100;
-  color: white;
   text-decoration: none;
-  font-weight: 100;
-
 }
 
-.pure-menu-list {
+.resourceList {
   list-style-type: none;
-  margin-left: 45px;
-  line-height: 15px;
-  font-weight: 100;
-  font-size: 15px;
+  line-height: 2em;
+  font-weight: bold;
+  font-size: 1.1em;
   display: inline-block;
 }
 
-.pure-menu-link{
+.footerLink{
   color: white;
   background-color: transparent;
+  text-decoration: none;
 }
 
-.pure-menu-link:hover {
+.footerLink:hover {
   background-color:  #2f6fad;
 }
 
 .pure-button {
   background-color: #2f6fad;;
   margin: 5px;
-  font-size: 16px;
+  font-size: 1.2em;
   line-height: 1.5;
 }
