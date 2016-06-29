@@ -16,8 +16,7 @@ export const details = (state = initialState, action) => {
         }
       })
         
-      const mapState = Map(newState)
-      return mapState
+      return Map(newState)
     
     case SET_CARD_STATUS:
       var tempState = state.toJS()
