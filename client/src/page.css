@@ -2,6 +2,9 @@
 
 body {
   @mixin bgImage '../img/isabel1.jpg';
+  font-size: 12px;
+  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
+  color: white;
 }
 
 img {

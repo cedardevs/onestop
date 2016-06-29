@@ -1,104 +1,65 @@
 @import '../../style/style.css';
 
-$ICON_SIZE: 25px;
+/*$ICON_SIZE: 25px;*/
 
+.panel {
+  max-width: 90%;
+  margin: 20px auto;
+}
 .container {
-  background-color: $color-medium-blue;
-  display: flex;
+  background: #0a4595;
   justify-content: space-around;
-  width: 100vw;
-  height: 250px;
-  font-size: 20px;
-  line-height: 20px;
+  font-size: 12px;
+  width: 100%;
   color: white;
-  font-family: proxima_nova,"Helvetica Neue";
+  position: absolute;
+  bottom: 0;
 }
 
-.leftHalf {
-  padding-top: 20px;
-  text-align: left;
-  letter-spacing: 0.05em;
-  width: 35%;
+.noaaLinks {
+  font-size: 1.5em;
 }
 
-.rightHalf {
-  padding-top: 20px;
-  text-align: right;
-  letter-spacing: 0.05em;
-  width: 55%;
+.rowElement {
+  display: inline-block;
+  margin: 0 20px;
 }
 
 .about {
   display: flex;
   text-decoration: none;
   color: white;
-  line-height: 1.5em;
-  font-size: 1.5rem;
   vertical-align: baseline;
+  margin-left: 1em ;
+  margin-top: 1.0em;
   font-weight: 100;
 }
 
-.hidden {
-  visibility: hidden;
+.feedbackForm {
+  line-height: 1.5;
+  margin-top: 1.5em;
 }
 
-.icons {
-  display: inline-block;
+.logoPanel {
+  float: left;
+}
+
+.externalLinksPanel {
+  font-size: .8em;
+  float: right;
+  text-align: right;
+}
+
+.feedback{
+  margin-top: 0.5em;
+  line-height: 2.0em;
+  text-align: right;
   font-weight: 100;
-  line-height: 1.16667;
-  color: white;
-  margin-right: 20px;
-  font-size: 1.3rem;
 }
 
-.twitterLogo {
-  background-image: url( '../../img/twitter_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: $ICON_SIZE;
-  height: $ICON_SIZE;
-  display: inline-block;
-  margin-right: 20px;
-  font-size: 2.8rem;
-  border-bottom: none;
-  margin-left: 5px;
-  vertical-align: middle;
-}
-
-.facebookLogo {
-  background-image: url('../../img/faceBook_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: $ICON_SIZE;
-  height: $ICON_SIZE;
-  display: inline-block;
-  margin: 5px;
-  margin-right: 20px;
-  vertical-align: middle;
-}
-
-.instagrammLogo {
-  background-image: url('../../img/instagram_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: $ICON_SIZE;
-  height: $ICON_SIZE;
-  display: inline-block;
-  margin: 5px;
-  margin-right: 20px;
-  vertical-align: middle;
-}
-
-.youtubeLogo {
-  background-image: url('../../img/youTube_icon.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: $ICON_SIZE;
-  height: $ICON_SIZE;
-  display: inline-block;
-  margin: 5px;
-  margin-right: 20px;
-  vertical-align: middle;
+.items {
+  margin-top: 1.5em;
+  font-weight: 100;
 }
 
 .noaaLogo {
@@ -108,46 +69,77 @@ $ICON_SIZE: 25px;
   width: 50px;
   height: 50px;
   display: inline-block;
-  margin: 45px;
+  margin: 5px;
   vertical-align: middle;
-  margin-right: 20px;
-  line-height: 1.5;
-  font-size: 1.5rem;
-  font-weight: 100;
 }
 
-.feedbackButton {
-  margin: 35px;
-  color: white;
-  line-height: 1.5;
-  font-size: 16px;
-  vertical-align: baseline;
-  font-weight: 100;
+.slogan {
+  font-style: italic;
+  font-size: 1.2em;
 }
 
-.menu {
-  list-style-type: none;
-  margin: 10px;
-  line-height: 15px;
-  line-width: 150px;
-  font-size: 12px;
-}
 
-.menuLi {
-  border-left: 2px solid white;
+.socialMediaLogo {
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 32px;
+  height: 32px;
   display: inline-block;
-  margin: 3px;
-  padding: 0px 0px 0px 5px;
+  margin: 0 20px;
+  vertical-align: middle;
+}
+.twitterLogo {
+  background-image: url('../../img/twitter42.png');
 }
 
-.menuLiA {
+.facebookLogo {
+  background-image: url('../../img/facebook42.png');
+}
+
+.instagramLogo {
+  background-image: url('../../img/instagram42.png');
+}
+
+.youtubeLogo {
+  background-image: url('../../img/youtube42.png');
+}
+
+.socialMedia {
   color: white;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+.externalResource {
+  display:inline-block;
+  padding: 0px 0px 0px 5px;
+  font-weight: 100;
   text-decoration: none;
 }
 
-.button {
-  background-color: #2f6fad;
+.resourceList {
+  list-style-type: none;
+  line-height: 2em;
+  font-weight: bold;
+  font-size: 1.1em;
+  display: inline-block;
+}
+
+.footerLink{
+  color: white;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.footerLink:hover {
+  background-color:  #2f6fad;
+}
+
+.pure-button {
+  background-color: #2f6fad;;
   margin: 5px;
-  font-size: 16px;
+  font-size: 1.2em;
   line-height: 1.5;
 }
