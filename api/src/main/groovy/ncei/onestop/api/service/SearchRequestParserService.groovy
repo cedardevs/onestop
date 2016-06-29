@@ -3,6 +3,7 @@ package ncei.onestop.api.service
 import groovy.util.logging.Slf4j
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.index.query.WrapperQueryBuilder
 import org.springframework.stereotype.Service
 
 @Slf4j
@@ -49,9 +50,21 @@ class SearchRequestParserService {
         def groupedFilters = filters.groupBy { it.type }
 
         // Temporal filters:
-        groupedFilters.dateTime.each {
-            // TODO date field name in ES document unknown -- calling it creationDate for now
-            builder.must(QueryBuilders.rangeQuery("creationDate").gte(it.start).lte(it.end)/*.format("")*/)
+        groupedFilters.datetime.each {
+            def dataEndsInRange = QueryBuilders.boolQuery()
+            dataEndsInRange.must(QueryBuilders.rangeQuery("temporalBounding.beginDate").gte(it.after).lte(it.before))
+            dataEndsInRange.must(QueryBuilders.rangeQuery("temporalBounding.endDate").gte(it.before))
+
+            def dataContainedInRange = QueryBuilders.boolQuery()
+            dataContainedInRange.must(QueryBuilders.rangeQuery("temporalBounding.beginDate").lte(it.after))
+            dataContainedInRange.must(QueryBuilders.rangeQuery("temporalBounding.endDate").gte(it.before))
+
+            def dataStartsInRange = QueryBuilders.boolQuery()
+            dataStartsInRange.must(QueryBuilders.rangeQuery("temporalBounding.beginDate").lte(it.after))
+            dataStartsInRange.must(QueryBuilders.rangeQuery("temporalBounding.endDate").gte(it.after).lte(it.before))
+
+            // At least one date range match should be true for data set to pass filter:
+            builder.should(dataEndsInRange).should(dataContainedInRange).should(dataStartsInRange)
         }
 
         // Spatial filters:
@@ -61,6 +74,7 @@ class SearchRequestParserService {
 
         // Facet filters:
         groupedFilters.facet.each {
+            // TODO
             builder.must(QueryBuilders.termsQuery(it.name, it.values))
         }
 

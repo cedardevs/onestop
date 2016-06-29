@@ -69,4 +69,97 @@ class SearchRequestParserServiceTest extends Specification {
         !result.toString().empty
         result.toString().equals expectedString
     }
+
+
+    def 'Test datetime filter request generates expected elasticsearch query'() {
+        given:
+        def request = '{"filters":[{"type":"datetime","before":"2011-11-11", "after":"2010-10-10"}]}'
+        def params = slurper.parseText(request)
+
+        when:
+        def result = requestParser.parseSearchRequest(params)
+        def expectedString = """\
+        {
+          "bool" : {
+            "must" : {
+              "bool" : { }
+            },
+            "filter" : {
+              "bool" : {
+                "should" : [ {
+                  "bool" : {
+                    "must" : [ {
+                      "range" : {
+                        "temporalBounding.beginDate" : {
+                          "from" : "2010-10-10",
+                          "to" : "2011-11-11",
+                          "include_lower" : true,
+                          "include_upper" : true
+                        }
+                      }
+                    }, {
+                      "range" : {
+                        "temporalBounding.endDate" : {
+                          "from" : "2011-11-11",
+                          "to" : null,
+                          "include_lower" : true,
+                          "include_upper" : true
+                        }
+                      }
+                    } ]
+                  }
+                }, {
+                  "bool" : {
+                    "must" : [ {
+                      "range" : {
+                        "temporalBounding.beginDate" : {
+                          "from" : null,
+                          "to" : "2010-10-10",
+                          "include_lower" : true,
+                          "include_upper" : true
+                        }
+                      }
+                    }, {
+                      "range" : {
+                        "temporalBounding.endDate" : {
+                          "from" : "2011-11-11",
+                          "to" : null,
+                          "include_lower" : true,
+                          "include_upper" : true
+                        }
+                      }
+                    } ]
+                  }
+                }, {
+                  "bool" : {
+                    "must" : [ {
+                      "range" : {
+                        "temporalBounding.beginDate" : {
+                          "from" : null,
+                          "to" : "2010-10-10",
+                          "include_lower" : true,
+                          "include_upper" : true
+                        }
+                      }
+                    }, {
+                      "range" : {
+                        "temporalBounding.endDate" : {
+                          "from" : "2010-10-10",
+                          "to" : "2011-11-11",
+                          "include_lower" : true,
+                          "include_upper" : true
+                        }
+                      }
+                    } ]
+                  }
+                } ]
+              }
+            }
+          }
+        }""".stripIndent()
+
+        then:
+        !result.toString().empty
+        result.toString().equals expectedString
+    }
 }
