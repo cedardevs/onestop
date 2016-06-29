@@ -20,7 +20,6 @@ export const getDetails = (id) => {
     if (getState().getIn(['search', 'inFlight']) === true) {
       return Promise.resolve()
     }
-
     dispatch(setCardStatus(id))
   }
 }

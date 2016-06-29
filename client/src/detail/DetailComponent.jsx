@@ -14,13 +14,11 @@ const Detail = (props) => {
   }
   return (
         <FlipCard disabled={true} className={styles.reactFlipCard} flipped={props.flipped}>
-
-        <div style={localStyles} >
-          <div className={styles.reactFlipCard__Front} onClick={props.onClick}>
-            <div>Title: {props.title} </div>
-            <div></div>
+          <div style={localStyles} >
+            <div className={styles.reactFlipCard__Front} onClick={props.onClick}>
+              <div>Title: {props.title} </div>
+            </div>
           </div>
-        </div>
           <div className={styles.reactFlipCard__Back} onClick={props.onClick}>
             <div>Description: {props.description}</div>
           </div>
