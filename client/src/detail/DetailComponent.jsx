@@ -5,21 +5,21 @@ import styles from './detail.css'
 
 const Detail = (props) => {
   // Thumbnails are dynamically assigned so style's applied via JS
-  console.log("These are props:" + props)
   var localStyles = {
     background: 'url(' + props.thumbnail + ')',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
     backgroundPosition: 'center center'
   }
+
   return (
         <FlipCard disabled={true} className={styles.reactFlipCard} flipped={props.flipped}>
           <div style={localStyles} >
-            <div className={styles.reactFlipCard__Front} onClick={props.onClick}>
+            <div className={styles.reactFlipCard__Front}         onClick={() => props.onCardClick(props.recordId)}>
               <div>Title: {props.title} </div>
             </div>
           </div>
-          <div className={styles.reactFlipCard__Back} onClick={props.onClick}>
+          <div className={styles.reactFlipCard__Back} onClick={() => props.onCardClick(props.recordId)}>
             <div>Description: {props.description}</div>
           </div>
         </FlipCard>

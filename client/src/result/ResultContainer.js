@@ -1,24 +1,15 @@
 import { connect } from 'react-redux'
 import ResultsList from './ResultListComponent'
-import { getDetails } from '../detail/DetailActions'
 
 const mapStateToProps = (state) => {
   return {
     loading: state.getIn(['search', 'inFlight']),
-    results: state.get('results'),
-    details: state.get('details').toJS()
-  }
-}
-
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onCardClick: (id) => dispatch(getDetails(id))
+    results: state.get('results')
   }
 }
 
 const ResultsContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
+    mapStateToProps
 )(ResultsList)
 
 export default ResultsContainer

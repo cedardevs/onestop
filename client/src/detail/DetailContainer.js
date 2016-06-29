@@ -1,18 +1,24 @@
 import { connect } from 'react-redux'
-import { flipCard } from './DetailActions'
-//import DetailList from './DetailListComponent'
-import ResultsList from '../result/ResultListComponent'
+import { getDetails, CardStatus } from './DetailActions'
+import Detail from './DetailComponent'
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, ownProps) => {
+  let details = state.get('details').toJS()
+  let cardStatus = details[ownProps.recordId].cardStatus != CardStatus.SHOW_FRONT
   return {
-    details: state.get('details').toJS()
+    details: details,
+    recordId: ownProps.recordId,
+    title: ownProps.title,
+    thumbnail: ownProps.thumbnail,
+    description: ownProps.description,
+    flipped: cardStatus
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     onCardClick: (id) => {
-      dispatch(flipCard(id))
+      dispatch(getDetails(id))
     }
   }
 }
@@ -20,6 +26,6 @@ const mapDispatchToProps = (dispatch) => {
 const DetailContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(ResultsList);
+)(Detail)
 
 export default DetailContainer
