@@ -45,15 +45,13 @@
       "type": "object",
       "properties": {
         "type": {
-          "type": "string",
-          "enum": [
-            "queryText"
-          ]
+          "enum": ["queryText"]
         },
         "value": {
           "type": "string"
         }
       },
+      "required": ["type", "value"],
       "additionalProperties": false
     },
 
@@ -64,6 +62,12 @@
         },
         {
           "$ref": "#/definitions/facetFilter"
+        },
+        {
+          "$ref": "#/definitions/geoPointFilter"
+        },
+        {
+          "$ref": "#/definitions/boundingBoxFilter"
         }
       ]
     },
@@ -71,10 +75,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "type": "string",
-          "enum": [
-            "datetime"
-          ]
+          "enum": ["datetime"]
         },
         "before": {
           "type": "string",
@@ -85,16 +86,14 @@
           "format": "date-time"
         }
       },
+      "required": ["type", "before", "after"],
       "additionalProperties": false
     },
     "facetFilter": {
       "type": "object",
       "properties": {
         "type": {
-          "type": "string",
-          "enum": [
-            "facet"
-          ]
+          "enum": ["facet"]
         },
         "name": {
           "type": "string"
@@ -106,6 +105,60 @@
           }
         }
       },
+      "required": ["type", "name", "values"],
+      "additionalProperties": false
+    },
+    "geoPointFilter": {
+      "description": "Filter that returns results whose bounding geometry contains the specified geographical coordinate.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": ["geopoint"]
+        },
+        "coordinates": {
+          "$ref": "#/definitions/coordinatePoint"
+        }
+      },
+      "required": ["type", "coordinates"],
+      "additionalProperties": false
+    },
+    "boundingBoxFilter": {
+      "description": "Filter that returns results whose bounding geometry relates to the given bounding box as specified.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": ["bbox"]
+        },
+        "topLeft": {
+          "$ref": "#/definitions/coordinatePoint"
+        },
+        "bottomRight": {
+          "$ref": "#/definitions/coordinatePoint"
+        },
+        "relation": {
+          "description": "How the dataset geometry relates to the given bounding box, e.g., return all datasets whose geometry contains the given bounding box.",
+          "enum": ["contains", "disjoint", "intersects", "within"]
+        }
+      },
+      "required": ["type", "topLeft", "bottomRight", "relation"],
+      "additionalProperties": false
+    },
+
+    "coordinatePoint": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number",
+          "minimum": -90,
+          "maximum" : 90
+        },
+        "lon": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        }
+      },
+      "required": ["lat", "lon"],
       "additionalProperties": false
     }
   }

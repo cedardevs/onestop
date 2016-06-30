@@ -49,6 +49,7 @@ bootRun {
 
 bootRepackage {
     excludeDevtools = true
+    executable = true
 }
 
 task start(type: SpawnProcessTask) {

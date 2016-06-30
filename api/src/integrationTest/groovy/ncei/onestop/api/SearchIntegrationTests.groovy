@@ -1,7 +1,9 @@
 package ncei.onestop.api
 
-import ncei.onestop.api.controller.SearchController
 import ncei.onestop.api.service.MetadataParser
+import org.elasticsearch.action.bulk.BulkRequest
+import org.elasticsearch.action.delete.DeleteRequest
+import org.elasticsearch.action.index.IndexRequest
 
 import static ncei.onestop.api.IntegrationTestConfig.*
 import org.elasticsearch.client.Client
@@ -28,41 +30,32 @@ class SearchIntegrationTests extends Specification {
     @Autowired
     private Client client
 
-    @Autowired
-    private SearchController searchController
-
     @Value('${local.server.port}')
-    String port
+    private String port
 
     @Value('${server.context-path}')
-    String contextPath
+    private String contextPath
 
-    static MediaType contentType = MediaType.APPLICATION_JSON_UTF8
+    private MediaType contentType = MediaType.APPLICATION_JSON_UTF8
+    private List datasets = ['GHRSST', 'DEM']
 
-    RestTemplate restTemplate
-    URI searchBaseUri
+    private RestTemplate restTemplate
+    private URI searchBaseUri
 
 
     void setup() {
         def cl = ClassLoader.systemClassLoader
 
-        // Initialize index:
-        def indexSettings = cl.getResourceAsStream("config/index-settings.json").text
-        client.admin().indices().prepareCreate(INDEX).setSettings(indexSettings).execute().actionGet()
-        client.admin().cluster().prepareHealth(INDEX).setWaitForActiveShards(1).execute().actionGet()
-
-        // Initialize mapping & load data:
-        def mapping = cl.getResourceAsStream("config/item-mapping.json").text
-        client.admin().indices().preparePutMapping(INDEX).setSource(mapping).setType(TYPE).execute().actionGet()
-
-        def datasets = ['GHRSST', 'DEM']
+        def bulkLoad = new BulkRequest()
         for(e in datasets) {
             for(i in 1..3) {
                 def metadata = cl.getResourceAsStream("data/${e}/${i}.xml").text
                 def resource = MetadataParser.parseXMLMetadata(metadata)
-                client.prepareIndex(INDEX, TYPE).setSource(resource).setRefresh(true).execute().actionGet()
+                bulkLoad.add(new IndexRequest(INDEX, TYPE, "${e}${i}").source(resource))
             }
         }
+        bulkLoad.refresh(true)
+        client.bulk(bulkLoad).actionGet()
 
         restTemplate = new RestTemplate()
         restTemplate.errorHandler = new TestResponseErrorHandler()
@@ -70,7 +63,15 @@ class SearchIntegrationTests extends Specification {
     }
 
     void cleanup() {
-        client.admin().indices().prepareDelete(INDEX).execute().actionGet()
+        def bulkDelete = new BulkRequest()
+        for(e in datasets) {
+            for (i in 1..3) {
+                bulkDelete.add(new DeleteRequest(INDEX, TYPE, "${e}${i}"))
+                println "delete ${e}${i}"
+            }
+        }
+        bulkDelete.refresh(true)
+        client.bulk(bulkDelete).actionGet()
     }
 
 
@@ -109,14 +110,13 @@ class SearchIntegrationTests extends Specification {
         ])
     }
 
-    /* FIXME Does not work; should test filter other than datetime once implemented */
     def 'Valid filter-only search returns OK with expected results'() {
         setup:
         def request = """\
         {
           "filters":
             [
-              { "type": "facet", "name": "keywords.keywordText.raw", "values": ["Aleutian Islands", "Global"]}
+              { "type": "geopoint", "coordinates": {"lat": 12.34, "lon": 145.5}}
             ]
         }""".stripIndent()
 
@@ -139,11 +139,10 @@ class SearchIntegrationTests extends Specification {
         and: "Expected results are returned"
         def actualIds = items.collect { it.attributes.fileIdentifier }
         actualIds.containsAll([
-                'gov.noaa.ngdc.mgg.dem:258',
-                'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
+                'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
+                'gov.noaa.ngdc.mgg.dem:4870'
         ])
     }
-
 
     def 'Valid query-and-filter search returns OK with expected result'() {
         setup:
@@ -202,7 +201,7 @@ class SearchIntegrationTests extends Specification {
 
      */
 
-    def 'invalid search returns errors when not conforming to schema'() {
+    def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {
         setup:
         def invalidSchemaRequest = """\
         {
@@ -227,7 +226,7 @@ class SearchIntegrationTests extends Specification {
         result.body.errors.every { it.detail instanceof String }
     }
 
-    def 'invalid search returns returns error, need to specify body is json content type'() {
+    def 'Invalid search; returns UNSUPPORTED_MEDIA_TYPE error when request body not specified as json content'() {
         setup:
         def request = """\
         {
@@ -250,7 +249,7 @@ class SearchIntegrationTests extends Specification {
         result.body.data == null
     }
 
-    def 'invalid search returns returns error, need to specify json body'() {
+    def 'Invalid search; returns BAD_REQUEST error when no request body'() {
         def requestEntity = RequestEntity
                 .post(searchBaseUri)
                 .contentType(contentType)
@@ -266,7 +265,7 @@ class SearchIntegrationTests extends Specification {
         result.body.data == null
     }
 
-    def 'invalid search returns returns error, json body not parseable'() {
+    def 'Invalid search; returns BAD_REQUEST error when request body is invalid json'() {
         setup:
         def badJsonSearch = """\
         {

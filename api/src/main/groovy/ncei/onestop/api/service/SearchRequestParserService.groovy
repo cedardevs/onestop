@@ -1,6 +1,12 @@
 package ncei.onestop.api.service
 
+import com.spatial4j.core.shape.Shape
 import groovy.util.logging.Slf4j
+import org.elasticsearch.common.geo.ShapeRelation
+import org.elasticsearch.common.geo.builders.EnvelopeBuilder
+import org.elasticsearch.common.geo.builders.ShapeBuilder
+import org.elasticsearch.common.xcontent.ToXContent
+import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.index.query.WrapperQueryBuilder
@@ -68,8 +74,32 @@ class SearchRequestParserService {
         }
 
         // Spatial filters:
-        groupedFilters.point.each {
-            // TODO
+        groupedFilters.geopoint.each {
+            def point = ShapeBuilder.newPoint(it.coordinates.lon, it.coordinates.lat)
+            builder.must(QueryBuilders.geoShapeQuery("spatialBounding", point, ShapeRelation.CONTAINS))
+        }
+
+        groupedFilters.bbox.each {
+            def bbox = ShapeBuilder.newEnvelope()
+                    .topLeft(it.topLeft.lon, it.topLeft.lat)
+                    .bottomRight(it.bottomRight.lon, it.bottomRight.lat)
+            def relation
+            switch(it.relation) {
+                case 'contains':
+                    relation = ShapeRelation.CONTAINS
+                    break
+                case 'disjoint':
+                    relation = ShapeRelation.DISJOINT
+                    break
+                case 'within':
+                    relation = ShapeRelation.WITHIN
+                    break
+                default:
+                    // Default ES relation
+                    relation = ShapeRelation.INTERSECTS
+            }
+
+            builder.must(QueryBuilders.geoShapeQuery("spatialBounding", bbox, relation))
         }
 
         // Facet filters:
