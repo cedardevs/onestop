@@ -93,6 +93,7 @@ class SearchRequestParserService {
                     break
                 case 'within':
                     relation = ShapeRelation.WITHIN
+                    break
                 default:
                     // Default ES relation
                     relation = ShapeRelation.INTERSECTS
