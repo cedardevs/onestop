@@ -1,0 +1,13 @@
+# Deploy the onestop system
+---
+
+- hosts: backend
+  remote_user: root
+  roles:
+    - elasticsearch
+
+- hosts: web
+  remote_user: root
+  roles:
+    - api
+    - client

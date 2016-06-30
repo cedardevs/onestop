@@ -1,0 +1,81 @@
+# Tasks to install and start elasticsearch
+---
+
+- name: Ensure the latest java is installed
+  become: true
+  yum:
+    name: java-1.8.0-openjdk.x86_64
+    state: latest
+
+- name: Install the elasticsearch rpm gpg key
+  become: true
+  rpm_key:
+    key: https://packages.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Add the elasticsearch yum repository
+  become: true
+  yum_repository:
+    name: elasticsearch_2.x
+    description: Elasticsearch repository for 2.x packages
+    baseurl: https://packages.elastic.co/elasticsearch/2.x/centos
+    gpgkey: https://packages.elastic.co/GPG-KEY-elasticsearch
+    gpgcheck: yes
+    state: present
+
+- name: Install elasticsearch
+  become: true
+  yum:
+    name: elasticsearch
+    state: present
+
+- name: Create an elasticsearch group
+  become: true
+  group:
+    name: elasticsearch
+    state: present
+
+- name: Create an elasticsearch user
+  become: true
+  user:
+    name: elasticsearch
+    group: elasticsearch
+    state: present
+
+- name: Set up elasticsearch file system
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: elasticsearch
+    group: elasticsearch
+    recurse: yes
+  with_items:
+    - /usr/share/elasticsearch
+    - /etc/elasticsearch
+    - /var/lib/elasticsearch
+    - /var/log/elasticsearch
+    - /var/run/elasticsearch
+
+#- name: Allow incoming elasticsearch node transport traffic
+#  become: true
+#  firewalld:
+#    port: 9300/tcp
+#    state: disabled
+#    permanent: true
+#    immediate: true
+#
+#- name: Allow incoming elasticsearch rest api traffic
+#  become: true
+#  firewalld:
+#    port: 9200/tcp
+#    state: disabled
+#    permanent: true
+#    immediate: true
+
+- name: Start elasticsearch
+  become: true
+  service:
+    name: elasticsearch.service
+    state: started
+    enabled: yes
