@@ -14,7 +14,7 @@ const Detail = (props) => {
 
   return (
         <FlipCard disabled={true} className={styles.reactFlipCard} flipped={props.flipped}>
-          <div style={localStyles} >
+          <div style={localStyles}>
             <div className={styles.reactFlipCard__Front} onClick={() => props.onCardClick(props.recordId)}>
               <div>Title: {props.title} </div>
             </div>
@@ -29,15 +29,8 @@ const Detail = (props) => {
 Detail.propTypes = {
   id: PropTypes.string.isRequired,
   flipped: PropTypes.bool.isRequired,
-  onClick: PropTypes.func.isRequired,
-  details: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    summary: PropTypes.string.isRequired,
-    links: PropTypes.arrayOf(PropTypes.shape({
-      href: PropTypes.string.isRequired,
-      type: PropTypes.string.isRequired
-    })).isRequired
-  })
+  onCardClick: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired
 }
 
 Detail.defaultProps = {

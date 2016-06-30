@@ -29,8 +29,6 @@ export const textSearch = (searchText) => {
     dispatch(startSearch(searchText))
 
     const index = getState().getIn(['search', 'index'])
-    console.log('Searching: searchText="${index}":"${searchText}')
-
     const apiRoot = "/api/search"
     const fetchParams = {
       method: 'POST',

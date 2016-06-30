@@ -41,8 +41,8 @@ let Footer = ({dispatch}) => {
                 text: "Need help?"
               }
             ]
-  externalResources = externalResources.map(function(el){
-    return <li className={`${styles.externalResource} ${styles.rowElement}`}><a href={`${el.href}`} className={`${styles.footerLink}`}>{`${el.text}`}</a></li>
+  externalResources = externalResources.map(function(el, idx){
+    return <li key={idx} className={`${styles.externalResource} ${styles.rowElement}`}><a href={`${el.href}`} className={`${styles.footerLink}`}>{`${el.text}`}</a></li>
   })
 
   return (

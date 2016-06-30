@@ -27,7 +27,6 @@ const Root = () => (
             </div>
           </div>
       </div>
-
       <div>
         <ResultsContainer/>
       </div>
