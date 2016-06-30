@@ -1,19 +1,19 @@
 import './specHelper'
-import * as  detail from '../src/detail/DetailReducer';
+import * as detail from '../src/detail/DetailReducer'
 
 describe('The details reducer',() => {
   it('handles search request',() => {
-    const initialState = detail.initialState;
+    const initialState = detail.initialState
     const initalAction =  { type: 'search_complete',
                               searchText: 'test',
                               items: [{id:'1'}]}
 
-    const result = detail.details(initialState, initalAction);
+    const result = detail.details(initialState, initalAction).toJS()
+    console.log(JSON.stringify(result))
 
-    result.every(function(elem) {
-      var card = elem.cardStatus;
-      card.should.deep.equal('SHOW_FRONT')
-    });
-  });
-
-});
+    for (let [k, v] of Object.entries(result)) {
+      var cardStatus = v.cardStatus
+      cardStatus.should.equal('SHOW_FRONT')
+    }
+  })
+})
