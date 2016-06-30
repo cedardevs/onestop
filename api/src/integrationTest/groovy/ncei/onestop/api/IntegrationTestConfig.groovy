@@ -55,6 +55,16 @@ class IntegrationTestConfig {
         def client = node.client()
         node.start()
 
+        // Initialize index:
+        def cl = ClassLoader.systemClassLoader
+        def indexSettings = cl.getResourceAsStream("config/index-settings.json").text
+        client.admin().indices().prepareCreate(INDEX).setSettings(indexSettings).execute().actionGet()
+        client.admin().cluster().prepareHealth(INDEX).setWaitForActiveShards(1).execute().actionGet()
+
+        // Initialize mapping & load data:
+        def mapping = cl.getResourceAsStream("config/item-mapping.json").text
+        client.admin().indices().preparePutMapping(INDEX).setSource(mapping).setType(TYPE).execute().actionGet()
+
         return client
     }
 
