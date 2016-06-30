@@ -1,6 +1,8 @@
 package ncei.onestop.api
 
 import ncei.onestop.api.controller.SearchController
+import ncei.onestop.api.service.MetadataParser
+
 import static ncei.onestop.api.IntegrationTestConfig.*
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
@@ -56,8 +58,9 @@ class SearchIntegrationTests extends Specification {
         def datasets = ['GHRSST', 'DEM']
         for(e in datasets) {
             for(i in 1..3) {
-                def resource = cl.getResourceAsStream("data/${e}/${i}.json").text
-                client.prepareIndex(INDEX, TYPE, UUID.randomUUID().toString()).setSource(resource).setRefresh(true).execute().actionGet()
+                def metadata = cl.getResourceAsStream("data/${e}/${i}.xml").text
+                def resource = MetadataParser.parseXMLMetadata(metadata)
+                client.prepareIndex(INDEX, TYPE).setSource(resource).setRefresh(true).execute().actionGet()
             }
         }
 
@@ -98,7 +101,7 @@ class SearchIntegrationTests extends Specification {
         items.size() == 3
 
         and: "Expected results are returned"
-        def actualIds = items.collect { it.attributes.fileid }
+        def actualIds = items.collect { it.attributes.fileIdentifier }
         actualIds.containsAll([
                 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED',
                 'gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R',
@@ -106,16 +109,14 @@ class SearchIntegrationTests extends Specification {
         ])
     }
 
-    /* FIXME This certainly tests the code, but potentially does not represent desired behavior as-is.
-             E.g., GP index settings require an exact, case-sensitive match for keywords & our code always
-             represents a union for returned results when maybe we want an intersection (always/sometimes)...? */
+    /* FIXME Does not work; should test filter other than datetime once implemented */
     def 'Valid filter-only search returns OK with expected results'() {
         setup:
         def request = """\
         {
           "filters":
             [
-              { "type": "facet", "name": "keywords_s", "values": ["Aleutian Islands", "Global"]}
+              { "type": "facet", "name": "keywords.keywordText.raw", "values": ["Aleutian Islands", "Global"]}
             ]
         }""".stripIndent()
 
@@ -136,7 +137,7 @@ class SearchIntegrationTests extends Specification {
         items.size() == 2
 
         and: "Expected results are returned"
-        def actualIds = items.collect { it.attributes.fileid }
+        def actualIds = items.collect { it.attributes.fileIdentifier }
         actualIds.containsAll([
                 'gov.noaa.ngdc.mgg.dem:258',
                 'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
@@ -144,17 +145,17 @@ class SearchIntegrationTests extends Specification {
     }
 
 
-    def 'Valid query-and-filter search returns OK with expected results'() {
+    def 'Valid query-and-filter search returns OK with expected result'() {
         setup:
         def request = """\
         {
           "queries":
             [
-              { "type": "queryText", "value": "temp*"}
+              { "type": "queryText", "value": "temperature"}
             ],
           "filters":
             [
-              { "type": "facet", "name": "keywords_s", "values": ["Aleutian Islands", "Global"]}
+              {"type": "datetime", "before": "2007-12-31T23:59:59.999Z", "after": "2007-01-01T00:00:00Z"}
             ]
         }""".stripIndent()
 
@@ -175,11 +176,12 @@ class SearchIntegrationTests extends Specification {
         items.size() == 1
 
         and: "Expected result is returned"
-        def actualIds = items.collect { it.attributes.fileid }
+        def actualIds = items.collect { it.attributes.fileIdentifier }
         actualIds.containsAll([
-                'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
+                'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
         ])
     }
+
 
     /* TODO Happy path test cases:
         'Valid search returns OK when sort and page elements specified with expected results'
@@ -202,12 +204,10 @@ class SearchIntegrationTests extends Specification {
 
     def 'invalid search returns errors when not conforming to schema'() {
         setup:
-        // FIXME invalid based on "point"? undefined; pick something defined & actually invalid
         def invalidSchemaRequest = """\
         {
           "filters": [
-            {"type": "point", "value": "temperature"},
-            {"type": "dateTime", "before": "YYYY-MM-DD", "after": "YYYY-MM-DD"}
+            {"type": "dateTime", "before": "2012-01-01", "after": "2011-01-01"}
           ]
         }""".stripIndent()
         def requestEntity = RequestEntity
