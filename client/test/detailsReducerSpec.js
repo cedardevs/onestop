@@ -10,11 +10,10 @@ describe('The details reducer',() => {
 
     const result = detail.details(initialState, initalAction);
 
-    // result.should.not.equal(initialState);
-
-    var str =result;
-    console.log(str.toString())
-
+    result.every(function(elem) {
+      var card = elem.cardStatus;
+      card.should.deep.equal('SHOW_FRONT')
+    });
   });
 
 });

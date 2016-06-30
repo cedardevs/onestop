@@ -15,7 +15,7 @@ const Detail = (props) => {
   return (
         <FlipCard disabled={true} className={styles.reactFlipCard} flipped={props.flipped}>
           <div style={localStyles} >
-            <div className={styles.reactFlipCard__Front}         onClick={() => props.onCardClick(props.recordId)}>
+            <div className={styles.reactFlipCard__Front} onClick={() => props.onCardClick(props.recordId)}>
               <div>Title: {props.title} </div>
             </div>
           </div>

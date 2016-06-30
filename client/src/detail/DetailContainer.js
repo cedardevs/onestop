@@ -3,14 +3,13 @@ import { getDetails, CardStatus } from './DetailActions'
 import Detail from './DetailComponent'
 
 const mapStateToProps = (state, ownProps) => {
-  let details = state.get('details').toJS()
-  let cardStatus = details[ownProps.recordId].cardStatus != CardStatus.SHOW_FRONT
+  let cardDetails = state.getIn(['details',ownProps.recordId]).toJS()
+  let cardStatus = cardDetails.cardStatus != CardStatus.SHOW_FRONT
   return {
-    details: details,
     recordId: ownProps.recordId,
-    title: ownProps.title,
-    thumbnail: ownProps.thumbnail,
-    description: ownProps.description,
+    title: cardDetails.title,
+    thumbnail: cardDetails.thumbnail,
+    description: cardDetails.description,
     flipped: cardStatus
   }
 }

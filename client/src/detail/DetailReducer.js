@@ -11,11 +11,14 @@ export const details = (state = initialState, action) => {
       let newState = {}
       action.items.forEach(function (val, key) {
         newState[key] = {
-          details: val,
+          title: val.title,
+          thumbnail: val.thumbnail_s,
+          description: val.description,
           cardStatus: CardStatus.SHOW_FRONT
         }
       })
       return Immutable.fromJS(newState)
+
     case SET_CARD_STATUS:
       let cardStatus = state.getIn([action.id, 'cardStatus'])
       switch (cardStatus) {
