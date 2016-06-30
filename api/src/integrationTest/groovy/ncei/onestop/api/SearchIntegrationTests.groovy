@@ -109,14 +109,13 @@ class SearchIntegrationTests extends Specification {
         ])
     }
 
-    /* FIXME Does not work; should test filter other than datetime once implemented */
     def 'Valid filter-only search returns OK with expected results'() {
         setup:
         def request = """\
         {
           "filters":
             [
-              { "type": "facet", "name": "keywords.keywordText.raw", "values": ["Aleutian Islands", "Global"]}
+              { "type": "geopoint", "coordinates": {"lat": 12.34, "lon": 145.5}}
             ]
         }""".stripIndent()
 
@@ -139,11 +138,10 @@ class SearchIntegrationTests extends Specification {
         and: "Expected results are returned"
         def actualIds = items.collect { it.attributes.fileIdentifier }
         actualIds.containsAll([
-                'gov.noaa.ngdc.mgg.dem:258',
-                'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
+                'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
+                'gov.noaa.ngdc.mgg.dem:4870'
         ])
     }
-
 
     def 'Valid query-and-filter search returns OK with expected result'() {
         setup:
@@ -202,7 +200,7 @@ class SearchIntegrationTests extends Specification {
 
      */
 
-    def 'invalid search returns errors when not conforming to schema'() {
+    def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {
         setup:
         def invalidSchemaRequest = """\
         {
@@ -227,7 +225,7 @@ class SearchIntegrationTests extends Specification {
         result.body.errors.every { it.detail instanceof String }
     }
 
-    def 'invalid search returns returns error, need to specify body is json content type'() {
+    def 'Invalid search; returns UNSUPPORTED_MEDIA_TYPE error when request body not specified as json content'() {
         setup:
         def request = """\
         {
@@ -250,7 +248,7 @@ class SearchIntegrationTests extends Specification {
         result.body.data == null
     }
 
-    def 'invalid search returns returns error, need to specify json body'() {
+    def 'Invalid search; returns BAD_REQUEST error when no request body'() {
         def requestEntity = RequestEntity
                 .post(searchBaseUri)
                 .contentType(contentType)
@@ -266,7 +264,7 @@ class SearchIntegrationTests extends Specification {
         result.body.data == null
     }
 
-    def 'invalid search returns returns error, json body not parseable'() {
+    def 'Invalid search; returns BAD_REQUEST error when request body is invalid json'() {
         setup:
         def badJsonSearch = """\
         {
