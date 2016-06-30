@@ -6,6 +6,10 @@ import groovy.json.JsonBuilder
 class MetadataParser {
 
     public static String parseXMLMetadata(String xml) {
+        return parseXMLMetadataToJSON(xml).toPrettyString()
+    }
+
+    public static JsonBuilder parseXMLMetadataToJSON(String xml) {
 
         def fileIdentifier
         def parentIdentifier
@@ -247,6 +251,6 @@ class MetadataParser {
                 securityConstraints: securityConstraints,
                 grid: grid
 
-        return json.toPrettyString()
+        return json
     }
 }
