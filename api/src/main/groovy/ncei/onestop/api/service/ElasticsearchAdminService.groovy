@@ -1,5 +1,6 @@
 package ncei.onestop.api.service
 
+import groovy.json.JsonOutput
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,8 +21,10 @@ class ElasticsearchAdminService {
 
 
     public Map loadDocument(String document) {
-        def parsedDoc = MetadataParser.parseXMLMetadata(document)
-        IndexResponse iResponse = client.prepareIndex(index, type).setSource(parsedDoc).execute().actionGet()
+        def mappedDoc = MetadataParser.parseXMLMetadataToMap(document)
+        def parsedDoc = JsonOutput.toJson(mappedDoc)
+        IndexResponse iResponse = client.prepareIndex(index, type, mappedDoc.fileIdentifier)
+                .setSource(parsedDoc).execute().actionGet()
         def data = [type: 'collection', id: iResponse.id, attributes: parsedDoc]
         def response = [data: data]
         return response

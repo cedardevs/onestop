@@ -1,5 +1,18 @@
+buildscript {
+  dependencies {
+    classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7'
+  }
+}
+
+
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.ContentType
 import com.wiredforcode.gradle.spawn.SpawnProcessTask
 import com.wiredforcode.gradle.spawn.KillProcessTask
+import groovyx.net.http.Method
+import ncei.onestop.api.service.MetadataParser
 
 plugins {
   id "com.wiredforcode.spawn" version "0.6.0"
@@ -31,4 +44,93 @@ task start(type: SpawnProcessTask) {
 task stop(type: KillProcessTask) {
   onlyIf { new File(projectDir, '.pid.lock').exists() }
   directory projectDir.absolutePath
+}
+
+task bootstrapGHRSST {
+  dependsOn 'start', 'initializeIndex'
+  doLast {
+    def srcUrl = new URL('http://data.nodc.noaa.gov/geoportal/rest/find/document' +
+            '?searchText=title:GHRSST%20NOT%20title:Documentation&start=1&max=100&f=json')
+    def esBaseURL = 'http://localhost:9200/testing/item/'
+    def esIndex = new HTTPBuilder()
+
+    def json = new JsonSlurper().parse(srcUrl)
+    json.records.each { record ->
+      record.links.each { link ->
+        if (link.type.contains("metadata")) {
+          def doc = MetadataParser.parseXMLMetadataToMap(new URL(link.href).text)
+          esIndex.request(new URL(esBaseURL + doc.doi), Method.PUT, ContentType.JSON) {
+            body = JsonOutput.toJson(doc)
+            response.success = { resp, data ->
+              println "${data._index}:${data._type}:${data._id} created: ${data.created}"
+            }
+            response.failure = { resp, data ->
+              println "Error uploading metadata from ${link.href}: ${data.error}"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+task bootstrapDEM {
+  dependsOn 'start', 'initializeIndex'
+  doLast {
+    def srcUrl = "https://www.ngdc.noaa.gov/metadata/published/NOAA/NESDIS/NGDC/MGG/DEM/iso/xml"
+    def http = new HTTPBuilder(srcUrl)
+    def esBaseURL = 'http://localhost:9200/testing/item/'
+    def esIndex = new HTTPBuilder()
+
+    def html = http.get([:])
+    html."**".findAll { record ->
+      def link = (srcUrl.toString() + '/' + record.toString())
+      if (link.endsWith(".xml")) {
+        def doc = MetadataParser.parseXMLMetadataToMap(new URL(link).text)
+        esIndex.request(esBaseURL + doc.doi, Method.PUT, ContentType.JSON) {
+          body = JsonOutput.toJson(doc)
+          response.success = { resp, data ->
+            println "${data._index}:${data._type}:${data._id} created: ${data.created}"
+          }
+          response.failure = { resp, data ->
+            println "Error uploading metadata from ${link}: ${data.error}"
+          }
+        }
+      }
+    }
+  }
+}
+
+task updateMetadataParserFile(type: Copy) {
+  from '../api/src/main/groovy/ncei/onestop/api/service/MetadataParser.groovy'
+  into '../buildSrc/src/main/groovy'
+}
+
+task initializeIndex {
+  dependsOn 'start'
+  doLast {
+    def indexExists = true
+    def esIndex = new HTTPBuilder('http://localhost:9200/testing') // TODO need to have different name from GP index
+    esIndex.request(Method.HEAD) {
+      response.success = {
+        println "Index mapping already in place, ready to load data"
+      }
+      response.failure = {
+        println "Index needs to be created... "
+        indexExists = false
+      }
+    }
+
+    if (!indexExists) {
+      esIndex.request(Method.PUT, ContentType.JSON) { req ->
+        body = file('../api/src/integrationTest/resources/config/index-settings.json').text
+      }
+
+      def mapping = new HTTPBuilder('http://localhost:9200/testing/_mapping/item')
+      mapping.request(Method.PUT, ContentType.JSON) {
+        body = file('../api/src/integrationTest/resources/config/item-mapping.json').text
+      }
+      println 'Index created and mapped'
+    }
+  }
 }
