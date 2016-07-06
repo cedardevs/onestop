@@ -28,7 +28,7 @@
 - name: Get stats on the jar being deployed
   connection: local
   stat:
-    path: ../api/build/libs/api-1.0-SNAPSHOT.jar
+    path: "{{ apiJar }}"
   register: newjar
 
 - name: Stop the api service if we need to update it
@@ -40,19 +40,19 @@
 - name: Install the api app
   become: true
   copy:
-    src: ../api/build/libs/api-1.0-SNAPSHOT.jar #TODO - discover dynamically?
+    src: "{{ apiJar }}"
     dest: /usr/local/bin/onestop-api.jar
     owner: onestop
     group: onestop
     mode: u=rx,g=,o=
-  register: jar
+  register: deployedjar
 
 - name: Link the api app into system services
   become: true
   file:
     path: /etc/init.d/onestop-api
     state: link
-    src: "{{ jar.dest }}"
+    src: "{{ deployedjar.dest }}"
 
 - name: Start the api as a system service
   become: true

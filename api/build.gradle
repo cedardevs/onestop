@@ -43,11 +43,16 @@ dependencies {
     testCompile 'com.vividsolutions:jts:1.13' // Necessary for embedded ES to have geo_shape type available
 }
 
+ext {
+    outputJar = file("${buildDir}/libs/${project.name}-${project.version}.jar")
+}
+
 bootRun {
     dependsOn ':elasticsearch:start'
 }
 
 bootRepackage {
+    outputFile = outputJar
     excludeDevtools = true
     executable = true
 }
@@ -57,7 +62,7 @@ task start(type: SpawnProcessTask) {
     onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
 
     directory projectDir.absolutePath
-    command "java -jar ${buildDir}/libs/${project.name}-${project.version}.jar"
+    command "java -jar ${outputJar}"
     ready 'Started Application'
 }
 

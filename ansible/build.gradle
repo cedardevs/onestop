@@ -1,0 +1,27 @@
+// Defines a 'deploy' task which deploys the client and api via ansible
+// Assumes that ansible is installed and that an inventory file named 'hosts'
+// is present in the ansible subproject dir (next to this build script)
+
+task deploy {
+    dependsOn ':api:bootRepackage'//, clientBuildTask
+
+    doLast {
+//    def clientOutput = apiBuildTask.outputs.files.singleFile
+
+        def proc = new ProcessBuilder()
+          .command(
+            'ansible-playbook',
+            'deploy-onestop.yml',
+            '--inventory', './hosts',
+            '--user', 'root',
+            '--extra-vars', "apiJar=${project(':api').outputJar}"
+          )
+          .directory(projectDir)
+          .start()
+
+        proc.waitForProcessOutput(System.out, System.err)
+        if (proc.exitValue() != 0) {
+            throw new RuntimeException("Ansible playbook failed")
+        }
+    }
+}
