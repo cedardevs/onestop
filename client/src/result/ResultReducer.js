@@ -1,16 +1,16 @@
-import Immutable from 'immutable';
-import {SEARCH_COMPLETE} from '../search/SearchActions';
+import Immutable from 'immutable'
+import {SEARCH_COMPLETE} from '../search/SearchActions'
 
-export const initialState = Immutable.List();
+export const initialState = Immutable.Map()
 
 const results = (state = initialState, action) => {
   switch(action.type) {
     case SEARCH_COMPLETE:
-      return Immutable.fromJS(action.items);
+      return Immutable.fromJS(action.items)
 
     default:
       return state
   }
-};
+}
 
-export default results;
+export default results

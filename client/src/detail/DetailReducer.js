@@ -1,38 +1,36 @@
-import Immutable from 'immutable';
-import {SEARCH, SEARCH_COMPLETE} from '../search/SearchActions';
-import {FETCH_DETAILS, RECEIVE_DETAILS, FLIP_CARD} from './DetailActions';
+import Immutable from 'immutable'
+import {SEARCH_COMPLETE} from '../search/SearchActions'
+import {SET_CARD_STATUS, CardStatus} from './DetailActions'
+const { SHOW_FRONT } = CardStatus
 
-export const initialState = {
-  id: null,
-  details: null,
-  flipped: false
-};
+export const initialState = Immutable.Map({})
 
 export const details = (state = initialState, action) => {
   switch (action.type) {
-    case SEARCH:
     case SEARCH_COMPLETE:
-      return Immutable.Map();
-
-    case FETCH_DETAILS:
-      return Immutable.fromJS({id: action.id, flipped: false});
-
-    case RECEIVE_DETAILS:
-        console.log("Action Details is "+ action.details);
-      return state.merge({
-        details: action.details
+      let newState = {}
+      action.items.forEach(function (val, key) {
+        newState[key] = {
+          title: val.title,
+          thumbnail: val.thumbnail_s,
+          description: val.description,
+          cardStatus: CardStatus.SHOW_FRONT
+        }
       })
+      return Immutable.fromJS(newState)
 
-    case FLIP_CARD:
-      if (state.get('id') == action.id){
-        return state.merge({
-          flipped:  !state.get('flipped')
-        })
+    case SET_CARD_STATUS:
+      let cardStatus = state.getIn([action.id, 'cardStatus'])
+      switch (cardStatus) {
+        case CardStatus.SHOW_FRONT:
+          return state.setIn([action.id, 'cardStatus'], CardStatus.SHOW_BACK )
+        case CardStatus.SHOW_BACK:
+        default:
+          return state.setIn([action.id, 'cardStatus'], CardStatus.SHOW_FRONT )
       }
-
     default:
-      return state;
+      return state
   }
-};
+}
 
-export default details;
+export default details

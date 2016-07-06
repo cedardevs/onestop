@@ -29,8 +29,6 @@ export const textSearch = (searchText) => {
     dispatch(startSearch(searchText))
 
     const index = getState().getIn(['search', 'index'])
-    console.log(`Searching: searchText="${index}":"${searchText}`)
-
     const apiRoot = "/api/search"
     const fetchParams = {
       method: 'POST',
@@ -47,14 +45,16 @@ export const textSearch = (searchText) => {
 
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
-        .then(json => dispatch(completeSearch(searchText, flattenResourcesToItems(json.data))))
+        .then(json => dispatch(completeSearch(searchText, assignResourcesToMap(json.data))))
   }
 }
 
-const flattenResourcesToItems = (resourceList) => {
-  return resourceList.map(resource => {
-    return Object.assign({id: resource.id, type: resource.type}, resource.attributes)
+const assignResourcesToMap = (resourceList) => {
+  var map = new Map()
+  resourceList.forEach(resource => {
+    map.set(resource.id, Object.assign({type: resource.type}, resource.attributes))
   })
+  return map
 }
 
 export const indexChange = (indexText) => {

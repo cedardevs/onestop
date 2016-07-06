@@ -1,27 +1,15 @@
 export const FETCH_DETAILS = 'fetch_details'
 export const RECEIVE_DETAILS = 'receive_details'
-export const FLIP_CARD = 'flip_card'
+export const SET_CARD_STATUS = 'SET_CARD_STATUS'
 
-export const startDetails = (id) => {
-  return {
-    type: FETCH_DETAILS,
-    id: id,
-    flipped: false
-  }
+export const CardStatus = {
+  SHOW_FRONT: 'SHOW_FRONT',
+  SHOW_BACK: 'SHOW_BACK'
 }
 
-export const completeDetails = (id, details) => {
+export const setCardStatus = (id) => {
   return {
-    type: RECEIVE_DETAILS,
-    id: id,
-    details: details,
-    flipped: true
-  }
-}
-
-export const flipCard = (id) => {
-  return{
-    type: FLIP_CARD,
+    type: SET_CARD_STATUS,
     id: id
   }
 }
@@ -32,12 +20,6 @@ export const getDetails = (id) => {
     if (getState().getIn(['search', 'inFlight']) === true) {
       return Promise.resolve()
     }
-
-    dispatch(startDetails(id))
-
-    const details = getState().get('results').find(result => result.get('id') === id)
-    console.log ("details in getDetails method is " + details)
-    dispatch(completeDetails(id, details))
-    dispatch(flipCard(id))
+    dispatch(setCardStatus(id))
   }
 }

@@ -27,8 +27,7 @@ const Root = () => (
             </div>
           </div>
       </div>
-
-      <div styleName={styles.results}>
+      <div>
         <ResultsContainer/>
       </div>
       <div className={styles.footer} id='footer'>
