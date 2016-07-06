@@ -1,0 +1,6 @@
+[web]
+web.machine.one
+
+[backend]
+backend.machine.one
+backend.machine.two
