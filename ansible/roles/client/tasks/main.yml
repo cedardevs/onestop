@@ -83,6 +83,24 @@
     state: yes
     persistent: yes
 
+- name: Allow incoming http traffic
+  become: true
+  firewalld:
+    service: http
+    zone: public
+    state: enabled
+    permanent: true
+    immediate: true
+
+- name: Allow incoming https traffic
+  become: true
+  firewalld:
+    service: https
+    zone: public
+    state: enabled
+    permanent: true
+    immediate: true
+
 - name: Restart nginx
   become: true
   service:
