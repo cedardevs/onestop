@@ -45,14 +45,27 @@
     group: nginx
     mode: a=rx
 
-- name: Install client
-  become: true
+- name: Copy client tarball
   copy:
-     src: ../client/dist/
+    src: "{{ clientTar }}"
+    dest: /tmp/
+  register: copiedtar
+
+#TODO - clean up existing client?
+- name: Unpack client into document root
+  become: true
+  unarchive:
+     copy: no
+     src: "{{ copiedtar.dest }}"
      dest: /usr/share/nginx/html
      owner: nginx
      group: nginx
      mode: a=r
+
+- name: Delete temporary client tarball
+  file:
+    path: "{{ copiedtar.dest }}"
+    state: absent
 
 - name: Install api proxy config
   become: true

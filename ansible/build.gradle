@@ -3,10 +3,13 @@
 // is present in the ansible subproject dir (next to this build script)
 
 task deploy {
-    dependsOn ':api:bootRepackage'//, clientBuildTask
+    dependsOn ':api:bootRepackage', ':client:assemble'
 
     doLast {
-//    def clientOutput = apiBuildTask.outputs.files.singleFile
+        def apiOutput = project(':api').outputJar
+        def clientOutput = project(':client').tasks.findByName('assemble').outputs.files.singleFile
+
+        println clientOutput
 
         def proc = new ProcessBuilder()
           .command(
@@ -14,7 +17,7 @@ task deploy {
             'deploy-onestop.yml',
             '--inventory', './hosts',
             '--user', 'root',
-            '--extra-vars', "apiJar=${project(':api').outputJar}"
+            '--extra-vars', "apiJar=${apiOutput} clientTar=${clientOutput}"
           )
           .directory(projectDir)
           .start()
