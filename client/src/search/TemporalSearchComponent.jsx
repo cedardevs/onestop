@@ -5,26 +5,17 @@ import styles from './search.css'
 import 'purecss'
 
 
-class TemporalSearch extends React.component {
+const TemporalSearch = () => {
 
-
-  const dropDownEntries = function () {
-    
-   console.log('one stop')
-  };
-
-  render() {
-    return (
-        <div >
-          <div>
-            <button className={`${styles['pure-button']} ${styles.temporalDropdown}`} onClick={() => dropDownEntries }>
-              Temporal
-            </button>
-
-          </div>
-        </div>
-    );
+  const dropDownEntries = function() {
+   alert('one stop')
   }
+
+  return (
+    <button className={`${styles['pure-button']} ${styles.temporalDropdown}`} onClick={dropDownEntries}>
+      Temporal
+    </button>
+  )
 }
 
 export default TemporalSearch
