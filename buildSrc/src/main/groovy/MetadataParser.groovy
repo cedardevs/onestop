@@ -13,6 +13,7 @@ class MetadataParser {
 
         def fileIdentifier
         def parentIdentifier
+        def doi
         def title
         def alternateTitle
         def description
@@ -47,6 +48,7 @@ class MetadataParser {
         // Basic info:
         fileIdentifier = metadata.fileIdentifier.CharacterString.text()
         parentIdentifier = metadata.parentIdentifier.CharacterString.text()
+        doi = idInfo.citation.CI_Citation.identifier.MD_Identifier.code.Anchor.text()
         title = idInfo.citation.CI_Citation.title.CharacterString.text()
         alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text()
         description = idInfo.abstract.CharacterString.text()
@@ -229,6 +231,7 @@ class MetadataParser {
         def json = [
                 fileIdentifier: fileIdentifier,
                 parentIdentifier: parentIdentifier,
+                doi: doi,
                 title: title,
                 alternateTitle: alternateTitle,
                 description: description,
