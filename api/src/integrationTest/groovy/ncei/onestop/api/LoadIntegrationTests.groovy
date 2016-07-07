@@ -15,8 +15,6 @@ import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static ncei.onestop.api.IntegrationTestConfig.*
-
 @Unroll
 @WebIntegrationTest
 @ActiveProfiles("integration")
@@ -25,13 +23,19 @@ import static ncei.onestop.api.IntegrationTestConfig.*
 class LoadIntegrationTests extends Specification {
 
     @Autowired
-    Client client
+    private Client client
 
     @Value('${local.server.port}')
-    String port
+    private String port
 
     @Value('${server.context-path}')
-    String contextPath
+    private String contextPath
+
+    @Value('${elasticsearch.index}')
+    private String INDEX
+
+    @Value('${elasticsearch.type}')
+    private String TYPE
 
     RestTemplate restTemplate
     URI loadURI

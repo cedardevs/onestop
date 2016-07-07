@@ -27,7 +27,9 @@ class MetadataController {
             consumes = 'application/xml', produces = 'application/json')
     @ResponseStatus(value = HttpStatus.CREATED)
     Map load(@RequestBody String xml, HttpServletResponse response) {
+        log.debug("Request received")
         return esAdminService.loadDocument(xml)
     }
 
+    // todo ExceptionHandler methods
 }
