@@ -1,7 +1,9 @@
 import React from 'react'
 import IndexDropDown from './IndexDropDownComponent'
+import TemporalSearch from './TemporalSearchComponent'
 import TextSearchField from './TextSearchFieldComponent'
 import styles from './search.css'
+import 'purecss'
 
 const SearchFacet = ({indexName, submit, handleIndexChange}) => {
   return <form className={styles['pure-form']}>
@@ -9,6 +11,11 @@ const SearchFacet = ({indexName, submit, handleIndexChange}) => {
       <div className={styles.textField}>
         <TextSearchField onEnterKeyDown={submit}/>
       </div>
+
+      <div className={styles.dateTimeField}>
+        <TemporalSearch/>
+      </div>
+
       <div className={styles.dropDown}>
         <IndexDropDown indexName={indexName} onChange={handleIndexChange}/>
       </div>
