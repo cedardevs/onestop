@@ -1,0 +1,3 @@
+=== Getting started:
+
+`./gradlew start`
