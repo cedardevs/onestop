@@ -99,6 +99,34 @@ task bootstrapDEM {
   }
 }
 
+task bootstrapCOOPS {
+  dependsOn 'start', 'initializeIndex', ':api:start'
+  doLast {
+    // FIXME: This file is 11MB; pagination/buffering should probably be used?
+    def srcURL = new URL('http://www.nodc.noaa.gov/search/granule/rest/find/document' +
+            '?searchText=fileIdentifier%3ACO-OPS*&start=1&max=10000&after=2016-06-30&f=json')
+    def load = new HTTPBuilder('http://localhost:8097/api/load')
+
+    def json = new JsonSlurper().parse(srcURL)
+    json.records.each { record ->
+      record.links.each { link ->
+        if (link.type.contains("metadata")) {
+          load.request(Method.POST) {
+            requestContentType = 'application/xml'
+            body = new URL(link.href).text
+            response.success = { resp, data ->
+              println "${data.data.id} created: ${data.data.attributes.created}"
+            }
+            response.failure = { resp, data ->
+              println "Error uploading metadata from ${link.href}: ${data.errors.detail}"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 task initializeIndex {
   dependsOn 'start'
   doLast {

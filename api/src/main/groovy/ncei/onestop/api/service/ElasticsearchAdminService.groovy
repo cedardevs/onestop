@@ -36,7 +36,7 @@ class ElasticsearchAdminService {
             IndexResponse iResponse = client.prepareIndex(INDEX, TYPE, mappedDoc.fileIdentifier)
                     .setSource(parsedDoc).execute().actionGet()
             def attributes = [created: iResponse.created, src: parsedDoc]
-            def data = [type: 'collection', id: iResponse.id, attributes: attributes]
+            def data = [type: TYPE, id: iResponse.id, attributes: attributes]
             def response = [data: data]
             return response
         } else {
