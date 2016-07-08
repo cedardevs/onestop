@@ -2,7 +2,7 @@ import 'babel-polyfill'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import React from 'react'
 import {render} from 'react-dom'
-import { Router, Route, hashHistory, browserHistory } from 'react-router'
+import { Router, Route, browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import {createStore, applyMiddleware} from 'redux'
 import thunk from 'redux-thunk'
@@ -20,7 +20,12 @@ injectTapEventPlugin()
 let store = createStore(reducer, applyMiddleware(thunk))
 
 // Create an enhanced history that syncs navigation events with the store
-const history = syncHistoryWithStore(browserHistory, store)
+const history = syncHistoryWithStore(browserHistory, store, {
+  selectLocationState(state) {
+    console.log(JSON.stringify(state.toJS()))
+    return state.get("routing");
+  }
+})
 
 const routes =
     <Route component={Root}>
@@ -29,7 +34,7 @@ const routes =
 
 const body =
     <Provider store={store}>
-      <Router history={hashHistory}>{routes}</Router>
+      <Router history={history}>{routes}</Router>
     </Provider>
 
 var appDiv = document.createElement('div')
