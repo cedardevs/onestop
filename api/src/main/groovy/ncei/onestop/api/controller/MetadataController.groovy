@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 import javax.servlet.http.HttpServletResponse
@@ -25,11 +24,13 @@ class MetadataController {
 
     @RequestMapping(path = '/load', method = RequestMethod.POST,
             consumes = 'application/xml', produces = 'application/json')
-    @ResponseStatus(value = HttpStatus.CREATED)
     Map load(@RequestBody String xml, HttpServletResponse response) {
-        log.debug("Request received")
-        return esAdminService.loadDocument(xml)
+        def result = esAdminService.loadDocument(xml)
+        if(result.data) {
+            response.status = HttpStatus.CREATED.value()
+        } else {
+            response.status = HttpStatus.BAD_REQUEST.value()
+        }
+        return result
     }
-
-    // todo ExceptionHandler methods
 }

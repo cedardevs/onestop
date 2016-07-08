@@ -85,4 +85,19 @@ class LoadIntegrationTests extends Specification {
         fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
 
     }
+
+    def 'Document rejected when whitespace found in fileIdentifier'() {
+        setup:
+        def document = ClassLoader.systemClassLoader.getResourceAsStream("data/BadFiles/montauk_forecastgrids_2013.xml").text
+        def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+
+        when:
+        def loadResult = restTemplate.exchange(loadRequest, Map)
+
+        then: "Load returns BAD_REQUEST"
+        loadResult.statusCode == HttpStatus.BAD_REQUEST
+
+        and: "Erroneous file identifier specified"
+        loadResult.body.errors.detail == 'gov.noaa.ngdc.mgg.dem: montauk_forecastgrids_2013'
+    }
 }

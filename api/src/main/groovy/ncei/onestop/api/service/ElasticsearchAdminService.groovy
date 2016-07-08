@@ -2,6 +2,7 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
+
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,7 +40,12 @@ class ElasticsearchAdminService {
             def response = [data: data]
             return response
         } else {
-            // todo throw some error
+            def errors = [
+                    status: 400,
+                    title: 'Load request failed due to bad fileIdentifier value',
+                    detail: mappedDoc.fileIdentifier
+            ]
+            return [errors: errors]
         }
 
     }
