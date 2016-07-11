@@ -2,9 +2,10 @@ import 'babel-polyfill'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import React from 'react'
 import {render} from 'react-dom'
-import { Router, Route, browserHistory } from 'react-router'
+import { Router, Route, browserHistory, hashHistory, IndexRoute } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import {createStore, applyMiddleware} from 'redux'
+import ResultsContainer from './result/ResultContainer'
 import thunk from 'redux-thunk'
 import {Provider} from 'react-redux'
 import Root from './components/Root.jsx'
@@ -19,22 +20,30 @@ injectTapEventPlugin()
 
 let store = createStore(reducer, applyMiddleware(thunk))
 
-// Create an enhanced history that syncs navigation events with the store
-const history = syncHistoryWithStore(browserHistory, store, {
-  selectLocationState(state) {
-    console.log(JSON.stringify(state.toJS()))
-    return state.get("routing");
+// Create enhanced history object for router
+const createSelectLocationState = () => {
+  let prevRoutingState, prevRoutingStateJS
+  return (state) => {
+    const routingState = state.get('routing')
+    if (typeof prevRoutingState === 'undefined' || prevRoutingState !== routingState) {
+      prevRoutingState = routingState
+      prevRoutingStateJS = routingState.toJS()
+    }
+    return prevRoutingStateJS
   }
-})
+}
 
-const routes =
-    <Route component={Root}>
-      <Route path="/" component={Root} />
-    </Route>
+const history = syncHistoryWithStore(hashHistory, store, {
+  selectLocationState: createSelectLocationState()
+})
 
 const body =
     <Provider store={store}>
-      <Router history={history}>{routes}</Router>
+      <Router history={history}>
+        <Route path="/" component={Root}>
+          <IndexRoute component={ResultsContainer}/>
+        </Route>
+      </Router>
     </Provider>
 
 var appDiv = document.createElement('div')
