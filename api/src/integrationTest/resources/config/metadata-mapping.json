@@ -1,5 +1,5 @@
 {
-  "item": {
+  "metadata": {
     "properties": {
       "fileIdentifier": {
         "type": "string",

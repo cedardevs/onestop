@@ -6,7 +6,6 @@ import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.search.SearchRequest
 
-import static ncei.onestop.api.IntegrationTestConfig.*
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -36,6 +35,12 @@ class SearchIntegrationTests extends Specification {
 
     @Value('${server.context-path}')
     private String contextPath
+
+    @Value('${elasticsearch.index}')
+    private String INDEX
+
+    @Value('${elasticsearch.type}')
+    private String TYPE
 
     private MediaType contentType = MediaType.APPLICATION_JSON_UTF8
     private List datasets = ['GHRSST', 'DEM']
