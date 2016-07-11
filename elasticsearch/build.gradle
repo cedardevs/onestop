@@ -47,25 +47,24 @@ task stop(type: KillProcessTask) {
 }
 
 task bootstrapGHRSST {
-  dependsOn 'start', 'initializeIndex'
+  dependsOn 'start', 'initializeIndex', ':api:start'
   doLast {
-    def srcUrl = new URL('http://data.nodc.noaa.gov/geoportal/rest/find/document' +
+    def srcURL = new URL('http://data.nodc.noaa.gov/geoportal/rest/find/document' +
             '?searchText=title:GHRSST%20NOT%20title:Documentation&start=1&max=100&f=json')
-    def esBaseURL = 'http://localhost:9200/testing/item/'
-    def esIndex = new HTTPBuilder()
+    def load = new HTTPBuilder('http://localhost:8097/api/load')
 
-    def json = new JsonSlurper().parse(srcUrl)
+    def json = new JsonSlurper().parse(srcURL)
     json.records.each { record ->
       record.links.each { link ->
         if (link.type.contains("metadata")) {
-          def doc = MetadataParser.parseXMLMetadataToMap(new URL(link.href).text)
-          esIndex.request(new URL(esBaseURL + doc.doi), Method.PUT, ContentType.JSON) {
-            body = JsonOutput.toJson(doc)
+          load.request(Method.POST) {
+            requestContentType = 'application/xml'
+            body = new URL(link.href).text
             response.success = { resp, data ->
-              println "${data._index}:${data._type}:${data._id} created: ${data.created}"
+              println "${data.data.id} created: ${data.data.attributes.created}"
             }
             response.failure = { resp, data ->
-              println "Error uploading metadata from ${link.href}: ${data.error}"
+              println "Error uploading metadata from ${link.href}: ${data.errors.detail}"
             }
           }
         }
@@ -75,25 +74,24 @@ task bootstrapGHRSST {
 }
 
 task bootstrapDEM {
-  dependsOn 'start', 'initializeIndex'
+  dependsOn 'start', 'initializeIndex', ':api:start'
   doLast {
     def srcUrl = "https://www.ngdc.noaa.gov/metadata/published/NOAA/NESDIS/NGDC/MGG/DEM/iso/xml"
     def http = new HTTPBuilder(srcUrl)
-    def esBaseURL = 'http://localhost:9200/testing/item/'
-    def esIndex = new HTTPBuilder()
+    def load = new HTTPBuilder('http://localhost:8097/api/load')
 
     def html = http.get([:])
     html."**".findAll { record ->
       def link = (srcUrl.toString() + '/' + record.toString())
       if (link.endsWith(".xml")) {
-        def doc = MetadataParser.parseXMLMetadataToMap(new URL(link).text)
-        esIndex.request(esBaseURL + doc.doi, Method.PUT, ContentType.JSON) {
-          body = JsonOutput.toJson(doc)
+        load.request(Method.POST) {
+          requestContentType = 'application/xml'
+          body = new URL(link).text
           response.success = { resp, data ->
-            println "${data._index}:${data._type}:${data._id} created: ${data.created}"
+            println "${data.data.id} created: ${data.data.attributes.created}"
           }
           response.failure = { resp, data ->
-            println "Error uploading metadata from ${link}: ${data.error}"
+            println "Error uploading metadata from ${link}: ${data.errors.title}, ${data.errors.detail}"
           }
         }
       }
@@ -101,16 +99,44 @@ task bootstrapDEM {
   }
 }
 
-task updateMetadataParserFile(type: Copy) {
-  from '../api/src/main/groovy/ncei/onestop/api/service/MetadataParser.groovy'
-  into '../buildSrc/src/main/groovy'
+task bootstrapCOOPS {
+  dependsOn 'start', 'initializeIndex', ':api:start'
+  doLast {
+    def load = new HTTPBuilder('http://localhost:8097/api/load')
+    def count = 0
+
+    1.step(10000, 1000) { i ->
+      def url = "http://www.nodc.noaa.gov/search/granule/rest/find/document?" +
+              "searchText=fileIdentifier%3ACO-OPS*&orderBy=title&start=${i}&max=1000&after=2016-06-30&f=json"
+
+      def srcURL = new URL(url)
+      def json = new JsonSlurper().parse(srcURL)
+      json.records.each { record ->
+        record.links.each { link ->
+          if (link.type.contains("metadata")) {
+            count++
+            load.request(Method.POST) {
+              requestContentType = 'application/xml'
+              body = new URL(link.href).text
+              response.success = { resp, data ->
+                println "${data.data.id} created #${count}: ${data.data.attributes.created}"
+              }
+              response.failure = { resp, data ->
+                println "Error uploading metadata #${count} from ${link.href}: ${data.errors.detail}"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 task initializeIndex {
   dependsOn 'start'
   doLast {
     def indexExists = true
-    def esIndex = new HTTPBuilder('http://localhost:9200/testing') // TODO need to have different name from GP index
+    def esIndex = new HTTPBuilder('http://localhost:9200/onestop_v1') // TODO need to have different name from GP index
     esIndex.request(Method.HEAD) {
       response.success = {
         println "Index mapping already in place, ready to load data"
@@ -126,9 +152,9 @@ task initializeIndex {
         body = file('../api/src/integrationTest/resources/config/index-settings.json').text
       }
 
-      def mapping = new HTTPBuilder('http://localhost:9200/testing/_mapping/item')
+      def mapping = new HTTPBuilder('http://localhost:9200/onestop_v1/_mapping/metadata')
       mapping.request(Method.PUT, ContentType.JSON) {
-        body = file('../api/src/integrationTest/resources/config/item-mapping.json').text
+        body = file('../api/src/integrationTest/resources/config/metadata-mapping.json').text
       }
       println 'Index created and mapped'
     }

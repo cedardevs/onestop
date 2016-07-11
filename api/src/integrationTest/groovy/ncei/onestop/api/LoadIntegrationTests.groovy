@@ -15,8 +15,6 @@ import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static ncei.onestop.api.IntegrationTestConfig.*
-
 @Unroll
 @WebIntegrationTest
 @ActiveProfiles("integration")
@@ -25,13 +23,19 @@ import static ncei.onestop.api.IntegrationTestConfig.*
 class LoadIntegrationTests extends Specification {
 
     @Autowired
-    Client client
+    private Client client
 
     @Value('${local.server.port}')
-    String port
+    private String port
 
     @Value('${server.context-path}')
-    String contextPath
+    private String contextPath
+
+    @Value('${elasticsearch.index}')
+    private String INDEX
+
+    @Value('${elasticsearch.type}')
+    private String TYPE
 
     RestTemplate restTemplate
     URI loadURI
@@ -80,5 +84,20 @@ class LoadIntegrationTests extends Specification {
         hits.size() == 1
         fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
 
+    }
+
+    def 'Document rejected when whitespace found in fileIdentifier'() {
+        setup:
+        def document = ClassLoader.systemClassLoader.getResourceAsStream("data/BadFiles/montauk_forecastgrids_2013.xml").text
+        def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+
+        when:
+        def loadResult = restTemplate.exchange(loadRequest, Map)
+
+        then: "Load returns BAD_REQUEST"
+        loadResult.statusCode == HttpStatus.BAD_REQUEST
+
+        and: "Erroneous file identifier specified"
+        loadResult.body.errors.detail == 'gov.noaa.ngdc.mgg.dem: montauk_forecastgrids_2013'
     }
 }

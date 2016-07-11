@@ -1,6 +1,7 @@
 package ncei.onestop.api.service
 
 import groovy.util.logging.Slf4j
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -9,6 +10,12 @@ import org.elasticsearch.client.Client
 @Slf4j
 @Service
 class SearchService {
+
+    @Value('${elasticsearch.index}')
+    private String index
+
+    @Value('${elasticsearch.type}')
+    private String type
 
     private Client client
     private SearchRequestParserService searchRequestParserService
@@ -31,13 +38,11 @@ class SearchService {
     }
 
     private Map queryElasticSearch(Map params) {
-        def geoportalIndex = 'metadata_v1'
-        def itemTypeName = 'item'
         def query = searchRequestParserService.parseSearchRequest(params)
         log.debug("ES query:${query} params:${params}")
         def searchResponse = client
-            .prepareSearch(geoportalIndex)
-            .setTypes(itemTypeName)
+            .prepareSearch(index)
+            .setTypes(type)
             .setQuery(query)
             .execute()
             .actionGet()
