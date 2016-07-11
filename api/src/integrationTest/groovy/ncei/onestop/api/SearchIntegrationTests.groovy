@@ -115,7 +115,7 @@ class SearchIntegrationTests extends Specification {
         {
           "filters":
             [
-              { "type": "geopoint", "coordinates": {"lat": 12.34, "lon": 145.5}}
+              {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [12.34, 145.5]}}
             ]
         }""".stripIndent()
 

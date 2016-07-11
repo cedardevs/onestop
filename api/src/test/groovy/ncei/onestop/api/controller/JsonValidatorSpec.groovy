@@ -75,13 +75,15 @@ class JsonValidatorSpec extends Specification {
           """\
 {
   "filters": [
-    {"type": "geopoint", "coordinates": {"lat": 22.123, "lon": -45.245}}
+    {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [22.123, -45.245]}}
   ]
 }""",
           """\
 {
   "filters": [
-    {"type": "bbox", "topLeft": {"lat": 45.99, "lon": -5.99}, "bottomRight": {"lat": 30.01, "lon": 36.49}, "relation": "intersects"}
+    {"type": "geometry", "relation": "intersects", "geometry":
+      {"type": "Polygon", "coordinates": [[[-5.99, 45.99], [-5.99, 36.49], [36.49, 30.01], [36.49, 45.99], [-5.99, 45.99]]]}
+    }
   ]
 }""",
           """\
@@ -89,8 +91,10 @@ class JsonValidatorSpec extends Specification {
   "filters": [
     {"type": "facet", "name": "platform", "values": ["Healy"]},
     {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
-    {"type": "geopoint", "coordinates": {"lat": 22.123, "lon": -45.245}},
-    {"type": "bbox", "topLeft": {"lat": 45.99, "lon": -5.99}, "bottomRight": {"lat": 30.01, "lon": 36.49}, "relation": "within"}
+    {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [22.123, -45.245]}},
+    {"type": "geometry", "relation": "intersects", "geometry":
+      {"type": "Polygon", "coordinates": [[[-5.99, 45.99], [-5.99, 36.49], [36.49, 30.01], [36.49, 45.99], [-5.99, 45.99]]]}
+    }
   ]
 }""",
           """\
@@ -114,7 +118,7 @@ class JsonValidatorSpec extends Specification {
   "filters": [
     {"type": "facet", "name": "apiso_TopicCategory_s", "values": ["oceans", "oceanography"]},
     {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
-    {"type": "geopoint", "coordinates": {"lat": 22.123, "lon": -45.245}}
+    {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [22.123, -45.245]}}
   ],
   "sort": "title",
   "page": { "number": 42, "size": 10 }

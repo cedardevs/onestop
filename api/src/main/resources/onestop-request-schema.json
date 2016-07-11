@@ -64,10 +64,7 @@
           "$ref": "#/definitions/facetFilter"
         },
         {
-          "$ref": "#/definitions/geoPointFilter"
-        },
-        {
-          "$ref": "#/definitions/boundingBoxFilter"
+          "$ref": "#/definitions/geometryFilter"
         }
       ]
     },
@@ -108,58 +105,116 @@
       "required": ["type", "name", "values"],
       "additionalProperties": false
     },
-    "geoPointFilter": {
+    "geometryFilter": {
       "description": "Filter that returns results whose bounding geometry contains the specified geographical coordinate.",
       "type": "object",
       "properties": {
         "type": {
-          "enum": ["geopoint"]
+          "enum": ["geometry"]
         },
-        "coordinates": {
-          "$ref": "#/definitions/coordinatePoint"
-        }
-      },
-      "required": ["type", "coordinates"],
-      "additionalProperties": false
-    },
-    "boundingBoxFilter": {
-      "description": "Filter that returns results whose bounding geometry relates to the given bounding box as specified.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "enum": ["bbox"]
-        },
-        "topLeft": {
-          "$ref": "#/definitions/coordinatePoint"
-        },
-        "bottomRight": {
-          "$ref": "#/definitions/coordinatePoint"
+        "geometry": {
+          "$ref": "#/definitions/Geometry"
         },
         "relation": {
-          "description": "How the dataset geometry relates to the given bounding box, e.g., return all datasets whose geometry contains the given bounding box.",
+          "description": "How the dataset geometry relates to the given geometry, e.g., return all datasets whose geometry contains the given point.",
           "enum": ["contains", "disjoint", "intersects", "within"]
         }
       },
-      "required": ["type", "topLeft", "bottomRight", "relation"],
+      "required": ["type", "geometry"],
       "additionalProperties": false
     },
 
-    "coordinatePoint": {
+    "Geometry": {
+      "description": "One geometry as defined by GeoJSON",
+      "oneOf": [
+        {"$ref": "#/definitions/Point"},
+        {"$ref": "#/definitions/MultiPoint"},
+        {"$ref": "#/definitions/LineString"},
+        {"$ref": "#/definitions/MultiLineString"},
+        {"$ref": "#/definitions/Polygon"},
+        {"$ref": "#/definitions/MultiPolygon"}
+      ]
+    },
+    "Point": {
       "type": "object",
       "properties": {
-        "lat": {
-          "type": "number",
-          "minimum": -90,
-          "maximum" : 90
-        },
-        "lon": {
-          "type": "number",
-          "minimum": -180,
-          "maximum": 180
+        "type": {"enum": ["Point"]},
+        "coordinates": {"$ref": "#/definitions/position"}
+      },
+      "required": ["type", "coordinates"]
+    },
+    "MultiPoint": {
+      "properties": {
+        "type": {"enum": ["MultiPoint"]},
+        "coordinates": {"$ref": "#/definitions/positionArray"}
+      },
+      "required": ["type", "coordinates"]
+    },
+    "LineString": {
+      "properties": {
+        "type": {"enum": ["LineString"]},
+        "coordinates": {"$ref": "#/definitions/lineString"}
+      },
+      "required": ["type", "coordinates"]
+    },
+    "MultiLineString": {
+      "properties": {
+        "type": {"enum": ["MultiLineString"]},
+        "coordinates": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/lineString"}
         }
       },
-      "required": ["lat", "lon"],
-      "additionalProperties": false
+      "required": ["type", "coordinates"]
+    },
+    "Polygon": {
+      "properties": {
+        "type": {"enum": ["Polygon"]},
+        "coordinates": {"$ref": "#/definitions/polygon"}
+      },
+      "required": ["type", "coordinates"]
+    },
+    "MultiPolygon": {
+      "properties": {
+        "type": {"enum": ["MultiPolygon"]},
+        "coordinates": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/polygon"}
+        }
+      },
+      "required": ["type", "coordinates"]
+    },
+
+    "position": {
+      "description": "A single position",
+      "type": "array",
+      "minItems": 2,
+      "items": [ { "type": "number" }, { "type": "number" } ],
+      "additionalItems": false
+    },
+    "positionArray": {
+      "description": "An array of positions",
+      "type": "array",
+      "items": { "$ref": "#/definitions/position" }
+    },
+    "lineString": {
+      "description": "An array of two or more positions",
+      "allOf": [
+        { "$ref": "#/definitions/positionArray" },
+        { "minItems": 2 }
+      ]
+    },
+    "linearRing": {
+      "description": "An array of four positions where the first equals the last",
+      "allOf": [
+        { "$ref": "#/definitions/positionArray" },
+        { "minItems": 4 }
+      ]
+    },
+    "polygon": {
+      "description": "An array of linear rings",
+      "type": "array",
+      "items": { "$ref": "#/definitions/linearRing" }
     }
   }
 }
