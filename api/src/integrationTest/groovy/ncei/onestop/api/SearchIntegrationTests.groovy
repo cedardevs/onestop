@@ -4,6 +4,7 @@ import ncei.onestop.api.service.MetadataParser
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.index.IndexRequest
+import org.elasticsearch.action.search.SearchRequest
 
 import static ncei.onestop.api.IntegrationTestConfig.*
 import org.elasticsearch.client.Client
@@ -63,15 +64,13 @@ class SearchIntegrationTests extends Specification {
     }
 
     void cleanup() {
-        def bulkDelete = new BulkRequest()
-        for(e in datasets) {
-            for (i in 1..3) {
-                bulkDelete.add(new DeleteRequest(INDEX, TYPE, "${e}${i}"))
-                println "delete ${e}${i}"
-            }
+        def items = client.search(new SearchRequest(INDEX).types(TYPE)).actionGet()
+        def ids = items.hits.hits*.id
+        def bulkDelete = ids.inject(new BulkRequest()) {bulk, id ->
+            bulk.add(new DeleteRequest(INDEX, TYPE, id))
         }
         bulkDelete.refresh(true)
-        client.bulk(bulkDelete).actionGet()
+        client.bulk(bulkDelete)
     }
 
 
