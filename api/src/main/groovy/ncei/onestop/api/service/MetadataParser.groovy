@@ -165,7 +165,7 @@ class MetadataParser {
         }
 
         // Links:
-        def linkage = metadata.'**'.findAll { it.name() == 'CI_OnlineResource' }
+        def linkage = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'CI_OnlineResource' }
         linkage.each { e ->
             links.add( [
                     linkName: e.name.CharacterString.text(),
