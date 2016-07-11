@@ -1,6 +1,9 @@
 package ncei.onestop.api
 
+import org.elasticsearch.action.bulk.BulkRequest
+import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.get.GetRequest
+import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -46,6 +49,16 @@ class LoadIntegrationTests extends Specification {
         loadURI = "http://localhost:${port}/${contextPath}/load".toURI()
         refreshURI = "http://localhost:${port}/${contextPath}/load/refresh".toURI()
         searchURI = "http://localhost:${port}/${contextPath}/search".toURI()
+    }
+
+    void cleanup() {
+        def items = client.search(new SearchRequest(INDEX).types(TYPE)).actionGet()
+        def ids = items.hits.hits*.id
+        def bulkDelete = ids.inject(new BulkRequest()) {bulk, id ->
+            bulk.add(new DeleteRequest(INDEX, TYPE, id))
+        }
+        bulkDelete.refresh(true)
+        client.bulk(bulkDelete)
     }
 
     def 'Document is loaded but not searchable when only loading'() {
