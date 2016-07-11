@@ -1,4 +1,5 @@
 @import '../../style/style.css';
+@import '../../node_modules/react-date-picker/index.css';
 
 .textField {
   display: inline;
@@ -31,6 +32,18 @@
   display: inline-block;
 }
 
+.startTimeField{
+  display: inline;
+  display: inline-block;
+  margin-left: 7px;
+}
+
+.endTimeField{
+  display: inline;
+  display: inline-block;
+  margin-left: 7px;
+}
+
 .temporalDropdown{
   display: inline;
   background-color: #2f6fad;
@@ -39,3 +52,4 @@
   line-height: 1.5em;
   color: white;
 }
+

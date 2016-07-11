@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-import Result from './ResultComponent'
 import DetailContainer from '../detail/DetailContainer'
 import styles from './result.css'
 
