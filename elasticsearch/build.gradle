@@ -103,26 +103,26 @@ task bootstrapCOOPS {
   dependsOn 'start', 'initializeIndex', ':api:start'
   doLast {
     def load = new HTTPBuilder('http://localhost:8097/api/load')
-    def debug = 1
+    def count = 0
 
     1.step(10000, 1000) { i ->
       def url = "http://www.nodc.noaa.gov/search/granule/rest/find/document?" +
-              "searchText=fileIdentifier%3ACO-OPS*&orderBy=title&start=${i}&max=${i+1000}&after=2016-06-30&f=json"
+              "searchText=fileIdentifier%3ACO-OPS*&orderBy=title&start=${i}&max=1000&after=2016-06-30&f=json"
 
-    def srcURL = new URL(url)
+      def srcURL = new URL(url)
       def json = new JsonSlurper().parse(srcURL)
       json.records.each { record ->
         record.links.each { link ->
           if (link.type.contains("metadata")) {
-            debug++
+            count++
             load.request(Method.POST) {
               requestContentType = 'application/xml'
               body = new URL(link.href).text
               response.success = { resp, data ->
-                println "${data.data.id} created #${debug}: ${data.data.attributes.created}"
+                println "${data.data.id} created #${count}: ${data.data.attributes.created}"
               }
               response.failure = { resp, data ->
-                println "Error uploading metadata #${debug} from ${link.href}: ${data.errors.detail}"
+                println "Error uploading metadata #${count} from ${link.href}: ${data.errors.detail}"
               }
             }
           }
