@@ -1,17 +1,12 @@
 package ncei.onestop.api.service
 
-import com.spatial4j.core.shape.Shape
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.elasticsearch.common.geo.ShapeRelation
-import org.elasticsearch.common.geo.builders.EnvelopeBuilder
 import org.elasticsearch.common.geo.builders.ShapeBuilder
-import org.elasticsearch.common.xcontent.ToXContent
-import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.index.query.WrapperQueryBuilder
 import org.springframework.stereotype.Service
 
 @Slf4j
