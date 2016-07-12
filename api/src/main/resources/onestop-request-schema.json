@@ -83,7 +83,7 @@
           "format": "date-time"
         }
       },
-      "required": ["type", "before", "after"],
+      "required": ["type"],
       "additionalProperties": false
     },
     "facetFilter": {

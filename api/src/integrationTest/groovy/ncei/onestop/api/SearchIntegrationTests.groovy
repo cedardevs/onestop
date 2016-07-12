@@ -1,5 +1,6 @@
 package ncei.onestop.api
 
+import groovy.json.JsonOutput
 import ncei.onestop.api.service.MetadataParser
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.delete.DeleteRequest
@@ -183,6 +184,46 @@ class SearchIntegrationTests extends Specification {
         actualIds.containsAll([
                 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
         ])
+    }
+
+    def 'Time filter with #situation an item\'s time range returns the correct results'() {
+        setup:
+        def ghrsst1FileId = 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+        def request = [filters: [[type: 'datetime']]]
+        if (before) {
+            request.filters[0].before = before
+        }
+        if (after) {
+            request.filters[0].after = after
+        }
+
+        def requestEntity = RequestEntity
+          .post(searchBaseUri)
+          .contentType(contentType)
+          .body(JsonOutput.toJson(request))
+
+        when:
+        def result = restTemplate.exchange(requestEntity, Map)
+        def ids = result.body.data.collect { it.attributes.fileIdentifier }
+
+        then:
+        result.statusCode == HttpStatus.OK
+        ids.contains(ghrsst1FileId) == matches
+
+        where: // NOTE: time range for GHRSST/1.xml is: 2005-01-30 <-> 2008-01-14
+        after                   | before                    | matches   | situation
+        '2005-01-01T00:00:00Z'  | '2005-01-02T00:00:00Z'    | false     | 'range that is fully before'
+        '2005-01-01T00:00:00Z'  | '2008-01-01T00:00:00Z'    | true      | 'range that overlaps the beginning of'
+        '2005-02-01T00:00:00Z'  | '2008-01-01T00:00:00Z'    | true      | 'range that is fully within'
+        '2005-01-01T00:00:00Z'  | '2008-02-01T00:00:00Z'    | true      | 'range that fully encloses'
+        '2005-02-01T00:00:00Z'  | '2008-02-01T00:00:00Z'    | true      | 'range that overlaps the end of'
+        '2008-02-01T00:00:00Z'  | '2008-02-02T00:00:00Z'    | false     | 'range that is fully after'
+        '2005-01-01T00:00:00Z'  | null                      | true      | 'start time before'
+        '2005-02-01T00:00:00Z'  | null                      | true      | 'start time within'
+        '2008-02-01T00:00:00Z'  | null                      | false     | 'start time after'
+        null                    | '2005-01-01T00:00:00Z'    | false     | 'end time before'
+        null                    | '2008-01-01T00:00:00Z'    | true      | 'end time within'
+        null                    | '2008-02-01T00:00:00Z'    | true      | 'end time after'
     }
 
 

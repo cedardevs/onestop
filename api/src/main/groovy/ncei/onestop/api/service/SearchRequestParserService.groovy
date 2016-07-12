@@ -59,20 +59,12 @@ class SearchRequestParserService {
 
         // Temporal filters:
         groupedFilters.datetime.each {
-            def dataEndsInRange = QueryBuilders.boolQuery()
-            dataEndsInRange.must(QueryBuilders.rangeQuery("temporalBounding.beginDate").gte(it.after).lte(it.before))
-            dataEndsInRange.must(QueryBuilders.rangeQuery("temporalBounding.endDate").gte(it.before))
-
-            def dataContainedInRange = QueryBuilders.boolQuery()
-            dataContainedInRange.must(QueryBuilders.rangeQuery("temporalBounding.beginDate").lte(it.after))
-            dataContainedInRange.must(QueryBuilders.rangeQuery("temporalBounding.endDate").gte(it.before))
-
-            def dataStartsInRange = QueryBuilders.boolQuery()
-            dataStartsInRange.must(QueryBuilders.rangeQuery("temporalBounding.beginDate").lte(it.after))
-            dataStartsInRange.must(QueryBuilders.rangeQuery("temporalBounding.endDate").gte(it.after).lte(it.before))
-
-            // At least one date range match should be true for data set to pass filter:
-            builder.should(dataEndsInRange).should(dataContainedInRange).should(dataStartsInRange)
+            if (it.before) {
+                builder.must(QueryBuilders.rangeQuery('temporalBounding.beginDate').lte(it.before))
+            }
+            if (it.after) {
+                builder.must(QueryBuilders.rangeQuery('temporalBounding.endDate').gte(it.after))
+            }
         }
 
         // Spatial filters:

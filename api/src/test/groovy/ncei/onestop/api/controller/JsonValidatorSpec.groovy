@@ -160,12 +160,6 @@ class JsonValidatorSpec extends Specification {
           """\
 {
   "filters": [
-    { "type": "datetime", "before": "2016-06-15T20:20:58Z"}
-  ]
-}""",
-          """\
-{
-  "filters": [
     { "type": "geopoint", "coordinates": {"lat": -100, "lon": -100}}
   ]
 }""",
