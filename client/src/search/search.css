@@ -1,5 +1,8 @@
 @import '../../style/style.css';
-@import '../../node_modules/react-date-picker/index.css';
+:global {@import '../../node_modules/react-date-picker/index.css';}
+:global {@import '../../node_modules/react-date-picker/base.css';}
+:global {@import '../../node_modules/react-date-picker//theme/hackerone.css';}
+
 
 .textField {
   display: inline;
@@ -32,6 +35,10 @@
   display: inline-block;
 }
 
+.calandarTimeField{
+  padding: 10px;
+}
+
 .startTimeField{
   display: inline;
   display: inline-block;
@@ -52,4 +59,3 @@
   line-height: 1.5em;
   color: white;
 }
-
