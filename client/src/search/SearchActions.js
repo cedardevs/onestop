@@ -56,10 +56,3 @@ const assignResourcesToMap = (resourceList) => {
   })
   return map
 }
-
-export const indexChange = (indexText) => {
-  return {
-    type: INDEX_CHANGE,
-    indexText
-  }
-}

@@ -1,5 +1,5 @@
 import Immutable from 'immutable'
-import {INDEX_CHANGE, SEARCH, SEARCH_COMPLETE} from './SearchActions'
+import {SEARCH, SEARCH_COMPLETE} from './SearchActions'
 
 export const initialState = Immutable.Map({
   text: '',
@@ -9,11 +9,6 @@ export const initialState = Immutable.Map({
 
 export const search = (state = initialState, action) => {
   switch (action.type) {
-    case INDEX_CHANGE:
-      return state.merge({
-        index: action.indexText
-      })
-
     case SEARCH:
       return state.merge({
         text: action.searchText,
