@@ -62,6 +62,10 @@ class ElasticsearchAdminService {
         client.bulk(bulkDelete)
     }
 
+    public void refreshIndex() {
+        client.admin().indices().prepareRefresh(INDEX).execute().actionGet()
+    }
+
     @PostConstruct
     private configureIndex() {
         def indexExists = client.admin().indices().prepareExists(INDEX).execute().actionGet().exists

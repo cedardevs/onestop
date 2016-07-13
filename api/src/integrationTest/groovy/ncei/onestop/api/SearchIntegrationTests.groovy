@@ -53,6 +53,7 @@ class SearchIntegrationTests extends Specification {
                 adminService.loadDocument(metadata)
             }
         }
+        adminService.refreshIndex()
 
         restTemplate = new RestTemplate()
         restTemplate.errorHandler = new TestResponseErrorHandler()
