@@ -1,0 +1,6 @@
+:global { @import "../../../node_modules/leaflet/dist/leaflet.css"; }
+
+.mapContainer {
+    height: 400px;
+    width: 600px;
+}
