@@ -20,7 +20,7 @@ $cardWidth: 310px;
     height: $cardHeight;
     border: 2px solid $color-gray;
     padding: 5px;
-    background-color: rgba(10,10,10,.9);
+    background-color: rgba(10,10,10,.4);
     color: white;
     overflow: hidden;
 }
@@ -31,7 +31,7 @@ $cardWidth: 310px;
     height: $cardHeight;
     border: 2px solid $color-gray;
     padding: 5px;
-    background-color: rgba(30,30,30,.9);
+    background-color: rgba(30,30,30,.4);
     color: white;
     overflow: hidden;
 }
