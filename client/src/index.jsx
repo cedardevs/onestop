@@ -6,6 +6,7 @@ import { Router, Route, browserHistory, hashHistory, IndexRoute } from 'react-ro
 import { syncHistoryWithStore } from 'react-router-redux'
 import {createStore, applyMiddleware} from 'redux'
 import ResultsContainer from './result/ResultContainer'
+import MapComponent from './search/map/MapComponent'
 import thunk from 'redux-thunk'
 import {Provider} from 'react-redux'
 import Root from './components/Root.jsx'
@@ -41,7 +42,7 @@ const body =
     <Provider store={store}>
       <Router history={history}>
         <Route path="/" component={Root}>
-          <IndexRoute component={ResultsContainer}/>
+          <IndexRoute component={MapComponent}/>
         </Route>
       </Router>
     </Provider>
