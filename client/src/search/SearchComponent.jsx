@@ -1,6 +1,6 @@
 import React from 'react'
 import IndexDropDown from './IndexDropDownComponent'
-import TemporalSearch from './TemporalSearchComponent'
+import TemporalSearch from '../temporal/TemporalSearchComponent'
 import TextSearchField from './TextSearchFieldComponent'
 import styles from './search.css'
 import 'purecss'
@@ -13,7 +13,7 @@ const SearchFacet = ({indexName, submit, handleIndexChange}) => {
       </div>
 
       <div className={styles.dateTimeField}>
-        <TemporalSearch/>
+        <TemporalSearch onEnterKeyDown={submit}/>
       </div>
 
       <div className={styles.dropDown}>

@@ -1,19 +1,27 @@
 import React from 'react'
 import {TransitionView, DateField, Calendar} from 'react-date-picker'
-import styles from './search.css'
+import styles from '../search/search.css'
+import 'moment'
 
-
-const TemporalSearch = () => {
+const TemporalSearch = ({onEnterKeyDown}) => {
 
   let startDateValue = Date.now();
+
+  const onChange = (dateString, { dateMoment, timestamp }) => {
+    console.log(dateString)
+  }
 
   var startDate = [
     <DateField className = {styles['react-date-picker-theme-hackerone']}
         forceValidDate
+        updateOnDateClick
         defaultValue={startDateValue}
-        dateFormat="YYYY-MM-DD HH:mm:ss">
+        dateFormat="YYYY-MM-DD"
+        onChange={(dateString, { dateMoment, timestamp}) => {}}
+    >
       <TransitionView>
-        <Calendar style={{size: 10}} />
+        <Calendar
+        />
       </TransitionView>
     </DateField>
   ];
@@ -21,31 +29,25 @@ const TemporalSearch = () => {
   var endDate = [
     <DateField
         forceValidDate
+        updateOnDateClick
         defaultValue={startDateValue}
-        dateFormat="YYYY-MM-DD HH:mm:ss">
+        dateFormat="YYYY-MM-DD"
+    >
       <TransitionView>
-        <Calendar  className={styles.hackerone}/>
+        <Calendar
+        />
       </TransitionView>
     </DateField>
   ];
 
-  var changeDate = [
-    <div className={styles.dateTimeField}>
-      <button className={`${styles['pure-button']} ${styles.temporalDropdown}`}>
-        Temporal
-      </button>
-    </div>
-  ]
-
-  return ( <div>
-        <div className={styles.startTimeField}>
+  return (<div>
+        <div className={styles.startTimeField} >
           {startDate}
+
         </div>
         <div className={styles.endTimeField}>
           {endDate}
         </div>
-
-        { changeDate }
       </div>
   )
 }
