@@ -24,6 +24,13 @@ module.exports = {
       loader: 'react-hot!babel'
     }, {
       test: /\.css$/,
+      include: /node_modules/,
+      loaders: [
+        'style?sourceMap',
+        'css']
+    }, {
+      test: /\.css$/,
+      exclude: /node_modules/,
       loaders: [
         'style?sourceMap',
         'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
