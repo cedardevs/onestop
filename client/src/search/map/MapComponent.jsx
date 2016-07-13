@@ -1,12 +1,16 @@
 import React from 'react'
-import { render } from 'react-dom'
+import ReactDOM from 'react-dom'
 import L from 'leaflet'
 import 'leaflet-draw'
 import styles from './map.css'
 
-var MapComponent = React.createClass({
-    componentDidMount: function() {
-        var map = this.map = L.map(this.getDOMNode(), {
+class MapComponent extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    componentDidMount() {
+        var map = this.map = L.map(ReactDOM.findDOMNode(this), {
             drawControl: true,
             minZoom: 2,
             maxZoom: 20,
@@ -15,24 +19,27 @@ var MapComponent = React.createClass({
                     'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                     {attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'})
             ],
-            attributionControl: false,
-        });
+            attributionControl: false
+        })
+        map.on('click', this.onMapClick)
+        map.fitWorld()
+    }
 
-        map.on('click', this.onMapClick);
-        map.fitWorld();
-    },
-    componentWillUnmount: function() {
-        this.map.off('click', this.onMapClick);
-        this.map = null;
-    },
-    onMapClick: function() {
+    componentWillUnmount() {
+        map.off('click', this.onMapClick)
+        map = null
+    }
+
+    onMapClick() {
         // Do some wonderful map things...
-    },
-    render: function() {
+        console.log("You clicked the map!")
+    }
+
+    render() {
         return (
             <div className={styles.mapContainer}></div>
-        );
+        )
     }
-})
+}
 
 export default MapComponent
