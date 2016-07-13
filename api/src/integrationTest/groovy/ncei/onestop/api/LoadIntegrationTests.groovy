@@ -1,5 +1,6 @@
 package ncei.onestop.api
 
+import ncei.onestop.api.service.ElasticsearchAdminService
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.get.GetRequest
@@ -27,6 +28,9 @@ class LoadIntegrationTests extends Specification {
 
     @Autowired
     private Client client
+
+    @Autowired
+    private ElasticsearchAdminService adminService
 
     @Value('${local.server.port}')
     private String port
@@ -56,13 +60,7 @@ class LoadIntegrationTests extends Specification {
     }
 
     void cleanup() {
-        def items = client.search(new SearchRequest(INDEX).types(TYPE)).actionGet()
-        def ids = items.hits.hits*.id
-        def bulkDelete = ids.inject(new BulkRequest()) {bulk, id ->
-            bulk.add(new DeleteRequest(INDEX, TYPE, id))
-        }
-        bulkDelete.refresh(true)
-        client.bulk(bulkDelete)
+        adminService.purgeIndex()
     }
 
     def 'Document is loaded but not searchable when only loading'() {
@@ -82,21 +80,15 @@ class LoadIntegrationTests extends Specification {
         def docId = loadResult.body.data.id
         client.get(new GetRequest(INDEX, TYPE, docId)).actionGet().exists == true
 
-        and: "Search result returns OK but no hits immediately"
-        def hits = searchResult.body.data
-        searchResult.statusCode == HttpStatus.OK
-        hits.size() == 0
-
         when: "Wait for elasticsearch to auto-refresh"
         Thread.sleep(1000)
         searchResult = restTemplate.exchange(searchRequest, Map)
-        hits = searchResult.body.data
+        def hits = searchResult.body.data
 
         then: "Search results appear"
         def fileId = hits.attributes[0].fileIdentifier
         hits.size() == 1
         fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
-
     }
 
     def 'Document rejected when whitespace found in fileIdentifier'() {
