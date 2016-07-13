@@ -10,7 +10,6 @@ import Header from './Header.jsx'
 import AlphaBanner from './AlphaBanner.jsx'
 import styles from './root.css'
 
-
 const Root = () => (
     <div>
       <Favicon url={["http://www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
@@ -29,7 +28,7 @@ const Root = () => (
             </div>
           </div>
       </div>
-      <div>
+      <div className={styles.results}>
         <ResultsContainer/>
       </div>
       <div className={styles.footer} id='footer'>

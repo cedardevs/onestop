@@ -64,17 +64,10 @@
   font-size: 1em;
 }
 
-.results,
-.leftNav {
-  position: relative;
-  width: 200px;
-  display: inline-block;
-  width: 100%;
-}
 .results {
-  float: right;
-  width: 400px;
+  margin-bottom: 80px;
 }
+
 .details {
   position: fixed;
   top: 108px;
