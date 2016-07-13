@@ -1,14 +1,7 @@
 package ncei.onestop.api
 
 import groovy.json.JsonOutput
-import ncei.onestop.api.service.ElasticsearchAdminService
-import ncei.onestop.api.service.MetadataParser
-import org.elasticsearch.action.bulk.BulkRequest
-import org.elasticsearch.action.delete.DeleteRequest
-import org.elasticsearch.action.index.IndexRequest
-import org.elasticsearch.action.search.SearchRequest
-
-import org.elasticsearch.client.Client
+import ncei.onestop.api.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
@@ -30,7 +23,7 @@ import spock.lang.Unroll
 class SearchIntegrationTests extends Specification {
 
     @Autowired
-    private ElasticsearchAdminService adminService
+    private ElasticsearchService elasticsearchService
 
     @Value('${local.server.port}')
     private String port
@@ -50,10 +43,10 @@ class SearchIntegrationTests extends Specification {
         for(e in datasets) {
             for(i in 1..3) {
                 def metadata = cl.getResourceAsStream("data/${e}/${i}.xml").text
-                adminService.loadDocument(metadata)
+                elasticsearchService.loadDocument(metadata)
             }
         }
-        adminService.refreshIndex()
+        elasticsearchService.refreshIndex()
 
         restTemplate = new RestTemplate()
         restTemplate.errorHandler = new TestResponseErrorHandler()
@@ -61,7 +54,7 @@ class SearchIntegrationTests extends Specification {
     }
 
     void cleanup() {
-        adminService.purgeIndex()
+        elasticsearchService.purgeIndex()
     }
 
 

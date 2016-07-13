@@ -16,7 +16,7 @@ import java.util.regex.Pattern
 
 @Slf4j
 @Service
-class ElasticsearchAdminService {
+class ElasticsearchService {
 
     @Value('${elasticsearch.index}')
     private String INDEX
@@ -25,12 +25,36 @@ class ElasticsearchAdminService {
     private String TYPE
 
     private Client client
+    private SearchRequestParserService searchRequestParserService
+    private SearchResponseParserService searchResponseParserService
 
     @Autowired
-    public ElasticsearchAdminService(Client client) {
+    public ElasticsearchService(Client client,
+                                SearchRequestParserService searchRequestParserService,
+                                SearchResponseParserService searchResponseParserService) {
         this.client = client
+        this.searchRequestParserService = searchRequestParserService
+        this.searchResponseParserService = searchResponseParserService
     }
 
+
+    Map search(Map searchParams) {
+        def response = queryElasticSearch(searchParams)
+        response
+    }
+
+    private Map queryElasticSearch(Map params) {
+        def query = searchRequestParserService.parseSearchRequest(params)
+        log.debug("ES query:${query} params:${params}")
+        def searchResponse = client
+          .prepareSearch(INDEX)
+          .setTypes(TYPE)
+          .setQuery(query)
+          .execute()
+          .actionGet()
+
+        return searchResponseParserService.searchResponseParser(searchResponse)
+    }
 
     public Map loadDocument(String document) {
         def mappedDoc = MetadataParser.parseXMLMetadataToMap(document)

@@ -1,10 +1,7 @@
 package ncei.onestop.api
 
-import ncei.onestop.api.service.ElasticsearchAdminService
-import org.elasticsearch.action.bulk.BulkRequest
-import org.elasticsearch.action.delete.DeleteRequest
+import ncei.onestop.api.service.ElasticsearchService
 import org.elasticsearch.action.get.GetRequest
-import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -30,7 +27,7 @@ class LoadIntegrationTests extends Specification {
     private Client client
 
     @Autowired
-    private ElasticsearchAdminService adminService
+    private ElasticsearchService elasticsearchService
 
     @Value('${local.server.port}')
     private String port
@@ -60,7 +57,7 @@ class LoadIntegrationTests extends Specification {
     }
 
     void cleanup() {
-        adminService.purgeIndex()
+        elasticsearchService.purgeIndex()
     }
 
     def 'Document is loaded but not searchable when only loading'() {
