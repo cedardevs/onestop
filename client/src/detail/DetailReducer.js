@@ -12,7 +12,7 @@ export const details = (state = initialState, action) => {
       action.items.forEach(function (val, key) {
         newState[key] = {
           title: val.title,
-          thumbnail: val.thumbnail_s,
+          thumbnail: val.thumbnail,
           description: val.description,
           cardStatus: CardStatus.SHOW_FRONT
         }
