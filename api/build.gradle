@@ -86,7 +86,6 @@ sourceSets {
 }
 
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
-    dependsOn ':elasticsearch:start'
     testClassesDir = sourceSets.integrationTest.output.classesDir
     classpath = sourceSets.integrationTest.runtimeClasspath
     reports.junitXml.destination = 'build/integration-test-results'
