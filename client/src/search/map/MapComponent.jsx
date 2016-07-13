@@ -1,11 +1,13 @@
 import React from 'react'
 import { render } from 'react-dom'
 import L from 'leaflet'
+import 'leaflet-draw'
 import styles from './map.css'
 
 var MapComponent = React.createClass({
     componentDidMount: function() {
         var map = this.map = L.map(this.getDOMNode(), {
+            drawControl: true,
             minZoom: 2,
             maxZoom: 20,
             layers: [
