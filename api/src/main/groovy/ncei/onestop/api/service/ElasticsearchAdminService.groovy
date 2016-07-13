@@ -2,8 +2,10 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-
+import org.elasticsearch.action.bulk.BulkRequest
+import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.index.IndexResponse
+import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -48,7 +50,16 @@ class ElasticsearchAdminService {
             ]
             return [errors: errors]
         }
+    }
 
+    public void purgeIndex() {
+        def items = client.search(new SearchRequest(INDEX).types(TYPE)).actionGet()
+        def ids = items.hits.hits*.id
+        def bulkDelete = ids.inject(new BulkRequest()) { bulk, id ->
+            bulk.add(new DeleteRequest(INDEX, TYPE, id))
+        }
+        bulkDelete.refresh(true)
+        client.bulk(bulkDelete)
     }
 
     @PostConstruct

@@ -1,6 +1,7 @@
 package ncei.onestop.api
 
 import groovy.json.JsonOutput
+import ncei.onestop.api.service.ElasticsearchAdminService
 import ncei.onestop.api.service.MetadataParser
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.delete.DeleteRequest
@@ -29,19 +30,13 @@ import spock.lang.Unroll
 class SearchIntegrationTests extends Specification {
 
     @Autowired
-    private Client client
+    private ElasticsearchAdminService adminService
 
     @Value('${local.server.port}')
     private String port
 
     @Value('${server.context-path}')
     private String contextPath
-
-    @Value('${elasticsearch.index}')
-    private String INDEX
-
-    @Value('${elasticsearch.type}')
-    private String TYPE
 
     private MediaType contentType = MediaType.APPLICATION_JSON_UTF8
     private List datasets = ['GHRSST', 'DEM']
@@ -52,17 +47,12 @@ class SearchIntegrationTests extends Specification {
 
     void setup() {
         def cl = ClassLoader.systemClassLoader
-
-        def bulkLoad = new BulkRequest()
         for(e in datasets) {
             for(i in 1..3) {
                 def metadata = cl.getResourceAsStream("data/${e}/${i}.xml").text
-                def resource = MetadataParser.parseXMLMetadata(metadata)
-                bulkLoad.add(new IndexRequest(INDEX, TYPE, "${e}${i}").source(resource))
+                adminService.loadDocument(metadata)
             }
         }
-        bulkLoad.refresh(true)
-        client.bulk(bulkLoad).actionGet()
 
         restTemplate = new RestTemplate()
         restTemplate.errorHandler = new TestResponseErrorHandler()
@@ -70,13 +60,7 @@ class SearchIntegrationTests extends Specification {
     }
 
     void cleanup() {
-        def items = client.search(new SearchRequest(INDEX).types(TYPE)).actionGet()
-        def ids = items.hits.hits*.id
-        def bulkDelete = ids.inject(new BulkRequest()) {bulk, id ->
-            bulk.add(new DeleteRequest(INDEX, TYPE, id))
-        }
-        bulkDelete.refresh(true)
-        client.bulk(bulkDelete)
+        adminService.purgeIndex()
     }
 
 
