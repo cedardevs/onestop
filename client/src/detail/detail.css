@@ -1,6 +1,6 @@
 @import '../../style/style.css';
 $cardHeight: 140px;
-$cardWidth: 310px;
+$cardWidth: 300px;
 
 .base {
     display: block;
@@ -14,24 +14,65 @@ $cardWidth: 310px;
     height: $cardHeight;
 }
 
-.reactFlipCard__Front {
+.reactFlipCardFront {
     box-sizing: border-box;
     width: $cardWidth;
     height: $cardHeight;
     border: 2px solid $color-gray;
-    padding: 5px;
+    padding: 1em;
     background-color: rgba(10,10,10,.4);
     color: white;
     overflow: hidden;
 }
 
-.reactFlipCard__Back {
+.reactFlipCardBack {
     box-sizing: border-box;
     width: $cardWidth;
     height: $cardHeight;
     border: 2px solid $color-gray;
-    padding: 5px;
     background-color: rgba(30,30,30,.4);
     color: white;
     overflow: hidden;
+}
+
+/* styles for '...' */
+.titleText {
+    /* hide text if it more than N lines  */
+    overflow: hidden;
+    /* for set '...' in absolute position */
+    position: relative;
+    /* use this value to count block height */
+    line-height: 1.2em;
+    /* max-height = line-height (1.2) * lines max number (3) */
+    max-height: 2.4em;
+    /* fix problem when last visible word doesn't adjoin right side  */
+    text-align: justify;
+    /* place for '...' */
+    margin-right: -1em;
+    padding-right: 1em;
+}
+/* create the ... */
+.titleText:before {
+    /* points in the end */
+    content: '...';
+    /* absolute position */
+    position: absolute;
+    /* set position to right bottom corner of block */
+    right: 0;
+    bottom: 0;
+}
+/* hide ... if we have text, which is less than or equal to max lines */
+.titleText:after {
+    /* points in the end */
+    content: '';
+    /* absolute position */
+    position: absolute;
+    /* set position to right bottom corner of text */
+    right: 0;
+    /* set width and height */
+    width: 1em;
+    height: 1em;
+    margin-top: 0.2em;
+    /* bg color = bg color under block */
+    background: white;
 }
