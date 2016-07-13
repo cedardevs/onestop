@@ -11,7 +11,10 @@ import thunk from 'redux-thunk'
 import {Provider} from 'react-redux'
 import Root from './components/Root.jsx'
 import reducer from './reducers/main'
+import '../style/style.js'
 import './page.css'
+
+
 
 // Needed for onTouchTap
 // Can go away when react 1.0 release
