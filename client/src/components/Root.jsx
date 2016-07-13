@@ -7,14 +7,16 @@ import SearchContainer from '../search/SearchContainer'
 import Favicon from 'react-favicon'
 import Footer from './Footer.jsx'
 import Header from './Header.jsx'
+import AlphaBanner from './AlphaBanner.jsx'
 import styles from './root.css'
 
 
 const Root = () => (
     <div>
       <Favicon url={["http://www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
+      <AlphaBanner/>
       <div className={styles.bottomBorder}>
-          <div className={`${styles.appbar} ${styles.panel}`} id='appbar' rounded={false}>
+          <div className={`${styles.appbar} ${styles.panel}`}>
             <div className={styles.logoBox}>
                 <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
                 <div className={styles.orgBox}>
