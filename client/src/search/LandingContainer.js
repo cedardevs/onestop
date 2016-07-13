@@ -15,9 +15,9 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const SearchFacetContainer = connect(
+const LandingContainer = connect(
     mapStateToProps,
     mapDispatchToProps
 )(LandingComponent)
 
-export default SearchFacetContainer
+export default LandingContainer

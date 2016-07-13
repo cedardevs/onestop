@@ -1,11 +1,10 @@
 import React from 'react'
 import IndexDropDown from './IndexDropDownComponent'
 import PrimarySearchComponent from './PrimarySearchComponent'
-import MapComponent from './map/MapComponent'
+import MapContainer from './map/MapContainer'
 import styles from './landing.css'
 
 const LandingComponent = ({indexName, submit, handleIndexChange}) => {
-  console.log(submit)
   return <div><form className={`pure-form`}>
     <div className={styles.searchFields}>
       <span>
@@ -17,7 +16,7 @@ const LandingComponent = ({indexName, submit, handleIndexChange}) => {
     </div>
   </form>
     <div className={styles.mapContainer}>
-      <MapComponent/>
+      <MapContainer />
     </div>
     </div>
 }

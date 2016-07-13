@@ -14,7 +14,7 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const SearchFacetContainer = connect(
+const MapContainer = connect(
     mapStateToProps,
     mapDispatchToProps
 )(MapComponent)

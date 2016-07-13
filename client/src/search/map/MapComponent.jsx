@@ -7,9 +7,11 @@ import styles from './map.css'
 class MapComponent extends React.Component {
     constructor(props) {
         super(props)
+        this.handleGeometryUpdate = props.handleGeometryUpdate
     }
 
     componentDidMount() {
+        var self = this
         var map = this.map = L.map(ReactDOM.findDOMNode(this), {
             drawControl: true,
             minZoom: 2,
@@ -28,8 +30,9 @@ class MapComponent extends React.Component {
 
             // When a user finishes editing a shape we get that information here
             //editableLayers.addLayer(layer);
-            console.log('draw:created->');
-            console.log(JSON.stringify(layer.toGeoJSON()));
+            // console.log('draw:created->');
+            // console.log(JSON.stringify(layer.toGeoJSON()));
+            self.handleGeometryUpdate(layer.toGeoJSON())
         })
         map.fitWorld()
 
