@@ -50,6 +50,7 @@ class ElasticsearchService {
           .prepareSearch(INDEX)
           .setTypes(TYPE)
           .setQuery(query)
+          .setFrom(0).setSize(100) // TODO - expose these as API parameters
           .execute()
           .actionGet()
 
