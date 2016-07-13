@@ -10,7 +10,7 @@
 
 .panel {
   max-width: 90%;
-  margin: 20px auto 0 auto;
+  margin: 5px auto;
 }
 
 .bottomBorder {
@@ -74,14 +74,10 @@
   left: 400px;
   bottom: 24px;
 }
-.footer {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
+
 .searchFacet {
   float: right;
+  margin-top: 20px
 }
 .leftNav {
   z-index: 2;
