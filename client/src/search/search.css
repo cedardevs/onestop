@@ -1,7 +1,6 @@
 @import '../../style/style.css';
 
 .textField {
-  display: inline;
   width: 300px;
   color: black;
   display: inline-block;

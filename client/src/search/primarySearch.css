@@ -1,0 +1,10 @@
+@import '../../style/style.css';
+
+.textField {
+  font-size: 2em;
+  width: 90%;
+  height: 3em;
+  color: black;
+  display: inline-block;
+  margin: auto;
+}
