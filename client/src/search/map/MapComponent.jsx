@@ -22,12 +22,26 @@ class MapComponent extends React.Component {
             attributionControl: false
         })
         map.on('click', this.onMapClick)
+        map.on('draw:created', function (e) {
+            let type = e.layerType;
+            let layer = e.layer;
+
+            // When a user finishes editing a shape we get that information here
+            //editableLayers.addLayer(layer);
+            console.log('draw:created->');
+            console.log(JSON.stringify(layer.toGeoJSON()));
+        })
         map.fitWorld()
+
     }
 
     componentWillUnmount() {
         map.off('click', this.onMapClick)
         map = null
+    }
+
+    onDrawCreated(e) {
+
     }
 
     onMapClick() {
