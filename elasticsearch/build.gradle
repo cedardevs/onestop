@@ -131,32 +131,3 @@ task bootstrapCOOPS {
     }
   }
 }
-
-task initializeIndex {
-  dependsOn 'start'
-  doLast {
-    def indexExists = true
-    def esIndex = new HTTPBuilder('http://localhost:9200/onestop_v1') // TODO need to have different name from GP index
-    esIndex.request(Method.HEAD) {
-      response.success = {
-        println "Index mapping already in place, ready to load data"
-      }
-      response.failure = {
-        println "Index needs to be created... "
-        indexExists = false
-      }
-    }
-
-    if (!indexExists) {
-      esIndex.request(Method.PUT, ContentType.JSON) { req ->
-        body = file('../api/src/integrationTest/resources/config/index-settings.json').text
-      }
-
-      def mapping = new HTTPBuilder('http://localhost:9200/onestop_v1/_mapping/metadata')
-      mapping.request(Method.PUT, ContentType.JSON) {
-        body = file('../api/src/integrationTest/resources/config/metadata-mapping.json').text
-      }
-      println 'Index created and mapped'
-    }
-  }
-}

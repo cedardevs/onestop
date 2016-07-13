@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
+import javax.annotation.PostConstruct
 import java.util.regex.Pattern
 
 @Slf4j
@@ -48,5 +49,21 @@ class ElasticsearchAdminService {
             return [errors: errors]
         }
 
+    }
+
+    @PostConstruct
+    private configureIndex() {
+        def indexExists = client.admin().indices().prepareExists(INDEX).execute().actionGet().exists
+        if (!indexExists) {
+            // Initialize index:
+            def cl = ClassLoader.systemClassLoader
+            def indexSettings = cl.getResourceAsStream("config/index-settings.json").text
+            client.admin().indices().prepareCreate(INDEX).setSettings(indexSettings).execute().actionGet()
+            client.admin().cluster().prepareHealth(INDEX).setWaitForActiveShards(1).execute().actionGet()
+
+            // Initialize mapping:
+            def mapping = cl.getResourceAsStream("config/metadata-mapping.json").text
+            client.admin().indices().preparePutMapping(INDEX).setSource(mapping).setType(TYPE).execute().actionGet()
+        }
     }
 }

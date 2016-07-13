@@ -17,7 +17,7 @@ class ApplicationConfig {
     String elasticHost
 
     @Bean(destroyMethod = 'close')
-    public Client transportClient() {
+    public Client client() {
         TransportClient.builder().build()
             .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticHost), elasticPort))
     }
