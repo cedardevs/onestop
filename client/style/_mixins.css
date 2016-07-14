@@ -1,12 +1,13 @@
 @define-mixin bgImage
   $image,
   $height: 100vh,
-  $grStart: rgba(0,0,0,.95),
-  $grEnd: rgba(0,0,0,.65),
+  $grStart: rgba(0,0,0,.6),
+  $grEnd: rgba(0,0,0,.3),
   $bgPos: center center {
-    background: linear-gradient( to bottom, $grStart, $grEnd), url($image);
+    background: linear-gradient(to bottom, $grStart, $grEnd), url($image);
     background-repeat: no-repeat;
     background-position: $bgPos;
+    background-attachment: fixed;
     background-size: cover;
     height: $height;
     max-height: $height;

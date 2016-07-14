@@ -1,0 +1,13 @@
+@import '../../style/style.css';
+
+.banner {
+    background: $color-gray;
+    right: 0;
+    top: 0;
+    left: 0;
+    text-align: center;
+    vertical-align: middle;
+    height: 1.5em;
+    font-size: 1.2em;
+    padding: 0.15em;
+}

@@ -1,5 +1,6 @@
 package ncei.onestop.api
 
+import ncei.onestop.api.service.ElasticsearchService
 import org.elasticsearch.action.get.GetRequest
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,8 +16,6 @@ import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static ncei.onestop.api.IntegrationTestConfig.*
-
 @Unroll
 @WebIntegrationTest
 @ActiveProfiles("integration")
@@ -25,13 +24,22 @@ import static ncei.onestop.api.IntegrationTestConfig.*
 class LoadIntegrationTests extends Specification {
 
     @Autowired
-    Client client
+    private Client client
+
+    @Autowired
+    private ElasticsearchService elasticsearchService
 
     @Value('${local.server.port}')
-    String port
+    private String port
 
     @Value('${server.context-path}')
-    String contextPath
+    private String contextPath
+
+    @Value('${elasticsearch.index}')
+    private String INDEX
+
+    @Value('${elasticsearch.type}')
+    private String TYPE
 
     RestTemplate restTemplate
     URI loadURI
@@ -46,6 +54,10 @@ class LoadIntegrationTests extends Specification {
         loadURI = "http://localhost:${port}/${contextPath}/load".toURI()
         refreshURI = "http://localhost:${port}/${contextPath}/load/refresh".toURI()
         searchURI = "http://localhost:${port}/${contextPath}/search".toURI()
+    }
+
+    void cleanup() {
+        elasticsearchService.purgeIndex()
     }
 
     def 'Document is loaded but not searchable when only loading'() {
@@ -65,20 +77,29 @@ class LoadIntegrationTests extends Specification {
         def docId = loadResult.body.data.id
         client.get(new GetRequest(INDEX, TYPE, docId)).actionGet().exists == true
 
-        and: "Search result returns OK but no hits immediately"
-        def hits = searchResult.body.data
-        searchResult.statusCode == HttpStatus.OK
-        hits.size() == 0
-
         when: "Wait for elasticsearch to auto-refresh"
         Thread.sleep(1000)
         searchResult = restTemplate.exchange(searchRequest, Map)
-        hits = searchResult.body.data
+        def hits = searchResult.body.data
 
         then: "Search results appear"
         def fileId = hits.attributes[0].fileIdentifier
         hits.size() == 1
         fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+    }
 
+    def 'Document rejected when whitespace found in fileIdentifier'() {
+        setup:
+        def document = ClassLoader.systemClassLoader.getResourceAsStream("data/BadFiles/montauk_forecastgrids_2013.xml").text
+        def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+
+        when:
+        def loadResult = restTemplate.exchange(loadRequest, Map)
+
+        then: "Load returns BAD_REQUEST"
+        loadResult.statusCode == HttpStatus.BAD_REQUEST
+
+        and: "Erroneous file identifier specified"
+        loadResult.body.errors.detail == 'gov.noaa.ngdc.mgg.dem: montauk_forecastgrids_2013'
     }
 }

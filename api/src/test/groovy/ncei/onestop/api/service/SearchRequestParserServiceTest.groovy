@@ -85,71 +85,23 @@ class SearchRequestParserServiceTest extends Specification {
             },
             "filter" : {
               "bool" : {
-                "should" : [ {
-                  "bool" : {
-                    "must" : [ {
-                      "range" : {
-                        "temporalBounding.beginDate" : {
-                          "from" : "2010-10-10",
-                          "to" : "2011-11-11",
-                          "include_lower" : true,
-                          "include_upper" : true
-                        }
-                      }
-                    }, {
-                      "range" : {
-                        "temporalBounding.endDate" : {
-                          "from" : "2011-11-11",
-                          "to" : null,
-                          "include_lower" : true,
-                          "include_upper" : true
-                        }
-                      }
-                    } ]
+                "must" : [ {
+                  "range" : {
+                    "temporalBounding.beginDate" : {
+                      "from" : null,
+                      "to" : "2011-11-11",
+                      "include_lower" : true,
+                      "include_upper" : true
+                    }
                   }
                 }, {
-                  "bool" : {
-                    "must" : [ {
-                      "range" : {
-                        "temporalBounding.beginDate" : {
-                          "from" : null,
-                          "to" : "2010-10-10",
-                          "include_lower" : true,
-                          "include_upper" : true
-                        }
-                      }
-                    }, {
-                      "range" : {
-                        "temporalBounding.endDate" : {
-                          "from" : "2011-11-11",
-                          "to" : null,
-                          "include_lower" : true,
-                          "include_upper" : true
-                        }
-                      }
-                    } ]
-                  }
-                }, {
-                  "bool" : {
-                    "must" : [ {
-                      "range" : {
-                        "temporalBounding.beginDate" : {
-                          "from" : null,
-                          "to" : "2010-10-10",
-                          "include_lower" : true,
-                          "include_upper" : true
-                        }
-                      }
-                    }, {
-                      "range" : {
-                        "temporalBounding.endDate" : {
-                          "from" : "2010-10-10",
-                          "to" : "2011-11-11",
-                          "include_lower" : true,
-                          "include_upper" : true
-                        }
-                      }
-                    } ]
+                  "range" : {
+                    "temporalBounding.endDate" : {
+                      "from" : "2010-10-10",
+                      "to" : null,
+                      "include_lower" : true,
+                      "include_upper" : true
+                    }
                   }
                 } ]
               }
@@ -159,12 +111,12 @@ class SearchRequestParserServiceTest extends Specification {
 
         then:
         !result.toString().empty
-        result.toString().equals expectedString
+        result.toString() == expectedString
     }
 
     def 'Geopoint filter request generates expected elasticsearch query'() {
         given:
-        def request = '{"filters":[{"type":"geopoint","coordinates":{"lat":12.345,"lon":67.890}}]}'
+        def request = '{"filters":[{"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [67.89, 12.345]}}]}'
         def params = slurper.parseText(request)
 
         when:
@@ -201,7 +153,9 @@ class SearchRequestParserServiceTest extends Specification {
 
     def 'Bbox filter request generates expected elasticsearch query'() {
         given:
-        def request = '{"filters":[{"type":"bbox","topLeft":{"lat":12.345,"lon":67.890},"bottomRight":{"lat":-67.890,"lon":-12.345},"relation":"disjoint"}]}'
+        def request = '{"filters":[{"type": "geometry", "relation": "disjoint", "geometry":' +
+          '  {"type": "Polygon", "coordinates": [[[-5.99, 45.99], [-5.99, 36.49], [36.49, 30.01], [36.49, 45.99], [-5.99, 45.99]]]}' +
+          '}]}'
         def params = slurper.parseText(request)
 
         when:
@@ -218,8 +172,8 @@ class SearchRequestParserServiceTest extends Specification {
                   "geo_shape" : {
                     "spatialBounding" : {
                       "shape" : {
-                        "type" : "envelope",
-                        "coordinates" : [ [ 67.89, 12.345 ], [ -12.345, -67.89 ] ]
+                        "type" : "polygon",
+                        "coordinates" : [ [ [ -5.99, 45.99 ], [ -5.99, 36.49 ], [ 36.49, 30.01 ], [ 36.49, 45.99 ], [ -5.99, 45.99 ] ] ]
                       },
                       "relation" : "disjoint"
                     },

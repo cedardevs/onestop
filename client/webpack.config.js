@@ -68,11 +68,12 @@ module.exports = {
     }
   },
   plugins: [
-    new webpack.DefinePlugin({
-      'process.env': {
-        'NODE_ENV': process.env.NODE_ENV
-      }
-    }),
+    // TODO - This is not working in the running app right now. Can fix later as needed.
+    // new webpack.DefinePlugin({
+    //   'process.env': {
+    //     'NODE_ENV': process && process.env && process.env.NODE_ENV || 'development'
+    //   }
+    // }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {warnings: false},
       sourceMap: false

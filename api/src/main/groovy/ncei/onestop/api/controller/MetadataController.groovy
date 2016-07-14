@@ -1,13 +1,12 @@
 package ncei.onestop.api.controller
 
 import groovy.util.logging.Slf4j
-import ncei.onestop.api.service.ElasticsearchAdminService
+import ncei.onestop.api.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestController
 
 import javax.servlet.http.HttpServletResponse
@@ -16,18 +15,22 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 class MetadataController {
 
-    private ElasticsearchAdminService esAdminService
+    private ElasticsearchService elasticsearchService
 
     @Autowired
-    public MetadataController(ElasticsearchAdminService esAdminService) {
-        this.esAdminService = esAdminService
+    public MetadataController(ElasticsearchService elasticsearchService) {
+        this.elasticsearchService = elasticsearchService
     }
 
     @RequestMapping(path = '/load', method = RequestMethod.POST,
             consumes = 'application/xml', produces = 'application/json')
-    @ResponseStatus(value = HttpStatus.CREATED)
     Map load(@RequestBody String xml, HttpServletResponse response) {
-        return esAdminService.loadDocument(xml)
+        def result = elasticsearchService.loadDocument(xml)
+        if(result.data) {
+            response.status = HttpStatus.CREATED.value()
+        } else {
+            response.status = HttpStatus.BAD_REQUEST.value()
+        }
+        return result
     }
-
 }

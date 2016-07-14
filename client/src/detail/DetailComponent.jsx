@@ -15,12 +15,12 @@ const Detail = (props) => {
   return (
         <FlipCard disabled={true} className={styles.reactFlipCard} flipped={props.flipped}>
           <div style={localStyles}>
-            <div className={styles.reactFlipCard__Front} onClick={() => props.onCardClick(props.recordId)}>
-              <div>Title: {props.title} </div>
+            <div className={styles.reactFlipCardFront} onClick={() => props.onCardClick(props.recordId)}>
+              <div className={styles.titleText}>{props.title}</div>
             </div>
           </div>
-          <div className={styles.reactFlipCard__Back} onClick={() => props.onCardClick(props.recordId)}>
-            <div>Description: {props.description}</div>
+          <div className={styles.reactFlipCardBack} onClick={() => props.onCardClick(props.recordId)}>
+            <div>{props.description}</div>
           </div>
         </FlipCard>
   )

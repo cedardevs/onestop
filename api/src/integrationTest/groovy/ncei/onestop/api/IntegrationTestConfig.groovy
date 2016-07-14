@@ -6,6 +6,7 @@ import org.elasticsearch.common.util.concurrent.EsExecutors
 import org.elasticsearch.node.Node
 import org.elasticsearch.client.Client
 import org.elasticsearch.node.NodeBuilder
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
@@ -18,8 +19,12 @@ class IntegrationTestConfig {
 
     // Config constants:
     static final String CLUSTER_NAME = 'integrationTest'
-    static final String INDEX = "metadata_v1"
-    static final String TYPE = "item"
+
+    @Value('${elasticsearch.index}')
+    private String INDEX
+
+    @Value('${elasticsearch.type}')
+    private String TYPE
 
 
     ////////////////////////////////////////////
@@ -54,17 +59,6 @@ class IntegrationTestConfig {
         def node = node()
         def client = node.client()
         node.start()
-
-        // Initialize index:
-        def cl = ClassLoader.systemClassLoader
-        def indexSettings = cl.getResourceAsStream("config/index-settings.json").text
-        client.admin().indices().prepareCreate(INDEX).setSettings(indexSettings).execute().actionGet()
-        client.admin().cluster().prepareHealth(INDEX).setWaitForActiveShards(1).execute().actionGet()
-
-        // Initialize mapping & load data:
-        def mapping = cl.getResourceAsStream("config/item-mapping.json").text
-        client.admin().indices().preparePutMapping(INDEX).setSource(mapping).setType(TYPE).execute().actionGet()
-
         return client
     }
 
