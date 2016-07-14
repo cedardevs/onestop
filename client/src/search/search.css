@@ -1,7 +1,7 @@
 @import '../../style/style.css';
 :global {@import '../../node_modules/react-date-picker/index.css';}
-:global {@import '../../node_modules/react-date-picker/base.css';}
-:global {@import '../../node_modules/react-date-picker//theme/hackerone.css';}
+/*:global {@import '../../node_modules/react-date-picker/base.css';}*/
+/*:global {@import '../../node_modules/react-date-picker//theme/hackerone.css';}*/
 
 
 .textField {

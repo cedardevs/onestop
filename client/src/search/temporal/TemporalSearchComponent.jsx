@@ -1,23 +1,23 @@
 import React from 'react'
 import {TransitionView, DateField, Calendar} from 'react-date-picker'
-import styles from '../search/search.css'
+import styles from '../search.css'
 import 'moment'
 
-const TemporalSearch = ({onEnterKeyDown}) => {
+const TemporalSearch = ({onChange, currentDate}) => {
 
-  let startDateValue = Date.now();
+  let startDateValue = new Date();
 
-  const onChange = (dateString, { dateMoment, timestamp }) => {
-    console.log(dateString)
+  const formatAndEmit = (dateString) => {
+    onChange(dateString + 'T00:00:00Z')
   }
 
   var startDate = [
-    <DateField className = {styles['react-date-picker-theme-hackerone']}
+    <DateField
         forceValidDate
-        updateOnDateClick
+        updateOnOk
         defaultValue={startDateValue}
         dateFormat="YYYY-MM-DD"
-        onChange={(dateString, { dateMoment, timestamp}) => {}}
+        onChange={formatAndEmit}
     >
       <TransitionView>
         <Calendar
@@ -29,9 +29,10 @@ const TemporalSearch = ({onEnterKeyDown}) => {
   var endDate = [
     <DateField
         forceValidDate
-        updateOnDateClick
+        updateOnOk
         defaultValue={startDateValue}
         dateFormat="YYYY-MM-DD"
+        onChange={formatAndEmit}
     >
       <TransitionView>
         <Calendar
@@ -43,7 +44,6 @@ const TemporalSearch = ({onEnterKeyDown}) => {
   return (<div>
         <div className={styles.startTimeField} >
           {startDate}
-
         </div>
         <div className={styles.endTimeField}>
           {endDate}
