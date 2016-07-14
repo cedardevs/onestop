@@ -52,6 +52,7 @@
     "mocha": "^2.4.5",
     "node-sass": "^3.4.2",
     "path": "^0.12.7",
+    "postcss-assets": "^4.1.0",
     "postcss-import": "^8.1.2",
     "postcss-loader": "^0.8.2",
     "precss": "^1.4.0",
