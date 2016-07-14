@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import styles from './footer.css'
+import 'purecss'
 
 let Footer = ({dispatch}) => {
 
