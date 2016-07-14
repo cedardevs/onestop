@@ -1,14 +1,5 @@
-buildscript {
-  dependencies {
-    classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7'
-  }
-}
-
-import groovy.json.JsonSlurper
-import groovyx.net.http.HTTPBuilder
 import com.wiredforcode.gradle.spawn.SpawnProcessTask
 import com.wiredforcode.gradle.spawn.KillProcessTask
-import groovyx.net.http.Method
 
 plugins {
   id "com.wiredforcode.spawn" version "0.6.0"
@@ -40,90 +31,4 @@ task start(type: SpawnProcessTask) {
 task stop(type: KillProcessTask) {
   onlyIf { new File(projectDir, '.pid.lock').exists() }
   directory projectDir.absolutePath
-}
-
-task bootstrapGHRSST {
-  dependsOn 'start', ':api:start'
-  doLast {
-    def srcURL = new URL('http://data.nodc.noaa.gov/geoportal/rest/find/document' +
-            '?searchText=title:GHRSST%20NOT%20title:Documentation&start=1&max=100&f=json')
-    def load = new HTTPBuilder('http://localhost:8097/api/load')
-
-    def json = new JsonSlurper().parse(srcURL)
-    json.records.each { record ->
-      record.links.each { link ->
-        if (link.type.contains("metadata")) {
-          load.request(Method.POST) {
-            requestContentType = 'application/xml'
-            body = new URL(link.href).text
-            response.success = { resp, data ->
-              println "${data.data.id} created: ${data.data.attributes.created}"
-            }
-            response.failure = { resp, data ->
-              println "Error uploading metadata from ${link.href}: ${data.errors.detail}"
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-task bootstrapDEM {
-  dependsOn 'start', ':api:start'
-  doLast {
-    def srcUrl = "https://www.ngdc.noaa.gov/metadata/published/NOAA/NESDIS/NGDC/MGG/DEM/iso/xml"
-    def http = new HTTPBuilder(srcUrl)
-    def load = new HTTPBuilder('http://localhost:8097/api/load')
-
-    def html = http.get([:])
-    html."**".findAll { record ->
-      def link = (srcUrl.toString() + '/' + record.toString())
-      if (link.endsWith(".xml")) {
-        load.request(Method.POST) {
-          requestContentType = 'application/xml'
-          body = new URL(link).text
-          response.success = { resp, data ->
-            println "${data.data.id} created: ${data.data.attributes.created}"
-          }
-          response.failure = { resp, data ->
-            println "Error uploading metadata from ${link}: ${data.errors.title}, ${data.errors.detail}"
-          }
-        }
-      }
-    }
-  }
-}
-
-task bootstrapCOOPS {
-  dependsOn 'start', ':api:start'
-  doLast {
-    def load = new HTTPBuilder('http://localhost:8097/api/load')
-    def count = 0
-
-    1.step(10000, 1000) { i ->
-      def url = "http://www.nodc.noaa.gov/search/granule/rest/find/document?" +
-              "searchText=fileIdentifier%3ACO-OPS*&orderBy=title&start=${i}&max=1000&after=2016-06-30&f=json"
-
-      def srcURL = new URL(url)
-      def json = new JsonSlurper().parse(srcURL)
-      json.records.each { record ->
-        record.links.each { link ->
-          if (link.type.contains("metadata")) {
-            count++
-            load.request(Method.POST) {
-              requestContentType = 'application/xml'
-              body = new URL(link.href).text
-              response.success = { resp, data ->
-                println "${data.data.id} created #${count}: ${data.data.attributes.created}"
-              }
-              response.failure = { resp, data ->
-                println "Error uploading metadata #${count} from ${link.href}: ${data.errors.detail}"
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 }
