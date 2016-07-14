@@ -1,0 +1,25 @@
+import groovy.json.JsonSlurper
+
+plugins {
+    id "com.moowork.node" version "0.13"
+}
+
+version = new JsonSlurper().parse(file("${projectDir}/package.json")).version
+
+task clean {
+    doFirst {
+        file("${projectDir}/dist").deleteDir()
+        file("${buildDir}/libs").deleteDir()
+    }
+}
+
+task assemble(type: Tar) {
+    // TODO - shouldn't have to always clean...
+    dependsOn 'clean', 'npmInstall', 'npm_run_build'
+
+    from "${projectDir}/dist"
+    baseName = 'onestop-client'
+    version = project.version
+    extension = 'tar.gz'
+    destinationDir = file("${buildDir}/libs")
+}

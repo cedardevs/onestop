@@ -1,7 +1,7 @@
 package ncei.onestop.api.controller
 
 import groovy.util.logging.Slf4j
-import ncei.onestop.api.service.SearchService
+import ncei.onestop.api.service.ElasticsearchService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMethod
@@ -15,11 +15,11 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 class SearchController {
 
-    private SearchService searchService
+    private ElasticsearchService elasticsearchService
 
     @Autowired
-    public SearchController(SearchService searchService) {
-        this.searchService = searchService
+    public SearchController(ElasticsearchService elasticsearchService) {
+        this.elasticsearchService = elasticsearchService
     }
 
     // POST in order to support request bodies from clients that won't send bodies with GETs
@@ -32,7 +32,7 @@ class SearchController {
             return [errors: validation.errors]
         }
 
-        return searchService.search(params)
+        return elasticsearchService.search(params)
     }
 }
 

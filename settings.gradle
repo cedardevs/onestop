@@ -1,6 +1,8 @@
 rootProject.name = 'onestop'
 
+include 'ansible'
 include 'api'
 include 'client'
 include 'elasticsearch'
+include 'etl'
 include 'geoportal'

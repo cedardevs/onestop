@@ -13,6 +13,7 @@ class MetadataParser {
 
         def fileIdentifier
         def parentIdentifier
+        def doi
         def title
         def alternateTitle
         def description
@@ -29,8 +30,8 @@ class MetadataParser {
         def creationDate
         def revisionDate
         def publicationDate
-        def language          // TODO Remove?
-        def resourceLanguage  // TODO Remove?
+        def language
+        def resourceLanguage
         def resourceConstraints = [] as Set
         def securityConstraints = [] as Set
         def grid = [:]
@@ -46,7 +47,8 @@ class MetadataParser {
 
         // Basic info:
         fileIdentifier = metadata.fileIdentifier.CharacterString.text()
-        parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text()
+        parentIdentifier = metadata.parentIdentifier.CharacterString.text()
+        doi = idInfo.citation.CI_Citation.identifier.MD_Identifier.code.Anchor.text()
         title = idInfo.citation.CI_Citation.title.CharacterString.text()
         alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text()
         description = idInfo.abstract.CharacterString.text()
@@ -60,11 +62,11 @@ class MetadataParser {
         dates.each { date ->
             def dateType = date.CI_Date.dateType.CI_DateTypeCode.@codeListValue.text()
             if(dateType == 'publication') {
-                publicationDate = date.CI_Date.date.Date.text() ?: null
+                publicationDate = date.CI_Date.date.Date.text() ? date.CI_Date.date.Date.text() : null
             } else if(dateType == 'creation') {
-                creationDate = date.CI_Date.date.Date.text() ?: null
+                creationDate = date.CI_Date.date.Date.text() ? date.CI_Date.date.Date.text() : null
             } else if(dateType == 'revision') {
-                revisionDate = date.CI_Date.date.Date.text() ?: null
+                revisionDate = date.CI_Date.date.Date.text() ? date.CI_Date.date.Date.text() : null
             }
         }
 
@@ -165,7 +167,7 @@ class MetadataParser {
         }
 
         // Links:
-        def linkage = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'CI_OnlineResource' }
+        def linkage = metadata.'**'.findAll { it.name() == 'CI_OnlineResource' }
         linkage.each { e ->
             links.add( [
                     linkName: e.name.CharacterString.text(),
@@ -229,6 +231,7 @@ class MetadataParser {
         def json = [
                 fileIdentifier: fileIdentifier,
                 parentIdentifier: parentIdentifier,
+                doi: doi,
                 title: title,
                 alternateTitle: alternateTitle,
                 description: description,

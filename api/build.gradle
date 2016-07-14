@@ -33,14 +33,18 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-tomcat'
     compile 'org.springframework.boot:spring-boot-devtools'
-    compile(group: "com.github.fge", name: "json-schema-validator", version: "2.2.6")
+    compile 'com.github.fge:json-schema-validator:2.2.6'
+    compile 'com.spatial4j:spatial4j:0.5' // Necessary for embedded ES to have geo_shape type available
+    compile 'com.vividsolutions:jts:1.13' // Necessary for embedded ES to have geo_shape type available
 
     testCompile "org.spockframework:spock-spring:1.0-groovy-2.4"
     testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
     testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
     testCompile 'org.springframework.boot:spring-boot-starter-test'
-    testCompile 'com.spatial4j:spatial4j:0.5' // Necessary for embedded ES to have geo_shape type available
-    testCompile 'com.vividsolutions:jts:1.13' // Necessary for embedded ES to have geo_shape type available
+}
+
+ext {
+    outputJar = file("${buildDir}/libs/${project.name}-${project.version}.jar")
 }
 
 bootRun {
@@ -48,6 +52,7 @@ bootRun {
 }
 
 bootRepackage {
+    outputFile = outputJar
     excludeDevtools = true
     executable = true
 }
@@ -57,7 +62,7 @@ task start(type: SpawnProcessTask) {
     onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
 
     directory projectDir.absolutePath
-    command "java -jar ${buildDir}/libs/${project.name}-${project.version}.jar"
+    command "java -jar ${outputJar}"
     ready 'Started Application'
 }
 
@@ -81,7 +86,6 @@ sourceSets {
 }
 
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
-    dependsOn ':elasticsearch:start'
     testClassesDir = sourceSets.integrationTest.output.classesDir
     classpath = sourceSets.integrationTest.runtimeClasspath
     reports.junitXml.destination = 'build/integration-test-results'

@@ -1,0 +1,179 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7'
+    }
+}
+
+import groovy.json.JsonSlurper
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
+
+def sources = [
+  [
+    name: 'GHRSST',
+    class: GeoportalExtractor,
+    url: 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
+    params: [searchText: 'title:GHRSST%20NOT%20title:Documentation']
+  ],
+  [
+    name: 'COOPS',
+    class: GeoportalExtractor,
+    url: 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
+    params: [searchText: 'fileIdentifier%3ACO-OPS*', after: '2016-06-30']
+  ],
+  [
+    name: 'DEM',
+    class: WafExtractor,
+    url: 'https://www.ngdc.noaa.gov/metadata/published/NOAA/NESDIS/NGDC/MGG/DEM/iso/xml',
+    params: [:]
+  ]
+]
+
+def targets = [
+  [
+    name: 'LocalApi',
+    class: ApiLoader,
+    url: 'http://localhost:8097/api/load'
+  ],
+  [
+    name: 'CUApi',
+    class: ApiLoader,
+    url: 'http://sciapps.colorado.edu/api/load'
+  ],
+  [
+    name: 'LocalGeoportal',
+    class: GeoportalLoader,
+    url: "http://localhost:8888/rest/metadata/item"
+  ]
+]
+
+// Creates a task to load from each source into each target,
+// plus a task to load all sources into each target
+targets.each { target ->
+    def tasksForTarget = sources.collect { source ->
+        tasks.create("etl${source.name}To${target.name}").doFirst {
+            def extractor = source.class.newInstance(source.url, source.params)
+            def loader = target.class.newInstance(extractor, target.url)
+            loader.load()
+        }
+    }
+    tasks.create("etlAllTo${target.name}").dependsOn(tasksForTarget)
+}
+
+
+class WafExtractor implements Iterator<String> {
+    private String endpointUrl
+    private Map searchParams
+    private Iterator wafIterator
+
+    WafExtractor(String endpointUrl, Map searchParams = [:]) {
+        this.endpointUrl = endpointUrl
+        this.searchParams = searchParams
+
+        def html = new HTTPBuilder(endpointUrl).get(searchParams)
+        def xmlFiles = html.'**'.collect({"${endpointUrl}/${it}"}).findAll({it.endsWith('.xml')})
+        this.wafIterator = xmlFiles.iterator()
+    }
+
+    @Override
+    boolean hasNext() {
+        return wafIterator.hasNext()
+    }
+
+    @Override
+    String next() {
+        return wafIterator.next()
+    }
+}
+
+
+class GeoportalExtractor implements Iterator<String> {
+    private String endpointUrl
+    private Map searchParams
+    private Integer pageSize = 1000
+    private List currentPage = []
+    private Integer currentPageNum = 0
+    private Integer currentIndex = 0
+    private JsonSlurper jsonSlurper = new JsonSlurper()
+
+    GeoportalExtractor(String endpointUrl, Map searchParams = [:]) {
+        this.endpointUrl = endpointUrl
+        this.searchParams = searchParams
+        getNextPage()
+    }
+
+    @Override
+    boolean hasNext() {
+        if (currentIndex < currentPage.size()) {
+            return true
+        }
+        else {
+            getNextPage()
+            return currentPage.size() > 0
+        }
+    }
+
+    @Override
+    String next() {
+        return hasNext() ? currentPage[currentIndex++] : null
+    }
+
+    private getNextPage() {
+        currentPage = jsonSlurper.parse(buildUrl()).records.collect { record ->
+            record.links.find({it.type.contains('metadata')}).href
+        }
+        currentIndex = 0
+        currentPageNum++
+    }
+
+    private buildUrl() {
+        def params = searchParams + [start: currentPageNum * pageSize, max: pageSize, f: 'json', orderBy: 'title']
+        def queryString = params.collect({ k, v -> k + '=' + v }).join('&')
+        def url = endpointUrl + '?' + queryString
+        println url
+        return new URL(url)
+    }
+}
+
+class ApiLoader {
+    protected Iterator<String> metadataUrls
+    protected HTTPBuilder target
+    protected Method httpMethod
+
+    ApiLoader(Iterator<String> metadataUrls, String apiEndpoint) {
+        this.metadataUrls = metadataUrls
+        this.target = new HTTPBuilder(apiEndpoint)
+        this.httpMethod = Method.POST
+    }
+
+    void load() {
+        def successes = 0
+        def failures = 0
+        metadataUrls.eachWithIndex { metadata, i ->
+            target.request(httpMethod) {
+                requestContentType = 'application/xml'
+                body = new URL(metadata).text
+                response.success = { resp, data ->
+                    successes++
+                    println "${data.data.id} created #${i}: ${data.data.attributes.created}"
+                }
+                response.failure = { resp, data ->
+                    failures++
+                    println "Error uploading metadata #${i} from ${metadata}: ${data}"
+                }
+            }
+        }
+        println "Load complete. Successfully loaded ${successes} or ${successes + failures} metadata records"
+    }
+}
+
+class GeoportalLoader extends ApiLoader {
+    GeoportalLoader(Iterator<String> metadataUrls, String geoportalEndpoint) {
+        super(metadataUrls, geoportalEndpoint)
+        this.target.auth.basic('gptadmin', 'gptadmin')
+        this.httpMethod = Method.PUT
+    }
+}

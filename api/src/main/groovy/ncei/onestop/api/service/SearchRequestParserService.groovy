@@ -1,15 +1,12 @@
 package ncei.onestop.api.service
 
-import com.spatial4j.core.shape.Shape
+import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.elasticsearch.common.geo.ShapeRelation
-import org.elasticsearch.common.geo.builders.EnvelopeBuilder
 import org.elasticsearch.common.geo.builders.ShapeBuilder
-import org.elasticsearch.common.xcontent.ToXContent
-import org.elasticsearch.common.xcontent.XContentBuilder
+import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.index.query.WrapperQueryBuilder
 import org.springframework.stereotype.Service
 
 @Slf4j
@@ -57,49 +54,25 @@ class SearchRequestParserService {
 
         // Temporal filters:
         groupedFilters.datetime.each {
-            def dataEndsInRange = QueryBuilders.boolQuery()
-            dataEndsInRange.must(QueryBuilders.rangeQuery("temporalBounding.beginDate").gte(it.after).lte(it.before))
-            dataEndsInRange.must(QueryBuilders.rangeQuery("temporalBounding.endDate").gte(it.before))
-
-            def dataContainedInRange = QueryBuilders.boolQuery()
-            dataContainedInRange.must(QueryBuilders.rangeQuery("temporalBounding.beginDate").lte(it.after))
-            dataContainedInRange.must(QueryBuilders.rangeQuery("temporalBounding.endDate").gte(it.before))
-
-            def dataStartsInRange = QueryBuilders.boolQuery()
-            dataStartsInRange.must(QueryBuilders.rangeQuery("temporalBounding.beginDate").lte(it.after))
-            dataStartsInRange.must(QueryBuilders.rangeQuery("temporalBounding.endDate").gte(it.after).lte(it.before))
-
-            // At least one date range match should be true for data set to pass filter:
-            builder.should(dataEndsInRange).should(dataContainedInRange).should(dataStartsInRange)
+            if (it.before) {
+                builder.must(QueryBuilders.rangeQuery('temporalBounding.beginDate').lte(it.before))
+            }
+            if (it.after) {
+                builder.must(QueryBuilders.rangeQuery('temporalBounding.endDate').gte(it.after))
+            }
         }
 
         // Spatial filters:
-        groupedFilters.geopoint.each {
-            def point = ShapeBuilder.newPoint(it.coordinates.lon, it.coordinates.lat)
-            builder.must(QueryBuilders.geoShapeQuery("spatialBounding", point, ShapeRelation.CONTAINS))
-        }
+        groupedFilters.geometry.each {
+            // it's a little silly to convert back to json string, but it's the easiest
+            // and most flexible way for the elasticsearch api to parse a request from it
+            def json = JsonOutput.toJson(it.geometry)
+            def parser = XContentType.JSON.xContent().createParser(json)
+            parser.nextToken() // need to advance to the first token before parsing for some reason...
+            def shape = ShapeBuilder.parse(parser)
+            def relation = ShapeRelation.getRelationByName(it.relation ?: 'intersects')
 
-        groupedFilters.bbox.each {
-            def bbox = ShapeBuilder.newEnvelope()
-                    .topLeft(it.topLeft.lon, it.topLeft.lat)
-                    .bottomRight(it.bottomRight.lon, it.bottomRight.lat)
-            def relation
-            switch(it.relation) {
-                case 'contains':
-                    relation = ShapeRelation.CONTAINS
-                    break
-                case 'disjoint':
-                    relation = ShapeRelation.DISJOINT
-                    break
-                case 'within':
-                    relation = ShapeRelation.WITHIN
-                    break
-                default:
-                    // Default ES relation
-                    relation = ShapeRelation.INTERSECTS
-            }
-
-            builder.must(QueryBuilders.geoShapeQuery("spatialBounding", bbox, relation))
+            builder.must(QueryBuilders.geoShapeQuery("spatialBounding", shape, relation))
         }
 
         // Facet filters:

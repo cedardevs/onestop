@@ -10,7 +10,7 @@
 
 .panel {
   max-width: 90%;
-  margin: 20px auto 0 auto;
+  margin: 5px auto;
 }
 
 .bottomBorder {
@@ -64,31 +64,20 @@
   font-size: 1em;
 }
 
-.results,
-.leftNav {
-  position: relative;
-  width: 200px;
-  display: inline-block;
-  width: 100%;
-}
 .results {
-  float: right;
-  width: 400px;
+  margin-bottom: 80px;
 }
+
 .details {
   position: fixed;
   top: 108px;
   left: 400px;
   bottom: 24px;
 }
-.footer {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
+
 .searchFacet {
   float: right;
+  margin-top: 20px
 }
 .leftNav {
   z-index: 2;

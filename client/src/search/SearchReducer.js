@@ -10,11 +10,6 @@ export const initialState = Immutable.Map({
 
 export const search = (state = initialState, action) => {
   switch (action.type) {
-    case INDEX_CHANGE:
-      return state.merge({
-        index: action.indexText
-      })
-
     case SEARCH:
       return state.merge({
         text: action.searchText,
