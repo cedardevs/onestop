@@ -5,6 +5,7 @@ import { UPDATE_GEOMETRY } from './map/MapActions'
 export const initialState = Immutable.Map({
   text: '',
   index: '',
+  geometry: '',
   inFlight: false
 })
 

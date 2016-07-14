@@ -32,7 +32,7 @@ class MapComponent extends React.Component {
             //editableLayers.addLayer(layer);
             // console.log('draw:created->');
             // console.log(JSON.stringify(layer.toGeoJSON()));
-            self.handleGeometryUpdate(layer.toGeoJSON())
+            self.handleGeometryUpdate(layer.toGeoJSON().geometry)
         })
         map.fitWorld()
 
