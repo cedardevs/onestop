@@ -20,7 +20,7 @@ $cardWidth: 300px;
     height: $cardHeight;
     border: 2px solid $color-gray;
     padding: 1em;
-    background-color: rgba(10,10,10,.4);
+    background: linear-gradient(rgba(10,10,10,1), rgba(10,10,10,.5), rgba(10,10,10,.2), rgba(10,10,10,0));
     color: white;
     overflow: hidden;
 }
