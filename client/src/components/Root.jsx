@@ -1,6 +1,7 @@
 const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 
 import React from 'react'
+import DetailContainer from '../detail/DetailContainer'
 import ResultsListContainer from '../result/ResultsListContainer'
 import SearchContainer from '../search/SearchContainer'
 //import FacetContainer from '../facet/FacetContainer'
@@ -14,6 +15,7 @@ const Root = () => (
     <div>
       <Favicon url={["http://www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
       <AlphaBanner/>
+      <DetailContainer/>
       <div className={styles.bottomBorder}>
         <div className={styles.panel}>
           <div className={styles['pure-g']}>

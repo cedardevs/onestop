@@ -1,43 +1,35 @@
 @import '../../style/style.css';
-$cardHeight: 140px;
-$cardWidth: 300px;
 
-.base {
-    display: block;
-    margin: 20px;
+.modal {
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.6);
 }
 
-.reactFlipCard {
-    padding: 15px;
-    text-align: center;
-    width: $cardWidth;
-    height: $cardHeight;
+.modalContent {
+    background-color: #000;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid $color-gray;
+    width: 90%;
 }
 
-.reactFlipCardFront {
-    box-sizing: border-box;
-    width: $cardWidth;
-    height: $cardHeight;
-    border: 2px solid $color-gray;
-    padding: 1em;
-    background: linear-gradient(rgba(10,10,10,1), rgba(10,10,10,.5), rgba(10,10,10,.2), rgba(10,10,10,0));
-    color: white;
-    overflow: hidden;
+.close {
+    color: $color-gray;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
 }
-
-.reactFlipCardBack {
-    box-sizing: border-box;
-    width: $cardWidth;
-    height: $cardHeight;
-    border: 2px solid $color-gray;
-    background-color: rgba(30,30,30,.4);
-    color: white;
-    overflow: hidden;
-}
-
-.titleText {
-    position: relative;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+.close:hover,
+.close:focus {
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
 }

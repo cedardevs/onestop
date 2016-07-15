@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { getDetails, CardStatus } from '../detail/DetailActions'
+import { setFocus, CardStatus } from '../detail/DetailActions'
 import Result from './ResultComponent'
 
 const mapStateToProps = (state, ownProps) => {
@@ -17,7 +17,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onCardClick: (id) => {
-      dispatch(getDetails(id))
+      dispatch(setFocus(id))
     }
   }
 }

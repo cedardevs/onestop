@@ -1,24 +1,19 @@
 import { connect } from 'react-redux'
-import { getDetails, CardStatus } from './DetailActions'
+import { setFocus } from './DetailActions'
 import Detail from './DetailComponent'
 
-const mapStateToProps = (state, ownProps) => {
-  let cardDetails = state.getIn(['details',ownProps.recordId]).toJS()
-  let cardStatus = cardDetails.cardStatus != CardStatus.SHOW_FRONT
+const mapStateToProps = (reduxState, reactProps) => {
+  const focusedId = reduxState.get('details').get('focusedId')
+  const focusedItem = reduxState.get('results').get(focusedId)
   return {
-    recordId: ownProps.recordId,
-    title: cardDetails.title,
-    thumbnail: cardDetails.thumbnail,
-    description: cardDetails.description,
-    flipped: cardStatus
+    id: focusedId,
+    item: focusedItem ? focusedItem.toJS() : null
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onCardClick: (id) => {
-      dispatch(getDetails(id))
-    }
+    dismiss: () => dispatch(setFocus(null))
   }
 }
 

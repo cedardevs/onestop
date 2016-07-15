@@ -11,14 +11,18 @@ const Result = (props) => {
     backgroundPosition: 'center center'
   }
 
+  const handleClick = () => {
+    props.onCardClick(props.recordId)
+  }
+
   return (
-    <FlipCard disabled={true} className={styles.reactFlipCard} flipped={props.flipped}>
+    <FlipCard disabled={true} className={styles.reactFlipCard} flipped={false}>
       <div style={localStyles}>
-        <div className={styles.reactFlipCardFront} onClick={() => props.onCardClick(props.recordId)}>
+        <div className={styles.reactFlipCardFront} onClick={handleClick}>
           <div className={styles.titleText}>{props.title}</div>
         </div>
       </div>
-      <div className={styles.reactFlipCardBack} onClick={() => props.onCardClick(props.recordId)}>
+      <div className={styles.reactFlipCardBack} onClick={handleClick}>
         <div>{props.description}</div>
       </div>
     </FlipCard>

@@ -1,9 +1,10 @@
 import Immutable from 'immutable'
 import {SEARCH_COMPLETE} from '../search/SearchActions'
-import {SET_CARD_STATUS, CardStatus} from './DetailActions'
-const { SHOW_FRONT } = CardStatus
+import {SET_FOCUS, SET_CARD_STATUS, CardStatus} from './DetailActions'
 
-export const initialState = Immutable.Map({})
+export const initialState = Immutable.Map({
+  focusedId: null
+})
 
 export const details = (state = initialState, action) => {
   switch (action.type) {
@@ -19,6 +20,9 @@ export const details = (state = initialState, action) => {
       })
       return Immutable.fromJS(newState)
 
+    case SET_FOCUS:
+      return state.merge({focusedId: action.id})
+
     case SET_CARD_STATUS:
       let cardStatus = state.getIn([action.id, 'cardStatus'])
       switch (cardStatus) {
@@ -28,6 +32,7 @@ export const details = (state = initialState, action) => {
         default:
           return state.setIn([action.id, 'cardStatus'], CardStatus.SHOW_FRONT )
       }
+
     default:
       return state
   }
