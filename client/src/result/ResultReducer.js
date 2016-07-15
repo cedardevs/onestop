@@ -6,6 +6,7 @@ export const initialState = Immutable.OrderedMap()
 const results = (state = initialState, action) => {
   switch(action.type) {
     case SEARCH_COMPLETE:
+      state = Immutable.OrderedMap()
       action.items.forEach((value, key) => {
         state = state.set(key, Immutable.Map(value))
       })
