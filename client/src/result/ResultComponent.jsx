@@ -1,37 +1,47 @@
 import React, { PropTypes } from 'react'
-import ListItem from '../../node_modules/material-ui/lib/lists/list-item';
-import Avatar from '../../node_modules/material-ui/lib/avatar';
+import FlipCard from 'react-flipcard'
+import styles from './result.css'
 
-const Result = ({record, onClick}) => {
-  const thumbnailHref = record.thumbnail_s; //ES tag
-
-  const styles = {
-    title: {
-      whiteSpace: 'nowrap',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-      color: 'white'
-    }
+const Result = (props) => {
+  // Thumbnails are dynamically assigned so style's applied via JS
+  var localStyles = {
+    background: 'url(' + props.thumbnail + ')',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center center'
   }
 
-  const handleSelection = () => onClick(record.id);
-
-  return <ListItem
-      primaryText={<div style={styles.title}>{record.title}</div>}
-      leftAvatar={<Avatar src={thumbnailHref || null}/>}
-      onTouchTap={handleSelection}
-  />
+  return (
+    <FlipCard disabled={true} className={styles.reactFlipCard} flipped={props.flipped}>
+      <div style={localStyles}>
+        <div className={styles.reactFlipCardFront} onClick={() => props.onCardClick(props.recordId)}>
+          <div className={styles.titleText}>{props.title}</div>
+        </div>
+      </div>
+      <div className={styles.reactFlipCardBack} onClick={() => props.onCardClick(props.recordId)}>
+        <div>{props.description}</div>
+      </div>
+    </FlipCard>
+  )
 }
 
 Result.propTypes = {
-  record: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    links: PropTypes.arrayOf(PropTypes.shape({
-      href: PropTypes.string.isRequired,
-      type: PropTypes.string.isRequired
-    })).isRequired
-  })
+  id: PropTypes.string.isRequired,
+  flipped: PropTypes.bool.isRequired,
+  onCardClick: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired
 }
+
+Result.defaultProps = {
+  id: '',
+  details: {
+    title: '',
+    summary: '',
+    links: []
+  },
+  flipped: false
+}
+
+Result.shouldComponentUpdate = (nextProps, nextState) => typeof nextProps.id !== 'undefined'
 
 export default Result

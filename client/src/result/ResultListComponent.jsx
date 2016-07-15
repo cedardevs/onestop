@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react'
-import Result from './ResultComponent'
-import DetailContainer from '../detail/DetailContainer'
+import ResultContainer from './ResultContainer'
 import styles from './result.css'
 
 const ResultsList = ({results, loading}) => {
@@ -9,7 +8,7 @@ const ResultsList = ({results, loading}) => {
     cards.push(<div key={key} className={`${styles['pure-u-1']}
       ${styles['pure-u-md-1-2']} ${styles['pure-u-lg-1-3']}
       ${styles['pure-u-xl-1-4']} ${styles.grid}`}>
-      <DetailContainer recordId={key} />
+      <ResultContainer recordId={key} />
     </div>)
   })
   return <div className={`${styles['pure-g']} ${styles.gridContainer}`} zDepth={3} rounded={false}>
