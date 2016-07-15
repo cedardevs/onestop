@@ -1,7 +1,7 @@
 const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 
 import React from 'react'
-import ResultsContainer from '../result/ResultContainer'
+import ResultsListContainer from '../result/ResultsListContainer'
 import SearchContainer from '../search/SearchContainer'
 //import FacetContainer from '../facet/FacetContainer'
 import Favicon from 'react-favicon'
@@ -31,7 +31,7 @@ const Root = () => (
         </div>
       </div>
       <div className={styles.results}>
-        <ResultsContainer/>
+        <ResultsListContainer/>
       </div>
       <Footer/>
     </div>

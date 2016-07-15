@@ -8,8 +8,8 @@ const mapStateToProps = (state) => {
   }
 }
 
-const ResultsContainer = connect(
+const ResultsListContainer = connect(
     mapStateToProps
 )(ResultsList)
 
-export default ResultsContainer
+export default ResultsListContainer
