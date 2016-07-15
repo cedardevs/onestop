@@ -11,7 +11,7 @@ const ResultsList = ({results, loading}) => {
       <ResultContainer recordId={key} />
     </div>)
   })
-  return <div className={`${styles['pure-g']} ${styles.gridContainer}`} zDepth={3} rounded={false}>
+  return <div className={`${styles['pure-g']} ${styles.gridContainer}`}>
     {cards}
   </div>
 }
