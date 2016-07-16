@@ -68,8 +68,8 @@ class Detail extends React.Component {
   }
 
   renderLink(link, index) {
-   return <li className={styles['pure-u']}>
-     <a href={link.linkUrl} target="_blank" key={index}
+   return <li className={styles['pure-u']} key={index}>
+     <a href={link.linkUrl} target="_blank"
              className={`${styles['pure-button']} ${styles['pure-button-primary']}`}>
        {link.linkName || 'Link'}
      </a>
