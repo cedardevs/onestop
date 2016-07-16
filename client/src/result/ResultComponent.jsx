@@ -6,6 +6,7 @@ const Result = (props) => {
   // Thumbnails are dynamically assigned so style's applied via JS
   var localStyles = {
     background: 'url(' + props.thumbnail + ')',
+    backgroundColor: 'black',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
     backgroundPosition: 'center center'
