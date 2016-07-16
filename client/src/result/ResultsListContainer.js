@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import { setFocus } from '../detail/DetailActions'
 import ResultsList from './ResultListComponent'
 
 const mapStateToProps = (state) => {
@@ -8,8 +9,17 @@ const mapStateToProps = (state) => {
   }
 }
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onCardClick: (id) => {
+      dispatch(setFocus(id))
+    }
+  }
+}
+
 const ResultsListContainer = connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(ResultsList)
 
 export default ResultsListContainer
