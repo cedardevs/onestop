@@ -25,26 +25,16 @@ class Detail extends React.Component {
         </div>
         <div className={styles['pure-g']}>
           <div className={`${styles['pure-u-1']} ${styles['pure-u-md-1-3']}`}>
-            <img className={styles.previewImg} src={item.thumbnail}/>
+            {this.renderImage()}
           </div>
           <div className={`${styles['pure-u-1']} ${styles['pure-u-md-2-3']}`}>
             <div className={`${styles['pure-g']}`}>
               <div className={`${styles['pure-u-1']} ${styles.underscored}`}>
                 <p>{item.description}</p>
               </div>
-              <div className={`${styles['pure-u-1-6']} ${styles.linkRow}`}>
-                <span>More Info:</span>
-              </div>
-              <div className={`${styles['pure-u-5-6']} ${styles.linkRow}`}>
-                {this.renderLinks(this.getInformationLinks())}
-              </div>
-              <div className={`${styles['pure-u-1-6']} ${styles.linkRow}`}>
-                <span>Data Access:</span>
-              </div>
-              <div className={`${styles['pure-u-5-6']} ${styles.linkRow}`}>
-                {this.renderLinks(this.getDownloadLinks())}
-              </div>
             </div>
+            {this.renderLinks('More Info', this.getLinksByType('information'))}
+            {this.renderLinks('Data Access', this.getLinksByType('download'))}
           </div>
         </div>
       </div>
@@ -55,16 +45,23 @@ class Detail extends React.Component {
     return this.props && this.props.item && this.props.item.links || []
   }
 
-  getDownloadLinks() {
-    return this.getLinks().filter((link) => link.linkFunction === 'download')
+  getLinksByType(type) {
+    return this.getLinks().filter((link) => link.linkFunction === type)
   }
 
-  getInformationLinks() {
-    return this.getLinks().filter((link) => link.linkFunction === 'information')
-  }
+  renderLinks(label, links) {
+    if (!links || links.length === 0) {
+      return <div></div>
+    }
 
-  renderLinks(links) {
-    return <ul className={styles['pure-g']}>{links.map(this.renderLink)}</ul>
+    return <div className={`${styles['pure-g']}`}>
+      <div className={`${styles['pure-u-1-6']} ${styles.linkRow}`}>
+        <span>{label}</span>
+      </div>
+      <div className={`${styles['pure-u-5-6']} ${styles.linkRow}`}>
+        <ul className={styles['pure-g']}>{links.map(this.renderLink)}</ul>
+      </div>
+    </div>
   }
 
   renderLink(link, index) {
@@ -74,6 +71,12 @@ class Detail extends React.Component {
        {link.linkName || 'Link'}
      </a>
    </li>
+  }
+
+  renderImage() {
+    return this.props.item.thumbnail ?
+        <img className={styles.previewImg} src={this.props.item.thumbnail}/> :
+        <h3 style={{textAlign: 'center'}}>No Image Available</h3>
   }
 
   //$r.props.item.keywords.filter((k) => k.keywordType == 'place').map((k) => k.keywordText.split('>')).map((a) => a[a.length-1])
