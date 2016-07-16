@@ -7,6 +7,7 @@ class Detail extends React.Component {
 
     this.close = this.close.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.renderKeyword = this.renderKeyword.bind(this)
   }
 
   render() {
@@ -33,8 +34,14 @@ class Detail extends React.Component {
                 <p>{item.description}</p>
               </div>
             </div>
-            {this.renderLinks('More Info', this.getLinksByType('information'))}
-            {this.renderLinks('Data Access', this.getLinksByType('download'))}
+            <div className={`${styles.underscored}`}>
+              {this.renderLinks('More Info', this.getLinksByType('information'), this.renderLink)}
+              {this.renderLinks('Data Access', this.getLinksByType('download'), this.renderLink)}
+            </div>
+            <div>
+              {this.renderLinks('Themes', this.getKeywordsByType('theme'), this.renderKeyword)}
+              {this.renderLinks('Places', this.getKeywordsByType('place'), this.renderKeyword)}
+            </div>
           </div>
         </div>
       </div>
@@ -49,7 +56,7 @@ class Detail extends React.Component {
     return this.getLinks().filter((link) => link.linkFunction === type)
   }
 
-  renderLinks(label, links) {
+  renderLinks(label, links, linkRenderer) {
     if (!links || links.length === 0) {
       return <div></div>
     }
@@ -59,7 +66,7 @@ class Detail extends React.Component {
         <span>{label}</span>
       </div>
       <div className={`${styles['pure-u-5-6']} ${styles.linkRow}`}>
-        <ul className={styles['pure-g']}>{links.map(this.renderLink)}</ul>
+        <ul className={styles['pure-g']}>{links.map(linkRenderer)}</ul>
       </div>
     </div>
   }
@@ -79,7 +86,28 @@ class Detail extends React.Component {
         <h3 style={{textAlign: 'center'}}>No Image Available</h3>
   }
 
-  //$r.props.item.keywords.filter((k) => k.keywordType == 'place').map((k) => k.keywordText.split('>')).map((a) => a[a.length-1])
+  getKeywords() {
+    return this.props && this.props.item && this.props.item.keywords || []
+  }
+
+  getKeywordsByType(type) {
+    return this.getKeywords()
+        .filter((k) => k.keywordType === type) // filter by type
+        .filter((k) => k.keywordText) // filter out empties
+        .map((k) => k.keywordText.split('>')) // split GCMD keywords apart
+        .reduce((list, keys) => list.concat(keys), []) // flatten
+        .map((k) => k.toLowerCase().trim()) // you can figure this one out
+        .filter((k, i, a) => a.indexOf(k) === i) // dedupe
+  }
+
+  renderKeyword(keyword, index) {
+    return <li className={styles['pure-u']} key={index}>
+      <a className={`${styles['pure-button']} ${styles['button-secondary']}`}
+         onClick={() => this.props.textSearch(keyword)}>
+        {keyword}
+      </a>
+    </li>
+  }
 
   close() {
     this.props.dismiss()

@@ -78,3 +78,8 @@
     }
   }
 }
+
+.button-secondary {
+  color: white;
+  background: #00a6d2;
+}

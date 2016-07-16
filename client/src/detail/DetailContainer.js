@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import { setFocus } from './DetailActions'
+import { textSearch } from '../search/SearchActions'
 import Detail from './DetailComponent'
 
 const mapStateToProps = (reduxState, reactProps) => {
@@ -13,7 +14,8 @@ const mapStateToProps = (reduxState, reactProps) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    dismiss: () => dispatch(setFocus(null))
+    dismiss: () => dispatch(setFocus(null)),
+    textSearch: (text) => dispatch(textSearch(text))
   }
 }
 

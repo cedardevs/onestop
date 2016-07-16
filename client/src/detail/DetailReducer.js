@@ -9,7 +9,7 @@ export const initialState = Immutable.Map({
 export const details = (state = initialState, action) => {
   switch (action.type) {
     case SEARCH_COMPLETE:
-      let newState = {}
+      let newState = {focusedId: null}
       action.items.forEach(function (val, key) {
         newState[key] = {
           title: val.title,
