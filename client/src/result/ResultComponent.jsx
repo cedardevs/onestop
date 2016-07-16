@@ -38,11 +38,6 @@ Result.propTypes = {
 
 Result.defaultProps = {
   id: '',
-  details: {
-    title: '',
-    summary: '',
-    links: []
-  },
   flipped: false
 }
 
