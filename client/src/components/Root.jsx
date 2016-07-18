@@ -1,7 +1,9 @@
 const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 
 import React from 'react'
+import DetailContainer from '../detail/DetailContainer'
 import SearchContainer from '../search/SearchContainer'
+import Breadcrumbs from 'react-breadcrumbs'
 //import FacetContainer from '../facet/FacetContainer'
 import Favicon from 'react-favicon'
 import Footer from './Footer.jsx'
@@ -10,10 +12,18 @@ import AlphaBanner from './AlphaBanner.jsx'
 import styles from './root.css'
 
 
-const Root = ({children, routes}) => {
+const Root = ({children, routes, params, location}) => {
+    let breadcrumbs
+    if (location.pathname !== "/"){
+        breadcrumbs = <Breadcrumbs
+          routes={routes}
+          params={params}
+        />
+    }
     return <div>
       <Favicon url={["http://www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
       <AlphaBanner/>
+      <DetailContainer/>
       <div className={styles.bottomBorder}>
         <div className={styles.panel}>
           <div className={styles['pure-g']}>
@@ -29,6 +39,9 @@ const Root = ({children, routes}) => {
             </div>
           </div>
         </div>
+      </div>
+      <div className={styles.breadCrumbs}>
+      {breadcrumbs}
       </div>
       <div className={styles.results}>
           {children}
