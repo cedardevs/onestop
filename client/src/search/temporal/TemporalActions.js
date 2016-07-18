@@ -1,40 +1,18 @@
-// export const AFTER_TEMPORAL_SEARCH = 'AFTER_temporal_search'
-// export const BEFORE_TEMPORAL_SEARCH = 'before_temporal_search'
-//
-// export const afterDateSearch = (afterDatetime) => {
-//   return {
-//     type: AFTER_TEMPORAL_SEARCH,
-//     afterDatetime
-//   }
-// }
-//
-// export const beforeDateSearch = (beforeDatetime) => {
-//   return {
-//     type: BEFORE_TEMPORAL_SEARCH,
-//     beforeDatetime
-//   }
-// }
-//
-// export const temporalSearch = (afterDatetime, beforeDatetime) => {
-//   return (dispatch, getState) => {
-//
-//            (dispatch(afterDateSearch(afterDatetime)))
-//            (dispatch(beforeDateSearch(beforeDatetime)))
-//
-//   }
-// }
+export const DateRange = {
+  START_DATE: 'START_DATE',
+  END_DATE: 'END_DATE'
+}
 
-
-
-export const TEMPORAL_SEARCH = 'temporal_search'
-
-export const temporalSearch = (beforeDatetime, afteDatetime) => {
+export const startDate = (datetime) => {
   return {
-    type: TEMPORAL_SEARCH,
-    before: beforeDatetime,
-    after: afteDatetime
+    type: DateRange.START_DATE,
+    datetime
   }
 }
 
-// dispatch(temporalSearch('2000-01-01T00:00:00Z', null))
-
+export const endDate = (datetime) => {
+  return {
+    type: DateRange.END_DATE,
+    datetime
+  }
+}
