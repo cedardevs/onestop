@@ -37,6 +37,7 @@ export const textSearch = (searchText) => {
         { type: 'geometry', geometry: geometry.toJS() }
       )
     }
+    // { type: 'datetime', after: startDateTime, before: endDateTime }
     const apiRoot = "/api/search"
     const fetchParams = {
       method: 'POST',

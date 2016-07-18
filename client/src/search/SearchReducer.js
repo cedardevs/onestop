@@ -1,12 +1,15 @@
 import Immutable from 'immutable'
 import {SEARCH, SEARCH_COMPLETE} from './SearchActions'
 import { UPDATE_GEOMETRY } from './map/MapActions'
+import { DateRange } from './temporal/TemporalActions'
 
 export const initialState = Immutable.Map({
   text: '',
   index: '',
   geometry: '',
-  inFlight: false
+  inFlight: false,
+  startDateTime: '',
+  endDateTime: ''
 })
 
 export const search = (state = initialState, action) => {
@@ -26,6 +29,16 @@ export const search = (state = initialState, action) => {
     case UPDATE_GEOMETRY:
       return state.merge({
         geometry: action.searchGeometry
+      })
+
+    case DateRange.START_DATE:
+      return state.merge({
+       startDateTime: action.datetime
+      })
+
+    case DateRange.END_DATE:
+      return state.merge({
+       endDateTime: action.datetime
       })
 
     default:
