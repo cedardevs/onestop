@@ -13,12 +13,14 @@ import styles from './root.css'
 
 
 const Root = ({children, routes, params, location}) => {
-    let breadcrumbs
+    // Conditionally show some elements while not on main landing page
+    let breadcrumbs, searchContainer
     if (location.pathname !== "/"){
         breadcrumbs = <Breadcrumbs
           routes={routes}
           params={params}
         />
+        searchContainer = <SearchContainer/>
     }
     return <div>
       <Favicon url={["http://www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
@@ -35,7 +37,7 @@ const Root = ({children, routes, params, location}) => {
                 </div>
             </div>
             <div className={`${styles['pure-u-2-5']} ${styles.searchFacet}`}>
-              <SearchContainer/>
+                {searchContainer}
             </div>
           </div>
         </div>
