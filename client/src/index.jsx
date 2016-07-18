@@ -6,7 +6,7 @@ import {render} from 'react-dom'
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import {createStore, applyMiddleware} from 'redux'
-import ResultsContainer from './result/ResultContainer'
+import ResultsListContainer from './result/ResultsListContainer'
 import LandingContainer from './search/LandingContainer'
 import thunk from 'redux-thunk'
 import {Provider} from 'react-redux'
@@ -43,9 +43,9 @@ const history = syncHistoryWithStore(browserHistory, store, {
 const body =
     <Provider store={store}>
       <Router history={history}>
-        <Route path="/" component={Root}>
+        <Route path="/" name="Home" component={Root}>
           <IndexRoute component={LandingContainer}/>
-          <Route path="results" component={ResultsContainer}/>
+          <Route name="Results" path="results" component={ResultsListContainer}/>
         </Route>
       </Router>
     </Provider>
