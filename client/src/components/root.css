@@ -64,6 +64,14 @@
   font-size: 1em;
 }
 
+.breadCrumbs {
+  margin: 1% 0 2% 3%;
+  font-size: 1.3em;
+  a, a:visited, a:hover, a:active {
+    color: inherit;
+  }
+}
+
 .results {
   margin-bottom: 80px;
 }

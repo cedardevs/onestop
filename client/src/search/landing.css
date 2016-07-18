@@ -1,0 +1,18 @@
+@import '../../style/style.css';
+
+.mapContainer {
+  margin: auto;
+  width: 50%;
+}
+
+.searchFields {
+  text-align: center;
+  margin: 6em auto 4em;
+  width: 40%;
+  color: black;
+}
+
+.dropDown {
+  padding: 10px 0 0 0;
+  display: inline-block;
+}

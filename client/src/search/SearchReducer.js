@@ -1,9 +1,11 @@
 import Immutable from 'immutable'
 import {SEARCH, SEARCH_COMPLETE} from './SearchActions'
+import { UPDATE_GEOMETRY } from './map/MapActions'
 
 export const initialState = Immutable.Map({
   text: '',
   index: '',
+  geometry: '',
   inFlight: false
 })
 
@@ -19,6 +21,11 @@ export const search = (state = initialState, action) => {
       return state.merge({
         text: action.searchText,
         inFlight: false
+      })
+
+    case UPDATE_GEOMETRY:
+      return state.merge({
+        geometry: action.searchGeometry
       })
 
     default:

@@ -2,6 +2,9 @@ var webpack = require('webpack')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var precss = require('precss')
 var autoprefixer = require('autoprefixer')
+var postcssAssets = require('postcss-assets')
+var path = require('path')
+
 
 module.exports = {
   entry: {
@@ -12,7 +15,7 @@ module.exports = {
   module: {
     preLoaders: [{
       test: /\.js$/,
-      loader: "eslint-loader",
+      loader: "eslint",
       exclude: /node_modules/
     }],
     loaders: [{
@@ -21,23 +24,32 @@ module.exports = {
       loader: 'react-hot!babel'
     }, {
       test: /\.css$/,
+      include: /node_modules/,
+      loaders: [
+        'style?sourceMap',
+        'css']
+    }, {
+      test: /\.css$/,
+      exclude: /node_modules/,
       loaders: [
         'style?sourceMap',
         'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
         'postcss']
     }, {
-      test: /\.(jpe?g|png|gif|svg)$/,
-        loaders: [
-            'file?hash=sha512&digest=hex&name=[hash].[ext]',
-            'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
-        ]
+      test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
+      loader: 'file' + '?name=[path][name].[ext]'
     }]
   },
   postcss: function(){
-    return [precss, autoprefixer]
+    return [postcssAssets({
+        loadPaths: ['**']
+      }), precss, autoprefixer]
   },
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.js', '.jsx'],
+    root: [
+      path.resolve('./node_modules/leaflet/dist')
+    ]
   },
   output: {
     path: __dirname + '/dist',
