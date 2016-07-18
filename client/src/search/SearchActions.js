@@ -1,4 +1,6 @@
 import fetch from 'isomorphic-fetch'
+import { browserHistory} from 'react-router'
+
 
 export const INDEX_CHANGE = 'index_change'
 export const SEARCH = 'search'
@@ -49,6 +51,7 @@ export const textSearch = (searchText) => {
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
         .then(json => dispatch(completeSearch(searchText, assignResourcesToMap(json.data))))
+        .then(browserHistory.push('results'))
   }
 }
 
