@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { temporalSearch } from './TemporalActions'
+import { startDate, endDate, DateRange } from './TemporalActions'
 import TemporalSearch from './TemporalSearchComponent'
 
 const dateStateToProps = (state) => {
@@ -10,9 +10,12 @@ const dateStateToProps = (state) => {
 
 const dateDispatchToProps = (dispatch) => {
   return {
-    onChange: (text) => {
-      console.log(text)
-      dispatch(temporalSearch(text,text))
+    onChange: (text, dateSelected) => {
+      if (dateSelected === DateRange.START_DATE){
+        dispatch(startDate(text))
+      } else {
+        dispatch(endDate(text))
+      }
     }
   }
 }
@@ -22,4 +25,4 @@ const TemporalContainer = connect(
     dateDispatchToProps
 )(TemporalSearch)
 
-export default TemporalContainer 
+export default TemporalContainer
