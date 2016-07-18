@@ -28,8 +28,8 @@ export const textSearch = (searchText) => {
 
     dispatch(startSearch(searchText))
 
-    const beforedatetime = getState().getIn(['search', 'beforedatetime'])
-    const afterdatetime = getState().getIn(['search', 'afterdatetime'])
+    const startDateTime = getState().getIn(['search', 'startDateTime'])
+    const endDateTime = getState().getIn(['search', 'endDateTime'])
     const apiRoot = "/api/search"
     const fetchParams = {
       method: 'POST',
@@ -42,7 +42,7 @@ export const textSearch = (searchText) => {
           {type: 'queryText', value: searchText}
         ],
         filters: [
-          { type: 'datetime', after: afterdatetime, before: beforedatetime }
+          { type: 'datetime', after: startDateTime, before: endDateTime }
         ]
       })
     }
