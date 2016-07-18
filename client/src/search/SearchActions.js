@@ -24,13 +24,19 @@ export const completeSearch = (searchText, items) => {
 export const textSearch = (searchText) => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
-    var s = getState()
-    if (getState().getIn(['search', 'inFlight']) === true) {
+    var state = getState()
+    if (state.getIn(['search', 'inFlight']) === true) {
       return Promise.resolve()
     }
     dispatch(startSearch(searchText))
 
-    const geometry = getState().getIn(['search', 'geometry']).toJS()
+    const geometry = state.getIn(['search', 'geometry'])
+    let filters = []
+    if (geometry !== ""){
+      filters.push(
+        { type: 'geometry', geometry: geometry.toJS() }
+      )
+    }
     const apiRoot = "/api/search"
     const fetchParams = {
       method: 'POST',
@@ -42,9 +48,7 @@ export const textSearch = (searchText) => {
         queries: [
           {type: 'queryText', value: searchText}
         ],
-        filters: [
-          { type: 'geometry', geometry: geometry }
-        ]
+        filters: filters
       })
     }
 
