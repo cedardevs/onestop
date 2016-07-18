@@ -11,22 +11,20 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "history": "^1.17.0",
-    "immutable": "^3.7.6",
+    "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "leaflet": "^0.7.7",
     "leaflet-draw": "^0.3.0",
     "lodash": "^4.0.0",
-    "material-ui": "^0.14.4",
     "react": "^0.14.8",
     "react-dom": "^0.14.8",
     "react-flipcard": "^0.2.1",
-    "react-leaflet": "^0.12.1",
-    "react-redux": "^4.0.6",
-    "react-router": "^2.4.0",
+    "react-redux": "^4.4.5",
+    "react-router": "^2.5.2",
     "react-router-redux": "^4.0.5",
     "react-tap-event-plugin": "^0.2.0",
-    "redux": "^3.0.5",
+    "redux": "^3.5.2",
+    "redux-immutable": "^3.0.6",
     "redux-thunk": "^2.0.1"
   },
   "devDependencies": {
