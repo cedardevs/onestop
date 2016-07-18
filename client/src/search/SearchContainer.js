@@ -3,7 +3,9 @@ import SearchFacet from './SearchComponent'
 import { textSearch, indexChange } from './SearchActions'
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    searchText: state.get('search').get('text')
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {

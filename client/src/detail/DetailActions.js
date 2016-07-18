@@ -1,5 +1,4 @@
-export const FETCH_DETAILS = 'fetch_details'
-export const RECEIVE_DETAILS = 'receive_details'
+export const SET_FOCUS = 'SET_FOCUS'
 export const SET_CARD_STATUS = 'SET_CARD_STATUS'
 
 export const CardStatus = {
@@ -14,12 +13,9 @@ export const setCardStatus = (id) => {
   }
 }
 
-export const getDetails = (id) => {
-  return (dispatch, getState) => {
-    // if a request is already in flight, let the calling code know there's nothing to wait for
-    if (getState().getIn(['search', 'inFlight']) === true) {
-      return Promise.resolve()
-    }
-    dispatch(setCardStatus(id))
+export const setFocus = (id) => {
+  return {
+    type: SET_FOCUS,
+    id: id
   }
 }

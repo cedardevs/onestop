@@ -1,5 +1,7 @@
 @import '../../style/style.css';
 $gridHeight: 160px; /* Workaround until div can autoadjust height */
+$cardHeight: 140px;
+$cardWidth: 300px;
 
 .gridContainer {
     width: 95%;
@@ -19,4 +21,39 @@ $gridHeight: 160px; /* Workaround until div can autoadjust height */
 
 .grid {
     height: $gridHeight;
+}
+
+.reactFlipCard {
+    padding: 15px;
+    text-align: center;
+    width: $cardWidth;
+    height: $cardHeight;
+}
+
+.reactFlipCardFront {
+    box-sizing: border-box;
+    width: $cardWidth;
+    height: $cardHeight;
+    border: 2px solid $color-gray;
+    padding: 1em;
+    background: linear-gradient(rgba(10,10,10,1), rgba(10,10,10,.5), rgba(10,10,10,.2), rgba(10,10,10,0));
+    color: white;
+    overflow: hidden;
+}
+
+.reactFlipCardBack {
+    box-sizing: border-box;
+    width: $cardWidth;
+    height: $cardHeight;
+    border: 2px solid $color-gray;
+    background-color: rgba(30,30,30,.4);
+    color: white;
+    overflow: hidden;
+}
+
+.titleText {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
