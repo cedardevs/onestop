@@ -1,6 +1,6 @@
 import Immutable from 'immutable'
 import {INDEX_CHANGE, SEARCH, SEARCH_COMPLETE} from './SearchActions'
-import { START_DATE, END_DATE } from './temporal/TemporalActions'
+import { DateRange } from './temporal/TemporalActions'
 
 export const initialState = Immutable.Map({
   text: '',
@@ -24,12 +24,12 @@ export const search = (state = initialState, action) => {
         inFlight: false
       })
 
-    case START_DATE:
+    case DateRange.START_DATE:
       return state.merge({
        startDateTime: action.datetime
       })
 
-    case END_DATE:
+    case DateRange.END_DATE:
       return state.merge({
        endDateTime: action.datetime
       })
