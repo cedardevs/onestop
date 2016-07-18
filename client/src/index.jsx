@@ -1,8 +1,9 @@
 import 'babel-polyfill'
 import injectTapEventPlugin from 'react-tap-event-plugin'
 import React from 'react'
+import Immutable from 'immutable'
 import {render} from 'react-dom'
-import { Router, Route, browserHistory, hashHistory, IndexRoute } from 'react-router'
+import { Router, Route, IndexRoute, browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import {createStore, applyMiddleware} from 'redux'
 import ResultsContainer from './result/ResultContainer'
@@ -14,15 +15,14 @@ import reducer from './reducers/main'
 import '../style/style.js'
 import './page.css'
 
-
-
 // Needed for onTouchTap
 // Can go away when react 1.0 release
 // Check this repo:
 // https://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin()
 
-let store = createStore(reducer, applyMiddleware(thunk))
+const initialState = Immutable.Map()
+const store = createStore(reducer, initialState, applyMiddleware(thunk))
 
 // Create enhanced history object for router
 const createSelectLocationState = () => {
@@ -30,14 +30,13 @@ const createSelectLocationState = () => {
   return (state) => {
     const routingState = state.get('routing')
     if (typeof prevRoutingState === 'undefined' || prevRoutingState !== routingState) {
-      prevRoutingState = routingState
       prevRoutingStateJS = routingState.toJS()
     }
     return prevRoutingStateJS
   }
 }
 
-const history = syncHistoryWithStore(hashHistory, store, {
+const history = syncHistoryWithStore(browserHistory, store, {
   selectLocationState: createSelectLocationState()
 })
 
@@ -46,6 +45,7 @@ const body =
       <Router history={history}>
         <Route path="/" component={Root}>
           <IndexRoute component={LandingContainer}/>
+          <Route path="results" component={ResultsContainer}/>
         </Route>
       </Router>
     </Provider>
