@@ -39,6 +39,7 @@ class MapComponent extends React.Component {
     }
 
     componentWillUnmount() {
+        var map = this.map
         map.off('click', this.onMapClick)
         map = null
     }
