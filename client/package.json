@@ -50,6 +50,7 @@
     "image-webpack-loader": "^1.8.0",
     "img-loader": "^1.2.2",
     "mocha": "^2.4.5",
+    "moment": "^2.14.1",
     "node-sass": "^3.4.2",
     "path": "^0.12.7",
     "postcss-assets": "^4.1.0",
