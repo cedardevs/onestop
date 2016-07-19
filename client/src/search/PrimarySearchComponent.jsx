@@ -10,10 +10,10 @@ const PrimarySearchComponent = ({onEnterKeyDown}) => {
   }
 
   return <input
-    className={styles.textField}
-    placeholder="Enter Search Term"
-    onKeyDown={handleKeyDown}
-  />
+      className={styles.textField}
+      placeholder="Enter Search Term"
+      onKeyDown={handleKeyDown}
+    />
 }
 
 export default PrimarySearchComponent

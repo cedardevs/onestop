@@ -17,7 +17,7 @@ const TemporalSearch = ({onChange, currentDate}) => {
         defaultValue=""
         onChange={(dateString)=>{formatAndEmit(dateString, DateRange.START_DATE)}}
     >
-        <Calendar/>
+      <Calendar/>
     </DateField>
   ]
 
@@ -28,7 +28,7 @@ const TemporalSearch = ({onChange, currentDate}) => {
         defaultValue=""
         onChange={(dateString)=>{formatAndEmit(dateString, DateRange.END_DATE)}}
     >
-        <Calendar/>
+      <Calendar/>
     </DateField>
   ]
 
