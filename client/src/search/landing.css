@@ -1,5 +1,25 @@
 @import '../../style/style.css';
 
+.landingComponents {
+  margin: 10em auto;
+  background-color: black;
+  color: black;
+  position: relative;
+  opacity: 0.7;
+  filter: alpha(opacity=30); /* For IE8 and earlier */
+  height: 400px;
+  width: 600px;
+}
+
+.landingButton {
+  background-color: $color-primary;
+}
+
+.temporalBox {
+  display: inline-block;
+  margin: 2em;
+}
+
 .mapContainer {
   margin: auto;
   width: 50%;
@@ -7,8 +27,6 @@
 
 .searchFields {
   text-align: center;
-  margin: 6em auto 4em;
-  width: 40%;
   color: black;
 }
 
