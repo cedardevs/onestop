@@ -10,7 +10,7 @@ module.exports = {
   entry: {
     app: './src/index.jsx',
     vendor: ['purecss', 'react', 'react-dom', 'react-router', 'redux', 'redux-thunk',
-      'react-tap-event-plugin']
+      'react-tap-event-plugin', 'leaflet']
   },
   module: {
     preLoaders: [{
@@ -36,8 +36,11 @@ module.exports = {
         'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
         'postcss']
     }, {
-      test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
-      loader: 'file' + '?name=[path][name].[ext]'
+      test: /\.(jpe?g|png|gif|svg)$/,
+      loaders: [
+        'file?hash=sha512&digest=hex&name=[hash].[ext]',
+        'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+      ]
     }]
   },
   postcss: function(){
