@@ -1,24 +1,44 @@
 import React from 'react'
-import IndexDropDown from './IndexDropDownComponent'
 import PrimarySearchComponent from './PrimarySearchComponent'
+import TemporalContainer from './temporal/TemporalContainer'
 import MapContainer from './map/MapContainer'
+import ToggleDisplay from 'react-toggle-display'
 import styles from './landing.css'
 
-const LandingComponent = ({indexName, submit, handleIndexChange}) => {
-  return <div><form className={`pure-form`}>
-    <div className={styles.searchFields}>
-      <span>
-        <PrimarySearchComponent onEnterKeyDown={submit}/>
-        <div className={styles.dropDown}>
-          <IndexDropDown indexName={indexName} onChange={handleIndexChange}/>
+
+class LandingComponent extends React.Component {
+  constructor(props) {
+    super(props)
+    this.submit = props.submit
+    this.toggleMap = this.toggleMap.bind(this)
+    this.state = {
+      showMap: false
+    }
+  }
+
+  toggleMap() {
+    this.state.showMap = !this.state.showMap
+    this.forceUpdate()
+  }
+
+  render() {
+    return <div className={styles.landingComponents}>
+        <form className={`pure-form`}>
+          <div className={styles.searchFields}>
+            <PrimarySearchComponent onEnterKeyDown={this.submit}/>
+          </div>
+        </form>
+        <div className={styles.temporalBox}>
+          <TemporalContainer />
         </div>
-        </span>
-    </div>
-  </form>
-    <div className={styles.mapContainer}>
-      <MapContainer />
-    </div>
-    </div>
+        <button className={`pure-button ${styles.landingButton}`} onClick={this.toggleMap}>Map</button>
+        <ToggleDisplay show={this.state.showMap}>
+          <div className={styles.mapContainer}>
+            <MapContainer updated={this.state.showMap} />
+          </div>
+        </ToggleDisplay>
+      </div>
+  }
 }
 
 export default LandingComponent
