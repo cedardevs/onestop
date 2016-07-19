@@ -38,18 +38,6 @@
   padding: 10px;
 }
 
-.startTimeField{
-  display: inline;
-  display: inline-block;
-  margin-left: 7px;
-}
-
-.endTimeField{
-  display: inline;
-  display: inline-block;
-  margin-left: 7px;
-}
-
 .temporalDropdown{
   display: inline;
   background-color: #2f6fad;

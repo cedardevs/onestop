@@ -1,7 +1,7 @@
 import React from 'react'
 import {TransitionView, DateField, Calendar} from 'react-date-picker'
 import { DateRange } from './TemporalActions'
-import styles from '../search.css'
+import styles from './temporal.css'
 import moment from 'moment'
 
 const TemporalSearch = ({onChange, currentDate}) => {
@@ -18,8 +18,7 @@ const TemporalSearch = ({onChange, currentDate}) => {
         onChange={(dateString)=>{formatAndEmit(dateString, DateRange.START_DATE)}}
     >
       <TransitionView>
-        <Calendar
-        />
+        <Calendar/>
       </TransitionView>
     </DateField>
   ]
