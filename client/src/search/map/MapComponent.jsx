@@ -38,6 +38,10 @@ class MapComponent extends React.Component {
 
     }
 
+    componentWillReceiveProps() {
+        this.map.invalidateSize()
+    }
+
     componentWillUnmount() {
         var map = this.map
         map.off('click', this.onMapClick)
