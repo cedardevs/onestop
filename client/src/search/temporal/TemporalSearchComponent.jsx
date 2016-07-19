@@ -17,9 +17,7 @@ const TemporalSearch = ({onChange, currentDate}) => {
         defaultValue=""
         onChange={(dateString)=>{formatAndEmit(dateString, DateRange.START_DATE)}}
     >
-      <TransitionView>
         <Calendar/>
-      </TransitionView>
     </DateField>
   ]
 
@@ -30,10 +28,7 @@ const TemporalSearch = ({onChange, currentDate}) => {
         defaultValue=""
         onChange={(dateString)=>{formatAndEmit(dateString, DateRange.END_DATE)}}
     >
-      <TransitionView>
-        <Calendar
-        />
-      </TransitionView>
+        <Calendar/>
     </DateField>
   ]
 
