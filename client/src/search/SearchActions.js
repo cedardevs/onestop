@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch'
 import { browserHistory} from 'react-router'
+import moment from 'moment'
 
 
 export const INDEX_CHANGE = 'index_change'
@@ -24,7 +25,8 @@ export const completeSearch = (searchText, items) => {
 export const textSearch = (searchText) => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
-    var state = getState()
+    let state = getState()
+
     if (state.getIn(['search', 'inFlight']) === true) {
       return Promise.resolve()
     }
@@ -35,6 +37,16 @@ export const textSearch = (searchText) => {
     if (geometry !== ""){
       filters.push(
         { type: 'geometry', geometry: geometry.toJS() }
+      )
+    }
+    let startDateTime = state.getIn(['search', 'startDateTime'])
+    let endDateTime = state.getIn(['search', 'endDateTime'])
+    if (startDateTime !== '') {
+      if (endDateTime === '') {
+        endDateTime = moment().format()
+      }
+      filters.push(
+        { type: 'datetime', after: startDateTime, before: endDateTime }
       )
     }
     // { type: 'datetime', after: startDateTime, before: endDateTime }
@@ -66,4 +78,17 @@ const assignResourcesToMap = (resourceList) => {
     map.set(resource.id, Object.assign({type: resource.type}, resource.attributes))
   })
   return map
+}
+
+const filterGeometry = (state) => {
+  let geometry = state.getIn(['search', 'geometry'])
+  if (geometry !== ""){
+    filters.push(
+      { type: 'geometry', geometry: geometry.toJS() }
+    )
+  }
+}
+
+const filterDates = (state) => {
+
 }
