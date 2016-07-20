@@ -1,5 +1,5 @@
 import React from 'react'
-import TemporalContainer from './temporal/TemporalContainer'
+import { Link } from 'react-router'
 import TextSearchField from './TextSearchFieldComponent'
 import styles from './search.css'
 import 'purecss'
@@ -10,9 +10,7 @@ const SearchFacet = ({submit, updateQuery, searchText}) => {
       <div className={styles.textField}>
         <TextSearchField onEnterKeyDown={submit} onChange={updateQuery} value={searchText}/>
       </div>
-      <div className={styles.dateTimeField}>
-        <TemporalContainer />
-      </div>
+      <Link className={`pure-button ${styles.advancedButton}`} to="/">Advanced</Link>
     </span>
   </form>
 }

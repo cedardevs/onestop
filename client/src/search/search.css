@@ -25,8 +25,11 @@
   display: inline-block;
 }
 
-.searchButton {
-  color: blue;
+.advancedButton {
+  color: white;
+  text-shadow: 0 0 5px black;
+  margin-left: 1em;
+  background-color: $color-primary;
 }
 
 .dateTimeField{

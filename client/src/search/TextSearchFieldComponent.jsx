@@ -16,7 +16,7 @@ class TextSearchField extends React.Component {
 
   render() {
     return <input
-        className={styles.textField}
+        style={{width: '100%'}}
         placeholder="Enter Search Term"
         onKeyDown={this.handleKeyDown}
         onChange={this.handleChange}

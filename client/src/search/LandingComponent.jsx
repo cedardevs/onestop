@@ -1,5 +1,5 @@
 import React from 'react'
-import PrimarySearchComponent from './PrimarySearchComponent'
+import TextSearchField from './TextSearchFieldComponent'
 import TemporalContainer from './temporal/TemporalContainer'
 import MapContainer from './map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
@@ -26,7 +26,7 @@ class LandingComponent extends React.Component {
     return <div className={styles.landingComponents}>
         <form className={`pure-form`}>
           <div className={styles.searchFields}>
-            <PrimarySearchComponent onEnterKeyDown={this.submit} onChange={this.updateQuery}/>
+            <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery} value={this.props.queryString}/>
           </div>
         </form>
         <div className={styles.temporalBox}>
@@ -38,6 +38,7 @@ class LandingComponent extends React.Component {
             <MapContainer updated={this.state.showMap} />
           </div>
         </ToggleDisplay>
+        <button className={`pure-button ${styles.landingButton} ${styles.searchButton}`} onClick={this.submit}>Search</button>
       </div>
   }
 }

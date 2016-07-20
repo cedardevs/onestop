@@ -4,7 +4,7 @@ import { triggerSearch, updateQuery } from './SearchActions'
 
 const mapStateToProps = (state) => {
   return {
-    indexName: state.getIn(['search', 'index'])
+    queryString: state.getIn(['search', 'text'])
   }
 }
 

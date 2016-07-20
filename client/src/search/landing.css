@@ -11,7 +11,15 @@
 }
 
 .landingButton {
+  color: white;
+  text-shadow: 0 0 5px black;
   background-color: $color-primary;
+  font-weight: bold;
+  margin-right: 2em;
+}
+
+.searchButton {
+  background-color: $color-success;
 }
 
 .temporalBox {
@@ -25,8 +33,13 @@
 }
 
 .searchFields {
-  text-align: center;
   color: black;
+  margin: 2em 1em 1em 1em;
+  position: relative;
+  font-size: 2em;
+  width: 90%;
+  height: 2em;
+  display: inline-block;
 }
 
 .dropDown {

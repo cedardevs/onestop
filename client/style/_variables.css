@@ -17,6 +17,8 @@ $color-secondary-lightest:   lighten($color-secondary, 75%);
 $color-focus:                $color-primary-alt;
 $color-visited:              #4c2c92;
 
+$color-success:              #1CB841;
+
 $color-gray:                 #595959;
 $color-gray-dark:            darken($color-gray, 20%);
 
