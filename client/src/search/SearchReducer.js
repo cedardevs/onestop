@@ -6,7 +6,7 @@ import { DateRange } from './temporal/TemporalActions'
 export const initialState = Immutable.Map({
   text: '',
   index: '',
-  geometry: '',
+  geoJSON: '',
   inFlight: false,
   startDateTime: '',
   endDateTime: ''
@@ -28,7 +28,7 @@ export const search = (state = initialState, action) => {
 
     case UPDATE_GEOMETRY:
       return state.merge({
-        geometry: action.searchGeometry
+        geometry: action.geoJSON
       })
 
     case DateRange.START_DATE:

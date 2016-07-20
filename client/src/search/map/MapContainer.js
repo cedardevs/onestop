@@ -10,7 +10,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    handleGeometryUpdate: (text) => dispatch(updateGeometry(text))
+    handleGeometryUpdate: (geoJSON) => dispatch(updateGeometry(geoJSON))
   }
 }
 

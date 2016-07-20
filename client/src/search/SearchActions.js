@@ -32,11 +32,11 @@ export const textSearch = (searchText) => {
     }
     dispatch(startSearch(searchText))
 
-    const geometry = state.getIn(['search', 'geometry'])
+    const geoJSON = state.getIn(['search', 'geoJSON'])
     let filters = []
-    if (geometry !== ""){
+    if (geoJSON !== ""){
       filters.push(
-        { type: 'geometry', geometry: geometry.toJS() }
+        { type: 'geometry', geometry: geoJSON.toJS().geometry }
       )
     }
     let startDateTime = state.getIn(['search', 'startDateTime'])
@@ -78,17 +78,4 @@ const assignResourcesToMap = (resourceList) => {
     map.set(resource.id, Object.assign({type: resource.type}, resource.attributes))
   })
   return map
-}
-
-const filterGeometry = (state) => {
-  let geometry = state.getIn(['search', 'geometry'])
-  if (geometry !== ""){
-    filters.push(
-      { type: 'geometry', geometry: geometry.toJS() }
-    )
-  }
-}
-
-const filterDates = (state) => {
-
 }
