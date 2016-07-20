@@ -8,12 +8,18 @@ class MapComponent extends React.Component {
     constructor(props) {
         super(props)
         this.handleGeometryUpdate = props.handleGeometryUpdate
+        this.geoJSON = props.geoJSON
         this.lastLayer
     }
 
     componentDidMount() {
         let self = this
         let editableLayers = new L.FeatureGroup()
+        // Reload previous map selection from store
+        if (this.geoJSON){
+            let layer = this.lastLayer = L.geoJson(this.geoJSON.toJS())
+            editableLayers.addLayer(layer)
+        }
         let map = this.map = L.map(ReactDOM.findDOMNode(this), {
             minZoom: 2,
             maxZoom: 20,
@@ -26,12 +32,12 @@ class MapComponent extends React.Component {
         })
         map.addLayer(editableLayers)
         map.on('draw:created', function (e) {
-            if (typeof self.lastLayer !== 'undefined'){
-                self.map.removeLayer(self.lastLayer)
-            }
             let layer = self.lastLayer = e.layer;
-            self.map.addLayer(layer);
-            self.handleGeometryUpdate(layer.toGeoJSON().geometry)
+            editableLayers.addLayer(layer)
+            self.handleGeometryUpdate(layer.toGeoJSON())
+        })
+        map.on('draw:drawstart', function (e) {
+            editableLayers.removeLayer(self.lastLayer)
         })
 
         let shadeOptions = {
@@ -42,14 +48,13 @@ class MapComponent extends React.Component {
             edit: {
                 featureGroup: editableLayers
             },
+            remove: true,
             position: 'topright',
             draw: {
                 polyline: false,
                 marker: false,
                 polygon: false,
-                circle: {
-                    shapeOptions: shadeOptions
-                },
+                circle: false,
                 rectangle: {
                     shapeOptions: shadeOptions
                 }

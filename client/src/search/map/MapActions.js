@@ -1,8 +1,8 @@
 export const UPDATE_GEOMETRY = 'update_geometry'
 
-export const updateGeometry = (searchGeometry) => {
+export const updateGeometry = (geoJSON) => {
   return {
     type: UPDATE_GEOMETRY,
-    searchGeometry
+    geoJSON
   }
 }
