@@ -27,13 +27,11 @@ class MapComponent extends React.Component {
         map.addLayer(editableLayers)
         map.on('draw:created', function (e) {
             let layer = self.lastLayer = e.layer;
-            self.map.addLayer(layer);
+            editableLayers.addLayer(layer)
             self.handleGeometryUpdate(layer.toGeoJSON().geometry)
         })
         map.on('draw:drawstart', function (e) {
-            if (typeof self.lastLayer !== 'undefined'){
-                self.map.removeLayer(self.lastLayer)
-            }
+            editableLayers.removeLayer(self.lastLayer)
         })
 
         let shadeOptions = {
@@ -44,6 +42,7 @@ class MapComponent extends React.Component {
             edit: {
                 featureGroup: editableLayers
             },
+            remove: true,
             position: 'topright',
             draw: {
                 polyline: false,
