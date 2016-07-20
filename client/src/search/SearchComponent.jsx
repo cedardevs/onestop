@@ -4,11 +4,11 @@ import TextSearchField from './TextSearchFieldComponent'
 import styles from './search.css'
 import 'purecss'
 
-const SearchFacet = ({submit, searchText}) => {
+const SearchFacet = ({submit, updateQuery, searchText}) => {
   return <form className={styles['pure-form']}>
     <span className={styles.searchFields}>
       <div className={styles.textField}>
-        <TextSearchField onEnterKeyDown={submit} value={searchText}/>
+        <TextSearchField onEnterKeyDown={submit} onChange={updateQuery} value={searchText}/>
       </div>
       <div className={styles.dateTimeField}>
         <TemporalContainer />

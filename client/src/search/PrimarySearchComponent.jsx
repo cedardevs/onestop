@@ -1,7 +1,7 @@
 import React from 'react'
 import styles from './primarySearch.css'
 
-const PrimarySearchComponent = ({onEnterKeyDown}) => {
+const PrimarySearchComponent = ({onEnterKeyDown, onChange}) => {
   const handleKeyDown = (e) => {
     if (e.keyCode === 13) {
       e.preventDefault()
@@ -9,10 +9,16 @@ const PrimarySearchComponent = ({onEnterKeyDown}) => {
     }
   }
 
+  const handleChange = (e) => {
+    e.preventDefault()
+    onChange(e.target.value)
+  }
+
   return <input
       className={styles.textField}
       placeholder="Enter Search Term"
       onKeyDown={handleKeyDown}
+      onChange={handleChange}
     />
 }
 

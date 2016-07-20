@@ -2,27 +2,31 @@ import fetch from 'isomorphic-fetch'
 import { browserHistory} from 'react-router'
 import moment from 'moment'
 
-
-export const INDEX_CHANGE = 'index_change'
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
+export const UPDATE_QUERY = 'update_query'
 
-export const startSearch = (searchText) => {
+export const updateQuery = (searchText) => {
   return {
-    type: SEARCH,
+    type: UPDATE_QUERY,
     searchText
   }
 }
 
-export const completeSearch = (searchText, items) => {
+export const startSearch = () => {
+  return {
+    type: SEARCH
+  }
+}
+
+export const completeSearch = (items) => {
   return {
     type: SEARCH_COMPLETE,
-    searchText,
     items
   }
 }
 
-export const textSearch = (searchText) => {
+export const triggerSearch = () => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
     let state = getState()
@@ -30,10 +34,10 @@ export const textSearch = (searchText) => {
     if (state.getIn(['search', 'inFlight']) === true) {
       return Promise.resolve()
     }
-    dispatch(startSearch(searchText))
+    dispatch(startSearch())
 
-    const geometry = state.getIn(['search', 'geometry'])
     let filters = []
+    const geometry = state.getIn(['search', 'geometry'])
     if (geometry !== ""){
       filters.push(
         { type: 'geometry', geometry: geometry.toJS() }
@@ -49,6 +53,15 @@ export const textSearch = (searchText) => {
         { type: 'datetime', after: startDateTime, before: endDateTime }
       )
     }
+
+    const queries = []
+    const queryText = state.getIn(['search', 'text'])
+    if (queryText) {
+      queries.push({type: 'queryText', value: queryText})
+    }
+
+    const searchBody = JSON.stringify({queries, filters})
+
     // { type: 'datetime', after: startDateTime, before: endDateTime }
     const apiRoot = "/api/search"
     const fetchParams = {
@@ -57,17 +70,12 @@ export const textSearch = (searchText) => {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        queries: [
-          {type: 'queryText', value: searchText}
-        ],
-        filters: filters
-      })
+      body: searchBody
     }
 
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
-        .then(json => dispatch(completeSearch(searchText, assignResourcesToMap(json.data))))
+        .then(json => dispatch(completeSearch(assignResourcesToMap(json.data))))
         .then(browserHistory.push('results'))
   }
 }

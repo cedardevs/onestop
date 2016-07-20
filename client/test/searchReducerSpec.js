@@ -18,17 +18,13 @@ describe('The search reducer', function () {
 
     result.should.not.equal(initialState)
     result.get('inFlight').should.equal(true)
-    result.get('text').should.equal(searchText)
   })
 
   it('for a completed search', function () {
-    const searchText = 'test'
     const searchResults = [{id: '1'}, {id: '2'}]
-    const searchAction = completeSearch(searchText, searchResults)
+    const searchAction = completeSearch(searchResults)
     const result = search(initialState, searchAction)
 
-    result.should.not.equal(initialState)
     result.get('inFlight').should.equal(false)
-    result.get('text').should.equal('test')
   })
 })

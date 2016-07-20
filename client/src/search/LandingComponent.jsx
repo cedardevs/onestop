@@ -10,6 +10,7 @@ class LandingComponent extends React.Component {
   constructor(props) {
     super(props)
     this.submit = props.submit
+    this.updateQuery = props.updateQuery
     this.toggleMap = this.toggleMap.bind(this)
     this.state = {
       showMap: false
@@ -25,7 +26,7 @@ class LandingComponent extends React.Component {
     return <div className={styles.landingComponents}>
         <form className={`pure-form`}>
           <div className={styles.searchFields}>
-            <PrimarySearchComponent onEnterKeyDown={this.submit}/>
+            <PrimarySearchComponent onEnterKeyDown={this.submit} onChange={this.updateQuery}/>
           </div>
         </form>
         <div className={styles.temporalBox}>

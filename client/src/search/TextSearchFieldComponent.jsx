@@ -6,6 +6,8 @@ class TextSearchField extends React.Component {
   constructor(props) {
     super(props)
 
+    this.onChange = props.onChange
+    this.onEnterKeyDown = props.onEnterKeyDown
     this.state = {value: props.value}
 
     this.handleChange = this.handleChange.bind(this)
@@ -24,12 +26,13 @@ class TextSearchField extends React.Component {
 
   handleChange(e) {
     this.setState({value: e.target.value})
+    this.onChange(e.target.value)
   }
 
   handleKeyDown(e) {
     if (e.keyCode === 13) {
       e.preventDefault()
-      this.props.onEnterKeyDown(e.target.value)
+      this.onEnterKeyDown(e.target.value)
     }
   }
 
