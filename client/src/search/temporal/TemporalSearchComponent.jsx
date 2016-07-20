@@ -7,7 +7,8 @@ import moment from 'moment'
 const TemporalSearch = ({onChange, currentDate}) => {
 
   const formatAndEmit = (dateString, dateSelected) => {
-    onChange(moment(dateString).format(), dateSelected)
+    const value = dateString ? moment(dateString).format() : null
+    onChange(value, dateSelected)
   }
 
   var startDate = [
