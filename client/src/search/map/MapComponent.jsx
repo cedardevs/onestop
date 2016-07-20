@@ -12,9 +12,8 @@ class MapComponent extends React.Component {
 
     componentDidMount() {
         let self = this
-        let editableLayers
+        let editableLayers = new L.FeatureGroup()
         let map = this.map = L.map(ReactDOM.findDOMNode(this), {
-            drawControl: true,
             minZoom: 2,
             maxZoom: 20,
             layers: [
@@ -24,6 +23,7 @@ class MapComponent extends React.Component {
             ],
             attributionControl: false
         })
+        map.addLayer(editableLayers)
         map.on('click', this.onMapClick)
         map.on('draw:created', function (e) {
             let type = e.layerType;
@@ -31,8 +31,32 @@ class MapComponent extends React.Component {
             self.map.addLayer(layer);
             self.handleGeometryUpdate(layer.toGeoJSON().geometry)
         })
-        map.fitWorld()
 
+        let shadeOptions = {
+            color: '#00FF00',
+            weight: 6
+        }
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: editableLayers
+            },
+            position: 'topright',
+            draw: {
+                polyline: false,
+                marker: false,
+                polygon: {
+                    shapeOptions: shadeOptions
+                },
+                circle: {
+                    shapeOptions: shadeOptions
+                },
+                rectangle: {
+                    shapeOptions: shadeOptions
+                }
+            }
+        });
+        map.addControl(drawControl);
+        map.fitWorld()
     }
 
     componentWillReceiveProps() {
@@ -43,10 +67,6 @@ class MapComponent extends React.Component {
         var map = this.map
         map.off('click', this.onMapClick)
         map = null
-    }
-
-    onDrawCreated(e) {
-
     }
 
     onMapClick() {
