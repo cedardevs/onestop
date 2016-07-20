@@ -24,7 +24,6 @@ class MapComponent extends React.Component {
             attributionControl: false
         })
         map.addLayer(editableLayers)
-        map.on('click', this.onMapClick)
         map.on('draw:created', function (e) {
             let type = e.layerType;
             let layer = e.layer;
@@ -44,9 +43,7 @@ class MapComponent extends React.Component {
             draw: {
                 polyline: false,
                 marker: false,
-                polygon: {
-                    shapeOptions: shadeOptions
-                },
+                polygon: false,
                 circle: {
                     shapeOptions: shadeOptions
                 },
@@ -67,11 +64,6 @@ class MapComponent extends React.Component {
         var map = this.map
         map.off('click', this.onMapClick)
         map = null
-    }
-
-    onMapClick() {
-        // Do some wonderful map things...
-        console.log("You clicked the map!")
     }
 
     render() {
