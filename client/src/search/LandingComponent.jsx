@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import PrimarySearchComponent from './PrimarySearchComponent'
 import TemporalContainer from './temporal/TemporalContainer'
 import MapContainer from './map/MapContainer'
@@ -11,14 +12,38 @@ class LandingComponent extends React.Component {
     super(props)
     this.submit = props.submit
     this.toggleMap = this.toggleMap.bind(this)
+    this.handleClick = this.handleClick.bind(this)
     this.state = {
       showMap: false
     }
   }
 
+  handleClick(e) {
+    // Close map when user clicks outside of it
+    var component = ReactDOM.findDOMNode(this.refs.mapComponent)
+    if (this.state.showMap && !component.contains(e.target) && e.srcElement.id !== 'mapButton') {
+      this.toggleMap()
+    }
+  }
+
+  componentWillMount() {
+    document.addEventListener('click', this.handleClick, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleClick, false);
+  }
+
   toggleMap() {
     this.state.showMap = !this.state.showMap
     this.forceUpdate()
+  }
+
+  onClickOut(e) {
+    if (this.state.showMap) {
+      this.state.showMap = false //Close map when clicked anywhere outside of it
+      this.forceUpdate()
+    }
   }
 
   render() {
@@ -31,10 +56,10 @@ class LandingComponent extends React.Component {
         <div className={styles.temporalBox}>
           <TemporalContainer />
         </div>
-        <button className={`pure-button ${styles.landingButton}`} onClick={this.toggleMap}>Map</button>
+        <button id="mapButton" className={`pure-button ${styles.landingButton}`} onClick={this.toggleMap}>Map</button>
         <ToggleDisplay show={this.state.showMap}>
           <div className={styles.mapContainer}>
-            <MapContainer updated={this.state.showMap} />
+            <MapContainer updated={this.state.showMap} ref='mapComponent' />
           </div>
         </ToggleDisplay>
       </div>
