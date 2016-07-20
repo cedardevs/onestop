@@ -12,6 +12,7 @@ const TemporalSearch = ({onChange, currentDate}) => {
 
   var startDate = [
     <DateField
+        key='start'
         updateOnOk
         dateFormat="YYYY-MM-DD HH:mm"
         defaultValue=""
@@ -23,6 +24,7 @@ const TemporalSearch = ({onChange, currentDate}) => {
 
   var endDate = [
     <DateField
+        key='end'
         updateOnOk
         dateFormat="YYYY-MM-DD HH:mm"
         defaultValue=""
