@@ -8,16 +8,18 @@ class MapComponent extends React.Component {
     constructor(props) {
         super(props)
         this.handleGeometryUpdate = props.handleGeometryUpdate
-        this.currentGeometry = props.currentGeometry
+        this.geoJSON = props.geoJSON
         this.lastLayer
     }
 
     componentDidMount() {
         let self = this
         let editableLayers = new L.FeatureGroup()
-        // if (this.currentGeometry){
-        //     editableLayers.
-        // }
+        // Reload previous map selection from store
+        if (this.geoJSON){
+            let layer = this.lastLayer = L.geoJson(this.geoJSON.toJS())
+            editableLayers.addLayer(layer)
+        }
         let map = this.map = L.map(ReactDOM.findDOMNode(this), {
             minZoom: 2,
             maxZoom: 20,

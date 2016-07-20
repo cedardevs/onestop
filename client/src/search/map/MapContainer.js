@@ -4,7 +4,7 @@ import { updateGeometry } from './MapActions'
 
 const mapStateToProps = (state) => {
   return {
-    currentGeometry: state.getIn(['search', 'geometry'])
+    geoJSON: state.getIn(['search', 'geoJSON'])
   }
 }
 

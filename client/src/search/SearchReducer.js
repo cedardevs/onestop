@@ -28,7 +28,7 @@ export const search = (state = initialState, action) => {
 
     case UPDATE_GEOMETRY:
       return state.merge({
-        geometry: action.geoJSON
+        geoJSON: action.geoJSON
       })
 
     case DateRange.START_DATE:
