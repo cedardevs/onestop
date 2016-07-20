@@ -28,8 +28,17 @@
 }
 
 .mapContainer {
-  margin: auto;
-  width: 50%;
+  position: relative;
+  display: inline-block;
+}
+
+.mapContent {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-top: 2em;
+  margin-left: -35em;
 }
 
 .searchFields {

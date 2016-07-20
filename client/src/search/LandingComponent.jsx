@@ -60,7 +60,9 @@ class LandingComponent extends React.Component {
         <button id="mapButton" className={`pure-button ${styles.landingButton}`} onClick={this.toggleMap}>Map</button>
         <ToggleDisplay show={this.state.showMap}>
           <div className={styles.mapContainer}>
-            <MapContainer updated={this.state.showMap} ref='mapComponent' />
+            <span className={styles.mapContent}>
+              <MapContainer updated={this.state.showMap} ref='mapComponent' />
+            </span>
           </div>
         </ToggleDisplay>
         <button className={`pure-button ${styles.landingButton} ${styles.searchButton}`} onClick={this.submit}>Search</button>
