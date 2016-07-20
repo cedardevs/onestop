@@ -8,6 +8,7 @@ class MapComponent extends React.Component {
     constructor(props) {
         super(props)
         this.handleGeometryUpdate = props.handleGeometryUpdate
+        this.lastLayer
     }
 
     componentDidMount() {
@@ -25,8 +26,10 @@ class MapComponent extends React.Component {
         })
         map.addLayer(editableLayers)
         map.on('draw:created', function (e) {
-            let type = e.layerType;
-            let layer = e.layer;
+            if (typeof self.lastLayer !== 'undefined'){
+                self.map.removeLayer(self.lastLayer)
+            }
+            let layer = self.lastLayer = e.layer;
             self.map.addLayer(layer);
             self.handleGeometryUpdate(layer.toGeoJSON().geometry)
         })
