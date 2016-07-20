@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch'
-import { browserHistory} from 'react-router'
+import { push } from 'react-router-redux'
 import moment from 'moment'
 
 export const SEARCH = 'search'
@@ -45,8 +45,8 @@ export const triggerSearch = () => {
     }
     let startDateTime = state.getIn(['search', 'startDateTime'])
     let endDateTime = state.getIn(['search', 'endDateTime'])
-    if (startDateTime !== '') {
-      if (endDateTime === '') {
+    if (startDateTime) {
+      if (endDateTime) {
         endDateTime = moment().format()
       }
       filters.push(
@@ -76,7 +76,7 @@ export const triggerSearch = () => {
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
         .then(json => dispatch(completeSearch(assignResourcesToMap(json.data))))
-        .then(browserHistory.push('results'))
+        .then(() => dispatch(push('results')))
   }
 }
 
