@@ -2,8 +2,8 @@
 
 .landingComponents {
   margin: 10em auto;
-  background-color: black;
   position: relative;
+  color: black;
   background: rgba(0, 0, 0, 0.7);
   filter: alpha(opacity=30); /* For IE8 and earlier */
   height: 400px;
