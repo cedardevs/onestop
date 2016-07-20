@@ -18,6 +18,18 @@
   margin-right: 2em;
 }
 
+.mapButton,
+.mapButton:active,
+.mapButton:hover {
+  margin: auto 2em;
+  padding: 2em 0;
+  display: inline-block;
+  height: 30px;
+  width: 60px;
+  background: url('../../img/mapIcon.png') center center no-repeat;
+  background-size: 60%;
+}
+
 .searchButton {
   background-color: $color-success;
 }

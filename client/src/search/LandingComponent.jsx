@@ -57,7 +57,7 @@ class LandingComponent extends React.Component {
         <div className={styles.temporalBox}>
           <TemporalContainer />
         </div>
-        <button id="mapButton" className={`pure-button ${styles.landingButton}`} onClick={this.toggleMap}>Map</button>
+        <button id="mapButton" className={`${styles.mapButton}`} onClick={this.toggleMap}></button>
         <ToggleDisplay show={this.state.showMap}>
           <div className={styles.mapContainer}>
             <span className={styles.mapContent}>
