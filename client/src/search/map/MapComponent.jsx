@@ -48,9 +48,7 @@ class MapComponent extends React.Component {
                 polyline: false,
                 marker: false,
                 polygon: false,
-                circle: {
-                    shapeOptions: shadeOptions
-                },
+                circle: false,
                 rectangle: {
                     shapeOptions: shadeOptions
                 }
