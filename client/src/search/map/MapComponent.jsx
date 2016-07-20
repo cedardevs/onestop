@@ -11,8 +11,9 @@ class MapComponent extends React.Component {
     }
 
     componentDidMount() {
-        var self = this
-        var map = this.map = L.map(ReactDOM.findDOMNode(this), {
+        let self = this
+        let editableLayers
+        let map = this.map = L.map(ReactDOM.findDOMNode(this), {
             drawControl: true,
             minZoom: 2,
             maxZoom: 20,
@@ -27,11 +28,7 @@ class MapComponent extends React.Component {
         map.on('draw:created', function (e) {
             let type = e.layerType;
             let layer = e.layer;
-
-            // When a user finishes editing a shape we get that information here
-            //editableLayers.addLayer(layer);
-            // console.log('draw:created->');
-            // console.log(JSON.stringify(layer.toGeoJSON()));
+            self.map.addLayer(layer);
             self.handleGeometryUpdate(layer.toGeoJSON().geometry)
         })
         map.fitWorld()
