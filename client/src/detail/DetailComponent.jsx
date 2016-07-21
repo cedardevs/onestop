@@ -81,8 +81,9 @@ class Detail extends React.Component {
   }
 
   renderImage() {
+    const imgUrl = this.props.item.thumbnail && this.props.item.thumbnail.replace(/^https?:/, '')
     return this.props.item.thumbnail ?
-        <img className={styles.previewImg} src={this.props.item.thumbnail}/> :
+        <img className={styles.previewImg} src={imgUrl}/> :
         <h3 style={{textAlign: 'center'}}>No Image Available</h3>
   }
 
