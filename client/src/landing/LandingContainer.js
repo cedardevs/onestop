@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import LandingComponent from './LandingComponent'
-import { triggerSearch, updateQuery } from './SearchActions'
+import { triggerSearch, updateQuery } from '../search/SearchActions'
 
 const mapStateToProps = (state) => {
   return {

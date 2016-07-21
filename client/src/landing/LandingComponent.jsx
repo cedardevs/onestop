@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import TextSearchField from './TextSearchFieldComponent'
-import TemporalContainer from './temporal/TemporalContainer'
-import MapContainer from './map/MapContainer'
+import TextSearchField from '../search/TextSearchFieldComponent'
+import TemporalContainer from '../search/temporal/TemporalContainer'
+import MapContainer from '../search/map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
 import styles from './landing.css'
 
