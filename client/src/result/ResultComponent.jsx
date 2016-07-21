@@ -5,7 +5,7 @@ import styles from './result.css'
 const Result = (props) => {
   // Thumbnails are dynamically assigned so style's applied via JS
   var localStyles = {
-    background: 'url(' + props.thumbnail + ')',
+    background: 'url(' + props.thumbnail.replace(/^https?:/, '') + ')',
     backgroundColor: 'black',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',

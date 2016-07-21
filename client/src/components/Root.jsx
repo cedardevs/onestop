@@ -23,7 +23,7 @@ const Root = ({children, routes, params, location}) => {
         searchContainer = <SearchContainer/>
     }
     return <div>
-      <Favicon url={["http://www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
+      <Favicon url={["//www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
       <AlphaBanner/>
       <DetailContainer/>
       <div className={styles.bottomBorder}>
@@ -33,7 +33,7 @@ const Root = ({children, routes, params, location}) => {
                 <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
                 <div className={styles.orgBox}>
                     <a className={styles.orgName} href="/">National Oceanic and Atmospheric Administration</a>
-                    <a className={styles.deptName} href="http://www.commerce.gov">U.S. Department of Commerce</a>
+                    <a className={styles.deptName} href="//www.commerce.gov">U.S. Department of Commerce</a>
                 </div>
             </div>
             <div className={`${styles['pure-u-2-5']} ${styles.searchFacet}`}>

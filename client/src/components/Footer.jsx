@@ -7,16 +7,16 @@ let Footer = ({dispatch}) => {
 
     var externalResources = [
         {
-            href: "http://www.noaa.gov/protecting-your-privacy",
+            href: "//www.noaa.gov/protecting-your-privacy",
             text: "Protecting your Privacy"
         }, {
-            href: "http://www.noaa.gov/foia-freedom-information-act",
+            href: "//www.noaa.gov/foia-freedom-information-act",
             text: "FOIA"
         }, {
-            href: "http://www.cio.noaa.gov/services_programs/info_quality.html",
+            href: "//www.cio.noaa.gov/services_programs/info_quality.html",
             text: "Information Quality"
         }, {
-            href: "http://www.noaa.gov/disclaimer",
+            href: "//www.noaa.gov/disclaimer",
             text: "Disclaimer"
         }, {
             href: "https://www.usa.gov/",
@@ -25,19 +25,19 @@ let Footer = ({dispatch}) => {
             href: "https://www.ready.gov/",
             text: "Ready.gov"
         }, {
-            href: "http://www.eeo.noaa.gov/noaa/",
+            href: "//www.eeo.noaa.gov/noaa/",
             text: "EEO"
         }, {
-            href: "http://www.homelandsecurity.noaa.gov/",
+            href: "//www.homelandsecurity.noaa.gov/",
             text: "Employee Check-In"
         }, {
-            href: "http://www.noaa.gov/contact-us",
+            href: "//www.noaa.gov/contact-us",
             text: "Contact Us"
         }, {
             href: "https://nsd.rdc.noaa.gov/nsd",
             text: "Staff Directory"
         }, {
-            href: "http://www.noaa.gov/need-help",
+            href: "//www.noaa.gov/need-help",
             text: "Need help?"
         }
     ]
@@ -52,9 +52,9 @@ let Footer = ({dispatch}) => {
           <div className={styles.panel}>
               {/*<div className={`${styles['pure-g']} ${styles['pure-u-lg']}`}>*/}
                   {/*<div className={`${styles['pure-u-1-2']} ${styles.noaaLinks}`}>*/}
-                      {/*<a href="http://www.noaa.gov/about-our-agency" className={styles.about}>About our agency</a>*/}
-                      {/*<a href="http://www.noaa.gov/news-features" className={styles.about}>News and features</a>*/}
-                      {/*<a href="http://www.noaa.gov/our-work" className={styles.about}>Our work</a>*/}
+                      {/*<a href="//www.noaa.gov/about-our-agency" className={styles.about}>About our agency</a>*/}
+                      {/*<a href="//www.noaa.gov/news-features" className={styles.about}>News and features</a>*/}
+                      {/*<a href="//www.noaa.gov/our-work" className={styles.about}>Our work</a>*/}
                   {/*</div>*/}
                   {/*<div className={`${styles.feedback} ${styles['pure-u-1-2']} ${styles['pure-u-md-1-2']}`}>*/}
                       {/*<div className={styles.socialMedia}>*/}
@@ -85,7 +85,7 @@ let Footer = ({dispatch}) => {
               {/*</div>*/}
               <div className={styles['pure-g']}>
                   <div className={`${styles['pure-u-2-5']} ${styles.logoPanel}`}>
-                      <a href="http://www.noaa.gov/" className={`${styles.noaaLogo} ${styles.rowElement}`}>
+                      <a href="//www.noaa.gov/" className={`${styles.noaaLogo} ${styles.rowElement}`}>
                           <span className={styles.hidden}>NOAA Home</span>
                       </a>
                       <span className={`${styles.rowElement} ${styles.slogan}`}>Science. Service. Stewardship.</span>
