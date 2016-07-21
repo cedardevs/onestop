@@ -8,7 +8,10 @@ class MapComponent extends React.Component {
     constructor(props) {
         super(props)
         this.handleGeometryUpdate = props.handleGeometryUpdate
-        this.geoJSON = props.geoJSON
+        this.geoJSON
+        if (props.geoJSON){
+            this.geoJSON = props.geoJSON.toJS()
+        }
         this.lastLayer
     }
 
@@ -17,7 +20,7 @@ class MapComponent extends React.Component {
         let editableLayers = new L.FeatureGroup()
         // Reload previous map selection from store
         if (this.geoJSON){
-            let layer = this.lastLayer = L.geoJson(this.geoJSON.toJS())
+            let layer = this.lastLayer = L.GeoJSON.geometryToLayer(this.geoJSON)
             editableLayers.addLayer(layer)
         }
         let map = this.map = L.map(ReactDOM.findDOMNode(this), {
