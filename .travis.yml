@@ -3,6 +3,9 @@ jdk:
     - oraclejdk8
 notifications:
     email: false
+    slack:
+        rooms:
+            - secure: Ch12lKiGgb6P1YrVkzhrAJrj+P4Bh4qcoPEVwBjUapRO02GbR7hJefYMAcBMbKv2CPQoHZHYaGn+XZ2//mIUdAW4fqjrKtY+Ep4EkhpBg8E/Hpu2TfKShOujIlnJfc4hxrzRK2mg/Avv4mUHIeLxDgzWGdNix7LHMLRi/aqsEYGH1llsa6vqfxXUta0FT9GlpaIDKF053gt3meAT+WPwpsu08NRWlb/JeXMW+PbP92HtUFbI40gAtCN8WCMRaEB4tQpkOlvEKo95NkU/ZdYZuGJ4ftOIGQW9ucxNBxOx4Hvv3qzX2hbQtx2WMLb3IJ6UvX3ybGjxozE6KwJsQHBVgJQl/6CBC8oVf5bcLJIW1LHPnUOXH2L/T4sVfATiKGFvJ/XAOFgJ4ylhjoud6NX98MhQD1D4OhiHi5wA4XJiqr7STBNO/uIHOU4vnbpUya/LeDRuoPmDgajTzp4VB0TlKfD3a3t3pfdBbxSgkG/e+8MLQVQMTUvwVeej0zRKNB/rvo9SbD+65NFzdL2DEhCEQGZrzHI+eKXftzhx6eDqM6u1Nhcka7yTu0weyzjldivDjCXZQ0eo9NsSclUKf3WmndPgD71pD01Dj57phoLxvc1zR5AD+bZ4VzXNxt3zBYHlHB8FTVmskp8ePp9A0kldS+b/tVeAHQmIuaxED1INXj4=
 before_cache:
     - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
     - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
