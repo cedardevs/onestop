@@ -1,4 +1,9 @@
-﻿OneStop software is used to allow discovery and access to the 
+﻿NOAA OneStop
+============
+
+[![Build Status](https://travis-ci.org/cires-ncei/onestop.svg?branch=master)](https://travis-ci.org/cires-ncei/onestop)
+
+OneStop software is used to allow discovery and access to the 
 National Oceanic and Atmospheric Administration’s publicly available 
 data holdings. This software was developed by Team Foam-Cat, 
 under the OneStop project: 1553647, 
