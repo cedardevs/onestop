@@ -10,5 +10,6 @@ cache:
     directories:
         - $HOME/.gradle/caches/
         - $HOME/.gradle/wrapper/
+        - client/node_modules
 script:
     - ./gradlew build
