@@ -4,6 +4,11 @@ plugins {
     id "com.moowork.node" version "0.13"
 }
 
+node {
+    version = '0.12.15'
+    download = true
+}
+
 version = new JsonSlurper().parse(file("${projectDir}/package.json")).version
 
 task clean {
