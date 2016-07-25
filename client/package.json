@@ -6,7 +6,7 @@
   "license": "WTFPL",
   "scripts": {
     "dev": "webpack-dev-server --hot --inline --progress --colors & mocha --watch",
-    "test": "mocha",
+    "test": "find ./test -name '*Spec.js' | xargs mocha -R spec",
     "build": "npm install && npm test && NODE_ENV=production webpack",
     "clean": "rm -rf dist"
   },

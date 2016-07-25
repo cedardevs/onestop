@@ -1,5 +1,5 @@
 import React from 'react'
-import {TransitionView, DateField, Calendar} from 'react-date-picker'
+import {DateField, Calendar} from 'react-date-picker'
 import { DateRange } from './TemporalActions'
 import styles from './temporal.css'
 import moment from 'moment'
@@ -36,7 +36,7 @@ const TemporalSearch = ({onChange, currentDate}) => {
   ]
 
   return (<div>
-        <div className={styles.startTimeField} >
+        <div className={styles.startTimeField}>
           {startDate}
         </div>
         <div className={styles.endTimeField}>
