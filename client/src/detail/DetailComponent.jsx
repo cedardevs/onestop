@@ -18,19 +18,19 @@ class Detail extends React.Component {
     const item = this.props.item
     return <div className={styles.modal}>
       <div className={styles.modalContent}>
-        <div className={`${styles['pure-g']} ${styles.header} ${styles.underscored}`}>
-          <div className={`${styles['pure-u-7-8']} ${styles.title}`}>{item.title}</div>
-          <div className={styles['pure-u-1-8']}>
+        <div className={`pure-g ${styles.header} ${styles.underscored}`}>
+          <div className={`pure-u-7-8 ${styles.title}`}>{item.title}</div>
+          <div className={'pure-u-1-8'}>
             <span className={styles.close} onClick={this.close}>x</span>
           </div>
         </div>
-        <div className={styles['pure-g']}>
-          <div className={`${styles['pure-u-1']} ${styles['pure-u-md-1-3']}`}>
+        <div className={'pure-g'}>
+          <div className={`pure-u-1 pure-u-md-1-3`}>
             {this.renderImage()}
           </div>
-          <div className={`${styles['pure-u-1']} ${styles['pure-u-md-2-3']}`}>
-            <div className={`${styles['pure-g']}`}>
-              <div className={`${styles['pure-u-1']} ${styles.underscored}`}>
+          <div className={`pure-u-1 pure-u-md-2-3`}>
+            <div className={`pure-g`}>
+              <div className={`pure-u-1 ${styles.underscored}`}>
                 <p>{item.description}</p>
               </div>
             </div>
@@ -61,20 +61,20 @@ class Detail extends React.Component {
       return <div></div>
     }
 
-    return <div className={`${styles['pure-g']}`}>
-      <div className={`${styles['pure-u-1-6']} ${styles.linkRow}`}>
+    return <div className={'pure-g'}>
+      <div className={`pure-u-1-6 ${styles.linkRow}`}>
         <span>{label}</span>
       </div>
-      <div className={`${styles['pure-u-5-6']} ${styles.linkRow}`}>
-        <ul className={styles['pure-g']}>{links.map(linkRenderer)}</ul>
+      <div className={`pure-u-5-6 ${styles.linkRow}`}>
+        <ul className={'pure-g'}>{links.map(linkRenderer)}</ul>
       </div>
     </div>
   }
 
   renderLink(link, index) {
-   return <li className={styles['pure-u']} key={index}>
+   return <li className={'pure-u'} key={index}>
      <a href={link.linkUrl} target="_blank"
-             className={`${styles['pure-button']} ${styles['pure-button-primary']}`}>
+             className={`pure-button pure-button-primary`}>
        {link.linkName || 'Link'}
      </a>
    </li>
@@ -102,8 +102,8 @@ class Detail extends React.Component {
   }
 
   renderKeyword(keyword, index) {
-    return <li className={styles['pure-u']} key={index}>
-      <a className={`${styles['pure-button']} ${styles['button-secondary']}`}
+    return <li className={'pure-u'} key={index}>
+      <a className={`pure-button button-secondary`}
          onClick={() => this.props.textSearch(keyword)}>
         {keyword}
       </a>
