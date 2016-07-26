@@ -1,5 +1,5 @@
-import './specHelper'
-import * as detail from '../src/detail/DetailReducer'
+import '../specHelper'
+import * as detail from '../../src/detail/DetailReducer'
 
 describe('The details reducer',() => {
   it('handles search request',() => {

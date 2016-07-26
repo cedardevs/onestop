@@ -1,7 +1,6 @@
-import './specHelper'
-import Immutable from 'immutable'
-import { search, initialState } from '../src/search/SearchReducer'
-import { SEARCH, SEARCH_COMPLETE, startSearch, completeSearch } from '../src/search/SearchActions'
+import '../specHelper'
+import { search, initialState } from '../../src/search/SearchReducer'
+import { startSearch, completeSearch } from '../../src/search/SearchActions'
 
 describe('The search reducer', function () {
   it('has a default state', function () {
