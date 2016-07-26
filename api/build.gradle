@@ -51,10 +51,19 @@ bootRun {
     dependsOn ':elasticsearch:start'
 }
 
+jar {
+    appendix = 'tmp' // changes output name so bootRepackage doesn't overwrite it
+}
+
+springBoot {
+    backupSource = false
+}
+
 bootRepackage {
     outputFile = outputJar
     excludeDevtools = true
     executable = true
+    onlyIf { !tasks.getByName('jar').state.upToDate }
 }
 
 task start(type: SpawnProcessTask) {
