@@ -12,20 +12,20 @@ const IndexDropDown = ({indexName, onChange}) => {
     {value: 'startdate', label: 'Start Date'}
   ]
 
-  let i = 0;
+  let i = 0
   const dropDownEntries = facets.map((facet) => {
-    return <li className={styles['pure-menu-item']} key={i++}>
-    <a href="#" className={styles['pure-menu-link']} label={facet.label} >{facet.label}</a>
+    return <li className={'pure-menu-item'} key={i++}>
+    <a href="#" className={'pure-menu-link'} label={facet.label} >{facet.label}</a>
     </li>
   })
 
   const handleChange = (e, i, v) => onChange(v)
 
-  return <div className={`${styles['pure-menu']} ${styles['pure-menu-horizontal']}`}>
-      <ul className={styles['pure-menu-list']} id='searchField'>
-        <li className={`${styles['pure-menu-item']} ${styles['pure-menu-has-children']} ${styles['pure-menu-allow-hover']}`}>
-            <a href='#' id='menuLink1' className={styles['pure-menu-link']}>{indexName}</a>
-            <ul className={styles['pure-menu-children']}>
+  return <div className={`pure-menu pure-menu-horizontal`}>
+      <ul className={'pure-menu-list'} id='searchField'>
+        <li className={`pure-menu-item pure-menu-has-children`} ${'pure-menu-allow-hover']}`}>
+            <a href='#' id='menuLink1' className={'pure-menu-link']}>{indexName}</a>
+            <ul className={'pure-menu-children']}>
               {dropDownEntries}
             </ul>
         </li>
