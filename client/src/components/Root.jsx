@@ -28,15 +28,15 @@ const Root = ({children, routes, params, location}) => {
       <DetailContainer/>
       <div className={styles.bottomBorder}>
         <div className={styles.panel}>
-          <div className={styles['pure-g']}>
-            <div className={styles['pure-u-3-5']}>
+          <div className={'pure-g'}>
+            <div className={'pure-u-3-5'}>
                 <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
                 <div className={styles.orgBox}>
                     <a className={styles.orgName} href="/">National Oceanic and Atmospheric Administration</a>
                     <a className={styles.deptName} href="//www.commerce.gov">U.S. Department of Commerce</a>
                 </div>
             </div>
-            <div className={`${styles['pure-u-2-5']} ${styles.searchFacet}`}>
+            <div className={`pure-u-2-5 ${styles.searchFacet}`}>
                 {searchContainer}
             </div>
           </div>

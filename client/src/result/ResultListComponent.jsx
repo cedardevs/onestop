@@ -6,9 +6,9 @@ import styles from './result.css'
 const ResultsList = ({results, loading, onCardClick}) => {
   const cards = []
   results.forEach((value, key) => {
-    cards.push(<div key={key} className={`${styles['pure-u-1']}
-                ${styles['pure-u-md-1-2']} ${styles['pure-u-lg-1-3']}
-                ${styles['pure-u-xl-1-4']} ${styles.grid}`}>
+    cards.push(<div key={key} className={`pure-u-1
+                pure-u-md-1-2 pure-u-lg-1-3
+                pure-u-xl-1-4 ${styles.grid}`}>
       <Result
           recordId={key}
           title={value.get('title')}
@@ -19,7 +19,7 @@ const ResultsList = ({results, loading, onCardClick}) => {
       />
     </div>)
   })
-  return <div className={`${styles['pure-g']} ${styles.gridContainer}`}>
+  return <div className={`pure-g ${styles.gridContainer}`}>
     {cards}
   </div>
 }

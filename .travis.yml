@@ -15,4 +15,4 @@ cache:
         - $HOME/.gradle/wrapper/
         - client/node_modules
 script:
-    - ./gradlew build
+    - ./gradlew build -Dscan

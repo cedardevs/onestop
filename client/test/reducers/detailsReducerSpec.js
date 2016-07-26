@@ -11,7 +11,6 @@ describe('The details reducer',() => {
                               items: testItems}
 
     const result = detail.details(initialState, initalAction).toJS()
-
     result['a'].cardStatus.should.equal('SHOW_FRONT')
   })
 })

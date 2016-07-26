@@ -2,10 +2,9 @@ import React from 'react'
 import { Link } from 'react-router'
 import TextSearchField from './TextSearchFieldComponent'
 import styles from './search.css'
-import 'purecss'
 
 const SearchFacet = ({submit, updateQuery, searchText}) => {
-  return <form className={styles['pure-form']}>
+  return <form className={'pure-form'}>
     <span className={styles.searchFields}>
       <div className={styles.textField}>
         <TextSearchField onEnterKeyDown={submit} onChange={updateQuery} value={searchText}/>
