@@ -1,4 +1,5 @@
 import groovy.json.JsonSlurper
+import com.moowork.gradle.node.task.NodeTask
 
 plugins {
     id "com.moowork.node" version "0.13"
@@ -18,13 +19,46 @@ task clean {
     }
 }
 
+def sourceDirs = ['node_modules', 'img', 'src', 'style']
+
+task compile(type: NodeTask) {
+    dependsOn 'npmInstall'
+    sourceDirs.each {
+        inputs.sourceDir(it)
+    }
+    outputs.dir('dist')
+    script = file('node_modules/.bin/webpack')
+    execOverrides {
+        it.environment 'NODE_ENV', 'production'
+    }
+    doFirst {
+        // Remove previous outputs. Doesn't run if the task if UP-TO-DATE
+        file("${projectDir}/dist").deleteDir()
+    }
+}
+
 task assemble(type: Tar) {
-    // TODO - shouldn't have to always clean...
-    dependsOn 'clean', 'npmInstall', 'npm_run_build'
+    dependsOn 'compile'
 
     from "${projectDir}/dist"
     baseName = 'onestop-client'
     version = project.version
     extension = 'tar.gz'
     destinationDir = file("${buildDir}/libs")
+}
+
+task npm_test {
+    dependsOn 'compile'
+    sourceDirs.each {
+        inputs.sourceDir(it)
+    }
+    inputs.sourceDir('test')
+}
+
+task test {
+    dependsOn 'npm_test'
+}
+
+task build {
+    dependsOn 'assemble', 'test'
 }
