@@ -43,16 +43,6 @@ export const triggerSearch = () => {
         { type: 'geometry', geometry: geoJSON.toJS().geometry }
       )
     }
-    let startDateTime = state.getIn(['search', 'startDateTime'])
-    let endDateTime = state.getIn(['search', 'endDateTime'])
-    if (startDateTime) {
-      if (endDateTime) {
-        endDateTime = moment().format()
-      }
-      filters.push(
-        { type: 'datetime', after: startDateTime, before: endDateTime }
-      )
-    }
 
     const queries = []
     const queryText = state.getIn(['search', 'text'])
@@ -60,9 +50,13 @@ export const triggerSearch = () => {
       queries.push({type: 'queryText', value: queryText})
     }
 
+    // datetime filters 
+    let startDateTime = state.getIn(['search', 'startDateTime'])
+    let endDateTime = state.getIn(['search', 'endDateTime'])
+    filters.push(dateTime(startDateTime, endDateTime))
+
     const searchBody = JSON.stringify({queries, filters})
 
-    // { type: 'datetime', after: startDateTime, before: endDateTime }
     const apiRoot = "/api/search"
     const fetchParams = {
       method: 'POST',
@@ -86,4 +80,31 @@ const assignResourcesToMap = (resourceList) => {
     map.set(resource.id, Object.assign({type: resource.type}, resource.attributes))
   })
   return map
+}
+
+export const dateTime = (startDateTime, endDateTime) => {
+  let defaultDate = moment().format()
+  // start datetime != null where end datetime is either null or not
+  if (startDateTime) {
+    if (endDateTime) {
+      return  { type: 'datetime', after: startDateTime, before: endDateTime }
+    } else{
+      endDateTime = defaultDate
+      return  { type: 'datetime', after: startDateTime, before: endDateTime }
+    }
+  }
+  // if start datetime ==null  where end datetime is either null or not
+  else if (startDateTime ==="") {
+    if (endDateTime) {
+      return  { type: 'datetime', before: endDateTime }
+    } else{
+      endDateTime = defaultDate
+      return  { type: 'datetime', before: endDateTime }
+    }
+  }
+  // where end and start date time  is null
+  else {
+      endDateTime = defaultDate
+      return  { type: 'datetime', before: endDateTime }
+    }
 }
