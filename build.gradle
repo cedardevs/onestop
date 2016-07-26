@@ -1,1 +1,8 @@
-// Nothing to put here yet
+plugins {
+  id 'com.gradle.build-scan' version '1.0'
+}
+
+buildScan {
+  licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+  licenseAgree = 'yes'
+}
