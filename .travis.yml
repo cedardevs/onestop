@@ -13,6 +13,9 @@ cache:
     directories:
         - $HOME/.gradle/caches/
         - $HOME/.gradle/wrapper/
+        - .gradle
+        - client/.gradle
         - client/node_modules
+install: true
 script:
     - ./gradlew build -Dscan
