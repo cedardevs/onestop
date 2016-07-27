@@ -1,9 +1,9 @@
 {
-  "name": "onestop-sandbox",
+  "name": "onestop-client",
   "version": "0.0.1",
-  "description": "An experiment in creating a OneStop web app",
-  "repository": "ssh://git@stash.ngdc.noaa.gov:7999/~emcquinn/onestop-sandbox.git",
-  "license": "WTFPL",
+  "description": "The web client for the OneStop discovery service",
+  "repository": "ssh://git@github.com:cires-ncei/onestop.git",
+  "license": "GPL-2.0",
   "scripts": {
     "dev": "webpack-dev-server --hot --inline --progress --colors & find ./test -name '*Spec.js' | xargs mocha -R spec --watch",
     "test": "find ./test -name '*Spec.js' | xargs mocha -R spec",
