@@ -22,3 +22,16 @@ cache:
 install: true
 script:
     - ./gradlew build -Dscan
+before_deploy:
+    - export API_RELEASE=$(ls -t1 api/build/libs/*.jar | head -1)
+    - export CLIENT_RELEASE=$(ls -t1 client/build/libs/*.tar.gz | head -1)
+deploy:
+    provider: releases
+    prerelease: true
+    api_key:
+        secure: toyxi6h2nTqXVwIdMeyPdLlbcGhhiMjhNLEbki4qcQomDMnEw9Mg66eYLhLSCaaA6FtOYLDRxDuN+f7XQWF52lt53zGnD8JbTFtaogRohKe1VC0uYdEBvCtRMStRD7mbdPjlB85Sz5vh7ski2PWa4PFBfCNdsIgwPxQwjiHTO2cgXiSOifLRFfFgLmgqCzI8cMIeIwjWl4HShnBOR7kmIFJqTfHwQBp9478CWqpCeszKQr9/KmpGkyrtVegYyWUXGIuJSTIxbsFpInty+OQeQxHoZ+/PeqCyPibLkbPPNG/2xckU36aF8N6ULjsochSwYawdrzSOytqJi/TNwVVS4L922g7m0sJNwwjRbSMZPQP3iFK/Evj6TjNKHjcpCihcUsrkDHoCaGM3oNYkvCFrMegedtI26qT2RQw+PDig5Ec473pbLK5fQxJECqzHGAZSgBzy9HfaCzQxtZpCqNVM2yYrtw9fmo5fkv64zDS7OXHbzp3YJunTELDIsQV+qEDxss3/YkOFao2RGCNR9aK3hZsS5wNB12E+NgoKRw4japJahuVeDDng7EEXqVgHvFzmnAgoGgd5CaD+SeLaDqi+m/NHoAX0HBF+5knJqN5xPtzSbi6ipy48gRDC7KC8W/ghfxh+AnfQmFDeVhFQkDxo9BmHje4kbz9ms5br/lR1yck=
+    file:
+        - "${CLIENT_RELEASE}"
+        - "${API_RELEASE}"
+    on:
+        repo: cires-ncei/onestop
