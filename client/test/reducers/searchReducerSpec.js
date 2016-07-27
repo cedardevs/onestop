@@ -70,6 +70,4 @@ describe('The search reducer', function () {
 
     searchAction.should.deep.equal(expected)
   })
-
-
 })
