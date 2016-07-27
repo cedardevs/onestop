@@ -10,7 +10,7 @@ import ResultsListContainer from './result/ResultsListContainer'
 import LandingContainer from './landing/LandingContainer'
 import thunk from 'redux-thunk'
 import {Provider} from 'react-redux'
-import Root from './components/Root.jsx'
+import RootComponent from './components/Root.jsx'
 import reducer from './reducers/main'
 import '../style/style.js'
 import './page.css'
@@ -47,7 +47,7 @@ const history = syncHistoryWithStore(browserHistory, store, {
 const body =
     <Provider store={store}>
       <Router history={history}>
-        <Route path="/" name="Home" component={Root}>
+        <Route path="/" name="Home" component={RootComponent}>
           <IndexRoute component={LandingContainer}/>
           <Route name="Results" path="results" component={ResultsListContainer}/>
         </Route>
