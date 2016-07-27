@@ -43,7 +43,7 @@ export const triggerSearch = () => {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: state.getIn(['search', 'search'])
+      body: state.getIn(['search', 'requestBody'])
     }
 
     return fetch(apiRoot, fetchParams)
