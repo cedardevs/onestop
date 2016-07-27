@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
-import moment from 'moment'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -34,35 +33,9 @@ export const triggerSearch = () => {
     if (state.getIn(['search', 'inFlight']) === true) {
       return Promise.resolve()
     }
+
     dispatch(startSearch())
 
-    const geoJSON = state.getIn(['search', 'geoJSON'])
-    let filters = []
-    if (geoJSON !== ""){
-      filters.push(
-        { type: 'geometry', geometry: geoJSON.toJS().geometry }
-      )
-    }
-    let startDateTime = state.getIn(['search', 'startDateTime'])
-    let endDateTime = state.getIn(['search', 'endDateTime'])
-    if (startDateTime) {
-      if (endDateTime) {
-        endDateTime = moment().format()
-      }
-      filters.push(
-        { type: 'datetime', after: startDateTime, before: endDateTime }
-      )
-    }
-
-    const queries = []
-    const queryText = state.getIn(['search', 'text'])
-    if (queryText) {
-      queries.push({type: 'queryText', value: queryText})
-    }
-
-    const searchBody = JSON.stringify({queries, filters})
-
-    // { type: 'datetime', after: startDateTime, before: endDateTime }
     const apiRoot = "/api/search"
     const fetchParams = {
       method: 'POST',
@@ -70,7 +43,7 @@ export const triggerSearch = () => {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: searchBody
+      body: state.getIn(['search', 'search'])
     }
 
     return fetch(apiRoot, fetchParams)
