@@ -10,7 +10,6 @@ import Header from './Header.jsx'
 import AlphaBanner from './AlphaBanner.jsx'
 import styles from './root.css'
 
-
 class RootComponent extends React.Component {
 
     constructor(props) {

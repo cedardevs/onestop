@@ -6,17 +6,26 @@ import { Router, Route, IndexRoute } from 'react-router'
 import ResultsListContainer from './result/ResultsListContainer'
 import LandingContainer from './landing/LandingContainer'
 import {Provider} from 'react-redux'
-import RootComponent from './components/Root.jsx'
-import '../style/style.js'
+import RootComponent from './components/Root'
+import { triggerSearch } from './search/SearchActions'
+import queryString from 'query-string'
+import '../style/style'
 import './page.css'
-import store from './store.jsx'
-import history from './history.jsx'
+import store from './store'
+import history from './history'
 
 // Needed for onTouchTap
 // Can go away when react 1.0 release
 // Check this repo:
 // https://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin()
+
+// If loading page with query params, conduct search
+const urlString = document.location.hash
+const queryParams = queryString.parse(urlString.slice(urlString.indexOf('?')+1,-1))
+if ('queries' in queryParams){
+  store.dispatch(triggerSearch(queryParams))
+}
 
 const body =
     <Provider store={store}>
