@@ -2,7 +2,6 @@ const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 
 import React from 'react'
 import DetailContainer from '../detail/DetailContainer'
-import SearchContainer from '../search/SearchContainer'
 import Breadcrumbs from 'react-breadcrumbs'
 //import FacetContainer from '../facet/FacetContainer'
 import Favicon from 'react-favicon'
@@ -17,7 +16,6 @@ class RootComponent extends React.Component {
     constructor(props) {
         super(props)
         this.breadcrumbs
-        this.searchContainer
     }
 
     componentWillReceiveProps() {
@@ -26,7 +24,6 @@ class RootComponent extends React.Component {
               routes={this.props.routes}
               params={this.props.params}
             />
-            this.searchContainer = <SearchContainer/>
         } else {
             this.breadcrumbs = undefined
         }
