@@ -18,7 +18,7 @@ class RootComponent extends React.Component {
         this.breadcrumbs
     }
 
-    componentWillReceiveProps() {
+    render() {
         if (this.props.location.pathname !== "/"){
             this.breadcrumbs = <Breadcrumbs
               routes={this.props.routes}
@@ -27,9 +27,7 @@ class RootComponent extends React.Component {
         } else {
             this.breadcrumbs = undefined
         }
-    }
 
-    render() {
         return <div>
           <Favicon url={["//www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
           <AlphaBanner/>
