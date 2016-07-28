@@ -6,8 +6,10 @@ import thunk from 'redux-thunk'
 import reducer from './reducers/main'
 
 const initialState = Immutable.Map()
-export const store = createStore(reducer, initialState,
+const store = createStore(reducer, initialState,
     applyMiddleware(
         thunk,
         routerMiddleware(hashHistory)
     ))
+
+export default store

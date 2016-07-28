@@ -14,6 +14,8 @@ const createSelectLocationState = () => {
   }
 }
 
-export const history = syncHistoryWithStore(hashHistory, store, {
+const history = syncHistoryWithStore(hashHistory, store, {
   selectLocationState: createSelectLocationState()
 })
+
+export default history

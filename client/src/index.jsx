@@ -14,35 +14,14 @@ import RootComponent from './components/Root.jsx'
 import reducer from './reducers/main'
 import '../style/style.js'
 import './page.css'
+import store from './store.jsx'
+import history from './history.jsx'
 
 // Needed for onTouchTap
 // Can go away when react 1.0 release
 // Check this repo:
 // https://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin()
-
-const initialState = Immutable.Map()
-const store = createStore(reducer, initialState,
-    applyMiddleware(
-        thunk,
-        routerMiddleware(hashHistory)
-    ))
-
-// Create enhanced history object for router
-const createSelectLocationState = () => {
-  let prevRoutingState, prevRoutingStateJS
-  return (state) => {
-    const routingState = state.get('routing')
-    if (typeof prevRoutingState === 'undefined' || prevRoutingState !== routingState) {
-      prevRoutingStateJS = routingState.toJS()
-    }
-    return prevRoutingStateJS
-  }
-}
-
-const history = syncHistoryWithStore(hashHistory, store, {
-  selectLocationState: createSelectLocationState()
-})
 
 const body =
     <Provider store={store}>
