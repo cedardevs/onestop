@@ -3,7 +3,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 import React from 'react'
 import Immutable from 'immutable'
 import {render} from 'react-dom'
-import { Router, Route, IndexRoute, browserHistory } from 'react-router'
+import { Router, Route, IndexRoute, hashHistory } from 'react-router'
 import { syncHistoryWithStore, routerMiddleware } from 'react-router-redux'
 import {createStore, applyMiddleware} from 'redux'
 import ResultsListContainer from './result/ResultsListContainer'
@@ -25,7 +25,7 @@ const initialState = Immutable.Map()
 const store = createStore(reducer, initialState,
     applyMiddleware(
         thunk,
-        routerMiddleware(browserHistory)
+        routerMiddleware(hashHistory)
     ))
 
 // Create enhanced history object for router
@@ -40,7 +40,7 @@ const createSelectLocationState = () => {
   }
 }
 
-const history = syncHistoryWithStore(browserHistory, store, {
+const history = syncHistoryWithStore(hashHistory, store, {
   selectLocationState: createSelectLocationState()
 })
 
