@@ -38,6 +38,13 @@ class MapComponent extends React.Component {
             editableLayers.addLayer(layer)
             this.handleGeometryUpdate(layer.toGeoJSON())
         })
+        map.on('draw:edited', (e) => {
+            this.handleGeometryUpdate(e.layers.getLayers()[0].toGeoJSON())
+        })
+        map.on('draw:deleted', (e) => {
+            editableLayers.removeLayer(this.lastLayer)
+            this.handleGeometryUpdate(null)
+        })
         map.on('draw:drawstart', (e) => {
             editableLayers.removeLayer(this.lastLayer)
         })

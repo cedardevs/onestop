@@ -5,7 +5,7 @@ import { DateRange } from './temporal/TemporalActions'
 
 export const initialState = Immutable.fromJS({
   text: '',
-  geoJSON: '',
+  geoJSON: null,
   inFlight: false,
   startDateTime: '',
   endDateTime: '',
