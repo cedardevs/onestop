@@ -47,9 +47,6 @@ class RootComponent extends React.Component {
                         <a className={styles.deptName} href="//www.commerce.gov">U.S. Department of Commerce</a>
                     </div>
                 </div>
-                <div className={`pure-u-2-5 ${styles.searchFacet}`}>
-                    {this.searchContainer}
-                </div>
               </div>
             </div>
           </div>
