@@ -1,8 +1,9 @@
 import Immutable from 'immutable'
 import '../specHelper'
 import { search, initialState } from '../../src/search/SearchReducer'
-import { dateTime,  startSearch, completeSearch } from '../../src/search/SearchActions'
-import moment from 'moment'
+import { updateQuery, startSearch, completeSearch } from '../../src/search/SearchActions'
+import { startDate, endDate } from '../../src/search/temporal/TemporalActions'
+import { updateGeometry } from '../../src/search/map/MapActions'
 
 describe('The search reducer', function () {
   it('has a default state', function () {
@@ -12,7 +13,7 @@ describe('The search reducer', function () {
     result.has('text').should.equal(true)
   })
 
-  it('for a new search', function () {
+  it('for a new search', function () { // FIXME no input on startSearch
     const searchText = 'test'
     const searchAction = startSearch(searchText)
     const result = search(initialState, searchAction)
@@ -30,105 +31,87 @@ describe('The search reducer', function () {
   })
 })
 
-describe.skip('The search reducer\'s assembleSearchBody function', function() {
+describe('The search reducer\'s assembleRequestBody function', function() {
 
-  it('sets queries array with queryText', function() {})
+  it('sets queries array with queryText', function () {
+    const queryText = 'DEM'
+    const updateQueryAction = updateQuery(queryText)
+    const result = search(initialState, updateQueryAction)
 
-  it('sets filters array with start date only', function() {})
+    const expectedRequestBody = JSON.stringify({queries: [{type: 'queryText', value: 'DEM'}], filters: []})
 
-  it('sets filters array with end date only', function() {})
-
-  it('sets filters array with start and end dates', function() {})
-
-  it('sets filters array with geometry', function() {})
-})
-
-/*describe.skip('The search reducer\'s temporal test cases', function () {
-
-  it(' update search with requested datetime ', function () {
-    const startDateTime = moment('2000-07-30 00:00').format()
-    const endDateTime = moment('2014-07-30 00:00').format()
-
-    const expected = { type: 'datetime', after: startDateTime, before: endDateTime }
-    const searchAction = dateTime(startDateTime, endDateTime)
-
-    searchAction.should.deep.equal(expected)
-
+    result.get('text').should.equal('DEM')
+    result.get('requestBody').should.equal(expectedRequestBody)
   })
 
-  it(' update search with requested start datetime ', function () {
-    const startDateTime = moment('2000-07-30 00:00').format()
-    const endDateTime = ""
-    const defaultDate = moment().format()
+  it('sets filters array with start date only', function () {
+    const startDatetime = '2010-07-25T15:45:00-06:00'
+    const updateStartDateAction = startDate(startDatetime)
+    const result = search(initialState, updateStartDateAction)
 
-    const expected = { type: 'datetime', after: startDateTime, before: defaultDate }
-    const searchAction = dateTime(startDateTime, endDateTime)
+    const expectedRequestBody = JSON.stringify({queries: [], filters: [{type: 'datetime', after: '2010-07-25T15:45:00-06:00'}]})
 
-    searchAction.should.deep.equal(expected)
+    result.get('startDateTime').should.equal('2010-07-25T15:45:00-06:00')
+    result.get('requestBody').should.equal(expectedRequestBody)
   })
 
-  it(' update search with requested end datetime ', function () {
-    const startDateTime = ""
-    const endDateTime = moment('2000-07-30 00:00').format()
+  it('sets filters array with end date only', function () {
+    const endDatetime = '2016-07-25T15:45:00-06:00'
+    const updateEndDateAction = endDate(endDatetime)
+    const result = search(initialState, updateEndDateAction)
 
-    const expected = { type: 'datetime', before: endDateTime }
-    const searchAction = dateTime(startDateTime, endDateTime)
+    const expectedRequestBody = JSON.stringify({queries: [], filters: [{type: 'datetime', before: '2016-07-25T15:45:00-06:00'}]})
 
-    searchAction.should.deep.equal(expected)
+    result.get('endDateTime').should.equal('2016-07-25T15:45:00-06:00')
+    result.get('requestBody').should.equal(expectedRequestBody)
   })
 
-  it(' update search with default datetime ', function () {
-    const startDateTime = ""
-    const endDateTime = ""
-    const defaultDate = moment().format()
+  it('sets filters array with start and end dates', function () {
+    const startDatetime = '2010-07-25T15:45:00-06:00'
+    const updateStartDateAction = startDate(startDatetime)
+    const intermediateResult = search(initialState, updateStartDateAction)
 
-    const searchAction = dateTime(startDateTime, endDateTime)
-    const expected = { type: 'datetime', before: defaultDate }
+    const endDatetime = '2016-07-25T15:45:00-06:00'
+    const updateEndDateAction = endDate(endDatetime)
+    const result = search(intermediateResult, updateEndDateAction)
 
-    searchAction.should.deep.equal(expected)
+    const expectedRequestBody = JSON.stringify({
+      queries: [],
+      filters: [{type: 'datetime', after: '2010-07-25T15:45:00-06:00', before: '2016-07-25T15:45:00-06:00'}]
+    })
+
+    result.get('startDateTime').should.equal('2010-07-25T15:45:00-06:00')
+    result.get('endDateTime').should.equal('2016-07-25T15:45:00-06:00')
+    result.get('requestBody').should.equal(expectedRequestBody)
   })
-})
 
-describe.skip('The search reducer\'s geometry test cases', function () {
-
-  const validState = Immutable.Map({
-    text: '',
-    geoJSON: Immutable.Map({
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ]
-        ]
+  it('sets filters array with geometry', function () {
+    const validGeoJSON = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
       },
-      "properties": {
-        "description": "Valid test GeoJSON"
+      properties: {
+        description: 'Valid test GeoJSON'
       }
-    }),
-    inFlight: false,
-    startDateTime: '',
-    endDateTime: ''
-  })
+    }
 
-  it('handles a valid geoJSON object', function () {
-    // TODO
-  })
+    const updateGeometryAction = updateGeometry(validGeoJSON)
+    const result = search(initialState, updateGeometryAction)
 
+    const expectedRequestBody = JSON.stringify({
+      queries: [],
+      filters: [{
+        type: 'geometry',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
+        }
+      }]
+    })
 
-  const invalidState = Immutable.Map({
-    text: '',
-    geoJSON: Immutable.Map({
-      "type": "Feature",
-      "properties": {
-        "description": "Valid test GeoJSON"
-      }
-    }),
-    inFlight: false,
-    startDateTime: '',
-    endDateTime: ''
+    JSON.stringify(result.get('geoJSON')).should.equal(JSON.stringify(validGeoJSON))
+    result.get('requestBody').should.equal(expectedRequestBody)
   })
-
-  it('explodes(?) with an invalid geoJSON object', function() {
-    // TODO
-  })
-})*/
+})

@@ -1,15 +1,15 @@
 import Immutable from 'immutable'
-import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY, ASSEMBLE_SEARCH} from './SearchActions'
+import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY} from './SearchActions'
 import { UPDATE_GEOMETRY } from './map/MapActions'
 import { DateRange } from './temporal/TemporalActions'
 
 export const initialState = Immutable.fromJS({
   text: '',
-  geoJSON: '',
+  geoJSON: null,
   inFlight: false,
   startDateTime: '',
   endDateTime: '',
-  search: {queries: [], filters: []}
+  requestBody: ''
 })
 
 export const search = (state = initialState, action) => {
@@ -29,19 +29,19 @@ export const search = (state = initialState, action) => {
 
     case UPDATE_GEOMETRY:
       newState = state.mergeDeep({geoJSON: action.geoJSON})
-      return newState.mergeDeep({search: assembleSearchBody(newState)})
+      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case UPDATE_QUERY:
       newState = state.mergeDeep({text: action.searchText})
-      return newState.mergeDeep({search: assembleSearchBody(newState)})
+      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case DateRange.START_DATE:
       newState = state.mergeDeep({startDateTime: action.datetime})
-      return newState.mergeDeep({search: assembleSearchBody(newState)})
+      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case DateRange.END_DATE:
       newState = state.mergeDeep({endDateTime: action.datetime})
-      return newState.mergeDeep({search: assembleSearchBody(newState)})
+      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     default:
       return state
@@ -50,7 +50,7 @@ export const search = (state = initialState, action) => {
 
 export default search
 
-const assembleSearchBody = (state) => {
+const assembleRequestBody = (state) => {
 
   let queries = []
   let filters = []
@@ -63,7 +63,7 @@ const assembleSearchBody = (state) => {
 
   // Spatial filter:
   let geoJSON = state.get('geoJSON')
-  if (geoJSON !== ""){
+  if (geoJSON){
     filters.push({type: 'geometry', geometry: geoJSON.toJS().geometry})
   }
 

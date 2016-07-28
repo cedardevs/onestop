@@ -1,24 +1,38 @@
 language: java
 jdk:
-    - oraclejdk8
+  - oraclejdk8
 notifications:
-    email: false
-    slack:
-        rooms:
-            - secure: Ch12lKiGgb6P1YrVkzhrAJrj+P4Bh4qcoPEVwBjUapRO02GbR7hJefYMAcBMbKv2CPQoHZHYaGn+XZ2//mIUdAW4fqjrKtY+Ep4EkhpBg8E/Hpu2TfKShOujIlnJfc4hxrzRK2mg/Avv4mUHIeLxDgzWGdNix7LHMLRi/aqsEYGH1llsa6vqfxXUta0FT9GlpaIDKF053gt3meAT+WPwpsu08NRWlb/JeXMW+PbP92HtUFbI40gAtCN8WCMRaEB4tQpkOlvEKo95NkU/ZdYZuGJ4ftOIGQW9ucxNBxOx4Hvv3qzX2hbQtx2WMLb3IJ6UvX3ybGjxozE6KwJsQHBVgJQl/6CBC8oVf5bcLJIW1LHPnUOXH2L/T4sVfATiKGFvJ/XAOFgJ4ylhjoud6NX98MhQD1D4OhiHi5wA4XJiqr7STBNO/uIHOU4vnbpUya/LeDRuoPmDgajTzp4VB0TlKfD3a3t3pfdBbxSgkG/e+8MLQVQMTUvwVeej0zRKNB/rvo9SbD+65NFzdL2DEhCEQGZrzHI+eKXftzhx6eDqM6u1Nhcka7yTu0weyzjldivDjCXZQ0eo9NsSclUKf3WmndPgD71pD01Dj57phoLxvc1zR5AD+bZ4VzXNxt3zBYHlHB8FTVmskp8ePp9A0kldS+b/tVeAHQmIuaxED1INXj4=
+  email: false
+  slack:
+    rooms:
+      - secure: Ch12lKiGgb6P1YrVkzhrAJrj+P4Bh4qcoPEVwBjUapRO02GbR7hJefYMAcBMbKv2CPQoHZHYaGn+XZ2//mIUdAW4fqjrKtY+Ep4EkhpBg8E/Hpu2TfKShOujIlnJfc4hxrzRK2mg/Avv4mUHIeLxDgzWGdNix7LHMLRi/aqsEYGH1llsa6vqfxXUta0FT9GlpaIDKF053gt3meAT+WPwpsu08NRWlb/JeXMW+PbP92HtUFbI40gAtCN8WCMRaEB4tQpkOlvEKo95NkU/ZdYZuGJ4ftOIGQW9ucxNBxOx4Hvv3qzX2hbQtx2WMLb3IJ6UvX3ybGjxozE6KwJsQHBVgJQl/6CBC8oVf5bcLJIW1LHPnUOXH2L/T4sVfATiKGFvJ/XAOFgJ4ylhjoud6NX98MhQD1D4OhiHi5wA4XJiqr7STBNO/uIHOU4vnbpUya/LeDRuoPmDgajTzp4VB0TlKfD3a3t3pfdBbxSgkG/e+8MLQVQMTUvwVeej0zRKNB/rvo9SbD+65NFzdL2DEhCEQGZrzHI+eKXftzhx6eDqM6u1Nhcka7yTu0weyzjldivDjCXZQ0eo9NsSclUKf3WmndPgD71pD01Dj57phoLxvc1zR5AD+bZ4VzXNxt3zBYHlHB8FTVmskp8ePp9A0kldS+b/tVeAHQmIuaxED1INXj4=
 before_cache:
-    - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-    - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
-    directories:
-        - $HOME/.gradle/caches/
-        - $HOME/.gradle/wrapper/
-        - .gradle
-        - api/build
-        - api/dist
-        - client/.gradle
-        - client/node_modules
-        - client/build
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - .gradle
+    - api/build
+    - api/dist
+    - client/.gradle
+    - client/node_modules
+    - client/build
 install: true
 script:
-    - ./gradlew build -Dscan
+  - ./gradlew build -Dscan
+before_deploy:
+  - export API_RELEASE=$(ls -t1 api/build/libs/*.jar | head -1)
+  - export CLIENT_RELEASE=$(ls -t1 client/build/libs/*.tar.gz | head -1)
+deploy:
+  skip_cleanup: true
+  provider: releases
+  prerelease: true
+  api_key:
+    secure: toyxi6h2nTqXVwIdMeyPdLlbcGhhiMjhNLEbki4qcQomDMnEw9Mg66eYLhLSCaaA6FtOYLDRxDuN+f7XQWF52lt53zGnD8JbTFtaogRohKe1VC0uYdEBvCtRMStRD7mbdPjlB85Sz5vh7ski2PWa4PFBfCNdsIgwPxQwjiHTO2cgXiSOifLRFfFgLmgqCzI8cMIeIwjWl4HShnBOR7kmIFJqTfHwQBp9478CWqpCeszKQr9/KmpGkyrtVegYyWUXGIuJSTIxbsFpInty+OQeQxHoZ+/PeqCyPibLkbPPNG/2xckU36aF8N6ULjsochSwYawdrzSOytqJi/TNwVVS4L922g7m0sJNwwjRbSMZPQP3iFK/Evj6TjNKHjcpCihcUsrkDHoCaGM3oNYkvCFrMegedtI26qT2RQw+PDig5Ec473pbLK5fQxJECqzHGAZSgBzy9HfaCzQxtZpCqNVM2yYrtw9fmo5fkv64zDS7OXHbzp3YJunTELDIsQV+qEDxss3/YkOFao2RGCNR9aK3hZsS5wNB12E+NgoKRw4japJahuVeDDng7EEXqVgHvFzmnAgoGgd5CaD+SeLaDqi+m/NHoAX0HBF+5knJqN5xPtzSbi6ipy48gRDC7KC8W/ghfxh+AnfQmFDeVhFQkDxo9BmHje4kbz9ms5br/lR1yck=
+  file:
+    - "${CLIENT_RELEASE}"
+    - "${API_RELEASE}"
+  on:
+    repo: cires-ncei/onestop

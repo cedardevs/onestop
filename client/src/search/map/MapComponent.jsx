@@ -16,7 +16,6 @@ class MapComponent extends React.Component {
     }
 
     componentDidMount() {
-        let self = this
         let editableLayers = new L.FeatureGroup()
         // Reload previous map selection from store
         if (this.geoJSON){
@@ -34,13 +33,20 @@ class MapComponent extends React.Component {
             attributionControl: false
         })
         map.addLayer(editableLayers)
-        map.on('draw:created', function (e) {
-            let layer = self.lastLayer = e.layer;
+        map.on('draw:created', (e) => {
+            let layer = this.lastLayer = e.layer;
             editableLayers.addLayer(layer)
-            self.handleGeometryUpdate(layer.toGeoJSON())
+            this.handleGeometryUpdate(layer.toGeoJSON())
         })
-        map.on('draw:drawstart', function (e) {
-            editableLayers.removeLayer(self.lastLayer)
+        map.on('draw:edited', (e) => {
+            this.handleGeometryUpdate(e.layers.getLayers()[0].toGeoJSON())
+        })
+        map.on('draw:deleted', (e) => {
+            editableLayers.removeLayer(this.lastLayer)
+            this.handleGeometryUpdate(null)
+        })
+        map.on('draw:drawstart', (e) => {
+            editableLayers.removeLayer(this.lastLayer)
         })
 
         let shadeOptions = {
