@@ -26,6 +26,7 @@ before_deploy:
   - export API_RELEASE=$(ls -t1 api/build/libs/*.jar | head -1)
   - export CLIENT_RELEASE=$(ls -t1 client/build/libs/*.tar.gz | head -1)
 deploy:
+  skip_cleanup: true
   provider: releases
   prerelease: true
   api_key:
