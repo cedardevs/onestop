@@ -25,7 +25,7 @@ export const completeSearch = (items) => {
   }
 }
 
-export const triggerSearch = () => {
+export const triggerSearch = (testing) => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
     let state = getState()
@@ -36,7 +36,8 @@ export const triggerSearch = () => {
 
     dispatch(startSearch())
 
-    const apiRoot = "/api/search"
+    let apiRoot = "/api/search"
+    if(testing) {apiRoot = testing + apiRoot}
     const fetchParams = {
       method: 'POST',
       headers: {
