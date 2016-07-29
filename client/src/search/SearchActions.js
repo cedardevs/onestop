@@ -7,7 +7,6 @@ export const SEARCH_COMPLETE = 'search_complete'
 export const UPDATE_QUERY = 'update_query'
 
 export const updateQuery = (searchText) => {
-  console.log(searchText)
   return {
     type: UPDATE_QUERY,
     searchText
