@@ -1,27 +1,14 @@
-import groovy.json.JsonSlurper
 import com.moowork.gradle.node.task.NodeTask
 
-buildscript {
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath 'com.moowork.gradle:gradle-node-plugin:0.13'
-    }
-}
-
 apply plugin: "com.moowork.node"
+apply from: "${rootDir}/gradle/publishing.gradle"
 
 node {
     version = '6.3.1'
     download = true
 }
 
-version = new JsonSlurper().parse(file("${projectDir}/package.json")).version
-
-task clean {
+clean {
     doFirst {
         file("${projectDir}/dist").deleteDir()
         file("${buildDir}/libs").deleteDir()
@@ -46,7 +33,7 @@ task compile(type: NodeTask) {
     }
 }
 
-task assemble(type: Tar) {
+task tarResults(type: Tar) {
     dependsOn 'compile'
 
     from "${projectDir}/dist"
@@ -55,6 +42,8 @@ task assemble(type: Tar) {
     extension = 'tar.gz'
     destinationDir = file("${buildDir}/libs")
 }
+
+assemble.dependsOn 'tarResults'
 
 task npm_test {
     dependsOn 'compile'
@@ -68,6 +57,21 @@ task test {
     dependsOn 'npm_test'
 }
 
-task build {
-    dependsOn 'assemble', 'test'
+check {
+    dependsOn 'test'
+}
+
+build {
+    dependsOn 'assemble', 'check'
+}
+
+publishing {
+    publications {
+        main(MavenPublication) {
+            artifact tarResults.outputs.files.singleFile, {
+                extension 'tar'
+            }
+            artifactId "${rootProject.name}-${project.name}"
+        }
+    }
 }

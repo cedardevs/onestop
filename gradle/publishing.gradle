@@ -1,0 +1,51 @@
+// Apply to sub-projects to enable publishing to bintray
+
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.jfrog.artifactory'
+
+ext {
+  bintrayUser = System.getenv('BINTRAY_USER')
+  bintrayKey = System.getenv('BINTRAY_KEY')
+}
+
+// only publish snapshot versions
+version = version += '-SNAPSHOT'
+
+artifactory {
+  contextUrl = 'https://oss.jfrog.org'
+  publish {
+    repository {
+      repoKey = 'oss-snapshot-local'
+      username = bintrayUser
+      password = bintrayKey
+      maven = true
+    }
+    defaults {
+      publications 'main'
+    }
+  }
+}
+
+artifactoryPublish {
+  mustRunAfter 'build'
+  dependsOn 'generatePomFileForMainPublication'
+}
+
+//bintray {
+//  user = System.getenv('BINTRAY_USER')
+//  key = System.getenv('BINTRAY_KEY')
+//
+//  pkg {
+//    userOrg = 'cires-ncei'
+//    repo = 'maven'
+//    name = 'onestop-' + project.name
+//    licenses = ['GPL-v2.0']
+//    vcsUrl = 'https://github.com/cires-ncei/onestop'
+//    version {
+//      name = project.version
+//      released = new Date()
+//    }
+//  }
+//}
