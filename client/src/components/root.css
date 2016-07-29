@@ -32,12 +32,43 @@
 .logo {
   height: 90px;
   float: left;
-  margin: 5px 10px;
+}
+
+.logSty img {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.logSty a {
+  position: relative;
+}
+
+.logSty a {
+  opacity: 0;
+  -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
+  transition: opacity 0.35s, transform 0.35s;
+  -webkit-transform: translateX(10px);
+  transform: translateX(10px);
+}
+
+.logSty:hover img {
+  -webkit-transform: translateX(-70px);
+  transform: translateX(-70px);
+}
+
+.logSty:hover a {
+  opacity: 1;
+  -webkit-transform: translateX(-50px);
+  transform: translateX(-50px);
 }
 
 .orgBox {
   margin: 10px 0 0;
   display: block;
+}
+
+.orgbox:hover {
+  background-position: 0 0;
 }
 
 @media screen and (max-width:938px) {
@@ -57,11 +88,11 @@
 }
 
 .orgName {
-  font-size: 2em;
+  font-size: 2vw;
 }
 
 .deptName {
-  font-size: 1em;
+  font-size: 1vw;
 }
 
 .breadCrumbs {
