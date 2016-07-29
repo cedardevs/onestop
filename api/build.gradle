@@ -1,24 +1,11 @@
 import com.wiredforcode.gradle.spawn.SpawnProcessTask
 import com.wiredforcode.gradle.spawn.KillProcessTask
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
-    }
-}
-
-plugins {
-    id 'groovy'
-    id "com.wiredforcode.spawn" version "0.6.0"
-}
-
+apply plugin: 'groovy'
 apply plugin: 'spring-boot'
+apply plugin: "com.wiredforcode.spawn"
+apply from: "${rootDir}/gradle/publishing.gradle"
 
-group 'ncei.onestop'
-version '1.0-SNAPSHOT'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -102,3 +89,12 @@ task integrationTest(type: Test, description: 'Runs the integration tests', grou
 }
 
 check.dependsOn integrationTest
+
+publishing {
+    publications {
+        main(MavenPublication) {
+            artifact outputJar
+            artifactId "${rootProject.name}-${project.name}"
+        }
+    }
+}
