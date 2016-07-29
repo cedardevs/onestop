@@ -1,11 +1,13 @@
 import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
+import queryString from 'query-string'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
 export const UPDATE_QUERY = 'update_query'
 
 export const updateQuery = (searchText) => {
+  console.log(searchText)
   return {
     type: UPDATE_QUERY,
     searchText
@@ -25,7 +27,7 @@ export const completeSearch = (items) => {
   }
 }
 
-export const triggerSearch = () => {
+export const triggerSearch = (queryParams) => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
     let state = getState()
@@ -37,19 +39,26 @@ export const triggerSearch = () => {
     dispatch(startSearch())
 
     const apiRoot = "/api/search"
+    const searchBody = queryParams || state.getIn(['search', 'requestBody'])
     const fetchParams = {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: state.getIn(['search', 'requestBody'])
+      body: searchBody
     }
+    // Append query to URL
+    let parsedSearchBody = JSON.parse(searchBody)
+    for (const key in parsedSearchBody){
+      parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
+    }
+    const urlQueryString = queryString.stringify(parsedSearchBody)
 
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
         .then(json => dispatch(completeSearch(assignResourcesToMap(json.data))))
-        .then(() => dispatch(push('results')))
+        .then(() => dispatch(push('results?' + urlQueryString)))
   }
 }
 
