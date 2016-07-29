@@ -1,9 +1,18 @@
 import com.wiredforcode.gradle.spawn.SpawnProcessTask
 import com.wiredforcode.gradle.spawn.KillProcessTask
 
-plugins {
-  id "com.wiredforcode.spawn" version "0.6.0"
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath 'com.wiredforcode:gradle-spawn-plugin:0.6.0'
+  }
 }
+
+apply plugin: 'com.wiredforcode.spawn'
 
 task installJettyRunner(type: DownloadTask) {
   url = 'http://repo2.maven.org/maven2/org/mortbay/jetty/jetty-runner/8.1.10.v20130312/jetty-runner-8.1.10.v20130312.jar'
