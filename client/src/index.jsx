@@ -8,7 +8,7 @@ import LandingContainer from './landing/LandingContainer'
 import {Provider} from 'react-redux'
 import RootComponent from './components/Root'
 import { triggerSearch } from './search/SearchActions'
-import queryString from 'query-string'
+import loadQuery from './query'
 import '../style/style'
 import './page.css'
 import store from './store'
@@ -20,12 +20,8 @@ import history from './history'
 // https://github.com/zilverline/react-tap-event-plugin
 injectTapEventPlugin()
 
-// If loading page with query params, conduct search
-const urlString = document.location.hash
-const queryParams = queryString.parse(urlString.slice(urlString.indexOf('?')+1,-1))
-if ('queries' in queryParams){
-  store.dispatch(triggerSearch(queryParams))
-}
+// If loading page with query params, resubmit search
+loadQuery()
 
 const body =
     <Provider store={store}>
