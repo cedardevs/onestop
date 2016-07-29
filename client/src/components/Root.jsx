@@ -36,7 +36,7 @@ class RootComponent extends React.Component {
               <div className={'pure-g'}>
                 <div className={`pure-u-11-24 ${styles.logSty}`}>
                     <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
-                    <a className={styles.orgName} href="/">National Oceanic and Atmospheric Administration</a>
+                    <a className={styles.orgName}>National Oceanic and Atmospheric Administration</a>
                     <a className={styles.deptName} href="//www.commerce.gov">U.S. Department of Commerce</a>
                 </div>
               </div>
