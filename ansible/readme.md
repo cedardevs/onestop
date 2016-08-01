@@ -9,7 +9,7 @@ This subproject defines a playbook which deploys all of onestop.
 1. An [ansible inventory file](http://docs.ansible.com/ansible/intro_inventory.html) named `hosts` in this subproject directory
     - The inventory should define a group of machines called `web` and one called `backend`
     - You can put the same host(s) in both groups
-    - See `sameple_hosts` for an example
+    - See `sample_hosts` for an example
 1. Root access via ssh to the machines in your inventory w/ ssh keys copied to them
 
 ### Usage
