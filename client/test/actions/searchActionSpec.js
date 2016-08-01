@@ -5,9 +5,12 @@ import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import Immutable from 'immutable'
 import nock from 'nock'
+import reducer from '../../src/reducers/main'
 
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
+
+const requestBody = JSON.stringify({queries: [{type: 'queryText', value: 'alaska'}], filters: []})
 
 describe('The search action', () => {
 
@@ -15,18 +18,13 @@ describe('The search action', () => {
     nock.cleanAll()
   })
 
-  it('triggerSearch handles a new search', () => {
+  it('triggerSearch executes a search from requestBody', () => {
 
     nock.disableNetConnect()
 
     const testingRoot = 'http://localhost:9090'
-    const requestBody = {queries: [{type: 'queryText', value: 'alaska'}], filters: []}
 
     nock(testingRoot)
-/*        .filteringPath(function(path){
-          return '/';
-        })
-        .log(console.log)*/
         .post('/api/search', requestBody)
         .reply(200, {
           data: [
@@ -48,9 +46,9 @@ describe('The search action', () => {
             }
             ]
         })
-    const testSearchState = initialState.mergeDeep({requestBody: JSON.stringify(requestBody)})
-    const fullState = Immutable.fromJS({search: {}, facets: {}, results: {}, details: {}, routing: {}})
-    const testState = fullState.mergeDeep({search: testSearchState})
+    const testSearchState = initialState.mergeDeep({requestBody: requestBody})
+    const initState = reducer(Immutable.Map(), {type: 'init'})
+    const testState = initState.mergeDeep({search: testSearchState})
 
     const expectedItems = new Map()
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
@@ -64,18 +62,76 @@ describe('The search action', () => {
         method: 'push'}
       }
     ]
-    console.log(expectedActions)
 
     const store = mockStore(Immutable.fromJS(testState))
     return store.dispatch(module.triggerSearch(null, testingRoot))
         .then(() => {
-          console.log(store.getActions())
           store.getActions().should.deep.equal(expectedActions)
         })
   })
 
-  it.skip('triggerSearch returns promise when a search is already in flight', () => {
-    // TODO
+  it('triggerSearch executes a search from query params', () => {
+
+    nock.disableNetConnect()
+
+    const testingRoot = 'http://localhost:9090'
+
+    nock(testingRoot)
+        .post('/api/search', requestBody)
+        .reply(200, {
+          data: [
+            {
+              type: 'collection',
+              id: '123ABC',
+              attributes: {
+                field0: 'field0',
+                field1: 'field1'
+              }
+            },
+            {
+              type: 'collection',
+              id: '789XYZ',
+              attributes: {
+                field0: 'field00',
+                field1: 'field01'
+              }
+            }
+          ]
+        })
+
+    const initState = reducer(Immutable.Map(), {type: 'init'})
+
+    const expectedItems = new Map()
+    expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
+    expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
+
+    const expectedActions = [
+      {type: module.SEARCH},
+      {type: module.SEARCH_COMPLETE, items: expectedItems},
+      {type: '@@router/CALL_HISTORY_METHOD', payload: {
+        args: ['results?filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
+        method: 'push'}
+      }
+    ]
+
+    // Empty requestBody; params passed directly to triggerSearch
+    const store = mockStore(Immutable.fromJS(initState))
+    return store.dispatch(module.triggerSearch(requestBody, testingRoot))
+        .then(() => {
+          store.getActions().should.deep.equal(expectedActions)
+        })
+  })
+
+  it('triggerSearch does not start a new search when a search is already in flight', () => {
+    const testSearchState = initialState.mergeDeep({inFlight: true})
+    const fullState = Immutable.fromJS({search: {}, facets: {}, results: {}, details: {}, routing: {}})
+    const testState = fullState.mergeDeep({search: testSearchState})
+
+    const store = mockStore(Immutable.fromJS(testState))
+    return store.dispatch(module.triggerSearch())
+        .then(() => {
+          store.getActions().should.deep.equal([]) // No actions dispatched
+        })
   })
 
   it('updateQuery sets searchText', () => {

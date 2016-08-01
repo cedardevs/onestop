@@ -1,4 +1,3 @@
-import Immutable from 'immutable'
 import '../specHelper'
 import { search, initialState } from '../../src/search/SearchReducer'
 import { updateQuery, startSearch, completeSearch } from '../../src/search/SearchActions'
@@ -13,9 +12,8 @@ describe('The search reducer', function () {
     result.has('text').should.equal(true)
   })
 
-  it('for a new search', function () { // FIXME no input on startSearch
-    const searchText = 'test'
-    const searchAction = startSearch(searchText)
+  it('for a new search', function () {
+    const searchAction = startSearch()
     const result = search(initialState, searchAction)
 
     result.should.not.equal(initialState)
