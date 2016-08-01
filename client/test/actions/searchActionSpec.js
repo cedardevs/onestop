@@ -21,6 +21,10 @@ describe('The search action', () => {
     const requestBody = JSON.stringify({queries: [{type: 'queryText', value: 'alaska'}], filters: []})
 
     nock(testingRoot)
+        .filteringPath(function(path){
+          return '/';
+        })
+        .log(console.log)
         .post('/api/search', requestBody)
         .reply(200, {
           data: [

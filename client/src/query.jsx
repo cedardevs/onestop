@@ -12,7 +12,11 @@ const loadQuery = () => {
       delete(queryParams[key])
     }
   }
-  store.dispatch(triggerSearch(JSON.stringify(queryParams)))
+  let params = JSON.stringify(queryParams)
+  if(params !== '{}') {
+    store.dispatch(triggerSearch(params))
+  }
+
 }
 
 export default loadQuery
