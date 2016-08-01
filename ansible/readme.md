@@ -18,8 +18,6 @@ This subproject defines a playbook which deploys all of onestop.
 
 This will:
 
-1. Build the api jar
-1. Build the client
 1. Set up the `backend` machines:
     1. Update java
     1. Install elasticsearch via rpm
@@ -32,6 +30,10 @@ This will:
     1. Install nginx
     1. Configure nginx to proxy requests to the api app
     1. Copy the client static content into the nginx document root
+    
+##### NOTE:
+
+The api and client are the most recent versions from the [OJO Snapshot Repo](https://oss.jfrog.org/webapp/#/artifacts/browse/tree/General/oss-snapshot-local/cires/ncei/onestop/)
     
 ##### WARNING:
 
