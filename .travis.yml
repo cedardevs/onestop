@@ -16,6 +16,8 @@ cache:
     - .gradle
     - api/build
     - api/dist
+    - buildSrc/.gradle
+    - buildSrc/build
     - client/.gradle
     - client/node_modules
     - client/build

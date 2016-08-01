@@ -20,39 +20,30 @@
     group: onestop
     state: present
 
-- name: Get stats on the currently deployed jar
-  stat:
-    path: /usr/local/bin/onestop-api.jar
-  register: currentjar
+- name: Download latest api snapshot
+  become: true
+  maven_artifact:
+    repository_url: https://oss.jfrog.org/oss-snapshot-local
+    group_id: cires.ncei.onestop
+    artifact_id: onestop-api
+    version: latest
+    dest: /usr/local/bin/onestop-api.jar
+    state: present
+  register: download
 
-- name: Get stats on the jar being deployed
-  connection: local
-  stat:
-    path: "{{ apiJar }}"
-  register: newjar
-
-- name: Stop the api service if we need to update it
+- name: Stop the api service if the jar changed
+  become: true
   service:
     name: onestop-api
     state: stopped
-  when: currentjar.stat.exists and currentjar.stat.checksum != newjar.stat.checksum
-
-- name: Install the api app
-  become: true
-  copy:
-    src: "{{ apiJar }}"
-    dest: /usr/local/bin/onestop-api.jar
-    owner: onestop
-    group: onestop
-    mode: u=rx,g=,o=
-  register: deployedjar
+  when: download.changed
 
 - name: Link the api app into system services
   become: true
   file:
     path: /etc/init.d/onestop-api
     state: link
-    src: "{{ deployedjar.dest }}"
+    src: "{{ download.dest }}"
 
 - name: Start the api as a system service
   become: true
