@@ -45,18 +45,22 @@
     group: nginx
     mode: a=rx
 
-- name: Copy client tarball
-  copy:
-    src: "{{ clientTar }}"
-    dest: /tmp/
-  register: copiedtar
+- name: Download latest client snapshot
+  maven_artifact:
+    repository_url: https://oss.jfrog.org/oss-snapshot-local
+    group_id: cires.ncei.onestop
+    artifact_id: onestop-client
+    version: latest
+    extension: tar
+    dest: /tmp/onestop-client.tar
+    state: present
 
 #TODO - clean up existing client?
 - name: Unpack client into document root
   become: true
   unarchive:
      copy: no
-     src: "{{ copiedtar.dest }}"
+     src: /tmp/onestop-client.tar
      dest: /usr/share/nginx/html
      owner: nginx
      group: nginx
@@ -64,7 +68,7 @@
 
 - name: Delete temporary client tarball
   file:
-    path: "{{ copiedtar.dest }}"
+    path: /tmp/onestop-client.tar
     state: absent
 
 - name: Install api proxy config
