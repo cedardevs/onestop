@@ -27,20 +27,37 @@ module.exports = {
       include: /node_modules/,
       loaders: [
         'style?sourceMap',
-        'css']
+        'css'
+      ]
     }, {
       test: /\.css$/,
       exclude: /node_modules/,
       loaders: [
         'style?sourceMap',
         'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
-        'postcss']
+        'postcss'
+      ]
     }, {
-      test: /\.(jpe?g|png|gif|svg)$/,
+      test: /\.(jpe?g|png|gif)$/,
       loaders: [
         'file?hash=sha512&digest=hex&name=[hash].[ext]',
         'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
-      ]
+      ],
+    }, {
+      test: /\.(svg)(\?v=\d+\.\d+\.\d+)?$/,
+      loader: 'url?limit=65000&mimetype=image/svg+xml&name=public/fonts/[name].[ext]'
+    }, {
+        test: /\.(woff)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url?limit=65000&mimetype=application/font-woff&name=public/fonts/[name].[ext]'
+    }, {
+        test: /\.(woff2)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url?limit=65000&mimetype=application/font-woff2&name=public/fonts/[name].[ext]'
+    }, {
+        test: /\.([ot]tf)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url?limit=65000&mimetype=application/octet-stream&name=public/fonts/[name].[ext]'
+    }, {
+        test: /\.(eot)(\?v=\d+\.\d+\.\d+)?$/,
+        loader: 'url?limit=65000&mimetype=application/vnd.ms-fontobject&name=public/fonts/[name].[ext]'
     }]
   },
   postcss: function(){
