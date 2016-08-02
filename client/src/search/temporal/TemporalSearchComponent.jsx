@@ -2,6 +2,7 @@ import React from 'react'
 import { DateRange } from './TemporalActions'
 import DayPicker, { DateUtils } from 'react-day-picker'
 import styles from './temporal.css'
+import ToggleDisplay from 'react-toggle-display'
 import moment from 'moment'
 
 //const TemporalSearch = ({onChange, currentDate}) => {
@@ -49,6 +50,7 @@ class TemporalSearch extends React.Component {
     super(props)
     this.handleDayClick = this.handleDayClick.bind(this)
     this.handleResetClick = this.handleResetClick.bind(this)
+    this.showCurrentDate = this.showCurrentDate.bind(this)
     this.render = this.render.bind(this)
     this.state = this.getInitialState()
   }
@@ -57,7 +59,8 @@ class TemporalSearch extends React.Component {
     return {
       from: null,
       to: null,
-      initialMonth: toMonth
+      initialMonth: toMonth,
+      showCalendar: false
     }
   }
 
@@ -79,7 +82,8 @@ class TemporalSearch extends React.Component {
   }
 
   showCurrentDate() {
-    this.refs.daypicker.showMonth(this.state.month)
+    // this.refs.daypicker.showMonth(this.state.month)
+    this.setState({showCalendar: !this.state.showCalendar})
   }
 
   handleResetClick(e) {
@@ -116,17 +120,19 @@ class TemporalSearch extends React.Component {
             />
           </p>
         </div>
-        <DayPicker className={styles.dateComponent}
-          ref="daypicker"
-          onDayClick={ this.handleDayClick }
-          initialMonth={ this.state.initialMonth }
-          fromMonth={ fromMonth }
-          toMonth={ toMonth }
-          selectedDays={ day => DateUtils.isDayInRange(day, { from, to }) }
-          captionElement={
-            <YearMonthForm onChange={ initialMonth => this.setState({ initialMonth }) } />
-          }
-        />
+        <ToggleDisplay show={this.state.showCalendar}>
+          <DayPicker className={styles.dateComponent}
+            ref="daypicker"
+            onDayClick={ this.handleDayClick }
+            initialMonth={ this.state.initialMonth }
+            fromMonth={ fromMonth }
+            toMonth={ toMonth }
+            selectedDays={ day => DateUtils.isDayInRange(day, { from, to }) }
+            captionElement={
+              <YearMonthForm onChange={ initialMonth => this.setState({ initialMonth }) } />
+            }
+          />
+        </ToggleDisplay>
       </div>
     )
   }
