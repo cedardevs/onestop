@@ -13,8 +13,7 @@ export const initialState = Immutable.fromJS({
 })
 
 export const search = (state = initialState, action) => {
-
-  let newState = {}
+  let newState
 
   switch (action.type) {
     case SEARCH:
