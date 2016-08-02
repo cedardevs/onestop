@@ -11,6 +11,11 @@ class LandingComponent extends React.Component {
     this.state = {}
   }
 
+  search(query) {
+    this.updateQuery(query);
+    this.submit(query);
+  }
+
   render() {
     let featured = [
       '//placehold.it/700x500/ffffff/c0392b/&text=featured1',
@@ -50,7 +55,7 @@ class LandingComponent extends React.Component {
       {title: 'Space', icon: 'rocket'}
     ]
     topics = topics.map((topic, i) => {
-      return <div key={i} className={`${styles.topicItem}`}>
+      return <div key={i} className={`${styles.topicItem}`} onClick={()=>this.search(topic.title.toLowerCase())}>
         <i className={`fa fa-5x fa-${topic.icon}`} aria-hidden="true"/>
         <h3>{topic.title}</h3>
       </div>

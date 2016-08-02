@@ -17,6 +17,10 @@
     text-align: center;
     margin-bottom: 0;
   }
+  &:hover {
+    background-color: #0a4595;
+    border-radius: 5em;
+  }
 }
 
 .carouselContainer {
