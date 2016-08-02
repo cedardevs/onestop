@@ -10,23 +10,23 @@ import Header from './Header.jsx'
 import AlphaBanner from './AlphaBanner.jsx'
 import styles from './root.css'
 
+import SearchFieldsContainer from './SearchFieldsContainer'
+
 class RootComponent extends React.Component {
-
-    constructor(props) {
-        super(props)
-        this.breadcrumbs
-    }
-
+  constructor(props) {
+    super(props)
+    this.breadcrumbs
+  }
     render() {
-        if (this.props.location.pathname !== "/"){
-            this.breadcrumbs = <Breadcrumbs
-              routes={this.props.routes}
-              params={this.props.params}
-            />
-        } else {
-            this.breadcrumbs = undefined
-        }
 
+      if (this.props.location.pathname !== "/"){
+        this.breadcrumbs = <Breadcrumbs
+            routes={this.props.routes}
+            params={this.props.params}
+        />
+      } else {
+        this.breadcrumbs = undefined
+      }
         return <div>
           <Favicon url={["//www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
           <AlphaBanner/>
@@ -34,10 +34,13 @@ class RootComponent extends React.Component {
           <div className={styles.bottomBorder}>
             <div className={styles.panel}>
               <div className={'pure-g'}>
-                <div className={`pure-u-11-24 ${styles.logSty}`}>
+                <div className={`pure-u-5-24 ${styles.logSty}`}>
                     <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
                     <a className={styles.orgName}>National Oceanic and Atmospheric Administration</a>
                     <a className={styles.deptName} href="//www.commerce.gov">U.S. Department of Commerce</a>
+                </div>
+                <div className={`pure-u-3-4 ${styles.landingComponents}`}>
+                  <SearchFieldsContainer/>
                 </div>
               </div>
             </div>

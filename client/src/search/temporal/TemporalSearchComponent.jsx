@@ -15,7 +15,7 @@ const TemporalSearch = ({onChange, currentDate}) => {
     <DateField
         key='start'
         updateOnOk
-        dateFormat="YYYY-MM-DD HH:mm"
+        dateFormat="YYYY-MM-DD"
         defaultValue=""
         onChange={(dateString)=>{formatAndEmit(dateString, DateRange.START_DATE)}}
     >
@@ -27,7 +27,7 @@ const TemporalSearch = ({onChange, currentDate}) => {
     <DateField
         key='end'
         updateOnOk
-        dateFormat="YYYY-MM-DD HH:mm"
+        dateFormat="YYYY-MM-DD"
         defaultValue=""
         onChange={(dateString)=>{formatAndEmit(dateString, DateRange.END_DATE)}}
     >
