@@ -8,35 +8,36 @@
   margin: 0 auto;
 }
 
+.bottomBorder {
+  border-bottom: solid $color-gray 5px;
+}
+
 .panel {
   max-width: 90%;
   margin: 5px auto;
 }
 
-.bottomBorder {
-  border-bottom: solid $color-gray 2px;
+.logSty img {
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
+
 .appbar {
   clear: both;
   display: flex;
   justify-content: space-between;
   top: 24px;
-  height: 140px;
+  height: 210px;
   width: 100%;
 }
 
-.logoBox {
-  margin: 0px 10px;
-}
+/*.logoBox {*/
+  /*margin: 0px 10px;*/
+/*}*/
 
 .logo {
   height: 90px;
   float: left;
-}
-
-.logSty img {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
 }
 
 .logSty a {
@@ -88,11 +89,11 @@
 }
 
 .orgName {
-  font-size: 2vw;
+  font-size: 1.5vw;
 }
 
 .deptName {
-  font-size: 1vw;
+  font-size: 0.8vw;
 }
 
 .breadCrumbs {
@@ -101,6 +102,61 @@
   a, a:visited, a:hover, a:active {
     color: inherit;
   }
+}
+
+.landingComponents {
+  /*margin: 1em auto;*/
+  position: relative;
+  color: black;
+  /*background: rgba(0, 0, 0, 0.7);*/
+  filter: alpha(opacity=30); /* For IE8 and earlier */
+  /*height: 100px;*/
+  /*width: 400px;*/
+}
+
+.searchFields {
+  color: black;
+  margin: 1.5em 1em 1em 1em;
+  position: relative;
+  font-size: 2em;
+  width: 40%;
+  height: 1.8em;
+  display: inline-block;
+}
+
+.mapIcon {
+  background: url('../../img/mapIcon.png');
+  width: 10px;
+}
+
+.searchButton {
+  background-color: $color-success;
+}
+
+.temporalBox {
+  display: inline-block;
+  /*margin: 2em;*/
+  margin-right: 2em;
+
+}
+
+.mapContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.mapContent {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-top: 2em;
+  margin-left: -35em;
+}
+
+.dropDown {
+  padding: 10px 0 0 0;
+  display: inline-block;
 }
 
 .results {
@@ -124,4 +180,12 @@
   display: inline-block;
   top: 24px;
   bottom: 24px;
+}
+
+.landingButton {
+  color: white;
+  text-shadow: 0 0 5px black;
+  background-color: $color-primary;
+  font-weight: bold;
+  margin-right: 2em;
 }

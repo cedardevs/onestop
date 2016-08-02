@@ -1,13 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import TextSearchField from '../search/TextSearchFieldComponent'
 import TemporalContainer from '../search/temporal/TemporalContainer'
 import MapContainer from '../search/map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
-import styles from './landing.css'
+import TextSearchField from '../search/TextSearchFieldComponent'
+
+import styles from './root.css'
 
 
-class LandingComponent extends React.Component {
+class SearchFieldsComponent extends React.Component {
   constructor(props) {
     super(props)
     this.submit = props.submit
@@ -48,10 +49,25 @@ class LandingComponent extends React.Component {
   }
 
   render() {
-    return <div>
-
+    return<div className={`pure-form`}>
+        <div className={styles.searchFields}>
+          <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery} value={this.props.queryString}/>
+        </div>
+        <div className={styles.temporalBox}>
+          <TemporalContainer />
+        </div>
+        <button id="mapButton" className={`pure-button ${styles.mapButton} ${styles.landingButton}`}
+                   onClick={this.toggleMap}>Map</button>
+        <ToggleDisplay show={this.state.showMap}>
+          <div className={styles.mapContainer}>
+            <span className={styles.mapContent}>
+              <MapContainer updated={this.state.showMap} ref='mapComponent' />
+            </span>
+          </div>
+        </ToggleDisplay>
+        <button className={`pure-button ${styles.landingButton} ${styles.searchButton}`} onClick={this.submit}>Search</button>
       </div>
   }
 }
 
-export default LandingComponent
+export default SearchFieldsComponent
