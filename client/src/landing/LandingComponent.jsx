@@ -27,7 +27,7 @@ class LandingComponent extends React.Component {
       '//placehold.it/700x500/ffffff/c0392b/&text=trending5'
     ]
     const mapToSliderItem = (url, i) => {
-      return <img key={i} src={url} className={`${styles.sliderImg}`}/>
+      return <img key={i} src={url} className={`${styles.carouselImg}`}/>
     }
     featured = featured.map(mapToSliderItem)
     trending = trending.map(mapToSliderItem)
@@ -39,10 +39,28 @@ class LandingComponent extends React.Component {
       slidesToScroll: 1,
     }
 
+    let topics = [
+      {title: 'Economy', icon: 'money'},
+      {title: 'Climate', icon: 'globe'},
+      {title: 'Safety', icon: 'medkit'},
+      {title: 'Weather', icon: 'cloud'},
+      {title: 'Oceans', icon: 'anchor'},
+      {title: 'Air', icon: 'plane'},
+      {title: 'Solar', icon: 'sun-o'},
+      {title: 'Space', icon: 'rocket'}
+    ]
+    topics = topics.map((topic, i) => {
+      return <div key={i} className={`${styles.topicItem}`}>
+        <i className={`fa fa-5x fa-${topic.icon}`} aria-hidden="true"/>
+        <h3>{topic.title}</h3>
+      </div>
+    })
+
     return <div className={`pure-g`}>
       <div className={`pure-u-1`}>
-        <div className={`${styles.carouselContainer}`}>
-          <i className="fa fa-anchor fa-5x" aria-hidden="true"/>
+        <div className={`${styles.topicContainer}`}>
+          <h2>Search by Topic:</h2>
+          {topics}
         </div>
       </div>
       <div className={`pure-u-1 pure-u-md-1-2`}>

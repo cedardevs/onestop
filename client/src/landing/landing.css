@@ -61,10 +61,29 @@
   display: inline-block;
 }
 
+.topicContainer {
+  padding: 2em;
+  text-align: center;
+
+  h1, h2, h3, h4, h5 {
+    text-align: left;
+  }
+}
+
+.topicItem {
+  display: inline-block;
+  margin-right: 3em;
+
+  h1, h2, h3, h4, h5 {
+    text-align: center;
+    margin-bottom: 0;
+  }
+}
+
 .carouselContainer {
   padding: 2em;
 }
 
-.sliderImg {
+.carouselImg {
   max-width: 100%;
 }
