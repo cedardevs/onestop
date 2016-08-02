@@ -86,6 +86,12 @@ class LandingComponent extends React.Component {
       </div>
     </div>
   }
+
+  componentDidMount() {
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 0);
+  }
 }
 
 export default LandingComponent
