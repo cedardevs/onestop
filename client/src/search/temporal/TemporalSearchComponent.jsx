@@ -21,6 +21,7 @@ function YearMonthForm({ date, onChange }) {
   const handleChange = function handleChange(e) {
     let { year, month } = e.target.form
     onChange(new Date(year.value, month.value))
+    console.log("Year: " + year.value + ", Month: " + month.value)
   }
 
   return (
@@ -63,7 +64,22 @@ class TemporalSearch extends React.Component {
   handleDayClick(e, day) {
     const range = DateUtils.addDayToRange(day, this.state)
     this.setState(range)
-    console.log("Current range: " + JSON.stringify(range))
+  }
+
+  handleInputChange(e) {
+    const { value } = e.target
+    if (moment(value, 'L', true).isValid()) {
+      this.setState({
+        month: moment(value, 'L').toDate(),
+        value,
+      }, this.showCurrentDate)
+    } else {
+      this.setState({ value }, this.showCurrentDate)
+    }
+  }
+
+  showCurrentDate() {
+    this.refs.daypicker.showMonth(this.state.month)
   }
 
   handleResetClick(e) {
@@ -77,7 +93,27 @@ class TemporalSearch extends React.Component {
   render() {
     const { from, to } = this.state
     return (
-      <div className="RangeExample">
+      <div>
+        <p>
+          <input
+            ref="input"
+            type="text"
+            value={ this.state.from }
+            placeholder="YYYY-MM-DD"
+            onChange={ this.handleInputChange }
+            onFocus={ this.showCurrentDate }
+          />
+        </p>
+        <p>
+          <input
+            ref="input"
+            type="text"
+            value={ this.state.to }
+            placeholder="YYYY-MM-DD"
+            onChange={ this.handleInputChange }
+            onFocus={ this.showCurrentDate }
+          />
+        </p>
         <DayPicker className={styles.dateComponent}
           ref="daypicker"
           onDayClick={ this.handleDayClick }
