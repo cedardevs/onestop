@@ -93,27 +93,29 @@ class TemporalSearch extends React.Component {
   render() {
     const { from, to } = this.state
     return (
-      <div>
-        <p>
-          <input
-            ref="input"
-            type="text"
-            value={ this.state.from }
-            placeholder="YYYY-MM-DD"
-            onChange={ this.handleInputChange }
-            onFocus={ this.showCurrentDate }
-          />
-        </p>
-        <p>
-          <input
-            ref="input"
-            type="text"
-            value={ this.state.to }
-            placeholder="YYYY-MM-DD"
-            onChange={ this.handleInputChange }
-            onFocus={ this.showCurrentDate }
-          />
-        </p>
+      <div className={styles.temporalContainer}>
+        <div>
+          <p className={`${styles.dateInputs} ${styles.dateInputLeft}`}>
+            <input
+              ref="input"
+              type="text"
+              value={ this.state.from }
+              placeholder="YYYY-MM-DD"
+              onChange={ this.handleInputChange }
+              onFocus={ this.showCurrentDate }
+            />
+          </p>
+          <p className={`${styles.dateInputs} ${styles.dateInputRight}`}>
+            <input
+              ref="input"
+              type="text"
+              value={ this.state.to }
+              placeholder="YYYY-MM-DD"
+              onChange={ this.handleInputChange }
+              onFocus={ this.showCurrentDate }
+            />
+          </p>
+        </div>
         <DayPicker className={styles.dateComponent}
           ref="daypicker"
           onDayClick={ this.handleDayClick }
