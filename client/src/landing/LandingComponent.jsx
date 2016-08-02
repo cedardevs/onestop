@@ -1,6 +1,7 @@
 import React from 'react'
 import Carousel from 'nuka-carousel'
 import styles from './landing.css'
+import 'font-awesome/css/font-awesome.css'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -39,6 +40,11 @@ class LandingComponent extends React.Component {
     }
 
     return <div className={`pure-g`}>
+      <div className={`pure-u-1`}>
+        <div className={`${styles.carouselContainer}`}>
+          <i className="fa fa-anchor fa-5x" aria-hidden="true"/>
+        </div>
+      </div>
       <div className={`pure-u-1 pure-u-md-1-2`}>
         <div className={`${styles.carouselContainer}`}>
           <h2>Featured Data Sets:</h2>
