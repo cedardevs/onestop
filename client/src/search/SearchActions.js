@@ -61,8 +61,7 @@ export const triggerSearch = (queryParams, testing) => {
 
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
-        .then((json) => { setTimeout(() => { dispatch(completeSearch(assignResourcesToMap(json.data))) }, 1000) })
-        // .then(json => dispatch(completeSearch(assignResourcesToMap(json.data)))) // ^^ Added a 1-second delay for demo purposes
+        .then(json => dispatch(completeSearch(assignResourcesToMap(json.data))))
   }
 }
 
