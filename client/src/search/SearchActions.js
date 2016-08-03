@@ -40,6 +40,14 @@ export const triggerSearch = (queryParams, testing) => {
 
     dispatch(startSearch())
 
+    // Append query to URL
+    let parsedSearchBody = JSON.parse(searchBody)
+    for (const key in parsedSearchBody){
+      parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
+    }
+    const urlQueryString = queryString.stringify(parsedSearchBody)
+    dispatch(push('results?' + urlQueryString))
+
     let apiRoot = "/api/search"
     if(testing) { apiRoot = testing + apiRoot }
     const fetchParams = {
@@ -50,18 +58,11 @@ export const triggerSearch = (queryParams, testing) => {
       },
       body: searchBody
     }
-    // Append query to URL
-    let parsedSearchBody = JSON.parse(searchBody)
-    for (const key in parsedSearchBody){
-      parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
-    }
-    const urlQueryString = queryString.stringify(parsedSearchBody)
 
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
         .then((json) => { setTimeout(() => { dispatch(completeSearch(assignResourcesToMap(json.data))) }, 1000) })
-        //.then(json => dispatch(completeSearch(assignResourcesToMap(json.data)))) // ^^ Added a 1-second delay for demo purposes
-        .then(() => dispatch(push('results?' + urlQueryString)))
+        // .then(json => dispatch(completeSearch(assignResourcesToMap(json.data)))) // ^^ Added a 1-second delay for demo purposes
   }
 }
 

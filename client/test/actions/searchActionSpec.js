@@ -56,11 +56,11 @@ describe('The search action', () => {
 
     const expectedActions = [
       {type: module.SEARCH},
-      {type: module.SEARCH_COMPLETE, items: expectedItems},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
         args: ['results?filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
-      }
+      },
+      {type: module.SEARCH_COMPLETE, items: expectedItems}
     ]
 
     const store = mockStore(Immutable.fromJS(testState))
@@ -107,11 +107,11 @@ describe('The search action', () => {
 
     const expectedActions = [
       {type: module.SEARCH},
-      {type: module.SEARCH_COMPLETE, items: expectedItems},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
         args: ['results?filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
-      }
+      },
+      {type: module.SEARCH_COMPLETE, items: expectedItems}
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
