@@ -3,10 +3,8 @@ const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 import React from 'react'
 import DetailContainer from '../detail/DetailContainer'
 import Breadcrumbs from 'react-breadcrumbs'
-//import FacetContainer from '../facet/FacetContainer'
 import Favicon from 'react-favicon'
 import Footer from './Footer.jsx'
-import Header from './Header.jsx'
 import AlphaBanner from './AlphaBanner.jsx'
 import styles from './root.css'
 
@@ -34,13 +32,13 @@ class RootComponent extends React.Component {
           <div className={styles.bottomBorder}>
             <div className={styles.panel}>
               <div className={'pure-g'}>
-                <div className={`pure-u-5-24 ${styles.logSty}`}>
+                <div className={`pure-u-1-6 ${styles.logSty}`}>
                     <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
                     <a className={styles.orgName}>National Oceanic and Atmospheric Administration</a>
                     <a className={styles.deptName} href="//www.commerce.gov">U.S. Department of Commerce</a>
                 </div>
-                <div className={`pure-u-3-4 ${styles.landingComponents}`}>
-                  <SearchFieldsContainer/>
+                <div  className={`pure-u-5-6 ${styles.landingComponents}`}>
+                  <SearchFieldsContainer />
                 </div>
               </div>
             </div>

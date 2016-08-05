@@ -53,14 +53,14 @@
 }
 
 .logSty:hover img {
-  -webkit-transform: translateX(-70px);
-  transform: translateX(-70px);
+  -webkit-transform: translateX(0px);
+  transform: translateX(0px);
 }
 
 .logSty:hover a {
   opacity: 1;
-  -webkit-transform: translateX(-50px);
-  transform: translateX(-50px);
+  -webkit-transform: translateX(0px);
+  transform: translateX(0px);
 }
 
 .orgBox {
@@ -89,11 +89,11 @@
 }
 
 .orgName {
-  font-size: 1.5vw;
+  font-size: 1.2vw;
 }
 
 .deptName {
-  font-size: 0.8vw;
+  font-size: 0.5vw;
 }
 
 .breadCrumbs {
@@ -112,6 +112,7 @@
   filter: alpha(opacity=30); /* For IE8 and earlier */
   /*height: 100px;*/
   /*width: 400px;*/
+  /*display: inline;*/
 }
 
 .searchFields {
@@ -120,7 +121,7 @@
   position: relative;
   font-size: 2em;
   width: 40%;
-  height: 1.8em;
+  height: 1.8vm;
   display: inline-block;
 }
 
