@@ -31,16 +31,12 @@
   width: 100%;
 }
 
-/*.logoBox {*/
-  /*margin: 0px 10px;*/
-/*}*/
-
 .logo {
   height: 100px;
   float: left;
 }
 
-.logSty a, .searchHover span{
+.logSty a {
   position: relative;
 }
 
@@ -105,14 +101,9 @@
 }
 
 .landingComponents {
-  /*margin: 1em auto;*/
   position: relative;
   color: black;
-  /*background: rgba(0, 0, 0, 0.7);*/
   filter: alpha(opacity=30); /* For IE8 and earlier */
-  /*height: 100px;*/
-  /*width: 400px;*/
-  /*display: inline;*/
 }
 
 .searchFields {
@@ -130,13 +121,8 @@
   width: 10px;
 }
 
-.searchButton {
-  background-color: $color-success;
-}
-
 .temporalBox {
   display: inline-block;
-  /*margin: 2em;*/
   margin-right: 2em;
 
 }
@@ -152,7 +138,7 @@
   top: 100%;
   left: 50%;
   margin-top: 2em;
-  margin-left: -35em;
+  margin-left: -45em;
 }
 
 .dropDown {

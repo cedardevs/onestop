@@ -68,7 +68,7 @@ class SearchFieldsComponent extends React.Component {
             </span>
           </div>
         </ToggleDisplay>
-        <button className={`pure-button ${styles.landingButton} ${styles.searchButton}`} onClick={this.submit}>Search</button>
+        <button className={`pure-button ${styles.landingButton}`} onClick={this.submit}>Search</button>
       </span>
     </div>
   }
