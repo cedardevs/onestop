@@ -99,8 +99,11 @@ module.exports = {
       sourceMap: false
     }),
     new HtmlWebpackPlugin({
-      title: 'NOAA OneStop'
+      title: 'CIRES OneStop Demo'
     }),
+/*    new HtmlWebpackPlugin({
+      title: 'NOAA OneStop'
+    }),*/
     new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
   ]
 }

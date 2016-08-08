@@ -74,11 +74,11 @@
 }
 
 .ciresLogo {
-  background-image: url('../../img/cireslogo-cc.png');
+  background-image: url('../../img/ciresLogo.png');
   background-size: contain;
   background-repeat: no-repeat;
-  width: 150px;
-  height: 75px;
+  width: 273px;
+  height: 48px;
   display: inline-block;
   margin: 5px;
   vertical-align: middle;

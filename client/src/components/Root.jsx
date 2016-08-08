@@ -29,7 +29,8 @@ class RootComponent extends React.Component {
         this.breadcrumbs = undefined
       }
         return <div>
-          <Favicon url={["//www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>
+          <Favicon url={["//cires1.colorado.edu/favicon.ico"]}/>
+          {/*<Favicon url={["//www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>*/}
           <AlphaBanner/>
           <DetailContainer/>
           <div className={styles.bottomBorder}>
