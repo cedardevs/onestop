@@ -1,14 +1,8 @@
 @import '../../style/style.css';
 
-.landingComponents {
-  margin: 10em auto;
-  position: relative;
-  color: black;
-  background: rgba(0, 0, 0, 0.7);
-  filter: alpha(opacity=30); /* For IE8 and earlier */
-  height: 210px;
-  width: 600px;
-}
+.topicContainer {
+  padding: 2em;
+  text-align: center;
 
 .landingButton {
   margin-top: 0;
@@ -22,42 +16,29 @@
 .mapIcon {
   background: url('../../img/mapIcon.png');
   width: 10px;
+  h1, h2, h3, h4, h5 {
+    text-align: left;
+  }
 }
 
-.searchButton {
-  background-color: $color-success;
-}
-
-.temporalBox {
+.topicItem {
   display: inline-block;
-  margin: 2em;
+  margin-right: 3em;
+
+  h1, h2, h3, h4, h5 {
+    text-align: center;
+    margin-bottom: 0;
+  }
+  &:hover {
+    background-color: #0a4595;
+    border-radius: 5em;
+  }
 }
 
-.mapContainer {
-  position: relative;
-  display: inline-block;
+.carouselContainer {
+  padding: 2em;
 }
 
-.mapContent {
-  position: absolute;
-  z-index: 1;
-  top: 100%;
-  left: 50%;
-  margin-top: 2em;
-  margin-left: -35em;
-}
-
-.searchFields {
-  color: black;
-  margin: 2em 1em 1em 1em;
-  position: relative;
-  font-size: 2em;
-  width: 90%;
-  height: 2em;
-  display: inline-block;
-}
-
-.dropDown {
-  padding: 10px 0 0 0;
-  display: inline-block;
+.carouselImg {
+  max-width: 100%;
 }

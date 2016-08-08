@@ -8,7 +8,7 @@ task deploy {
           .command(
             'ansible-playbook',
             'deploy-onestop.yml',
-            '--inventory', './hosts',
+            '--inventory', "${projectDir}/hosts",
             '--user', 'root',
           )
           .directory(projectDir)

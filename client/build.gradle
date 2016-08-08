@@ -45,7 +45,7 @@ task tarResults(type: Tar) {
 
 assemble.dependsOn 'tarResults'
 
-task npm_test {
+npm_test {
     dependsOn 'compile'
     sourceDirs.each {
         inputs.sourceDir(it)

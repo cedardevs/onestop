@@ -64,7 +64,7 @@
      dest: /usr/share/nginx/html
      owner: nginx
      group: nginx
-     mode: a=r
+     mode: o=rx
 
 - name: Delete temporary client tarball
   file:

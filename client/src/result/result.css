@@ -9,9 +9,7 @@ $cardWidth: 300px;
 }
 .spinner {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding-top: 24;
+    justify-content: center;
 }
 
 .list {

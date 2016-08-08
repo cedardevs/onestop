@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import Result from './ResultComponent'
 import { CardStatus } from '../detail/DetailActions'
 import styles from './result.css'
+import 'font-awesome/css/font-awesome.css'
 
 const ResultsList = ({results, loading, onCardClick}) => {
   const cards = []
@@ -19,9 +20,20 @@ const ResultsList = ({results, loading, onCardClick}) => {
       />
     </div>)
   })
-  return <div className={`pure-g ${styles.gridContainer}`}>
-    {cards}
-  </div>
+
+  let display = null
+  if(loading) {
+    display =
+        <div className={`pure-u-1`}>
+          <div className={`${styles.spinner}`}>
+            <i className="fa fa-anchor fa-spin fa-5x" aria-hidden="true"/>
+          </div>
+        </div>
+  } else {
+    display = <div className={`pure-g ${styles.gridContainer}`}>{cards}</div>
+  }
+
+  return display
 }
 
 ResultsList.propTypes = {

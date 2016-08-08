@@ -8,42 +8,39 @@
   margin: 0 auto;
 }
 
+.bottomBorder {
+  border-bottom: solid $color-gray 5px;
+}
+
 .panel {
   max-width: 90%;
   margin: 5px auto;
 }
 
-.bottomBorder {
-  border-bottom: solid $color-gray 2px;
+.logSty img, #searchbox.searchHover{
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
+
 .appbar {
   clear: both;
   display: flex;
   justify-content: space-between;
   top: 24px;
-  height: 140px;
+  height: 210px;
   width: 100%;
 }
 
-.logoBox {
-  margin: 0px 10px;
-}
-
 .logo {
-  height: 90px;
+  height: 100px;
   float: left;
-}
-
-.logSty img {
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
 }
 
 .logSty a {
   position: relative;
 }
 
-.logSty a {
+.logSty a, .searchHover span{
   opacity: 0;
   -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
   transition: opacity 0.35s, transform 0.35s;
@@ -51,15 +48,15 @@
   transform: translateX(10px);
 }
 
-.logSty:hover img {
-  -webkit-transform: translateX(-70px);
-  transform: translateX(-70px);
+.logSty:hover img, #searchbox.searchHover:hover{
+  -webkit-transform: translateX(0px);
+  transform: translateX(0px);
 }
 
-.logSty:hover a {
+.logSty:hover a, .searchHover:hover span{
   opacity: 1;
-  -webkit-transform: translateX(-50px);
-  transform: translateX(-50px);
+  -webkit-transform: translateX(0px);
+  transform: translateX(0px);
 }
 
 .orgBox {
@@ -88,11 +85,11 @@
 }
 
 .orgName {
-  font-size: 2vw;
+  font-size: 1.2vw;
 }
 
 .deptName {
-  font-size: 1vw;
+  font-size: 0.5vw;
 }
 
 .breadCrumbs {
@@ -101,6 +98,52 @@
   a, a:visited, a:hover, a:active {
     color: inherit;
   }
+}
+
+.landingComponents {
+  position: relative;
+  color: black;
+  filter: alpha(opacity=30); /* For IE8 and earlier */
+}
+
+.searchFields {
+  color: black;
+  margin: 1.5em 1em 1em 1em;
+  position: relative;
+  font-size: 2em;
+  width: 40%;
+  height: 1.8vm;
+  display: inline-block;
+}
+
+.mapIcon {
+  background: url('../../img/mapIcon.png');
+  width: 10px;
+}
+
+.temporalBox {
+  display: inline-block;
+  margin-right: 2em;
+
+}
+
+.mapContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.mapContent {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-top: 2em;
+  margin-left: -45em;
+}
+
+.dropDown {
+  padding: 10px 0 0 0;
+  display: inline-block;
 }
 
 .results {
@@ -124,4 +167,12 @@
   display: inline-block;
   top: 24px;
   bottom: 24px;
+}
+
+.landingButton {
+  color: white;
+  text-shadow: 0 0 5px black;
+  background-color: $color-primary;
+  font-weight: bold;
+  margin-right: 2em;
 }

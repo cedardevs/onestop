@@ -13,8 +13,7 @@ export const initialState = Immutable.fromJS({
 })
 
 export const search = (state = initialState, action) => {
-
-  let newState = {}
+  let newState
 
   switch (action.type) {
     case SEARCH:
@@ -74,7 +73,11 @@ const assembleRequestBody = (state) => {
     filters.push(dateTime(startDateTime, endDateTime))
   }
 
-  return JSON.stringify({queries, filters})
+  if(queries.length === 0 && filters.length === 0) {
+    return ''
+  } else {
+    return JSON.stringify({queries, filters})
+  }
 }
 
 const dateTime = (startDateTime, endDateTime) => {

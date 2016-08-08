@@ -103,7 +103,7 @@ class Detail extends React.Component {
 
   renderKeyword(keyword, index) {
     return <li className={'pure-u'} key={index}>
-      <a className={`pure-button button-secondary`}
+      <a className={`pure-button ${styles['button-secondary']}`}
          onClick={() => this.props.textSearch(keyword)}>
         {keyword}
       </a>

@@ -1,73 +1,96 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
-import TextSearchField from '../search/TextSearchFieldComponent'
-import TemporalContainer from '../search/temporal/TemporalContainer'
-import MapContainer from '../search/map/MapContainer'
-import ToggleDisplay from 'react-toggle-display'
+import Carousel from 'nuka-carousel'
 import styles from './landing.css'
-
+import 'font-awesome/css/font-awesome.css'
 
 class LandingComponent extends React.Component {
   constructor(props) {
     super(props)
     this.submit = props.submit
     this.updateQuery = props.updateQuery
-    this.toggleMap = this.toggleMap.bind(this)
-    this.handleClick = this.handleClick.bind(this)
-    this.state = {
-      showMap: false
-    }
+    this.state = {}
   }
 
-  handleClick(e) {
-    // Close map when user clicks outside of it
-    var component = ReactDOM.findDOMNode(this.refs.mapComponent)
-    if (this.state.showMap && !component.contains(e.target) && e.srcElement.id !== 'mapButton') {
-      this.toggleMap()
-    }
-  }
-
-  componentWillMount() {
-    document.addEventListener('click', this.handleClick, false);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('click', this.handleClick, false);
-  }
-
-  toggleMap() {
-    this.state.showMap = !this.state.showMap
-    this.forceUpdate()
-  }
-
-  onClickOut(e) {
-    if (this.state.showMap) {
-      this.state.showMap = false //Close map when clicked anywhere outside of it
-      this.forceUpdate()
-    }
+  search(query) {
+    this.updateQuery(query);
+    this.submit(query);
   }
 
   render() {
-    return <div className={styles.landingComponents}>
-        <form className={`pure-form`}>
-          <div className={styles.searchFields}>
-            <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery} value={this.props.queryString}/>
-          </div>
-        </form>
-        <div className={styles.temporalBox}>
-          <TemporalContainer />
-        </div>
-        <button id="mapButton" className={`pure-button ${styles.mapButton} ${styles.landingButton}`}
-        onClick={this.toggleMap}>Map</button>
-        <ToggleDisplay show={this.state.showMap}>
-          <div className={styles.mapContainer}>
-            <span className={styles.mapContent}>
-              <MapContainer updated={this.state.showMap} ref='mapComponent' />
-            </span>
-          </div>
-        </ToggleDisplay>
-        <button className={`pure-button ${styles.landingButton} ${styles.searchButton}`} onClick={this.submit}>Search</button>
+    let featured = [
+      '//placehold.it/700x500/ffffff/c0392b/&text=featured1',
+      '//placehold.it/700x500/ffffff/c0392b/&text=featured2',
+      '//placehold.it/700x500/ffffff/c0392b/&text=featured3',
+      '//placehold.it/700x500/ffffff/c0392b/&text=featured4',
+      '//placehold.it/700x500/ffffff/c0392b/&text=featured5'
+    ]
+    let trending = [
+      '//placehold.it/700x500/ffffff/c0392b/&text=trending1',
+      '//placehold.it/700x500/ffffff/c0392b/&text=trending2',
+      '//placehold.it/700x500/ffffff/c0392b/&text=trending3',
+      '//placehold.it/700x500/ffffff/c0392b/&text=trending4',
+      '//placehold.it/700x500/ffffff/c0392b/&text=trending5'
+    ]
+    const mapToSliderItem = (url, i) => {
+      return <img key={i} src={url} className={`${styles.carouselImg}`}/>
+    }
+    featured = featured.map(mapToSliderItem)
+    trending = trending.map(mapToSliderItem)
+
+    const sliderSettings = {
+      cellAlign: 'center',
+      dragging: true,
+      slidesToShow: 1,
+      slidesToScroll: 1,
+    }
+
+    let topics = [
+      {title: 'Economy', icon: 'money'},
+      {title: 'Climate', icon: 'globe'},
+      {title: 'Safety', icon: 'medkit'},
+      {title: 'Weather', icon: 'cloud'},
+      {title: 'Oceans', icon: 'anchor'},
+      {title: 'Air', icon: 'plane'},
+      {title: 'Solar', icon: 'sun-o'},
+      {title: 'Space', icon: 'rocket'}
+    ]
+    topics = topics.map((topic, i) => {
+      return <div key={i} className={`${styles.topicItem}`} onClick={()=>this.search(topic.title.toLowerCase())}>
+        <i className={`fa fa-5x fa-${topic.icon}`} aria-hidden="true"/>
+        <h3>{topic.title}</h3>
       </div>
+    })
+
+    return <div className={`pure-g`}>
+      <div className={`pure-u-1`}>
+        <div className={`${styles.topicContainer}`}>
+          <h2>Search by Topic:</h2>
+          {topics}
+        </div>
+      </div>
+      <div className={`pure-u-1 pure-u-md-1-2`}>
+        <div className={`${styles.carouselContainer}`}>
+          <h2>Featured Data Sets:</h2>
+          <Carousel {...sliderSettings}>
+            {featured}
+          </Carousel>
+        </div>
+      </div>
+      <div className={`pure-u-1 pure-u-md-1-2`}>
+        <div className={`${styles.carouselContainer}`}>
+          <h2>Trending Data Sets:</h2>
+          <Carousel {...sliderSettings}>
+            {trending}
+          </Carousel>
+        </div>
+      </div>
+    </div>
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 0);
   }
 }
 
