@@ -49,7 +49,7 @@ class SearchFieldsComponent extends React.Component {
   }
 
   render() {
-    return<div className={`pure-form ${styles.searchMapSpace}`}>
+    return<div className={`pure-form `}>
         <div id ="searchbox" className={` ${styles.searchFields}`}>
           <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery}
                            value={this.props.queryString}

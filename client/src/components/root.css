@@ -17,7 +17,7 @@
   margin: 5px auto;
 }
 
-.logSty img, #searchbox.searchMapSpace{
+.logSty img, #searchbox.searchHover{
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
@@ -40,11 +40,11 @@
   float: left;
 }
 
-.logSty a, .searchMapSpace span{
+.logSty a, .searchHover span{
   position: relative;
 }
 
-.logSty a, .searchMapSpace span{
+.logSty a, .searchHover span{
   opacity: 0;
   -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
   transition: opacity 0.35s, transform 0.35s;
@@ -52,12 +52,12 @@
   transform: translateX(10px);
 }
 
-.logSty:hover img, #searchbox.searchMapSpace:hover{
+.logSty:hover img, #searchbox.searchHover:hover{
   -webkit-transform: translateX(0px);
   transform: translateX(0px);
 }
 
-.logSty:hover a, .searchMapSpace:hover span{
+.logSty:hover a, .searchHover:hover span{
   opacity: 1;
   -webkit-transform: translateX(0px);
   transform: translateX(0px);
