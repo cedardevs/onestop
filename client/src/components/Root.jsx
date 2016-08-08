@@ -7,7 +7,6 @@ import Favicon from 'react-favicon'
 import Footer from './Footer.jsx'
 import AlphaBanner from './AlphaBanner.jsx'
 import styles from './root.css'
-
 import SearchFieldsContainer from './SearchFieldsContainer'
 
 class RootComponent extends React.Component {
