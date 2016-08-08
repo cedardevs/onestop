@@ -1,4 +1,5 @@
-const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
+//const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
+const logoPath = require('../../img/cireslogo-cc.png')
 
 import React from 'react'
 import DetailContainer from '../detail/DetailContainer'
@@ -35,9 +36,12 @@ class RootComponent extends React.Component {
             <div className={styles.panel}>
               <div className={'pure-g'}>
                 <div className={`pure-u-5-24 ${styles.logSty}`}>
-                    <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
+                  <img className={styles.logo} id='logo' src={logoPath} alt="CIRES Logo"/>
+                  <a className={styles.orgName}>CIRES-NCEI OneStop</a>
+                  <a className={styles.deptName}>DEMONSTRATION SITE</a>
+{/*                    <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
                     <a className={styles.orgName}>National Oceanic and Atmospheric Administration</a>
-                    <a className={styles.deptName} href="//www.commerce.gov">U.S. Department of Commerce</a>
+                    <a className={styles.deptName} href="//www.commerce.gov">U.S. Department of Commerce</a>*/}
                 </div>
                 <div className={`pure-u-3-4 ${styles.landingComponents}`}>
                   <SearchFieldsContainer/>
