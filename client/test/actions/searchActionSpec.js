@@ -5,7 +5,7 @@ import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import Immutable from 'immutable'
 import nock from 'nock'
-import reducer from '../../src/reducers/main'
+import reducer from '../../src/reducer'
 
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)

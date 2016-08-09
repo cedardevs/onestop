@@ -1,6 +1,6 @@
 import '../specHelper'
 import Immutable from 'immutable'
-import reducer from '../../src/reducers/main'
+import reducer from '../../src/reducer'
 
 
 describe('The main reducer', function() {
