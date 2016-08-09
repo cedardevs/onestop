@@ -24,7 +24,6 @@ class RootComponent extends React.Component {
             params={this.props.params}
         />
         searchlabel = 'searchHover'
-        console.log(searchlabel)
     } else {
         this.breadcrumbs = undefined
         searchlabel =  "searchMapSpace"

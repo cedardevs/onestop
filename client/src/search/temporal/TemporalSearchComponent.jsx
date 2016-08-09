@@ -4,48 +4,13 @@ import DayPicker, { DateUtils } from 'react-day-picker'
 import styles from './temporal.css'
 import ToggleDisplay from 'react-toggle-display'
 import moment from 'moment'
-
-//const TemporalSearch = ({onChange, currentDate}) => {
+import YearMonthForm from './YearMonthForm'
 
 const currentYear = (new Date()).getFullYear()
 const fromMonth = new Date(currentYear - 100, 0, 1, 0, 0)
 const toMonth = new Date()
-// Component will receive date, locale
-function YearMonthForm({ date, onChange }) {
-  const months = moment.months()
 
-  const years = []
-  for (let i = fromMonth.getFullYear(); i <= toMonth.getFullYear(); i++) {
-    years.push(i)
-  }
-
-  const handleChange = function handleChange(e) {
-    let { year, month } = e.target.form
-    onChange(new Date(year.value, month.value))
-    console.log("Year: " + year.value + ", Month: " + month.value)
-  }
-
-
-  return (
-    <form className="DayPicker-Caption">
-      <select name="month" onChange={ handleChange } value={ date.getMonth() }>
-        { months.map((month, i) =>
-          <option key={ i } value={ i }>
-            { month }
-          </option>)
-        }
-      </select>
-      <select name="year" onChange={ handleChange } value={ date.getFullYear() }>
-        { years.map((year, i) =>
-          <option key={ i } value={ year }>
-            { year }
-          </option>)
-        }
-      </select>
-    </form>
-  )
-}
-
+//const TemporalSearch = ({onChange, currentDate}) => {
 class TemporalSearch extends React.Component {
   constructor(props) {
     super(props)
@@ -53,10 +18,10 @@ class TemporalSearch extends React.Component {
     this.handleResetClick = this.handleResetClick.bind(this)
     this.showCurrentDate = this.showCurrentDate.bind(this)
     this.render = this.render.bind(this)
-    this.state = this.getInitialState()
+    this.state = this.initialState()
   }
 
-  getInitialState() {
+  initialState() {
     return {
       from: null,
       to: null,
@@ -91,7 +56,7 @@ class TemporalSearch extends React.Component {
     e.preventDefault()
     this.setState({
       from: null,
-      to: null,
+      to: null
     })
   }
 
@@ -133,6 +98,13 @@ class TemporalSearch extends React.Component {
               <YearMonthForm onChange={ initialMonth => this.setState({ initialMonth }) } />
             }
           />
+          <div className={styles.resetSelection}>
+            <a href="#" onClick={ this.handleResetClick }><strong>Reset</strong></a>
+            <p>
+              Start Date: { moment(from).format('L') } <br/> End Date: { moment(to).format('L') }
+              { ' ' }
+            </p>
+          </div>
         </ToggleDisplay>
       </div>
     )

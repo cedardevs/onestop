@@ -2,13 +2,13 @@ import { connect } from 'react-redux'
 import { startDate, endDate, DateRange } from './TemporalActions'
 import TemporalSearch from './TemporalSearchComponent'
 
-const dateStateToProps = (state) => {
+const mapStateToProps = (state) => {
   return {
     currentDate: state.getIn(['search', 'datetime'])
   }
 }
 
-const dateDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch) => {
   return {
     onChange: (text, dateSelected) => {
       if (dateSelected === DateRange.START_DATE){
@@ -21,8 +21,8 @@ const dateDispatchToProps = (dispatch) => {
 }
 
 const TemporalContainer = connect(
-    dateStateToProps,
-    dateDispatchToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(TemporalSearch)
 
 export default TemporalContainer

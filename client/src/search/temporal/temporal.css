@@ -151,3 +151,10 @@
   color: #FFF;
   background-color: #4A90E2;
 }
+
+.resetSelection {
+  color: black;
+  background: white;
+  text-align: center;
+  font-size: 120%;
+}
