@@ -19,34 +19,13 @@ function YearMonthForm({ date, onChange }) {
     years.push(i)
   }
 
-  var startDate = [
-    <DateField
-        key='start'
-        updateOnOk
-        dateFormat="YYYY-MM-DD"
-        defaultValue=""
-        onChange={(dateString)=>{formatAndEmit(dateString, DateRange.START_DATE)}}
-    >
-      <Calendar/>
-    </DateField>
-  ]
   const handleChange = function handleChange(e) {
     let { year, month } = e.target.form
     onChange(new Date(year.value, month.value))
     console.log("Year: " + year.value + ", Month: " + month.value)
   }
 
-  var endDate = [
-    <DateField
-        key='end'
-        updateOnOk
-        dateFormat="YYYY-MM-DD"
-        defaultValue=""
-        onChange={(dateString)=>{formatAndEmit(dateString, DateRange.END_DATE)}}
-    >
-      <Calendar/>
-    </DateField>
-  ]
+
   return (
     <form className="DayPicker-Caption">
       <select name="month" onChange={ handleChange } value={ date.getMonth() }>
