@@ -1,23 +1,23 @@
 import { connect } from 'react-redux'
-import SearchFacet from './SearchComponent'
+import SearchFieldsComponent from './SearchFieldsComponent'
 import { triggerSearch, updateQuery } from './SearchActions'
 
 const mapStateToProps = (state) => {
   return {
-    searchText: state.get('search').get('text')
+    queryString: state.getIn(['search', 'text'])
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     submit: () => dispatch(triggerSearch()),
-    updateQuery: (text) => dispatch(updateQuery(text)),
+    updateQuery: (text) => dispatch(updateQuery(text))
   }
 }
 
-const SearchFacetContainer = connect(
+const SearchFieldsContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(SearchFacet)
+)(SearchFieldsComponent)
 
-export default SearchFacetContainer
+export default SearchFieldsContainer

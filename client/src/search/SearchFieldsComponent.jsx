@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import TemporalContainer from '../search/temporal/TemporalContainer'
-import MapContainer from '../search/map/MapContainer'
+import TemporalContainer from './temporal/TemporalContainer'
+import MapContainer from './map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
-import TextSearchField from '../search/TextSearchFieldComponent'
+import TextSearchField from './TextSearchFieldComponent'
 
-import styles from './root.css'
+import styles from '../root/root.css'
 
 
 class SearchFieldsComponent extends React.Component {

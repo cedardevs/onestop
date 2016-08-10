@@ -1,6 +1,6 @@
 import { syncHistoryWithStore } from 'react-router-redux'
 import { hashHistory } from 'react-router'
-import store from './store.jsx'
+import store from './store.js'
 
 // Create enhanced history object for router
 const createSelectLocationState = () => {

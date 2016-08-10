@@ -1,9 +1,9 @@
 import Immutable from 'immutable'
 import { combineReducers } from 'redux-immutable'
-import search from './../search/SearchReducer'
-import results from './../result/ResultReducer'
-import details from './../detail/DetailReducer'
-import facets from './../facet/FacetReducer'
+import search from './search/SearchReducer'
+import results from './result/ResultReducer'
+import details from './detail/DetailReducer'
+import facets from './facet/FacetReducer'
 import { LOCATION_CHANGE } from 'react-router-redux'
 
 // Routing reducer
