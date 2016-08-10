@@ -1,41 +1,40 @@
 /* DayPicker styles */
 
  .temporalContainer {
-   position: absolute;
     /*width: 280px;*/
    display: inline-block;
+   /*position: relative;*/
 
  }
 
  .dateComponent {
    background: white;
-   /*clear: left;*/
+   clear: left;
  }
 
  .dateInputs {
    display: inline;
  }
+
  .dateInputLeft {
    /*float: left;*/
-   position: relative;
-
    margin-left: 7px;
-
+   display: inline;
+   font-size: 1.3em;
  }
 
  .dateInputRight {
    /*float: center;*/
-   position: relative;
-
    margin-left: 7px;
-
+   display: inline;
+   font-size: 1.3em;
  }
 
 .DayPicker {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  position: relative;
+  position: absolute;
   padding: 1rem 0;
   user-select: none;
 }

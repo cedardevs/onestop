@@ -70,7 +70,7 @@ class TemporalSearch extends React.Component {
     return (
       <div className={styles.temporalContainer}>
         <div>
-          <p className={`${styles.dateInputs} ${styles.dateInputLeft}`}>
+          <div className={styles.dateInputLeft}>
             <input
               ref="input"
               type="text"
@@ -80,8 +80,8 @@ class TemporalSearch extends React.Component {
               onChange={this.emitDate(from, DateRange.START_DATE)}
               onFocus={ this.showCurrentDate }
             />
-          </p>
-          <p className={`${styles.dateInputs} ${styles.dateInputRight}`}>
+          </div>
+          <div className={styles.dateInputRight} >
             <input
               ref="input"
               type="text"
@@ -91,7 +91,7 @@ class TemporalSearch extends React.Component {
               OnChange={this.emitDate(to, DateRange.END_DATE)}
               onFocus={ this.showCurrentDate }
             />
-          </p>
+          </div>
         </div>
         <ToggleDisplay show={this.state.showCalendar}>
           <DayPicker className={styles.dateComponent}
@@ -106,10 +106,6 @@ class TemporalSearch extends React.Component {
             }
           />
           <div className={styles.resetSelection}>
-            <p>
-              Start Date: { moment(from).format('L') } <br/> End Date: { moment(to).format('L') }
-              { ' ' }
-            </p>
             <a href="#" onClick={ this.handleResetClick }><strong>Reset</strong></a>
           </div>
         </ToggleDisplay>

@@ -86,14 +86,14 @@ let Footer = ({dispatch}) => {
               {/*</div>*/}
               <div className={'pure-g'}>
                   <div className={`pure-u-2-5 ${styles.logoPanel}`}>
-                      <a href="https://sciapps.colorado.edu" className={`${styles.ciresLogo} ${styles.rowElement}`}>
+                      {/*   <a href="https://sciapps.colorado.edu" className={`${styles.ciresLogo} ${styles.rowElement}`}>
                           <span className={styles.hidden}>OneStop Home</span>
-                      </a>
-                      <span className={`${styles.rowElement} ${styles.slogan}`}>CIRES-NCEI OneStop Demonstration Site</span>
-{/*                      <a href="//www.noaa.gov/" className={`${styles.noaaLogo} ${styles.rowElement}`}>
-                          <span className={styles.hidden}>NOAA Home</span>
                       </a>*/}
-                      {/*<span className={`${styles.rowElement} ${styles.slogan}`}>Science. Service. Stewardship.</span>*/}
+                      {/* <span className={`${styles.rowElement} ${styles.slogan}`}>CIRES-NCEI OneStop Demonstration Site</span>*/}
+                     <a href="//www.noaa.gov/" className={`${styles.noaaLogo} ${styles.rowElement}`}>
+                          <span className={styles.hidden}>NOAA Home</span>
+                      </a>
+                     <span className={`${styles.rowElement} ${styles.slogan}`}>Science. Service. Stewardship.</span>
                   </div>
 
                   {/*<div className={`pure-u-3-5 ${styles.externalLinksPanel}`}>*/}

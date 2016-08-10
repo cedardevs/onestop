@@ -17,6 +17,10 @@
   margin: 5px auto;
 }
 
+.searchMapSpace{
+
+}
+
 .logSty img, #searchbox.searchHover{
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -108,12 +112,10 @@
 
 .searchFields {
   color: black;
-  margin: 1.5em 1em 1em 1em;
-  position: relative;
-  font-size: 2em;
+  margin: 3.5em 1em 1em 1em;
   width: 40%;
-  height: 1.8vm;
   display: inline-block;
+  font-size: 1.3em;
 }
 
 .mapIcon {
@@ -124,7 +126,7 @@
 .temporalBox {
   display: inline-block;
   margin-right: 2em;
-
+  position: relative;
 }
 
 .mapContainer {
@@ -161,6 +163,7 @@
   float: right;
   margin-top: 20px
 }
+
 .leftNav {
   z-index: 2;
   float: left;
@@ -173,6 +176,10 @@
   color: white;
   text-shadow: 0 0 5px black;
   background-color: $color-primary;
-  font-weight: bold;
   margin-right: 2em;
+  font-size: 1em;
+}
+
+.searchFields, .temporalBox, .landingButton {
+  height: 3em;
 }
