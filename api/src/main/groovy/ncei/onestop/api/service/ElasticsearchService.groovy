@@ -18,11 +18,20 @@ import java.util.regex.Pattern
 @Service
 class ElasticsearchService {
 
-    @Value('${elasticsearch.index}')
-    private String INDEX
+    @Value('${elasticsearch.index.search.name}')
+    private String SEARCH_INDEX
 
-    @Value('${elasticsearch.type}')
-    private String TYPE
+    @Value('${elasticsearch.index.search.type}')
+    private String SEARCH_TYPE
+
+    @Value('${elasticsearch.index.storage.name}')
+    private String STORAGE_INDEX
+
+    @Value('${elasticsearch.index.storage.collectionType}')
+    private String COLLECTION_TYPE
+
+    @Value('${elasticsearch.index.storage.granuleType}')
+    private String GRANULE_TYPE
 
     private Client client
     private SearchRequestParserService searchRequestParserService
@@ -47,8 +56,8 @@ class ElasticsearchService {
         def query = searchRequestParserService.parseSearchRequest(params)
         log.debug("ES query:${query} params:${params}")
         def searchResponse = client
-          .prepareSearch(INDEX)
-          .setTypes(TYPE)
+          .prepareSearch(SEARCH_INDEX)
+          .setTypes(SEARCH_TYPE)
           .setQuery(query)
           .setFrom(0).setSize(100) // TODO - expose these as API parameters
           .execute()
@@ -61,10 +70,10 @@ class ElasticsearchService {
         def mappedDoc = MetadataParser.parseXMLMetadataToMap(document)
         if(!Pattern.matches(".*\\s.*", mappedDoc.fileIdentifier)) {
             def parsedDoc = JsonOutput.toJson(mappedDoc)
-            IndexResponse iResponse = client.prepareIndex(INDEX, TYPE, mappedDoc.fileIdentifier)
+            IndexResponse iResponse = client.prepareIndex(SEARCH_INDEX, SEARCH_TYPE, mappedDoc.fileIdentifier)
                     .setSource(parsedDoc).execute().actionGet()
             def attributes = [created: iResponse.created, src: parsedDoc]
-            def data = [type: TYPE, id: iResponse.id, attributes: attributes]
+            def data = [type: SEARCH_TYPE, id: iResponse.id, attributes: attributes]
             def response = [data: data]
             return response
         } else {
@@ -81,10 +90,10 @@ class ElasticsearchService {
         def mappedDoc = MetadataParser.parseKeywords(document)
         if(!Pattern.matches(".*\\s.*", mappedDoc.fileIdentifier)) {
             def parsedDoc = JsonOutput.toJson(mappedDoc)
-            IndexResponse iResponse = client.prepareIndex("testing", TYPE, mappedDoc.fileIdentifier)
+            IndexResponse iResponse = client.prepareIndex("testing", SEARCH_TYPE, mappedDoc.fileIdentifier)
                 .setSource(parsedDoc).execute().actionGet()
             def attributes = [created: iResponse.created, src: parsedDoc]
-            def data = [type: TYPE, id: iResponse.id, attributes: attributes]
+            def data = [type: SEARCH_TYPE, id: iResponse.id, attributes: attributes]
             def response = [data: data]
             return response
         } else {
@@ -98,32 +107,50 @@ class ElasticsearchService {
     }
 
     public void purgeIndex() {
-        def items = client.search(new SearchRequest(INDEX).types(TYPE)).actionGet()
+        def items = client.search(new SearchRequest(SEARCH_INDEX).types(SEARCH_TYPE)).actionGet()
         def ids = items.hits.hits*.id
         def bulkDelete = ids.inject(new BulkRequest()) { bulk, id ->
-            bulk.add(new DeleteRequest(INDEX, TYPE, id))
+            bulk.add(new DeleteRequest(SEARCH_INDEX, SEARCH_TYPE, id))
         }
         bulkDelete.refresh(true)
         client.bulk(bulkDelete)
     }
 
     public void refreshIndex() {
-        client.admin().indices().prepareRefresh(INDEX).execute().actionGet()
+        client.admin().indices().prepareRefresh(SEARCH_INDEX).execute().actionGet()
     }
 
     @PostConstruct
-    private configureIndex() {
-        def indexExists = client.admin().indices().prepareExists(INDEX).execute().actionGet().exists
+    private configureSearchIndex() {
+        def indexExists = client.admin().indices().prepareExists(SEARCH_INDEX).execute().actionGet().exists
         if (!indexExists) {
             // Initialize index:
             def cl = ClassLoader.systemClassLoader
-            def indexSettings = cl.getResourceAsStream("config/index-settings.json").text
-            client.admin().indices().prepareCreate(INDEX).setSettings(indexSettings).execute().actionGet()
-            client.admin().cluster().prepareHealth(INDEX).setWaitForActiveShards(1).execute().actionGet()
+            def indexSettings = cl.getResourceAsStream("config/${SEARCH_INDEX}-settings.json").text
+            client.admin().indices().prepareCreate(SEARCH_INDEX).setSettings(indexSettings).execute().actionGet()
+            client.admin().cluster().prepareHealth(SEARCH_INDEX).setWaitForActiveShards(1).execute().actionGet()
 
             // Initialize mapping:
-            def mapping = cl.getResourceAsStream("config/metadata-mapping.json").text
-            client.admin().indices().preparePutMapping(INDEX).setSource(mapping).setType(TYPE).execute().actionGet()
+            def mapping = cl.getResourceAsStream("config/${SEARCH_INDEX}-mapping-${SEARCH_TYPE}.json").text
+            client.admin().indices().preparePutMapping(SEARCH_INDEX).setSource(mapping).setType(SEARCH_TYPE).execute().actionGet()
+        }
+    }
+
+    @PostConstruct
+    private configureStorageIndex() {
+        def indexExists = client.admin().indices().prepareExists(STORAGE_INDEX).execute().actionGet().exists
+        if (!indexExists) {
+            // Initialize index:
+            def cl = ClassLoader.systemClassLoader
+            def indexSettings = cl.getResourceAsStream("config/${STORAGE_INDEX}-settings.json").text
+            client.admin().indices().prepareCreate(STORAGE_INDEX).setSettings(indexSettings).execute().actionGet()
+            client.admin().cluster().prepareHealth(STORAGE_INDEX).setWaitForActiveShards(1).execute().actionGet()
+
+            // Initialize mapping:
+            def collectionMapping = cl.getResourceAsStream("config/${STORAGE_INDEX}-mapping-${COLLECTION_TYPE}.json").text
+            client.admin().indices().preparePutMapping(STORAGE_INDEX).setSource(collectionMapping).setType(COLLECTION_TYPE).execute().actionGet()
+            def granuleMapping = cl.getResourceAsStream("config/${STORAGE_INDEX}-mapping-${GRANULE_TYPE}.json").text
+            client.admin().indices().preparePutMapping(STORAGE_INDEX).setSource(granuleMapping).setType(GRANULE_TYPE).execute().actionGet()
         }
     }
 }

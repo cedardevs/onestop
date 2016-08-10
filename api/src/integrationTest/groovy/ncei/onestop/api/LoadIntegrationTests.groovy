@@ -35,10 +35,10 @@ class LoadIntegrationTests extends Specification {
     @Value('${server.context-path}')
     private String contextPath
 
-    @Value('${elasticsearch.index}')
+    @Value('${elasticsearch.index.search.name}')
     private String INDEX
 
-    @Value('${elasticsearch.type}')
+    @Value('${elasticsearch.index.search.type}')
     private String TYPE
 
     RestTemplate restTemplate
