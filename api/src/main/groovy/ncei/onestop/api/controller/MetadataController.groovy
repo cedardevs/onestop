@@ -25,7 +25,8 @@ class MetadataController {
     @RequestMapping(path = '/load', method = RequestMethod.POST,
             consumes = 'application/xml', produces = 'application/json')
     Map load(@RequestBody String xml, HttpServletResponse response) {
-        def result = elasticsearchService.loadDocument(xml)
+        //def result = elasticsearchService.loadDocument(xml)
+        def result = elasticsearchService.loadDocumentToTest(xml)
         if(result.data) {
             response.status = HttpStatus.CREATED.value()
         } else {

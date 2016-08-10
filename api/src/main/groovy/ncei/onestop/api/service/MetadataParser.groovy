@@ -1,6 +1,7 @@
 package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
+import org.apache.commons.lang3.text.WordUtils
 
 
 class MetadataParser {
@@ -283,5 +284,159 @@ class MetadataParser {
     ]
 
     return json
+  }
+
+  public static Map parseKeywords(String xml) {
+
+    def fileIdentifier
+    def parentIdentifier
+    def title
+    def description
+    def gcmdKeywords = [] as Set
+    def gcmdScience = [] as Set
+    def gcmdLocations = [] as Set
+    def gcmdPlatforms = [] as Set
+    def gcmdInstruments = [] as Set
+    def gcmdProjects = [] as Set
+    def gcmdDataCenters = [] as Set
+    def gcmdDataResolution = [] as Set
+
+    def metadata = new XmlSlurper().parseText(xml)
+    def idInfo = metadata.identificationInfo.MD_DataIdentification
+
+    fileIdentifier = metadata.fileIdentifier.CharacterString.text()
+    parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
+    title = idInfo.citation.CI_Citation.title.CharacterString.text()
+    description = idInfo.abstract.CharacterString.text()
+
+/*    def topicCategories = idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text()
+    topicCategories.each { e ->
+      topics.add(e)
+    }*/
+
+
+    def descriptiveKeywords = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
+    descriptiveKeywords.each { e ->
+      def keywordGroup = e.'**'.findAll { it.name() == 'keyword' }
+      keywordGroup.each { k ->
+
+        def text = k.CharacterString.text()
+        //def type = e.type.MD_KeywordTypeCode.@codeListValue.text()
+        def namespace = e.thesaurusName.CI_Citation.title.CharacterString.text()
+
+        def gcmd = parseGCMDKeywordNamespace(text, namespace)
+        if(gcmd) {
+          gcmdKeywords.add(gcmd)
+
+        } /*else {
+          if(text) {
+            keywords.add([
+                keywordText     : text,
+                keywordType     : type,
+                keywordNamespace: namespace
+            ])
+          } else {
+           return
+          }*/
+        }
+      //}
+    }
+
+    gcmdKeywords.each {e ->
+      switch(e.keywordNamespace) {
+        case KeywordType.Science:
+          gcmdScience.add(e.keywordText)
+          break
+        case KeywordType.Location:
+          gcmdLocations.add(e.keywordText)
+          break
+        case KeywordType.Platform:
+          gcmdPlatforms.add(e.keywordText)
+          break
+        case KeywordType.Instrument:
+          gcmdInstruments.add(e.keywordText)
+          break
+        case KeywordType.Project:
+          gcmdProjects.add(e.keywordText)
+          break
+        case KeywordType.Data_Center:
+          gcmdDataCenters.add(e.keywordText)
+          break
+        case KeywordType.Data_Resolution:
+          gcmdDataResolution.add(e.keywordText)
+          break
+        default:
+          break
+      }
+    }
+
+
+    def json = [
+        fileIdentifier: fileIdentifier,
+        parentIdentifier: parentIdentifier,
+        title: title,
+        description: description,
+        gcmdScience: gcmdScience,
+        gcmdLocations: gcmdLocations,
+        gcmdPlatforms: gcmdPlatforms,
+        gcmdInstruments: gcmdInstruments,
+        gcmdProjects: gcmdProjects,
+        gcmdDataCenters: gcmdDataCenters,
+        gcmdDataResolution: gcmdDataResolution
+    ]
+
+    return json
+  }
+
+  public static Map parseGCMDKeywordNamespace(String text, String namespace) {
+    if(!namespace.toLowerCase().contains('gcmd')) { return null }
+
+    def keywords
+    def type
+    switch (namespace) {
+      case {it.toLowerCase().contains('location') || it.toLowerCase().contains('place')}:
+        type = KeywordType.Location
+        break
+      case {it.toLowerCase().contains('science')}:
+        type = KeywordType.Science
+        break
+      case {it.toLowerCase().contains('platform')}:
+        type = KeywordType.Platform
+        break
+      case {it.toLowerCase().contains('instrument')}:
+        type = KeywordType.Instrument
+        break
+      case {it.toLowerCase().contains('project')}:
+        type = KeywordType.Project
+        break
+      case {it.toLowerCase().contains('data center')}:
+        type = KeywordType.Data_Center
+        break
+      case {it.toLowerCase().contains('data resolution')}:
+        type = KeywordType.Data_Resolution
+        break
+      default:
+        type = null
+        break
+    }
+
+    if(type == KeywordType.Data_Center || type == KeywordType.Data_Resolution) {
+      keywords = text
+    } else {
+      keywords = WordUtils.capitalizeFully(text, " " as char, "/" as char, "." as char)
+    }
+
+    if(type == KeywordType.Science) {
+      keywords = keywords.replace('Earth Science > ', '')
+    }
+
+    return [
+        keywordText: keywords,
+        keywordNamespace: type
+    ]
+  }
+
+  public static enum KeywordType {
+    Location, Science, Platform, Instrument, Project, Data_Center, Data_Resolution
   }
 }

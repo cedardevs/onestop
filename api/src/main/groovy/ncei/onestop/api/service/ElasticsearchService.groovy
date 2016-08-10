@@ -77,6 +77,26 @@ class ElasticsearchService {
         }
     }
 
+    public Map loadDocumentToTest(String document) {
+        def mappedDoc = MetadataParser.parseKeywords(document)
+        if(!Pattern.matches(".*\\s.*", mappedDoc.fileIdentifier)) {
+            def parsedDoc = JsonOutput.toJson(mappedDoc)
+            IndexResponse iResponse = client.prepareIndex("testing", TYPE, mappedDoc.fileIdentifier)
+                .setSource(parsedDoc).execute().actionGet()
+            def attributes = [created: iResponse.created, src: parsedDoc]
+            def data = [type: TYPE, id: iResponse.id, attributes: attributes]
+            def response = [data: data]
+            return response
+        } else {
+            def errors = [
+                status: 400,
+                title: 'Load request failed due to bad fileIdentifier value',
+                detail: mappedDoc.fileIdentifier
+            ]
+            return [errors: errors]
+        }
+    }
+
     public void purgeIndex() {
         def items = client.search(new SearchRequest(INDEX).types(TYPE)).actionGet()
         def ids = items.hits.hits*.id
