@@ -34,6 +34,7 @@ class MetadataParser {
     def gcmdInstruments = [] as Set
     def gcmdProjects = [] as Set
     def gcmdDataResolution = [] as Set
+    def gcmdDataCenters = [] as Set
     def temporalBounding = [:]
     def spatialBounding = [:]
     def acquisitionInstruments = [] as Set
