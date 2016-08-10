@@ -2,11 +2,15 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
+import org.apache.lucene.util.QueryBuilder
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.delete.DeleteRequest
+import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.Client
+import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.search.sort.SortOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -67,22 +71,34 @@ class ElasticsearchService {
     }
 
     public Map loadDocument(String document) {
-        def mappedDoc = MetadataParser.parseXMLMetadataToMap(document)
-        if(!Pattern.matches(".*\\s.*", mappedDoc.fileIdentifier)) {
-            def parsedDoc = JsonOutput.toJson(mappedDoc)
-            IndexResponse iResponse = client.prepareIndex(SEARCH_INDEX, SEARCH_TYPE, mappedDoc.fileIdentifier)
-                    .setSource(parsedDoc).execute().actionGet()
-            def attributes = [created: iResponse.created, src: parsedDoc]
-            def data = [type: SEARCH_TYPE, id: iResponse.id, attributes: attributes]
-            def response = [data: data]
-            return response
-        } else {
-            def errors = [
+        def storageInfo = MetadataParser.parseStorageInfo(document)
+        def id = storageInfo.id
+        if (Pattern.matches(/.*\s.*/, id)) {
+            return [
+                errors: [
                     status: 400,
                     title: 'Load request failed due to bad fileIdentifier value',
-                    detail: mappedDoc.fileIdentifier
+                    detail: id
+                ]
             ]
-            return [errors: errors]
+        }
+        else {
+            def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
+            def source = [isoXml: document, fileIdentifier: id]
+            if (type == GRANULE_TYPE) {
+                source.parentIdentifier = storageInfo.parentId
+            }
+            source = JsonOutput.toJson(source)
+            def response = client.prepareIndex(STORAGE_INDEX, type, id).setSource(source).execute().actionGet()
+            return [
+                data: [
+                    id: id,
+                    type: type,
+                    attributes: [
+                        created: response.created
+                    ]
+                ]
+            ]
         }
     }
 
@@ -116,8 +132,75 @@ class ElasticsearchService {
         client.bulk(bulkDelete)
     }
 
-    public void refreshIndex() {
+    public void refresh() {
         client.admin().indices().prepareRefresh(SEARCH_INDEX).execute().actionGet()
+        client.admin().indices().prepareRefresh(STORAGE_INDEX).execute().actionGet()
+    }
+
+    public void reindex() {
+        log.info "starting reindex process"
+        def start = System.currentTimeMillis()
+
+        def bulkRequest = client.prepareBulk()
+        def bulkCount = 0
+        def bulkSize = 100
+        def recordCount = 0
+        def addRecordToBulk = { record ->
+            def id = record.fileIdentifier
+            def json = JsonOutput.toJson(record)
+            def insertRequest = client.prepareIndex(SEARCH_INDEX, SEARCH_TYPE, id).setSource(json)
+            bulkRequest.add(insertRequest)
+            bulkCount++
+            recordCount++
+            if (bulkCount >= bulkSize) {
+                bulkRequest.get()
+                bulkRequest = client.prepareBulk()
+                bulkCount = 0
+            }
+        }
+
+        def scrollSize = 100
+        def collectionScroll = client.prepareSearch(STORAGE_INDEX)
+            .setTypes(COLLECTION_TYPE)
+            .addSort('fileIdentifier', SortOrder.ASC)
+            .setScroll('1m')
+            .setSize(scrollSize)
+            .execute()
+            .actionGet()
+        def collectionsRemain = collectionScroll.hits.hits.length > 0
+        while (collectionsRemain) {
+            collectionScroll.hits.hits.each { collection ->
+                def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
+                def granuleQuery = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', collection.source.fileIdentifier))
+                def granuleScroll = client.prepareSearch(STORAGE_INDEX)
+                    .setTypes(GRANULE_TYPE)
+                    .addSort('fileIdentifier', SortOrder.ASC)
+                    .setScroll('1m')
+                    .setQuery(granuleQuery)
+                    .setSize(scrollSize)
+                    .execute()
+                    .actionGet()
+                def granulesRemain = granuleScroll.hits.hits.length > 0
+                if (!granulesRemain) {
+                    addRecordToBulk(parsedCollection)
+                }
+                while(granulesRemain) {
+                    granuleScroll.hits.hits.each { granule ->
+                        def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)
+                        def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
+                        addRecordToBulk(flattenedRecord)
+                    }
+                    granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll('1m').execute().actionGet()
+                    granulesRemain = granuleScroll.hits.hits.length > 0
+                }
+            }
+            collectionScroll = client.prepareSearchScroll(collectionScroll.scrollId).setScroll('1m').execute().actionGet()
+            collectionsRemain = collectionScroll.hits.hits.length > 0
+        }
+
+        bulkRequest.get()
+        def end = System.currentTimeMillis()
+        log.info "reindexed ${recordCount} records in ${(end - start)/1000}s"
     }
 
     @PostConstruct

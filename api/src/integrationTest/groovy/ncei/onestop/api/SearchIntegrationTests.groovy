@@ -46,7 +46,9 @@ class SearchIntegrationTests extends Specification {
                 elasticsearchService.loadDocument(metadata)
             }
         }
-        elasticsearchService.refreshIndex()
+        elasticsearchService.refresh()
+        elasticsearchService.reindex()
+        elasticsearchService.refresh()
 
         restTemplate = new RestTemplate()
         restTemplate.errorHandler = new TestResponseErrorHandler()

@@ -35,10 +35,10 @@ class LoadIntegrationTests extends Specification {
     @Value('${server.context-path}')
     private String contextPath
 
-    @Value('${elasticsearch.index.search.name}')
+    @Value('${elasticsearch.index.storage.name}')
     private String INDEX
 
-    @Value('${elasticsearch.index.search.type}')
+    @Value('${elasticsearch.index.storage.collectionType}')
     private String TYPE
 
     RestTemplate restTemplate
@@ -60,7 +60,7 @@ class LoadIntegrationTests extends Specification {
         elasticsearchService.purgeIndex()
     }
 
-    def 'Document is loaded but not searchable when only loading'() {
+    def 'Document is stored, then searchable on reindex'() {
         setup:
         def document = ClassLoader.systemClassLoader.getResourceAsStream("data/GHRSST/1.xml").text
         def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
@@ -68,23 +68,31 @@ class LoadIntegrationTests extends Specification {
 
         when:
         def loadResult = restTemplate.exchange(loadRequest, Map)
-        def searchResult = restTemplate.exchange(searchRequest, Map)
 
         then: "Load returns CREATED"
         loadResult.statusCode == HttpStatus.CREATED
 
-        and: "Elasticsearch contains loaded document"
+        and: "Storage index contains loaded document"
         def docId = loadResult.body.data.id
-        client.get(new GetRequest(INDEX, TYPE, docId)).actionGet().exists == true
+        client.get(new GetRequest(INDEX, TYPE, docId)).actionGet().exists
 
-        when: "Wait for elasticsearch to auto-refresh"
-        Thread.sleep(1000)
-        searchResult = restTemplate.exchange(searchRequest, Map)
+        when: "Refresh elasticsearch then search"
+        elasticsearchService.refresh()
+        def searchResult = restTemplate.exchange(searchRequest, Map)
         def hits = searchResult.body.data
 
-        then: "Search results appear"
-        def fileId = hits.attributes[0].fileIdentifier
+        then: "Does not appear in search results yet"
+        hits.size() == 0
+
+        when: "Reindex storage then search"
+        elasticsearchService.reindex()
+        elasticsearchService.refresh()
+        searchResult = restTemplate.exchange(searchRequest, Map)
+        hits = searchResult.body.data
+
+        then:
         hits.size() == 1
+        def fileId = hits.attributes[0].fileIdentifier
         fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
     }
 
