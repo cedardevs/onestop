@@ -19,6 +19,7 @@ class TemporalSearch extends React.Component {
     this.showCurrentDate = this.showCurrentDate.bind(this)
     this.render = this.render.bind(this)
     this.state = this.initialState()
+    this.emitDate
   }
 
   initialState() {
@@ -60,6 +61,10 @@ class TemporalSearch extends React.Component {
     })
   }
 
+  emitDate(dateString, dateSelected ) {
+    this.props.updateOnChange(dateString, dateSelected)
+  }
+
   render() {
     const { from, to } = this.state
     return (
@@ -72,6 +77,7 @@ class TemporalSearch extends React.Component {
               value={ this.state.from }
               placeholder="YYYY-MM-DD"
               onChange={ this.handleInputChange }
+              onChange={this.emitDate(from, DateRange.START_DATE)}
               onFocus={ this.showCurrentDate }
             />
           </p>
@@ -82,6 +88,7 @@ class TemporalSearch extends React.Component {
               value={ this.state.to }
               placeholder="YYYY-MM-DD"
               onChange={ this.handleInputChange }
+              OnChange={this.emitDate(to, DateRange.END_DATE)}
               onFocus={ this.showCurrentDate }
             />
           </p>
@@ -99,11 +106,11 @@ class TemporalSearch extends React.Component {
             }
           />
           <div className={styles.resetSelection}>
-            <a href="#" onClick={ this.handleResetClick }><strong>Reset</strong></a>
             <p>
               Start Date: { moment(from).format('L') } <br/> End Date: { moment(to).format('L') }
               { ' ' }
             </p>
+            <a href="#" onClick={ this.handleResetClick }><strong>Reset</strong></a>
           </div>
         </ToggleDisplay>
       </div>

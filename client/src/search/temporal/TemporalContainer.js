@@ -10,7 +10,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onChange: (text, dateSelected) => {
+    updateOnChange: (text, dateSelected) => {
       if (dateSelected === DateRange.START_DATE){
         dispatch(startDate(text))
       } else {
