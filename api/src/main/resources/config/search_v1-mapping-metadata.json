@@ -9,10 +9,6 @@
         "type": "string",
         "index": "not_analyzed"
       },
-      "doi": {
-        "type": "string",
-        "index": "not_analyzed"
-      },
       "title": {
         "type": "string"
       },
@@ -23,26 +19,9 @@
         "type": "string"
       },
       "keywords": {
-        "type": "nested",
-        "properties": {
-          "keywordText": {
-            "type": "string",
-            "fields": {
-              "raw": {
-                "type": "string",
-                "index": "not_analyzed"
-              },
-              "hierarchy": {
-                "type": "string",
-                "analyzer": "keyword_analyzer"
-              }
-            }
-          },
-          "keywordType": {
-            "type": "string",
-            "index": "not_analyzed"
-          },
-          "keywordNamespace": {
+        "type": "string",
+        "fields": {
+          "raw": {
             "type": "string",
             "index": "not_analyzed"
           }

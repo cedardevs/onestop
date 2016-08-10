@@ -102,8 +102,9 @@ class ElasticsearchService {
         }
     }
 
+    // FIXME Delete this once no longer testing
     public Map loadDocumentToTest(String document) {
-        def mappedDoc = MetadataParser.parseKeywords(document)
+        def mappedDoc = MetadataParser.parseXMLMetadataToMap(document)
         if(!Pattern.matches(".*\\s.*", mappedDoc.fileIdentifier)) {
             def parsedDoc = JsonOutput.toJson(mappedDoc)
             IndexResponse iResponse = client.prepareIndex("testing", SEARCH_TYPE, mappedDoc.fileIdentifier)

@@ -26,6 +26,14 @@ class MetadataParser {
     def alternateTitle
     def description
     def keywords = [] as Set
+    def topicCategories = [] as Set
+    def gcmdKeywords = [] as Set
+    def gcmdScience = [] as Set
+    def gcmdLocations = [] as Set
+    def gcmdPlatforms = [] as Set
+    def gcmdInstruments = [] as Set
+    def gcmdProjects = [] as Set
+    def gcmdDataResolution = [] as Set
     def temporalBounding = [:]
     def spatialBounding = [:]
     def acquisitionInstruments = [] as Set
@@ -38,8 +46,8 @@ class MetadataParser {
     def creationDate
     def revisionDate
     def publicationDate
-    def language          // TODO Remove?
-    def resourceLanguage  // TODO Remove?
+    def language
+    def resourceLanguage
     def resourceConstraints = [] as Set
     def securityConstraints = [] as Set
     def grid = [:]
@@ -78,29 +86,56 @@ class MetadataParser {
     }
 
     // Keywords:
-    /*
-     TODO
-     Some things noticed here:
-      - Some keywords are appearing under the path descriptiveKeywords.MD_Keywords.keyword.Anchor. GP does not
-        collect these, and maybe we don't want to either? These show up in DEM example as keyword objects with empty
-        keywordText and keywordType fields. In the XML they are in extreme numbers and appear to have inconsistent
-        value. Discuss with Anna?
-      - If we disregard these keywords, should we programmatically remove elements where keywordText is empty?
-     */
-    def topicCategories = idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text()
-    topicCategories.each { e ->
-      keywords.add([keywordText: e, keywordType: null, keywordNamespace: null])
-    }
+    topicCategories.addAll(idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text())
 
     def descriptiveKeywords = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
     descriptiveKeywords.each { e ->
       def keywordGroup = e.'**'.findAll { it.name() == 'keyword' }
       keywordGroup.each { k ->
-        keywords.add([
-            keywordText     : k.CharacterString.text(),
-            keywordType     : e.type.MD_KeywordTypeCode.@codeListValue.text(),
-            keywordNamespace: e.thesaurusName.CI_Citation.title.CharacterString.text()
-        ])
+
+        def text = k.CharacterString.text()
+        //def type = e.type.MD_KeywordTypeCode.@codeListValue.text() //fixme can use this for gcmd type since it's already standardized
+        def namespace = e.thesaurusName.CI_Citation.title.CharacterString.text()
+
+        def gcmd = parseGCMDKeywordNamespace(text, namespace)
+        if(gcmd) {
+          gcmdKeywords.add(gcmd)
+
+        } else {
+          if(text) {
+            keywords.add(text)
+          } else {
+           return
+          }
+      }
+      }
+    }
+
+    gcmdKeywords.each {e ->
+      switch(e.keywordNamespace) {
+        case KeywordType.Science:
+          gcmdScience.add(e.keywordText)
+          break
+        case KeywordType.Location:
+          gcmdLocations.add(e.keywordText)
+          break
+        case KeywordType.Platform:
+          gcmdPlatforms.add(e.keywordText)
+          break
+        case KeywordType.Instrument:
+          gcmdInstruments.add(e.keywordText)
+          break
+        case KeywordType.Project:
+          gcmdProjects.add(e.keywordText)
+          break
+        case KeywordType.Data_Center:
+          gcmdDataCenters.add(e.keywordText)
+          break
+        case KeywordType.Data_Resolution:
+          gcmdDataResolution.add(e.keywordText)
+          break
+        default:
+          break
       }
     }
 
@@ -241,6 +276,13 @@ class MetadataParser {
         alternateTitle        : alternateTitle,
         description           : description,
         keywords              : keywords,
+        topicCategories       : topicCategories,
+        gcmdScience           : gcmdScience,
+        gcmdLocations         : gcmdLocations,
+        gcmdInstruments       : gcmdInstruments,
+        gcmdPlatforms         : gcmdPlatforms,
+        gcmdProjects          : gcmdProjects,
+        gcmdDataResolution    : gcmdDataResolution,
         temporalBounding      : temporalBounding,
         spatialBounding       : spatialBounding,
         acquisitionInstruments: acquisitionInstruments,
@@ -294,107 +336,6 @@ class MetadataParser {
     return json
   }
 
-  public static Map parseKeywords(String xml) {
-
-    def fileIdentifier
-    def parentIdentifier
-    def title
-    def description
-    def gcmdKeywords = [] as Set
-    def gcmdScience = [] as Set
-    def gcmdLocations = [] as Set
-    def gcmdPlatforms = [] as Set
-    def gcmdInstruments = [] as Set
-    def gcmdProjects = [] as Set
-    def gcmdDataCenters = [] as Set
-    def gcmdDataResolution = [] as Set
-
-    def metadata = new XmlSlurper().parseText(xml)
-    def idInfo = metadata.identificationInfo.MD_DataIdentification
-
-    fileIdentifier = metadata.fileIdentifier.CharacterString.text()
-    parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
-    title = idInfo.citation.CI_Citation.title.CharacterString.text()
-    description = idInfo.abstract.CharacterString.text()
-
-/*    def topicCategories = idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text()
-    topicCategories.each { e ->
-      topics.add(e)
-    }*/
-
-
-    def descriptiveKeywords = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
-    descriptiveKeywords.each { e ->
-      def keywordGroup = e.'**'.findAll { it.name() == 'keyword' }
-      keywordGroup.each { k ->
-
-        def text = k.CharacterString.text()
-        //def type = e.type.MD_KeywordTypeCode.@codeListValue.text()
-        def namespace = e.thesaurusName.CI_Citation.title.CharacterString.text()
-
-        def gcmd = parseGCMDKeywordNamespace(text, namespace)
-        if(gcmd) {
-          gcmdKeywords.add(gcmd)
-
-        } /*else {
-          if(text) {
-            keywords.add([
-                keywordText     : text,
-                keywordType     : type,
-                keywordNamespace: namespace
-            ])
-          } else {
-           return
-          }*/
-        }
-      //}
-    }
-
-    gcmdKeywords.each {e ->
-      switch(e.keywordNamespace) {
-        case KeywordType.Science:
-          gcmdScience.add(e.keywordText)
-          break
-        case KeywordType.Location:
-          gcmdLocations.add(e.keywordText)
-          break
-        case KeywordType.Platform:
-          gcmdPlatforms.add(e.keywordText)
-          break
-        case KeywordType.Instrument:
-          gcmdInstruments.add(e.keywordText)
-          break
-        case KeywordType.Project:
-          gcmdProjects.add(e.keywordText)
-          break
-        case KeywordType.Data_Center:
-          gcmdDataCenters.add(e.keywordText)
-          break
-        case KeywordType.Data_Resolution:
-          gcmdDataResolution.add(e.keywordText)
-          break
-        default:
-          break
-      }
-    }
-
-
-    def json = [
-        fileIdentifier: fileIdentifier,
-        parentIdentifier: parentIdentifier,
-        title: title,
-        description: description,
-        gcmdScience: gcmdScience,
-        gcmdLocations: gcmdLocations,
-        gcmdPlatforms: gcmdPlatforms,
-        gcmdInstruments: gcmdInstruments,
-        gcmdProjects: gcmdProjects,
-        gcmdDataCenters: gcmdDataCenters,
-        gcmdDataResolution: gcmdDataResolution
-    ]
-
-    return json
-  }
 
   public static Map parseGCMDKeywordNamespace(String text, String namespace) {
     if(!namespace.toLowerCase().contains('gcmd')) { return null }
@@ -428,10 +369,11 @@ class MetadataParser {
         break
     }
 
-    if(type == KeywordType.Data_Center || type == KeywordType.Data_Resolution) {
-      keywords = text
+    if(type == KeywordType.Science || type == KeywordType.Location) {
+      keywords = WordUtils.capitalizeFully(text,
+          " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
     } else {
-      keywords = WordUtils.capitalizeFully(text, " " as char, "/" as char, "." as char)
+      keywords = text
     }
 
     if(type == KeywordType.Science) {
