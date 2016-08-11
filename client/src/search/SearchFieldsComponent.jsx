@@ -49,15 +49,17 @@ class SearchFieldsComponent extends React.Component {
   }
 
   render() {
-    return<div className={`pure-form `}>
-        <div id ="searchbox" className={styles.searchFields}>
+    return<div className={`pure-form  ${styles.searchFields}`}>
+        <div id ="searchbox" className={styles.searchContainer}>
           <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery}
                            value={this.props.queryString}
                            />
         </div>
       <span>
-        <div className={styles.temporalBox}>
-          <TemporalContainer />
+        <div className={styles.temporalContainer}>
+           <span className={styles.temporalContent}>
+               <TemporalContainer />
+           </span>
         </div>
         <button id="mapButton" className={`pure-button ${styles.mapButton} ${styles.landingButton}`}
                    onClick={this.toggleMap}>Map</button>

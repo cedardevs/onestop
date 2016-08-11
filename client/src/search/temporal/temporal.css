@@ -1,34 +1,21 @@
 /* DayPicker styles */
 
- .temporalContainer {
-    /*width: 280px;*/
-   display: inline-block;
-   /*position: relative;*/
-
- }
-
  .dateComponent {
    background: white;
    clear: left;
- }
-
- .dateInputs {
    display: inline;
  }
 
- .dateInputLeft {
+ .dateInputLeft,
+ .dateInputRight  {
    /*float: left;*/
    margin-left: 7px;
    display: inline;
-   font-size: 1.3em;
  }
 
- .dateInputRight {
-   /*float: center;*/
-   margin-left: 7px;
-   display: inline;
-   font-size: 1.3em;
- }
+.dateInputRight  {
+  margin-right: 2em;
+}
 
 .DayPicker {
   display: flex;
@@ -152,8 +139,7 @@
 }
 
 .resetSelection {
-  color: black;
-  background: white;
+  background-color: white;
   text-align: center;
   font-size: 120%;
 }

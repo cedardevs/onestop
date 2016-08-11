@@ -17,9 +17,9 @@ class TemporalSearch extends React.Component {
     this.handleDayClick = this.handleDayClick.bind(this)
     this.handleResetClick = this.handleResetClick.bind(this)
     this.showCurrentDate = this.showCurrentDate.bind(this)
+    this.emitRange = this.emitRange.bind(this)
     this.render = this.render.bind(this)
     this.state = this.initialState()
-    this.emitDate
   }
 
   initialState() {
@@ -34,18 +34,7 @@ class TemporalSearch extends React.Component {
   handleDayClick(e, day) {
     const range = DateUtils.addDayToRange(day, this.state)
     this.setState(range)
-  }
-
-  handleInputChange(e) {
-    const { value } = e.target
-    if (moment(value, 'L', true).isValid()) {
-      this.setState({
-        month: moment(value, 'L').toDate(),
-        value,
-      }, this.showCurrentDate)
-    } else {
-      this.setState({ value }, this.showCurrentDate)
-    }
+    this.emitRange()
   }
 
   showCurrentDate() {
@@ -59,16 +48,18 @@ class TemporalSearch extends React.Component {
       from: null,
       to: null
     })
+    this.emitRange()
   }
 
-  emitDate(dateString, dateSelected ) {
-    this.props.updateOnChange(dateString, dateSelected)
+  emitRange() {
+    this.props.updateOnChange(this.state.from, DateRange.START_DATE)
+    this.props.updateOnChange(this.state.to, DateRange.END_DATE)
   }
 
   render() {
     const { from, to } = this.state
     return (
-      <div className={styles.temporalContainer}>
+      <div>
         <div>
           <div className={styles.dateInputLeft}>
             <input
@@ -76,8 +67,6 @@ class TemporalSearch extends React.Component {
               type="text"
               value={ this.state.from }
               placeholder="YYYY-MM-DD"
-              onChange={ this.handleInputChange }
-              onChange={this.emitDate(from, DateRange.START_DATE)}
               onFocus={ this.showCurrentDate }
             />
           </div>
@@ -87,8 +76,6 @@ class TemporalSearch extends React.Component {
               type="text"
               value={ this.state.to }
               placeholder="YYYY-MM-DD"
-              onChange={ this.handleInputChange }
-              OnChange={this.emitDate(to, DateRange.END_DATE)}
               onFocus={ this.showCurrentDate }
             />
           </div>
@@ -106,7 +93,7 @@ class TemporalSearch extends React.Component {
             }
           />
           <div className={styles.resetSelection}>
-            <a href="#" onClick={ this.handleResetClick }><strong>Reset</strong></a>
+            <button href="#" onClick={ this.handleResetClick }><strong>Reset</strong></button>
           </div>
         </ToggleDisplay>
       </div>

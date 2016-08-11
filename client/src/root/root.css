@@ -17,11 +17,11 @@
   margin: 5px auto;
 }
 
-.searchMapSpace{
+.searchMapSpace {
 
 }
 
-.logSty img, #searchbox.searchHover{
+.logSty img, #searchbox.searchHover {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
@@ -110,43 +110,10 @@
   filter: alpha(opacity=30); /* For IE8 and earlier */
 }
 
-.searchFields {
-  color: black;
-  margin: 3.5em 1em 1em 1em;
-  width: 40%;
-  display: inline-block;
-  font-size: 1.3em;
-}
-
-.mapIcon {
-  background: url('../../img/mapIcon.png');
-  width: 10px;
-}
-
-.temporalBox {
-  display: inline-block;
-  margin-right: 2em;
-  position: relative;
-}
-
-.mapContainer {
-  position: relative;
-  display: inline-block;
-}
-
-.mapContent {
-  position: absolute;
-  z-index: 1;
-  top: 100%;
-  left: 50%;
-  margin-top: 2em;
-  margin-left: -45em;
-}
-
-.dropDown {
-  padding: 10px 0 0 0;
-  display: inline-block;
-}
+/*.dropDown {*/
+  /*padding: 10px 0 0 0;*/
+  /*display: inline-block;*/
+/*}*/
 
 .results {
   margin-bottom: 80px;
@@ -159,11 +126,6 @@
   bottom: 24px;
 }
 
-.searchFacet {
-  float: right;
-  margin-top: 20px
-}
-
 .leftNav {
   z-index: 2;
   float: left;
@@ -172,14 +134,51 @@
   bottom: 24px;
 }
 
+/*search fields*/
+.searchFields {
+  position: relative;
+  display: inline;
+  font-size: 1.2em;
+  height: 3em;
+}
+/*search container*/
+.searchContainer {
+  color: black;
+  margin: 3.5em 1em 1em 1em;
+  width: 40%;
+  display: inline-block;
+}
+
+/*temporal and map*/
+.temporalContent {
+  position: absolute;
+  z-index: 1;
+}
+
+.mapContainer,
+.temporalContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.mapIcon {
+  background: url('../../img/mapIcon.png');
+  width: 10px;
+}
+
+.mapContent {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-top: 2em;
+  margin-left: -45em;
+}
+
+/*search button*/
 .landingButton {
   color: white;
   text-shadow: 0 0 5px black;
   background-color: $color-primary;
   margin-right: 2em;
-  font-size: 1em;
-}
-
-.searchFields, .temporalBox, .landingButton {
-  height: 3em;
 }
