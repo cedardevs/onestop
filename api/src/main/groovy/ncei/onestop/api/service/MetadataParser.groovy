@@ -6,6 +6,14 @@ import org.apache.commons.lang3.text.WordUtils
 
 class MetadataParser {
 
+  public static Map parseStorageInfo(String xml) {
+    def slurped = new XmlSlurper().parseText(xml)
+    return [
+        id: slurped.fileIdentifier.CharacterString.text(),
+        parentId: slurped.parentIdentifier.Anchor.text() ?: slurped.parentIdentifier.CharacterString.text() ?: null
+    ]
+  }
+
   public static String parseXMLMetadata(String xml) {
     return JsonOutput.toJson(parseXMLMetadataToMap(xml))
   }
@@ -26,6 +34,7 @@ class MetadataParser {
     def gcmdInstruments = [] as Set
     def gcmdProjects = [] as Set
     def gcmdDataResolution = [] as Set
+    def gcmdDataCenters = [] as Set
     def temporalBounding = [:]
     def spatialBounding = [:]
     def acquisitionInstruments = [] as Set
