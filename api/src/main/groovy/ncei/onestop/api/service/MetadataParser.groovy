@@ -27,7 +27,6 @@ class MetadataParser {
     def description
     def keywords = [] as Set
     def topicCategories = [] as Set
-    def gcmdDataCenters = [] as Set
     def gcmdScience = [] as Set
     def gcmdLocations = [] as Set
     def gcmdPlatforms = [] as Set
@@ -88,17 +87,22 @@ class MetadataParser {
       def keywordGroup = e.'**'.findAll { it.name() == 'keyword' }
       keywordGroup.each { k ->
 
-        def text = k.CharacterString.text()
+        def text = k.CharacterString.text() as String
         def namespace = e.thesaurusName.CI_Citation.title.CharacterString.text()
 
         if(text) {
           if(namespace.toLowerCase().contains('gcmd')) {
             switch(namespace) {
               case {it.toLowerCase().contains('science')}:
+                text = WordUtils.capitalizeFully(text,
+                    " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
+                text = text.replace('Earth Science > ', '')
                 gcmdScience.add(text)
                 break
               case {it.toLowerCase().contains('location') || it.toLowerCase().contains('place')}:
-                gcmdLocations.add(text)
+                def locationKeywords = WordUtils.capitalizeFully(text,
+                    " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
+                gcmdLocations.add(locationKeywords)
                 break
               case {it.toLowerCase().contains('platform')}:
                 gcmdPlatforms.add(text)
