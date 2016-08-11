@@ -19,7 +19,7 @@ class MetadataParser {
     def description
     def keywords = [] as Set
     def topicCategories = [] as Set
-    def gcmdKeywords = [] as Set
+    def gcmdDataCenters = [] as Set
     def gcmdScience = [] as Set
     def gcmdLocations = [] as Set
     def gcmdPlatforms = [] as Set
@@ -46,12 +46,6 @@ class MetadataParser {
 
     def metadata = new XmlSlurper().parseText(xml)
     def idInfo = metadata.identificationInfo.MD_DataIdentification
-    /*
-    TODO
-    idInfo points to only identificationInfo node with MD_DataIdentification child, but there are some (in DEM)
-    where child is SV_ServiceIdentification. Discuss with Anna -- should these be parsed as well? GP does, but
-    data is stored across several fields included & not included here.
-     */
 
     // Basic info:
     fileIdentifier = metadata.fileIdentifier.CharacterString.text()
@@ -77,7 +71,7 @@ class MetadataParser {
       }
     }
 
-    // Keywords:
+    // Keywords & topics:
     topicCategories.addAll(idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text())
 
     def descriptiveKeywords = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
@@ -86,48 +80,41 @@ class MetadataParser {
       keywordGroup.each { k ->
 
         def text = k.CharacterString.text()
-        //def type = e.type.MD_KeywordTypeCode.@codeListValue.text() //fixme can use this for gcmd type since it's already standardized
         def namespace = e.thesaurusName.CI_Citation.title.CharacterString.text()
 
-        def gcmd = parseGCMDKeywordNamespace(text, namespace)
-        if(gcmd) {
-          gcmdKeywords.add(gcmd)
+        if(text) {
+          if(namespace.toLowerCase().contains('gcmd')) {
+            switch(namespace) {
+              case {it.toLowerCase().contains('science')}:
+                gcmdScience.add(text)
+                break
+              case {it.toLowerCase().contains('location') || it.toLowerCase().contains('place')}:
+                gcmdLocations.add(text)
+                break
+              case {it.toLowerCase().contains('platform')}:
+                gcmdPlatforms.add(text)
+                break
+              case {it.toLowerCase().contains('instrument')}:
+                gcmdInstruments.add(text)
+                break
+              case {it.toLowerCase().contains('data center')}:
+                gcmdDataCenters.add(text)
+                break
+              case {it.toLowerCase().contains('data resolution')}:
+                gcmdDataResolution.add(text)
+                break
+              case {it.toLowerCase().contains('project')}:
+                gcmdProjects.add(text)
+                break
+              default:
+                keywords.add(text)
+                break
+            }
 
-        } else {
-          if(text) {
-            keywords.add(text)
           } else {
-           return
+            keywords.add(text)
           }
-      }
-      }
-    }
-
-    gcmdKeywords.each {e ->
-      switch(e.keywordNamespace) {
-        case KeywordType.Science:
-          gcmdScience.add(e.keywordText)
-          break
-        case KeywordType.Location:
-          gcmdLocations.add(e.keywordText)
-          break
-        case KeywordType.Platform:
-          gcmdPlatforms.add(e.keywordText)
-          break
-        case KeywordType.Instrument:
-          gcmdInstruments.add(e.keywordText)
-          break
-        case KeywordType.Project:
-          gcmdProjects.add(e.keywordText)
-          break
-        case KeywordType.Data_Center:
-          gcmdDataCenters.add(e.keywordText)
-          break
-        case KeywordType.Data_Resolution:
-          gcmdDataResolution.add(e.keywordText)
-          break
-        default:
-          break
+        }
       }
     }
 
@@ -274,6 +261,7 @@ class MetadataParser {
         gcmdInstruments       : gcmdInstruments,
         gcmdPlatforms         : gcmdPlatforms,
         gcmdProjects          : gcmdProjects,
+        gcmdDataCenters       : gcmdDataCenters,
         gcmdDataResolution    : gcmdDataResolution,
         temporalBounding      : temporalBounding,
         spatialBounding       : spatialBounding,
@@ -299,13 +287,57 @@ class MetadataParser {
 
   public static Map mergeCollectionAndGranule(Map collection, Map granule) {
 
+    def keywords = [] as Set
+    keywords.addAll(collection.keywords)
+    keywords.addAll(granule.keywords)
+
+    def topicCategories = [] as Set
+    topicCategories.addAll(collection.topicCategories)
+    topicCategories.addAll(granule.topicCategories)
+
+    def gcmdDataCenters = [] as Set
+    gcmdDataCenters.addAll(collection.gcmdDataCenters)
+    gcmdDataCenters.addAll(granule.gcmdDataCenters)
+
+    def gcmdScience = [] as Set
+    gcmdScience.addAll(collection.gcmdScience)
+    gcmdScience.addAll(granule.gcmdScience)
+
+    def gcmdLocations = [] as Set
+    gcmdLocations.addAll(collection.gcmdLocations)
+    gcmdLocations.addAll(granule.gcmdLocations)
+
+    def gcmdPlatforms = [] as Set
+    gcmdPlatforms.addAll(collection.gcmdPlatforms)
+    gcmdPlatforms.addAll(granule.gcmdPlatforms)
+
+    def gcmdInstruments = [] as Set
+    gcmdInstruments.addAll(collection.gcmdInstruments)
+    gcmdInstruments.addAll(granule.gcmdInstruments)
+
+    def gcmdProjects = [] as Set
+    gcmdProjects.addAll(collection.gcmdProjects)
+    gcmdProjects.addAll(granule.gcmdProjects)
+
+    def gcmdDataResolution = [] as Set
+    gcmdDataResolution.addAll(collection.gcmdDataResolution)
+    gcmdDataResolution.addAll(granule.gcmdDataResolution)
+
     def json = [
         fileIdentifier        : granule.fileIdentifier,
         parentIdentifier      : granule.parentIdentifier,
         title                 : granule.title,
         alternateTitle        : granule.alternateTitle ?: collection.alternateTitle ?: collection.title, //fixme?
         description           : granule.description,
-        keywords              : granule.keywords,
+        keywords              : keywords,
+        topicCategories       : topicCategories,
+        gcmdScience           : gcmdScience,
+        gcmdLocations         : gcmdLocations,
+        gcmdInstruments       : gcmdInstruments,
+        gcmdPlatforms         : gcmdPlatforms,
+        gcmdProjects          : gcmdProjects,
+        gcmdDataCenters       : gcmdDataCenters,
+        gcmdDataResolution    : gcmdDataResolution,
         temporalBounding      : granule.temporalBounding,
         spatialBounding       : granule.spatialBounding,
         acquisitionInstruments: granule.acquisitionInstruments ?: collection.acquisitionInstruments,
@@ -326,59 +358,5 @@ class MetadataParser {
     ]
 
     return json
-  }
-
-
-  public static Map parseGCMDKeywordNamespace(String text, String namespace) {
-    if(!namespace.toLowerCase().contains('gcmd')) { return null }
-
-    def keywords
-    def type
-    switch (namespace) {
-      case {it.toLowerCase().contains('location') || it.toLowerCase().contains('place')}:
-        type = KeywordType.Location
-        break
-      case {it.toLowerCase().contains('science')}:
-        type = KeywordType.Science
-        break
-      case {it.toLowerCase().contains('platform')}:
-        type = KeywordType.Platform
-        break
-      case {it.toLowerCase().contains('instrument')}:
-        type = KeywordType.Instrument
-        break
-      case {it.toLowerCase().contains('project')}:
-        type = KeywordType.Project
-        break
-      case {it.toLowerCase().contains('data center')}:
-        type = KeywordType.Data_Center
-        break
-      case {it.toLowerCase().contains('data resolution')}:
-        type = KeywordType.Data_Resolution
-        break
-      default:
-        type = null
-        break
-    }
-
-    if(type == KeywordType.Science || type == KeywordType.Location) {
-      keywords = WordUtils.capitalizeFully(text,
-          " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
-    } else {
-      keywords = text
-    }
-
-    if(type == KeywordType.Science) {
-      keywords = keywords.replace('Earth Science > ', '')
-    }
-
-    return [
-        keywordText: keywords,
-        keywordNamespace: type
-    ]
-  }
-
-  public static enum KeywordType {
-    Location, Science, Platform, Instrument, Project, Data_Center, Data_Resolution
   }
 }
