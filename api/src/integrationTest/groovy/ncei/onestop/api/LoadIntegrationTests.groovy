@@ -19,95 +19,94 @@ import spock.lang.Unroll
 @Unroll
 @WebIntegrationTest
 @ActiveProfiles("integration")
-@ContextConfiguration(loader = SpringApplicationContextLoader,
-        classes = [Application, IntegrationTestConfig])
+@ContextConfiguration(loader = SpringApplicationContextLoader, classes = [Application, IntegrationTestConfig])
 class LoadIntegrationTests extends Specification {
 
-    @Autowired
-    private Client client
+  @Autowired
+  private Client client
 
-    @Autowired
-    private ElasticsearchService elasticsearchService
+  @Autowired
+  private ElasticsearchService elasticsearchService
 
-    @Value('${local.server.port}')
-    private String port
+  @Value('${local.server.port}')
+  private String port
 
-    @Value('${server.context-path}')
-    private String contextPath
+  @Value('${server.context-path}')
+  private String contextPath
 
-    @Value('${elasticsearch.index.storage.name}')
-    private String INDEX
+  @Value('${elasticsearch.index.storage.name}')
+  private String INDEX
 
-    @Value('${elasticsearch.index.storage.collectionType}')
-    private String TYPE
+  @Value('${elasticsearch.index.storage.collectionType}')
+  private String TYPE
 
-    RestTemplate restTemplate
-    URI loadURI
-    URI refreshURI
-    URI searchURI
+  RestTemplate restTemplate
+  URI loadURI
+  URI refreshURI
+  URI searchURI
 
-    private final String searchQuery = '{"queries":[{"type":"queryText","value":"temperature"}]}'
+  private final String searchQuery = '{"queries":[{"type":"queryText","value":"temperature"}]}'
 
-    void setup() {
-        restTemplate = new RestTemplate()
-        restTemplate.errorHandler = new TestResponseErrorHandler()
-        loadURI = "http://localhost:${port}/${contextPath}/load".toURI()
-        refreshURI = "http://localhost:${port}/${contextPath}/load/refresh".toURI()
-        searchURI = "http://localhost:${port}/${contextPath}/search".toURI()
-    }
+  void setup() {
+    restTemplate = new RestTemplate()
+    restTemplate.errorHandler = new TestResponseErrorHandler()
+    loadURI = "http://localhost:${port}/${contextPath}/load".toURI()
+    refreshURI = "http://localhost:${port}/${contextPath}/load/refresh".toURI()
+    searchURI = "http://localhost:${port}/${contextPath}/search".toURI()
+  }
 
-    void cleanup() {
-        elasticsearchService.purgeIndex()
-    }
+  void cleanup() {
+    elasticsearchService.purgeIndex()
+  }
 
-    def 'Document is stored, then searchable on reindex'() {
-        setup:
-        def document = ClassLoader.systemClassLoader.getResourceAsStream("data/GHRSST/1.xml").text
-        def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
-        def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
+  def 'Document is stored, then searchable on reindex'() {
+    setup:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("data/GHRSST/1.xml").text
+    def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+    def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
 
-        when:
-        def loadResult = restTemplate.exchange(loadRequest, Map)
+    when:
+    def loadResult = restTemplate.exchange(loadRequest, Map)
 
-        then: "Load returns CREATED"
-        loadResult.statusCode == HttpStatus.CREATED
+    then: "Load returns CREATED"
+    loadResult.statusCode == HttpStatus.CREATED
 
-        and: "Storage index contains loaded document"
-        def docId = loadResult.body.data.id
-        client.get(new GetRequest(INDEX, TYPE, docId)).actionGet().exists
+    and: "Storage index contains loaded document"
+    def docId = loadResult.body.data.id
+    client.get(new GetRequest(INDEX, TYPE, docId)).actionGet().exists
 
-        when: "Refresh elasticsearch then search"
-        elasticsearchService.refresh()
-        def searchResult = restTemplate.exchange(searchRequest, Map)
-        def hits = searchResult.body.data
+    when: "Refresh elasticsearch then search"
+    elasticsearchService.refresh()
+    def searchResult = restTemplate.exchange(searchRequest, Map)
+    def hits = searchResult.body.data
 
-        then: "Does not appear in search results yet"
-        hits.size() == 0
+    then: "Does not appear in search results yet"
+    hits.size() == 0
 
-        when: "Reindex storage then search"
-        elasticsearchService.reindex()
-        elasticsearchService.refresh()
-        searchResult = restTemplate.exchange(searchRequest, Map)
-        hits = searchResult.body.data
+    when: "Reindex storage then search"
+    elasticsearchService.reindex()
+    elasticsearchService.refresh()
+    searchResult = restTemplate.exchange(searchRequest, Map)
+    hits = searchResult.body.data
 
-        then:
-        hits.size() == 1
-        def fileId = hits.attributes[0].fileIdentifier
-        fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
-    }
+    then:
+    hits.size() == 1
+    def fileId = hits.attributes[0].fileIdentifier
+    fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+  }
 
-    def 'Document rejected when whitespace found in fileIdentifier'() {
-        setup:
-        def document = ClassLoader.systemClassLoader.getResourceAsStream("data/BadFiles/montauk_forecastgrids_2013.xml").text
-        def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+  def 'Document rejected when whitespace found in fileIdentifier'() {
+    setup:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("data/BadFiles/montauk_forecastgrids_2013.xml").text
+    def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
 
-        when:
-        def loadResult = restTemplate.exchange(loadRequest, Map)
+    when:
+    def loadResult = restTemplate.exchange(loadRequest, Map)
 
-        then: "Load returns BAD_REQUEST"
-        loadResult.statusCode == HttpStatus.BAD_REQUEST
+    then: "Load returns BAD_REQUEST"
+    loadResult.statusCode == HttpStatus.BAD_REQUEST
 
-        and: "Erroneous file identifier specified"
-        loadResult.body.errors.detail == 'gov.noaa.ngdc.mgg.dem: montauk_forecastgrids_2013'
-    }
+    and: "Erroneous file identifier specified"
+    loadResult.body.errors.detail == 'gov.noaa.ngdc.mgg.dem: montauk_forecastgrids_2013'
+  }
 }
