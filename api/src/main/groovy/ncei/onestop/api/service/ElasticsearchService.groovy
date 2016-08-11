@@ -2,10 +2,8 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-import org.apache.lucene.util.QueryBuilder
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.delete.DeleteRequest
-import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.Client
@@ -172,12 +170,11 @@ class ElasticsearchService {
         while (collectionsRemain) {
             collectionScroll.hits.hits.each { collection ->
                 def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
-                def granuleQuery = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', collection.source.fileIdentifier))
                 def granuleScroll = client.prepareSearch(STORAGE_INDEX)
                     .setTypes(GRANULE_TYPE)
                     .addSort('fileIdentifier', SortOrder.ASC)
                     .setScroll('1m')
-                    .setQuery(granuleQuery)
+                    .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', parsedCollection.fileIdentifier)))
                     .setSize(scrollSize)
                     .execute()
                     .actionGet()
