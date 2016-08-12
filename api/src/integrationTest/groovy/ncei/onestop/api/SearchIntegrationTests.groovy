@@ -56,7 +56,7 @@ class SearchIntegrationTests extends Specification {
     }
 
     void cleanup() {
-        elasticsearchService.purgeIndex()
+        elasticsearchService.recreate()
     }
 
 

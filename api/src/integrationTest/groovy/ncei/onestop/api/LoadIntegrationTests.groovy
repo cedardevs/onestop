@@ -45,7 +45,7 @@ class LoadIntegrationTests extends Specification {
   URI refreshURI
   URI searchURI
 
-  private final String searchQuery = '{"queries":[{"type":"queryText","value":"temperature"}]}'
+  private final String searchQuery = '{"queries":[]}'
 
   void setup() {
     restTemplate = new RestTemplate()
@@ -53,10 +53,10 @@ class LoadIntegrationTests extends Specification {
     loadURI = "http://localhost:${port}/${contextPath}/load".toURI()
     refreshURI = "http://localhost:${port}/${contextPath}/load/refresh".toURI()
     searchURI = "http://localhost:${port}/${contextPath}/search".toURI()
+    elasticsearchService.recreate()
   }
 
   void cleanup() {
-    elasticsearchService.purgeIndex()
   }
 
   def 'Document is stored, then searchable on reindex'() {
@@ -109,4 +109,32 @@ class LoadIntegrationTests extends Specification {
     and: "Erroneous file identifier specified"
     loadResult.body.errors.detail == 'gov.noaa.ngdc.mgg.dem: montauk_forecastgrids_2013'
   }
+
+  def 'Orphan granules are not indexed for searching'() {
+    setup:
+    // O1.xml is an orphan: it's parentIdentified doesn't match anything
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("data/COOPS/O1.xml").text
+    def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+    def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
+
+    when:
+    def loadResult = restTemplate.exchange(loadRequest, Map)
+    elasticsearchService.refresh()
+    elasticsearchService.reindex()
+    elasticsearchService.refresh()
+    def hits = restTemplate.exchange(searchRequest, Map).body.data
+
+    then:
+    loadResult.statusCode == HttpStatus.CREATED
+    hits.size() == 0
+  }
+
+  def 'Collections with no granules are indexed for searching'() {
+
+  }
+
+  def 'Granules are merged with their collections and indexed for searching'() {
+
+  }
+
 }
