@@ -3,7 +3,6 @@ import { DateRange } from './TemporalActions'
 import DayPicker, { DateUtils } from 'react-day-picker'
 import styles from './temporal.css'
 import ToggleDisplay from 'react-toggle-display'
-import moment from 'moment'
 import YearMonthForm from './YearMonthForm'
 
 const currentYear = (new Date()).getFullYear()
@@ -34,7 +33,7 @@ class TemporalSearch extends React.Component {
   handleDayClick(e, day) {
     const range = DateUtils.addDayToRange(day, this.state)
     this.setState(range)
-    this.emitRange()
+    this.emitRange(range.from, range.to)
   }
 
   showCurrentDate() {
@@ -48,12 +47,12 @@ class TemporalSearch extends React.Component {
       from: null,
       to: null
     })
-    this.emitRange()
+    this.emitRange(this.setState.from, this.setState.to)
   }
 
-  emitRange() {
-    this.props.updateOnChange(this.state.from, DateRange.START_DATE)
-    this.props.updateOnChange(this.state.to, DateRange.END_DATE)
+  emitRange(from, to) {
+    this.props.updateOnChange(from, DateRange.START_DATE)
+    this.props.updateOnChange(to, DateRange.END_DATE)
   }
 
   render() {
