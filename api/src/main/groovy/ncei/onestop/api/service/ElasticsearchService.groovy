@@ -105,27 +105,6 @@ class ElasticsearchService {
     }
   }
 
-  // FIXME Delete this once no longer testing
-  public Map loadDocumentToTest(String document) {
-    def mappedDoc = MetadataParser.parseXMLMetadataToMap(document)
-    if (!Pattern.matches(".*\\s.*", mappedDoc.fileIdentifier)) {
-      def parsedDoc = JsonOutput.toJson(mappedDoc)
-      IndexResponse iResponse = client.prepareIndex("testing", SEARCH_TYPE, mappedDoc.fileIdentifier)
-          .setSource(parsedDoc).execute().actionGet()
-      def attributes = [created: iResponse.created, src: parsedDoc]
-      def data = [type: SEARCH_TYPE, id: iResponse.id, attributes: attributes]
-      def response = [data: data]
-      return response
-    } else {
-      def errors = [
-          status: 400,
-          title : 'Load request failed due to bad fileIdentifier value',
-          detail: mappedDoc.fileIdentifier
-      ]
-      return [errors: errors]
-    }
-  }
-
   public void reindex() {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
