@@ -2,10 +2,7 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-import org.elasticsearch.action.bulk.BulkRequest
-import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.index.IndexResponse
-import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortOrder
@@ -129,21 +126,6 @@ class ElasticsearchService {
     }
   }
 
-  public void purgeIndex() {
-    def items = client.search(new SearchRequest(SEARCH_INDEX).types(SEARCH_TYPE)).actionGet()
-    def ids = items.hits.hits*.id
-    def bulkDelete = ids.inject(new BulkRequest()) { bulk, id ->
-      bulk.add(new DeleteRequest(SEARCH_INDEX, SEARCH_TYPE, id))
-    }
-    bulkDelete.refresh(true)
-    client.bulk(bulkDelete)
-  }
-
-  public void refresh() {
-    client.admin().indices().prepareRefresh(SEARCH_INDEX).execute().actionGet()
-    client.admin().indices().prepareRefresh(STORAGE_INDEX).execute().actionGet()
-  }
-
   public void reindex() {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
@@ -204,9 +186,30 @@ class ElasticsearchService {
       collectionsRemain = collectionScroll.hits.hits.length > 0
     }
 
-    bulkRequest.get()
+    if (bulkRequest.numberOfActions() > 0) {
+      bulkRequest.get()
+    }
+
     def end = System.currentTimeMillis()
     log.info "reindexed ${recordCount} records in ${(end - start) / 1000}s"
+  }
+
+  public void refresh() {
+    client.admin().indices().prepareRefresh(SEARCH_INDEX, STORAGE_INDEX).execute().actionGet()
+  }
+
+  public void drop() {
+    client.admin().indices().prepareDelete(SEARCH_INDEX, STORAGE_INDEX).execute().actionGet()
+  }
+
+  public void create() {
+    configureSearchIndex()
+    configureStorageIndex()
+  }
+
+  public void recreate() {
+    drop()
+    create()
   }
 
   @PostConstruct

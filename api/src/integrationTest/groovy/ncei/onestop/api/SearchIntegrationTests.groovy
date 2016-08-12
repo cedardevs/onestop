@@ -39,6 +39,8 @@ class SearchIntegrationTests extends Specification {
 
 
     void setup() {
+        elasticsearchService.recreate()
+
         def cl = ClassLoader.systemClassLoader
         for(e in datasets) {
             for(i in 1..3) {
@@ -54,11 +56,6 @@ class SearchIntegrationTests extends Specification {
         restTemplate.errorHandler = new TestResponseErrorHandler()
         searchBaseUri = "http://localhost:${port}/${contextPath}/search".toURI()
     }
-
-    void cleanup() {
-        elasticsearchService.purgeIndex()
-    }
-
 
     def 'Valid query-only search returns OK with expected results'() {
         setup:
