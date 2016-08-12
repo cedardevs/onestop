@@ -80,19 +80,21 @@ class TemporalSearch extends React.Component {
           </div>
         </div>
         <ToggleDisplay show={this.state.showCalendar}>
-          <DayPicker className={styles.dateComponent}
-            ref="daypicker"
-            onDayClick={ this.handleDayClick }
-            initialMonth={ this.state.initialMonth }
-            fromMonth={ fromMonth }
-            toMonth={ toMonth }
-            selectedDays={ day => DateUtils.isDayInRange(day, { from, to }) }
-            captionElement={
-              <YearMonthForm onChange={ initialMonth => this.setState({ initialMonth }) } />
-            }
-          />
-          <div className={styles.resetSelection}>
-            <button href="#" onClick={ this.handleResetClick }><strong>Reset</strong></button>
+          <div className={styles.calendarBox}>
+            <DayPicker
+              ref="daypicker"
+              onDayClick={ this.handleDayClick }
+              initialMonth={ this.state.initialMonth }
+              fromMonth={ fromMonth }
+              toMonth={ toMonth }
+              selectedDays={ day => DateUtils.isDayInRange(day, { from, to }) }
+              captionElement={
+                <YearMonthForm onChange={ initialMonth => this.setState({ initialMonth }) } />
+              }
+            />
+            <div className={styles.resetSelection}>
+              <button href="#" onClick={ this.handleResetClick }><strong>Reset</strong></button>
+            </div>
           </div>
         </ToggleDisplay>
       </div>
