@@ -176,7 +176,7 @@ class ElasticsearchService {
     aliasBuilder.addAlias(newSearchIndex, SEARCH_INDEX)
     aliasBuilder.execute().actionGet()
 
-    client.admin().indices().prepareDelete(existingSearchIndices as String[])
+    existingSearchIndices.each { drop(it) }
 
     def end = System.currentTimeMillis()
     log.info "reindexed ${recordCount} records in ${(end - start) / 1000}s"
@@ -192,6 +192,7 @@ class ElasticsearchService {
 
   public void drop(String name) {
     client.admin().indices().prepareDelete(name).execute().actionGet()
+    log.debug "dropped index [${name}]"
   }
 
   public String create(String baseName, List typeNames) {
@@ -209,6 +210,7 @@ class ElasticsearchService {
       client.admin().indices().preparePutMapping(indexName).setSource(mapping).setType(type).execute().actionGet()
     }
 
+    log.debug "created new index [${indexName}]"
     return indexName
   }
 
