@@ -1,6 +1,7 @@
 package ncei.onestop.api.service
 
 import groovy.json.JsonSlurper
+import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -203,5 +204,56 @@ class SearchRequestParserServiceTest extends Specification {
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
     postFilters == null
+  }
+
+  def 'Facet filter request creates post-filter'() {
+    given:
+    def request = '{"filters":[{"type":"facet","name":"gcmdScience","values":"Atmosphere > Aerosols"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def parsedRequest = requestParser.parseSearchRequest(params)
+    def queryResult = parsedRequest.query
+    def postFilters = parsedRequest.postFilters
+    def expectedQueryString = """\
+        {
+          "bool" : {
+            "must" : {
+              "bool" : { }
+            },
+            "filter" : {
+              "bool" : { }
+            }
+          }
+        }""".stripIndent()
+
+    def expectedPostFiltersString = """\
+        {
+          "bool" : {
+            "must" : {
+              "terms" : {
+                "gcmdScience" : [ "Atmosphere > Aerosols" ]
+              }
+            }
+          }
+        }""".stripIndent()
+
+    then:
+    !queryResult.toString().empty
+    !postFilters.toString().empty
+    queryResult.toString() == expectedQueryString
+    postFilters.toString() == expectedPostFiltersString
+  }
+
+  def 'Default aggregations are built'() {
+    when:
+    def aggs = requestParser.createDefaultAggregations()
+
+    then:
+    // This is about all that can be verified w/o changing the List to a Map unnecessarily...
+    aggs.size() == 7 // 7 GCMD types
+    aggs.each { a ->
+      a.class == TermsBuilder
+    }
   }
 }
