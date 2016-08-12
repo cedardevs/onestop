@@ -1,6 +1,7 @@
 import React from 'react'
 import { DateRange } from './TemporalActions'
 import DayPicker, { DateUtils } from 'react-day-picker'
+import moment from 'moment'
 import styles from './temporal.css'
 import ToggleDisplay from 'react-toggle-display'
 import YearMonthForm from './YearMonthForm'
@@ -64,8 +65,8 @@ class TemporalSearch extends React.Component {
             <input
               ref="input"
               type="text"
-              value={ this.state.from }
-              placeholder="YYYY-MM-DD"
+              value={ moment(this.state.from).format('L') }
+              placeholder="MM-DD-YYYY"
               onFocus={ this.showCurrentDate }
             />
           </div>
@@ -73,8 +74,8 @@ class TemporalSearch extends React.Component {
             <input
               ref="input"
               type="text"
-              value={ this.state.to }
-              placeholder="YYYY-MM-DD"
+              value={ moment(this.state.to).format('L') }
+              placeholder="MM-DD-YYYY"
               onFocus={ this.showCurrentDate }
             />
           </div>
