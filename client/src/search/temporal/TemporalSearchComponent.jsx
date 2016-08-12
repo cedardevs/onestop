@@ -2,6 +2,7 @@ import React from 'react'
 import { DateRange } from './TemporalActions'
 import DayPicker, { DateUtils } from 'react-day-picker'
 import styles from './temporal.css'
+import ReactDOM from 'react-dom'
 import ToggleDisplay from 'react-toggle-display'
 import YearMonthForm from './YearMonthForm'
 
@@ -9,7 +10,6 @@ const currentYear = (new Date()).getFullYear()
 const fromMonth = new Date(currentYear - 100, 0, 1, 0, 0)
 const toMonth = new Date()
 
-//const TemporalSearch = ({onChange, currentDate}) => {
 class TemporalSearch extends React.Component {
   constructor(props) {
     super(props)
@@ -18,7 +18,9 @@ class TemporalSearch extends React.Component {
     this.showCurrentDate = this.showCurrentDate.bind(this)
     this.emitRange = this.emitRange.bind(this)
     this.render = this.render.bind(this)
+    this.toggleDate = this.toggleDate.bind(this)
     this.state = this.initialState()
+    this.handleClick = this.handleClick.bind(this)
   }
 
   initialState() {
@@ -37,7 +39,6 @@ class TemporalSearch extends React.Component {
   }
 
   showCurrentDate() {
-    // this.refs.daypicker.showMonth(this.state.month)
     this.setState({showCalendar: !this.state.showCalendar})
   }
 
@@ -55,6 +56,26 @@ class TemporalSearch extends React.Component {
     this.props.updateOnChange(to, DateRange.END_DATE)
   }
 
+  handleClick(e) {
+    var component = ReactDOM.findDOMNode(this.refs.daypicker)
+    if (this.state.showCalendar && !component.contains(e.target) && e.srcElement.id !== 'inputDate') {
+      this.toggleDate()
+    }
+  }
+
+  componentWillMount() {
+    document.addEventListener('click', this.handleClick, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleClick, false);
+  }
+
+  toggleDate() {
+    this.state.showCalendar = !this.state.showCalendar
+    this.forceUpdate()
+  }
+
   render() {
     const { from, to } = this.state
     return (
@@ -62,7 +83,7 @@ class TemporalSearch extends React.Component {
         <div>
           <div className={styles.dateInputLeft}>
             <input
-              ref="input"
+              id="inputDate"
               type="text"
               value={ this.state.from }
               placeholder="YYYY-MM-DD"
@@ -71,7 +92,7 @@ class TemporalSearch extends React.Component {
           </div>
           <div className={styles.dateInputRight} >
             <input
-              ref="input"
+              id="inputDate"
               type="text"
               value={ this.state.to }
               placeholder="YYYY-MM-DD"
