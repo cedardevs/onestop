@@ -7,16 +7,18 @@ import spock.lang.Unroll
 @Unroll
 class SearchRequestParserServiceTest extends Specification {
 
-    private slurper = new JsonSlurper()
-    private requestParser = new SearchRequestParserService()
+  private slurper = new JsonSlurper()
+  private requestParser = new SearchRequestParserService()
 
-    def "Request with #label creates empty elasticsearch request" () {
-        given:
-        def params = slurper.parseText(json)
+  def "Request with #label creates empty elasticsearch request"() {
+    given:
+    def params = slurper.parseText(json)
 
-        when:
-        def result = requestParser.parseSearchRequest(params)
-        def expectedString = """\
+    when:
+    def parsedRequest = requestParser.parseSearchRequest(params)
+    def queryResult = parsedRequest.query
+    def postFilters = parsedRequest.postFilters
+    def expectedQueryString = """\
         {
           "bool" : {
             "must" : {
@@ -28,26 +30,29 @@ class SearchRequestParserServiceTest extends Specification {
           }
         }""".stripIndent()
 
-        then:
-        !result.toString().empty
-        result.toString() == expectedString
+    then:
+    !queryResult.toString().empty
+    queryResult.toString() == expectedQueryString
+    postFilters == null
 
-        where:
-        label                       | json
-        'nothing'                   | '{}'
-        'empty queries and filters' | '{"queries":[],"filters":[]}'
-        'only queries'              | '{"queries":[]}'
-        'only filters'              | '{"filters":[]}'
-    }
+    where:
+    label                       | json
+    'nothing'                   | '{}'
+    'empty queries and filters' | '{"queries":[],"filters":[]}'
+    'only queries'              | '{"queries":[]}'
+    'only filters'              | '{"filters":[]}'
+  }
 
-    def "Test only queryText specified" () {
-        given:
-        def request = '{"queries":[{"type":"queryText","value":"winter"}]}'
-        def params = slurper.parseText(request)
+  def "Test only queryText specified"() {
+    given:
+    def request = '{"queries":[{"type":"queryText","value":"winter"}]}'
+    def params = slurper.parseText(request)
 
-        when:
-        def result = requestParser.parseSearchRequest(params)
-        def expectedString = """\
+    when:
+    def parsedRequest = requestParser.parseSearchRequest(params)
+    def queryResult = parsedRequest.query
+    def postFilters = parsedRequest.postFilters
+    def expectedQueryString = """\
         {
           "bool" : {
             "must" : {
@@ -65,19 +70,22 @@ class SearchRequestParserServiceTest extends Specification {
           }
         }""".stripIndent()
 
-        then:
-        !result.toString().empty
-        result.toString().equals expectedString
-    }
+    then:
+    !queryResult.toString().empty
+    queryResult.toString() == expectedQueryString
+    postFilters == null
+  }
 
-    def 'Datetime filter request generates expected elasticsearch query'() {
-        given:
-        def request = '{"filters":[{"type":"datetime","before":"2011-11-11", "after":"2010-10-10"}]}'
-        def params = slurper.parseText(request)
+  def 'Datetime filter request generates expected elasticsearch query'() {
+    given:
+    def request = '{"filters":[{"type":"datetime","before":"2011-11-11", "after":"2010-10-10"}]}'
+    def params = slurper.parseText(request)
 
-        when:
-        def result = requestParser.parseSearchRequest(params)
-        def expectedString = """\
+    when:
+    def parsedRequest = requestParser.parseSearchRequest(params)
+    def queryResult = parsedRequest.query
+    def postFilters = parsedRequest.postFilters
+    def expectedQueryString = """\
         {
           "bool" : {
             "must" : {
@@ -109,19 +117,22 @@ class SearchRequestParserServiceTest extends Specification {
           }
         }""".stripIndent()
 
-        then:
-        !result.toString().empty
-        result.toString() == expectedString
-    }
+    then:
+    !queryResult.toString().empty
+    queryResult.toString() == expectedQueryString
+    postFilters == null
+  }
 
-    def 'Geopoint filter request generates expected elasticsearch query'() {
-        given:
-        def request = '{"filters":[{"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [67.89, 12.345]}}]}'
-        def params = slurper.parseText(request)
+  def 'Geopoint filter request generates expected elasticsearch query'() {
+    given:
+    def request = '{"filters":[{"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [67.89, 12.345]}}]}'
+    def params = slurper.parseText(request)
 
-        when:
-        def result = requestParser.parseSearchRequest(params)
-        def expectedString = """\
+    when:
+    def parsedRequest = requestParser.parseSearchRequest(params)
+    def queryResult = parsedRequest.query
+    def postFilters = parsedRequest.postFilters
+    def expectedQueryString = """\
         {
           "bool" : {
             "must" : {
@@ -146,21 +157,24 @@ class SearchRequestParserServiceTest extends Specification {
           }
         }""".stripIndent()
 
-        then:
-        !result.toString().empty
-        result.toString() == expectedString
-    }
+    then:
+    !queryResult.toString().empty
+    queryResult.toString() == expectedQueryString
+    postFilters == null
+  }
 
-    def 'Bbox filter request generates expected elasticsearch query'() {
-        given:
-        def request = '{"filters":[{"type": "geometry", "relation": "disjoint", "geometry":' +
-          '  {"type": "Polygon", "coordinates": [[[-5.99, 45.99], [-5.99, 36.49], [36.49, 30.01], [36.49, 45.99], [-5.99, 45.99]]]}' +
-          '}]}'
-        def params = slurper.parseText(request)
+  def 'Bbox filter request generates expected elasticsearch query'() {
+    given:
+    def request = '{"filters":[{"type": "geometry", "relation": "disjoint", "geometry":' +
+        '  {"type": "Polygon", "coordinates": [[[-5.99, 45.99], [-5.99, 36.49], [36.49, 30.01], [36.49, 45.99], [-5.99, 45.99]]]}' +
+        '}]}'
+    def params = slurper.parseText(request)
 
-        when:
-        def result = requestParser.parseSearchRequest(params)
-        def expectedString = """\
+    when:
+    def parsedRequest = requestParser.parseSearchRequest(params)
+    def queryResult = parsedRequest.query
+    def postFilters = parsedRequest.postFilters
+    def expectedQueryString = """\
         {
           "bool" : {
             "must" : {
@@ -185,8 +199,9 @@ class SearchRequestParserServiceTest extends Specification {
           }
         }""".stripIndent()
 
-        then:
-        !result.toString().empty
-        result.toString() == expectedString
-    }
+    then:
+    !queryResult.toString().empty
+    queryResult.toString() == expectedQueryString
+    postFilters == null
+  }
 }

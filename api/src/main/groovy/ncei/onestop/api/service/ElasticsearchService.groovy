@@ -57,7 +57,6 @@ class ElasticsearchService {
   private Map queryElasticSearch(Map params) {
 
     def parsedRequest = searchRequestParserService.parseSearchRequest(params)
-
     def query = parsedRequest.query
     def postFilters = parsedRequest.postFilters
     def aggregations = searchRequestParserService.createDefaultAggregations()
@@ -70,9 +69,7 @@ class ElasticsearchService {
 
     if(postFilters) { srb = srb.setPostFilter(postFilters) }
 
-    aggregations.each { a ->
-      srb = srb.addAggregation(a)
-    }
+    aggregations.each { a -> srb = srb.addAggregation(a) }
 
     srb = srb.setFrom(0).setSize(100) // TODO - expose these as API parameters
 

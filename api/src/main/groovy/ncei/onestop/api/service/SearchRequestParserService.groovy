@@ -69,6 +69,8 @@ class SearchRequestParserService {
          - intersection probably bool > must > bool > must (single term)
     */
 
+    def postFilters = false // Use a flag
+
     def preBuilder = QueryBuilders.boolQuery()
     def postBuilder = QueryBuilders.boolQuery()
     if (!filters) {
@@ -108,9 +110,11 @@ class SearchRequestParserService {
     // Facet filters:
     groupedFilters.facet.each {
       // Facets are applied as post_filters so that counts on the facet menu don't change but displayed results do
+      postFilters = true
       postBuilder.must(QueryBuilders.termsQuery(it.name, it.values))
     }
 
+    postBuilder = postFilters ? postBuilder : null
     return [
         pre: preBuilder,
         post: postBuilder
