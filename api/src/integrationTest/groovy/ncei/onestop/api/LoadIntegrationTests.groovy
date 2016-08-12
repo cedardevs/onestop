@@ -48,15 +48,13 @@ class LoadIntegrationTests extends Specification {
   private final String searchQuery = '{"queries":[]}'
 
   void setup() {
+    elasticsearchService.recreate()
+
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
     loadURI = "http://localhost:${port}/${contextPath}/load".toURI()
     refreshURI = "http://localhost:${port}/${contextPath}/load/refresh".toURI()
     searchURI = "http://localhost:${port}/${contextPath}/search".toURI()
-    elasticsearchService.recreate()
-  }
-
-  void cleanup() {
   }
 
   def 'Document is stored, then searchable on reindex'() {
@@ -112,7 +110,7 @@ class LoadIntegrationTests extends Specification {
 
   def 'Orphan granules are not indexed for searching'() {
     setup:
-    // O1.xml is an orphan: it's parentIdentified doesn't match anything
+    // COOPS/O1.xml is an orphan: it's parentIdentified doesn't match anything
     def document = ClassLoader.systemClassLoader.getResourceAsStream("data/COOPS/O1.xml").text
     def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
     def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
@@ -130,11 +128,58 @@ class LoadIntegrationTests extends Specification {
   }
 
   def 'Collections with no granules are indexed for searching'() {
+    setup:
+    // GHRSST/1.xml is a collection with no granules
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("data/GHRSST/1.xml").text
+    def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+    def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
 
+    when:
+    def loadResult = restTemplate.exchange(loadRequest, Map)
+    elasticsearchService.refresh()
+    elasticsearchService.reindex()
+    elasticsearchService.refresh()
+    def hits = restTemplate.exchange(searchRequest, Map).body.data
+
+    then:
+    loadResult.statusCode == HttpStatus.CREATED
+    hits.size() == 1
+    hits[0].attributes.fileIdentifier == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
   }
 
   def 'Granules are merged with their collections and indexed for searching'() {
+    setup:
+    // COOPS/C1.xml is a collection, G1.xml and G2.xml are granules belonging to it
+    def documents = [
+        ClassLoader.systemClassLoader.getResourceAsStream("data/COOPS/C1.xml").text,
+        ClassLoader.systemClassLoader.getResourceAsStream("data/COOPS/G1.xml").text,
+        ClassLoader.systemClassLoader.getResourceAsStream("data/COOPS/G2.xml").text
+    ]
+    def loadRequests = documents.collect { document ->
+      RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+    }
+    def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
 
+    when:
+    def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }
+    elasticsearchService.refresh()
+    elasticsearchService.reindex()
+    elasticsearchService.refresh()
+    def hits = restTemplate.exchange(searchRequest, Map).body.data
+
+    then: 'two merged granule + collection documents have been indexed'
+    loadResults.every { it.statusCode == HttpStatus.CREATED }
+    hits.size() == 2
+    def g1Record = hits.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_8638614_201602_D1_v00' }
+    def g2Record = hits.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_9410170_201503_D1_v00' }
+    g1Record != null
+    g2Record != null
+
+    and: 'they contain the attribute values from the granule records when present'
+    g1Record.attributes.temporalBounding.beginDate == '2016-02-01'
+    g1Record.attributes.temporalBounding.endDate == '2016-02-29'
+    g2Record.attributes.temporalBounding.beginDate == '2015-03-01'
+    g2Record.attributes.temporalBounding.endDate == '2015-03-31'
   }
 
 }
