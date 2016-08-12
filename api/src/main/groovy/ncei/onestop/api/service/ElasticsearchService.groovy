@@ -55,16 +55,28 @@ class ElasticsearchService {
   }
 
   private Map queryElasticSearch(Map params) {
-    def query = searchRequestParserService.parseSearchRequest(params)
-    log.debug("ES query:${query} params:${params}")
-    def searchResponse = client
-        .prepareSearch(SEARCH_INDEX)
-        .setTypes(SEARCH_TYPE)
-        .setQuery(query)
-        .setFrom(0).setSize(100) // TODO - expose these as API parameters
-        .execute()
-        .actionGet()
 
+    def parsedRequest = searchRequestParserService.parseSearchRequest(params)
+
+    def query = parsedRequest.query
+    def postFilters = parsedRequest.postFilters
+    def aggregations = searchRequestParserService.createDefaultAggregations()
+
+    log.debug("ES query:${query} params:${params}")
+
+    // Assemble the search request:
+    def srb = client.prepareSearch(SEARCH_INDEX)
+    srb = srb.setTypes(SEARCH_TYPE).setQuery(query)
+
+    if(postFilters) { srb = srb.setPostFilter(postFilters) }
+
+    aggregations.each { a ->
+      srb = srb.addAggregation(a)
+    }
+
+    srb = srb.setFrom(0).setSize(100) // TODO - expose these as API parameters
+
+    def searchResponse = srb.execute().actionGet()
     return searchResponseParserService.searchResponseParser(searchResponse)
   }
 
@@ -123,7 +135,7 @@ class ElasticsearchService {
   public void purgeIndex() {
     def items = client.search(new SearchRequest(SEARCH_INDEX).types(SEARCH_TYPE)).actionGet()
     def ids = items.hits.hits*.id
-    def bulkDelete = ids.inject(new BulkRequest()) {bulk, id ->
+    def bulkDelete = ids.inject(new BulkRequest()) { bulk, id ->
       bulk.add(new DeleteRequest(SEARCH_INDEX, SEARCH_TYPE, id))
     }
     bulkDelete.refresh(true)
@@ -143,7 +155,7 @@ class ElasticsearchService {
     def bulkCount = 0
     def bulkSize = 100
     def recordCount = 0
-    def addRecordToBulk = {record ->
+    def addRecordToBulk = { record ->
       def id = record.fileIdentifier
       def json = JsonOutput.toJson(record)
       def insertRequest = client.prepareIndex(SEARCH_INDEX, SEARCH_TYPE, id).setSource(json)
@@ -167,7 +179,7 @@ class ElasticsearchService {
         .actionGet()
     def collectionsRemain = collectionScroll.hits.hits.length > 0
     while (collectionsRemain) {
-      collectionScroll.hits.hits.each {collection ->
+      collectionScroll.hits.hits.each { collection ->
         def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
         def granuleScroll = client.prepareSearch(STORAGE_INDEX)
             .setTypes(GRANULE_TYPE)
@@ -182,7 +194,7 @@ class ElasticsearchService {
           addRecordToBulk(parsedCollection)
         }
         while (granulesRemain) {
-          granuleScroll.hits.hits.each {granule ->
+          granuleScroll.hits.hits.each { granule ->
             def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)
             def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
             addRecordToBulk(flattenedRecord)
