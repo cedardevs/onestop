@@ -2,10 +2,7 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-import org.elasticsearch.action.bulk.BulkRequest
-import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.action.index.IndexResponse
-import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortOrder
