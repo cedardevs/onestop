@@ -140,6 +140,7 @@
   display: inline;
   font-size: 1.2em;
   height: 3em;
+  z-index: 999;
 }
 /*search container*/
 .searchContainer {
