@@ -4,6 +4,8 @@
    background: white;
    clear: left;
    display: inline;
+   position: absolute !important; /* Necessary to override DayPicker selector default style */
+   margin: 10px 0 0 10px;
  }
 
  .dateInputLeft,
@@ -21,7 +23,6 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  position: absolute;
   padding: 1rem 0;
   user-select: none;
 }
