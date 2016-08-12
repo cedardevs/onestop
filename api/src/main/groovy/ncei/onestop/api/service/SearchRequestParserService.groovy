@@ -9,6 +9,7 @@ import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.aggregations.AggregationBuilder
 import org.elasticsearch.search.aggregations.AggregationBuilders
+import org.elasticsearch.search.aggregations.bucket.terms.Terms
 import org.springframework.stereotype.Service
 
 @Slf4j
@@ -46,13 +47,13 @@ class SearchRequestParserService {
   public List<AggregationBuilder> createDefaultAggregations() {
 
     def aggregations = [
-        AggregationBuilders.terms('science').field('gcmdScience'),
-        AggregationBuilders.terms('locations').field('gcmdLocations'),
-        AggregationBuilders.terms('instruments').field('gcmdInstruments'),
-        AggregationBuilders.terms('platforms').field('gcmdPlatforms'),
-        AggregationBuilders.terms('projects').field('gcmdProjects'),
-        AggregationBuilders.terms('dataCenters').field('gcmdDataCenters'),
-        AggregationBuilders.terms('dataResolution').field('gcmdDataResolution')
+        AggregationBuilders.terms('science').field('gcmdScience').order(Terms.Order.term(true)),
+        AggregationBuilders.terms('locations').field('gcmdLocations').order(Terms.Order.term(true)),
+        AggregationBuilders.terms('instruments').field('gcmdInstruments').order(Terms.Order.term(true)),
+        AggregationBuilders.terms('platforms').field('gcmdPlatforms').order(Terms.Order.term(true)),
+        AggregationBuilders.terms('projects').field('gcmdProjects').order(Terms.Order.term(true)),
+        AggregationBuilders.terms('dataCenters').field('gcmdDataCenters').order(Terms.Order.term(true)),
+        AggregationBuilders.terms('dataResolution').field('gcmdDataResolution').order(Terms.Order.term(true))
     ]
 
     return aggregations
