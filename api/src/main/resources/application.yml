@@ -29,5 +29,5 @@ elasticsearch:
       granuleType: granule
       collectionType: collection
     search:
-      name: search_v1
+      name: search_v2
       type: metadata
