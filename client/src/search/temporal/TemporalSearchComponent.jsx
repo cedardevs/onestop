@@ -37,7 +37,14 @@ class TemporalSearch extends React.Component {
 
   handleDayClick(e, day) {
     const range = DateUtils.addDayToRange(day, this.state)
+    const self = this
+    // Convert to standard format before setting local state
     this.setState(range)
+    _.forOwn(range, function(val, key){
+      if (val) {
+        self.setState({[key + 'String']: moment(val).format('L')})
+      }
+    })
     this.emitRange(range.from, range.to)
   }
 
