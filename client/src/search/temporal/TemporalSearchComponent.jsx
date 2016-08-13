@@ -16,6 +16,7 @@ class TemporalSearch extends React.Component {
     super(props)
     this.handleDayClick = this.handleDayClick.bind(this)
     this.handleResetClick = this.handleResetClick.bind(this)
+    this.handleInputChange = this.handleInputChange.bind(this)
     this.showCurrentDate = this.showCurrentDate.bind(this)
     this.emitRange = this.emitRange.bind(this)
     this.render = this.render.bind(this)
@@ -51,6 +52,16 @@ class TemporalSearch extends React.Component {
     this.emitRange(this.setState.from, this.setState.to)
   }
 
+  handleInputChange(e) {
+    const { value, id } = e.target
+
+    if (moment(value, 'L', true).isValid()) {
+      this.setState({
+        [id]: moment(value, 'L').toDate()
+      })
+    }
+  }
+
   emitRange(from, to) {
     this.props.updateOnChange(from, DateRange.START_DATE)
     this.props.updateOnChange(to, DateRange.END_DATE)
@@ -63,16 +74,17 @@ class TemporalSearch extends React.Component {
         <div>
           <div className={styles.dateInputLeft}>
             <input
-              ref="input"
+              id="from"
               type="text"
               value={ moment(this.state.from).format('L') }
               placeholder="MM-DD-YYYY"
               onFocus={ this.showCurrentDate }
+              onChange={ this.handleInputChange }
             />
           </div>
           <div className={styles.dateInputRight} >
             <input
-              ref="input"
+              id="to"
               type="text"
               value={ moment(this.state.to).format('L') }
               placeholder="MM-DD-YYYY"
