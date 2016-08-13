@@ -38,8 +38,8 @@ class TemporalSearch extends React.Component {
   handleDayClick(e, day) {
     const range = DateUtils.addDayToRange(day, this.state)
     const self = this
-    // Convert to standard format before setting local state
     this.setState(range)
+    // Convert to standard format for display
     _.forOwn(range, function(val, key){
       if (val) {
         self.setState({[key + 'String']: moment(val).format('L')})
@@ -66,7 +66,7 @@ class TemporalSearch extends React.Component {
   handleInputChange(e) {
     const { value, id } = e.target
 
-    // If a valid date, update. Else allow string update only
+    // If a valid date, update entire state, else allow string update only
     if (moment(value, 'L', true).isValid()) {
       this.setState({
         [id]: moment(value, 'L').toDate(),

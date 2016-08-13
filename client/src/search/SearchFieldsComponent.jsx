@@ -40,14 +40,7 @@ class SearchFieldsComponent extends React.Component {
     this.state.showMap = !this.state.showMap
     this.forceUpdate()
   }
-
-  onClickOut(e) {
-    if (this.state.showMap) {
-      this.state.showMap = false //Close map when clicked anywhere outside of it
-      this.forceUpdate()
-    }
-  }
-
+  
   render() {
     return<div className={`pure-form  ${styles.searchFields}`}>
         <div id ="searchbox" className={styles.searchContainer}>
