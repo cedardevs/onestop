@@ -27,9 +27,11 @@ class TemporalSearch extends React.Component {
   initialState() {
     return {
       from: null,
+      fromString: "",
       to: null,
+      toString: "",
       initialMonth: toMonth,
-      showCalendar: false
+      showCalendar: true
     }
   }
 
@@ -40,15 +42,16 @@ class TemporalSearch extends React.Component {
   }
 
   showCurrentDate() {
-    // this.refs.daypicker.showMonth(this.state.month)
-    this.setState({showCalendar: !this.state.showCalendar})
+    //this.refs.daypicker.showMonth(this.state.month)
   }
 
   handleResetClick(e) {
     e.preventDefault()
     this.setState({
       from: null,
-      to: null
+      fromString: "",
+      to: null,
+      toString: ""
     })
     this.emitRange(this.setState.from, this.setState.to)
   }
