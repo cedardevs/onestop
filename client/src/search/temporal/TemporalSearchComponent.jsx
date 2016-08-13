@@ -5,6 +5,7 @@ import moment from 'moment'
 import styles from './temporal.css'
 import ToggleDisplay from 'react-toggle-display'
 import YearMonthForm from './YearMonthForm'
+import _ from 'lodash'
 
 const currentYear = (new Date()).getFullYear()
 const fromMonth = new Date(currentYear - 100, 0, 1, 0, 0)
