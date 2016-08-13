@@ -7,6 +7,7 @@ import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
 import javax.annotation.PostConstruct
@@ -104,6 +105,7 @@ class ElasticsearchService {
     }
   }
 
+  @Scheduled(fixedDelay = 300000L) // 5 minutes after previous run ends
   public void reindex() {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
