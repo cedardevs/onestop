@@ -66,10 +66,14 @@ class TemporalSearch extends React.Component {
   handleInputChange(e) {
     const { value, id } = e.target
 
+    // If a valid date, update. Else allow string update only
     if (moment(value, 'L', true).isValid()) {
       this.setState({
-        [id]: moment(value, 'L').toDate()
-      })
+        [id]: moment(value, 'L').toDate(),
+        [id + 'String']: moment(value).format('L')
+      }, this.showCurrentDate)
+    } else {
+      this.setState({ [id + 'String']: value }, this.showCurrentDate)
     }
   }
 
@@ -79,26 +83,27 @@ class TemporalSearch extends React.Component {
   }
 
   render() {
-    const { from, to } = this.state
+    let { from, to, fromString, toString } = this.state
     return (
       <div>
         <div>
           <div className={styles.dateInputLeft}>
             <input
-              id="from"
               type="text"
-              value={ moment(this.state.from).format('L') }
+              id="from"
+              value={ fromString }
               placeholder="MM-DD-YYYY"
+              onChange={this.handleInputChange}
               onFocus={ this.showCurrentDate }
-              onChange={ this.handleInputChange }
             />
           </div>
           <div className={styles.dateInputRight} >
             <input
-              id="to"
               type="text"
-              value={ moment(this.state.to).format('L') }
+              id="to"
+              value={ toString }
               placeholder="MM-DD-YYYY"
+              onChange={this.handleInputChange}
               onFocus={ this.showCurrentDate }
             />
           </div>
