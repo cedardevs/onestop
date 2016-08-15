@@ -80,7 +80,7 @@ class TemporalSearch extends React.Component {
 
     // If a valid date, promote state date objs, else allow string update only
     if (moment(value, 'L', true).isValid()) {
-      let validDate = moment(value, 'L').toDate()
+      let validDate = moment(value).format('L')
       this.setState({
         [id]: moment(value, 'L').toDate(),
         [id + 'String']: validDate
@@ -94,7 +94,8 @@ class TemporalSearch extends React.Component {
 
   formatAndEmit(date, id) {
     const startEndDate = (id == 'from') ? DateRange.START_DATE : DateRange.END_DATE
-    this.props.updateOnChange(date, startEndDate)
+    const dateString = moment(date).format()
+    this.props.updateOnChange(dateString, startEndDate)
   }
 
   handleClick(e) {
