@@ -19,7 +19,7 @@ class TemporalSearch extends React.Component {
     this.handleResetClick = this.handleResetClick.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.showCurrentDate = this.showCurrentDate.bind(this)
-    this.emitRange = this.emitRange.bind(this)
+    this.formatAndEmit = this.formatAndEmit.bind(this)
     this.render = this.render.bind(this)
     this.state = this.initialState()
   }
@@ -42,10 +42,12 @@ class TemporalSearch extends React.Component {
     // Convert to standard format for display
     _.forOwn(range, function(val, key){
       if (val) {
-        self.setState({[key + 'String']: moment(val).format('L')})
+        let validDate = moment(val).format('L')
+        self.setState({ [key + 'String']: validDate })
+        // Update store
+        self.formatAndEmit(validDate, key)
       }
     })
-    this.emitRange(range.from, range.to)
   }
 
   showCurrentDate() {
@@ -60,7 +62,6 @@ class TemporalSearch extends React.Component {
       to: null,
       toString: ""
     })
-    this.emitRange(this.setState.from, this.setState.to)
   }
 
   handleInputChange(e) {
@@ -68,18 +69,21 @@ class TemporalSearch extends React.Component {
 
     // If a valid date, promote state date objs, else allow string update only
     if (moment(value, 'L', true).isValid()) {
+      let validDate = moment(value, 'L').toDate()
       this.setState({
         [id]: moment(value, 'L').toDate(),
-        [id + 'String']: moment(value).format('L')
+        [id + 'String']: validDate
       })
+      // Update store
+      this.formatAndEmit(validDate, id)
     } else {
       this.setState({ [id + 'String']: value }, this.showCurrentDate)
     }
   }
 
-  emitRange(from, to) {
-    this.props.updateOnChange(from, DateRange.START_DATE)
-    this.props.updateOnChange(to, DateRange.END_DATE)
+  formatAndEmit(date, id) {
+    const startEndDate = (id == 'from') ? DateRange.START_DATE : DateRange.END_DATE
+    this.props.updateOnChange(date, startEndDate)
   }
 
   render() {
