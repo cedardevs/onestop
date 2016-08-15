@@ -9,7 +9,7 @@ import _ from 'lodash'
 
 const currentYear = (new Date()).getFullYear()
 const fromMonth = new Date(currentYear - 100, 0, 1, 0, 0)
-const toMonth = new Date()
+const currentMonth = new Date()
 
 //const TemporalSearch = ({onChange, currentDate}) => {
 class TemporalSearch extends React.Component {
@@ -30,7 +30,7 @@ class TemporalSearch extends React.Component {
       fromString: "",
       to: null,
       toString: "",
-      initialMonth: toMonth,
+      initialMonth: currentMonth,
       showCalendar: true
     }
   }
@@ -49,7 +49,7 @@ class TemporalSearch extends React.Component {
   }
 
   showCurrentDate() {
-    //this.refs.daypicker.showMonth(this.state.month)
+    this.refs.daypicker.showMonth(currentMonth)
   }
 
   handleResetClick(e) {
@@ -115,7 +115,7 @@ class TemporalSearch extends React.Component {
               onDayClick={ this.handleDayClick }
               initialMonth={ this.state.initialMonth }
               fromMonth={ fromMonth }
-              toMonth={ toMonth }
+              currentMonth={ currentMonth }
               selectedDays={ day => DateUtils.isDayInRange(day, { from, to }) }
               captionElement={
                 <YearMonthForm onChange={ initialMonth => this.setState({ initialMonth }) } />
@@ -123,6 +123,9 @@ class TemporalSearch extends React.Component {
             />
             <div className={styles.resetSelection}>
               <button href="#" onClick={ this.handleResetClick }><strong>Reset</strong></button>
+            </div>
+            <div className={styles.resetSelection}>
+              <button href="#" onClick={ this.showCurrentDate }><strong>Today</strong></button>
             </div>
           </div>
         </ToggleDisplay>
