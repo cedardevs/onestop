@@ -71,7 +71,7 @@ class TemporalSearch extends React.Component {
       this.setState({
         [id]: moment(value, 'L').toDate(),
         [id + 'String']: moment(value).format('L')
-      }, this.showCurrentDate)
+      })
     } else {
       this.setState({ [id + 'String']: value }, this.showCurrentDate)
     }
