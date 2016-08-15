@@ -8,10 +8,10 @@ import YearMonthForm from './YearMonthForm'
 import _ from 'lodash'
 
 const currentYear = (new Date()).getFullYear()
-const fromMonth = new Date(currentYear - 100, 0, 1, 0, 0)
+//TODO: Extend selection period beyond 100 years
+const earliestMonth = new Date(currentYear - 100, 0, 1, 0, 0)
 const currentMonth = new Date()
 
-//const TemporalSearch = ({onChange, currentDate}) => {
 class TemporalSearch extends React.Component {
   constructor(props) {
     super(props)
@@ -66,7 +66,7 @@ class TemporalSearch extends React.Component {
   handleInputChange(e) {
     const { value, id } = e.target
 
-    // If a valid date, update entire state, else allow string update only
+    // If a valid date, promote state date objs, else allow string update only
     if (moment(value, 'L', true).isValid()) {
       this.setState({
         [id]: moment(value, 'L').toDate(),
@@ -114,7 +114,7 @@ class TemporalSearch extends React.Component {
               ref="daypicker"
               onDayClick={ this.handleDayClick }
               initialMonth={ this.state.initialMonth }
-              fromMonth={ fromMonth }
+              earliestMonth={ earliestMonth }
               currentMonth={ currentMonth }
               selectedDays={ day => DateUtils.isDayInRange(day, { from, to }) }
               captionElement={
