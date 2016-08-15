@@ -2,12 +2,12 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-import org.elasticsearch.action.index.IndexResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
 import javax.annotation.PostConstruct
@@ -105,34 +105,36 @@ class ElasticsearchService {
     }
   }
 
+  @Scheduled(fixedDelay = 300000L) // 5 minutes after previous run ends
   public void reindex() {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
 
+    def existingSearchIndices = client.admin().indices().prepareGetAliases(SEARCH_INDEX).get().aliases.keysIt()*.toString()
+    def newSearchIndex = create(SEARCH_INDEX, [SEARCH_TYPE])
     def bulkRequest = client.prepareBulk()
     def bulkCount = 0
-    def bulkSize = 100
     def recordCount = 0
+    def pageSize = 100
     def addRecordToBulk = { record ->
-      def id = record.fileIdentifier
+      def id = record.fileIdentifier as String
       def json = JsonOutput.toJson(record)
-      def insertRequest = client.prepareIndex(SEARCH_INDEX, SEARCH_TYPE, id).setSource(json)
+      def insertRequest = client.prepareIndex(newSearchIndex, SEARCH_TYPE, id).setSource(json)
       bulkRequest.add(insertRequest)
       bulkCount++
       recordCount++
-      if (bulkCount >= bulkSize) {
+      if (bulkCount >= pageSize) {
         bulkRequest.get()
         bulkRequest = client.prepareBulk()
         bulkCount = 0
       }
     }
 
-    def scrollSize = 100
     def collectionScroll = client.prepareSearch(STORAGE_INDEX)
         .setTypes(COLLECTION_TYPE)
         .addSort('fileIdentifier', SortOrder.ASC)
         .setScroll('1m')
-        .setSize(scrollSize)
+        .setSize(pageSize)
         .execute()
         .actionGet()
     def collectionsRemain = collectionScroll.hits.hits.length > 0
@@ -144,7 +146,7 @@ class ElasticsearchService {
             .addSort('fileIdentifier', SortOrder.ASC)
             .setScroll('1m')
             .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', parsedCollection.fileIdentifier)))
-            .setSize(scrollSize)
+            .setSize(pageSize)
             .execute()
             .actionGet()
         def granulesRemain = granuleScroll.hits.hits.length > 0
@@ -169,59 +171,67 @@ class ElasticsearchService {
       bulkRequest.get()
     }
 
+    def aliasBuilder = client.admin().indices().prepareAliases()
+    existingSearchIndices.each {
+      aliasBuilder.removeAlias(it, SEARCH_INDEX)
+    }
+    aliasBuilder.addAlias(newSearchIndex, SEARCH_INDEX)
+    aliasBuilder.execute().actionGet()
+
+    existingSearchIndices.each { drop(it) }
+
     def end = System.currentTimeMillis()
     log.info "reindexed ${recordCount} records in ${(end - start) / 1000}s"
   }
 
   public void refresh() {
-    client.admin().indices().prepareRefresh(SEARCH_INDEX, STORAGE_INDEX).execute().actionGet()
+    client.admin().indices().prepareRefresh("${SEARCH_INDEX}*", "${STORAGE_INDEX}*").execute().actionGet()
   }
 
   public void drop() {
-    client.admin().indices().prepareDelete(SEARCH_INDEX, STORAGE_INDEX).execute().actionGet()
+    [STORAGE_INDEX, SEARCH_INDEX].each { drop("${it}*") }
   }
 
-  public void create() {
-    configureSearchIndex()
-    configureStorageIndex()
+  public void drop(String name) {
+    client.admin().indices().prepareDelete(name).execute().actionGet()
+    log.debug "dropped index [${name}]"
+  }
+
+  public String create(String baseName, List typeNames) {
+    def indexName = "${baseName}-${System.currentTimeMillis()}"
+
+    // Initialize index:
+    def cl = ClassLoader.systemClassLoader
+    def indexSettings = cl.getResourceAsStream("config/${baseName}-settings.json").text
+    client.admin().indices().prepareCreate(indexName).setSettings(indexSettings).execute().actionGet()
+    client.admin().cluster().prepareHealth(indexName).setWaitForActiveShards(1).execute().actionGet()
+
+    // Initialize mappings:
+    typeNames.each { type ->
+      def mapping = cl.getResourceAsStream("config/${baseName}-mapping-${type}.json").text
+      client.admin().indices().preparePutMapping(indexName).setSource(mapping).setType(type).execute().actionGet()
+    }
+
+    log.debug "created new index [${indexName}]"
+    return indexName
+  }
+
+  @PostConstruct
+  public void ensure() {
+    def storageExists = client.admin().indices().prepareAliasesExist(STORAGE_INDEX).execute().actionGet().exists
+    if (!storageExists) {
+      def realName = create(STORAGE_INDEX, [COLLECTION_TYPE, GRANULE_TYPE])
+      client.admin().indices().prepareAliases().addAlias(realName, STORAGE_INDEX).execute().actionGet()
+    }
+    def searchExists = client.admin().indices().prepareAliasesExist(SEARCH_INDEX).execute().actionGet().exists
+    if (!searchExists) {
+      def realName = create(SEARCH_INDEX, [SEARCH_TYPE])
+      client.admin().indices().prepareAliases().addAlias(realName, SEARCH_INDEX).execute().actionGet()
+    }
   }
 
   public void recreate() {
     drop()
-    create()
-  }
-
-  @PostConstruct
-  private configureSearchIndex() {
-    def indexExists = client.admin().indices().prepareExists(SEARCH_INDEX).execute().actionGet().exists
-    if (!indexExists) {
-      // Initialize index:
-      def cl = ClassLoader.systemClassLoader
-      def indexSettings = cl.getResourceAsStream("config/${SEARCH_INDEX}-settings.json").text
-      client.admin().indices().prepareCreate(SEARCH_INDEX).setSettings(indexSettings).execute().actionGet()
-      client.admin().cluster().prepareHealth(SEARCH_INDEX).setWaitForActiveShards(1).execute().actionGet()
-
-      // Initialize mapping:
-      def mapping = cl.getResourceAsStream("config/${SEARCH_INDEX}-mapping-${SEARCH_TYPE}.json").text
-      client.admin().indices().preparePutMapping(SEARCH_INDEX).setSource(mapping).setType(SEARCH_TYPE).execute().actionGet()
-    }
-  }
-
-  @PostConstruct
-  private configureStorageIndex() {
-    def indexExists = client.admin().indices().prepareExists(STORAGE_INDEX).execute().actionGet().exists
-    if (!indexExists) {
-      // Initialize index:
-      def cl = ClassLoader.systemClassLoader
-      def indexSettings = cl.getResourceAsStream("config/${STORAGE_INDEX}-settings.json").text
-      client.admin().indices().prepareCreate(STORAGE_INDEX).setSettings(indexSettings).execute().actionGet()
-      client.admin().cluster().prepareHealth(STORAGE_INDEX).setWaitForActiveShards(1).execute().actionGet()
-
-      // Initialize mapping:
-      def collectionMapping = cl.getResourceAsStream("config/${STORAGE_INDEX}-mapping-${COLLECTION_TYPE}.json").text
-      client.admin().indices().preparePutMapping(STORAGE_INDEX).setSource(collectionMapping).setType(COLLECTION_TYPE).execute().actionGet()
-      def granuleMapping = cl.getResourceAsStream("config/${STORAGE_INDEX}-mapping-${GRANULE_TYPE}.json").text
-      client.admin().indices().preparePutMapping(STORAGE_INDEX).setSource(granuleMapping).setType(GRANULE_TYPE).execute().actionGet()
-    }
+    ensure()
   }
 }
