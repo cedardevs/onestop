@@ -58,7 +58,9 @@ class TemporalSearch extends React.Component {
 
   showCalendarDate() {
     // this.refs.daypicker.showMonth(currentMonth)
-    this.setState({showCalendar: !this.state.showCalendar})
+    // if(!this.state.to || this.setState.from){
+      this.setState({showCalendar: this.handleClick})
+    // }
   }
 
   handleResetClick(e) {
