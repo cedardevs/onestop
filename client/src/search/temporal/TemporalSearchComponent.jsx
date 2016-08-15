@@ -2,6 +2,7 @@ import React from 'react'
 import { DateRange } from './TemporalActions'
 import DayPicker, { DateUtils } from 'react-day-picker'
 import moment from 'moment'
+import ReactDOM from 'react-dom'
 import styles from './temporal.css'
 import ToggleDisplay from 'react-toggle-display'
 import YearMonthForm from './YearMonthForm'
@@ -19,7 +20,10 @@ class TemporalSearch extends React.Component {
     this.handleResetClick = this.handleResetClick.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.showCurrentDate = this.showCurrentDate.bind(this)
+    this.showCalendarDate = this.showCalendarDate.bind(this)
     this.emitRange = this.emitRange.bind(this)
+    this.toggleDate = this.toggleDate.bind(this)
+    this.handleClick = this.handleClick.bind(this)
     this.render = this.render.bind(this)
     this.state = this.initialState()
   }
@@ -31,7 +35,7 @@ class TemporalSearch extends React.Component {
       to: null,
       toString: "",
       initialMonth: currentMonth,
-      showCalendar: true
+      showCalendar: false
     }
   }
 
@@ -50,6 +54,11 @@ class TemporalSearch extends React.Component {
 
   showCurrentDate() {
     this.refs.daypicker.showMonth(currentMonth)
+  }
+
+  showCalendarDate() {
+    // this.refs.daypicker.showMonth(currentMonth)
+    this.setState({showCalendar: !this.state.showCalendar})
   }
 
   handleResetClick(e) {
@@ -82,6 +91,27 @@ class TemporalSearch extends React.Component {
     this.props.updateOnChange(to, DateRange.END_DATE)
   }
 
+  handleClick(e) {
+    var component = ReactDOM.findDOMNode(this.refs.daypicker)
+    if (this.state.showCalendar && !component.contains(e.target)
+        && e.srcElement.id !== 'from' && e.srcElement.id !== 'to' && e.srcElement.id !== 'reset'){
+      this.toggleDate()
+    }
+  }
+
+  componentWillMount() {
+    document.addEventListener('click', this.handleClick, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleClick, false);
+  }
+
+  toggleDate() {
+    this.state.showCalendar = !this.state.showCalendar
+    this.forceUpdate()
+  }
+
   render() {
     let { from, to, fromString, toString } = this.state
     return (
@@ -94,7 +124,7 @@ class TemporalSearch extends React.Component {
               value={ fromString }
               placeholder="MM-DD-YYYY"
               onChange={this.handleInputChange}
-              onFocus={ this.showCurrentDate }
+              onFocus={ this.showCalendarDate }
             />
           </div>
           <div className={styles.dateInputRight} >
@@ -104,7 +134,7 @@ class TemporalSearch extends React.Component {
               value={ toString }
               placeholder="MM-DD-YYYY"
               onChange={this.handleInputChange}
-              onFocus={ this.showCurrentDate }
+              onFocus={ this.showCalendarDate }
             />
           </div>
         </div>
@@ -121,11 +151,9 @@ class TemporalSearch extends React.Component {
                 <YearMonthForm onChange={ initialMonth => this.setState({ initialMonth }) } />
               }
             />
-            <div className={styles.resetSelection}>
-              <button href="#" onClick={ this.handleResetClick }><strong>Reset</strong></button>
-            </div>
-            <div className={styles.resetSelection}>
-              <button href="#" onClick={ this.showCurrentDate }><strong>Today</strong></button>
+            <div id="reset" className={styles.resetSelection}>
+              <button href="#" onClick={ this.handleResetClick }><strong id="reset">Reset</strong></button>
+              <button href="#" onClick={ this.showCurrentDate }><strong id="reset">Today</strong></button>
             </div>
           </div>
         </ToggleDisplay>

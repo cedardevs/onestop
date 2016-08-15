@@ -136,11 +136,17 @@
 
 .DayPicker-Day--selected:not(.DayPicker-Day--disabled):not(.DayPicker-Day--outside) {
   color: #FFF;
-  background-color: #4A90E2;
+  /*background-color: #4A90E2;*/
 }
 
 .resetSelection {
   background-color: white;
   text-align: center;
-  font-size: 120%;
+}
+
+.resetSelection button{
+  color: black;
+  /*background-color: $color-primary;*/
+  font-size: 100%;
+  /*margin-right: 2em;*/
 }
