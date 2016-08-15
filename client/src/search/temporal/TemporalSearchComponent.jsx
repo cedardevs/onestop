@@ -20,7 +20,6 @@ class TemporalSearch extends React.Component {
     this.handleResetClick = this.handleResetClick.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.showCurrentDate = this.showCurrentDate.bind(this)
-    this.showCalendarDate = this.showCalendarDate.bind(this)
     this.formatAndEmit = this.formatAndEmit.bind(this)
     this.toggleDate = this.toggleDate.bind(this)
     this.handleClick = this.handleClick.bind(this)
@@ -56,13 +55,6 @@ class TemporalSearch extends React.Component {
 
   showCurrentDate() {
     this.refs.daypicker.showMonth(currentMonth)
-  }
-
-  showCalendarDate() {
-    // this.refs.daypicker.showMonth(currentMonth)
-    // if(!this.state.to || this.setState.from){
-      this.setState({showCalendar: this.handleClick})
-    // }
   }
 
   handleResetClick(e) {
@@ -131,7 +123,12 @@ class TemporalSearch extends React.Component {
               value={ fromString }
               placeholder="MM-DD-YYYY"
               onChange={this.handleInputChange}
-              onFocus={ this.showCalendarDate }
+              onFocus={ () => {
+                  if (!this.state.showCalendar){
+                    this.toggleDate()
+                  }
+                }
+              }
             />
           </div>
           <div className={styles.dateInputRight} >
@@ -141,7 +138,12 @@ class TemporalSearch extends React.Component {
               value={ toString }
               placeholder="MM-DD-YYYY"
               onChange={this.handleInputChange}
-              onFocus={ this.showCalendarDate }
+              onFocus={ () => {
+                  if (!this.state.showCalendar){
+                    this.toggleDate()
+                  }
+                }
+              }
             />
           </div>
         </div>
