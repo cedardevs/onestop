@@ -38,6 +38,14 @@ class TemporalSearch extends React.Component {
     }
   }
 
+  componentWillMount() {
+    document.addEventListener('click', this.handleClick, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleClick, false);
+  }
+
   handleDayClick(e, day) {
     const range = DateUtils.addDayToRange(day, this.state)
     const self = this
@@ -53,8 +61,13 @@ class TemporalSearch extends React.Component {
     })
   }
 
-  showCurrentDate() {
-    this.refs.daypicker.showMonth(currentMonth)
+  // Handle clicks outside of date components
+  handleClick(e) {
+    var component = ReactDOM.findDOMNode(this.refs.daypicker)
+    if (this.state.showCalendar && !component.contains(e.target)
+        && e.srcElement.id !== 'from' && e.srcElement.id !== 'to' && e.srcElement.id !== 'reset'){
+      this.toggleDate()
+    }
   }
 
   handleResetClick(e) {
@@ -90,20 +103,8 @@ class TemporalSearch extends React.Component {
     this.props.updateOnChange(dateString, startEndDate)
   }
 
-  handleClick(e) {
-    var component = ReactDOM.findDOMNode(this.refs.daypicker)
-    if (this.state.showCalendar && !component.contains(e.target)
-        && e.srcElement.id !== 'from' && e.srcElement.id !== 'to' && e.srcElement.id !== 'reset'){
-      this.toggleDate()
-    }
-  }
-
-  componentWillMount() {
-    document.addEventListener('click', this.handleClick, false);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('click', this.handleClick, false);
+  showCurrentDate() {
+    this.refs.daypicker.showMonth(currentMonth)
   }
 
   toggleDate() {
