@@ -19,47 +19,47 @@ import spock.lang.Unroll
 @WebIntegrationTest
 @ActiveProfiles("integration")
 @ContextConfiguration(loader = SpringApplicationContextLoader,
-        classes = [Application, IntegrationTestConfig])
+    classes = [Application, IntegrationTestConfig])
 class SearchIntegrationTests extends Specification {
 
-    @Autowired
-    private ElasticsearchService elasticsearchService
+  @Autowired
+  private ElasticsearchService elasticsearchService
 
-    @Value('${local.server.port}')
-    private String port
+  @Value('${local.server.port}')
+  private String port
 
-    @Value('${server.context-path}')
-    private String contextPath
+  @Value('${server.context-path}')
+  private String contextPath
 
-    private MediaType contentType = MediaType.APPLICATION_JSON_UTF8
-    private List datasets = ['GHRSST', 'DEM']
+  private MediaType contentType = MediaType.APPLICATION_JSON_UTF8
+  private List datasets = ['GHRSST', 'DEM']
 
-    private RestTemplate restTemplate
-    private URI searchBaseUri
+  private RestTemplate restTemplate
+  private URI searchBaseUri
 
 
-    void setup() {
-        elasticsearchService.recreate()
+  void setup() {
+    elasticsearchService.recreate()
 
-        def cl = ClassLoader.systemClassLoader
-        for(e in datasets) {
-            for(i in 1..3) {
-                def metadata = cl.getResourceAsStream("data/${e}/${i}.xml").text
-                elasticsearchService.loadDocument(metadata)
-            }
-        }
-        elasticsearchService.refresh()
-        elasticsearchService.reindex()
-        elasticsearchService.refresh()
-
-        restTemplate = new RestTemplate()
-        restTemplate.errorHandler = new TestResponseErrorHandler()
-        searchBaseUri = "http://localhost:${port}/${contextPath}/search".toURI()
+    def cl = ClassLoader.systemClassLoader
+    for (e in datasets) {
+      for (i in 1..3) {
+        def metadata = cl.getResourceAsStream("data/${e}/${i}.xml").text
+        elasticsearchService.loadDocument(metadata)
+      }
     }
+    elasticsearchService.refresh()
+    elasticsearchService.reindex()
+    elasticsearchService.refresh()
 
-    def 'Valid query-only search returns OK with expected results'() {
-        setup:
-        def request = """\
+    restTemplate = new RestTemplate()
+    restTemplate.errorHandler = new TestResponseErrorHandler()
+    searchBaseUri = "http://localhost:${port}/${contextPath}/search".toURI()
+  }
+
+  def 'Valid query-only search returns OK with expected results'() {
+    setup:
+    def request = """\
         {
           "queries":
             [
@@ -67,34 +67,53 @@ class SearchIntegrationTests extends Specification {
             ]
         }""".stripIndent()
 
-        def requestEntity = RequestEntity
-                .post(searchBaseUri)
-                .contentType(contentType)
-                .body(request)
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
 
-        when:
-        def result = restTemplate.exchange(requestEntity, Map)
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
 
-        then: "Search returns OK"
-        result.statusCode == HttpStatus.OK
-        result.headers.getContentType() == contentType
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
 
-        and: "Result contains 3 items"
-        def items = result.body.data
-        items.size() == 3
+    and: "Result contains 3 items"
+    def items = result.body.data
+    items.size() == 3
 
-        and: "Expected results are returned"
-        def actualIds = items.collect { it.attributes.fileIdentifier }
-        actualIds.containsAll([
-                'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED',
-                'gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R',
-                'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
-        ])
-    }
+    and: "Expected results are returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED',
+        'gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R',
+        'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
+    ])
 
-    def 'Valid filter-only search returns OK with expected results'() {
-        setup:
-        def request = """\
+    and: 'The correct number of aggregations is returned'
+    def aggs = result.body.meta.aggregations
+    aggs.size() == 7
+
+    and: 'The aggregations are as expected'
+    aggs.science != null
+    aggs.locations != null
+    aggs.instruments != null
+    aggs.platforms != null
+    aggs.projects != null
+    aggs.dataCenters != null
+    aggs.dataResolution != null
+
+    and: 'The cleaned aggregations are actually cleaned'
+    def locationTerms = aggs.locations.collect { it.term }
+    // Bad planted keywords should be removed
+    !locationTerms.contains('Alaska')
+    !locationTerms.contains('Alaska > Unalaska')
+  }
+
+  def 'Valid filter-only search returns OK with expected results'() {
+    setup:
+    def request = """\
         {
           "filters":
             [
@@ -102,33 +121,41 @@ class SearchIntegrationTests extends Specification {
             ]
         }""".stripIndent()
 
-        def requestEntity = RequestEntity
-                .post(searchBaseUri)
-                .contentType(contentType)
-                .body(request)
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
 
-        when:
-        def result = restTemplate.exchange(requestEntity, Map)
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
 
-        then: "Search returns OK"
-        result.statusCode == HttpStatus.OK
-        result.headers.getContentType() == contentType
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
 
-        and: "Result contains 2 items"
-        def items = result.body.data
-        items.size() == 2
+    and: "Result contains 2 items"
+    def items = result.body.data
+    items.size() == 2
 
-        and: "Expected results are returned"
-        def actualIds = items.collect { it.attributes.fileIdentifier }
-        actualIds.containsAll([
-                'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
-                'gov.noaa.ngdc.mgg.dem:4870'
-        ])
-    }
+    and: "Expected results are returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
+        'gov.noaa.ngdc.mgg.dem:4870'
+    ])
 
-    def 'Valid query-and-filter search returns OK with expected result'() {
-        setup:
-        def request = """\
+    and: 'The correct number of aggregations is returned'
+    def aggs = result.body.meta.aggregations
+    aggs.size() == 7
+
+    and: 'The aggregations are as expected'
+    def aggNames = aggs.collect { it.facet }
+    aggNames.containsAll(['science', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'dataResolution'])
+  }
+
+  def 'Valid query-and-filter search returns OK with expected result'() {
+    setup:
+    def request = """\
         {
           "queries":
             [
@@ -140,175 +167,171 @@ class SearchIntegrationTests extends Specification {
             ]
         }""".stripIndent()
 
-        def requestEntity = RequestEntity
-                .post(searchBaseUri)
-                .contentType(contentType)
-                .body(request)
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
 
-        when:
-        def result = restTemplate.exchange(requestEntity, Map)
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
 
-        then: "Search returns OK"
-        result.statusCode == HttpStatus.OK
-        result.headers.getContentType() == contentType
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
 
-        and: "Result contains 1 item"
-        def items = result.body.data
-        items.size() == 1
+    and: "Result contains 1 item"
+    def items = result.body.data
+    items.size() == 1
 
-        and: "Expected result is returned"
-        def actualIds = items.collect { it.attributes.fileIdentifier }
-        actualIds.containsAll([
-                'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
-        ])
+    and: "Expected result is returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+    ])
+
+    and: 'The correct number of aggregations is returned'
+    def aggs = result.body.meta.aggregations
+    aggs.size() == 7
+
+    and: 'The aggregations are as expected'
+    def aggNames = aggs.collect { it.facet }
+    aggNames.containsAll(['science', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'dataResolution'])
+  }
+
+  def 'Time filter with #situation an item\'s time range returns the correct results'() {
+    setup:
+    def ghrsst1FileId = 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+    def request = [filters: [[type: 'datetime']]]
+    if (before) {
+      request.filters[0].before = before
+    }
+    if (after) {
+      request.filters[0].after = after
     }
 
-    def 'Time filter with #situation an item\'s time range returns the correct results'() {
-        setup:
-        def ghrsst1FileId = 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
-        def request = [filters: [[type: 'datetime']]]
-        if (before) {
-            request.filters[0].before = before
-        }
-        if (after) {
-            request.filters[0].after = after
-        }
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(JsonOutput.toJson(request))
 
-        def requestEntity = RequestEntity
-          .post(searchBaseUri)
-          .contentType(contentType)
-          .body(JsonOutput.toJson(request))
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+    def ids = result.body.data.collect { it.attributes.fileIdentifier }
 
-        when:
-        def result = restTemplate.exchange(requestEntity, Map)
-        def ids = result.body.data.collect { it.attributes.fileIdentifier }
+    then:
+    result.statusCode == HttpStatus.OK
+    ids.contains(ghrsst1FileId) == matches
 
-        then:
-        result.statusCode == HttpStatus.OK
-        ids.contains(ghrsst1FileId) == matches
+    and: 'The correct number of aggregations is returned'
+    def aggs = result.body.meta.aggregations
+    aggs.size() == 7
 
-        where: // NOTE: time range for GHRSST/1.xml is: 2005-01-30 <-> 2008-01-14
-        after                   | before                    | matches   | situation
-        '2005-01-01T00:00:00Z'  | '2005-01-02T00:00:00Z'    | false     | 'range that is fully before'
-        '2005-01-01T00:00:00Z'  | '2008-01-01T00:00:00Z'    | true      | 'range that overlaps the beginning of'
-        '2005-02-01T00:00:00Z'  | '2008-01-01T00:00:00Z'    | true      | 'range that is fully within'
-        '2005-01-01T00:00:00Z'  | '2008-02-01T00:00:00Z'    | true      | 'range that fully encloses'
-        '2005-02-01T00:00:00Z'  | '2008-02-01T00:00:00Z'    | true      | 'range that overlaps the end of'
-        '2008-02-01T00:00:00Z'  | '2008-02-02T00:00:00Z'    | false     | 'range that is fully after'
-        '2005-01-01T00:00:00Z'  | null                      | true      | 'start time before'
-        '2005-02-01T00:00:00Z'  | null                      | true      | 'start time within'
-        '2008-02-01T00:00:00Z'  | null                      | false     | 'start time after'
-        null                    | '2005-01-01T00:00:00Z'    | false     | 'end time before'
-        null                    | '2008-01-01T00:00:00Z'    | true      | 'end time within'
-        null                    | '2008-02-01T00:00:00Z'    | true      | 'end time after'
-    }
+    and: 'The aggregations are as expected'
+    def aggNames = aggs.collect { it.facet }
+    aggNames.containsAll(['science', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'dataResolution'])
 
+    where: // NOTE: time range for GHRSST/1.xml is: 2005-01-30 <-> 2008-01-14
+    after                  | before                 | matches | situation
+    '2005-01-01T00:00:00Z' | '2005-01-02T00:00:00Z' | false   | 'range that is fully before'
+    '2005-01-01T00:00:00Z' | '2008-01-01T00:00:00Z' | true    | 'range that overlaps the beginning of'
+    '2005-02-01T00:00:00Z' | '2008-01-01T00:00:00Z' | true    | 'range that is fully within'
+    '2005-01-01T00:00:00Z' | '2008-02-01T00:00:00Z' | true    | 'range that fully encloses'
+    '2005-02-01T00:00:00Z' | '2008-02-01T00:00:00Z' | true    | 'range that overlaps the end of'
+    '2008-02-01T00:00:00Z' | '2008-02-02T00:00:00Z' | false   | 'range that is fully after'
+    '2005-01-01T00:00:00Z' | null                   | true    | 'start time before'
+    '2005-02-01T00:00:00Z' | null                   | true    | 'start time within'
+    '2008-02-01T00:00:00Z' | null                   | false   | 'start time after'
+    null                   | '2005-01-01T00:00:00Z' | false   | 'end time before'
+    null                   | '2008-01-01T00:00:00Z' | true    | 'end time within'
+    null                   | '2008-02-01T00:00:00Z' | true    | 'end time after'
+  }
 
-    /* TODO Happy path test cases:
-        'Valid search returns OK when sort and page elements specified with expected results'
-
-            def searchqueriesfiltersformatting = """\
-{
-  "queries": [
-    {"type": "queryText", "value": "temperature"}
-  ],
-  "filters":[
-    {"type": "facet", "name": "apiso_TopicCategory_s", "values": ["oceanography", "oceans"]},
-    {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
-  ],
-  "sort": "relevance",
-  "page": {"number": 1, "size": 10}
-}"""
-
-
-     */
-
-    def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {
-        setup:
-        def invalidSchemaRequest = """\
+  def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {
+    setup:
+    def invalidSchemaRequest = """\
         {
           "filters": [
             {"type": "dateTime", "before": "2012-01-01", "after": "2011-01-01"}
           ]
         }""".stripIndent()
-        def requestEntity = RequestEntity
-                .post(searchBaseUri)
-                .contentType(contentType)
-                .body(invalidSchemaRequest)
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(invalidSchemaRequest)
 
-        when:
-        def result = restTemplate.exchange(requestEntity, Map)
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
 
-        then: "Request invalid"
-        result.statusCode == HttpStatus.BAD_REQUEST
+    then: "Request invalid"
+    result.statusCode == HttpStatus.BAD_REQUEST
 
-        and: "result contains errors list"
-        result.body.errors instanceof List
-        result.body.errors.every { it.status == '400'}
-        result.body.errors.every { it.detail instanceof String }
-    }
+    and: "result contains errors list"
+    result.body.errors instanceof List
+    result.body.errors.every { it.status == '400' }
+    result.body.errors.every { it.detail instanceof String }
+  }
 
-    def 'Invalid search; returns UNSUPPORTED_MEDIA_TYPE error when request body not specified as json content'() {
-        setup:
-        def request = """\
+  def 'Invalid search; returns UNSUPPORTED_MEDIA_TYPE error when request body not specified as json content'() {
+    setup:
+    def request = """\
         {
           "queries":
             [
               { "type": "queryText", "value": "temperature"}
             ]
         }""".stripIndent()
-        def requestEntity = RequestEntity
-                .post(searchBaseUri)
-                .body(request)
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .body(request)
 
-        when:
-        def result = restTemplate.exchange(requestEntity, Map)
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
 
-        then: "Bad request"
-        result.statusCode == HttpStatus.UNSUPPORTED_MEDIA_TYPE
-        result.headers.getContentType() == contentType
-        and: "result contains no items"
-        result.body.data == null
-    }
+    then: "Bad request"
+    result.statusCode == HttpStatus.UNSUPPORTED_MEDIA_TYPE
+    result.headers.getContentType() == contentType
+    and: "result contains no items"
+    result.body.data == null
+  }
 
-    def 'Invalid search; returns BAD_REQUEST error when no request body'() {
-        def requestEntity = RequestEntity
-                .post(searchBaseUri)
-                .contentType(contentType)
-                .body("")
+  def 'Invalid search; returns BAD_REQUEST error when no request body'() {
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body("")
 
-        when:
-        def result = restTemplate.exchange(requestEntity, Map)
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
 
-        then: "Bad request"
-        result.statusCode == HttpStatus.BAD_REQUEST
-        result.headers.getContentType() == contentType
-        and: "result contains no items"
-        result.body.data == null
-    }
+    then: "Bad request"
+    result.statusCode == HttpStatus.BAD_REQUEST
+    result.headers.getContentType() == contentType
+    and: "result contains no items"
+    result.body.data == null
+  }
 
-    def 'Invalid search; returns BAD_REQUEST error when request body is invalid json'() {
-        setup:
-        def badJsonSearch = """\
+  def 'Invalid search; returns BAD_REQUEST error when request body is invalid json'() {
+    setup:
+    def badJsonSearch = """\
         {
           "queries": [
             {"type": "queryText", "value": "}
           ]
         }""".stripIndent()
-        def requestEntity = RequestEntity
-                .post(searchBaseUri)
-                .contentType(contentType)
-                .body(badJsonSearch)
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(badJsonSearch)
 
-        when:
-        def result = restTemplate.exchange(requestEntity, Map)
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
 
-        then: "Bad request"
-        result.statusCode == HttpStatus.BAD_REQUEST
-        result.headers.getContentType() == contentType
-        and: "result contains no items"
-        result.body.data == null
-        String error = result.body.error
-        error.contains("Bad Request")
-    }
+    then: "Bad request"
+    result.statusCode == HttpStatus.BAD_REQUEST
+    result.headers.getContentType() == contentType
+    and: "result contains no items"
+    result.body.data == null
+    String error = result.body.error
+    error.contains("Bad Request")
+  }
 }
