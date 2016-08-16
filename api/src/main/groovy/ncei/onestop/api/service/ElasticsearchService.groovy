@@ -230,6 +230,8 @@ class ElasticsearchService {
       bulkRequest.get()
     }
 
+    refresh(newSearchIndex)
+
     def aliasBuilder = client.admin().indices().prepareAliases()
     existingSearchIndices.each {
       aliasBuilder.removeAlias(it, SEARCH_INDEX)
@@ -244,7 +246,11 @@ class ElasticsearchService {
   }
 
   public void refresh() {
-    client.admin().indices().prepareRefresh("${SEARCH_INDEX}*", "${STORAGE_INDEX}*").execute().actionGet()
+    refresh("${SEARCH_INDEX}*", "${STORAGE_INDEX}*")
+  }
+
+  public void refresh(String... indices) {
+    client.admin().indices().prepareRefresh(indices).execute().actionGet()
   }
 
   public void drop() {

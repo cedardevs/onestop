@@ -12,5 +12,8 @@
         "delimiter": ">"
       }
     }
+  },
+  "index": {
+    "refresh_interval": "-1"
   }
 }

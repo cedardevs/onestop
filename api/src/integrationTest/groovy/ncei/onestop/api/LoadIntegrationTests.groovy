@@ -75,6 +75,7 @@ class LoadIntegrationTests extends Specification {
 
     when: "Refresh elasticsearch then search"
     def searchResult = restTemplate.exchange(searchRequest, Map)
+    elasticsearchService.refresh()
     def hits = searchResult.body.data
 
     then: "Does not appear in search results yet"
@@ -98,6 +99,7 @@ class LoadIntegrationTests extends Specification {
     def deleteResult = restTemplate.exchange(deleteRequest, Map)
     getResult = restTemplate.exchange(getRequest, Map)
     searchResult = restTemplate.exchange(searchRequest, Map)
+    elasticsearchService.refresh()
 
     then: "Document is not in storage, but still in search index"
     deleteResult.body?.meta?.deleted
