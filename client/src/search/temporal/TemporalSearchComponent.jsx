@@ -78,6 +78,9 @@ class TemporalSearch extends React.Component {
       to: null,
       toString: ""
     })
+    // Reset store
+    this.formatAndEmit('', 'from')
+    this.formatAndEmit('', 'to')
   }
 
   handleInputChange(e) {
@@ -99,7 +102,7 @@ class TemporalSearch extends React.Component {
 
   formatAndEmit(date, id) {
     const startEndDate = (id == 'from') ? DateRange.START_DATE : DateRange.END_DATE
-    const dateString = moment(date).format()
+    const dateString = date ? moment(date).format() : date //Allow sending of empty string on reset
     this.props.updateOnChange(dateString, startEndDate)
   }
 
