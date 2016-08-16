@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service
 class SearchResponseParserService {
 
   Map searchResponseParser(SearchResponse response) {
-    log.debug("Parsing elasticsearch response: ${response}")
-
     def data = response.hits.hits.collect({ [type: 'collection', id: it.id, attributes: it.source] })
     def aggs = prepareAggregationsForUI(response.aggregations)
 
@@ -22,7 +20,7 @@ class SearchResponseParserService {
         aggregations: aggs
     ]
     def result = [data: data, meta: metadata]
-    log.debug("Parsed result: ${result}")
+    log.debug("Parsed elasticsearch response with ${data.size()}/${metadata.total} results")
     return result
   }
 
