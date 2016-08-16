@@ -170,7 +170,6 @@ class ElasticsearchService {
     def existingSearchIndices = client.admin().indices().prepareGetAliases(SEARCH_INDEX).get().aliases.keysIt()*.toString()
     def newSearchIndex = create(SEARCH_INDEX, [SEARCH_TYPE])
     def bulkRequest = client.prepareBulk()
-    def bulkCount = 0
     def recordCount = 0
     def pageSize = 100
     def addRecordToBulk = { record ->
@@ -178,12 +177,10 @@ class ElasticsearchService {
       def json = JsonOutput.toJson(record)
       def insertRequest = client.prepareIndex(newSearchIndex, SEARCH_TYPE, id).setSource(json)
       bulkRequest.add(insertRequest)
-      bulkCount++
       recordCount++
-      if (bulkCount >= pageSize) {
+      if (bulkRequest.numberOfActions() >= pageSize) {
         bulkRequest.get()
         bulkRequest = client.prepareBulk()
-        bulkCount = 0
       }
     }
 
