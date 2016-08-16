@@ -120,7 +120,6 @@ class ElasticsearchService {
       def response = client.prepareIndex(STORAGE_INDEX, type, id)
           .setSource(source)
           .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
-          .setRefresh(true)
           .execute().actionGet()
       return [
           data: [
@@ -139,7 +138,6 @@ class ElasticsearchService {
     def responses = [COLLECTION_TYPE, GRANULE_TYPE].collect {
       client.prepareDelete(STORAGE_INDEX, it, fileIdentifier)
           .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
-          .setRefresh(true)
           .execute().actionGet()
     }
     def success = responses.find { it.found }
