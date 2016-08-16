@@ -74,7 +74,7 @@ class MetadataController {
 
     @RequestMapping(path = '/metadata/reindex', method = [GET, PUT], produces = 'application/json')
     Map reindex() {
-        elasticsearchService.reindex()
+        elasticsearchService.reindexAsync()
         return [acknowledged: true]
     }
 

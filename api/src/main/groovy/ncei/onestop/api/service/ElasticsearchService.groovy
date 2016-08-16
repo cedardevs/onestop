@@ -164,6 +164,10 @@ class ElasticsearchService {
   }
 
   @Async
+  public void reindexAsync() {
+    reindex()
+  }
+
   @Scheduled(fixedDelay = 300000L) // 5 minutes after previous run ends
   public void reindex() {
     log.info "starting reindex process"
