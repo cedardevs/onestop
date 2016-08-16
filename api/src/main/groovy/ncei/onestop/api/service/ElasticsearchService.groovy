@@ -169,7 +169,6 @@ class ElasticsearchService {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
 
-    def existingSearchIndices = client.admin().indices().prepareGetAliases(SEARCH_INDEX).get().aliases.keysIt()*.toString()
     def newSearchIndex = create(SEARCH_INDEX, [SEARCH_TYPE])
     def bulkRequest = client.prepareBulk()
     def recordCount = 0
@@ -230,13 +229,13 @@ class ElasticsearchService {
     refresh(newSearchIndex)
 
     def aliasBuilder = client.admin().indices().prepareAliases()
-    existingSearchIndices.each {
+    def oldIndices = client.admin().indices().prepareGetAliases(SEARCH_INDEX).get().aliases.keysIt()*.toString()
+    oldIndices.each {
       aliasBuilder.removeAlias(it, SEARCH_INDEX)
     }
     aliasBuilder.addAlias(newSearchIndex, SEARCH_INDEX)
     aliasBuilder.execute().actionGet()
-
-    existingSearchIndices.each { drop(it) }
+    oldIndices.each { drop(it) }
 
     def end = System.currentTimeMillis()
     log.info "reindexed ${recordCount} records in ${(end - start) / 1000}s"
