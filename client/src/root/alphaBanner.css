@@ -1,7 +1,7 @@
 @import '../../style/style.css';
 
 .banner {
-    background: $color-gray;
+    background: red;
     right: 0;
     top: 0;
     left: 0;
@@ -10,4 +10,8 @@
     height: 1.5em;
     font-size: 1.2em;
     padding: 0.15em;
+}
+
+.banner a {
+    margin-left: 1em;
 }
