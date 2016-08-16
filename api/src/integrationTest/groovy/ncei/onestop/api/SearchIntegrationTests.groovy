@@ -149,7 +149,7 @@ class SearchIntegrationTests extends Specification {
     aggs.size() == 7
 
     and: 'The aggregations are as expected'
-    def aggNames = aggs.collect { it.facet }
+    def aggNames = aggs.collect { it.key }
     aggNames.containsAll(['science', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'dataResolution'])
   }
 
@@ -194,7 +194,7 @@ class SearchIntegrationTests extends Specification {
     aggs.size() == 7
 
     and: 'The aggregations are as expected'
-    def aggNames = aggs.collect { it.facet }
+    def aggNames = aggs.collect { it.key }
     aggNames.containsAll(['science', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'dataResolution'])
   }
 
@@ -227,7 +227,7 @@ class SearchIntegrationTests extends Specification {
     aggs.size() == 7
 
     and: 'The aggregations are as expected'
-    def aggNames = aggs.collect { it.facet }
+    def aggNames = aggs.collect { it.key }
     aggNames.containsAll(['science', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'dataResolution'])
 
     where: // NOTE: time range for GHRSST/1.xml is: 2005-01-30 <-> 2008-01-14
