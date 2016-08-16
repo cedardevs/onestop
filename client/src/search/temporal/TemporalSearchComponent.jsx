@@ -119,38 +119,34 @@ class TemporalSearch extends React.Component {
     let { from, to, fromString, toString } = this.state
     return (
       <div>
-        <div>
-          <div className={styles.dateInputLeft}>
-            <input
-              type="text"
-              id="from"
-              value={ fromString }
-              placeholder="MM-DD-YYYY"
-              onChange={this.handleInputChange}
-              onFocus={ () => {
-                  if (!this.state.showCalendar){
-                    this.toggleDate()
-                  }
+        <span className={styles.dateInputs}>
+          <input className={styles.dateInputLeft}
+            type="text"
+            id="from"
+            value={ fromString }
+            placeholder="MM-DD-YYYY"
+            onChange={this.handleInputChange}
+            onFocus={ () => {
+                if (!this.state.showCalendar){
+                  this.toggleDate()
                 }
               }
-            />
-          </div>
-          <div className={styles.dateInputRight} >
-            <input
-              type="text"
-              id="to"
-              value={ toString }
-              placeholder="MM-DD-YYYY"
-              onChange={this.handleInputChange}
-              onFocus={ () => {
-                  if (!this.state.showCalendar){
-                    this.toggleDate()
-                  }
+            }
+          />
+          <input className={styles.dateInputRight}
+            type="text"
+            id="to"
+            value={ toString }
+            placeholder="MM-DD-YYYY"
+            onChange={this.handleInputChange}
+            onFocus={ () => {
+                if (!this.state.showCalendar){
+                  this.toggleDate()
                 }
               }
-            />
-          </div>
-        </div>
+            }
+          />
+        </span>
         <ToggleDisplay show={this.state.showCalendar}>
           <div className={styles.calendarBox}>
             <DayPicker

@@ -17,10 +17,6 @@
   margin: 5px auto;
 }
 
-.searchMapSpace {
-
-}
-
 .logSty img, #searchbox.searchHover {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -110,11 +106,6 @@
   filter: alpha(opacity=30); /* For IE8 and earlier */
 }
 
-/*.dropDown {*/
-  /*padding: 10px 0 0 0;*/
-  /*display: inline-block;*/
-/*}*/
-
 .results {
   margin-bottom: 80px;
 }
@@ -162,6 +153,12 @@
   display: inline-block;
 }
 
+@media only screen and (max-width: 1040px) {
+  .temporalContainer {
+    display: block;
+  }
+}
+
 .mapIcon {
   background: url('../../img/mapIcon.png');
   width: 10px;
@@ -176,10 +173,15 @@
   margin-left: -45em;
 }
 
+.buttonsGroup {
+  display: inline-block;
+  margin: 1em;
+}
+
 /*search button*/
 .landingButton {
   color: white;
   text-shadow: 0 0 5px black;
   background-color: $color-primary;
-  margin-right: 2em;
+  margin: .5em;
 }

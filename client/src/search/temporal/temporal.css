@@ -3,21 +3,21 @@
  .calendarBox {
    background: white;
    clear: left;
-   display: inline;
    position: absolute !important; /* Necessary to override DayPicker selector default style */
    margin: 10px 0 0 10px;
+ }
+
+ .dateInputs {
+   min-width: 17em;
  }
 
  .dateInputLeft,
  .dateInputRight  {
    /*float: left;*/
    margin-left: 7px;
-   display: inline;
+   display: inline-block;
+   width: 8em;
  }
-
-.dateInputRight  {
-  margin-right: 2em;
-}
 
 .DayPicker {
   display: flex;
