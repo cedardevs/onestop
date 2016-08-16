@@ -98,9 +98,6 @@ module.exports = {
       compress: {warnings: false},
       sourceMap: false
     }),
-    // new HtmlWebpackPlugin({
-    //   title: 'CIRES OneStop Demo'
-    // }),
     new HtmlWebpackPlugin({
       title: 'NOAA OneStop Demo'
     }),
