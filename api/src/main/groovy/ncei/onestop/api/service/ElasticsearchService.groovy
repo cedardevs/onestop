@@ -2,6 +2,7 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
+import org.elasticsearch.action.WriteConsistencyLevel
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortOrder
@@ -52,7 +53,6 @@ class ElasticsearchService {
   }
 
   private Map queryElasticSearch(Map params) {
-
     def parsedRequest = searchRequestParserService.parseSearchRequest(params)
     def query = parsedRequest.query
     def postFilters = parsedRequest.postFilters
@@ -74,7 +74,29 @@ class ElasticsearchService {
     return searchResponseParserService.searchResponseParser(searchResponse)
   }
 
-  public Map loadDocument(String document) {
+  public Map getMetadata(String fileIdentifier) {
+    def response = client.prepareGet(STORAGE_INDEX, null, fileIdentifier).execute().actionGet()
+    if (response.exists) {
+      return [
+          data: [
+            id: response.id,
+            type: response.type,
+            attributes: [
+                isoXml: response.source.isoXml
+            ]
+          ]
+      ]
+    }
+    else {
+      return [
+          status: 404,
+          title: 'No such document',
+          detail: "Metadata with ID ${fileIdentifier} does not exist" as String
+      ]
+    }
+  }
+
+  public Map loadMetadata(String document) {
     def storageInfo = MetadataParser.parseStorageInfo(document)
     def id = storageInfo.id
     if (Pattern.matches(/.*\s.*/, id)) {
@@ -85,14 +107,19 @@ class ElasticsearchService {
               detail: id
           ]
       ]
-    } else {
+    }
+    else {
       def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
       def source = [isoXml: document, fileIdentifier: id]
       if (type == GRANULE_TYPE) {
         source.parentIdentifier = storageInfo.parentId
       }
       source = JsonOutput.toJson(source)
-      def response = client.prepareIndex(STORAGE_INDEX, type, id).setSource(source).execute().actionGet()
+      def response = client.prepareIndex(STORAGE_INDEX, type, id)
+          .setSource(source)
+          .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
+          .setRefresh(true)
+          .execute().actionGet()
       return [
           data: [
               id        : id,
@@ -101,6 +128,36 @@ class ElasticsearchService {
                   created: response.created
               ]
           ]
+      ]
+    }
+  }
+
+  public Map deleteMetadata(String fileIdentifier) {
+    // delete requires explicit type, so we have to try deleting from both types
+    def responses = [COLLECTION_TYPE, GRANULE_TYPE].collect {
+      client.prepareDelete(STORAGE_INDEX, it, fileIdentifier)
+          .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
+          .setRefresh(true)
+          .execute().actionGet()
+    }
+    def success = responses.find { it.found }
+    if (success) {
+      return [
+          data: [
+              id: success.id,
+              type: success.type,
+          ],
+          meta: [
+              deleted: true,
+              message: "Deleted metadata with ID ${success.id}" as String
+          ]
+      ]
+    }
+    else {
+      return [
+          status: 404,
+          title: 'No such document',
+          detail: "Metadata with ID ${fileIdentifier} does not exist" as String
       ]
     }
   }

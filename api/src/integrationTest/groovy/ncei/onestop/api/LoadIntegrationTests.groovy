@@ -42,7 +42,6 @@ class LoadIntegrationTests extends Specification {
 
   RestTemplate restTemplate
   URI loadURI
-  URI refreshURI
   URI searchURI
 
   private final String searchQuery = '{"queries":[]}'
@@ -52,8 +51,7 @@ class LoadIntegrationTests extends Specification {
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    loadURI = "http://localhost:${port}/${contextPath}/load".toURI()
-    refreshURI = "http://localhost:${port}/${contextPath}/load/refresh".toURI()
+    loadURI = "http://localhost:${port}/${contextPath}/metadata".toURI()
     searchURI = "http://localhost:${port}/${contextPath}/search".toURI()
   }
 
@@ -71,10 +69,11 @@ class LoadIntegrationTests extends Specification {
 
     and: "Storage index contains loaded document"
     def docId = loadResult.body.data.id
-    client.get(new GetRequest(INDEX, TYPE, docId)).actionGet().exists
+    def getRequest = RequestEntity.get("http://localhost:${port}/${contextPath}/metadata/${docId}.json".toURI()).build()
+    def getResult = restTemplate.exchange(getRequest, Map)
+    getResult.body?.data?.id == docId
 
     when: "Refresh elasticsearch then search"
-    elasticsearchService.refresh()
     def searchResult = restTemplate.exchange(searchRequest, Map)
     def hits = searchResult.body.data
 
@@ -91,6 +90,28 @@ class LoadIntegrationTests extends Specification {
     hits.size() == 1
     def fileId = hits.attributes[0].fileIdentifier
     fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+
+    when: "Document is deleted though api"
+    getResult = restTemplate.exchange(getRequest, Map)
+    assert getResult.body?.data?.id == docId
+    def deleteRequest = RequestEntity.delete("http://localhost:${port}/${contextPath}/metadata/${docId}.json".toURI()).build()
+    def deleteResult = restTemplate.exchange(deleteRequest, Map)
+    getResult = restTemplate.exchange(getRequest, Map)
+    searchResult = restTemplate.exchange(searchRequest, Map)
+
+    then: "Document is not in storage, but still in search index"
+    deleteResult.body?.meta?.deleted
+    getResult.statusCode.value() == 404
+    searchResult.body.data.size() == 1
+
+    when: "Reindex again"
+    elasticsearchService.reindex()
+    elasticsearchService.refresh()
+    searchResult = restTemplate.exchange(searchRequest, Map)
+    hits = searchResult.body.data
+
+    then: "Document not in search results"
+    hits.size() == 0
   }
 
   def 'Document rejected when whitespace found in fileIdentifier'() {

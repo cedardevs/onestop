@@ -45,7 +45,7 @@ class SearchIntegrationTests extends Specification {
     for (e in datasets) {
       for (i in 1..3) {
         def metadata = cl.getResourceAsStream("data/${e}/${i}.xml").text
-        elasticsearchService.loadDocument(metadata)
+        elasticsearchService.loadMetadata(metadata)
       }
     }
     elasticsearchService.refresh()
