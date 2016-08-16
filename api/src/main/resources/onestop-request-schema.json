@@ -23,13 +23,15 @@
     "page": {
       "type": "object",
       "properties": {
-        "number": {
+        "max": {
           "type": "integer"
         },
-        "size": {
+        "offset": {
           "type": "integer"
         }
-      }
+      },
+      "required": ["max", "offset"],
+      "additionalProperties": false
     }
   },
 

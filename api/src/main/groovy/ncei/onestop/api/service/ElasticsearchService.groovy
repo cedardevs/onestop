@@ -63,12 +63,14 @@ class ElasticsearchService {
     // Assemble the search request:
     def srb = client.prepareSearch(SEARCH_INDEX)
     srb = srb.setTypes(SEARCH_TYPE).setQuery(query)
-
     if(postFilters) { srb = srb.setPostFilter(postFilters) }
-
     aggregations.each { a -> srb = srb.addAggregation(a) }
 
-    srb = srb.setFrom(0).setSize(100) // TODO - expose these as API parameters
+    if(params.page) {
+      srb = srb.setFrom(params.page.offset).setSize(params.page.max)
+    } else {
+      srb = srb.setFrom(0).setSize(100)
+    }
 
     def searchResponse = srb.execute().actionGet()
     return searchResponseParserService.searchResponseParser(searchResponse)

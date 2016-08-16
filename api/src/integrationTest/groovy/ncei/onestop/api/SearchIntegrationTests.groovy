@@ -246,6 +246,56 @@ class SearchIntegrationTests extends Specification {
     null                   | '2008-02-01T00:00:00Z' | true    | 'end time after'
   }
 
+  def 'Search with pagination specified returns OK with expected results'() {
+    setup:
+    def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "temperature"}
+            ],
+          "page":
+            {
+              "max": 1, "offset": 0}
+            }
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 1 item"
+    def items = result.body.data
+    items.size() == 1
+
+    and: "Expected result is returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+    ])
+
+    and: 'The correct number of aggregations is returned'
+    def aggs = result.body.meta.aggregations
+    aggs.size() == 7
+
+    and: 'The aggregations are as expected'
+    aggs.science != null
+    aggs.locations != null
+    aggs.instruments != null
+    aggs.platforms != null
+    aggs.projects != null
+    aggs.dataCenters != null
+    aggs.dataResolution != null
+  }
+
   def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {
     setup:
     def invalidSchemaRequest = """\
