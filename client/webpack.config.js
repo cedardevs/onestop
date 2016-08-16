@@ -98,12 +98,12 @@ module.exports = {
       compress: {warnings: false},
       sourceMap: false
     }),
+    // new HtmlWebpackPlugin({
+    //   title: 'CIRES OneStop Demo'
+    // }),
     new HtmlWebpackPlugin({
-      title: 'CIRES OneStop Demo'
+      title: 'NOAA OneStop Demo'
     }),
-/*    new HtmlWebpackPlugin({
-      title: 'NOAA OneStop'
-    }),*/
     new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
   ]
 }
