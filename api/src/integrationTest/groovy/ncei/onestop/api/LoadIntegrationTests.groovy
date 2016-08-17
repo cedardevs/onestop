@@ -1,9 +1,8 @@
 package ncei.onestop.api
 
 import ncei.onestop.api.service.ETLService
-import ncei.onestop.api.service.ElasticsearchService
+import ncei.onestop.api.service.SearchIndexService
 import ncei.onestop.api.service.MetadataIndexService
-import org.elasticsearch.action.get.GetRequest
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -28,7 +27,7 @@ class LoadIntegrationTests extends Specification {
   private Client client
 
   @Autowired
-  private ElasticsearchService elasticsearchService
+  private SearchIndexService searchIndexService
 
   @Autowired
   private MetadataIndexService metadataIndexService
@@ -55,7 +54,7 @@ class LoadIntegrationTests extends Specification {
   private final String searchQuery = '{"queries":[]}'
 
   void setup() {
-    elasticsearchService.recreate()
+    searchIndexService.recreate()
     metadataIndexService.recreate()
 
     restTemplate = new RestTemplate()
@@ -85,7 +84,7 @@ class LoadIntegrationTests extends Specification {
 
     when: "Refresh elasticsearch then search"
     def searchResult = restTemplate.exchange(searchRequest, Map)
-    elasticsearchService.refresh()
+    searchIndexService.refresh()
     def hits = searchResult.body.data
 
     then: "Does not appear in search results yet"
@@ -93,7 +92,7 @@ class LoadIntegrationTests extends Specification {
 
     when: "Reindex storage then search"
     etlService.reindex()
-    elasticsearchService.refresh()
+    searchIndexService.refresh()
     searchResult = restTemplate.exchange(searchRequest, Map)
     hits = searchResult.body.data
 
@@ -118,7 +117,7 @@ class LoadIntegrationTests extends Specification {
 
     when: "Reindex again"
     etlService.reindex()
-    elasticsearchService.refresh()
+    searchIndexService.refresh()
     searchResult = restTemplate.exchange(searchRequest, Map)
     hits = searchResult.body.data
 
@@ -152,7 +151,7 @@ class LoadIntegrationTests extends Specification {
     def loadResult = restTemplate.exchange(loadRequest, Map)
     metadataIndexService.refresh()
     etlService.reindex()
-    elasticsearchService.refresh()
+    searchIndexService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
     then:
@@ -171,7 +170,7 @@ class LoadIntegrationTests extends Specification {
     def loadResult = restTemplate.exchange(loadRequest, Map)
     metadataIndexService.refresh()
     etlService.reindex()
-    elasticsearchService.refresh()
+    searchIndexService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
     then:
@@ -197,7 +196,7 @@ class LoadIntegrationTests extends Specification {
     def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }
     metadataIndexService.refresh()
     etlService.reindex()
-    elasticsearchService.refresh()
+    searchIndexService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
     then: 'two merged granule + collection documents have been indexed'

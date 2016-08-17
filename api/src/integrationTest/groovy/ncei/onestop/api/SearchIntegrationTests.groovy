@@ -2,7 +2,7 @@ package ncei.onestop.api
 
 import groovy.json.JsonOutput
 import ncei.onestop.api.service.ETLService
-import ncei.onestop.api.service.ElasticsearchService
+import ncei.onestop.api.service.SearchIndexService
 import ncei.onestop.api.service.MetadataIndexService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -25,7 +25,7 @@ import spock.lang.Unroll
 class SearchIntegrationTests extends Specification {
 
   @Autowired
-  private ElasticsearchService elasticsearchService
+  private SearchIndexService searchIndexService
 
   @Autowired
   private MetadataIndexService metadataIndexService
@@ -48,7 +48,7 @@ class SearchIntegrationTests extends Specification {
 
 
   void setup() {
-    elasticsearchService.recreate()
+    searchIndexService.recreate()
     metadataIndexService.recreate()
 
     def cl = ClassLoader.systemClassLoader
@@ -60,7 +60,7 @@ class SearchIntegrationTests extends Specification {
     }
     metadataIndexService.refresh()
     etlService.reindex()
-    elasticsearchService.refresh()
+    searchIndexService.refresh()
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()

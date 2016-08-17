@@ -2,7 +2,7 @@ package ncei.onestop.api.controller
 
 import groovy.util.logging.Slf4j
 import ncei.onestop.api.service.ETLService
-import ncei.onestop.api.service.ElasticsearchService
+import ncei.onestop.api.service.SearchIndexService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.RequestBody
@@ -17,12 +17,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.*
 @RestController
 class SearchController {
 
-    private ElasticsearchService elasticsearchService
+    private SearchIndexService searchIndexService
     private ETLService etlService
 
     @Autowired
-    public SearchController(ElasticsearchService elasticsearchService, ETLService etlService) {
-        this.elasticsearchService = elasticsearchService
+    public SearchController(SearchIndexService searchIndexService, ETLService etlService) {
+        this.searchIndexService = searchIndexService
         this.etlService = etlService
     }
 
@@ -36,7 +36,7 @@ class SearchController {
             return [errors: validation.errors]
         }
 
-        return elasticsearchService.search(params)
+        return searchIndexService.search(params)
     }
 
     @RequestMapping(path = '/search/reindex', method = [GET, PUT], produces = 'application/json')

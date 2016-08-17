@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct
 
 @Slf4j
 @Service
-class ElasticsearchService {
+class SearchIndexService {
 
   @Value('${elasticsearch.index.search.name}')
   private String SEARCH_INDEX
@@ -24,10 +24,10 @@ class ElasticsearchService {
   private IndexAdminService indexAdminService
 
   @Autowired
-  public ElasticsearchService(Client client,
-                              SearchRequestParserService searchRequestParserService,
-                              SearchResponseParserService searchResponseParserService,
-                              IndexAdminService indexAdminService) {
+  public SearchIndexService(Client client,
+                            SearchRequestParserService searchRequestParserService,
+                            SearchResponseParserService searchResponseParserService,
+                            IndexAdminService indexAdminService) {
     this.client = client
     this.searchRequestParserService = searchRequestParserService
     this.searchResponseParserService = searchResponseParserService
