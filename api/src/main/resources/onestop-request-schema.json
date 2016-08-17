@@ -17,6 +17,10 @@
         "$ref": "#/definitions/filter"
       }
     },
+    "aggregations": {
+      "type": "boolean",
+      "default": false
+    },
     "sort" : {
       "type": "string"
     },

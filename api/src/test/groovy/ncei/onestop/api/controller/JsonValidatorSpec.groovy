@@ -56,6 +56,20 @@ class JsonValidatorSpec extends Specification {
           """\
 {
   "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ],
+  "aggregations": true
+}""",
+          """\
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ],
+  "aggregations": false
+}""",
+          """\
+{
+  "queries": [
     {"type": "queryText", "value": "temperature"},
     {"type": "queryText", "value": "pressure"}
   ]
@@ -151,6 +165,10 @@ class JsonValidatorSpec extends Specification {
   }
 }
 """,
+          """\
+{
+  "aggregations": "false"
+}""",
           """\
 {
   "filters": [
