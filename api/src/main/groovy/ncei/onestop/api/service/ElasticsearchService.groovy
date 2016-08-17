@@ -37,14 +37,17 @@ class ElasticsearchService {
   private Client client
   private SearchRequestParserService searchRequestParserService
   private SearchResponseParserService searchResponseParserService
+  private IndexAdminService indexAdminService
 
   @Autowired
   public ElasticsearchService(Client client,
                               SearchRequestParserService searchRequestParserService,
-                              SearchResponseParserService searchResponseParserService) {
+                              SearchResponseParserService searchResponseParserService,
+                              IndexAdminService indexAdminService) {
     this.client = client
     this.searchRequestParserService = searchRequestParserService
     this.searchResponseParserService = searchResponseParserService
+    this.indexAdminService = indexAdminService
   }
 
 
@@ -77,92 +80,6 @@ class ElasticsearchService {
     return searchResponseParserService.searchResponseParser(searchResponse)
   }
 
-  public Map getMetadata(String fileIdentifier) {
-    def response = client.prepareGet(STORAGE_INDEX, null, fileIdentifier).execute().actionGet()
-    if (response.exists) {
-      return [
-          data: [
-            id: response.id,
-            type: response.type,
-            attributes: [
-                isoXml: response.source.isoXml
-            ]
-          ]
-      ]
-    }
-    else {
-      return [
-          status: 404,
-          title: 'No such document',
-          detail: "Metadata with ID ${fileIdentifier} does not exist" as String
-      ]
-    }
-  }
-
-  public Map loadMetadata(String document) {
-    def storageInfo = MetadataParser.parseStorageInfo(document)
-    def id = storageInfo.id
-    if (Pattern.matches(/.*\s.*/, id)) {
-      return [
-          errors: [
-              status: 400,
-              title : 'Load request failed due to bad fileIdentifier value',
-              detail: id
-          ]
-      ]
-    }
-    else {
-      def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
-      def source = [isoXml: document, fileIdentifier: id]
-      if (type == GRANULE_TYPE) {
-        source.parentIdentifier = storageInfo.parentId
-      }
-      source = JsonOutput.toJson(source)
-      def response = client.prepareIndex(STORAGE_INDEX, type, id)
-          .setSource(source)
-          .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
-          .execute().actionGet()
-      return [
-          data: [
-              id        : id,
-              type      : type,
-              attributes: [
-                  created: response.created
-              ]
-          ]
-      ]
-    }
-  }
-
-  public Map deleteMetadata(String fileIdentifier) {
-    // delete requires explicit type, so we have to try deleting from both types
-    def responses = [COLLECTION_TYPE, GRANULE_TYPE].collect {
-      client.prepareDelete(STORAGE_INDEX, it, fileIdentifier)
-          .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
-          .execute().actionGet()
-    }
-    def success = responses.find { it.found }
-    if (success) {
-      return [
-          data: [
-              id: success.id,
-              type: success.type,
-          ],
-          meta: [
-              deleted: true,
-              message: "Deleted metadata with ID ${success.id}" as String
-          ]
-      ]
-    }
-    else {
-      return [
-          status: 404,
-          title: 'No such document',
-          detail: "Metadata with ID ${fileIdentifier} does not exist" as String
-      ]
-    }
-  }
-
   @Async
   public void reindexAsync() {
     reindex()
@@ -173,7 +90,7 @@ class ElasticsearchService {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
 
-    def newSearchIndex = create(SEARCH_INDEX, [SEARCH_TYPE])
+    def newSearchIndex = indexAdminService.create(SEARCH_INDEX, [SEARCH_TYPE])
     def bulkRequest = client.prepareBulk()
     def recordCount = 0
     def pageSize = 100
@@ -230,7 +147,7 @@ class ElasticsearchService {
       bulkRequest.get()
     }
 
-    refresh(newSearchIndex)
+    indexAdminService.refresh(newSearchIndex)
 
     def aliasBuilder = client.admin().indices().prepareAliases()
     def oldIndices = client.admin().indices().prepareGetAliases(SEARCH_INDEX).get().aliases.keysIt()*.toString()
@@ -239,58 +156,25 @@ class ElasticsearchService {
     }
     aliasBuilder.addAlias(newSearchIndex, SEARCH_INDEX)
     aliasBuilder.execute().actionGet()
-    oldIndices.each { drop(it) }
+    oldIndices.each { indexAdminService.drop(it) }
 
     def end = System.currentTimeMillis()
     log.info "reindexed ${recordCount} records in ${(end - start) / 1000}s"
   }
 
   public void refresh() {
-    refresh("${SEARCH_INDEX}*", "${STORAGE_INDEX}*")
-  }
-
-  public void refresh(String... indices) {
-    client.admin().indices().prepareRefresh(indices).execute().actionGet()
+    indexAdminService.refresh(SEARCH_INDEX, STORAGE_INDEX)
   }
 
   public void drop() {
-    [STORAGE_INDEX, SEARCH_INDEX].each { drop("${it}*") }
-  }
-
-  public void drop(String name) {
-    client.admin().indices().prepareDelete(name).execute().actionGet()
-    log.debug "dropped index [${name}]"
-  }
-
-  public String create(String baseName, List typeNames) {
-    def indexName = "${baseName}-${System.currentTimeMillis()}"
-
-    // Initialize index:
-    def cl = ClassLoader.systemClassLoader
-    def indexSettings = cl.getResourceAsStream("config/${baseName}-settings.json").text
-    client.admin().indices().prepareCreate(indexName).setSettings(indexSettings).execute().actionGet()
-    client.admin().cluster().prepareHealth(indexName).setWaitForActiveShards(1).execute().actionGet()
-
-    // Initialize mappings:
-    typeNames.each { type ->
-      def mapping = cl.getResourceAsStream("config/${baseName}-mapping-${type}.json").text
-      client.admin().indices().preparePutMapping(indexName).setSource(mapping).setType(type).execute().actionGet()
-    }
-
-    log.debug "created new index [${indexName}]"
-    return indexName
+    indexAdminService.drop(SEARCH_INDEX)
   }
 
   @PostConstruct
   public void ensure() {
-    def storageExists = client.admin().indices().prepareAliasesExist(STORAGE_INDEX).execute().actionGet().exists
-    if (!storageExists) {
-      def realName = create(STORAGE_INDEX, [COLLECTION_TYPE, GRANULE_TYPE])
-      client.admin().indices().prepareAliases().addAlias(realName, STORAGE_INDEX).execute().actionGet()
-    }
     def searchExists = client.admin().indices().prepareAliasesExist(SEARCH_INDEX).execute().actionGet().exists
     if (!searchExists) {
-      def realName = create(SEARCH_INDEX, [SEARCH_TYPE])
+      def realName = indexAdminService.create(SEARCH_INDEX, [SEARCH_TYPE])
       client.admin().indices().prepareAliases().addAlias(realName, SEARCH_INDEX).execute().actionGet()
     }
   }

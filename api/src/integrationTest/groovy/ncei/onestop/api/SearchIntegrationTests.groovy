@@ -2,6 +2,7 @@ package ncei.onestop.api
 
 import groovy.json.JsonOutput
 import ncei.onestop.api.service.ElasticsearchService
+import ncei.onestop.api.service.MetadataIndexService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
@@ -25,6 +26,9 @@ class SearchIntegrationTests extends Specification {
   @Autowired
   private ElasticsearchService elasticsearchService
 
+  @Autowired
+  private MetadataIndexService metadataIndexService
+
   @Value('${local.server.port}')
   private String port
 
@@ -40,15 +44,16 @@ class SearchIntegrationTests extends Specification {
 
   void setup() {
     elasticsearchService.recreate()
+    metadataIndexService.recreate()
 
     def cl = ClassLoader.systemClassLoader
     for (e in datasets) {
       for (i in 1..3) {
         def metadata = cl.getResourceAsStream("data/${e}/${i}.xml").text
-        elasticsearchService.loadMetadata(metadata)
+        metadataIndexService.loadMetadata(metadata)
       }
     }
-    elasticsearchService.refresh()
+    metadataIndexService.refresh()
     elasticsearchService.reindex()
     elasticsearchService.refresh()
 

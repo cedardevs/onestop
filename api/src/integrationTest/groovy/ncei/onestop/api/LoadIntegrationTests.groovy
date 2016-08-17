@@ -1,6 +1,7 @@
 package ncei.onestop.api
 
 import ncei.onestop.api.service.ElasticsearchService
+import ncei.onestop.api.service.MetadataIndexService
 import org.elasticsearch.action.get.GetRequest
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,6 +29,9 @@ class LoadIntegrationTests extends Specification {
   @Autowired
   private ElasticsearchService elasticsearchService
 
+  @Autowired
+  private MetadataIndexService metadataIndexService
+
   @Value('${local.server.port}')
   private String port
 
@@ -48,6 +52,7 @@ class LoadIntegrationTests extends Specification {
 
   void setup() {
     elasticsearchService.recreate()
+    metadataIndexService.recreate()
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
