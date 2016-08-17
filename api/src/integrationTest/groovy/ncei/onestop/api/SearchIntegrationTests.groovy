@@ -43,6 +43,7 @@ class SearchIntegrationTests extends Specification {
   private List datasets = ['GHRSST', 'DEM']
 
   private RestTemplate restTemplate
+  private String searchBaseUriString
   private URI searchBaseUri
 
 
@@ -63,17 +64,19 @@ class SearchIntegrationTests extends Specification {
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    searchBaseUri = "http://localhost:${port}/${contextPath}/search".toURI()
+    searchBaseUriString = "http://localhost:${port}/${contextPath}/search"
+    searchBaseUri = searchBaseUriString.toURI()
   }
 
-  def 'Valid query-only search returns OK with expected results'() {
+  def 'Valid query-only search with aggregations returns OK with expected results'() {
     setup:
     def request = """\
         {
           "queries":
             [
               { "type": "queryText", "value": "temperature"}
-            ]
+            ],
+          "aggregations" : true
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -127,7 +130,8 @@ class SearchIntegrationTests extends Specification {
           "filters":
             [
               {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [145.5, 12.34]}}
-            ]
+            ],
+          "aggregations": false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -152,14 +156,6 @@ class SearchIntegrationTests extends Specification {
         'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
         'gov.noaa.ngdc.mgg.dem:4870'
     ])
-
-    and: 'The correct number of aggregations is returned'
-    def aggs = result.body.meta.aggregations
-    aggs.size() == 7
-
-    and: 'The aggregations are as expected'
-    def aggNames = aggs.collect { it.key }
-    aggNames.containsAll(['science', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'dataResolution'])
   }
 
   def 'Valid query-and-filter search returns OK with expected result'() {
@@ -197,14 +193,6 @@ class SearchIntegrationTests extends Specification {
     actualIds.containsAll([
         'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
     ])
-
-    and: 'The correct number of aggregations is returned'
-    def aggs = result.body.meta.aggregations
-    aggs.size() == 7
-
-    and: 'The aggregations are as expected'
-    def aggNames = aggs.collect { it.key }
-    aggNames.containsAll(['science', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'dataResolution'])
   }
 
   def 'Time filter with #situation an item\'s time range returns the correct results'() {
@@ -230,14 +218,6 @@ class SearchIntegrationTests extends Specification {
     then:
     result.statusCode == HttpStatus.OK
     ids.contains(ghrsst1FileId) == matches
-
-    and: 'The correct number of aggregations is returned'
-    def aggs = result.body.meta.aggregations
-    aggs.size() == 7
-
-    and: 'The aggregations are as expected'
-    def aggNames = aggs.collect { it.key }
-    aggNames.containsAll(['science', 'locations', 'instruments', 'platforms', 'projects', 'dataCenters', 'dataResolution'])
 
     where: // NOTE: time range for GHRSST/1.xml is: 2005-01-30 <-> 2008-01-14
     after                  | before                 | matches | situation
@@ -290,19 +270,6 @@ class SearchIntegrationTests extends Specification {
     actualIds.containsAll([
         'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
     ])
-
-    and: 'The correct number of aggregations is returned'
-    def aggs = result.body.meta.aggregations
-    aggs.size() == 7
-
-    and: 'The aggregations are as expected'
-    aggs.science != null
-    aggs.locations != null
-    aggs.instruments != null
-    aggs.platforms != null
-    aggs.projects != null
-    aggs.dataCenters != null
-    aggs.dataResolution != null
   }
 
   def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {

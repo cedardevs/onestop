@@ -44,7 +44,6 @@ class ElasticsearchService {
     def parsedRequest = searchRequestParserService.parseSearchRequest(params)
     def query = parsedRequest.query
     def postFilters = parsedRequest.postFilters
-    def aggregations = searchRequestParserService.createDefaultAggregations()
 
     log.debug("ES query:${query} params:${params}")
 
@@ -52,7 +51,11 @@ class ElasticsearchService {
     def srb = client.prepareSearch(SEARCH_INDEX)
     srb = srb.setTypes(SEARCH_TYPE).setQuery(query)
     if(postFilters) { srb = srb.setPostFilter(postFilters) }
-    aggregations.each { a -> srb = srb.addAggregation(a) }
+    if(params.aggregations) {
+      def aggregations = searchRequestParserService.createDefaultAggregations()
+      aggregations.each { a -> srb = srb.addAggregation(a) }
+    }
+
 
     if(params.page) {
       srb = srb.setFrom(params.page.offset).setSize(params.page.max)
