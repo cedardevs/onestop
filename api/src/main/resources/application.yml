@@ -23,5 +23,11 @@ logging:
 elasticsearch:
   host: localhost
   port: 9300
-  index: onestop_v1
-  type: metadata
+  index:
+    storage:
+      name: storage_v1
+      granuleType: granule
+      collectionType: collection
+    search:
+      name: search_v2
+      type: metadata

@@ -1,9 +1,18 @@
 package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
+import org.apache.commons.lang3.text.WordUtils
 
 
 class MetadataParser {
+
+  public static Map parseStorageInfo(String xml) {
+    def slurped = new XmlSlurper().parseText(xml)
+    return [
+        id: slurped.fileIdentifier.CharacterString.text(),
+        parentId: slurped.parentIdentifier.Anchor.text() ?: slurped.parentIdentifier.CharacterString.text() ?: null
+    ]
+  }
 
   public static String parseXMLMetadata(String xml) {
     return JsonOutput.toJson(parseXMLMetadataToMap(xml))
@@ -17,6 +26,14 @@ class MetadataParser {
     def alternateTitle
     def description
     def keywords = [] as Set
+    def topicCategories = [] as Set
+    def gcmdScience = [] as Set
+    def gcmdLocations = [] as Set
+    def gcmdPlatforms = [] as Set
+    def gcmdInstruments = [] as Set
+    def gcmdProjects = [] as Set
+    def gcmdDataResolution = [] as Set
+    def gcmdDataCenters = [] as Set
     def temporalBounding = [:]
     def spatialBounding = [:]
     def acquisitionInstruments = [] as Set
@@ -29,20 +46,14 @@ class MetadataParser {
     def creationDate
     def revisionDate
     def publicationDate
-    def language          // TODO Remove?
-    def resourceLanguage  // TODO Remove?
+    def language
+    def resourceLanguage
     def resourceConstraints = [] as Set
     def securityConstraints = [] as Set
     def grid = [:]
 
     def metadata = new XmlSlurper().parseText(xml)
     def idInfo = metadata.identificationInfo.MD_DataIdentification
-    /*
-    TODO
-    idInfo points to only identificationInfo node with MD_DataIdentification child, but there are some (in DEM)
-    where child is SV_ServiceIdentification. Discuss with Anna -- should these be parsed as well? GP does, but
-    data is stored across several fields included & not included here.
-     */
 
     // Basic info:
     fileIdentifier = metadata.fileIdentifier.CharacterString.text()
@@ -68,30 +79,55 @@ class MetadataParser {
       }
     }
 
-    // Keywords:
-    /*
-     TODO
-     Some things noticed here:
-      - Some keywords are appearing under the path descriptiveKeywords.MD_Keywords.keyword.Anchor. GP does not
-        collect these, and maybe we don't want to either? These show up in DEM example as keyword objects with empty
-        keywordText and keywordType fields. In the XML they are in extreme numbers and appear to have inconsistent
-        value. Discuss with Anna?
-      - If we disregard these keywords, should we programmatically remove elements where keywordText is empty?
-     */
-    def topicCategories = idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text()
-    topicCategories.each { e ->
-      keywords.add([keywordText: e, keywordType: null, keywordNamespace: null])
-    }
+    // Keywords & topics:
+    topicCategories.addAll(idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text())
 
     def descriptiveKeywords = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
     descriptiveKeywords.each { e ->
       def keywordGroup = e.'**'.findAll { it.name() == 'keyword' }
       keywordGroup.each { k ->
-        keywords.add([
-            keywordText     : k.CharacterString.text(),
-            keywordType     : e.type.MD_KeywordTypeCode.@codeListValue.text(),
-            keywordNamespace: e.thesaurusName.CI_Citation.title.CharacterString.text()
-        ])
+
+        def text = k.CharacterString.text() as String
+        def namespace = e.thesaurusName.CI_Citation.title.CharacterString.text()
+
+        if(text) {
+          if(namespace.toLowerCase().contains('gcmd')) {
+            switch(namespace) {
+              case {it.toLowerCase().contains('science')}:
+                text = WordUtils.capitalizeFully(text,
+                    " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
+                text = text.replace('Earth Science > ', '')
+                gcmdScience.add(text)
+                break
+              case {it.toLowerCase().contains('location') || it.toLowerCase().contains('place')}:
+                def locationKeywords = WordUtils.capitalizeFully(text,
+                    " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
+                gcmdLocations.add(locationKeywords)
+                break
+              case {it.toLowerCase().contains('platform')}:
+                gcmdPlatforms.add(text)
+                break
+              case {it.toLowerCase().contains('instrument')}:
+                gcmdInstruments.add(text)
+                break
+              case {it.toLowerCase().contains('data center')}:
+                gcmdDataCenters.add(text)
+                break
+              case {it.toLowerCase().contains('data resolution')}:
+                gcmdDataResolution.add(text)
+                break
+              case {it.toLowerCase().contains('project')}:
+                gcmdProjects.add(text)
+                break
+              default:
+                keywords.add(text)
+                break
+            }
+
+          } else {
+            keywords.add(text)
+          }
+        }
       }
     }
 
@@ -232,6 +268,14 @@ class MetadataParser {
         alternateTitle        : alternateTitle,
         description           : description,
         keywords              : keywords,
+        topicCategories       : topicCategories,
+        gcmdScience           : gcmdScience,
+        gcmdLocations         : gcmdLocations,
+        gcmdInstruments       : gcmdInstruments,
+        gcmdPlatforms         : gcmdPlatforms,
+        gcmdProjects          : gcmdProjects,
+        gcmdDataCenters       : gcmdDataCenters,
+        gcmdDataResolution    : gcmdDataResolution,
         temporalBounding      : temporalBounding,
         spatialBounding       : spatialBounding,
         acquisitionInstruments: acquisitionInstruments,
@@ -256,13 +300,57 @@ class MetadataParser {
 
   public static Map mergeCollectionAndGranule(Map collection, Map granule) {
 
+    def keywords = [] as Set
+    keywords.addAll(collection.keywords)
+    keywords.addAll(granule.keywords)
+
+    def topicCategories = [] as Set
+    topicCategories.addAll(collection.topicCategories)
+    topicCategories.addAll(granule.topicCategories)
+
+    def gcmdDataCenters = [] as Set
+    gcmdDataCenters.addAll(collection.gcmdDataCenters)
+    gcmdDataCenters.addAll(granule.gcmdDataCenters)
+
+    def gcmdScience = [] as Set
+    gcmdScience.addAll(collection.gcmdScience)
+    gcmdScience.addAll(granule.gcmdScience)
+
+    def gcmdLocations = [] as Set
+    gcmdLocations.addAll(collection.gcmdLocations)
+    gcmdLocations.addAll(granule.gcmdLocations)
+
+    def gcmdPlatforms = [] as Set
+    gcmdPlatforms.addAll(collection.gcmdPlatforms)
+    gcmdPlatforms.addAll(granule.gcmdPlatforms)
+
+    def gcmdInstruments = [] as Set
+    gcmdInstruments.addAll(collection.gcmdInstruments)
+    gcmdInstruments.addAll(granule.gcmdInstruments)
+
+    def gcmdProjects = [] as Set
+    gcmdProjects.addAll(collection.gcmdProjects)
+    gcmdProjects.addAll(granule.gcmdProjects)
+
+    def gcmdDataResolution = [] as Set
+    gcmdDataResolution.addAll(collection.gcmdDataResolution)
+    gcmdDataResolution.addAll(granule.gcmdDataResolution)
+
     def json = [
         fileIdentifier        : granule.fileIdentifier,
         parentIdentifier      : granule.parentIdentifier,
         title                 : granule.title,
         alternateTitle        : granule.alternateTitle ?: collection.alternateTitle ?: collection.title, //fixme?
         description           : granule.description,
-        keywords              : granule.keywords,
+        keywords              : keywords,
+        topicCategories       : topicCategories,
+        gcmdScience           : gcmdScience,
+        gcmdLocations         : gcmdLocations,
+        gcmdInstruments       : gcmdInstruments,
+        gcmdPlatforms         : gcmdPlatforms,
+        gcmdProjects          : gcmdProjects,
+        gcmdDataCenters       : gcmdDataCenters,
+        gcmdDataResolution    : gcmdDataResolution,
         temporalBounding      : granule.temporalBounding,
         spatialBounding       : granule.spatialBounding,
         acquisitionInstruments: granule.acquisitionInstruments ?: collection.acquisitionInstruments,

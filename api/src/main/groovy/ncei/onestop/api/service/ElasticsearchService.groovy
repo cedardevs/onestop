@@ -1,109 +1,88 @@
 package ncei.onestop.api.service
 
-import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-import org.elasticsearch.action.bulk.BulkRequest
-import org.elasticsearch.action.delete.DeleteRequest
-import org.elasticsearch.action.index.IndexResponse
-import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 import javax.annotation.PostConstruct
-import java.util.regex.Pattern
 
 @Slf4j
 @Service
 class ElasticsearchService {
 
-    @Value('${elasticsearch.index}')
-    private String INDEX
+  @Value('${elasticsearch.index.search.name}')
+  private String SEARCH_INDEX
 
-    @Value('${elasticsearch.type}')
-    private String TYPE
+  @Value('${elasticsearch.index.search.type}')
+  private String SEARCH_TYPE
 
-    private Client client
-    private SearchRequestParserService searchRequestParserService
-    private SearchResponseParserService searchResponseParserService
+  private Client client
+  private SearchRequestParserService searchRequestParserService
+  private SearchResponseParserService searchResponseParserService
+  private IndexAdminService indexAdminService
 
-    @Autowired
-    public ElasticsearchService(Client client,
-                                SearchRequestParserService searchRequestParserService,
-                                SearchResponseParserService searchResponseParserService) {
-        this.client = client
-        this.searchRequestParserService = searchRequestParserService
-        this.searchResponseParserService = searchResponseParserService
+  @Autowired
+  public ElasticsearchService(Client client,
+                              SearchRequestParserService searchRequestParserService,
+                              SearchResponseParserService searchResponseParserService,
+                              IndexAdminService indexAdminService) {
+    this.client = client
+    this.searchRequestParserService = searchRequestParserService
+    this.searchResponseParserService = searchResponseParserService
+    this.indexAdminService = indexAdminService
+  }
+
+
+  Map search(Map searchParams) {
+    def response = queryElasticSearch(searchParams)
+    response
+  }
+
+  private Map queryElasticSearch(Map params) {
+    def parsedRequest = searchRequestParserService.parseSearchRequest(params)
+    def query = parsedRequest.query
+    def postFilters = parsedRequest.postFilters
+    def aggregations = searchRequestParserService.createDefaultAggregations()
+
+    log.debug("ES query:${query} params:${params}")
+
+    // Assemble the search request:
+    def srb = client.prepareSearch(SEARCH_INDEX)
+    srb = srb.setTypes(SEARCH_TYPE).setQuery(query)
+    if(postFilters) { srb = srb.setPostFilter(postFilters) }
+    aggregations.each { a -> srb = srb.addAggregation(a) }
+
+    if(params.page) {
+      srb = srb.setFrom(params.page.offset).setSize(params.page.max)
+    } else {
+      srb = srb.setFrom(0).setSize(100)
     }
 
+    def searchResponse = srb.execute().actionGet()
+    return searchResponseParserService.searchResponseParser(searchResponse)
+  }
 
-    Map search(Map searchParams) {
-        def response = queryElasticSearch(searchParams)
-        response
+  public void refresh() {
+    indexAdminService.refresh(SEARCH_INDEX)
+  }
+
+  public void drop() {
+    indexAdminService.drop(SEARCH_INDEX)
+  }
+
+  @PostConstruct
+  public void ensure() {
+    def searchExists = client.admin().indices().prepareAliasesExist(SEARCH_INDEX).execute().actionGet().exists
+    if (!searchExists) {
+      def realName = indexAdminService.create(SEARCH_INDEX, [SEARCH_TYPE])
+      client.admin().indices().prepareAliases().addAlias(realName, SEARCH_INDEX).execute().actionGet()
     }
+  }
 
-    private Map queryElasticSearch(Map params) {
-        def query = searchRequestParserService.parseSearchRequest(params)
-        log.debug("ES query:${query} params:${params}")
-        def searchResponse = client
-          .prepareSearch(INDEX)
-          .setTypes(TYPE)
-          .setQuery(query)
-          .setFrom(0).setSize(100) // TODO - expose these as API parameters
-          .execute()
-          .actionGet()
-
-        return searchResponseParserService.searchResponseParser(searchResponse)
-    }
-
-    public Map loadDocument(String document) {
-        def mappedDoc = MetadataParser.parseXMLMetadataToMap(document)
-        if(!Pattern.matches(".*\\s.*", mappedDoc.fileIdentifier)) {
-            def parsedDoc = JsonOutput.toJson(mappedDoc)
-            IndexResponse iResponse = client.prepareIndex(INDEX, TYPE, mappedDoc.fileIdentifier)
-                    .setSource(parsedDoc).execute().actionGet()
-            def attributes = [created: iResponse.created, src: parsedDoc]
-            def data = [type: TYPE, id: iResponse.id, attributes: attributes]
-            def response = [data: data]
-            return response
-        } else {
-            def errors = [
-                    status: 400,
-                    title: 'Load request failed due to bad fileIdentifier value',
-                    detail: mappedDoc.fileIdentifier
-            ]
-            return [errors: errors]
-        }
-    }
-
-    public void purgeIndex() {
-        def items = client.search(new SearchRequest(INDEX).types(TYPE)).actionGet()
-        def ids = items.hits.hits*.id
-        def bulkDelete = ids.inject(new BulkRequest()) { bulk, id ->
-            bulk.add(new DeleteRequest(INDEX, TYPE, id))
-        }
-        bulkDelete.refresh(true)
-        client.bulk(bulkDelete)
-    }
-
-    public void refreshIndex() {
-        client.admin().indices().prepareRefresh(INDEX).execute().actionGet()
-    }
-
-    @PostConstruct
-    private configureIndex() {
-        def indexExists = client.admin().indices().prepareExists(INDEX).execute().actionGet().exists
-        if (!indexExists) {
-            // Initialize index:
-            def cl = ClassLoader.systemClassLoader
-            def indexSettings = cl.getResourceAsStream("config/index-settings.json").text
-            client.admin().indices().prepareCreate(INDEX).setSettings(indexSettings).execute().actionGet()
-            client.admin().cluster().prepareHealth(INDEX).setWaitForActiveShards(1).execute().actionGet()
-
-            // Initialize mapping:
-            def mapping = cl.getResourceAsStream("config/metadata-mapping.json").text
-            client.admin().indices().preparePutMapping(INDEX).setSource(mapping).setType(TYPE).execute().actionGet()
-        }
-    }
+  public void recreate() {
+    drop()
+    ensure()
+  }
 }

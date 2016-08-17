@@ -21,6 +21,7 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-tomcat'
     compile 'org.springframework.boot:spring-boot-devtools'
     compile 'com.github.fge:json-schema-validator:2.2.6'
+    compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.spatial4j:spatial4j:0.5' // Necessary for embedded ES to have geo_shape type available
     compile 'com.vividsolutions:jts:1.13' // Necessary for embedded ES to have geo_shape type available
 

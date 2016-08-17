@@ -36,12 +36,12 @@ def targets = [
   [
     name: 'LocalApi',
     class: ApiLoader,
-    url: 'http://localhost:8097/api/load'
+    url: 'http://localhost:8097/api/metadata'
   ],
   [
     name: 'CUApi',
     class: ApiLoader,
-    url: 'http://sciapps.colorado.edu/api/load'
+    url: 'http://sciapps.colorado.edu/api/metadata'
   ],
   [
     name: 'LocalGeoportal',

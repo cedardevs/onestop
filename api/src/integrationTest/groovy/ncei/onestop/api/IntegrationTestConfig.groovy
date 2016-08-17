@@ -20,10 +20,10 @@ class IntegrationTestConfig {
     // Config constants:
     static final String CLUSTER_NAME = 'integrationTest'
 
-    @Value('${elasticsearch.index}')
+    @Value('${elasticsearch.index.search.name}')
     private String INDEX
 
-    @Value('${elasticsearch.type}')
+    @Value('${elasticsearch.index.search.type}')
     private String TYPE
 
 
