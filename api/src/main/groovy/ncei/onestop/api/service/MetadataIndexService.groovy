@@ -28,7 +28,7 @@ class MetadataIndexService {
   private IndexAdminService indexAdminService
 
   @Autowired
-  public ElasticsearchService(Client client, IndexAdminService indexAdminService) {
+  public MetadataIndexService(Client client, IndexAdminService indexAdminService) {
     this.client = client
     this.indexAdminService = indexAdminService
   }
