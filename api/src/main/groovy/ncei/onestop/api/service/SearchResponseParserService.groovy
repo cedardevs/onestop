@@ -11,25 +11,19 @@ import org.springframework.stereotype.Service
 class SearchResponseParserService {
 
   Map searchResponseParser(SearchResponse response) {
-    def data = response.hits.hits.collect({ [type: 'collection', id: it.id, attributes: it.source] })
+    def result = [
+        data: response.hits.hits.collect({ [type: 'collection', id: it.id, attributes: it.source] }),
+        meta: [
+            took : response.tookInMillis,
+            total: response.hits.totalHits,
+        ]
+    ]
 
-    def metadata
-    if(response.aggregations) {
-      def aggs = prepareAggregationsForUI(response.aggregations)
-      metadata = [
-          took : response.tookInMillis,
-          total: response.hits.totalHits,
-          aggregations: aggs
-      ]
-    } else {
-      metadata = [
-          took : response.tookInMillis,
-          total: response.hits.totalHits
-      ]
+    if (response.aggregations) {
+      result.meta.aggregations = prepareAggregationsForUI(response.aggregations)
     }
 
-    def result = [data: data, meta: metadata]
-    log.debug("Parsed elasticsearch response with ${data.size()}/${metadata.total} results")
+    log.debug("Parsed elasticsearch response with ${result.data.size()}/${result.meta.total} results")
     return result
   }
 
