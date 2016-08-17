@@ -41,7 +41,7 @@ def targets = [
   [
     name: 'CUApi',
     class: ApiLoader,
-    url: 'http://sciapps.colorado.edu/api/metadata'
+    url: 'https://sciapps.colorado.edu/api/metadata'
   ],
   [
     name: 'LocalGeoportal',
@@ -146,6 +146,7 @@ class ApiLoader {
     ApiLoader(Iterator<String> metadataUrls, String apiEndpoint) {
         this.metadataUrls = metadataUrls
         this.target = new HTTPBuilder(apiEndpoint)
+        this.target.ignoreSSLIssues()
         this.httpMethod = Method.POST
     }
 
