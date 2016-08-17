@@ -1,6 +1,7 @@
 package ncei.onestop.api
 
 import groovy.json.JsonOutput
+import ncei.onestop.api.service.ETLService
 import ncei.onestop.api.service.ElasticsearchService
 import ncei.onestop.api.service.MetadataIndexService
 import org.springframework.beans.factory.annotation.Autowired
@@ -29,6 +30,9 @@ class SearchIntegrationTests extends Specification {
   @Autowired
   private MetadataIndexService metadataIndexService
 
+  @Autowired
+  private ETLService etlService
+
   @Value('${local.server.port}')
   private String port
 
@@ -54,7 +58,7 @@ class SearchIntegrationTests extends Specification {
       }
     }
     metadataIndexService.refresh()
-    elasticsearchService.reindex()
+    etlService.reindex()
     elasticsearchService.refresh()
 
     restTemplate = new RestTemplate()

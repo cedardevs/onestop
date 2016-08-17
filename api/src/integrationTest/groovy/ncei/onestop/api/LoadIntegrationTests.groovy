@@ -1,5 +1,6 @@
 package ncei.onestop.api
 
+import ncei.onestop.api.service.ETLService
 import ncei.onestop.api.service.ElasticsearchService
 import ncei.onestop.api.service.MetadataIndexService
 import org.elasticsearch.action.get.GetRequest
@@ -31,6 +32,9 @@ class LoadIntegrationTests extends Specification {
 
   @Autowired
   private MetadataIndexService metadataIndexService
+
+  @Autowired
+  private ETLService etlService
 
   @Value('${local.server.port}')
   private String port
@@ -68,6 +72,7 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
+    metadataIndexService.refresh()
 
     then: "Load returns CREATED"
     loadResult.statusCode == HttpStatus.CREATED
@@ -87,7 +92,7 @@ class LoadIntegrationTests extends Specification {
     hits.size() == 0
 
     when: "Reindex storage then search"
-    elasticsearchService.reindex()
+    etlService.reindex()
     elasticsearchService.refresh()
     searchResult = restTemplate.exchange(searchRequest, Map)
     hits = searchResult.body.data
@@ -104,7 +109,7 @@ class LoadIntegrationTests extends Specification {
     def deleteResult = restTemplate.exchange(deleteRequest, Map)
     getResult = restTemplate.exchange(getRequest, Map)
     searchResult = restTemplate.exchange(searchRequest, Map)
-    elasticsearchService.refresh()
+    metadataIndexService.refresh()
 
     then: "Document is not in storage, but still in search index"
     deleteResult.body?.meta?.deleted
@@ -112,7 +117,7 @@ class LoadIntegrationTests extends Specification {
     searchResult.body.data.size() == 1
 
     when: "Reindex again"
-    elasticsearchService.reindex()
+    etlService.reindex()
     elasticsearchService.refresh()
     searchResult = restTemplate.exchange(searchRequest, Map)
     hits = searchResult.body.data
@@ -145,8 +150,8 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
-    elasticsearchService.refresh()
-    elasticsearchService.reindex()
+    metadataIndexService.refresh()
+    etlService.reindex()
     elasticsearchService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
@@ -164,8 +169,8 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
-    elasticsearchService.refresh()
-    elasticsearchService.reindex()
+    metadataIndexService.refresh()
+    etlService.reindex()
     elasticsearchService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
@@ -190,8 +195,8 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }
-    elasticsearchService.refresh()
-    elasticsearchService.reindex()
+    metadataIndexService.refresh()
+    etlService.reindex()
     elasticsearchService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
