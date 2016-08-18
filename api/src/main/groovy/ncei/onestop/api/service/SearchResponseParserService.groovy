@@ -20,7 +20,7 @@ class SearchResponseParserService {
     ]
 
     if (response.aggregations) {
-      result.meta.aggregations = prepareAggregationsForUI(response.aggregations)
+      result.meta.facets = prepareAggregationsForUI(response.aggregations)
     }
 
     log.debug("Parsed elasticsearch response with ${result.data.size()}/${result.meta.total} results")

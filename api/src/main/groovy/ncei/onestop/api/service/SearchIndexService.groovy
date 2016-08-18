@@ -45,13 +45,11 @@ class SearchIndexService {
     def query = parsedRequest.query
     def postFilters = parsedRequest.postFilters
 
-    log.debug("ES query:${query} params:${params}")
-
     // Assemble the search request:
     def srb = client.prepareSearch(SEARCH_INDEX)
     srb = srb.setTypes(SEARCH_TYPE).setQuery(query)
     if(postFilters) { srb = srb.setPostFilter(postFilters) }
-    if(params.aggregations) {
+    if(params.facets) {
       def aggregations = searchRequestParserService.createDefaultAggregations()
       aggregations.each { a -> srb = srb.addAggregation(a) }
     }
@@ -62,6 +60,8 @@ class SearchIndexService {
     } else {
       srb = srb.setFrom(0).setSize(100)
     }
+
+    log.debug("ES query:${srb} params:${params}")
 
     def searchResponse = srb.execute().actionGet()
     return searchResponseParserService.searchResponseParser(searchResponse)

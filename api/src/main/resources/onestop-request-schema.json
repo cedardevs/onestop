@@ -17,7 +17,7 @@
         "$ref": "#/definitions/filter"
       }
     },
-    "aggregations": {
+    "facets": {
       "type": "boolean",
       "default": false
     },
