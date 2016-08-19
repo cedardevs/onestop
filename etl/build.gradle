@@ -180,18 +180,25 @@ class ApiLoader {
     def successes = 0
     def failures = 0
     metadataUrls.eachWithIndex { metadata, i ->
-      target.request(httpMethod) {
-        requestContentType = 'application/xml'
-        body = new URL(metadata).text
-        response.success = { resp, data ->
-          successes++
-          println "${data.data.id} created #${i}: ${data.data.attributes.created}"
-          collections.add(data.data.id.replace('gov.noaa.nodc:', ''))
+      try {
+        def metadataContent = new URL(metadata).text
+        target.request(httpMethod) {
+          requestContentType = 'application/xml'
+          body = metadataContent
+          response.success = { resp, data ->
+            successes++
+            println "${data.data.id} created #${i}: ${data.data.attributes.created}"
+            collections.add(data.data.id.replace('gov.noaa.nodc:', ''))
+          }
+          response.failure = { resp, data ->
+            failures++
+            println "Error uploading metadata #${i} from ${metadata}: ${data}"
+          }
         }
-        response.failure = { resp, data ->
-          failures++
-          println "Error uploading metadata #${i} from ${metadata}: ${data}"
-        }
+      }
+      catch (e) {
+        println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
+        return // break out of current each{} loop
       }
     }
     println "Load complete. Successfully loaded ${successes} of ${successes + failures} metadata records"
@@ -208,25 +215,30 @@ class ApiLoader {
     def fragment = new XmlParser(false, false).parseText(xmlFragment)
 
     metadataUrls.eachWithIndex { metadata, i ->
-
-      def root = new XmlParser(false, false).parseText(new URL(metadata).text)
-      def xml = root.children()
-      xml.add(fragment)
-      def updatedXml = XmlUtil.serialize(root)
-
-      target.request(httpMethod) {
-        requestContentType = 'application/xml'
-        body = updatedXml
-        response.success = { resp, data ->
-          successes++
-          println "${data.data.id} created #${i}: ${data.data.attributes.created}"
-        }
-        response.failure = { resp, data ->
-          failures++
-          println "Error uploading metadata #${i} from ${metadata}: ${data}"
-        }
+      try {
+        def root = new XmlParser(false, false).parseText(new URL(metadata).text)
+        def xml = root.children()
+        xml.add(fragment)
+        def updatedXml = XmlUtil.serialize(root)
+          target.request(httpMethod) {
+            requestContentType = 'application/xml'
+            body = updatedXml
+            response.success = { resp, data ->
+              successes++
+              println "${data.data.id} created #${i}: ${data.data.attributes.created}"
+            }
+            response.failure = { resp, data ->
+              failures++
+              println "Error uploading metadata #${i} from ${metadata}: ${data}"
+            }
+          }
+      }
+      catch(e) {
+        println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
+        return // break out of current each{} loop
       }
     }
+
     println "Load complete. Successfully loaded ${successes} of ${successes + failures} metadata records"
   }
 
