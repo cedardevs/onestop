@@ -53,6 +53,7 @@ class ETLService {
     def bulkRequest = client.prepareBulk()
     def recordCount = 0
     def pageSize = 100
+    def scrollTimeout = '5m'
     def addRecordToBulk = { record ->
       def id = record.fileIdentifier as String
       def json = JsonOutput.toJson(record)
@@ -68,7 +69,7 @@ class ETLService {
     def collectionScroll = client.prepareSearch(STORAGE_INDEX)
         .setTypes(COLLECTION_TYPE)
         .addSort('fileIdentifier', SortOrder.ASC)
-        .setScroll('5m')
+        .setScroll(scrollTimeout)
         .setSize(pageSize)
         .execute()
         .actionGet()
@@ -80,7 +81,7 @@ class ETLService {
         def granuleScroll = client.prepareSearch(STORAGE_INDEX)
             .setTypes(GRANULE_TYPE)
             .addSort('fileIdentifier', SortOrder.ASC)
-            .setScroll('5m')
+            .setScroll(scrollTimeout)
             .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', parsedCollection.fileIdentifier)))
             .setSize(pageSize)
             .execute()
@@ -97,11 +98,11 @@ class ETLService {
             def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
             addRecordToBulk(flattenedRecord)
           }
-          granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll('1m').execute().actionGet()
+          granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
           granulesRemain = granuleScroll.hits.hits.length > 0
         }
       }
-      collectionScroll = client.prepareSearchScroll(collectionScroll.scrollId).setScroll('1m').execute().actionGet()
+      collectionScroll = client.prepareSearchScroll(collectionScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
       collectionsRemain = collectionScroll.hits.hits.length > 0
     }
 
