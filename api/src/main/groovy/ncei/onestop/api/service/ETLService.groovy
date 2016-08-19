@@ -52,7 +52,7 @@ class ETLService {
     def newSearchIndex = indexAdminService.create(SEARCH_INDEX, [SEARCH_TYPE])
     def bulkRequest = client.prepareBulk()
     def recordCount = 0
-    def pageSize = 100
+    def pageSize = 50
     def scrollTimeout = '5m'
     def addRecordToBulk = { record ->
       def id = record.fileIdentifier as String
@@ -66,6 +66,7 @@ class ETLService {
       }
     }
 
+    log.debug("starting initial collection scroll")
     def collectionScroll = client.prepareSearch(STORAGE_INDEX)
         .setTypes(COLLECTION_TYPE)
         .addSort('fileIdentifier', SortOrder.ASC)
@@ -78,6 +79,7 @@ class ETLService {
       collectionScroll.hits.hits.each { collection ->
         def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
         addRecordToBulk(parsedCollection) // Add collections whether they have granules or not
+        log.debug("starting initial granule scroll for collection ${parsedCollection.fileIdentifier}")
         def granuleScroll = client.prepareSearch(STORAGE_INDEX)
             .setTypes(GRANULE_TYPE)
             .addSort('fileIdentifier', SortOrder.ASC)
@@ -98,10 +100,12 @@ class ETLService {
             def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
             addRecordToBulk(flattenedRecord)
           }
+          log.debug("starting new granule scroll for collection ${parsedCollection.fileIdentifier}")
           granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
           granulesRemain = granuleScroll.hits.hits.length > 0
         }
       }
+      log.debug("starting new collection scroll")
       collectionScroll = client.prepareSearchScroll(collectionScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
       collectionsRemain = collectionScroll.hits.hits.length > 0
     }
