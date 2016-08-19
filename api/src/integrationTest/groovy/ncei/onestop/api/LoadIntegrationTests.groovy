@@ -199,13 +199,15 @@ class LoadIntegrationTests extends Specification {
     searchIndexService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
-    then: 'two merged granule + collection documents have been indexed'
+    then: 'two merged granule + collection documents have been indexed along with collection document'
     loadResults.every { it.statusCode == HttpStatus.CREATED }
-    hits.size() == 2
+    hits.size() == 3
     def g1Record = hits.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_8638614_201602_D1_v00' }
     def g2Record = hits.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_9410170_201503_D1_v00' }
+    def c1Record = hits.find { it.attributes.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS' }
     g1Record != null
     g2Record != null
+    c1Record != null
 
     and: 'they contain the attribute values from the granule records when present'
     g1Record.attributes.temporalBounding.beginDate == '2016-02-01'
