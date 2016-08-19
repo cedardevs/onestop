@@ -86,9 +86,6 @@ class ETLService {
             .execute()
             .actionGet()
         def granulesRemain = granuleScroll.hits.hits.length > 0
-/*        if (!granulesRemain) {
-          addRecordToBulk(parsedCollection)
-        }*/
         while (granulesRemain) {
           granuleScroll.hits.hits.each { granule ->
             def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)
