@@ -44,7 +44,7 @@ class ETLService {
     reindex()
   }
 
-  @Scheduled(fixedDelay = 300000L) // 5 minutes after previous run ends
+  @Scheduled(fixedDelay = 600000L) // 10 minutes after previous run ends
   public void reindex() {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
@@ -68,7 +68,7 @@ class ETLService {
     def collectionScroll = client.prepareSearch(STORAGE_INDEX)
         .setTypes(COLLECTION_TYPE)
         .addSort('fileIdentifier', SortOrder.ASC)
-        .setScroll('1m')
+        .setScroll('5m')
         .setSize(pageSize)
         .execute()
         .actionGet()
@@ -76,18 +76,19 @@ class ETLService {
     while (collectionsRemain) {
       collectionScroll.hits.hits.each { collection ->
         def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
+        addRecordToBulk(parsedCollection) // Add collections whether they have granules or not
         def granuleScroll = client.prepareSearch(STORAGE_INDEX)
             .setTypes(GRANULE_TYPE)
             .addSort('fileIdentifier', SortOrder.ASC)
-            .setScroll('1m')
+            .setScroll('5m')
             .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', parsedCollection.fileIdentifier)))
             .setSize(pageSize)
             .execute()
             .actionGet()
         def granulesRemain = granuleScroll.hits.hits.length > 0
-        if (!granulesRemain) {
+/*        if (!granulesRemain) {
           addRecordToBulk(parsedCollection)
-        }
+        }*/
         while (granulesRemain) {
           granuleScroll.hits.hits.each { granule ->
             def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)
