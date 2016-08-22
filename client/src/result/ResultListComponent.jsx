@@ -3,6 +3,7 @@ import Result from './ResultComponent'
 import { CardStatus } from '../detail/DetailActions'
 import styles from './result.css'
 import 'font-awesome/css/font-awesome.css'
+import facetList from '../facet/FacetContainer'
 
 const ResultsList = ({results, loading, onCardClick}) => {
   const cards = []
@@ -30,7 +31,19 @@ const ResultsList = ({results, loading, onCardClick}) => {
           </div>
         </div>
   } else {
-    display = <div className={`pure-g ${styles.gridContainer}`}>{cards}</div>
+    display =
+        <div id= "layout" className={` pure-g `}>
+          <div  className={`${styles.facetContainer}`}>
+            <div className={`pure-menu `}>
+             {facetList}
+            </div>
+            </div>
+          <div className={`${styles.gridContent}`}>
+            <div className={`${styles.gridContainer}`}>
+              {cards}
+            </div>
+          </div>
+        </div>
   }
 
   return display

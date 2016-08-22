@@ -1,0 +1,14 @@
+
+.facetContainer div {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.facetItem {
+    display: inline-block;
+    width: 15%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0 auto;
+    background-color: white;
+}

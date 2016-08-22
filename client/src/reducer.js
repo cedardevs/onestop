@@ -23,7 +23,6 @@ const routing = (state = initialState, action) => {
 
 const reducer = combineReducers({
     search: search,
-    facets: facets,
     results: results,
     details: details,
     routing: routing

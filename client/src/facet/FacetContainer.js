@@ -1,22 +1,22 @@
 import { connect } from 'react-redux'
-import FacetList from './FacetListComponent'
-import { toggleVisibility } from './FacetActions'
+import FacetComponent from './FacetListComponent'
 
 const mapStateToProps = (state) => {
     return {
-        opened: state.getIn(['facets', 'visible'])
+        queryString: console.log(state.getIn(['search', 'text']))
     }
-};
+}
 
 const mapDispatchToProps = (dispatch) => {
     return {
-      toggleVisibility: () => dispatch(toggleVisibility())
-    };
-};
+        onChange: () => dispatch(console.log('facets')),
+    }
+}
 
-const FacetsContainer = connect(
+const FacetContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(FacetList);
+)(FacetComponent)
 
-export default FacetsContainer
+export default FacetContainer
+

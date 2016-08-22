@@ -4,9 +4,10 @@ $cardHeight: 140px;
 $cardWidth: 300px;
 
 .gridContainer {
-    width: 95%;
-    margin: 0 auto;
+    width: 105%;
+    margin: 0 0 0 200px;
 }
+
 .spinner {
     display: flex;
     justify-content: center;
@@ -19,6 +20,8 @@ $cardWidth: 300px;
 
 .grid {
     height: $gridHeight;
+    display: inline-block;
+    margin: 0 11px 0 0;
 }
 
 .reactFlipCard {
@@ -54,4 +57,20 @@ $cardWidth: 300px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.gridContent {
+    margin: 0 auto;
+}
+
+.facetContainer {
+    display: inline-block;
+    width: 15%;
+    height: 65%;
+    max-height: 100%;
+    background-color: ghostwhite;
+    border: none;
+    text-align: left;
+    position:fixed;
+    margin-left: 8px;
 }

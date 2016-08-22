@@ -76,7 +76,7 @@ const assembleRequestBody = (state) => {
   if(queries.length === 0 && filters.length === 0) {
     return ''
   } else {
-    return JSON.stringify({queries, filters})
+    return JSON.stringify({queries, filters, facets: true})
   }
 }
 
