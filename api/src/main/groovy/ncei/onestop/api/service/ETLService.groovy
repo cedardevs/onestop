@@ -89,11 +89,13 @@ class ETLService {
             .execute()
             .actionGet()
         def granulesRemain = granuleScroll.hits.hits.length > 0
-/*        if (!granulesRemain) { // insert a synthesized granule record if there is no separate xml for it
-          def synthesizedGranule = [parentIdentifier: parsedCollection.fileIdentifier]
-          def flattenedSynthesizedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, synthesizedGranule)
-          addRecordToBulk(flattenedSynthesizedRecord)
-        }*/
+        if (!granulesRemain) { // insert a synthesized granule record if there is no separate xml for it
+          def synthesizedGranule = new HashMap(parsedCollection)
+          def fileId = parsedCollection.fileIdentifier
+          synthesizedGranule.put('fileIdentifier', fileId + '_granule')
+          synthesizedGranule.put('parentIdentifier', fileId)
+          addRecordToBulk(synthesizedGranule)
+        }
         while (granulesRemain) {
           granuleScroll.hits.hits.each { granule ->
             def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)

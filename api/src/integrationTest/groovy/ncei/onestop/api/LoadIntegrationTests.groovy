@@ -14,6 +14,7 @@ import org.springframework.http.RequestEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.client.RestTemplate
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -179,6 +180,7 @@ class LoadIntegrationTests extends Specification {
     hits[0].attributes.fileIdentifier == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
   }
 
+  @Ignore
   def 'Granules are merged with their collections and indexed for searching'() {
     setup:
     // COOPS/C1.xml is a collection, G1.xml and G2.xml are granules belonging to it

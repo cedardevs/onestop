@@ -12,7 +12,7 @@ class SearchResponseParserService {
 
   Map searchResponseParser(SearchResponse response) {
     def result = [
-        data: response.hits.hits.collect({ [type: 'collection', id: it.id, attributes: it.source] }),
+        data: response.hits.hits.collect({ [type: 'collection', id: it.id, attributes: it.source] }), // FIXME -- type
         meta: [
             took : response.tookInMillis,
             total: response.hits.totalHits,

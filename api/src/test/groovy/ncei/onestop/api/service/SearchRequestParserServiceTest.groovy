@@ -2,6 +2,7 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonSlurper
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 

@@ -48,7 +48,7 @@ class SearchIndexService {
     // Assemble the search request:
     def srb = client.prepareSearch(SEARCH_INDEX)
     srb = srb.setTypes(SEARCH_TYPE).setQuery(query)
-    if(postFilters) { srb = srb.setPostFilter(postFilters) }
+    srb = srb.setPostFilter(postFilters)
     if(params.facets) {
       def aggregations = searchRequestParserService.createDefaultAggregations()
       aggregations.each { a -> srb = srb.addAggregation(a) }
