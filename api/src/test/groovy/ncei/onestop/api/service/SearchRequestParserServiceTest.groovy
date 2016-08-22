@@ -31,11 +31,21 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
+    def expectedPostFilterString = """\
+        {
+          "bool" : {
+            "must_not" : {
+              "exists" : {
+                "field" : "parentIdentifier"
+              }
+            }
+          }
+        }""".stripIndent()
 
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters == null
+    postFilters.toString() == expectedPostFilterString
 
     where:
     label                       | json
@@ -71,11 +81,21 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
+    def expectedPostFilterString = """\
+        {
+          "bool" : {
+            "must_not" : {
+              "exists" : {
+                "field" : "parentIdentifier"
+              }
+            }
+          }
+        }""".stripIndent()
 
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters == null
+    postFilters.toString() == expectedPostFilterString
   }
 
   def 'Datetime filter request generates expected elasticsearch query'() {
@@ -118,11 +138,21 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
+    def expectedPostFilterString = """\
+        {
+          "bool" : {
+            "must_not" : {
+              "exists" : {
+                "field" : "parentIdentifier"
+              }
+            }
+          }
+        }""".stripIndent()
 
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters == null
+    postFilters.toString() == expectedPostFilterString
   }
 
   def 'Geopoint filter request generates expected elasticsearch query'() {
@@ -158,11 +188,21 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
+    def expectedPostFilterString = """\
+        {
+          "bool" : {
+            "must_not" : {
+              "exists" : {
+                "field" : "parentIdentifier"
+              }
+            }
+          }
+        }""".stripIndent()
 
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters == null
+    postFilters.toString() == expectedPostFilterString
   }
 
   def 'Bbox filter request generates expected elasticsearch query'() {
@@ -200,14 +240,24 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
+    def expectedPostFilterString = """\
+        {
+          "bool" : {
+            "must_not" : {
+              "exists" : {
+                "field" : "parentIdentifier"
+              }
+            }
+          }
+        }""".stripIndent()
 
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters == null
+    postFilters.toString() == expectedPostFilterString
   }
 
-  def 'Facet filter request creates post-filter'() {
+  def 'Facet filter request (not on parentIdentifier) creates post-filter for collections only'() {
     given:
     def request = '{"filters":[{"type":"facet","name":"gcmdScience","values":"Atmosphere > Aerosols"}]}'
     def params = slurper.parseText(request)
@@ -227,7 +277,6 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
-
     def expectedPostFiltersString = """\
         {
           "bool" : {
@@ -235,7 +284,55 @@ class SearchRequestParserServiceTest extends Specification {
               "terms" : {
                 "gcmdScience" : [ "Atmosphere > Aerosols" ]
               }
+            },
+            "must_not" : {
+              "exists" : {
+                "field" : "parentIdentifier"
+              }
             }
+          }
+        }""".stripIndent()
+
+    then:
+    !queryResult.toString().empty
+    !postFilters.toString().empty
+    queryResult.toString() == expectedQueryString
+    postFilters.toString() == expectedPostFiltersString
+  }
+
+  def 'Facet filter request on parentIdentifier creates post-filter on granules'() {
+    given:
+    def request = '{"filters":[{"type":"facet","name":"gcmdScience","values":"Atmosphere > Aerosols"},' +
+        '{"type":"facet","name":"parentIdentifier","values":"GHRSST_Something_Something"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def parsedRequest = requestParser.parseSearchRequest(params)
+    def queryResult = parsedRequest.query
+    def postFilters = parsedRequest.postFilters
+    def expectedQueryString = """\
+        {
+          "bool" : {
+            "must" : {
+              "bool" : { }
+            },
+            "filter" : {
+              "bool" : { }
+            }
+          }
+        }""".stripIndent()
+    def expectedPostFiltersString = """\
+        {
+          "bool" : {
+            "must" : [ {
+              "terms" : {
+                "gcmdScience" : [ "Atmosphere > Aerosols" ]
+              }
+            }, {
+              "terms" : {
+                "parentIdentifier" : [ "GHRSST_Something_Something" ]
+              }
+            } ]
           }
         }""".stripIndent()
 
