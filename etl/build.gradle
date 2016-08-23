@@ -215,11 +215,12 @@ class ApiLoader {
     def fragment = new XmlParser(false, false).parseText(xmlFragment)
 
     metadataUrls.eachWithIndex { metadata, i ->
-      try {
-        def root = new XmlParser(false, false).parseText(new URL(metadata).text)
-        def xml = root.children()
-        xml.add(fragment)
-        def updatedXml = XmlUtil.serialize(root)
+      if (i <= 500) {
+        try {
+          def root = new XmlParser(false, false).parseText(new URL(metadata).text)
+          def xml = root.children()
+          xml.add(fragment)
+          def updatedXml = XmlUtil.serialize(root)
           target.request(httpMethod) {
             requestContentType = 'application/xml'
             body = updatedXml
@@ -232,13 +233,15 @@ class ApiLoader {
               println "Error uploading metadata #${i} from ${metadata}: ${data}"
             }
           }
-      }
-      catch(e) {
-        println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
-        return // break out of current each{} loop
+        }
+        catch (e) {
+          println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
+          return // break out of current each{} loop
+        }
+      } else {
+        return
       }
     }
-
     println "Load complete. Successfully loaded ${successes} of ${successes + failures} metadata records"
   }
 
