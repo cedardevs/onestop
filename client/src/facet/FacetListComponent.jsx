@@ -44,12 +44,11 @@ class FacetList extends React.Component {
     ]
 
     brandFacets = brandFacets.map((facet, i) => {
-      return <div key={i} className={styles.facetItem} onChange={()=>console.log("facets")}>
-        <span className={`pure-menu-heading`}>Facets</span>
+      return <div key={i} className={styles.facetItem} onChange={()=> this.search(facet.label.toLowerCase())}>
         <ul className={`pure-menu-list`}>
-          <li className={`pure-menu-item`}>{facet.label}</li>
+          <li className={`pure-menu-item`}>{facet.label}({facet.count})</li><br/>
         </ul>
-        {console.log(facet)}
+        {brandFacets}
       </div>
     })
 

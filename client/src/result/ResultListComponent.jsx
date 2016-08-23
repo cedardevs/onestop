@@ -21,6 +21,7 @@ const ResultsList = ({results, loading, onCardClick}) => {
       />
     </div>)
   })
+  
 
   let display = null
   if(loading) {
@@ -35,7 +36,7 @@ const ResultsList = ({results, loading, onCardClick}) => {
         <div id= "layout" className={` pure-g `}>
           <div  className={`${styles.facetContainer}`}>
             <div className={`pure-menu `}>
-             {facetList}
+              <facetList/>
             </div>
             </div>
           <div className={`${styles.gridContent}`}>

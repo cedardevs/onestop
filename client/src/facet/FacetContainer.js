@@ -1,15 +1,17 @@
 import { connect } from 'react-redux'
-import FacetComponent from './FacetListComponent'
+import FacetComponent from '../facet/FacetListComponent'
+import { triggerSearch, updateQuery } from '../search/SearchActions'
 
 const mapStateToProps = (state) => {
     return {
-        queryString: console.log(state.getIn(['search', 'text']))
+        queryString: state.getIn(['search', 'text'])
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onChange: () => dispatch(console.log('facets')),
+        submit: () => dispatch(triggerSearch()),
+        updateQuery: (text) => dispatch(updateQuery(text))
     }
 }
 
