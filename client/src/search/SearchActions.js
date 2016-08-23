@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
 import queryString from 'query-string'
+import { processMetadata } from '../facet/FacetActions'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -25,6 +26,7 @@ export const completeSearch = (items) => {
     items
   }
 }
+
 
 export const triggerSearch = (queryParams, testing) => {
   return (dispatch, getState) => {
@@ -61,7 +63,13 @@ export const triggerSearch = (queryParams, testing) => {
 
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
-        .then(json => dispatch(completeSearch(assignResourcesToMap(json.data))))
+        .then(json => dispatch(completeSearch((function(){
+              processMetadata(json.meta)
+              return assignResourcesToMap(json.data)
+        })()
+        )))
+
+        .then(json => dispatch(processMetadata(json.meta)))
   }
 }
 

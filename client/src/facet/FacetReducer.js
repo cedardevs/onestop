@@ -1,19 +1,15 @@
 import Immutable from 'immutable';
 import {OPEN, CLOSED} from './FacetActions'
+import { METADATA_RECEIVED } from './FacetActions'
 export const initialState = Immutable.Map({
     visible: false
 });
 
 const facets = (state = initialState, action) => {
     switch(action.type) {
-        case OPEN:
-            return state.merge({
-                visible: true
-            });
-        case CLOSED:
-            return state.merge({
-                visible: false
-            });
+        case METADATA_RECEIVED:
+            console.log(action.metadata)
+            return state
 
         default:
             return state

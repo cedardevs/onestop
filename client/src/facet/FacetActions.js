@@ -1,25 +1,9 @@
-export const OPEN = 'open';
-export const CLOSED = 'closed';
+export const METADATA_RECEIVED = 'METADATA_RECEIVED';
 
-export const opened = () => {
-    return {
-        type: OPEN
-    };
-};
 
-export const closed = () => {
-    return {
-        type: CLOSED
-    };
-};
-
-export const toggleVisibility = () => {
-  return (dispatch, getState) => {
-    if (getState().getIn(['facets', 'visible']) === true) {
-        dispatch(closed());
-    }
-    else {
-        dispatch(opened());
-    }
+export const processMetadata = (metadata) => {
+  return {
+    type: METADATA_RECEIVED,
+    metadata
   }
-};
+}
