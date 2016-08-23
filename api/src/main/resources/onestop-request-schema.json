@@ -17,19 +17,25 @@
         "$ref": "#/definitions/filter"
       }
     },
+    "facets": {
+      "type": "boolean",
+      "default": false
+    },
     "sort" : {
       "type": "string"
     },
     "page": {
       "type": "object",
       "properties": {
-        "number": {
+        "max": {
           "type": "integer"
         },
-        "size": {
+        "offset": {
           "type": "integer"
         }
-      }
+      },
+      "required": ["max", "offset"],
+      "additionalProperties": false
     }
   },
 

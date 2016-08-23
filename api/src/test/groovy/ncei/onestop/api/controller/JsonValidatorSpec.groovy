@@ -56,6 +56,20 @@ class JsonValidatorSpec extends Specification {
           """\
 {
   "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ],
+  "facets": true
+}""",
+          """\
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ],
+  "facets": false
+}""",
+          """\
+{
+  "queries": [
     {"type": "queryText", "value": "temperature"},
     {"type": "queryText", "value": "pressure"}
   ]
@@ -69,7 +83,7 @@ class JsonValidatorSpec extends Specification {
           """\
 {
   "filters": [
-    {"type": "facet", "name": "platform", "values": ["Healy"]}
+    {"type": "facet", "name": "gcmdScience", "values": ["Atmosphere"]}
   ]
 }""",
           """\
@@ -89,7 +103,7 @@ class JsonValidatorSpec extends Specification {
           """\
 {
   "filters": [
-    {"type": "facet", "name": "platform", "values": ["Healy"]},
+    {"type": "facet", "name": "gcmdLocations", "values": ["Continent > North America"]},
     {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
     {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [22.123, -45.245]}},
     {"type": "geometry", "relation": "intersects", "geometry":
@@ -103,12 +117,12 @@ class JsonValidatorSpec extends Specification {
 }""",
           """\
 {
-  "page": { "number": 42, "size": 10 }
+  "page": { "max": 10, "offset": 10 }
 }""",
           """\
 {
   "sort": "title",
-  "page": { "number": 42, "size": 10 }
+  "page": { "max": 25, "offset": 10 }
 }""",
           """\
 {
@@ -116,12 +130,12 @@ class JsonValidatorSpec extends Specification {
     {"type": "queryText", "value": "temperature"}
   ],
   "filters": [
-    {"type": "facet", "name": "apiso_TopicCategory_s", "values": ["oceans", "oceanography"]},
+    {"type": "facet", "name": "gcmdScience", "values": ["Oceans"]},
     {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
     {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [22.123, -45.245]}}
   ],
   "sort": "title",
-  "page": { "number": 42, "size": 10 }
+  "page": { "max": 100, "offset": 0 }
 }"""
         ]
     }
@@ -151,6 +165,10 @@ class JsonValidatorSpec extends Specification {
   }
 }
 """,
+          """\
+{
+  "facets": "false"
+}""",
           """\
 {
   "filters": [
