@@ -180,7 +180,6 @@ class LoadIntegrationTests extends Specification {
     hits[0].attributes.fileIdentifier == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
   }
 
-  @Ignore
   def 'Granules are merged with their collections and indexed for searching'() {
     setup:
     // COOPS/C1.xml is a collection, G1.xml and G2.xml are granules belonging to it
@@ -192,24 +191,29 @@ class LoadIntegrationTests extends Specification {
     def loadRequests = documents.collect { document ->
       RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
     }
-    def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
+    def searchRequestC = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
+    def searchRequestG = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON)
+        .body('{"filters":[{"type":"facet", "name":"parentIdentifier", "values":["gov.noaa.nodc:NDBC-COOPS"]}]}')
 
     when:
     def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }
     metadataIndexService.refresh()
     etlService.reindex()
     searchIndexService.refresh()
-    def hits = restTemplate.exchange(searchRequest, Map).body.data
+    def hitsC = restTemplate.exchange(searchRequestC, Map).body.data
+    def hitsG = restTemplate.exchange(searchRequestG, Map).body.data
 
     then: 'two merged granule + collection documents have been indexed along with collection document'
     loadResults.every { it.statusCode == HttpStatus.CREATED }
-    hits.size() == 3
-    def g1Record = hits.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_8638614_201602_D1_v00' }
-    def g2Record = hits.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_9410170_201503_D1_v00' }
-    def c1Record = hits.find { it.attributes.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS' }
+    hitsC.size() == 1
+    def c1Record = hitsC.find { it.attributes.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS' }
+    c1Record != null
+
+    hitsG.size() == 2
+    def g1Record = hitsG.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_8638614_201602_D1_v00' }
+    def g2Record = hitsG.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_9410170_201503_D1_v00' }
     g1Record != null
     g2Record != null
-    c1Record != null
 
     and: 'they contain the attribute values from the granule records when present'
     g1Record.attributes.temporalBounding.beginDate == '2016-02-01'
