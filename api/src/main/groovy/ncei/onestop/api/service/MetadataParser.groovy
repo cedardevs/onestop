@@ -299,42 +299,41 @@ class MetadataParser {
   }
 
   public static Map mergeCollectionAndGranule(Map collection, Map granule) {
-
     def keywords = [] as Set
-    keywords.addAll(collection.keywords)
-    keywords.addAll(granule.keywords)
+    keywords.addAll(collection.keywords ?: [])
+    keywords.addAll(granule.keywords ?: [])
 
     def topicCategories = [] as Set
-    topicCategories.addAll(collection.topicCategories)
-    topicCategories.addAll(granule.topicCategories)
+    topicCategories.addAll(collection.topicCategories ?: [])
+    topicCategories.addAll(granule.topicCategories ?:[])
 
     def gcmdDataCenters = [] as Set
-    gcmdDataCenters.addAll(collection.gcmdDataCenters)
-    gcmdDataCenters.addAll(granule.gcmdDataCenters)
+    gcmdDataCenters.addAll(collection.gcmdDataCenters ?: [])
+    gcmdDataCenters.addAll(granule.gcmdDataCenters ?: [])
 
     def gcmdScience = [] as Set
-    gcmdScience.addAll(collection.gcmdScience)
-    gcmdScience.addAll(granule.gcmdScience)
+    gcmdScience.addAll(collection.gcmdScience ?: [])
+    gcmdScience.addAll(granule.gcmdScience ?: [])
 
     def gcmdLocations = [] as Set
-    gcmdLocations.addAll(collection.gcmdLocations)
-    gcmdLocations.addAll(granule.gcmdLocations)
+    gcmdLocations.addAll(collection.gcmdLocations ?: [])
+    gcmdLocations.addAll(granule.gcmdLocations ?: [])
 
     def gcmdPlatforms = [] as Set
-    gcmdPlatforms.addAll(collection.gcmdPlatforms)
-    gcmdPlatforms.addAll(granule.gcmdPlatforms)
+    gcmdPlatforms.addAll(collection.gcmdPlatforms ?: [])
+    gcmdPlatforms.addAll(granule.gcmdPlatforms ?: [])
 
     def gcmdInstruments = [] as Set
-    gcmdInstruments.addAll(collection.gcmdInstruments)
-    gcmdInstruments.addAll(granule.gcmdInstruments)
+    gcmdInstruments.addAll(collection.gcmdInstruments ?: [])
+    gcmdInstruments.addAll(granule.gcmdInstruments ?: [])
 
     def gcmdProjects = [] as Set
-    gcmdProjects.addAll(collection.gcmdProjects)
-    gcmdProjects.addAll(granule.gcmdProjects)
+    gcmdProjects.addAll(collection.gcmdProjects ?: [])
+    gcmdProjects.addAll(granule.gcmdProjects ?: [])
 
     def gcmdDataResolution = [] as Set
-    gcmdDataResolution.addAll(collection.gcmdDataResolution)
-    gcmdDataResolution.addAll(granule.gcmdDataResolution)
+    gcmdDataResolution.addAll(collection.gcmdDataResolution ?: [])
+    gcmdDataResolution.addAll(granule.gcmdDataResolution ?: [])
 
     def json = [
         fileIdentifier        : granule.fileIdentifier,

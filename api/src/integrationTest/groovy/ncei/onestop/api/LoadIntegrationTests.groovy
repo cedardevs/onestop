@@ -14,6 +14,7 @@ import org.springframework.http.RequestEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.client.RestTemplate
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -190,20 +191,27 @@ class LoadIntegrationTests extends Specification {
     def loadRequests = documents.collect { document ->
       RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
     }
-    def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
+    def searchRequestC = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
+    def searchRequestG = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON)
+        .body('{"filters":[{"type":"facet", "name":"parentIdentifier", "values":["gov.noaa.nodc:NDBC-COOPS"]}]}')
 
     when:
     def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }
     metadataIndexService.refresh()
     etlService.reindex()
     searchIndexService.refresh()
-    def hits = restTemplate.exchange(searchRequest, Map).body.data
+    def hitsC = restTemplate.exchange(searchRequestC, Map).body.data
+    def hitsG = restTemplate.exchange(searchRequestG, Map).body.data
 
-    then: 'two merged granule + collection documents have been indexed'
+    then: 'two merged granule + collection documents have been indexed along with collection document'
     loadResults.every { it.statusCode == HttpStatus.CREATED }
-    hits.size() == 2
-    def g1Record = hits.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_8638614_201602_D1_v00' }
-    def g2Record = hits.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_9410170_201503_D1_v00' }
+    hitsC.size() == 1
+    def c1Record = hitsC.find { it.attributes.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS' }
+    c1Record != null
+
+    hitsG.size() == 2
+    def g1Record = hitsG.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_8638614_201602_D1_v00' }
+    def g2Record = hitsG.find { it.attributes.fileIdentifier == 'CO-OPS.NOS_9410170_201503_D1_v00' }
     g1Record != null
     g2Record != null
 

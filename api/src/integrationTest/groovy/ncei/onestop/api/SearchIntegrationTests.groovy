@@ -68,7 +68,7 @@ class SearchIntegrationTests extends Specification {
     searchBaseUri = searchBaseUriString.toURI()
   }
 
-  def 'Valid query-only search with aggregations returns OK with expected results'() {
+  def 'Valid query-only search with facets returns OK with expected results'() {
     setup:
     def request = """\
         {
@@ -76,7 +76,7 @@ class SearchIntegrationTests extends Specification {
             [
               { "type": "queryText", "value": "temperature"}
             ],
-          "aggregations" : true
+          "facets" : true
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -104,7 +104,7 @@ class SearchIntegrationTests extends Specification {
     ])
 
     and: 'The correct number of aggregations is returned'
-    def aggs = result.body.meta.aggregations
+    def aggs = result.body.meta.facets
     aggs.size() == 7
 
     and: 'The aggregations are as expected'

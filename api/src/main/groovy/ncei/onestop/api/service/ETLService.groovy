@@ -44,7 +44,7 @@ class ETLService {
     reindex()
   }
 
-  @Scheduled(fixedDelay = 300000L) // 5 minutes after previous run ends
+  @Scheduled(fixedDelay = 600000L) // 10 minutes after previous run ends
   public void reindex() {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
@@ -52,7 +52,8 @@ class ETLService {
     def newSearchIndex = indexAdminService.create(SEARCH_INDEX, [SEARCH_TYPE])
     def bulkRequest = client.prepareBulk()
     def recordCount = 0
-    def pageSize = 100
+    def pageSize = 50
+    def scrollTimeout = '5m'
     def addRecordToBulk = { record ->
       def id = record.fileIdentifier as String
       def json = JsonOutput.toJson(record)
@@ -65,10 +66,11 @@ class ETLService {
       }
     }
 
+    log.debug("starting initial collection scroll")
     def collectionScroll = client.prepareSearch(STORAGE_INDEX)
         .setTypes(COLLECTION_TYPE)
         .addSort('fileIdentifier', SortOrder.ASC)
-        .setScroll('1m')
+        .setScroll(scrollTimeout)
         .setSize(pageSize)
         .execute()
         .actionGet()
@@ -76,17 +78,23 @@ class ETLService {
     while (collectionsRemain) {
       collectionScroll.hits.hits.each { collection ->
         def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
+        addRecordToBulk(parsedCollection) // Add collections whether they have granules or not
+        log.debug("starting initial granule scroll for collection ${parsedCollection.fileIdentifier}")
         def granuleScroll = client.prepareSearch(STORAGE_INDEX)
             .setTypes(GRANULE_TYPE)
             .addSort('fileIdentifier', SortOrder.ASC)
-            .setScroll('1m')
+            .setScroll(scrollTimeout)
             .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', parsedCollection.fileIdentifier)))
             .setSize(pageSize)
             .execute()
             .actionGet()
         def granulesRemain = granuleScroll.hits.hits.length > 0
-        if (!granulesRemain) {
-          addRecordToBulk(parsedCollection)
+        if (!granulesRemain) { // insert a synthesized granule record if there is no separate xml for it
+          def synthesizedGranule = new HashMap(parsedCollection)
+          def fileId = parsedCollection.fileIdentifier
+          synthesizedGranule.put('fileIdentifier', fileId + '_granule')
+          synthesizedGranule.put('parentIdentifier', fileId)
+          addRecordToBulk(synthesizedGranule)
         }
         while (granulesRemain) {
           granuleScroll.hits.hits.each { granule ->
@@ -94,11 +102,13 @@ class ETLService {
             def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
             addRecordToBulk(flattenedRecord)
           }
-          granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll('1m').execute().actionGet()
+          log.debug("starting new granule scroll for collection ${parsedCollection.fileIdentifier}")
+          granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
           granulesRemain = granuleScroll.hits.hits.length > 0
         }
       }
-      collectionScroll = client.prepareSearchScroll(collectionScroll.scrollId).setScroll('1m').execute().actionGet()
+      log.debug("starting new collection scroll")
+      collectionScroll = client.prepareSearchScroll(collectionScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
       collectionsRemain = collectionScroll.hits.hits.length > 0
     }
 

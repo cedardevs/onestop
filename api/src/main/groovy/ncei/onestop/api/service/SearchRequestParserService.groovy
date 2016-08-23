@@ -75,9 +75,10 @@ class SearchRequestParserService {
     def preBuilder = QueryBuilders.boolQuery()
     def postBuilder = QueryBuilders.boolQuery()
     if (!filters) {
+      postBuilder.mustNot(QueryBuilders.existsQuery('parentIdentifier'))
       return [
           pre: preBuilder,
-          post: null
+          post: postBuilder
       ]
     }
 
@@ -109,13 +110,17 @@ class SearchRequestParserService {
     }
 
     // Facet filters:
+    def granules = false
     groupedFilters.facet.each {
+      if(it.name == 'parentIdentifier') { granules = true }
       // Facets are applied as post_filters so that counts on the facet menu don't change but displayed results do
       postFilters = true
       postBuilder.must(QueryBuilders.termsQuery(it.name, it.values))
     }
 
-    postBuilder = postFilters ? postBuilder : null
+    if(!granules) {
+      postBuilder.mustNot(QueryBuilders.existsQuery('parentIdentifier'))
+    }
     return [
         pre: preBuilder,
         post: postBuilder

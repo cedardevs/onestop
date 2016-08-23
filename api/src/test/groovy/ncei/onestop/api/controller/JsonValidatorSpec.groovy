@@ -58,14 +58,14 @@ class JsonValidatorSpec extends Specification {
   "queries": [
     {"type": "queryText", "value": "temperature"}
   ],
-  "aggregations": true
+  "facets": true
 }""",
           """\
 {
   "queries": [
     {"type": "queryText", "value": "temperature"}
   ],
-  "aggregations": false
+  "facets": false
 }""",
           """\
 {
@@ -167,7 +167,7 @@ class JsonValidatorSpec extends Specification {
 """,
           """\
 {
-  "aggregations": "false"
+  "facets": "false"
 }""",
           """\
 {
