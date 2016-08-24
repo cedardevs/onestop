@@ -1,24 +1,20 @@
 import { connect } from 'react-redux'
-import FacetComponent from '../facet/FacetListComponent'
+import FacetList from '../facet/FacetListComponent'
 import { triggerSearch, updateQuery } from '../search/SearchActions'
 
 const mapStateToProps = (state) => {
-    return {
-        queryString: state.getIn(['search', 'text'])
-    }
+  return {
+    categories: state.getIn(['facets', 'categories']).toJS()
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return {
-        submit: () => dispatch(triggerSearch()),
-        updateQuery: (text) => dispatch(updateQuery(text))
-    }
+  return {}
 }
 
 const FacetContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(FacetComponent)
+  mapStateToProps,
+  mapDispatchToProps
+)(FacetList)
 
 export default FacetContainer
-

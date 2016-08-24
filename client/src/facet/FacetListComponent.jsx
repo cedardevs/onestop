@@ -4,9 +4,7 @@ import styles from './facet.css'
 class FacetList extends React.Component {
   constructor(props) {
     super(props)
-    this.submit = props.submit
-    this.updateQuery = props.updateQuery
-    this.state = {}
+    console.log(props.categories)
   }
 
   search(query) {
