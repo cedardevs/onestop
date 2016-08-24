@@ -8,24 +8,26 @@ import { LOCATION_CHANGE } from 'react-router-redux'
 
 // Routing reducer
 const initialState = Immutable.fromJS({
-    locationBeforeTransitions: null
+  locationBeforeTransitions: null
 })
+
 const routing = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_CHANGE:
     return state.merge({
-            locationBeforeTransitions: action.payload
-        });
+      locationBeforeTransitions: action.payload
+    })
     default:
-      return state
+    return state
   }
 }
 
 const reducer = combineReducers({
-    search: search,
-    results: results,
-    details: details,
-    routing: routing
-  })
+  search: search,
+  results: results,
+  details: details,
+  routing: routing,
+  facets: facets
+})
 
 export default reducer
