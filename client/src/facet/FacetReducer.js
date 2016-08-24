@@ -10,7 +10,7 @@ const facets = (state = initialState, action) => {
   switch(action.type) {
     case METADATA_RECEIVED:
       let tempState = state.mergeDeep({
-        facets: action.metadata.facets
+        categories: action.metadata.facets
       })
       console.log(tempState.toJS())
       return tempState
