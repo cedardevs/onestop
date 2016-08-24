@@ -63,16 +63,17 @@ class SearchResponseParserService {
       def count = e.docCount
 
       if(!topLevelKeywords) {
-        cleanAgg.add([[term: term, count: count]])
-
-      } else {
+        cleanAgg.add([term: term, count: count])
+      }
+      else {
         if(term.contains('>')) {
           def splitTerms = term.split('>', 2)
           if(topLevelKeywords.contains(splitTerms[0].trim())) {
             cleanAgg.add([term: term, count: count])
           }
 
-        } else {
+        }
+        else {
           if(topLevelKeywords.contains(term)) {
             cleanAgg.add([term: term, count: count])
           }
