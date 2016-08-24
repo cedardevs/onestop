@@ -64,12 +64,10 @@ export const triggerSearch = (queryParams, testing) => {
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
         .then(json => dispatch(completeSearch((function(){
-              processMetadata(json.meta)
-              return assignResourcesToMap(json.data)
+          dispatch(processMetadata(json.meta))
+          return assignResourcesToMap(json.data)
         })()
         )))
-
-        .then(json => dispatch(processMetadata(json.meta)))
   }
 }
 
