@@ -17,11 +17,16 @@ class FacetList extends React.Component {
 
   render() {
     let facets = []
-    let i = 0
+    let i = 0, j = 0
     _.forOwn(this.categories, function(v,k){
       facets.push(
         <Panel header={`${k}`} key={`${i++}`}>
-        <p>Testing text</p>
+          <Collapse>
+            {v.map((obj)=> {
+              console.log(`this is the object ${JSON.stringify(obj)}`)
+              return <Panel header={`${obj.term}`} key={`${j++}`}>{`${obj.count}`}</Panel>
+            })}
+          </Collapse>
         </Panel>
       )
     })
