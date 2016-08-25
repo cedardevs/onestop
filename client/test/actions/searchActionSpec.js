@@ -10,7 +10,7 @@ import reducer from '../../src/reducer'
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
 
-const requestBody = JSON.stringify({queries: [{type: 'queryText', value: 'alaska'}], filters: []})
+const requestBody = JSON.stringify({queries: [{type: 'queryText', value: 'alaska'}], filters: [], facets: true})
 
 describe('The search action', () => {
 
@@ -44,26 +44,45 @@ describe('The search action', () => {
                 field1: 'field01'
               }
             }
-            ]
+          ],
+          meta:
+            {
+            facets:{
+              science: [
+                {term: "land", count: 2}
+              ]}
+            }
+
         })
+
     const testSearchState = initialState.mergeDeep({requestBody: requestBody})
     const initState = reducer(Immutable.Map(), {type: 'init'})
     const testState = initState.mergeDeep({search: testSearchState})
 
     const expectedItems = new Map()
+    const expectedFacets = new Map()
+
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
+    expectedFacets.set("facets", {type: 'METADATA_RECEIVED', field0: 'field00', field1: 'field01'})
 
     const expectedActions = [
       {type: module.SEARCH},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
-        args: ['results?filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
+        args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
-      {type: module.SEARCH_COMPLETE, items: expectedItems}
+      {type: module.SEARCH_COMPLETE, items: expectedItems},
+      {type: "METADATA_RECEIVED", metadata: expectedFacets}
+
     ]
 
+    console.log(JSON.stringify(expectedActions))
+
+
     const store = mockStore(Immutable.fromJS(testState))
+    console.log((store))
+
     return store.dispatch(module.triggerSearch(null, testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
@@ -96,7 +115,12 @@ describe('The search action', () => {
                 field1: 'field01'
               }
             }
-          ]
+          ],
+          meta: [
+            {
+              facets: {science: [{term: "Oceans", count: 2}]}
+            }
+           ]
         })
 
     const initState = reducer(Immutable.Map(), {type: 'init'})
@@ -105,13 +129,17 @@ describe('The search action', () => {
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
 
+    const expectedFacets = new Map()
+    expectedFacets.set({type: 'METADATA_RECEIVED',  meta: {facets: {science: {term: "Oceans", count: 2}}}})
+
     const expectedActions = [
       {type: module.SEARCH},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
-        args: ['results?filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
+        args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
-      {type: module.SEARCH_COMPLETE, items: expectedItems}
+      {type: module.SEARCH_COMPLETE, items: expectedItems},
+      {type: "METADATA_RECEIVED", metadata:expectedFacets }
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
