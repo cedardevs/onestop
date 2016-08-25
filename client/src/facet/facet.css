@@ -1,5 +1,8 @@
 
-.facetContainer div {
+.facetContainer {
+    color: black;
+    font-family: Helvetica Neue,helvetica,Arial,sans-serif;
+    letter-spacing: normal;
     overflow-x: hidden;
     overflow-y: hidden;
 }
