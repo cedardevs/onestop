@@ -46,7 +46,6 @@ class FacetList extends React.Component {
         <ul className={`pure-menu-list`}>
           <li className={`pure-menu-item`}>{facet.label}({facet.count})</li><br/>
         </ul>
-        {brandFacets}
       </div>
     })
 
