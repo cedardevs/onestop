@@ -21,12 +21,12 @@ class FacetList extends React.Component {
     _.forOwn(this.categories, function(v,k){
       facets.push(
         <Panel header={`${k}`} key={`${i++}`}>
-          <Collapse>
-            {v.map((obj)=> {
-              console.log(`this is the object ${JSON.stringify(obj)}`)
-              return <Panel header={`${obj.term}`} key={`${j++}`}>{`${obj.count}`}</Panel>
-            })}
-          </Collapse>
+          {v.map((obj)=> {
+            return(<div>
+              <Panel className={styles.subPanel} header={`${obj.term}`} key={`${j++}`}></Panel>
+              <div className={`${styles.count} ${styles.numberCircle}`}>{`${obj.count}`}</div>
+            </div>)
+          })}
         </Panel>
       )
     })
