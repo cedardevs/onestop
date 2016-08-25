@@ -15,8 +15,11 @@ class SearchIndexService {
   @Value('${elasticsearch.index.search.name}')
   private String SEARCH_INDEX
 
-  @Value('${elasticsearch.index.search.type}')
-  private String SEARCH_TYPE
+  @Value('${elasticsearch.index.search.collectionType}')
+  private String COLLECTION_TYPE
+
+  @Value('${elasticsearch.index.search.granuleType}')
+  private String GRANULE_TYPE
 
   private Client client
   private SearchRequestParserService searchRequestParserService
@@ -46,14 +49,16 @@ class SearchIndexService {
     def postFilters = parsedRequest.postFilters
 
     // Assemble the search request:
+    def searchType = parsedRequest.collections ? COLLECTION_TYPE : GRANULE_TYPE
     def srb = client.prepareSearch(SEARCH_INDEX)
-    srb = srb.setTypes(SEARCH_TYPE).setQuery(query)
-    srb = srb.setPostFilter(postFilters)
+    srb = srb.setTypes(searchType).setQuery(query)
+
+    if(postFilters) { srb = srb.setPostFilter(postFilters) }
+
     if(params.facets) {
-      def aggregations = searchRequestParserService.createDefaultAggregations()
+      def aggregations = searchRequestParserService.createGCMDAggregations()
       aggregations.each { a -> srb = srb.addAggregation(a) }
     }
-
 
     if(params.page) {
       srb = srb.setFrom(params.page.offset).setSize(params.page.max)
@@ -79,7 +84,7 @@ class SearchIndexService {
   public void ensure() {
     def searchExists = client.admin().indices().prepareAliasesExist(SEARCH_INDEX).execute().actionGet().exists
     if (!searchExists) {
-      def realName = indexAdminService.create(SEARCH_INDEX, [SEARCH_TYPE])
+      def realName = indexAdminService.create(SEARCH_INDEX, [GRANULE_TYPE, COLLECTION_TYPE])
       client.admin().indices().prepareAliases().addAlias(realName, SEARCH_INDEX).execute().actionGet()
     }
   }

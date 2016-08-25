@@ -2,7 +2,6 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonSlurper
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -345,7 +344,7 @@ class SearchRequestParserServiceTest extends Specification {
 
   def 'Default aggregations are built'() {
     when:
-    def aggs = requestParser.createDefaultAggregations()
+    def aggs = requestParser.createGCMDAggregations()
 
     then:
     // This is about all that can be verified w/o changing the List to a Map unnecessarily...

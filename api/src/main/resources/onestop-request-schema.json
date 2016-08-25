@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "OneStop Search Request Schema",
-  "description": "The shape of a search request body that can be sent to the OneStop API to execute a search.",
+  "description": "The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata. Collections are returned by default unless a collection filter is included, resulting in granules being returned.",
 
   "type": "object",
   "properties": {
@@ -71,6 +71,9 @@
         },
         {
           "$ref": "#/definitions/geometryFilter"
+        },
+        {
+          "$ref": "#/definitions/collectionFilter"
         }
       ]
     },
@@ -109,6 +112,23 @@
         }
       },
       "required": ["type", "name", "values"],
+      "additionalProperties": false
+    },
+    "collectionFilter": {
+      "description": "Collections to filter results by (OR if multiple filters or multiple values in one filter). If any collection filters are provided, granules are returned.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": ["collection"]
+        },
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["type", "values"],
       "additionalProperties": false
     },
     "geometryFilter": {

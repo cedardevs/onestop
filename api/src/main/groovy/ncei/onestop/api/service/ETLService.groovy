@@ -99,7 +99,7 @@ class ETLService {
         while (granulesRemain) {
           granuleScroll.hits.hits.each { granule ->
             def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)
-            def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
+            def flattenedRecord = parsedCollection + parsedGranule
             addRecordToBulk(flattenedRecord)
           }
           log.debug("starting new granule scroll for collection ${parsedCollection.fileIdentifier}")
