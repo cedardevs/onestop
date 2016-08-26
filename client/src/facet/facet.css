@@ -16,7 +16,16 @@
     background-color: white;
 }
 
-.subPanel, .count {
+.count {
     display: inline-block;
-    margin: .2em .3em;
+    margin: -.7em .2em .3em;
+}
+
+.facetLabel {
+    margin: 0 .2em .3em;
+}
+
+.checkFacet {
+    display: inline-block;
+    margin-top: .9em;
 }

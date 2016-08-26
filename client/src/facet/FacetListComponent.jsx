@@ -23,8 +23,8 @@ class FacetList extends React.Component {
         <Panel header={`${k}`} key={`${i++}`}>
           {v.map((obj)=> {
             return(<div>
-              <Panel className={styles.subPanel} header={`${obj.term}`} key={`${j++}`}></Panel>
-              <div className={`${styles.count} ${styles.numberCircle}`}>{`${obj.count}`}</div>
+              <input className={styles.checkFacet} id={`${obj.term}`} type="checkbox"/><span className={styles.facetLabel}>{`${obj.term}`}</span>
+              <div className={`${styles.count} ${styles.numberCircle}`}>{`(${obj.count})`}</div>
             </div>)
           })}
         </Panel>
@@ -34,10 +34,12 @@ class FacetList extends React.Component {
 
     return <div>
       <div className={`${styles.facetContainer}`}>
-        <span className={'pure-menu-heading'}>Facets</span>
-        <Collapse>
-          {facets}
-        </Collapse>
+        <form class="pure-form">
+          <span className={'pure-menu-heading'}>Facets</span>
+          <Collapse>
+            {facets}
+          </Collapse>
+        </form>
       </div>
     </div>
   }
