@@ -1,6 +1,7 @@
 import Immutable from 'immutable'
 import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY} from './SearchActions'
 import { UPDATE_GEOMETRY } from './map/MapActions'
+import { UPDATE_FACETS } from '../facet/FacetActions'
 import { DateRange } from './temporal/TemporalActions'
 
 export const initialState = Immutable.fromJS({
@@ -32,6 +33,10 @@ export const search = (state = initialState, action) => {
 
     case UPDATE_QUERY:
       newState = state.mergeDeep({text: action.searchText})
+      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+
+    case UPDATE_FACETS:
+      newState = state.mergeDeep({facets: updateFacets(action.facet)})
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case DateRange.START_DATE:
@@ -91,4 +96,8 @@ const dateTime = (startDateTime, endDateTime) => {
   } else {
     return {type: 'datetime', before: endDateTime}
   }
+}
+
+const updateFacets = facet => {
+
 }
