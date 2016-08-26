@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
-import FacetList from '../facet/FacetListComponent'
-import { triggerSearch, updateQuery } from '../search/SearchActions'
+import FacetList from './FacetListComponent'
+import { triggerSearch, updateQuery } from '../SearchActions'
 
 const mapStateToProps = (state) => {
   return {

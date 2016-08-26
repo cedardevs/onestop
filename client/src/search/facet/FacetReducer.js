@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import {OPEN, CLOSED} from './FacetActions'
+import { OPEN, CLOSED } from './FacetActions'
 import { METADATA_RECEIVED } from './FacetActions'
 
 export const initialState = Immutable.fromJS({
