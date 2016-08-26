@@ -15,3 +15,8 @@
     margin: 0 auto;
     background-color: white;
 }
+
+.subPanel, .count {
+    display: inline-block;
+    margin: .2em .3em;
+}
