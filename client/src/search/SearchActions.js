@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
 import queryString from 'query-string'
-import { processMetadata } from '../facet/FacetActions'
+import { processMetadata } from './facet/FacetActions'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'

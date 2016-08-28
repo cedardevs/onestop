@@ -1,7 +1,7 @@
 import Immutable from 'immutable'
 import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY} from './SearchActions'
 import { UPDATE_GEOMETRY } from './map/MapActions'
-import { UPDATE_FACETS } from '../facet/FacetActions'
+import { UPDATE_FACETS } from './facet/FacetActions'
 import { DateRange } from './temporal/TemporalActions'
 
 export const initialState = Immutable.fromJS({
