@@ -6,12 +6,21 @@ import Collapse, { Panel } from 'rc-collapse'
 class FacetList extends React.Component {
   constructor(props) {
     super(props)
+    this.updateAndSubmitSearch = this.updateAndSubmitSearch.bind(this)
     this.categories = props.categories
+    this.updateFacets = props.updateFacets
+    this.submit = props.submit
   }
 
   updateAndSubmitSearch(e) {
     const {name, value} = e.target.dataset
     const selected = e.target.checked
+    const facet = {
+      name,
+      value,
+      selected
+    }
+    this.updateFacets(facet)
     // Update query
     // Submit query
   }
