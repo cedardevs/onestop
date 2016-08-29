@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
-import FacetList from '../facet/FacetListComponent'
-import { triggerSearch, updateQuery } from '../search/SearchActions'
+import FacetList from './FacetListComponent'
+import { triggerSearch, updateQuery } from '../SearchActions'
+import { updateFacetsSelected } from './FacetActions'
 
 const mapStateToProps = (state) => {
   return {
@@ -9,7 +10,10 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  return {}
+  return {
+    updateFacets: (facet) => dispatch(updateFacetsSelected(facet)),
+    submit: () => dispatch(triggerSearch())
+  }
 }
 
 const FacetContainer = connect(

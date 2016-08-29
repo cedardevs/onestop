@@ -15,3 +15,17 @@
     margin: 0 auto;
     background-color: white;
 }
+
+.count {
+    display: inline-block;
+    margin: -.7em .2em .3em;
+}
+
+.facetLabel {
+    margin: 0 .2em .3em;
+}
+
+.checkFacet {
+    display: inline-block;
+    margin-top: .9em;
+}

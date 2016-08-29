@@ -2,8 +2,7 @@ import React, { PropTypes } from 'react'
 import Result from './ResultComponent'
 import { CardStatus } from '../detail/DetailActions'
 import styles from './result.css'
-import 'font-awesome/css/font-awesome.css'
-import FacetContainer from '../facet/FacetContainer'
+import FacetContainer from '../search/facet/FacetContainer'
 
 const ResultsList = ({results, loading, onCardClick}) => {
   const cards = []

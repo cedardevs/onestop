@@ -1,6 +1,7 @@
 import Immutable from 'immutable'
 import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY} from './SearchActions'
 import { UPDATE_GEOMETRY } from './map/MapActions'
+import { UPDATE_FACETS } from './facet/FacetActions'
 import { DateRange } from './temporal/TemporalActions'
 
 export const initialState = Immutable.fromJS({
@@ -9,7 +10,8 @@ export const initialState = Immutable.fromJS({
   inFlight: false,
   startDateTime: '',
   endDateTime: '',
-  requestBody: ''
+  requestBody: '',
+  facets: Immutable.Map()
 })
 
 export const search = (state = initialState, action) => {
@@ -32,6 +34,10 @@ export const search = (state = initialState, action) => {
 
     case UPDATE_QUERY:
       newState = state.mergeDeep({text: action.searchText})
+      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+
+    case UPDATE_FACETS:
+      newState = updateFacets(action.facet, state)
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case DateRange.START_DATE:
@@ -91,4 +97,16 @@ const dateTime = (startDateTime, endDateTime) => {
   } else {
     return {type: 'datetime', before: endDateTime}
   }
+}
+
+const updateFacets = (facet, state) => {
+  const {name, value, selected} = facet
+  let categories = state.get('facets')
+
+  if (selected){
+    categories = categories.setIn([name, value], selected)
+  } else {
+    categories = categories.deleteIn([name, value]).filter(x => x.count())
+  }
+  return Immutable.Map().setIn(['facets'], categories)
 }

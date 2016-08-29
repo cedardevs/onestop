@@ -1,7 +1,6 @@
 import React from 'react'
 import Carousel from 'nuka-carousel'
 import styles from './landing.css'
-import 'font-awesome/css/font-awesome.css'
 
 class LandingComponent extends React.Component {
   constructor(props) {
