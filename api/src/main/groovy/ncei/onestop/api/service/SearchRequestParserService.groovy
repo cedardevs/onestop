@@ -38,24 +38,44 @@ class SearchRequestParserService {
                 {queries}
      */
     def completeQuery = QueryBuilders.boolQuery().filter(filters.pre).must(query)
+    def allFilterQuery = QueryBuilders.boolQuery().filter(filters.all).must(query)
 
     return [
         query: completeQuery,
-        postFilters: filters.post
+        queryWithAllFilters: allFilterQuery,
+        postFilter: filters.post,
+        collections: filters.collections
     ]
   }
 
-  public List<AggregationBuilder> createGCMDAggregations() {
+  public AggregationBuilder createCollectionsAggregation() {
+
+    def scoreScript = new Script('_score', ScriptService.ScriptType.INLINE, 'expression', null)
+
+    def collections = AggregationBuilders
+        .terms('collections').field('parentIdentifier').order(Terms.Order.aggregation('score_agg', 'max', false)).size(0)
+        .subAggregation(AggregationBuilders.stats('score_agg').script(scoreScript))
+
+    return collections
+  }
+
+  public List<AggregationBuilder> createGCMDAggregations(boolean forCollections) {
 
     def aggregations = [
-        AggregationBuilders.terms('science').field('gcmdScience').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('locations').field('gcmdLocations').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('instruments').field('gcmdInstruments').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('platforms').field('gcmdPlatforms').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('projects').field('gcmdProjects').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('dataCenters').field('gcmdDataCenters').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('dataResolution').field('gcmdDataResolution').order(Terms.Order.term(true))
+        AggregationBuilders.terms('science').field('gcmdScience').order(Terms.Order.term(true)).size(0),
+        AggregationBuilders.terms('locations').field('gcmdLocations').order(Terms.Order.term(true)).size(0),
+        AggregationBuilders.terms('instruments').field('gcmdInstruments').order(Terms.Order.term(true)).size(0),
+        AggregationBuilders.terms('platforms').field('gcmdPlatforms').order(Terms.Order.term(true)).size(0),
+        AggregationBuilders.terms('projects').field('gcmdProjects').order(Terms.Order.term(true)).size(0),
+        AggregationBuilders.terms('dataCenters').field('gcmdDataCenters').order(Terms.Order.term(true)).size(0),
+        AggregationBuilders.terms('dataResolution').field('gcmdDataResolution').order(Terms.Order.term(true)).size(0)
     ]
+
+    if(forCollections) {
+      aggregations.each { a ->
+        a.subAggregation(AggregationBuilders.terms('byCollection').field('parentIdentifier').size(0))
+      }
+    }
 
     return aggregations
   }
@@ -90,10 +110,17 @@ class SearchRequestParserService {
 
     def preBuilder = QueryBuilders.boolQuery()
     def postBuilder = QueryBuilders.boolQuery()
+    def allBuilder = QueryBuilders.boolQuery()
+
+    // Need post filters as pre filters if querying for collections in order to piece together responses accurately
+    def prePlusAll = [preBuilder, allBuilder]
+    def postPlusAll = [postBuilder, allBuilder]
+
     if (!filters) {
       return [
           pre: preBuilder,
           post: null,
+          all: allBuilder,
           collections: collections
       ]
     }
@@ -104,10 +131,14 @@ class SearchRequestParserService {
     groupedFilters.datetime.each {
       // TODO post filters for datetime from timeline view?
       if (it.before) {
-        preBuilder.must(QueryBuilders.rangeQuery('temporalBounding.beginDate').lte(it.before))
+        prePlusAll.each { b ->
+          b.must(QueryBuilders.rangeQuery('temporalBounding.beginDate').lte(it.before))
+        }
       }
       if (it.after) {
-        preBuilder.must(QueryBuilders.rangeQuery('temporalBounding.endDate').gte(it.after))
+        prePlusAll.each { b ->
+          b.must(QueryBuilders.rangeQuery('temporalBounding.endDate').gte(it.after))
+        }
       }
     }
 
@@ -122,40 +153,37 @@ class SearchRequestParserService {
       def shape = ShapeBuilder.parse(parser)
       def relation = ShapeRelation.getRelationByName(it.relation ?: 'intersects')
 
-      preBuilder.must(QueryBuilders.geoShapeQuery("spatialBounding", shape, relation))
+      prePlusAll.each {b ->
+        b.must(QueryBuilders.geoShapeQuery("spatialBounding", shape, relation))
+      }
     }
 
     // Facet filters:
     groupedFilters.facet.each {
       // Facets are applied as post_filters so that counts on the facet menu don't change but displayed results do
       postFilters = true
-      postBuilder.must(QueryBuilders.termsQuery(it.name, it.values))
+      postPlusAll.each {b ->
+        b.must(QueryBuilders.termsQuery(it.name, it.values))
+      }
     }
 
     // Collection filter -- force a union since an intersection on multiple parentIds will return nothing
     def parentIds = [] as Set
     groupedFilters.collection.each {
-      collections = false
       parentIds.addAll(it.values)
     }
-    if(parentIds) { preBuilder.must(QueryBuilders.termsQuery('parentIdentifier', parentIds)) }
+    if(parentIds) {
+      collections = false
+      preBuilder.must(QueryBuilders.termsQuery('parentIdentifier', parentIds))
+    }
 
     postBuilder = postFilters ? postBuilder : null
     return [
         pre: preBuilder,
-        post: postBuilder
+        post: postBuilder,
+        all: allBuilder,
+        collections: collections
     ]
-  }
-
-  private AggregationBuilder createCollectionsAggregation() {
-
-    def scoreScript = new Script('_score', ScriptService.ScriptType.INLINE, 'expression', null)
-
-    def collections = AggregationBuilders
-        .terms('parentIdentifier').order(Terms.Order.aggregation('score_agg', 'sum', false))
-        .subAggregation(AggregationBuilders.stats('score_agg').script(scoreScript))
-
-    return collections
   }
 }
 
