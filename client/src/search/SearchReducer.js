@@ -66,6 +66,19 @@ const assembleRequestBody = (state) => {
     queries.push({type: 'queryText', value: queryText})
   }
 
+  // Facets
+  let categories = state.get('facets')
+  let facetQuery = []
+  let catIterator = categories.entries()
+  let entry = catIterator.next()
+  while (!entry.done){
+    const name = entry.value[0]
+    const values = entry.value[1].toJS()
+    facetQuery.push({"type":"facet","name": name,"values": values})
+    entry = catIterator.next()
+  }
+  filters = [...filters, ...facetQuery]
+
   // Spatial filter:
   let geoJSON = state.get('geoJSON')
   if (geoJSON){
@@ -84,6 +97,7 @@ const assembleRequestBody = (state) => {
   } else {
     return JSON.stringify({queries, filters, facets: true})
   }
+
 }
 
 const dateTime = (startDateTime, endDateTime) => {
