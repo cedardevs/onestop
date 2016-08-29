@@ -101,7 +101,6 @@ const dateTime = (startDateTime, endDateTime) => {
 
 const updateFacets = (facet, state) => {
   const {name, value, selected} = facet
-  const newFacetState = Immutable.Map()
   let categories = state.get('facets')
 
   if (selected){
@@ -109,5 +108,5 @@ const updateFacets = (facet, state) => {
   } else {
     categories = categories.deleteIn([name, value]).filter(x => x.count())
   }
-  return newFacetState.setIn(['facets'], categories)
+  return Immutable.Map().setIn(['facets'], categories)
 }
