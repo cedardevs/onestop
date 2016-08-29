@@ -25,17 +25,25 @@ class FacetList extends React.Component {
     // Submit query
   }
 
+  toTitleCase(str){
+    return _.startCase(_.toLower((str.split(/(?=[A-Z])/).join(" "))))
+  }
+
+  subFacetLabel(str) {
+    return str.split('>').pop().trim()
+  }
+
   render() {
     let facets = []
     let self = this
     let i = 0, j = 0
     _.forOwn(this.categories, function(v,k){
       facets.push(
-        <Panel header={`${k}`} key={`${i++}`}>
+        <Panel header={`${self.toTitleCase(k)}`} key={`${i++}`}>
           {v.map((obj)=> {
             return(<div>
               <input className={styles.checkFacet} data-name={`${k}`} data-value={`${obj.term}`} id={`${k}-${obj.term}`} type="checkbox"
-               onChange={self.updateAndSubmitSearch}/><span className={styles.facetLabel}>{`${obj.term}`}</span>
+               onChange={self.updateAndSubmitSearch}/><span className={styles.facetLabel}>{self.subFacetLabel(`${obj.term}`)}</span>
               <div className={`${styles.count} ${styles.numberCircle}`}>{`(${obj.count})`}</div>
             </div>)
           })}
@@ -47,7 +55,7 @@ class FacetList extends React.Component {
       <div className={`${styles.facetContainer}`}>
         <form class="pure-form">
           <span className={'pure-menu-heading'}>Facets</span>
-          <Collapse>
+          <Collapse defaultActiveKey="0">
             {facets}
           </Collapse>
         </form>
