@@ -104,9 +104,12 @@ const updateFacets = (facet, state) => {
   let categories = state.get('facets')
 
   if (selected){
-    categories = categories.setIn([name, value], selected)
+    const oldValues = categories.get(name) ? categories.get(name) : Immutable.List()
+    const newValues = Immutable.Set().merge(oldValues, Immutable.List([value]))
+    categories = categories.setIn([name], newValues)
   } else {
-    categories = categories.deleteIn([name, value]).filter(x => x.count())
+    categories = categories.set(name, categories.get(name).filterNot(x => x === value))
+    categories = categories.filter(x => x.size)
   }
   return Immutable.Map().setIn(['facets'], categories)
 }
