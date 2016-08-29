@@ -10,7 +10,8 @@ export const initialState = Immutable.fromJS({
   inFlight: false,
   startDateTime: '',
   endDateTime: '',
-  requestBody: ''
+  requestBody: '',
+  facets: Immutable.Map()
 })
 
 export const search = (state = initialState, action) => {
@@ -36,7 +37,7 @@ export const search = (state = initialState, action) => {
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case UPDATE_FACETS:
-      newState = state.mergeDeep({facets: updateFacets(action.facet)})
+      newState = updateFacets(action.facet, state)
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case DateRange.START_DATE:
@@ -98,6 +99,15 @@ const dateTime = (startDateTime, endDateTime) => {
   }
 }
 
-const updateFacets = facet => {
+const updateFacets = (facet, state) => {
+  const {name, value, selected} = facet
+  const newFacetState = Immutable.Map()
+  let categories = state.get('facets')
 
+  if (selected){
+    categories = categories.setIn([name, value], selected)
+  } else {
+    categories = categories.deleteIn([name, value]).filter(x => x.count())
+  }
+  return newFacetState.setIn(['facets'], categories)
 }
