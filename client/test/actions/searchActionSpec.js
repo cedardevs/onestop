@@ -6,6 +6,7 @@ import thunk from 'redux-thunk'
 import Immutable from 'immutable'
 import nock from 'nock'
 import reducer from '../../src/reducer'
+import searchQuery from '../searchQuery'
 
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
@@ -23,37 +24,7 @@ describe('The search action', () => {
     nock.disableNetConnect()
 
     const testingRoot = 'http://localhost:9090'
-
-    nock(testingRoot)
-        .post('/api/search', requestBody)
-        .reply(200, {
-          data: [
-            {
-              type: 'collection',
-              id: '123ABC',
-              attributes: {
-                field0: 'field0',
-                field1: 'field1'
-              }
-            },
-            {
-              type: 'collection',
-              id: '789XYZ',
-              attributes: {
-                field0: 'field00',
-                field1: 'field01'
-              }
-            }
-          ],
-          meta:
-            {
-            facets:{
-              science: [
-                {term: "land", count: 2}
-              ]}
-            }
-
-        })
+    searchQuery(testingRoot,requestBody)
 
     const testSearchState = initialState.mergeDeep({requestBody: requestBody})
     const initState = reducer(Immutable.Map(), {type: 'init'})
@@ -77,7 +48,6 @@ describe('The search action', () => {
     ]
 
     const store = mockStore(Immutable.fromJS(testState))
-    console.log((store))
 
     return store.dispatch(module.triggerSearch(null, testingRoot))
         .then(() => {
@@ -90,33 +60,7 @@ describe('The search action', () => {
     nock.disableNetConnect()
 
     const testingRoot = 'http://localhost:9090'
-
-    nock(testingRoot)
-        .post('/api/search', requestBody)
-        .reply(200, {
-          data: [
-            {
-              type: 'collection',
-              id: '123ABC',
-              attributes: {
-                field0: 'field0',
-                field1: 'field1'
-              }
-            },
-            {
-              type: 'collection',
-              id: '789XYZ',
-              attributes: {
-                field0: 'field00',
-                field1: 'field01'
-              }
-            }
-          ],
-          meta: {
-            facets: {science: [{term: "Oceans", count: 2}]
-          }
-        }
-      })
+    searchQuery(testingRoot, requestBody)
 
     const initState = reducer(Immutable.Map(), {type: 'init'})
 
@@ -125,7 +69,7 @@ describe('The search action', () => {
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
 
     let expectedFacets
-    expectedFacets = {facets: {science: [{term: "Oceans", count: 2}]}}
+    expectedFacets = {facets: {science: [{term: "land", count: 2}]}}
 
     const expectedActions = [
       {type: module.SEARCH},

@@ -2,12 +2,6 @@ import nock from 'nock'
 
 const searchQuery = (testingRoot, requestBody) => {
 
-  // nock.disableNetConnect()
-  //
-  // const testingRoot = 'http://localhost:9090'
-  const expectedFacets = new Map()
-  expectedFacets.set("facets", {science: [{term: "Land Surface", count: 2}, {term: "Land Surface > Topography", count: 2}]})
-
   nock(testingRoot)
       .post('/api/search', requestBody)
       .reply(200, {
@@ -29,7 +23,13 @@ const searchQuery = (testingRoot, requestBody) => {
             }
           }
         ],
-        meta: expectedFacets
+        meta:
+        {
+          facets:{
+            science: [
+              {term: "land", count: 2}
+            ]}
+        }
 
       })
 }
