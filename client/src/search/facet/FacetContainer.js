@@ -5,8 +5,7 @@ import { updateFacetsSelected } from './FacetActions'
 
 const mapStateToProps = (state) => {
   return {
-    categories: state.getIn(['facets', 'categories']) ?
-     state.getIn(['facets', 'categories']).toJS() : {}
+    categories: state.getIn(['facets', 'categories']) ? state.getIn(['facets', 'categories']).toJS() : {}
   }
 }
 

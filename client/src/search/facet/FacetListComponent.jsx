@@ -12,6 +12,10 @@ class FacetList extends React.Component {
     this.submit = props.submit
   }
 
+  componentWillUpdate(nextProps) {
+    this.categories = nextProps.categories
+  }
+
   updateAndSubmitSearch(e) {
     const {name, value} = e.target.dataset
     const selected = e.target.checked

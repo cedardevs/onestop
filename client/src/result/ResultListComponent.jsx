@@ -19,7 +19,6 @@ const ResultsList = ({results, loading, onCardClick}) => {
     </div>)
   })
 
-
   return <div id= "layout" className={` ${styles.resultContainer}`}>
             <div className={`${styles.facetContainer}`}>
               <FacetContainer/>
