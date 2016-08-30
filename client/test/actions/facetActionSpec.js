@@ -50,9 +50,7 @@ describe('The facet action', function () {
     actions.clearFacets()
     return store.dispatch(module.triggerSearch(null, testingRoot))
         .then(() => {
-          //TODO
-          // store.
+          // TODO: Check state?
         })
   })
 })
-
