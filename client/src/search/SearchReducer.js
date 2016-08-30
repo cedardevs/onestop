@@ -68,16 +68,14 @@ const assembleRequestBody = (state) => {
 
   // Facets
   let categories = state.get('facets')
-  let facetQuery = []
   let catIterator = categories.entries()
   let entry = catIterator.next()
   while (!entry.done){
     const name = entry.value[0]
     const values = entry.value[1].toJS()
-    facetQuery.push({"type":"facet","name": name,"values": values})
+    filters.push({"type":"facet","name": name,"values": values})
     entry = catIterator.next()
   }
-  filters = [...filters, ...facetQuery]
 
   // Spatial filter:
   let geoJSON = state.get('geoJSON')
