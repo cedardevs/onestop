@@ -2,6 +2,7 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortOrder
@@ -48,87 +49,93 @@ class ETLService {
   public void reindex() {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
-
     def newSearchIndex = indexAdminService.create(SEARCH_INDEX, [SEARCH_TYPE])
-    def bulkRequest = client.prepareBulk()
-    def recordCount = 0
-    def pageSize = 50
-    def scrollTimeout = '5m'
-    def addRecordToBulk = { record ->
-      def id = record.fileIdentifier as String
-      def json = JsonOutput.toJson(record)
-      def insertRequest = client.prepareIndex(newSearchIndex, SEARCH_TYPE, id).setSource(json)
-      bulkRequest.add(insertRequest)
-      recordCount++
-      if (bulkRequest.numberOfActions() >= pageSize) {
-        bulkRequest.get()
-        bulkRequest = client.prepareBulk()
-      }
-    }
 
-    log.debug("starting initial collection scroll")
-    def collectionScroll = client.prepareSearch(STORAGE_INDEX)
-        .setTypes(COLLECTION_TYPE)
-        .addSort('fileIdentifier', SortOrder.ASC)
-        .setScroll(scrollTimeout)
-        .setSize(pageSize)
-        .execute()
-        .actionGet()
-    def collectionsRemain = collectionScroll.hits.hits.length > 0
-    while (collectionsRemain) {
-      collectionScroll.hits.hits.each { collection ->
-        def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
-        addRecordToBulk(parsedCollection) // Add collections whether they have granules or not
-        log.debug("starting initial granule scroll for collection ${parsedCollection.fileIdentifier}")
-        def granuleScroll = client.prepareSearch(STORAGE_INDEX)
-            .setTypes(GRANULE_TYPE)
-            .addSort('fileIdentifier', SortOrder.ASC)
-            .setScroll(scrollTimeout)
-            .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', parsedCollection.fileIdentifier)))
-            .setSize(pageSize)
-            .execute()
-            .actionGet()
-        def granulesRemain = granuleScroll.hits.hits.length > 0
-        if (!granulesRemain) { // insert a synthesized granule record if there is no separate xml for it
-          def synthesizedGranule = new HashMap(parsedCollection)
-          def fileId = parsedCollection.fileIdentifier
-          synthesizedGranule.put('fileIdentifier', fileId + '_granule')
-          synthesizedGranule.put('parentIdentifier', fileId)
-          addRecordToBulk(synthesizedGranule)
+    try {
+      def bulkRequest = client.prepareBulk()
+      def recordCount = 0
+      def pageSize = 50
+      def scrollTimeout = '5m'
+      def addRecordToBulk = { record ->
+        def id = record.fileIdentifier as String
+        def json = JsonOutput.toJson(record)
+        def insertRequest = client.prepareIndex(newSearchIndex, SEARCH_TYPE, id).setSource(json)
+        bulkRequest.add(insertRequest)
+        recordCount++
+        if (bulkRequest.numberOfActions() >= pageSize) {
+          bulkRequest.get()
+          bulkRequest = client.prepareBulk()
         }
-        while (granulesRemain) {
-          granuleScroll.hits.hits.each { granule ->
-            def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)
-            def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
-            addRecordToBulk(flattenedRecord)
+      }
+
+      log.debug("starting initial collection scroll")
+      def collectionScroll = client.prepareSearch(STORAGE_INDEX)
+          .setTypes(COLLECTION_TYPE)
+          .addSort('fileIdentifier', SortOrder.ASC)
+          .setScroll(scrollTimeout)
+          .setSize(pageSize)
+          .execute()
+          .actionGet()
+      def collectionsRemain = collectionScroll.hits.hits.length > 0
+      while (collectionsRemain) {
+        collectionScroll.hits.hits.each { collection ->
+          def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
+          addRecordToBulk(parsedCollection) // Add collections whether they have granules or not
+          log.debug("starting initial granule scroll for collection ${parsedCollection.fileIdentifier}")
+          def granuleScroll = client.prepareSearch(STORAGE_INDEX)
+              .setTypes(GRANULE_TYPE)
+              .addSort('fileIdentifier', SortOrder.ASC)
+              .setScroll(scrollTimeout)
+              .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', parsedCollection.fileIdentifier)))
+              .setSize(pageSize)
+              .execute()
+              .actionGet()
+          def granulesRemain = granuleScroll.hits.hits.length > 0
+          if (!granulesRemain) { // insert a synthesized granule record if there is no separate xml for it
+            def synthesizedGranule = new HashMap(parsedCollection)
+            def fileId = parsedCollection.fileIdentifier
+            synthesizedGranule.put('fileIdentifier', fileId + '_granule')
+            synthesizedGranule.put('parentIdentifier', fileId)
+            addRecordToBulk(synthesizedGranule)
           }
-          log.debug("starting new granule scroll for collection ${parsedCollection.fileIdentifier}")
-          granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
-          granulesRemain = granuleScroll.hits.hits.length > 0
+          while (granulesRemain) {
+            granuleScroll.hits.hits.each { granule ->
+              def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)
+              def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
+              addRecordToBulk(flattenedRecord)
+            }
+            log.debug("starting new granule scroll for collection ${parsedCollection.fileIdentifier}")
+            granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
+            granulesRemain = granuleScroll.hits.hits.length > 0
+          }
         }
+        log.debug("starting new collection scroll")
+        collectionScroll = client.prepareSearchScroll(collectionScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
+        collectionsRemain = collectionScroll.hits.hits.length > 0
       }
-      log.debug("starting new collection scroll")
-      collectionScroll = client.prepareSearchScroll(collectionScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
-      collectionsRemain = collectionScroll.hits.hits.length > 0
+
+      if (bulkRequest.numberOfActions() > 0) {
+        bulkRequest.get()
+      }
+
+      indexAdminService.refresh(newSearchIndex)
+
+      def aliasBuilder = client.admin().indices().prepareAliases()
+      def oldIndices = client.admin().indices().prepareGetAliases(SEARCH_INDEX).get().aliases.keysIt()*.toString()
+      oldIndices.each {
+        aliasBuilder.removeAlias(it, SEARCH_INDEX)
+      }
+      aliasBuilder.addAlias(newSearchIndex, SEARCH_INDEX)
+      aliasBuilder.execute().actionGet()
+      oldIndices.each { indexAdminService.drop(it) }
+      def end = System.currentTimeMillis()
+      log.info "reindexed ${recordCount} records in ${(end - start) / 1000}s"
+
+    } catch(Exception e) {
+      log.error "Search reindexing failed because of: " + ExceptionUtils.getRootCauseMessage(e)
+      log.error "Root cause stack trace: \n" + ExceptionUtils.getRootCauseStackTrace(e)
+      indexAdminService.drop(newSearchIndex)
     }
-
-    if (bulkRequest.numberOfActions() > 0) {
-      bulkRequest.get()
-    }
-
-    indexAdminService.refresh(newSearchIndex)
-
-    def aliasBuilder = client.admin().indices().prepareAliases()
-    def oldIndices = client.admin().indices().prepareGetAliases(SEARCH_INDEX).get().aliases.keysIt()*.toString()
-    oldIndices.each {
-      aliasBuilder.removeAlias(it, SEARCH_INDEX)
-    }
-    aliasBuilder.addAlias(newSearchIndex, SEARCH_INDEX)
-    aliasBuilder.execute().actionGet()
-    oldIndices.each { indexAdminService.drop(it) }
-
-    def end = System.currentTimeMillis()
-    log.info "reindexed ${recordCount} records in ${(end - start) / 1000}s"
   }
 
 }
