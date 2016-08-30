@@ -21,8 +21,7 @@ class FacetList extends React.Component {
       selected
     }
     this.updateFacets(facet)
-    // Update query
-    // Submit query
+    this.submit()
   }
 
   toTitleCase(str){
