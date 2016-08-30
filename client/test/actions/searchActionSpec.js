@@ -60,11 +60,11 @@ describe('The search action', () => {
     const testState = initState.mergeDeep({search: testSearchState})
 
     const expectedItems = new Map()
-    const expectedFacets = new Map()
+    let expectedFacets
 
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
-    expectedFacets.set("facets", {type: 'METADATA_RECEIVED', field0: 'field00', field1: 'field01'})
+    expectedFacets = {"facets":{"science":[{"term":"land","count":2}]}}
 
     const expectedActions = [
       {type: module.SEARCH},
@@ -72,13 +72,9 @@ describe('The search action', () => {
         args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
-      {type: module.SEARCH_COMPLETE, items: expectedItems},
-      {type: "METADATA_RECEIVED", metadata: expectedFacets}
-
+      {type: "METADATA_RECEIVED", metadata: expectedFacets},
+      {type: module.SEARCH_COMPLETE, items: expectedItems}
     ]
-
-    console.log(JSON.stringify(expectedActions))
-
 
     const store = mockStore(Immutable.fromJS(testState))
     console.log((store))
@@ -116,12 +112,11 @@ describe('The search action', () => {
               }
             }
           ],
-          meta: [
-            {
-              facets: {science: [{term: "Oceans", count: 2}]}
-            }
-           ]
-        })
+          meta: {
+            facets: {science: [{term: "Oceans", count: 2}]
+          }
+        }
+      })
 
     const initState = reducer(Immutable.Map(), {type: 'init'})
 
@@ -129,8 +124,8 @@ describe('The search action', () => {
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
 
-    const expectedFacets = new Map()
-    expectedFacets.set({type: 'METADATA_RECEIVED',  meta: {facets: {science: {term: "Oceans", count: 2}}}})
+    let expectedFacets
+    expectedFacets = {facets: {science: [{term: "Oceans", count: 2}]}}
 
     const expectedActions = [
       {type: module.SEARCH},
@@ -138,8 +133,8 @@ describe('The search action', () => {
         args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
-      {type: module.SEARCH_COMPLETE, items: expectedItems},
-      {type: "METADATA_RECEIVED", metadata:expectedFacets }
+      {type: "METADATA_RECEIVED", metadata:expectedFacets },
+      {type: module.SEARCH_COMPLETE, items: expectedItems}
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
