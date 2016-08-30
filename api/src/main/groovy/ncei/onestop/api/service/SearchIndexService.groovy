@@ -36,7 +36,6 @@ class SearchIndexService {
                             IndexAdminService indexAdminService) {
     this.client = client
     this.searchRequestParserService = searchRequestParserService
-    this.searchResponseParserService = searchResponseParserService
     this.indexAdminService = indexAdminService
   }
 
@@ -84,7 +83,7 @@ class SearchIndexService {
           def facets = prepareAggregationsForUI(searchResponse1.aggregations, parsedRequest.collections)
 
           def searchResponse2 = queryAgainstGranules(queryWithAllFilters, false, false, true)
-          def result = getAllCollectionDocuments(searchResponse2)
+          def result = getAllCollectionDocuments(searchResponse2, params.page)
           result.meta.took = searchResponse1.tookInMillis + searchResponse2.tookInMillis
           result.meta.facets = facets
           return result
@@ -92,7 +91,7 @@ class SearchIndexService {
         } else {
           /* facets && !postFilter */
           def searchResponse = queryAgainstGranules(query, true, false, true)
-          def result = getAllCollectionDocuments(searchResponse)
+          def result = getAllCollectionDocuments(searchResponse, params.page)
           result.meta.took = searchResponse.tookInMillis
           result.meta.facets = prepareAggregationsForUI(searchResponse.aggregations, parsedRequest.collections)
           return result
@@ -107,7 +106,7 @@ class SearchIndexService {
           /* !facets && !postFilter */
           searchResponse = queryAgainstGranules(query, false, false, true)
         }
-        def result = getAllCollectionDocuments(searchResponse)
+        def result = getAllCollectionDocuments(searchResponse, params.page)
         result.meta.took = searchResponse.tookInMillis
         return result
       }
@@ -115,7 +114,7 @@ class SearchIndexService {
 
     } else {
       // Returning granule results:
-      def searchResponse = queryAgainstGranules(query, postFilter, params.page, params.facets, true, false)
+      def searchResponse = queryAgainstGranules(query, postFilter, params.page, params.facets ?: false, true, false)
       def result = [
           data: searchResponse.hits.hits.collect({ [type: it.type, id: it.id, attributes: it.source] }),
           meta: [
@@ -168,6 +167,15 @@ class SearchIndexService {
 
     def collections = response.aggregations.get('collections').getBuckets().collect({ it.key as String })
 
+    if(!collections) {
+      return [
+          data: [],
+          meta: [
+              total: 0
+          ]
+      ]
+    }
+
     def rangeStart
     def rangeEnd
     if(paginationParams) {
@@ -176,7 +184,11 @@ class SearchIndexService {
     } else {
       // Default first 100 results returned
       rangeStart = 0
-      rangeEnd = 99
+      if (collections.size >= 100) {
+        rangeEnd = 99
+      } else {
+        rangeEnd = collections.size - 1
+      }
     }
     def collectionsToRetrieve = collections[rangeStart..rangeEnd]
 

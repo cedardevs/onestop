@@ -18,9 +18,6 @@ class ETLService {
   @Value('${elasticsearch.index.search.name}')
   private String SEARCH_INDEX
 
-  @Value('${elasticsearch.index.search.type}')
-  private String SEARCH_TYPE
-
   @Value('${elasticsearch.index.storage.name}')
   private String STORAGE_INDEX
 
@@ -44,20 +41,21 @@ class ETLService {
     reindex()
   }
 
-  @Scheduled(fixedDelay = 600000L) // 10 minutes after previous run ends
+//  @Scheduled(fixedDelay = 600000L) // 10 minutes after previous run ends
   public void reindex() {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
 
-    def newSearchIndex = indexAdminService.create(SEARCH_INDEX, [SEARCH_TYPE])
+    def newSearchIndex = indexAdminService.create(SEARCH_INDEX, [GRANULE_TYPE, COLLECTION_TYPE])
     def bulkRequest = client.prepareBulk()
     def recordCount = 0
-    def pageSize = 50
+    def pageSize = 100
     def scrollTimeout = '5m'
-    def addRecordToBulk = { record ->
+
+    def addRecordToBulk = { record, type ->
       def id = record.fileIdentifier as String
       def json = JsonOutput.toJson(record)
-      def insertRequest = client.prepareIndex(newSearchIndex, SEARCH_TYPE, id).setSource(json)
+      def insertRequest = client.prepareIndex(newSearchIndex, type, id).setSource(json)
       bulkRequest.add(insertRequest)
       recordCount++
       if (bulkRequest.numberOfActions() >= pageSize) {
@@ -66,7 +64,6 @@ class ETLService {
       }
     }
 
-    log.debug("starting initial collection scroll")
     def collectionScroll = client.prepareSearch(STORAGE_INDEX)
         .setTypes(COLLECTION_TYPE)
         .addSort('fileIdentifier', SortOrder.ASC)
@@ -74,12 +71,12 @@ class ETLService {
         .setSize(pageSize)
         .execute()
         .actionGet()
+
     def collectionsRemain = collectionScroll.hits.hits.length > 0
     while (collectionsRemain) {
       collectionScroll.hits.hits.each { collection ->
         def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
-        addRecordToBulk(parsedCollection) // Add collections whether they have granules or not
-        log.debug("starting initial granule scroll for collection ${parsedCollection.fileIdentifier}")
+        addRecordToBulk(parsedCollection, COLLECTION_TYPE) // Add collections whether they have granules or not
         def granuleScroll = client.prepareSearch(STORAGE_INDEX)
             .setTypes(GRANULE_TYPE)
             .addSort('fileIdentifier', SortOrder.ASC)
@@ -90,24 +87,20 @@ class ETLService {
             .actionGet()
         def granulesRemain = granuleScroll.hits.hits.length > 0
         if (!granulesRemain) { // insert a synthesized granule record if there is no separate xml for it
-          def synthesizedGranule = new HashMap(parsedCollection)
-          def fileId = parsedCollection.fileIdentifier
-          synthesizedGranule.put('fileIdentifier', fileId + '_granule')
-          synthesizedGranule.put('parentIdentifier', fileId)
-          addRecordToBulk(synthesizedGranule)
+          def synthesizedGranule = [fileIdentifier: parsedCollection.fileIdentifier, parentIdentifier: parsedCollection.fileIdentifier]
+          def flattenedSynthesizedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, synthesizedGranule)
+          addRecordToBulk(flattenedSynthesizedRecord, GRANULE_TYPE)
         }
         while (granulesRemain) {
           granuleScroll.hits.hits.each { granule ->
             def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)
-            def flattenedRecord = parsedCollection + parsedGranule
-            addRecordToBulk(flattenedRecord)
+            def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
+            addRecordToBulk(flattenedRecord, GRANULE_TYPE)
           }
-          log.debug("starting new granule scroll for collection ${parsedCollection.fileIdentifier}")
           granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
           granulesRemain = granuleScroll.hits.hits.length > 0
         }
       }
-      log.debug("starting new collection scroll")
       collectionScroll = client.prepareSearchScroll(collectionScroll.scrollId).setScroll(scrollTimeout).execute().actionGet()
       collectionsRemain = collectionScroll.hits.hits.length > 0
     }

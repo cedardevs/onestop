@@ -297,4 +297,8 @@ class MetadataParser {
 
     return json
   }
+
+  public static Map mergeCollectionAndGranule(Map collection, Map granule) {
+    return collection + granule
+  }
 }

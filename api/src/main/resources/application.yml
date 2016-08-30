@@ -29,6 +29,6 @@ elasticsearch:
       granuleType: granule
       collectionType: collection
     search:
-      name: search_v2
+      name: search_v3
       granuleType: granule
       collectionType: collection
