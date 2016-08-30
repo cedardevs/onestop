@@ -259,7 +259,7 @@ class SearchRequestParserServiceTest extends Specification {
 
   def 'Facet filter request (not on parentIdentifier) creates post-filter for collections only'() {
     given:
-    def request = '{"filters":[{"type":"facet","name":"gcmdScience","values":"Atmosphere > Aerosols"}]}'
+    def request = '{"filters":[{"type":"facet","name":"science","values":"Atmosphere > Aerosols"}]}'
     def params = slurper.parseText(request)
 
     when:
@@ -302,7 +302,7 @@ class SearchRequestParserServiceTest extends Specification {
 
   def 'Facet filter request on parentIdentifier creates post-filter on granules'() {
     given:
-    def request = '{"filters":[{"type":"facet","name":"gcmdScience","values":"Atmosphere > Aerosols"},' +
+    def request = '{"filters":[{"type":"facet","name":"science","values":"Atmosphere > Aerosols"},' +
         '{"type":"facet","name":"parentIdentifier","values":"GHRSST_Something_Something"}]}'
     def params = slurper.parseText(request)
 
