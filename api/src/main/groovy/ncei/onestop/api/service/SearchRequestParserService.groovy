@@ -19,6 +19,18 @@ class SearchRequestParserService {
   public SearchRequestParserService() {}
 
 
+  private static final Map<String, String> facetNameMappings = [
+      'parentIdentifier': 'parentIdentifier',
+      'science': 'gcmdScience',
+      'locations': 'gcmdLocations',
+      'instruments': 'gcmdInstruments',
+      'platforms': 'gcmdPlatforms',
+      'projects': 'gcmdProjects',
+      'dataCenters': 'gcmdDataCenters',
+      'dataResolution': 'gcmdDataResolution',
+  ]
+
+
   public Map<String, QueryBuilder> parseSearchRequest(Map params) {
 
     log.debug("Queries: ${params.queries}")
@@ -45,18 +57,9 @@ class SearchRequestParserService {
 
 
   public List<AggregationBuilder> createDefaultAggregations() {
-
-    def aggregations = [
-        AggregationBuilders.terms('science').field('gcmdScience').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('locations').field('gcmdLocations').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('instruments').field('gcmdInstruments').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('platforms').field('gcmdPlatforms').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('projects').field('gcmdProjects').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('dataCenters').field('gcmdDataCenters').order(Terms.Order.term(true)),
-        AggregationBuilders.terms('dataResolution').field('gcmdDataResolution').order(Terms.Order.term(true))
-    ]
-
-    return aggregations
+    facetNameMappings
+        .findAll { facet, field -> field.startsWith('gcmd') }
+        .collect { facet, field -> AggregationBuilders.terms(facet).field(field).order(Terms.Order.term(true)) }
   }
 
 
@@ -115,7 +118,7 @@ class SearchRequestParserService {
       if(it.name == 'parentIdentifier') { granules = true }
       // Facets are applied as post_filters so that counts on the facet menu don't change but displayed results do
       postFilters = true
-      postBuilder.must(QueryBuilders.termsQuery(it.name, it.values))
+      postBuilder.must(QueryBuilders.termsQuery(facetNameMappings[it.name], it.values))
     }
 
     if(!granules) {
