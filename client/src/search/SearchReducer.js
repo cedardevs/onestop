@@ -127,5 +127,5 @@ const updateFacets = (facet, state) => {
     categories = categories.set(name, categories.get(name).filterNot(x => x === value))
     categories = categories.filter(x => x.size)
   }
-  return Immutable.Map().setIn(['facets'], categories)
+  return state.set('facets', categories)
 }
