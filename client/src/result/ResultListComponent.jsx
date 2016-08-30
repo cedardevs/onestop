@@ -20,17 +20,7 @@ const ResultsList = ({results, loading, onCardClick}) => {
   })
 
 
-  let display = null
-  if(loading) {
-    display =
-        <div className={`pure-u-1`}>
-          <div className={`${styles.spinner}`}>
-            <i className="fa fa-anchor fa-spin fa-5x" aria-hidden="true"/>
-          </div>
-        </div>
-  } else {
-    display =
-        <div id= "layout" className={` ${styles.resultContainer}`}>
+  return <div id= "layout" className={` ${styles.resultContainer}`}>
             <div className={`${styles.facetContainer}`}>
               <FacetContainer/>
             </div>
@@ -38,9 +28,6 @@ const ResultsList = ({results, loading, onCardClick}) => {
               {cards}
             </div>
         </div>
-  }
-
-  return display
 }
 
 ResultsList.propTypes = {
