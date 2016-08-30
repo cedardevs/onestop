@@ -19,6 +19,7 @@ dependencies {
     compile 'org.elasticsearch:elasticsearch:2.3.3'
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-tomcat'
+    compile 'org.springframework.boot:spring-boot-starter-security'
     compile 'org.springframework.boot:spring-boot-devtools'
     compile 'com.github.fge:json-schema-validator:2.2.6'
     compile 'org.apache.commons:commons-lang3:3.4'

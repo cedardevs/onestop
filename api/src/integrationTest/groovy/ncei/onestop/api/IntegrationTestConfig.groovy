@@ -6,11 +6,13 @@ import org.elasticsearch.common.util.concurrent.EsExecutors
 import org.elasticsearch.node.Node
 import org.elasticsearch.client.Client
 import org.elasticsearch.node.NodeBuilder
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Profile
+import org.springframework.core.env.Environment
 
 
 @Profile("integration")
@@ -58,5 +60,9 @@ class IntegrationTestConfig {
     node.start()
     return client
   }
+
+  @Autowired
+  Environment environment
+
 
 }
