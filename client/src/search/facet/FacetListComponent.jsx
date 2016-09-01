@@ -57,7 +57,7 @@ class FacetList extends React.Component {
     return <div>
       <div className={`${styles.facetContainer}`}>
         <form class="pure-form">
-          <span className={'pure-menu-heading'}>Facets</span>
+          <span className={'pure-menu-heading'}>Categories</span>
           <Collapse defaultActiveKey="0">
             {facets}
           </Collapse>
