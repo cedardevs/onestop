@@ -103,11 +103,11 @@ class SearchIntegrationTests extends Specification {
         'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
     ])
 
-    and: 'The correct number of aggregations is returned'
+    and: 'The correct number of facets is returned'
     def aggs = result.body.meta.facets
     aggs.size() == 7
 
-    and: 'The aggregations are as expected'
+    and: 'The facets are as expected'
     aggs.science != null
     aggs.locations != null
     aggs.instruments != null
@@ -131,7 +131,7 @@ class SearchIntegrationTests extends Specification {
             [
               {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [145.5, 12.34]}}
             ],
-          "aggregations": false
+          "facets": false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
