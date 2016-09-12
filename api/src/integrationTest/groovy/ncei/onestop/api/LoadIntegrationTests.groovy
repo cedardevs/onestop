@@ -42,6 +42,12 @@ class LoadIntegrationTests extends Specification {
   @Value('${server.context-path}')
   private String contextPath
 
+  @Value('${security.user.name}')
+  private String username
+
+  @Value('${security.user.password}')
+  private String password
+
   @Value('${elasticsearch.index.storage.name}')
   private String INDEX
 
@@ -67,7 +73,7 @@ class LoadIntegrationTests extends Specification {
   def 'Document is stored, then searchable on reindex'() {
     setup:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("data/GHRSST/1.xml").text
-    def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+    def loadRequest = RequestEntity.post(loadURI).header('Authorization', buildAuthHeader(username, password)).contentType(MediaType.APPLICATION_XML).body(document)
     def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
 
     when:
@@ -79,7 +85,7 @@ class LoadIntegrationTests extends Specification {
 
     and: "Storage index contains loaded document"
     def docId = loadResult.body.data.id
-    def getRequest = RequestEntity.get("http://localhost:${port}/${contextPath}/metadata/${docId}.json".toURI()).build()
+    def getRequest = RequestEntity.get("http://localhost:${port}/${contextPath}/metadata/${docId}.json".toURI()).header('Authorization', buildAuthHeader(username, password)).build()
     def getResult = restTemplate.exchange(getRequest, Map)
     getResult.body?.data?.id == docId
 
@@ -105,7 +111,7 @@ class LoadIntegrationTests extends Specification {
     when: "Document is deleted though api"
     getResult = restTemplate.exchange(getRequest, Map)
     assert getResult.body?.data?.id == docId
-    def deleteRequest = RequestEntity.delete("http://localhost:${port}/${contextPath}/metadata/${docId}.json".toURI()).build()
+    def deleteRequest = RequestEntity.delete("http://localhost:${port}/${contextPath}/metadata/${docId}.json".toURI()).header('Authorization', buildAuthHeader(username, password)).build()
     def deleteResult = restTemplate.exchange(deleteRequest, Map)
     getResult = restTemplate.exchange(getRequest, Map)
     searchResult = restTemplate.exchange(searchRequest, Map)
@@ -129,7 +135,7 @@ class LoadIntegrationTests extends Specification {
   def 'Document rejected when whitespace found in fileIdentifier'() {
     setup:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("data/BadFiles/montauk_forecastgrids_2013.xml").text
-    def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+    def loadRequest = RequestEntity.post(loadURI).header('Authorization', buildAuthHeader(username, password)).contentType(MediaType.APPLICATION_XML).body(document)
 
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
@@ -145,7 +151,7 @@ class LoadIntegrationTests extends Specification {
     setup:
     // COOPS/O1.xml is an orphan: it's parentIdentified doesn't match anything
     def document = ClassLoader.systemClassLoader.getResourceAsStream("data/COOPS/O1.xml").text
-    def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+    def loadRequest = RequestEntity.post(loadURI).header('Authorization', buildAuthHeader(username, password)).contentType(MediaType.APPLICATION_XML).body(document)
     def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
 
     when:
@@ -164,7 +170,7 @@ class LoadIntegrationTests extends Specification {
     setup:
     // GHRSST/1.xml is a collection with no granules
     def document = ClassLoader.systemClassLoader.getResourceAsStream("data/GHRSST/1.xml").text
-    def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+    def loadRequest = RequestEntity.post(loadURI).header('Authorization', buildAuthHeader(username, password)).contentType(MediaType.APPLICATION_XML).body(document)
     def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
 
     when:
@@ -189,7 +195,7 @@ class LoadIntegrationTests extends Specification {
         ClassLoader.systemClassLoader.getResourceAsStream("data/COOPS/G2.xml").text
     ]
     def loadRequests = documents.collect { document ->
-      RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+      RequestEntity.post(loadURI).header('Authorization', buildAuthHeader(username, password)).contentType(MediaType.APPLICATION_XML).body(document)
     }
     def searchRequestC = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
     def searchRequestG = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON)
@@ -220,6 +226,10 @@ class LoadIntegrationTests extends Specification {
     g1Record.attributes.temporalBounding.endDate == '2016-02-29'
     g2Record.attributes.temporalBounding.beginDate == '2015-03-01'
     g2Record.attributes.temporalBounding.endDate == '2015-03-31'
+  }
+
+  private static buildAuthHeader(String username, String password) {
+    'Basic ' + new String(Base64.encoder.encode("$username:$password".bytes ) as byte[])
   }
 
 }

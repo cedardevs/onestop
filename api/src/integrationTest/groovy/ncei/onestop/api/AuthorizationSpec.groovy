@@ -1,14 +1,11 @@
 package ncei.onestop.api
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.security.SecurityProperties
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.WebIntegrationTest
 import org.springframework.http.RequestEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.test.context.TestPropertySource
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
@@ -23,9 +20,7 @@ import static org.springframework.http.MediaType.*
 @Unroll
 @WebIntegrationTest
 @ActiveProfiles("integration")
-@ContextConfiguration(loader = SpringApplicationContextLoader,
-    classes = [Application, IntegrationTestConfig])
-@TestPropertySource(properties = ['security.user.name:user', 'security.user.password:pass'])
+@ContextConfiguration(loader = SpringApplicationContextLoader, classes = [Application, IntegrationTestConfig])
 class AuthorizationSpec extends Specification {
 
   @Value('${local.server.port}')
@@ -46,7 +41,6 @@ class AuthorizationSpec extends Specification {
   def '#path does not require authorization'() {
     setup:
     def uri = "${baseUri}${path}".toURI()
-    println uri
     def requestEntity = RequestEntity.method(method, uri)
         .contentType(contentType)
         .body(body)
@@ -67,7 +61,6 @@ class AuthorizationSpec extends Specification {
   def '#path requires authorization'() {
     setup:
     def uri = "${baseUri}${path}".toURI()
-    println uri
     def unauthorizedRequest = RequestEntity.method(method, uri)
         .contentType(contentType)
         .body(body)
@@ -82,7 +75,6 @@ class AuthorizationSpec extends Specification {
 
     then:
     def httpException = thrown(HttpStatusCodeException)
-    println httpException?.responseBodyAsString
     httpException.statusCode in [UNAUTHORIZED, FORBIDDEN]
 
     when:
@@ -98,12 +90,11 @@ class AuthorizationSpec extends Specification {
     '/search/reindex' | GET     | APPLICATION_JSON  | null
     '/metadata'       | POST    | APPLICATION_XML   | '<xml sarcasm="very yes">xml is my favorite format of all!</xml>'
 //    'metadata/id'    | GET     | APPLICATION_XML   | null
+//    'metadata/id'    | DELETE  | APPLICATION_XML   | null
   }
 
   private static buildAuthHeader(String username, String password) {
-    def result = 'Basic ' + new String(Base64.encoder.encode("$username:$password".bytes ) as byte[])
-    println "encoded $username:$password => $result"
-    return result
+    'Basic ' + new String(Base64.encoder.encode("$username:$password".bytes ) as byte[])
   }
 
 }
