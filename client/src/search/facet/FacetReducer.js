@@ -9,7 +9,7 @@ export const initialState = Immutable.fromJS({
 const facets = (state = initialState, action) => {
   switch(action.type) {
     case METADATA_RECEIVED:
-      return state.mergeDeep({
+      return Immutable.fromJS({
         categories: action.metadata.facets
       })
     default:
