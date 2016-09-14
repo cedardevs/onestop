@@ -1,11 +1,11 @@
-export const METADATA_RECEIVED = 'METADATA_RECEIVED'
+export const FACETS_RECEIVED = 'FACETS_RECEIVED'
 export const UPDATE_FACETS = 'UPDATE_FACETS'
 export const CLEAR_FACETS = 'CLEAR_FACETS'
 
 
-export const processMetadata = metadata => {
+export const facetsReceived = metadata => {
   return {
-    type: METADATA_RECEIVED,
+    type: FACETS_RECEIVED,
     metadata
   }
 }

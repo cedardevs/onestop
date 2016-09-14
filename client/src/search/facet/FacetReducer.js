@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import _ from 'lodash'
 import { OPEN, CLOSED } from './FacetActions'
-import { METADATA_RECEIVED, UPDATE_FACETS } from './FacetActions'
+import { FACETS_RECEIVED, UPDATE_FACETS } from './FacetActions'
 
 export const initialState = Immutable.fromJS({
   categories: null
@@ -9,7 +9,7 @@ export const initialState = Immutable.fromJS({
 
 const facets = (state = initialState, action) => {
   switch(action.type) {
-    case METADATA_RECEIVED:
+    case FACETS_RECEIVED:
       // Build the UI object we eventually expect to receive from the API
       let categories = {}
       _.forOwn(action.metadata.facets, (terms, category) => {
