@@ -6,7 +6,7 @@ import Collapse, { Panel } from 'rc-collapse'
 class FacetList extends React.Component {
   constructor(props) {
     super(props)
-    this.updateAndSubmitSearch = this.updateAndSubmitSearch.bind(this)
+    this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(this)
     this.categories = props.categories
     this.updateFacets = props.updateFacets
     this.submit = props.submit
@@ -16,7 +16,9 @@ class FacetList extends React.Component {
     this.categories = nextProps.categories
   }
 
-  updateAndSubmitSearch(e) {
+  updateStoreAndSubmitSearch(e) {
+    // Update store's UI vals
+    // Submit search
     const {name, value} = e.target.dataset
     const selected = e.target.checked
     const facet = {
@@ -40,14 +42,23 @@ class FacetList extends React.Component {
     let facets = []
     let self = this
     let i = 0, j = 0
-    _.forOwn(this.categories, function(v,k){
+    _.forOwn(this.categories, (terms,category) => {
       facets.push(
-        <Panel header={`${self.toTitleCase(k)}`} key={`${i++}`}>
-          {v.map((obj)=> {
+        <Panel header={`${self.toTitleCase(category)}`} key={`${i++}`}>
+          {Object.keys(terms).map( term => {
+            let input = {
+              className: styles.checkFacet,
+              'data-name': category,
+              'data-value': term,
+              id: `${category}-${term}`,
+              type: 'checkbox',
+              onChange: self.updateStoreAndSubmitSearch,
+              checked: terms[term].selected
+            }
             return(<div>
-              <input className={styles.checkFacet} data-name={`${k}`} data-value={`${obj.term}`} id={`${k}-${obj.term}`} type="checkbox"
-               onChange={self.updateAndSubmitSearch}/><span className={styles.facetLabel}>{self.subFacetLabel(`${obj.term}`)}</span>
-              <div className={`${styles.count} ${styles.numberCircle}`}>{`(${obj.count})`}</div>
+              <input {...input}/>
+               <span className={styles.facetLabel}>{self.subFacetLabel(`${term}`)}</span>
+              <div className={`${styles.count} ${styles.numberCircle}`}>{`(${terms[term].count})`}</div>
             </div>)
           })}
         </Panel>
