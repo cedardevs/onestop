@@ -11,8 +11,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateFacets: (facet) => dispatch(updateFacetsSelected(facet)),
-    submit: () => dispatch(triggerSearch())
+    updateFacets: facetsSelected => dispatch(updateFacetsSelected(facetsSelected)),
+    submit: () => dispatch(triggerSearch(null, null, true))
   }
 }
 

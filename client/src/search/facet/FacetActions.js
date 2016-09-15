@@ -3,17 +3,18 @@ export const UPDATE_FACETS = 'UPDATE_FACETS'
 export const CLEAR_FACETS = 'CLEAR_FACETS'
 
 
-export const facetsReceived = metadata => {
+export const facetsReceived = (metadata, processFacets = false) => {
   return {
     type: FACETS_RECEIVED,
-    metadata
+    metadata,
+    processFacets
   }
 }
 
-export const updateFacetsSelected = facet => {
+export const updateFacetsSelected = facetsSelected => {
   return {
     type: UPDATE_FACETS,
-    facet
+    facetsSelected
   }
 }
 

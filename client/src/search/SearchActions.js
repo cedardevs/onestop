@@ -28,7 +28,7 @@ export const completeSearch = (items) => {
 }
 
 
-export const triggerSearch = (queryParams, testing) => {
+export const triggerSearch = (queryParams, testing, processFacets) => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
     let state = getState()
@@ -64,7 +64,7 @@ export const triggerSearch = (queryParams, testing) => {
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
         .then(json => dispatch(completeSearch((function(){
-          dispatch(facetsReceived(json.meta))
+          dispatch(facetsReceived(json.meta, processFacets))
           return assignResourcesToMap(json.data)
         })()
         )))
