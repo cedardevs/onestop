@@ -1,3 +1,4 @@
+import Immutable from 'immutable'
 import React from 'react'
 import styles from './facet.css'
 import _ from 'lodash'
@@ -7,17 +8,16 @@ class FacetList extends React.Component {
   constructor(props) {
     super(props)
     this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(this)
-    this.categories = props.categories
+    this.facetMap = props.facetMap
     this.updateFacets = props.updateFacets
     this.submit = props.submit
   }
 
   componentWillUpdate(nextProps) {
-    this.categories = nextProps.categories
+    this.facetMap = nextProps.facetMap
   }
 
   updateStoreAndSubmitSearch(e) {
-    // Update store's UI vals
     // Submit search
     const {name, value} = e.target.dataset
     const selected = e.target.checked
@@ -26,8 +26,21 @@ class FacetList extends React.Component {
       value,
       selected
     }
-    this.updateFacets(facet)
-    this.submit()
+    // Update facetMap and submit for merge with new facet results
+    let facetsSelected = Immutable
+                        .fromJS(this.facetMap)
+                        .setIn([name, value, 'selected'], selected)
+    facetsSelected.forEach((facetNames,category) => {
+      facetsSelected = facetsSelected
+        .set(category, facetsSelected
+                        .get(category)
+                        .filter(x => x.toJS().selected))
+      facetNames.forEach((facetValues, facetName) => {
+        facetsSelected = facetsSelected.deleteIn([category, facetName, 'count'])})
+    })
+    facetsSelected = facetsSelected.filter(x => x.size)
+    this.updateFacets(facetsSelected)
+    this.submit(facetsSelected)
   }
 
   toTitleCase(str){

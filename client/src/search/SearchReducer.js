@@ -11,7 +11,7 @@ export const initialState = Immutable.fromJS({
   startDateTime: '',
   endDateTime: '',
   requestBody: '',
-  facets: Immutable.Map()
+  facetsSelected: Immutable.Map()
 })
 
 export const search = (state = initialState, action) => {
@@ -37,11 +37,11 @@ export const search = (state = initialState, action) => {
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case UPDATE_FACETS:
-      newState = updateFacets(action.facet, state)
+      newState = state.set('facetsSelected', action.facetsSelected)
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case CLEAR_FACETS:
-      newState = state.set('facets', initialState.get('facets'))
+      newState = state.set('facetsSelected', initialState.get('facetsSelected'))
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case DateRange.START_DATE:
@@ -71,15 +71,10 @@ const assembleRequestBody = (state) => {
   }
 
   // Facets
-  let categories = state.get('facets')
-  let catIterator = categories.entries()
-  let entry = catIterator.next()
-  while (!entry.done){
-    const name = entry.value[0]
-    const values = entry.value[1].toJS()
-    filters.push({"type":"facet","name": name,"values": values})
-    entry = catIterator.next()
-  }
+  let categories = state.get('facetsSelected')
+  categories.forEach((v,k) => {
+    filters.push({"type":"facet","name": k,"values": Object.keys(v.toJS())})
+  })
 
   // Spatial filter:
   let geoJSON = state.get('geoJSON')
@@ -99,7 +94,6 @@ const assembleRequestBody = (state) => {
   } else {
     return JSON.stringify({queries, filters, facets: true})
   }
-
 }
 
 const dateTime = (startDateTime, endDateTime) => {
@@ -113,19 +107,4 @@ const dateTime = (startDateTime, endDateTime) => {
   } else {
     return {type: 'datetime', before: endDateTime}
   }
-}
-
-const updateFacets = (facet, state) => {
-  const {name, value, selected} = facet
-  let categories = state.get('facets')
-
-  if (selected){
-    const oldValues = categories.get(name) ? categories.get(name) : Immutable.List()
-    const newValues = Immutable.Set().merge(oldValues, Immutable.List([value]))
-    categories = categories.setIn([name], newValues)
-  } else {
-    categories = categories.set(name, categories.get(name).filterNot(x => x === value))
-    categories = categories.filter(x => x.size)
-  }
-  return state.set('facets', categories)
 }
