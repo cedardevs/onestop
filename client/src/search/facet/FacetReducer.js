@@ -4,7 +4,8 @@ import { OPEN, CLOSED } from './FacetActions'
 import { FACETS_RECEIVED, UPDATE_FACETS } from './FacetActions'
 
 export const initialState = Immutable.fromJS({
-  categories: null
+  categories: null,
+  facetsSelected: Immutable.Map()
 })
 
 const facets = (state = initialState, action) => {
@@ -21,11 +22,16 @@ const facets = (state = initialState, action) => {
           }
         }
       })
-      return state.set('categories', Immutable.fromJS(categories))
+      // Update facets with previous checks
+      if (action.processFacets){
+        categories = Immutable.fromJS(categories).mergeDeep(state.get('facetsSelected'))
+      } else {
+        categories = Immutable.fromJS(categories)
+      }
+      return state.set('categories', categories)
 
     case UPDATE_FACETS:
-      const { name, value, selected } = action.facet
-      return state.setIn(['categories', name, value, 'selected'], selected)
+      return state.set('facetsSelected', action.facetsSelected)
     default:
       return state
   }
