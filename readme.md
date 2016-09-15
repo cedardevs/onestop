@@ -32,26 +32,34 @@ Deploying it requires:
 As an example, here is how you could install the entire system on a single Fedora/RedHat/CentOS machine:
 
 1. Install Java 8 (Oracle Java works as well)
-    ```shell
+
+    ```
     yum install java-1.8.0-openjdk.x86_64
     ```
+
 1. Install and start ElasticSearch
+
     ```shell
     yum install elasticsearch
     systemctl start elasticsearch
     ```
+
 1. Download and start the latest API application snapshot:
+
     ```shell
     curl https://oss.jfrog.org/oss-snapshot-local/cires/ncei/onestop/onestop-api/0.1.0-SNAPSHOT/onestop-api-0.1.0-SNAPSHOT.jar > /usr/local/bin/onestop-api.jar
     chmod +x /usr/local/bin/onestop-api.jar
     ln -s /usr/local/bin/onestop-api.jar /etc/init.d/onestop-api
     systemctl start onestop-api
     ```
+
 1. Host the latest client application snapshot with your favorite web server:
+
     ```shell
     curl https://oss.jfrog.org/oss-snapshot-local/cires/ncei/onestop/onestop-client/0.1.0-SNAPSHOT/onestop-client-0.1.0-SNAPSHOT.tar | tar -x -C /usr/share/nginx/html
     systemctl restart nginx
     ```
+
 1. Add a proxy for the API application to your web server, e.g. in nginx add something like:
     ```shell
     location /api/search {
