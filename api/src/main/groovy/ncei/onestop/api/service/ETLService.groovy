@@ -51,8 +51,8 @@ class ETLService {
     try {
       def bulkRequest = client.prepareBulk()
       def recordCount = 0
-      def collectionPageSize = 5
-      def collectionScrollTimeout = '10m'
+      def collectionPageSize = 3
+      def collectionScrollTimeout = '45m'
       def granuleScrollTimeout = '1m'
       def granulePageSize = 10
 
@@ -62,7 +62,7 @@ class ETLService {
         def insertRequest = client.prepareIndex(newSearchIndex, type, id).setSource(json)
         bulkRequest.add(insertRequest)
         recordCount++
-        if (bulkRequest.numberOfActions() >= 100) { // FIXME update in other branch
+        if (bulkRequest.numberOfActions() >= 100) {
           bulkRequest.get()
           bulkRequest = client.prepareBulk()
         }
