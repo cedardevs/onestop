@@ -55,7 +55,7 @@ class FacetList extends React.Component {
     let facets = []
     let self = this
     let i = 0, j = 0
-    _.forOwn(this.categories, (terms,category) => {
+    _.forOwn(this.facetMap, (terms,category) => {
       facets.push(
         <Panel header={`${self.toTitleCase(category)}`} key={`${i++}`}>
           {Object.keys(terms).map( term => {
