@@ -76,9 +76,9 @@
   copy:
     src: files/nginx-onestop.conf
     dest: /etc/nginx/conf.d/default.conf
-    owner: root
-    group: root
-    mode: o=rw,g=r,o=r
+    owner: nginx
+    group: nginx
+    mode: 440
 
 - name: Configure SELinux to allow network connections
   become: true
