@@ -59,7 +59,7 @@ class FacetList extends React.Component {
               onChange: self.updateStoreAndSubmitSearch,
               checked: terms[term].selected
             }
-            return(<div>
+            return(<div key={`${j++}`}>
               <input {...input}/>
                <span className={styles.facetLabel}>{self.subFacetLabel(`${term}`)}</span>
               <div className={`${styles.count} ${styles.numberCircle}`}>{`(${terms[term].count})`}</div>
@@ -71,7 +71,7 @@ class FacetList extends React.Component {
 
     return <div>
       <div className={`${styles.facetContainer}`}>
-        <form class="pure-form">
+        <form className="pure-form">
           <span className={'pure-menu-heading'}>Categories</span>
           <Collapse defaultActiveKey="0">
             {facets}
