@@ -16,6 +16,7 @@ class FacetList extends React.Component {
 
   componentWillUpdate(nextProps) {
     this.facetMap = nextProps.facetMap
+    this.selectedFacets = nextProps.selectedFacets
   }
 
   updateStoreAndSubmitSearch(e) {
