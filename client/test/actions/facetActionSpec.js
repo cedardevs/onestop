@@ -1,6 +1,5 @@
 import '../specHelper'
 import * as actions from '../../src/search/facet/FacetActions'
-import '../specHelper'
 import { expect } from 'chai'
 
 
