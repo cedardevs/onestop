@@ -27,8 +27,8 @@ class FacetList extends React.Component {
       this.selectedFacets = this.selectedFacets.setIn([name,value,'selected'], selected)
     } else {
       this.selectedFacets = this.selectedFacets.deleteIn([name,value])
+                                  .filter(x => x.size)
     }
-    this.selectedFacets = this.selectedFacets.filter(x => x.size)
 
     this.modifySelectedFacets(this.selectedFacets)
     this.submit(this.selectedFacets)
