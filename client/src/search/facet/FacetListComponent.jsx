@@ -9,7 +9,8 @@ class FacetList extends React.Component {
     super(props)
     this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(this)
     this.facetMap = props.facetMap
-    this.updateFacets = props.updateFacets
+    this.selectedFacets = props.selectedFacets
+    this.modifySelectedFacets = props.modifySelectedFacets
     this.submit = props.submit
   }
 
@@ -18,29 +19,18 @@ class FacetList extends React.Component {
   }
 
   updateStoreAndSubmitSearch(e) {
-    // Submit search
     const {name, value} = e.target.dataset
     const selected = e.target.checked
-    const facet = {
-      name,
-      value,
-      selected
+
+    if (selected){
+      this.selectedFacets = this.selectedFacets.setIn([name,value,'selected'], selected)
+    } else {
+      this.selectedFacets = this.selectedFacets.deleteIn([name,value])
     }
-    // Update facetMap and submit for merge with new facet results
-    let facetsSelected = Immutable
-                        .fromJS(this.facetMap)
-                        .setIn([name, value, 'selected'], selected)
-    facetsSelected.forEach((facetNames,category) => {
-      facetsSelected = facetsSelected
-        .set(category, facetsSelected
-                        .get(category)
-                        .filter(x => x.toJS().selected))
-      facetNames.forEach((facetValues, facetName) => {
-        facetsSelected = facetsSelected.deleteIn([category, facetName, 'count'])})
-    })
-    facetsSelected = facetsSelected.filter(x => x.size)
-    this.updateFacets(facetsSelected)
-    this.submit(facetsSelected)
+    this.selectedFacets = this.selectedFacets.filter(x => x.size)
+
+    this.modifySelectedFacets(this.selectedFacets)
+    this.submit(this.selectedFacets)
   }
 
   toTitleCase(str){
