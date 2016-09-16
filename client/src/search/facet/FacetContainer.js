@@ -1,17 +1,21 @@
 import { connect } from 'react-redux'
+import Immutable from 'immutable'
 import FacetList from './FacetListComponent'
 import { triggerSearch, updateQuery } from '../SearchActions'
-import { updateFacetsSelected } from './FacetActions'
+import { modifySelectedFacets } from './FacetActions'
 
 const mapStateToProps = (state) => {
   return {
-    facetMap: state.getIn(['facets', 'categories']) ? state.getIn(['facets', 'categories']).toJS() : {}
+    facetMap: state.getIn(['facets', 'allFacets']) ?
+      state.getIn(['facets', 'allFacets']).toJS() : {},
+    selectedFacets: state.getIn(['facets', 'selectedFacets']) ?
+      state.getIn(['facets', 'selectedFacets']) : Immutable.Map()
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateFacets: facetsSelected => dispatch(updateFacetsSelected(facetsSelected)),
+    modifySelectedFacets: selectedFacets => dispatch(modifySelectedFacets(selectedFacets)),
     submit: () => dispatch(triggerSearch(null, null, true))
   }
 }
