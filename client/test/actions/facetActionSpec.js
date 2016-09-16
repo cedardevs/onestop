@@ -16,17 +16,17 @@ describe('The facet action', function () {
   })
 
   it('update facets selected ', function () {
-    const facet = {name: "science", value: "Atmosphere", selected: true}
-    const facetAction = actions.updateFacetsSelected(facet)
-    const expectedAction =   { type: 'UPDATE_FACETS', facetsSelected: facet }
+    const facets = {name: "science", value: "Atmosphere", selected: true}
+    const facetAction = actions.modifySelectedFacets(facets)
+    const expectedAction =   { type: 'MODIFY_SELECTED_FACETS', selectedFacets: facets }
 
     facetAction.should.deep.equal(expectedAction)
   })
 
   it('clear facets ', function () {
-    const facet = {name: "science", value: "Atmosphere", selected: true}
-    const facetAction = actions.updateFacetsSelected(facet)
-    const expectedAction = {type: 'UPDATE_FACETS', facetsSelected: facet}
+    const facets = {name: "science", value: "Atmosphere", selected: true}
+    const facetAction = actions.modifySelectedFacets(facets)
+    const expectedAction = {type: 'MODIFY_SELECTED_FACETS', selectedFacets: facets}
 
     facetAction.should.deep.equal(expectedAction)
 
