@@ -73,9 +73,11 @@ const assembleRequestBody = (state) => {
 
   // Facets
   let categories = state.get('selectedFacets')
-  categories.forEach((v,k) => {
-    filters.push({"type":"facet","name": k,"values": Object.keys(v.toJS())})
-  })
+  if ( categories.size ) {
+    categories.forEach((v,k) => {
+      filters.push({"type":"facet","name": k,"values": Object.keys(v.toJS())})
+    })
+  }
 
   // Spatial filter:
   let geoJSON = state.get('geoJSON')
