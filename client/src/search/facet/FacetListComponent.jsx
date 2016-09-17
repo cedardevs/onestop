@@ -57,7 +57,7 @@ class FacetList extends React.Component {
               id: `${category}-${term}`,
               type: 'checkbox',
               onChange: self.updateStoreAndSubmitSearch,
-              checked: terms[term].selected
+              defaultChecked: terms[term].selected
             }
             return(<div key={`${j++}`}>
               <input {...input}/>
