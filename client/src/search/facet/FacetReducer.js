@@ -32,7 +32,8 @@ const facets = (state = initialState, action) => {
       return state.set('allFacets', categories)
 
     case MODIFY_SELECTED_FACETS:
-      return state.set('selectedFacets', action.selectedFacets)
+      return state.set('selectedFacets', (action.selectedFacets ?
+        action.selectedFacets : initialState.selectedFacets))
 
     default:
       return state

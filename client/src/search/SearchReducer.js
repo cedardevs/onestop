@@ -37,7 +37,8 @@ export const search = (state = initialState, action) => {
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case MODIFY_SELECTED_FACETS:
-      newState = state.set('selectedFacets', action.selectedFacets)
+      newState = state.set('selectedFacets', (action.selectedFacets ?
+        action.selectedFacets : initialState.selectedFacets))
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case CLEAR_FACETS:
