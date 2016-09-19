@@ -56,7 +56,7 @@ class FacetList extends React.Component {
               id: `${category}-${term}`,
               type: 'checkbox',
               onChange: self.updateStoreAndSubmitSearch,
-              defaultChecked: terms[term].selected
+              checked: terms[term].selected
             }
             return(<div key={`${j++}`}>
               <input {...input}/>
@@ -67,6 +67,7 @@ class FacetList extends React.Component {
         </Panel>
       )
     })
+    console.log(facets)
 
     return <div>
       <div className={`${styles.facetContainer}`}>
