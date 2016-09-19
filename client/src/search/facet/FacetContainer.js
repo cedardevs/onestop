@@ -16,7 +16,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     modifySelectedFacets: selectedFacets => dispatch(modifySelectedFacets(selectedFacets)),
-    submit: () => dispatch(triggerSearch(null, null, true))
+    submit: (processFacets) => dispatch(triggerSearch(null, null, processFacets))
   }
 }
 
