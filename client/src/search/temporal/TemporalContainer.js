@@ -4,7 +4,9 @@ import TemporalSearch from './TemporalSearchComponent'
 
 const mapStateToProps = (state) => {
   return {
-    currentDate: state.getIn(['search', 'datetime'])
+    currentDate: state.getIn(['search', 'datetime']),
+    endDateTime: state.getIn(['search', 'endDateTime']),
+    startDateTime: state.getIn(['search', 'startDateTime'])
   }
 }
 

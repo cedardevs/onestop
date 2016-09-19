@@ -4,6 +4,7 @@ import Immutable from 'immutable'
 import store from './store'
 import { triggerSearch, updateQuery } from './search/SearchActions'
 import { modifySelectedFacets } from './search/facet/FacetActions'
+import { startDate, endDate } from './search/temporal/TemporalActions'
 import { updateGeometry } from './search/map/MapActions'
 
 const loadQuery = () => {
@@ -23,6 +24,16 @@ const loadQuery = () => {
     const geometry = getQueryContent(queryParams.filters, 'geometry')
     if (!_.isEmpty(geometry[0])) dispatchGeometry(geometry[0].geometry)
 
+    const datetime = getQueryContent(queryParams.filters, 'datetime')
+    if (!_.isEmpty(datetime[0])) {
+      if (datetime[0].hasOwnProperty('before')){
+        store.dispatch(startDate(datetime[0].before))
+      }
+      if (datetime[0].hasOwnProperty('after')){
+        store.dispatch(startDate(datetime[0].after))
+      }
+    }
+    
     const facets = getQueryContent(queryParams.filters, 'facet')
 
     let params = JSON.stringify(queryParams)
