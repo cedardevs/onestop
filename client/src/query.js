@@ -2,7 +2,7 @@ import queryString from 'query-string'
 import _ from 'lodash'
 import Immutable from 'immutable'
 import store from './store'
-import { triggerSearch } from './search/SearchActions'
+import { triggerSearch, updateQuery } from './search/SearchActions'
 import { modifySelectedFacets } from './search/facet/FacetActions'
 
 const loadQuery = () => {
@@ -15,17 +15,25 @@ const loadQuery = () => {
       delete(queryParams[key])
     }
   }
-  
-  let params = JSON.stringify(queryParams)
-  if(params !== '{}') {
-    store.dispatch(triggerSearch(params, null, loadFacets(queryParams.filters)))
+  if (!_.isEmpty(queryParams)){
+    const queryText = getQueryContent(queryParams.queries, 'queryText')
+    if (!_.isEmpty(queryText)) store.dispatch(updateQuery(queryText[0].value))
+
+    const facets = getQueryContent(queryParams.filters, 'facet')
+
+    let params = JSON.stringify(queryParams)
+    store.dispatch(triggerSearch(params, null, dispatchFacets(facets)))
   }
 }
 
-const loadFacets = filters => {
-  const facets = _.filter(filters, (o) => {
-    return o.type === 'facet'
+const getQueryContent = (querySection, type) => {
+  const queryContent = _.filter(querySection, (o) => {
+    return o.type === type
   })
+  return queryContent ? queryContent : []
+}
+
+const dispatchFacets = facets => {
   if (facets) {
     let selectedFacets = Immutable.Map()
     for (let facet of facets) {
