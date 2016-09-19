@@ -58,7 +58,7 @@
     - /var/log/elasticsearch
     - /var/run/elasticsearch
 
-- name: Install the custom elasticsearch config
+- name: Install the elasticsearch.yml
   become: true
   template:
     src: templates/elasticsearch.yml
@@ -66,6 +66,16 @@
     owner: elasticsearch
     group: elasticsearch
     mode: 440
+  register: esyml
+
+- name: Install the elasticsearch sysconfig
+  become: true
+  template:
+    src: templates/elasticsearch.conf
+    dest: /etc/sysconfig/elasticsearch
+    owner: root
+    group: root
+    mode: 644
   register: esconfig
 
 - name: Allow incoming elasticsearch node transport traffic
@@ -88,5 +98,5 @@
   become: true
   service:
     name: elasticsearch.service
-    state: "{{ 'restarted' if esconfig.changed or esinstall.changed else 'started' }}"
+    state: "{{ 'restarted' if esconfig.changed or esyaml.changed or esinstall.changed else 'started' }}"
     enabled: yes
