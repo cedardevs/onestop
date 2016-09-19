@@ -4,6 +4,7 @@ import Immutable from 'immutable'
 import store from './store'
 import { triggerSearch, updateQuery } from './search/SearchActions'
 import { modifySelectedFacets } from './search/facet/FacetActions'
+import { updateGeometry } from './search/map/MapActions'
 
 const loadQuery = () => {
   const urlString = document.location.hash
@@ -18,6 +19,9 @@ const loadQuery = () => {
   if (!_.isEmpty(queryParams)){
     const queryText = getQueryContent(queryParams.queries, 'queryText')
     if (!_.isEmpty(queryText)) store.dispatch(updateQuery(queryText[0].value))
+
+    const geometry = getQueryContent(queryParams.filters, 'geometry')
+    if (!_.isEmpty(geometry[0])) dispatchGeometry(geometry[0].geometry)
 
     const facets = getQueryContent(queryParams.filters, 'facet')
 
@@ -44,6 +48,16 @@ const dispatchFacets = facets => {
     store.dispatch(modifySelectedFacets(selectedFacets))
   }
   return !!facets
+}
+
+const dispatchGeometry = geometry => {
+  store.dispatch(updateGeometry(
+    {
+      type: "Feature",
+      properties: {},
+      geometry
+    }
+  ))
 }
 
 export default loadQuery
