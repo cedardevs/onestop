@@ -31,7 +31,7 @@ const loadQuery = () => {
         store.dispatch(startDate(datetime[0].before))
       }
       if (datetime[0].hasOwnProperty('after')){
-        store.dispatch(startDate(datetime[0].after))
+        store.dispatch(endDate(datetime[0].after))
       }
     }
 

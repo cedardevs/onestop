@@ -24,15 +24,18 @@ class TemporalSearch extends React.Component {
     this.toggleDate = this.toggleDate.bind(this)
     this.handleClick = this.handleClick.bind(this)
     this.render = this.render.bind(this)
+    this.initialState = this.initialState.bind(this)
+    this.userFriendlyStartDateTime = props.userFriendlyStartDateTime
+    this.userFriendlyEndDateTime = props.userFriendlyEndDateTime
     this.state = this.initialState()
   }
 
   initialState() {
     return {
       from: null,
-      fromString: "",
+      fromString: this.userFriendlyStartDateTime,
       to: null,
-      toString: "",
+      toString: this.userFriendlyEndDateTime,
       initialMonth: currentMonth,
       showCalendar: false
     }

@@ -67,7 +67,6 @@ class FacetList extends React.Component {
         </Panel>
       )
     })
-    console.log(facets)
 
     return <div>
       <div className={`${styles.facetContainer}`}>
