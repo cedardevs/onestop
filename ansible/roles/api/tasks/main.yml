@@ -31,12 +31,22 @@
     state: present
   register: download
 
-- name: Stop the api service if the jar changed
+- name: Install the api conf file
+  become: true
+  template:
+    src: templates/onestop-api.conf
+    dest: /usr/local/bin/onestop-api.conf
+    owner: onestop
+    group: onestop
+    mode: 440
+  register: conf
+
+- name: Stop the api service if the something changed
   become: true
   service:
     name: onestop-api
     state: stopped
-  when: download.changed
+  when: download.changed or conf.changed
 
 - name: Link the api app into system services
   become: true
@@ -49,5 +59,5 @@
   become: true
   service:
     name: onestop-api
-    state: started
+    state: "{{ 'restarted' if download.changed or conf.changed else 'started'}}"
     enabled: true
