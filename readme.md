@@ -1,8 +1,8 @@
-﻿# NOAA OneStop
+﻿# OneStop Search
 
 [![Build Status](https://travis-ci.org/cires-ncei/onestop.svg?branch=master)](https://travis-ci.org/cires-ncei/onestop)
 
-OneStop software is used to allow discovery and access to the 
+OneStop search software is used to allow discovery and access to the 
 National Oceanic and Atmospheric Administration’s publicly available 
 data holdings. It is being developed on a grant by a team of researchers
 from the University of Colorado (more legal info below).
