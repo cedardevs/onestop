@@ -180,9 +180,8 @@ POST        | /api/metadata                     | ISO XML   | Upload a metadata 
 GET         | /api/metadata/[fileIdentifier]/   | (none)    | Retrieve a metadata record <sup>[2](#getfootnoe)</sup>
 DELETE      | /api/metadata/[fileIdentifier]/   | (none)    | Delete a metadata record <sup>[2](#getfootnoe)</sup>
 
-<a href="postfootnote">1</a>: Note that POSTing an XML record with the same fileIdentifier as a previously-POSTed record
-will result in replacing that record.
-<a href="getfootnote">2</a>: The trailing `/` in URLs which include fileIdentifiers is important if the fileIdentifier includes any `.` characters.
+- <a href="postfootnote">1</a>: Note that POSTing an XML record with the same fileIdentifier as a previously-POSTed record will result in replacing that record.
+- <a href="getfootnote">2</a>: The trailing `/` in URLs which include fileIdentifiers is important if the fileIdentifier includes any `.` characters.
 
 ##### Indexing Metadata for Search
 
