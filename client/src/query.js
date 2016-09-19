@@ -17,6 +17,7 @@ const loadQuery = () => {
       delete(queryParams[key])
     }
   }
+
   if (!_.isEmpty(queryParams)){
     const queryText = getQueryContent(queryParams.queries, 'queryText')
     if (!_.isEmpty(queryText)) store.dispatch(updateQuery(queryText[0].value))
@@ -33,11 +34,10 @@ const loadQuery = () => {
         store.dispatch(startDate(datetime[0].after))
       }
     }
-    
+
     const facets = getQueryContent(queryParams.filters, 'facet')
 
-    let params = JSON.stringify(queryParams)
-    store.dispatch(triggerSearch(params, null, dispatchFacets(facets)))
+    store.dispatch(triggerSearch(null, dispatchFacets(facets)))
   }
 }
 

@@ -49,7 +49,7 @@ describe('The search action', () => {
 
     const store = mockStore(Immutable.fromJS(testState))
 
-    return store.dispatch(module.triggerSearch(null, testingRoot))
+    return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
         })
@@ -82,8 +82,8 @@ describe('The search action', () => {
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
-    const store = mockStore(Immutable.fromJS(initState))
-    return store.dispatch(module.triggerSearch(requestBody, testingRoot))
+    const store = mockStore(Immutable.fromJS({'search':{'requestBody': requestBody}}))
+    return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
         })

@@ -28,7 +28,7 @@ export const completeSearch = (items) => {
 }
 
 
-export const triggerSearch = (queryParams, testing, processFacets) => {
+export const triggerSearch = (testing, processFacets) => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
     let state = getState()
@@ -37,7 +37,7 @@ export const triggerSearch = (queryParams, testing, processFacets) => {
       return Promise.resolve()
     }
 
-    const searchBody = queryParams || state.getIn(['search', 'requestBody'])
+    const searchBody = state.getIn(['search', 'requestBody'])
     if(!searchBody) { return } // To avoid returning all results when hitting search w/empty fields
 
     dispatch(startSearch())
