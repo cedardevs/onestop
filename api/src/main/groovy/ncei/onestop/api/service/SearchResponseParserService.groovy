@@ -55,27 +55,27 @@ class SearchResponseParserService {
     ]
   }
 
-  private List cleanAggregation(List<String> topLevelKeywords, List<Terms.Bucket> originalAgg) {
+  private Map cleanAggregation(List<String> topLevelKeywords, List<Terms.Bucket> originalAgg) {
 
-    def cleanAgg = []
+    def cleanAgg = [:]
     originalAgg.each { e ->
       def term = e.key as String
       def count = e.docCount
 
       if(!topLevelKeywords) {
-        cleanAgg.add([term: term, count: count])
+        cleanAgg.put(term, [count: count])
       }
       else {
         if(term.contains('>')) {
           def splitTerms = term.split('>', 2)
           if(topLevelKeywords.contains(splitTerms[0].trim())) {
-            cleanAgg.add([term: term, count: count])
+            cleanAgg.put(term, [count: count])
           }
 
         }
         else {
           if(topLevelKeywords.contains(term)) {
-            cleanAgg.add([term: term, count: count])
+            cleanAgg.put(term, [count: count])
           }
         }
       }

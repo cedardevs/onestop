@@ -117,7 +117,7 @@ class SearchIntegrationTests extends Specification {
     aggs.dataResolution != null
 
     and: 'The cleaned aggregations are actually cleaned'
-    def locationTerms = aggs.locations.collect { it.term }
+    def locationTerms = aggs.locations.collect { it }
     // Bad planted keywords should be removed
     !locationTerms.contains('Alaska')
     !locationTerms.contains('Alaska > Unalaska')

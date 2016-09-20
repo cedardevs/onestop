@@ -11,17 +11,7 @@ export const initialState = Immutable.fromJS({
 const facets = (state = initialState, action) => {
   switch(action.type) {
     case FACETS_RECEIVED:
-      // Build the UI object we eventually expect to receive from the API
-      let categories = {}
-      _.forOwn(action.metadata.facets, (terms, category) => {
-        categories[category] = {}
-        for (let term of terms){
-          categories[category][term.term] = {
-            count: term.count,
-            selected: false
-          }
-        }
-      })
+      let categories = action.metadata.facets
       // Update facets with previous checks or reset selected facets w/ new search
       if (action.processFacets){
         categories = Immutable.fromJS(categories).mergeDeep(state.get('selectedFacets'))
