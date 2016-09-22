@@ -11,12 +11,12 @@ export const initialState = Immutable.fromJS({
 const facets = (state = initialState, action) => {
   switch(action.type) {
     case FACETS_RECEIVED:
-      let categories = action.metadata.facets
+      let categories = Immutable.fromJS(action.metadata.facets)
       // Update facets with previous checks or reset selected facets w/ new search
-      if (action.processFacets){
-        categories = Immutable.fromJS(categories).mergeDeep(state.get('selectedFacets'))
+      if (action.procSelectedFacets){
+        categories = categories.mergeDeep(state.get('selectedFacets'))
       } else {
-        categories = Immutable.fromJS(categories)
+        // Reset selected facets to original state
         state = state.set('selectedFacets', initialState.get('selectedFacets'))
       }
       return state.set('allFacets', categories)
