@@ -9,7 +9,7 @@ describe('The facet action', function () {
 
   it('process new facets  ', function () {
     const facetAction = actions.facetsReceived(metadata)
-    const expectedAction =  { type: 'FACETS_RECEIVED', metadata: metadata, processFacets: false}
+    const expectedAction =  { type: 'FACETS_RECEIVED', metadata: metadata, procSelectedFacets: false}
 
     facetAction.should.deep.equal(expectedAction)
   })

@@ -43,7 +43,7 @@ describe('The search action', () => {
         args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
-      {type: "FACETS_RECEIVED", metadata: expectedFacets, processFacets: false},
+      {type: "FACETS_RECEIVED", metadata: expectedFacets, procSelectedFacets: false},
       {type: module.SEARCH_COMPLETE, items: expectedItems}
     ]
 
@@ -77,7 +77,7 @@ describe('The search action', () => {
         args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
-      {type: "FACETS_RECEIVED", metadata:expectedFacets, processFacets: false },
+      {type: "FACETS_RECEIVED", metadata:expectedFacets, procSelectedFacets: false },
       {type: module.SEARCH_COMPLETE, items: expectedItems}
     ]
 
