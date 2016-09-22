@@ -22,8 +22,10 @@ const facets = (state = initialState, action) => {
       return state.set('allFacets', categories)
 
     case MODIFY_SELECTED_FACETS:
-      return state.set('selectedFacets', (action.selectedFacets ?
-        action.selectedFacets : initialState.selectedFacets))
+      // Receives an already immutable object from upstream
+      const selectedFacets = !_.isEmpty(action.selectedFacets) ?
+        Immutable.fromJS(action.selectedFacets) : initialState.selectedFacets
+      return state.set('selectedFacets', selectedFacets)
 
     default:
       return state
