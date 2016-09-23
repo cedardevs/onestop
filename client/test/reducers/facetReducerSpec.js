@@ -1,7 +1,7 @@
 import '../specHelper'
 import { expect } from 'chai'
 import Immutable from 'immutable'
-import facets from '../../src/search/facet/facetReducer'
+import facets from '../../src/search/facet/FacetReducer'
 import * as actions from '../../src/search/facet/FacetActions'
 
 describe('Facet reducer', () => {
