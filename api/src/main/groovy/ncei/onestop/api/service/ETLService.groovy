@@ -51,10 +51,13 @@ class ETLService {
     try {
       def bulkRequest = client.prepareBulk()
       def recordCount = 0
-      def collectionPageSize = 3
-      def collectionScrollTimeout = '45m'
       def granuleScrollTimeout = '1m'
       def granulePageSize = 10
+
+      def offset = 0
+      def increment = 10
+      def collectionsCount = client.prepareSearch(STORAGE_INDEX).setTypes(COLLECTION_TYPE)
+          .setSize(0).execute().actionGet().hits.totalHits
 
       def addRecordToBulk = { record, type ->
         def id = record.fileIdentifier as String
@@ -62,24 +65,17 @@ class ETLService {
         def insertRequest = client.prepareIndex(newSearchIndex, type, id).setSource(json)
         bulkRequest.add(insertRequest)
         recordCount++
-        if (bulkRequest.numberOfActions() >= 100) {
+        if (bulkRequest.numberOfActions() >= 1000) {
           bulkRequest.get()
           bulkRequest = client.prepareBulk()
         }
       }
 
-      def collectionScroll = client.prepareSearch(STORAGE_INDEX)
-          .setTypes(COLLECTION_TYPE)
-          .addSort('fileIdentifier', SortOrder.ASC)
-          .setScroll(collectionScrollTimeout)
-          .setSize(collectionPageSize)
-          .execute()
-          .actionGet()
-      def collectionsRemain = collectionScroll.hits.hits.length > 0
 
-      while (collectionsRemain) {
-        log.debug('Parsing collection scroll ' + collectionScroll.scrollId) // fixme delete later
-        collectionScroll.hits.hits.each { collection ->
+      while (offset < collectionsCount) {
+        def collections = client.prepareSearch(STORAGE_INDEX).setTypes(COLLECTION_TYPE)
+            .addSort("fileIdentifier", SortOrder.ASC).setFrom(offset).setSize(increment).execute().actionGet().hits.hits
+        collections.each { collection ->
           def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
           log.debug('Starting indexing of collection ' + parsedCollection.fileIdentifier) //fixme delete later
           addRecordToBulk(parsedCollection, COLLECTION_TYPE) // Add collections whether they have granules or not
@@ -111,8 +107,7 @@ class ETLService {
           log.debug('Finished indexing for collection ' + parsedCollection.fileIdentifier) // fixme delete later
         }
 
-        collectionScroll = client.prepareSearchScroll(collectionScroll.scrollId).setScroll(collectionScrollTimeout).execute().actionGet()
-        collectionsRemain = collectionScroll.hits.hits.length > 0
+        offset += increment
       }
 
       if (bulkRequest.numberOfActions() > 0) {
