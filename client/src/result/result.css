@@ -3,6 +3,18 @@ $gridHeight: 160px; /* Workaround until div can autoadjust height */
 $cardHeight: 140px;
 $cardWidth: 300px;
 
+.mainWindow {
+    display: flex;
+}
+
+.facetSideBar {
+    flex: 2;
+    width: 230px;
+    border: 1px solid color($color-primary lightness(-10%));
+    background-color: $color-primary;
+    margin-bottom: -100em;
+}
+
 .gridContainer {
     display: inline-block;
     width: 85%;

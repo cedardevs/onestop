@@ -19,11 +19,11 @@ const ResultsList = ({results, loading, onCardClick}) => {
     </div>)
   })
 
-  return <div id= "layout" className={` ${styles.resultContainer}`}>
-            <div className={`${styles.facetContainer}`}>
+  return <div id="layout" className={styles.mainWindow}>
+            <div className={styles.facetSideBar}>
               <FacetContainer/>
             </div>
-            <div className={`  ${styles.gridContainer}`}>
+            <div className={styles.gridContainer}>
               {cards}
             </div>
         </div>
