@@ -125,6 +125,7 @@ class TemporalSearch extends React.Component {
         <div>
           <div className={styles.dateInputLeft}>
             <input
+              className={styles.input}
               type="text"
               id="from"
               value={ fromString }
@@ -140,6 +141,7 @@ class TemporalSearch extends React.Component {
           </div>
           <div className={styles.dateInputRight} >
             <input
+              className={styles.input}
               type="text"
               id="to"
               value={ toString }

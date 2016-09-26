@@ -8,6 +8,10 @@
    margin: 10px 0 0 10px;
  }
 
+ .input {
+   width: 110px;
+ }
+
  .dateInputLeft,
  .dateInputRight  {
    /*float: left;*/
