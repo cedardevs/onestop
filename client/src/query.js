@@ -27,11 +27,11 @@ const loadQuery = () => {
 
     const datetime = getQueryContent(queryParams.filters, 'datetime')
     if (!_.isEmpty(datetime[0])) {
-      if (datetime[0].hasOwnProperty('before')){
-        store.dispatch(startDate(datetime[0].before))
-      }
       if (datetime[0].hasOwnProperty('after')){
-        store.dispatch(endDate(datetime[0].after))
+        store.dispatch(startDate(datetime[0].after))
+      }
+      if (datetime[0].hasOwnProperty('before')){
+        store.dispatch(endDate(datetime[0].before))
       }
     }
 
