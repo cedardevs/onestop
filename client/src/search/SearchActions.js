@@ -38,8 +38,11 @@ export const triggerSearch = (testing, procSelectedFacets) => {
     }
 
     const searchBody = state.getIn(['search', 'requestBody'])
-    if(!searchBody) { return } // To avoid returning all results when hitting search w/empty fields
-
+    // To avoid returning all results when hitting search w/empty fields
+    if(!searchBody) {
+      dispatch(push('/')) // Redirect to home
+      return
+    }
     dispatch(startSearch())
 
     // Append query to URL
