@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import L from 'leaflet'
+import 'esri-leaflet'
 import 'leaflet-draw'
 import styles from './map.css'
 
@@ -26,9 +27,7 @@ class MapComponent extends React.Component {
             minZoom: 2,
             maxZoom: 20,
             layers: [
-                L.tileLayer(
-                    '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    {attribution: '&copy; <a href="//openstreetmap.org">OpenStreetMap</a> contributors, <a href="//creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'})
+              L.esri.basemapLayer("Oceans")
             ],
             attributionControl: false
         })
