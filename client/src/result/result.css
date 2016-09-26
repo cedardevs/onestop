@@ -16,19 +16,11 @@ $cardWidth: 300px;
 }
 
 .gridContainer {
-    display: inline-block;
+    flex: 7;
     width: 85%;
     margin-left: 30px;
-    position: absolute;
+    margin-top: -16px;
     overflow-x: hidden;
-}
-
-.facetContainer {
-    display: inline-block;
-    position: relative;
-    margin-left: 10px;
-    width: 230px;
-    max-height:100vh;
 }
 
 .facetContainer h2 {
@@ -67,11 +59,12 @@ $cardWidth: 300px;
     box-sizing: border-box;
     width: $cardWidth;
     height: $cardHeight;
-    border: 2px solid $color-gray;
+    border: 1px solid $color-gray;
     padding: 1em;
     background: linear-gradient(rgba(10,10,10,1), rgba(10,10,10,.5), rgba(10,10,10,.2), rgba(10,10,10,0));
     color: white;
     overflow: hidden;
+    box-shadow: 6px 8px 5px rgb(0,0,0,.7);
 }
 
 .reactFlipCardBack {
