@@ -99,6 +99,7 @@ class ETLService {
             granuleScroll.hits.hits.each { granule ->
               def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)
               def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
+              flattenedRecord.parentIdentifier = parsedCollection.parentIdentifier // should always be true, but may not be if granule xml has a bad PID
               addRecordToBulk(flattenedRecord, GRANULE_TYPE)
             }
             granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
