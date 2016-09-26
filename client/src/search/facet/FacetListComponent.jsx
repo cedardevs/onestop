@@ -46,26 +46,28 @@ class FacetList extends React.Component {
     let self = this
     let i = 0, j = 0
     _.forOwn(this.facetMap, (terms,category) => {
-      facets.push(
-        <Panel header={`${self.toTitleCase(category)}`} key={`${i++}`}>
-          {Object.keys(terms).map( term => {
-            let input = {
-              className: styles.checkFacet,
-              'data-name': category,
-              'data-value': term,
-              id: `${category}-${term}`,
-              type: 'checkbox',
-              onChange: self.updateStoreAndSubmitSearch,
-              checked: terms[term].selected
-            }
-            return(<div key={`${j++}`}>
-              <input {...input}/>
-               <span className={styles.facetLabel}>{self.subFacetLabel(`${term}`)}</span>
-              <div className={`${styles.count} ${styles.numberCircle}`}>{`(${terms[term].count})`}</div>
-            </div>)
-          })}
-        </Panel>
-      )
+      if (!_.isEmpty(terms)) { // Don't load categories that have no results
+        facets.push(
+          <Panel header={`${self.toTitleCase(category)}`} key={`${i++}`}>
+            {Object.keys(terms).map( term => {
+              let input = {
+                className: styles.checkFacet,
+                'data-name': category,
+                'data-value': term,
+                id: `${category}-${term}`,
+                type: 'checkbox',
+                onChange: self.updateStoreAndSubmitSearch,
+                checked: terms[term].selected
+              }
+              return(<div key={`${j++}`}>
+                <input {...input}/>
+                 <span className={styles.facetLabel}>{self.subFacetLabel(`${term}`)}</span>
+                <div className={`${styles.count} ${styles.numberCircle}`}>{`(${terms[term].count})`}</div>
+              </div>)
+            })}
+          </Panel>
+        )
+      }
     })
 
     return <div>
