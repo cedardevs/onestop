@@ -136,11 +136,6 @@ input {
   display: inline-block;
 }
 
-.mapIcon {
-  background: url('../../img/mapIcon.png');
-  width: 10px;
-}
-
 .mapContent {
   position: absolute;
   z-index: 1;
@@ -163,9 +158,19 @@ input {
 }
 
 .mapButton {
+  position: relative;
   color: white;
   background-color: $color-primary;
   text-shadow: 0 0 5px black;
   margin-right: .5em;
   margin-left: -1.5em;
+}
+/* fix for large, unclickable area on button */
+.mapButton:before{
+    position:absolute;
+    content:'';
+    top:-1px;
+    right:-1px;
+    left:-1px;
+    bottom:-1px;
 }

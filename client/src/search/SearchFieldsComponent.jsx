@@ -50,11 +50,13 @@ class SearchFieldsComponent extends React.Component {
       </div>
       <div className={styles.temporalContainer}>
          <span className={styles.temporalContent}>
-             <TemporalContainer />
+           <TemporalContainer />
          </span>
       </div>
-      <button id="mapButton" className={`pure-button ${styles.mapButton} fa fa-map`}
-                 onClick={this.toggleMap}></button>
+      <button id="mapButton" className={`pure-button ${styles.mapButton}`}
+                 onClick={this.toggleMap}>
+        <i className={'fa fa-map fa-lg'}></i>
+      </button>
       <ToggleDisplay show={this.state.showMap}>
         <div className={styles.mapContainer}>
           <span className={styles.mapContent}>
@@ -62,7 +64,9 @@ class SearchFieldsComponent extends React.Component {
           </span>
         </div>
       </ToggleDisplay>
-      <button className={`${styles.landingButton} fa fa-search`} onClick={this.submit}></button>
+      <button className={`${styles.landingButton}`} onClick={this.submit}>
+        <i className={'fa fa-search fa-lg'}></i>
+      </button>
     </div>
   }
 }
