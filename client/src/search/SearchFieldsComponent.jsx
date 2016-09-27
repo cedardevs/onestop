@@ -12,6 +12,7 @@ class SearchFieldsComponent extends React.Component {
   constructor(props) {
     super(props)
     this.submit = props.submit
+    this.clearSearch = props.clearSearch
     this.updateQuery = props.updateQuery
     this.toggleMap = this.toggleMap.bind(this)
     this.handleClick = this.handleClick.bind(this)

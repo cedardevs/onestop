@@ -1,5 +1,5 @@
 import Immutable from 'immutable'
-import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY} from './SearchActions'
+import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY, CLEAR_SEARCH} from './SearchActions'
 import { UPDATE_GEOMETRY } from './map/MapActions'
 import { MODIFY_SELECTED_FACETS, CLEAR_FACETS } from './facet/FacetActions'
 import { DateRange } from './temporal/TemporalActions'
@@ -52,6 +52,9 @@ export const search = (state = initialState, action) => {
     case DateRange.END_DATE:
       newState = state.mergeDeep({endDateTime: action.datetime})
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+
+    case CLEAR_SEARCH:
+      return initialState
 
     default:
       return state

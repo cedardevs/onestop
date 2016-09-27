@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
 import { DateRange } from './TemporalActions'
+import { CLEAR_SEARCH } from '../SearchActions'
 
 export const initialState = Immutable.fromJS({
   startDateTime: '',
@@ -13,6 +14,9 @@ const temporal = (state = initialState, action) => {
 
     case DateRange.END_DATE:
       return state.mergeDeep({endDateTime: action.datetime})
+
+    case CLEAR_SEARCH:
+      return initialState
 
     default:
       return state
