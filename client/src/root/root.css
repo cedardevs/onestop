@@ -147,6 +147,20 @@ input {
   border: 2px outset $color-primary;
 }
 
+.clearButton {
+  margin-left: -1.26em;
+  height: 1em;
+  color: grey;
+  border: none;
+  font-size: 1.2em;
+  border: none;
+  text-shadow: none;
+  background-color: white;
+}
+.clearButton:hover {
+  color: #5a5a5a;
+}
+
 /*search button*/
 .landingButton {
   color: white;

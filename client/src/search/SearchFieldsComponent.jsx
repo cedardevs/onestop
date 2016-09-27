@@ -48,6 +48,7 @@ class SearchFieldsComponent extends React.Component {
                          value={this.props.queryString}
                          />
       </div>
+      <button className={`${styles.clearButton}`} onClick={this.clearSearch}>x</button>
       <div className={styles.temporalContainer}>
          <span className={styles.temporalContent}>
            <TemporalContainer />
