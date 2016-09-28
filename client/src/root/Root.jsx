@@ -33,21 +33,21 @@ class RootComponent extends React.Component {
           {/*<Favicon url={["//www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>*/}
       <AlphaBanner/>
       <DetailContainer/>
-      <div className={styles.bottomBorder}>
-        <div className={styles.panel}>
-          <div className={'pure-g'}>
-            <div className={`pure-u-1-6 ${styles.logSty}`}>
-              {/*               <img className={styles.logo} id='logo' src={logoPath} alt="CIRES Logo"/>
-              <a className={styles.orgName}>CIRES-NCEI OneStop</a>
-              <a className={styles.deptName}>DEMONSTRATION SITE</a>
-               */}
-              <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
-              <a className={styles.orgName}>National Oceanic and Atmospheric Administration</a>
-              <a className={styles.deptName} href="//www.commerce.gov">U.S. Department of Commerce</a>
+      <div className={styles.headerArea}>
+        <div className={'pure-g'}>
+          <div className={`pure-u-1-4 ${styles.orgBox}`}>
+            {/*               <img className={styles.logo} id='logo' src={logoPath} alt="CIRES Logo"/>
+            <a className={styles.orgName}>CIRES-NCEI OneStop</a>
+            <a className={styles.deptName}>DEMONSTRATION SITE</a>
+             */}
+            <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
+            <div className={styles.orgInfo}>
+              <a className={styles.noaa}>National Oceanic and Atmospheric Administration</a>
+              <a className={styles.doc} href="//www.commerce.gov">U.S. Department of Commerce</a>
             </div>
-            <div  className={`pure-u-5-6 ${styles.landingComponents} ${styles[searchlabel]}`}>
-              <SearchFieldsContainer  />
-            </div>
+          </div>
+          <div  className={`pure-u-3-4 ${styles.landingComponents} ${styles[searchlabel]}`}>
+            <SearchFieldsContainer  />
           </div>
         </div>
       </div>

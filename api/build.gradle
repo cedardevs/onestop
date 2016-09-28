@@ -34,7 +34,7 @@ dependencies {
 }
 
 ext {
-  outputJar = file("${buildDir}/libs/${project.name}-${project.version}.jar")
+  outputJar = file("${buildDir}/libs/${rootProject.name}-${project.name}-${project.version}.jar")
 }
 
 bootRun {

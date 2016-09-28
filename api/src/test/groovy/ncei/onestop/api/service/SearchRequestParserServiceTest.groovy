@@ -208,7 +208,7 @@ class SearchRequestParserServiceTest extends Specification {
 
   def 'Facet filter request creates post-filter for collections only'() {
     given:
-    def request = '{"filters":[{"type":"facet","name":"gcmdScience","values":"Atmosphere > Aerosols"}]}'
+    def request = '{"filters":[{"type":"facet","name":"science","values":"Atmosphere > Aerosols"}]}'
     def params = slurper.parseText(request)
 
     when:

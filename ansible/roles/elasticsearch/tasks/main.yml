@@ -28,6 +28,7 @@
   yum:
     name: elasticsearch
     state: present
+  register: esinstall
 
 - name: Create an elasticsearch group
   become: true
@@ -57,25 +58,45 @@
     - /var/log/elasticsearch
     - /var/run/elasticsearch
 
-#- name: Allow incoming elasticsearch node transport traffic
-#  become: true
-#  firewalld:
-#    port: 9300/tcp
-#    state: disabled
-#    permanent: true
-#    immediate: true
-#
-#- name: Allow incoming elasticsearch rest api traffic
-#  become: true
-#  firewalld:
-#    port: 9200/tcp
-#    state: disabled
-#    permanent: true
-#    immediate: true
+- name: Install the elasticsearch.yml
+  become: true
+  template:
+    src: templates/elasticsearch.yml
+    dest: /etc/elasticsearch/elasticsearch.yml
+    owner: elasticsearch
+    group: elasticsearch
+    mode: 440
+  register: esyml
+
+- name: Install the elasticsearch sysconfig
+  become: true
+  template:
+    src: templates/elasticsearch.conf
+    dest: /etc/sysconfig/elasticsearch
+    owner: root
+    group: root
+    mode: 644
+  register: esconfig
+
+- name: Allow incoming elasticsearch node transport traffic
+  become: true
+  firewalld:
+    port: 9300/tcp
+    state: enabled
+    permanent: true
+    immediate: true
+
+- name: Allow incoming elasticsearch rest api traffic
+  become: true
+  firewalld:
+    port: 9200/tcp
+    state: enabled
+    permanent: true
+    immediate: true
 
 - name: Start elasticsearch
   become: true
   service:
     name: elasticsearch.service
-    state: started
+    state: "{{ 'restarted' if esconfig.changed or esyaml.changed or esinstall.changed else 'started' }}"
     enabled: yes

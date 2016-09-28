@@ -1,6 +1,7 @@
 import Immutable from 'immutable'
 import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY} from './SearchActions'
 import { UPDATE_GEOMETRY } from './map/MapActions'
+import { MODIFY_SELECTED_FACETS, CLEAR_FACETS } from './facet/FacetActions'
 import { DateRange } from './temporal/TemporalActions'
 
 export const initialState = Immutable.fromJS({
@@ -9,7 +10,8 @@ export const initialState = Immutable.fromJS({
   inFlight: false,
   startDateTime: '',
   endDateTime: '',
-  requestBody: ''
+  requestBody: '',
+  selectedFacets: Immutable.Map()
 })
 
 export const search = (state = initialState, action) => {
@@ -32,6 +34,15 @@ export const search = (state = initialState, action) => {
 
     case UPDATE_QUERY:
       newState = state.mergeDeep({text: action.searchText})
+      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+
+    case MODIFY_SELECTED_FACETS:
+      newState = state.set('selectedFacets', (action.selectedFacets ?
+        action.selectedFacets : initialState.selectedFacets))
+      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+
+    case CLEAR_FACETS:
+      newState = state.set('selectedFacets', initialState.get('selectedFacets'))
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case DateRange.START_DATE:
@@ -60,6 +71,14 @@ const assembleRequestBody = (state) => {
     queries.push({type: 'queryText', value: queryText})
   }
 
+  // Facets
+  let categories = state.get('selectedFacets')
+  if ( categories.size ) {
+    categories.forEach((v,k) => {
+      filters.push({"type":"facet","name": k,"values": Object.keys(v.toJS())})
+    })
+  }
+
   // Spatial filter:
   let geoJSON = state.get('geoJSON')
   if (geoJSON){
@@ -76,7 +95,7 @@ const assembleRequestBody = (state) => {
   if(queries.length === 0 && filters.length === 0) {
     return ''
   } else {
-    return JSON.stringify({queries, filters})
+    return JSON.stringify({queries, filters, facets: true})
   }
 }
 

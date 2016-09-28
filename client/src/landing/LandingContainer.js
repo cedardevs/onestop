@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import LandingComponent from './LandingComponent'
 import { triggerSearch, updateQuery } from '../search/SearchActions'
+import { clearFacets } from '../search/facet/FacetActions'
 
 const mapStateToProps = (state) => {
   return {
@@ -10,7 +11,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    submit: () => dispatch(triggerSearch()),
+    submit: () => {
+      dispatch(clearFacets())
+      dispatch(triggerSearch())
+    },
     updateQuery: (text) => dispatch(updateQuery(text))
   }
 }

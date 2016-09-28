@@ -6,11 +6,12 @@ import thunk from 'redux-thunk'
 import Immutable from 'immutable'
 import nock from 'nock'
 import reducer from '../../src/reducer'
+import searchQuery from '../searchQuery'
 
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
 
-const requestBody = JSON.stringify({queries: [{type: 'queryText', value: 'alaska'}], filters: []})
+const requestBody = JSON.stringify({queries: [{type: 'queryText', value: 'alaska'}], filters: [], facets: true})
 
 describe('The search action', () => {
 
@@ -23,48 +24,32 @@ describe('The search action', () => {
     nock.disableNetConnect()
 
     const testingRoot = 'http://localhost:9090'
+    searchQuery(testingRoot,requestBody)
 
-    nock(testingRoot)
-        .post('/api/search', requestBody)
-        .reply(200, {
-          data: [
-            {
-              type: 'collection',
-              id: '123ABC',
-              attributes: {
-                field0: 'field0',
-                field1: 'field1'
-              }
-            },
-            {
-              type: 'collection',
-              id: '789XYZ',
-              attributes: {
-                field0: 'field00',
-                field1: 'field01'
-              }
-            }
-            ]
-        })
     const testSearchState = initialState.mergeDeep({requestBody: requestBody})
     const initState = reducer(Immutable.Map(), {type: 'init'})
     const testState = initState.mergeDeep({search: testSearchState})
 
     const expectedItems = new Map()
+    let expectedFacets
+
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
+    expectedFacets = {"facets":{"science":[{"term":"land","count":2}]}}
 
     const expectedActions = [
       {type: module.SEARCH},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
-        args: ['results?filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
+        args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
+      {type: "FACETS_RECEIVED", metadata: expectedFacets, procSelectedFacets: false},
       {type: module.SEARCH_COMPLETE, items: expectedItems}
     ]
 
     const store = mockStore(Immutable.fromJS(testState))
-    return store.dispatch(module.triggerSearch(null, testingRoot))
+
+    return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
         })
@@ -75,29 +60,7 @@ describe('The search action', () => {
     nock.disableNetConnect()
 
     const testingRoot = 'http://localhost:9090'
-
-    nock(testingRoot)
-        .post('/api/search', requestBody)
-        .reply(200, {
-          data: [
-            {
-              type: 'collection',
-              id: '123ABC',
-              attributes: {
-                field0: 'field0',
-                field1: 'field1'
-              }
-            },
-            {
-              type: 'collection',
-              id: '789XYZ',
-              attributes: {
-                field0: 'field00',
-                field1: 'field01'
-              }
-            }
-          ]
-        })
+    searchQuery(testingRoot, requestBody)
 
     const initState = reducer(Immutable.Map(), {type: 'init'})
 
@@ -105,18 +68,22 @@ describe('The search action', () => {
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
 
+    let expectedFacets
+    expectedFacets = {facets: {science: [{term: "land", count: 2}]}}
+
     const expectedActions = [
       {type: module.SEARCH},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
-        args: ['results?filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
+        args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
+      {type: "FACETS_RECEIVED", metadata:expectedFacets, procSelectedFacets: false },
       {type: module.SEARCH_COMPLETE, items: expectedItems}
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
-    const store = mockStore(Immutable.fromJS(initState))
-    return store.dispatch(module.triggerSearch(requestBody, testingRoot))
+    const store = mockStore(Immutable.fromJS({'search':{'requestBody': requestBody}}))
+    return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
         })

@@ -21,6 +21,18 @@ class SearchRequestParserService {
   public SearchRequestParserService() {}
 
 
+  private static final Map<String, String> facetNameMappings = [
+      'parentIdentifier': 'parentIdentifier',
+      'science': 'gcmdScience',
+      'locations': 'gcmdLocations',
+      'instruments': 'gcmdInstruments',
+      'platforms': 'gcmdPlatforms',
+      'projects': 'gcmdProjects',
+      'dataCenters': 'gcmdDataCenters',
+      'dataResolution': 'gcmdDataResolution',
+  ]
+
+
   public Map parseSearchRequest(Map params) {
 
     log.debug("Queries: ${params.queries}")
@@ -163,7 +175,7 @@ class SearchRequestParserService {
       // Facets are applied as post_filters so that counts on the facet menu don't change but displayed results do
       postFilters = true
       postPlusAll.each {b ->
-        b.must(QueryBuilders.termsQuery(it.name, it.values))
+        b.must(QueryBuilders.termsQuery(facetNameMappings[it.name], it.values))
       }
     }
 

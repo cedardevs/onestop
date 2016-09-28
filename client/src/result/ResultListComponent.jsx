@@ -2,14 +2,12 @@ import React, { PropTypes } from 'react'
 import Result from './ResultComponent'
 import { CardStatus } from '../detail/DetailActions'
 import styles from './result.css'
-import 'font-awesome/css/font-awesome.css'
+import FacetContainer from '../search/facet/FacetContainer'
 
 const ResultsList = ({results, loading, onCardClick}) => {
   const cards = []
   results.forEach((value, key) => {
-    cards.push(<div key={key} className={`pure-u-1
-                pure-u-md-1-2 pure-u-lg-1-3
-                pure-u-xl-1-4 ${styles.grid}`}>
+    cards.push(<div key={key} className={`${styles.grid}`}>
       <Result
           recordId={key}
           title={value.get('title')}
@@ -21,19 +19,14 @@ const ResultsList = ({results, loading, onCardClick}) => {
     </div>)
   })
 
-  let display = null
-  if(loading) {
-    display =
-        <div className={`pure-u-1`}>
-          <div className={`${styles.spinner}`}>
-            <i className="fa fa-anchor fa-spin fa-5x" aria-hidden="true"/>
-          </div>
+  return <div id="layout" className={styles.mainWindow}>
+            <div className={styles.facetSideBar}>
+              <FacetContainer/>
+            </div>
+            <div className={styles.gridContainer}>
+              {cards}
+            </div>
         </div>
-  } else {
-    display = <div className={`pure-g ${styles.gridContainer}`}>{cards}</div>
-  }
-
-  return display
 }
 
 ResultsList.propTypes = {

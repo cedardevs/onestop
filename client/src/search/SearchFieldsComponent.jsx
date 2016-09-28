@@ -40,31 +40,29 @@ class SearchFieldsComponent extends React.Component {
     this.state.showMap = !this.state.showMap
     this.forceUpdate()
   }
-  
+
   render() {
     return<div className={`pure-form  ${styles.searchFields}`}>
-        <div id ="searchbox" className={styles.searchContainer}>
-          <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery}
-                           value={this.props.queryString}
-                           />
+      <div id ="searchbox" className={styles.searchContainer}>
+        <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery}
+                         value={this.props.queryString}
+                         />
+      </div>
+      <div className={styles.temporalContainer}>
+         <span className={styles.temporalContent}>
+             <TemporalContainer />
+         </span>
+      </div>
+      <button id="mapButton" className={`pure-button ${styles.mapButton} fa fa-map`}
+                 onClick={this.toggleMap}></button>
+      <ToggleDisplay show={this.state.showMap}>
+        <div className={styles.mapContainer}>
+          <span className={styles.mapContent}>
+            <MapContainer updated={this.state.showMap} ref='mapComponent' />
+          </span>
         </div>
-      <span>
-        <div className={styles.temporalContainer}>
-           <span className={styles.temporalContent}>
-               <TemporalContainer />
-           </span>
-        </div>
-        <button id="mapButton" className={`pure-button ${styles.mapButton} ${styles.landingButton}`}
-                   onClick={this.toggleMap}>Map</button>
-        <ToggleDisplay show={this.state.showMap}>
-          <div className={styles.mapContainer}>
-            <span className={styles.mapContent}>
-              <MapContainer updated={this.state.showMap} ref='mapComponent' />
-            </span>
-          </div>
-        </ToggleDisplay>
-        <button className={`pure-button ${styles.landingButton}`} onClick={this.submit}>Search</button>
-      </span>
+      </ToggleDisplay>
+      <button className={`${styles.landingButton} fa fa-search`} onClick={this.submit}></button>
     </div>
   }
 }

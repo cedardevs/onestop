@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
 import queryString from 'query-string'
+import { facetsReceived } from './facet/FacetActions'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -26,7 +27,8 @@ export const completeSearch = (items) => {
   }
 }
 
-export const triggerSearch = (queryParams, testing) => {
+
+export const triggerSearch = (testing, procSelectedFacets) => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
     let state = getState()
@@ -35,9 +37,12 @@ export const triggerSearch = (queryParams, testing) => {
       return Promise.resolve()
     }
 
-    const searchBody = queryParams || state.getIn(['search', 'requestBody'])
-    if(!searchBody) { return } // To avoid returning all results when hitting search w/empty fields
-
+    const searchBody = state.getIn(['search', 'requestBody'])
+    // To avoid returning all results when hitting search w/empty fields
+    if(!searchBody) {
+      dispatch(push('/')) // Redirect to home
+      return
+    }
     dispatch(startSearch())
 
     // Append query to URL
@@ -61,7 +66,11 @@ export const triggerSearch = (queryParams, testing) => {
 
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
-        .then(json => dispatch(completeSearch(assignResourcesToMap(json.data))))
+        .then(json => dispatch(completeSearch((function(){
+          dispatch(facetsReceived(json.meta, procSelectedFacets))
+          return assignResourcesToMap(json.data)
+        })()
+        )))
   }
 }
 

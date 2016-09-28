@@ -1,7 +1,6 @@
 package ncei.onestop.api.controller
 
 import groovy.util.logging.Slf4j
-import ncei.onestop.api.service.ETLService
 import ncei.onestop.api.service.SearchIndexService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -18,12 +17,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.*
 class SearchController {
 
     private SearchIndexService searchIndexService
-    private ETLService etlService
 
     @Autowired
-    public SearchController(SearchIndexService searchIndexService, ETLService etlService) {
+    public SearchController(SearchIndexService searchIndexService) {
         this.searchIndexService = searchIndexService
-        this.etlService = etlService
     }
 
     // POST in order to support request bodies from clients that won't send bodies with GETs
@@ -39,10 +36,5 @@ class SearchController {
         return searchIndexService.search(params)
     }
 
-    @RequestMapping(path = '/search/reindex', method = [GET, PUT], produces = 'application/json')
-    Map reindex() {
-        etlService.reindexAsync()
-        return [acknowledged: true]
-    }
 }
 
