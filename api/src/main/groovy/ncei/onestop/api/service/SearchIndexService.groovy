@@ -232,9 +232,9 @@ class SearchIndexService {
     ]
   }
 
-  private List cleanAggregation(List<String> topLevelKeywords, List<Terms.Bucket> originalAgg, boolean collections) {
+  private Map cleanAggregation(List<String> topLevelKeywords, List<Terms.Bucket> originalAgg, boolean collections) {
 
-    def cleanAgg = []
+    def cleanAgg = [:]
     originalAgg.each { e ->
       def term = e.key as String
       def count
@@ -245,18 +245,18 @@ class SearchIndexService {
       }
 
       if(!topLevelKeywords) {
-        cleanAgg.add([term: term, count: count])
+        cleanAgg.put(term, [count: count])
 
       } else {
         if(term.contains('>')) {
           def splitTerms = term.split('>', 2)
           if(topLevelKeywords.contains(splitTerms[0].trim())) {
-            cleanAgg.add([term: term, count: count])
+            cleanAgg.put(term, [count: count])
           }
 
         } else {
           if(topLevelKeywords.contains(term)) {
-            cleanAgg.add([term: term, count: count])
+            cleanAgg.put(term, [count: count])
           }
         }
       }
