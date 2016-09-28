@@ -193,7 +193,7 @@ class LoadIntegrationTests extends Specification {
     }
     def searchRequestC = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
     def searchRequestG = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON)
-        .body('{"filters":[{"type":"facet", "name":"parentIdentifier", "values":["gov.noaa.nodc:NDBC-COOPS"]}]}')
+        .body('{"filters":[{"type":"collection", "values":["gov.noaa.nodc:NDBC-COOPS"]}]}')
 
     when:
     def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }

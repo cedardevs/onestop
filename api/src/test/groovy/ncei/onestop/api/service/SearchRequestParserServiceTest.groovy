@@ -2,7 +2,6 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonSlurper
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -19,7 +18,7 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilters
+    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -31,21 +30,11 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
-    def expectedPostFilterString = """\
-        {
-          "bool" : {
-            "must_not" : {
-              "exists" : {
-                "field" : "parentIdentifier"
-              }
-            }
-          }
-        }""".stripIndent()
 
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters.toString() == expectedPostFilterString
+    postFilters == null
 
     where:
     label                       | json
@@ -63,7 +52,7 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilters
+    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -81,21 +70,11 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
-    def expectedPostFilterString = """\
-        {
-          "bool" : {
-            "must_not" : {
-              "exists" : {
-                "field" : "parentIdentifier"
-              }
-            }
-          }
-        }""".stripIndent()
 
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters.toString() == expectedPostFilterString
+    postFilters == null
   }
 
   def 'Datetime filter request generates expected elasticsearch query'() {
@@ -106,7 +85,7 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilters
+    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -138,21 +117,11 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
-    def expectedPostFilterString = """\
-        {
-          "bool" : {
-            "must_not" : {
-              "exists" : {
-                "field" : "parentIdentifier"
-              }
-            }
-          }
-        }""".stripIndent()
 
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters.toString() == expectedPostFilterString
+    postFilters == null
   }
 
   def 'Geopoint filter request generates expected elasticsearch query'() {
@@ -163,7 +132,7 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilters
+    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -188,21 +157,11 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
-    def expectedPostFilterString = """\
-        {
-          "bool" : {
-            "must_not" : {
-              "exists" : {
-                "field" : "parentIdentifier"
-              }
-            }
-          }
-        }""".stripIndent()
 
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters.toString() == expectedPostFilterString
+    postFilters == null
   }
 
   def 'Bbox filter request generates expected elasticsearch query'() {
@@ -215,7 +174,7 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilters
+    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -240,24 +199,14 @@ class SearchRequestParserServiceTest extends Specification {
             }
           }
         }""".stripIndent()
-    def expectedPostFilterString = """\
-        {
-          "bool" : {
-            "must_not" : {
-              "exists" : {
-                "field" : "parentIdentifier"
-              }
-            }
-          }
-        }""".stripIndent()
 
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters.toString() == expectedPostFilterString
+    postFilters == null
   }
 
-  def 'Facet filter request (not on parentIdentifier) creates post-filter for collections only'() {
+  def 'Facet filter request creates post-filter for collections only'() {
     given:
     def request = '{"filters":[{"type":"facet","name":"science","values":"Atmosphere > Aerosols"}]}'
     def params = slurper.parseText(request)
@@ -265,7 +214,7 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilters
+    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -284,11 +233,6 @@ class SearchRequestParserServiceTest extends Specification {
               "terms" : {
                 "gcmdScience" : [ "Atmosphere > Aerosols" ]
               }
-            },
-            "must_not" : {
-              "exists" : {
-                "field" : "parentIdentifier"
-              }
             }
           }
         }""".stripIndent()
@@ -300,52 +244,21 @@ class SearchRequestParserServiceTest extends Specification {
     postFilters.toString() == expectedPostFiltersString
   }
 
-  def 'Facet filter request on parentIdentifier creates post-filter on granules'() {
-    given:
-    def request = '{"filters":[{"type":"facet","name":"science","values":"Atmosphere > Aerosols"},' +
-        '{"type":"facet","name":"parentIdentifier","values":"GHRSST_Something_Something"}]}'
-    def params = slurper.parseText(request)
-
+  def 'Default aggregations are built for granules'() {
     when:
-    def parsedRequest = requestParser.parseSearchRequest(params)
-    def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilters
-    def expectedQueryString = """\
-        {
-          "bool" : {
-            "must" : {
-              "bool" : { }
-            },
-            "filter" : {
-              "bool" : { }
-            }
-          }
-        }""".stripIndent()
-    def expectedPostFiltersString = """\
-        {
-          "bool" : {
-            "must" : [ {
-              "terms" : {
-                "gcmdScience" : [ "Atmosphere > Aerosols" ]
-              }
-            }, {
-              "terms" : {
-                "parentIdentifier" : [ "GHRSST_Something_Something" ]
-              }
-            } ]
-          }
-        }""".stripIndent()
+    def aggs = requestParser.createGCMDAggregations(false)
 
     then:
-    !queryResult.toString().empty
-    !postFilters.toString().empty
-    queryResult.toString() == expectedQueryString
-    postFilters.toString() == expectedPostFiltersString
+    // This is about all that can be verified w/o changing the List to a Map unnecessarily...
+    aggs.size() == 7 // 7 GCMD types
+    aggs.each { a ->
+      a.class == TermsBuilder
+    }
   }
 
-  def 'Default aggregations are built'() {
+  def 'Default aggregations are built for collections'() {
     when:
-    def aggs = requestParser.createDefaultAggregations()
+    def aggs = requestParser.createGCMDAggregations(true)
 
     then:
     // This is about all that can be verified w/o changing the List to a Map unnecessarily...

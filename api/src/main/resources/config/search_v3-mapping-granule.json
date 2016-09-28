@@ -1,5 +1,5 @@
 {
-  "metadata": {
+  "granule": {
     "properties": {
       "fileIdentifier": {
         "type": "string",
@@ -19,11 +19,71 @@
         "type": "string"
       },
       "keywords": {
+        "type": "string"
+      },
+      "topicCategories": {
+        "type": "string"
+      },
+      "gcmdScience": {
         "type": "string",
+        "analyzer": "keyword_analyzer",
         "fields": {
-          "raw": {
-            "type": "string",
-            "index": "not_analyzed"
+          "analyzed": {
+            "type": "string"
+          }
+        }
+      },
+      "gcmdLocations": {
+        "type": "string",
+        "analyzer": "keyword_analyzer",
+        "fields": {
+          "analyzed": {
+            "type": "string"
+          }
+        }
+      },
+      "gcmdInstruments": {
+        "type": "string",
+        "analyzer": "keyword_analyzer",
+        "fields": {
+          "analyzed": {
+            "type": "string"
+          }
+        }
+      },
+      "gcmdPlatforms": {
+        "type": "string",
+        "analyzer": "keyword_analyzer",
+        "fields": {
+          "analyzed": {
+            "type": "string"
+          }
+        }
+      },
+      "gcmdProjects": {
+        "type": "string",
+        "analyzer": "keyword_analyzer",
+        "fields": {
+          "analyzed": {
+            "type": "string"
+          }
+        }
+      },
+      "gcmdDataCenters": {
+        "type": "string",
+        "analyzer": "keyword_analyzer",
+        "fields": {
+          "analyzed": {
+            "type": "string"
+          }
+        }
+      },
+      "gcmdDataResolution": {
+        "type": "string",
+        "analyzer": "keyword_analyzer",
+        "fields": {
+          "analyzed": {
+            "type": "string"
           }
         }
       },
@@ -76,7 +136,7 @@
             "index": "not_analyzed"
           },
           "instrumentDescription": {
-              "type": "string"
+            "type": "string"
           }
         }
       },

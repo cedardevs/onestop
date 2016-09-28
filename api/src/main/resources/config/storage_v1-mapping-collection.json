@@ -1,5 +1,8 @@
 {
   "collection": {
+    "_all": {
+      "enabled": false
+    },
     "properties": {
       "fileIdentifier": {
         "type": "string",

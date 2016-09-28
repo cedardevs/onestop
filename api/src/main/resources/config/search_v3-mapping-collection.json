@@ -1,11 +1,7 @@
 {
-  "metadata": {
+  "collection": {
     "properties": {
       "fileIdentifier": {
-        "type": "string",
-        "index": "not_analyzed"
-      },
-      "parentIdentifier": {
         "type": "string",
         "index": "not_analyzed"
       },
