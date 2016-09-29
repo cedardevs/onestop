@@ -22,7 +22,7 @@ class SearchRequestParserService {
 
 
   private static final Map<String, String> facetNameMappings = [
-      'parentIdentifier': 'parentIdentifier',
+      //'parentIdentifier': 'parentIdentifier',
       'science': 'gcmdScience',
       'locations': 'gcmdLocations',
       'instruments': 'gcmdInstruments',
@@ -73,15 +73,9 @@ class SearchRequestParserService {
 
   public List<AggregationBuilder> createGCMDAggregations(boolean forCollections) {
 
-    def aggregations = [
-        AggregationBuilders.terms('science').field('gcmdScience').order(Terms.Order.term(true)).size(0),
-        AggregationBuilders.terms('locations').field('gcmdLocations').order(Terms.Order.term(true)).size(0),
-        AggregationBuilders.terms('instruments').field('gcmdInstruments').order(Terms.Order.term(true)).size(0),
-        AggregationBuilders.terms('platforms').field('gcmdPlatforms').order(Terms.Order.term(true)).size(0),
-        AggregationBuilders.terms('projects').field('gcmdProjects').order(Terms.Order.term(true)).size(0),
-        AggregationBuilders.terms('dataCenters').field('gcmdDataCenters').order(Terms.Order.term(true)).size(0),
-        AggregationBuilders.terms('dataResolution').field('gcmdDataResolution').order(Terms.Order.term(true)).size(0)
-    ]
+    def aggregations = facetNameMappings.collect { name, field ->
+      AggregationBuilders.terms(name).field(field).order(Terms.Order.term(true)).size(0)
+    }
 
     if(forCollections) {
       aggregations.each { a ->
