@@ -24,8 +24,8 @@ elasticsearch:
   host: localhost
   port: 9300
   index:
-    storage:
-      name: storage_v1
+    staging:
+      name: staging_v1
       granuleType: granule
       collectionType: collection
     search:

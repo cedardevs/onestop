@@ -15,13 +15,13 @@ import java.util.regex.Pattern
 @Service
 class MetadataIndexService {
 
-  @Value('${elasticsearch.index.storage.name}')
-  String STORAGE_INDEX
+  @Value('${elasticsearch.index.staging.name}')
+  String STAGING_INDEX
 
-  @Value('${elasticsearch.index.storage.collectionType}')
+  @Value('${elasticsearch.index.staging.collectionType}')
   String COLLECTION_TYPE
 
-  @Value('${elasticsearch.index.storage.granuleType}')
+  @Value('${elasticsearch.index.staging.granuleType}')
   String GRANULE_TYPE
 
   private Client client
@@ -35,7 +35,7 @@ class MetadataIndexService {
 
 
   public Map loadMetadata(String document) {
-    def storageInfo = MetadataParser.parseStorageInfo(document)
+    def storageInfo = MetadataParser.parseIdentifierInfo(document)
     def id = storageInfo.id
     if (Pattern.matches(/.*\s.*/, id)) {
       return [
@@ -48,12 +48,12 @@ class MetadataIndexService {
     }
     else {
       def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
-      def source = [isoXml: document, fileIdentifier: id]
-      if (type == GRANULE_TYPE) {
-        source.parentIdentifier = storageInfo.parentId
+      def source = MetadataParser.parseXMLMetadataToMap(document)
+      if(type == COLLECTION_TYPE) {
+        source.isoXml = document
       }
       source = JsonOutput.toJson(source)
-      def response = client.prepareIndex(STORAGE_INDEX, type, id)
+      def response = client.prepareIndex(STAGING_INDEX, type, id)
           .setSource(source)
           .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
           .execute().actionGet()
@@ -70,14 +70,14 @@ class MetadataIndexService {
   }
 
   public Map getMetadata(String fileIdentifier) {
-    def response = client.prepareGet(STORAGE_INDEX, null, fileIdentifier).execute().actionGet()
+    def response = client.prepareGet(STAGING_INDEX, null, fileIdentifier).execute().actionGet()
     if (response.exists) {
       return [
           data: [
               id: response.id,
               type: response.type,
               attributes: [
-                  isoXml: response.source.isoXml
+                  source: response.source
               ]
           ]
       ]
@@ -94,7 +94,7 @@ class MetadataIndexService {
   public Map deleteMetadata(String fileIdentifier) {
     // delete requires explicit type, so we have to try deleting from both types
     def responses = [COLLECTION_TYPE, GRANULE_TYPE].collect {
-      client.prepareDelete(STORAGE_INDEX, it, fileIdentifier)
+      client.prepareDelete(STAGING_INDEX, it, fileIdentifier)
           .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
           .execute().actionGet()
     }
@@ -121,19 +121,19 @@ class MetadataIndexService {
   }
 
   void refresh() {
-    indexAdminService.refresh(STORAGE_INDEX)
+    indexAdminService.refresh(STAGING_INDEX)
   }
 
   void drop() {
-    indexAdminService.drop(STORAGE_INDEX)
+    indexAdminService.drop(STAGING_INDEX)
   }
 
   @PostConstruct
   public void ensure() {
-    def storageExists = client.admin().indices().prepareAliasesExist(STORAGE_INDEX).execute().actionGet().exists
+    def storageExists = client.admin().indices().prepareAliasesExist(STAGING_INDEX).execute().actionGet().exists
     if (!storageExists) {
-      def realName = indexAdminService.create(STORAGE_INDEX, [COLLECTION_TYPE, GRANULE_TYPE])
-      client.admin().indices().prepareAliases().addAlias(realName, STORAGE_INDEX).execute().actionGet()
+      def realName = indexAdminService.create(STAGING_INDEX, [COLLECTION_TYPE, GRANULE_TYPE])
+      client.admin().indices().prepareAliases().addAlias(realName, STAGING_INDEX).execute().actionGet()
     }
   }
 

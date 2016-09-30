@@ -19,13 +19,13 @@ class ETLService {
   @Value('${elasticsearch.index.search.name}')
   private String SEARCH_INDEX
 
-  @Value('${elasticsearch.index.storage.name}')
-  private String STORAGE_INDEX
+  @Value('${elasticsearch.index.staging.name}')
+  private String STAGING_INDEX
 
-  @Value('${elasticsearch.index.storage.collectionType}')
+  @Value('${elasticsearch.index.staging.collectionType}')
   private String COLLECTION_TYPE
 
-  @Value('${elasticsearch.index.storage.granuleType}')
+  @Value('${elasticsearch.index.staging.granuleType}')
   private String GRANULE_TYPE
 
   private Client client

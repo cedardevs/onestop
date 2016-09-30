@@ -1,5 +1,8 @@
 {
   "granule": {
+    "_all": {
+      "enabled": false
+    },
     "properties": {
       "fileIdentifier": {
         "type": "string",
@@ -10,89 +13,59 @@
         "index": "not_analyzed"
       },
       "title": {
-        "type": "string"
+        "type": "string",
+         "index": "no"
       },
       "alternateTitle": {
-        "type": "string"
+        "type": "string",
+        "index": "no"
       },
       "description": {
-        "type": "string"
+        "type": "string",
+        "index": "no"
       },
       "keywords": {
-        "type": "string"
+        "type": "string",
+        "index": "no"
       },
       "topicCategories": {
         "type": "string"
       },
       "gcmdScience": {
         "type": "string",
-        "analyzer": "keyword_analyzer",
-        "fields": {
-          "analyzed": {
-            "type": "string"
-          }
-        }
+        "index": "no"
       },
       "gcmdLocations": {
         "type": "string",
-        "analyzer": "keyword_analyzer",
-        "fields": {
-          "analyzed": {
-            "type": "string"
-          }
-        }
+        "index": "no"
       },
       "gcmdInstruments": {
         "type": "string",
-        "analyzer": "keyword_analyzer",
-        "fields": {
-          "analyzed": {
-            "type": "string"
-          }
-        }
+        "index": "no"
       },
       "gcmdPlatforms": {
         "type": "string",
-        "analyzer": "keyword_analyzer",
-        "fields": {
-          "analyzed": {
-            "type": "string"
-          }
-        }
+        "index": "no"
       },
       "gcmdProjects": {
         "type": "string",
-        "analyzer": "keyword_analyzer",
-        "fields": {
-          "analyzed": {
-            "type": "string"
-          }
-        }
+        "index": "no"
       },
       "gcmdDataCenters": {
         "type": "string",
-        "analyzer": "keyword_analyzer",
-        "fields": {
-          "analyzed": {
-            "type": "string"
-          }
-        }
+        "index": "no"
       },
       "gcmdDataResolution": {
         "type": "string",
-        "analyzer": "keyword_analyzer",
-        "fields": {
-          "analyzed": {
-            "type": "string"
-          }
-        }
+        "index": "no"
       },
       "temporalBounding": {
         "type": "object",
         "properties": {
           "beginDate": {
             "type": "date",
-            "format": "date_optional_time"
+            "format": "date_optional_time",
+            "index": "no"
           },
           "beginIndeterminate": {
             "type": "string",
@@ -100,7 +73,8 @@
           },
           "endDate": {
             "type": "date",
-            "format": "date_optional_time"
+            "format": "date_optional_time",
+            "index": "no"
           },
           "endIndeterminate": {
             "type": "string",
@@ -108,7 +82,8 @@
           },
           "instant": {
             "type": "date",
-            "format": "date_optional_time"
+            "format": "date_optional_time",
+            "index": "no"
           },
           "instantIndeterminate": {
             "type": "string",
@@ -117,26 +92,23 @@
         }
       },
       "spatialBounding": {
-        "type": "geo_shape"
+        "type": "geo_shape",
+        "index": "no"
       },
       "acquisitionInstruments": {
         "type": "nested",
         "properties": {
           "instrumentIdentifier": {
             "type": "string",
-            "fields": {
-              "hierarchy": {
-                "type": "string",
-                "analyzer": "keyword_analyzer"
-              }
-            }
+            "index": "no"
           },
           "instrumentType": {
             "type": "string",
-            "index": "not_analyzed"
+            "index": "no"
           },
           "instrumentDescription": {
-            "type": "string"
+            "type": "string",
+            "index": "no"
           }
         }
       },
@@ -144,17 +116,20 @@
         "type": "nested",
         "properties": {
           "operationDescription": {
-            "type": "string"
+            "type": "string",
+            "index": "no"
           },
           "operationIdentifier": {
-            "type": "string"
+            "type": "string",
+            "index": "no"
           },
           "operationStatus": {
             "type": "string",
             "index": "no"
           },
           "operationType": {
-            "type": "string"
+            "type": "string",
+            "index": "no"
           }
         }
       },
@@ -162,13 +137,16 @@
         "type": "nested",
         "properties": {
           "platformIdentifier": {
-            "type": "string"
+            "type": "string",
+            "index": "no"
           },
           "platformDescription": {
-            "type": "string"
+            "type": "string",
+            "index": "no"
           },
           "platformSponsor": {
-            "type": "string"
+            "type": "string",
+            "index": "no"
           }
         }
       },
@@ -193,52 +171,29 @@
           }
         }
       },
-      "contacts": {
-        "type": "nested",
-        "properties": {
-          "individualName": {
-            "type": "string",
-            "fields": {
-              "raw": {
-                "type": "string",
-                "index": "not_analyzed"
-              }
-            }
-          },
-          "organizationName": {
-            "type": "string",
-            "fields": {
-              "raw": {
-                "type": "string",
-                "index": "not_analyzed"
-              }
-            }
-          },
-          "role": {
-            "type": "string",
-            "index": "no"
-          }
-        }
-      },
       "thumbnail": {
         "type": "string",
         "index": "no"
       },
       "modifiedDate": {
         "type": "date",
-        "format": "date_optional_time"
+        "format": "date_optional_time",
+        "index": "no"
       },
       "creationDate": {
         "type": "date",
-        "format": "date_optional_time"
+        "format": "date_optional_time",
+        "index": "no"
       },
       "revisionDate": {
         "type": "date",
-        "format": "date_optional_time"
+        "format": "date_optional_time",
+        "index": "no"
       },
       "publicationDate": {
         "type": "date",
-        "format": "date_optional_time"
+        "format": "date_optional_time",
+        "index": "no"
       }
     }
   }

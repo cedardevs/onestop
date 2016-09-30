@@ -3,10 +3,9 @@ package ncei.onestop.api.service
 import groovy.json.JsonOutput
 import org.apache.commons.lang3.text.WordUtils
 
-
 class MetadataParser {
 
-  public static Map parseStorageInfo(String xml) {
+  public static Map parseIdentifierInfo(String xml) {
     def slurped = new XmlSlurper().parseText(xml)
     return [
         id: slurped.fileIdentifier.CharacterString.text(),
@@ -46,11 +45,6 @@ class MetadataParser {
     def creationDate
     def revisionDate
     def publicationDate
-    def language
-    def resourceLanguage
-    def resourceConstraints = [] as Set
-    def securityConstraints = [] as Set
-    def grid = [:]
 
     def metadata = new XmlSlurper().parseText(xml)
     def idInfo = metadata.identificationInfo.MD_DataIdentification
@@ -62,8 +56,6 @@ class MetadataParser {
     alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text() ?: null
     description = idInfo.abstract.CharacterString.text()
     thumbnail = idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text()
-    language = metadata.language.LanguageCode.@codeListValue.text() ?: metadata.language.CharacterString.text()
-    resourceLanguage = idInfo.language.LanguageCode.@codeListValue.text() ?: idInfo.language.CharacterString.text()
 
     // Miscellaneous dates:
     modifiedDate = metadata.dateStamp.Date.text() ?: metadata.dateStamp.DateTime.text()
@@ -221,45 +213,6 @@ class MetadataParser {
       ])
     }
 
-    // Resource constraints:
-    def constraints = metadata.'**'.findAll { it.name() == 'MD_Constraints' }
-    constraints.each { resourceConstraints.add(it.useLimitation.CharacterString.text()) }
-
-    constraints = metadata.'**'.findAll { it.name() == 'MD_LegalConstraints' }
-    constraints.each {
-      resourceConstraints.add(it.useLimitation.CharacterString.text()) // FIXME include these?
-      resourceConstraints.add(it.otherConstraints.CharacterString.text())
-    }
-    resourceConstraints.removeAll([''])  // FIXME not sure why empty strings are showing up
-
-    // Security constraints:
-    constraints = metadata.'**'.findAll { it.name() == 'MD_SecurityConstraints' }
-    constraints.each { e ->
-      securityConstraints.add([
-          classification      : e.classification.MD_ClassificationCode.@codeListValue.text(),
-          userNote            : e.userNote.CharacterString.text(),
-          classificationSystem: e.classificationSystem.CharacterString.text(),
-          handlingDescription : e.handlingDescription.CharacterString.text()
-      ])
-    }
-
-    // Grid info:
-    def gridInfo = metadata.spatialRepresentationInfo.MD_GridSpatialRepresentation
-    def axisInfo = gridInfo.'**'.findAll { it.name() == 'MD_Dimension' }
-    def axisProps = []
-    axisInfo.each { e ->
-      axisProps.add([
-          dimensionName  : e.dimensionName.MD_DimensionNameTypeCode.@codeListValue.text(),
-          dimensionSize  : e.dimensionSize.Integer.text() ? e.dimensionSize.Integer.toInteger() : e.dimensionSize.Integer.text(),
-          resolutionUnits: e.resolution.Measure.@uom.text(),
-          resolutionSize : e.resolution.Measure.text()
-      ])
-    }
-    grid.put('numberOfDimensions', gridInfo.numberOfDimensions.Integer.text() ? gridInfo.numberOfDimensions.Integer.toInteger() : gridInfo.numberOfDimensions.Integer.text())
-    grid.put('axisDimensionProperties', axisProps)
-    grid.put('cellGeometry', gridInfo.cellGeometry.MD_CellGeometryCode.@codeListValue.text())
-    grid.put('transformationParameterAvailability', gridInfo.transformationParameterAvailability.Boolean.toBoolean())
-
     // Build JSON:
     def json = [
         fileIdentifier        : fileIdentifier,
@@ -287,12 +240,7 @@ class MetadataParser {
         modifiedDate          : modifiedDate,
         creationDate          : creationDate,
         revisionDate          : revisionDate,
-        publicationDate       : publicationDate,
-        language              : language,
-        resourceLanguage      : resourceLanguage,
-        resourceConstraints   : resourceConstraints,
-        securityConstraints   : securityConstraints,
-        grid                  : grid
+        publicationDate       : publicationDate
     ]
 
     return json

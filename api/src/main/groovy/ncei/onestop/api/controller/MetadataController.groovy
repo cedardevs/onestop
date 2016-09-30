@@ -36,7 +36,8 @@ class MetadataController {
         return result
     }
 
-    @RequestMapping(path = '/metadata/{id}', method = [GET, HEAD], produces = 'application/xml')
+  // TODO Store & retrieve collection-level XML?
+/*    @RequestMapping(path = '/metadata/{id}', method = [GET, HEAD], produces = 'application/xml')
     String retrieveXml(@PathVariable String id, HttpServletResponse response) {
         def result = metadataIndexService.getMetadata(id)
         if (result.data) {
@@ -47,7 +48,8 @@ class MetadataController {
             response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
             return result.title
         }
-    }
+    }*/
+
     @RequestMapping(path = '/metadata/{id}', method = [GET, HEAD], produces = 'application/json')
     Map retrieveJson(@PathVariable String id, HttpServletResponse response) {
         def result = metadataIndexService.getMetadata(id)
