@@ -64,8 +64,8 @@
         "properties": {
           "beginDate": {
             "type": "date",
-            "format": "date_optional_time",
-            "index": "no"
+            "index": "no",
+            "format": "date_optional_time"
           },
           "beginIndeterminate": {
             "type": "string",
@@ -73,8 +73,8 @@
           },
           "endDate": {
             "type": "date",
-            "format": "date_optional_time",
-            "index": "no"
+            "index": "no",
+            "format": "date_optional_time"
           },
           "endIndeterminate": {
             "type": "string",
@@ -82,8 +82,8 @@
           },
           "instant": {
             "type": "date",
-            "format": "date_optional_time",
-            "index": "no"
+            "index": "no",
+            "format": "date_optional_time"
           },
           "instantIndeterminate": {
             "type": "string",
@@ -92,8 +92,7 @@
         }
       },
       "spatialBounding": {
-        "type": "geo_shape",
-        "index": "no"
+        "type": "geo_shape"
       },
       "acquisitionInstruments": {
         "type": "nested",
@@ -177,23 +176,23 @@
       },
       "modifiedDate": {
         "type": "date",
-        "format": "date_optional_time",
-        "index": "no"
+        "index": "no",
+        "format": "date_optional_time"
       },
       "creationDate": {
         "type": "date",
-        "format": "date_optional_time",
-        "index": "no"
+        "index": "no",
+        "format": "date_optional_time"
       },
       "revisionDate": {
         "type": "date",
-        "format": "date_optional_time",
-        "index": "no"
+        "index": "no",
+        "format": "date_optional_time"
       },
       "publicationDate": {
         "type": "date",
-        "format": "date_optional_time",
-        "index": "no"
+        "index": "no",
+        "format": "date_optional_time"
       }
     }
   }

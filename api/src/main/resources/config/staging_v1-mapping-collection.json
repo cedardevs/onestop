@@ -92,8 +92,7 @@
         }
       },
       "spatialBounding": {
-        "type": "geo_shape",
-        "index": "no"
+        "type": "geo_shape"
       },
       "acquisitionInstruments": {
         "type": "nested",
