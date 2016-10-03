@@ -56,7 +56,7 @@ class ETLService {
 
       def offset = 0
       def increment = 10
-      def collectionsCount = client.prepareSearch(STORAGE_INDEX).setTypes(COLLECTION_TYPE)
+      def collectionsCount = client.prepareSearch(STAGING_INDEX).setTypes(COLLECTION_TYPE)
           .setSize(0).execute().actionGet().hits.totalHits
 
       def addRecordToBulk = { record, type ->
@@ -73,39 +73,38 @@ class ETLService {
 
 
       while (offset < collectionsCount) {
-        def collections = client.prepareSearch(STORAGE_INDEX).setTypes(COLLECTION_TYPE)
+        def collections = client.prepareSearch(STAGING_INDEX).setTypes(COLLECTION_TYPE)
             .addSort("fileIdentifier", SortOrder.ASC).setFrom(offset).setSize(increment).execute().actionGet().hits.hits
         collections.each { collection ->
-          def parsedCollection = MetadataParser.parseXMLMetadataToMap(collection.source.isoXml as String)
-          log.debug('Starting indexing of collection ' + parsedCollection.fileIdentifier) //fixme delete later
-          addRecordToBulk(parsedCollection, COLLECTION_TYPE) // Add collections whether they have granules or not
-          def granuleScroll = client.prepareSearch(STORAGE_INDEX)
+          def collectionDoc = collection.source
+          log.debug('Starting indexing of collection ' + collectionDoc.fileIdentifier) //fixme delete later
+          addRecordToBulk(collectionDoc, COLLECTION_TYPE) // Add collections whether they have granules or not
+          def granuleScroll = client.prepareSearch(STAGING_INDEX)
               .setTypes(GRANULE_TYPE)
               .addSort('fileIdentifier', SortOrder.ASC)
               .setScroll(granuleScrollTimeout)
-              .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', parsedCollection.fileIdentifier)))
+              .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', collectionDoc.fileIdentifier)))
               .setSize(granulePageSize)
               .execute()
               .actionGet()
           def granulesRemain = granuleScroll.hits.hits.length > 0
-          if (!granulesRemain) { // insert a synthesized granule record if there is no separate xml for it
-            log.debug('Inserting synthesized granule for collection ' + parsedCollection.fileIdentifier) // fixme delete later
-            def synthesizedGranule = [fileIdentifier: parsedCollection.fileIdentifier, parentIdentifier: parsedCollection.fileIdentifier]
-            def flattenedSynthesizedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, synthesizedGranule)
+          if (!granulesRemain) { // insert a synthesized granule record if there are no found granules
+            log.debug('Inserting synthesized granule for collection ' + collectionDoc.fileIdentifier) // fixme delete later
+            def synthesizedGranule = [fileIdentifier: collectionDoc.fileIdentifier, parentIdentifier: collectionDoc.fileIdentifier]
+            def flattenedSynthesizedRecord = MetadataParser.mergeCollectionAndGranule(collectionDoc, synthesizedGranule)
             addRecordToBulk(flattenedSynthesizedRecord, GRANULE_TYPE)
           }
 
           while (granulesRemain) {
             granuleScroll.hits.hits.each { granule ->
-              def parsedGranule = MetadataParser.parseXMLMetadataToMap(granule.source.isoXml as String)
-              def flattenedRecord = MetadataParser.mergeCollectionAndGranule(parsedCollection, parsedGranule)
-              flattenedRecord.parentIdentifier = parsedCollection.fileIdentifier // should always be true, but may not be if granule xml has a bad PID
+              def granuleDoc = granule.source
+              def flattenedRecord = MetadataParser.mergeCollectionAndGranule(collectionDoc, granuleDoc)
               addRecordToBulk(flattenedRecord, GRANULE_TYPE)
             }
             granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
             granulesRemain = granuleScroll.hits.hits.length > 0
           }
-          log.debug('Finished indexing for collection ' + parsedCollection.fileIdentifier) // fixme delete later
+          log.debug('Finished indexing for collection ' + collectionDoc.fileIdentifier) // fixme delete later
         }
 
         offset += increment
