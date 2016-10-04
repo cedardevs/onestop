@@ -18,7 +18,6 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -34,7 +33,6 @@ class SearchRequestParserServiceTest extends Specification {
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters == null
 
     where:
     label                       | json
@@ -52,7 +50,6 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -74,7 +71,6 @@ class SearchRequestParserServiceTest extends Specification {
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters == null
   }
 
   def 'Datetime filter request generates expected elasticsearch query'() {
@@ -85,7 +81,6 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -121,7 +116,6 @@ class SearchRequestParserServiceTest extends Specification {
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters == null
   }
 
   def 'Geopoint filter request generates expected elasticsearch query'() {
@@ -132,7 +126,6 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -161,7 +154,6 @@ class SearchRequestParserServiceTest extends Specification {
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters == null
   }
 
   def 'Bbox filter request generates expected elasticsearch query'() {
@@ -174,7 +166,6 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -203,10 +194,9 @@ class SearchRequestParserServiceTest extends Specification {
     then:
     !queryResult.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters == null
   }
 
-  def 'Facet filter request creates post-filter for collections only'() {
+  def 'Facet filter request includes filter in query'() {
     given:
     def request = '{"filters":[{"type":"facet","name":"science","values":"Atmosphere > Aerosols"}]}'
     def params = slurper.parseText(request)
@@ -214,7 +204,6 @@ class SearchRequestParserServiceTest extends Specification {
     when:
     def parsedRequest = requestParser.parseSearchRequest(params)
     def queryResult = parsedRequest.query
-    def postFilters = parsedRequest.postFilter
     def expectedQueryString = """\
         {
           "bool" : {
@@ -222,16 +211,12 @@ class SearchRequestParserServiceTest extends Specification {
               "bool" : { }
             },
             "filter" : {
-              "bool" : { }
-            }
-          }
-        }""".stripIndent()
-    def expectedPostFiltersString = """\
-        {
-          "bool" : {
-            "must" : {
-              "terms" : {
-                "gcmdScience" : [ "Atmosphere > Aerosols" ]
+              "bool" : {
+                "must" : {
+                  "terms" : {
+                    "gcmdScience" : [ "Atmosphere > Aerosols" ]
+                  }
+                }
               }
             }
           }
@@ -239,9 +224,7 @@ class SearchRequestParserServiceTest extends Specification {
 
     then:
     !queryResult.toString().empty
-    !postFilters.toString().empty
     queryResult.toString() == expectedQueryString
-    postFilters.toString() == expectedPostFiltersString
   }
 
   def 'Default aggregations are built for granules'() {

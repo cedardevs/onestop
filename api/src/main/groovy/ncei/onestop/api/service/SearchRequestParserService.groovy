@@ -49,13 +49,10 @@ class SearchRequestParserService {
             must
                 {queries}
      */
-    def completeQuery = QueryBuilders.boolQuery().filter(filters.pre).must(query)
     def allFilterQuery = QueryBuilders.boolQuery().filter(filters.all).must(query)
 
     return [
-        query: completeQuery,
-        queryWithAllFilters: allFilterQuery,
-        postFilter: filters.post,
+        query: allFilterQuery,
     ]
   }
 
@@ -114,21 +111,11 @@ class SearchRequestParserService {
          - intersection probably bool > must > bool > must (single term)
     */
 
-    def postFilters = false
-
-    def preBuilder = QueryBuilders.boolQuery()
-    def postBuilder = QueryBuilders.boolQuery()
-    def allBuilder = QueryBuilders.boolQuery()
-
-    // Need post filters as pre filters if querying for collections in order to piece together responses accurately
-    def prePlusAll = [preBuilder, allBuilder]
-    def postPlusAll = [postBuilder, allBuilder]
+    def builder = QueryBuilders.boolQuery()
 
     if (!filters) {
       return [
-          pre: preBuilder,
-          post: null,
-          all: allBuilder,
+          all: builder,
       ]
     }
 
@@ -138,14 +125,10 @@ class SearchRequestParserService {
     groupedFilters.datetime.each {
       // TODO post filters for datetime from timeline view?
       if (it.before) {
-        prePlusAll.each { b ->
-          b.must(QueryBuilders.rangeQuery('temporalBounding.beginDate').lte(it.before))
-        }
+        builder.must(QueryBuilders.rangeQuery('temporalBounding.beginDate').lte(it.before))
       }
       if (it.after) {
-        prePlusAll.each { b ->
-          b.must(QueryBuilders.rangeQuery('temporalBounding.endDate').gte(it.after))
-        }
+        builder.must(QueryBuilders.rangeQuery('temporalBounding.endDate').gte(it.after))
       }
     }
 
@@ -160,18 +143,12 @@ class SearchRequestParserService {
       def shape = ShapeBuilder.parse(parser)
       def relation = ShapeRelation.getRelationByName(it.relation ?: 'intersects')
 
-      prePlusAll.each {b ->
-        b.must(QueryBuilders.geoShapeQuery("spatialBounding", shape, relation))
-      }
+      builder.must(QueryBuilders.geoShapeQuery("spatialBounding", shape, relation))
     }
 
     // Facet filters:
     groupedFilters.facet.each {
-      // Facets are applied as post_filters so that counts on the facet menu don't change but displayed results do
-      postFilters = true
-      postPlusAll.each {b ->
-        b.must(QueryBuilders.termsQuery(facetNameMappings[it.name], it.values))
-      }
+      builder.must(QueryBuilders.termsQuery(facetNameMappings[it.name], it.values))
     }
 
     // Collection filter -- force a union since an intersection on multiple parentIds will return nothing
@@ -180,14 +157,11 @@ class SearchRequestParserService {
       parentIds.addAll(it.values)
     }
     if(parentIds) {
-      preBuilder.must(QueryBuilders.termsQuery('parentIdentifier', parentIds))
+      builder.must(QueryBuilders.termsQuery('parentIdentifier', parentIds))
     }
 
-    postBuilder = postFilters ? postBuilder : null
     return [
-        pre: preBuilder,
-        post: postBuilder,
-        all: allBuilder,
+        all: builder,
     ]
   }
 }
