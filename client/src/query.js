@@ -5,7 +5,7 @@ import store from './store'
 import { triggerSearch, updateQuery } from './search/SearchActions'
 import { modifySelectedFacets } from './search/facet/FacetActions'
 import { startDate, endDate } from './search/temporal/TemporalActions'
-import { updateGeometry } from './search/map/MapActions'
+import { newGeometry } from './search/map/MapActions'
 
 const loadQuery = () => {
   const urlString = document.location.hash
@@ -62,7 +62,7 @@ const dispatchFacets = facets => {
 }
 
 const dispatchGeometry = geometry => {
-  store.dispatch(updateGeometry(
+  store.dispatch(newGeometry(
     {
       type: "Feature",
       properties: {},
