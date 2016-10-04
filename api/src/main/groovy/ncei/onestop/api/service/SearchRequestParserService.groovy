@@ -56,7 +56,6 @@ class SearchRequestParserService {
         query: completeQuery,
         queryWithAllFilters: allFilterQuery,
         postFilter: filters.post,
-        collections: filters.collections
     ]
   }
 
@@ -86,6 +85,10 @@ class SearchRequestParserService {
     return aggregations
   }
 
+  public Boolean shouldReturnCollections(Map params) {
+    !params.filters.any { it.type == 'collection' }
+  }
+
   private QueryBuilder assembleQuery(List<Map> queries) {
     def builder = QueryBuilders.boolQuery()
     if (!queries) {
@@ -112,7 +115,6 @@ class SearchRequestParserService {
     */
 
     def postFilters = false
-    def collections = true
 
     def preBuilder = QueryBuilders.boolQuery()
     def postBuilder = QueryBuilders.boolQuery()
@@ -127,7 +129,6 @@ class SearchRequestParserService {
           pre: preBuilder,
           post: null,
           all: allBuilder,
-          collections: collections
       ]
     }
 
@@ -179,7 +180,6 @@ class SearchRequestParserService {
       parentIds.addAll(it.values)
     }
     if(parentIds) {
-      collections = false
       preBuilder.must(QueryBuilders.termsQuery('parentIdentifier', parentIds))
     }
 
@@ -188,7 +188,6 @@ class SearchRequestParserService {
         pre: preBuilder,
         post: postBuilder,
         all: allBuilder,
-        collections: collections
     ]
   }
 }

@@ -4,6 +4,7 @@ import groovy.util.logging.Slf4j
 import org.elasticsearch.action.get.MultiGetResponse
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.Client
+import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.aggregations.bucket.terms.Terms
@@ -70,17 +71,18 @@ class SearchIndexService {
 
     // Parse the request
     def parsedRequest = searchRequestParserService.parseSearchRequest(params)
+    def getCollections = searchRequestParserService.shouldReturnCollections(params)
     def query = parsedRequest.query
     def queryWithAllFilters = parsedRequest.queryWithAllFilters
     def postFilter = parsedRequest.postFilter
 
-    if (parsedRequest.collections) {
+    if (getCollections) {
       // Returning collection results:
       if (params.facets) {
         if (postFilter) {
           /* facets && postFilter */
           def searchResponse1 = queryAgainstGranules(query, true, false, false)
-          def facets = prepareAggregationsForUI(searchResponse1.aggregations, parsedRequest.collections)
+          def facets = prepareAggregationsForUI(searchResponse1.aggregations, getCollections)
 
           def searchResponse2 = queryAgainstGranules(queryWithAllFilters, false, false, true)
           def result = getAllCollectionDocuments(searchResponse2, params.page)
@@ -93,7 +95,7 @@ class SearchIndexService {
           def searchResponse = queryAgainstGranules(query, true, false, true)
           def result = getAllCollectionDocuments(searchResponse, params.page)
           result.meta.took = searchResponse.tookInMillis
-          result.meta.facets = prepareAggregationsForUI(searchResponse.aggregations, parsedRequest.collections)
+          result.meta.facets = prepareAggregationsForUI(searchResponse.aggregations, getCollections)
           return result
         }
 
