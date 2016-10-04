@@ -1,6 +1,6 @@
 import Immutable from 'immutable'
 import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY, CLEAR_SEARCH} from './SearchActions'
-import { UPDATE_GEOMETRY } from './map/MapActions'
+import { NEW_GEOMETRY, REMOVE_GEOMETRY } from './map/MapActions'
 import { MODIFY_SELECTED_FACETS, CLEAR_FACETS } from './facet/FacetActions'
 import { DateRange } from './temporal/TemporalActions'
 
@@ -28,8 +28,12 @@ export const search = (state = initialState, action) => {
         inFlight: false
       })
 
-    case UPDATE_GEOMETRY:
+    case NEW_GEOMETRY:
       newState = state.mergeDeep({geoJSON: action.geoJSON})
+      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+
+    case REMOVE_GEOMETRY:
+      newState = state.mergeDeep({geoJSON: initialState.get('geoJSON')})
       return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
 
     case UPDATE_QUERY:

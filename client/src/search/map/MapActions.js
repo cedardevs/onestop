@@ -1,8 +1,15 @@
-export const UPDATE_GEOMETRY = 'update_geometry'
+export const NEW_GEOMETRY = 'new_geometry'
+export const REMOVE_GEOMETRY = 'remove_geometry'
 
-export const updateGeometry = (geoJSON) => {
+export const newGeometry = (geoJSON) => {
   return {
-    type: UPDATE_GEOMETRY,
+    type: NEW_GEOMETRY,
     geoJSON
+  }
+}
+
+export const removeGeometry = () => {
+  return {
+    type: REMOVE_GEOMETRY
   }
 }
