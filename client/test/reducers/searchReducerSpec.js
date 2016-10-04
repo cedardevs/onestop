@@ -2,7 +2,7 @@ import '../specHelper'
 import { search, initialState } from '../../src/search/SearchReducer'
 import { updateQuery, startSearch, completeSearch } from '../../src/search/SearchActions'
 import { startDate, endDate } from '../../src/search/temporal/TemporalActions'
-import { updateGeometry } from '../../src/search/map/MapActions'
+import { newGeometry } from '../../src/search/map/MapActions'
 
 describe('The search reducer', function () {
   it('has a default state', function () {
@@ -96,7 +96,7 @@ describe('The search reducer\'s assembleRequestBody function', function() {
       }
     }
 
-    const updateGeometryAction = updateGeometry(validGeoJSON)
+    const updateGeometryAction = newGeometry(validGeoJSON)
     const result = search(initialState, updateGeometryAction)
 
     const expectedRequestBody = JSON.stringify({

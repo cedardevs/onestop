@@ -9,20 +9,29 @@ import styles from './map.css'
 class MapComponent extends React.Component {
 	constructor(props) {
 		super(props)
-			this.handleNewGeometry = props.handleNewGeometry
-			this.removeGeometry = props.removeGeometry
-			this.geoJSON = props.geoJSON
-			this.mapDefaults = this.mapDefaults.bind(this)
-			this.state = {}
+		this.handleNewGeometry = props.handleNewGeometry
+		this.removeGeometry = props.removeGeometry
+		this.geoJSON = props.geoJSON
+		this.mapDefaults = this.mapDefaults.bind(this)
+		this.state = {}
 	}
+
+  componentDidMount() {
+  	// Build the map defaults. When finished, use them to set the state then set up the map
+  	Promise.resolve(this.mapDefaults())
+  		.then(state => {
+				this.setState(state)
+				this.mapSetup()
+				})
+  }
 
 	mapDefaults() {
 		let editableLayers = new L.FeatureGroup()
-			const drawStyle = {
-				color: "#ffe800",
-					weight: 3,
-					opacity: 0.65
-			}
+		const drawStyle = {
+			color: "#ffe800",
+				weight: 3,
+				opacity: 0.65
+		}
 		return {
 			style: {
 				color: '#00FF00',
@@ -62,24 +71,15 @@ class MapComponent extends React.Component {
 
   mapSetup() {
   	let { map, drawControl, editableLayers } = this.state
-  		this.loadDrawEventHandlers()
-  		map.addControl(drawControl)
-  		map.addLayer(editableLayers)
-  		map.fitWorld()
-  }
-
-  componentDidMount() {
-  	// Build the map defaults. When finished, use them to set the state then set up the map
-  	Promise.resolve(this.mapDefaults())
-  		.then(state => {
-  				this.setState(state)
-  				this.mapSetup()
-  				})
+		this.loadDrawEventHandlers()
+		map.addControl(drawControl)
+		map.addLayer(editableLayers)
+		map.fitWorld()
   }
 
   componentWillReceiveProps() {
   	let { map } = this.state
-  		map.invalidateSize() // Necessary to redraw map which isn't initially visible
+		map.invalidateSize() // Necessary to redraw map which isn't initially visible
   }
 
   componentWillUpdate(nextProps){
@@ -89,23 +89,23 @@ class MapComponent extends React.Component {
 
   updateDrawnLayer({geoJSON}) {
   	let { editableLayers, style } = this.state
-  		if (!geoJSON) {
-  			if (editableLayers) {
-  				editableLayers.clearLayers()
-  			}
-  		} else {
-  			// Compare old vs. new layer
-  			if (editableLayers) {
-  				const prevGeoJSON = editableLayers.getLayers()[0] ?
-  					editableLayers.getLayers()[0].toGeoJSON() : null
-  					if (!prevGeoJSON || prevGeoJSON &&
-  							!_.isEqual(geoJSON.geometry.coordinates, prevGeoJSON.geometry.coordinates)){
-  						editableLayers.clearLayers()
-  							let layer = L.GeoJSON.geometryToLayer(geoJSON, {style})
-  							editableLayers.addLayer(layer)
-  					}
-  			}
-  		}
+		if (!geoJSON) {
+			if (editableLayers) {
+				editableLayers.clearLayers()
+			}
+		} else {
+			// Compare old vs. new layer
+			if (editableLayers) {
+				const prevGeoJSON = editableLayers.getLayers()[0] ?
+					editableLayers.getLayers()[0].toGeoJSON() : null
+					if (!prevGeoJSON || prevGeoJSON &&
+							!_.isEqual(geoJSON.geometry.coordinates, prevGeoJSON.geometry.coordinates)){
+						editableLayers.clearLayers()
+						let layer = L.GeoJSON.geometryToLayer(geoJSON, {style})
+						editableLayers.addLayer(layer)
+					}
+			}
+		}
   }
 
   componentWillUnmount() {
