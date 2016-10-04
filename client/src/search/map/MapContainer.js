@@ -1,16 +1,17 @@
 import { connect } from 'react-redux'
 import MapComponent from './MapComponent'
-import { updateGeometry } from './MapActions'
+import { newGeometry, removeGeometry } from './MapActions'
 
 const mapStateToProps = (state) => {
   return {
-    geoJSON: state.getIn(['search', 'geoJSON'])
+    geoJSON: state.getIn(['map', 'geoJSON']) ? state.getIn(['map', 'geoJSON']).toJS() : null
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    handleGeometryUpdate: (geoJSON) => dispatch(updateGeometry(geoJSON))
+    handleNewGeometry: geoJSON => dispatch(newGeometry(geoJSON)),
+    removeGeometry: () => dispatch(removeGeometry())
   }
 }
 
