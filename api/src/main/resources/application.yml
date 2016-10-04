@@ -6,6 +6,10 @@ server:
 spring:
   application:
     name: onestop
+  http:
+    multipart:
+      location: /tmp
+      max-request-size: 5MB
 
 logging:
   level:

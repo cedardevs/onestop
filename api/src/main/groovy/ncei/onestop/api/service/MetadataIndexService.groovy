@@ -7,6 +7,7 @@ import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 
 import javax.annotation.PostConstruct
 import java.util.regex.Pattern
@@ -33,8 +34,68 @@ class MetadataIndexService {
     this.indexAdminService = indexAdminService
   }
 
+  public Map loadMetadata(MultipartFile[] documents) {
+
+    def data = []
+    def errors = []
+
+    def bulkRequest = client.prepareBulk()
+    def addRecordToBulk = { record, type ->
+      def id = record.fileIdentifier as String
+      def json = JsonOutput.toJson(record)
+      def insertRequest = client.prepareIndex(STAGING_INDEX, type, id).setSource(json)
+      bulkRequest.add(insertRequest)
+    }
+
+    documents.each { rawDoc ->
+      def filename = rawDoc.originalFilename
+      def document = rawDoc.inputStream.text
+      def storageInfo = MetadataParser.parseIdentifierInfo(document)
+      def id = storageInfo.id
+      if (Pattern.matches(/.*\s.*/, id)) {
+        errors.add([
+            title: 'Load request failed due to bad fileIdentifier value',
+            detail: "Filename: ${filename}; id: ${id}"
+        ])
+      } else {
+        def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
+        def source = MetadataParser.parseXMLMetadataToMap(document)
+        if(type == COLLECTION_TYPE) {
+          source.isoXml = document
+        }
+        addRecordToBulk(source, type)
+      }
+    }
+
+    if (bulkRequest.numberOfActions() > 0) {
+      def bulkResponses = bulkRequest.get().items
+      bulkResponses.each { response ->
+        if(response.isFailed()) {
+          errors.add([
+              title: 'Load request failed, elasticsearch rejected document',
+              detail: "Filename: ${filename}; Failure message: ${response.failureMessage}"
+          ])
+        }
+        else {
+          data.add([
+              id        : response.id,
+              type      : response.type,
+              attributes: [
+                  created: response.response.isCreated()
+              ]
+          ])
+        }
+      }
+
+      return [
+          data: data,
+          errors: errors
+      ]
+    }
+  }
 
   public Map loadMetadata(String document) {
+
     def storageInfo = MetadataParser.parseIdentifierInfo(document)
     def id = storageInfo.id
     if (Pattern.matches(/.*\s.*/, id)) {
