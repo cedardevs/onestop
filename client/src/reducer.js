@@ -4,6 +4,7 @@ import search from './search/SearchReducer'
 import results from './result/ResultReducer'
 import details from './detail/DetailReducer'
 import facets from './search/facet/FacetReducer'
+import map from './search/map/MapReducer'
 import temporal from './search/temporal/TemporalReducer'
 import { LOCATION_CHANGE } from 'react-router-redux'
 
@@ -29,7 +30,8 @@ const reducer = combineReducers({
   details,
   routing,
   facets,
-  temporal
+  temporal,
+  map
 })
 
 export default reducer
