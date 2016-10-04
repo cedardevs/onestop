@@ -73,11 +73,10 @@ export const triggerSearch = (testing, procSelectedFacets) => {
 
     return fetch(apiRoot, fetchParams)
         .then(response => response.json())
-        .then(json => dispatch(completeSearch((function(){
+        .then(json => {
           dispatch(facetsReceived(json.meta, procSelectedFacets))
-          return assignResourcesToMap(json.data)
-        })()
-        )))
+          dispatch(completeSearch(assignResourcesToMap(json.data)))
+        })
   }
 }
 
