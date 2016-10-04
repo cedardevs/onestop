@@ -42,10 +42,10 @@ class LoadIntegrationTests extends Specification {
   @Value('${server.context-path}')
   private String contextPath
 
-  @Value('${elasticsearch.index.storage.name}')
+  @Value('${elasticsearch.index.staging.name}')
   private String INDEX
 
-  @Value('${elasticsearch.index.storage.collectionType}')
+  @Value('${elasticsearch.index.staging.collectionType}')
   private String TYPE
 
   RestTemplate restTemplate
@@ -193,7 +193,7 @@ class LoadIntegrationTests extends Specification {
     }
     def searchRequestC = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
     def searchRequestG = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON)
-        .body('{"filters":[{"type":"facet", "name":"parentIdentifier", "values":["gov.noaa.nodc:NDBC-COOPS"]}]}')
+        .body('{"filters":[{"type":"collection", "values":["gov.noaa.nodc:NDBC-COOPS"]}]}')
 
     when:
     def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }
