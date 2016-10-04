@@ -16,8 +16,7 @@ class SearchRequestParserServiceTest extends Specification {
     def params = slurper.parseText(json)
 
     when:
-    def parsedRequest = requestParser.parseSearchRequest(params)
-    def queryResult = parsedRequest.query
+    def queryResult = requestParser.parseSearchQuery(params)
     def expectedQueryString = """\
         {
           "bool" : {
@@ -48,8 +47,7 @@ class SearchRequestParserServiceTest extends Specification {
     def params = slurper.parseText(request)
 
     when:
-    def parsedRequest = requestParser.parseSearchRequest(params)
-    def queryResult = parsedRequest.query
+    def queryResult = requestParser.parseSearchQuery(params)
     def expectedQueryString = """\
         {
           "bool" : {
@@ -79,8 +77,7 @@ class SearchRequestParserServiceTest extends Specification {
     def params = slurper.parseText(request)
 
     when:
-    def parsedRequest = requestParser.parseSearchRequest(params)
-    def queryResult = parsedRequest.query
+    def queryResult = requestParser.parseSearchQuery(params)
     def expectedQueryString = """\
         {
           "bool" : {
@@ -124,8 +121,7 @@ class SearchRequestParserServiceTest extends Specification {
     def params = slurper.parseText(request)
 
     when:
-    def parsedRequest = requestParser.parseSearchRequest(params)
-    def queryResult = parsedRequest.query
+    def queryResult = requestParser.parseSearchQuery(params)
     def expectedQueryString = """\
         {
           "bool" : {
@@ -164,8 +160,7 @@ class SearchRequestParserServiceTest extends Specification {
     def params = slurper.parseText(request)
 
     when:
-    def parsedRequest = requestParser.parseSearchRequest(params)
-    def queryResult = parsedRequest.query
+    def queryResult = requestParser.parseSearchQuery(params)
     def expectedQueryString = """\
         {
           "bool" : {
@@ -202,8 +197,7 @@ class SearchRequestParserServiceTest extends Specification {
     def params = slurper.parseText(request)
 
     when:
-    def parsedRequest = requestParser.parseSearchRequest(params)
-    def queryResult = parsedRequest.query
+    def queryResult = requestParser.parseSearchQuery(params)
     def expectedQueryString = """\
         {
           "bool" : {

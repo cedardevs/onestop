@@ -4,7 +4,6 @@ import groovy.util.logging.Slf4j
 import org.elasticsearch.action.get.MultiGetResponse
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.Client
-import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.aggregations.bucket.terms.Terms
@@ -68,12 +67,9 @@ class SearchIndexService {
   }
 
   private Map queryElasticSearch(Map params) {
-
-    // Parse the request
-    def parsedRequest = searchRequestParserService.parseSearchRequest(params)
+    def query = searchRequestParserService.parseSearchQuery(params)
     def getCollections = searchRequestParserService.shouldReturnCollections(params)
     def getFacets = params.facets as boolean
-    def query = parsedRequest.query
 
     if (getCollections) {
       // Returning collection results:
@@ -90,9 +86,8 @@ class SearchIndexService {
         result.meta.took = searchResponse.tookInMillis
         return result
       }
-
-
-    } else {
+    }
+    else {
       // Returning granule results:
       def searchResponse = queryAgainstGranules(query, params.page, getFacets ?: false, true, false)
       def result = [

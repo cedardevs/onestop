@@ -33,13 +33,9 @@ class SearchRequestParserService {
   ]
 
 
-  public Map parseSearchRequest(Map params) {
-
+  public QueryBuilder parseSearchQuery(Map params) {
     log.debug("Queries: ${params.queries}")
     log.debug("Filters: ${params.filters}")
-
-    def query = assembleQuery(params.queries)
-    def filters = assembleFilters(params.filters)
 
     /*
     query
@@ -49,11 +45,9 @@ class SearchRequestParserService {
             must
                 {queries}
      */
-    def allFilterQuery = QueryBuilders.boolQuery().filter(filters.all).must(query)
-
-    return [
-        query: allFilterQuery,
-    ]
+    def query = assembleQuery(params.queries)
+    def filters = assembleFilters(params.filters)
+    return QueryBuilders.boolQuery().filter(filters).must(query)
   }
 
   public AggregationBuilder createCollectionsAggregation() {
@@ -101,7 +95,7 @@ class SearchRequestParserService {
     return builder
   }
 
-  private Map assembleFilters(List<Map> filters) {
+  private QueryBuilder assembleFilters(List<Map> filters) {
 
     /*For filters:
          * union: A | B | A & B; intersection: A & B
@@ -112,11 +106,8 @@ class SearchRequestParserService {
     */
 
     def builder = QueryBuilders.boolQuery()
-
     if (!filters) {
-      return [
-          all: builder,
-      ]
+      return builder
     }
 
     def groupedFilters = filters.groupBy { it.type }
@@ -160,9 +151,7 @@ class SearchRequestParserService {
       builder.must(QueryBuilders.termsQuery('parentIdentifier', parentIds))
     }
 
-    return [
-        all: builder,
-    ]
+    return builder
   }
 }
 
