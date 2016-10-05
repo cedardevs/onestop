@@ -3,7 +3,7 @@
  .calendarBox {
    background: white;
    clear: left;
-   display: inline;
+   display: block;
    position: absolute !important; /* Necessary to override DayPicker selector default style */
    margin: 10px 0 0 10px;
  }

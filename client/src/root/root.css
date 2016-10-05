@@ -177,7 +177,7 @@ input {
   background-color: $color-primary;
   text-shadow: 0 0 5px black;
   margin-right: .5em;
-  margin-left: -1.5em;
+  margin-left: .5em;
 }
 /* fix for large, unclickable area on button */
 .mapButton:before{
