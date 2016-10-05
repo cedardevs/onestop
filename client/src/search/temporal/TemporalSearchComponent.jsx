@@ -16,7 +16,6 @@ const currentMonth = new Date()
 class TemporalSearch extends React.Component {
   constructor(props) {
     super(props)
-    super(props)
     this.handleDayClick = this.handleDayClick.bind(this)
     this.handleResetClick = this.handleResetClick.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
@@ -45,6 +44,21 @@ class TemporalSearch extends React.Component {
 
   componentWillUnmount() {
     document.removeEventListener('click', this.handleClick, false);
+  }
+
+  componentWillUpdate(nextProps){
+  	this.updateDateTimes(nextProps)
+  }
+
+  updateDateTimes({startDateTime, endDateTime}) {
+    let { from, to, placeholder } = this.state
+    // Handle search reset
+    if (startDateTime === '' && from !== '') {
+      this.setState({from: '', fromTemp: ''})
+    }
+    if (endDateTime === '' && to !== '') {
+      this.setState({to: '', toTemp: ''})
+    }
   }
 
   handleDayClick(e, day) {
@@ -87,8 +101,6 @@ class TemporalSearch extends React.Component {
 
   handleInputChange(e) {
     const { value, id } = e.target
-
-    // If a valid date, promote state date objs, else allow string update only
     if (moment(value, 'L', true).isValid()) {
       let validDate = moment(value).format('L')
       this.setState({
