@@ -28,13 +28,10 @@ class MetadataController {
 
   @RequestMapping(path = '/metadata', method = POST, produces = 'application/json')
   Map load(@RequestParam("files") MultipartFile[] metadataRecords, HttpServletResponse response) {
+    log.debug("Received ${metadataRecords.length} files")
 
     def result = metadataIndexService.loadMetadata(metadataRecords)
-    if (result.data.empty) {
-      response.status = HttpStatus.BAD_REQUEST.value()
-    } else {
-      response.status = HttpStatus.CREATED.value()
-    }
+    response.status = HttpStatus.MULTI_STATUS.value() // FIXME This is accurate but uncommon?
     return result
   }
 
@@ -48,6 +45,7 @@ class MetadataController {
       response.status = HttpStatus.BAD_REQUEST.value()
     }
     return result
+
   }
 
   @RequestMapping(path = '/metadata/{id}', method = [GET, HEAD], produces = 'application/json')
