@@ -30,7 +30,7 @@ class FacetList extends React.Component {
     }
 
     this.modifySelectedFacets(this.selectedFacets)
-    this.submit(!!this.selectedFacets.size)
+    this.submit()
   }
 
   toTitleCase(str){
