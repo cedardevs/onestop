@@ -33,9 +33,10 @@ class TemporalSearch extends React.Component {
   initialState() {
     return {
       from: null,
-      fromString: this.userFriendlyStartDateTime,
       to: null,
-      toString: this.userFriendlyEndDateTime,
+      fromTemp: '',
+      toTemp: '',
+      placeholder: 'MM/DD/YYYY',
       initialMonth: currentMonth,
       showCalendar: false
     }
@@ -57,7 +58,7 @@ class TemporalSearch extends React.Component {
     _.forOwn(range, function(val, key){
       if (val) {
         let validDate = moment(val).format('L')
-        self.setState({ [key + 'String']: validDate })
+        self.setState({ [key + 'Temp']: validDate })
         // Update store
         self.formatAndEmit(validDate, key)
       }
@@ -77,9 +78,9 @@ class TemporalSearch extends React.Component {
     e.preventDefault()
     this.setState({
       from: null,
-      fromString: "",
+      fromTemp: "",
       to: null,
-      toString: ""
+      toTemp: ""
     })
     // Reset store
     this.formatAndEmit('', 'from')
@@ -94,12 +95,12 @@ class TemporalSearch extends React.Component {
       let validDate = moment(value).format('L')
       this.setState({
         [id]: moment(value, 'L').toDate(),
-        [id + 'String']: validDate
+        [id + 'Temp']: validDate
       })
       // Update store
       this.formatAndEmit(validDate, id)
     } else {
-      this.setState({ [id + 'String']: value }, this.showCurrentDate)
+      this.setState({ [id + 'Temp']: value }, this.showCurrentDate)
     }
   }
 
@@ -119,43 +120,23 @@ class TemporalSearch extends React.Component {
   }
 
   render() {
-    let { from, to, fromString, toString } = this.state
+    let { from, to, placeholder } = this.state
+    let inputs = ["from", "to"]
     return (
       <div>
-        <div>
-          <div className={styles.dateInputLeft}>
+        {inputs.map( idField => {
+          return <div className={ styles.dateInput }>
             <input
-              className={styles.input}
+              className={ styles.input }
               type="text"
-              id="from"
-              value={ fromString }
-              placeholder="MM-DD-YYYY"
-              onChange={this.handleInputChange}
-              onFocus={ () => {
-                  if (!this.state.showCalendar){
-                    this.toggleDate()
-                  }
-                }
-              }
+              id={ idField }
+              value={ this.state[`${idField}Temp`] }
+              placeholder={ placeholder }
+              onChange={ this.handleInputChange }
+              onFocus={ () => this.setState({showCalendar: true}) }
             />
           </div>
-          <div className={styles.dateInputRight} >
-            <input
-              className={styles.input}
-              type="text"
-              id="to"
-              value={ toString }
-              placeholder="MM-DD-YYYY"
-              onChange={this.handleInputChange}
-              onFocus={ () => {
-                  if (!this.state.showCalendar){
-                    this.toggleDate()
-                  }
-                }
-              }
-            />
-          </div>
-        </div>
+        })}
         <ToggleDisplay show={this.state.showCalendar}>
           <div className={styles.calendarBox}>
             <DayPicker

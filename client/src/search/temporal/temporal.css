@@ -12,16 +12,11 @@
    width: 110px;
  }
 
- .dateInputLeft,
- .dateInputRight  {
+ .dateInput {
    /*float: left;*/
    margin-left: 7px;
-   display: inline;
+   display: inline-block;
  }
-
-.dateInputRight  {
-  margin-right: 2em;
-}
 
 .DayPicker {
   display: flex;
