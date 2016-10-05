@@ -30,7 +30,7 @@ class FacetList extends React.Component {
     }
 
     this.modifySelectedFacets(this.selectedFacets)
-    this.submit(!!this.selectedFacets.size)
+    this.submit()
   }
 
   toTitleCase(str){
@@ -44,11 +44,10 @@ class FacetList extends React.Component {
   render() {
     let facets = []
     let self = this
-    let i = 0, j = 0
     _.forOwn(this.facetMap, (terms,category) => {
       if (!_.isEmpty(terms)) { // Don't load categories that have no results
         facets.push(
-          <Panel header={`${self.toTitleCase(category)}`} key={`${i++}`}>
+          <Panel header={`${self.toTitleCase(category)}`} key={`${category}`}>
             {Object.keys(terms).map( term => {
               let input = {
                 className: styles.checkFacet,
@@ -59,7 +58,7 @@ class FacetList extends React.Component {
                 onChange: self.updateStoreAndSubmitSearch,
                 checked: terms[term].selected
               }
-              return(<div key={`${j++}`}>
+              return(<div key={`${category}-${term}`}>
                 <input {...input}/>
                  <span className={styles.facetLabel}>{self.subFacetLabel(`${term}`)}</span>
                 <div className={`${styles.count} ${styles.numberCircle}`}>{`(${terms[term].count})`}</div>

@@ -79,13 +79,4 @@ describe('Facet reducer', () => {
     expect(mergedFacets).to.deep.include(selectedFacets)
   })
 
-  it('should handle FACETS_RECEIVED w/ NO flag set to not process selected facets', () => {
-    // First select some facets
-    let stateWithFacets = facets(initState, modFacetsAction)
-    // Receive new facets and wipe out 'selected facets'
-    const newSearchFacets = Object.assign({}, facetsRecAction, {procSelectedFacets: false})
-    console.log(JSON.stringify(newSearchFacets))
-    const nonMergedFacets = facets(stateWithFacets, newSearchFacets)
-    expect(nonMergedFacets).to.not.deep.include(selectedFacets)
-  })
 })

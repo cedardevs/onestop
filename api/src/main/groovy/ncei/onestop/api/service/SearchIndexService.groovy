@@ -67,54 +67,29 @@ class SearchIndexService {
   }
 
   private Map queryElasticSearch(Map params) {
+    def query = searchRequestParserService.parseSearchQuery(params)
+    def getCollections = searchRequestParserService.shouldReturnCollections(params)
+    def getFacets = params.facets as boolean
 
-    // Parse the request
-    def parsedRequest = searchRequestParserService.parseSearchRequest(params)
-    def query = parsedRequest.query
-    def queryWithAllFilters = parsedRequest.queryWithAllFilters
-    def postFilter = parsedRequest.postFilter
-
-    if (parsedRequest.collections) {
+    if (getCollections) {
       // Returning collection results:
-      if (params.facets) {
-        if (postFilter) {
-          /* facets && postFilter */
-          def searchResponse1 = queryAgainstGranules(query, true, false, false)
-          def facets = prepareAggregationsForUI(searchResponse1.aggregations, parsedRequest.collections)
-
-          def searchResponse2 = queryAgainstGranules(queryWithAllFilters, false, false, true)
-          def result = getAllCollectionDocuments(searchResponse2, params.page)
-          result.meta.took = searchResponse1.tookInMillis + searchResponse2.tookInMillis
-          result.meta.facets = facets
-          return result
-
-        } else {
-          /* facets && !postFilter */
+      if (getFacets) {
           def searchResponse = queryAgainstGranules(query, true, false, true)
           def result = getAllCollectionDocuments(searchResponse, params.page)
           result.meta.took = searchResponse.tookInMillis
-          result.meta.facets = prepareAggregationsForUI(searchResponse.aggregations, parsedRequest.collections)
+          result.meta.facets = prepareAggregationsForUI(searchResponse.aggregations, getCollections)
           return result
-        }
-
-      } else {
-        def searchResponse
-        if (postFilter) {
-          /* !facets && postFilter */
-          searchResponse = queryAgainstGranules(queryWithAllFilters, false, false, true)
-        } else {
-          /* !facets && !postFilter */
-          searchResponse = queryAgainstGranules(query, false, false, true)
-        }
+      }
+      else {
+        def searchResponse = queryAgainstGranules(query, false, false, true)
         def result = getAllCollectionDocuments(searchResponse, params.page)
         result.meta.took = searchResponse.tookInMillis
         return result
       }
-
-
-    } else {
+    }
+    else {
       // Returning granule results:
-      def searchResponse = queryAgainstGranules(query, postFilter, params.page, params.facets ?: false, true, false)
+      def searchResponse = queryAgainstGranules(query, params.page, getFacets ?: false, true, false)
       def result = [
           data: searchResponse.hits.hits.collect({ [type: it.type, id: it.id, attributes: it.source] }),
           meta: [
@@ -132,15 +107,12 @@ class SearchIndexService {
   }
 
   private SearchResponse queryAgainstGranules(QueryBuilder query,
-                                              QueryBuilder postFilter = null,
                                               Map paginationParams = null,
                                               boolean getGCMDFacets,
                                               boolean getGranuleResults,
                                               boolean getCollectionsAgg) {
 
     def srb = client.prepareSearch(SEARCH_INDEX).setTypes(GRANULE_TYPE).setQuery(query)
-
-    if(postFilter) { srb = srb.setPostFilter(postFilter) }
 
     if(getGCMDFacets) {
       def aggregations = searchRequestParserService.createGCMDAggregations(true)

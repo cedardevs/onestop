@@ -98,5 +98,5 @@
   become: true
   service:
     name: elasticsearch.service
-    state: "{{ 'restarted' if esconfig.changed or esyaml.changed or esinstall.changed else 'started' }}"
+    state: "{{ 'restarted' if esconfig.changed or esyml.changed or esinstall.changed else 'started' }}"
     enabled: yes

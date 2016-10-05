@@ -3,11 +3,10 @@ export const MODIFY_SELECTED_FACETS = 'MODIFY_SELECTED_FACETS'
 export const CLEAR_FACETS = 'CLEAR_FACETS'
 
 
-export const facetsReceived = (metadata, procSelectedFacets = false) => {
+export const facetsReceived = (metadata) => {
   return {
     type: FACETS_RECEIVED,
-    metadata,
-    procSelectedFacets
+    metadata
   }
 }
 

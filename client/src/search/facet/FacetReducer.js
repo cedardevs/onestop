@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import _ from 'lodash'
 import { OPEN, CLOSED } from './FacetActions'
-import { FACETS_RECEIVED, MODIFY_SELECTED_FACETS } from './FacetActions'
+import { FACETS_RECEIVED, MODIFY_SELECTED_FACETS, CLEAR_FACETS } from './FacetActions'
 
 export const initialState = Immutable.fromJS({
   allFacets: null,
@@ -11,21 +11,18 @@ export const initialState = Immutable.fromJS({
 const facets = (state = initialState, action) => {
   switch(action.type) {
     case FACETS_RECEIVED:
-      let categories = Immutable.fromJS(action.metadata.facets)
-      // Update facets with previous checks or reset selected facets w/ new search
-      if (action.procSelectedFacets){
-        categories = categories.mergeDeep(state.get('selectedFacets'))
-      } else {
-        // Reset selected facets to original state
-        state = state.set('selectedFacets', initialState.get('selectedFacets'))
-      }
+      // Update facets with previous checks
+      let categories = Immutable.fromJS(action.metadata.facets).mergeDeep(state.get('selectedFacets'))
       return state.set('allFacets', categories)
 
     case MODIFY_SELECTED_FACETS:
       // Receives an already immutable object from upstream
       const selectedFacets = !_.isEmpty(action.selectedFacets) ?
-        Immutable.fromJS(action.selectedFacets) : initialState.selectedFacets
+          Immutable.fromJS(action.selectedFacets) : initialState.selectedFacets
       return state.set('selectedFacets', selectedFacets)
+
+    case CLEAR_FACETS:
+      return initialState
 
     default:
       return state

@@ -33,13 +33,9 @@ class SearchRequestParserService {
   ]
 
 
-  public Map parseSearchRequest(Map params) {
-
+  public QueryBuilder parseSearchQuery(Map params) {
     log.debug("Queries: ${params.queries}")
     log.debug("Filters: ${params.filters}")
-
-    def query = assembleQuery(params.queries)
-    def filters = assembleFilters(params.filters)
 
     /*
     query
@@ -49,15 +45,9 @@ class SearchRequestParserService {
             must
                 {queries}
      */
-    def completeQuery = QueryBuilders.boolQuery().filter(filters.pre).must(query)
-    def allFilterQuery = QueryBuilders.boolQuery().filter(filters.all).must(query)
-
-    return [
-        query: completeQuery,
-        queryWithAllFilters: allFilterQuery,
-        postFilter: filters.post,
-        collections: filters.collections
-    ]
+    def query = assembleQuery(params.queries)
+    def filters = assembleFilters(params.filters)
+    return QueryBuilders.boolQuery().filter(filters).must(query)
   }
 
   public AggregationBuilder createCollectionsAggregation() {
@@ -86,6 +76,10 @@ class SearchRequestParserService {
     return aggregations
   }
 
+  public Boolean shouldReturnCollections(Map params) {
+    !params.filters.any { it.type == 'collection' }
+  }
+
   private QueryBuilder assembleQuery(List<Map> queries) {
     def builder = QueryBuilders.boolQuery()
     if (!queries) {
@@ -101,7 +95,7 @@ class SearchRequestParserService {
     return builder
   }
 
-  private Map assembleFilters(List<Map> filters) {
+  private QueryBuilder assembleFilters(List<Map> filters) {
 
     /*For filters:
          * union: A | B | A & B; intersection: A & B
@@ -111,24 +105,9 @@ class SearchRequestParserService {
          - intersection probably bool > must > bool > must (single term)
     */
 
-    def postFilters = false
-    def collections = true
-
-    def preBuilder = QueryBuilders.boolQuery()
-    def postBuilder = QueryBuilders.boolQuery()
-    def allBuilder = QueryBuilders.boolQuery()
-
-    // Need post filters as pre filters if querying for collections in order to piece together responses accurately
-    def prePlusAll = [preBuilder, allBuilder]
-    def postPlusAll = [postBuilder, allBuilder]
-
+    def builder = QueryBuilders.boolQuery()
     if (!filters) {
-      return [
-          pre: preBuilder,
-          post: null,
-          all: allBuilder,
-          collections: collections
-      ]
+      return builder
     }
 
     def groupedFilters = filters.groupBy { it.type }
@@ -137,14 +116,10 @@ class SearchRequestParserService {
     groupedFilters.datetime.each {
       // TODO post filters for datetime from timeline view?
       if (it.before) {
-        prePlusAll.each { b ->
-          b.must(QueryBuilders.rangeQuery('temporalBounding.beginDate').lte(it.before))
-        }
+        builder.must(QueryBuilders.rangeQuery('temporalBounding.beginDate').lte(it.before))
       }
       if (it.after) {
-        prePlusAll.each { b ->
-          b.must(QueryBuilders.rangeQuery('temporalBounding.endDate').gte(it.after))
-        }
+        builder.must(QueryBuilders.rangeQuery('temporalBounding.endDate').gte(it.after))
       }
     }
 
@@ -159,18 +134,12 @@ class SearchRequestParserService {
       def shape = ShapeBuilder.parse(parser)
       def relation = ShapeRelation.getRelationByName(it.relation ?: 'intersects')
 
-      prePlusAll.each {b ->
-        b.must(QueryBuilders.geoShapeQuery("spatialBounding", shape, relation))
-      }
+      builder.must(QueryBuilders.geoShapeQuery("spatialBounding", shape, relation))
     }
 
     // Facet filters:
     groupedFilters.facet.each {
-      // Facets are applied as post_filters so that counts on the facet menu don't change but displayed results do
-      postFilters = true
-      postPlusAll.each {b ->
-        b.must(QueryBuilders.termsQuery(facetNameMappings[it.name], it.values))
-      }
+      builder.must(QueryBuilders.termsQuery(facetNameMappings[it.name], it.values))
     }
 
     // Collection filter -- force a union since an intersection on multiple parentIds will return nothing
@@ -179,17 +148,10 @@ class SearchRequestParserService {
       parentIds.addAll(it.values)
     }
     if(parentIds) {
-      collections = false
-      preBuilder.must(QueryBuilders.termsQuery('parentIdentifier', parentIds))
+      builder.must(QueryBuilders.termsQuery('parentIdentifier', parentIds))
     }
 
-    postBuilder = postFilters ? postBuilder : null
-    return [
-        pre: preBuilder,
-        post: postBuilder,
-        all: allBuilder,
-        collections: collections
-    ]
+    return builder
   }
 }
 

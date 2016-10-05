@@ -37,7 +37,8 @@ const loadQuery = () => {
 
     const facets = getQueryContent(queryParams.filters, 'facet')
 
-    store.dispatch(triggerSearch(null, dispatchFacets(facets)))
+    dispatchFacets(facets)
+    store.dispatch(triggerSearch())
   }
 }
 
