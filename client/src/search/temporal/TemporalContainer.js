@@ -6,11 +6,8 @@ import moment from 'moment'
 const mapStateToProps = (state) => {
   const { startDateTime, endDateTime } = state.get('temporal').toJS()
   return {
-    currentDate: state.getIn(['search', 'datetime']),
     startDateTime: state.getIn(['temporal', 'startDateTime']),
-    endDateTime: state.getIn(['temporal', 'endDateTime']),
-    userFriendlyStartDateTime: startDateTime ? moment(startDateTime).format('L') : '',
-    userFriendlyEndDateTime: endDateTime ? moment(endDateTime).format('L') : ''
+    endDateTime: state.getIn(['temporal', 'endDateTime'])
   }
 }
 
