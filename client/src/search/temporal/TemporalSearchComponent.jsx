@@ -16,17 +16,14 @@ const currentMonth = new Date()
 class TemporalSearch extends React.Component {
   constructor(props) {
     super(props)
+    super(props)
     this.handleDayClick = this.handleDayClick.bind(this)
     this.handleResetClick = this.handleResetClick.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
     this.showCurrentDate = this.showCurrentDate.bind(this)
-    this.formatAndEmit = this.formatAndEmit.bind(this)
-    this.toggleDate = this.toggleDate.bind(this)
+    this.formatAndUpdate = this.formatAndUpdate.bind(this)
     this.handleClick = this.handleClick.bind(this)
     this.render = this.render.bind(this)
-    this.initialState = this.initialState.bind(this)
-    this.userFriendlyStartDateTime = props.userFriendlyStartDateTime
-    this.userFriendlyEndDateTime = props.userFriendlyEndDateTime
     this.state = this.initialState()
   }
 
@@ -60,7 +57,7 @@ class TemporalSearch extends React.Component {
         let validDate = moment(val).format('L')
         self.setState({ [key + 'Temp']: validDate })
         // Update store
-        self.formatAndEmit(validDate, key)
+        self.formatAndUpdate(validDate, key)
       }
     })
   }
@@ -70,7 +67,8 @@ class TemporalSearch extends React.Component {
     var component = ReactDOM.findDOMNode(this.refs.daypicker)
     if (this.state.showCalendar && !component.contains(e.target)
         && e.srcElement.id !== 'from' && e.srcElement.id !== 'to' && e.srcElement.id !== 'reset'){
-      this.toggleDate()
+      this.state.showCalendar = !this.state.showCalendar
+      this.forceUpdate()
     }
   }
 
@@ -83,8 +81,8 @@ class TemporalSearch extends React.Component {
       toTemp: ""
     })
     // Reset store
-    this.formatAndEmit('', 'from')
-    this.formatAndEmit('', 'to')
+    this.formatAndUpdate('', 'from')
+    this.formatAndUpdate('', 'to')
   }
 
   handleInputChange(e) {
@@ -98,13 +96,13 @@ class TemporalSearch extends React.Component {
         [id + 'Temp']: validDate
       })
       // Update store
-      this.formatAndEmit(validDate, id)
+      this.formatAndUpdate(validDate, id)
     } else {
       this.setState({ [id + 'Temp']: value }, this.showCurrentDate)
     }
   }
 
-  formatAndEmit(date, id) {
+  formatAndUpdate(date, id) {
     const startEndDate = (id == 'from') ? DateRange.START_DATE : DateRange.END_DATE
     const dateString = date ? moment(date).format() : date //Allow sending of empty string on reset
     this.props.updateOnChange(dateString, startEndDate)
@@ -114,18 +112,13 @@ class TemporalSearch extends React.Component {
     this.refs.daypicker.showMonth(currentMonth)
   }
 
-  toggleDate() {
-    this.state.showCalendar = !this.state.showCalendar
-    this.forceUpdate()
-  }
-
   render() {
     let { from, to, placeholder } = this.state
     let inputs = ["from", "to"]
     return (
       <div>
         {inputs.map( idField => {
-          return <div className={ styles.dateInput }>
+          return <div key={idField} className={ styles.dateInput }>
             <input
               className={ styles.input }
               type="text"
