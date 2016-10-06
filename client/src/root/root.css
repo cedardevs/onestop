@@ -172,6 +172,7 @@ input {
 }
 
 .mapButton {
+  max-height: 2.2em;
   position: relative;
   color: white;
   background-color: $color-primary;
@@ -187,4 +188,9 @@ input {
     right:-1px;
     left:-1px;
     bottom:-1px;
+}
+
+.globeIcon {
+    text-align: center;
+    line-height: 64%;
 }

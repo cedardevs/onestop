@@ -57,7 +57,7 @@ class SearchFieldsComponent extends React.Component {
       </div>
       <button id="mapButton" className={`pure-button ${styles.mapButton}`}
                  onClick={this.toggleMap}>
-        <i className={'fa fa-map fa-lg'}></i>
+        <i className={`${styles.globeIcon} fa fa-globe fa-2x`}></i>
       </button>
       <ToggleDisplay show={this.state.showMap}>
         <div className={styles.mapContainer}>
