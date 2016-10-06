@@ -80,7 +80,7 @@ class SearchIndexService {
     def builder = client.prepareSearch(SEARCH_INDEX).setTypes(GRANULE_TYPE).setQuery(query)
 
     if (getFacets) {
-      def aggregations = searchRequestParserService.createGCMDAggregations(true)
+      def aggregations = searchRequestParserService.createGCMDAggregations(getCollections)
       aggregations.each { a -> builder = builder.addAggregation(a) }
     }
 
@@ -144,7 +144,7 @@ class SearchIndexService {
         ]
     ]
 
-    def facets = prepareFacets(searchResponse, true)
+    def facets = prepareFacets(searchResponse, false)
     if (facets) {
       result.meta.facets = facets
     }
