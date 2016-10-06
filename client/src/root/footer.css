@@ -6,8 +6,9 @@
   max-width: 90%;
   margin: 5px auto;
 }
+
 .container {
-  background: #0a4595;
+  background: $color-primary-darkest;
   justify-content: space-around;
   font-size: 12px;
   width: 100%;

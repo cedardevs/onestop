@@ -5,6 +5,7 @@
     letter-spacing: normal;
     overflow-x: hidden;
     overflow-y: hidden;
+    margin-top: 15px;
 }
 
 /* Override collapsible menu defaults */
