@@ -16,6 +16,8 @@ const currentMonth = new Date()
 class TemporalSearch extends React.Component {
   constructor(props) {
     super(props)
+    this.startDateTime = props.startDateTime
+    this.endDateTime = props.endDateTime
     this.handleDayClick = this.handleDayClick.bind(this)
     this.handleResetClick = this.handleResetClick.bind(this)
     this.handleInputChange = this.handleInputChange.bind(this)
@@ -28,14 +30,24 @@ class TemporalSearch extends React.Component {
 
   initialState() {
     return {
-      from: null,
-      to: null,
+      from: '',
+      to: '',
       fromTemp: '',
       toTemp: '',
       placeholder: 'MM/DD/YYYY',
       initialMonth: currentMonth,
       showCalendar: false
     }
+  }
+
+  componentDidMount() {
+    this.setState({
+      from: this.startDateTime,
+      to: this.endDateTime,
+      fromTemp: this.startDateTime ? moment(this.startDateTime).format('L') : '',
+      toTemp: this.endDateTime ? moment(this.endDateTime).format('L') : ''
+    })
+
   }
 
   componentWillMount() {

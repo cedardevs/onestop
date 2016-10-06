@@ -2,6 +2,7 @@ import queryString from 'query-string'
 import _ from 'lodash'
 import Immutable from 'immutable'
 import store from './store'
+import moment from 'moment'
 import { triggerSearch, updateQuery } from './search/SearchActions'
 import { modifySelectedFacets } from './search/facet/FacetActions'
 import { startDate, endDate } from './search/temporal/TemporalActions'
@@ -28,10 +29,10 @@ const loadQuery = () => {
     const datetime = getQueryContent(queryParams.filters, 'datetime')
     if (!_.isEmpty(datetime[0])) {
       if (datetime[0].hasOwnProperty('after')){
-        store.dispatch(startDate(datetime[0].after))
+        store.dispatch(startDate(moment(datetime[0].after).format()))
       }
       if (datetime[0].hasOwnProperty('before')){
-        store.dispatch(endDate(datetime[0].before))
+        store.dispatch(endDate(moment(datetime[0].before).format()))
       }
     }
 
