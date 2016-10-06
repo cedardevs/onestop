@@ -46,6 +46,7 @@ class ETLService {
   public void reindex() {
     log.info "starting reindex process"
     def start = System.currentTimeMillis()
+    indexAdminService.refresh(STAGING_INDEX)
     def newSearchIndex = indexAdminService.create(SEARCH_INDEX, [GRANULE_TYPE, COLLECTION_TYPE])
 
     try {
