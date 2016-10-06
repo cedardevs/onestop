@@ -37,7 +37,6 @@ class MetadataIndexService {
   public Map loadMetadata(MultipartFile[] documents) {
 
     def data = []
-    def errors = []
 
     def bulkRequest = client.prepareBulk()
     def addRecordToBulk = { record, type ->
@@ -48,48 +47,54 @@ class MetadataIndexService {
     }
 
     documents.each { rawDoc ->
-      def filename = rawDoc.originalFilename
       def document = rawDoc.inputStream.text
       def storageInfo = MetadataParser.parseIdentifierInfo(document)
       def id = storageInfo.id
-      if (Pattern.matches(/.*\s.*/, id)) {
-        errors.add([
+      def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
+
+      def dataRecord = [
+          id: id,
+          type: type,
+          attributes: [
+              filename: rawDoc.originalFilename
+          ]
+      ]
+
+      if(Pattern.matches(/.*\s.*/, id)) {
+        dataRecord.attributes.status = 400
+        dataRecord.attributes.error = [
             title: 'Load request failed due to bad fileIdentifier value',
-            detail: "Filename: ${filename}; id: ${id}"
-        ])
-      } else {
-        def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
+            detail: id
+        ]
+      }
+      else {
         def source = MetadataParser.parseXMLMetadataToMap(document)
         if(type == COLLECTION_TYPE) {
           source.isoXml = document
         }
         addRecordToBulk(source, type)
       }
+      data.add(dataRecord)
     }
 
     if (bulkRequest.numberOfActions() > 0) {
       def bulkResponses = bulkRequest.get().items
-      bulkResponses.each { response ->
+      bulkResponses.eachWithIndex { response, i ->
         if(response.isFailed()) {
-          errors.add([
+          data[i].attributes.status = response.failure.status.status
+          data[i].attributes.error = [
               title: 'Load request failed, elasticsearch rejected document',
-              detail: "Filename: ${filename}; Failure message: ${response.failureMessage}"
-          ])
+              detail: response.failureMessage
+          ]
         }
         else {
-          data.add([
-              id        : response.id,
-              type      : response.type,
-              attributes: [
-                  created: response.response.isCreated()
-              ]
-          ])
+          data[i].attributes.status = response.response.isCreated() ? 201 : 200
+          data[i].attributes.created = response.response.isCreated()
         }
       }
 
       return [
-          data: data,
-          errors: errors
+          data: data
       ]
     }
   }

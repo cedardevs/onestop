@@ -8,11 +8,24 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.WebIntegrationTest
+import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.FileSystemResource
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
+import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.ByteArrayHttpMessageConverter
+import org.springframework.http.converter.FormHttpMessageConverter
+import org.springframework.http.converter.HttpMessageConverter
+import org.springframework.http.converter.ResourceHttpMessageConverter
+import org.springframework.http.converter.StringHttpMessageConverter
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.util.MultiValueMap
+import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import spock.lang.Ignore
 import spock.lang.Specification
@@ -124,6 +137,30 @@ class LoadIntegrationTests extends Specification {
 
     then: "Document not in search results"
     hits.size() == 0
+  }
+
+  def 'Multiple documents are ingested through bulk upload'() {
+    setup:
+    restTemplate.getMessageConverters().add(new FormHttpMessageConverter())
+    def parts = new LinkedMultiValueMap<String, Object>()
+    parts.add("files", new ClassPathResource("data/GHRSST/1.xml"))
+    parts.add("files", new ClassPathResource("data/GHRSST/2.xml"))
+    parts.add("files", new ClassPathResource("data/BadFiles/montauk_forecastgrids_2013.xml"))
+
+    when:
+    def loadResult = restTemplate.postForEntity(loadURI, parts, Map)
+    metadataIndexService.refresh()
+
+    then: "Load returns MULTI-STATUS"
+    loadResult.statusCode == HttpStatus.MULTI_STATUS
+
+    and: "Load returns 3 records in data"
+    loadResult.body.data.size == 3
+
+    and: "Records in expected order with expected status codes "
+    loadResult.body.data[0].attributes.status == HttpStatus.CREATED.value()
+    loadResult.body.data[1].attributes.status == HttpStatus.CREATED.value()
+    loadResult.body.data[2].attributes.status == HttpStatus.BAD_REQUEST.value()
   }
 
   def 'Document rejected when whitespace found in fileIdentifier'() {
