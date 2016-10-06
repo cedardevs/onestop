@@ -136,9 +136,8 @@ class SearchIndexService {
 
   private Map getAllCollectionDocuments(SearchResponse response, Map paginationParams) {
 
-    def collections = response.aggregations.get('collections').getBuckets().collect({ it.key as String })
-
-    if(!collections) {
+    def totalCount = response.aggregations.get('collections').getBuckets().size()
+    if(!totalCount) {
       return [
           data: [],
           meta: [
@@ -147,21 +146,24 @@ class SearchIndexService {
       ]
     }
 
-    def rangeStart
-    def rangeEnd
+    def offset
+    def max
     if(paginationParams) {
-      rangeStart = paginationParams.offset
-      rangeEnd = rangeStart + paginationParams.max - 1
-    } else {
-      // Default first 100 results returned
-      rangeStart = 0
-      if (collections.size >= 100) {
-        rangeEnd = 99
-      } else {
-        rangeEnd = collections.size - 1
-      }
+      offset = paginationParams.offset
+      max = paginationParams.max
     }
-    def collectionsToRetrieve = collections[rangeStart..rangeEnd]
+    else {
+      // Default first 100 results returned
+      offset = 0
+      max = 100
+    }
+
+    def collectionsToRetrieve = response.aggregations.get('collections').getBuckets()
+        .stream()
+        .skip(offset)
+        .limit(max)
+        .map( {i -> i.keyAsString} )
+        .collect()
 
     MultiGetResponse multiGetItemResponses = client.prepareMultiGet().add(SEARCH_INDEX, COLLECTION_TYPE, collectionsToRetrieve).get()
     def result = [
@@ -169,7 +171,7 @@ class SearchIndexService {
           [type: it.type, id: it.id, attributes: it.response.getSourceAsMap()]
         },
         meta: [
-            total: collections.size()
+            total: totalCount
         ]
     ]
     return result
