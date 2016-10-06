@@ -74,14 +74,14 @@ class SearchIndexService {
     if (getCollections) {
       // Returning collection results:
       if (getFacets) {
-          def searchResponse = queryAgainstGranules(query, true, false, true)
+          def searchResponse = queryAgainstGranules(query, getFacets, getCollections)
           def result = getAllCollectionDocuments(searchResponse, params.page)
           result.meta.took = searchResponse.tookInMillis
           result.meta.facets = prepareAggregationsForUI(searchResponse.aggregations, getCollections)
           return result
       }
       else {
-        def searchResponse = queryAgainstGranules(query, false, false, true)
+        def searchResponse = queryAgainstGranules(query, getFacets, getCollections)
         def result = getAllCollectionDocuments(searchResponse, params.page)
         result.meta.took = searchResponse.tookInMillis
         return result
@@ -89,7 +89,7 @@ class SearchIndexService {
     }
     else {
       // Returning granule results:
-      def searchResponse = queryAgainstGranules(query, params.page, getFacets ?: false, true, false)
+      def searchResponse = queryAgainstGranules(query, params.page, getFacets, getCollections)
       def result = [
           data: searchResponse.hits.hits.collect({ [type: it.type, id: it.id, attributes: it.source] }),
           meta: [
@@ -99,7 +99,7 @@ class SearchIndexService {
       ]
 
       if (searchResponse.aggregations) {
-        result.meta.facets = prepareAggregationsForUI(searchResponse.aggregations, false)
+        result.meta.facets = prepareAggregationsForUI(searchResponse.aggregations, getCollections)
       }
       return result
     }
@@ -108,20 +108,19 @@ class SearchIndexService {
 
   private SearchResponse queryAgainstGranules(QueryBuilder query,
                                               Map paginationParams = null,
-                                              boolean getGCMDFacets,
-                                              boolean getGranuleResults,
-                                              boolean getCollectionsAgg) {
+                                              boolean getFacets,
+                                              boolean getCollections) {
 
     def srb = client.prepareSearch(SEARCH_INDEX).setTypes(GRANULE_TYPE).setQuery(query)
 
-    if(getGCMDFacets) {
-      def aggregations = searchRequestParserService.createGCMDAggregations(true)
+    if(getFacets) {
+      def aggregations = searchRequestParserService.createGCMDAggregations(getCollections)
       aggregations.each { a -> srb = srb.addAggregation(a) }
     }
 
-    if(!getGranuleResults) {
+    if(getCollections) {
       // Pagination needs to be handled on collections -- only getting aggregations here
-      if(getCollectionsAgg) { srb = srb.addAggregation(searchRequestParserService.createCollectionsAggregation()) }
+      srb = srb.addAggregation(searchRequestParserService.createCollectionsAggregation())
       srb = srb.setSize(0)
     } else {
       if (paginationParams) {
