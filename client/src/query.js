@@ -27,18 +27,11 @@ const loadQuery = () => {
     if (!_.isEmpty(geometry[0])) dispatchGeometry(geometry[0].geometry)
 
     const datetime = getQueryContent(queryParams.filters, 'datetime')
-    if (!_.isEmpty(datetime[0])) {
-      if (datetime[0].hasOwnProperty('after')){
-        store.dispatch(startDate(moment(datetime[0].after).format()))
-      }
-      if (datetime[0].hasOwnProperty('before')){
-        store.dispatch(endDate(moment(datetime[0].before).format()))
-      }
-    }
+    if (!_.isEmpty(datetime[0])) dispatchDatetimes(datetime[0])
 
     const facets = getQueryContent(queryParams.filters, 'facet')
-
     dispatchFacets(facets)
+
     store.dispatch(triggerSearch())
   }
 }
@@ -48,6 +41,17 @@ const getQueryContent = (querySection, type) => {
     return o.type === type
   })
   return queryContent ? queryContent : []
+}
+
+const dispatchDatetimes = ({before, after}) => {
+    if (after) {
+      let afterDate = moment(after).format()
+      store.dispatch(startDate(afterDate))
+    }
+    if (before) {
+      let beforeDate = moment(before).format()
+      store.dispatch(endDate(beforeDate)
+    }
 }
 
 const dispatchFacets = facets => {
