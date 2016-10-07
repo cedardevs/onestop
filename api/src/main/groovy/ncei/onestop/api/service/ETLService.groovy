@@ -77,7 +77,7 @@ class ETLService {
         def collections = client.prepareSearch(STAGING_INDEX).setTypes(COLLECTION_TYPE)
             .addSort("fileIdentifier", SortOrder.ASC).setFrom(offset).setSize(increment).execute().actionGet().hits.hits
         collections.each { collection ->
-          def collectionDoc = collection.source
+          def collectionDoc = collection.source.findAll { it.key != 'isoXml' }
           log.debug('Starting indexing of collection ' + collectionDoc.fileIdentifier) //fixme delete later
           addRecordToBulk(collectionDoc, COLLECTION_TYPE) // Add collections whether they have granules or not
           def granuleScroll = client.prepareSearch(STAGING_INDEX)

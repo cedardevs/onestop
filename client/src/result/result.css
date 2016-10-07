@@ -12,7 +12,13 @@ $cardWidth: 300px;
     width: 230px;
     border: 1px solid color($color-primary lightness(-10%));
     background-color: $color-primary;
-    margin-bottom: -100em;
+}
+
+@media screen {
+    .facetSideBar{
+        margin-bottom: -100em;
+        margin-top: -4%;
+    }
 }
 
 .gridContainer {
@@ -23,12 +29,12 @@ $cardWidth: 300px;
     overflow-x: hidden;
 }
 
-.facetContainer h2 {
-    color: #000;
-}
-.facetContainer div {
-    background: white;
-}
+/*.facetContainer h2 {*/
+    /*color: #000;*/
+/*}*/
+/*.facetContainer div {*/
+    /*background: white;*/
+/*}*/
 
 .spinner {
     display: flex;

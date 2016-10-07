@@ -69,6 +69,7 @@ class SearchFieldsComponent extends React.Component {
       <button className={`${styles.landingButton}`} onClick={this.submit}>
         <i className={'fa fa-search fa-lg'}></i>
       </button>
+      <p className={styles.oneStopText}> OneStop </p>
     </div>
   }
 }

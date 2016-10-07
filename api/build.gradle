@@ -1,6 +1,7 @@
 import com.wiredforcode.gradle.spawn.SpawnProcessTask
 import com.wiredforcode.gradle.spawn.KillProcessTask
 
+apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'spring-boot'
 apply plugin: "com.wiredforcode.spawn"
@@ -18,7 +19,7 @@ dependencies {
   compile 'org.codehaus.groovy:groovy-all:2.4.6'
   compile 'org.elasticsearch:elasticsearch:2.3.5'
   compile 'org.springframework.boot:spring-boot-starter-web'
-  compile 'org.springframework.boot:spring-boot-starter-tomcat'
+  compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-devtools'
   compile 'com.github.fge:json-schema-validator:2.2.6'
   compile 'org.apache.commons:commons-lang3:3.4'
@@ -27,6 +28,8 @@ dependencies {
   compile 'org.apache.lucene:lucene-expressions:5.5.0'
   compile 'org.elasticsearch.module:lang-expression:2.3.5'
 
+  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
   testCompile "org.spockframework:spock-spring:1.0-groovy-2.4"
   testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
@@ -34,14 +37,14 @@ dependencies {
 }
 
 ext {
-  outputJar = file("${buildDir}/libs/${rootProject.name}-${project.name}-${project.version}.jar")
+  outputWar = file("${buildDir}/libs/${rootProject.name}-${project.name}-${project.version}.war")
 }
 
 bootRun {
   dependsOn ':elasticsearch:start'
 }
 
-jar {
+war {
   appendix = 'tmp' // changes output name so bootRepackage doesn't overwrite it
 }
 
@@ -50,10 +53,10 @@ springBoot {
 }
 
 bootRepackage {
-  outputFile = outputJar
+  outputFile = outputWar
   excludeDevtools = true
   executable = true
-  onlyIf { !tasks.getByName('jar').state.upToDate }
+  onlyIf { !tasks.getByName('war').state.upToDate }
 }
 
 task start(type: SpawnProcessTask) {
@@ -61,7 +64,7 @@ task start(type: SpawnProcessTask) {
   onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
 
   directory projectDir.absolutePath
-  command "java -jar ${outputJar}"
+  command "java -jar ${outputWar}"
   ready 'Started Application'
 }
 
@@ -96,7 +99,7 @@ check.dependsOn integrationTest
 publishing {
   publications {
     main(MavenPublication) {
-      artifact outputJar
+      artifact outputWar
       artifactId "${rootProject.name}-${project.name}"
     }
   }

@@ -69,8 +69,17 @@ input {
   font-size: 0.8em;
 }
 
+.oneStopText {
+  color: white;
+  font-size: 1.5em;
+  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
+  float: right;
+  padding: 0 120px 0 0;
+}
+
 .breadCrumbs {
-  margin: 1% 0 2% 3%;
+  margin: 1% 0 2% 23%;
+  width: 85%;
   font-size: 1.3em;
   a, a:visited, a:hover, a:active {
     color: inherit;
