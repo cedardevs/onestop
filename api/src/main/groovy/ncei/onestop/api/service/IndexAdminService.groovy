@@ -20,7 +20,7 @@ class IndexAdminService {
     def indexName = "${baseName}-${System.currentTimeMillis()}"
 
     // Initialize index:
-    def cl = ClassLoader.systemClassLoader
+    def cl = Thread.currentThread().contextClassLoader
     def indexSettings = cl.getResourceAsStream("config/${baseName}-settings.json").text
     client.admin().indices().prepareCreate(indexName).setSettings(indexSettings).execute().actionGet()
     client.admin().cluster().prepareHealth(indexName).setWaitForActiveShards(1).execute().actionGet()
