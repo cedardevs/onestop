@@ -184,6 +184,9 @@ DELETE      | /api/metadata/[fileIdentifier]/   | (none)    | Delete a metadata 
 - <a href="getfootnote">2</a>: The trailing `/` in URLs which include fileIdentifiers is important if the fileIdentifier includes any `.` characters.
 
 ##### Indexing Metadata for Search
+Some sample metadata load processes are available.  For example, on the command line you can run:
+
+>gradle etlDEMToLocalApi
 
 Once some metadata documents have been uploaded into the system, you can trigger the indexing process to
 make them searchable. This process will correlate child records with their parents and index them such that
