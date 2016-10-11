@@ -32,7 +32,8 @@ h1, h2, h3, h4, h5 {
   padding: 10px 16px 30px;
   margin: 0 2em;
   color: #fff;
-  background: rgb(0,0,0,.7);
+  background: $color-medium-blue;
+  box-shadow: 6px 8px 5px rgb(0,0,0,.7);
 }
 
 .showcase {
