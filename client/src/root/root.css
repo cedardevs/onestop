@@ -201,5 +201,5 @@ input {
 
 .globeIcon {
     text-align: center;
-    line-height: 64%;
+    line-height: 64% !important;
 }
