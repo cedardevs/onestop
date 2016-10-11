@@ -110,10 +110,8 @@ const dateTime = (startDateTime, endDateTime) => {
 
   if(startDateTime && endDateTime) {
     return {type: 'datetime', after: startDateTime, before: endDateTime}
-
   } else if(startDateTime) {
     return {type: 'datetime', after: startDateTime}
-
   } else {
     return {type: 'datetime', before: endDateTime}
   }

@@ -44,14 +44,12 @@ const getQueryContent = (querySection, type) => {
 }
 
 const dispatchDatetimes = ({before, after}) => {
-    if (after) {
-      let afterDate = moment(after).format()
-      store.dispatch(startDate(afterDate))
-    }
-    if (before) {
-      let beforeDate = moment(before).format()
-      store.dispatch(endDate(beforeDate)
-    }
+  if (after) {
+    store.dispatch(startDate(after))
+  }
+  if (before) {
+    store.dispatch(endDate(before))
+  }
 }
 
 const dispatchFacets = facets => {

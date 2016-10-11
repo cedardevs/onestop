@@ -42,8 +42,8 @@ class TemporalSearch extends React.Component {
 
   componentDidMount() {
     this.setState({
-      from: this.startDateTime,
-      to: this.endDateTime,
+      from: this.startDateTime ? moment(this.startDateTime).toDate() : '',
+      to: this.endDateTime ? moment(this.endDateTime).toDate() : '',
       fromTemp: this.startDateTime ? moment(this.startDateTime).format('L') : '',
       toTemp: this.endDateTime ? moment(this.endDateTime).format('L') : ''
     })
@@ -63,7 +63,7 @@ class TemporalSearch extends React.Component {
   }
 
   updateDateTimes({startDateTime, endDateTime}) {
-    let { from, to, placeholder } = this.state
+    let { from, to } = this.state
     // Handle search reset
     if (startDateTime === '' && from !== '') {
       this.setState({from: '', fromTemp: ''})
@@ -137,7 +137,6 @@ class TemporalSearch extends React.Component {
   }
 
   render() {
-    let { from, to, placeholder } = this.state
     let inputs = ["from", "to"]
     return (
       <div>
@@ -148,7 +147,7 @@ class TemporalSearch extends React.Component {
               type="text"
               id={ idField }
               value={ this.state[`${idField}Temp`] }
-              placeholder={ placeholder }
+              placeholder='MM/DD/YYYY'
               onChange={ this.handleInputChange }
               onFocus={ () => this.setState({showCalendar: true}) }
             />
@@ -162,7 +161,7 @@ class TemporalSearch extends React.Component {
               initialMonth={ this.state.initialMonth }
               earliestMonth={ earliestMonth }
               currentMonth={ currentMonth }
-              selectedDays={ day => DateUtils.isDayInRange(day, { from, to }) }
+              selectedDays={ day => DateUtils.isDayInRange(day, this.state) }
               captionElement={
                 <YearMonthForm onChange={ initialMonth => this.setState({ initialMonth }) } />
               }
