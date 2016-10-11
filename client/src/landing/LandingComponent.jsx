@@ -1,6 +1,10 @@
 import React from 'react'
 import Slider from 'react-slick'
 import styles from './landing.css'
+import image1 from '../../img/tsunami01.jpg'
+import image2 from '../../img/tsunami02.jpg'
+import image3 from '../../img/tsunami03.jpg'
+import image4 from '../../img/tsunami04.jpg'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -16,31 +20,8 @@ class LandingComponent extends React.Component {
   }
 
   render() {
-    let featured = [
-      '//placehold.it/700x500/ffffff/c0392b/&text=featured1',
-      '//placehold.it/700x500/ffffff/c0392b/&text=featured2',
-      '//placehold.it/700x500/ffffff/c0392b/&text=featured3',
-      '//placehold.it/700x500/ffffff/c0392b/&text=featured4',
-      '//placehold.it/700x500/ffffff/c0392b/&text=featured5'
-    ]
-    let trending = [
-      '//placehold.it/700x500/ffffff/c0392b/&text=trending1',
-      '//placehold.it/700x500/ffffff/c0392b/&text=trending2',
-      '//placehold.it/700x500/ffffff/c0392b/&text=trending3',
-      '//placehold.it/700x500/ffffff/c0392b/&text=trending4',
-      '//placehold.it/700x500/ffffff/c0392b/&text=trending5'
-    ]
     const mapToSliderItem = (url, i) => {
       return <img key={i} src={url} className={`${styles.carouselImg}`}/>
-    }
-    featured = featured.map(mapToSliderItem)
-    trending = trending.map(mapToSliderItem)
-
-    const sliderSettings = {
-      cellAlign: 'center',
-      dragging: true,
-      slidesToShow: 1,
-      slidesToScroll: 1,
     }
 
     let topics = [
@@ -60,18 +41,25 @@ class LandingComponent extends React.Component {
       </div>
     })
 
-    // Kitten test
     var settings = {
       autoplay: true,
-      autoplaySpeed: 5000,
       dots: true,
       infinite: true,
       speed: 500,
-      slidesToShow: 1,
+      slidesToShow: 2,
       slidesToScroll: 1
     }
-    const kittens = <div className='container'>
-      	<Slider {...settings}>
+    // Hard-coded for display, TODO: dynamically pull from API
+    const featuredContainer = <div className='container'>
+      	<Slider { ...{ ...settings, autoplaySpeed: 5000} }>
+        	<div><img src={image1} /></div>
+        	<div><img src={image2} /></div>
+        	<div><img src={image3} /></div>
+        	<div><img src={image4} /></div>
+        </Slider>
+      </div>
+    const trendingContainer = <div className='container'>
+      	<Slider { ...{ ...settings, autoplaySpeed: 5100} }>
         	<div><img src='http://placekitten.com/g/400/200' /></div>
           <div><img src='http://placekitten.com/g/400/200' /></div>
           <div><img src='http://placekitten.com/g/400/200' /></div>
@@ -79,23 +67,23 @@ class LandingComponent extends React.Component {
         </Slider>
       </div>
 
-    return <div className={`pure-g`}>
+    return <div className={`pure-g ${styles.showcase}`}>
       <div className={`pure-u-1`}>
         <div className={`${styles.topicContainer}`}>
           <h2>Search by Topic:</h2>
-          {topics}
+            {topics}
         </div>
       </div>
       <div className={`pure-u-1 pure-u-md-1-2`}>
           <h2>Featured Data Sets:</h2>
           <div className={styles.carouselContainer}>
-            {kittens}
+            {featuredContainer}
           </div>
       </div>
       <div className={`pure-u-1 pure-u-md-1-2`}>
           <h2>Trending Data Sets:</h2>
           <div className={styles.carouselContainer}>
-            {kittens}
+            {trendingContainer}
           </div>
       </div>
     </div>

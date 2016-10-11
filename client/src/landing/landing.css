@@ -24,18 +24,18 @@ h1, h2, h3, h4, h5 {
  }
 }
 
-.carouselContainer {
-  padding: 2em;
-}
-
 .carouselImg {
   max-width: 100%;
 }
 
 .carouselContainer {
+  padding: 10px 16px 30px;
+  margin: 0 2em;
+  color: #fff;
+  background: rgb(0,0,0,.7);
+}
+
+.showcase {
   margin: 0 auto;
-  padding: 40px;
-  width: 80%;
-  color: #333;
-  background: #419be0;
+  width: 90%;
 }
