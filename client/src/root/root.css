@@ -169,6 +169,9 @@ input {
 .clearButton:hover {
   color: #5a5a5a;
 }
+.clearButton:focus {
+  outline: 0;
+}
 
 /*search button*/
 .landingButton {
@@ -178,6 +181,9 @@ input {
   text-shadow: 0 0 5px black;
   background-color: rgb(0,0,0,0);
   margin-right: .5em;
+}
+.landingButton:focus {
+  outline: 0;
 }
 
 .mapButton {
