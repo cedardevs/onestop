@@ -34,7 +34,6 @@ class TemporalSearch extends React.Component {
       to: '',
       fromTemp: '',
       toTemp: '',
-      placeholder: 'MM/DD/YYYY',
       initialMonth: currentMonth,
       showCalendar: false
     }
@@ -116,7 +115,7 @@ class TemporalSearch extends React.Component {
     if (moment(value, 'L', true).isValid()) {
       let validDate = moment(value).format('L')
       this.setState({
-        [id]: moment(value, 'L').toDate(),
+        [id]: moment(value).toDate(),
         [id + 'Temp']: validDate
       })
       // Update store
