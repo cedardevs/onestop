@@ -1,5 +1,5 @@
 import React from 'react'
-import Carousel from 'nuka-carousel'
+import Slider from 'react-slick'
 import styles from './landing.css'
 
 class LandingComponent extends React.Component {
@@ -60,6 +60,25 @@ class LandingComponent extends React.Component {
       </div>
     })
 
+    // Kitten test
+    var settings = {
+      autoplay: true,
+      autoplaySpeed: 5000,
+      dots: true,
+      infinite: true,
+      speed: 500,
+      slidesToShow: 1,
+      slidesToScroll: 1
+    }
+    const kittens = <div className='container'>
+      	<Slider {...settings}>
+        	<div><img src='http://placekitten.com/g/400/200' /></div>
+          <div><img src='http://placekitten.com/g/400/200' /></div>
+          <div><img src='http://placekitten.com/g/400/200' /></div>
+          <div><img src='http://placekitten.com/g/400/200' /></div>
+        </Slider>
+      </div>
+
     return <div className={`pure-g`}>
       <div className={`pure-u-1`}>
         <div className={`${styles.topicContainer}`}>
@@ -68,20 +87,16 @@ class LandingComponent extends React.Component {
         </div>
       </div>
       <div className={`pure-u-1 pure-u-md-1-2`}>
-        <div className={`${styles.carouselContainer}`}>
           <h2>Featured Data Sets:</h2>
-          <Carousel {...sliderSettings}>
-            {featured}
-          </Carousel>
-        </div>
+          <div className={styles.carouselContainer}>
+            {kittens}
+          </div>
       </div>
       <div className={`pure-u-1 pure-u-md-1-2`}>
-        <div className={`${styles.carouselContainer}`}>
           <h2>Trending Data Sets:</h2>
-          <Carousel {...sliderSettings}>
-            {trending}
-          </Carousel>
-        </div>
+          <div className={styles.carouselContainer}>
+            {kittens}
+          </div>
       </div>
     </div>
   }

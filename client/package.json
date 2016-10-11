@@ -19,7 +19,6 @@
     "leaflet-draw": "^0.3.0",
     "lodash": "^4.14.1",
     "moment": "^2.14.1",
-    "nuka-carousel": "^2.0.2",
     "query-string": "^4.2.2",
     "rc-collapse": "^1.6.6",
     "react": "^0.14.8",
@@ -30,11 +29,13 @@
     "react-redux": "^4.4.5",
     "react-router": "^2.5.2",
     "react-router-redux": "^4.0.5",
+    "react-slick": "^0.14.5",
     "react-tap-event-plugin": "^0.2.0",
     "react-toggle-display": "^2.0.2",
     "redux": "^3.5.2",
     "redux-immutable": "^3.0.6",
-    "redux-thunk": "^2.0.1"
+    "redux-thunk": "^2.0.1",
+    "slick-carousel": "^1.6.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.3.6",
