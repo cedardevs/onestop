@@ -9,6 +9,7 @@ import Footer from './Footer.jsx'
 import AlphaBanner from './AlphaBanner.jsx'
 import styles from './root.css'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
+import LoadingContainer from '../loading/LoadingContainer'
 
 class RootComponent extends React.Component {
   constructor(props) {
@@ -51,6 +52,7 @@ class RootComponent extends React.Component {
           </div>
         </div>
       </div>
+      <LoadingContainer/>
       <div className={styles.breadCrumbs}>
               {this.breadcrumbs}
       </div>

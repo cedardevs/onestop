@@ -1,5 +1,6 @@
 import '../specHelper'
 import * as module from '../../src/search/SearchActions'
+import { LOADING_SHOW, LOADING_HIDE } from '../../src/loading/LoadingActions'
 import { initialState } from '../../src/search/SearchReducer'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
@@ -38,13 +39,15 @@ describe('The search action', () => {
     expectedFacets = {"facets":{"science":[{"term":"land","count":2}]}}
 
     const expectedActions = [
+      {type: LOADING_SHOW},
       {type: module.SEARCH},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
         args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
       {type: "FACETS_RECEIVED", metadata: expectedFacets},
-      {type: module.SEARCH_COMPLETE, items: expectedItems}
+      {type: module.SEARCH_COMPLETE, items: expectedItems},
+      {type: LOADING_HIDE}
     ]
 
     const store = mockStore(Immutable.fromJS(testState))
@@ -72,13 +75,15 @@ describe('The search action', () => {
     expectedFacets = {facets: {science: [{term: "land", count: 2}]}}
 
     const expectedActions = [
+      {type: LOADING_SHOW},
       {type: module.SEARCH},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
         args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
       {type: "FACETS_RECEIVED", metadata:expectedFacets},
-      {type: module.SEARCH_COMPLETE, items: expectedItems}
+      {type: module.SEARCH_COMPLETE, items: expectedItems},
+      {type: LOADING_HIDE}
     ]
 
     // Empty requestBody; params passed directly to triggerSearch

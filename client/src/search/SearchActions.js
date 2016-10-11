@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
+import { showLoading, hideLoading } from '../loading/LoadingActions'
 import queryString from 'query-string'
 import { facetsReceived } from './facet/FacetActions'
 
@@ -50,6 +51,7 @@ export const triggerSearch = (testing) => {
       dispatch(push('/')) // Redirect to home
       return
     }
+    dispatch(showLoading())
     dispatch(startSearch())
 
     // Append query to URL
@@ -76,6 +78,7 @@ export const triggerSearch = (testing) => {
         .then(json => {
           dispatch(facetsReceived(json.meta))
           dispatch(completeSearch(assignResourcesToMap(json.data)))
+          dispatch(hideLoading())
         })
   }
 }
