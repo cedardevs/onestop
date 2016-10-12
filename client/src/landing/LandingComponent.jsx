@@ -60,10 +60,10 @@ class LandingComponent extends React.Component {
       </div>
     const trendingContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5100} }>
-        	<div><img src='http://placekitten.com/g/400/200' /></div>
-          <div><img src='http://placekitten.com/g/400/200' /></div>
-          <div><img src='http://placekitten.com/g/400/200' /></div>
-          <div><img src='http://placekitten.com/g/400/200' /></div>
+        	<div><img src={image1} /></div>
+        	<div><img src={image2} /></div>
+        	<div><img src={image3} /></div>
+        	<div><img src={image4} /></div>
         </Slider>
       </div>
 
