@@ -5,6 +5,10 @@ import image1 from '../../img/tsunami01.jpg'
 import image2 from '../../img/tsunami02.jpg'
 import image3 from '../../img/tsunami03.jpg'
 import image4 from '../../img/tsunami04.jpg'
+import dem1 from '../../img/dem1.jpg'
+import dem2 from '../../img/dem2.jpg'
+import ghrsst1 from '../../img/ghrsst1.jpg'
+import ghrsst2 from '../../img/ghrsst2.jpg'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -52,10 +56,10 @@ class LandingComponent extends React.Component {
     // Hard-coded for display, TODO: dynamically pull from API
     const featuredContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5000} }>
-        	<div><img src={image1} /></div>
-        	<div><img src={image2} /></div>
-        	<div><img src={image3} /></div>
-        	<div><img src={image4} /></div>
+        	<div><img src={dem1} /></div>
+        	<div><img src={dem2} /></div>
+        	<div><img src={ghrsst1} /></div>
+        	<div><img src={ghrsst2} /></div>
         </Slider>
       </div>
     const trendingContainer = <div className='container'>
