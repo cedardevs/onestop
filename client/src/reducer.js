@@ -6,6 +6,7 @@ import details from './detail/DetailReducer'
 import facets from './search/facet/FacetReducer'
 import map from './search/map/MapReducer'
 import temporal from './search/temporal/TemporalReducer'
+import loading from './loading/LoadingReducer'
 import { LOCATION_CHANGE } from 'react-router-redux'
 
 // Routing reducer
@@ -31,7 +32,8 @@ const reducer = combineReducers({
   routing,
   facets,
   temporal,
-  map
+  map,
+  loading
 })
 
 export default reducer

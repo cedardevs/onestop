@@ -27,9 +27,18 @@
     group_id: cires.ncei.onestop
     artifact_id: onestop-api
     version: latest
-    dest: /usr/local/bin/onestop-api.jar
+    extension: war
+    dest: /usr/local/bin/onestop-api.war
     state: present
   register: download
+
+- name: Set the permissions on the api app
+  become: true
+  file:
+    path: "{{ download.dest }}"
+    owner: onestop
+    group: onestop
+    mode: 440
 
 - name: Install the api conf file
   become: true
