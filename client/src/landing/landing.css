@@ -24,16 +24,16 @@ h1, h2, h3, h4, h5 {
  }
 }
 
-.carouselImg {
-  max-width: 100%;
-}
-
 .carouselContainer {
   padding: 10px 16px 30px;
+  max-width: 500px;
   margin: 0 2em;
   color: #fff;
-  background: $color-medium-blue;
-  box-shadow: 6px 8px 5px rgb(0,0,0,.7);
+  background: rgb(3,70,148,.75);
+  box-shadow: 6px 8px 5px rgb(3,0,0,.7);
+  img {
+    margin: 0 auto;
+  }
 }
 
 .showcase {
