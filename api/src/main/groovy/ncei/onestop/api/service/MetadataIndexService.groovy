@@ -2,6 +2,7 @@ package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.elasticsearch.action.WriteConsistencyLevel
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
@@ -46,6 +47,7 @@ class MetadataIndexService {
       bulkRequest.add(insertRequest)
     }
 
+    def stagedDate = System.currentTimeMillis()
     documents.each { rawDoc ->
       def document = rawDoc.inputStream.text
       def storageInfo = MetadataParser.parseIdentifierInfo(document)
@@ -53,26 +55,36 @@ class MetadataIndexService {
       def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
 
       def dataRecord = [
-          id: id,
-          type: type,
+          id        : id,
+          type      : type,
           attributes: [
               filename: rawDoc.originalFilename
           ]
       ]
 
-      if(Pattern.matches(/.*\s.*/, id)) {
+      if (Pattern.matches(/.*\s.*/, id)) {
         dataRecord.attributes.status = 400
         dataRecord.attributes.error = [
-            title: 'Load request failed due to bad fileIdentifier value',
+            title : 'Load request failed due to bad fileIdentifier value',
             detail: id
         ]
       }
       else {
-        def source = MetadataParser.parseXMLMetadataToMap(document)
-        if(type == COLLECTION_TYPE) {
-          source.isoXml = document
+        try {
+          def source = MetadataParser.parseXMLMetadataToMap(document)
+          source.stagedDate = stagedDate
+          if (type == COLLECTION_TYPE) {
+            source.isoXml = document
+          }
+          addRecordToBulk(source, type)
         }
-        addRecordToBulk(source, type)
+        catch (Exception e) {
+          dataRecord.attributes.status = 400
+          dataRecord.attributes.error = [
+              title : 'Load request failed due to malformed XML',
+              detail: ExceptionUtils.getRootCauseMessage(e)
+          ]
+        }
       }
       data.add(dataRecord)
     }
@@ -80,10 +92,10 @@ class MetadataIndexService {
     if (bulkRequest.numberOfActions() > 0) {
       def bulkResponses = bulkRequest.get().items
       bulkResponses.eachWithIndex { response, i ->
-        if(response.isFailed()) {
+        if (response.isFailed()) {
           data[i].attributes.status = response.failure.status.status
           data[i].attributes.error = [
-              title: 'Load request failed, elasticsearch rejected document',
+              title : 'Load request failed, elasticsearch rejected document',
               detail: response.failureMessage
           ]
         }
@@ -115,9 +127,10 @@ class MetadataIndexService {
     else {
       def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
       def source = MetadataParser.parseXMLMetadataToMap(document)
-      if(type == COLLECTION_TYPE) {
+      if (type == COLLECTION_TYPE) {
         source.isoXml = document
       }
+      source.stagedDate = System.currentTimeMillis()
       source = JsonOutput.toJson(source)
       def response = client.prepareIndex(STAGING_INDEX, type, id)
           .setSource(source)
@@ -140,8 +153,8 @@ class MetadataIndexService {
     if (response.exists) {
       return [
           data: [
-              id: response.id,
-              type: response.type,
+              id        : response.id,
+              type      : response.type,
               attributes: [
                   source: response.source
               ]
@@ -151,7 +164,7 @@ class MetadataIndexService {
     else {
       return [
           status: 404,
-          title: 'No such document',
+          title : 'No such document',
           detail: "Metadata with ID ${fileIdentifier} does not exist" as String
       ]
     }
@@ -168,7 +181,7 @@ class MetadataIndexService {
     if (success) {
       return [
           data: [
-              id: success.id,
+              id  : success.id,
               type: success.type,
           ],
           meta: [
@@ -180,10 +193,23 @@ class MetadataIndexService {
     else {
       return [
           status: 404,
-          title: 'No such document',
+          title : 'No such document',
           detail: "Metadata with ID ${fileIdentifier} does not exist" as String
       ]
     }
+  }
+
+  public Map deleteMetadata(List<String> fileIdentifiers) {
+    def data = []
+
+    def bulkRequest = client.prepareBulk()
+    def addRecordToBulk = { record, type ->
+      def id = record.fileIdentifier as String
+      def json = JsonOutput.toJson(record)
+      def deleteRequest = client.prepareDelete(STAGING_INDEX, type, id)
+      bulkRequest.add(deleteRequest)
+    }
+
   }
 
   void refresh() {

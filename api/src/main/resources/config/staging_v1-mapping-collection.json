@@ -4,6 +4,10 @@
       "enabled": false
     },
     "properties": {
+      "stagedDate": {
+        "type": "date",
+        "format": "epoch_millis"
+      },
       "fileIdentifier": {
         "type": "string",
         "index": "not_analyzed"
