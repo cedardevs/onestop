@@ -26,4 +26,9 @@ class AdminController {
     return [acknowledged: true]
   }
 
+  @RequestMapping(path = '/admin/refresh', method = [GET, PUT], produces = 'application/json')
+  Map refresh() {
+    etlService.refreshAsync()
+    return [acknowledged: true]
+  }
 }
