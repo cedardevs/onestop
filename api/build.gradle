@@ -17,7 +17,7 @@ repositories {
 
 dependencies {
   compile 'org.codehaus.groovy:groovy-all:2.4.6'
-  compile 'org.elasticsearch:elasticsearch:2.3.5'
+  compile 'org.elasticsearch:elasticsearch:2.4.1'
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-devtools'
@@ -26,7 +26,8 @@ dependencies {
   compile 'com.spatial4j:spatial4j:0.5' // Necessary for embedded ES to have geo_shape type available
   compile 'com.vividsolutions:jts:1.13' // Necessary for embedded ES to have geo_shape type available
   compile 'org.apache.lucene:lucene-expressions:5.5.0'
-  compile 'org.elasticsearch.module:lang-expression:2.3.5'
+  compile 'org.elasticsearch.module:lang-expression:2.4.1'
+  compile 'org.elasticsearch.plugin:delete-by-query:2.4.1'
 
   providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
