@@ -6,9 +6,8 @@ import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.common.util.concurrent.EsExecutors
 import org.elasticsearch.node.Node
 import org.elasticsearch.client.Client
-import org.elasticsearch.node.NodeBuilder
-import org.elasticsearch.env.Environment
 import org.elasticsearch.node.internal.InternalSettingsPreparer
+import org.elasticsearch.plugin.deletebyquery.DeleteByQueryPlugin
 import org.elasticsearch.plugins.Plugin
 import org.elasticsearch.script.expression.ExpressionPlugin
 import org.springframework.context.annotation.Bean
@@ -46,7 +45,7 @@ class IntegrationTestConfig {
         .put(IndexMetaData.SETTING_NUMBER_OF_REPLICAS, 0)
         .put(EsExecutors.PROCESSORS, 1)
         .build()
-    Collection<Class<? extends Plugin>> classpathPlugins = Collections.singletonList(ExpressionPlugin.class)
+    def classpathPlugins = [ExpressionPlugin, DeleteByQueryPlugin]
 
     def node = new IntegrationTestNode(InternalSettingsPreparer.prepareEnvironment(settings, null),
         Version.CURRENT, classpathPlugins)

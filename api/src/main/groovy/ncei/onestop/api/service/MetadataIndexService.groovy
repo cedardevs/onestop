@@ -4,9 +4,16 @@ import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.elasticsearch.action.WriteConsistencyLevel
+import org.elasticsearch.action.deletebyquery.DeleteByQueryAction
+import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder
+import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse
+import org.elasticsearch.action.get.MultiGetResponse
 import org.elasticsearch.client.Client
+import org.elasticsearch.action.bulk.BulkRequestBuilder
+import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
@@ -19,6 +26,9 @@ class MetadataIndexService {
 
   @Value('${elasticsearch.index.staging.name}')
   String STAGING_INDEX
+
+  @Value('${elasticsearch.index.search.name}')
+  String SEARCH_INDEX
 
   @Value('${elasticsearch.index.staging.collectionType}')
   String COLLECTION_TYPE
@@ -163,51 +173,113 @@ class MetadataIndexService {
     }
     else {
       return [
-          status: 404,
+          status: HttpStatus.NOT_FOUND.value(),
           title : 'No such document',
           detail: "Metadata with ID ${fileIdentifier} does not exist" as String
       ]
     }
   }
 
-  public Map deleteMetadata(String fileIdentifier) {
-    // delete requires explicit type, so we have to try deleting from both types
-    def responses = [COLLECTION_TYPE, GRANULE_TYPE].collect {
-      client.prepareDelete(STAGING_INDEX, it, fileIdentifier)
-          .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
-          .execute().actionGet()
-    }
-    def success = responses.find { it.found }
-    if (success) {
-      return [
-          data: [
-              id  : success.id,
-              type: success.type,
-          ],
-          meta: [
-              deleted: true,
-              message: "Deleted metadata with ID ${success.id}" as String
-          ]
-      ]
-    }
-    else {
-      return [
-          status: 404,
-          title : 'No such document',
-          detail: "Metadata with ID ${fileIdentifier} does not exist" as String
-      ]
-    }
-  }
-
-  public Map deleteMetadata(List<String> fileIdentifiers) {
-    def data = []
-
+  public Map deleteMetadata(String fileIdentifier, String type) {
     def bulkRequest = client.prepareBulk()
-    def addRecordToBulk = { record, type ->
-      def id = record.fileIdentifier as String
-      def json = JsonOutput.toJson(record)
-      def deleteRequest = client.prepareDelete(STAGING_INDEX, type, id)
-      bulkRequest.add(deleteRequest)
+    def data = [
+        id        : fileIdentifier,
+        type      : type,
+        attributes: [
+            successes: [],
+            failures : []
+        ]
+    ]
+
+    def removeCollectionGranules = false
+    if (type == GRANULE_TYPE) {
+      [STAGING_INDEX, SEARCH_INDEX].each { index ->
+        bulkRequest.add(client.prepareDelete(index, type, fileIdentifier))
+      }
+    }
+
+    else if (type == COLLECTION_TYPE) {
+      removeCollectionGranules = true
+      [STAGING_INDEX, SEARCH_INDEX].each { index ->
+        bulkRequest.add(client.prepareDelete(index, COLLECTION_TYPE, fileIdentifier))
+      }
+    }
+
+    else {
+      def docs = client.prepareMultiGet().add(SEARCH_INDEX, null, fileIdentifier).get().responses
+      if (docs.length == 2) {
+        if (docs.any { it.response.source.parentIdentifier == fileIdentifier }) {
+          // No-granule collection
+          data.type = COLLECTION_TYPE
+          bulkRequest.add(client.prepareDelete(STAGING_INDEX, COLLECTION_TYPE, fileIdentifier))
+          [COLLECTION_TYPE, GRANULE_TYPE].each { t ->
+            bulkRequest.add((client.prepareDelete(SEARCH_INDEX, t, fileIdentifier)))
+          }
+        }
+        else {
+          // Collection & unrelated granule
+          return [
+              errors: [
+                  id    : fileIdentifier,
+                  status: HttpStatus.CONFLICT.value(),
+                  title : 'Ambiguous delete request received',
+                  detail: "Collection and granule metadata found with ID ${fileIdentifier}. Try request again with 'type' request param specified." as String
+              ]
+          ]
+        }
+      }
+
+      else if (docs.length == 1) {
+        // Collection or granule
+        if (docs[0].type == COLLECTION_TYPE) {
+          removeCollectionGranules = true
+        }
+        data.type = docs[0].type
+        [STAGING_INDEX, SEARCH_INDEX].each { index ->
+          bulkRequest.add(client.prepareDelete(index, docs[0].type, fileIdentifier))
+        }
+      }
+
+      else if (!docs.length) {
+        return [
+            errors: [
+                id    : fileIdentifier,
+                status: HttpStatus.NOT_FOUND.value(),
+                title : 'No such document',
+                detail: "Metadata with ID ${fileIdentifier} does not exist" as String
+            ]
+        ]
+      }
+    }
+
+    def bulkResponse = bulkRequest.execute().actionGet()
+    bulkResponse.items.each { i ->
+      if(i.failed) {
+        data.attributes.failures.add([
+            index : i.index,
+            type  : i.type,
+            detail: i.failureMessage
+        ])
+      }
+      else {
+        data.attributes.successes.add([
+            index : i.index,
+            type  : i.type,
+            found : i.response.isFound()
+        ])
+      }
+    }
+
+    if (removeCollectionGranules) {
+      DeleteByQueryResponse deleteResponse = new DeleteByQueryRequestBuilder(client, DeleteByQueryAction.INSTANCE)
+          .setIndices([STAGING_INDEX, SEARCH_INDEX])
+          .setTypes(GRANULE_TYPE)
+          .setQuery(QueryBuilders.termQuery('parentIdentifer', fileIdentifier))
+          .execute().actionGet()
+      data.attributes.stagingGranulesFound = deleteResponse.getIndex(STAGING_INDEX).found
+      data.attributes.stagingGranulesDeleted = deleteResponse.getIndex(STAGING_INDEX).deleted
+      data.attributes.searchGranulesFound = deleteResponse.getIndex(SEARCH_INDEX).found
+      data.attributes.searchGranulesDeleted = deleteResponse.getIndex(SEARCH_INDEX).deleted
     }
 
   }
