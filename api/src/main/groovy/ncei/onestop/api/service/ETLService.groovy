@@ -195,7 +195,7 @@ class ETLService {
           addRecordToBulk(collectionDoc, COLLECTION_TYPE) // Add collections whether they have granules or not
           def granuleScroll = client.prepareSearch(STAGING_INDEX)
               .setTypes(GRANULE_TYPE)
-              .addSort('fileIdentifier', SortOrder.ASC)
+              .addSort('_doc', SortOrder.ASC)
               .setScroll(granuleScrollTimeout)
               .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', collectionDoc.fileIdentifier)))
               .setSize(increment)
@@ -246,7 +246,7 @@ class ETLService {
             log.debug('Starting indexing of modified granule(s) in collection ' + collectionDoc.fileIdentifier)
             def granuleScroll = client.prepareSearch(STAGING_INDEX)
                 .setTypes(GRANULE_TYPE)
-                .addSort('fileIdentifier', SortOrder.ASC)
+                .addSort('_doc', SortOrder.ASC)
                 .setScroll(granuleScrollTimeout)
                 .setQuery(QueryBuilders.boolQuery()
                   .must(QueryBuilders.termsQuery('parentIdentifier', collectionDoc.fileIdentifier))
