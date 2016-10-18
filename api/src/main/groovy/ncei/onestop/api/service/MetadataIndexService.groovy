@@ -256,14 +256,14 @@ class MetadataIndexService {
     bulkResponse.items.each { i ->
       if(i.failed) {
         data.attributes.failures.add([
-            index : i.index,
+            index : i.index.substring(0, i.index.indexOf('_')),
             type  : i.type,
             detail: i.failureMessage
         ])
       }
       else {
         data.attributes.successes.add([
-            index : i.index,
+            index : i.index.substring(0, i.index.indexOf('_')),
             type  : i.type,
             found : i.response.isFound()
         ])
@@ -282,6 +282,7 @@ class MetadataIndexService {
       data.attributes.searchGranulesDeleted = deleteResponse.getIndex(SEARCH_INDEX).deleted
     }
 
+    return data
   }
 
   void refresh() {
