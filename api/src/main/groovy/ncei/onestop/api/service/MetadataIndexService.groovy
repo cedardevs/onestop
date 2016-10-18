@@ -206,8 +206,12 @@ class MetadataIndexService {
     }
 
     else {
-      def docs = client.prepareMultiGet().add(SEARCH_INDEX, null, fileIdentifier).get().responses
-      if (docs.length == 2) {
+      def docs = client.prepareMultiGet()
+          .add(SEARCH_INDEX, COLLECTION_TYPE, fileIdentifier)
+          .add(SEARCH_INDEX, GRANULE_TYPE, fileIdentifier)
+          .get().responses
+      def foundDocs = docs.count { it.response.exists }
+      if (foundDocs == 2) {
         if (docs.any { it.response.source.parentIdentifier == fileIdentifier }) {
           // No-granule collection
           data.type = COLLECTION_TYPE
@@ -229,7 +233,7 @@ class MetadataIndexService {
         }
       }
 
-      else if (docs.length == 1) {
+      else if (foundDocs == 1) {
         // Collection or granule
         if (docs[0].type == COLLECTION_TYPE) {
           removeCollectionGranules = true
@@ -240,7 +244,7 @@ class MetadataIndexService {
         }
       }
 
-      else if (!docs.length) {
+      else if (!foundDocs) {
         return [
             errors: [
                 id    : fileIdentifier,
