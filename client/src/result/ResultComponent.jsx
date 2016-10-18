@@ -4,8 +4,12 @@ import styles from './result.css'
 
 const Result = (props) => {
   // Thumbnails are dynamically assigned so style's applied via JS
+  let thumbnailUrl = props.thumbnail && props.thumbnail
+          .replace(/^https?:/, '')
+          .replace(/'/, '%27')
+          .replace(/"/, '%22')
   var localStyles = {
-    background: 'url(' + props.thumbnail.replace(/^https?:/, '') + ')',
+    background: `url('${thumbnailUrl}')`,
     backgroundColor: 'black',
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover',
