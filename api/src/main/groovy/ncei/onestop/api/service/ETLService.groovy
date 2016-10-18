@@ -147,7 +147,7 @@ class ETLService {
   public void refresh() {
     log.info "Starting search index refresh process"
     def start = System.currentTimeMillis()
-    indexAdminService.refresh(STAGING_INDEX)
+    indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
 
     def bulkRequest = client.prepareBulk()
     def recordCount = 0
@@ -276,7 +276,7 @@ class ETLService {
       bulkRequest.get()
     }
 
-    indexAdminService.refresh(SEARCH_INDEX)
+    indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
     def end = System.currentTimeMillis()
     log.info "Reindexed ${recordCount} records in ${(end - start) / 1000}s"
 
