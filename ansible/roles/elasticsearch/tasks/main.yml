@@ -26,7 +26,7 @@
 - name: Install elasticsearch
   become: true
   yum:
-    name: elasticsearch
+    name: elasticsearch-2.4.1
     state: present
   register: esinstall
 
