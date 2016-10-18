@@ -169,7 +169,7 @@ class ETLService {
 
     // Get max stagedDate from search index to serve as reference:
     def sr = client.prepareSearch(SEARCH_INDEX)
-        .setTypes([COLLECTION_TYPE, GRANULE_TYPE])
+        .setTypes(COLLECTION_TYPE, GRANULE_TYPE)
         .setSize(0)
         .addAggregation(AggregationBuilders.max('maxStagedDate').field('stagedDate'))
         .execute().actionGet()
