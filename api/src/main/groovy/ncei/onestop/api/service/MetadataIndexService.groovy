@@ -286,6 +286,7 @@ class MetadataIndexService {
       data.attributes.searchGranulesDeleted = deleteResponse.getIndex(SEARCH_INDEX).deleted
     }
 
+    indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
     return data
   }
 
