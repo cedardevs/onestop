@@ -65,6 +65,9 @@ class MetadataController {
     if (result.errors) {
       response.status = result.errors.status
     }
+    else if(result.attributes.failures) {
+      response.status = HttpStatus.INTERNAL_SERVER_ERROR.value() // FIXME Actual failures are problem with elasticsearch?
+    }
     else {
       response.status = HttpStatus.OK.value()
     }
