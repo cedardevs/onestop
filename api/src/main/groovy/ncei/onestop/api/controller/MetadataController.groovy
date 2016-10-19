@@ -28,10 +28,10 @@ class MetadataController {
 
   @RequestMapping(path = '/metadata', method = POST, produces = 'application/json')
   Map load(@RequestParam("files") MultipartFile[] metadataRecords, HttpServletResponse response) {
-    log.debug("Received ${metadataRecords.length} files")
+    log.debug("Received ${metadataRecords.length} metadata files to load")
 
     def result = metadataIndexService.loadMetadata(metadataRecords)
-    response.status = HttpStatus.MULTI_STATUS.value() // FIXME This is accurate but uncommon?
+    response.status = HttpStatus.MULTI_STATUS.value()
     return result
   }
 
@@ -60,12 +60,16 @@ class MetadataController {
   }
 
   @RequestMapping(path = '/metadata/{id}', method = DELETE, produces = 'application/json')
-  Map delete(@PathVariable String id, HttpServletResponse response) {
-    def result = metadataIndexService.deleteMetadata(id)
-    if (result.meta?.deleted) {
+  Map delete(@PathVariable String id, @RequestParam(value = 'type', required = false) String type, HttpServletResponse response) {
+    def result = metadataIndexService.deleteMetadata(id, type)
+    if (result.errors) {
+      response.status = result.errors.status
+    }
+    else if(result.attributes.failures) {
+      response.status = HttpStatus.INTERNAL_SERVER_ERROR.value() // FIXME Actual failures are problem with elasticsearch?
+    }
+    else {
       response.status = HttpStatus.OK.value()
-    } else {
-      response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
     }
     return result
   }

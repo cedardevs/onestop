@@ -147,7 +147,7 @@ class ETLService {
   public void refresh() {
     log.info "Starting search index refresh process"
     def start = System.currentTimeMillis()
-    indexAdminService.refresh(STAGING_INDEX)
+    indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
 
     def bulkRequest = client.prepareBulk()
     def recordCount = 0
@@ -169,7 +169,7 @@ class ETLService {
 
     // Get max stagedDate from search index to serve as reference:
     def sr = client.prepareSearch(SEARCH_INDEX)
-        .setTypes([COLLECTION_TYPE, GRANULE_TYPE])
+        .setTypes(COLLECTION_TYPE, GRANULE_TYPE)
         .setSize(0)
         .addAggregation(AggregationBuilders.max('maxStagedDate').field('stagedDate'))
         .execute().actionGet()
@@ -195,7 +195,7 @@ class ETLService {
           addRecordToBulk(collectionDoc, COLLECTION_TYPE) // Add collections whether they have granules or not
           def granuleScroll = client.prepareSearch(STAGING_INDEX)
               .setTypes(GRANULE_TYPE)
-              .addSort('fileIdentifier', SortOrder.ASC)
+              .addSort('_doc', SortOrder.ASC)
               .setScroll(granuleScrollTimeout)
               .setQuery(QueryBuilders.boolQuery().must(QueryBuilders.termsQuery('parentIdentifier', collectionDoc.fileIdentifier)))
               .setSize(increment)
@@ -246,7 +246,7 @@ class ETLService {
             log.debug('Starting indexing of modified granule(s) in collection ' + collectionDoc.fileIdentifier)
             def granuleScroll = client.prepareSearch(STAGING_INDEX)
                 .setTypes(GRANULE_TYPE)
-                .addSort('fileIdentifier', SortOrder.ASC)
+                .addSort('_doc', SortOrder.ASC)
                 .setScroll(granuleScrollTimeout)
                 .setQuery(QueryBuilders.boolQuery()
                   .must(QueryBuilders.termsQuery('parentIdentifier', collectionDoc.fileIdentifier))
@@ -276,7 +276,7 @@ class ETLService {
       bulkRequest.get()
     }
 
-    indexAdminService.refresh(SEARCH_INDEX)
+    indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
     def end = System.currentTimeMillis()
     log.info "Reindexed ${recordCount} records in ${(end - start) / 1000}s"
 

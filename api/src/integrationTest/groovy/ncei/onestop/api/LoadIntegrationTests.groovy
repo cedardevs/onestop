@@ -9,25 +9,14 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.boot.test.WebIntegrationTest
 import org.springframework.core.io.ClassPathResource
-import org.springframework.core.io.FileSystemResource
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
-import org.springframework.http.ResponseEntity
-import org.springframework.http.converter.ByteArrayHttpMessageConverter
 import org.springframework.http.converter.FormHttpMessageConverter
-import org.springframework.http.converter.HttpMessageConverter
-import org.springframework.http.converter.ResourceHttpMessageConverter
-import org.springframework.http.converter.StringHttpMessageConverter
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.util.MultiValueMap
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -97,16 +86,15 @@ class LoadIntegrationTests extends Specification {
     getResult.body?.data?.id == docId
 
     when: "Refresh elasticsearch then search"
-    def searchResult = restTemplate.exchange(searchRequest, Map)
     searchIndexService.refresh()
+    def searchResult = restTemplate.exchange(searchRequest, Map)
     def hits = searchResult.body.data
 
     then: "Does not appear in search results yet"
     hits.size() == 0
 
-    when: "Reindex storage then search"
+    when: "Reindex then search"
     etlService.reindex()
-    searchIndexService.refresh()
     searchResult = restTemplate.exchange(searchRequest, Map)
     hits = searchResult.body.data
 
@@ -124,19 +112,12 @@ class LoadIntegrationTests extends Specification {
     searchResult = restTemplate.exchange(searchRequest, Map)
     metadataIndexService.refresh()
 
-    then: "Document is not in storage, but still in search index"
-    deleteResult.body?.meta?.deleted
+    then: "Document is deleted in staging and search indices"
+    deleteResult.body.attributes.successes.count { it.found == true } == 3
+    deleteResult.body.attributes.successes.count { it.index == 'search'} == 2  // Collection & synthesized granule
+    deleteResult.body.attributes.successes.count { it.index == 'staging'} == 1
     getResult.statusCode.value() == 404
-    searchResult.body.data.size() == 1
-
-    when: "Reindex again"
-    etlService.reindex()
-    searchIndexService.refresh()
-    searchResult = restTemplate.exchange(searchRequest, Map)
-    hits = searchResult.body.data
-
-    then: "Document not in search results"
-    hits.size() == 0
+    searchResult.body.data.size() == 0
   }
 
   def 'Multiple documents are ingested through bulk upload'() {
