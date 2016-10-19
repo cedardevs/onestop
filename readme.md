@@ -77,13 +77,13 @@ For more detailed information about each component, see the sections below.
 You can build the software from source by running `./gradlew build` from the root directory of the code.
 
 This will use Gradle to download the necessary dependencies, run the tests, and compile the software.
-The API and client artifacts will be located at `api/build/libs/onestop-api-[version].jar` and `client/build/libs/onestop-client-[version].tar`, respectively.
+The API and client artifacts will be located at `api/build/libs/onestop-api-[version].war` and `client/build/libs/onestop-client-[version].tar`, respectively.
 
 ### API
 
 ##### Installation
-The API is a Spring Boot application that is packaged as a fully executable jar,
-meaning that it can be run with `java -jar onestop-api.jar` or executed directly like `./onestop-api.jar`.
+The API is a Spring Boot application that is packaged as a fully executable war in the api/build/libs folder,
+meaning that it can be run in a standalone webapp container like tomcat, or with `java -jar onestop-api.war`, or executed directly like `./onestop-api.war`.
 
 Probably the simplest way to install the api on a machine is to set it up as an `init.d` or `systemd` service as described in the [Spring Boot service installation guide](http://docs.spring.io/spring-boot/docs/current/reference/html/deployment-install.html#deployment-service).
 For example, linking the application into `init.d` like `ln -s [path to jar] /etc/init.d/onestop-api` will cause the app to run on startup,
