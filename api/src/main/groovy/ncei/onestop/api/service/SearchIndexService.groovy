@@ -1,11 +1,11 @@
 package ncei.onestop.api.service
 
 import groovy.util.logging.Slf4j
+import org.elasticsearch.action.get.MultiGetResponse
 import org.elasticsearch.action.search.SearchRequestBuilder
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilder
-import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.aggregations.bucket.terms.Terms
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
