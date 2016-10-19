@@ -7,9 +7,7 @@ import org.elasticsearch.action.WriteConsistencyLevel
 import org.elasticsearch.action.deletebyquery.DeleteByQueryAction
 import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse
-import org.elasticsearch.action.get.MultiGetResponse
 import org.elasticsearch.client.Client
-import org.elasticsearch.action.bulk.BulkRequestBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
