@@ -173,7 +173,7 @@ class ETLService {
         .setSize(0)
         .addAggregation(AggregationBuilders.max('maxStagedDate').field('stagedDate'))
         .execute().actionGet()
-    def maxSearchStagedDate = sr.aggregations.get('maxStagedDate').getValue()
+    def maxSearchStagedDate = sr.aggregations.get('maxStagedDate').getValueAsString() as long
 
     // Get all collection IDs where stagedDate > maxSearchStagedDate:
     sr = client.prepareSearch(STAGING_INDEX)

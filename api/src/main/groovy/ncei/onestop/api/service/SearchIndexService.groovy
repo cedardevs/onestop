@@ -2,10 +2,10 @@ package ncei.onestop.api.service
 
 import groovy.util.logging.Slf4j
 import org.elasticsearch.action.get.MultiGetResponse
+import org.elasticsearch.action.search.SearchRequestBuilder
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilder
-import org.elasticsearch.search.aggregations.Aggregations
 import org.elasticsearch.search.aggregations.bucket.terms.Terms
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -70,87 +70,47 @@ class SearchIndexService {
     def query = searchRequestParserService.parseSearchQuery(params)
     def getCollections = searchRequestParserService.shouldReturnCollections(params)
     def getFacets = params.facets as boolean
+    def pageParams = params.page as Map
+
+    def searchBuilder = searchRequestBuilder(query, getFacets, getCollections)
+    return getCollections ? getCollectionResults(searchBuilder, pageParams) : getGranuleResults(searchBuilder, pageParams)
+  }
+
+  private SearchRequestBuilder searchRequestBuilder(QueryBuilder query, boolean getFacets, boolean getCollections) {
+    def builder = client.prepareSearch(SEARCH_INDEX).setTypes(GRANULE_TYPE).setQuery(query)
+
+    if (getFacets) {
+      def aggregations = searchRequestParserService.createGCMDAggregations(getCollections)
+      aggregations.each { a -> builder = builder.addAggregation(a) }
+    }
 
     if (getCollections) {
-      // Returning collection results:
-      if (getFacets) {
-          def searchResponse = queryAgainstGranules(query, getFacets, getCollections)
-          def result = getAllCollectionDocuments(searchResponse, params.page)
-          result.meta.took = searchResponse.tookInMillis
-          result.meta.facets = prepareAggregationsForUI(searchResponse.aggregations, getCollections)
-          return result
-      }
-      else {
-        def searchResponse = queryAgainstGranules(query, getFacets, getCollections)
-        def result = getAllCollectionDocuments(searchResponse, params.page)
-        result.meta.took = searchResponse.tookInMillis
-        return result
-      }
-    }
-    else {
-      // Returning granule results:
-      def searchResponse = queryAgainstGranules(query, params.page, getFacets, getCollections)
-      def result = [
-          data: searchResponse.hits.hits.collect({ [type: it.type, id: it.id, attributes: it.source] }),
-          meta: [
-              took : searchResponse.tookInMillis,
-              total: searchResponse.hits.totalHits,
-          ]
-      ]
-
-      if (searchResponse.aggregations) {
-        result.meta.facets = prepareAggregationsForUI(searchResponse.aggregations, getCollections)
-      }
-      return result
+      builder = builder.addAggregation(searchRequestParserService.createCollectionsAggregation())
+      builder = builder.setSize(0)
     }
 
+    log.debug("ES query:${builder}")
+    return builder
   }
 
-  private SearchResponse queryAgainstGranules(QueryBuilder query,
-                                              Map paginationParams = null,
-                                              boolean getFacets,
-                                              boolean getCollections) {
-
-    def srb = client.prepareSearch(SEARCH_INDEX).setTypes(GRANULE_TYPE).setQuery(query)
-
-    if(getFacets) {
-      def aggregations = searchRequestParserService.createGCMDAggregations(getCollections)
-      aggregations.each { a -> srb = srb.addAggregation(a) }
-    }
-
-    if(getCollections) {
-      // Pagination needs to be handled on collections -- only getting aggregations here
-      srb = srb.addAggregation(searchRequestParserService.createCollectionsAggregation())
-      srb = srb.setSize(0)
-    } else {
-      if (paginationParams) {
-        srb = srb.setFrom(paginationParams.offset).setSize(paginationParams.max)
-      } else {
-        srb = srb.setFrom(0).setSize(100)
-      }
-    }
-
-    log.debug("ES query:${srb}")
-    return srb.execute().actionGet()
-  }
-
-  private Map getAllCollectionDocuments(SearchResponse response, Map paginationParams) {
-
+  private Map getCollectionResults(SearchRequestBuilder searchRequestBuilder, Map pageParams) {
+    def response = searchRequestBuilder.execute().actionGet()
     def totalCount = response.aggregations.get('collections').getBuckets().size()
     if(!totalCount) {
       return [
           data: [],
           meta: [
-              total: 0
+              total: 0,
+              took: response.tookInMillis
           ]
       ]
     }
 
     def offset
     def max
-    if(paginationParams) {
-      offset = paginationParams.offset
-      max = paginationParams.max
+    if(pageParams) {
+      offset = pageParams.offset
+      max = pageParams.max
     }
     else {
       // Default first 100 results returned
@@ -171,63 +131,90 @@ class SearchIndexService {
           [type: it.type, id: it.id, attributes: it.response.getSourceAsMap()]
         },
         meta: [
-            total: totalCount
+            total: totalCount,
+            took: response.tookInMillis
         ]
     ]
+
+    def facets = prepareFacets(response, true)
+    if (facets) {
+      result.meta.facets = facets
+    }
+
     return result
   }
 
-  private Map prepareAggregationsForUI(Aggregations aggs, boolean collections) {
+  private getGranuleResults(SearchRequestBuilder searchRequestBuilder, Map pageParams) {
+    int from = pageParams?.offset ?: 0
+    int size = pageParams?.max ?: 100
+    searchRequestBuilder = searchRequestBuilder.setFrom(from).setSize(size)
 
-    def topLevelLocations = ['Continent', 'Geographic Region', 'Ocean', 'Solid Earth', 'Space', 'Vertical Location']
-    def topLevelScience =
-        ['Agriculture', 'Atmosphere', 'Biological Classification', 'Biosphere', 'Climate Indicators',
-         'Cryosphere', 'Human Dimensions', 'Land Surface', 'Oceans', 'Paleoclimate', 'Solid Earth',
-         'Spectral/Engineering', 'Sun-Earth Interactions', 'Terrestrial Hydrosphere']
-
-    def scienceAgg = cleanAggregation(topLevelScience, aggs.get('science').getBuckets(), collections)
-    def locationsAgg = cleanAggregation(topLevelLocations, aggs.get('locations').getBuckets(), collections)
-
-    def instrumentsAgg = cleanAggregation(null, aggs.get('instruments').getBuckets(), collections)
-    def platformsAgg = cleanAggregation(null, aggs.get('platforms').getBuckets(), collections)
-    def projectsAgg = cleanAggregation(null, aggs.get('projects').getBuckets(), collections)
-    def dataCentersAgg = cleanAggregation(null, aggs.get('dataCenters').getBuckets(), collections)
-    def dataResolutionAgg = cleanAggregation(null, aggs.get('dataResolution').getBuckets(), collections)
-
-    return [
-        science: scienceAgg,
-        locations: locationsAgg,
-        instruments: instrumentsAgg,
-        platforms: platformsAgg,
-        projects: projectsAgg,
-        dataCenters: dataCentersAgg,
-        dataResolution: dataResolutionAgg
+    def searchResponse = searchRequestBuilder.execute().actionGet()
+    def result = [
+        data: searchResponse.hits.hits.collect({ [type: it.type, id: it.id, attributes: it.source] }),
+        meta: [
+            took : searchResponse.tookInMillis,
+            total: searchResponse.hits.totalHits,
+        ]
     ]
+
+    def facets = prepareFacets(searchResponse, false)
+    if (facets) {
+      result.meta.facets = facets
+    }
+
+    return result
+  }
+
+  private static final topLevelKeywords = [
+      'science': [
+          'Agriculture', 'Atmosphere', 'Biological Classification', 'Biosphere', 'Climate Indicators',
+          'Cryosphere', 'Human Dimensions', 'Land Surface', 'Oceans', 'Paleoclimate', 'Solid Earth',
+          'Spectral/Engineering', 'Sun-Earth Interactions', 'Terrestrial Hydrosphere'
+      ],
+      'location': [
+          'Continent', 'Geographic Region', 'Ocean', 'Solid Earth', 'Space', 'Vertical Location'
+      ]
+  ]
+
+  private Map prepareFacets(SearchResponse searchResponse, boolean collections) {
+    def aggregations = searchResponse.aggregations
+    if (!aggregations) {
+      return null
+    }
+    def facetNames = searchRequestParserService.facetNameMappings.keySet()
+    def hasFacets = false
+    def result = [:]
+    facetNames.each { name ->
+      def topLevelKeywords = topLevelKeywords[name]
+      def buckets = aggregations?.get(name)?.getBuckets()
+      if (buckets) {
+        hasFacets = true
+      }
+      result[name] = cleanAggregation(topLevelKeywords, buckets, collections)
+    }
+    return hasFacets ? result : null
   }
 
   private Map cleanAggregation(List<String> topLevelKeywords, List<Terms.Bucket> originalAgg, boolean collections) {
-
     def cleanAgg = [:]
     originalAgg.each { e ->
       def term = e.key as String
-      def count
-      if(collections) {
-        count = e.getAggregations().get('byCollection').getBuckets().size()
-      } else {
-        count = e.docCount
-      }
+      def count = collections ?
+          e.getAggregations().get('byCollection').getBuckets().size() :
+          e.docCount
 
       if(!topLevelKeywords) {
         cleanAgg.put(term, [count: count])
-
-      } else {
-        if(term.contains('>')) {
+      }
+      else {
+        if (term.contains('>')) {
           def splitTerms = term.split('>', 2)
-          if(topLevelKeywords.contains(splitTerms[0].trim())) {
+          if (topLevelKeywords.contains(splitTerms[0].trim())) {
             cleanAgg.put(term, [count: count])
           }
-
-        } else {
+        }
+        else {
           if(topLevelKeywords.contains(term)) {
             cleanAgg.put(term, [count: count])
           }

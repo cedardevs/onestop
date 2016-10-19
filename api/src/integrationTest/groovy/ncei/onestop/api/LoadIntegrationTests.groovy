@@ -120,6 +120,59 @@ class LoadIntegrationTests extends Specification {
     searchResult.body.data.size() == 0
   }
 
+  def 'Documents loaded are pulled into search index after an ETL refresh'() {
+    setup:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("data/GHRSST/1.xml").text
+    def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+
+    when: "First document is loaded"
+    def loadResult = restTemplate.exchange(loadRequest, Map)
+
+    then: "Load returns CREATED"
+    loadResult.statusCode == HttpStatus.CREATED
+
+    when: "Reindex then search"
+    etlService.reindex()
+    def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
+    def searchResult = restTemplate.exchange(searchRequest, Map)
+    def hits = searchResult.body.data
+
+    then: "Document shows up in search results"
+    hits.size() == 1
+    def fileId = hits.attributes[0].fileIdentifier
+    fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+
+    when: "Another document is loaded"
+    document = ClassLoader.systemClassLoader.getResourceAsStream("data/GHRSST/2.xml").text
+    loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
+    loadResult = restTemplate.exchange(loadRequest, Map)
+
+    then: "Load returns CREATED"
+    loadResult.statusCode == HttpStatus.CREATED
+
+    when: "Search resent"
+    searchResult = restTemplate.exchange(searchRequest, Map)
+    hits = searchResult.body.data
+    fileId = hits?.attributes[0]?.fileIdentifier
+
+    then: "Search is unchanged"
+    hits.size() == 1
+    fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+
+    when: "ETL refresh requested"
+    etlService.refresh()
+    searchResult = restTemplate.exchange(searchRequest, Map)
+    hits = searchResult.body.data
+
+    then: "New document appears in search results"
+    def ids = hits.collect { it.attributes.fileIdentifier }
+    hits.size() == 2
+    ids.containsAll([
+        'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED',
+        'gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R'
+    ])
+  }
+
   def 'Multiple documents are ingested through bulk upload'() {
     setup:
     restTemplate.getMessageConverters().add(new FormHttpMessageConverter())
