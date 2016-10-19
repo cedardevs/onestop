@@ -46,6 +46,7 @@ bootRun {
 
 war {
   appendix = 'tmp' // changes output name so bootRepackage doesn't overwrite it
+  finalizedBy bootRepackage
 }
 
 springBoot {
