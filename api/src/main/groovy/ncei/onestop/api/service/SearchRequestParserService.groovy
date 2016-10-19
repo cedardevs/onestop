@@ -21,7 +21,7 @@ class SearchRequestParserService {
   public SearchRequestParserService() {}
 
 
-  private static final Map<String, String> facetNameMappings = [
+  public static final Map<String, String> facetNameMappings = [
       //'parentIdentifier': 'parentIdentifier',
       'science': 'gcmdScience',
       'locations': 'gcmdLocations',
