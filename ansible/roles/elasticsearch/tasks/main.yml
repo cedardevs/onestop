@@ -112,6 +112,15 @@
     state: present
     name: "delete-by-query"
 
+#   CAN'T USE UNTIL ANSIBLE V2.2
+#- name: Start elasticsearch
+#  become: true
+#  systemd:
+#    name: elasticsearch
+#    daemon_reload: yes
+#    state: "{{ 'restarted' if esconfig.changed or esyml.changed or esinstall.changed else 'started' }}"
+#    enabled: true
+
 - name: Start elasticsearch
   become: true
   service:
