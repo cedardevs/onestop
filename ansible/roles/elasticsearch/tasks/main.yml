@@ -94,6 +94,24 @@
     permanent: true
     immediate: true
 
+- name: Install license plugin
+  become: true
+  elasticsearch_plugin:
+    state: present
+    name: "license"
+
+- name: Install Shield plugin
+  become: true
+  elasticsearch_plugin:
+    state: present
+    name: "shield"
+
+- name: Install delete-by-query plugin
+  become: true
+  elasticsearch_plugin:
+    state: present
+    name: "delete-by-query"
+
 - name: Start elasticsearch
   become: true
   service:
