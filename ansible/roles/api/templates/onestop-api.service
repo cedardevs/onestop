@@ -1,0 +1,10 @@
+[Unit]
+Description=OneStop API
+After=syslog.target
+
+[Service]
+ExecStart=/usr/local/bin/onestop-api.war
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target

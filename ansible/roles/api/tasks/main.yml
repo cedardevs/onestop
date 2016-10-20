@@ -50,19 +50,38 @@
     mode: 440
   register: conf
 
-- name: Stop the api service if the something changed
+#   CAN'T USE UNTIL ANSIBLE V2.2
+#- name: Stop the api service if something changed
+#  become: true
+#  systemd:
+#    name: onestop-api
+#    state: stopped
+#  when: download.changed or conf.changed
+
+- name: Stop the api service if something changed
   become: true
   service:
     name: onestop-api
     state: stopped
   when: download.changed or conf.changed
 
-- name: Link the api app into system services
+- name: Install the api as a systemd service
   become: true
-  file:
-    path: /etc/init.d/onestop-api
-    state: link
-    src: "{{ download.dest }}"
+  template:
+    src: templates/onestop-api.service
+    dest: /etc/systemd/system/onestop-api.service
+    owner: root
+    group: root
+    mode: 664
+
+#   CAN'T USE UNTIL ANSIBLE V2.2
+#- name: Start the api as a system service
+#  become: true
+#  systemd:
+#    name: onestop-api
+#    daemon_reload: yes
+#    state: "{{ 'restarted' if download.changed or conf.changed else 'started'}}"
+#    enabled: true
 
 - name: Start the api as a system service
   become: true
