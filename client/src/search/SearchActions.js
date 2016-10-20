@@ -62,7 +62,7 @@ export const triggerSearch = (testing) => {
     const urlQueryString = queryString.stringify(parsedSearchBody)
     dispatch(push('results?' + urlQueryString))
 
-    let apiRoot = "/api/search"
+    let apiRoot = "/onestop/api/search"
     if(testing) { apiRoot = testing + apiRoot }
     const fetchParams = {
       method: 'POST',

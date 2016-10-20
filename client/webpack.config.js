@@ -82,7 +82,7 @@ module.exports = {
     contentBase: './dist',
     hot: true,
     proxy: {
-      '/api/*': {
+      '/onestop/api/*': {
         target: 'http://localhost:8097/',
         secure: false
       }

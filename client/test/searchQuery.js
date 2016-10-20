@@ -3,7 +3,7 @@ import nock from 'nock'
 const searchQuery = (testingRoot, requestBody) => {
 
   nock(testingRoot)
-      .post('/api/search', requestBody)
+      .post('/onestop/api/search', requestBody)
       .reply(200, {
         data: [
           {
