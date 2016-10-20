@@ -1,7 +1,7 @@
 # classpath config is included in compiled application
 server:
   port: 8097
-  context-path: /api
+  context-path: /onestop/api
 
 spring:
   application:

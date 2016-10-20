@@ -27,7 +27,7 @@ Deploying it requires:
     - Network connectivity to a node in an ElasticSearch cluster
 - Front end:
     - Web server to serve static content
-    - A web server proxy on the client's host from the path `/api` to the API app, `[api host machine]:8097/api` by default.
+    - A web server proxy on the client's host from the path `/onestop/api` to the API app, `[api host machine]:8097/onestop/api` by default.
 
 As an example, here is how you could install the entire system on a single Fedora/RedHat/CentOS machine:
 
@@ -62,10 +62,10 @@ As an example, here is how you could install the entire system on a single Fedor
 
 1. Add a proxy for the API application to your web server, e.g. in nginx add something like:
     ```shell
-    location /api/search {
+    location /onestop/api/search {
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
-        proxy_pass http://127.0.0.1:8097/api/search;
+        proxy_pass http://127.0.0.1:8097/onestop/api/search;
     }
     ```
     
@@ -105,7 +105,7 @@ Config Name         | Default Value
 elasticsearch.host  | localhost
 elasticsearch.port  | 9300
 server.port         | 8097
-server.context-path | /api
+server.context-path | /onestop/api
 logging.file        | (none, logs to stdout by default)
 
 ### Client
@@ -117,14 +117,14 @@ Note that the app requires NodeJS to be built from source (as it is concatenated
 but it has no dependency on node at runtime.
 
 ##### Dependencies
-The client assumes that it can make requests to `/api/search` in order to execute searches.
+The client assumes that it can make requests to `/onestop/api/search` in order to execute searches.
 Hence, a reverse proxy must be put into place from that path to the api application.
 For example, if you are hosting the client using `httpd` and the api application is running
 on the same host, you could add the following to your `httpd.conf`:
 
 ```
-ProxyPass        /api/search http://localhost:8097/api/search
-ProxyPassReverse /api/search http://localhost:8097/api/search
+ProxyPass        /onestop/api/search http://localhost:8097/onestop/api/search
+ProxyPassReverse /onestop/api/search http://localhost:8097/onestop/api/search
 ```
 
 Note that the API application has other endpoints, e.g. for uploading metadata and triggering indexing,
@@ -172,13 +172,13 @@ the `fileIdentifier` of the parent record verbatim. For example:
 ```
 
 These documents can be uploaded, retrieved, and deleted from the system using REST-style
-requests around the `/api/metadata` resource endpoint.
+requests around the `/onestop/api/metadata` resource endpoint.
 
-HTTP Method | Endpoint                          | Body      | Action
-------------|-----------------------------------|-----------|--------------------------
-POST        | /api/metadata                     | ISO XML   | Upload a metadata record <sup>[1](#postfootnote)</sup>
-GET         | /api/metadata/[fileIdentifier]/   | (none)    | Retrieve a metadata record <sup>[2](#getfootnoe)</sup>
-DELETE      | /api/metadata/[fileIdentifier]/   | (none)    | Delete a metadata record <sup>[2](#getfootnoe)</sup>
+HTTP Method | Endpoint                                  | Body      | Action
+------------|-------------------------------------------|-----------|--------------------------
+POST        | /onsetop/api/metadata                     | ISO XML   | Upload a metadata record <sup>[1](#postfootnote)</sup>
+GET         | /onsetop/api/metadata/[fileIdentifier]/   | (none)    | Retrieve a metadata record <sup>[2](#getfootnoe)</sup>
+DELETE      | /onsetop/api/metadata/[fileIdentifier]/   | (none)    | Delete a metadata record <sup>[2](#getfootnoe)</sup>
 
 - <a href="postfootnote">1</a>: Note that POSTing an XML record with the same fileIdentifier as a previously-POSTed record will result in replacing that record.
 - <a href="getfootnote">2</a>: The trailing `/` in URLs which include fileIdentifiers is important if the fileIdentifier includes any `.` characters.
@@ -193,7 +193,7 @@ make them searchable. This process will correlate child records with their paren
 any indexed values provided in the child will override those in the parent, while any values not present in
 the child will be inherited from the parent.
 
-The indexing can be triggered by sending an emtpy `GET` or `PUT` request to `/api/admin/reindex`
+The indexing can be triggered by sending an emtpy `GET` or `PUT` request to `/onestop/api/admin/reindex`
 
 ##### Verifying Search
 
