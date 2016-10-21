@@ -9,8 +9,10 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress
 import org.elasticsearch.client.Client
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.plugin.deletebyquery.DeleteByQueryPlugin
+import org.springframework.context.annotation.Profile
 
 @Configuration
+@Profile("default")
 class ApplicationConfig {
 
   @Value('${elasticsearch.port}')
