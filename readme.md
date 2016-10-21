@@ -176,9 +176,9 @@ requests around the `/onestop/api/metadata` resource endpoint.
 
 HTTP Method | Endpoint                                  | Body      | Action
 ------------|-------------------------------------------|-----------|--------------------------
-POST        | /onsetop/api/metadata                     | ISO XML   | Upload a metadata record <sup>[1](#postfootnote)</sup>
-GET         | /onsetop/api/metadata/[fileIdentifier]/   | (none)    | Retrieve a metadata record <sup>[2](#getfootnoe)</sup>
-DELETE      | /onsetop/api/metadata/[fileIdentifier]/   | (none)    | Delete a metadata record <sup>[2](#getfootnoe)</sup>
+POST        | /onestop/api/metadata                     | ISO XML   | Upload a metadata record <sup>[1](#postfootnote)</sup>
+GET         | /onestop/api/metadata/[fileIdentifier]/   | (none)    | Retrieve a metadata record <sup>[2](#getfootnoe)</sup>
+DELETE      | /onestop/api/metadata/[fileIdentifier]/   | (none)    | Delete a metadata record <sup>[2](#getfootnoe)</sup>
 
 - <a href="postfootnote">1</a>: Note that POSTing an XML record with the same fileIdentifier as a previously-POSTed record will result in replacing that record.
 - <a href="getfootnote">2</a>: The trailing `/` in URLs which include fileIdentifiers is important if the fileIdentifier includes any `.` characters.
