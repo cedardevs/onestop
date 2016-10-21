@@ -1,0 +1,4 @@
+ro_user: "{{ vault_ro_user }}"
+ro_pass: "{{ vault_ro_pass }}"
+rw_user: "{{ vault_rw_user }}"
+rw_pass: "{{ vault_rw_pass }}"
