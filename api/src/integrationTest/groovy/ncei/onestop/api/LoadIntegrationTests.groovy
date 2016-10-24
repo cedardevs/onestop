@@ -209,7 +209,10 @@ class LoadIntegrationTests extends Specification {
     loadResult.statusCode == HttpStatus.BAD_REQUEST
 
     and: "Erroneous file identifier specified"
-    loadResult.body.errors.detail == 'gov.noaa.ngdc.mgg.dem: montauk_forecastgrids_2013'
+    def body = loadResult.body
+    println body
+    body.errors?.any { it.title == 'Bad Request' }
+    body.errors?.any { it.detail.contains('gov.noaa.ngdc.mgg.dem: montauk_forecastgrids_2013') }
   }
 
   def 'Orphan granules are not indexed for searching'() {
