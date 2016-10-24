@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
 import { showLoading, hideLoading } from '../loading/LoadingActions'
 import queryString from 'query-string'
-import { facetsReceived } from './facet/FacetActions'
+import { facetsReceived, clearFacets } from './facet/FacetActions'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -74,10 +74,24 @@ export const triggerSearch = (testing) => {
     }
 
     return fetch(apiRoot, fetchParams)
+        .then(response => {
+          if (response.status < 200 || response.status >= 400) {
+            var error = new Error(response.statusText)
+            error.response = response
+            throw error
+          } else {
+            return response
+          }
+        })
         .then(response => response.json())
         .then(json => {
           dispatch(facetsReceived(json.meta))
           dispatch(completeSearch(assignResourcesToMap(json.data)))
+          dispatch(hideLoading())
+        })
+        .catch(error => {
+          dispatch(clearFacets())
+          dispatch(completeSearch(assignResourcesToMap([])))
           dispatch(hideLoading())
         })
   }
