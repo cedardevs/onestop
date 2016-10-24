@@ -383,7 +383,7 @@ class SearchIntegrationTests extends Specification {
     and: "result contains no items"
     result.body.data == null
     def errors = result.body.errors
-    errors.any { it.title?.contains("failed validation") }
+    errors.any { it.title?.contains("Bad Request") }
   }
 
 }
