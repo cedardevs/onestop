@@ -126,9 +126,7 @@ class MetadataIndexService {
     if (Pattern.matches(/.*\s.*/, id)) {
       return [
           errors: [
-              status: 400,
-              title : 'Load request failed due to bad fileIdentifier value',
-              detail: id
+              [status: 400, title: 'Bad Request', detail: 'Load request failed due to bad fileIdentifier value: ' + id]
           ]
       ]
     }
