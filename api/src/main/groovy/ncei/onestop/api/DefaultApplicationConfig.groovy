@@ -53,7 +53,7 @@ class DefaultApplicationConfig {
 
     if (rwUser && rwPassword) {
       builder.addPlugin(ShieldPlugin)
-      builder.settings(Settings.builder().put('shield.user', "${roUser}:${roPassword}"))
+      builder.settings(Settings.builder().put('shield.user', "${rwUser}:${rwPassword}"))
     }
 
     def client = builder.build()
