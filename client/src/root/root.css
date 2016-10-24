@@ -1,5 +1,28 @@
 @import '../../style/style.css';
 
+$footer-height: 60px;
+$footer-padding: 5px;
+
+.rootContainer {
+  height: 100%;
+}
+
+.mainContent {
+  min-height: 100%;
+  margin-bottom: -$footer-height; /* negative value of footer height */
+}
+
+.main {
+  overflow: hidden;
+  min-height: 100%;
+}
+
+.footer {
+  position: relative;
+  height: $footer-height;
+  clear: both;
+}
+
 input {
   border-radius: 0 !important;
 }

@@ -76,7 +76,7 @@ module.exports = {
     publicPath: '/',
     filename: 'bundle-[hash].js'
   },
-  devtool: '#eval-cheap-module-source-map',
+  devtool: '#eval-source-map',
   debug: true,
   devServer: {
     contentBase: './dist',
