@@ -336,7 +336,7 @@ class SearchIntegrationTests extends Specification {
     result.body.data == null
   }
 
-  def 'Invalid search; returns BAD_REQUEST error when request body is invalid json'() {
+  def 'Invalid search; returns BAD_REQUEST error when request body is malformed json'() {
     setup:
     def badJsonSearch = """\
         {
@@ -357,7 +357,33 @@ class SearchIntegrationTests extends Specification {
     result.headers.getContentType() == contentType
     and: "result contains no items"
     result.body.data == null
-    String error = result.body.error
-    error.contains("Bad Request")
+    def errors = result.body.errors
+    errors.any { it.title?.contains("Bad Request") }
   }
+
+  def 'Invalid search; returns BAD_REQUEST error when request body is invalid'() {
+    setup:
+    def invalidJsonSearch = """\
+        {
+          "queries": [
+            {"type": "NOTAREALTYPE", "value": "NONSENSE"}
+          ]
+        }""".stripIndent()
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(invalidJsonSearch)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Bad request"
+    result.statusCode == HttpStatus.BAD_REQUEST
+    result.headers.getContentType() == contentType
+    and: "result contains no items"
+    result.body.data == null
+    def errors = result.body.errors
+    errors.any { it.title?.contains("Bad Request") }
+  }
+
 }

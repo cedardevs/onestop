@@ -140,21 +140,15 @@ class JsonValidatorSpec extends Specification {
         ]
     }
 
-    def 'invalid requests return success false and a list of errors'() {
+    def 'invalid requests throw an exception to be caught by the default exception handler'() {
         when: "invalid json is validated"
         def jsonSlurper = new JsonSlurper()
         def params = jsonSlurper.parseText(request)
-        def validation = JsonValidator.validateSearchRequestSchema(params)
+        JsonValidator.validateSearchRequestSchema(params)
 
-        then: "success is false"
-        println("validation:${validation}")
-        !validation.success
-
-        and: 'errors are returned'
-        validation.errors instanceof List
-        validation.errors.every { it.status == '400' }
-        validation.errors.every { it.detail instanceof String }
-        validation.errors.every { it.title == "JSON request failed validation" }
+        then: "exception is thrown"
+        def e = thrown(Exception)
+        e.message.contains('not a valid request')
 
         where:
         request << [
