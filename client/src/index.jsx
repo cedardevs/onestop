@@ -34,6 +34,7 @@ const body =
 
 var appDiv = document.createElement('div')
 appDiv.setAttribute('id', 'app')
+appDiv.setAttribute('style', 'height:100%')
 document.body.appendChild(appDiv)
 
 render(body, appDiv)

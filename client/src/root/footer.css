@@ -4,17 +4,14 @@
 
 .panel {
   max-width: 90%;
-  margin: 5px auto;
+  margin: 0 auto;
 }
 
 .container {
   background: $color-primary-darkest;
-  justify-content: space-around;
   font-size: 12px;
   width: 100%;
   color: white;
-  position: fixed;
-  bottom: 0;
 }
 
 .noaaLinks {

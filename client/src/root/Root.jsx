@@ -29,39 +29,40 @@ class RootComponent extends React.Component {
         this.breadcrumbs = undefined
         searchlabel =  "searchMapSpace"
     }
-    return <div>
+    return <div className={styles.rootContainer}>
       <Favicon url={["//cires1.colorado.edu/favicon.ico"]}/>
-          {/*<Favicon url={["//www.noaa.gov/sites/all/themes/custom/noaa/favicon.ico"]}/>*/}
-      <AlphaBanner/>
-      <DetailContainer/>
-      <div className={styles.headerArea}>
-        <div className={'pure-g'}>
-          <div className={`pure-u-1-4 ${styles.orgBox}`}>
-            {/*               <img className={styles.logo} id='logo' src={logoPath} alt="CIRES Logo"/>
-            <a className={styles.orgName}>CIRES-NCEI OneStop</a>
-            <a className={styles.deptName}>DEMONSTRATION SITE</a>
-             */}
-            <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
-            <div className={styles.orgInfo}>
-              <a className={styles.noaa}>National Oceanic and Atmospheric Administration</a>
-              <a className={styles.doc} href="//www.commerce.gov">U.S. Department of Commerce</a>
+      <div className={styles.mainContent}>
+        <AlphaBanner/>
+        <DetailContainer/>
+        <div id="header" className={styles.headerArea}>
+          <div className={'pure-g'}>
+            <div className={`pure-u-1-4 ${styles.orgBox}`}>
+              <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
+              <div className={styles.orgInfo}>
+                <a className={styles.noaa}>National Oceanic and Atmospheric Administration</a>
+                <a className={styles.doc} href="//www.commerce.gov">U.S. Department of Commerce</a>
+              </div>
+            </div>
+            <div  className={`pure-u-3-4 ${styles.landingComponents} ${styles[searchlabel]}`}>
+              <SearchFieldsContainer  />
             </div>
           </div>
-          <div  className={`pure-u-3-4 ${styles.landingComponents} ${styles[searchlabel]}`}>
-            <SearchFieldsContainer  />
+        </div>
+        <div className={styles.main}>
+          <LoadingContainer/>
+          <div className={styles.breadCrumbs}>
+            {this.breadcrumbs}
+          </div>
+          <div className={styles.results}>
+            {this.props.children}
           </div>
         </div>
       </div>
-      <LoadingContainer/>
-      <div className={styles.breadCrumbs}>
-              {this.breadcrumbs}
-      </div>
-      <div className={styles.results}>
-        {this.props.children}
-      </div>
-      <Footer/>
+      <div className={styles.footer}>
+        <Footer/>
      </div>
-    }
+   </div>
+  }
 }
 
 

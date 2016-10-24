@@ -1,5 +1,10 @@
 @import '../style/style.css';
 
+
+html, body {
+  height: 100%;
+}
+
 body {
   @mixin bgImage '../img/isabel1.jpg';
   font-size: 12px;
