@@ -3,7 +3,6 @@ package ncei.onestop.api.service
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.elasticsearch.action.get.MultiGetResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.aggregations.AggregationBuilders
@@ -11,7 +10,6 @@ import org.elasticsearch.search.sort.SortOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Async
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
 @Slf4j
@@ -30,12 +28,12 @@ class ETLService {
   @Value('${elasticsearch.index.staging.granuleType}')
   private String GRANULE_TYPE
 
-  private Client client
+  private Client adminClient
   private IndexAdminService indexAdminService
 
   @Autowired
-  ETLService(Client client, IndexAdminService indexAdminService) {
-    this.client = client
+  ETLService(Client adminClient, IndexAdminService indexAdminService) {
+    this.adminClient = adminClient
     this.indexAdminService = indexAdminService
   }
 
@@ -57,37 +55,37 @@ class ETLService {
     def newSearchIndex = indexAdminService.create(SEARCH_INDEX, [GRANULE_TYPE, COLLECTION_TYPE])
 
     try {
-      def bulkRequest = client.prepareBulk()
+      def bulkRequest = adminClient.prepareBulk()
       def recordCount = 0
       def granuleScrollTimeout = '1m'
       def granulePageSize = 10
 
       def offset = 0
       def increment = 10
-      def collectionsCount = client.prepareSearch(STAGING_INDEX).setTypes(COLLECTION_TYPE)
+      def collectionsCount = adminClient.prepareSearch(STAGING_INDEX).setTypes(COLLECTION_TYPE)
           .setSize(0).execute().actionGet().hits.totalHits
 
       def addRecordToBulk = { record, type ->
         def id = record.fileIdentifier as String
         def json = JsonOutput.toJson(record)
-        def insertRequest = client.prepareIndex(newSearchIndex, type, id).setSource(json)
+        def insertRequest = adminClient.prepareIndex(newSearchIndex, type, id).setSource(json)
         bulkRequest.add(insertRequest)
         recordCount++
         if (bulkRequest.numberOfActions() >= 1000) {
           bulkRequest.get()
-          bulkRequest = client.prepareBulk()
+          bulkRequest = adminClient.prepareBulk()
         }
       }
 
 
       while (offset < collectionsCount) {
-        def collections = client.prepareSearch(STAGING_INDEX).setTypes(COLLECTION_TYPE)
+        def collections = adminClient.prepareSearch(STAGING_INDEX).setTypes(COLLECTION_TYPE)
             .addSort("fileIdentifier", SortOrder.ASC).setFrom(offset).setSize(increment).execute().actionGet().hits.hits
         collections.each { collection ->
           def collectionDoc = collection.source.findAll { it.key != 'isoXml' }
           log.debug('Starting indexing of collection ' + collectionDoc.fileIdentifier) //fixme delete later
           addRecordToBulk(collectionDoc, COLLECTION_TYPE) // Add collections whether they have granules or not
-          def granuleScroll = client.prepareSearch(STAGING_INDEX)
+          def granuleScroll = adminClient.prepareSearch(STAGING_INDEX)
               .setTypes(GRANULE_TYPE)
               .addSort('fileIdentifier', SortOrder.ASC)
               .setScroll(granuleScrollTimeout)
@@ -109,7 +107,7 @@ class ETLService {
               def flattenedRecord = MetadataParser.mergeCollectionAndGranule(collectionDoc, granuleDoc)
               addRecordToBulk(flattenedRecord, GRANULE_TYPE)
             }
-            granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
+            granuleScroll = adminClient.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
             granulesRemain = granuleScroll.hits.hits.length > 0
           }
           log.debug('Finished indexing for collection ' + collectionDoc.fileIdentifier) // fixme delete later
@@ -124,8 +122,8 @@ class ETLService {
 
       indexAdminService.refresh(newSearchIndex)
 
-      def aliasBuilder = client.admin().indices().prepareAliases()
-      def oldIndices = client.admin().indices().prepareGetAliases(SEARCH_INDEX).get().aliases.keysIt()*.toString()
+      def aliasBuilder = adminClient.admin().indices().prepareAliases()
+      def oldIndices = adminClient.admin().indices().prepareGetAliases(SEARCH_INDEX).get().aliases.keysIt()*.toString()
       oldIndices.each {
         aliasBuilder.removeAlias(it, SEARCH_INDEX)
       }
@@ -149,7 +147,7 @@ class ETLService {
     def start = System.currentTimeMillis()
     indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
 
-    def bulkRequest = client.prepareBulk()
+    def bulkRequest = adminClient.prepareBulk()
     def recordCount = 0
     def granuleScrollTimeout = '1m'
     def offset = 0
@@ -158,17 +156,17 @@ class ETLService {
     def addRecordToBulk = { record, type ->
       def id = record.fileIdentifier as String
       def json = JsonOutput.toJson(record)
-      def insertRequest = client.prepareIndex(SEARCH_INDEX, type, id).setSource(json)
+      def insertRequest = adminClient.prepareIndex(SEARCH_INDEX, type, id).setSource(json)
       bulkRequest.add(insertRequest)
       recordCount++
       if (bulkRequest.numberOfActions() >= 1000) {
         bulkRequest.get()
-        bulkRequest = client.prepareBulk()
+        bulkRequest = adminClient.prepareBulk()
       }
     }
 
     // Get max stagedDate from search index to serve as reference:
-    def sr = client.prepareSearch(SEARCH_INDEX)
+    def sr = adminClient.prepareSearch(SEARCH_INDEX)
         .setTypes(COLLECTION_TYPE, GRANULE_TYPE)
         .setSize(0)
         .addAggregation(AggregationBuilders.max('maxStagedDate').field('stagedDate'))
@@ -176,7 +174,7 @@ class ETLService {
     def maxSearchStagedDate = sr.aggregations.get('maxStagedDate').getValueAsString() as long
 
     // Get all collection IDs where stagedDate > maxSearchStagedDate:
-    sr = client.prepareSearch(STAGING_INDEX)
+    sr = adminClient.prepareSearch(STAGING_INDEX)
         .setTypes(COLLECTION_TYPE)
         .setSize(0)
         .setQuery(QueryBuilders.rangeQuery('stagedDate').gt(maxSearchStagedDate))
@@ -188,12 +186,12 @@ class ETLService {
     if(collectionIds) {
       while(offset < collectionIds.size()) {
         def collectionsToRetrieve = collectionIds.stream().skip(offset).limit(increment).collect()
-        def collectionDocs = client.prepareMultiGet().add(STAGING_INDEX, COLLECTION_TYPE, collectionsToRetrieve).get().responses
+        def collectionDocs = adminClient.prepareMultiGet().add(STAGING_INDEX, COLLECTION_TYPE, collectionsToRetrieve).get().responses
         collectionDocs.each { collection ->
           def collectionDoc = collection.response.source.findAll { it.key != 'isoXml' }
           log.debug('Starting indexing of collection ' + collectionDoc.fileIdentifier)
           addRecordToBulk(collectionDoc, COLLECTION_TYPE) // Add collections whether they have granules or not
-          def granuleScroll = client.prepareSearch(STAGING_INDEX)
+          def granuleScroll = adminClient.prepareSearch(STAGING_INDEX)
               .setTypes(GRANULE_TYPE)
               .addSort('_doc', SortOrder.ASC)
               .setScroll(granuleScrollTimeout)
@@ -215,7 +213,7 @@ class ETLService {
               def flattenedRecord = MetadataParser.mergeCollectionAndGranule(collectionDoc, granuleDoc)
               addRecordToBulk(flattenedRecord, GRANULE_TYPE)
             }
-            granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
+            granuleScroll = adminClient.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
             granulesRemain = granuleScroll.hits.hits.length > 0
           }
           log.debug('Finished indexing for collection ' + collectionDoc.fileIdentifier)
@@ -225,7 +223,7 @@ class ETLService {
     }
 
     // Get any granules that are not part of the already covered collections; gather collection IDs first:
-    sr = client.prepareSearch(STAGING_INDEX)
+    sr = adminClient.prepareSearch(STAGING_INDEX)
         .setTypes(GRANULE_TYPE)
         .setSize(0)
         .setQuery(QueryBuilders.boolQuery()
@@ -239,12 +237,12 @@ class ETLService {
       offset = 0 // Reset to zero
       while(offset < collectionIds.size()) {
         def collectionsToRetrieve = collectionIds.stream().skip(offset).limit(increment).collect()
-        def collectionDocs = client.prepareMultiGet().add(STAGING_INDEX, COLLECTION_TYPE, collectionsToRetrieve).get().responses
+        def collectionDocs = adminClient.prepareMultiGet().add(STAGING_INDEX, COLLECTION_TYPE, collectionsToRetrieve).get().responses
         collectionDocs.each { collection ->
           if(collection.response.exists) { // Check in case a granule has been inserted without an existing collection
             def collectionDoc = collection.response.source.findAll { it.key != 'isoXml' }
             log.debug('Starting indexing of modified granule(s) in collection ' + collectionDoc.fileIdentifier)
-            def granuleScroll = client.prepareSearch(STAGING_INDEX)
+            def granuleScroll = adminClient.prepareSearch(STAGING_INDEX)
                 .setTypes(GRANULE_TYPE)
                 .addSort('_doc', SortOrder.ASC)
                 .setScroll(granuleScrollTimeout)
@@ -261,7 +259,7 @@ class ETLService {
                 def flattenedRecord = MetadataParser.mergeCollectionAndGranule(collectionDoc, granuleDoc)
                 addRecordToBulk(flattenedRecord, GRANULE_TYPE)
               }
-              granuleScroll = client.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
+              granuleScroll = adminClient.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
               granulesRemain = granuleScroll.hits.hits.length > 0
             }
             log.debug('Finished indexing modified granule(s) in collection ' + collectionDoc.fileIdentifier)

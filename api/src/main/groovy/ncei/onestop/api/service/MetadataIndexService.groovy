@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
-import javax.annotation.PostConstruct
 import java.util.regex.Pattern
 
 @Slf4j
@@ -34,12 +33,12 @@ class MetadataIndexService {
   @Value('${elasticsearch.index.staging.granuleType}')
   String GRANULE_TYPE
 
-  private Client client
+  private Client adminClient
   private IndexAdminService indexAdminService
 
   @Autowired
-  public MetadataIndexService(Client client, IndexAdminService indexAdminService) {
-    this.client = client
+  public MetadataIndexService(Client adminClient, IndexAdminService indexAdminService) {
+    this.adminClient = adminClient
     this.indexAdminService = indexAdminService
   }
 
@@ -47,11 +46,11 @@ class MetadataIndexService {
 
     def data = []
 
-    def bulkRequest = client.prepareBulk()
+    def bulkRequest = adminClient.prepareBulk()
     def addRecordToBulk = { record, type ->
       def id = record.fileIdentifier as String
       def json = JsonOutput.toJson(record)
-      def insertRequest = client.prepareIndex(STAGING_INDEX, type, id).setSource(json)
+      def insertRequest = adminClient.prepareIndex(STAGING_INDEX, type, id).setSource(json)
       bulkRequest.add(insertRequest)
     }
 
@@ -140,7 +139,7 @@ class MetadataIndexService {
       }
       source.stagedDate = System.currentTimeMillis()
       source = JsonOutput.toJson(source)
-      def response = client.prepareIndex(STAGING_INDEX, type, id)
+      def response = adminClient.prepareIndex(STAGING_INDEX, type, id)
           .setSource(source)
           .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
           .execute().actionGet()
@@ -157,7 +156,7 @@ class MetadataIndexService {
   }
 
   public Map getMetadata(String fileIdentifier) {
-    def response = client.prepareGet(STAGING_INDEX, null, fileIdentifier).execute().actionGet()
+    def response = adminClient.prepareGet(STAGING_INDEX, null, fileIdentifier).execute().actionGet()
     if (response.exists) {
       return [
           data: [
@@ -179,7 +178,7 @@ class MetadataIndexService {
   }
 
   public Map deleteMetadata(String fileIdentifier, String type) {
-    def bulkRequest = client.prepareBulk()
+    def bulkRequest = adminClient.prepareBulk()
     def data = [
         id        : fileIdentifier,
         type      : type,
@@ -192,19 +191,19 @@ class MetadataIndexService {
     def removeCollectionGranules = false
     if (type == GRANULE_TYPE) {
       [STAGING_INDEX, SEARCH_INDEX].each { index ->
-        bulkRequest.add(client.prepareDelete(index, type, fileIdentifier))
+        bulkRequest.add(adminClient.prepareDelete(index, type, fileIdentifier))
       }
     }
 
     else if (type == COLLECTION_TYPE) {
       removeCollectionGranules = true
       [STAGING_INDEX, SEARCH_INDEX].each { index ->
-        bulkRequest.add(client.prepareDelete(index, COLLECTION_TYPE, fileIdentifier))
+        bulkRequest.add(adminClient.prepareDelete(index, COLLECTION_TYPE, fileIdentifier))
       }
     }
 
     else {
-      def docs = client.prepareMultiGet()
+      def docs = adminClient.prepareMultiGet()
           .add(SEARCH_INDEX, COLLECTION_TYPE, fileIdentifier)
           .add(SEARCH_INDEX, GRANULE_TYPE, fileIdentifier)
           .get().responses
@@ -213,9 +212,9 @@ class MetadataIndexService {
         if (docs.any { it.response.source.parentIdentifier == fileIdentifier }) {
           // No-granule collection
           data.type = COLLECTION_TYPE
-          bulkRequest.add(client.prepareDelete(STAGING_INDEX, COLLECTION_TYPE, fileIdentifier))
+          bulkRequest.add(adminClient.prepareDelete(STAGING_INDEX, COLLECTION_TYPE, fileIdentifier))
           [COLLECTION_TYPE, GRANULE_TYPE].each { t ->
-            bulkRequest.add((client.prepareDelete(SEARCH_INDEX, t, fileIdentifier)))
+            bulkRequest.add((adminClient.prepareDelete(SEARCH_INDEX, t, fileIdentifier)))
           }
         }
         else {
@@ -238,7 +237,7 @@ class MetadataIndexService {
         }
         data.type = docs[0].type
         [STAGING_INDEX, SEARCH_INDEX].each { index ->
-          bulkRequest.add(client.prepareDelete(index, docs[0].type, fileIdentifier))
+          bulkRequest.add(adminClient.prepareDelete(index, docs[0].type, fileIdentifier))
         }
       }
 
@@ -273,7 +272,7 @@ class MetadataIndexService {
     }
 
     if (removeCollectionGranules) {
-      DeleteByQueryResponse deleteResponse = new DeleteByQueryRequestBuilder(client, DeleteByQueryAction.INSTANCE)
+      DeleteByQueryResponse deleteResponse = new DeleteByQueryRequestBuilder(adminClient, DeleteByQueryAction.INSTANCE)
           .setIndices([STAGING_INDEX, SEARCH_INDEX])
           .setTypes(GRANULE_TYPE)
           .setQuery(QueryBuilders.termQuery('parentIdentifer', fileIdentifier))
@@ -296,18 +295,9 @@ class MetadataIndexService {
     indexAdminService.drop(STAGING_INDEX)
   }
 
-  @PostConstruct
-  public void ensure() {
-    def storageExists = client.admin().indices().prepareAliasesExist(STAGING_INDEX).execute().actionGet().exists
-    if (!storageExists) {
-      def realName = indexAdminService.create(STAGING_INDEX, [COLLECTION_TYPE, GRANULE_TYPE])
-      client.admin().indices().prepareAliases().addAlias(realName, STAGING_INDEX).execute().actionGet()
-    }
-  }
-
   public void recreate() {
     drop()
-    ensure()
+    indexAdminService.ensureStaging()
   }
 
 }

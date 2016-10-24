@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
-import javax.annotation.PostConstruct
-
 @Slf4j
 @Service
 class SearchIndexService {
@@ -26,15 +24,15 @@ class SearchIndexService {
   @Value('${elasticsearch.index.search.granuleType}')
   private String GRANULE_TYPE
 
-  private Client client
+  private Client searchClient
   private SearchRequestParserService searchRequestParserService
   private IndexAdminService indexAdminService
 
   @Autowired
-  public SearchIndexService(Client client,
+  public SearchIndexService(Client searchClient,
                             SearchRequestParserService searchRequestParserService,
                             IndexAdminService indexAdminService) {
-    this.client = client
+    this.searchClient = searchClient
     this.searchRequestParserService = searchRequestParserService
     this.indexAdminService = indexAdminService
   }
@@ -47,18 +45,9 @@ class SearchIndexService {
     indexAdminService.drop(SEARCH_INDEX)
   }
 
-  @PostConstruct
-  public void ensure() {
-    def searchExists = client.admin().indices().prepareAliasesExist(SEARCH_INDEX).execute().actionGet().exists
-    if (!searchExists) {
-      def realName = indexAdminService.create(SEARCH_INDEX, [GRANULE_TYPE, COLLECTION_TYPE])
-      client.admin().indices().prepareAliases().addAlias(realName, SEARCH_INDEX).execute().actionGet()
-    }
-  }
-
   public void recreate() {
     drop()
-    ensure()
+    indexAdminService.ensureSearch()
   }
 
   public Map search(Map searchParams) {
@@ -77,7 +66,7 @@ class SearchIndexService {
   }
 
   private SearchRequestBuilder searchRequestBuilder(QueryBuilder query, boolean getFacets, boolean getCollections) {
-    def builder = client.prepareSearch(SEARCH_INDEX).setTypes(GRANULE_TYPE).setQuery(query)
+    def builder = searchClient.prepareSearch(SEARCH_INDEX).setTypes(GRANULE_TYPE).setQuery(query)
 
     if (getFacets) {
       def aggregations = searchRequestParserService.createGCMDAggregations(getCollections)
@@ -125,7 +114,7 @@ class SearchIndexService {
         .map( {i -> i.keyAsString} )
         .collect()
 
-    MultiGetResponse multiGetItemResponses = client.prepareMultiGet().add(SEARCH_INDEX, COLLECTION_TYPE, collectionsToRetrieve).get()
+    MultiGetResponse multiGetItemResponses = searchClient.prepareMultiGet().add(SEARCH_INDEX, COLLECTION_TYPE, collectionsToRetrieve).get()
     def result = [
         data: multiGetItemResponses.responses.collect {
           [type: it.type, id: it.id, attributes: it.response.getSourceAsMap()]

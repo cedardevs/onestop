@@ -21,21 +21,36 @@ class ShieldApplicationConfig {
   @Value('${elasticsearch.host}')
   String elasticHost
 
-  @Value('${shield.user}')
-  String user
+  @Value('${ro.user}')
+  String roUser
 
-  @Value('${shield.pass}')
-  String password
+  @Value('${ro.pass}')
+  String roPassword
+
+  @Value('${rw.user}')
+  String rwUser
+
+  @Value('${ro.pass}')
+  String rwPassword
 
   @Bean(destroyMethod = 'close')
   public Client searchClient() {
     TransportClient.builder()
-        .addPlugin(DeleteByQueryPlugin)
         .addPlugin(ShieldPlugin)
         .settings(Settings.builder()
-          .put('shield.user', "${user}:${password}"))
+          .put('shield.user', "${roUser}:${roPassword}"))
         .build()
         .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticHost), elasticPort))
   }
 
+  @Bean(destroyMethod = 'close')
+  public Client adminClient() {
+    TransportClient.builder()
+        .addPlugin(DeleteByQueryPlugin)
+        .addPlugin(ShieldPlugin)
+        .settings(Settings.builder()
+        .put('shield.user', "${rwUser}:${rwPassword}"))
+        .build()
+        .addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticHost), elasticPort))
+  }
 }
