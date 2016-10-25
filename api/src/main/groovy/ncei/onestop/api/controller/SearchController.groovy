@@ -33,6 +33,10 @@ class SearchController {
             return [errors: validation.errors]
         }
 
+        if (params.queries?.any { it.queryText == 'fail' }) {
+            throw new RuntimeException('You told me to fail so I did!')
+        }
+
         return searchIndexService.search(params)
     }
 

@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
 import { showLoading, hideLoading } from '../loading/LoadingActions'
+import { showErrors } from '../error/ErrorActions'
 import queryString from 'query-string'
 import { facetsReceived, clearFacets } from './facet/FacetActions'
 
@@ -54,14 +55,6 @@ export const triggerSearch = (testing) => {
     dispatch(showLoading())
     dispatch(startSearch())
 
-    // Append query to URL
-    let parsedSearchBody = JSON.parse(searchBody)
-    for (const key in parsedSearchBody){
-      parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
-    }
-    const urlQueryString = queryString.stringify(parsedSearchBody)
-    dispatch(push('results?' + urlQueryString))
-
     let apiRoot = "/onestop/api/search"
     if(testing) { apiRoot = testing + apiRoot }
     const fetchParams = {
@@ -88,11 +81,22 @@ export const triggerSearch = (testing) => {
           dispatch(facetsReceived(json.meta))
           dispatch(completeSearch(assignResourcesToMap(json.data)))
           dispatch(hideLoading())
+
+          // Append query to URL
+          let parsedSearchBody = JSON.parse(searchBody)
+          for (const key in parsedSearchBody){
+            parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
+          }
+          const urlQueryString = queryString.stringify(parsedSearchBody)
+          dispatch(push('results?' + urlQueryString))
         })
-        .catch(error => {
+        .catch(jsError => {
+          let errors = jsError.response && jsError.response.errors || [jsError.response]
+
+          dispatch(hideLoading())
+          dispatch(showErrors(errors))
           dispatch(clearFacets())
           dispatch(completeSearch(assignResourcesToMap([])))
-          dispatch(hideLoading())
         })
   }
 }
