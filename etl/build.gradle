@@ -13,15 +13,22 @@ import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 
 def parentIdentifier
-
 def sources = [
+    [
+        name             : 'GptCollections',
+        class            : GeoportalExtractor,
+        collectionsUrl   : 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
+        collectionsParams: [searchText: 'title%3A*%20NOT%20title%3AGHRSST'], //All collections not part of GHRSST
+        requireBrowseImg : true
+    ],
     [
         name             : 'GHRSST',
         class            : GeoportalExtractor,
         collectionsUrl   : 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'title:GHRSST%20NOT%20title:Documentation'],
         granulesUrl      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
-        granulesParams   : [searchText: "fileIdentifier:${-> parentIdentifier}*"]
+        granulesParams   : [searchText: "fileIdentifier:${-> parentIdentifier}*"],
+        requireBrowseImg : false
     ],
     [
         name             : 'COOPS',
@@ -29,13 +36,15 @@ def sources = [
         collectionsUrl   : 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'title:NWLON%20NOT%20title:Documentation'],
         granulesUrl      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
-        granulesParams   : [searchText: 'fileIdentifier%3ACO-OPS*', after: '2016-06-30']
+        granulesParams   : [searchText: 'fileIdentifier%3ACO-OPS*', after: '2016-06-30'],
+        requireBrowseImg : false
     ],
     [
         name             : 'DEM',
         class            : WafExtractor,
         collectionsUrl   : 'http://ngdc.noaa.gov/metadata/published/NOAA/OneStop/DEM/iso/xml/',
-        collectionsParams: [:]
+        collectionsParams: [:],
+        requireBrowseImg : false
     ]
 ]
 
@@ -65,7 +74,7 @@ targets.each { target ->
       // Load collections first
       def extractor = source.class.newInstance(source.collectionsUrl, source.collectionsParams)
       def loader = target.class.newInstance(extractor, target.url)
-      loader.load()
+      loader.load(source.requireBrowseImg)
 
       // Load granules if they exist
       if(source.granulesUrl) {
@@ -78,8 +87,9 @@ targets.each { target ->
           loader = target.class.newInstance(extractor, target.url)
           if (source.name == 'GHRSST') {
             loader.load(parentIdentifier)
-          } else {
-            loader.load()
+          }
+          else {
+            loader.load(source.requireBrowseImg)
           }
         }
       }
@@ -118,11 +128,13 @@ class WafExtractor implements Iterator<String> {
 class GeoportalExtractor implements Iterator<String> {
   private String endpointUrl
   private Map searchParams
-  private Integer pageSize = 1000
+  private Integer pageSize = 500
   private List currentPage = []
   private Integer currentPageNum = 0
   private Integer currentIndex = 0
   private JsonSlurper jsonSlurper = new JsonSlurper()
+  private gptPageRequests = 0
+  private maxGptPageRequests = 2 //TODO Should be an arg passed in; Update me as needed!
 
   GeoportalExtractor(String endpointUrl, Map searchParams = [:]) {
     this.endpointUrl = endpointUrl
@@ -135,8 +147,14 @@ class GeoportalExtractor implements Iterator<String> {
     if (currentIndex < currentPage.size()) {
       return true
     } else {
-      getNextPage()
-      return currentPage.size() > 0
+      gptPageRequests++
+      println "Number of gptPageRequests: ${gptPageRequests}"
+      if (gptPageRequests < maxGptPageRequests) {
+        getNextPage()
+        return currentPage.size() > 0
+      } else {
+        return false
+      }
     }
   }
 
@@ -146,8 +164,13 @@ class GeoportalExtractor implements Iterator<String> {
   }
 
   private getNextPage() {
-    currentPage = jsonSlurper.parse(buildUrl()).records.collect { record ->
-      record.links.find({ it.type.contains('metadata') }).href
+    try {
+      currentPage = jsonSlurper.parse(buildUrl()).records.collect { record ->
+        record.links.find({ it.type.contains('metadata') }).href
+      }
+    } catch (e) {
+      println "getNextPage() failed. Go to next page..."
+      sleep(3000)
     }
     currentIndex = 0
     currentPageNum++
@@ -176,32 +199,48 @@ class ApiLoader {
     this.httpMethod = Method.POST
   }
 
-  void load() {
+  void load(boolean requireBrowseImg) {
     def successes = 0
     def failures = 0
+    def browseImgCollectionsFound = 0
+
     metadataUrls.eachWithIndex { metadata, i ->
+      println "Metadata request: ${i}"
       try {
         def metadataContent = new URL(metadata).text
-        target.request(httpMethod) {
-          requestContentType = 'application/xml'
-          body = metadataContent
-          response.success = { resp, data ->
-            successes++
-            println "${data.data.id} created #${i}: ${data.data.attributes.created}"
-            collections.add(data.data.id.replace('gov.noaa.nodc:', ''))
-          }
-          response.failure = { resp, data ->
-            failures++
-            println "Error uploading metadata #${i} from ${metadata}: ${data}"
-          }
+        def metadataMap = new XmlSlurper().parseText(metadataContent)
+        def idInfo = metadataMap.identificationInfo.MD_DataIdentification
+
+        // Check for browse graphic
+        def thumbnail = idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text()
+        println "Load metadata: ${(!requireBrowseImg || (requireBrowseImg && thumbnail?.trim()))}"
+        // browseImg not needed or it's required and its got an image
+        if (!requireBrowseImg || (requireBrowseImg && thumbnail?.trim())) {
+          browseImgCollectionsFound++
+
+//          target.request(httpMethod) {
+//            requestContentType = 'application/xml'
+//            body = metadataContent
+//            response.success = { resp, data ->
+//              successes++
+//              println "${data.data.id} created #${i}: ${data.data.attributes.created}"
+//              collections.add(data.data.id.replace('gov.noaa.nodc:', ''))
+//            }
+//            response.failure = { resp, data ->
+//              failures++
+//              println "Error uploading metadata #${i}: ${data}"
+//            }
+//          }
         }
       }
       catch (e) {
         println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
         return // break out of current each{} loop
       }
+      if (requireBrowseImg) println "Found ${browseImgCollectionsFound} metadata records with browseGraphics"
+      println "Load complete. Successfully loaded ${successes} of ${successes + failures} metadata records"
     }
-    println "Load complete. Successfully loaded ${successes} of ${successes + failures} metadata records"
+
   }
 
   void load(String parentIdentifier) {
@@ -215,31 +254,27 @@ class ApiLoader {
     def fragment = new XmlParser(false, false).parseText(xmlFragment)
 
     metadataUrls.eachWithIndex { metadata, i ->
-      if (i <= 500) {
-        try {
-          def root = new XmlParser(false, false).parseText(new URL(metadata).text)
-          def xml = root.children()
-          xml.add(fragment)
-          def updatedXml = XmlUtil.serialize(root)
-          target.request(httpMethod) {
-            requestContentType = 'application/xml'
-            body = updatedXml
-            response.success = { resp, data ->
-              successes++
-              println "${data.data.id} created #${i}: ${data.data.attributes.created}"
-            }
-            response.failure = { resp, data ->
-              failures++
-              println "Error uploading metadata #${i} from ${metadata}: ${data}"
-            }
+      try {
+        def root = new XmlParser(false, false).parseText(new URL(metadata).text)
+        def xml = root.children()
+        xml.add(fragment)
+        def updatedXml = XmlUtil.serialize(root)
+        target.request(httpMethod) {
+          requestContentType = 'application/xml'
+          body = updatedXml
+          response.success = { resp, data ->
+            successes++
+            println "${data.data.id} created #${i}: ${data.data.attributes.created}"
+          }
+          response.failure = { resp, data ->
+            failures++
+            println "Error uploading metadata #${i} from ${metadata}: ${data}"
           }
         }
-        catch (e) {
-          println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
-          return // break out of current each{} loop
-        }
-      } else {
-        return
+      }
+      catch (e) {
+        println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
+        return // break out of current each{} loop
       }
     }
     println "Load complete. Successfully loaded ${successes} of ${successes + failures} metadata records"
