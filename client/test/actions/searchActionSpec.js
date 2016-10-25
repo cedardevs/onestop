@@ -1,13 +1,14 @@
 import '../specHelper'
 import * as module from '../../src/search/SearchActions'
 import { LOADING_SHOW, LOADING_HIDE } from '../../src/loading/LoadingActions'
+import { FACETS_RECEIVED, CLEAR_FACETS } from '../../src/search/facet/FacetActions'
 import { initialState } from '../../src/search/SearchReducer'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import Immutable from 'immutable'
 import nock from 'nock'
 import reducer from '../../src/reducer'
-import searchQuery from '../searchQuery'
+import {searchQuery, errorQuery} from '../searchQuery'
 
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
@@ -45,7 +46,7 @@ describe('The search action', () => {
         args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
-      {type: "FACETS_RECEIVED", metadata: expectedFacets},
+      {type: FACETS_RECEIVED, metadata: expectedFacets},
       {type: module.SEARCH_COMPLETE, items: expectedItems},
       {type: LOADING_HIDE}
     ]
@@ -81,8 +82,35 @@ describe('The search action', () => {
         args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
       },
-      {type: "FACETS_RECEIVED", metadata:expectedFacets},
+      {type: FACETS_RECEIVED, metadata:expectedFacets},
       {type: module.SEARCH_COMPLETE, items: expectedItems},
+      {type: LOADING_HIDE}
+    ]
+
+    // Empty requestBody; params passed directly to triggerSearch
+    const store = mockStore(Immutable.fromJS({'search':{'requestBody': requestBody}}))
+    return store.dispatch(module.triggerSearch(testingRoot))
+        .then(() => {
+          store.getActions().should.deep.equal(expectedActions)
+        })
+  })
+
+  it('triggerSearch handles failed search requests', () => {
+
+    nock.disableNetConnect()
+
+    const testingRoot = 'http://localhost:9090'
+    errorQuery(testingRoot, requestBody)
+
+    const expectedActions = [
+      {type: LOADING_SHOW},
+      {type: module.SEARCH},
+      {type: '@@router/CALL_HISTORY_METHOD', payload: {
+        args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
+        method: 'push'}
+      },
+      {type: CLEAR_FACETS},
+      {type: module.SEARCH_COMPLETE, items: new Map()},
       {type: LOADING_HIDE}
     ]
 
