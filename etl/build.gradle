@@ -134,7 +134,7 @@ class GeoportalExtractor implements Iterator<String> {
   private Integer currentIndex = 0
   private JsonSlurper jsonSlurper = new JsonSlurper()
   private gptPageRequests = 0
-  private maxGptPageRequests = 2 //TODO Should be an arg passed in; Update me as needed!
+  private maxGptPageRequests = 10 //TODO Should be an arg passed in; Update me as needed!
 
   GeoportalExtractor(String endpointUrl, Map searchParams = [:]) {
     this.endpointUrl = endpointUrl
@@ -218,19 +218,19 @@ class ApiLoader {
         if (!requireBrowseImg || (requireBrowseImg && thumbnail?.trim())) {
           browseImgCollectionsFound++
 
-//          target.request(httpMethod) {
-//            requestContentType = 'application/xml'
-//            body = metadataContent
-//            response.success = { resp, data ->
-//              successes++
-//              println "${data.data.id} created #${i}: ${data.data.attributes.created}"
-//              collections.add(data.data.id.replace('gov.noaa.nodc:', ''))
-//            }
-//            response.failure = { resp, data ->
-//              failures++
-//              println "Error uploading metadata #${i}: ${data}"
-//            }
-//          }
+          target.request(httpMethod) {
+            requestContentType = 'application/xml'
+            body = metadataContent
+            response.success = { resp, data ->
+              successes++
+              println "${data.data.id} created #${i}: ${data.data.attributes.created}"
+              collections.add(data.data.id.replace('gov.noaa.nodc:', ''))
+            }
+            response.failure = { resp, data ->
+              failures++
+              println "Error uploading metadata #${i}: ${data}"
+            }
+          }
         }
       }
       catch (e) {
