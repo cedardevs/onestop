@@ -83,12 +83,8 @@ export const triggerSearch = (testing) => {
           dispatch(hideLoading())
           dispatch(push('results?' + buildQueryString(searchBody)))
         })
-        .catch(jsError => {
-          dispatch(hideLoading())
-          dispatch(showErrors(extractErrors(jsError)))
-          dispatch(clearFacets())
-          dispatch(completeSearch(assignResourcesToMap([])))
-        })
+        .catch(ajaxError => ajaxError.response.json().then(errorJson => handleErrors(dispatch, errorJson)))
+        .catch(jsError => handleErrors(dispatch, jsError))
   }
 }
 
@@ -109,11 +105,9 @@ const buildQueryString = (searchBody) => {
   return queryString.stringify(parsedSearchBody)
 }
 
-const extractErrors = (jsError) => {
-  if (jsError.response) {
-    return jsError.response.errors || jsError.response
-  }
-  else {
-    return jsError
-  }
+const handleErrors = (dispatch, e) => {
+  dispatch(hideLoading())
+  dispatch(showErrors(e.errors || e))
+  dispatch(clearFacets())
+  dispatch(completeSearch(assignResourcesToMap([])))
 }
