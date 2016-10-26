@@ -32,17 +32,19 @@ export const searchQuery = (testingRoot, requestBody) => {
       })
 }
 
+export const errorsArray = [
+  {
+    status: '500',
+    title: 'Sorry, something has gone wrong',
+    detail: 'Looks like something isn\'t working on our end, please try again later',
+  }
+]
+
 export const errorQuery = (testingRoot, requestBody) => {
   nock(testingRoot)
       .post('/onestop/api/search', requestBody)
       .reply(500, {
-        errors: [
-          {
-            status: '500',
-            title: 'Sorry, something has gone wrong',
-            detail: 'Looks like something isn\'t working on our end, please try again later',
-          }
-        ],
+        errors: errorsArray,
         meta: {
           timestamp: new Date().time,
           request: 'uri:/onestop/api/search',

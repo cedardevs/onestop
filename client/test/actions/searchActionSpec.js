@@ -2,13 +2,14 @@ import '../specHelper'
 import * as module from '../../src/search/SearchActions'
 import { LOADING_SHOW, LOADING_HIDE } from '../../src/loading/LoadingActions'
 import { FACETS_RECEIVED, CLEAR_FACETS } from '../../src/search/facet/FacetActions'
+import { SET_ERRORS } from '../../src/error/ErrorActions'
 import { initialState } from '../../src/search/SearchReducer'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import Immutable from 'immutable'
 import nock from 'nock'
 import reducer from '../../src/reducer'
-import {searchQuery, errorQuery} from '../searchQuery'
+import {searchQuery, errorQuery, errorsArray} from '../searchQuery'
 
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
@@ -42,13 +43,13 @@ describe('The search action', () => {
     const expectedActions = [
       {type: LOADING_SHOW},
       {type: module.SEARCH},
+      {type: FACETS_RECEIVED, metadata: expectedFacets},
+      {type: module.SEARCH_COMPLETE, items: expectedItems},
+      {type: LOADING_HIDE},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
         args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
-      },
-      {type: FACETS_RECEIVED, metadata: expectedFacets},
-      {type: module.SEARCH_COMPLETE, items: expectedItems},
-      {type: LOADING_HIDE}
+      }
     ]
 
     const store = mockStore(Immutable.fromJS(testState))
@@ -78,13 +79,13 @@ describe('The search action', () => {
     const expectedActions = [
       {type: LOADING_SHOW},
       {type: module.SEARCH},
+      {type: FACETS_RECEIVED, metadata:expectedFacets},
+      {type: module.SEARCH_COMPLETE, items: expectedItems},
+      {type: LOADING_HIDE},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
         args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
         method: 'push'}
-      },
-      {type: FACETS_RECEIVED, metadata:expectedFacets},
-      {type: module.SEARCH_COMPLETE, items: expectedItems},
-      {type: LOADING_HIDE}
+      }
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
@@ -105,13 +106,14 @@ describe('The search action', () => {
     const expectedActions = [
       {type: LOADING_SHOW},
       {type: module.SEARCH},
+      {type: LOADING_HIDE},
+      {type: SET_ERRORS, errors: errorsArray},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
-        args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
+        args: ['error'],
         method: 'push'}
       },
       {type: CLEAR_FACETS},
       {type: module.SEARCH_COMPLETE, items: new Map()},
-      {type: LOADING_HIDE}
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
