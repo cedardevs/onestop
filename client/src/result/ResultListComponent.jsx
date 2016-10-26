@@ -1,10 +1,11 @@
 import React, { PropTypes } from 'react'
+import Breadcrumbs from 'react-breadcrumbs'
 import Result from './ResultComponent'
 import { CardStatus } from '../detail/DetailActions'
 import styles from './result.css'
 import FacetContainer from '../search/facet/FacetContainer'
 
-const ResultsList = ({results, loading, onCardClick}) => {
+const ResultsList = ({results, onCardClick, location, routes, params}) => {
   const cards = []
   results.forEach((value, key) => {
     cards.push(<div key={key} className={`${styles.grid}`}>
@@ -19,11 +20,19 @@ const ResultsList = ({results, loading, onCardClick}) => {
     </div>)
   })
 
+  let breadcrumbs
+  if (location.pathname !== "/") {
+    breadcrumbs = <Breadcrumbs routes={routes} params={params}/>
+  }
+
   return <div id="layout" className={styles.mainWindow}>
             <div className={styles.facetSideBar}>
               <FacetContainer/>
             </div>
             <div className={styles.gridContainer}>
+              <div className={styles.breadCrumbs}>
+                {breadcrumbs}
+              </div>
               {cards}
             </div>
         </div>
