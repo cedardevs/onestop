@@ -11,12 +11,41 @@ class ErrorComponent extends React.Component {
   constructor(props) {
     super(props)
 
-    this.errors = _.isArray(props.errors) && props.errors ||
-        _.isObject(props.errors) && [props.errors] ||
-        [defaultError]
+    this.errors = _.chain(this.getErrorsArray(props.errors))
+        .map(this.normalizeError)
+        .uniqWith((a, b) => a.title === b.title && a.detail === b.detail)
+        .value()
 
     this.goBack = props.goBack.bind(this)
     this.goHome = props.goHome.bind(this)
+  }
+
+  getErrorsArray(errors) {
+    if (_.isArray(errors) && errors.length > 0) {
+      return errors
+    }
+    else if (_.isObject(errors)) {
+      return [ errors ]
+    }
+    else {
+      return [ defaultError ]
+    }
+  }
+
+  normalizeError(error) {
+    if (_.isError(error)) {
+      return defaultError
+    }
+    else if (error.title) {
+      return error
+    }
+    else if (error.message) {
+      error.title = error.message
+      return error
+    }
+    else {
+      return defaultError
+    }
   }
 
   render() {

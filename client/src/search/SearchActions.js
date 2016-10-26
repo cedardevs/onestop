@@ -84,10 +84,8 @@ export const triggerSearch = (testing) => {
           dispatch(push('results?' + buildQueryString(searchBody)))
         })
         .catch(jsError => {
-          let errors = jsError.response && jsError.response.errors || [jsError.response]
-
           dispatch(hideLoading())
-          dispatch(showErrors(errors))
+          dispatch(showErrors(extractErrors(jsError)))
           dispatch(clearFacets())
           dispatch(completeSearch(assignResourcesToMap([])))
         })
@@ -109,4 +107,13 @@ const buildQueryString = (searchBody) => {
     parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
   }
   return queryString.stringify(parsedSearchBody)
+}
+
+const extractErrors = (jsError) => {
+  if (jsError.response) {
+    return jsError.response.errors || jsError.response
+  }
+  else {
+    return jsError
+  }
 }
