@@ -11,13 +11,20 @@ class ErrorComponent extends React.Component {
   constructor(props) {
     super(props)
 
-    this.errors = _.chain(this.getErrorsArray(props.errors))
+    this.errors = this.extractErrors(props)
+    this.goBack = props.goBack.bind(this)
+    this.goHome = props.goHome.bind(this)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.errors = this.extractErrors(nextProps)
+  }
+
+  extractErrors(props) {
+    return _.chain(this.getErrorsArray(props.errors))
         .map(this.normalizeError)
         .uniqWith((a, b) => a.title === b.title && a.detail === b.detail)
         .value()
-
-    this.goBack = props.goBack.bind(this)
-    this.goHome = props.goHome.bind(this)
   }
 
   getErrorsArray(errors) {
