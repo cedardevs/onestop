@@ -24,7 +24,7 @@ class SearchFieldsComponent extends React.Component {
   handleClick(e) {
     // Close map when user clicks outside of it
     var component = ReactDOM.findDOMNode(this.refs.mapComponent)
-    if (this.state.showMap && !component.contains(e.target) && e.srcElement.id !== 'mapButton') {
+    if (this.state.showMap && !component.contains(e.target) && e.target.id !== 'mapButton') {
       this.toggleMap()
     }
   }
