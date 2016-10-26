@@ -81,14 +81,7 @@ export const triggerSearch = (testing) => {
           dispatch(facetsReceived(json.meta))
           dispatch(completeSearch(assignResourcesToMap(json.data)))
           dispatch(hideLoading())
-
-          // Append query to URL
-          let parsedSearchBody = JSON.parse(searchBody)
-          for (const key in parsedSearchBody){
-            parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
-          }
-          const urlQueryString = queryString.stringify(parsedSearchBody)
-          dispatch(push('results?' + urlQueryString))
+          dispatch(push('results?' + buildQueryString(searchBody)))
         })
         .catch(jsError => {
           let errors = jsError.response && jsError.response.errors || [jsError.response]
@@ -107,4 +100,13 @@ const assignResourcesToMap = (resourceList) => {
     map.set(resource.id, Object.assign({type: resource.type}, resource.attributes))
   })
   return map
+}
+
+const buildQueryString = (searchBody) => {
+  // Append query to URL
+  let parsedSearchBody = JSON.parse(searchBody)
+  for (const key in parsedSearchBody) {
+    parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
+  }
+  return queryString.stringify(parsedSearchBody)
 }
