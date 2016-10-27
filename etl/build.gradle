@@ -36,6 +36,24 @@ def sources = [
         class            : WafExtractor,
         collectionsUrl   : 'http://ngdc.noaa.gov/metadata/published/NOAA/OneStop/DEM/iso/xml/',
         collectionsParams: [:]
+    ],
+    [
+        name: 'SAMOS',
+        class: GeoportalExtractor,
+        collectionsUrl: 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
+        collectionsParams: [searchText: 'title:SAMOS'],
+        granulesUrl: 'http://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/samos/',
+        granulesParams: [:],
+        granulesClass: WafExtractor
+    ],
+    [
+        name: 'WOA13',
+        class: GeoportalExtractor,
+        collectionsUrl: 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
+        collectionsParams: [searchText: 'fileIdentifier:"gov.noaa.nodc:0114815"'],
+        granulesUrl: 'http://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/woa13/',
+        granulesParams: [:],
+        granulesClass: WafExtractor
     ]
 ]
 
@@ -74,11 +92,18 @@ targets.each { target ->
           // ParentID is only relevant to GHRSST but set here to avoid duplicate code below since granulesParams
           // is dynamically constructed for each collection
           parentIdentifier = i
-          extractor = source.class.newInstance(source.granulesUrl, source.granulesParams)
+
+          if(source.granulesClass) {
+            extractor = source.granulesClass.newInstance(source.granulesUrl, source.granulesParams)
+          }
+          else {
+            extractor = source.class.newInstance(source.granulesUrl, source.granulesParams)
+          }
           loader = target.class.newInstance(extractor, target.url)
           if (source.name == 'GHRSST') {
             loader.load(parentIdentifier)
-          } else {
+          }
+          else {
             loader.load()
           }
         }
