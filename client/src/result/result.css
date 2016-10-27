@@ -8,17 +8,12 @@ $cardWidth: 300px;
 }
 
 .facetSideBar {
+    min-height: 100%;
+    margin-top: calc($banner-height + 2 * $section-padding);
     flex: 2;
     width: 230px;
     border: 1px solid color($color-primary lightness(-10%));
     background-color: $color-primary;
-}
-
-@media screen {
-    .facetSideBar{
-        margin-bottom: -100em;
-        margin-top: -4%;
-    }
 }
 
 .gridContainer {

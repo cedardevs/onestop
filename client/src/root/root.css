@@ -1,26 +1,25 @@
 @import '../../style/style.css';
 
-$footer-height: 60px;
-$footer-padding: 5px;
-
 .rootContainer {
   height: 100%;
 }
 
-.mainContent {
+.pageContent {
   min-height: 100%;
   margin-bottom: -$footer-height; /* negative value of footer height */
 }
 
 .main {
-  overflow: hidden;
+  overflow: visible;
   min-height: 100%;
 }
 
 .footer {
+  background: $color-primary-darkest;
   position: relative;
   height: $footer-height;
   clear: both;
+  padding: $section-padding;
 }
 
 input {
@@ -31,7 +30,7 @@ input {
   border-bottom: 1px solid color($color-primary-darkest lightness(-10%));
   background: $color-primary-darkest;
   box-shadow: 0 10px 5px rgb(0,0,0,.7);
-  padding: 10px;
+  padding: $section-padding;
 }
 
 .appbar {

@@ -7,7 +7,7 @@
     left: 0;
     text-align: center;
     vertical-align: middle;
-    height: 1.5em;
+    height: $banner-height;
     font-size: 1.2em;
 }
 
