@@ -1,8 +1,8 @@
 elasticsearch:
-  host: {{ groups.backend[0] }}
+  host: "{{ groups.backend[0] }}"
   ro:
-    user: {{ ro_user }}
-    pass: {{ ro_pass }}
+    user: "{{ ro_user }}"
+    pass: "{{ ro_pass }}"
   rw:
-    user: {{ rw_user }}
-    pass: {{ rw_pass }}
+    user: "{{ rw_user }}"
+    pass: "{{ rw_pass }}"
