@@ -4,13 +4,12 @@
   height: 100%;
 }
 
-.pageContent {
+.mainContent {
   min-height: 100%;
-  margin-bottom: -$footer-height; /* negative value of footer height */
+  margin-bottom: calc(-$footer-height + 2 * -$section-padding);
 }
 
 .main {
-  overflow: visible;
   min-height: 100%;
 }
 
