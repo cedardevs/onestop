@@ -39,9 +39,7 @@ class RootComponent extends React.Component {
         </div>
         <div className={styles.main}>
           <LoadingContainer/>
-          <div className={styles.results}>
-            {this.props.children}
-          </div>
+          {this.props.children}
         </div>
       </div>
       <div className={styles.footer}>

@@ -111,10 +111,6 @@ input {
   /*display: inline-block;*/
 /*}*/
 
-.results {
-  margin-bottom: 80px;
-}
-
 .details {
   position: fixed;
   top: 108px;
