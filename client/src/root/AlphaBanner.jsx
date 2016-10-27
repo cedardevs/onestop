@@ -6,19 +6,19 @@ class AlphaBanner extends React.Component {
 
   constructor(props) {
     super(props)
-    this.setState({message: null})
+    this.state = {message: null}
   }
 
   componentDidMount() {
     config.then((config => {
       if (config && config.disclaimer) {
-        this.setState({message: 'Not an official US Government website - OneStop demonstration site to allow quick feedback from our stakeholders.'})
+        this.state.message = 'Not an official US Government website - OneStop demonstration site to allow quick feedback from our stakeholders.'
       }
     }))
   }
 
   render() {
-    return this.message ? <div className={styles.banner}>{this.message}</div> : null
+    return this.state.message ? <div className={styles.banner}>{this.state.message}</div> : null
   }
 
 }
