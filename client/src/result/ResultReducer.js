@@ -8,6 +8,7 @@ const results = (state = initialState, action) => {
     case SEARCH:
       state = Immutable.OrderedMap()
       return state
+
     case SEARCH_COMPLETE:
       state = Immutable.OrderedMap()
       action.items.forEach((value, key) => {

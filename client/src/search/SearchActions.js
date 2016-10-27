@@ -1,8 +1,9 @@
 import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
 import { showLoading, hideLoading } from '../loading/LoadingActions'
+import { showErrors } from '../error/ErrorActions'
 import queryString from 'query-string'
-import { facetsReceived } from './facet/FacetActions'
+import { facetsReceived, clearFacets } from './facet/FacetActions'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -54,14 +55,6 @@ export const triggerSearch = (testing) => {
     dispatch(showLoading())
     dispatch(startSearch())
 
-    // Append query to URL
-    let parsedSearchBody = JSON.parse(searchBody)
-    for (const key in parsedSearchBody){
-      parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
-    }
-    const urlQueryString = queryString.stringify(parsedSearchBody)
-    dispatch(push('results?' + urlQueryString))
-
     let apiRoot = "/onestop/api/search"
     if(testing) { apiRoot = testing + apiRoot }
     const fetchParams = {
@@ -74,12 +67,24 @@ export const triggerSearch = (testing) => {
     }
 
     return fetch(apiRoot, fetchParams)
+        .then(response => {
+          if (response.status < 200 || response.status >= 400) {
+            var error = new Error(response.statusText)
+            error.response = response
+            throw error
+          } else {
+            return response
+          }
+        })
         .then(response => response.json())
         .then(json => {
           dispatch(facetsReceived(json.meta))
           dispatch(completeSearch(assignResourcesToMap(json.data)))
           dispatch(hideLoading())
+          dispatch(push('results?' + buildQueryString(searchBody)))
         })
+        .catch(ajaxError => ajaxError.response.json().then(errorJson => handleErrors(dispatch, errorJson)))
+        .catch(jsError => handleErrors(dispatch, jsError))
   }
 }
 
@@ -89,4 +94,20 @@ const assignResourcesToMap = (resourceList) => {
     map.set(resource.id, Object.assign({type: resource.type}, resource.attributes))
   })
   return map
+}
+
+const buildQueryString = (searchBody) => {
+  // Append query to URL
+  let parsedSearchBody = JSON.parse(searchBody)
+  for (const key in parsedSearchBody) {
+    parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
+  }
+  return queryString.stringify(parsedSearchBody)
+}
+
+const handleErrors = (dispatch, e) => {
+  dispatch(hideLoading())
+  dispatch(showErrors(e.errors || e))
+  dispatch(clearFacets())
+  dispatch(completeSearch(assignResourcesToMap([])))
 }
