@@ -43,8 +43,8 @@
 - name: Install the api conf file
   become: true
   template:
-    src: templates/onestop-api.conf
-    dest: /usr/local/bin/onestop-api.conf
+    src: templates/onestop-api.yml
+    dest: /usr/local/bin/onestop-api.yml
     owner: onestop
     group: onestop
     mode: 440

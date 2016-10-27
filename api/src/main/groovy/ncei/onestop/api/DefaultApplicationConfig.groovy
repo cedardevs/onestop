@@ -21,16 +21,16 @@ class DefaultApplicationConfig {
   @Value('${elasticsearch.host}')
   String elasticHost
 
-  @Value('${ro.user:}')
+  @Value('${elasticsearch.ro.user:}')
   String roUser
 
-  @Value('${ro.pass:}')
+  @Value('${elasticsearch.ro.pass:}')
   String roPassword
 
-  @Value('${rw.user:}')
+  @Value('${elasticsearch.rw.user:}')
   String rwUser
 
-  @Value('${rw.pass:}')
+  @Value('${elasticsearch.rw.pass:}')
   String rwPassword
 
   @Bean(destroyMethod = 'close')
