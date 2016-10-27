@@ -19,7 +19,6 @@ class RootComponent extends React.Component {
     let searchLabel = this.props.location.pathname === "/" ? "searchMapSpace" : 'searchHover';
 
     return <div className={styles.rootContainer}>
-      <Favicon url={["//cires1.colorado.edu/favicon.ico"]}/>
       <div className={styles.mainContent}>
         <AlphaBanner/>
         <DetailContainer/>

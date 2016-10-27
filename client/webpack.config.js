@@ -100,7 +100,8 @@ module.exports = {
       sourceMap: false
     }),
     new HtmlWebpackPlugin({
-      title: 'NOAA OneStop Demo'
+      title: 'NOAA OneStop Demo',
+      favicon: './img/noaa-favicon.ico'
     }),
     new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
   ]
