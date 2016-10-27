@@ -12,7 +12,7 @@ class AlphaBanner extends React.Component {
   componentDidMount() {
     config.then((config => {
       if (config && config.disclaimer) {
-        this.state.message = 'Not an official US Government website - OneStop demonstration site to allow quick feedback from our stakeholders.'
+        this.setState({message: 'Not an official US Government website - OneStop demonstration site to allow quick feedback from our stakeholders.'})
       }
     }))
   }
