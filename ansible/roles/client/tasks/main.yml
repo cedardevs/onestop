@@ -80,6 +80,15 @@
     group: nginx
     mode: 440
 
+- name: Install onestop client config file
+  become: true
+  copy:
+    src: files/onestopConfig.json
+    dest: /usr/share/nginx/html
+    owner: nginx
+    group: nginx
+    mode: o=rx
+
 - name: Configure SELinux to allow network connections
   become: true
   seboolean:
