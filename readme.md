@@ -219,11 +219,12 @@ requests around the `/onestop/api/metadata` resource endpoint.
 HTTP Method | Endpoint                                  | Body      | Action
 ------------|-------------------------------------------|-----------|--------------------------
 POST        | /onestop/api/metadata                     | ISO XML   | Upload a metadata record <sup>[1](#postfootnote)</sup>
-GET         | /onestop/api/metadata/[fileIdentifier]/   | (none)    | Retrieve a metadata record <sup>[2](#getfootnoe)</sup>
-DELETE      | /onestop/api/metadata/[fileIdentifier]/   | (none)    | Delete a metadata record <sup>[2](#getfootnoe)</sup>
+GET         | /onestop/api/metadata/[fileIdentifier]/   | (none)    | Retrieve a metadata record <sup>[2](#getfootnote)</sup>
+DELETE      | /onestop/api/metadata/[fileIdentifier]/   | (none)    | Delete a metadata record <sup>[2](#getfootnote)</sup><sup>,</sup><sup>[3](#delfootnote)</sup>
 
 - <a href="postfootnote">1</a>: Note that POSTing an XML record with the same fileIdentifier as a previously-POSTed record will result in replacing that record.
 - <a href="getfootnote">2</a>: The trailing `/` in URLs which include fileIdentifiers is important if the fileIdentifier includes any `.` characters.
+- <a href="delfootnote">3</a>: Note that DELETEing a collection-level metadata record will result in the deletion of all associated granules too. Use of this endpoint for facilitating collection-level metadata updates should be limited to breaking changes that require a re-upload of granules -- such as a fileIdentifier change.
 
 ##### Indexing Metadata for Search
 Some sample metadata load processes are available.  For example, on the command line you can run:
