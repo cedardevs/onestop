@@ -93,20 +93,60 @@ and pipes the logging (which uses stdout by default) to `/var/log/onestop-api.lo
 ##### Dependencies
 The API requires Java 8 to run and must be able to connect to ElasticSearch
 
+##### Security
+Currently the API app does not implement any authentication or authorization of its own. We recommend that you
+control access to the app's sensitive endpoints with a reverse proxy. As described in the client dependencies
+section below, the only endpoint required for the client to function is `/onestop/api/search`.
+
+If your ElasticSearch cluster has the Shield security plugin installed, the API can be configured to connect to
+it using two sets of credentials for readonly and read/write operations, respectively. The following is a breakdown
+of the privileges required by each user. See the configuration settings below for a description of how to provide
+the app with the credentials for the two users.
+
+Readonly User:
+```json
+{
+  "cluster": [ "transport_client" ], 
+  "indices": [ 
+    {
+      "names": [ "search_*" ], 
+      "privileges": [ "read" ] 
+    }
+  ] 
+}
+```
+
+Read/Write User:
+```json
+{
+  "cluster": [ "transport_client", "manage" ], 
+  "indices": [ 
+    {
+      "names": [ "search_*", "staging_*" ], 
+      "privileges": [ "all" ] 
+    }
+  ] 
+}
+```
+
+Note: an easy way to configure the users with these privileges is to use the roles that come out of the box with Shield:
+
+```
+Readonly roles  : user, transport_client
+Read/Write roles: power_user
+```
+
 ##### Configuration
-There are several of configurable values that can be passed to the application.
+There are several configurable values that can be passed to the application.
 They can be provided to the app in a number of ways as outlined in the [Spring Externalized Configuration Documentation](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html).
 
-The following are relevant configuration values needed to run the app.
-None of them are required if the app is running on the same host as elasticsearch.
+We recommend using a Spring Cloud Config Server to make the config available to the app in a consistent and secure way.
+Alternatively, a simple way to pass config values is to create a .yml or .properties file and provided its path to the
+app by setting the `spring.config.location` value, e.g. with an environment variable:
 
-Config Name         | Default Value
---------------------|--------------------
-elasticsearch.host  | localhost
-elasticsearch.port  | 9300
-server.port         | 8097
-server.context-path | /onestop/api
-logging.file        | (none, logs to stdout by default)
+`SPRING_CONFIG_LOCATION=file:/my/config/path/config.yml ./onestop-api.war`
+
+See the [API's default config values](api/defaults.yml) for a full picture of the values that can be set. 
 
 ### Client
 
