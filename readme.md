@@ -141,7 +141,7 @@ There are several configurable values that can be passed to the application.
 They can be provided to the app in a number of ways as outlined in the [Spring Externalized Configuration Documentation](http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html).
 
 We recommend using a Spring Cloud Config Server to make the config available to the app in a consistent and secure way.
-Alternatively, a simple way to pass config values is to create a .yml or .properties file and provided its path to the
+Alternatively, a simple way to pass config values is to create a .yml or .properties file and provide its path to the
 app by setting the `spring.config.location` value, e.g. with an environment variable:
 
 `SPRING_CONFIG_LOCATION=file:/my/config/path/config.yml ./onestop-api.war`
