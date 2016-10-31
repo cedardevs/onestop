@@ -6,7 +6,7 @@ import { clearSearch } from '../search/SearchActions'
 
 const mapStateToProps = (state) => {
   return {
-    errors: state.get('errors').toJS()
+    errors: state.get('errors')
   }
 }
 
