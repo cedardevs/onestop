@@ -12,7 +12,8 @@ const facets = (state = initialState, action) => {
   switch(action.type) {
     case FACETS_RECEIVED:
       // Update facets with previous checks
-      let categories = Immutable.fromJS(action.metadata.facets).mergeDeep(state.get('selectedFacets'))
+      let categories = !_.isEmpty(action.metadata.facets) ?
+          Immutable.fromJS(action.metadata.facets).mergeDeep(state.get('selectedFacets')) : initialState.allFacets
       return state.set('allFacets', categories)
 
     case MODIFY_SELECTED_FACETS:

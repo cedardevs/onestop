@@ -7,6 +7,7 @@ import FacetContainer from '../search/facet/FacetContainer'
 
 const ResultsList = ({results, onCardClick, location, routes, params}) => {
   const cards = []
+  const count = results.count()
   results.forEach((value, key) => {
     cards.push(<div key={key} className={`${styles.grid}`}>
       <Result
@@ -25,6 +26,8 @@ const ResultsList = ({results, onCardClick, location, routes, params}) => {
     breadcrumbs = <Breadcrumbs routes={routes} params={params}/>
   }
 
+  const countString = `Search returned ${count} ${(count !== 1) ? "results" : "result"}`
+
   return <div id="layout" className={styles.mainWindow}>
             <div className={styles.facetSideBar}>
               <FacetContainer/>
@@ -32,6 +35,9 @@ const ResultsList = ({results, onCardClick, location, routes, params}) => {
             <div className={styles.gridContainer}>
               <div className={styles.breadCrumbs}>
                 {breadcrumbs}
+              </div>
+              <div>
+                {countString}
               </div>
               {cards}
             </div>

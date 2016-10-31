@@ -78,6 +78,7 @@ export const triggerSearch = (testing) => {
         })
         .then(response => response.json())
         .then(json => {
+          console.log("JSON: " + json)
           dispatch(facetsReceived(json.meta))
           dispatch(completeSearch(assignResourcesToMap(json.data)))
           dispatch(hideLoading())
