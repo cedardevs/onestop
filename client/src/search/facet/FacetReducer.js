@@ -5,7 +5,7 @@ import { FACETS_RECEIVED, MODIFY_SELECTED_FACETS, CLEAR_FACETS } from './FacetAc
 
 export const initialState = Immutable.fromJS({
   allFacets: null,
-  selectedFacets: Immutable.Map()
+  selectedFacets: {}
 })
 
 const facets = (state = initialState, action) => {
