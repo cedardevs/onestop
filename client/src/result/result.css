@@ -8,9 +8,7 @@ $cardWidth: 300px;
 }
 
 .facetSideBar {
-    min-height:
-      calc(100vh - ($banner-height + $header-height +
-        $footer-height + 3 * $section-padding));
+    min-height: 100vh;
     flex: 2;
     width: 230px;
     border: 1px solid color($color-primary lightness(-10%));
