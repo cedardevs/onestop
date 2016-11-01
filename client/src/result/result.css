@@ -13,6 +13,7 @@ $cardWidth: 300px;
     width: 230px;
     border: 1px solid color($color-primary lightness(-10%));
     background-color: $color-primary;
+    margin-bottom: calc($footer-height + 2 * $section-padding);
 }
 
 .gridContainer {
