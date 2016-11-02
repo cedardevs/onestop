@@ -94,7 +94,7 @@ class LoadIntegrationTests extends Specification {
     hits.size() == 0
 
     when: "Reindex then search"
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     searchResult = restTemplate.exchange(searchRequest, Map)
     hits = searchResult.body.data
 
@@ -132,7 +132,7 @@ class LoadIntegrationTests extends Specification {
     loadResult.statusCode == HttpStatus.CREATED
 
     when: "Reindex then search"
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
     def searchResult = restTemplate.exchange(searchRequest, Map)
     def hits = searchResult.body.data
@@ -225,7 +225,7 @@ class LoadIntegrationTests extends Specification {
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
     metadataIndexService.refresh()
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     searchIndexService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
@@ -244,7 +244,7 @@ class LoadIntegrationTests extends Specification {
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
     metadataIndexService.refresh()
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     searchIndexService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
@@ -272,7 +272,7 @@ class LoadIntegrationTests extends Specification {
     when:
     def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }
     metadataIndexService.refresh()
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     searchIndexService.refresh()
     def hitsC = restTemplate.exchange(searchRequestC, Map).body.data
     def hitsG = restTemplate.exchange(searchRequestG, Map).body.data

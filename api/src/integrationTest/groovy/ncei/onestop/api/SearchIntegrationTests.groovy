@@ -59,7 +59,7 @@ class SearchIntegrationTests extends Specification {
       }
     }
     metadataIndexService.refresh()
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     searchIndexService.refresh()
 
     restTemplate = new RestTemplate()

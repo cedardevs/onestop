@@ -38,8 +38,8 @@ class ETLService {
   }
 
   @Async
-  public void reindexAsync() {
-    reindex()
+  public void rebuildSearchIndexAsync() {
+    rebuildSearchIndex()
   }
 
   @Async
@@ -48,8 +48,8 @@ class ETLService {
   }
 
 //  @Scheduled(fixedDelay = 600000L) // 10 minutes after previous run ends
-  public void reindex() {
-    log.info "starting reindex process"
+  public void rebuildSearchIndex() {
+    log.info "starting rebuilding process"
     def start = System.currentTimeMillis()
     indexAdminService.refresh(STAGING_INDEX)
     def newSearchIndex = indexAdminService.create(SEARCH_INDEX, [GRANULE_TYPE, COLLECTION_TYPE])
