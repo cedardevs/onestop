@@ -128,13 +128,13 @@ class WafExtractor implements Iterator<String> {
 class GeoportalExtractor implements Iterator<String> {
   private String endpointUrl
   private Map searchParams
-  private Integer pageSize = 500
+  private Integer pageSize = 250
   private List currentPage = []
   private Integer currentPageNum = 0
   private Integer currentIndex = 0
   private JsonSlurper jsonSlurper = new JsonSlurper()
   private gptPageRequests = 0
-  private maxGptPageRequests = 10 //TODO Should be an arg passed in; Update me as needed!
+  private maxGptPageRequests = 2 //TODO Should be an arg passed in; Update me as needed!
 
   GeoportalExtractor(String endpointUrl, Map searchParams = [:]) {
     this.endpointUrl = endpointUrl
@@ -203,19 +203,21 @@ class ApiLoader {
     def successes = 0
     def failures = 0
     def browseImgCollectionsFound = 0
+    def xmlSlurper = new XmlSlurper()
 
     metadataUrls.eachWithIndex { metadata, i ->
       println "Metadata request: ${i}"
       try {
         def metadataContent = new URL(metadata).text
-        def metadataMap = new XmlSlurper().parseText(metadataContent)
+        def metadataMap = xmlSlurper.parseText(metadataContent)
         def idInfo = metadataMap.identificationInfo.MD_DataIdentification
 
         // Check for browse graphic
         def thumbnail = idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text()
-        println "Load metadata: ${(!requireBrowseImg || (requireBrowseImg && thumbnail?.trim()))}"
+        def loadMetadata = !requireBrowseImg || (requireBrowseImg && thumbnail?.trim())
+        println "Load metadata: ${loadMetadata}"
         // browseImg not needed or it's required and its got an image
-        if (!requireBrowseImg || (requireBrowseImg && thumbnail?.trim())) {
+        if (loadMetadata) {
           browseImgCollectionsFound++
 
           target.request(httpMethod) {
