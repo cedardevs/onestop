@@ -26,9 +26,9 @@ class AdminController {
     return [acknowledged: true]
   }
 
-  @RequestMapping(path = '/admin/refresh', method = [GET, PUT], produces = 'application/json')
-  Map refresh() {
-    etlService.refreshAsync()
+  @RequestMapping(path = '/admin/index/search/update', method = [GET, PUT], produces = 'application/json')
+  Map updateSearchIndex() {
+    etlService.updateSearchIndexAsync()
     return [acknowledged: true]
   }
 }

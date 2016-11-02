@@ -43,8 +43,8 @@ class ETLService {
   }
 
   @Async
-  public void refreshAsync() {
-    refresh()
+  public void updateSearchIndexAsync() {
+    updateSearchIndex()
   }
 
 //  @Scheduled(fixedDelay = 600000L) // 10 minutes after previous run ends
@@ -142,8 +142,8 @@ class ETLService {
   }
 
 
-  public void refresh() {
-    log.info "Starting search index refresh process"
+  public void updateSearchIndex() {
+    log.info "Starting search index update process"
     def start = System.currentTimeMillis()
     indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
 
