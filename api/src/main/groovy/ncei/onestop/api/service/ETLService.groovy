@@ -6,6 +6,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.aggregations.AggregationBuilders
+import org.elasticsearch.search.aggregations.metrics.max.Max
 import org.elasticsearch.search.sort.SortOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -166,15 +167,10 @@ class ETLService {
     }
 
     // Get max stagedDate from search index to serve as reference:
-    def sr = adminClient.prepareSearch(SEARCH_INDEX)
-        .setTypes(COLLECTION_TYPE, GRANULE_TYPE)
-        .setSize(0)
-        .addAggregation(AggregationBuilders.max('maxStagedDate').field('stagedDate'))
-        .execute().actionGet()
-    def maxSearchStagedDate = sr.aggregations.get('maxStagedDate').getValueAsString() as long
+    def maxSearchStagedDate = getMaxSearchStagedMillis()
 
     // Get all collection IDs where stagedDate > maxSearchStagedDate:
-    sr = adminClient.prepareSearch(STAGING_INDEX)
+    def sr = adminClient.prepareSearch(STAGING_INDEX)
         .setTypes(COLLECTION_TYPE)
         .setSize(0)
         .setQuery(QueryBuilders.rangeQuery('stagedDate').gt(maxSearchStagedDate))
@@ -278,5 +274,26 @@ class ETLService {
     def end = System.currentTimeMillis()
     log.info "Reindexed ${recordCount} records in ${(end - start) / 1000}s"
 
+  }
+
+  // Returns the max value of the stagedDate field in the search index
+  // If the search index is empty, returns 0
+  // Note: This software was written after the epoch, so this should be pretty safe.
+  private long getMaxSearchStagedMillis() {
+    def searchIndexCount = adminClient
+        .prepareSearch(SEARCH_INDEX).setTypes(COLLECTION_TYPE, GRANULE_TYPE).setSize(0)
+        .execute().actionGet().hits.totalHits
+
+    if (searchIndexCount == 0L) {
+      return 0
+    }
+
+    def maxDateSearch = adminClient.prepareSearch(SEARCH_INDEX)
+        .setTypes(COLLECTION_TYPE, GRANULE_TYPE)
+        .setSize(0)
+        .addAggregation(AggregationBuilders.max('maxStagedDate').field('stagedDate'))
+        .execute().actionGet()
+    def maxDateAgg = maxDateSearch.aggregations.get('maxStagedDate') as Max
+    return maxDateAgg.value as long
   }
 }

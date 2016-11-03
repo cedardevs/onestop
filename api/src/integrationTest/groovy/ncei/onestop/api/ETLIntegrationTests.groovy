@@ -43,6 +43,18 @@ class ETLIntegrationTests extends Specification {
     metadataIndexService.recreate()
   }
 
+  def 'update does nothing when staging is empty'() {
+    when:
+    etlService.updateSearchIndex()
+
+    then:
+    noExceptionThrown()
+
+    and:
+    indexedCollectionVersions().size() == 0
+    indexedGranuleVersions().size() == 0
+  }
+
   def 'updating a new collection indexes a collection and a synthesized granule'() {
     setup:
     insertMetadataFromPath('data/COOPS/C1.xml')
@@ -116,6 +128,18 @@ class ETLIntegrationTests extends Specification {
     granules['gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'] == 1
     granules['CO-OPS.NOS_8638614_201602_D1_v00'] == 2
     granules['CO-OPS.NOS_9410170_201503_D1_v00'] == 2
+  }
+
+  def 'rebuild does nothing when staging is empty'() {
+    when:
+    etlService.rebuildSearchIndex()
+
+    then:
+    noExceptionThrown()
+
+    and:
+    indexedCollectionVersions().size() == 0
+    indexedGranuleVersions().size() == 0
   }
 
   def 'rebuilding with a collection indexes a collection and a synthesized granule'() {
