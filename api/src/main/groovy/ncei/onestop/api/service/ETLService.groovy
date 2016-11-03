@@ -11,6 +11,7 @@ import org.elasticsearch.search.sort.SortOrder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Async
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 
 @Slf4j
@@ -48,7 +49,6 @@ class ETLService {
     updateSearchIndex()
   }
 
-//  @Scheduled(fixedDelay = 600000L) // 10 minutes after previous run ends
   public void rebuildSearchIndex() {
     log.info "starting rebuilding process"
     def start = System.currentTimeMillis()
@@ -142,7 +142,7 @@ class ETLService {
     }
   }
 
-
+  @Scheduled(fixedDelay = 600000L) // 10 minutes after previous run ends
   public void updateSearchIndex() {
     log.info "Starting search index update process"
     def start = System.currentTimeMillis()
