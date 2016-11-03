@@ -85,7 +85,7 @@ class LoadIntegrationTests extends Specification {
     def getResult = restTemplate.exchange(getRequest, Map)
     getResult.body?.data?.id == docId
 
-    when: "Refresh elasticsearch then search"
+    when: "Update search index then search"
     searchIndexService.refresh()
     def searchResult = restTemplate.exchange(searchRequest, Map)
     def hits = searchResult.body.data
@@ -94,7 +94,7 @@ class LoadIntegrationTests extends Specification {
     hits.size() == 0
 
     when: "Reindex then search"
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     searchResult = restTemplate.exchange(searchRequest, Map)
     hits = searchResult.body.data
 
@@ -120,7 +120,7 @@ class LoadIntegrationTests extends Specification {
     searchResult.body.data.size() == 0
   }
 
-  def 'Documents loaded are pulled into search index after an ETL refresh'() {
+  def 'Documents loaded are pulled into search index after an ETL update'() {
     setup:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("data/GHRSST/1.xml").text
     def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
@@ -132,7 +132,7 @@ class LoadIntegrationTests extends Specification {
     loadResult.statusCode == HttpStatus.CREATED
 
     when: "Reindex then search"
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
     def searchResult = restTemplate.exchange(searchRequest, Map)
     def hits = searchResult.body.data
@@ -159,8 +159,8 @@ class LoadIntegrationTests extends Specification {
     hits.size() == 1
     fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
 
-    when: "ETL refresh requested"
-    etlService.refresh()
+    when: "ETL updateSearchIndex requested"
+    etlService.updateSearchIndex()
     searchResult = restTemplate.exchange(searchRequest, Map)
     hits = searchResult.body.data
 
@@ -225,7 +225,7 @@ class LoadIntegrationTests extends Specification {
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
     metadataIndexService.refresh()
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     searchIndexService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
@@ -244,7 +244,7 @@ class LoadIntegrationTests extends Specification {
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
     metadataIndexService.refresh()
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     searchIndexService.refresh()
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
@@ -272,7 +272,7 @@ class LoadIntegrationTests extends Specification {
     when:
     def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }
     metadataIndexService.refresh()
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     searchIndexService.refresh()
     def hitsC = restTemplate.exchange(searchRequestC, Map).body.data
     def hitsG = restTemplate.exchange(searchRequestG, Map).body.data

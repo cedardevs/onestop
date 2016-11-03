@@ -20,10 +20,10 @@ repositories {
 
 dependencies {
   compile 'org.codehaus.groovy:groovy-all:2.4.6'
-  compile 'org.elasticsearch:elasticsearch:2.4.1'
-  compile 'org.elasticsearch.module:lang-expression:2.4.1'
-  compile 'org.elasticsearch.plugin:delete-by-query:2.4.1'
-  compile 'org.elasticsearch.plugin:shield:2.4.1'
+  compile "org.elasticsearch:elasticsearch:${project.esVersion}"
+  compile "org.elasticsearch.module:lang-expression:${project.esVersion}"
+  compile "org.elasticsearch.plugin:delete-by-query:${project.esVersion}"
+  compile "org.elasticsearch.plugin:shield:${project.esVersion}"
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-devtools'
