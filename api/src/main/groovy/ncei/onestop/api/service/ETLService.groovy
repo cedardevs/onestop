@@ -56,7 +56,7 @@ class ETLService {
     def newSearchIndex = indexAdminService.create(SEARCH_INDEX, [GRANULE_TYPE, COLLECTION_TYPE])
 
     try {
-      def bulkRequest = adminClient.prepareBulk()
+      def bulkIndexer = new BulkIndexer(adminClient, newSearchIndex)
       def recordCount = 0
       def granuleScrollTimeout = '1m'
       def granulePageSize = 10
@@ -66,18 +66,6 @@ class ETLService {
       def collectionsCount = adminClient.prepareSearch(STAGING_INDEX).setTypes(COLLECTION_TYPE)
           .setSize(0).execute().actionGet().hits.totalHits
 
-      def addRecordToBulk = { record, type ->
-        def id = record.fileIdentifier as String
-        def json = JsonOutput.toJson(record)
-        def insertRequest = adminClient.prepareIndex(newSearchIndex, type, id).setSource(json)
-        bulkRequest.add(insertRequest)
-        recordCount++
-        if (bulkRequest.numberOfActions() >= 1000) {
-          bulkRequest.get()
-          bulkRequest = adminClient.prepareBulk()
-        }
-      }
-
 
       while (offset < collectionsCount) {
         def collections = adminClient.prepareSearch(STAGING_INDEX).setTypes(COLLECTION_TYPE)
@@ -85,7 +73,7 @@ class ETLService {
         collections.each { collection ->
           def collectionDoc = collection.source.findAll { it.key != 'isoXml' }
           log.debug('Starting indexing of collection ' + collectionDoc.fileIdentifier) //fixme delete later
-          addRecordToBulk(collectionDoc, COLLECTION_TYPE) // Add collections whether they have granules or not
+          bulkIndexer.addRecordToBulk(collectionDoc, COLLECTION_TYPE) // Add collections whether they have granules or not
           def granuleScroll = adminClient.prepareSearch(STAGING_INDEX)
               .setTypes(GRANULE_TYPE)
               .addSort('fileIdentifier', SortOrder.ASC)
@@ -99,14 +87,14 @@ class ETLService {
             log.debug('Inserting synthesized granule for collection ' + collectionDoc.fileIdentifier) // fixme delete later
             def synthesizedGranule = [fileIdentifier: collectionDoc.fileIdentifier, parentIdentifier: collectionDoc.fileIdentifier]
             def flattenedSynthesizedRecord = MetadataParser.mergeCollectionAndGranule(collectionDoc, synthesizedGranule)
-            addRecordToBulk(flattenedSynthesizedRecord, GRANULE_TYPE)
+            bulkIndexer.addRecordToBulk(flattenedSynthesizedRecord, GRANULE_TYPE)
           }
 
           while (granulesRemain) {
             granuleScroll.hits.hits.each { granule ->
               def granuleDoc = granule.source
               def flattenedRecord = MetadataParser.mergeCollectionAndGranule(collectionDoc, granuleDoc)
-              addRecordToBulk(flattenedRecord, GRANULE_TYPE)
+              bulkIndexer.addRecordToBulk(flattenedRecord, GRANULE_TYPE)
             }
             granuleScroll = adminClient.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
             granulesRemain = granuleScroll.hits.hits.length > 0
@@ -117,10 +105,7 @@ class ETLService {
         offset += increment
       }
 
-      if (bulkRequest.numberOfActions() > 0) {
-        bulkRequest.get()
-      }
-
+      bulkIndexer.flush()
       indexAdminService.refresh(newSearchIndex)
 
       def aliasBuilder = adminClient.admin().indices().prepareAliases()
@@ -148,23 +133,10 @@ class ETLService {
     def start = System.currentTimeMillis()
     indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
 
-    def bulkRequest = adminClient.prepareBulk()
-    def recordCount = 0
     def granuleScrollTimeout = '1m'
     def offset = 0
     def increment = 10
-
-    def addRecordToBulk = { record, type ->
-      def id = record.fileIdentifier as String
-      def json = JsonOutput.toJson(record)
-      def insertRequest = adminClient.prepareIndex(SEARCH_INDEX, type, id).setSource(json)
-      bulkRequest.add(insertRequest)
-      recordCount++
-      if (bulkRequest.numberOfActions() >= 1000) {
-        bulkRequest.get()
-        bulkRequest = adminClient.prepareBulk()
-      }
-    }
+    def bulkIndexer = new BulkIndexer(adminClient, SEARCH_INDEX)
 
     // Get max stagedDate from search index to serve as reference:
     def maxSearchStagedDate = getMaxSearchStagedMillis()
@@ -186,7 +158,7 @@ class ETLService {
         collectionDocs.each { collection ->
           def collectionDoc = collection.response.source.findAll { it.key != 'isoXml' }
           log.debug('Starting indexing of collection ' + collectionDoc.fileIdentifier)
-          addRecordToBulk(collectionDoc, COLLECTION_TYPE) // Add collections whether they have granules or not
+          bulkIndexer.addRecordToBulk(collectionDoc, COLLECTION_TYPE) // Add collections whether they have granules or not
           def granuleScroll = adminClient.prepareSearch(STAGING_INDEX)
               .setTypes(GRANULE_TYPE)
               .addSort('_doc', SortOrder.ASC)
@@ -200,14 +172,14 @@ class ETLService {
             log.debug('Inserting synthesized granule for collection ' + collectionDoc.fileIdentifier)
             def synthesizedGranule = [fileIdentifier: collectionDoc.fileIdentifier, parentIdentifier: collectionDoc.fileIdentifier]
             def flattenedSynthesizedRecord = MetadataParser.mergeCollectionAndGranule(collectionDoc, synthesizedGranule)
-            addRecordToBulk(flattenedSynthesizedRecord, GRANULE_TYPE)
+            bulkIndexer.addRecordToBulk(flattenedSynthesizedRecord, GRANULE_TYPE)
           }
 
           while (granulesRemain) {
             granuleScroll.hits.hits.each { granule ->
               def granuleDoc = granule.source
               def flattenedRecord = MetadataParser.mergeCollectionAndGranule(collectionDoc, granuleDoc)
-              addRecordToBulk(flattenedRecord, GRANULE_TYPE)
+              bulkIndexer.addRecordToBulk(flattenedRecord, GRANULE_TYPE)
             }
             granuleScroll = adminClient.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
             granulesRemain = granuleScroll.hits.hits.length > 0
@@ -253,7 +225,7 @@ class ETLService {
               granuleScroll.hits.hits.each { granule ->
                 def granuleDoc = granule.source
                 def flattenedRecord = MetadataParser.mergeCollectionAndGranule(collectionDoc, granuleDoc)
-                addRecordToBulk(flattenedRecord, GRANULE_TYPE)
+                bulkIndexer.addRecordToBulk(flattenedRecord, GRANULE_TYPE)
               }
               granuleScroll = adminClient.prepareSearchScroll(granuleScroll.scrollId).setScroll(granuleScrollTimeout).execute().actionGet()
               granulesRemain = granuleScroll.hits.hits.length > 0
@@ -265,14 +237,10 @@ class ETLService {
       }
     }
 
-    // Complete anything remaining in bulk request:
-    if (bulkRequest.numberOfActions() > 0) {
-      bulkRequest.get()
-    }
-
+    bulkIndexer.flush()
     indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
     def end = System.currentTimeMillis()
-    log.info "Reindexed ${recordCount} records in ${(end - start) / 1000}s"
+    log.info "Reindexed ${bulkIndexer.recordCount} records in ${(end - start) / 1000}s"
 
   }
 
@@ -295,5 +263,37 @@ class ETLService {
         .execute().actionGet()
     def maxDateAgg = maxDateSearch.aggregations.get('maxStagedDate') as Max
     return maxDateAgg.value as long
+  }
+
+  // a helper class to facilitate bulk indexing
+  private static class BulkIndexer {
+    private client, index, bulkRequest, recordCount
+    public getRecordCount() { recordCount }
+
+    BulkIndexer(Client esClient, String esIndex) {
+      client = esClient
+      index = esIndex
+      bulkRequest = client.prepareBulk()
+      recordCount = 0
+    }
+
+    def addRecordToBulk(record, type) {
+      def id = record.fileIdentifier as String
+      def json = JsonOutput.toJson(record)
+      def insertRequest = client.prepareIndex(index, type, id).setSource(json)
+      bulkRequest.add(insertRequest)
+      recordCount++
+      if (bulkRequest.numberOfActions() >= 1000) {
+        bulkRequest.get()
+        bulkRequest = client.prepareBulk()
+      }
+    }
+
+    def flush() {
+      if (bulkRequest.numberOfActions() > 0) {
+        bulkRequest.get()
+      }
+    }
+
   }
 }
