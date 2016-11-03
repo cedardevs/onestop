@@ -196,68 +196,64 @@ class MetadataIndexService {
     ]
 
     def removeCollectionGranules = false
-    if (type == GRANULE_TYPE) {
-      [STAGING_INDEX, SEARCH_INDEX].each { index ->
-        bulkRequest.add(adminClient.prepareDelete(index, type, internalId))
-      }
-    }
-
-    else if (type == COLLECTION_TYPE) {
-      removeCollectionGranules = true
-      [STAGING_INDEX, SEARCH_INDEX].each { index ->
-        bulkRequest.add(adminClient.prepareDelete(index, COLLECTION_TYPE, internalId))
-      }
-    }
-
-    else {
-      def docs = adminClient.prepareMultiGet()
+    switch(type) {
+      case COLLECTION_TYPE:
+        removeCollectionGranules = true
+      case GRANULE_TYPE:
+        [STAGING_INDEX, SEARCH_INDEX].each { index ->
+          bulkRequest.add(adminClient.prepareDelete(index, type, internalId))
+        }
+        break
+      default:
+        def docs = adminClient.prepareMultiGet()
           .add(SEARCH_INDEX, COLLECTION_TYPE, internalId)
           .add(SEARCH_INDEX, GRANULE_TYPE, internalId)
           .get().responses
-      def foundDocs = docs.count { it.response.exists }
-      if (foundDocs == 2) {
-        if (docs.any { it.response.source.parentIdentifier == externalId }) {
-          // No-granule collection
-          data.type = COLLECTION_TYPE
-          bulkRequest.add(adminClient.prepareDelete(STAGING_INDEX, COLLECTION_TYPE, internalId))
-          [COLLECTION_TYPE, GRANULE_TYPE].each { t ->
-            bulkRequest.add((adminClient.prepareDelete(SEARCH_INDEX, t, internalId)))
+        def foundDocs = docs.count { it.response.exists }
+        if (foundDocs == 2) {
+          if (docs.any { it.response.source.parentIdentifier == externalId }) {
+            // No-granule collection
+            data.type = COLLECTION_TYPE
+            bulkRequest.add(adminClient.prepareDelete(STAGING_INDEX, COLLECTION_TYPE, internalId))
+            [COLLECTION_TYPE, GRANULE_TYPE].each { t ->
+              bulkRequest.add((adminClient.prepareDelete(SEARCH_INDEX, t, internalId)))
+            }
+          }
+          else {
+            // Collection & unrelated granule
+            return [
+              errors: [
+                id    : externalId,
+                status: HttpStatus.CONFLICT.value(),
+                title : 'Ambiguous delete request received',
+                detail: "Collection and granule metadata found with ID ${externalId}. Try request again with 'type' request param specified." as String
+              ]
+            ]
           }
         }
-        else {
-          // Collection & unrelated granule
+
+        else if (foundDocs == 1) {
+          // Collection or granule
+          if (docs[0].type == COLLECTION_TYPE) {
+            removeCollectionGranules = true
+          }
+          data.type = docs[0].type
+          [STAGING_INDEX, SEARCH_INDEX].each { index ->
+            bulkRequest.add(adminClient.prepareDelete(index, docs[0].type, internalId))
+          }
+        }
+
+        else if (!foundDocs) {
           return [
-              errors: [
-                  id    : externalId,
-                  status: HttpStatus.CONFLICT.value(),
-                  title : 'Ambiguous delete request received',
-                  detail: "Collection and granule metadata found with ID ${externalId}. Try request again with 'type' request param specified." as String
-              ]
+            errors: [
+              id    : externalId,
+              status: HttpStatus.NOT_FOUND.value(),
+              title : 'No such document',
+              detail: "Metadata with ID ${externalId} does not exist" as String
+            ]
           ]
         }
-      }
-
-      else if (foundDocs == 1) {
-        // Collection or granule
-        if (docs[0].type == COLLECTION_TYPE) {
-          removeCollectionGranules = true
-        }
-        data.type = docs[0].type
-        [STAGING_INDEX, SEARCH_INDEX].each { index ->
-          bulkRequest.add(adminClient.prepareDelete(index, docs[0].type, internalId))
-        }
-      }
-
-      else if (!foundDocs) {
-        return [
-            errors: [
-                id    : externalId,
-                status: HttpStatus.NOT_FOUND.value(),
-                title : 'No such document',
-                detail: "Metadata with ID ${externalId} does not exist" as String
-            ]
-        ]
-      }
+        break
     }
 
     def bulkResponse = bulkRequest.execute().actionGet()
