@@ -254,10 +254,11 @@ class ApiLoader {
     <gco:CharacterString>${parentIdentifier}</gco:CharacterString>
   </gmd:parentIdentifier>"""
     def fragment = new XmlParser(false, false).parseText(xmlFragment)
-
+    def root = new XmlParser(false, false)
+    
     metadataUrls.eachWithIndex { metadata, i ->
       try {
-        def root = new XmlParser(false, false).parseText(new URL(metadata).text)
+        root.parseText(new URL(metadata).text)
         def xml = root.children()
         xml.add(fragment)
         def updatedXml = XmlUtil.serialize(root)
