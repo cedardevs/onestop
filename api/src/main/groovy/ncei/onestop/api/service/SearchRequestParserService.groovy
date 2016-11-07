@@ -139,7 +139,8 @@ class SearchRequestParserService {
 
     // Facet filters:
     groupedFilters.facet.each {
-      builder.must(QueryBuilders.termsQuery(facetNameMappings[it.name], it.values))
+      def fieldName = facetNameMappings[it.name] ?: it.name
+      builder.must(QueryBuilders.termsQuery(fieldName, it.values))
     }
 
     // Collection filter -- force a union since an intersection on multiple parentIds will return nothing
