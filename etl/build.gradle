@@ -43,8 +43,8 @@ def sources = [
         name             : 'DEM',
         class            : WafExtractor,
         collectionsUrl   : 'http://ngdc.noaa.gov/metadata/published/NOAA/OneStop/DEM/iso/xml/',
-<<<<<<< HEAD
-        collectionsParams: [:]
+        collectionsParams: [:],
+        requireBrowseImg : false
     ],
     [
         name: 'SAMOS',
@@ -53,7 +53,8 @@ def sources = [
         collectionsParams: [searchText: 'title:SAMOS'],
         granulesUrl: 'http://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/samos/',
         granulesParams: [:],
-        granulesClass: WafExtractor
+        granulesClass: WafExtractor,
+        requireBrowseImg : false
     ],
     [
         name: 'WOA13',
@@ -62,11 +63,8 @@ def sources = [
         collectionsParams: [searchText: 'fileIdentifier:"gov.noaa.nodc:0114815"'],
         granulesUrl: 'http://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/woa13/',
         granulesParams: [:],
-        granulesClass: WafExtractor
-=======
-        collectionsParams: [:],
+        granulesClass: WafExtractor,
         requireBrowseImg : false
->>>>>>> pr-1
     ]
 ]
 
@@ -117,11 +115,7 @@ targets.each { target ->
             loader.load(parentIdentifier)
           }
           else {
-<<<<<<< HEAD
-            loader.load()
-=======
             loader.load(source.requireBrowseImg)
->>>>>>> pr-1
           }
         }
       }
@@ -287,7 +281,7 @@ class ApiLoader {
   </gmd:parentIdentifier>"""
     def fragment = new XmlParser(false, false).parseText(xmlFragment)
     def root = new XmlParser(false, false)
-    
+
     metadataUrls.eachWithIndex { metadata, i ->
       try {
         root.parseText(new URL(metadata).text)
