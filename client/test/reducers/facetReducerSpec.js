@@ -15,7 +15,7 @@ describe('Facet reducer', () => {
     metadata:{
       facets:{
         science:{
-          Oceans:{
+          "Oceans":{
             count:5
           },
           "Oceans > Ocean Temperature":{
@@ -35,7 +35,7 @@ describe('Facet reducer', () => {
     type:"MODIFY_SELECTED_FACETS",
     selectedFacets:{
       science:{
-        Oceans:{
+        "Oceans":{
           selected:true
         },
         "Oceans > Ocean Temperature":{

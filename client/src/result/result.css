@@ -8,37 +8,28 @@ $cardWidth: 300px;
 }
 
 .facetSideBar {
+    min-height: 100vh;
     flex: 2;
     width: 230px;
     border: 1px solid color($color-primary lightness(-10%));
     background-color: $color-primary;
-}
-
-@media screen {
-    .facetSideBar{
-        margin-bottom: -100em;
-        margin-top: -4%;
-    }
+    margin-bottom: calc($footer-height + 2 * $section-padding);
 }
 
 .gridContainer {
     flex: 7;
     width: 85%;
     margin-left: 30px;
-    margin-top: -16px;
     overflow-x: hidden;
+    margin-bottom: 80px;
 }
 
-/*.facetContainer h2 {*/
-    /*color: #000;*/
-/*}*/
-/*.facetContainer div {*/
-    /*background: white;*/
-/*}*/
-
-.spinner {
-    display: flex;
-    justify-content: center;
+.breadCrumbs {
+    margin: 1% 0 2% 0;
+    font-size: 1.3em;
+    a, a:visited, a:hover, a:active {
+        color: inherit;
+    }
 }
 
 .list {

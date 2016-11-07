@@ -36,6 +36,8 @@ class MetadataIndexService {
   private Client adminClient
   private IndexAdminService indexAdminService
 
+  private String invalidFileIdPattern = /.*(?![-._:])\p{Punct}.*|.*\s.*/
+
   @Autowired
   public MetadataIndexService(Client adminClient, IndexAdminService indexAdminService) {
     this.adminClient = adminClient
@@ -47,8 +49,7 @@ class MetadataIndexService {
     def data = []
 
     def bulkRequest = adminClient.prepareBulk()
-    def addRecordToBulk = { record, type ->
-      def id = record.fileIdentifier as String
+    def addRecordToBulk = { id, record, type ->
       def json = JsonOutput.toJson(record)
       def insertRequest = adminClient.prepareIndex(STAGING_INDEX, type, id).setSource(json)
       bulkRequest.add(insertRequest)
@@ -58,22 +59,23 @@ class MetadataIndexService {
     documents.each { rawDoc ->
       def document = rawDoc.inputStream.text
       def storageInfo = MetadataParser.parseIdentifierInfo(document)
-      def id = storageInfo.id
+      def internalId = storageInfo.id
+      def externalId = storageInfo.doi ?: storageInfo.id
       def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
 
       def dataRecord = [
-          id        : id,
+          id        : externalId,
           type      : type,
           attributes: [
               filename: rawDoc.originalFilename
           ]
       ]
 
-      if (Pattern.matches(/.*\s.*/, id)) {
+      if (Pattern.matches(invalidFileIdPattern, internalId)) {
         dataRecord.attributes.status = 400
         dataRecord.attributes.error = [
             title : 'Load request failed due to bad fileIdentifier value',
-            detail: id
+            detail: externalId
         ]
       }
       else {
@@ -83,7 +85,7 @@ class MetadataIndexService {
           if (type == COLLECTION_TYPE) {
             source.isoXml = document
           }
-          addRecordToBulk(source, type)
+          addRecordToBulk(internalId, source, type)
         }
         catch (Exception e) {
           dataRecord.attributes.status = 400
@@ -121,11 +123,12 @@ class MetadataIndexService {
   public Map loadMetadata(String document) {
 
     def storageInfo = MetadataParser.parseIdentifierInfo(document)
-    def id = storageInfo.id
-    if (Pattern.matches(/.*\s.*/, id)) {
+    def internalId = storageInfo.id
+    def externalId = storageInfo.doi ?: storageInfo.id
+    if (Pattern.matches(invalidFileIdPattern, internalId)) {
       return [
           errors: [
-              [status: 400, title: 'Bad Request', detail: 'Load request failed due to bad fileIdentifier value: ' + id]
+              [status: 400, title: 'Bad Request', detail: 'Load request failed due to bad fileIdentifier value: ' + externalId]
           ]
       ]
     }
@@ -137,13 +140,13 @@ class MetadataIndexService {
       }
       source.stagedDate = System.currentTimeMillis()
       source = JsonOutput.toJson(source)
-      def response = adminClient.prepareIndex(STAGING_INDEX, type, id)
+      def response = adminClient.prepareIndex(STAGING_INDEX, type, internalId)
           .setSource(source)
           .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
           .execute().actionGet()
       return [
           data: [
-              id        : id,
+              id        : externalId,
               type      : type,
               attributes: [
                   created: response.created
@@ -153,12 +156,15 @@ class MetadataIndexService {
     }
   }
 
-  public Map getMetadata(String fileIdentifier) {
-    def response = adminClient.prepareGet(STAGING_INDEX, null, fileIdentifier).execute().actionGet()
+  public Map getMetadata(String id) {
+
+    def response = adminClient.prepareGet(STAGING_INDEX, null, id).execute().actionGet()
+    def externalId = id.contains('doi:10.') ? id.replace('-', '/') : id
+
     if (response.exists) {
       return [
           data: [
-              id        : response.id,
+              id        : externalId,
               type      : response.type,
               attributes: [
                   source: response.source
@@ -170,15 +176,18 @@ class MetadataIndexService {
       return [
           status: HttpStatus.NOT_FOUND.value(),
           title : 'No such document',
-          detail: "Metadata with ID ${fileIdentifier} does not exist" as String
+          detail: "Metadata with ID ${externalId} does not exist" as String
       ]
     }
   }
 
-  public Map deleteMetadata(String fileIdentifier, String type) {
+  public Map deleteMetadata(String internalId, String type) {
+
+    def externalId = internalId.contains('doi:10.') ? internalId.replace('-', '/') : internalId
+
     def bulkRequest = adminClient.prepareBulk()
     def data = [
-        id        : fileIdentifier,
+        id        : externalId,
         type      : type,
         attributes: [
             successes: [],
@@ -187,68 +196,64 @@ class MetadataIndexService {
     ]
 
     def removeCollectionGranules = false
-    if (type == GRANULE_TYPE) {
-      [STAGING_INDEX, SEARCH_INDEX].each { index ->
-        bulkRequest.add(adminClient.prepareDelete(index, type, fileIdentifier))
-      }
-    }
-
-    else if (type == COLLECTION_TYPE) {
-      removeCollectionGranules = true
-      [STAGING_INDEX, SEARCH_INDEX].each { index ->
-        bulkRequest.add(adminClient.prepareDelete(index, COLLECTION_TYPE, fileIdentifier))
-      }
-    }
-
-    else {
-      def docs = adminClient.prepareMultiGet()
-          .add(SEARCH_INDEX, COLLECTION_TYPE, fileIdentifier)
-          .add(SEARCH_INDEX, GRANULE_TYPE, fileIdentifier)
+    switch(type) {
+      case COLLECTION_TYPE:
+        removeCollectionGranules = true
+      case GRANULE_TYPE:
+        [STAGING_INDEX, SEARCH_INDEX].each { index ->
+          bulkRequest.add(adminClient.prepareDelete(index, type, internalId))
+        }
+        break
+      default:
+        def docs = adminClient.prepareMultiGet()
+          .add(SEARCH_INDEX, COLLECTION_TYPE, internalId)
+          .add(SEARCH_INDEX, GRANULE_TYPE, internalId)
           .get().responses
-      def foundDocs = docs.count { it.response.exists }
-      if (foundDocs == 2) {
-        if (docs.any { it.response.source.parentIdentifier == fileIdentifier }) {
-          // No-granule collection
-          data.type = COLLECTION_TYPE
-          bulkRequest.add(adminClient.prepareDelete(STAGING_INDEX, COLLECTION_TYPE, fileIdentifier))
-          [COLLECTION_TYPE, GRANULE_TYPE].each { t ->
-            bulkRequest.add((adminClient.prepareDelete(SEARCH_INDEX, t, fileIdentifier)))
+        def foundDocs = docs.count { it.response.exists }
+        if (foundDocs == 2) {
+          if (docs.any { it.response.source.parentIdentifier == externalId }) {
+            // No-granule collection
+            data.type = COLLECTION_TYPE
+            bulkRequest.add(adminClient.prepareDelete(STAGING_INDEX, COLLECTION_TYPE, internalId))
+            [COLLECTION_TYPE, GRANULE_TYPE].each { t ->
+              bulkRequest.add((adminClient.prepareDelete(SEARCH_INDEX, t, internalId)))
+            }
+          }
+          else {
+            // Collection & unrelated granule
+            return [
+              errors: [
+                id    : externalId,
+                status: HttpStatus.CONFLICT.value(),
+                title : 'Ambiguous delete request received',
+                detail: "Collection and granule metadata found with ID ${externalId}. Try request again with 'type' request param specified." as String
+              ]
+            ]
           }
         }
-        else {
-          // Collection & unrelated granule
+
+        else if (foundDocs == 1) {
+          // Collection or granule
+          if (docs[0].type == COLLECTION_TYPE) {
+            removeCollectionGranules = true
+          }
+          data.type = docs[0].type
+          [STAGING_INDEX, SEARCH_INDEX].each { index ->
+            bulkRequest.add(adminClient.prepareDelete(index, docs[0].type, internalId))
+          }
+        }
+
+        else if (!foundDocs) {
           return [
-              errors: [
-                  id    : fileIdentifier,
-                  status: HttpStatus.CONFLICT.value(),
-                  title : 'Ambiguous delete request received',
-                  detail: "Collection and granule metadata found with ID ${fileIdentifier}. Try request again with 'type' request param specified." as String
-              ]
+            errors: [
+              id    : externalId,
+              status: HttpStatus.NOT_FOUND.value(),
+              title : 'No such document',
+              detail: "Metadata with ID ${externalId} does not exist" as String
+            ]
           ]
         }
-      }
-
-      else if (foundDocs == 1) {
-        // Collection or granule
-        if (docs[0].type == COLLECTION_TYPE) {
-          removeCollectionGranules = true
-        }
-        data.type = docs[0].type
-        [STAGING_INDEX, SEARCH_INDEX].each { index ->
-          bulkRequest.add(adminClient.prepareDelete(index, docs[0].type, fileIdentifier))
-        }
-      }
-
-      else if (!foundDocs) {
-        return [
-            errors: [
-                id    : fileIdentifier,
-                status: HttpStatus.NOT_FOUND.value(),
-                title : 'No such document',
-                detail: "Metadata with ID ${fileIdentifier} does not exist" as String
-            ]
-        ]
-      }
+        break
     }
 
     def bulkResponse = bulkRequest.execute().actionGet()
@@ -273,7 +278,7 @@ class MetadataIndexService {
       DeleteByQueryResponse deleteResponse = new DeleteByQueryRequestBuilder(adminClient, DeleteByQueryAction.INSTANCE)
           .setIndices([STAGING_INDEX, SEARCH_INDEX])
           .setTypes(GRANULE_TYPE)
-          .setQuery(QueryBuilders.termQuery('parentIdentifer', fileIdentifier))
+          .setQuery(QueryBuilders.termQuery('parentIdentifer', internalId))
           .execute().actionGet()
       data.attributes.stagingGranulesFound = deleteResponse.getIndex(STAGING_INDEX).found
       data.attributes.stagingGranulesDeleted = deleteResponse.getIndex(STAGING_INDEX).deleted

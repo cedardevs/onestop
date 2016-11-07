@@ -8,6 +8,14 @@
     margin-top: 15px;
 }
 
+.formStyle {
+    display: table;
+    min-width: 100%;
+    > div {
+        display: table-row;
+    }
+}
+
 /* Override collapsible menu defaults */
 form > span {
     color: white !important;

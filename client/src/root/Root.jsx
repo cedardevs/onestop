@@ -3,7 +3,6 @@ const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 
 import React from 'react'
 import DetailContainer from '../detail/DetailContainer'
-import Breadcrumbs from 'react-breadcrumbs'
 import Favicon from 'react-favicon'
 import Footer from './Footer.jsx'
 import AlphaBanner from './AlphaBanner.jsx'
@@ -14,23 +13,12 @@ import LoadingContainer from '../loading/LoadingContainer'
 class RootComponent extends React.Component {
   constructor(props) {
     super(props)
-    this.breadcrumbs
   }
 
   render() {
-    var searchlabel
-    if (this.props.location.pathname !== "/"){
-        this.breadcrumbs = <Breadcrumbs
-            routes={this.props.routes}
-            params={this.props.params}
-        />
-        searchlabel = 'searchHover'
-    } else {
-        this.breadcrumbs = undefined
-        searchlabel =  "searchMapSpace"
-    }
+    let searchLabel = this.props.location.pathname === "/" ? "searchMapSpace" : 'searchHover';
+
     return <div className={styles.rootContainer}>
-      <Favicon url={["//cires1.colorado.edu/favicon.ico"]}/>
       <div className={styles.mainContent}>
         <AlphaBanner/>
         <DetailContainer/>
@@ -43,19 +31,14 @@ class RootComponent extends React.Component {
                 <a className={styles.doc} href="//www.commerce.gov">U.S. Department of Commerce</a>
               </div>
             </div>
-            <div  className={`pure-u-3-4 ${styles.landingComponents} ${styles[searchlabel]}`}>
-              <SearchFieldsContainer  />
+            <div className={`pure-u-3-4 ${styles.landingComponents} ${styles[searchLabel]}`}>
+              <SearchFieldsContainer/>
             </div>
           </div>
         </div>
         <div className={styles.main}>
           <LoadingContainer/>
-          <div className={styles.breadCrumbs}>
-            {this.breadcrumbs}
-          </div>
-          <div className={styles.results}>
-            {this.props.children}
-          </div>
+          {this.props.children}
         </div>
       </div>
       <div className={styles.footer}>

@@ -20,15 +20,15 @@ class AdminController {
     this.etlService = etlService
   }
 
-  @RequestMapping(path = '/admin/reindex', method = [GET, PUT], produces = 'application/json')
-  Map reindex() {
-    etlService.reindexAsync()
+  @RequestMapping(path = '/admin/index/search/rebuild', method = [GET, PUT], produces = 'application/json')
+  Map rebuildSearchIndex() {
+    etlService.rebuildSearchIndexAsync()
     return [acknowledged: true]
   }
 
-  @RequestMapping(path = '/admin/refresh', method = [GET, PUT], produces = 'application/json')
-  Map refresh() {
-    etlService.refreshAsync()
+  @RequestMapping(path = '/admin/index/search/update', method = [GET, PUT], produces = 'application/json')
+  Map updateSearchIndex() {
+    etlService.updateSearchIndexAsync()
     return [acknowledged: true]
   }
 }

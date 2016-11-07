@@ -7,8 +7,19 @@ class MetadataParser {
 
   public static Map parseIdentifierInfo(String xml) {
     def slurped = new XmlSlurper().parseText(xml)
+
+    def identifiers = slurped.identificationInfo.MD_DataIdentification.citation.CI_Citation.'**'.findAll {
+      it.name() == 'identifier'
+    }
+    String doi = identifiers.findResult(null, { identifier ->
+      if(identifier.MD_Identifier.authority.CI_Citation.title.CharacterString.text() == 'Digital Object Identifier (DOI)') {
+        return identifier.MD_Identifier.code.Anchor.text()
+      }
+    })
+
     return [
-        id: slurped.fileIdentifier.CharacterString.text(),
+        id: doi ? doi.replace('/', '-') : slurped.fileIdentifier.CharacterString.text(),
+        doi: doi,
         parentId: slurped.parentIdentifier.Anchor.text() ?: slurped.parentIdentifier.CharacterString.text() ?: null
     ]
   }
@@ -21,6 +32,7 @@ class MetadataParser {
 
     def fileIdentifier
     def parentIdentifier
+    def doi
     def title
     def alternateTitle
     def description
@@ -52,6 +64,12 @@ class MetadataParser {
     // Basic info:
     fileIdentifier = metadata.fileIdentifier.CharacterString.text()
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
+    def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier'}
+    doi = identifiers.findResult(null, { identifier ->
+      if(identifier.MD_Identifier.authority.CI_Citation.title.CharacterString.text() == 'Digital Object Identifier (DOI)') {
+        return identifier.MD_Identifier.code.Anchor.text()
+      }
+    })
     title = idInfo.citation.CI_Citation.title.CharacterString.text()
     alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text() ?: null
     description = idInfo.abstract.CharacterString.text()
@@ -79,7 +97,7 @@ class MetadataParser {
       def keywordGroup = e.'**'.findAll { it.name() == 'keyword' }
       keywordGroup.each { k ->
 
-        def text = k.CharacterString.text() as String
+        def text = k.CharacterString.text() ?: k.Anchor.text()
         def namespace = e.thesaurusName.CI_Citation.title.CharacterString.text()
 
         if(text) {
@@ -130,13 +148,13 @@ class MetadataParser {
     def beginDate = time.TimePeriod.beginPosition.text() ?:
         time.TimePeriod.begin.TimeInstant.timePosition.text() ?: null
     def beginIndeterminate = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
-        time.TimePeriod.begin.TimeInstant.timePosition.@indeterminatePosition.text()
+        time.TimePeriod.begin.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
     def endDate = time.TimePeriod.endPosition.text() ?:
         time.TimePeriod.end.TimeInstant.timePosition.text() ?: null
     def endIndeterminate = time.TimePeriod.endPosition.@indeterminatePosition.text() ?:
-        time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text()
+        time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
     def instant = time.TimeInstant.timePosition.text() ?: null
-    def instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text()
+    def instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
 
     temporalBounding.put('beginDate', beginDate)
     temporalBounding.put('beginIndeterminate', beginIndeterminate)
@@ -162,21 +180,21 @@ class MetadataParser {
         .'**'.findAll { it.name() == 'MI_Instrument' }
     instruments.each { e ->
       acquisitionInstruments.add([
-          instrumentIdentifier : e.identifier.MD_Identifier.code.CharacterString.text(),
-          instrumentType       : e.type.CharacterString.text(),
-          instrumentDescription: e.description.CharacterString.text()
+          instrumentIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: null,
+          instrumentType       : e.type.CharacterString.text() ?: null,
+          instrumentDescription: e.description.CharacterString.text() ?: null
       ])
     }
 
     // Acquisition operation:
     def operations = metadata.acquisitionInformation.MI_AcquisitionInformation.operation
-        .'**'.findAll { it.name == 'MI_Operation' }
+        .'**'.findAll { it.name() == 'MI_Operation' }
     operations.each { e ->
       acquisitionOperations.add([
-          operationDescription: e.description.CharacterString.text(),
-          operationIdentifier : e.identifier.MD_Identifier.code.CharacterString.text(),
-          operationStatus     : e.status.MD_ProgressCode.@codeListValue.text(),
-          operationType       : e.type.MI_OperationTypeCode.@codeListValue.text() // FIXME not sure on path
+          operationDescription: e.description.CharacterString.text() ?: null,
+          operationIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: null,
+          operationStatus     : e.status.MD_ProgressCode.@codeListValue.text() ?: null,
+          operationType       : e.type.MI_OperationTypeCode.@codeListValue.text() ?: null // FIXME not sure on path
       ])
     }
 
@@ -185,8 +203,8 @@ class MetadataParser {
         .'**'.findAll { it.name() == 'MI_Platform' }
     platforms.each { e ->
       acquisitionPlatforms.add([
-          platformIdentifier : e.identifier.MD_Identifier.code.CharacterString.text(),
-          platformDescription: e.description.CharacterString.text(),
+          platformIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: null,
+          platformDescription: e.description.CharacterString.text() ?: null,
           platformSponsor    : e.sponsor.CI_ResponsibleParty.organisationName
               .'**'.findAll { it.name() == 'CharacterString' }*.text()
       ])
@@ -196,10 +214,10 @@ class MetadataParser {
     def linkage = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'CI_OnlineResource' }
     linkage.each { e ->
       links.add([
-          linkName       : e.name.CharacterString.text(),
-          linkUrl        : e.linkage.URL.text(),
-          linkDescription: e.description.CharacterString.text(),
-          linkFunction   : e.function.CI_OnLineFunctionCode.@codeListValue.text()
+          linkName       : e.name.CharacterString.text() ?: null,
+          linkUrl        : e.linkage.URL.text() ?: null,
+          linkDescription: e.description.CharacterString.text() ?: null,
+          linkFunction   : e.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
       ])
     }
 
@@ -207,9 +225,9 @@ class MetadataParser {
     def contactInfo = metadata.'**'.findAll { it.name() == 'CI_ResponsibleParty' }
     contactInfo.each { e ->
       contacts.add([
-          individualName  : e.individualName.CharacterString.text() ?: e.individualName.Anchor.text(),
-          organizationName: e.organisationName.CharacterString.text() ?: e.organisationName.Anchor.text(),
-          role            : e.role.CI_RoleCode.@codeListValue.text()
+          individualName  : e.individualName.CharacterString.text() ?: e.individualName.Anchor.text() ?: null,
+          organizationName: e.organisationName.CharacterString.text() ?: e.organisationName.Anchor.text() ?: null,
+          role            : e.role.CI_RoleCode.@codeListValue.text() ?: null
       ])
     }
 
@@ -217,6 +235,7 @@ class MetadataParser {
     def json = [
         fileIdentifier        : fileIdentifier,
         parentIdentifier      : parentIdentifier,
+        doi                   : doi,
         title                 : title,
         alternateTitle        : alternateTitle,
         description           : description,

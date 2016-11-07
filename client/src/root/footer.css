@@ -2,13 +2,7 @@
 
 /*$ICON_SIZE: 25px;*/
 
-.panel {
-  max-width: 90%;
-  margin: 0 auto;
-}
-
 .container {
-  background: $color-primary-darkest;
   font-size: 12px;
   width: 100%;
   color: white;

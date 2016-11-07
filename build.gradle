@@ -14,6 +14,13 @@ buildscript {
   }
 }
 
+subprojects {
+  project.ext {
+    esVersion = '2.4.1'
+  }
+}
+
+
 apply plugin: 'com.gradle.build-scan'
 
 group = 'cires.ncei.onestop'

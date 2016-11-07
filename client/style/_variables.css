@@ -26,3 +26,9 @@ $color-base: $color-gray;
 $text-max-width:    660px;
 $site-max-width:    1040px;
 $color-medium-blue:     #0a4595;
+
+/* Page layout */
+$banner-height: 1.5em;
+$header-height: 7.4em;
+$footer-height: 5em;
+$section-padding: .9em;

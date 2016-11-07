@@ -14,10 +14,8 @@ buildscript {
 
 apply plugin: 'com.wiredforcode.spawn'
 
-def esVersion = '2.3.2'
-
 task installElasticSearch(type: DownloadTask) {
-  url = "https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${esVersion}/elasticsearch-${esVersion}.tar.gz"
+  url = "https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/tar/elasticsearch/${project.esVersion}/elasticsearch-${project.esVersion}.tar.gz"
   targetDir = "${buildDir}/elasticsearch"
 
   finalizedBy 'extractElasticSearch'
@@ -26,6 +24,15 @@ task installElasticSearch(type: DownloadTask) {
 task extractElasticSearch(type: Copy) {
   from tarTree(installElasticSearch.targetFile)
   into installElasticSearch.targetFile.parentFile
+
+  finalizedBy 'installDeleteByQueryPlugin'
+}
+
+task installDeleteByQueryPlugin(type: Exec) {
+  onlyIf { !(new File("${buildDir}/elasticsearch/elasticsearch-${project.esVersion}/plugins/delete-by-query").exists()) }
+
+  workingDir "${buildDir}/elasticsearch/elasticsearch-${project.esVersion}/bin"
+  commandLine './plugin', 'install', 'delete-by-query'
 }
 
 task start(type: SpawnProcessTask) {
@@ -33,7 +40,7 @@ task start(type: SpawnProcessTask) {
   onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
 
   directory projectDir.absolutePath
-  command "${buildDir}/elasticsearch/elasticsearch-${esVersion}/bin/elasticsearch"
+  command "${buildDir}/elasticsearch/elasticsearch-${project.esVersion}/bin/elasticsearch"
   ready 'started'
 }
 

@@ -50,14 +50,12 @@ let Footer = ({dispatch}) => {
 
     return (
       <div className={styles.container}>
-          <div className={styles.panel}>
-              <div className={'pure-g'}>
-                  <div className={`pure-u-2-5 ${styles.logoPanel}`}>
-                     <a href="//www.noaa.gov/" className={`${styles.noaaLogo} ${styles.rowElement}`}>
-                          <span className={styles.hidden}>NOAA Home</span>
-                      </a>
-                     <span className={`${styles.rowElement} ${styles.slogan}`}>Science. Service. Stewardship.</span>
-                  </div>
+          <div className={'pure-g'}>
+              <div className={`pure-u-2-5 ${styles.logoPanel}`}>
+                 <a href="//www.noaa.gov/" className={`${styles.noaaLogo} ${styles.rowElement}`}>
+                      <span className={styles.hidden}>NOAA Home</span>
+                  </a>
+                 <span className={`${styles.rowElement} ${styles.slogan}`}>Science. Service. Stewardship.</span>
               </div>
           </div>
       </div>

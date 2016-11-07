@@ -91,7 +91,7 @@ class TemporalSearch extends React.Component {
   handleClick(e) {
     var component = ReactDOM.findDOMNode(this.refs.daypicker)
     if (this.state.showCalendar && !component.contains(e.target)
-        && e.srcElement.id !== 'from' && e.srcElement.id !== 'to' && e.srcElement.id !== 'reset'){
+        && e.target.id !== 'from' && e.target.id !== 'to' && e.target.id !== 'reset'){
       this.state.showCalendar = !this.state.showCalendar
       this.forceUpdate()
     }

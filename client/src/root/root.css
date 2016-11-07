@@ -1,26 +1,24 @@
 @import '../../style/style.css';
 
-$footer-height: 60px;
-$footer-padding: 5px;
-
 .rootContainer {
   height: 100%;
 }
 
 .mainContent {
   min-height: 100%;
-  margin-bottom: -$footer-height; /* negative value of footer height */
+  margin-bottom: calc(-$footer-height + 2 * -$section-padding);
 }
 
 .main {
-  overflow: hidden;
   min-height: 100%;
 }
 
 .footer {
+  background: $color-primary-darkest;
   position: relative;
   height: $footer-height;
   clear: both;
+  padding: $section-padding;
 }
 
 input {
@@ -31,7 +29,7 @@ input {
   border-bottom: 1px solid color($color-primary-darkest lightness(-10%));
   background: $color-primary-darkest;
   box-shadow: 0 10px 5px rgb(0,0,0,.7);
-  padding: 10px;
+  padding: $section-padding;
 }
 
 .appbar {
@@ -100,15 +98,6 @@ input {
   padding: 0 120px 0 0;
 }
 
-.breadCrumbs {
-  margin: 1% 0 2% 23%;
-  width: 85%;
-  font-size: 1.3em;
-  a, a:visited, a:hover, a:active {
-    color: inherit;
-  }
-}
-
 .landingComponents {
   float: right;
   color: black;
@@ -121,10 +110,6 @@ input {
   /*padding: 10px 0 0 0;*/
   /*display: inline-block;*/
 /*}*/
-
-.results {
-  margin-bottom: 80px;
-}
 
 .details {
   position: fixed;

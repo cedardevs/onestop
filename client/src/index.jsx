@@ -4,6 +4,7 @@ import React from 'react'
 import {render} from 'react-dom'
 import { Router, Route, IndexRoute } from 'react-router'
 import ResultsListContainer from './result/ResultsListContainer'
+import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
 import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
@@ -28,6 +29,7 @@ const body =
         <Route path="/" name="Home" component={RootComponent}>
           <IndexRoute component={LandingContainer}/>
           <Route name="Results" path="results" component={ResultsListContainer}/>
+          <Route name="Error" path="error" component={ErrorContainer}/>
         </Route>
       </Router>
     </Provider>

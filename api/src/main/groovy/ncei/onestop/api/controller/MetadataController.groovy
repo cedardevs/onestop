@@ -59,6 +59,12 @@ class MetadataController {
     return result
   }
 
+  @RequestMapping(path = '/metadata/doi:10{prefix}/{suffix}', method = [GET, HEAD], produces = 'application/json')
+  Map retrieveJson(@PathVariable String prefix, @PathVariable String suffix, HttpServletResponse response) {
+    def id = "doi:10${prefix}-${suffix}"
+    return retrieveJson(id, response)
+  }
+
   @RequestMapping(path = '/metadata/{id}', method = DELETE, produces = 'application/json')
   Map delete(@PathVariable String id, @RequestParam(value = 'type', required = false) String type, HttpServletResponse response) {
     def result = metadataIndexService.deleteMetadata(id, type)
@@ -72,6 +78,13 @@ class MetadataController {
       response.status = HttpStatus.OK.value()
     }
     return result
+  }
+
+  @RequestMapping(path = '/metadata/doi:10{prefix}/{suffix}', method = DELETE, produces = 'application/json')
+  Map delete(@PathVariable String prefix, @PathVariable String suffix,
+             @RequestParam(value = 'type', required = false) String type, HttpServletResponse response) {
+    def id = "doi:10${prefix}-${suffix}"
+    return delete(id, type, response)
   }
 
 }

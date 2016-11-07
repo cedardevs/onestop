@@ -59,7 +59,7 @@ class SearchIntegrationTests extends Specification {
       }
     }
     metadataIndexService.refresh()
-    etlService.reindex()
+    etlService.rebuildSearchIndex()
     searchIndexService.refresh()
 
     restTemplate = new RestTemplate()
@@ -268,7 +268,7 @@ class SearchIntegrationTests extends Specification {
     and: "Expected result is returned"
     def actualIds = items.collect { it.attributes.fileIdentifier }
     actualIds.containsAll([
-        'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+        'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
     ])
   }
 

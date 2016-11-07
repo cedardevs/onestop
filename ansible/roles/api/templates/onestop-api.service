@@ -5,6 +5,7 @@ After=syslog.target
 [Service]
 ExecStart=/usr/local/bin/onestop-api.war
 SuccessExitStatus=143
+Environment="SPRING_CONFIG_LOCATION=file:/usr/local/bin/onestop-api.yml"
 
 [Install]
 WantedBy=multi-user.target
