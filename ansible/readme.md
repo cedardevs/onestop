@@ -4,13 +4,22 @@ Ansible playbook for deploying onestop
 This subproject defines a playbook which deploys all of onestop.
 
 ### Prerequisites
-
-1. Ansible installed locally
-1. An [ansible inventory file](http://docs.ansible.com/ansible/intro_inventory.html) named `hosts` in this subproject directory
+1. Install pip
+    - Download https://bootstrap.pypa.io/get-pip.py
+    - python get-pip.py --user
+    - Add .local/bin to path
+2. Install ansible
+    - pip install ansible --user
+3. Set-up an ansible vault
+    - obtain the vault passphrase from a sysadmin.
+    - edit ~/.vault_pass.txt and add the passphrase on a single line to this file.
+    - chmod 600 .vault_pass.txt
+    - add "ANSIBLE_VAULT_PASSWORD_FILE=~/.vault_pass.txt" to your environment.      
+4. An [ansible inventory file](http://docs.ansible.com/ansible/intro_inventory.html) named `hosts` in this subproject directory
     - The inventory should define a group of machines called `web` and one called `backend`
     - You can put the same host(s) in both groups
     - See `sample_hosts` for an example
-1. Root access via ssh to the machines in your inventory w/ ssh keys copied to them
+5. Root access via ssh to the machines in your inventory w/ ssh keys copied to them
 
 ### Usage
 
