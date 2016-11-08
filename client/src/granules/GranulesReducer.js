@@ -1,5 +1,5 @@
 import Immutable from 'immutable'
-import { TOGGLE_GRANULE_FOCUS } from './GranulesActions'
+import { TOGGLE_GRANULE_FOCUS, TOGGLE_COLLECTION_SELECTION } from './GranulesActions'
 
 export const initialState = Immutable.Map({
   selectedCollections: Immutable.Set(),
@@ -9,10 +9,11 @@ export const initialState = Immutable.Map({
 
 export const granules = (state = initialState, action) => {
   switch(action.type) {
+    case TOGGLE_COLLECTION_SELECTION:
+      return state.set('selectedCollections', toggleValueInSet(state.get('selectedCollections'), action.id))
+
     case TOGGLE_GRANULE_FOCUS:
-      const current = state.get('focusedGranules')
-      const next = current.has(action.id) ? current.delete(action.id) : current.add(action.id)
-      return state.set('focusedGranules', next)
+      return state.set('focusedGranules', toggleValueInSet(state.get('focusedGranules'), action.id))
 
     default:
       return state
@@ -20,3 +21,7 @@ export const granules = (state = initialState, action) => {
 }
 
 export default granules
+
+const toggleValueInSet = (set, value) => {
+  return set.has(value) ? set.delete(value) : set.add(value)
+}
