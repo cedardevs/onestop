@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import Immutable from 'immutable'
 import {
     TOGGLE_GRANULE_FOCUS, TOGGLE_COLLECTION_SELECTION,
@@ -24,11 +23,10 @@ export const granules = (state = initialState, action) => {
       return state.set('inFlight', true)
 
     case FETCHED_GRANULES:
-      const initialGranules = state.get('granules')
-      const finalGranules =_.reduce(action.granules,
-          (interimGranules, granule) => interimGranules.set(granule.id, Immutable.fromJS(granule)),
-          initialGranules)
-      return state.set('inFlight', false).set('granules', finalGranules)
+      const newGranules = Immutable.fromJS(action.granules).reduce(
+          (existing, next) => existing.set(next.get('id'), next),
+          state.get('granules'))
+      return state.set('inFlight', false).set('granules', newGranules)
 
     case CLEAR_GRANULES:
       return state.set('granules', initialState.get('granules'))
