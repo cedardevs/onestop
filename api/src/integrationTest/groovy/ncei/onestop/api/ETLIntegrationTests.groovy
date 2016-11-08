@@ -105,6 +105,7 @@ class ETLIntegrationTests extends Specification {
 
     then: 'only that granule is reindexed'
     indexedCollectionVersions()['gov.noaa.nodc:NDBC-COOPS'] == 1
+    indexedGranuleVersions()['CO-OPS.NOS_9410170_201503_D1_v00'] == 1
     indexedGranuleVersions()['CO-OPS.NOS_8638614_201602_D1_v00'] == 2
   }
 
