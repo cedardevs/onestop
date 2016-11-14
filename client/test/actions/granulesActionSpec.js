@@ -3,7 +3,7 @@ import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import Immutable from 'immutable'
 import nock from 'nock'
-import * as granuleActions from '../../src/granules/GranulesActions'
+import * as granuleActions from '../../src/result/granules/GranulesActions'
 import { LOADING_SHOW, LOADING_HIDE } from '../../src/loading/LoadingActions'
 
 const mockStore = configureMockStore([thunk])

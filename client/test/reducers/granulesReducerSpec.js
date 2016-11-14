@@ -1,7 +1,7 @@
 import '../specHelper'
 import Immutable from 'immutable'
-import { granules, initialState } from '../../src/granules/GranulesReducer'
-import { toggleGranuleFocus, toggleCollectionSelection, clearCollectionSelections, fetchingGranules, fetchedGranules, clearGranules } from '../../src/granules/GranulesActions'
+import { granules, initialState } from '../../src/result/granules/GranulesReducer'
+import { toggleGranuleFocus, toggleCollectionSelection, clearCollectionSelections, fetchingGranules, fetchedGranules, clearGranules } from '../../src/result/granules/GranulesActions'
 
 describe('The granules reducer', function() {
   it('has a default state', function () {

@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react'
 import FlipCard from 'react-flipcard'
-import styles from './result.css'
+import styles from './collectionGrid.css'
 
-const Result = (props) => {
+const CollectionTile = (props) => {
   // Thumbnails are dynamically assigned so style's applied via JS
   let thumbnailUrl = props.thumbnail && props.thumbnail
           .replace(/^https?:/, '')
@@ -34,18 +34,18 @@ const Result = (props) => {
   )
 }
 
-Result.propTypes = {
+CollectionTile.propTypes = {
   id: PropTypes.string.isRequired,
   flipped: PropTypes.bool.isRequired,
   onCardClick: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired
 }
 
-Result.defaultProps = {
+CollectionTile.defaultProps = {
   id: '',
   flipped: false
 }
 
-Result.shouldComponentUpdate = (nextProps, nextState) => typeof nextProps.id !== 'undefined'
+CollectionTile.shouldComponentUpdate = (nextProps, nextState) => typeof nextProps.id !== 'undefined'
 
-export default Result
+export default CollectionTile

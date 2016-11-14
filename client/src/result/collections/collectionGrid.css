@@ -1,4 +1,4 @@
-@import '../../style/style.css';
+@import '../../../style/style.css';
 $gridHeight: 160px; /* Workaround until div can autoadjust height */
 $cardHeight: 140px;
 $cardWidth: 300px;
