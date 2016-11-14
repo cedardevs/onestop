@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import { setFocus } from './DetailActions'
+import { fetchGranules, clearGranules, toggleCollectionSelection, clearCollectionSelections } from '../granules/GranulesActions'
 import { clearSearch, triggerSearch, updateQuery } from '../search/SearchActions'
 import { clearFacets } from '../search/facet/FacetActions'
 import Detail from './DetailComponent'
@@ -21,6 +22,13 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(clearSearch())
       dispatch(updateQuery(text))
       dispatch(triggerSearch())
+    },
+    showGranules: (id) => {
+      dispatch(setFocus(null))
+      dispatch(clearCollectionSelections())
+      dispatch(toggleCollectionSelection(id))
+      dispatch(clearGranules())
+      dispatch(fetchGranules())
     }
   }
 }

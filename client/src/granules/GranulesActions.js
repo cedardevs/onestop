@@ -1,9 +1,11 @@
 import fetch from 'isomorphic-fetch'
+import { push } from 'react-router-redux'
 import { showLoading, hideLoading } from '../loading/LoadingActions'
 import { showErrors } from '../error/ErrorActions'
 
 export const TOGGLE_GRANULE_FOCUS = 'toggle_granule_focus'
 export const TOGGLE_COLLECTION_SELECTION = 'toggle_collection_selection'
+export const CLEAR_COLLECTION_SELECTIONS = 'clear_collection_selections'
 export const FETCHING_GRANULES = 'fetching_granules'
 export const FETCHED_GRANULES = 'fetched_granules'
 export const CLEAR_GRANULES = 'clear_granules'
@@ -19,6 +21,12 @@ export const toggleCollectionSelection = (collectionId) => {
   return {
     type: TOGGLE_COLLECTION_SELECTION,
     id: collectionId
+  }
+}
+
+export const clearCollectionSelections = () => {
+  return {
+    type: CLEAR_COLLECTION_SELECTIONS
   }
 }
 
@@ -85,6 +93,7 @@ export const fetchGranules = () => {
         .then(json => {
           dispatch(fetchedGranules(json.data))
           dispatch(hideLoading())
+          dispatch(push('granules'))
         })
         .catch(ajaxError => {
           ajaxError.response.json().then(errorJson => handleErrors(dispatch, errorJson))

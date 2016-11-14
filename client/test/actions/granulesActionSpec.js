@@ -52,7 +52,8 @@ describe('The granule actions', function () {
         {type: LOADING_SHOW},
         {type: granuleActions.FETCHING_GRANULES},
         {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data},
-        {type: LOADING_HIDE}
+        {type: LOADING_HIDE},
+        {payload: {args: ["granules"], method: "push"}, type: "@@router/CALL_HISTORY_METHOD"}
       ])
     })
   })
@@ -83,7 +84,8 @@ describe('The granule actions', function () {
         {type: LOADING_SHOW},
         {type: granuleActions.FETCHING_GRANULES},
         {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data},
-        {type: LOADING_HIDE}
+        {type: LOADING_HIDE},
+        {payload: {args: ["granules"], method: "push"}, type: "@@router/CALL_HISTORY_METHOD"}
       ])
     })
   })

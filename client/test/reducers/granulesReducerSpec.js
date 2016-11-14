@@ -1,7 +1,7 @@
 import '../specHelper'
 import Immutable from 'immutable'
 import { granules, initialState } from '../../src/granules/GranulesReducer'
-import { toggleGranuleFocus, toggleCollectionSelection, fetchingGranules, fetchedGranules, clearGranules } from '../../src/granules/GranulesActions'
+import { toggleGranuleFocus, toggleCollectionSelection, clearCollectionSelections, fetchingGranules, fetchedGranules, clearGranules } from '../../src/granules/GranulesActions'
 
 describe('The granules reducer', function() {
   it('has a default state', function () {
@@ -52,13 +52,13 @@ describe('The granules reducer', function() {
   })
 
   it('merges received granules into the map of granules', function () {
-    const firstRoundData = [{id: 'A', version: 1}, {id: 'B', version: 1}]
-    const firstRoundMap = {A: {id: 'A', version: 1}, B: {id: 'B', version: 1}}
+    const firstRoundData = [{id: 'A', attributes: {version: 1}}, {id: 'B', attributes: {version: 1}}]
+    const firstRoundMap = {A: {version: 1}, B: {version: 1}}
     const firstRoundResult = granules(initialState, fetchedGranules(firstRoundData))
     firstRoundResult.get('granules').should.equal(Immutable.fromJS(firstRoundMap))
 
-    const secondRoundData = [{id: 'B', version: 2}, {id: 'C', version: 1}]
-    const secondRoundMap = {A: {id: 'A', version: 1}, B: {id: 'B', version: 2}, C: {id: 'C', version: 1}}
+    const secondRoundData = [{id: 'B', attributes: {version: 2}}, {id: 'C', attributes: {version: 1}}]
+    const secondRoundMap = {A: {version: 1}, B: {version: 2}, C: {version: 1}}
     const secondRoundResult = granules(firstRoundResult, fetchedGranules(secondRoundData))
     secondRoundResult.get('granules').should.equal(Immutable.fromJS(secondRoundMap))
   })
@@ -68,4 +68,11 @@ describe('The granules reducer', function() {
     const result = granules(stateWithGranules, clearGranules())
     result.get('granules').should.equal(Immutable.Map())
   })
+
+  it('can clear existing collection selections', function () {
+    const stateWithCollections = Immutable.Map({selectedCollections: Immutable.Set['ABC']})
+    const result = granules(stateWithCollections, clearCollectionSelections())
+    result.get('selectedCollections').should.equal(Immutable.Set())
+  })
+
 })

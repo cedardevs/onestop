@@ -1,7 +1,8 @@
 import Immutable from 'immutable'
 import {
     TOGGLE_GRANULE_FOCUS, TOGGLE_COLLECTION_SELECTION,
-    FETCHING_GRANULES, FETCHED_GRANULES, CLEAR_GRANULES
+    FETCHING_GRANULES, FETCHED_GRANULES, CLEAR_GRANULES,
+    CLEAR_COLLECTION_SELECTIONS
 } from './GranulesActions'
 
 export const initialState = Immutable.Map({
@@ -24,12 +25,15 @@ export const granules = (state = initialState, action) => {
 
     case FETCHED_GRANULES:
       const newGranules = Immutable.fromJS(action.granules).reduce(
-          (existing, next) => existing.set(next.get('id'), next),
+          (existing, next) => existing.set(next.get('id'), next.get('attributes')),
           state.get('granules'))
       return state.set('inFlight', false).set('granules', newGranules)
 
     case CLEAR_GRANULES:
       return state.set('granules', initialState.get('granules'))
+
+    case CLEAR_COLLECTION_SELECTIONS:
+      return state.set('selectedCollections', initialState.get('selectedCollections'))
 
     default:
       return state

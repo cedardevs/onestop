@@ -27,6 +27,9 @@ class Detail extends React.Component {
         <div className={'pure-g'}>
           <div className={`pure-u-1 pure-u-md-1-3`}>
             {this.renderImage()}
+            <a onClick={() => this.props.showGranules(this.props.id)} className={`pure-button pure-button-primary`}>
+              Show Matching Granules
+            </a>
           </div>
           <div className={`pure-u-1 pure-u-md-2-3`}>
             <div className={`pure-g`}>
