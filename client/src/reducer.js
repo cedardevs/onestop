@@ -8,6 +8,7 @@ import map from './search/map/MapReducer'
 import temporal from './search/temporal/TemporalReducer'
 import loading from './loading/LoadingReducer'
 import errors from './error/ErrorReducer'
+import granules from './granules/GranulesReducer'
 import { LOCATION_CHANGE } from 'react-router-redux'
 
 // Routing reducer
@@ -35,7 +36,8 @@ const reducer = combineReducers({
   temporal,
   map,
   loading,
-  errors
+  errors,
+  granules
 })
 
 export default reducer
