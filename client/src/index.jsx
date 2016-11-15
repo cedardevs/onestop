@@ -31,7 +31,7 @@ const body =
         <Route path="/" name="Home" component={RootComponent}>
           <IndexRoute component={LandingContainer}/>
           <Route name="Results" path="results" component={ResultLayout}>
-            <IndexRoute name="Collections" component={CollectionGridContainer}/>
+            <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
             <Route name="Granules" path="granules" component={GranuleListContainer}/>
           </Route>
           <Route name="Error" path="error" component={ErrorContainer}/>
