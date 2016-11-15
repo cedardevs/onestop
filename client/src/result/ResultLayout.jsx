@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react'
 import Breadcrumbs from 'react-breadcrumbs'
-import styles from './collections/collectionGrid.css'
+import styles from './resultLayout.css'
 import FacetContainer from '../search/facet/FacetContainer'
 
 class ResultLayout extends React.Component {
@@ -13,7 +13,7 @@ class ResultLayout extends React.Component {
       <div className={styles.facetSideBar}>
         <FacetContainer/>
       </div>
-      <div className={styles.gridContainer}>
+      <div className={styles.resultsContainer}>
         <div className={styles.breadCrumbs}>
           <Breadcrumbs routes={this.props.routes} params={this.props.params}/>
         </div>
