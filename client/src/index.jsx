@@ -3,7 +3,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin'
 import React from 'react'
 import {render} from 'react-dom'
 import { Router, Route, IndexRoute } from 'react-router'
-import ResultLayoutContainer from './result/ResultLayoutContainer'
+import ResultLayout from './result/ResultLayout'
 import CollectionGridContainer from './result/collections/CollectionGridContainer'
 import GranuleListContainer from './result/granules/list/GranuleListContainer'
 import ErrorContainer from './error/ErrorContainer'
@@ -30,7 +30,7 @@ const body =
       <Router history={history}>
         <Route path="/" name="Home" component={RootComponent}>
           <IndexRoute component={LandingContainer}/>
-          <Route name="Results" path="results" component={ResultLayoutContainer}>
+          <Route name="Results" path="results" component={ResultLayout}>
             <IndexRoute name="Collections" component={CollectionGridContainer}/>
             <Route name="Granules" path="granules" component={GranuleListContainer}/>
           </Route>

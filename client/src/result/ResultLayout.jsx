@@ -17,9 +17,6 @@ class ResultLayout extends React.Component {
         <div className={styles.breadCrumbs}>
           <Breadcrumbs routes={this.props.routes} params={this.props.params}/>
         </div>
-        <div>
-          Search returned {this.props.count} {(this.props.count !== 1) ? "results" : "result"}
-        </div>
         {this.props.children}
       </div>
     </div>

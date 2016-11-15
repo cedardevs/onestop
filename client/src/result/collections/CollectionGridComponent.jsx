@@ -22,7 +22,14 @@ class CollectionGrid extends React.Component {
         />
       </div>)
     })
-    return <div>{cards}</div>
+    return <div>
+      <div>
+        Search returned {this.props.count} {(this.props.count !== 1) ? "results" : "result"}
+      </div>
+      <div>
+        {cards}
+      </div>
+    </div>
   }
 }
 
