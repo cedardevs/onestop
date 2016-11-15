@@ -11,7 +11,8 @@ class MapComponent extends React.Component {
 		super(props)
 		this.handleNewGeometry = props.handleNewGeometry
 		this.removeGeometry = props.removeGeometry
-		this.geoJSON = props.geoJSON
+		this.geoJsonSelection = props.geoJsonSelection
+		this.geoJsonFeatures = props.geoJsonFeatures
 		this.mapDefaults = this.mapDefaults.bind(this)
 		this.state = {}
 	}
@@ -26,6 +27,7 @@ class MapComponent extends React.Component {
   }
 
 	mapDefaults() {
+    let resultsLayer = L.featureGroup()
 		let editableLayers = new L.FeatureGroup()
 		const drawStyle = {
 			color: "#ffe800",
@@ -71,9 +73,10 @@ class MapComponent extends React.Component {
   }
 
   mapSetup() {
-  	let { map, drawControl, editableLayers } = this.state
+  	let { map, drawControl, editableLayers, resultsLayer } = this.state
 		this.loadDrawEventHandlers()
 		map.addControl(drawControl)
+		map.addLayer(resultsLayers)
 		map.addLayer(editableLayers)
 		map.fitWorld()
   }
@@ -84,29 +87,35 @@ class MapComponent extends React.Component {
   }
 
   componentWillUpdate(nextProps){
-  	// Add/remove layer on map to reflect store
+  	// Add/remove layers on map to reflect store
   	this.updateDrawnLayer(nextProps)
+    this.updateResultsLayer(nextProps)
   }
 
-  updateDrawnLayer({geoJSON}) {
+  updateDrawnLayer({geoJsonSelection}) {
   	let { editableLayers, style } = this.state
-		if (!geoJSON) {
+		if (!geoJsonSelection) {
 			if (editableLayers) {
 				editableLayers.clearLayers()
 			}
 		} else {
 			// Compare old vs. new layer
 			if (editableLayers) {
-				const prevGeoJSON = editableLayers.getLayers()[0] ?
+				const prevSelection = editableLayers.getLayers()[0] ?
 					editableLayers.getLayers()[0].toGeoJSON() : null
-					if (!prevGeoJSON || prevGeoJSON &&
-							!_.isEqual(geoJSON.geometry.coordinates, prevGeoJSON.geometry.coordinates)){
+					if (!prevSelection || prevSelection &&
+							!_.isEqual(geoJsonSelection.geometry.coordinates, prevSelection.geometry.coordinates)){
 						editableLayers.clearLayers()
-						let layer = L.GeoJSON.geometryToLayer(geoJSON, {style})
+						let layer = L.GeoJSON.geometryToLayer(geoJsonSelection, {style})
 						editableLayers.addLayer(layer)
 					}
 			}
 		}
+  }
+
+  updateResultsLayer({geoJsonFeatures}) {
+    let { resultsLayers } = this.state
+    geoJsonFeatures.forEach(recordData => resultsLayers.addLayer(recordData))
   }
 
   componentWillUnmount() {
