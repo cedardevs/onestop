@@ -125,7 +125,7 @@ class MapComponent extends React.Component {
   }
 
   loadDrawEventHandlers(){
-    let { map, editableLayers, geoJSON } = this.state
+    let { map } = this.state
     map.on('draw:drawstart', (e) => {
       this.removeGeometry()
     })
