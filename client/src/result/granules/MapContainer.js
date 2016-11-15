@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import MapComponent from './search/map/MapComponent'
+import MapComponent from '../../search/map/MapComponent'
 import { toggleGranuleFocus } from './GranulesActions'
 
 const mapStateToProps = (state) => {
