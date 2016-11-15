@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react'
-import FlipCard from 'react-flipcard'
-import styles from './collectionGrid.css'
+import styles from './collectionTile.css'
 
 const CollectionTile = (props) => {
   // Thumbnails are dynamically assigned so style's applied via JS
@@ -8,7 +7,7 @@ const CollectionTile = (props) => {
           .replace(/^https?:/, '')
           .replace(/'/, '%27')
           .replace(/"/, '%22')
-  var localStyles = {
+  var backgroundImageStyles = {
     background: `url('${thumbnailUrl}')`,
     backgroundColor: 'black',
     backgroundRepeat: 'no-repeat',
@@ -20,30 +19,23 @@ const CollectionTile = (props) => {
     props.onCardClick(props.recordId)
   }
 
-  return (
-    <FlipCard disabled={true} className={styles.reactFlipCard} flipped={false}>
-      <div style={localStyles}>
-        <div className={styles.reactFlipCardFront} onClick={handleClick}>
-          <div className={styles.titleText}>{props.title}</div>
-        </div>
+  return <div className={styles.tileContainer}>
+    <div style={backgroundImageStyles}>
+      <div className={styles.tileContent} onClick={handleClick}>
+        <div className={styles.titleText}>{props.title}</div>
       </div>
-      <div className={styles.reactFlipCardBack} onClick={handleClick}>
-        <div>{props.description}</div>
-      </div>
-    </FlipCard>
-  )
+    </div>
+  </div>
 }
 
 CollectionTile.propTypes = {
   id: PropTypes.string.isRequired,
-  flipped: PropTypes.bool.isRequired,
   onCardClick: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired
 }
 
 CollectionTile.defaultProps = {
-  id: '',
-  flipped: false
+  id: ''
 }
 
 CollectionTile.shouldComponentUpdate = (nextProps, nextState) => typeof nextProps.id !== 'undefined'
