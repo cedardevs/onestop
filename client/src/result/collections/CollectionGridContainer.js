@@ -4,7 +4,6 @@ import CollectionGrid from './CollectionGridComponent'
 
 const mapStateToProps = (state) => {
   return {
-    loading: state.getIn(['search', 'inFlight']),
     results: state.get('results')
   }
 }
