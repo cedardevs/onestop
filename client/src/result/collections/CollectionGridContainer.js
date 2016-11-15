@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { setFocus } from '../../detail/DetailActions'
-import ResultsList from './CollectionGridComponent'
+import CollectionGrid from './CollectionGridComponent'
 
 const mapStateToProps = (state) => {
   return {
@@ -20,6 +20,6 @@ const mapDispatchToProps = (dispatch) => {
 const CollectionGridContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(ResultsList)
+)(CollectionGrid)
 
 export default CollectionGridContainer
