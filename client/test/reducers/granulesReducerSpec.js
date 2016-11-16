@@ -1,7 +1,7 @@
 import '../specHelper'
 import Immutable from 'immutable'
 import { granules, initialState } from '../../src/result/granules/GranulesReducer'
-import { toggleGranuleFocus, toggleCollectionSelection, clearCollectionSelections, fetchingGranules, fetchedGranules, clearGranules } from '../../src/result/granules/GranulesActions'
+import { toggleGranuleFocus, fetchingGranules, fetchedGranules, clearGranules } from '../../src/result/granules/GranulesActions'
 
 describe('The granules reducer', function() {
   it('has a default state', function () {
@@ -23,20 +23,6 @@ describe('The granules reducer', function() {
     // toggle A --> ['B']
     const removedAResult = granules(addedBResult, toggleA)
     removedAResult.get('focusedGranules').should.equal(Immutable.Set(['B']))
-  })
-
-  it('toggles selected collections', function () {
-    const toggleA = toggleCollectionSelection('A')
-    const toggleB = toggleCollectionSelection('B')
-    // toggle A --> ['A']
-    const addedAResult = granules(initialState, toggleA)
-    addedAResult.get('selectedCollections').should.equal(Immutable.Set(['A']))
-    // toggle B --> ['A', 'B']
-    const addedBResult = granules(addedAResult, toggleB)
-    addedBResult.get('selectedCollections').should.equal(Immutable.Set(['A', 'B']))
-    // toggle A --> ['B']
-    const removedAResult = granules(addedBResult, toggleA)
-    removedAResult.get('selectedCollections').should.equal(Immutable.Set(['B']))
   })
 
   it('marks inFlight true while retrieving granules', function () {
@@ -67,12 +53,6 @@ describe('The granules reducer', function() {
     const stateWithGranules = Immutable.fromJS({granules: {A: {id: 'A'}}})
     const result = granules(stateWithGranules, clearGranules())
     result.get('granules').should.equal(Immutable.Map())
-  })
-
-  it('can clear existing collection selections', function () {
-    const stateWithCollections = Immutable.Map({selectedCollections: Immutable.Set['ABC']})
-    const result = granules(stateWithCollections, clearCollectionSelections())
-    result.get('selectedCollections').should.equal(Immutable.Set())
   })
 
 })

@@ -13,7 +13,7 @@ describe('The main reducer', function() {
     result.should.be.an.instanceOf(Immutable.Map)
     result.get('search').should.be.an.instanceOf(Immutable.Map)
     result.get('facets').should.be.an.instanceOf(Immutable.Map)
-    result.get('results').should.be.an.instanceOf(Immutable.Map)
+    result.get('collections').should.be.an.instanceOf(Object)
     result.get('details').should.be.an.instanceOf(Immutable.Map)
     result.get('routing').should.be.an.instanceOf(Immutable.Map)
   })

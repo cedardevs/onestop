@@ -4,8 +4,6 @@ import { showLoading, hideLoading } from '../../loading/LoadingActions'
 import { showErrors } from '../../error/ErrorActions'
 
 export const TOGGLE_GRANULE_FOCUS = 'toggle_granule_focus'
-export const TOGGLE_COLLECTION_SELECTION = 'toggle_collection_selection'
-export const CLEAR_COLLECTION_SELECTIONS = 'clear_collection_selections'
 export const FETCHING_GRANULES = 'fetching_granules'
 export const FETCHED_GRANULES = 'fetched_granules'
 export const CLEAR_GRANULES = 'clear_granules'
@@ -14,19 +12,6 @@ export const toggleGranuleFocus = (granuleId) => {
   return {
     type: TOGGLE_GRANULE_FOCUS,
     id: granuleId
-  }
-}
-
-export const toggleCollectionSelection = (collectionId) => {
-  return {
-    type: TOGGLE_COLLECTION_SELECTION,
-    id: collectionId
-  }
-}
-
-export const clearCollectionSelections = () => {
-  return {
-    type: CLEAR_COLLECTION_SELECTIONS
   }
 }
 
