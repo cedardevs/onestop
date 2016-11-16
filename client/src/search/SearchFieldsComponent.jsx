@@ -62,7 +62,13 @@ class SearchFieldsComponent extends React.Component {
       <ToggleDisplay show={this.state.showMap}>
         <div className={styles.mapContainer}>
           <span className={styles.mapContent}>
-            <MapContainer updated={this.state.showMap} ref='mapComponent' />
+            {/* 'updated' passed to trigger update but is unused*/}
+            <MapContainer
+              ref='mapComponent'
+              updated={this.state.showMap}
+              selectionMap={true}
+              featureMap={false}
+            />
           </span>
         </div>
       </ToggleDisplay>

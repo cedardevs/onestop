@@ -10,7 +10,7 @@ const mapStateToProps = (state) => {
     })
   }
   return {
-    geoJsonFeatures: granules.toJS()
+    geoJsonFeatures: granules ? granules.toJS() : []
   }
 }
 

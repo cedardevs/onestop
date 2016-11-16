@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import MapContainer from '../MapContainer'
 
 class GranuleList extends React.Component {
   constructor(props) {
@@ -24,7 +25,8 @@ class GranuleList extends React.Component {
       )
     })
 
-    return <table className="pure-table">
+    return <div>
+    <table className="pure-table">
         <thead>
           <tr>
             <th>Description</th>
@@ -35,6 +37,7 @@ class GranuleList extends React.Component {
         </thead>
         <tbody>{rows}</tbody>
       </table>
+    </div>
   }
 }
 

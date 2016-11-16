@@ -13,6 +13,8 @@ class MapComponent extends React.Component {
 		this.removeGeometry = props.removeGeometry
 		this.geoJsonSelection = props.geoJsonSelection
 		this.geoJsonFeatures = props.geoJsonFeatures
+		this.featureMap = props.featureMap
+		this.selectionMap = props.selectionMap
 		this.mapDefaults = this.mapDefaults.bind(this)
 		this.state = {}
 	}
@@ -27,7 +29,7 @@ class MapComponent extends React.Component {
   }
 
 	mapDefaults() {
-    let resultsLayer = L.featureGroup()
+    let resultsLayers = new L.FeatureGroup()
 		let editableLayers = new L.FeatureGroup()
 		const drawStyle = {
 			color: "#ffe800",
@@ -40,6 +42,7 @@ class MapComponent extends React.Component {
 					weight: 3,
 					opacity: 0.65
 			},
+			resultsLayers,
       editableLayers,
       // Define map with defaults
       map: L.map(ReactDOM.findDOMNode(this), {
@@ -73,7 +76,7 @@ class MapComponent extends React.Component {
   }
 
   mapSetup() {
-  	let { map, drawControl, editableLayers, resultsLayer } = this.state
+  	let { map, drawControl, editableLayers, resultsLayers } = this.state
 		this.loadDrawEventHandlers()
 		map.addControl(drawControl)
 		map.addLayer(resultsLayers)
@@ -88,8 +91,8 @@ class MapComponent extends React.Component {
 
   componentWillUpdate(nextProps){
   	// Add/remove layers on map to reflect store
-  	this.updateDrawnLayer(nextProps)
-    this.updateResultsLayer(nextProps)
+  	if (this.selectionMap) this.updateDrawnLayer(nextProps)
+    if (this.featureMap) this.updateResultsLayers(nextProps)
   }
 
   updateDrawnLayer({geoJsonSelection}) {
@@ -113,7 +116,7 @@ class MapComponent extends React.Component {
 		}
   }
 
-  updateResultsLayer({geoJsonFeatures}) {
+  updateResultsLayers({geoJsonFeatures}) {
     let { resultsLayers } = this.state
     geoJsonFeatures.forEach(recordData => resultsLayers.addLayer(recordData))
   }
@@ -147,6 +150,11 @@ class MapComponent extends React.Component {
       <div className={styles.mapContainer}></div>
     )
   }
+}
+
+Map.defaultProps = {
+	selectionMap: false,
+	featureMap: true
 }
 
 export default MapComponent
