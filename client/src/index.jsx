@@ -1,5 +1,4 @@
 import 'babel-polyfill'
-import injectTapEventPlugin from 'react-tap-event-plugin'
 import React from 'react'
 import {render} from 'react-dom'
 import { Router, Route, IndexRoute } from 'react-router'
@@ -15,12 +14,6 @@ import '../style/style'
 import './page.css'
 import store from './store'
 import history from './history'
-
-// Needed for onTouchTap
-// Can go away when react 1.0 release
-// Check this repo:
-// https://github.com/zilverline/react-tap-event-plugin
-injectTapEventPlugin()
 
 // If loading page with query params, resubmit search
 loadQuery()
