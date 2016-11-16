@@ -1,7 +1,7 @@
 import Immutable from 'immutable'
 import { combineReducers } from 'redux-immutable'
 import search from './search/SearchReducer'
-import results from './result/ResultReducer'
+import collections from './result/collections/CollectionReducer'
 import details from './detail/DetailReducer'
 import facets from './search/facet/FacetReducer'
 import map from './search/map/MapReducer'
@@ -29,7 +29,7 @@ const routing = (state = initialState, action) => {
 
 const reducer = combineReducers({
   search,
-  results,
+  collections,
   details,
   routing,
   facets,

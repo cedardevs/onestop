@@ -1,13 +1,14 @@
 import { connect } from 'react-redux'
 import { setFocus } from './DetailActions'
-import { fetchGranules, clearGranules, toggleCollectionSelection, clearCollectionSelections } from '../result/granules/GranulesActions'
+import { fetchGranules, clearGranules } from '../result/granules/GranulesActions'
+import { toggleSelection, clearSelections } from '../result/collections/CollectionsActions'
 import { clearSearch, triggerSearch, updateQuery } from '../search/SearchActions'
 import { clearFacets } from '../search/facet/FacetActions'
 import Detail from './DetailComponent'
 
 const mapStateToProps = (reduxState, reactProps) => {
   const focusedId = reduxState.get('details').get('focusedId')
-  const focusedItem = reduxState.get('results').get(focusedId)
+  const focusedItem = reduxState.get('collections').get('results').get(focusedId)
   return {
     id: focusedId,
     item: focusedItem ? focusedItem.toJS() : null
@@ -25,8 +26,8 @@ const mapDispatchToProps = (dispatch) => {
     },
     showGranules: (id) => {
       dispatch(setFocus(null))
-      dispatch(clearCollectionSelections())
-      dispatch(toggleCollectionSelection(id))
+      dispatch(clearSelections())
+      dispatch(toggleSelection(id))
       dispatch(clearGranules())
       dispatch(fetchGranules())
     }

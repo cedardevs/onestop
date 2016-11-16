@@ -1,8 +1,6 @@
 import Immutable from 'immutable'
 import {
-    TOGGLE_GRANULE_FOCUS, TOGGLE_COLLECTION_SELECTION,
-    FETCHING_GRANULES, FETCHED_GRANULES, CLEAR_GRANULES,
-    CLEAR_COLLECTION_SELECTIONS
+    TOGGLE_GRANULE_FOCUS, FETCHING_GRANULES, FETCHED_GRANULES, CLEAR_GRANULES
 } from './GranulesActions'
 
 export const initialState = Immutable.Map({
@@ -14,9 +12,6 @@ export const initialState = Immutable.Map({
 
 export const granules = (state = initialState, action) => {
   switch(action.type) {
-    case TOGGLE_COLLECTION_SELECTION:
-      return state.set('selectedCollections', toggleValueInSet(state.get('selectedCollections'), action.id))
-
     case TOGGLE_GRANULE_FOCUS:
       return state.set('focusedGranules', toggleValueInSet(state.get('focusedGranules'), action.id))
 
@@ -31,9 +26,6 @@ export const granules = (state = initialState, action) => {
 
     case CLEAR_GRANULES:
       return state.set('granules', initialState.get('granules'))
-
-    case CLEAR_COLLECTION_SELECTIONS:
-      return state.set('selectedCollections', initialState.get('selectedCollections'))
 
     default:
       return state
