@@ -38,7 +38,7 @@ class GranuleList extends React.Component {
         <tbody>{rows}</tbody>
       </table>
       {/* Remove this line and uncomment map component below for map test */}
-      {/*<MapContainer />*/}
+      <MapContainer />
     </div>
   }
 }

@@ -3,16 +3,16 @@ import MapComponent from '../../search/map/MapComponent'
 import { toggleGranuleFocus } from './GranulesActions'
 
 const mapStateToProps = (state) => {
-  let granules = []
+  let granules = state.getIn(['granules', 'granules'])
   let inFlight = state.getIn(['granules', 'inFlight'])
-  if (!inFlight){
-    granules = state.getIn(['granules', 'granules'])
+  let granulesMap = new Map()
+  if (!inFlight && granules.count()){
     granules.forEach((data, id)=> {
-      granules.update(id, convertToGeoJson(data.toJS()))
+      granulesMap.set(id, convertToGeoJson(data.toJS()))
     })
   }
   return {
-    geoJsonFeatures: granules ? granules.toJS() : []
+    geoJsonFeatures: granulesMap
   }
 }
 
