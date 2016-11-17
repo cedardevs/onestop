@@ -17,7 +17,7 @@ class GranuleList extends React.Component {
     this.results.forEach((value, key) => {
       rows.push(
         <tr key={key} onMouseOver={() => this.onMouseOver(key)}>
-          <td>{value.get('description')}</td>
+          <td>{value.get('title')}</td>
           <td>{value.get('modifiedDate')}</td>
           <td>{dataFormats}</td>
           <td>{tags}</td>
@@ -29,7 +29,7 @@ class GranuleList extends React.Component {
     <table className="pure-table">
         <thead>
           <tr>
-            <th>Description</th>
+            <th>Title</th>
             <th>Date Modified</th>
             <th>Data Formats</th>
             <th>Tags</th>
