@@ -12,10 +12,10 @@ import javax.annotation.PostConstruct
 @Service
 class IndexAdminService {
 
-  @Value('${elasticsearch.index.staging.name}')
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
   String STAGING_INDEX
 
-  @Value('${elasticsearch.index.search.name}')
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
   String SEARCH_INDEX
 
   @Value('${elasticsearch.index.staging.collectionType}')
@@ -23,6 +23,9 @@ class IndexAdminService {
 
   @Value('${elasticsearch.index.staging.granuleType}')
   String GRANULE_TYPE
+
+  @Value('${elasticsearch.index.prefix:}')
+  String PREFIX
 
   private Client adminClient
 
@@ -42,13 +45,13 @@ class IndexAdminService {
 
     // Initialize index:
     def cl = Thread.currentThread().contextClassLoader
-    def indexSettings = cl.getResourceAsStream("config/${baseName}-settings.json").text
+    def indexSettings = cl.getResourceAsStream("config/${baseName - PREFIX}-settings.json").text
     adminClient.admin().indices().prepareCreate(indexName).setSettings(indexSettings).execute().actionGet()
     adminClient.admin().cluster().prepareHealth(indexName).setWaitForActiveShards(1).execute().actionGet()
 
     // Initialize mappings:
     typeNames.each { type ->
-      def mapping = cl.getResourceAsStream("config/${baseName}-mapping-${type}.json").text
+      def mapping = cl.getResourceAsStream("config/${baseName - PREFIX}-mapping-${type}.json").text
       adminClient.admin().indices().preparePutMapping(indexName).setSource(mapping).setType(type).execute().actionGet()
     }
 

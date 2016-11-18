@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service
 @Service
 class SearchIndexService {
 
-  @Value('${elasticsearch.index.search.name}')
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
   private String SEARCH_INDEX
 
   @Value('${elasticsearch.index.search.collectionType}')

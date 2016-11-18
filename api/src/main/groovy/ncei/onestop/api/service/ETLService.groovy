@@ -21,10 +21,10 @@ class ETLService {
   private String SCROLL_TIMEOUT = '1m'
   private Integer PAGE_SIZE = 10
 
-  @Value('${elasticsearch.index.search.name}')
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
   private String SEARCH_INDEX
 
-  @Value('${elasticsearch.index.staging.name}')
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
   private String STAGING_INDEX
 
   @Value('${elasticsearch.index.staging.collectionType}')
