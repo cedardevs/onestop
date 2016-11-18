@@ -3,7 +3,6 @@ const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 
 import React from 'react'
 import DetailContainer from '../detail/DetailContainer'
-import Favicon from 'react-favicon'
 import Footer from './Footer.jsx'
 import AlphaBanner from './AlphaBanner.jsx'
 import styles from './root.css'
