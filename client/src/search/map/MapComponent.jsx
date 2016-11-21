@@ -13,19 +13,23 @@ class MapComponent extends React.Component {
 		this.removeGeometry = props.removeGeometry
 		this.geoJsonSelection = props.geoJsonSelection
 		this.geoJsonFeatures = props.geoJsonFeatures
-		this.featureMap = props.featureMap
-		this.selectionMap = props.selectionMap
 		this.mapDefaults = this.mapDefaults.bind(this)
-		this.state = {}
+		this.state = {
+      _initialized: false
+    }
+
 	}
 
   componentDidMount() {
   	// Build the map defaults. When finished, use them to set the state then set up the map
   	Promise.resolve(this.mapDefaults())
   		.then(state => {
-				this.setState(state)
+				this.setState(state, ()=> {
+        	if (this.props.selection) this.updateDrawnLayer(this.props)
+          if (this.props.features) this.updateResultsLayers(this.props)
+        })
 				this.mapSetup()
-				})
+			})
   }
 
 	mapDefaults() {
@@ -37,6 +41,7 @@ class MapComponent extends React.Component {
 				opacity: 0.65
 		}
 		return {
+      _initialized: true,
 			style: {
 				color: '#00FF00',
 					weight: 3,
@@ -91,8 +96,7 @@ class MapComponent extends React.Component {
 
   componentWillUpdate(nextProps){
   	// Add/remove layers on map to reflect store
-  	if (this.selectionMap) this.updateDrawnLayer(nextProps)
-    if (this.featureMap) this.updateResultsLayers(nextProps)
+    if (this.props.selection && this.state._initialized) this.updateDrawnLayer(nextProps)
   }
 
   updateDrawnLayer({geoJsonSelection}) {
