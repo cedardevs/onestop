@@ -66,8 +66,8 @@ class SearchFieldsComponent extends React.Component {
             <MapContainer
               ref='mapComponent'
               updated={this.state.showMap}
-              selectionMap={true}
-              featureMap={false}
+              selection={true}
+              features={false}
             />
           </span>
         </div>
