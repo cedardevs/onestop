@@ -61,10 +61,10 @@ class ResultLayout extends React.Component {
 
   renderResultsContainer() {
     if(this.location.includes("granules") || this.collapseFacetMenu) {
-      return "pure-u-23-24"
+      return "pure-u-22-24"
     }
     else {
-      return "pure-u-13-24 pure-u-md-16-24 pure-u-lg-18-24"
+      return "pure-u-12-24 pure-u-md-15-24 pure-u-lg-17-24"
     }
   }
 
