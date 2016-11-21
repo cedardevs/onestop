@@ -40,7 +40,7 @@ export const fetchGranules = () => {
       return Promise.resolve() // let the calling code know there's nothing to wait for
     }
 
-    let selectedCollections = getState().getIn(['granules', 'selectedCollections']).toJS()
+    let selectedCollections = getState().getIn(['collections', 'selectedIds']).toJS()
     if (!selectedCollections) {
       return Promise.resolve()
     }
