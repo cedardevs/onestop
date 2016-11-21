@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import MapContainer from '../MapContainer'
+import styles from './list.css'
 
 class GranuleList extends React.Component {
   constructor(props) {
@@ -7,6 +8,7 @@ class GranuleList extends React.Component {
     this.results = props.results
     this.focusedIds = props.focusedIds
     this.onMouseOver = props.onMouseOver
+
   }
 
   render() {
@@ -26,7 +28,20 @@ class GranuleList extends React.Component {
     })
 
     return <div>
-    <table className="pure-table">
+    <div className={styles.granuleHeader}>
+      <div className={styles.leftDescription}>
+        <div className={styles.leftTitle}>
+          {this.props.selectedCollection.get('title')}
+        </div>
+        <div>
+          {this.props.selectedCollection.get('description')}
+        </div>
+      </div>
+      <div className={styles.rightMap}>
+        <MapContainer />
+      </div>
+    </div>
+    <table className={`pure-table ${styles.table}`}>
         <thead>
           <tr>
             <th>Title</th>
@@ -37,8 +52,6 @@ class GranuleList extends React.Component {
         </thead>
         <tbody>{rows}</tbody>
       </table>
-      {/* Remove this line and uncomment map component below for map test */}
-      <MapContainer />
     </div>
   }
 }

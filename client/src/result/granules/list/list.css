@@ -1,0 +1,22 @@
+.granuleHeader {
+  background-color: blue;
+}
+
+.rightMap {
+  display: inline-block;
+}
+
+.leftDescription {
+  display: inline-block;
+  width: 50%;
+  font-size: 1.4em;
+  vertical-align: top;
+}
+
+.leftTitle {
+  font-size: 1.6em;
+}
+
+.table {
+  width: 100%;
+}
