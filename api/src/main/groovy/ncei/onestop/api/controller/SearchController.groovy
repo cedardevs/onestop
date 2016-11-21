@@ -17,10 +17,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.*
 class SearchController {
 
     private SearchIndexService searchIndexService
+    private UiConfig uiConfig
 
     @Autowired
-    public SearchController(SearchIndexService searchIndexService) {
+    public SearchController(SearchIndexService searchIndexService, UiConfig uiConfig) {
         this.searchIndexService = searchIndexService
+        this.uiConfig = uiConfig
     }
 
     // POST in order to support request bodies from clients that won't send bodies with GETs
@@ -36,5 +38,9 @@ class SearchController {
         return searchIndexService.search(params)
     }
 
-}
+    @RequestMapping(path = '/search/uiConfig', method = GET)
+    UiConfig uiConfig() {
+        return uiConfig
+    }
 
+}
