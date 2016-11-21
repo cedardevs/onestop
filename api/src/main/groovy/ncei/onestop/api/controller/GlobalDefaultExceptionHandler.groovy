@@ -22,6 +22,10 @@ class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleExceptionInternal(
       Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
 
+    if (status.is5xxServerError()) {
+      log.error(ex)
+    }
+
     def result = [
         errors: [
             [
