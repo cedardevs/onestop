@@ -84,9 +84,15 @@ class MapComponent extends React.Component {
   	let { map, drawControl, editableLayers, resultsLayers } = this.state
 		this.loadDrawEventHandlers()
 		map.addControl(drawControl)
-		map.addLayer(resultsLayers)
-		map.addLayer(editableLayers)
-		map.fitWorld()
+		if (this.props.selection) map.addLayer(editableLayers)
+		if (this.props.features) {
+      map.addLayer(resultsLayers)
+    }
+    if (!this.props.selection && this.props.features){
+  		map.fitBounds(resultsLayers.getBounds())
+    } else {
+  		map.fitWorld()
+    }
   }
 
   componentWillReceiveProps() {
