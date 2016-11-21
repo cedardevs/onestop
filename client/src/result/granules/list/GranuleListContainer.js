@@ -3,23 +3,25 @@ import { toggleGranuleFocus } from '../GranulesActions'
 import GranuleList from './GranuleListComponent'
 
 const mapStateToProps = (state) => {
-    return {
-        results: state.getIn(['granules', 'granules']),
-        focusedIds: state.getIn(['granules', 'focusedGranules'])
-    }
+  const id = state.getIn(['collections', 'selectedIds']).first()
+  return {
+    results: state.getIn(['granules', 'granules']),
+    focusedIds: state.getIn(['granules', 'focusedGranules']),
+    selectedCollection: state.getIn(['collections', 'results', id])
+  }
 }
 
 const mapDispatchToProps = (dispatch) => {
-    return {
-        onMouseOver: (id) => {
-            dispatch(toggleGranuleFocus(id))
-        }
+  return {
+    onMouseOver: (id) => {
+      dispatch(toggleGranuleFocus(id))
     }
+  }
 }
 
 const GranuleListContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
+  mapStateToProps,
+  mapDispatchToProps
 )(GranuleList)
 
 export default GranuleListContainer
