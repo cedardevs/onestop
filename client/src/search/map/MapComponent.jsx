@@ -117,8 +117,8 @@ class MapComponent extends React.Component {
   }
 
   updateResultsLayers({geoJsonFeatures}) {
-    let { resultsLayers } = this.state
-    geoJsonFeatures.forEach(recordData => resultsLayers.addLayer(recordData))
+    let { resultsLayers, map } = this.state
+    geoJsonFeatures.forEach(feature=> resultsLayers.addLayer(L.geoJson(feature)))
   }
 
   componentWillUnmount() {
@@ -152,9 +152,10 @@ class MapComponent extends React.Component {
   }
 }
 
-Map.defaultProps = {
-	selectionMap: false,
-	featureMap: true
+MapComponent.defaultProps= {
+  selection: false,
+  features: true
 }
+
 
 export default MapComponent
