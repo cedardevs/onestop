@@ -42,7 +42,7 @@ describe('The granule actions', function () {
 
   it('fetches granules with selected collections', function () {
     const collections = ['A', 'B']
-    const state = {apiHost: apiHost, granules: {selectedCollections: collections}}
+    const state = {apiHost: apiHost, collections: {selectedIds: collections}}
     const store = mockStore(Immutable.fromJS(state))
     const expectedBody = JSON.stringify({filters: [{type: "collection", values: collections}], facets: false})
     nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
@@ -67,8 +67,8 @@ describe('The granule actions', function () {
       search: {
         requestBody: JSON.stringify({queries: [query], filters: [facetFilter]})
       },
-      granules: {
-        selectedCollections: collections
+      collections: {
+        selectedIds: collections
       }
     }
     const store = mockStore(Immutable.fromJS(state))

@@ -25,7 +25,7 @@ class MapComponent extends React.Component {
   	Promise.resolve(this.mapDefaults())
   		.then(state => {
 				this.setState(state, ()=> {
-        	if (this.props.selection) { this.updateDrawnLayer(this.props) }
+        	if (this.props.selection) { this.updateSelectionLayer(this.props) }
           if (this.props.features) { this.updateResultsLayers(this.props) }
         })
 				this.mapSetup()
@@ -56,8 +56,6 @@ class MapComponent extends React.Component {
       }),
       previousLayer: {},
     }
-    // Add draw control if selection map
-    if (this.props.selection) { mapSettings.drawControl = this.drawDefaults(editableLayers) }
     return mapSettings
   }
 
@@ -88,7 +86,7 @@ class MapComponent extends React.Component {
   	let { map, drawControl, editableLayers, resultsLayers } = this.state
 		this.loadDrawEventHandlers()
 		if (this.props.selection) {
-      map.addControl(drawControl)
+      map.addControl(this.drawDefaults(editableLayers))
       map.addLayer(editableLayers)
     }
 		if (this.props.features) {
@@ -109,12 +107,12 @@ class MapComponent extends React.Component {
   componentWillUpdate(nextProps) {
   	// Add/remove layers on map to reflect store
     if (this.state._initialized) {
-      if (this.props.selection) { this.updateDrawnLayer(nextProps) }
+      if (this.props.selection) { this.updateSelectionLayer(nextProps) }
       if (this.props.features) { this.updateResultsLayers(nextProps) }
     }
   }
 
-  updateDrawnLayer({geoJsonSelection}) {
+  updateSelectionLayer({geoJsonSelection}) {
   	let { editableLayers, style } = this.state
 		if (!geoJsonSelection) {
 			if (editableLayers) {
