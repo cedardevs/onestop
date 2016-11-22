@@ -13,11 +13,11 @@ class MapComponent extends React.Component {
 		this.removeGeometry = props.removeGeometry
 		this.geoJsonSelection = props.geoJsonSelection
 		this.geoJsonFeatures = props.geoJsonFeatures
+    this.focusedFeatures = props.focusedFeatures
 		this.mapDefaults = this.mapDefaults.bind(this)
 		this.state = {
       _initialized: false
     }
-
 	}
 
   componentDidMount() {
@@ -25,8 +25,8 @@ class MapComponent extends React.Component {
   	Promise.resolve(this.mapDefaults())
   		.then(state => {
 				this.setState(state, ()=> {
-        	if (this.props.selection) this.updateDrawnLayer(this.props)
-          if (this.props.features) this.updateResultsLayers(this.props)
+        	if (this.props.selection) { this.updateDrawnLayer(this.props) }
+          if (this.props.features) { this.updateResultsLayers(this.props) }
         })
 				this.mapSetup()
 			})
@@ -37,15 +37,15 @@ class MapComponent extends React.Component {
 		let editableLayers = new L.FeatureGroup()
 		const drawStyle = {
 			color: "#ffe800",
-				weight: 3,
-				opacity: 0.65
+      weight: 3,
+			opacity: 0.65
 		}
 		return {
       _initialized: true,
 			style: {
 				color: '#00FF00',
-					weight: 3,
-					opacity: 0.65
+        weight: 3,
+				opacity: 0.65
 			},
 			resultsLayers,
       editableLayers,
@@ -83,8 +83,10 @@ class MapComponent extends React.Component {
   mapSetup() {
   	let { map, drawControl, editableLayers, resultsLayers } = this.state
 		this.loadDrawEventHandlers()
-		map.addControl(drawControl)
-		if (this.props.selection) map.addLayer(editableLayers)
+		if (this.props.selection) {
+      map.addControl(drawControl)
+      map.addLayer(editableLayers)
+    }
 		if (this.props.features) {
       map.addLayer(resultsLayers)
     }
@@ -100,9 +102,16 @@ class MapComponent extends React.Component {
 		map.invalidateSize() // Necessary to redraw map which isn't initially visible
   }
 
-  componentWillUpdate(nextProps){
+  componentWillUpdate(nextProps) {
   	// Add/remove layers on map to reflect store
-    if (this.props.selection && this.state._initialized) this.updateDrawnLayer(nextProps)
+    if (this.state._initialized) {
+      if (this.props.selection) {
+        this.updateDrawnLayer(nextProps)
+      }
+      if (this.props.features) {
+        this.updateResultsLayers(nextProps)
+      }
+    }
   }
 
   updateDrawnLayer({geoJsonSelection}) {
@@ -111,24 +120,33 @@ class MapComponent extends React.Component {
 			if (editableLayers) {
 				editableLayers.clearLayers()
 			}
-		} else {
+		}
+		else {
 			// Compare old vs. new layer
 			if (editableLayers) {
 				const prevSelection = editableLayers.getLayers()[0] ?
 					editableLayers.getLayers()[0].toGeoJSON() : null
-					if (!prevSelection || prevSelection &&
-							!_.isEqual(geoJsonSelection.geometry.coordinates, prevSelection.geometry.coordinates)){
-						editableLayers.clearLayers()
-						let layer = L.GeoJSON.geometryToLayer(geoJsonSelection, {style})
-						editableLayers.addLayer(layer)
-					}
+        if (!prevSelection || prevSelection &&
+            !_.isEqual(geoJsonSelection.geometry.coordinates, prevSelection.geometry.coordinates)) {
+          editableLayers.clearLayers()
+          let layer = L.GeoJSON.geometryToLayer(geoJsonSelection, {style})
+          editableLayers.addLayer(layer)
+				}
 			}
 		}
   }
 
-  updateResultsLayers({geoJsonFeatures}) {
-    let { resultsLayers, map } = this.state
-    geoJsonFeatures.forEach(feature=> resultsLayers.addLayer(L.geoJson(feature)))
+  updateResultsLayers({geoJsonFeatures, focusedFeatures}) {
+    let { resultsLayers } = this.state
+    const selectedStyle = {color: '#f9c642'}
+    resultsLayers.clearLayers()
+    geoJsonFeatures.forEach(feature => {
+      resultsLayers.addLayer(L.geoJson(feature, {
+        style: (f) => focusedFeatures.indexOf(f.properties.id) >= 0 ? selectedStyle : {}
+      }))
+    })
+    this.geoJsonFeatures = geoJsonFeatures
+    this.focusedFeatures = focusedFeatures
   }
 
   componentWillUnmount() {
@@ -162,7 +180,7 @@ class MapComponent extends React.Component {
   }
 }
 
-MapComponent.defaultProps= {
+MapComponent.defaultProps = {
   selection: false,
   features: true
 }

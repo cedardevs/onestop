@@ -1,19 +1,16 @@
 import { connect } from 'react-redux'
 import MapComponent from '../../search/map/MapComponent'
 import { toggleGranuleFocus } from './GranulesActions'
-import L from 'leaflet'
 
 const mapStateToProps = (state) => {
   let granules = state.getIn(['granules', 'granules'])
-  let inFlight = state.getIn(['granules', 'inFlight'])
   let featureCollection = []
-  if (!inFlight && granules.count()){
-    granules.forEach((data, id)=> {
-      featureCollection.push(convertToGeoJson(data.toJS()))
-    })
-  }
+  granules.forEach((data, id)=> {
+    featureCollection.push(convertToGeoJson(data.toJS(), id))
+  })
   return {
-    geoJsonFeatures: featureCollection
+    geoJsonFeatures: featureCollection,
+    focusedFeatures: state.getIn(['granules', 'focusedGranules']).toJS()
   }
 }
 
@@ -28,14 +25,14 @@ const MapContainer = connect(
     mapDispatchToProps
 )(MapComponent)
 
-const convertToGeoJson = recordData => {
+const convertToGeoJson = (recordData, id) => {
   // Currently defaulting to rendering bounding box coordinates
   let geoJson = {
     geometry: {
       coordinates: bboxToCoords(recordData.spatialBounding.coordinates),
       type: "Polygon"
     },
-    properties: recordData,
+    properties: Object.assign(recordData, {id: id}),
     type: "Feature"
   }
   return geoJson

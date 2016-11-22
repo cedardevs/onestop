@@ -8,7 +8,6 @@ class GranuleList extends React.Component {
     this.results = props.results
     this.focusedIds = props.focusedIds
     this.onMouseOver = props.onMouseOver
-
   }
 
   render() {
@@ -18,7 +17,7 @@ class GranuleList extends React.Component {
     // FIXME Which granule fields are being displayed in table?
     this.results.forEach((value, key) => {
       rows.push(
-        <tr key={key} onMouseOver={() => this.onMouseOver(key)}>
+        <tr key={key} onMouseOver={() => this.onMouseOver(key)} onMouseLeave={() => this.onMouseOver(key)}>
           <td>{value.get('title')}</td>
           <td>{value.get('modifiedDate')}</td>
           <td>{dataFormats}</td>
