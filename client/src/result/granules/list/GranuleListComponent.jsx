@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import _ from 'lodash'
 import MapContainer from '../MapContainer'
 import styles from './list.css'
 
@@ -15,43 +16,44 @@ class GranuleList extends React.Component {
     const dataFormats = 'Data Formats TBD'
     const tags = 'Tags TBD'
     // FIXME Which granule fields are being displayed in table?
-    this.results.forEach((value, key) => {
+
+    _.forEach(this.results, (value, key) => {
       rows.push(
         <tr key={key} onMouseOver={() => this.onMouseOver(key)} onMouseLeave={() => this.onMouseOver(key)}>
-          <td>{value.get('title')}</td>
-          <td>{value.get('modifiedDate')}</td>
+          <td>{value.title}</td>
+          <td>{value.modifiedDate}</td>
           <td>{dataFormats}</td>
           <td>{tags}</td>
         </tr>
       )
     })
 
-    return <div>
-    <div className={styles.granuleHeader}>
-      <div className={styles.leftDescription}>
-        <div className={styles.leftTitle}>
-          {this.props.selectedCollection.title}
+    return <div className={`pure-g ${styles.mainWindow}`}>
+          <div className={`pure-u-1 ${styles.leftTitle}`}>
+            {this.props.selectedCollection.title}
+          </div>
+          <div className={`pure-u-1`}>
+            <div className={`pure-u-5-24 ${styles.leftDescription}`}>
+              {this.props.selectedCollection.description}
+            </div>
+            <div className={`pure-u-3-4 ${styles.rightMap}`}>
+              <MapContainer />
+            </div>
+          </div>
+          <div className={`pure-u-1`}>
+            <table className={`pure-table ${styles.table}`}>
+              <thead>
+              <tr>
+                <th>Title</th>
+                <th>Date Modified</th>
+                <th>Data Formats</th>
+                <th>Tags</th>
+              </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </table>
+          </div>
         </div>
-        <div>
-          {this.props.selectedCollection.description}
-        </div>
-      </div>
-      <div className={styles.rightMap}>
-        <MapContainer />
-      </div>
-    </div>
-    <table className={`pure-table ${styles.table}`}>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Date Modified</th>
-            <th>Data Formats</th>
-            <th>Tags</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </table>
-    </div>
   }
 }
 

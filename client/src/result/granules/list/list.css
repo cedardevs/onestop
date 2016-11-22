@@ -1,23 +1,31 @@
+@import '../../../../style/style.css';
+
+.mainWindow {
+  letter-spacing: 0em !important;
+  margin-bottom: $footer-height;
+}
+
 .granuleHeader {
   background-color: blue;
 }
 
 .rightMap {
-  display: inline-block;
+  margin-left: 2em;
 }
 
 .leftDescription {
   display: inline-block;
-  width: 50%;
-  font-size: 1.4em;
+  font-size: 1em;
   vertical-align: top;
 }
 
 .leftTitle {
-  font-size: 1.6em;
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
 }
 
 .table {
+  margin-top: 2em;
   width: 100%;
   tbody {
     tr:hover {

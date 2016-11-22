@@ -5,8 +5,8 @@ import GranuleList from './GranuleListComponent'
 const mapStateToProps = (state) => {
   const id = state.getIn(['collections', 'selectedIds']).first()
   return {
-    results: state.getIn(['granules', 'granules']),
-    focusedIds: state.getIn(['granules', 'focusedGranules']),
+    results: state.getIn(['granules', 'granules']).toJS(),
+    focusedIds: state.getIn(['granules', 'focusedGranules']).toJS(),
     selectedCollection: state.getIn(['collections', 'results', id]) ?
       state.getIn(['collections', 'results', id]).toJS() : {}
   }

@@ -39,7 +39,7 @@ class ResultLayout extends React.Component {
 
   renderFacetButton() {
     if(this.location.includes("granules")) {
-      return <div display="none"></div>
+      return <div className="pure-u-1-24"></div>
     }
     else {
       return <div className={"pure-u-1-24"}>
