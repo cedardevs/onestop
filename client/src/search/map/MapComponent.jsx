@@ -35,12 +35,7 @@ class MapComponent extends React.Component {
 	mapDefaults() {
     let resultsLayers = new L.FeatureGroup()
 		let editableLayers = new L.FeatureGroup()
-		const drawStyle = {
-			color: "#ffe800",
-      weight: 3,
-			opacity: 0.65
-		}
-		return {
+		let mapSettings = {
       _initialized: true,
 			style: {
 				color: '#00FF00',
@@ -60,24 +55,33 @@ class MapComponent extends React.Component {
         attributionControl: false
       }),
       previousLayer: {},
-      // Define map's draw control with defaults
-      drawControl: new L.Control.Draw({
-        edit: {
-          featureGroup: editableLayers
-        },
-        remove: true,
-        position: 'topright',
-        draw: {
-          polyline: false,
-          marker: false,
-          polygon: false,
-          circle: false,
-          rectangle: {
-            shapeOptions: drawStyle
-          }
-        }
-      })
     }
+    // Add draw control if selection map
+    if (this.props.selection) { mapSettings.drawControl = this.drawDefaults(editableLayers) }
+    return mapSettings
+  }
+
+  drawDefaults(layerGroup){
+		const drawStyle = { color: "#ffe800",
+      weight: 3,
+			opacity: 0.65
+		}
+    return new L.Control.Draw({
+      edit: {
+        featureGroup: layerGroup
+      },
+      remove: true,
+      position: 'topright',
+      draw: {
+        polyline: false,
+        marker: false,
+        polygon: false,
+        circle: false,
+        rectangle: {
+          shapeOptions: drawStyle
+        }
+      }
+    })
   }
 
   mapSetup() {
