@@ -30,10 +30,10 @@ class GranuleList extends React.Component {
     <div className={styles.granuleHeader}>
       <div className={styles.leftDescription}>
         <div className={styles.leftTitle}>
-          {this.props.selectedCollection.get('title')}
+          {this.props.selectedCollection.title}
         </div>
         <div>
-          {this.props.selectedCollection.get('description')}
+          {this.props.selectedCollection.description}
         </div>
       </div>
       <div className={styles.rightMap}>

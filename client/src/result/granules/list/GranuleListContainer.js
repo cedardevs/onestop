@@ -7,7 +7,8 @@ const mapStateToProps = (state) => {
   return {
     results: state.getIn(['granules', 'granules']),
     focusedIds: state.getIn(['granules', 'focusedGranules']),
-    selectedCollection: state.getIn(['collections', 'results', id])
+    selectedCollection: state.getIn(['collections', 'results', id]) ?
+      state.getIn(['collections', 'results', id]).toJS() : {}
   }
 }
 

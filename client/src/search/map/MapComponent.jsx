@@ -105,12 +105,8 @@ class MapComponent extends React.Component {
   componentWillUpdate(nextProps) {
   	// Add/remove layers on map to reflect store
     if (this.state._initialized) {
-      if (this.props.selection) {
-        this.updateDrawnLayer(nextProps)
-      }
-      if (this.props.features) {
-        this.updateResultsLayers(nextProps)
-      }
+      if (this.props.selection) { this.updateDrawnLayer(nextProps) }
+      if (this.props.features) { this.updateResultsLayers(nextProps) }
     }
   }
 
@@ -137,6 +133,7 @@ class MapComponent extends React.Component {
   }
 
   updateResultsLayers({geoJsonFeatures, focusedFeatures}) {
+		// Apply colors to focused feature
     let { resultsLayers } = this.state
     const selectedStyle = {color: '#f9c642'}
     resultsLayers.clearLayers()
