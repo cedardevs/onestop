@@ -50,6 +50,7 @@ class MetadataParser {
     def acquisitionInstruments = [] as Set
     def acquisitionOperations = [] as Set
     def acquisitionPlatforms = [] as Set
+    def dataFormats = [] as Set
     def links = [] as Set
     def contacts = [] as Set
     def thumbnail
@@ -210,6 +211,12 @@ class MetadataParser {
       ])
     }
 
+    // Data formats
+    def formats = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'MD_Format' }
+    formats.each { e ->
+      dataFormats.add( e.name.CharacterString.text() ? (e.name.CharacterString.text() as String).toUpperCase() : null )
+    }
+
     // Links:
     def linkage = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'CI_OnlineResource' }
     linkage.each { e ->
@@ -253,6 +260,7 @@ class MetadataParser {
         acquisitionInstruments: acquisitionInstruments,
         acquisitionOperations : acquisitionOperations,
         acquisitionPlatforms  : acquisitionPlatforms,
+        dataFormats           : dataFormats,
         links                 : links,
         contacts              : contacts,
         thumbnail             : thumbnail,

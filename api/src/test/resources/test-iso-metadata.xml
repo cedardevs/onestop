@@ -570,6 +570,20 @@
     <gmd:MD_Distribution>
       <gmd:distributor>
         <gmd:MD_Distributor>
+          <gmd:distributorFormat>
+            <gmd:MD_Format>
+              <gmd:name>
+                <gco:CharacterString>NetCDF</gco:CharacterString>
+              </gmd:name>
+            </gmd:MD_Format>
+          </gmd:distributorFormat>
+          <gmd:distributorFormat>
+            <gmd:MD_Format>
+              <gmd:name>
+                <gco:CharacterString>csv</gco:CharacterString>
+              </gmd:name>
+            </gmd:MD_Format>
+          </gmd:distributorFormat>
           <gmd:distributorTransferOptions>
             <gmd:MD_DigitalTransferOptions>
               <gmd:onLine>
@@ -598,6 +612,20 @@
           </gmd:distributorTransferOptions>
         </gmd:MD_Distributor>
       </gmd:distributor>
+      <gmd:distributionFormat>
+        <gmd:MD_Format>
+          <gmd:name>
+            <gco:CharacterString>ascii</gco:CharacterString>
+          </gmd:name>
+        </gmd:MD_Format>
+      </gmd:distributionFormat>
+      <gmd:distributionFormat>
+        <gmd:MD_Format>
+          <gmd:name>
+            <gco:CharacterString>NETCDF</gco:CharacterString>
+          </gmd:name>
+        </gmd:MD_Format>
+      </gmd:distributionFormat>
     </gmd:MD_Distribution>
   </gmd:distributionInfo>
 

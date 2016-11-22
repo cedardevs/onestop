@@ -63,6 +63,11 @@ class MetadataParserTest extends Specification {
         operationStatus      : null,
         operationType        : null
     ]] as Set
+    parsedXml.dataFormats == [
+        'NETCDF',
+        'ASCII',
+        'CSV'
+    ] as Set
     parsedXml.acquisitionPlatforms == [[
         platformIdentifier  : 'TS-18 > TumbleSat-18',
         platformDescription : 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',

@@ -176,6 +176,15 @@
           }
         }
       },
+      "dataFormats": {
+        "type": "string",
+        "index": "not_analyzed",
+        "fields": {
+          "analyzed": {
+            "type": "string"
+          }
+        }
+      },
       "links": {
         "type": "nested",
         "properties": {
