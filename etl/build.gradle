@@ -71,59 +71,72 @@ def sources = [
 def targets = [
     [
         name : 'LocalApi',
-        class: ApiLoader,
+        class: Loader,
         url  : 'http://localhost:8097/onestop/api/metadata'
     ],
     [
         name : 'CUApi',
-        class: ApiLoader,
+        class: Loader,
         url  : 'https://sciapps.colorado.edu/onestop/api/metadata'
     ],
     [
         name : 'LocalGeoportal',
         class: GeoportalLoader,
         url  : "http://localhost:8888/rest/metadata/item"
+    ],
+    [
+        name : 'LocalFiles',
+        class: Loader,
+        filePath  : "/tmp"
     ]
 ]
 
-// Creates a task to load from each source into each target,
-// plus a task to load all sources into each target
-targets.each { target ->
-  def tasksForTarget = sources.collect { source ->
-    tasks.create("etl${source.name}To${target.name}").doFirst {
-      // Load collections first
-      def extractor = source.class.newInstance(source.collectionsUrl, source.collectionsParams)
-      def loader = target.class.newInstance(extractor, target.url)
-      loader.load(source.requireBrowseImg)
+// Return a closure resource for loading sources into each target
+def loadToTarget( Map source, Map target ) {
+  return {
+    // Load collections first
+    def extractor = source.class.newInstance(source.collectionsUrl, source.collectionsParams)
+    def filePath = target.filePath
+    def loader
+    if (filePath){
+      loader = target.class.newInstance(extractor, source.name, filePath, new File(filePath))
+    } else {
+      loader = target.class.newInstance(extractor, new HTTPBuilder(target.url))
+    }
+    loader.load(source.requireBrowseImg)
 
-      // Load granules if they exist
-      if(source.granulesUrl) {
-        def collections = loader.collections
-        collections.each { i ->
-          // ParentID is only relevant to GHRSST but set here to avoid duplicate code below since granulesParams
-          // is dynamically constructed for each collection
-          parentIdentifier = i
+    // Load granules if they exist
+    if (source.granulesUrl) {
+      def collections = loader.collections
+      collections.each { i ->
+        // ParentID is only relevant to GHRSST but set here to avoid duplicate code below since granulesParams
+        // is dynamically constructed for each collection
+        def parentIdentifier = i
 
-          if(source.granulesClass) {
-            extractor = source.granulesClass.newInstance(source.granulesUrl, source.granulesParams)
-          }
-          else {
-            extractor = source.class.newInstance(source.granulesUrl, source.granulesParams)
-          }
-          loader = target.class.newInstance(extractor, target.url)
-          if (source.name == 'GHRSST') {
-            loader.load(parentIdentifier)
-          }
-          else {
-            loader.load(source.requireBrowseImg)
-          }
+        if (source.granulesClass) {
+          extractor = source.granulesClass.newInstance(source.granulesUrl, source.granulesParams)
+        } else {
+          extractor = source.class.newInstance(source.granulesUrl, source.granulesParams)
+        }
+        loader = target.class.newInstance(extractor, loader.target)
+        if (source.name == 'GHRSST') {
+          loader.load(parentIdentifier)
+        } else {
+          loader.load(source.requireBrowseImg)
         }
       }
     }
   }
-  tasks.create("etlAllTo${target.name}").dependsOn(tasksForTarget)
 }
 
+// Creates a task to load from each source into local & server targets
+targets.each { target ->
+  tasks.create("etlAllTo${target.name}")
+    .dependsOn( sources.collect { source ->
+      tasks.create("etl${source.name}To${target.name}")
+        .doFirst(loadToTarget(source, target))
+  })
+}
 
 class WafExtractor implements Iterator<String> {
   private String endpointUrl
