@@ -29,7 +29,7 @@ class ETLIntegrationTests extends Specification {
   @Autowired
   private ETLService etlService
 
-  @Value('${elasticsearch.index.search.name}')
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
   private String SEARCH_INDEX
 
   @Value('${elasticsearch.index.search.collectionType}')

@@ -3,9 +3,8 @@ const logoPath = require('../../img/noaa_logo_circle_72x72.svg')
 
 import React from 'react'
 import DetailContainer from '../detail/DetailContainer'
-import Favicon from 'react-favicon'
 import Footer from './Footer.jsx'
-import AlphaBanner from './AlphaBanner.jsx'
+import BannerContainer from './banner/BannerContainer'
 import styles from './root.css'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import LoadingContainer from '../loading/LoadingContainer'
@@ -20,7 +19,7 @@ class RootComponent extends React.Component {
 
     return <div className={styles.rootContainer}>
       <div className={styles.mainContent}>
-        <AlphaBanner/>
+        <BannerContainer/>
         <DetailContainer/>
         <div id="header" className={styles.headerArea}>
           <div className={'pure-g'}>
