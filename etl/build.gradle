@@ -224,41 +224,49 @@ class GeoportalExtractor implements Iterator<String> {
   }
 }
 
-class ApiLoader {
+class Loader {
   protected Iterator<String> metadataUrls
-  protected HTTPBuilder target
   protected Method httpMethod
+  def xmlSlurper = new XmlSlurper()
+  def target
+  def sourceName
+  def targetPath
 
   private collections = []
 
-  ApiLoader(Iterator<String> metadataUrls, String apiEndpoint) {
+  Loader(Iterator<String> metadataUrls, HTTPBuilder target) {
     this.metadataUrls = metadataUrls
-    this.target = new HTTPBuilder(apiEndpoint)
+    this.target = target
     this.target.ignoreSSLIssues()
     this.httpMethod = Method.POST
+  }
+
+  Loader(Iterator<String> metadataUrls, String sourceName, String targetPath, File target) {
+    this.metadataUrls = metadataUrls
+    this.httpMethod = Method.POST
+    this.target = target
+    this.sourceName = sourceName
+    this.targetPath = targetPath
   }
 
   void load(boolean requireBrowseImg) {
     def successes = 0
     def failures = 0
     def browseImgCollectionsFound = 0
-    def xmlSlurper = new XmlSlurper()
 
     metadataUrls.eachWithIndex { metadata, i ->
       println "Metadata request: ${i}"
+      def metadataContent
       try {
-        def metadataContent = new URL(metadata).text
-        def metadataMap = xmlSlurper.parseText(metadataContent)
-        def idInfo = metadataMap.identificationInfo.MD_DataIdentification
+        metadataContent = new URL(metadata).text
+      } catch (e) {
+        println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
+        return // break out of current loop
+      }
 
-        // Check for browse graphic
-        def thumbnail = idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text()
-        def loadMetadata = !requireBrowseImg || (requireBrowseImg && thumbnail?.trim())
-        println "Load metadata: ${loadMetadata}"
-        // browseImg not needed or it's required and its got an image
-        if (loadMetadata) {
-          browseImgCollectionsFound++
-
+      if (!requireBrowseImg || hasImage(metadataContent)) {
+        browseImgCollectionsFound++
+        if (target in HTTPBuilder) {
           target.request(httpMethod) {
             requestContentType = 'application/xml'
             body = metadataContent
@@ -272,16 +280,18 @@ class ApiLoader {
               println "Error uploading metadata #${i}: ${data}"
             }
           }
+        } else { // Target is file
+          def fileName = metadata.tokenize('/').last()
+          def parentDir = new File("/tmp/${sourceName}")
+          parentDir.mkdirs()
+          def tmpFile = new File(parentDir, "/$fileName")
+          tmpFile.text = metadataContent
         }
       }
-      catch (e) {
-        println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
-        return // break out of current each{} loop
-      }
+
       if (requireBrowseImg) println "Found ${browseImgCollectionsFound} metadata records with browseGraphics"
       println "Load complete. Successfully loaded ${successes} of ${successes + failures} metadata records"
     }
-
   }
 
   void load(String parentIdentifier) {
@@ -322,12 +332,15 @@ class ApiLoader {
     println "Load complete. Successfully loaded ${successes} of ${successes + failures} metadata records"
   }
 
-  List getCollections() {
-    return collections
+  private boolean hasImage(metadataContent) {
+    def metadataMap = xmlSlurper.parseText(metadataContent)
+    def idInfo = metadataMap.identificationInfo.MD_DataIdentification
+    def thumbnail = idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text()
+    return thumbnail?.trim()
   }
 }
 
-class GeoportalLoader extends ApiLoader {
+class GeoportalLoader extends Loader {
   GeoportalLoader(Iterator<String> metadataUrls, String geoportalEndpoint) {
     super(metadataUrls, geoportalEndpoint)
     this.target.auth.basic('gptadmin', 'gptadmin')
