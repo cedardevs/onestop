@@ -1,3 +1,9 @@
+import groovy.json.JsonSlurper
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
+
+def parentIdentifier
+
 buildscript {
   repositories {
     mavenCentral()
@@ -7,12 +13,6 @@ buildscript {
   }
 }
 
-import groovy.json.JsonSlurper
-import groovy.xml.XmlUtil
-import groovyx.net.http.HTTPBuilder
-import groovyx.net.http.Method
-
-def parentIdentifier
 def sources = [
     [
         name             : 'GptCollections',
@@ -85,7 +85,7 @@ def targets = [
         url  : "http://localhost:8888/rest/metadata/item"
     ],
     [
-        name : 'LocalFiles',
+        name : 'LocalDisk',
         class: Loader,
         filePath  : "/tmp"
     ]
@@ -227,116 +227,104 @@ class GeoportalExtractor implements Iterator<String> {
 class Loader {
   protected Iterator<String> metadataUrls
   protected Method httpMethod
-  def xmlSlurper = new XmlSlurper()
-  def target
-  def sourceName
-  def targetPath
-
-  private collections = []
+  def xmlSlurper, target, parentDir, metadataContent
+  def successes = 0
+  def failures = 0
+  def collections = []
 
   Loader(Iterator<String> metadataUrls, HTTPBuilder target) {
-    this.metadataUrls = metadataUrls
-    this.target = target
-    this.target.ignoreSSLIssues()
-    this.httpMethod = Method.POST
+    init(target, metadataUrls)
+    target.ignoreSSLIssues()
   }
 
   Loader(Iterator<String> metadataUrls, String sourceName, String targetPath, File target) {
-    this.metadataUrls = metadataUrls
-    this.httpMethod = Method.POST
+    init(target, metadataUrls)
+    (parentDir = new File("$targetPath/$sourceName")).mkdirs()
+  }
+
+  def init( File target, Iterator<String> metadataUrls ) {
+    httpMethod = Method.POST
     this.target = target
-    this.sourceName = sourceName
-    this.targetPath = targetPath
+    this.metadataUrls = metadataUrls
+    xmlSlurper = new XmlSlurper()
   }
 
   void load(boolean requireBrowseImg) {
-    def successes = 0
-    def failures = 0
-    def browseImgCollectionsFound = 0
-
+    (parentDir = new File(parentDir, "collections")).mkdirs()
     metadataUrls.eachWithIndex { metadata, i ->
-      println "Metadata request: ${i}"
-      def metadataContent
       try {
         metadataContent = new URL(metadata).text
       } catch (e) {
         println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
         return // break out of current loop
       }
-
-      if (!requireBrowseImg || hasImage(metadataContent)) {
-        browseImgCollectionsFound++
-        if (target in HTTPBuilder) {
-          target.request(httpMethod) {
-            requestContentType = 'application/xml'
-            body = metadataContent
-            response.success = { resp, data ->
-              successes++
-              println "${data.data.id} created #${i}: ${data.data.attributes.created}"
-              collections.add(data.data.id.replace('gov.noaa.nodc:', ''))
-            }
-            response.failure = { resp, data ->
-              failures++
-              println "Error uploading metadata #${i}: ${data}"
-            }
-          }
-        } else { // Target is file
-          def fileName = metadata.tokenize('/').last()
-          def parentDir = new File("/tmp/${sourceName}")
-          parentDir.mkdirs()
-          def tmpFile = new File(parentDir, "/$fileName")
-          tmpFile.text = metadataContent
-        }
-      }
-
-      if (requireBrowseImg) println "Found ${browseImgCollectionsFound} metadata records with browseGraphics"
-      println "Load complete. Successfully loaded ${successes} of ${successes + failures} metadata records"
+      writeToDestination(metadataContent, requireBrowseImg, true)
     }
   }
 
   void load(String parentIdentifier) {
-    def successes = 0
-    def failures = 0
-
-    parentIdentifier = 'gov.noaa.nodc:' + parentIdentifier
-    def xmlFragment = """  <gmd:parentIdentifier>
-    <gco:CharacterString>${parentIdentifier}</gco:CharacterString>
-  </gmd:parentIdentifier>"""
-    def fragment = new XmlParser(false, false).parseText(xmlFragment)
-    def root = new XmlParser(false, false)
-
+    (parentDir = new File(parentDir, "granules")).mkdirs()
+    def fragment = xmlSlurper.parseText("""<gmd:parentIdentifier>
+    <gco:CharacterString>gov.noaa.nodc:${parentIdentifier}</gco:CharacterString>
+  </gmd:parentIdentifier>""")
     metadataUrls.eachWithIndex { metadata, i ->
       try {
-        root.parseText(new URL(metadata).text)
-        def xml = root.children()
-        xml.add(fragment)
-        def updatedXml = XmlUtil.serialize(root)
-        target.request(httpMethod) {
-          requestContentType = 'application/xml'
-          body = updatedXml
-          response.success = { resp, data ->
-            successes++
-            println "${data.data.id} created #${i}: ${data.data.attributes.created}"
-          }
-          response.failure = { resp, data ->
-            failures++
-            println "Error uploading metadata #${i} from ${metadata}: ${data}"
-          }
-        }
-      }
-      catch (e) {
+        metadataContent = xmlSlurper.parseText(new URL(metadata).text)
+          .children()
+          .add(fragment)
+      } catch (e) {
         println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
-        return // break out of current each{} loop
+        return // break out of current loop
       }
+      writeToDestination(metadataContent)
     }
-    println "Load complete. Successfully loaded ${successes} of ${successes + failures} metadata records"
   }
 
-  private boolean hasImage(metadataContent) {
+  private void writeToDestination(metadataContent, requireBrowseImg=false,
+                                  isCollection=false) {
     def metadataMap = xmlSlurper.parseText(metadataContent)
+    if (!requireBrowseImg || hasImage(metadataMap)) {
+      if (target in HTTPBuilder) {
+        sendToApi(metadataContent, isCollection)
+      } else { // Target is file
+        def fileName = fileName(metadataMap)
+        try {
+          new File(parentDir, "/$fileName") << metadataContent
+          successes++
+        } catch (Exception ex) {
+          println "Failed to write to file $filename , exception: $ex"
+          failures++
+        }
+      }
+      println "${successes} of ${successes + failures} metadata records written"
+    }
+  }
+
+  private sendToApi(dataContent, isCollection) {
+    target.request(httpMethod) {
+      requestContentType = 'application/xml'
+      body = dataContent
+      response.success = { resp, data ->
+        successes++
+        println "${data.data.id} created #${i}: ${data.data.attributes.created}"
+        if (isCollection) { collections.add(data.data.id.replace('gov.noaa.nodc:', '')) }
+      }
+      response.failure = { resp, data ->
+        failures++
+        println "Error uploading metadata #${i} from ${metadata}: ${data}"
+      }
+    }
+  }
+
+  private boolean hasImage(metadataMap) {
     def idInfo = metadataMap.identificationInfo.MD_DataIdentification
     def thumbnail = idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text()
     return thumbnail?.trim()
+  }
+
+  private String fileName(metadataMap) {
+    def fileName = metadataMap.fileIdentifier.CharacterString
+    return "${fileName}.xml"
   }
 }
 
