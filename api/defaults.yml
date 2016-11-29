@@ -24,6 +24,8 @@
 # and pass the appropriate credentials when talking to elasticsearch.
 
 #elasticsearch:
+#  cluster:
+#    name: elasticsearch
 #  host: localhost
 #  port: 9300
 #  ro:

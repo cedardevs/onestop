@@ -15,6 +15,9 @@ import org.springframework.context.annotation.Profile
 @Profile("default")
 class DefaultApplicationConfig {
 
+  @Value('${elasticsearch.cluster.name}')
+  String clusterName
+
   @Value('${elasticsearch.port}')
   Integer elasticPort
 
@@ -36,27 +39,33 @@ class DefaultApplicationConfig {
   @Bean(destroyMethod = 'close')
   public Client searchClient() {
     def builder = TransportClient.builder()
+    def settingsBuilder = Settings.builder()
+
+    settingsBuilder.put('cluster.name', clusterName)
 
     if (roUser && roPassword) {
       builder.addPlugin(ShieldPlugin)
-      builder.settings(Settings.builder().put('shield.user', "${roUser}:${roPassword}"))
+      settingsBuilder.put('shield.user', "${roUser}:${roPassword}")
     }
 
-    def client = builder.build()
+    def client = builder.settings(settingsBuilder.build()).build()
     client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticHost), elasticPort))
   }
 
   @Bean(destroyMethod = 'close')
   public Client adminClient() {
     def builder = TransportClient.builder()
+    def settingsBuilder = Settings.builder()
+
     builder.addPlugin(DeleteByQueryPlugin)
+    settingsBuilder.put('cluster.name', clusterName)
 
     if (rwUser && rwPassword) {
       builder.addPlugin(ShieldPlugin)
-      builder.settings(Settings.builder().put('shield.user', "${rwUser}:${rwPassword}"))
+      settingsBuilder.put('shield.user', "${rwUser}:${rwPassword}")
     }
 
-    def client = builder.build()
+    def client = builder.settings(settingsBuilder.build()).build()
     client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticHost), elasticPort))
   }
 
