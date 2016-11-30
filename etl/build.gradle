@@ -19,52 +19,62 @@ def sources = [
         class            : GeoportalExtractor,
         collectionsUrl   : 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'title%3A*%20NOT%20title%3AGHRSST'], //All collections not part of GHRSST
-        requireBrowseImg : true
+        requireBrowseImg : true,
+        granules         : false
     ],
     [
         name             : 'GHRSST',
         class            : GeoportalExtractor,
         collectionsUrl   : 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'title:GHRSST%20NOT%20title:Documentation'],
-        granulesUrl      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
-        granulesParams   : [searchText: "fileIdentifier:${-> parentIdentifier}*"],
-        requireBrowseImg : false
+        requireBrowseImg : false,
+        granules         : [
+          url      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
+          params   : [searchText: "fileIdentifier:${-> parentIdentifier}*"],
+        ]
     ],
     [
         name             : 'COOPS',
         class            : GeoportalExtractor,
         collectionsUrl   : 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'title:NWLON%20NOT%20title:Documentation'],
-        granulesUrl      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
-        granulesParams   : [searchText: 'fileIdentifier%3ACO-OPS*', after: '2016-06-30'],
-        requireBrowseImg : false
+        requireBrowseImg : false,
+        granules         : [
+          url      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
+          params   : [searchText: 'fileIdentifier%3ACO-OPS*', after: '2016-06-30'],
+        ]
     ],
     [
         name             : 'DEM',
         class            : WafExtractor,
         collectionsUrl   : 'http://ngdc.noaa.gov/metadata/published/NOAA/OneStop/DEM/iso/xml/',
         collectionsParams: [:],
-        requireBrowseImg : false
+        requireBrowseImg : false,
+        granules         : false
     ],
     [
         name: 'SAMOS',
         class: GeoportalExtractor,
         collectionsUrl: 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'title:SAMOS'],
-        granulesUrl: 'http://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/samos/',
-        granulesParams: [:],
-        granulesClass: WafExtractor,
-        requireBrowseImg : false
+        requireBrowseImg : false,
+        granules         : [
+          url: 'http://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/samos/',
+          params: [:],
+          class: WafExtractor,
+        ]
     ],
     [
         name: 'WOA13',
         class: GeoportalExtractor,
         collectionsUrl: 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'fileIdentifier:"gov.noaa.nodc:0114815"'],
-        granulesUrl: 'http://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/woa13/',
-        granulesParams: [:],
-        granulesClass: WafExtractor,
-        requireBrowseImg : false
+        requireBrowseImg : false,
+        granules         : [
+          url: 'http://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/woa13/',
+          params: [:],
+          class: WafExtractor,
+        ]
     ]
 ]
 
@@ -106,19 +116,24 @@ def loadToTarget( Map source, Map target ) {
     loader.load(source.requireBrowseImg)
 
     // Load granules if they exist
-    if (source.granulesUrl) {
+    def granulesAttrs = source.granules
+    if (granulesAttrs) {
       def collections = loader.collections
       collections.each { i ->
-        // ParentID is only relevant to GHRSST but set here to avoid duplicate code below since granulesParams
+        // ParentID is only relevant to GHRSST but set here to avoid duplicate code below since params
         // is dynamically constructed for each collection
         def parentIdentifier = i
 
-        if (source.granulesClass) {
-          extractor = source.granulesClass.newInstance(source.granulesUrl, source.granulesParams)
+        if (granulesAttrs.class) {
+          extractor = granulesAttrs.class.newInstance(granulesAttrs.url, granulesAttrs.params)
         } else {
-          extractor = source.class.newInstance(source.granulesUrl, source.granulesParams)
+          extractor = source.class.newInstance(granulesAttrs.url, granulesAttrs.params)
         }
-        loader = target.class.newInstance(extractor, loader.target)
+        if (filePath){
+          loader = target.class.newInstance(extractor, source.name, filePath, new File(filePath))
+        } else {
+          loader = target.class.newInstance(extractor, new HTTPBuilder(granulesAttrs.url))
+        }
         if (source.name == 'GHRSST') {
           loader.load(parentIdentifier)
         } else {
@@ -233,16 +248,18 @@ class Loader {
   def collections = []
 
   Loader(Iterator<String> metadataUrls, HTTPBuilder target) {
-    init(target, metadataUrls)
+    init(metadataUrls)
+    this.target = target
     target.ignoreSSLIssues()
   }
 
   Loader(Iterator<String> metadataUrls, String sourceName, String targetPath, File target) {
-    init(target, metadataUrls)
+    init(metadataUrls)
     (parentDir = new File("$targetPath/$sourceName")).mkdirs()
+    this.target = target
   }
 
-  def init( File target, Iterator<String> metadataUrls ) {
+  def init( Iterator<String> metadataUrls ) {
     httpMethod = Method.POST
     this.target = target
     this.metadataUrls = metadataUrls
@@ -250,7 +267,7 @@ class Loader {
   }
 
   void load(boolean requireBrowseImg) {
-    (parentDir = new File(parentDir, "collections")).mkdirs()
+    (parentDir = new File((File)parentDir, "collections")).mkdirs()
     metadataUrls.eachWithIndex { metadata, i ->
       try {
         metadataContent = new URL(metadata).text
@@ -263,36 +280,32 @@ class Loader {
   }
 
   void load(String parentIdentifier) {
-    (parentDir = new File(parentDir, "granules")).mkdirs()
+    (parentDir = new File((File)parentDir, "granules")).mkdirs()
     def fragment = xmlSlurper.parseText("""<gmd:parentIdentifier>
     <gco:CharacterString>gov.noaa.nodc:${parentIdentifier}</gco:CharacterString>
   </gmd:parentIdentifier>""")
     metadataUrls.eachWithIndex { metadata, i ->
       try {
-        metadataContent = xmlSlurper.parseText(new URL(metadata).text)
-          .children()
-          .add(fragment)
+        metadataContent = new URL(metadata).text
+        writeToDestination(metadataContent)
       } catch (e) {
         println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
         return // break out of current loop
       }
-      writeToDestination(metadataContent)
     }
   }
 
-  private void writeToDestination(metadataContent, requireBrowseImg=false,
-                                  isCollection=false) {
+  private void writeToDestination(metadataContent, requireBrowseImg=false, isCollection=false) {
     def metadataMap = xmlSlurper.parseText(metadataContent)
     if (!requireBrowseImg || hasImage(metadataMap)) {
       if (target in HTTPBuilder) {
         sendToApi(metadataContent, isCollection)
       } else { // Target is file
-        def fileName = fileName(metadataMap)
         try {
-          new File(parentDir, "/$fileName") << metadataContent
+          new File(parentDir, "/${fileName(metadataMap)}") << metadataContent
           successes++
         } catch (Exception ex) {
-          println "Failed to write to file $filename , exception: $ex"
+          println "Failed to write to file, exception: $ex"
           failures++
         }
       }
@@ -306,12 +319,12 @@ class Loader {
       body = dataContent
       response.success = { resp, data ->
         successes++
-        println "${data.data.id} created #${i}: ${data.data.attributes.created}"
+        println "${data.data.id} created: ${data.data.attributes.created}"
         if (isCollection) { collections.add(data.data.id.replace('gov.noaa.nodc:', '')) }
       }
       response.failure = { resp, data ->
         failures++
-        println "Error uploading metadata #${i} from ${metadata}: ${data}"
+        println "Error uploading metadata: ${data}"
       }
     }
   }
@@ -330,7 +343,7 @@ class Loader {
 
 class GeoportalLoader extends Loader {
   GeoportalLoader(Iterator<String> metadataUrls, String geoportalEndpoint) {
-    super(metadataUrls, geoportalEndpoint)
+    super(metadataUrls, new HTTPBuilder(geoportalEndpoint))
     this.target.auth.basic('gptadmin', 'gptadmin')
     this.httpMethod = Method.PUT
   }
