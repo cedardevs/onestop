@@ -106,12 +106,11 @@ def loadToTarget( Map source, Map target ) {
   return {
     // Load collections first
     def extractor = source.class.newInstance(source.collectionsUrl, source.collectionsParams)
-    def filePath = target.filePath
     def loader, granuleLoader
-    if (filePath){
-      loader = target.class.newInstance(extractor, source.name, filePath, new File(filePath))
+    if (target.filePath){
+      loader = target.class.newInstance(extractor, target.filePath, source.name)
     } else {
-      loader = target.class.newInstance(extractor, new HTTPBuilder(target.url))
+      loader = target.class.newInstance(extractor, target.url)
     }
     loader.load(source.requireBrowseImg)
 
@@ -120,22 +119,21 @@ def loadToTarget( Map source, Map target ) {
     if (granulesAttrs) {
       def collections = loader.collections
       def isCollection = false
-      collections.each { i ->
+      collections.each { parentId ->
         // ParentID is only relevant to GHRSST but set here to avoid duplicate code below since params
         // is dynamically constructed for each collection
-        def parentIdentifier = i
         if (granulesAttrs.class) {
           extractor = granulesAttrs.class.newInstance(granulesAttrs.url, granulesAttrs.params)
         } else {
           extractor = source.class.newInstance(granulesAttrs.url, granulesAttrs.params)
         }
-        if (filePath){
-          granuleLoader = target.class.newInstance(extractor, source.name, filePath, new File(filePath))
+        if (target.filePath){
+          granuleLoader = target.class.newInstance(extractor, target.filePath, source.name)
         } else {
-          granuleLoader = target.class.newInstance(extractor, new HTTPBuilder(target.url))
+          granuleLoader = target.class.newInstance(extractor, target.url)
         }
         if (source.name == 'GHRSST') {
-          granuleLoader.load(parentIdentifier, source.requireBrowseImg, isCollection)
+          granuleLoader.load(source.requireBrowseImg, isCollection, parentId)
         } else {
           granuleLoader.load(source.requireBrowseImg, isCollection)
         }
@@ -240,63 +238,40 @@ class GeoportalExtractor implements Iterator<String> {
 }
 
 class Loader {
+  final def GRANULE_LIMIT = 500
   protected Iterator<String> metadataUrls
-  protected Method httpMethod
+  protected Method httpMethod = Method.POST
   def xmlSlurper, target, parentDir
   def successes = 0
   def failures = 0
   def collections = []
 
-  Loader(Iterator<String> metadataUrls, HTTPBuilder target) {
-    init(metadataUrls)
-    this.target = target
-    target.ignoreSSLIssues()
-  }
-
-  Loader(Iterator<String> metadataUrls, String sourceName, String targetPath, File target) {
-    init(metadataUrls)
-    (parentDir = new File("$targetPath/$sourceName")).mkdirs()
-    this.target = target
-  }
-
-  def init( Iterator<String> metadataUrls ) {
-    httpMethod = Method.POST
+  Loader(Iterator<String> metadataUrls, String targetPath, String sourceName = "") {
     this.metadataUrls = metadataUrls
-    xmlSlurper = new XmlSlurper()
-    xmlSlurper.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+    if (sourceName) {
+      (parentDir = new File("$targetPath/$sourceName")).mkdirs()
+    } else {
+      target = new HTTPBuilder(targetPath)
+    }
+    (xmlSlurper = new XmlSlurper()).setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
   }
 
-  void load(boolean requireBrowseImg, isCollection = true) {
-    if (isCollection) {
-      (parentDir = new File((File)parentDir, "collections")).mkdirs()
-    } else {
-      (parentDir = new File((File)parentDir, "granules")).mkdirs()
-    }
-    metadataUrls.eachWithIndex { metadata, i ->
-      try {
-        writeToDestination(metadata, requireBrowseImg, isCollection)
-      } catch (e) {
-        println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
-        return // break out of current loop
-      }
-    }
-  }
-
-  void load(String parentIdentifier, boolean requireBrowseImg = false, boolean isCollection = false) {
-    if (isCollection) {
-      (parentDir = new File((File)parentDir, "collections")).mkdirs()
-    } else {
-      (parentDir = new File((File)parentDir, "granules")).mkdirs()
-    }
-    def fragment = xmlSlurper.parseText("""<gmd:parentIdentifier>
+  void load(boolean requireBrowseImg, boolean isCollection = true, String parentIdentifier = null) {
+    def fileDirName = isCollection ? "collections" : "granules"
+    (parentDir = new File((File)parentDir, fileDirName)).mkdirs()
+    if (parentIdentifier) { // TODO: Add this on if GHRSST
+      def fragment = xmlSlurper.parseText("""<gmd:parentIdentifier>
     <gco:CharacterString>gov.noaa.nodc:${parentIdentifier}</gco:CharacterString>
   </gmd:parentIdentifier>""")
+    }
     metadataUrls.eachWithIndex { metadata, i ->
-      try {
-        writeToDestination(metadata, requireBrowseImg, isCollection)
-      } catch (e) {
-        println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
-        return // break out of current loop
+      if (i < GRANULE_LIMIT) {
+        try {
+          writeToDestination(metadata, requireBrowseImg, isCollection)
+        } catch (e) {
+          println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
+          return // break out of current loop
+        }
       }
     }
   }
@@ -306,7 +281,7 @@ class Loader {
     def metadataMap = xmlSlurper.parseText(metadataContent)
     def fileName = fileName(metadataMap)
     if (!requireBrowseImg || hasImage(metadataMap)) {
-      if (target in HTTPBuilder) {
+      if (target) {
         sendToApi(metadataContent, isCollection)
       } else { // Target is file
         try {
