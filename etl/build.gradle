@@ -30,7 +30,7 @@ def sources = [
         requireBrowseImg : false,
         granules         : [
           url      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
-          params   : [searchText: "fileIdentifier:${-> parentIdentifier}*"],
+          params   : [searchText: "fileIdentifier:${-> parentIdentifier}*"]
         ]
     ],
     [
@@ -41,7 +41,7 @@ def sources = [
         requireBrowseImg : false,
         granules         : [
           url      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
-          params   : [searchText: 'fileIdentifier%3ACO-OPS*', after: '2016-06-30'],
+          params   : [searchText: 'fileIdentifier%3ACO-OPS*', after: '2016-06-30']
         ]
     ],
     [
@@ -120,8 +120,6 @@ def loadToTarget( Map source, Map target ) {
       def collections = loader.collections
       def isCollection = false
       collections.each { parentId ->
-        // ParentID is only relevant to GHRSST but set here to avoid duplicate code below since params
-        // is dynamically constructed for each collection
         if (granulesAttrs.class) {
           extractor = granulesAttrs.class.newInstance(granulesAttrs.url, granulesAttrs.params)
         } else {
@@ -132,11 +130,9 @@ def loadToTarget( Map source, Map target ) {
         } else {
           granuleLoader = target.class.newInstance(extractor, target.url)
         }
-        if (source.name == 'GHRSST') {
-          granuleLoader.load(source.requireBrowseImg, isCollection, parentId)
-        } else {
-          granuleLoader.load(source.requireBrowseImg, isCollection)
-        }
+        // ParentID only relevant for GHRSST
+        granuleLoader.load(source.requireBrowseImg, isCollection,
+          source.name == 'GHRSST' ? parentId : null)
       }
     }
   }
