@@ -47,7 +47,7 @@ def sources = [
     [
         name             : 'DEM',
         class            : WafExtractor,
-        collectionsUrl   : 'http://ngdc.noaa.gov/metadata/published/NOAA/OneStop/DEM/iso/xml/',
+        collectionsUrl   : 'https://ngdc.noaa.gov/metadata/published/NOAA/OneStop/DEM/iso/xml',
         collectionsParams: [:],
         requireBrowseImg : false,
         granules         : false
@@ -107,7 +107,7 @@ def loadToTarget( Map source, Map target ) {
     // Load collections first
     def extractor = source.class.newInstance(source.collectionsUrl, source.collectionsParams)
     def filePath = target.filePath
-    def loader
+    def loader, granuleLoader
     if (filePath){
       loader = target.class.newInstance(extractor, source.name, filePath, new File(filePath))
     } else {
@@ -119,25 +119,25 @@ def loadToTarget( Map source, Map target ) {
     def granulesAttrs = source.granules
     if (granulesAttrs) {
       def collections = loader.collections
+      def isCollection = false
       collections.each { i ->
         // ParentID is only relevant to GHRSST but set here to avoid duplicate code below since params
         // is dynamically constructed for each collection
         def parentIdentifier = i
-
         if (granulesAttrs.class) {
           extractor = granulesAttrs.class.newInstance(granulesAttrs.url, granulesAttrs.params)
         } else {
           extractor = source.class.newInstance(granulesAttrs.url, granulesAttrs.params)
         }
         if (filePath){
-          loader = target.class.newInstance(extractor, source.name, filePath, new File(filePath))
+          granuleLoader = target.class.newInstance(extractor, source.name, filePath, new File(filePath))
         } else {
-          loader = target.class.newInstance(extractor, new HTTPBuilder(granulesAttrs.url))
+          granuleLoader = target.class.newInstance(extractor, new HTTPBuilder(target.url))
         }
         if (source.name == 'GHRSST') {
-          loader.load(parentIdentifier)
+          granuleLoader.load(parentIdentifier, source.requireBrowseImg, isCollection)
         } else {
-          loader.load(source.requireBrowseImg)
+          granuleLoader.load(source.requireBrowseImg, isCollection)
         }
       }
     }
@@ -188,7 +188,7 @@ class GeoportalExtractor implements Iterator<String> {
   private Integer currentIndex = 0
   private JsonSlurper jsonSlurper = new JsonSlurper()
   private gptPageRequests = 0
-  private maxGptPageRequests = 2 //TODO Should be an arg passed in; Update me as needed!
+  private maxGptPageRequests = 2000 //TODO Should be an arg passed in; Update me as needed!
 
   GeoportalExtractor(String endpointUrl, Map searchParams = [:]) {
     this.endpointUrl = endpointUrl
@@ -242,7 +242,7 @@ class GeoportalExtractor implements Iterator<String> {
 class Loader {
   protected Iterator<String> metadataUrls
   protected Method httpMethod
-  def xmlSlurper, target, parentDir, metadataContent
+  def xmlSlurper, target, parentDir
   def successes = 0
   def failures = 0
   def collections = []
@@ -261,33 +261,39 @@ class Loader {
 
   def init( Iterator<String> metadataUrls ) {
     httpMethod = Method.POST
-    this.target = target
     this.metadataUrls = metadataUrls
     xmlSlurper = new XmlSlurper()
+    xmlSlurper.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
   }
 
-  void load(boolean requireBrowseImg) {
-    (parentDir = new File((File)parentDir, "collections")).mkdirs()
+  void load(boolean requireBrowseImg, isCollection = true) {
+    if (isCollection) {
+      (parentDir = new File((File)parentDir, "collections")).mkdirs()
+    } else {
+      (parentDir = new File((File)parentDir, "granules")).mkdirs()
+    }
     metadataUrls.eachWithIndex { metadata, i ->
       try {
-        metadataContent = new URL(metadata).text
+        writeToDestination(metadata, requireBrowseImg, isCollection)
       } catch (e) {
         println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
         return // break out of current loop
       }
-      writeToDestination(metadataContent, requireBrowseImg, true)
     }
   }
 
-  void load(String parentIdentifier) {
-    (parentDir = new File((File)parentDir, "granules")).mkdirs()
+  void load(String parentIdentifier, boolean requireBrowseImg = false, boolean isCollection = false) {
+    if (isCollection) {
+      (parentDir = new File((File)parentDir, "collections")).mkdirs()
+    } else {
+      (parentDir = new File((File)parentDir, "granules")).mkdirs()
+    }
     def fragment = xmlSlurper.parseText("""<gmd:parentIdentifier>
     <gco:CharacterString>gov.noaa.nodc:${parentIdentifier}</gco:CharacterString>
   </gmd:parentIdentifier>""")
     metadataUrls.eachWithIndex { metadata, i ->
       try {
-        metadataContent = new URL(metadata).text
-        writeToDestination(metadataContent)
+        writeToDestination(metadata, requireBrowseImg, isCollection)
       } catch (e) {
         println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
         return // break out of current loop
@@ -295,14 +301,17 @@ class Loader {
     }
   }
 
-  private void writeToDestination(metadataContent, requireBrowseImg=false, isCollection=false) {
+  private void writeToDestination(metadata, requireBrowseImg, isCollection) {
+    def metadataContent = new URL(metadata).text
     def metadataMap = xmlSlurper.parseText(metadataContent)
+    def fileName = fileName(metadataMap)
     if (!requireBrowseImg || hasImage(metadataMap)) {
       if (target in HTTPBuilder) {
         sendToApi(metadataContent, isCollection)
       } else { // Target is file
         try {
-          new File(parentDir, "/${fileName(metadataMap)}") << metadataContent
+          new File(parentDir, "/$fileName") << metadataContent
+          if (isCollection) {collections.add(fileName.tokenize(':')[1])}
           successes++
         } catch (Exception ex) {
           println "Failed to write to file, exception: $ex"
@@ -320,7 +329,7 @@ class Loader {
       response.success = { resp, data ->
         successes++
         println "${data.data.id} created: ${data.data.attributes.created}"
-        if (isCollection) { collections.add(data.data.id.replace('gov.noaa.nodc:', '')) }
+        if (isCollection) {collections.add(data.data.id.replace('gov.noaa.nodc:', ''))}
       }
       response.failure = { resp, data ->
         failures++
