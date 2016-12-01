@@ -47,7 +47,13 @@ class IndexAdminService {
     def cl = Thread.currentThread().contextClassLoader
     def indexSettings = cl.getResourceAsStream("config/${baseName - PREFIX}-settings.json").text
     adminClient.admin().indices().prepareCreate(indexName).setSettings(indexSettings).execute().actionGet()
-    adminClient.admin().cluster().prepareHealth(indexName).setWaitForActiveShards(1).execute().actionGet()
+
+    try {
+      adminClient.admin().cluster().prepareHealth(indexName).setWaitForActiveShards(1).execute().actionGet()
+    }
+    catch (e) {
+      log.warn('Unable to use cluster health api to wait for active shards', e)
+    }
 
     // Initialize mappings:
     typeNames.each { type ->
