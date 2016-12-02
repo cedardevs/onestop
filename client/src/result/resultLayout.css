@@ -13,10 +13,34 @@
   margin-bottom: calc($footer-height + 2 * $section-padding);
 }
 
-.facetButton {
-  font-size: 1em;
-  margin-left: 0.25em;
-  margin-top: 1em;
+.facetButtonExpanded {
+  font-size: 2.5em;
+  margin: 3.5em 0em 0em -1em;
+  color: #FFFFFF;
+}
+
+.facetButtonExpanded:hover,
+.facetButtonExpanded:focus {
+  color: $color-gray;
+  cursor: pointer;
+}
+
+.facetButtonCollapsed {
+  font-size: 2.5em;
+  margin: 1em 0.5em 0em;
+  color: #FFFFFF;
+}
+
+.facetButtonCollapsed:hover,
+.facetButtonCollapsed:focus {
+  color: $color-gray;
+  cursor: pointer;
+}
+
+.buttonColumn {
+  max-height: 5vh;
+  margin-right: 0.5em;
+  background-color: $color-primary;
 }
 
 .resultsContainer {
