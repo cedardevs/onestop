@@ -56,18 +56,18 @@ class LandingComponent extends React.Component {
     // Hard-coded for display, TODO: dynamically pull from API
     const featuredContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5000} }>
-        	<div><img src={dem1} /></div>
-        	<div><img src={dem2} /></div>
-        	<div><img src={ghrsst1} /></div>
-        	<div><img src={ghrsst2} /></div>
+        	<div onClick={()=>this.search('dem')}><img src={dem1} /></div>
+        	<div onClick={()=>this.search('dem')}><img src={dem2} /></div>
+        	<div onClick={()=>this.search('ghrsst')}><img src={ghrsst1} /></div>
+        	<div onClick={()=>this.search('ghrsst')}><img src={ghrsst2} /></div>
         </Slider>
       </div>
     const trendingContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5100} }>
-        	<div><img src={image1} /></div>
-        	<div><img src={image2} /></div>
-        	<div><img src={image3} /></div>
-        	<div><img src={image4} /></div>
+        	<div onClick={()=>this.search('tsunami')}><img src={image1} /></div>
+        	<div onClick={()=>this.search('tsunami')}><img src={image2} /></div>
+        	<div onClick={()=>this.search('tsunami')}><img src={image3} /></div>
+        	<div onClick={()=>this.search('tsunami')}><img src={image4} /></div>
         </Slider>
       </div>
 
