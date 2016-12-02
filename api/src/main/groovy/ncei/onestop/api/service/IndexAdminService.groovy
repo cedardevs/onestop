@@ -2,6 +2,7 @@ package ncei.onestop.api.service
 
 import groovy.util.logging.Slf4j
 import org.elasticsearch.client.Client
+import org.elasticsearch.index.IndexNotFoundException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -75,7 +76,7 @@ class IndexAdminService {
   }
 
   public void ensureStaging() {
-    def storageExists = adminClient.admin().indices().prepareAliasesExist(STAGING_INDEX).execute().actionGet().exists
+    def storageExists = checkAliasExists(STAGING_INDEX)
     if (!storageExists) {
       def realName = create(STAGING_INDEX, [COLLECTION_TYPE, GRANULE_TYPE])
       adminClient.admin().indices().prepareAliases().addAlias(realName, STAGING_INDEX).execute().actionGet()
@@ -83,11 +84,22 @@ class IndexAdminService {
   }
 
   public void ensureSearch() {
-    def searchExists = adminClient.admin().indices().prepareAliasesExist(SEARCH_INDEX).execute().actionGet().exists
+    def searchExists = checkAliasExists(SEARCH_INDEX)
     if (!searchExists) {
       def realName = create(SEARCH_INDEX, [GRANULE_TYPE, COLLECTION_TYPE])
       adminClient.admin().indices().prepareAliases().addAlias(realName, SEARCH_INDEX).execute().actionGet()
     }
+  }
+
+  private Boolean checkAliasExists(String name) {
+    def result
+    try {
+      result = adminClient.admin().indices().prepareAliasesExist(name).execute().actionGet().exists
+    }
+    catch (IndexNotFoundException e) {
+      result = false
+    }
+    return result
   }
 
 }
