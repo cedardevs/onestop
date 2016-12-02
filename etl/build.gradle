@@ -1,8 +1,7 @@
 import groovy.json.JsonSlurper
+import groovy.xml.XmlUtil
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
-
-def parentIdentifier
 
 buildscript {
   repositories {
@@ -30,7 +29,7 @@ def sources = [
         requireBrowseImg : false,
         granules         : [
           url      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
-          params   : [searchText: "fileIdentifier:${-> parentIdentifier}*"]
+          params   : [searchText: "fileIdentifier:REPLACE_PARAMS*"]
         ]
     ],
     [
@@ -121,9 +120,9 @@ def loadToTarget( Map source, Map target ) {
       def isCollection = false
       collections.each { parentId ->
         if (granulesAttrs.class) {
-          extractor = granulesAttrs.class.newInstance(granulesAttrs.url, granulesAttrs.params)
+          extractor = granulesAttrs.class.newInstance(granulesAttrs.url, granulesAttrs.params, parentId)
         } else {
-          extractor = source.class.newInstance(granulesAttrs.url, granulesAttrs.params)
+          extractor = source.class.newInstance(granulesAttrs.url, granulesAttrs.params, parentId)
         }
         if (target.filePath){
           granuleLoader = target.class.newInstance(extractor, target.filePath, source.name)
@@ -174,6 +173,8 @@ class WafExtractor implements Iterator<String> {
 
 
 class GeoportalExtractor implements Iterator<String> {
+  private final def GPT_PAGE_REQUESTS = 0
+  private final def MAX_GPT_PAGE_REQUESTS = 2000 //TODO Should be an arg passed in; Update me as needed!
   private String endpointUrl
   private Map searchParams
   private Integer pageSize = 250
@@ -181,12 +182,12 @@ class GeoportalExtractor implements Iterator<String> {
   private Integer currentPageNum = 0
   private Integer currentIndex = 0
   private JsonSlurper jsonSlurper = new JsonSlurper()
-  private gptPageRequests = 0
-  private maxGptPageRequests = 2000 //TODO Should be an arg passed in; Update me as needed!
+  def parentId
 
-  GeoportalExtractor(String endpointUrl, Map searchParams = [:]) {
+  GeoportalExtractor(String endpointUrl, Map searchParams = [:], String parentId = null) {
     this.endpointUrl = endpointUrl
     this.searchParams = searchParams
+    this.parentId = parentId
     getNextPage()
   }
 
@@ -195,9 +196,9 @@ class GeoportalExtractor implements Iterator<String> {
     if (currentIndex < currentPage.size()) {
       return true
     } else {
-      gptPageRequests++
-      println "Number of gptPageRequests: ${gptPageRequests}"
-      if (gptPageRequests < maxGptPageRequests) {
+      GPT_PAGE_REQUESTS++
+      println "Number of gptPageRequests: ${GPT_PAGE_REQUESTS}"
+      if (GPT_PAGE_REQUESTS < MAX_GPT_PAGE_REQUESTS) {
         getNextPage()
         return currentPage.size() > 0
       } else {
@@ -225,6 +226,11 @@ class GeoportalExtractor implements Iterator<String> {
   }
 
   private buildUrl() {
+    if (parentId) {
+      searchParams = searchParams.collectEntries { k, v ->
+        [k, v.replaceAll('REPLACE_PARAMS', parentId)]
+      }
+    }
     def params = searchParams + [start: currentPageNum * pageSize, max: pageSize, f: 'json', orderBy: 'title']
     def queryString = params.collect({ k, v -> k + '=' + v }).join('&')
     def url = endpointUrl + '?' + queryString
@@ -237,33 +243,32 @@ class Loader {
   final def GRANULE_LIMIT = 500
   protected Iterator<String> metadataUrls
   protected Method httpMethod = Method.POST
-  def xmlSlurper, target, parentDir
+  def xmlParser = new XmlParser(false, false)
+  def xmlSlurper, target
   def successes = 0
   def failures = 0
   def collections = []
 
   Loader(Iterator<String> metadataUrls, String targetPath, String sourceName = "") {
     this.metadataUrls = metadataUrls
+    xmlSlurper = new XmlSlurper()
+    xmlSlurper.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
     if (sourceName) {
-      (parentDir = new File("$targetPath/$sourceName")).mkdirs()
+      (target = new File("$targetPath/$sourceName")).mkdirs()
     } else {
       target = new HTTPBuilder(targetPath)
     }
-    (xmlSlurper = new XmlSlurper()).setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
   }
 
-  void load(boolean requireBrowseImg, boolean isCollection = true, String parentIdentifier = null) {
-    def fileDirName = isCollection ? "collections" : "granules"
-    (parentDir = new File((File)parentDir, fileDirName)).mkdirs()
-    if (parentIdentifier) { // TODO: Add this on if GHRSST
-      def fragment = xmlSlurper.parseText("""<gmd:parentIdentifier>
-    <gco:CharacterString>gov.noaa.nodc:${parentIdentifier}</gco:CharacterString>
-  </gmd:parentIdentifier>""")
+  void load(boolean requireBrowseImg, boolean isCollection = true, String parentId = null) {
+    if (target in File) {
+      def fileDirName = isCollection ? "collections" : "granules"
+      (target = new File((File)target, fileDirName)).mkdirs()
     }
     metadataUrls.eachWithIndex { metadata, i ->
       if (i < GRANULE_LIMIT) {
         try {
-          writeToDestination(metadata, requireBrowseImg, isCollection)
+          writeToDestination(metadata, requireBrowseImg, isCollection, parentId)
         } catch (e) {
           println "Error downloading metadata #${i} from ${metadata}: ${e.message}"
           return // break out of current loop
@@ -272,24 +277,37 @@ class Loader {
     }
   }
 
-  private void writeToDestination(metadata, requireBrowseImg, isCollection) {
-    def metadataContent = new URL(metadata).text
+  private void writeToDestination(metadata, requireBrowseImg, isCollection, parentId) {
+    def metadataContent
+    if (parentId) { // Add parentId for GHRSST
+      metadataContent = xmlParser.parseText(new URL(metadata).text)
+      metadataContent.children().add(
+        xmlParser.parseText(
+          """<gmd:parentIdentifier>
+               <gco:CharacterString>gov.noaa.nodc:
+                 ${parentId}
+               </gco:CharacterString>
+             </gmd:parentIdentifier>"""))
+      metadataContent = XmlUtil.serialize(metadataContent)
+    } else {
+      metadataContent = new URL(metadata).text
+    }
     def metadataMap = xmlSlurper.parseText(metadataContent)
     def fileName = fileName(metadataMap)
     if (!requireBrowseImg || hasImage(metadataMap)) {
-      if (target) {
-        sendToApi(metadataContent, isCollection)
-      } else { // Target is file
+      if (target in File) {
         try {
-          new File(parentDir, "/$fileName") << metadataContent
+          new File(target, "/${fileName}.xml") << metadataContent
           if (isCollection) {collections.add(fileName.tokenize(':')[1])}
           successes++
         } catch (Exception ex) {
-          println "Failed to write to file, exception: $ex"
+          println "Failed to write to file $fileName, exception: $ex"
           failures++
         }
+      } else {
+        sendToApi(metadataContent, isCollection)
       }
-      println "${successes} of ${successes + failures} metadata records written"
+      println "${successes} of ${successes + failures}, $fileName completed"
     }
   }
 
@@ -316,8 +334,7 @@ class Loader {
   }
 
   private String fileName(metadataMap) {
-    def fileName = metadataMap.fileIdentifier.CharacterString
-    return "${fileName}.xml"
+    metadataMap.fileIdentifier.CharacterString
   }
 }
 
