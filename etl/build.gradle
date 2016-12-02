@@ -151,7 +151,7 @@ class WafExtractor implements Iterator<String> {
   private Map searchParams
   private Iterator wafIterator
 
-  WafExtractor(String endpointUrl, Map searchParams = [:]) {
+  WafExtractor(String endpointUrl, Map searchParams = [:], String parentId = null) {
     this.endpointUrl = endpointUrl
     this.searchParams = searchParams
 
