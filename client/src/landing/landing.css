@@ -36,6 +36,24 @@ h1, h2, h3, h4, h5 {
   }
 }
 
+.containerItemTitle {
+  text-align: left;
+  /*font-size: 14px;*/
+  font-weight:bold;
+  margin-left: 50px;
+
+&:hover   {
+  color: #dbdbdb;
+  border-radius: 5em;
+  }
+}
+
+.containerItemImage {
+&:hover   {
+   filter: brightness(50%);
+ }
+}
+
 .showcase {
   margin: 0 auto;
   width: 90%;
