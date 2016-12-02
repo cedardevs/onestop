@@ -42,20 +42,31 @@ class ResultLayout extends React.Component {
       return <div className="pure-u-1-24"></div>
     }
     else {
-      return <div className={"pure-u-1-24"}>
-        <button id="facetButton" className={`pure-button ${styles.facetButton}`} onClick={this.toggleFacetMenu}>
+      let buttonStyling
+      let buttonColumnStyling
+      if(this.collapseFacetMenu) {
+        buttonStyling = styles.facetButtonCollapsed
+        buttonColumnStyling = styles.buttonColumn
+      }
+      else {
+        buttonStyling = styles.facetButtonExpanded
+        buttonColumnStyling = null
+      }
+
+      return <div className={`pure-u-1-24 ${buttonColumnStyling}`}>
+        <span className={buttonStyling} onClick={this.toggleFacetMenu}>
           <i className={`${this.facetButtonImage()}`}></i>
-        </button>
+        </span>
       </div>
     }
   }
 
   facetButtonImage() {
     if(this.collapseFacetMenu) {
-      return "fa fa-arrow-right"
+      return "fa fa-angle-double-right"
     }
     else {
-      return "fa fa-arrow-left"
+      return "fa fa-angle-double-left"
     }
   }
 
