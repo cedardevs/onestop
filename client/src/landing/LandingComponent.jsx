@@ -1,14 +1,10 @@
 import React from 'react'
 import Slider from 'react-slick'
 import styles from './landing.css'
-import image1 from '../../img/tsunami01.jpg'
-import image2 from '../../img/tsunami02.jpg'
-import image3 from '../../img/tsunami03.jpg'
+import image1 from '../../img/ghrsst2.jpg'
 import image4 from '../../img/tsunami04.jpg'
-import dem1 from '../../img/dem1.jpg'
 import dem2 from '../../img/dem2.jpg'
 import ghrsst1 from '../../img/ghrsst1.jpg'
-import ghrsst2 from '../../img/ghrsst2.jpg'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -57,36 +53,28 @@ class LandingComponent extends React.Component {
     const featuredContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5000} }>
             <div>
-              <p onClick={()=>this.search('dem')} className={`${styles.containerItemTitle}`}> Dem </p>
-              <img onClick={()=>this.search('dem')} className={`${styles.containerItemImage}`} src={dem1} />
+              <p onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemTitle}`}>  Port Townsend DEM </p>
+              <img onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemImage}`} src={dem2} />
             </div>
             <div>
-              <p onClick={()=>this.search('dem')} className={`${styles.containerItemTitle}`}> Dem </p>
-              <img onClick={()=>this.search('dem')} className={`${styles.containerItemImage}`} src={dem2} />
+                <p onClick={()=>this.search('tsunami')} className={`${styles.containerItemTitle}`}> Tsunami  </p>
+                <img onClick={()=>this.search('tsunami')} className={`${styles.containerItemImage}`} src={image4} />
             </div>
             <div>
-              <p onClick={()=>this.search('ghrsst')} className={`${styles.containerItemTitle}`}> Ghrsst </p>
-              <img onClick={()=>this.search('ghrsst')} className={`${styles.containerItemImage}`} src={ghrsst1} />
-            </div>
-            <div>
-              <p onClick={()=>this.search('ghrsst')} className={`${styles.containerItemTitle}`}> Ghrsst </p>
-              <img onClick={()=>this.search('ghrsst')} className={`${styles.containerItemImage}`} src={ghrsst1} />
+              <p onClick={()=>this.search('GHRSST')} className={`${styles.containerItemTitle}`}> GHRSST </p>
+              <img onClick={()=>this.search('GHRSST')} className={`${styles.containerItemImage}`} src={ghrsst1} />
             </div>
         </Slider>
       </div>
     const trendingContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5100} }>
         	<div>
-              <p onClick={()=>this.search('tsunami')} className={`${styles.containerItemTitle}`}> Tsunami </p>
-              <img onClick={()=>this.search('tsunami')} className={`${styles.containerItemImage}`} src={image1} />
+              <p onClick={()=>this.search('GHRSST')} className={`${styles.containerItemTitle}`}> GHRSST </p>
+              <img onClick={()=>this.search('GHRSST')} className={`${styles.containerItemImage}`} src={image1} />
             </div>
             <div>
-              <p onClick={()=>this.search('tsunami')} className={`${styles.containerItemTitle}`}> Tsunami </p>
-              <img onClick={()=>this.search('tsunami')} className={`${styles.containerItemImage}`} src={image2} />
-            </div>
-            <div>
-              <p onClick={()=>this.search('tsunami')} className={`${styles.containerItemTitle}`}> Tsunami </p>
-              <img onClick={()=>this.search('tsunami')} className={`${styles.containerItemImage}`} src={image3} />
+                <p onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemTitle}`}>  Port Townsend DEM </p>
+                <img onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemImage}`} src={dem2} />
             </div>
             <div>
               <p onClick={()=>this.search('tsunami')} className={`${styles.containerItemTitle}`}> Tsunami  </p>
