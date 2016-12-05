@@ -1,5 +1,4 @@
 import React from 'react'
-import styles from './search.css'
 
 class TextSearchField extends React.Component {
 
