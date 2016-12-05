@@ -1,10 +1,10 @@
 import React from 'react'
 import Slider from 'react-slick'
 import styles from './landing.css'
-import image1 from '../../img/ghrsst2.jpg'
-import image4 from '../../img/tsunami04.jpg'
-import dem2 from '../../img/dem2.jpg'
+import tsunami from '../../img/tsunami.jpg'
+import dem from '../../img/dem.jpg'
 import ghrsst1 from '../../img/ghrsst1.jpg'
+import ghrsst2 from '../../img/ghrsst2.jpg'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -54,11 +54,11 @@ class LandingComponent extends React.Component {
       	<Slider { ...{ ...settings, autoplaySpeed: 5000} }>
             <div>
               <p onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemTitle}`}>  Port Townsend DEM </p>
-              <img onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemImage}`} src={dem2} />
+              <img onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemImage}`} src={dem} />
             </div>
             <div>
                 <p onClick={()=>this.search('tsunami')} className={`${styles.containerItemTitle}`}> Tsunami  </p>
-                <img onClick={()=>this.search('tsunami')} className={`${styles.containerItemImage}`} src={image4} />
+                <img onClick={()=>this.search('tsunami')} className={`${styles.containerItemImage}`} src={tsunami} />
             </div>
             <div>
               <p onClick={()=>this.search('GHRSST')} className={`${styles.containerItemTitle}`}> GHRSST </p>
@@ -70,15 +70,15 @@ class LandingComponent extends React.Component {
       	<Slider { ...{ ...settings, autoplaySpeed: 5100} }>
         	<div>
               <p onClick={()=>this.search('GHRSST')} className={`${styles.containerItemTitle}`}> GHRSST </p>
-              <img onClick={()=>this.search('GHRSST')} className={`${styles.containerItemImage}`} src={image1} />
+              <img onClick={()=>this.search('GHRSST')} className={`${styles.containerItemImage}`} src={ghrsst2} />
             </div>
             <div>
                 <p onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemTitle}`}>  Port Townsend DEM </p>
-                <img onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemImage}`} src={dem2} />
+                <img onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemImage}`} src={dem} />
             </div>
             <div>
               <p onClick={()=>this.search('tsunami')} className={`${styles.containerItemTitle}`}> Tsunami  </p>
-              <img onClick={()=>this.search('tsunami')} className={`${styles.containerItemImage}`} src={image4} />
+              <img onClick={()=>this.search('tsunami')} className={`${styles.containerItemImage}`} src={tsunami} />
             </div>
         </Slider>
       </div>
