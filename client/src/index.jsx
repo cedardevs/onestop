@@ -10,6 +10,7 @@ import LandingContainer from './landing/LandingContainer'
 import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
 import loadQuery from './query'
+import { fetchConfig } from './config/ConfigActions'
 import '../style/style'
 import './page.css'
 import store from './store'
@@ -17,6 +18,8 @@ import history from './history'
 
 // If loading page with query params, resubmit search
 loadQuery()
+
+store.dispatch(fetchConfig())
 
 const body =
     <Provider store={store}>

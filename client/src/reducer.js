@@ -1,5 +1,6 @@
 import Immutable from 'immutable'
 import { combineReducers } from 'redux-immutable'
+import config from './config/ConfigReducer'
 import search from './search/SearchReducer'
 import collections from './result/collections/CollectionReducer'
 import details from './detail/DetailReducer'
@@ -28,6 +29,7 @@ const routing = (state = initialState, action) => {
 }
 
 const reducer = combineReducers({
+  config,
   search,
   collections,
   details,

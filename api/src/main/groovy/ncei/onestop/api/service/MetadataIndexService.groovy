@@ -21,10 +21,10 @@ import java.util.regex.Pattern
 @Service
 class MetadataIndexService {
 
-  @Value('${elasticsearch.index.staging.name}')
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
   String STAGING_INDEX
 
-  @Value('${elasticsearch.index.search.name}')
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
   String SEARCH_INDEX
 
   @Value('${elasticsearch.index.staging.collectionType}')
