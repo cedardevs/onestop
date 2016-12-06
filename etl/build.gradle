@@ -334,7 +334,9 @@ class Loader {
   }
 
   private String fileName(metadataMap) {
-    metadataMap.fileIdentifier.CharacterString
+    def filename = metadataMap.fileIdentifier.CharacterString.toString()
+    filename = filename.replaceAll('/', '-')
+    return filename
   }
 }
 
