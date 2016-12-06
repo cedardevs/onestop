@@ -44,7 +44,7 @@ class LoadIntegrationTests extends Specification {
   @Value('${server.context-path}')
   private String contextPath
 
-  @Value('${elasticsearch.index.staging.name}')
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
   private String INDEX
 
   @Value('${elasticsearch.index.staging.collectionType}')

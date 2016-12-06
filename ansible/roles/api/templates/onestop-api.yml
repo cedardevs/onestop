@@ -6,3 +6,9 @@ elasticsearch:
   rw:
     user: "{{ rw_user }}"
     pass: "{{ rw_pass }}"
+  index:
+    prefix: "onestop-"
+
+logging:
+  level:
+    ncei.onestop.api: DEBUG

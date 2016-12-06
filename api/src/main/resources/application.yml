@@ -13,7 +13,7 @@ spring:
 
 logging:
   level:
-      ncei.onestop.api: DEBUG
+      ncei.onestop.api: INFO
       org.gradle: WARN
       org.apache.http: WARN
       org.apache.http.wire: WARN
@@ -25,6 +25,8 @@ logging:
       org.hibernate: WARN
 
 elasticsearch:
+  cluster:
+    name: elasticsearch
   host: localhost
   port: 9300
   index:
