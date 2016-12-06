@@ -5,6 +5,7 @@ import tsunami from '../../img/tsunami.jpg'
 import dem from '../../img/dem.jpg'
 import ghrsst1 from '../../img/ghrsst1.jpg'
 import ghrsst2 from '../../img/ghrsst2.jpg'
+import CollectionTile from '../result/collections/CollectionTileComponent.jsx'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -53,32 +54,32 @@ class LandingComponent extends React.Component {
     const featuredContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5000} }>
             <div>
-              <p onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemTitle}`}>  Port Townsend DEM </p>
-              <img onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemImage}`} src={dem} />
+                <CollectionTile height={200} width={400} margin="auto" title="Port Townsend DEM"
+                                onCardClick={()=>this.search('title:"Port Townsend"')} thumbnail={dem} />
             </div>
             <div>
-                <p onClick={()=>this.search('tsunami')} className={`${styles.containerItemTitle}`}> Tsunami  </p>
-                <img onClick={()=>this.search('tsunami')} className={`${styles.containerItemImage}`} src={tsunami} />
+                <CollectionTile height={200} width={400} margin="auto" title="Tsunami"
+                                onCardClick={()=>this.search('Tsunami')} thumbnail={tsunami} />
             </div>
             <div>
-              <p onClick={()=>this.search('GHRSST')} className={`${styles.containerItemTitle}`}> GHRSST </p>
-              <img onClick={()=>this.search('GHRSST')} className={`${styles.containerItemImage}`} src={ghrsst1} />
+                <CollectionTile height={200} width={400} margin="auto" title="GHRSST"
+                                onCardClick={()=>this.search('GHRSST')} thumbnail={ghrsst1} />
             </div>
         </Slider>
       </div>
     const trendingContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5100} }>
-        	<div>
-              <p onClick={()=>this.search('GHRSST')} className={`${styles.containerItemTitle}`}> GHRSST </p>
-              <img onClick={()=>this.search('GHRSST')} className={`${styles.containerItemImage}`} src={ghrsst2} />
+            <div>
+                <CollectionTile height={200} width={400} margin="auto" title="Tsunami-"
+                                onCardClick={()=>this.search('tsunami')} thumbnail={tsunami} />
             </div>
             <div>
-                <p onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemTitle}`}>  Port Townsend DEM </p>
-                <img onClick={()=>this.search('title:"Port Townsend"')} className={`${styles.containerItemImage}`} src={dem} />
+                <CollectionTile height={200} width={400} margin="auto" title="GHRSST"
+                                onCardClick={()=>this.search('ghrsst')} thumbnail={ghrsst2} />
             </div>
             <div>
-              <p onClick={()=>this.search('tsunami')} className={`${styles.containerItemTitle}`}> Tsunami  </p>
-              <img onClick={()=>this.search('tsunami')} className={`${styles.containerItemImage}`} src={tsunami} />
+                <CollectionTile height={200} width={400} margin="auto" title="Port Townsend DEM"
+                                onCardClick={()=>this.search('title:"Port Townsend"')} thumbnail={dem} />
             </div>
         </Slider>
       </div>
