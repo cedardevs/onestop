@@ -2,24 +2,28 @@
 
 .mainWindow {
   letter-spacing: 0em !important;
-  margin-bottom: $footer-height;
+  background-color: #000;
+  margin-bottom: 2em;
+  height: calc(100vh - 5em - $header-height - $footer-height*2);
 }
 
-.granuleHeader {
-  background-color: blue;
+.granuleInfo {
+  padding: 0 1em;
+  height: 100%;
+  overflow-y: auto;
 }
 
-.rightMap {
-  margin-left: 2em;
+.map {
+  height: 100%
 }
 
-.leftDescription {
+.description {
   display: inline-block;
   font-size: 1em;
   vertical-align: top;
 }
 
-.leftTitle {
+.title {
   font-size: 1.5em;
   margin-bottom: 0.5em;
 }

@@ -21,37 +21,37 @@ class GranuleList extends React.Component {
       rows.push(
         <tr key={key} onMouseOver={() => this.onMouseOver(key)} onMouseLeave={() => this.onMouseOver(key)}>
           <td>{value.title}</td>
-          <td>{value.modifiedDate}</td>
-          <td>{dataFormats}</td>
-          <td>{tags}</td>
+          {/*<td>{value.modifiedDate}</td>*/}
+          {/*<td>{dataFormats}</td>*/}
+          {/*<td>{tags}</td>*/}
         </tr>
       )
     })
 
     return <div className={`pure-g ${styles.mainWindow}`}>
-          <div className={`pure-u-1 ${styles.leftTitle}`}>
-            {this.props.selectedCollection.title}
+          <div className={`pure-u-1-2 ${styles.map}`}>
+            <MapContainer />
           </div>
-          <div className={`pure-u-1`}>
-            <div className={`pure-u-5-24 ${styles.leftDescription}`}>
-              {this.props.selectedCollection.description}
+          <div className={`pure-u-1-2`}>
+            <div className={`${styles.granuleInfo}`}>
+              <div className={`${styles.title}`}>
+                {this.props.selectedCollection.title}
+              </div>
+              <div className={`${styles.description}`}>
+                {this.props.selectedCollection.description}
+              </div>
+              <table className={`pure-table ${styles.table}`}>
+                <thead>
+                <tr>
+                  <th>Title</th>
+                  {/*<th>Date Modified</th>*/}
+                  {/*<th>Data Formats</th>*/}
+                  {/*<th>Tags</th>*/}
+                </tr>
+                </thead>
+                <tbody>{rows}</tbody>
+              </table>
             </div>
-            <div className={`pure-u-3-4 ${styles.rightMap}`}>
-              <MapContainer />
-            </div>
-          </div>
-          <div className={`pure-u-1`}>
-            <table className={`pure-table ${styles.table}`}>
-              <thead>
-              <tr>
-                <th>Title</th>
-                <th>Date Modified</th>
-                <th>Data Formats</th>
-                <th>Tags</th>
-              </tr>
-              </thead>
-              <tbody>{rows}</tbody>
-            </table>
           </div>
         </div>
   }
