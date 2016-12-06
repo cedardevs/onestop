@@ -14,14 +14,19 @@ const CollectionTile = (props) => {
     backgroundSize: 'cover',
     backgroundPosition: 'center center'
   }
+  var dimensionStyles = {
+    width: props.width || styles.tileContainer.width,
+    height: props.height || styles.tileContainer.height,
+    margin: props.margin || ""
+  }
 
   const handleClick = () => {
     props.onCardClick(props.recordId)
   }
 
-  return <div className={styles.tileContainer}>
+  return <div className={styles.tileContainer} style={dimensionStyles}>
     <div style={backgroundImageStyles}>
-      <div className={styles.tileContent} onClick={handleClick}>
+      <div className={styles.tileContent} style={dimensionStyles} onClick={handleClick}>
         <div className={styles.titleText}>{props.title}</div>
       </div>
     </div>
