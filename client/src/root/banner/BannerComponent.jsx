@@ -13,8 +13,8 @@ class Banner extends React.Component {
     }
 
     const configStyle = {
-      color: this.props.colors.text,
-      background: this.props.colors.background
+      color: this.props.colors && this.props.colors.text || 'white',
+      background: this.props.colors && this.props.colors.background || 'red'
     }
 
     return <div style={configStyle} className={styles.banner}>

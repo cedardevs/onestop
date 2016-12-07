@@ -1,17 +1,7 @@
 import Immutable from 'immutable'
 import {CLEAR_CONFIG, SET_CONFIG} from './ConfigActions'
 
-export const initialState = Immutable.fromJS({
-  apiHost: '',
-  banner: {
-    message: null,
-    colors: {
-      text: 'white',
-      background: 'red'
-    }
-  },
-  granuleDetails: false
-})
+export const initialState = Immutable.fromJS({})
 
 export const config = (state = initialState, action) => {
   switch (action.type) {
