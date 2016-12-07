@@ -111,9 +111,9 @@ class ETLService {
         .setTypes(COLLECTION_TYPE)
         .setSize(0)
         .setQuery(QueryBuilders.rangeQuery('stagedDate').gt(maxSearchStagedDate))
-        .addAggregation(AggregationBuilders.terms('collections').field('fileIdentifier').size(0))
+        .addAggregation(AggregationBuilders.terms('collections').field('_uid').size(0))
         .execute().actionGet()
-    def collectionIds = sr.aggregations.get('collections').getBuckets().stream().map( {i -> i.keyAsString} ).collect()
+    def collectionIds = sr.aggregations.get('collections').getBuckets().stream().map( {i -> i.keyAsString} ).map( {i -> i.substring(i.indexOf('#') + 1)}).collect()
 
     // If any collections returned, need to reindex ENTIRE collection:
     if (collectionIds) {
