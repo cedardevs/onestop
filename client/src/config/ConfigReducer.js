@@ -9,7 +9,8 @@ export const initialState = Immutable.fromJS({
       text: 'white',
       background: 'red'
     }
-  }
+  },
+  granuleDetails: false
 })
 
 export const config = (state = initialState, action) => {

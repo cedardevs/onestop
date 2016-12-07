@@ -11,7 +11,8 @@ const mapStateToProps = (reduxState, reactProps) => {
   const focusedItem = reduxState.get('collections').get('results').get(focusedId)
   return {
     id: focusedId,
-    item: focusedItem ? focusedItem.toJS() : null
+    item: focusedItem ? focusedItem.toJS() : null,
+    showGranulesLink: reduxState.getIn(['config', 'granuleDetails']) || false
   }
 }
 
