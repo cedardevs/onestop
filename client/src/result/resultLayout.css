@@ -40,10 +40,11 @@
 
 .buttonColumn {
   min-height: 2.5em;
-  max-height: 5em;
+  max-height: 4em;
   margin-right: 2em;
   background-color: $color-primary;
   border-top-right-radius: 25%;
+  border-bottom-right-radius: 25%;
 }
 
 .resultsContainer {
