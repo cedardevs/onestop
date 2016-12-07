@@ -11,33 +11,38 @@ class MapComponent extends React.Component {
 		super(props)
 		this.handleNewGeometry = props.handleNewGeometry
 		this.removeGeometry = props.removeGeometry
-		this.geoJSON = props.geoJSON
+		this.geoJsonSelection = props.geoJsonSelection
+		this.geoJsonFeatures = props.geoJsonFeatures
+    this.focusedFeatures = props.focusedFeatures
 		this.mapDefaults = this.mapDefaults.bind(this)
-		this.state = {}
+		this.state = {
+      _initialized: false
+    }
 	}
 
   componentDidMount() {
   	// Build the map defaults. When finished, use them to set the state then set up the map
   	Promise.resolve(this.mapDefaults())
   		.then(state => {
-				this.setState(state)
+				this.setState(state, ()=> {
+        	if (this.props.selection) { this.updateSelectionLayer(this.props) }
+          if (this.props.features) { this.updateResultsLayers(this.props) }
+        })
 				this.mapSetup()
-				})
+			})
   }
 
 	mapDefaults() {
+    let resultsLayers = new L.FeatureGroup()
 		let editableLayers = new L.FeatureGroup()
-		const drawStyle = {
-			color: "#ffe800",
-				weight: 3,
-				opacity: 0.65
-		}
-		return {
+		let mapSettings = {
+      _initialized: true,
 			style: {
 				color: '#00FF00',
-					weight: 3,
-					opacity: 0.65
+        weight: 3,
+				opacity: 0.65
 			},
+			resultsLayers,
       editableLayers,
       // Define map with defaults
       map: L.map(ReactDOM.findDOMNode(this), {
@@ -50,32 +55,48 @@ class MapComponent extends React.Component {
         attributionControl: false
       }),
       previousLayer: {},
-      // Define map's draw control with defaults
-      drawControl: new L.Control.Draw({
-        edit: {
-          featureGroup: editableLayers
-        },
-        remove: true,
-        position: 'topright',
-        draw: {
-          polyline: false,
-          marker: false,
-          polygon: false,
-          circle: false,
-          rectangle: {
-            shapeOptions: drawStyle
-          }
-        }
-      })
     }
+    return mapSettings
+  }
+
+  drawDefaults(layerGroup){
+		const drawStyle = { color: "#ffe800",
+      weight: 3,
+			opacity: 0.65
+		}
+    return new L.Control.Draw({
+      edit: {
+        featureGroup: layerGroup
+      },
+      remove: true,
+      position: 'topright',
+      draw: {
+        polyline: false,
+        marker: false,
+        polygon: false,
+        circle: false,
+        rectangle: {
+          shapeOptions: drawStyle
+        }
+      }
+    })
   }
 
   mapSetup() {
-  	let { map, drawControl, editableLayers } = this.state
+  	let { map, drawControl, editableLayers, resultsLayers } = this.state
 		this.loadDrawEventHandlers()
-		map.addControl(drawControl)
-		map.addLayer(editableLayers)
-		map.fitWorld()
+		if (this.props.selection) {
+      map.addControl(this.drawDefaults(editableLayers))
+      map.addLayer(editableLayers)
+    }
+		if (this.props.features) {
+      map.addLayer(resultsLayers)
+    }
+    if (!this.props.selection && this.props.features){
+  		map.fitBounds(resultsLayers.getBounds())
+    } else {
+  		map.fitWorld()
+    }
   }
 
   componentWillReceiveProps() {
@@ -83,30 +104,48 @@ class MapComponent extends React.Component {
 		map.invalidateSize() // Necessary to redraw map which isn't initially visible
   }
 
-  componentWillUpdate(nextProps){
-  	// Add/remove layer on map to reflect store
-  	this.updateDrawnLayer(nextProps)
+  componentWillUpdate(nextProps) {
+  	// Add/remove layers on map to reflect store
+    if (this.state._initialized) {
+      if (this.props.selection) { this.updateSelectionLayer(nextProps) }
+      if (this.props.features) { this.updateResultsLayers(nextProps) }
+    }
   }
 
-  updateDrawnLayer({geoJSON}) {
+  updateSelectionLayer({geoJsonSelection}) {
   	let { editableLayers, style } = this.state
-		if (!geoJSON) {
+		if (!geoJsonSelection) {
 			if (editableLayers) {
 				editableLayers.clearLayers()
 			}
-		} else {
+		}
+		else {
 			// Compare old vs. new layer
 			if (editableLayers) {
-				const prevGeoJSON = editableLayers.getLayers()[0] ?
+				const prevSelection = editableLayers.getLayers()[0] ?
 					editableLayers.getLayers()[0].toGeoJSON() : null
-					if (!prevGeoJSON || prevGeoJSON &&
-							!_.isEqual(geoJSON.geometry.coordinates, prevGeoJSON.geometry.coordinates)){
-						editableLayers.clearLayers()
-						let layer = L.GeoJSON.geometryToLayer(geoJSON, {style})
-						editableLayers.addLayer(layer)
-					}
+        if (!prevSelection || prevSelection &&
+            !_.isEqual(geoJsonSelection.geometry.coordinates, prevSelection.geometry.coordinates)) {
+          editableLayers.clearLayers()
+          let layer = L.GeoJSON.geometryToLayer(geoJsonSelection, {style})
+          editableLayers.addLayer(layer)
+				}
 			}
 		}
+  }
+
+  updateResultsLayers({geoJsonFeatures, focusedFeatures}) {
+		// Apply colors to focused feature
+    let { resultsLayers } = this.state
+    const selectedStyle = {color: '#f9c642'}
+    resultsLayers.clearLayers()
+    geoJsonFeatures.forEach(feature => {
+      resultsLayers.addLayer(L.geoJson(feature, {
+        style: (f) => focusedFeatures.indexOf(f.properties.id) >= 0 ? selectedStyle : {}
+      }))
+    })
+    this.geoJsonFeatures = geoJsonFeatures
+    this.focusedFeatures = focusedFeatures
   }
 
   componentWillUnmount() {
@@ -116,7 +155,7 @@ class MapComponent extends React.Component {
   }
 
   loadDrawEventHandlers(){
-    let { map, editableLayers, geoJSON } = this.state
+    let { map } = this.state
     map.on('draw:drawstart', (e) => {
       this.removeGeometry()
     })
@@ -139,5 +178,11 @@ class MapComponent extends React.Component {
     )
   }
 }
+
+MapComponent.defaultProps = {
+  selection: false,
+  features: true
+}
+
 
 export default MapComponent

@@ -1,0 +1,32 @@
+@import '../../../style/style.css';
+$cardHeight: 140px;
+$cardWidth: 300px;
+
+.tileContainer {
+    padding: 15px;
+    text-align: center;
+    width: $cardWidth;
+    height: $cardHeight;
+}
+
+.tileContent {
+    box-sizing: border-box;
+    width: $cardWidth;
+    height: $cardHeight;
+    border: 1px solid $color-gray;
+    padding: 1em;
+    background: linear-gradient(rgba(10,10,10,1), rgba(10,10,10,.5), rgba(10,10,10,.2), rgba(10,10,10,0));
+    color: white;
+    overflow: hidden;
+    box-shadow: 6px 8px 5px rgb(0,0,0,.7);
+&:hover {
+     border: 3px solid $color-gray;
+ }
+}
+
+.titleText {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}

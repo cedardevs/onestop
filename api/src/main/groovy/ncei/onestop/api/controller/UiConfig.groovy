@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component
 @ConfigurationProperties('ui')
 class UiConfig {
 
+  Boolean granuleDetails
   BannerConfig banner
 
   static class BannerConfig {

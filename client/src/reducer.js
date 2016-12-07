@@ -2,13 +2,14 @@ import Immutable from 'immutable'
 import { combineReducers } from 'redux-immutable'
 import config from './config/ConfigReducer'
 import search from './search/SearchReducer'
-import results from './result/ResultReducer'
+import collections from './result/collections/CollectionReducer'
 import details from './detail/DetailReducer'
 import facets from './search/facet/FacetReducer'
 import map from './search/map/MapReducer'
 import temporal from './search/temporal/TemporalReducer'
 import loading from './loading/LoadingReducer'
 import errors from './error/ErrorReducer'
+import granules from './result/granules/GranulesReducer'
 import { LOCATION_CHANGE } from 'react-router-redux'
 
 // Routing reducer
@@ -30,14 +31,15 @@ const routing = (state = initialState, action) => {
 const reducer = combineReducers({
   config,
   search,
-  results,
+  collections,
   details,
   routing,
   facets,
   temporal,
   map,
   loading,
-  errors
+  errors,
+  granules
 })
 
 export default reducer

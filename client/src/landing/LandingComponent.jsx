@@ -1,14 +1,11 @@
 import React from 'react'
 import Slider from 'react-slick'
 import styles from './landing.css'
-import image1 from '../../img/tsunami01.jpg'
-import image2 from '../../img/tsunami02.jpg'
-import image3 from '../../img/tsunami03.jpg'
-import image4 from '../../img/tsunami04.jpg'
-import dem1 from '../../img/dem1.jpg'
-import dem2 from '../../img/dem2.jpg'
+import tsunami from '../../img/tsunami.jpg'
+import dem from '../../img/dem.jpg'
 import ghrsst1 from '../../img/ghrsst1.jpg'
 import ghrsst2 from '../../img/ghrsst2.jpg'
+import CollectionTile from '../result/collections/CollectionTileComponent.jsx'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -56,18 +53,34 @@ class LandingComponent extends React.Component {
     // Hard-coded for display, TODO: dynamically pull from API
     const featuredContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5000} }>
-        	<div><img src={dem1} /></div>
-        	<div><img src={dem2} /></div>
-        	<div><img src={ghrsst1} /></div>
-        	<div><img src={ghrsst2} /></div>
+            <div>
+                <CollectionTile height={200} width={400} margin="auto" title="Port Townsend DEM"
+                                onCardClick={()=>this.search('title:"Port Townsend"')} thumbnail={dem} />
+            </div>
+            <div>
+                <CollectionTile height={200} width={400} margin="auto" title="Tsunami"
+                                onCardClick={()=>this.search('Tsunami')} thumbnail={tsunami} />
+            </div>
+            <div>
+                <CollectionTile height={200} width={400} margin="auto" title="GHRSST"
+                                onCardClick={()=>this.search('GHRSST')} thumbnail={ghrsst1} />
+            </div>
         </Slider>
       </div>
     const trendingContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5100} }>
-        	<div><img src={image1} /></div>
-        	<div><img src={image2} /></div>
-        	<div><img src={image3} /></div>
-        	<div><img src={image4} /></div>
+            <div>
+                <CollectionTile height={200} width={400} margin="auto" title="Tsunami-"
+                                onCardClick={()=>this.search('tsunami')} thumbnail={tsunami} />
+            </div>
+            <div>
+                <CollectionTile height={200} width={400} margin="auto" title="GHRSST"
+                                onCardClick={()=>this.search('ghrsst')} thumbnail={ghrsst2} />
+            </div>
+            <div>
+                <CollectionTile height={200} width={400} margin="auto" title="Port Townsend DEM"
+                                onCardClick={()=>this.search('title:"Port Townsend"')} thumbnail={dem} />
+            </div>
         </Slider>
       </div>
 

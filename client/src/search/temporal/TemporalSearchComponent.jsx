@@ -8,9 +8,6 @@ import ToggleDisplay from 'react-toggle-display'
 import YearMonthForm from './YearMonthForm'
 import _ from 'lodash'
 
-const currentYear = (new Date()).getFullYear()
-//TODO: Extend selection period beyond 100 years
-const earliestMonth = new Date(currentYear - 100, 0, 1, 0, 0)
 const currentMonth = new Date()
 
 class TemporalSearch extends React.Component {
@@ -158,8 +155,6 @@ class TemporalSearch extends React.Component {
               ref="daypicker"
               onDayClick={ this.handleDayClick }
               initialMonth={ this.state.initialMonth }
-              earliestMonth={ earliestMonth }
-              currentMonth={ currentMonth }
               selectedDays={ day => DateUtils.isDayInRange(day, this.state) }
               captionElement={
                 <YearMonthForm onChange={ initialMonth => this.setState({ initialMonth }) } />

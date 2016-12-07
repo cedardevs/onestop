@@ -10,7 +10,7 @@ module.exports = {
   entry: {
     app: './src/index.jsx',
     vendor: ['purecss', 'react', 'react-dom', 'react-router', 'redux', 'redux-thunk',
-      'react-tap-event-plugin', 'leaflet']
+      'leaflet']
   },
   module: {
     preLoaders: [{
@@ -21,7 +21,7 @@ module.exports = {
     loaders: [{
       test: /\.jsx?$/,
       exclude: /node_modules/,
-      loader: 'react-hot!babel'
+      loader: 'babel'
     }, {
       test: /\.css$/,
       include: /node_modules/,

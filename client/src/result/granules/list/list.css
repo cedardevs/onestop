@@ -1,0 +1,39 @@
+@import '../../../../style/style.css';
+
+.mainWindow {
+  letter-spacing: 0em !important;
+  background-color: #000;
+  margin-bottom: 2em;
+  height: calc(100vh - 5em - $header-height - $footer-height*2);
+}
+
+.granuleInfo {
+  padding: 0 1em;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.map {
+  height: 100%
+}
+
+.description {
+  display: inline-block;
+  font-size: 1em;
+  vertical-align: top;
+}
+
+.title {
+  font-size: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.table {
+  margin-top: 2em;
+  width: 100%;
+  tbody {
+    tr:hover {
+      background-color: #144CBD;
+    }
+  }
+}

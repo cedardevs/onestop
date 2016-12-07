@@ -12,6 +12,9 @@ dist/
 *.iws
 *.iml
 
+### General editor/IDE files
+.vscode/
+
 ### Node template
 # Logs
 logs

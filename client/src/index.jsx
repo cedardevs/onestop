@@ -1,9 +1,10 @@
 import 'babel-polyfill'
-import injectTapEventPlugin from 'react-tap-event-plugin'
 import React from 'react'
 import {render} from 'react-dom'
 import { Router, Route, IndexRoute } from 'react-router'
-import ResultsListContainer from './result/ResultsListContainer'
+import ResultLayout from './result/ResultLayout'
+import CollectionGridContainer from './result/collections/CollectionGridContainer'
+import GranuleListContainer from './result/granules/list/GranuleListContainer'
 import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
 import {Provider} from 'react-redux'
@@ -15,12 +16,6 @@ import './page.css'
 import store from './store'
 import history from './history'
 
-// Needed for onTouchTap
-// Can go away when react 1.0 release
-// Check this repo:
-// https://github.com/zilverline/react-tap-event-plugin
-injectTapEventPlugin()
-
 // If loading page with query params, resubmit search
 loadQuery()
 
@@ -31,7 +26,10 @@ const body =
       <Router history={history}>
         <Route path="/" name="Home" component={RootComponent}>
           <IndexRoute component={LandingContainer}/>
-          <Route name="Results" path="results" component={ResultsListContainer}/>
+          <Route name="Results" path="results" component={ResultLayout}>
+            <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
+            <Route name="Granules" path="granules" component={GranuleListContainer}/>
+          </Route>
           <Route name="Error" path="error" component={ErrorContainer}/>
         </Route>
       </Router>
