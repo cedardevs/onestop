@@ -1,3 +1,4 @@
+@import '../../../style/style.css';
 /* DayPicker styles */
 
  .calendarBox {
@@ -148,4 +149,28 @@
   /*background-color: $color-primary;*/
   font-size: 100%;
   /*margin-right: 2em;*/
+}
+
+.timeButton {
+  max-height: 2.2em;
+  position: relative;
+  color: white;
+  background-color: $color-primary;
+  text-shadow: 0 0 5px black;
+  margin-right: .5em;
+  margin-left: 1em;
+}
+/* fix for large, unclickable area on button */
+.timeButton:before{
+  position:absolute;
+  content:'';
+  top:-1px;
+  right:-1px;
+  left:-1px;
+  bottom:-1px;
+}
+
+.timeIcon {
+  text-align: center;
+  line-height: 64% !important;
 }

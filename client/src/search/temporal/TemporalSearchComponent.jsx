@@ -20,6 +20,7 @@ class TemporalSearch extends React.Component {
     this.handleInputChange = this.handleInputChange.bind(this)
     this.showCurrentDate = this.showCurrentDate.bind(this)
     this.formatAndUpdate = this.formatAndUpdate.bind(this)
+    this.toggleCalendar = this.toggleCalendar.bind(this)
     this.handleClick = this.handleClick.bind(this)
     this.render = this.render.bind(this)
     this.state = this.initialState()
@@ -132,22 +133,19 @@ class TemporalSearch extends React.Component {
     this.refs.daypicker.showMonth(currentMonth)
   }
 
+  toggleCalendar() {
+    this.state.showCalendar = !this.state.showCalendar
+    this.forceUpdate()
+  }
+
   render() {
     let inputs = ["from", "to"]
     return (
       <div>
         {inputs.map( idField => {
-          return <div key={idField} className={ styles.dateInput }>
-            <input
-              className={ styles.input }
-              type="text"
-              id={ idField }
-              value={ this.state[`${idField}Temp`] }
-              placeholder='MM/DD/YYYY'
-              onChange={ this.handleInputChange }
-              onFocus={ () => this.setState({showCalendar: true}) }
-            />
-          </div>
+          return <button id={idField} className={`pure-button ${styles.timeButton}`} onClick={this.toggleCalendar}>
+            <i className={`${styles.timeIcon} fa fa-clock-o fa-2x`}></i>
+          </button>
         })}
         <ToggleDisplay show={this.state.showCalendar}>
           <div className={styles.calendarBox}>
