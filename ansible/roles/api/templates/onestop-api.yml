@@ -12,3 +12,8 @@ elasticsearch:
 logging:
   level:
     ncei.onestop.api: DEBUG
+
+ui:
+  granuleDetails: true
+  banner:
+    message: THIS IS A BETA RELEASE - IT IS NOT RUNNING ON NCEI HOSTS NOR DOES IT REPRESENT THE FULL EXTENT OF NCEI'S DATA
