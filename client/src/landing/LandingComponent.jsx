@@ -70,7 +70,7 @@ class LandingComponent extends React.Component {
     const trendingContainer = <div className='container'>
       	<Slider { ...{ ...settings, autoplaySpeed: 5100} }>
             <div>
-                <CollectionTile height={200} width={400} margin="auto" title="Tsunami-"
+                <CollectionTile height={200} width={400} margin="auto" title="Tsunami"
                                 onCardClick={()=>this.search('tsunami')} thumbnail={tsunami} />
             </div>
             <div>
