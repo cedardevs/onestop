@@ -266,7 +266,7 @@ class Loader {
       (target = new File((File)target, fileDirName)).mkdirs()
     }
     metadataUrls.eachWithIndex { metadata, i ->
-      if (i < GRANULE_LIMIT) {
+      if (!isCollection ? i < GRANULE_LIMIT : true) {
         try {
           writeToDestination(metadata, requireBrowseImg, isCollection, parentId)
         } catch (e) {
