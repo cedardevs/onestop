@@ -27,7 +27,7 @@ class ResultLayout extends React.Component {
   }
 
   renderFacetMenu() {
-    if(this.location.includes("granules") || this.collapseFacetMenu) {
+    if(this.location.includes("files") || this.collapseFacetMenu) {
       return <div display="none"></div>
     }
     else {
@@ -38,7 +38,7 @@ class ResultLayout extends React.Component {
   }
 
   renderFacetButton() {
-    if(this.location.includes("granules")) {
+    if(this.location.includes("files")) {
       return <div className="pure-u-1-24"></div>
     }
     else {
@@ -71,7 +71,7 @@ class ResultLayout extends React.Component {
   }
 
   renderResultsContainer() {
-    if(this.location.includes("granules") || this.collapseFacetMenu) {
+    if(this.location.includes("files") || this.collapseFacetMenu) {
       return "pure-u-22-24"
     }
     else {
