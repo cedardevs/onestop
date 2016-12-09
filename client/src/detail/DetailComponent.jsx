@@ -40,8 +40,8 @@ class Detail extends React.Component {
               {this.renderLinks('Data Access', this.getLinksByType('download'), this.renderLink)}
             </div>
             <div>
-              {this.renderLinks('Themes', this.getKeywordsByType('theme'), this.renderKeyword)}
-              {this.renderLinks('Places', this.getKeywordsByType('place'), this.renderKeyword)}
+              {this.renderLinks('Themes', this.getKeywordsByType('gcmdScience'), this.renderKeyword)}
+              {this.renderLinks('Places', this.getKeywordsByType('gcmdLocations'), this.renderKeyword)}
             </div>
           </div>
         </div>
@@ -88,15 +88,10 @@ class Detail extends React.Component {
         <h3 style={{textAlign: 'center'}}>No Image Available</h3>
   }
 
-  getKeywords() {
-    return this.props && this.props.item && this.props.item.keywords || []
-  }
-
   getKeywordsByType(type) {
-    return this.getKeywords()
-        .filter((k) => k.keywordType === type) // filter by type
-        .filter((k) => k.keywordText) // filter out empties
-        .map((k) => k.keywordText.split('>')) // split GCMD keywords apart
+    const keywords = this.props.item && this.props.item[type] || []
+    return keywords
+        .map((k) => k.split('>')) // split GCMD keywords apart
         .reduce((list, keys) => list.concat(keys), []) // flatten
         .map((k) => k.toLowerCase().trim()) // you can figure this one out
         .filter((k, i, a) => a.indexOf(k) === i) // dedupe
