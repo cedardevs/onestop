@@ -153,17 +153,6 @@ input {
   display: inline-block;
 }
 
-.mapContent {
-  position: absolute;
-  z-index: 1;
-  top: 100%;
-  left: 50%;
-  margin-top: 2em;
-  margin-left: -45em;
-  box-shadow: 14px 14px 5px rgb(0,0,0,.7);
-  border: 2px outset $color-primary;
-}
-
 .clearButton {
   margin-left: -1.26em;
   height: 1em;
@@ -214,6 +203,15 @@ input {
 }
 
 .mapContainer {
+  position: fixed;
+  z-index: 1;
+  top: 50%;
+  left: 50%;
+  margin: 2em auto 0;
+  margin-top: -400px;
+  margin-left: -300px;
+  box-shadow: 14px 14px 5px rgb(0,0,0,.7);
+  border: 2px outset $color-primary;
   height: 400px;
   width: 600px;
 }
