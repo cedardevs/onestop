@@ -46,7 +46,7 @@ def sources = [
     [
         name             : 'DEM',
         class            : WafExtractor,
-        collectionsUrl   : 'https://ngdc.noaa.gov/metadata/published/NOAA/OneStop/DEM/iso/xml',
+        collectionsUrl   : 'https://www.ngdc.noaa.gov/metadata/published/NOAA/NESDIS/NGDC/MGG/DEM/iso/xml/',
         collectionsParams: [:],
         requireBrowseImg : false,
         granules         : false
