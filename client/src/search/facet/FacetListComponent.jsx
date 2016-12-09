@@ -12,6 +12,15 @@ class FacetList extends React.Component {
     this.selectedFacets = props.selectedFacets
     this.modifySelectedFacets = props.modifySelectedFacets
     this.submit = props.submit
+    this.state = this.getDefaultState()
+  }
+
+  getDefaultState() {
+    return {
+      terms : {
+        "science": "Data Theme"
+      }
+    }
   }
 
   componentWillUpdate(nextProps) {
@@ -47,7 +56,8 @@ class FacetList extends React.Component {
     _.forOwn(this.facetMap, (terms,category) => {
       if (!_.isEmpty(terms)) { // Don't load categories that have no results
         facets.push(
-          <Panel header={`${self.toTitleCase(category)}`} key={`${category}`}>
+          <Panel header={`${this.state.terms[category.toLowerCase()] ||
+            self.toTitleCase(category)}`} key={`${category}`}>
             {Object.keys(terms).map( term => {
               let input = {
                 className: styles.checkFacet,

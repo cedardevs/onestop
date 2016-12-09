@@ -128,7 +128,7 @@ class Detail extends React.Component {
   renderGranulesLink() {
     if (this.props.showGranulesLink) {
       return <a onClick={() => this.props.showGranules(this.props.id)} className={`pure-button pure-button-primary`}>
-        Show Matching Granules
+        Show Matching Files
       </a>
     }
   }

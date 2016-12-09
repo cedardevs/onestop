@@ -28,7 +28,7 @@ const body =
           <IndexRoute component={LandingContainer}/>
           <Route name="Results" path="results" component={ResultLayout}>
             <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
-            <Route name="Granules" path="granules" component={GranuleListContainer}/>
+            <Route name="Files" path="files" component={GranuleListContainer}/>
           </Route>
           <Route name="Error" path="error" component={ErrorContainer}/>
         </Route>
