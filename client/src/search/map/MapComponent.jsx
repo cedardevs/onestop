@@ -4,7 +4,6 @@ import L from 'leaflet'
 import 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
-import styles from './map.css'
 
 class MapComponent extends React.Component {
 	constructor(props) {
@@ -14,6 +13,7 @@ class MapComponent extends React.Component {
 		this.geoJsonSelection = props.geoJsonSelection
 		this.geoJsonFeatures = props.geoJsonFeatures
     this.focusedFeatures = props.focusedFeatures
+    this.style = props.style
 		this.mapDefaults = this.mapDefaults.bind(this)
 		this.state = {
       _initialized: false
@@ -174,7 +174,7 @@ class MapComponent extends React.Component {
 
   render() {
     return (
-      <div className={styles.mapContainer}></div>
+      <div className={this.style}></div>
     )
   }
 }

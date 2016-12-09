@@ -60,17 +60,16 @@ class SearchFieldsComponent extends React.Component {
         <i className={`${styles.globeIcon} fa fa-globe fa-2x`}></i>
       </button>
       <ToggleDisplay show={this.state.showMap}>
-        <div className={styles.mapContainer}>
-          <span className={styles.mapContent}>
-            {/* 'updated' passed to trigger update but is unused*/}
-            <MapContainer
-              ref='mapComponent'
-              updated={this.state.showMap}
-              selection={true}
-              features={false}
-            />
-          </span>
-        </div>
+        <span className={styles.mapContent}>
+          {/* 'updated' passed to trigger update but is unused*/}
+          <MapContainer
+            ref='mapComponent'
+            updated={this.state.showMap}
+            selection={true}
+            features={false}
+            style={styles.mapContainer}
+          />
+        </span>
       </ToggleDisplay>
       <button className={`${styles.landingButton}`} onClick={this.submit}>
         <i className={'fa fa-search fa-lg'}></i>

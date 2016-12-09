@@ -213,6 +213,11 @@ input {
     bottom:-1px;
 }
 
+.mapContainer {
+  height: 400px;
+  width: 600px;
+}
+
 .globeIcon {
     text-align: center;
     line-height: 64% !important;
