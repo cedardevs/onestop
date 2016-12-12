@@ -1,10 +1,11 @@
 import Immutable from 'immutable'
-import {SEARCH, SEARCH_COMPLETE} from '../../search/SearchActions'
+import {SEARCH, SEARCH_COMPLETE, COUNT_HITS} from '../../search/SearchActions'
 import { TOGGLE_SELECTION, CLEAR_SELECTIONS } from './CollectionsActions'
 
 export const initialState = Immutable.Map({
   results: Immutable.Map(),
-  selectedIds: Immutable.Set()
+  selectedIds: Immutable.Set(),
+  totalHits: 0
 })
 
 export const collections = (state = initialState, action) => {
@@ -24,6 +25,9 @@ export const collections = (state = initialState, action) => {
         results = results.set(key, Immutable.Map(value))
       })
       return state.set('results', results)
+
+    case COUNT_HITS:
+      return state.set('totalHits', action.totalHits)
 
     default:
       return state

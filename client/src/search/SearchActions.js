@@ -9,6 +9,7 @@ export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
 export const UPDATE_QUERY = 'update_query'
 export const CLEAR_SEARCH = 'clear_search'
+export const COUNT_HITS = 'count_hits'
 
 export const updateQuery = (searchText) => {
   return {
@@ -33,6 +34,13 @@ export const completeSearch = (items) => {
 export const clearSearch = () => {
   return {
     type: CLEAR_SEARCH
+  }
+}
+
+export const countHits = (totalHits) => {
+  return {
+    type: COUNT_HITS,
+    totalHits
   }
 }
 
@@ -79,6 +87,7 @@ export const triggerSearch = (testing) => {
         .then(response => response.json())
         .then(json => {
           dispatch(facetsReceived(json.meta))
+          dispatch(countHits(json.meta.total))
           dispatch(completeSearch(assignResourcesToMap(json.data)))
           dispatch(hideLoading())
           dispatch(push('results?' + buildQueryString(searchBody)))
