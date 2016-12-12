@@ -94,12 +94,6 @@ input {
   z-index: 999;
 }
 
-.mapContainer,
-.temporalContainer {
-  position: relative;
-  display: inline-block;
-}
-
 @media screen and (max-width:725px) {
   .oneStopText {
     display: none;
@@ -114,22 +108,22 @@ input {
   display: inline-block;
 }
 
-/*temporal and map*/
-.temporalContent {
-  /*position: absolute;*/
-  /*z-index: 1;*/
+.temporalContainer {
+  position: relative;
+  display: inline-block;
 }
 
-
-.mapContent {
-  position: absolute;
+.mapContainer {
+  position: fixed;
   z-index: 1;
-  top: 100%;
   left: 50%;
-  margin-top: 2em;
-  margin-left: -45em;
+  margin-top: 5%;
+  margin-left: -40%;
   box-shadow: 14px 14px 5px rgb(0,0,0,.7);
   border: 2px outset $color-primary;
+  height: 400px;
+  width: 80%;
+  max-width: 1000px;
 }
 
 .clearButton {
@@ -162,6 +156,7 @@ input {
   outline: 0;
 }
 
+.timeButton,
 .mapButton {
   max-height: 2.2em;
   position: relative;
@@ -172,21 +167,18 @@ input {
   margin-left: .5em;
 }
 /* fix for large, unclickable area on button */
+.timeButton:before,
 .mapButton:before{
-    position:absolute;
-    content:'';
-    top:-1px;
-    right:-1px;
-    left:-1px;
-    bottom:-1px;
+  position:absolute;
+  content:'';
+  top:-1px;
+  right:-1px;
+  left:-1px;
+  bottom:-1px;
 }
 
-.globeIcon {
-    text-align: center;
-    line-height: 64% !important;
-}
-
-.timeIcon {
+.timeIcon,
+.mapIcon {
   text-align: center;
   line-height: 64% !important;
 }
