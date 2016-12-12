@@ -82,7 +82,6 @@ input {
 .landingComponents {
   color: black;
   filter: alpha(opacity=30); /* For IE8 and earlier */
-  /*position: relative;*/
   z-index: 10;
 }
 

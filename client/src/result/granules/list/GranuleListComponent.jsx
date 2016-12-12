@@ -30,7 +30,7 @@ class GranuleList extends React.Component {
 
     return <div className={`pure-g ${styles.mainWindow}`}>
           <div className={`pure-u-1-2 ${styles.map}`}>
-            <MapContainer />
+            <MapContainer style={styles.mapContainer}/>
           </div>
           <div className={`pure-u-1-2`}>
             <div className={`${styles.granuleInfo}`}>

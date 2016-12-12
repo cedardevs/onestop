@@ -53,7 +53,7 @@ describe('The granule actions', function () {
         {type: granuleActions.FETCHING_GRANULES},
         {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data},
         {type: LOADING_HIDE},
-        {payload: {args: ["results/granules"], method: "push"}, type: "@@router/CALL_HISTORY_METHOD"}
+        {payload: {args: ["results/files"], method: "push"}, type: "@@router/CALL_HISTORY_METHOD"}
       ])
     })
   })
@@ -85,7 +85,7 @@ describe('The granule actions', function () {
         {type: granuleActions.FETCHING_GRANULES},
         {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data},
         {type: LOADING_HIDE},
-        {payload: {args: ["results/granules"], method: "push"}, type: "@@router/CALL_HISTORY_METHOD"}
+        {payload: {args: ["results/files"], method: "push"}, type: "@@router/CALL_HISTORY_METHOD"}
       ])
     })
   })

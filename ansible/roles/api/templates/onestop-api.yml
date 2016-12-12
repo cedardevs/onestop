@@ -16,4 +16,4 @@ logging:
 ui:
   granuleDetails: true
   banner:
-    message: THIS IS A BETA RELEASE - IT IS NOT RUNNING ON NCEI HOSTS NOR DOES IT REPRESENT THE FULL EXTENT OF NCEI'S DATA
+    message: THIS IS A BETA RELEASE - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and is only a partial implementation of its intended funtionality.
