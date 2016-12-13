@@ -11,7 +11,7 @@ class Detail extends React.Component {
   }
 
   render() {
-    if (!this.props.id) {
+    if (!this.props.id || !this.props.item) {
       return <div style={{display: 'none'}}></div>
     }
 

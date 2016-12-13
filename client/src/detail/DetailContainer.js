@@ -20,6 +20,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     dismiss: () => dispatch(setFocus(null)),
     textSearch: (text) => {
+      dispatch(setFocus(null))
       dispatch(clearFacets())
       dispatch(clearSearch())
       dispatch(updateQuery(text))
