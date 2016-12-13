@@ -34,16 +34,17 @@ describe('The search action', () => {
     const testState = initState.mergeDeep({search: testSearchState})
 
     const expectedItems = new Map()
-    let expectedFacets
+    let expectedMetadata
 
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
-    expectedFacets = {"facets":{"science":[{"term":"land","count":2}]}}
+    expectedMetadata = {"facets":{"science":[{"term":"land","count":2}]}, "total":2, "took":100}
 
     const expectedActions = [
       {type: LOADING_SHOW},
       {type: module.SEARCH},
-      {type: FACETS_RECEIVED, metadata: expectedFacets},
+      {type: FACETS_RECEIVED, metadata: expectedMetadata},
+      {type: module.COUNT_HITS, totalHits: 2},
       {type: module.SEARCH_COMPLETE, items: expectedItems},
       {type: LOADING_HIDE},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
@@ -73,13 +74,14 @@ describe('The search action', () => {
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
 
-    let expectedFacets
-    expectedFacets = {facets: {science: [{term: "land", count: 2}]}}
+    let expectedMetadata
+    expectedMetadata = {"facets":{"science":[{"term":"land","count":2}]}, "total":2, "took":100}
 
     const expectedActions = [
       {type: LOADING_SHOW},
       {type: module.SEARCH},
-      {type: FACETS_RECEIVED, metadata:expectedFacets},
+      {type: FACETS_RECEIVED, metadata: expectedMetadata},
+      {type: module.COUNT_HITS, totalHits: 2},
       {type: module.SEARCH_COMPLETE, items: expectedItems},
       {type: LOADING_HIDE},
       {type: '@@router/CALL_HISTORY_METHOD', payload: {
