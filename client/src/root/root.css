@@ -204,16 +204,15 @@ input {
 
 .mapContainer {
   position: fixed;
-  z-index: 1;
-  top: 50%;
+  z-index: 2;
   left: 50%;
-  margin: 2em auto 0;
-  margin-top: -400px;
-  margin-left: -300px;
+  margin-top: 5%;
+  margin-left: -40%;
   box-shadow: 14px 14px 5px rgb(0,0,0,.7);
   border: 2px outset $color-primary;
   height: 400px;
-  width: 600px;
+  width: 80%;
+  max-width: 1000px;
 }
 
 .globeIcon {
