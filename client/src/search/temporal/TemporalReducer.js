@@ -3,8 +3,8 @@ import { DateRange } from './TemporalActions'
 import { CLEAR_SEARCH } from '../SearchActions'
 
 export const initialState = Immutable.fromJS({
-  startDateTime: '',
-  endDateTime: ''
+  startDateTime: null,
+  endDateTime: null
 })
 
 const temporal = (state = initialState, action) => {

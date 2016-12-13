@@ -59,17 +59,13 @@ class SearchFieldsComponent extends React.Component {
           </div>
           <button className={`${styles.clearButton}`} onClick={this.clearSearch}>x</button>
           <button id="timeButton" className={`pure-button ${styles.timeButton}`} onClick={this.toggleCalendar}>
-            <i className={`${styles.timeIcon} fa fa-clock-o fa-2x`}></i>
+            <i className={`${styles.icon} fa fa-clock-o fa-2x`}></i>
           </button>
           <ToggleDisplay show={this.state.showCalendar}>
-            <div className={styles.temporalContainer}>
-              <span className={styles.temporalContent}>
-                <TemporalContainer />
-              </span>
-            </div>
+                <TemporalContainer ref='temporalComponent' />
           </ToggleDisplay>
           <button id="mapButton" className={`pure-button ${styles.mapButton}`} onClick={this.toggleMap}>
-            <i className={`${styles.mapIcon} fa fa-globe fa-2x`}></i>
+            <i className={`${styles.icon} fa fa-globe fa-2x`}></i>
           </button>
           <ToggleDisplay show={this.state.showMap}>
             {/* 'updated' passed to trigger update but is unused*/}
@@ -81,8 +77,8 @@ class SearchFieldsComponent extends React.Component {
                 style={styles.mapContainer}
             />
           </ToggleDisplay>
-          <button className={`${styles.landingButton}`} onClick={this.submit}>
-            <i className={'fa fa-search fa-lg'}></i>
+          <button className={`pure-button ${styles.searchButton}`} onClick={this.submit}>
+            <i className={`${styles.icon} fa fa-search fa-2x`}></i>
           </button>
         </div>
     )

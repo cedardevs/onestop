@@ -27,6 +27,8 @@ $color-base: $color-gray;
 $text-max-width:    660px;
 $site-max-width:    1040px;
 $color-medium-blue:     #0a4595;
+$color-green: #2e8540;
+$color-green-light: #4aa564;
 
 /* Page layout */
 $banner-height: 1.5em;

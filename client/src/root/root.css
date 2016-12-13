@@ -99,6 +99,12 @@ input {
   }
 }
 
+/*@media screen and (max-width:455px) {
+  .orgBox {
+    display: none;
+  }
+}*/
+
 /*search container*/
 .searchContainer {
   color: black;
@@ -130,23 +136,27 @@ input {
   text-shadow: none;
   background-color: white;
 }
+
 .clearButton:hover {
   color: #5a5a5a;
 }
+
 .clearButton:focus {
   outline: 0;
 }
 
 /*search button*/
-.landingButton {
+.searchButton {
   color: white;
-  font-size: 1.3em;
+  max-height: 2.2em;
+  position: relative;
   border: none;
   text-shadow: 0 0 5px black;
-  background-color: rgb(0,0,0,0);
-  margin-right: .5em;
+  background-color: $color-green-light;
+  margin-left: .5em;
 }
-.landingButton:focus {
+
+.searchButton:focus {
   outline: 0;
 }
 
@@ -157,12 +167,13 @@ input {
   color: white;
   background-color: $color-primary;
   text-shadow: 0 0 5px black;
-  margin-right: .5em;
   margin-left: .5em;
 }
+
 /* fix for large, unclickable area on button */
+.searchButton:before,
 .timeButton:before,
-.mapButton:before{
+.mapButton:before {
   position:absolute;
   content:'';
   top:-1px;
@@ -171,8 +182,7 @@ input {
   bottom:-1px;
 }
 
-.timeIcon,
-.mapIcon {
+.icon {
   text-align: center;
   line-height: 64% !important;
 }
