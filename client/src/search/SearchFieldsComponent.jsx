@@ -62,7 +62,7 @@ class SearchFieldsComponent extends React.Component {
             <i className={`${styles.icon} fa fa-clock-o fa-2x`}></i>
           </button>
           <ToggleDisplay show={this.state.showCalendar}>
-                <TemporalContainer ref='temporalComponent' />
+                <TemporalContainer ref='temporalComponent' toggleSelf={this.toggleCalendar} />
           </ToggleDisplay>
           <button id="mapButton" className={`pure-button ${styles.mapButton}`} onClick={this.toggleMap}>
             <i className={`${styles.icon} fa fa-globe fa-2x`}></i>

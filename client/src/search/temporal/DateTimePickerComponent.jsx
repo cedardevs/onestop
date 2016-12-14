@@ -13,35 +13,48 @@ now.locale('en-gb').utcOffset(0)
 
 class DateTimePicker extends React.Component {
 
+  constructor(props) {
+    super(props)
+    this.handleReset = this.handleReset.bind(this)
+  }
+
+  handleReset(e) {
+    e.preventDefault()
+    this.props.onChange(null)
+  }
+
   render() {
     const props = this.props;
     const calendar = (
         <Calendar
             locale={enUS}
-            defaultValue={now}
             timePicker={<TimePickerPanel />}
             disabledDate={props.disabledDate}
+            showDateInput={false}
         />)
 
     return (
-        <DatePicker
-            animation="slide-up"
-            disabled={false}
-            calendar={calendar}
-            value={props.value}
-            onChange={props.onChange}
-        >
-          { value => {
-            return <span>
-              <input
-                  type="text"
-                  placeholder={format}
-                  value={value && moment(value).format(format) || ''}
-                  readOnly
-              />
-            </span>
-          }}
-        </DatePicker>
+        <div className={props.style}>
+          <DatePicker
+              animation="slide-up"
+              disabled={false}
+              calendar={calendar}
+              value={props.value}
+              onChange={props.onChange}
+          >
+            { value => {
+              return (
+                  <input
+                      className="pure-input-1-2"
+                      placeholder="YYYY-MM-DD"
+                      value={value && moment(value).format(format) || ''}
+                      readOnly
+                  />
+              )
+            }}
+          </DatePicker>
+          <button id={props.id} className={`pure-button`} onClick={this.handleReset}>Clear</button>
+      </div>
     )
   }
 
