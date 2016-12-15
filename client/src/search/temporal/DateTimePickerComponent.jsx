@@ -9,8 +9,6 @@ import 'rc-time-picker/assets/index.css'
 import styles from './temporal.css'
 
 const format = 'YYYY-MM-DD HH:mm:ss'
-const now = moment()
-now.locale('en-gb').utcOffset(0)
 
 class DateTimePicker extends React.Component {
 
@@ -38,7 +36,14 @@ class DateTimePicker extends React.Component {
     const calendar = (
         <Calendar
             locale={enUS}
-            timePicker={<TimePickerPanel className={styles.pickerRow} />}
+            defaultValue={moment().utc().hour(0).minute(0).second(0)}
+            timePicker={
+              <TimePickerPanel
+                className={styles.timePicker}
+                showHour={true}
+                showMinute={true}
+                showSecond={true}
+              />}
             disabledDate={props.disabledDate}
             showDateInput={false}
         />)
@@ -64,7 +69,7 @@ class DateTimePicker extends React.Component {
             }}
           </DatePicker>
           <button id={props.id} className={`pure-button ${styles.clearButton}`} onClick={this.handleReset}>
-            <i className={`${styles.icon} fa fa-undo fa-fw fa-lg`}></i></button>
+            <i className="fa fa-undo fa-fw fa-lg"></i></button>
       </div>
     )
   }

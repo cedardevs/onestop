@@ -30,10 +30,13 @@
   font-weight: bold;
 }
 
+.timePicker {
+  color: black;
+}
+
 .pickerRow {
   margin-bottom: 5%;
   display: inline;
-  color: black;
 }
 
 .inputField {
