@@ -77,14 +77,14 @@ class TemporalSearch extends React.Component {
             <div className={`pure-u-1 ${styles.pickerLabel}`}>Start Date:</div>
             <div className={`pure-u-1 ${styles.pickerRow}`}>
               <DateTimePicker id="startValue"
-                              value={this.startValue}
+                              value={this.state.startValue}
                               onChange={this.onChange.bind(this, 'startValue')}
                               disabledDate={this.disabledStartDate}/>
             </div>
             <div className={`pure-u-1 ${styles.pickerLabel}`}>End Date:</div>
             <div className={`pure-u-1 ${styles.pickerRow}`}>
               <DateTimePicker id="endValue"
-                              value={this.endValue}
+                              value={this.state.endValue}
                               onChange={this.onChange.bind(this, 'endValue')}
                               disabledDate={this.disabledEndDate}/>
             </div>
