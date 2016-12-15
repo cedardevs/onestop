@@ -1,26 +1,73 @@
 @import '../../../style/style.css';
 
 .temporalContainer {
-    position: fixed;
-    z-index: 2;
-    margin-top: 1%;
-    margin-left: 25%;
-    box-shadow: 14px 14px 5px rgb(0,0,0,.7);
-    border: 2px outset $color-primary;
-    height: 200px;
-    width: 30%;
-    max-width: 350px;
-    color: white;
-    background-color: black;
+  position: fixed;
+  z-index: 2;
+  margin-top: 1%;
+  margin-left: 15%;
+  box-shadow: 14px 14px 5px rgb(0, 0, 0, .7);
+  border: 2px outset $ color-primary;
+  height: 200px;
+  width: 30%;
+  min-width: 300px;
+  max-width: 300px;
+  color: white;
+  background-color: black;
 }
 
 .temporalContent {
-    padding: 5%;
-    width: 100%;
-    height: 100%;
+  padding: 3%;
+  width: 100%;
+  height: 100%;
+  border: none !important;
+  position: relative;
 }
 
-.picker {
-    margin-bottom: 5px;
-    width: 85%;
+.pickerLabel {
+  font-size: 1em;
+  margin-top: 3%;
+  margin-bottom: 1%;
+  font-weight: bold;
+}
+
+.pickerRow {
+  margin-bottom: 5%;
+  display: inline;
+  color: black;
+}
+
+.inputField {
+  min-width: 185px;
+  max-width: 200px;
+}
+
+.clearButton {
+  color: white;
+  max-height: 2.2em;
+  position: relative;
+  background-color: $color-primary;
+  margin-left: 5%;
+  text-align: center;
+  line-height: 135% !important;
+}
+
+.bottomButtonPanel {
+  margin-top: 7%;
+  width: 90%;
+  bottom: 15%;
+}
+
+.cancelButton {
+  color: white;
+  max-height: 2.2em;
+  background-color: $color-primary;
+  font-weight: bold;
+  margin-right: 18%;
+}
+
+.submitButton {
+  color: white;
+  max-height: 2.2em;
+  background-color: $color-primary;
+  font-weight: bold;
 }

@@ -46,7 +46,6 @@ input {
 .orgBox {
   display: flex;
   align-items: center;
-  /*max-width: 75px;*/
   padding-right: 15px;
 }
 
@@ -85,7 +84,6 @@ input {
   z-index: 1;
 }
 
-/*search fields*/
 .searchFields {
   display: inline;
   font-size: 1.2em;
@@ -99,13 +97,6 @@ input {
   }
 }
 
-/*@media screen and (max-width:455px) {
-  .orgBox {
-    display: none;
-  }
-}*/
-
-/*search container*/
 .searchContainer {
   color: black;
   margin-top: .9em;
@@ -145,7 +136,6 @@ input {
   outline: 0;
 }
 
-/*search button*/
 .searchButton {
   color: white;
   max-height: 2.2em;
