@@ -11,15 +11,17 @@ import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
 import loadQuery from './query'
 import { fetchConfig } from './config/ConfigActions'
+import { setOperation } from './routing/RoutingActions'
 import '../style/style'
 import './page.css'
 import store from './store'
 import history from './history'
 
 // If loading page with query params, resubmit search
-loadQuery()
+//loadQuery()
 
 store.dispatch(fetchConfig())
+//store.dispatch(setOperation())
 
 const body =
     <Provider store={store}>
