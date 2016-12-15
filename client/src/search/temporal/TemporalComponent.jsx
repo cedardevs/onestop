@@ -1,8 +1,6 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import { DateRange } from './TemporalActions'
 import DateTimePicker from './DateTimePickerComponent'
-import moment from 'moment'
 import styles from './temporal.css'
 
 

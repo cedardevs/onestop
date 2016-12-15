@@ -16,11 +16,20 @@ class DateTimePicker extends React.Component {
   constructor(props) {
     super(props)
     this.handleReset = this.handleReset.bind(this)
+    this.getValueString = this.getValueString.bind(this)
   }
 
   handleReset(e) {
     e.preventDefault()
     this.props.onChange(null)
+  }
+
+  getValueString(value) {
+    if(value.value !== null && value.value !== undefined) {
+      return value.value.utc().format(format)
+    } else {
+      return ''
+    }
   }
 
   render() {
@@ -46,8 +55,8 @@ class DateTimePicker extends React.Component {
               return (
                   <input
                       className="pure-input-1-2"
-                      placeholder="YYYY-MM-DD"
-                      value={value && moment(value).format(format) || ''}
+                      placeholder={format}
+                      value={this.getValueString(value)}
                       readOnly
                   />
               )
