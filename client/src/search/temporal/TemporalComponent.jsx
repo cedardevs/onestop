@@ -30,6 +30,11 @@ class TemporalSearch extends React.Component {
     })
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({'startValue': nextProps.startDateTime})
+    this.setState({'endValue': nextProps.endDateTime})
+  }
+
   disabledEndDate(endValue) {
     if (!endValue) {
       return false;
