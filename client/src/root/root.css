@@ -160,10 +160,22 @@ input {
   margin-left: .5em;
 }
 
+.timeButtonApplied,
+.mapButtonApplied {
+  max-height: 2.2em;
+  position: relative;
+  color: white;
+  background-color: $color-visited-light;
+  text-shadow: 0 0 5px black;
+  margin-left: .5em;
+}
+
 /* fix for large, unclickable area on button */
 .searchButton:before,
 .timeButton:before,
-.mapButton:before {
+.mapButton:before,
+.timeButtonApplied:before,
+.mapButtonApplied:before {
   position:absolute;
   content:'';
   top:-1px;

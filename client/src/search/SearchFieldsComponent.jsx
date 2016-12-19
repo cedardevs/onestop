@@ -14,9 +14,11 @@ class SearchFieldsComponent extends React.Component {
     this.submit = props.submit
     this.clearSearch = props.clearSearch
     this.updateQuery = props.updateQuery
+    this.handleClick = this.handleClick.bind(this)
     this.toggleMap = this.toggleMap.bind(this)
     this.toggleCalendar = this.toggleCalendar.bind(this)
-    this.handleClick = this.handleClick.bind(this)
+    this.mapButtonStyle = this.mapButtonStyle.bind(this)
+    this.timeButtonStyle = this.timeButtonStyle.bind(this)
     this.state = {
       showMap: false,
       showCalendar: false
@@ -49,6 +51,24 @@ class SearchFieldsComponent extends React.Component {
     this.forceUpdate()
   }
 
+  mapButtonStyle() {
+    if(this.props.geoJSON) {
+      return styles.mapButtonApplied
+
+    } else {
+      return styles.mapButton
+    }
+  }
+
+  timeButtonStyle() {
+    if(this.props.startDateTime || this.props.endDateTime) {
+      return styles.timeButtonApplied
+
+    } else {
+      return styles.timeButton
+    }
+  }
+
   render() {
     return (
         <div className={`pure-form  ${styles.searchFields}`}>
@@ -58,13 +78,13 @@ class SearchFieldsComponent extends React.Component {
             />
           </div>
           <button className={`${styles.clearButton}`} onClick={this.clearSearch}>x</button>
-          <button id="timeButton" className={`pure-button ${styles.timeButton}`} onClick={this.toggleCalendar}>
+          <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`} onClick={this.toggleCalendar}>
             <i className={`${styles.icon} fa fa-clock-o fa-2x`}></i>
           </button>
           <ToggleDisplay show={this.state.showCalendar}>
-                <TemporalContainer ref='temporalComponent' toggleSelf={this.toggleCalendar} />
+                <TemporalContainer toggleSelf={this.toggleCalendar} />
           </ToggleDisplay>
-          <button id="mapButton" className={`pure-button ${styles.mapButton}`} onClick={this.toggleMap}>
+          <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`} onClick={this.toggleMap}>
             <i className={`${styles.icon} fa fa-globe fa-2x`}></i>
           </button>
           <ToggleDisplay show={this.state.showMap}>
