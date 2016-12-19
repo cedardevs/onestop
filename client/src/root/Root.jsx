@@ -14,8 +14,6 @@ class RootComponent extends React.Component {
   }
 
   render() {
-    let searchLabel = this.props.location.pathname === "/" ? "searchMapSpace" : 'searchHover';
-
     return <div className={styles.rootContainer}>
       <div className={styles.mainContent}>
         <BannerContainer/>
@@ -26,7 +24,7 @@ class RootComponent extends React.Component {
               <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
               <span className={styles.oneStopText}><i className={`fa fa-stop-circle-o fa-md ${styles.oneStopText}`}></i>neStop</span>
             </div>
-            <div className={`pure-u-1 pure-u-sm-3-4 ${styles.landingComponents} ${styles[searchLabel]}`}>
+            <div className={`pure-u-1 pure-u-sm-3-4 ${styles.landingComponents}`}>
               <SearchFieldsContainer/>
             </div>
           </div>
