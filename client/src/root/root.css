@@ -97,10 +97,16 @@ input {
   }
 }
 
+@media screen and (max-width:580px) {
+  .orgBox {
+    display: none;
+  }
+}
+
 .searchContainer {
   color: black;
   margin-top: .9em;
-  width: 40%;
+  width: 38%;
   display: inline-block;
 }
 
@@ -136,20 +142,8 @@ input {
   outline: 0;
 }
 
-.searchButton {
-  color: white;
-  max-height: 2.2em;
-  position: relative;
-  border: none;
-  text-shadow: 0 0 5px black;
-  background-color: $color-primary;
-  margin-left: .5em;
-}
-
-.searchButton:focus {
-  outline: 0;
-}
-
+.undoButton,
+.searchButton,
 .timeButton,
 .mapButton {
   max-height: 2.2em;
@@ -158,6 +152,10 @@ input {
   background-color: $color-primary;
   text-shadow: 0 0 5px black;
   margin-left: .5em;
+}
+
+.searchButton:focus {
+  outline: 0;
 }
 
 .timeButtonApplied,
@@ -171,6 +169,7 @@ input {
 }
 
 /* fix for large, unclickable area on button */
+.undoButton:before,
 .searchButton:before,
 .timeButton:before,
 .mapButton:before,

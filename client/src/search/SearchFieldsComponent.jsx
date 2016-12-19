@@ -15,6 +15,7 @@ class SearchFieldsComponent extends React.Component {
     this.clearSearch = props.clearSearch
     this.updateQuery = props.updateQuery
     this.handleClick = this.handleClick.bind(this)
+    this.clearQueryString = this.clearQueryString.bind(this)
     this.toggleMap = this.toggleMap.bind(this)
     this.toggleCalendar = this.toggleCalendar.bind(this)
     this.mapButtonStyle = this.mapButtonStyle.bind(this)
@@ -31,6 +32,10 @@ class SearchFieldsComponent extends React.Component {
     if (this.state.showMap && !component.contains(e.target) && e.target.id !== 'mapButton') {
       this.toggleMap()
     }
+  }
+
+  clearQueryString() {
+    this.updateQuery('')
   }
 
   componentWillMount() {
@@ -72,12 +77,12 @@ class SearchFieldsComponent extends React.Component {
   render() {
     return (
         <div className={`pure-form  ${styles.searchFields}`}>
-          <div id ="searchbox" className={styles.searchContainer}>
+          <div id="searchbox" className={styles.searchContainer}>
             <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery}
                              value={this.props.queryString}
             />
           </div>
-          <button className={`${styles.clearButton}`} onClick={this.clearSearch}>x</button>
+          <button className={`${styles.clearButton}`} onClick={this.clearQueryString}>x</button>
           <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`} onClick={this.toggleCalendar}>
             <i className={`${styles.icon} fa fa-clock-o fa-2x`}></i>
           </button>
@@ -97,6 +102,9 @@ class SearchFieldsComponent extends React.Component {
                 style={styles.mapContainer}
             />
           </ToggleDisplay>
+          <button className={`pure-button ${styles.undoButton}`} onClick={this.clearSearch}>
+            <i className={`${styles.icon} fa fa-undo fa-2x`}></i>
+          </button>
           <button className={`pure-button ${styles.searchButton}`} onClick={this.submit}>
             <i className={`${styles.icon} fa fa-search fa-2x`}></i>
           </button>
