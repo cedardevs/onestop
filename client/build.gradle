@@ -39,6 +39,7 @@ task tarResults(type: Tar) {
     from "${projectDir}/dist"
     baseName = 'onestop-client'
     version = project.version
+    compression = 'gzip'
     extension = 'tar.gz'
     destinationDir = file("${buildDir}/libs")
 }
@@ -69,7 +70,7 @@ publishing {
     publications {
         main(MavenPublication) {
             artifact tarResults.outputs.files.singleFile, {
-                extension 'tar'
+                extension 'tar.gz'
             }
             artifactId "${rootProject.name}-${project.name}"
         }
