@@ -81,7 +81,6 @@ export const fetchGranules = () => {
         .then(json => {
           dispatch(fetchedGranules(json.data))
           dispatch(hideLoading())
-          dispatch(push('results/files'))
         })
         .catch(ajaxError => {
           ajaxError.response.json().then(errorJson => handleErrors(dispatch, errorJson))
