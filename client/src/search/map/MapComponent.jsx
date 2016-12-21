@@ -91,17 +91,17 @@ class MapComponent extends React.Component {
     }
 		if (this.props.features) {
       map.addLayer(resultsLayers)
-    }
-    if (!this.props.selection && this.props.features){
-  		map.fitBounds(resultsLayers.getBounds())
-    } else {
-  		map.fitWorld()
+      if (!this.props.selection && typeof resultsLayers.getLayers()[0] !== 'undefined'){
+    		map.fitBounds(resultsLayers.getBounds())
+      } else {
+    		map.fitWorld()
+      }
     }
   }
 
   componentWillReceiveProps() {
   	let { map } = this.state
-		map.invalidateSize() // Necessary to redraw map which isn't initially visible
+		if (typeof map != 'undefined') { map.invalidateSize() }
   }
 
   componentWillUpdate(nextProps) {
