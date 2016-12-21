@@ -51,8 +51,8 @@
     group_id: cires.ncei.onestop
     artifact_id: onestop-client
     version: latest
-    extension: tar
-    dest: /tmp/onestop-client.tar
+    extension: tar.gz
+    dest: /tmp/onestop-client.tar.gz
     state: present
 
 #TODO - clean up existing client?
@@ -60,7 +60,7 @@
   become: true
   unarchive:
      copy: no
-     src: /tmp/onestop-client.tar
+     src: /tmp/onestop-client.tar.gz
      dest: /usr/share/nginx/html
      owner: nginx
      group: nginx
