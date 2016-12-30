@@ -12,7 +12,7 @@ const mapStateToProps = (reduxState, reactProps) => {
   return {
     id: focusedId,
     item: focusedItem,
-    showGranulesLink: reduxState.config.granuleDetails || true
+    showGranulesLink: reduxState.config.granuleDetails
   }
 }
 
