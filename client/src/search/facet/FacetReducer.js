@@ -1,26 +1,20 @@
-import Immutable from 'immutable';
+import Immutable from 'seamless-immutable';
 import _ from 'lodash'
 import { OPEN, CLOSED } from './FacetActions'
-import { FACETS_RECEIVED, MODIFY_SELECTED_FACETS, CLEAR_FACETS } from './FacetActions'
+import { FACETS_RECEIVED, TOGGLE_FACET, CLEAR_FACETS } from './FacetActions'
 
-export const initialState = Immutable.fromJS({
-  allFacets: null,
+export const initialState = Immutable({
+  allFacets: {},
   selectedFacets: {}
 })
 
 const facets = (state = initialState, action) => {
   switch(action.type) {
     case FACETS_RECEIVED:
-      // Update facets with previous checks
-      let categories = !_.isEmpty(action.metadata.facets) ?
-          Immutable.fromJS(action.metadata.facets).mergeDeep(state.get('selectedFacets')) : initialState.allFacets
-      return state.set('allFacets', categories)
+      return Immutable.set(state, 'allFacets', action.metadata.facets)
 
-    case MODIFY_SELECTED_FACETS:
-      // Receives an already immutable object from upstream
-      const selectedFacets = !_.isEmpty(action.selectedFacets) ?
-          Immutable.fromJS(action.selectedFacets) : initialState.selectedFacets
-      return state.set('selectedFacets', selectedFacets)
+    case TOGGLE_FACET:
+      return Immutable.set(state, 'selectedFacets', action.selectedFacets)
 
     case CLEAR_FACETS:
       return initialState

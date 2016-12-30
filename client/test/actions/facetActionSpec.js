@@ -1,7 +1,11 @@
 import '../specHelper'
 import * as actions from '../../src/search/facet/FacetActions'
 import { expect } from 'chai'
+import configureMockStore from 'redux-mock-store'
+import thunk from 'redux-thunk'
 
+const middlewares = [ thunk ]
+const mockStore = configureMockStore(middlewares)
 
 describe('The facet action', function () {
 
@@ -14,23 +18,31 @@ describe('The facet action', function () {
     facetAction.should.deep.equal(expectedAction)
   })
 
-  it('update facets selected', function () {
-    const facets = {name: "science", value: "Atmosphere", selected: true}
-    const facetAction = actions.modifySelectedFacets(facets)
-    const expectedAction = { type: 'MODIFY_SELECTED_FACETS', selectedFacets: facets }
+  it('add facet to facets selected', function () {
+    const facets = {name: "a", value: "a", selected: true}
+    const expectedActions = { type: 'TOGGLE_FACET', selectedFacets: {a: ['a']}}
 
-    facetAction.should.deep.equal(expectedAction)
+    const store = mockStore({ facets: {selectedFacets: {} }})
+    store.dispatch(
+      actions.toggleFacet(facets.name, facets.value, facets.selected))
+    store.getActions()[0].should.deep.equal(expectedActions)
+  })
+
+  it('remove facet from facets selected', function () {
+    const facets = {name: "a", value: "a", selected: false}
+    const expectedActions = { type: 'TOGGLE_FACET', selectedFacets: {}}
+
+    const store = mockStore({ facets: {selectedFacets: {a:['a']} }})
+    store.dispatch(
+      actions.toggleFacet(facets.name, facets.value, facets.selected))
+    store.getActions()[0].should.deep.equal(expectedActions)
   })
 
   it('clear facets', function () {
-    const facets = {name: "science", value: "Atmosphere", selected: true}
-    const facetAction = actions.modifySelectedFacets(facets)
-    const expectedAction = {type: 'MODIFY_SELECTED_FACETS', selectedFacets: facets}
-
-    facetAction.should.deep.equal(expectedAction)
-
-    const clearFacet = actions.clearFacets()
-
-    expect(clearFacet).to.have.any.keys('type', 'CLEAR_FACETS')
+    const expectedActions = { type: 'CLEAR_FACETS' }
+    const store = mockStore({ facets: {selectedFacets: {} }})
+    store.dispatch(
+      actions.clearFacets())
+      store.getActions()[0].should.deep.equal(expectedActions)
+    })
   })
-})
