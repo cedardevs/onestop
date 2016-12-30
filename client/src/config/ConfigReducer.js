@@ -1,12 +1,12 @@
-import Immutable from 'immutable'
+import Immutable from 'seamless-immutable'
 import {CLEAR_CONFIG, SET_CONFIG} from './ConfigActions'
 
-export const initialState = Immutable.fromJS({})
+export const initialState = Immutable({})
 
 export const config = (state = initialState, action) => {
   switch (action.type) {
     case SET_CONFIG:
-      return state.mergeDeep(action.config)
+      return Immutable.merge(state, action.config)
 
     case CLEAR_CONFIG:
       return initialState
