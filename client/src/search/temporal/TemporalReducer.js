@@ -1,8 +1,8 @@
-import Immutable from 'immutable';
+import Immutable from 'seamless-immutable';
 import { DateRange } from './TemporalActions'
 import { CLEAR_SEARCH } from '../SearchActions'
 
-export const initialState = Immutable.fromJS({
+export const initialState = Immutable({
   startDateTime: '',
   endDateTime: ''
 })
@@ -10,10 +10,10 @@ export const initialState = Immutable.fromJS({
 const temporal = (state = initialState, action) => {
   switch(action.type) {
     case DateRange.START_DATE:
-      return state.mergeDeep({startDateTime: action.datetime})
+      return Immutable.merge(state, {startDateTime: action.datetime})
 
     case DateRange.END_DATE:
-      return state.mergeDeep({endDateTime: action.datetime})
+      return Immutable.merge(state, {endDateTime: action.datetime})
 
     case CLEAR_SEARCH:
       return initialState

@@ -4,10 +4,10 @@ import TemporalSearch from './TemporalSearchComponent'
 import moment from 'moment'
 
 const mapStateToProps = (state) => {
-  const { startDateTime, endDateTime } = state.get('temporal').toJS()
+  const { startDateTime, endDateTime } = state.temporal
   return {
-    startDateTime: state.getIn(['temporal', 'startDateTime']),
-    endDateTime: state.getIn(['temporal', 'endDateTime'])
+    startDateTime: state.temporal.startDateTime,
+    endDateTime: state.temporal.endDateTime
   }
 }
 
