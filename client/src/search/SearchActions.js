@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
+import _ from 'lodash'
 import { showLoading, hideLoading } from '../loading/LoadingActions'
 import { showErrors } from '../error/ErrorActions'
 import queryString from 'query-string'
@@ -30,7 +31,7 @@ export const completeSearch = (items) => {
     view: 'collections',
     items,
     //TODO: This will be unnecessary when search helper functions are moved to actions
-    appState: store.getState().getIn(['search', 'requestBody'])
+    appState: store.getState().search.requestBody
   }
 }
 
@@ -46,11 +47,11 @@ export const triggerSearch = (testing) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
     let state = getState()
 
-    if (state.getIn(['search', 'inFlight']) === true) {
+    if (state.search.inFlight === true) {
       return Promise.resolve()
     }
 
-    const searchBody = state.getIn(['search', 'requestBody'])
+    const searchBody = state.search.requestBody
     // To avoid returning all results when hitting search w/empty fields
     if(!searchBody) {
       return
@@ -92,7 +93,7 @@ export const triggerSearch = (testing) => {
 
 const assignResourcesToMap = (resourceList) => {
   var map = new Map()
-  resourceList.forEach(resource => {
+  _.forOwn(resourceList, resource => {
     map.set(resource.id, Object.assign({type: resource.type}, resource.attributes))
   })
   return map

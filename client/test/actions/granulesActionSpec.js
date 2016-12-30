@@ -1,7 +1,7 @@
 import '../specHelper'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import Immutable from 'immutable'
+import Immutable from 'seamless-immutable'
 import nock from 'nock'
 import * as granuleActions from '../../src/result/granules/GranulesActions'
 import { LOADING_SHOW, LOADING_HIDE } from '../../src/loading/LoadingActions'
@@ -44,8 +44,9 @@ describe('The granule actions', function () {
 
   it('fetches granules with selected collections', function () {
     const collections = ['A', 'B']
-    const state = {apiHost: apiHost, collections: {selectedIds: collections}}
-    const store = mockStore(Immutable.fromJS(state))
+    const state = {apiHost: apiHost, collections: {selectedIds: collections},
+      granules: {inFlight: false}, search: {requestBody: '{}'}}
+    const store = mockStore(Immutable(state))
     const expectedBody = JSON.stringify({filters: [{type: "collection", values: collections}], facets: false})
     nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
 
@@ -71,9 +72,10 @@ describe('The granule actions', function () {
       },
       collections: {
         selectedIds: collections
-      }
+      },
+      granules: {inFlight: false}
     }
-    const store = mockStore(Immutable.fromJS(state))
+    const store = mockStore(Immutable(state))
     const expectedBody = JSON.stringify({
       queries: [query],
       filters: [facetFilter, {type: "collection", values: collections}],

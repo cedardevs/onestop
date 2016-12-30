@@ -3,12 +3,12 @@ import { toggleGranuleFocus } from '../GranulesActions'
 import GranuleList from './GranuleListComponent'
 
 const mapStateToProps = (state) => {
-  const id = state.getIn(['collections', 'selectedIds']).first()
+  const id = state.collections.selectedIds[0]
   return {
-    results: state.getIn(['granules', 'granules']).toJS(),
-    focusedIds: state.getIn(['granules', 'focusedGranules']).toJS(),
-    selectedCollection: state.getIn(['collections', 'results', id]) ?
-      state.getIn(['collections', 'results', id]).toJS() : {}
+    results: state.granules.granules,
+    focusedIds: state.granules.focusedGranules,
+    selectedCollection: state.collections.results.id ?
+      state.collections.results.id : {}
   }
 }
 

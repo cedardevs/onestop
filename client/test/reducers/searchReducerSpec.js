@@ -9,7 +9,7 @@ describe('The search reducer', function () {
     const initialAction = {type: 'init'}
     const result = search(initialState, initialAction)
 
-    result.has('text').should.equal(true)
+    result.text.should.equal('')
   })
 
   it('for a new search', function () {
@@ -17,7 +17,7 @@ describe('The search reducer', function () {
     const result = search(initialState, searchAction)
 
     result.should.not.equal(initialState)
-    result.get('inFlight').should.equal(true)
+    result.inFlight.should.equal(true)
   })
 
   it('for a completed search', function () {
@@ -25,7 +25,7 @@ describe('The search reducer', function () {
     const searchAction = completeSearch(searchResults)
     const result = search(initialState, searchAction)
 
-    result.get('inFlight').should.equal(false)
+    result.inFlight.should.equal(false)
   })
 })
 
@@ -38,8 +38,8 @@ describe('The search reducer\'s assembleRequestBody function', function() {
 
     const expectedRequestBody = JSON.stringify({queries: [{type: 'queryText', value: 'DEM'}], filters: [], facets: true})
 
-    result.get('text').should.equal('DEM')
-    result.get('requestBody').should.equal(expectedRequestBody)
+    result.text.should.equal('DEM')
+    result.requestBody.should.equal(expectedRequestBody)
   })
 
   it('sets filters array with start date only', function () {
@@ -49,8 +49,8 @@ describe('The search reducer\'s assembleRequestBody function', function() {
 
     const expectedRequestBody = JSON.stringify({queries: [], filters: [{type: 'datetime', after: '2010-07-25T15:45:00-06:00'}], facets: true})
 
-    result.get('startDateTime').should.equal('2010-07-25T15:45:00-06:00')
-    result.get('requestBody').should.equal(expectedRequestBody)
+    result.startDateTime.should.equal('2010-07-25T15:45:00-06:00')
+    result.requestBody.should.equal(expectedRequestBody)
   })
 
   it('sets filters array with end date only', function () {
@@ -60,8 +60,8 @@ describe('The search reducer\'s assembleRequestBody function', function() {
 
     const expectedRequestBody = JSON.stringify({queries: [], filters: [{type: 'datetime', before: '2016-07-25T15:45:00-06:00'}], facets: true})
 
-    result.get('endDateTime').should.equal('2016-07-25T15:45:00-06:00')
-    result.get('requestBody').should.equal(expectedRequestBody)
+    result.endDateTime.should.equal('2016-07-25T15:45:00-06:00')
+    result.requestBody.should.equal(expectedRequestBody)
   })
 
   it('sets filters array with start and end dates', function () {
@@ -79,9 +79,9 @@ describe('The search reducer\'s assembleRequestBody function', function() {
       facets: true
     })
 
-    result.get('startDateTime').should.equal('2010-07-25T15:45:00-06:00')
-    result.get('endDateTime').should.equal('2016-07-25T15:45:00-06:00')
-    result.get('requestBody').should.equal(expectedRequestBody)
+    result.startDateTime.should.equal('2010-07-25T15:45:00-06:00')
+    result.endDateTime.should.equal('2016-07-25T15:45:00-06:00')
+    result.requestBody.should.equal(expectedRequestBody)
   })
 
   it('sets filters array with geometry', function () {
@@ -111,7 +111,7 @@ describe('The search reducer\'s assembleRequestBody function', function() {
       facets: true
     })
 
-    JSON.stringify(result.get('geoJSON')).should.equal(JSON.stringify(validGeoJSON))
-    result.get('requestBody').should.equal(expectedRequestBody)
+    JSON.stringify(result.geoJSON).should.equal(JSON.stringify(validGeoJSON))
+    result.requestBody.should.equal(expectedRequestBody)
   })
 })

@@ -6,7 +6,7 @@ import { SET_ERRORS } from '../../src/error/ErrorActions'
 import { initialState } from '../../src/search/SearchReducer'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import Immutable from 'immutable'
+import Immutable from 'seamless-immutable'
 import nock from 'nock'
 import reducer from '../../src/reducer'
 import {searchQuery, errorQuery, errorsArray} from '../searchQuery'
@@ -29,9 +29,9 @@ describe('The search action', () => {
     const testingRoot = 'http://localhost:9090'
     searchQuery(testingRoot,requestBody)
 
-    const testSearchState = initialState.mergeDeep({requestBody: requestBody})
-    const initState = reducer(Immutable.Map(), {type: 'init'})
-    const testState = initState.mergeDeep({search: testSearchState})
+    const testSearchState = Immutable({requestBody: requestBody})
+    const initState = reducer(new Map(), {type: 'init'})
+    const testState = Immutable.merge(initState, {search: testSearchState})
 
     const expectedItems = new Map()
     let expectedFacets
@@ -49,7 +49,7 @@ describe('The search action', () => {
       {type: LOADING_HIDE}
     ]
 
-    const store = mockStore(Immutable.fromJS(testState))
+    const store = mockStore(Immutable(testState))
 
     return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
@@ -63,8 +63,6 @@ describe('The search action', () => {
 
     const testingRoot = 'http://localhost:9090'
     searchQuery(testingRoot, requestBody)
-
-    const initState = reducer(Immutable.Map(), {type: 'init'})
 
     const expectedItems = new Map()
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
@@ -83,7 +81,7 @@ describe('The search action', () => {
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
-    const store = mockStore(Immutable.fromJS({'search':{'requestBody': requestBody}}))
+    const store = mockStore(Immutable({'search':{'requestBody': requestBody}}))
     return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
@@ -116,7 +114,7 @@ describe('The search action', () => {
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
-    const store = mockStore(Immutable.fromJS({'search':{'requestBody': requestBody}}))
+    const store = mockStore(Immutable({'search':{'requestBody': requestBody}}))
     return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
@@ -124,11 +122,11 @@ describe('The search action', () => {
   })
 
   it('triggerSearch does not start a new search when a search is already in flight', () => {
-    const testSearchState = initialState.mergeDeep({inFlight: true})
-    const fullState = Immutable.fromJS({search: {}, facets: {}, results: {}, details: {}, routing: {}})
-    const testState = fullState.mergeDeep({search: testSearchState})
+    const testSearchState = Immutable({inFlight: true})
+    const fullState = Immutable({search: {}, facets: {}, results: {}, details: {}, routing: {}})
+    const testState = Immutable({search: testSearchState})
 
-    const store = mockStore(Immutable.fromJS(testState))
+    const store = mockStore(testState)
     return store.dispatch(module.triggerSearch())
         .then(() => {
           store.getActions().should.deep.equal([]) // No actions dispatched

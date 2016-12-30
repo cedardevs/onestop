@@ -1,5 +1,5 @@
 import '../specHelper'
-import Immutable from 'immutable'
+import Immutable from 'seamless-immutable'
 import { granules, initialState } from '../../src/result/granules/GranulesReducer'
 import { toggleGranuleFocus, fetchingGranules, fetchedGranules, clearGranules } from '../../src/result/granules/GranulesActions'
 
@@ -8,7 +8,7 @@ describe('The granules reducer', function() {
     const initialAction = {type: 'init'}
     const result = granules(initialState, initialAction)
 
-    result.has('focusedGranules').should.equal(true)
+    result.focusedGranules.should.deep.equal([])
   })
 
   it('toggles focused granules', function () {
@@ -16,43 +16,43 @@ describe('The granules reducer', function() {
     const toggleB = toggleGranuleFocus('B')
     // toggle A --> ['A']
     const addedAResult = granules(initialState, toggleA)
-    addedAResult.get('focusedGranules').should.equal(Immutable.Set(['A']))
+    addedAResult.focusedGranules.should.deep.equal(['A'])
     // toggle B --> ['A', 'B']
     const addedBResult = granules(addedAResult, toggleB)
-    addedBResult.get('focusedGranules').should.equal(Immutable.Set(['A', 'B']))
+    addedBResult.focusedGranules.should.deep.equal(['A', 'B'])
     // toggle A --> ['B']
     const removedAResult = granules(addedBResult, toggleA)
-    removedAResult.get('focusedGranules').should.equal(Immutable.Set(['B']))
+    removedAResult.focusedGranules.should.deep.equal(['B'])
   })
 
   it('marks inFlight true while retrieving granules', function () {
-    const initial = Immutable.Map({inFlight: false})
+    const initial = Immutable({inFlight: false})
     const result = granules(initial, fetchingGranules())
-    result.get('inFlight').should.equal(true)
+    result.inFlight.should.equal(true)
   })
 
   it('marks inFlight false while receiving granules', function () {
-    const initial = Immutable.Map({inFlight: true, granules: Immutable.Map()})
+    const initial = Immutable({inFlight: true, granules: new Map()})
     const result = granules(initial, fetchedGranules([{id: 'A'}]))
-    result.get('inFlight').should.equal(false)
+    result.inFlight.should.equal(false)
   })
 
   it('merges received granules into the map of granules', function () {
     const firstRoundData = [{id: 'A', attributes: {version: 1}}, {id: 'B', attributes: {version: 1}}]
     const firstRoundMap = {A: {version: 1}, B: {version: 1}}
     const firstRoundResult = granules(initialState, fetchedGranules(firstRoundData))
-    firstRoundResult.get('granules').should.equal(Immutable.fromJS(firstRoundMap))
+    firstRoundResult.granules.should.deep.equal(firstRoundMap)
 
     const secondRoundData = [{id: 'B', attributes: {version: 2}}, {id: 'C', attributes: {version: 1}}]
     const secondRoundMap = {A: {version: 1}, B: {version: 2}, C: {version: 1}}
     const secondRoundResult = granules(firstRoundResult, fetchedGranules(secondRoundData))
-    secondRoundResult.get('granules').should.equal(Immutable.fromJS(secondRoundMap))
+    secondRoundResult.granules.should.deep.equal(secondRoundMap)
   })
 
   it('can clear existing granule state', function () {
-    const stateWithGranules = Immutable.fromJS({granules: {A: {id: 'A'}}})
+    const stateWithGranules = Immutable({granules: {A: {id: 'A'}}})
     const result = granules(stateWithGranules, clearGranules())
-    result.get('granules').should.equal(Immutable.Map())
+    result.granules.should.deep.equal({})
   })
 
 })

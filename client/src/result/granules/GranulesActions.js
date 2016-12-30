@@ -33,27 +33,28 @@ export const fetchedGranules = granuleList => {
     type: FETCHED_GRANULES,
     granules: granuleList,
     view: 'collections/files',
-    appState: store.getState().getIn(['search', 'requestBody'])
+    appState: store.getState().search.requestBody
   }
 }
 
 export const fetchGranules = () => {
   return (dispatch, getState) => {
-    if (getState().getIn(['granules', 'inFlight'])) {
+    const state = getState()
+    if (state.granules.inFlight) {
       return Promise.resolve() // let the calling code know there's nothing to wait for
     }
 
-    let selectedCollections = getState().getIn(['collections', 'selectedIds']).toJS()
+    let selectedCollections = state.collections.selectedIds
     if (!selectedCollections) {
       return Promise.resolve()
     }
-    let searchBody = JSON.parse(getState().getIn(['search', 'requestBody']) || '{}')
+    let searchBody = JSON.parse(state.search.requestBody || '{}')
     searchBody.filters = searchBody.filters || []
     searchBody.filters.push({"type": "collection", "values": selectedCollections})
     searchBody.facets = false
     searchBody = JSON.stringify(searchBody)
 
-    const apiHost = getState().get('apiHost') || ''
+    const apiHost = state.apiHost || ''
     const apiRoot = apiHost + '/onestop/api/search'
     const fetchParams = {
       method: 'POST',
