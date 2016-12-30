@@ -1,16 +1,17 @@
 import { connect } from 'react-redux'
+import _ from 'lodash'
 import MapComponent from '../../search/map/MapComponent'
 import { toggleGranuleFocus } from './GranulesActions'
 
 const mapStateToProps = (state) => {
-  let granules = state.getIn(['granules', 'granules'])
+  let granules = state.granules.granules
   let featureCollection = []
-  granules.forEach((data, id)=> {
-    featureCollection.push(convertToGeoJson(data.toJS(), id))
+  _.forOwn(granules, (data, id) => {
+    featureCollection.push(convertToGeoJson(data, id))
   })
   return {
     geoJsonFeatures: featureCollection,
-    focusedFeatures: state.getIn(['granules', 'focusedGranules']).toJS()
+    focusedFeatures: state.granules.focusedGranules
   }
 }
 
@@ -32,7 +33,7 @@ const convertToGeoJson = (recordData, id) => {
       coordinates: bboxToCoords(recordData.spatialBounding.coordinates),
       type: "Polygon"
     },
-    properties: Object.assign(recordData, {id: id}),
+    properties: Object.assign({}, recordData, {id: id}),
     type: "Feature"
   }
   return geoJson

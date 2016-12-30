@@ -4,7 +4,7 @@ import { newGeometry, removeGeometry } from './MapActions'
 
 const mapStateToProps = (state) => {
   return {
-    geoJsonSelection: state.getIn(['map', 'geoJSON']) ? state.getIn(['map', 'geoJSON']).toJS() : null
+    geoJsonSelection: state.map.geoJSON ? state.map.geoJSON : null
   }
 }
 
