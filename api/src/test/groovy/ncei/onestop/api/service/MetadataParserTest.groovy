@@ -116,6 +116,16 @@ class MetadataParserTest extends Specification {
     parsedXml.creationDate == null
     parsedXml.revisionDate == '2011-01-02'
     parsedXml.publicationDate == '2010-11-15'
+    parsedXml.dsmmAccessibility == 4
+    parsedXml.dsmmDataIntegrity == 0
+    parsedXml.dsmmDataQualityAssessment == 2
+    parsedXml.dsmmDataQualityAssurance == 3
+    parsedXml.dsmmDataQualityControlMonitoring == 1
+    parsedXml.dsmmPreservability == 5
+    parsedXml.dsmmProductionSustainability == 4
+    parsedXml.dsmmTransparencyTraceability == 2
+    parsedXml.dsmmUsability == 3
+
   }
 
   def "Identifier info is correctly parsed"() {
