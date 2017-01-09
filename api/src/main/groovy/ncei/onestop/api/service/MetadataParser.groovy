@@ -12,14 +12,14 @@ class MetadataParser {
       it.name() == 'identifier'
     }
     String doi = identifiers.findResult(null, { identifier ->
-      if(identifier.MD_Identifier.authority.CI_Citation.title.CharacterString.text() == 'Digital Object Identifier (DOI)') {
+      if (identifier.MD_Identifier.authority.CI_Citation.title.CharacterString.text() == 'Digital Object Identifier (DOI)') {
         return identifier.MD_Identifier.code.Anchor.text()
       }
     })
 
     return [
-        id: doi ? doi.replace('/', '-') : slurped.fileIdentifier.CharacterString.text(),
-        doi: doi,
+        id      : doi ? doi.replace('/', '-') : slurped.fileIdentifier.CharacterString.text(),
+        doi     : doi,
         parentId: slurped.parentIdentifier.Anchor.text() ?: slurped.parentIdentifier.CharacterString.text() ?: null
     ]
   }
@@ -65,9 +65,9 @@ class MetadataParser {
     // Basic info:
     fileIdentifier = metadata.fileIdentifier.CharacterString.text()
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
-    def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier'}
+    def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier' }
     doi = identifiers.findResult(null, { identifier ->
-      if(identifier.MD_Identifier.authority.CI_Citation.title.CharacterString.text() == 'Digital Object Identifier (DOI)') {
+      if (identifier.MD_Identifier.authority.CI_Citation.title.CharacterString.text() == 'Digital Object Identifier (DOI)') {
         return identifier.MD_Identifier.code.Anchor.text()
       }
     })
@@ -101,33 +101,33 @@ class MetadataParser {
         def text = k.CharacterString.text() ?: k.Anchor.text()
         def namespace = e.thesaurusName.CI_Citation.title.CharacterString.text()
 
-        if(text) {
-          if(namespace.toLowerCase().contains('gcmd')) {
-            switch(namespace) {
-              case {it.toLowerCase().contains('science')}:
+        if (text) {
+          if (namespace.toLowerCase().contains('gcmd')) {
+            switch (namespace) {
+              case { it.toLowerCase().contains('science') }:
                 text = WordUtils.capitalizeFully(text,
                     " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
                 text = text.replace('Earth Science > ', '')
                 gcmdScience.add(text)
                 break
-              case {it.toLowerCase().contains('location') || it.toLowerCase().contains('place')}:
+              case { it.toLowerCase().contains('location') || it.toLowerCase().contains('place') }:
                 def locationKeywords = WordUtils.capitalizeFully(text,
                     " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
                 gcmdLocations.add(locationKeywords)
                 break
-              case {it.toLowerCase().contains('platform')}:
+              case { it.toLowerCase().contains('platform') }:
                 gcmdPlatforms.add(text)
                 break
-              case {it.toLowerCase().contains('instrument')}:
+              case { it.toLowerCase().contains('instrument') }:
                 gcmdInstruments.add(text)
                 break
-              case {it.toLowerCase().contains('data center')}:
+              case { it.toLowerCase().contains('data center') }:
                 gcmdDataCenters.add(text)
                 break
-              case {it.toLowerCase().contains('data resolution')}:
+              case { it.toLowerCase().contains('data resolution') }:
                 gcmdDataResolution.add(text)
                 break
-              case {it.toLowerCase().contains('project')}:
+              case { it.toLowerCase().contains('project') }:
                 gcmdProjects.add(text)
                 break
               default:
@@ -214,7 +214,7 @@ class MetadataParser {
     // Data formats
     def formats = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'MD_Format' }
     formats.each { e ->
-      dataFormats.add( e.name.CharacterString.text() ? (e.name.CharacterString.text() as String).toUpperCase() : null )
+      dataFormats.add(e.name.CharacterString.text() ? (e.name.CharacterString.text() as String).toUpperCase() : null)
     }
 
     // Links:
@@ -238,36 +238,77 @@ class MetadataParser {
       ])
     }
 
+    // DSMM Values:
+    def dsmmMap = [
+        'Accessibility'               : 0,
+        'DataIntegrity'               : 0,
+        'DataQualityAssessment'       : 0,
+        'DataQualityAssurance'        : 0,
+        'DataQualityControlMonitoring': 0,
+        'Preservability'              : 0,
+        'ProductionSustainability'    : 0,
+        'TransparencyTraceability'    : 0,
+        'Usability'                   : 0
+    ]
+    def scoreMap = [
+        'notAvailable': 0,
+        'adHoc'       : 1,
+        'minimal'     : 2,
+        'intermediate': 3,
+        'advanced'    : 4,
+        'optimal'     : 5
+    ]
+
+    def dsmmValues = metadata.dataQualityInfo.DQ_DataQuality.report.DQ_ConceptualConsistency.'**'.find {
+      e -> e.nameOfMeasure.CharacterString.text() == 'Data Stewardship Maturity Assessment'
+    }.result.DQ_QuantitativeResult.'**'.findAll { it.name() == 'Record' }
+
+    dsmmValues.each { r ->
+      def measureUrl = r.CodeListValue.@codeList.text()
+      def measure = measureUrl.substring(measureUrl.lastIndexOf('#') + 1)
+      def score = scoreMap.get(r.CodeListValue.@codeListValue.text())
+      dsmmMap.put(measure, score)
+    }
+
     // Build JSON:
     def json = [
-        fileIdentifier        : fileIdentifier,
-        parentIdentifier      : parentIdentifier,
-        doi                   : doi,
-        title                 : title,
-        alternateTitle        : alternateTitle,
-        description           : description,
-        keywords              : keywords,
-        topicCategories       : topicCategories,
-        gcmdScience           : gcmdScience,
-        gcmdLocations         : gcmdLocations,
-        gcmdInstruments       : gcmdInstruments,
-        gcmdPlatforms         : gcmdPlatforms,
-        gcmdProjects          : gcmdProjects,
-        gcmdDataCenters       : gcmdDataCenters,
-        gcmdDataResolution    : gcmdDataResolution,
-        temporalBounding      : temporalBounding,
-        spatialBounding       : spatialBounding,
-        acquisitionInstruments: acquisitionInstruments,
-        acquisitionOperations : acquisitionOperations,
-        acquisitionPlatforms  : acquisitionPlatforms,
-        dataFormats           : dataFormats,
-        links                 : links,
-        contacts              : contacts,
-        thumbnail             : thumbnail,
-        modifiedDate          : modifiedDate,
-        creationDate          : creationDate,
-        revisionDate          : revisionDate,
-        publicationDate       : publicationDate
+        fileIdentifier                  : fileIdentifier,
+        parentIdentifier                : parentIdentifier,
+        doi                             : doi,
+        title                           : title,
+        alternateTitle                  : alternateTitle,
+        description                     : description,
+        keywords                        : keywords,
+        topicCategories                 : topicCategories,
+        gcmdScience                     : gcmdScience,
+        gcmdLocations                   : gcmdLocations,
+        gcmdInstruments                 : gcmdInstruments,
+        gcmdPlatforms                   : gcmdPlatforms,
+        gcmdProjects                    : gcmdProjects,
+        gcmdDataCenters                 : gcmdDataCenters,
+        gcmdDataResolution              : gcmdDataResolution,
+        temporalBounding                : temporalBounding,
+        spatialBounding                 : spatialBounding,
+        acquisitionInstruments          : acquisitionInstruments,
+        acquisitionOperations           : acquisitionOperations,
+        acquisitionPlatforms            : acquisitionPlatforms,
+        dataFormats                     : dataFormats,
+        links                           : links,
+        contacts                        : contacts,
+        thumbnail                       : thumbnail,
+        modifiedDate                    : modifiedDate,
+        creationDate                    : creationDate,
+        revisionDate                    : revisionDate,
+        publicationDate                 : publicationDate,
+        dsmmAccessibility               : dsmmMap.Accessibility,
+        dsmmDataIntegrity               : dsmmMap.DataIntegrity,
+        dsmmDataQualityAssessment       : dsmmMap.DataQualityAssessment,
+        dsmmDataQualityAssurance        : dsmmMap.DataQualityAssurance,
+        dsmmDataQualityControlMonitoring: dsmmMap.DataQualityControlMonitoring,
+        dsmmPreservability              : dsmmMap.Preservability,
+        dsmmProductionSustainability    : dsmmMap.ProductionSustainability,
+        dsmmTransparencyTraceability    : dsmmMap.TransparencyTraceability,
+        dsmmUsability                   : dsmmMap.Usability
     ]
 
     return json
