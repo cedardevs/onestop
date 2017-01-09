@@ -30,11 +30,11 @@ class SearchFieldsComponent extends React.Component {
   }
 
   componentWillMount() {
-    document.addEventListener('click', this.handleClick, false);
+    document.addEventListener('click', this.handleClick, false)
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this.handleClick, false);
+    document.removeEventListener('click', this.handleClick, false)
   }
 
   toggleMap() {
@@ -46,8 +46,7 @@ class SearchFieldsComponent extends React.Component {
     return<div className={`pure-form  ${styles.searchFields}`}>
       <div id ="searchbox" className={styles.searchContainer}>
         <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery}
-                         value={this.props.queryString}
-                         />
+                         value={this.props.queryString}/>
       </div>
       <button className={`${styles.clearButton}`} onClick={this.clearSearch}>x</button>
       <div className={styles.temporalContainer}>

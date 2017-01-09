@@ -9,7 +9,7 @@ export const initialState = Immutable({
 export const map = (state = initialState, action) => {
   switch (action.type) {
     case NEW_GEOMETRY:
-      return Immutable.set(state, 'geoJSON', Immutable(action.geoJSON))
+      return Immutable.set(state, 'geoJSON',action.geoJSON)
 
     case CLEAR_SEARCH:
     case REMOVE_GEOMETRY:
