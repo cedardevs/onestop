@@ -56,6 +56,7 @@ class DateTimePicker extends React.Component {
               calendar={calendar}
               value={props.value}
               onChange={props.onChange}
+              style={{color: "black"}}
           >
             { value => {
               return (
