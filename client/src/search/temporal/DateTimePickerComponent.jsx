@@ -61,7 +61,7 @@ class DateTimePicker extends React.Component {
               return (
                   <input
                       className={`pure-input-2-3 ${styles.inputField}`}
-                      placeholder={format}
+                      placeholder={"Choose a date"}
                       value={this.getValueString(value)}
                       readOnly
                   />
