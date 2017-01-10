@@ -90,13 +90,15 @@ class SearchFieldsComponent extends React.Component {
             />
           </div>
           <button className={`${styles.clearButton}`} onClick={this.clearQueryString}>x</button>
-          <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`} onClick={this.toggleCalendar}>
+          <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`}
+                  onClick={this.toggleCalendar} title="Add Temporal Criteria">
             <i className={`${styles.icon} fa fa-clock-o fa-2x`}></i>
           </button>
           <ToggleDisplay show={this.state.showCalendar}>
             <TemporalContainer ref="timeComponent" toggleSelf={this.toggleCalendar} />
           </ToggleDisplay>
-          <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`} onClick={this.toggleMap}>
+          <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`}
+                  onClick={this.toggleMap} title="Add Spatial Criteria">
             <i className={`${styles.icon} fa fa-globe fa-2x`}></i>
           </button>
           <ToggleDisplay show={this.state.showMap}>
@@ -109,10 +111,11 @@ class SearchFieldsComponent extends React.Component {
                 style={styles.mapContainer}
             />
           </ToggleDisplay>
-          <button className={`pure-button ${styles.undoButton}`} onClick={this.clearSearch}>
+          <button className={`pure-button ${styles.undoButton}`}
+                  onClick={this.clearSearch} title="Clear Search Criteria">
             <i className={`${styles.icon} fa fa-undo fa-2x`}></i>
           </button>
-          <button className={`pure-button ${styles.searchButton}`} onClick={this.submit}>
+          <button className={`pure-button ${styles.searchButton}`} onClick={this.submit} title="Search">
             <i className={`${styles.icon} fa fa-search fa-2x`}></i>
           </button>
         </div>
