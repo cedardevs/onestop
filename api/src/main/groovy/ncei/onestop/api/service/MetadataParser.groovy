@@ -77,7 +77,8 @@ class MetadataParser {
         dsmmPreservability              : dsmmMap.Preservability,
         dsmmProductionSustainability    : dsmmMap.ProductionSustainability,
         dsmmTransparencyTraceability    : dsmmMap.TransparencyTraceability,
-        dsmmUsability                   : dsmmMap.Usability
+        dsmmUsability                   : dsmmMap.Usability,
+        dsmmAverage                     : dsmmMap.average
     ]
 
     return json
@@ -400,9 +401,13 @@ class MetadataParser {
         'optimal'     : 5
     ]
 
-    def dsmmValues = metadata.dataQualityInfo.DQ_DataQuality.report.DQ_ConceptualConsistency.'**'.find {
+    def dsmmValues = []
+    def dsmm = metadata.dataQualityInfo.DQ_DataQuality.report.DQ_ConceptualConsistency.'**'.find {
       e -> e.nameOfMeasure.CharacterString.text() == 'Data Stewardship Maturity Assessment'
-    }.result.DQ_QuantitativeResult.'**'.findAll { it.name() == 'Record' }
+    }
+    if(dsmm) {
+      dsmmValues = dsmm.result.DQ_QuantitativeResult.'**'.findAll { it.name() == 'Record' }
+    }
 
     dsmmValues.each { r ->
       def measureUrl = r.CodeListValue.@codeList.text()
@@ -410,6 +415,9 @@ class MetadataParser {
       def score = scoreMap.get(r.CodeListValue.@codeListValue.text())
       dsmmMap.put(measure, score)
     }
+
+    def avg = dsmmMap.values().sum() / dsmmMap.size()
+    dsmmMap.put('average', avg)
 
     return dsmmMap
   }

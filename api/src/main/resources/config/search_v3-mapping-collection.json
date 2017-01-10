@@ -252,6 +252,46 @@
       "publicationDate": {
         "type": "date",
         "format": "date_optional_time"
+      },
+      "dsmmAccessibility": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmDataIntegrity": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmDataQualityAssessment": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmDataQualityAssurance": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmDataQualityControlMonitoring": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmPreservability": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmProductionSustainability": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmTransparencyTraceability": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmUsability": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmAverage": {
+        "type": "float",
+        "index": "no"
       }
     }
   }

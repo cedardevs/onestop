@@ -340,5 +340,8 @@ class MetadataParserTest extends Specification {
     dsmm.ProductionSustainability == 4
     dsmm.TransparencyTraceability == 2
     dsmm.Usability == 3
+    dsmm.average == ((dsmm.Accessibility + dsmm.DataIntegrity + dsmm.DataQualityAssessment + dsmm.DataQualityAssurance +
+        dsmm.DataQualityControlMonitoring + dsmm.Preservability + dsmm.ProductionSustainability +
+        dsmm.TransparencyTraceability + dsmm.Usability) / ( dsmm.size() - 1 ) )
   }
 }
