@@ -46,13 +46,13 @@ class SearchFieldsComponent extends React.Component {
   }
 
   componentWillMount() {
-    document.addEventListener('click', this.handleClick, false);
-    document.addEventListener('keyup', this.handleKeyup, false);
+    document.addEventListener('click', this.handleClick, false)
+    document.addEventListener('keyup', this.handleKeyup, false)
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this.handleClick, false);
-    document.removeEventListener('keyup', this.handleKeyup, false);
+    document.removeEventListener('click', this.handleClick, false)
+    document.removeEventListener('keyup', this.handleKeyup, false)
   }
 
   toggleMap() {
@@ -64,19 +64,19 @@ class SearchFieldsComponent extends React.Component {
   }
 
   mapButtonStyle() {
-    if(this.props.geoJSON) {
+    if (this.props.geoJSON) {
       return styles.mapButtonApplied
-
-    } else {
+    }
+    else {
       return styles.mapButton
     }
   }
 
   timeButtonStyle() {
-    if(this.props.startDateTime || this.props.endDateTime) {
+    if (this.props.startDateTime || this.props.endDateTime) {
       return styles.timeButtonApplied
-
-    } else {
+    }
+    else {
       return styles.timeButton
     }
   }
