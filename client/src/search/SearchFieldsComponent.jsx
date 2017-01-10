@@ -15,6 +15,7 @@ class SearchFieldsComponent extends React.Component {
     this.clearSearch = props.clearSearch
     this.updateQuery = props.updateQuery
     this.handleClick = this.handleClick.bind(this)
+    this.handleKeyup = this.handleKeyup.bind(this)
     this.clearQueryString = this.clearQueryString.bind(this)
     this.toggleMap = this.toggleMap.bind(this)
     this.toggleCalendar = this.toggleCalendar.bind(this)
@@ -28,9 +29,20 @@ class SearchFieldsComponent extends React.Component {
 
   handleClick(e) {
     // Close map when user clicks outside of it
-    var component = ReactDOM.findDOMNode(this.refs.mapComponent)
-    if (this.state.showMap && !component.contains(e.target) && e.target.id !== 'mapButton') {
+    const map = ReactDOM.findDOMNode(this.refs.mapComponent)
+    if (this.state.showMap && !map.contains(e.target) && e.target.id !== 'mapButton') {
       this.toggleMap()
+    }
+
+    const calendar = ReactDOM.findDOMNode(this.refs.timeComponent)
+    if (this.state.showCalendar && !calendar.contains(e.target) && e.target.id !== 'timeButton') {
+      this.toggleCalendar()
+    }
+  }
+
+  handleKeyup(e) {
+    if (e.keyCode === 27) {
+      this.setState({showMap: false, showCalendar: false})
     }
   }
 
@@ -40,20 +52,20 @@ class SearchFieldsComponent extends React.Component {
 
   componentWillMount() {
     document.addEventListener('click', this.handleClick, false);
+    document.addEventListener('keyup', this.handleKeyup, false);
   }
 
   componentWillUnmount() {
     document.removeEventListener('click', this.handleClick, false);
+    document.removeEventListener('keyup', this.handleKeyup, false);
   }
 
   toggleMap() {
-    this.state.showMap = !this.state.showMap
-    this.forceUpdate()
+    this.setState({showMap: !this.state.showMap})
   }
 
   toggleCalendar() {
-    this.state.showCalendar = !this.state.showCalendar
-    this.forceUpdate()
+    this.setState({showCalendar: !this.state.showCalendar})
   }
 
   mapButtonStyle() {
@@ -87,7 +99,7 @@ class SearchFieldsComponent extends React.Component {
             <i className={`${styles.icon} fa fa-clock-o fa-2x`}></i>
           </button>
           <ToggleDisplay show={this.state.showCalendar}>
-                <TemporalContainer toggleSelf={this.toggleCalendar} />
+            <TemporalContainer ref="timeComponent" toggleSelf={this.toggleCalendar} />
           </ToggleDisplay>
           <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`} onClick={this.toggleMap}>
             <i className={`${styles.icon} fa fa-globe fa-2x`}></i>
