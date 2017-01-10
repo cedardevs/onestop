@@ -1,11 +1,12 @@
 package ncei.onestop.api.service
 
 import groovy.json.JsonOutput
+import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.lang3.text.WordUtils
 
 class MetadataParser {
 
-  public static Map parseIdentifierInfo(String xml) {
+  static Map parseIdentifierInfo(String xml) {
     def slurped = new XmlSlurper().parseText(xml)
 
     def identifiers = slurped.identificationInfo.MD_DataIdentification.citation.CI_Citation.'**'.findAll {
@@ -24,45 +25,79 @@ class MetadataParser {
     ]
   }
 
-  public static String parseXMLMetadata(String xml) {
+  static String parseXMLMetadata(String xml) {
     return JsonOutput.toJson(parseXMLMetadataToMap(xml))
   }
 
-  public static Map parseXMLMetadataToMap(String xml) {
+  static Map parseXMLMetadataToMap(String xml) {
 
+    def metadata = new XmlSlurper().parseText(xml)
+
+    // Parse related data maps from the xml:
+    def citationInfo = parseCitationInfo(metadata)
+    def keywordsMap = parseKeywordsAndTopics(metadata)
+    def acquisitionInfo = parseAcquisitionInfo(metadata)
+    def dsmmMap = parseDSMM(metadata)
+
+    // Build JSON:
+    def json = [
+        fileIdentifier                  : citationInfo.fileIdentifier,
+        parentIdentifier                : citationInfo.parentIdentifier,
+        doi                             : citationInfo.doi,
+        title                           : citationInfo.title,
+        alternateTitle                  : citationInfo.alternateTitle,
+        description                     : citationInfo.description,
+        keywords                        : keywordsMap.keywords,
+        topicCategories                 : keywordsMap.topicCategories,
+        gcmdScience                     : keywordsMap.gcmdScience,
+        gcmdLocations                   : keywordsMap.gcmdLocations,
+        gcmdInstruments                 : keywordsMap.gcmdInstruments,
+        gcmdPlatforms                   : keywordsMap.gcmdPlatforms,
+        gcmdProjects                    : keywordsMap.gcmdProjects,
+        gcmdDataCenters                 : keywordsMap.gcmdDataCenters,
+        gcmdDataResolution              : keywordsMap.gcmdDataResolution,
+        temporalBounding                : parseTemporalBounding(metadata),
+        spatialBounding                 : parseSpatialBounding(metadata),
+        acquisitionInstruments          : acquisitionInfo.acquisitionInstruments,
+        acquisitionOperations           : acquisitionInfo.acquisitionOperations,
+        acquisitionPlatforms            : acquisitionInfo.acquisitionPlatforms,
+        dataFormats                     : parseDataFormats(metadata),
+        links                           : parseLinks(metadata),
+        contacts                        : parseContacts(metadata),
+        thumbnail                       : citationInfo.thumbnail,
+        modifiedDate                    : citationInfo.modifiedDate,
+        creationDate                    : citationInfo.creationDate,
+        revisionDate                    : citationInfo.revisionDate,
+        publicationDate                 : citationInfo.publicationDate,
+        dsmmAccessibility               : dsmmMap.Accessibility,
+        dsmmDataIntegrity               : dsmmMap.DataIntegrity,
+        dsmmDataQualityAssessment       : dsmmMap.DataQualityAssessment,
+        dsmmDataQualityAssurance        : dsmmMap.DataQualityAssurance,
+        dsmmDataQualityControlMonitoring: dsmmMap.DataQualityControlMonitoring,
+        dsmmPreservability              : dsmmMap.Preservability,
+        dsmmProductionSustainability    : dsmmMap.ProductionSustainability,
+        dsmmTransparencyTraceability    : dsmmMap.TransparencyTraceability,
+        dsmmUsability                   : dsmmMap.Usability
+    ]
+
+    return json
+  }
+
+  static Map parseCitationInfo(GPathResult metadata) {
     def fileIdentifier
     def parentIdentifier
     def doi
     def title
     def alternateTitle
     def description
-    def keywords = [] as Set
-    def topicCategories = [] as Set
-    def gcmdScience = [] as Set
-    def gcmdLocations = [] as Set
-    def gcmdPlatforms = [] as Set
-    def gcmdInstruments = [] as Set
-    def gcmdProjects = [] as Set
-    def gcmdDataResolution = [] as Set
-    def gcmdDataCenters = [] as Set
-    def temporalBounding = [:]
-    def spatialBounding = [:]
-    def acquisitionInstruments = [] as Set
-    def acquisitionOperations = [] as Set
-    def acquisitionPlatforms = [] as Set
-    def dataFormats = [] as Set
-    def links = [] as Set
-    def contacts = [] as Set
     def thumbnail
     def modifiedDate
     def creationDate
     def revisionDate
     def publicationDate
 
-    def metadata = new XmlSlurper().parseText(xml)
     def idInfo = metadata.identificationInfo.MD_DataIdentification
 
-    // Basic info:
     fileIdentifier = metadata.fileIdentifier.CharacterString.text()
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
     def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier' }
@@ -90,7 +125,39 @@ class MetadataParser {
       }
     }
 
-    // Keywords & topics:
+    return [
+        fileIdentifier  : fileIdentifier,
+        parentIdentifier: parentIdentifier,
+        doi             : doi,
+        title           : title,
+        alternateTitle  : alternateTitle,
+        description     : description,
+        thumbnail       : thumbnail,
+        modifiedDate    : modifiedDate,
+        creationDate    : creationDate,
+        revisionDate    : revisionDate,
+        publicationDate : publicationDate
+    ]
+  }
+
+  static Map parseCitationInfo(String xml) {
+    return parseCitationInfo(new XmlSlurper().parseText(xml))
+  }
+
+  static Map parseKeywordsAndTopics(GPathResult metadata) {
+
+    def idInfo = metadata.identificationInfo.MD_DataIdentification
+
+    def keywords = [] as Set
+    def topicCategories = [] as Set
+    def gcmdScience = [] as Set
+    def gcmdLocations = [] as Set
+    def gcmdPlatforms = [] as Set
+    def gcmdInstruments = [] as Set
+    def gcmdProjects = [] as Set
+    def gcmdDataResolution = [] as Set
+    def gcmdDataCenters = [] as Set
+
     topicCategories.addAll(idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text())
 
     def descriptiveKeywords = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
@@ -142,8 +209,26 @@ class MetadataParser {
       }
     }
 
-    // Temporal bounding:
-    def time = idInfo.extent.EX_Extent.'**'.find { e ->
+    return [
+        keywords          : keywords,
+        topicCategories   : topicCategories,
+        gcmdScience       : gcmdScience,
+        gcmdLocations     : gcmdLocations,
+        gcmdInstruments   : gcmdInstruments,
+        gcmdPlatforms     : gcmdPlatforms,
+        gcmdProjects      : gcmdProjects,
+        gcmdDataCenters   : gcmdDataCenters,
+        gcmdDataResolution: gcmdDataResolution
+    ]
+  }
+
+  static Map parseKeywordsAndTopics(String xml) {
+    return parseKeywordsAndTopics(new XmlSlurper().parseText(xml))
+  }
+
+  static Map parseTemporalBounding(GPathResult metadata) {
+
+    def time = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
       e.@id.text() == 'boundingExtent'
     }.temporalElement.EX_TemporalExtent.extent
     def beginDate = time.TimePeriod.beginPosition.text() ?:
@@ -157,15 +242,24 @@ class MetadataParser {
     def instant = time.TimeInstant.timePosition.text() ?: null
     def instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
 
-    temporalBounding.put('beginDate', beginDate)
-    temporalBounding.put('beginIndeterminate', beginIndeterminate)
-    temporalBounding.put('endDate', endDate)
-    temporalBounding.put('endIndeterminate', endIndeterminate)
-    temporalBounding.put('instant', instant)
-    temporalBounding.put('instantIndeterminate', instantIndeterminate)
+    return [
+        beginDate           : beginDate,
+        beginIndeterminate  : beginIndeterminate,
+        endDate             : endDate,
+        endIndeterminate    : endIndeterminate,
+        instant             : instant,
+        instantIndeterminate: instantIndeterminate
+    ]
+  }
 
-    // Spatial bounding:
-    def space = idInfo.extent.EX_Extent.'**'.find { e ->
+  static Map parseTemporalBounding(String xml) {
+    return parseTemporalBounding(new XmlSlurper().parseText(xml))
+  }
+
+  static Map parseSpatialBounding(GPathResult metadata) {
+
+    def spatialBounding = [:]
+    def space = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
       e.@id.text() == 'boundingExtent'
     }.geographicElement
     def bbox = space.'**'.find { it -> it.name() == 'EX_GeographicBoundingBox' }
@@ -175,6 +269,19 @@ class MetadataParser {
           [bbox.westBoundLongitude.Decimal.toFloat(), bbox.northBoundLatitude.Decimal.toFloat()],
           [bbox.eastBoundLongitude.Decimal.toFloat(), bbox.southBoundLatitude.Decimal.toFloat()]])
     }
+
+    return spatialBounding
+  }
+
+  static Map parseSpatialBounding(String xml) {
+    return parseSpatialBounding(new XmlSlurper().parseText(xml))
+  }
+
+  static Map parseAcquisitionInfo(GPathResult metadata) {
+
+    def acquisitionInstruments = [] as Set
+    def acquisitionOperations = [] as Set
+    def acquisitionPlatforms = [] as Set
 
     // Acquisition instrument:
     def instruments = metadata.acquisitionInformation.MI_AcquisitionInformation.instrument
@@ -211,13 +318,33 @@ class MetadataParser {
       ])
     }
 
-    // Data formats
+    return [
+        acquisitionInstruments: acquisitionInstruments,
+        acquisitionOperations : acquisitionOperations,
+        acquisitionPlatforms  : acquisitionPlatforms
+    ]
+  }
+
+  static Map parseAcquisitionInfo(String xml) {
+    return parseAcquisitionInfo(new XmlSlurper().parseText(xml))
+  }
+
+  static Set parseDataFormats(GPathResult metadata) {
+    def dataFormats = [] as Set
     def formats = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'MD_Format' }
     formats.each { e ->
       dataFormats.add(e.name.CharacterString.text() ? (e.name.CharacterString.text() as String).toUpperCase() : null)
     }
+    return dataFormats
+  }
 
-    // Links:
+  static Set parseDataFormats(String xml) {
+    return parseDataFormats(new XmlSlurper().parseText(xml))
+  }
+
+  static Set parseLinks(GPathResult metadata) {
+
+    def links = [] as Set
     def linkage = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'CI_OnlineResource' }
     linkage.each { e ->
       links.add([
@@ -227,8 +354,16 @@ class MetadataParser {
           linkFunction   : e.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
       ])
     }
+    return links
+  }
 
-    // Contacts:
+  static Set parseLinks(String xml) {
+    return parseLinks(new XmlSlurper().parseText(xml))
+  }
+
+  static Set parseContacts(GPathResult metadata) {
+
+    def contacts = [] as Set
     def contactInfo = metadata.'**'.findAll { it.name() == 'CI_ResponsibleParty' }
     contactInfo.each { e ->
       contacts.add([
@@ -237,8 +372,14 @@ class MetadataParser {
           role            : e.role.CI_RoleCode.@codeListValue.text() ?: null
       ])
     }
+    return contacts
+  }
 
-    // DSMM Values:
+  static Set parseContacts(String xml) {
+    return parseContacts(new XmlSlurper().parseText(xml))
+  }
+
+  static Map parseDSMM(GPathResult metadata) {
     def dsmmMap = [
         'Accessibility'               : 0,
         'DataIntegrity'               : 0,
@@ -270,51 +411,14 @@ class MetadataParser {
       dsmmMap.put(measure, score)
     }
 
-    // Build JSON:
-    def json = [
-        fileIdentifier                  : fileIdentifier,
-        parentIdentifier                : parentIdentifier,
-        doi                             : doi,
-        title                           : title,
-        alternateTitle                  : alternateTitle,
-        description                     : description,
-        keywords                        : keywords,
-        topicCategories                 : topicCategories,
-        gcmdScience                     : gcmdScience,
-        gcmdLocations                   : gcmdLocations,
-        gcmdInstruments                 : gcmdInstruments,
-        gcmdPlatforms                   : gcmdPlatforms,
-        gcmdProjects                    : gcmdProjects,
-        gcmdDataCenters                 : gcmdDataCenters,
-        gcmdDataResolution              : gcmdDataResolution,
-        temporalBounding                : temporalBounding,
-        spatialBounding                 : spatialBounding,
-        acquisitionInstruments          : acquisitionInstruments,
-        acquisitionOperations           : acquisitionOperations,
-        acquisitionPlatforms            : acquisitionPlatforms,
-        dataFormats                     : dataFormats,
-        links                           : links,
-        contacts                        : contacts,
-        thumbnail                       : thumbnail,
-        modifiedDate                    : modifiedDate,
-        creationDate                    : creationDate,
-        revisionDate                    : revisionDate,
-        publicationDate                 : publicationDate,
-        dsmmAccessibility               : dsmmMap.Accessibility,
-        dsmmDataIntegrity               : dsmmMap.DataIntegrity,
-        dsmmDataQualityAssessment       : dsmmMap.DataQualityAssessment,
-        dsmmDataQualityAssurance        : dsmmMap.DataQualityAssurance,
-        dsmmDataQualityControlMonitoring: dsmmMap.DataQualityControlMonitoring,
-        dsmmPreservability              : dsmmMap.Preservability,
-        dsmmProductionSustainability    : dsmmMap.ProductionSustainability,
-        dsmmTransparencyTraceability    : dsmmMap.TransparencyTraceability,
-        dsmmUsability                   : dsmmMap.Usability
-    ]
-
-    return json
+    return dsmmMap
   }
 
-  public static Map mergeCollectionAndGranule(Map collection, Map granule) {
+  static Map parseDSMM(String xml) {
+    return parseDSMM(new XmlSlurper().parseText(xml))
+  }
+
+  static Map mergeCollectionAndGranule(Map collection, Map granule) {
     return collection + granule
   }
 }
