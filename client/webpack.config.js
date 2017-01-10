@@ -73,12 +73,13 @@ module.exports = {
   },
   output: {
     path: __dirname + '/dist',
-    publicPath: '/',
+    publicPath: './',
     filename: 'bundle-[hash].js'
   },
   devtool: '#eval-source-map',
   debug: true,
   devServer: {
+    publicPath: '/onestop/',
     contentBase: './dist',
     hot: true,
     proxy: {

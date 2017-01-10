@@ -10,23 +10,7 @@ import temporal from './search/temporal/TemporalReducer'
 import loading from './loading/LoadingReducer'
 import errors from './error/ErrorReducer'
 import granules from './result/granules/GranulesReducer'
-import { LOCATION_CHANGE } from 'react-router-redux'
-
-// Routing reducer
-const initialState = Immutable.fromJS({
-  locationBeforeTransitions: null
-})
-
-const routing = (state = initialState, action) => {
-  switch (action.type) {
-    case LOCATION_CHANGE:
-    return state.merge({
-      locationBeforeTransitions: action.payload
-    })
-    default:
-    return state
-  }
-}
+import routing from './routing/RoutingReducer'
 
 const reducer = combineReducers({
   config,

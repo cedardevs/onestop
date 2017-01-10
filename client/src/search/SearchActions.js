@@ -4,6 +4,7 @@ import { showLoading, hideLoading } from '../loading/LoadingActions'
 import { showErrors } from '../error/ErrorActions'
 import queryString from 'query-string'
 import { facetsReceived, clearFacets } from './facet/FacetActions'
+import store from '../store'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -27,7 +28,10 @@ export const startSearch = () => {
 export const completeSearch = (items) => {
   return {
     type: SEARCH_COMPLETE,
-    items
+    view: 'collections',
+    items,
+    //TODO: This will be unnecessary when search helper functions are moved to actions
+    appState: store.getState().getIn(['search', 'requestBody'])
   }
 }
 
@@ -57,7 +61,6 @@ export const triggerSearch = (testing) => {
     const searchBody = state.getIn(['search', 'requestBody'])
     // To avoid returning all results when hitting search w/empty fields
     if(!searchBody) {
-      dispatch(push('/')) // Redirect to home
       return
     }
     dispatch(showLoading())
@@ -90,7 +93,6 @@ export const triggerSearch = (testing) => {
           dispatch(countHits(json.meta.total))
           dispatch(completeSearch(assignResourcesToMap(json.data)))
           dispatch(hideLoading())
-          dispatch(push('results?' + buildQueryString(searchBody)))
         })
         .catch(ajaxError => ajaxError.response.json().then(errorJson => handleErrors(dispatch, errorJson)))
         .catch(jsError => handleErrors(dispatch, jsError))

@@ -12,13 +12,15 @@ const apiHost = 'http://localhost:9090'
 const searchEndpoint = '/onestop/api/search'
 const successResponse = {
   data: [{
+
     type: 'granule',
     id: '1',
-    attributes: {id: 1, title: 'one'}
+    attributes: {id: 1, title: 'one'},
+    appState: ""
   }, {
     type: 'granule',
     id: '2',
-    attributes: {id: 2, title: 'two'}
+    attributes: {id: 2, title: 'two'},
   }],
   meta: {}
 }
@@ -51,9 +53,9 @@ describe('The granule actions', function () {
       store.getActions().should.deep.equal([
         {type: LOADING_SHOW},
         {type: granuleActions.FETCHING_GRANULES},
-        {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data},
-        {type: LOADING_HIDE},
-        {payload: {args: ["results/files"], method: "push"}, type: "@@router/CALL_HISTORY_METHOD"}
+        {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data,
+          view: 'collections/files', appState: ''},
+        {type: LOADING_HIDE}
       ])
     })
   })
@@ -83,9 +85,9 @@ describe('The granule actions', function () {
       store.getActions().should.deep.equal([
         {type: LOADING_SHOW},
         {type: granuleActions.FETCHING_GRANULES},
-        {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data},
-        {type: LOADING_HIDE},
-        {payload: {args: ["results/files"], method: "push"}, type: "@@router/CALL_HISTORY_METHOD"}
+        {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data,
+          view: 'collections/files', appState: ''},
+        {type: LOADING_HIDE}
       ])
     })
   })

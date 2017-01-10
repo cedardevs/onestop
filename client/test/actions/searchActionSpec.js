@@ -45,12 +45,9 @@ describe('The search action', () => {
       {type: module.SEARCH},
       {type: FACETS_RECEIVED, metadata: expectedMetadata},
       {type: module.COUNT_HITS, totalHits: 2},
-      {type: module.SEARCH_COMPLETE, items: expectedItems},
-      {type: LOADING_HIDE},
-      {type: '@@router/CALL_HISTORY_METHOD', payload: {
-        args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
-        method: 'push'}
-      }
+      {type: module.SEARCH_COMPLETE, items: expectedItems,
+          view: 'collections', appState: ''},
+      {type: LOADING_HIDE}
     ]
 
     const store = mockStore(Immutable.fromJS(testState))
@@ -80,13 +77,11 @@ describe('The search action', () => {
     const expectedActions = [
       {type: LOADING_SHOW},
       {type: module.SEARCH},
-      {type: FACETS_RECEIVED, metadata: expectedMetadata},
+      {type: FACETS_RECEIVED, metadata:expectedMetadata},
       {type: module.COUNT_HITS, totalHits: 2},
-      {type: module.SEARCH_COMPLETE, items: expectedItems},
-      {type: LOADING_HIDE},
-      {type: '@@router/CALL_HISTORY_METHOD', payload: {
-        args: ['results?facets=true&filters=%5B%5D&queries=%5B%7B%22type%22%3A%22queryText%22%2C%22value%22%3A%22alaska%22%7D%5D'],
-        method: 'push'}
+      {type: module.SEARCH_COMPLETE, items: expectedItems,
+      view: 'collections', appState: ''},
+      {type: LOADING_HIDE
       }
     ]
 
@@ -110,12 +105,17 @@ describe('The search action', () => {
       {type: module.SEARCH},
       {type: LOADING_HIDE},
       {type: SET_ERRORS, errors: errorsArray},
-      {type: '@@router/CALL_HISTORY_METHOD', payload: {
-        args: ['error'],
-        method: 'push'}
+      {type: "@@router/CALL_HISTORY_METHOD",
+        payload: {
+          "method": "push",
+          "args": [
+            "error"
+          ]
+        }
       },
       {type: CLEAR_FACETS},
-      {type: module.SEARCH_COMPLETE, items: new Map()},
+      {type: module.SEARCH_COMPLETE, items: new Map(),
+          view: 'collections', appState: ''},
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
@@ -163,7 +163,8 @@ describe('The search action', () => {
       ]
     }
     const action = module.completeSearch(items)
-    const expectedAction = {type: module.SEARCH_COMPLETE, items: items}
+    const expectedAction = {type: module.SEARCH_COMPLETE, items: items,
+          view: 'collections', appState: ''}
 
     action.should.deep.equal(expectedAction)
   })

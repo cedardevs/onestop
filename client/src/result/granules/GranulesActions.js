@@ -2,6 +2,7 @@ import fetch from 'isomorphic-fetch'
 import { push } from 'react-router-redux'
 import { showLoading, hideLoading } from '../../loading/LoadingActions'
 import { showErrors } from '../../error/ErrorActions'
+import store from '../../store'
 
 export const TOGGLE_GRANULE_FOCUS = 'toggle_granule_focus'
 export const FETCHING_GRANULES = 'fetching_granules'
@@ -27,10 +28,12 @@ export const fetchingGranules = () => {
   }
 }
 
-export const fetchedGranules = (granuleList) => {
+export const fetchedGranules = granuleList => {
   return {
     type: FETCHED_GRANULES,
-    granules: granuleList
+    granules: granuleList,
+    view: 'collections/files',
+    appState: store.getState().getIn(['search', 'requestBody'])
   }
 }
 
@@ -78,7 +81,6 @@ export const fetchGranules = () => {
         .then(json => {
           dispatch(fetchedGranules(json.data))
           dispatch(hideLoading())
-          dispatch(push('results/files'))
         })
         .catch(ajaxError => {
           ajaxError.response.json().then(errorJson => handleErrors(dispatch, errorJson))
