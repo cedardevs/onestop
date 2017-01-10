@@ -34,10 +34,10 @@ class SearchFieldsComponent extends React.Component {
       this.toggleMap()
     }
 
-    const calendar = ReactDOM.findDOMNode(this.refs.timeComponent)
-    if (this.state.showCalendar && !calendar.contains(e.target) && e.target.id !== 'timeButton') {
-      this.toggleCalendar()
-    }
+    // const calendar = ReactDOM.findDOMNode(this.refs.timeComponent)
+    // if (this.state.showCalendar && !calendar.contains(e.target) && e.target.id !== 'timeButton') {
+    //   this.toggleCalendar()
+    // }
   }
 
   handleKeyup(e) {
