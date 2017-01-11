@@ -254,44 +254,34 @@
         "format": "date_optional_time"
       },
       "dsmmAccessibility": {
-        "type": "byte",
-        "index": "no"
+        "type": "byte"
       },
       "dsmmDataIntegrity": {
-        "type": "byte",
-        "index": "no"
+        "type": "byte"
       },
       "dsmmDataQualityAssessment": {
-        "type": "byte",
-        "index": "no"
+        "type": "byte"
       },
       "dsmmDataQualityAssurance": {
-        "type": "byte",
-        "index": "no"
+        "type": "byte"
       },
       "dsmmDataQualityControlMonitoring": {
-        "type": "byte",
-        "index": "no"
+        "type": "byte"
       },
       "dsmmPreservability": {
-        "type": "byte",
-        "index": "no"
+        "type": "byte"
       },
       "dsmmProductionSustainability": {
-        "type": "byte",
-        "index": "no"
+        "type": "byte"
       },
       "dsmmTransparencyTraceability": {
-        "type": "byte",
-        "index": "no"
+        "type": "byte"
       },
       "dsmmUsability": {
-        "type": "byte",
-        "index": "no"
+        "type": "byte"
       },
       "dsmmAverage": {
-        "type": "float",
-        "index": "no"
+        "type": "float"
       }
     }
   }

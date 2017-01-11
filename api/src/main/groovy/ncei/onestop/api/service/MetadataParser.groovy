@@ -410,10 +410,10 @@ class MetadataParser {
     }
 
     dsmmValues.each { r ->
-      def measureUrl = r.CodeListValue.@codeList.text()
+      def measureUrl = r.CodeListValue.@codeList.text() ?: r.CodeListValue.@codelist.text() // FIXME Handling a typo until it's resolved
       def measure = measureUrl.substring(measureUrl.lastIndexOf('#') + 1)
       def score = scoreMap.get(r.CodeListValue.@codeListValue.text())
-      dsmmMap.put(measure, score)
+      dsmmMap.replace(measure, score)
     }
 
     def avg = dsmmMap.values().sum() / dsmmMap.size()
