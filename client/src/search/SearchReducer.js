@@ -3,6 +3,7 @@ import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY, CLEAR_SEARCH} from './SearchActio
 import { NEW_GEOMETRY, REMOVE_GEOMETRY } from './map/MapActions'
 import { MODIFY_SELECTED_FACETS, CLEAR_FACETS } from './facet/FacetActions'
 import { DateRange } from './temporal/TemporalActions'
+import { recenterGeometry } from '../utils/geoUtils'
 
 export const initialState = Immutable.fromJS({
   text: '',
@@ -89,7 +90,9 @@ const assembleRequestBody = (state) => {
   // Spatial filter:
   let geoJSON = state.get('geoJSON')
   if (geoJSON){
-    filters.push({type: 'geometry', geometry: geoJSON.toJS().geometry})
+    const recenteredGeometry = recenterGeometry(geoJSON.toJS().geometry)
+    console.dir(recenteredGeometry)
+    filters.push({type: 'geometry', geometry: recenteredGeometry})
   }
 
   // Temporal filter:
