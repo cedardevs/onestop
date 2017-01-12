@@ -11,6 +11,7 @@ export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
 export const UPDATE_QUERY = 'update_query'
 export const CLEAR_SEARCH = 'clear_search'
+export const GENERATE_COLLECTIONS_QUERY = 'GENERATE_COLLECTIONS_QUERY'
 
 export const updateQuery = (searchText) => {
   return {
@@ -29,11 +30,11 @@ export const completeSearch = (items) => {
   return {
     type: SEARCH_COMPLETE,
     view: 'collections',
-    items,
-    //TODO: This will be unnecessary when search helper functions are moved to actions
-    appState: store.getState().search.requestBody
+    items
   }
 }
+
+export const generateCollectionsQuery = () => {return {type: GENERATE_COLLECTIONS_QUERY}}
 
 export const clearSearch = () => {
   return {
@@ -47,11 +48,12 @@ export const triggerSearch = (testing) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
     let state = getState()
 
-    if (state.search.inFlight === true) {
+    if (state.appState.collectionRequest.inFlight) {
       return Promise.resolve()
     }
 
-    const searchBody = state.search.requestBody
+    dispatch(generateCollectionsQuery())
+    const searchBody = state.query.formatted
     // To avoid returning all results when hitting search w/empty fields
     if(!searchBody) {
       return
