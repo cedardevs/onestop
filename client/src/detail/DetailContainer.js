@@ -6,13 +6,13 @@ import { clearSearch, triggerSearch, updateQuery } from '../search/SearchActions
 import { clearFacets } from '../search/facet/FacetActions'
 import Detail from './DetailComponent'
 
-const mapStateToProps = (reduxState, reactProps) => {
-  const focusedId = reduxState.details.focusedId
-  const focusedItem = reduxState.collections.results[focusedId]
+const mapStateToProps = (state, reactProps) => {
+  const { focusedId } = state.ui.cardDetails
+  const focusedItem = state.domain.results.collections[focusedId]
   return {
     id: focusedId,
     item: focusedItem,
-    showGranulesLink: reduxState.config.granuleDetails
+    showGranulesLink: state.domain.config.granuleDetails
   }
 }
 
