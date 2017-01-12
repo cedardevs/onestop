@@ -91,7 +91,6 @@ const assembleRequestBody = (state) => {
   let geoJSON = state.get('geoJSON')
   if (geoJSON){
     const recenteredGeometry = recenterGeometry(geoJSON.toJS().geometry)
-    console.dir(recenteredGeometry)
     filters.push({type: 'geometry', geometry: recenteredGeometry})
   }
 
