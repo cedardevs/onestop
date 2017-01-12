@@ -7,8 +7,7 @@ const mapStateToProps = (state) => {
   return {
     results: state.granules.granules,
     focusedIds: state.granules.focusedGranules,
-    selectedCollection: state.collections.results.id ?
-      state.collections.results.id : {}
+    selectedCollection: state.collections.results[id] || {}
   }
 }
 
