@@ -1,5 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import watch from 'redux-watch'
+import store from '../../store'
 import L from 'leaflet'
 import 'esri-leaflet'
 import 'leaflet-draw'
@@ -107,31 +109,19 @@ class MapComponent extends React.Component {
   componentWillUpdate(nextProps) {
   	// Add/remove layers on map to reflect store
     if (this.state._initialized) {
-      if (this.props.selection) { this.updateSelectionLayer(nextProps) }
+      if (this.props.selection) { this.updateSelectionLayer() }
       if (this.props.features) { this.updateResultsLayers(nextProps) }
     }
   }
 
-  updateSelectionLayer({geoJsonSelection}) {
+  updateSelectionLayer() {
   	let { editableLayers, style } = this.state
-		if (!geoJsonSelection) {
-			if (editableLayers) {
-				editableLayers.clearLayers()
-			}
-		}
-		else {
-			// Compare old vs. new layer
-			if (editableLayers) {
-				const prevSelection = editableLayers.getLayers()[0] ?
-					editableLayers.getLayers()[0].toGeoJSON() : null
-        if (!prevSelection || prevSelection &&
-            !_.isEqual(geoJsonSelection.geometry.coordinates, prevSelection.geometry.coordinates)) {
-          editableLayers.clearLayers()
-          let layer = L.GeoJSON.geometryToLayer(geoJsonSelection, {style})
-          editableLayers.addLayer(layer)
-				}
-			}
-		}
+		let w = watch(store.getState, 'searchAndFacets.search.geometry.geoJSON')
+		store.subscribe(w((newVal, oldVal, objectPath) => {
+      editableLayers.clearLayers()
+      let layer = L.GeoJSON.geometryToLayer(newVal, {style})
+      editableLayers.addLayer(layer)
+		}))
   }
 
   updateResultsLayers({geoJsonFeatures, focusedFeatures}) {

@@ -32,6 +32,7 @@
     "redux-immutable": "^3.0.6",
     "redux-seamless-immutable": "^0.3.0",
     "redux-thunk": "^2.0.1",
+    "redux-watch": "^1.1.1",
     "seamless-immutable": "^7.0.1",
     "slick-carousel": "^1.6.0"
   },

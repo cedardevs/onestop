@@ -15,9 +15,11 @@ export const facetsReceived = (metadata) => {
 export const toggleFacet = (category, facetName, selected) => {
   return (dispatch, getState) => {
     const { selectedFacets } = getState().searchAndFacets.facets
+    const newSelectedFacets = updateSelectedFacets(selectedFacets, category, 
+      facetName, selected)
     dispatch({
       type: TOGGLE_FACET,
-      selectedFacets: updateSelectedFacets(selectedFacets, category, facetName, selected)
+      selectedFacets: newSelectedFacets
     })
   }
 }
