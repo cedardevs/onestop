@@ -12,9 +12,9 @@ const initialState = Immutable({
 export const results = (state = initialState, action) => {
   switch(action.type) {
     case SEARCH_COMPLETE:
-      let collections = Immutable({})
+      let collections = {}
       action.items.forEach((val, key) => {
-        collections = Immutable.set(results, key, val)
+        collections[key] = val
       })
       return Immutable.set(state, 'collections', collections)
 
