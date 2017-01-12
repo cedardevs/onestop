@@ -1,20 +1,20 @@
-import Immutable from 'immutable'
+import Immutable from 'seamless-immutable'
 import { LOCATION_CHANGE } from 'react-router-redux'
-import { INSTANTIATE_APP_STATE } from './RoutingActions'
+import { INSTANTIATE_APP_STATE } from './TransitionActions'
 import { SEARCH_COMPLETE } from '../search/SearchActions'
 import { FETCHED_GRANULES } from '../result/granules/GranulesActions'
 // Support query parsing
 
 // Routing reducer
-const initialState = Immutable.fromJS({
+const initialState = Immutable({
   locationBeforeTransitions: null,
   initialized: false
 })
 
-const routing = (state = initialState, action) => {
+const transition = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_CHANGE:
-      return state.merge({
+      return Immutable.merge(state, {
         locationBeforeTransitions: action.payload
       })
 
@@ -22,10 +22,10 @@ const routing = (state = initialState, action) => {
     case FETCHED_GRANULES:
     case SEARCH_COMPLETE:
       const { view, appState } = action
-      let location = state.get('locationBeforeTransitions').toJS()
+      let location = state.locationBeforeTransitions
       location = Object.assign({}, location, {pathname: `/${view}`, action: 'PUSH',
         search: `?${encodeURIComponent(appState)}`})
-      return state.merge({locationBeforeTransitions: location, 'initialized': true})
+      return Immutable.merge(state, {locationBeforeTransitions: location, initialized: true})
 
     default:
       return state
@@ -33,4 +33,4 @@ const routing = (state = initialState, action) => {
 }
 
 
-export default routing
+export default transition

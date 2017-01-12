@@ -1,9 +1,9 @@
 import _ from 'lodash'
-import Immutable from 'immutable'
+import Immutable from 'seamless-immutable'
 import moment from 'moment'
 import { triggerSearch, updateQuery } from '../search/SearchActions'
 import { fetchGranules } from '../result/granules/GranulesActions'
-import { modifySelectedFacets } from '../search/facet/FacetActions'
+import { toggleFacet } from '../search/facet/FacetActions'
 import { startDate, endDate } from '../search/temporal/TemporalActions'
 import { newGeometry } from '../search/map/MapActions'
 import store from '../store'
@@ -29,7 +29,7 @@ export const instantiateAppState = () => {
       dispatch(triggerSearch())
       if (baseURL.endsWith('files')) {
         // Requires both original collection search and granule search
-        const checkInitialize = () => store.getState().getIn(['routing', 'initialized'])
+        const checkInitialize = () => store.getState().routing.initialized
         const subscribeInitialized = () => {
           if (checkInitialize()) {
             unsubscribe()
@@ -37,15 +37,6 @@ export const instantiateAppState = () => {
           }
         }
         let unsubscribe = store.subscribe(subscribeInitialized)
-      }
-    }
-
-    function handleChange() {
-      let previousValue = currentValue
-      currentValue = select(store.getState())
-
-      if (previousValue !== currentValue) {
-        console.log('Some deep nested property changed from', previousValue, 'to', currentValue)
       }
     }
 
@@ -77,13 +68,11 @@ export const instantiateAppState = () => {
 
     function dispatchFacets(dispatch, facets) {
       if (facets) {
-        let selectedFacets = Immutable.Map()
-        for (let facet of facets) {
-          for (let value of facet.values) {
-            selectedFacets = selectedFacets.setIn([facet.name, value, 'selected'], true)
-          }
-        }
-        dispatch(modifySelectedFacets(selectedFacets))
+        facets.forEach((category)=> {
+          category.values.forEach( value => {
+            dispatch(toggleFacet(category.name, value, true))
+          })
+        })
       }
       return !!facets
     }

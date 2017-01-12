@@ -7,11 +7,11 @@ import { clearFacets } from '../search/facet/FacetActions'
 import Detail from './DetailComponent'
 
 const mapStateToProps = (reduxState, reactProps) => {
-  const focusedId = reduxState.get('details').get('focusedId')
-  const focusedItem = reduxState.get('collections').get('results').get(focusedId)
+  const focusedId = reduxState.details.focusedId
+  const focusedItem = reduxState.collections.results[focusedId]
   return {
     id: focusedId,
-    item: focusedItem ? focusedItem.toJS() : null
+    item: focusedItem
   }
 }
 

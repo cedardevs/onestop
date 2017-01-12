@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import _ from 'lodash'
 import CollectionTile from './CollectionTileComponent'
 import { CardStatus } from '../../detail/DetailActions'
 import styles from './collectionGrid.css'
@@ -10,14 +11,14 @@ class CollectionGrid extends React.Component {
 
   render() {
     const cards = []
-    this.props.results.forEach((value, key) => {
+    _.forOwn(this.props.results, (val, key) => {
       cards.push(<CollectionTile
             key={key}
             recordId={key}
-            title={value.get('title')}
-            thumbnail={value.get('thumbnail')}
-            description={value.get('description')}
-            flipped={value.get('cardStatus') != CardStatus.SHOW_FRONT}
+            title={val.title}
+            thumbnail={val.thumbnail}
+            description={val.description}
+            flipped={val.cardStatus != CardStatus.SHOW_FRONT}
             onCardClick={() => this.props.onCardClick(key)}
         />)
     })

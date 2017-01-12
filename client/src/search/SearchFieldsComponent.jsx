@@ -86,8 +86,7 @@ class SearchFieldsComponent extends React.Component {
         <div className={`pure-form  ${styles.searchFields}`}>
           <div id="searchbox" className={styles.searchContainer}>
             <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery}
-                             value={this.props.queryString}
-            />
+                             value={this.props.queryString}/>
           </div>
           <button className={`${styles.clearButton}`} onClick={this.clearQueryString}>x</button>
           <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`}

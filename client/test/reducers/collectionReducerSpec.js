@@ -1,5 +1,5 @@
 import '../specHelper'
-import Immutable from 'immutable'
+import Immutable from 'seamless-immutable'
 import { collections, initialState } from '../../src/result/collections/CollectionReducer'
 import { toggleSelection, clearSelections } from '../../src/result/collections/CollectionsActions'
 
@@ -8,8 +8,8 @@ describe('The collections reducer', function () {
     const initialAction = {type: 'init'}
     const result = collections(initialState, initialAction)
 
-    result.get('results').should.be.an.instanceOf(Immutable.Map)
-    result.get('selectedIds').should.be.an.instanceOf(Immutable.Set)
+    result.results.should.be.an.instanceOf(Object)
+    result.selectedIds.should.be.an.instanceOf(Array)
   })
 
   it('toggles selected collections', function () {
@@ -17,18 +17,18 @@ describe('The collections reducer', function () {
     const toggleB = toggleSelection('B')
     // toggle A --> ['A']
     const addedAResult = collections(initialState, toggleA)
-    addedAResult.get('selectedIds').should.equal(Immutable.Set(['A']))
+    addedAResult.selectedIds.should.deep.equal(['A'])
     // toggle B --> ['A', 'B']
     const addedBResult = collections(addedAResult, toggleB)
-    addedBResult.get('selectedIds').should.equal(Immutable.Set(['A', 'B']))
+    addedBResult.selectedIds.should.deep.equal(['A', 'B'])
     // toggle A --> ['B']
     const removedAResult = collections(addedBResult, toggleA)
-    removedAResult.get('selectedIds').should.equal(Immutable.Set(['B']))
+    removedAResult.selectedIds.should.deep.equal(['B'])
   })
 
   it('can clear existing collection selections', function () {
-    const stateWithCollections = Immutable.fromJS({selectedIds: ['ABC']})
+    const stateWithCollections = Immutable({selectedIds: ['ABC']})
     const result = collections(stateWithCollections, clearSelections())
-    result.get('selectedIds').should.equal(Immutable.Set())
+    result.selectedIds.should.deep.equal([])
   })
 })

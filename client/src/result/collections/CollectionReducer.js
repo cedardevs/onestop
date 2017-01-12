@@ -1,33 +1,34 @@
-import Immutable from 'immutable'
+import Immutable from 'seamless-immutable'
+import _ from 'lodash'
 import {SEARCH, SEARCH_COMPLETE, COUNT_HITS} from '../../search/SearchActions'
 import { TOGGLE_SELECTION, CLEAR_SELECTIONS } from './CollectionsActions'
 
-export const initialState = Immutable.Map({
-  results: Immutable.Map(),
-  selectedIds: Immutable.Set(),
-  totalHits: 0
+export const initialState = Immutable({
+  results: {},
+  selectedIds: [],
+  totalHists: 0
 })
 
 export const collections = (state = initialState, action) => {
   switch(action.type) {
     case TOGGLE_SELECTION:
-      return state.set('selectedIds', toggleValueInSet(state.get('selectedIds'), action.id))
+      return Immutable.set(state, 'selectedIds', toggleId(state.selectedIds, action.id))
 
     case CLEAR_SELECTIONS:
-      return state.set('selectedIds', initialState.get('selectedIds'))
+      return Immutable.set(state, 'selectedIds', initialState.selectedIds)
 
     case SEARCH:
-      return state.set('results', initialState.get('results'))
+      return Immutable.set(state, 'results', initialState.results)
 
     case SEARCH_COMPLETE:
-      let results = Immutable.Map()
-      action.items.forEach((value, key) => {
-        results = results.set(key, Immutable.Map(value))
+      let results = Immutable({})
+      action.items.forEach((val, key) => {
+        results = Immutable.set(results, key, val)
       })
-      return state.set('results', results)
+      return Immutable.set(state, 'results', results)
 
     case COUNT_HITS:
-      return state.set('totalHits', action.totalHits)
+      return Immutable.set(state, 'totalHits', action.totalHits)
 
     default:
       return state
@@ -36,6 +37,10 @@ export const collections = (state = initialState, action) => {
 
 export default collections
 
-const toggleValueInSet = (set, value) => {
-  return set.has(value) ? set.delete(value) : set.add(value)
+const toggleId = (selectedIds, value, idx = 0) => {
+  if (idx === selectedIds.length){
+    return selectedIds.concat([value])
+  } else if (selectedIds[idx] === value){
+    return selectedIds.slice(0, idx).concat(selectedIds.slice(idx + 1))
+  } else { return toggleId(selectedIds, value, idx + 1) }
 }

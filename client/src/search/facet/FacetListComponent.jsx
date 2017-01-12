@@ -1,4 +1,3 @@
-import Immutable from 'immutable'
 import React from 'react'
 import styles from './facet.css'
 import _ from 'lodash'
@@ -10,7 +9,7 @@ class FacetList extends React.Component {
     this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(this)
     this.facetMap = props.facetMap
     this.selectedFacets = props.selectedFacets
-    this.modifySelectedFacets = props.modifySelectedFacets
+    this.toggleFacet = props.toggleFacet
     this.submit = props.submit
     this.state = this.getDefaultState()
   }
@@ -32,13 +31,7 @@ class FacetList extends React.Component {
     const {name, value} = e.target.dataset
     const selected = e.target.checked
 
-    if (selected){
-      this.selectedFacets = this.selectedFacets.setIn([name,value,'selected'], selected)
-    } else {
-      this.selectedFacets = this.selectedFacets.deleteIn([name,value]).filter(x => x.size)
-    }
-
-    this.modifySelectedFacets(this.selectedFacets)
+    this.toggleFacet(name, value, selected)
     this.submit()
   }
 
@@ -48,6 +41,12 @@ class FacetList extends React.Component {
 
   subFacetLabel(str) {
     return str.split('>').pop().trim()
+  }
+
+  isSelected(category, facet) {
+    return this.selectedFacets[category]
+    && this.selectedFacets[category].includes(facet)
+    || false
   }
 
   render() {
@@ -66,7 +65,7 @@ class FacetList extends React.Component {
                 id: `${category}-${term}`,
                 type: 'checkbox',
                 onChange: self.updateStoreAndSubmitSearch,
-                checked: terms[term].selected
+                checked: self.isSelected(category, term)
               }
               return(<div key={`${category}-${term}`}>
                 <input {...input}/>

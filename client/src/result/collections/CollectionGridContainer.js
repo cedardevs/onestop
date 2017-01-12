@@ -4,9 +4,9 @@ import CollectionGrid from './CollectionGridComponent'
 
 const mapStateToProps = (state) => {
   return {
-    results: state.get('collections').get('results'),
-    totalHits: state.get('collections').get('totalHits'),
-    returnedHits: state.get('collections').get('results').count()
+    results: state.collections.results,
+    totalHits: state.collections.totalHits,
+    returnedHits: state.collections.results && Object.keys(state.collections.results).length || 0, // TODO - use the total hits from the search response
   }
 }
 

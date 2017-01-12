@@ -6,9 +6,9 @@ import store from './store.js'
 const createSelectLocationState = () => {
   let prevRoutingState, prevRoutingStateJS
   return (state) => {
-    const routingState = state.get('routing')
+    const routingState = state.routing
     if (typeof prevRoutingState === 'undefined' || prevRoutingState !== routingState) {
-      prevRoutingStateJS = routingState.toJS()
+      prevRoutingStateJS = routingState
     }
     return prevRoutingStateJS
   }

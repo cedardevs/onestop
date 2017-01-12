@@ -1,18 +1,19 @@
-import Immutable from 'immutable'
+import Immutable from 'seamless-immutable'
+import _ from 'lodash'
 import {SEARCH, SEARCH_COMPLETE, UPDATE_QUERY, CLEAR_SEARCH} from './SearchActions'
 import { NEW_GEOMETRY, REMOVE_GEOMETRY } from './map/MapActions'
-import { MODIFY_SELECTED_FACETS, CLEAR_FACETS } from './facet/FacetActions'
+import { TOGGLE_FACET, CLEAR_FACETS } from './facet/FacetActions'
 import { DateRange } from './temporal/TemporalActions'
 import { recenterGeometry } from '../utils/geoUtils'
 
-export const initialState = Immutable.fromJS({
+export const initialState = Immutable({
   text: '',
   geoJSON: null,
   inFlight: false,
   startDateTime: '',
   endDateTime: '',
   requestBody: '',
-  selectedFacets: Immutable.Map()
+  selectedFacets: {}
 })
 
 export const search = (state = initialState, action) => {
@@ -20,43 +21,43 @@ export const search = (state = initialState, action) => {
 
   switch (action.type) {
     case SEARCH:
-      return state.mergeDeep({
+      return Immutable.merge(state, {
         inFlight: true
       })
 
     case SEARCH_COMPLETE:
-      return state.mergeDeep({
+      return Immutable.merge(state, {
         inFlight: false
       })
 
     case NEW_GEOMETRY:
-      newState = state.mergeDeep({geoJSON: action.geoJSON})
-      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+      newState = Immutable.merge(state, {geoJSON: action.geoJSON}, {deep: true})
+      return Immutable.merge(newState, {requestBody: assembleRequestBody(newState)}, {deep: true})
 
     case REMOVE_GEOMETRY:
-      newState = state.mergeDeep({geoJSON: initialState.get('geoJSON')})
-      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+      newState = Immutable.merge(state, {geoJSON: initialState.geoJSON}, {deep: true})
+      return Immutable.merge(newState, {requestBody: assembleRequestBody(newState)}, {deep: true})
 
     case UPDATE_QUERY:
-      newState = state.mergeDeep({text: action.searchText})
-      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+      newState = Immutable.merge(state, {text: action.searchText}, {deep: true})
+      return Immutable.merge(newState, {requestBody: assembleRequestBody(newState)}, {deep: true})
 
-    case MODIFY_SELECTED_FACETS:
-      newState = state.set('selectedFacets', (action.selectedFacets ?
+    case TOGGLE_FACET:
+      newState = Immutable.set(state, 'selectedFacets', (action.selectedFacets ?
         action.selectedFacets : initialState.selectedFacets))
-      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+      return Immutable.merge(newState, {requestBody: assembleRequestBody(newState)}, {deep: true})
 
     case CLEAR_FACETS:
-      newState = state.set('selectedFacets', initialState.get('selectedFacets'))
-      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+      newState = Immutable.set(state, 'selectedFacets', initialState.selectedFacets)
+      return Immutable.merge(newState, {requestBody: assembleRequestBody(newState)}, {deep: true})
 
     case DateRange.START_DATE:
-      newState = state.mergeDeep({startDateTime: action.datetime})
-      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+      newState = Immutable.merge(state, {startDateTime: action.datetime}, {deep: true})
+      return Immutable.merge(newState, {requestBody: assembleRequestBody(newState)}, {deep: true})
 
     case DateRange.END_DATE:
-      newState = state.mergeDeep({endDateTime: action.datetime})
-      return newState.mergeDeep({requestBody: assembleRequestBody(newState)})
+      newState = Immutable.merge(state, {endDateTime: action.datetime}, {deep: true})
+      return Immutable.merge(newState, {requestBody: assembleRequestBody(newState)}, {deep: true})
 
     case CLEAR_SEARCH:
       return initialState
@@ -74,29 +75,27 @@ const assembleRequestBody = (state) => {
   let filters = []
 
   // Query:
-  let queryText = state.get('text')
+  let queryText = state.text
   if (queryText) {
     queries.push({type: 'queryText', value: queryText})
   }
 
   // Facets
-  let categories = state.get('selectedFacets')
-  if ( categories.size ) {
-    categories.forEach((v,k) => {
-      filters.push({"type":"facet","name": k,"values": Object.keys(v.toJS())})
-    })
-  }
+  let categories = state.selectedFacets
+  _.forOwn(categories, (v,k) => {
+    filters.push({"type":"facet","name": k,"values": v})
+  })
 
   // Spatial filter:
-  let geoJSON = state.get('geoJSON')
+  let geoJSON = state.geoJSON
   if (geoJSON){
-    const recenteredGeometry = recenterGeometry(geoJSON.toJS().geometry)
+    const recenteredGeometry = recenterGeometry(geoJSON.geometry)
     filters.push({type: 'geometry', geometry: recenteredGeometry})
   }
 
   // Temporal filter:
-  let startDateTime = state.get('startDateTime')
-  let endDateTime = state.get('endDateTime')
+  let startDateTime = state.startDateTime
+  let endDateTime = state.endDateTime
   if(startDateTime || endDateTime) {
     filters.push(dateTime(startDateTime, endDateTime))
   }

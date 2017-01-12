@@ -1,12 +1,12 @@
-import Immutable from 'immutable'
+import Immutable from 'seamless-immutable'
 import {CLEAR_ERRORS, SET_ERRORS} from './ErrorActions'
 
-export const initialState = Immutable.List()
+export const initialState = Immutable(new Set())
 
 const errors = (state = initialState, action) => {
   switch (action.type) {
     case SET_ERRORS:
-      return Immutable.fromJS(action.errors)
+      return Immutable(action.errors)
 
     case CLEAR_ERRORS:
       return initialState
