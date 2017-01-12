@@ -1,9 +1,8 @@
 import Immutable from 'seamless-immutable'
 import _ from 'lodash'
-import { SEARCH, SEARCH_COMPLETE, UPDATE_QUERY, CLEAR_SEARCH,
-  GENERATE_COLLECTIONS_QUERY} from '../../search/SearchActions'
-import { NEW_GEOMETRY, REMOVE_GEOMETRY } from '../../search/map/MapActions'
-import { TOGGLE_FACET, CLEAR_FACETS } from '../../search/facet/FacetActions'
+import { UPDATE_QUERY, GENERATE_COLLECTIONS_QUERY} from '../../search/SearchActions'
+import { NEW_GEOMETRY } from '../../search/map/MapActions'
+import { TOGGLE_FACET } from '../../search/facet/FacetActions'
 import { DateRange } from '../../search//temporal/TemporalActions'
 
 export const initialState = Immutable({

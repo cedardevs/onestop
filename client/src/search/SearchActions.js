@@ -46,13 +46,13 @@ export const clearSearch = () => {
 export const triggerSearch = (testing) => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
+    dispatch(generateCollectionsQuery())
     let state = getState()
 
     if (state.appState.collectionRequest.inFlight) {
       return Promise.resolve()
     }
 
-    dispatch(generateCollectionsQuery())
     const searchBody = state.query.formatted
     // To avoid returning all results when hitting search w/empty fields
     if(!searchBody) {
