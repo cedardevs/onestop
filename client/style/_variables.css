@@ -17,6 +17,7 @@ $color-secondary-lightest:   lighten($color-secondary, 75%);
 
 $color-focus:                $color-primary-alt;
 $color-visited:              #4c2c92;
+$color-visited-light:        #8967d2;
 
 $color-success:              #1CB841;
 
@@ -27,9 +28,13 @@ $color-base: $color-gray;
 $text-max-width:    660px;
 $site-max-width:    1040px;
 $color-medium-blue:     #0a4595;
+$color-green: #2e8540;
+$color-green-light: #4aa564;
+$color-green-lighter: #94bfa2;
+$color-gold: #fdb81e;
 
 /* Page layout */
 $banner-height: 1.5em;
-$header-height: 7.4em;
+$header-height: 5em;
 $footer-height: 5em;
 $section-padding: .9em;

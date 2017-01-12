@@ -30,44 +30,25 @@ input {
   background: $color-primary-darkest;
   box-shadow: 0 10px 5px rgb(0,0,0,.7);
   padding: $section-padding;
+  max-height: $header-height;
 }
 
-.appbar {
-  clear: both;
-  display: flex;
-  justify-content: space-between;
-  top: 24px;
-  height: 210px;
-  width: 100%;
-}
 
 .logo {
-  float: left;
-  height: 74px;
-  width: 74px;
-  min-height: 74px;
-  min-width: 74px;
-  margin-right: 20px;
-}
-
-.orgInfo {
-  display: block;
-  min-width: 300px;
+  height: 50px;
+  width: 50px;
+  min-height: 50px;
+  min-width: 50px;
+  padding: 0 10px;
+  display: inline;
 }
 
 .orgBox {
-  display: block;
+  display: flex;
+  align-items: center;
+  padding-right: 15px;
 }
 
-.orgbox:hover {
-  background-position: 0 0;
-}
-
-@media screen and (max-width:1245px) {
-  .orgBox {
-    display: none;
-  }
-}
 
 .noaa,
 .doc {
@@ -94,112 +75,39 @@ input {
   color: white;
   font-size: 1.5em;
   font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
-  float: right;
-  padding: 0 120px 0 0;
+  display: inline;
 }
 
 .landingComponents {
-  float: right;
   color: black;
   filter: alpha(opacity=30); /* For IE8 and earlier */
-  position: relative;
-  z-index: 10;
+  z-index: 1;
 }
 
-/*.dropDown {*/
-  /*padding: 10px 0 0 0;*/
-  /*display: inline-block;*/
-/*}*/
-
-.details {
-  position: fixed;
-  top: 108px;
-  left: 400px;
-  bottom: 24px;
-}
-
-.leftNav {
-  z-index: 2;
-  float: left;
-  display: inline-block;
-  top: 24px;
-  bottom: 24px;
-}
-
-/*search fields*/
 .searchFields {
   display: inline;
   font-size: 1.2em;
   height: 3em;
-  z-index: 999;
+  z-index: 1;
 }
-/*search container*/
+
+@media screen and (max-width:725px) {
+  .oneStopText {
+    display: none;
+  }
+}
+
+@media screen and (max-width:580px) {
+  .orgBox {
+    display: none;
+  }
+}
+
 .searchContainer {
   color: black;
   margin-top: .9em;
-  width: 40%;
+  width: 38%;
   display: inline-block;
-}
-
-/*temporal and map*/
-.temporalContent {
-  /*position: absolute;*/
-  /*z-index: 1;*/
-}
-
-.mapContainer,
-.temporalContainer {
-  position: relative;
-  display: inline-block;
-}
-
-.clearButton {
-  margin-left: -1.26em;
-  height: 1em;
-  color: grey;
-  border: none;
-  font-size: 1.2em;
-  border: none;
-  text-shadow: none;
-  background-color: white;
-}
-.clearButton:hover {
-  color: #5a5a5a;
-}
-.clearButton:focus {
-  outline: 0;
-}
-
-/*search button*/
-.landingButton {
-  color: white;
-  font-size: 1.3em;
-  border: none;
-  text-shadow: 0 0 5px black;
-  background-color: rgb(0,0,0,0);
-  margin-right: .5em;
-}
-.landingButton:focus {
-  outline: 0;
-}
-
-.mapButton {
-  max-height: 2.2em;
-  position: relative;
-  color: white;
-  background-color: $color-primary;
-  text-shadow: 0 0 5px black;
-  margin-right: .5em;
-  margin-left: .5em;
-}
-/* fix for large, unclickable area on button */
-.mapButton:before{
-    position:absolute;
-    content:'';
-    top:-1px;
-    right:-1px;
-    left:-1px;
-    bottom:-1px;
 }
 
 .mapContainer {
@@ -215,7 +123,67 @@ input {
   max-width: 1000px;
 }
 
-.globeIcon {
-    text-align: center;
-    line-height: 64% !important;
+.clearButton {
+  margin-left: -1.26em;
+  height: 1em;
+  color: grey;
+  border: none;
+  font-size: 1.2em;
+  border: none;
+  text-shadow: none;
+  background-color: white;
+}
+
+.clearButton:hover {
+  color: #5a5a5a;
+}
+
+.clearButton:focus {
+  outline: 0;
+}
+
+.undoButton,
+.searchButton,
+.timeButton,
+.mapButton {
+  max-height: 2.2em;
+  position: relative;
+  color: white;
+  background-color: $color-primary;
+  text-shadow: 0 0 5px black;
+  margin-left: .5em;
+}
+
+.searchButton:focus {
+  outline: 0;
+}
+
+.timeButtonApplied,
+.mapButtonApplied {
+  max-height: 2.2em;
+  position: relative;
+  color: white;
+  background-color: $color-visited-light;
+  text-shadow: 0 0 5px black;
+  margin-left: .5em;
+}
+
+/* fix for large, unclickable area on button */
+.undoButton:before,
+.searchButton:before,
+.timeButton:before,
+.mapButton:before,
+.timeButtonApplied:before,
+.mapButtonApplied:before {
+  position:absolute;
+  content:'';
+  top:-1px;
+  right:-1px;
+  left:-1px;
+  bottom:-1px;
+}
+
+.icon {
+  text-align: center;
+  line-height: 64% !important;
 }
