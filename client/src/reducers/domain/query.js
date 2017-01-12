@@ -58,8 +58,9 @@ const assembleFilters = ({facets, geoJSON, startDateTime, endDateTime}) => {
   _.forOwn(facets, (v,k) => {
     filters.push({'type':'facet', 'name': k, 'values': v})
   })
-  if (geoJSON){ filters.push({type: 'geometry', geometry: geoJSON.geometry}) }
+  if (!_.isEmpty(geoJSON.geometry)){ filters.push({type: 'geometry', geometry: geoJSON.geometry}) }
   if (startDateTime || endDateTime) { filters.push(dateTime(startDateTime, endDateTime)) }
+  return filters
 }
 
 const dateTime = (startDateTime, endDateTime) => {
