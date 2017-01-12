@@ -33,22 +33,22 @@ export const fetchedGranules = granuleList => {
     type: FETCHED_GRANULES,
     granules: granuleList,
     view: 'collections/files',
-    appState: store.getState().search.requestBody
+    appState: store.getState().query.formatted
   }
 }
 
 export const fetchGranules = () => {
   return (dispatch, getState) => {
     const state = getState()
-    if (state.granules.inFlight) {
+    if (state.appState.granuleRequest.inFlight) {
       return Promise.resolve() // let the calling code know there's nothing to wait for
     }
 
-    let selectedCollections = state.collections.selectedIds
+    let selectedCollections = state.appState.collectionSelect.selectedIds
     if (!selectedCollections) {
       return Promise.resolve()
     }
-    let searchBody = JSON.parse(state.search.requestBody || '{}')
+    let searchBody = JSON.parse(state.query.formatted || '{}')
     searchBody.filters = searchBody.filters || []
     searchBody.filters.push({"type": "collection", "values": selectedCollections})
     searchBody.facets = false

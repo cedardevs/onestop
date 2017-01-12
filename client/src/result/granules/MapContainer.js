@@ -4,14 +4,14 @@ import MapComponent from '../../search/map/MapComponent'
 import { toggleGranuleFocus } from './GranulesActions'
 
 const mapStateToProps = (state) => {
-  let granules = state.granules.granules
+  let { granules } = state.domain.results
   let featureCollection = []
   _.forOwn(granules, (data, id) => {
     featureCollection.push(convertToGeoJson(data, id))
   })
   return {
     geoJsonFeatures: featureCollection,
-    focusedFeatures: state.granules.focusedGranules
+    focusedFeatures: state.ui.granuleDetails.focusedGranules
   }
 }
 

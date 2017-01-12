@@ -3,9 +3,11 @@ import { setFocus } from '../../detail/DetailActions'
 import CollectionGrid from './CollectionGridComponent'
 
 const mapStateToProps = (state) => {
+  const { collections } = state.domain.results
   return {
-    results: state.collections.results,
-    count: state.collections && state.collections.results && Object.keys(state.collections.results).length || 0 // TODO - use the total hits from the search response
+    results: collections,
+    // TODO - use the total hits from the search response
+    count: collections && Object.keys(collections).length || 0
   }
 }
 
