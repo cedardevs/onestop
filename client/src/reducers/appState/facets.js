@@ -5,7 +5,7 @@ export const initialState = Immutable({
   selectedFacets: {}
 })
 
-const facets = (state = initialState, action) => {
+export const facets = (state = initialState, action) => {
   switch(action.type) {
     case TOGGLE_FACET:
       return Immutable.set(state, 'selectedFacets', action.selectedFacets)

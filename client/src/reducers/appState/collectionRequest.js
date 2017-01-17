@@ -1,9 +1,9 @@
 import Immutable from 'seamless-immutable'
 import { SEARCH, SEARCH_COMPLETE } from '../../search/SearchActions'
 
-const initialState = Immutable({ inFlight: false })
+export const initialState = Immutable({ inFlight: false })
 
-const collectionRequest = (state = initialState, action) => {
+export const collectionRequest = (state = initialState, action) => {
   switch (action.type) {
     case SEARCH:
       return Immutable.set(state, 'inFlight', true)
