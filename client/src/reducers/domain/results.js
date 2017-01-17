@@ -1,6 +1,6 @@
 import Immutable from 'seamless-immutable'
 import { SEARCH_COMPLETE } from '../../search/SearchActions'
-import { FETCHED_GRANULES } from '../../result/granules/GranulesActions'
+import { FETCHED_GRANULES, CLEAR_GRANULES } from '../../result/granules/GranulesActions'
 import { FACETS_RECEIVED } from '../../search/facet/FacetActions'
 
 const initialState = Immutable({
@@ -22,6 +22,9 @@ export const results = (state = initialState, action) => {
       const newGranules = action.granules.reduce(
           (existing, next) => existing.set(next.id, next.attributes), state.granules)
       return Immutable.set(state, 'granules', newGranules)
+
+    case CLEAR_GRANULES:
+      return Immutable.set(state, 'granules', initialState.granules)
 
     case FACETS_RECEIVED:
       return Immutable.set(state, 'facets', action.metadata.facets)
