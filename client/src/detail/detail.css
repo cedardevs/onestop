@@ -105,6 +105,6 @@
 }
 
 .infoIcon:hover + .dsmmInfo {
-  color: #2f6fad;
+  color: #00a6d2;
   visibility: visible;
 }
