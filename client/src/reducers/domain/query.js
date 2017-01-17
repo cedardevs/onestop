@@ -26,10 +26,10 @@ export const query = (state = initialState, action) => {
       return Immutable.set(state, 'facets', action.selectedFacets)
 
     case DateRange.START_DATE:
-      return Immutable.set(state, 'startDateTime', action.dateTime)
+      return Immutable.set(state, 'startDateTime', action.datetime)
 
     case DateRange.END_DATE:
-      return Immutable.set(state, 'endDateTime', action.dateTime)
+      return Immutable.set(state, 'endDateTime', action.datetime)
 
     case GENERATE_COLLECTIONS_QUERY:
       return Immutable.merge(state, {formatted: buildFormattedQuery(state)})
@@ -58,7 +58,7 @@ const assembleFilters = ({facets, geoJSON, startDateTime, endDateTime}) => {
   _.forOwn(facets, (v,k) => {
     filters.push({'type':'facet', 'name': k, 'values': v})
   })
-  if (!_.isEmpty(geoJSON.geometry)){ filters.push({type: 'geometry', geometry: geoJSON.geometry}) }
+  if (!_.isEmpty(geoJSON)){ filters.push({type: 'geometry', geometry: geoJSON}) }
   if (startDateTime || endDateTime) { filters.push(dateTime(startDateTime, endDateTime)) }
   return filters
 }
