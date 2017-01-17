@@ -53,13 +53,13 @@ const searchAndFacets = (state = {}, action) => {
 const reducer = (state, action) => {
   if (action.type === 'CLEAR_FACETS') { state.searchAndFacets = undefined }
   return {
-    domain: domain(state.domain, action),
-    appState: appState(state.appState, action),
-    searchAndFacets: searchAndFacets(state.searchAndFacets, action),
-    ui: ui(state.ui, action),
-    query: query(state.query, action),
-    errors: errors(state.errors, action),
-    routing: routing(state.routing, action)
+    domain: domain(state && state.domain || undefined, action),
+    appState: appState(state && state.appState || undefined, action),
+    searchAndFacets: searchAndFacets(state && state.searchAndFacets || undefined, action),
+    ui: ui(state && state.ui || undefined, action),
+    query: query(state && state.query || undefined, action),
+    errors: errors(state && state.errors || undefined, action),
+    routing: routing(state && state.routing || undefined, action)
   }
 }
 
