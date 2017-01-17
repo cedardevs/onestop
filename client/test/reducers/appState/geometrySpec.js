@@ -1,8 +1,8 @@
-import '../specHelper'
-import { map, initialState } from '../../src/search/map/MapReducer'
-import { newGeometry, removeGeometry } from '../../src/search/map/MapActions'
+import '../../specHelper'
+import { geometry, initialState } from '../../../src/reducers/appState/geometry'
+import { newGeometry, removeGeometry } from '../../../src/search/map/MapActions'
 
-describe('The map reducer', function () {
+describe('The geometry reducer', function () {
   const validGeoJSON = {
     type: 'Feature',
     geometry: {
@@ -16,19 +16,19 @@ describe('The map reducer', function () {
   it('defaults to the initial state', function () {
     const DOESNT_EXIST = 'DOESNT_EXIST'
     const fakeAction = ()=> {type: DOESNT_EXIST}
-    const result = map(initialState, fakeAction)
+    const result = geometry(initialState, fakeAction)
     result.should.equal(initialState)
   })
 
   it('updates the state for a new geometry', function () {
     const newGeomAction = newGeometry(validGeoJSON)
-    const result = map(initialState, newGeomAction)
-    result.should.not.equal(initialState)
+    const result = geometry(initialState, newGeomAction)
+    result.geoJSON.should.deep.equal(validGeoJSON)
   })
 
   it('defaults back to initial state for geometry removal', function () {
     const removeGeomAction = removeGeometry()
-    const result = map(initialState, removeGeomAction)
+    const result = geometry({geoJSON: validGeoJSON}, removeGeomAction)
     result.should.equal(initialState)
   })
 })

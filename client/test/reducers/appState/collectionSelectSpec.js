@@ -1,14 +1,13 @@
-import '../specHelper'
+import '../../specHelper'
 import Immutable from 'seamless-immutable'
-import { collections, initialState } from '../../src/result/collections/CollectionReducer'
-import { toggleSelection, clearSelections } from '../../src/result/collections/CollectionsActions'
+import { collectionSelect, initialState } from '../../../src/reducers/appState/collectionSelect'
+import { toggleSelection, clearSelections } from '../../../src/result/collections/CollectionsActions'
 
-describe('The collections reducer', function () {
+describe('The collectionSelect reducer', function () {
   it('has a default state', function () {
     const initialAction = {type: 'init'}
-    const result = collections(initialState, initialAction)
+    const result = collectionSelect(initialState, initialAction)
 
-    result.results.should.be.an.instanceOf(Object)
     result.selectedIds.should.be.an.instanceOf(Array)
   })
 
@@ -16,19 +15,19 @@ describe('The collections reducer', function () {
     const toggleA = toggleSelection('A')
     const toggleB = toggleSelection('B')
     // toggle A --> ['A']
-    const addedAResult = collections(initialState, toggleA)
+    const addedAResult = collectionSelect(initialState, toggleA)
     addedAResult.selectedIds.should.deep.equal(['A'])
     // toggle B --> ['A', 'B']
-    const addedBResult = collections(addedAResult, toggleB)
+    const addedBResult = collectionSelect(addedAResult, toggleB)
     addedBResult.selectedIds.should.deep.equal(['A', 'B'])
     // toggle A --> ['B']
-    const removedAResult = collections(addedBResult, toggleA)
+    const removedAResult = collectionSelect(addedBResult, toggleA)
     removedAResult.selectedIds.should.deep.equal(['B'])
   })
 
   it('can clear existing collection selections', function () {
     const stateWithCollections = Immutable({selectedIds: ['ABC']})
-    const result = collections(stateWithCollections, clearSelections())
+    const result = collectionSelect(stateWithCollections, clearSelections())
     result.selectedIds.should.deep.equal([])
   })
 })

@@ -1,77 +1,56 @@
-import '../specHelper'
-import { search, initialState } from '../../src/search/SearchReducer'
-import { updateQuery, startSearch, completeSearch } from '../../src/search/SearchActions'
-import { startDate, endDate } from '../../src/search/temporal/TemporalActions'
-import { newGeometry } from '../../src/search/map/MapActions'
+import '../../specHelper'
+import { query, initialState } from '../../../src/reducers/domain/query'
+import { updateQuery, generateCollectionsQuery } from '../../../src/search/SearchActions'
+import { startDate, endDate } from '../../../src/search/temporal/TemporalActions'
+import { newGeometry } from '../../../src/search/map/MapActions'
 
-describe('The search reducer', function () {
-  it('has a default state', function () {
-    const initialAction = {type: 'init'}
-    const result = search(initialState, initialAction)
-
-    result.text.should.equal('')
-  })
-
-  it('for a new search', function () {
-    const searchAction = startSearch()
-    const result = search(initialState, searchAction)
-
-    result.should.not.equal(initialState)
-    result.inFlight.should.equal(true)
-  })
-
-  it('for a completed search', function () {
-    const searchResults = [{id: '1'}, {id: '2'}]
-    const searchAction = completeSearch(searchResults)
-    const result = search(initialState, searchAction)
-
-    result.inFlight.should.equal(false)
-  })
-})
-
-describe('The search reducer\'s assembleRequestBody function', function() {
+describe('The query reducer', function() {
 
   it('sets queries array with queryText', function () {
     const queryText = 'DEM'
     const updateQueryAction = updateQuery(queryText)
-    const result = search(initialState, updateQueryAction)
+    const updatedState = query(initialState, updateQueryAction)
+    const result = query(updatedState, generateCollectionsQuery())
 
     const expectedRequestBody = JSON.stringify({queries: [{type: 'queryText', value: 'DEM'}], filters: [], facets: true})
 
-    result.text.should.equal('DEM')
-    result.requestBody.should.equal(expectedRequestBody)
+    result.queryText.should.equal('DEM')
+    result.formatted.should.equal(expectedRequestBody)
   })
 
   it('sets filters array with start date only', function () {
     const startDatetime = '2010-07-25T15:45:00-06:00'
     const updateStartDateAction = startDate(startDatetime)
-    const result = search(initialState, updateStartDateAction)
+    const updatedState = query(initialState, updateStartDateAction)
+    const result = query(updatedState, generateCollectionsQuery())
 
     const expectedRequestBody = JSON.stringify({queries: [], filters: [{type: 'datetime', after: '2010-07-25T15:45:00-06:00'}], facets: true})
 
     result.startDateTime.should.equal('2010-07-25T15:45:00-06:00')
-    result.requestBody.should.equal(expectedRequestBody)
+    result.formatted.should.equal(expectedRequestBody)
   })
 
   it('sets filters array with end date only', function () {
     const endDatetime = '2016-07-25T15:45:00-06:00'
     const updateEndDateAction = endDate(endDatetime)
-    const result = search(initialState, updateEndDateAction)
+    const updatedState = query(initialState, updateEndDateAction)
+    const result = query(updatedState, generateCollectionsQuery())
 
     const expectedRequestBody = JSON.stringify({queries: [], filters: [{type: 'datetime', before: '2016-07-25T15:45:00-06:00'}], facets: true})
 
     result.endDateTime.should.equal('2016-07-25T15:45:00-06:00')
-    result.requestBody.should.equal(expectedRequestBody)
+    result.formatted.should.equal(expectedRequestBody)
   })
 
   it('sets filters array with start and end dates', function () {
     const startDatetime = '2010-07-25T15:45:00-06:00'
     const updateStartDateAction = startDate(startDatetime)
-    const intermediateResult = search(initialState, updateStartDateAction)
+    const intermediateResult = query(initialState, updateStartDateAction)
 
     const endDatetime = '2016-07-25T15:45:00-06:00'
     const updateEndDateAction = endDate(endDatetime)
-    const result = search(intermediateResult, updateEndDateAction)
+    const updatedState = query(intermediateResult, updateEndDateAction)
+    const result = query(updatedState, generateCollectionsQuery())
 
     const expectedRequestBody = JSON.stringify({
       queries: [],
@@ -81,7 +60,7 @@ describe('The search reducer\'s assembleRequestBody function', function() {
 
     result.startDateTime.should.equal('2010-07-25T15:45:00-06:00')
     result.endDateTime.should.equal('2016-07-25T15:45:00-06:00')
-    result.requestBody.should.equal(expectedRequestBody)
+    result.formatted.should.equal(expectedRequestBody)
   })
 
   it('sets filters array with geometry', function () {
@@ -97,7 +76,8 @@ describe('The search reducer\'s assembleRequestBody function', function() {
     }
 
     const updateGeometryAction = newGeometry(validGeoJSON)
-    const result = search(initialState, updateGeometryAction)
+    const updatedState = query(initialState, updateGeometryAction)
+    const result = query(updatedState, generateCollectionsQuery())
 
     const expectedRequestBody = JSON.stringify({
       queries: [],
@@ -111,7 +91,7 @@ describe('The search reducer\'s assembleRequestBody function', function() {
       facets: true
     })
 
-    JSON.stringify(result.geoJSON).should.equal(JSON.stringify(validGeoJSON))
-    result.requestBody.should.equal(expectedRequestBody)
+    JSON.stringify(result.geoJSON).should.equal(JSON.stringify(validGeoJSON.geometry))
+    result.formatted.should.equal(expectedRequestBody)
   })
 })

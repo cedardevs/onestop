@@ -1,15 +1,15 @@
-import '../specHelper'
-import * as detail from '../../src/detail/DetailReducer'
+import '../../specHelper'
+import { cardDetails, initialState } from '../../../src/reducers/ui/cardDetails'
 
-describe('The details reducer',() => {
+describe('The cardDetails reducer',() => {
   it('handles search request',() => {
-    const initialState = detail.initialState
+    const initialState = initialState
     const testItems = {'a': {id: 'a'}}
     const initalAction =  { type: 'search_complete',
                               searchText: 'test',
                               items: testItems}
 
-    const result = detail.details(initialState, initalAction)
+    const result = cardDetails(initialState, initalAction)
     result['a'].cardStatus.should.equal('SHOW_FRONT')
   })
 })
