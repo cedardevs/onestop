@@ -28,6 +28,7 @@
 .underscored {
   border-bottom: 1px solid $color-gray;
   margin-bottom: 1em;
+  text-align: justify;
 }
 
 .header {
@@ -82,4 +83,28 @@
 .button-secondary {
   color: white;
   background: #00a6d2;
+}
+
+.granulesButton {
+  margin-bottom: 1em;
+}
+
+.star {
+  color: yellow;
+}
+
+.dsmmInfo {
+  visibility: hidden;
+  text-align: justify;
+  margin-right: 1em;
+}
+
+.infoIcon {
+  color: white;
+  margin-bottom: 1em;
+}
+
+.infoIcon:hover + .dsmmInfo {
+  color: #2f6fad;
+  visibility: visible;
 }
