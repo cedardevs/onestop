@@ -28,5 +28,5 @@ export const recenterGeometry = (geometry) => {
   const maxRotations = findMaxRotations(firstRing)
   const newRing = shiftCoordinates(firstRing, -1 * maxRotations)
   const newCoordinates = [newRing]
-  return _.assign(geometry, {coordinates: newCoordinates})
+  return _.assign({}, geometry, {coordinates: newCoordinates})
 }
