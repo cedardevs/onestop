@@ -4,6 +4,7 @@ import { UPDATE_QUERY, GENERATE_COLLECTIONS_QUERY} from '../../search/SearchActi
 import { NEW_GEOMETRY } from '../../search/map/MapActions'
 import { TOGGLE_FACET } from '../../search/facet/FacetActions'
 import { DateRange } from '../../search//temporal/TemporalActions'
+import { recenterGeometry } from '../../utils/geoUtils'
 
 export const initialState = Immutable({
   queryText: '',
@@ -58,7 +59,10 @@ const assembleFilters = ({facets, geoJSON, startDateTime, endDateTime}) => {
   _.forOwn(facets, (v,k) => {
     filters.push({'type':'facet', 'name': k, 'values': v})
   })
-  if (!_.isEmpty(geoJSON)){ filters.push({type: 'geometry', geometry: geoJSON}) }
+  if (!_.isEmpty(geoJSON)){
+    const recenteredGeometry = recenterGeometry(geoJSON.geometry)
+    filters.push({type: 'geometry', geometry: recenteredGeometry})
+  }
   if (startDateTime || endDateTime) { filters.push(dateTime(startDateTime, endDateTime)) }
   return filters
 }

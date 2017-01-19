@@ -2,8 +2,8 @@ import Immutable from 'seamless-immutable'
 import { DateRange } from '../../search/temporal/TemporalActions'
 
 export const initialState = Immutable({
-  startDateTime: '',
-  endDateTime: ''
+  startDateTime: null,
+  endDateTime: null
 })
 
 const temporal = (state = initialState, action) => {

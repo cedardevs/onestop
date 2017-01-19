@@ -25,9 +25,10 @@ class Detail extends React.Component {
           </div>
         </div>
         <div className={'pure-g'}>
-          <div className={`pure-u-1 pure-u-md-1-3`}>
+          <div className={`pure-u-1 pure-u-md-1-3`} style={{textAlign: 'center'}}>
             {this.renderImage()}
             {this.renderGranulesLink()}
+            {this.renderDSMMRating()}
           </div>
           <div className={`pure-u-1 pure-u-md-2-3`}>
             <div className={`pure-g`}>
@@ -126,11 +127,58 @@ class Detail extends React.Component {
   }
 
   renderGranulesLink() {
-    if (this.props.showGranulesLink) {
-      return <a onClick={() => this.props.showGranules(this.props.id)} className={`pure-button pure-button-primary`}>
-        Show Matching Files
-      </a>
+    return <a onClick={() => this.props.showGranules(this.props.id)} className={`pure-button pure-button-primary ${styles.granulesButton}`}>
+      Show Matching Files
+    </a>
+  }
+
+  renderDSMMRating() {
+    const dsmmScore = this.props.item.dsmmAverage
+    const fullStars = Math.floor(dsmmScore)
+    const halfStar = dsmmScore % 1 >= 0.5
+
+    let stars = []
+    let i
+    for(i = 1; i <= fullStars; i++) { stars[i] = this.renderFullStar(i) }
+
+    if(halfStar) {
+      stars[i] = this.renderHalfStar(i)
+      i++
     }
+
+    for(i = i; i <= 5; i++) { stars[i] = this.renderEmptyStar(i) }
+
+    return (
+        <div>{stars} <i className={`fa fa-info-circle ${styles.infoIcon}`}></i>
+          <div className={styles.dsmmInfo}>This is the average DSMM rating of this collection. The Data Stewardship
+            Maturity Matrix (DSMM) is a unified framework that defines criteria for the following nine components based
+            on measurable practices:
+            <ul>
+              <li>Data Quality Assessment</li>
+              <li>Accessibility</li>
+              <li>Data Quality Control Monitoring</li>
+              <li>Production Sustainability</li>
+              <li>Data Integrity</li>
+              <li>Preservability</li>
+              <li>Transparency Traceability</li>
+              <li>Usability</li>
+              <li>Data Quality Assurance</li>
+            </ul>
+          </div>
+        </div>
+    )
+  }
+
+  renderFullStar(i) {
+    return <i className={`${styles.star} fa fa-star`} key={i}></i>
+  }
+
+  renderHalfStar(i) {
+    return <i className={`${styles.star} fa fa-star-half-o`} key={i}></i>
+  }
+
+  renderEmptyStar(i) {
+    return <i className={`${styles.star} fa fa-star-o`} key={i}></i>
   }
 }
 

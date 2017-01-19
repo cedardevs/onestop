@@ -1,7 +1,6 @@
 import { connect } from 'react-redux'
 import { startDate, endDate, DateRange } from './TemporalActions'
-import TemporalSearch from './TemporalSearchComponent'
-import moment from 'moment'
+import TemporalSearch from './TemporalComponent'
 
 const mapStateToProps = (state) => {
   const { startDateTime, endDateTime } = state.searchAndFacets.search.temporal

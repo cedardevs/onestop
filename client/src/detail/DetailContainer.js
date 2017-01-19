@@ -11,8 +11,7 @@ const mapStateToProps = (state, reactProps) => {
   const focusedItem = state.domain.results.collections[focusedId]
   return {
     id: focusedId,
-    item: focusedItem,
-    showGranulesLink: state.domain.config.granuleDetails
+    item: focusedItem
   }
 }
 

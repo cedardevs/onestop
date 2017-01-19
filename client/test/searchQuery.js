@@ -27,7 +27,9 @@ export const searchQuery = (testingRoot, requestBody) => {
           facets:{
             science: [
               {term: "land", count: 2}
-            ]}
+            ]},
+          total: 2,
+          took: 100
         }
       })
 }

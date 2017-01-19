@@ -16,7 +16,7 @@ def sources = [
     [
         name             : 'GptCollections',
         class            : GeoportalExtractor,
-        collectionsUrl   : 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
+        collectionsUrl   : 'https://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'title%3A*%20NOT%20title%3AGHRSST'], //All collections not part of GHRSST
         requireBrowseImg : true,
         granules         : false
@@ -24,22 +24,22 @@ def sources = [
     [
         name             : 'GHRSST',
         class            : GeoportalExtractor,
-        collectionsUrl   : 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
+        collectionsUrl   : 'https://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'title:GHRSST%20NOT%20title:Documentation'],
         requireBrowseImg : false,
         granules         : [
-          url      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
+          url      : 'https://www.nodc.noaa.gov/search/granule/rest/find/document',
           params   : [searchText: "fileIdentifier:REPLACE_PARAMS*"]
         ]
     ],
     [
         name             : 'COOPS',
         class            : GeoportalExtractor,
-        collectionsUrl   : 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
+        collectionsUrl   : 'https://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'title:NWLON%20NOT%20title:Documentation'],
         requireBrowseImg : false,
         granules         : [
-          url      : 'http://www.nodc.noaa.gov/search/granule/rest/find/document',
+          url      : 'https://www.nodc.noaa.gov/search/granule/rest/find/document',
           params   : [searchText: 'fileIdentifier%3ACO-OPS*', after: '2016-06-30']
         ]
     ],
@@ -54,11 +54,11 @@ def sources = [
     [
         name: 'SAMOS',
         class: GeoportalExtractor,
-        collectionsUrl: 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
+        collectionsUrl: 'https://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'title:SAMOS'],
         requireBrowseImg : false,
         granules         : [
-          url: 'http://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/samos/',
+          url: 'https://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/samos/',
           params: [:],
           class: WafExtractor,
         ]
@@ -66,11 +66,11 @@ def sources = [
     [
         name: 'WOA13',
         class: GeoportalExtractor,
-        collectionsUrl: 'http://data.nodc.noaa.gov/geoportal/rest/find/document',
+        collectionsUrl: 'https://data.nodc.noaa.gov/geoportal/rest/find/document',
         collectionsParams: [searchText: 'fileIdentifier:"gov.noaa.nodc:0114815"'],
         requireBrowseImg : false,
         granules         : [
-          url: 'http://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/woa13/',
+          url: 'https://data.nodc.noaa.gov/nodc/archive/metadata/test/granule/iso/woa13/',
           params: [:],
           class: WafExtractor,
         ]
@@ -217,6 +217,7 @@ class GeoportalExtractor implements Iterator<String> {
       currentPage = jsonSlurper.parse(buildUrl()).records.collect { record ->
         record.links.find({ it.type.contains('metadata') }).href
       }
+
     } catch (e) {
       println "getNextPage() failed. Go to next page..."
       sleep(3000)

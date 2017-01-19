@@ -33,16 +33,17 @@ describe('The search action', () => {
     const testState = Immutable.merge(initState, {query: testSearchState})
 
     const expectedItems = new Map()
-    let expectedFacets
+    let expectedMetadata
 
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
-    expectedFacets = {"facets":{"science":[{"term":"land","count":2}]}}
+    expectedMetadata = {"facets":{"science":[{"term":"land","count":2}]}, "total":2, "took":100}
 
     const expectedActions = [
       {type: LOADING_SHOW},
       {type: module.SEARCH},
-      {type: FACETS_RECEIVED, metadata: expectedFacets},
+      {type: FACETS_RECEIVED, metadata: expectedMetadata},
+      {type: module.COUNT_HITS, totalHits: 2},
       {type: module.SEARCH_COMPLETE, items: expectedItems,
           view: 'collections'},
       {type: LOADING_HIDE}

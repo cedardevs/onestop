@@ -628,6 +628,184 @@
       </gmd:distributionFormat>
     </gmd:MD_Distribution>
   </gmd:distributionInfo>
+  <!--The info below is NOT DSMM and should not be ingested-->
+  <gmd:dataQualityInfo>
+    <gmd:DQ_DataQuality>
+      <gmd:scope>
+        <gmd:DQ_Scope>
+          <gmd:level>
+            <gmd:MD_ScopeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+          </gmd:level>
+        </gmd:DQ_Scope>
+      </gmd:scope>
+      <gmd:report>
+        <gmd:DQ_CompletenessCommission>
+          <gmd:evaluationMethodDescription>
+            <gco:CharacterString>NGDC made every effort to obtain all available digital topographic and bathymetric datasets in the region for use in building the DEM.</gco:CharacterString>
+          </gmd:evaluationMethodDescription>
+          <gmd:result gco:nilReason="unknown" />
+        </gmd:DQ_CompletenessCommission>
+      </gmd:report>
+      <gmd:report>
+        <gmd:DQ_ConceptualConsistency>
+          <gmd:measureDescription>
+            <gco:CharacterString>Datasets were visually compared internally and externally (with other overlapping datasets and satellite images and maps) in ESRI ArcGIS for identification of anomalous elevations or data inconsistencies. Where elevation inconsistencies occurred, the most recent and/or highest resolution data set was selected for use in that region. Elevations in the older and/or lower-resolution datasets were deleted prior to building the DEM.</gco:CharacterString>
+          </gmd:measureDescription>
+          <gmd:result gco:nilReason="unknown" />
+        </gmd:DQ_ConceptualConsistency>
+      </gmd:report>
+    </gmd:DQ_DataQuality>
+  </gmd:dataQualityInfo>
+  <gmd:dataQualityInfo xsi:schemaLocation="http://www.isotc211.org/2005/gmi http://www.ngdc.noaa.gov/metadata/published/xsd/schema.xsd">
+    <gmd:DQ_DataQuality>
+      <gmd:scope>
+        <gmd:DQ_Scope>
+          <gmd:level>
+            <gmd:MD_ScopeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="series">series</gmd:MD_ScopeCode>
+          </gmd:level>
+          <gmd:levelDescription>
+            <gmd:MD_ScopeDescription>
+              <gmd:other>
+                <gco:CharacterString>Data Stewardship</gco:CharacterString>
+              </gmd:other>
+            </gmd:MD_ScopeDescription>
+          </gmd:levelDescription>
+        </gmd:DQ_Scope>
+      </gmd:scope>
+      <gmd:report>
+        <gmd:DQ_ConceptualConsistency>
+          <gmd:nameOfMeasure>
+            <gco:CharacterString>Data Stewardship Maturity Assessment</gco:CharacterString>
+          </gmd:nameOfMeasure>
+          <gmd:measureIdentification>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>MM-Stew</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmd:measureIdentification>
+          <gmd:measureDescription>
+            <gco:CharacterString>The Data Stewardship Maturity Matrix (DSMM) is a unified framework that defines criteria for each of nine components based on measurable practices, which can be used to apply a progressive, 6-level rating to an individual dataset, representing stewardship maturity stages rated as Not Assessed or Not Available (Level 0), adHoc (Level 1), minimum (Level 2), intermediate (Level 3), advanced (Level 4), and optimal (Level 5).</gco:CharacterString>
+          </gmd:measureDescription>
+          <gmd:evaluationMethodDescription>
+            <gco:CharacterString>Data Stewardship Maturity Assessment was evaluated by the metadata content editor for the NOAA OneStop project using the Scientific Data Stewardship Maturity Assessment Model Template v4.0.</gco:CharacterString>
+          </gmd:evaluationMethodDescription>
+          <gmd:evaluationProcedure>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>The Scientific Data Stewardship Maturity Assessment Model Template</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2015-06-23</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:edition>
+                <gco:CharacterString>NCDC-CICS-SMM_0001_Rev.1 v4.0 06/23/2015</gco:CharacterString>
+              </gmd:edition>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gmx:Anchor xlink:href="https://doi.org/10.6084/m9.figshare.1211954" xlink:title="DOI link" xlink:actuate="onRequest">doi:10.10.6084/m9.figshare.1211954</gmx:Anchor>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+              <gmd:presentationForm>
+                <gmd:CI_PresentationFormCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode" codeListValue="documentDigital">documentDigital</gmd:CI_PresentationFormCode>
+              </gmd:presentationForm>
+            </gmd:CI_Citation>
+          </gmd:evaluationProcedure>
+          <gmd:dateTime>
+            <gco:DateTime>2016-06-22T00:00:00</gco:DateTime>
+          </gmd:dateTime>
+          <gmd:result>
+            <gmd:DQ_QuantitativeResult>
+              <gmd:valueUnit gco:nilReason="inapplicable" />
+              <gmd:value>
+                <gco:Record>
+                  <gco:CodeListValue codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/MM_StewCodelists.xml#Preservability" codeListValue="optimal">optimal</gco:CodeListValue>
+                </gco:Record>
+              </gmd:value>
+              <gmd:value>
+                <gco:Record>
+                  <gco:CodeListValue codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/MM_StewCodelists.xml#Accessibility" codeListValue="advanced">advanced</gco:CodeListValue>
+                </gco:Record>
+              </gmd:value>
+              <gmd:value>
+                <gco:Record>
+                  <gco:CodeListValue codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/MM_StewCodelists.xml#Usability" codeListValue="intermediate">intermediate</gco:CodeListValue>
+                </gco:Record>
+              </gmd:value>
+              <gmd:value>
+                <gco:Record>
+                  <gco:CodeListValue codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/MM_StewCodelists.xml#ProductionSustainability" codeListValue="advanced">advanced</gco:CodeListValue>
+                </gco:Record>
+              </gmd:value>
+              <gmd:value>
+                <gco:Record>
+                  <gco:CodeListValue codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/MM_StewCodelists.xml#DataQualityAssurance" codeListValue="intermediate">intermediate</gco:CodeListValue>
+                </gco:Record>
+              </gmd:value>
+              <gmd:value>
+                <gco:Record>
+                  <gco:CodeListValue codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/MM_StewCodelists.xml#DataQualityControlMonitoring" codeListValue="adHoc">adHoc</gco:CodeListValue>
+                </gco:Record>
+              </gmd:value>
+              <gmd:value>
+                <gco:Record>
+                  <gco:CodeListValue codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/MM_StewCodelists.xml#DataQualityAssessment" codeListValue="minimal">minimal</gco:CodeListValue>
+                </gco:Record>
+              </gmd:value>
+              <gmd:value>
+                <gco:Record>
+                  <gco:CodeListValue codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/MM_StewCodelists.xml#TransparencyTraceability" codeListValue="minimal">minimal</gco:CodeListValue>
+                </gco:Record>
+              </gmd:value>
+              <gmd:value>
+                <gco:Record>
+                  <gco:CodeListValue codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/MM_StewCodelists.xml#DataIntegrity" codeListValue="notAvailable">notAvailable</gco:CodeListValue>
+                </gco:Record>
+              </gmd:value>
+            </gmd:DQ_QuantitativeResult>
+          </gmd:result>
+          <gmd:result>
+            <gmd:DQ_ConformanceResult>
+              <gmd:specification>
+                <gmd:CI_Citation>
+                  <gmd:title>
+                    <gco:CharacterString>Lahaina_HI_1_3s_MHW_DEM</gco:CharacterString>
+                  </gmd:title>
+                  <gmd:date>
+                    <gmd:CI_Date>
+                      <gmd:date>
+                        <gco:Date>2016-06-22</gco:Date>
+                      </gmd:date>
+                      <gmd:dateType>
+                        <gmd:CI_DateTypeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                      </gmd:dateType>
+                    </gmd:CI_Date>
+                  </gmd:date>
+                  <gmd:edition>
+                    <gco:CharacterString>v01r00</gco:CharacterString>
+                  </gmd:edition>
+                </gmd:CI_Citation>
+              </gmd:specification>
+              <!-- Use same statement from gmd:evaluationMethodDescription for gmd:explanation -->
+              <gmd:explanation>
+                <gco:CharacterString>Data Stewardship Maturity Assessment was evaluated by the metadata content editor for the NOAA OneStop project using the Scientific Data Stewardship Maturity Assessment Model Template v4.0.</gco:CharacterString>
+              </gmd:explanation>
+              <gmd:pass gco:nilReason="inapplicable" />
+            </gmd:DQ_ConformanceResult>
+          </gmd:result>
+        </gmd:DQ_ConceptualConsistency>
+      </gmd:report>
+    </gmd:DQ_DataQuality>
+  </gmd:dataQualityInfo>
 
 </gmi:MI_Metadata>
 

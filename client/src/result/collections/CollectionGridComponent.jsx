@@ -24,7 +24,7 @@ class CollectionGrid extends React.Component {
     })
     return <div>
       <div>
-        Search returned {this.props.count} {(this.props.count !== 1) ? "results" : "result"}
+        Showing {this.props.returnedHits} of {this.props.totalHits} matching results
       </div>
       <div className={styles.gridWrapper}>
         {cards}
