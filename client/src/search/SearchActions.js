@@ -5,7 +5,6 @@ import { showLoading, hideLoading } from '../loading/LoadingActions'
 import { showErrors } from '../error/ErrorActions'
 import queryString from 'query-string'
 import { facetsReceived, clearFacets } from './facet/FacetActions'
-import store from '../store'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -46,7 +45,6 @@ export const clearSearch = () => {
 export const triggerSearch = (testing) => {
   return (dispatch, getState) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
-    dispatch(generateCollectionsQuery())
     let state = getState()
 
     if (state.appState.collectionRequest.inFlight) {

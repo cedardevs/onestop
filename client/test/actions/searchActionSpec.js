@@ -13,6 +13,7 @@ import {searchQuery, errorQuery, errorsArray} from '../searchQuery'
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
 
+const initState = reducer(new Map(), {type: 'init'})
 const requestBody = JSON.stringify({queries: [{type: 'queryText', value: 'alaska'}], filters: [], facets: true})
 
 describe('The search action', () => {
@@ -28,9 +29,8 @@ describe('The search action', () => {
     const testingRoot = 'http://localhost:9090'
     searchQuery(testingRoot,requestBody)
 
-    const testSearchState = Immutable({requestBody: requestBody})
-    const initState = reducer(new Map(), {type: 'init'})
-    const testState = Immutable.merge(initState, {search: testSearchState})
+    const testSearchState = Immutable({formatted: requestBody})
+    const testState = Immutable.merge(initState, {query: testSearchState})
 
     const expectedItems = new Map()
     let expectedFacets
@@ -44,43 +44,12 @@ describe('The search action', () => {
       {type: module.SEARCH},
       {type: FACETS_RECEIVED, metadata: expectedFacets},
       {type: module.SEARCH_COMPLETE, items: expectedItems,
-          view: 'collections', appState: ''},
+          view: 'collections'},
       {type: LOADING_HIDE}
     ]
 
     const store = mockStore(Immutable(testState))
 
-    return store.dispatch(module.triggerSearch(testingRoot))
-        .then(() => {
-          store.getActions().should.deep.equal(expectedActions)
-        })
-  })
-
-  it('triggerSearch executes a search from query params', () => {
-
-    nock.disableNetConnect()
-
-    const testingRoot = 'http://localhost:9090'
-    searchQuery(testingRoot, requestBody)
-
-    const expectedItems = new Map()
-    expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
-    expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
-
-    let expectedFacets
-    expectedFacets = {facets: {science: [{term: "land", count: 2}]}}
-
-    const expectedActions = [
-      {type: LOADING_SHOW},
-      {type: module.SEARCH},
-      {type: FACETS_RECEIVED, metadata: expectedFacets},
-      {type: module.SEARCH_COMPLETE, items: expectedItems,
-          view: 'collections'},
-      {type: LOADING_HIDE}
-    ]
-
-    // Empty requestBody; params passed directly to triggerSearch
-    const store = mockStore(Immutable({'search':{'requestBody': requestBody}}))
     return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
@@ -112,8 +81,9 @@ describe('The search action', () => {
           view: 'collections'},
     ]
 
-    // Empty requestBody; params passed directly to triggerSearch
-    const store = mockStore(Immutable({'search':{'requestBody': requestBody}}))
+    const testSearchState = Immutable({formatted: requestBody})
+    const testState = Immutable.merge(initState, {query: testSearchState})
+    const store = mockStore(testState)
     return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
@@ -121,9 +91,8 @@ describe('The search action', () => {
   })
 
   it('triggerSearch does not start a new search when a search is already in flight', () => {
-    const testSearchState = Immutable({inFlight: true})
-    const fullState = Immutable({search: {}, facets: {}, results: {}, details: {}, routing: {}})
-    const testState = Immutable({search: testSearchState})
+    const testAppState = Immutable({collectionRequest: {inFlight: true}})
+    const testState = Immutable({appState: testAppState})
 
     const store = mockStore(testState)
     return store.dispatch(module.triggerSearch())
