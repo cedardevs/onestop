@@ -60,7 +60,7 @@ const assembleFilters = ({facets, geoJSON, startDateTime, endDateTime}) => {
     filters.push({'type':'facet', 'name': k, 'values': v})
   })
   if (!_.isEmpty(geoJSON)){
-    const recenteredGeometry = recenterGeometry(geoJSON.geometry)
+    const recenteredGeometry = recenterGeometry(geoJSON)
     filters.push({type: 'geometry', geometry: recenteredGeometry})
   }
   if (startDateTime || endDateTime) { filters.push(dateTime(startDateTime, endDateTime)) }
