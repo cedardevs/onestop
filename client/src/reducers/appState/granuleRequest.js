@@ -6,7 +6,7 @@ export const initialState = Immutable({
   inFlight: false
 })
 
-export const granules = (state = initialState, action) => {
+export const granuleRequest = (state = initialState, action) => {
   switch(action.type) {
     case FETCHING_GRANULES:
       return Immutable.set(state, 'inFlight', true)
@@ -19,4 +19,4 @@ export const granules = (state = initialState, action) => {
   }
 }
 
-export default granules
+export default granuleRequest
