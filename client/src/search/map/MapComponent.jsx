@@ -117,10 +117,12 @@ class MapComponent extends React.Component {
   updateSelectionLayer() {
   	let { editableLayers, style } = this.state
 		let w = watch(store.getState, 'searchAndFacets.search.geometry.geoJSON')
-		store.subscribe(w((newVal, oldVal, objectPath) => {
+		store.subscribe(w((newGeoJson) => {
       editableLayers.clearLayers()
-      let layer = L.GeoJSON.geometryToLayer(newVal, {style})
-      editableLayers.addLayer(layer)
+      if (!_.isEmpty(newGeoJson)){
+        let layer = L.GeoJSON.geometryToLayer(newGeoJson, {style})
+        editableLayers.addLayer(layer)
+      }
 		}))
   }
 
