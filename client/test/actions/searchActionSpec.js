@@ -3,12 +3,11 @@ import * as module from '../../src/search/SearchActions'
 import { LOADING_SHOW, LOADING_HIDE } from '../../src/loading/LoadingActions'
 import { FACETS_RECEIVED, CLEAR_FACETS } from '../../src/search/facet/FacetActions'
 import { SET_ERRORS } from '../../src/error/ErrorActions'
-import { initialState } from '../../src/search/SearchReducer'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import Immutable from 'seamless-immutable'
 import nock from 'nock'
-import reducer from '../../src/reducer'
+import reducer from '../../src/reducers/reducer'
 import {searchQuery, errorQuery, errorsArray} from '../searchQuery'
 
 const middlewares = [ thunk ]
@@ -76,7 +75,7 @@ describe('The search action', () => {
       {type: module.SEARCH},
       {type: FACETS_RECEIVED, metadata: expectedFacets},
       {type: module.SEARCH_COMPLETE, items: expectedItems,
-          view: 'collections', appState: ''},
+          view: 'collections'},
       {type: LOADING_HIDE}
     ]
 
@@ -110,7 +109,7 @@ describe('The search action', () => {
       },
       {type: CLEAR_FACETS},
       {type: module.SEARCH_COMPLETE, items: new Map(),
-          view: 'collections', appState: ''},
+          view: 'collections'},
     ]
 
     // Empty requestBody; params passed directly to triggerSearch
@@ -159,7 +158,7 @@ describe('The search action', () => {
     }
     const action = module.completeSearch(items)
     const expectedAction = {type: module.SEARCH_COMPLETE, items: items,
-          view: 'collections', appState: ''}
+          view: 'collections'}
 
     action.should.deep.equal(expectedAction)
   })
