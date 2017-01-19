@@ -149,9 +149,10 @@ class Detail extends React.Component {
     for(i = i; i <= 5; i++) { stars[i] = this.renderEmptyStar(i) }
 
     return (
-        <div>DSMM Average Score {stars} <i className={`fa fa-info-circle ${styles.infoIcon}`}></i>
-          <div className={styles.dsmmInfo}>The Data Stewardship Maturity Matrix (DSMM) is a unified framework that
-            defines criteria for the following nine components based on measurable practices:
+        <div>{stars} <i className={`fa fa-info-circle ${styles.infoIcon}`}></i>
+          <div className={styles.dsmmInfo}>This is the average DSMM rating of this collection. The Data Stewardship
+            Maturity Matrix (DSMM) is a unified framework that defines criteria for the following nine components based
+            on measurable practices:
             <ul>
               <li>Data Quality Assessment</li>
               <li>Accessibility</li>
