@@ -12,7 +12,6 @@ const apiHost = 'http://localhost:9090'
 const searchEndpoint = '/onestop/api/search'
 const successResponse = {
   data: [{
-
     type: 'granule',
     id: '1',
     attributes: {id: 1, title: 'one'},
@@ -44,8 +43,20 @@ describe('The granule actions', function () {
 
   it('fetches granules with selected collections', function () {
     const collections = ['A', 'B']
-    const state = {apiHost: apiHost, collections: {selectedIds: collections},
-      granules: {inFlight: false}, search: {requestBody: '{}'}}
+    // const state = {apiHost: apiHost, collections: {selectedIds: collections},
+    //   granules: {inFlight: false}, search: {requestBody: '{}'}}
+    const state = {
+      apiHost: apiHost,
+      appState: {
+        granuleRequest: {
+          inFlight: false
+        },
+        collectionSelect: {
+          selectedIds: collections
+        }
+      },
+      query: { formatted: '' }
+    }
     const store = mockStore(Immutable(state))
     const expectedBody = JSON.stringify({filters: [{type: "collection", values: collections}], facets: false})
     nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
@@ -67,13 +78,15 @@ describe('The granule actions', function () {
     const facetFilter = {type: "facet", name: "location", values: ["Oceans"]}
     const state = {
       apiHost: apiHost,
-      search: {
-        requestBody: JSON.stringify({queries: [query], filters: [facetFilter]})
+      appState: {
+        granuleRequest: {
+          inFlight: false
+        },
+        collectionSelect: {
+          selectedIds: collections
+        }
       },
-      collections: {
-        selectedIds: collections
-      },
-      granules: {inFlight: false}
+      query: { formatted: JSON.stringify({queries: [query], filters: [facetFilter]}) }
     }
     const store = mockStore(Immutable(state))
     const expectedBody = JSON.stringify({
