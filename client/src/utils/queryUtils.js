@@ -6,11 +6,26 @@ export const assembleSearchRequestString = (state, granules = false) => {
 }
 
 export const assembleSearchRequest = (state, granules = false) => {
-  return {
-    queries: assembleQueries(state.appState || {}),
-    filters: assembleFilters(state.appState || {}, granules),
-    facets: !granules
+  const searchAndFacets = state.searchAndFacets || {}
+  const facets = searchAndFacets.facets || {}
+  const search = searchAndFacets.search || {}
+  const geometry = search.geometry || {}
+  const temporal = search.temporal || {}
+  const appState = state.appState || {}
+  const collectionSelect = appState.collectionSelect || {}
+
+  const queries = assembleQueries(search)
+  let filters = _.concat(
+      assembleFacetFilters(facets),
+      assembleGeometryFilters(geometry),
+      assembleTemporalFilters(temporal)
+  )
+  if (granules) {
+    filters = _.concat(assembleSelectedCollectionsFilters(collectionSelect))
   }
+  filters =  _.flatten(_.compact(filters))
+
+  return {queries: queries, filters: filters, facets: !granules}
 }
 
 const assembleQueries = ({queryText}) => {
@@ -20,24 +35,12 @@ const assembleQueries = ({queryText}) => {
   return []
 }
 
-const assembleFilters = ({temporal, geometry, facets, collectionSelect}, granules = false) => {
-  let filters = _.concat(
-      assembleFacetFilters(facets || {}),
-      assembleGeometryFilters(geometry || {}),
-      assembleTemporalFilters(temporal || {})
-  )
-  if (granules) {
-    filters = _.concat(assembleSelectedCollectionsFilters(collectionSelect))
-  }
-  return _.flatten(_.compact(filters))
-}
-
 const assembleFacetFilters = ({selectedFacets}) => {
   return _.map(selectedFacets, (v, k) => ({'type':'facet', 'name': k, 'values': v}))
 }
 
 const assembleGeometryFilters = ({geoJSON}) => {
-  if (geoJSON) {
+  if (geoJSON && geoJSON.geometry) {
     const recenteredGeometry = recenterGeometry(geoJSON.geometry)
     return {type: 'geometry', geometry: recenteredGeometry}
   }

@@ -41,9 +41,11 @@ function collectionTestCases() {
     {
       name: "a text search",
       inputState: {
-        appState: {
-          queryText: {
-            text: "test text"
+        searchAndFacets: {
+          search: {
+            queryText: {
+              text: "test text"
+            }
           }
         }
       },
@@ -60,10 +62,12 @@ function collectionTestCases() {
     {
       name: "a temporal search",
       inputState: {
-        appState: {
-          temporal: {
-            startDateTime: "2017-01-01",
-            endDateTime: "2017-01-20"
+        searchAndFacets: {
+          search: {
+            temporal: {
+              startDateTime: "2017-01-01",
+              endDateTime: "2017-01-20"
+            }
           }
         }
       },
@@ -82,15 +86,17 @@ function collectionTestCases() {
     {
       name: "a spatial search",
       inputState: {
-        appState: {
-          geometry: {
-            geoJSON: {
-              geometry: {
-                type: 'Polygon',
-                coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
-              },
-              properties: {
-                description: 'Valid test GeoJSON'
+        searchAndFacets: {
+          search: {
+            geometry: {
+              geoJSON: {
+                geometry: {
+                  type: 'Polygon',
+                  coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
+                },
+                properties: {
+                  description: 'Valid test GeoJSON'
+                }
               }
             }
           }
@@ -113,7 +119,7 @@ function collectionTestCases() {
     {
       name: "a facet search",
       inputState: {
-        appState: {
+        searchAndFacets: {
           facets: {
             selectedFacets: {
               science: ["Atmosphere"]
@@ -136,29 +142,31 @@ function collectionTestCases() {
     {
       name: "all filters applied",
       inputState: {
-        appState: {
-          geometry: {
-            geoJSON: {
-              geometry: {
-                type: 'Polygon',
-                coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
-              },
-              properties: {
-                description: 'Valid test GeoJSON'
+        searchAndFacets: {
+          search: {
+            geometry: {
+              geoJSON: {
+                geometry: {
+                  type: 'Polygon',
+                  coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
+                },
+                properties: {
+                  description: 'Valid test GeoJSON'
+                }
               }
+            },
+            temporal: {
+              startDateTime: "2017-01-01",
+              endDateTime: "2017-01-20"
+            },
+            queryText: {
+              text: "test text"
             }
           },
           facets: {
             selectedFacets: {
               science: ["Atmosphere"]
             }
-          },
-          temporal: {
-            startDateTime: "2017-01-01",
-            endDateTime: "2017-01-20"
-          },
-          queryText: {
-            text: "test text"
           }
         }
       },
@@ -239,11 +247,15 @@ function granuleTestCases() {
       name: "two collections and a text query",
       inputState: {
         appState: {
-          queryText: {
-            text: 'test'
-          },
           collectionSelect: {
             selectedIds: ['ABC123', 'XYZ789']
+          }
+        },
+        searchAndFacets: {
+          search: {
+            queryText: {
+              text: 'test'
+            },
           }
         }
       },
