@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch'
-import { push } from 'react-router-redux'
 import { showLoading, hideLoading } from '../../loading/LoadingActions'
 import { showErrors } from '../../error/ErrorActions'
+import { assembleSearchRequestString } from '../../utils/queryUtils'
 import store from '../../store'
 
 export const TOGGLE_GRANULE_FOCUS = 'toggle_granule_focus'
@@ -48,12 +48,8 @@ export const fetchGranules = () => {
     if (!selectedCollections) {
       return Promise.resolve()
     }
-    let searchBody = JSON.parse(state.query.formatted || '{}')
-    searchBody.filters = searchBody.filters || []
-    searchBody.filters.push({"type": "collection", "values": selectedCollections})
-    searchBody.facets = false
-    searchBody = JSON.stringify(searchBody)
 
+    let searchBody = assembleSearchRequestString(state, true)
     const apiHost = state.apiHost || ''
     const apiRoot = apiHost + '/onestop/api/search'
     const fetchParams = {
