@@ -1,10 +1,9 @@
 import fetch from 'isomorphic-fetch'
-import { push } from 'react-router-redux'
 import _ from 'lodash'
 import { showLoading, hideLoading } from '../loading/LoadingActions'
 import { showErrors } from '../error/ErrorActions'
-import queryString from 'query-string'
 import { facetsReceived, clearFacets } from './facet/FacetActions'
+import { assembleSearchRequestString } from '../utils/queryUtils'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -59,10 +58,10 @@ export const triggerSearch = (testing) => {
       return Promise.resolve()
     }
 
-    const searchBody = state.query.formatted
+    const searchBody = assembleSearchRequestString(state)
     // To avoid returning all results when hitting search w/empty fields
-    if(!searchBody) {
-      return
+    if (!searchBody) {
+      return Promise.resolve()
     }
     dispatch(showLoading())
     dispatch(startSearch())
@@ -81,7 +80,7 @@ export const triggerSearch = (testing) => {
     return fetch(apiRoot, fetchParams)
         .then(response => {
           if (response.status < 200 || response.status >= 400) {
-            var error = new Error(response.statusText)
+            let error = new Error(response.statusText)
             error.response = response
             throw error
           } else {
@@ -101,20 +100,11 @@ export const triggerSearch = (testing) => {
 }
 
 const assignResourcesToMap = (resourceList) => {
-  var map = new Map()
+  let map = new Map()
   _.forOwn(resourceList, resource => {
     map.set(resource.id, Object.assign({type: resource.type}, resource.attributes))
   })
   return map
-}
-
-const buildQueryString = (searchBody) => {
-  // Append query to URL
-  let parsedSearchBody = JSON.parse(searchBody)
-  for (const key in parsedSearchBody) {
-    parsedSearchBody[key] = JSON.stringify(parsedSearchBody[key])
-  }
-  return queryString.stringify(parsedSearchBody)
 }
 
 const handleErrors = (dispatch, e) => {

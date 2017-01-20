@@ -7,37 +7,36 @@ import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import Immutable from 'seamless-immutable'
 import nock from 'nock'
-import reducer from '../../src/reducers/reducer'
 import {searchQuery, errorQuery, errorsArray} from '../searchQuery'
+import {assembleSearchRequestString} from '../../src/utils/queryUtils'
 
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
 
-const initState = reducer(new Map(), {type: 'init'})
-const requestBody = JSON.stringify({queries: [{type: 'queryText', value: 'alaska'}], filters: [], facets: true})
-
 describe('The search action', () => {
 
+  beforeEach(() => {
+    nock.disableNetConnect()
+  })
   afterEach(() => {
     nock.cleanAll()
   })
 
   it('triggerSearch executes a search from requestBody', () => {
-
-    nock.disableNetConnect()
-
+    const testState = Immutable({
+      appState: {
+        queryText: {text: 'alaska'},
+        collectionRequest: {inFlight: false}
+      }
+    })
     const testingRoot = 'http://localhost:9090'
+    const requestBody = assembleSearchRequestString(testState)
     searchQuery(testingRoot,requestBody)
 
-    const testSearchState = Immutable({formatted: requestBody})
-    const testState = Immutable.merge(initState, {query: testSearchState})
-
+    const expectedMetadata = {"facets":{"science":[{"term":"land","count":2}]}, "total":2, "took":100}
     const expectedItems = new Map()
-    let expectedMetadata
-
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
-    expectedMetadata = {"facets":{"science":[{"term":"land","count":2}]}, "total":2, "took":100}
 
     const expectedActions = [
       {type: LOADING_SHOW},
@@ -50,7 +49,6 @@ describe('The search action', () => {
     ]
 
     const store = mockStore(Immutable(testState))
-
     return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
@@ -58,10 +56,14 @@ describe('The search action', () => {
   })
 
   it('triggerSearch handles failed search requests', () => {
-
-    nock.disableNetConnect()
-
+    const testState = Immutable({
+      appState: {
+        queryText: {text: 'alaska'},
+        collectionRequest: {inFlight: false}
+      }
+    })
     const testingRoot = 'http://localhost:9090'
+    const requestBody = assembleSearchRequestString(testState)
     errorQuery(testingRoot, requestBody)
 
     const expectedActions = [
@@ -82,8 +84,6 @@ describe('The search action', () => {
           view: 'collections'},
     ]
 
-    const testSearchState = Immutable({formatted: requestBody})
-    const testState = Immutable.merge(initState, {query: testSearchState})
     const store = mockStore(testState)
     return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
@@ -92,8 +92,11 @@ describe('The search action', () => {
   })
 
   it('triggerSearch does not start a new search when a search is already in flight', () => {
-    const testAppState = Immutable({collectionRequest: {inFlight: true}})
-    const testState = Immutable({appState: testAppState})
+    const testState = Immutable({
+      appState: {
+        collectionRequest: {inFlight: true}
+      }
+    })
 
     const store = mockStore(testState)
     return store.dispatch(module.triggerSearch())
