@@ -66,7 +66,7 @@ describe('The granule actions', function () {
         {type: LOADING_SHOW},
         {type: granuleActions.FETCHING_GRANULES},
         {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data,
-          view: 'collections/files', appState: ''},
+          view: 'collections/files'},
         {type: LOADING_HIDE}
       ])
     })
@@ -100,7 +100,7 @@ describe('The granule actions', function () {
         {type: LOADING_SHOW},
         {type: granuleActions.FETCHING_GRANULES},
         {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data,
-          view: 'collections/files', appState: ''},
+          view: 'collections/files'},
         {type: LOADING_HIDE}
       ])
     })

@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch'
 import { showLoading, hideLoading } from '../../loading/LoadingActions'
 import { showErrors } from '../../error/ErrorActions'
 import { assembleSearchRequestString } from '../../utils/queryUtils'
-import store from '../../store'
 
 export const TOGGLE_GRANULE_FOCUS = 'toggle_granule_focus'
 export const FETCHING_GRANULES = 'fetching_granules'
@@ -32,8 +31,7 @@ export const fetchedGranules = granuleList => {
   return {
     type: FETCHED_GRANULES,
     granules: granuleList,
-    view: 'collections/files',
-    appState: store.getState().query.formatted
+    view: 'collections/files'
   }
 }
 
