@@ -59,7 +59,7 @@ const reducer = (state, action) => {
     ui: ui(state && state.ui || undefined, action),
     query: query(state && state.query || undefined, action),
     errors: errors(state && state.errors || undefined, action),
-    routing: routing(state && state.routing || undefined, action)
+    routing: routing(state && state.routing || undefined, action, state.searchAndFacets)
   }
 }
 
