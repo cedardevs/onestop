@@ -1,15 +1,15 @@
 import _ from 'lodash'
 import { recenterGeometry } from './geoUtils'
 
-export const assembleSearchRequestString = (state) => {
-  return JSON.stringify(assembleSearchRequest(state))
+export const assembleSearchRequestString = (state, granules = false) => {
+  return JSON.stringify(assembleSearchRequest(state, granules))
 }
 
-export const assembleSearchRequest = (state) => {
+export const assembleSearchRequest = (state, granules = false) => {
   return {
     queries: assembleQueries(state.appState || {}),
-    filters: assembleFilters(state.appState || {}),
-    facets: true
+    filters: assembleFilters(state.appState || {}, granules),
+    facets: !granules
   }
 }
 
@@ -20,12 +20,16 @@ const assembleQueries = ({queryText}) => {
   return []
 }
 
-const assembleFilters = ({temporal, geometry, facets}) => {
-  return _.flatten(_.compact(_.concat(
+const assembleFilters = ({temporal, geometry, facets, collectionSelect}, granules = false) => {
+  let filters = _.concat(
       assembleFacetFilters(facets || {}),
       assembleGeometryFilters(geometry || {}),
       assembleTemporalFilters(temporal || {})
-  )))
+  )
+  if (granules) {
+    filters = _.concat(assembleSelectedCollectionsFilters(collectionSelect))
+  }
+  return _.flatten(_.compact(filters))
 }
 
 const assembleFacetFilters = ({selectedFacets}) => {
@@ -46,5 +50,11 @@ const assembleTemporalFilters = ({startDateTime, endDateTime}) => {
     return {type: 'datetime', after: startDateTime}
   } else if (endDateTime) {
     return {type: 'datetime', before: endDateTime}
+  }
+}
+
+const assembleSelectedCollectionsFilters = ({selectedIds}) => {
+  if (selectedIds.length > 0) {
+    return {type: 'collection', values: selectedIds}
   }
 }

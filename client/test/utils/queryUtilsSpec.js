@@ -3,18 +3,31 @@ import * as queryUtils from '../../src/utils/queryUtils'
 
 describe('The queryUtils', function () {
 
-  testCases().forEach(function (testCase) {
-    it(`can assemble requests with ${testCase.name}`, function () {
-      const objectResult = queryUtils.assembleSearchRequest(testCase.inputState)
-      const stringResult = queryUtils.assembleSearchRequestString(testCase.inputState)
-      objectResult.should.deep.equal(testCase.expectedResult)
-      stringResult.should.equal(JSON.stringify(testCase.expectedResult))
+  describe('assembles collection requests', function () {
+    collectionTestCases().forEach(function (testCase) {
+      it(`with ${testCase.name}`, function () {
+        const objectResult = queryUtils.assembleSearchRequest(testCase.inputState)
+        const stringResult = queryUtils.assembleSearchRequestString(testCase.inputState)
+        objectResult.should.deep.equal(testCase.expectedResult)
+        stringResult.should.equal(JSON.stringify(testCase.expectedResult))
+      })
+    })
+  })
+
+  describe('assembles granule requests', function () {
+    granuleTestCases().forEach(function (testCase) {
+      it(`with ${testCase.name}`, function () {
+        const objectResult = queryUtils.assembleSearchRequest(testCase.inputState, true)
+        const stringResult = queryUtils.assembleSearchRequestString(testCase.inputState, true)
+        objectResult.should.deep.equal(testCase.expectedResult)
+        stringResult.should.equal(JSON.stringify(testCase.expectedResult))
+      })
     })
   })
 
 })
 
-function testCases() {
+function collectionTestCases() {
   return [
     {
       name: "defaults",
@@ -175,6 +188,79 @@ function testCases() {
           }
         ],
         facets: true
+      }
+    }
+  ]
+}
+
+function granuleTestCases() {
+  return [
+    {
+      name: "one collection",
+      inputState: {
+        appState: {
+          collectionSelect: {
+            selectedIds: ['ABC123']
+          }
+        }
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            "type": "collection",
+            "values": ["ABC123"]
+          }
+        ],
+        facets: false
+      }
+    },
+    {
+      name: "two collections",
+      inputState: {
+        appState: {
+          collectionSelect: {
+            selectedIds: ['ABC123', 'XYZ789']
+          }
+        }
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            "type": "collection",
+            "values": ["ABC123", 'XYZ789']
+          }
+        ],
+        facets: false
+      }
+    },
+    {
+      name: "two collections and a text query",
+      inputState: {
+        appState: {
+          queryText: {
+            text: 'test'
+          },
+          collectionSelect: {
+            selectedIds: ['ABC123', 'XYZ789']
+          }
+        }
+      },
+      expectedResult: {
+        queries: [
+          {
+            type: 'queryText',
+            value: 'test'
+          }
+        ],
+        filters: [
+          {
+            "type": "collection",
+            "values": ["ABC123", 'XYZ789']
+          }
+        ],
+        facets: false
       }
     }
   ]
