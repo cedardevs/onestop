@@ -10,7 +10,6 @@ import LandingContainer from './landing/LandingContainer'
 import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
 import { fetchConfig } from './config/ConfigActions'
-import { setOperation, instantiateAppState } from './transition/TransitionActions'
 import { triggerSearch } from './search/SearchActions'
 import '../style/style'
 import './page.css'
@@ -21,7 +20,6 @@ import history from './history'
 //loadQuery()
 
 store.dispatch(fetchConfig())
-store.dispatch(instantiateAppState())
 store.dispatch(triggerSearch())
 
 const body =
