@@ -15,7 +15,6 @@ describe('The main reducer', function() {
     result.appState.should.be.an.instanceOf(Object)
     result.searchAndFacets.should.be.an.instanceOf(Object)
     result.ui.should.be.an.instanceOf(Object)
-    result.query.should.be.an.instanceOf(Object)
     result.errors.should.be.an.instanceOf(Object)
     result.routing.should.be.an.instanceOf(Object)
   })
