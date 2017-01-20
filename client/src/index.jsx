@@ -11,6 +11,7 @@ import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
 import { fetchConfig } from './config/ConfigActions'
 import { setOperation, instantiateAppState } from './transition/TransitionActions'
+import { triggerSearch } from './search/SearchActions'
 import '../style/style'
 import './page.css'
 import store from './store'
@@ -21,20 +22,21 @@ import history from './history'
 
 store.dispatch(fetchConfig())
 store.dispatch(instantiateAppState())
+store.dispatch(triggerSearch())
 
 const body =
-    <Provider store={store}>
-      <Router history={history}>
-        <Route path="/" name="Home" component={RootComponent}>
-          <IndexRoute component={LandingContainer}/>
-          <Route name="Collections" path="collections" component={ResultLayout}>
-            <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
-            <Route name="Files" path="files" component={GranuleListContainer}/>
-          </Route>
-          <Route name="Error" path="error" component={ErrorContainer}/>
+  <Provider store={store}>
+    <Router history={history}>
+      <Route path="/" name="Home" component={RootComponent}>
+        <IndexRoute component={LandingContainer}/>
+        <Route name="Collections" path="collections" component={ResultLayout}>
+          <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
+          <Route name="Files" path="files" component={GranuleListContainer}/>
         </Route>
-      </Router>
-    </Provider>
+        <Route name="Error" path="error" component={ErrorContainer}/>
+      </Route>
+    </Router>
+  </Provider>
 
 var appDiv = document.createElement('div')
 appDiv.setAttribute('id', 'app')
