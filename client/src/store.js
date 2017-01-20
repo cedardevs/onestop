@@ -4,6 +4,7 @@ import { hashHistory } from 'react-router'
 import Immutable from 'seamless-immutable'
 import thunk from 'redux-thunk'
 import reducer from './reducers/reducer'
+import _ from 'lodash'
 
 const store = createStore(reducer, initialState(),
     applyMiddleware(
@@ -21,10 +22,14 @@ function initialState() {
 }
 
 function searchAndFacetState() {
-  const urlString = decodeURIComponent(document.location.hash)
-  if (urlString.includes('?')){
-    const urlArray = urlString.split('?')
-    return JSON.parse(urlArray[1])
+  if(typeof document !== "undefined"){
+    const urlString = decodeURIComponent(document.location.hash)
+    if (urlString.includes('?')){
+      const urlArray = urlString.split('?')
+      return JSON.parse(urlArray[1])
+    } else {
+      return {}
+    }
   } else {
     return {}
   }
