@@ -7,11 +7,9 @@ export const initialState = Immutable({
 })
 
 export const queryText = (state = initialState, action) => {
-  let newState
-
   switch (action.type) {
     case UPDATE_QUERY:
-      return Immutable.merge(state, {text: action.searchText})
+      return Immutable.set(state, 'text', action.searchText)
 
     default:
       return state
