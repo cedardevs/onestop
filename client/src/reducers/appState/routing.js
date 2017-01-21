@@ -8,7 +8,7 @@ const initialState = Immutable({
   initialized: false
 })
 
-const transition = (state = initialState, action) => {
+const transition = (state = initialState, action, searchAndFacets = {}) => {
   switch (action.type) {
     case LOCATION_CHANGE:
       return Immutable.merge(state, {
@@ -20,7 +20,8 @@ const transition = (state = initialState, action) => {
     case SEARCH_COMPLETE:
       const { view } = action
       let location = state.locationBeforeTransitions
-      location = Object.assign({}, location, {pathname: `/${view}`, action: 'PUSH'})
+      location = Object.assign({}, location, {pathname: `/${view}`, action: 'PUSH',
+        search: `?${JSON.stringify(searchAndFacets)}`})
       return Immutable.merge(state, {locationBeforeTransitions: location, initialized: true})
 
     default:

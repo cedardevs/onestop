@@ -42,6 +42,7 @@ const search = combineReducers({
 
 const searchAndFacets = (state = {}, action) => {
   if (action.type === 'CLEAR_SEARCH') { state.search = undefined }
+  if (action.type === 'CLEAR_FACETS') { state.facets = undefined }
   return {
     search: search(state.search, action),
     facets: facets(state.facets, action)
@@ -50,14 +51,13 @@ const searchAndFacets = (state = {}, action) => {
 
 // TODO: Pass search state elements to query removing the need for state duplication
 const reducer = (state, action) => {
-  if (action.type === 'CLEAR_FACETS') { state.searchAndFacets = undefined }
   return {
     domain: domain(state && state.domain || undefined, action),
     appState: appState(state && state.appState || undefined, action),
     searchAndFacets: searchAndFacets(state && state.searchAndFacets || undefined, action),
     ui: ui(state && state.ui || undefined, action),
     errors: errors(state && state.errors || undefined, action),
-    routing: routing(state && state.routing || undefined, action)
+    routing: routing(state && state.routing || undefined, action, state.searchAndFacets)
   }
 }
 
