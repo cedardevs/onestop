@@ -1,4 +1,5 @@
 import React from 'react'
+import Immutable from 'seamless-immutable'
 import styles from './facet.css'
 import _ from 'lodash'
 import Collapse, { Panel } from 'rc-collapse'
@@ -57,7 +58,13 @@ class FacetList extends React.Component {
         facets.push(
           <Panel header={`${this.state.terms[category.toLowerCase()] ||
             self.toTitleCase(category)}`} key={`${category}`}>
-            {Object.keys(terms).map( term => {
+            {Object.keys(terms).sort( (a, b) => {
+              const aSub = self.subFacetLabel(a)
+              const bSub = self.subFacetLabel(b)
+              if(aSub < bSub) { return -1 }
+              if(aSub > bSub) { return 1 }
+              return 0
+            } ).map( term => {
               let input = {
                 className: styles.checkFacet,
                 'data-name': category,
