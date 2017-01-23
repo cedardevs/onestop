@@ -3,8 +3,13 @@
 .mainWindow {
   letter-spacing: 0em !important;
   background-color: #000;
-  margin-bottom: 2em;
+  margin: 2em 0 2em;
   height: calc(100vh - 5em - $header-height - $footer-height*2);
+}
+
+.navLink {
+  color: #00a6d2;
+  font-size: 1.15em;
 }
 
 .mapContainer {
