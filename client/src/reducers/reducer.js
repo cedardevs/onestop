@@ -11,7 +11,6 @@ import granuleRequest from './appState/granuleRequest'
 import collectionSelect from './appState/collectionSelect'
 
 import config from './domain/config'
-import query from './domain/query'
 import results from './domain/results'
 
 import cardDetails from './ui/cardDetails'
@@ -57,7 +56,6 @@ const reducer = (state, action) => {
     appState: appState(state && state.appState || undefined, action),
     searchAndFacets: searchAndFacets(state && state.searchAndFacets || undefined, action),
     ui: ui(state && state.ui || undefined, action),
-    query: query(state && state.query || undefined, action),
     errors: errors(state && state.errors || undefined, action),
     routing: routing(state && state.routing || undefined, action, state.searchAndFacets)
   }

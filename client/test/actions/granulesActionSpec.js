@@ -5,6 +5,7 @@ import Immutable from 'seamless-immutable'
 import nock from 'nock'
 import * as granuleActions from '../../src/result/granules/GranulesActions'
 import { LOADING_SHOW, LOADING_HIDE } from '../../src/loading/LoadingActions'
+import { assembleSearchRequestString } from '../../src/utils/queryUtils'
 
 const mockStore = configureMockStore([thunk])
 
@@ -54,11 +55,10 @@ describe('The granule actions', function () {
         collectionSelect: {
           selectedIds: collections
         }
-      },
-      query: { formatted: '' }
+      }
     }
     const store = mockStore(Immutable(state))
-    const expectedBody = JSON.stringify({filters: [{type: "collection", values: collections}], facets: false})
+    const expectedBody = assembleSearchRequestString(state, true)
     nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
 
     return store.dispatch(granuleActions.fetchGranules()).then(() => {
@@ -66,7 +66,7 @@ describe('The granule actions', function () {
         {type: LOADING_SHOW},
         {type: granuleActions.FETCHING_GRANULES},
         {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data,
-          view: 'collections/files', appState: ''},
+          view: 'collections/files'},
         {type: LOADING_HIDE}
       ])
     })
@@ -74,8 +74,6 @@ describe('The granule actions', function () {
 
   it('fetches granules with collection search params', function () {
     const collections = ['A', 'B']
-    const query = {type: "queryString", value: "my query"}
-    const facetFilter = {type: "facet", name: "location", values: ["Oceans"]}
     const state = {
       apiHost: apiHost,
       appState: {
@@ -84,16 +82,17 @@ describe('The granule actions', function () {
         },
         collectionSelect: {
           selectedIds: collections
+        },
+        queryTest: {
+          text: 'my query'
+        },
+        facets: {
+          location: ['Oceans']
         }
-      },
-      query: { formatted: JSON.stringify({queries: [query], filters: [facetFilter]}) }
+      }
     }
     const store = mockStore(Immutable(state))
-    const expectedBody = JSON.stringify({
-      queries: [query],
-      filters: [facetFilter, {type: "collection", values: collections}],
-      facets: false
-    })
+    const expectedBody = assembleSearchRequestString(state, true)
     nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
 
     return store.dispatch(granuleActions.fetchGranules()).then(() => {
@@ -101,7 +100,7 @@ describe('The granule actions', function () {
         {type: LOADING_SHOW},
         {type: granuleActions.FETCHING_GRANULES},
         {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data,
-          view: 'collections/files', appState: ''},
+          view: 'collections/files'},
         {type: LOADING_HIDE}
       ])
     })
