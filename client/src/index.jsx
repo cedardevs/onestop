@@ -11,6 +11,7 @@ import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
 import { fetchConfig } from './config/ConfigActions'
 import { triggerSearch } from './search/SearchActions'
+import { fetchGranules } from './result/granules/GranulesActions'
 import '../style/style'
 import './page.css'
 import store from './store'
@@ -20,7 +21,9 @@ import history from './history'
 //loadQuery()
 
 store.dispatch(fetchConfig())
+// Trigger search and granules will likely need to be staggered pending testing
 store.dispatch(triggerSearch())
+store.dispatch(fetchGranules())
 
 const body =
   <Provider store={store}>
