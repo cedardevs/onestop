@@ -10,20 +10,15 @@ import LandingContainer from './landing/LandingContainer'
 import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
 import { fetchConfig } from './config/ConfigActions'
-import { triggerSearch } from './search/SearchActions'
-import { fetchGranules } from './result/granules/GranulesActions'
+import { executeSearch } from './utils/refreshUtils'
 import '../style/style'
 import './page.css'
 import store from './store'
 import history from './history'
 
-// If loading page with query params, resubmit search
-//loadQuery()
-
 store.dispatch(fetchConfig())
 // Trigger search and granules will likely need to be staggered pending testing
-store.dispatch(triggerSearch())
-store.dispatch(fetchGranules())
+executeSearch()
 
 const body =
   <Provider store={store}>
