@@ -60,7 +60,7 @@ export const triggerSearch = (testing) => {
 
     const searchBody = assembleSearchRequestString(state)
     // To avoid returning all results when hitting search w/empty fields
-    if (_.isEmpty(JSON.parse(searchBody).queries)) {
+    if (!searchBody) {
       return Promise.resolve()
     }
     dispatch(showLoading())
