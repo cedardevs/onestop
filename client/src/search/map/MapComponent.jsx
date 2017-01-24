@@ -27,7 +27,12 @@ class MapComponent extends React.Component {
   	Promise.resolve(this.mapDefaults())
   		.then(state => {
 				this.setState(state, ()=> {
-        	if (this.props.selection) { this.updateSelectionLayer(this.props) }
+          let { geoJsonSelection } = this.props
+          if (geoJsonSelection) {
+            let { editableLayers, style } = this.state
+            let layer = L.GeoJSON.geometryToLayer(geoJsonSelection, {style})
+            editableLayers.addLayer(layer)
+          }
           if (this.props.features) { this.updateResultsLayers(this.props) }
         })
 				this.mapSetup()
