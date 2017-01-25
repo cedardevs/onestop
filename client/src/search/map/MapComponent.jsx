@@ -121,7 +121,7 @@ class MapComponent extends React.Component {
 
   updateSelectionLayer() {
   	let { editableLayers, style } = this.state
-		let w = watch(store.getState, 'appState.search.geoJSON')
+		let w = watch(store.getState, 'behavior.search.geoJSON')
 		store.subscribe(w((newGeoJson) => {
       editableLayers.clearLayers()
       if (!_.isEmpty(newGeoJson)){

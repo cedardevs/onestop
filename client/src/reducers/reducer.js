@@ -1,11 +1,11 @@
 import { combineReducers } from 'redux-seamless-immutable'
 
-import search from './appState/search'
-import routing from './appState/routing'
-import errors from './appState/error'
-import collectionRequest from './appState/collectionRequest'
-import granuleRequest from './appState/granuleRequest'
-import collectionSelect from './appState/collectionSelect'
+import search from './behavior/search'
+import routing from './behavior/routing'
+import errors from './behavior/error'
+import collectionRequest from './behavior/collectionRequest'
+import granuleRequest from './behavior/granuleRequest'
+import collectionSelect from './behavior/collectionSelect'
 
 import config from './domain/config'
 import results from './domain/results'
@@ -25,7 +25,7 @@ const ui = combineReducers({
   granuleDetails
 })
 
-const appState = combineReducers({
+const behavior = combineReducers({
   collectionRequest,
   granuleRequest,
   collectionSelect,
@@ -36,10 +36,10 @@ const appState = combineReducers({
 const reducer = (state, action) => {
   return {
     domain: domain(state && state.domain || undefined, action),
-    appState: appState(state && state.appState || undefined, action),
+    behavior: behavior(state && state.behavior || undefined, action),
     ui: ui(state && state.ui || undefined, action),
     errors: errors(state && state.errors || undefined, action),
-    routing: routing(state && state.routing || undefined, action, state && state.appState && state.appState.search)
+    routing: routing(state && state.routing || undefined, action, state && state.behavior && state.behavior.search)
   }
 }
 

@@ -6,7 +6,7 @@ import { toggleFacet } from './FacetActions'
 const mapStateToProps = (state) => {
   return {
     facetMap: state.domain.results.facets,
-    selectedFacets: state.appState.search.selectedFacets
+    selectedFacets: state.behavior.search.selectedFacets
   }
 }
 

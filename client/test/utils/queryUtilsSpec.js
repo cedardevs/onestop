@@ -41,7 +41,7 @@ function collectionTestCases() {
     {
       name: "a text search",
       inputState: {
-        appState: {
+        behavior: {
           search: {
             queryText: "test text"
           }
@@ -60,7 +60,7 @@ function collectionTestCases() {
     {
       name: "a temporal search",
       inputState: {
-        appState: {
+        behavior: {
           search: {
             startDateTime: "2017-01-01",
             endDateTime: "2017-01-20"
@@ -82,7 +82,7 @@ function collectionTestCases() {
     {
       name: "a spatial search",
       inputState: {
-        appState: {
+        behavior: {
           search: {
             geoJSON: {
               geometry: {
@@ -113,7 +113,7 @@ function collectionTestCases() {
     {
       name: "a facet search",
       inputState: {
-        appState: {
+        behavior: {
           search: {
             selectedFacets: {
               science: ["Atmosphere"]
@@ -136,7 +136,7 @@ function collectionTestCases() {
     {
       name: "all filters applied",
       inputState: {
-        appState: {
+        behavior: {
           search: {
             geoJSON: {
               geometry: {
@@ -192,7 +192,7 @@ function granuleTestCases() {
     {
       name: "one collection",
       inputState: {
-        appState: {
+        behavior: {
           search: {
             selectedIds: ['ABC123']
           }
@@ -212,7 +212,7 @@ function granuleTestCases() {
     {
       name: "two collections",
       inputState: {
-        appState: {
+        behavior: {
           search: {
             selectedIds: ['ABC123', 'XYZ789']
           }
@@ -232,7 +232,7 @@ function granuleTestCases() {
     {
       name: "two collections and a text query",
       inputState: {
-        appState: {
+        behavior: {
           search: {
             queryText: 'test',
             selectedIds: ['ABC123', 'XYZ789']

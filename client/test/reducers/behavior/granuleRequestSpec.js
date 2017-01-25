@@ -1,6 +1,6 @@
 import '../../specHelper'
 import Immutable from 'seamless-immutable'
-import { granuleRequest, initialState } from '../../../src/reducers/appState/granuleRequest'
+import { granuleRequest, initialState } from '../../../src/reducers/behavior/granuleRequest'
 import { fetchingGranules, fetchedGranules } from '../../../src/result/granules/GranulesActions'
 
 describe('The granuleRequest reducer', function() {

@@ -1,5 +1,5 @@
 import '../../specHelper'
-import { collectionRequest, initialState } from '../../../src/reducers/appState/collectionRequest'
+import { collectionRequest, initialState } from '../../../src/reducers/behavior/collectionRequest'
 import { startSearch, completeSearch } from '../../../src/search/SearchActions'
 
 describe('The collectionRequest reducer', function () {

@@ -16,7 +16,7 @@ const successResponse = {
     type: 'granule',
     id: '1',
     attributes: {id: 1, title: 'one'},
-    appState: ""
+    behavior: ""
   }, {
     type: 'granule',
     id: '2',
@@ -48,7 +48,7 @@ describe('The granule actions', function () {
     //   granules: {inFlight: false}, search: {requestBody: '{}'}}
     const state = {
       apiHost: apiHost,
-      appState: {
+      behavior: {
         granuleRequest: {
           inFlight: false
         },
@@ -76,7 +76,7 @@ describe('The granule actions', function () {
     const collections = ['A', 'B']
     const state = {
       apiHost: apiHost,
-      appState: {
+      behavior: {
         granuleRequest: {
           inFlight: false
         },

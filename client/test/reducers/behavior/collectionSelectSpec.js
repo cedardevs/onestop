@@ -1,6 +1,6 @@
 import '../../specHelper'
 import Immutable from 'seamless-immutable'
-import { collectionSelect, initialState } from '../../../src/reducers/appState/collectionSelect'
+import { collectionSelect, initialState } from '../../../src/reducers/behavior/collectionSelect'
 import { toggleSelection, clearSelections } from '../../../src/result/collections/CollectionsActions'
 
 describe('The collectionSelect reducer', function () {

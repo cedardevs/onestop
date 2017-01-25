@@ -6,8 +6,8 @@ export const assembleSearchRequestString = (state, granules = false) => {
 }
 
 export const assembleSearchRequest = (state, granules = false) => {
-  const appState = state.appState || {}
-  const search = appState.search || {}
+  const behavior = state.behavior || {}
+  const search = behavior.search || {}
 
   const queries = assembleQueries(search)
   let filters = _.concat(
