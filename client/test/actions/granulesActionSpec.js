@@ -52,7 +52,7 @@ describe('The granule actions', function () {
         granuleRequest: {
           inFlight: false
         },
-        collectionSelect: {
+        search: {
           selectedIds: collections
         }
       }
@@ -80,14 +80,12 @@ describe('The granule actions', function () {
         granuleRequest: {
           inFlight: false
         },
-        collectionSelect: {
-          selectedIds: collections
-        },
-        queryTest: {
-          text: 'my query'
-        },
-        facets: {
-          location: ['Oceans']
+        search: {
+          selectedIds: collections,
+          queryText: 'my query',
+          selectedFacets: {
+            location: ['Oceans']
+          }
         }
       }
     }

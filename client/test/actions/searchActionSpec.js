@@ -25,7 +25,9 @@ describe('The search action', () => {
   it('triggerSearch executes a search from requestBody', () => {
     const testState = Immutable({
       appState: {
-        queryText: {text: 'alaska'},
+        search: {
+          queryText: {text: 'alaska'}
+        },
         collectionRequest: {inFlight: false}
       }
     })
@@ -58,7 +60,9 @@ describe('The search action', () => {
   it('triggerSearch handles failed search requests', () => {
     const testState = Immutable({
       appState: {
-        queryText: {text: 'alaska'},
+        search: {
+          queryText: {text: 'alaska'}
+        },
         collectionRequest: {inFlight: false}
       }
     })

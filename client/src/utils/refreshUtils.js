@@ -22,7 +22,7 @@ export const executeSearch = function(){
 
 export const initialState = function() {
   if (encodedState){
-    return Immutable({searchAndFacets: encodedState})
+    return Immutable({appState: {search: encodedState}})
   } else {
     return Immutable({})
   }

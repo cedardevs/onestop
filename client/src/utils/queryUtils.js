@@ -6,22 +6,17 @@ export const assembleSearchRequestString = (state, granules = false) => {
 }
 
 export const assembleSearchRequest = (state, granules = false) => {
-  const searchAndFacets = state.searchAndFacets || {}
-  const facets = searchAndFacets.facets || {}
-  const search = searchAndFacets.search || {}
-  const geometry = search.geometry || {}
-  const temporal = search.temporal || {}
   const appState = state.appState || {}
-  const collectionSelect = appState.collectionSelect || {}
+  const search = appState.search || {}
 
   const queries = assembleQueries(search)
   let filters = _.concat(
-      assembleFacetFilters(facets),
-      assembleGeometryFilters(geometry),
-      assembleTemporalFilters(temporal)
+      assembleFacetFilters(search),
+      assembleGeometryFilters(search),
+      assembleTemporalFilters(search)
   )
   if (granules) {
-    filters = _.concat(assembleSelectedCollectionsFilters(collectionSelect))
+    filters = _.concat(assembleSelectedCollectionsFilters(search))
   }
   filters =  _.flatten(_.compact(filters))
 
@@ -29,8 +24,8 @@ export const assembleSearchRequest = (state, granules = false) => {
 }
 
 const assembleQueries = ({queryText}) => {
-  if (queryText && queryText.text) {
-    return [{type: 'queryText', value: queryText.text}]
+  if (queryText) {
+    return [{type: 'queryText', value: queryText}]
   }
   return []
 }

@@ -41,11 +41,9 @@ function collectionTestCases() {
     {
       name: "a text search",
       inputState: {
-        searchAndFacets: {
+        appState: {
           search: {
-            queryText: {
-              text: "test text"
-            }
+            queryText: "test text"
           }
         }
       },
@@ -62,12 +60,10 @@ function collectionTestCases() {
     {
       name: "a temporal search",
       inputState: {
-        searchAndFacets: {
+        appState: {
           search: {
-            temporal: {
-              startDateTime: "2017-01-01",
-              endDateTime: "2017-01-20"
-            }
+            startDateTime: "2017-01-01",
+            endDateTime: "2017-01-20"
           }
         }
       },
@@ -86,17 +82,15 @@ function collectionTestCases() {
     {
       name: "a spatial search",
       inputState: {
-        searchAndFacets: {
+        appState: {
           search: {
-            geometry: {
-              geoJSON: {
-                geometry: {
-                  type: 'Polygon',
-                  coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
-                },
-                properties: {
-                  description: 'Valid test GeoJSON'
-                }
+            geoJSON: {
+              geometry: {
+                type: 'Polygon',
+                coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
+              },
+              properties: {
+                description: 'Valid test GeoJSON'
               }
             }
           }
@@ -119,8 +113,8 @@ function collectionTestCases() {
     {
       name: "a facet search",
       inputState: {
-        searchAndFacets: {
-          facets: {
+        appState: {
+          search: {
             selectedFacets: {
               science: ["Atmosphere"]
             }
@@ -142,28 +136,20 @@ function collectionTestCases() {
     {
       name: "all filters applied",
       inputState: {
-        searchAndFacets: {
+        appState: {
           search: {
-            geometry: {
-              geoJSON: {
-                geometry: {
-                  type: 'Polygon',
-                  coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
-                },
-                properties: {
-                  description: 'Valid test GeoJSON'
-                }
+            geoJSON: {
+              geometry: {
+                type: 'Polygon',
+                coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
+              },
+              properties: {
+                description: 'Valid test GeoJSON'
               }
             },
-            temporal: {
-              startDateTime: "2017-01-01",
-              endDateTime: "2017-01-20"
-            },
-            queryText: {
-              text: "test text"
-            }
-          },
-          facets: {
+            startDateTime: "2017-01-01",
+            endDateTime: "2017-01-20",
+            queryText: "test text",
             selectedFacets: {
               science: ["Atmosphere"]
             }
@@ -207,7 +193,7 @@ function granuleTestCases() {
       name: "one collection",
       inputState: {
         appState: {
-          collectionSelect: {
+          search: {
             selectedIds: ['ABC123']
           }
         }
@@ -227,7 +213,7 @@ function granuleTestCases() {
       name: "two collections",
       inputState: {
         appState: {
-          collectionSelect: {
+          search: {
             selectedIds: ['ABC123', 'XYZ789']
           }
         }
@@ -247,15 +233,9 @@ function granuleTestCases() {
       name: "two collections and a text query",
       inputState: {
         appState: {
-          collectionSelect: {
-            selectedIds: ['ABC123', 'XYZ789']
-          }
-        },
-        searchAndFacets: {
           search: {
-            queryText: {
-              text: 'test'
-            },
+            queryText: 'test',
+            selectedIds: ['ABC123', 'XYZ789']
           }
         }
       },

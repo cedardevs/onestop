@@ -5,10 +5,10 @@ import { clearFacets } from './facet/FacetActions'
 
 const mapStateToProps = (state) => {
   return {
-    queryString: state.searchAndFacets.search.queryText.text,
-    startDateTime: state.searchAndFacets.search.temporal.startDateTime,
-    endDateTime: state.searchAndFacets.search.temporal.endDateTime,
-    geoJSON: state.searchAndFacets.search.geometry.geoJSON
+    queryString: state.appState.search.queryText,
+    startDateTime: state.appState.search.startDateTime,
+    endDateTime: state.appState.search.endDateTime,
+    geoJSON: state.appState.search.geoJSON
   }
 }
 

@@ -42,7 +42,7 @@ export const fetchGranules = () => {
       return Promise.resolve() // let the calling code know there's nothing to wait for
     }
 
-    let selectedCollections = state.appState.collectionSelect.selectedIds
+    let selectedCollections = state.appState.search.selectedIds
     if (!selectedCollections) {
       return Promise.resolve()
     }

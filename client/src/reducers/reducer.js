@@ -1,10 +1,7 @@
 import { combineReducers } from 'redux-seamless-immutable'
 
-import facets from './appState/facets'
-import geometry from './appState/geometry'
+import search from './appState/search'
 import routing from './appState/routing'
-import queryText from './appState/queryText'
-import temporal from './appState/temporal'
 import errors from './appState/error'
 import collectionRequest from './appState/collectionRequest'
 import granuleRequest from './appState/granuleRequest'
@@ -31,33 +28,18 @@ const ui = combineReducers({
 const appState = combineReducers({
   collectionRequest,
   granuleRequest,
-  collectionSelect
+  collectionSelect,
+  search
 })
-
-const search = combineReducers({
-  geometry,
-  queryText,
-  temporal
-})
-
-const searchAndFacets = (state = {}, action) => {
-  if (action.type === 'CLEAR_SEARCH') { state.search = undefined }
-  if (action.type === 'CLEAR_FACETS') { state.facets = undefined }
-  return {
-    search: search(state.search, action),
-    facets: facets(state.facets, action)
-  }
-}
 
 // TODO: Pass search state elements to query removing the need for state duplication
 const reducer = (state, action) => {
   return {
     domain: domain(state && state.domain || undefined, action),
     appState: appState(state && state.appState || undefined, action),
-    searchAndFacets: searchAndFacets(state && state.searchAndFacets || undefined, action),
     ui: ui(state && state.ui || undefined, action),
     errors: errors(state && state.errors || undefined, action),
-    routing: routing(state && state.routing || undefined, action, state.searchAndFacets)
+    routing: routing(state && state.routing || undefined, action, state && state.appState && state.appState.search)
   }
 }
 

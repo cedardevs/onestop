@@ -5,7 +5,7 @@ import { clearFacets } from '../search/facet/FacetActions'
 
 const mapStateToProps = (state) => {
   return {
-    queryString: state.searchAndFacets.search.queryText.text
+    queryString: state.appState.search.queryText.text
   }
 }
 

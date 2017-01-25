@@ -3,7 +3,7 @@ import { startDate, endDate, DateRange } from './TemporalActions'
 import TemporalSearch from './TemporalComponent'
 
 const mapStateToProps = (state) => {
-  const { startDateTime, endDateTime } = state.searchAndFacets.search.temporal
+  const { startDateTime, endDateTime } = state.appState.search
   return {
     startDateTime: startDateTime,
     endDateTime: endDateTime

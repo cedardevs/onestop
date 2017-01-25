@@ -13,7 +13,7 @@ describe('The main reducer', function() {
     result.should.be.an.instanceOf(Object)
     result.domain.should.be.an.instanceOf(Object)
     result.appState.should.be.an.instanceOf(Object)
-    result.searchAndFacets.should.be.an.instanceOf(Object)
+    result.appState.search.should.be.an.instanceOf(Object)
     result.ui.should.be.an.instanceOf(Object)
     result.errors.should.be.an.instanceOf(Object)
     result.routing.should.be.an.instanceOf(Object)
