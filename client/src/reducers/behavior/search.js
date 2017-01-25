@@ -1,7 +1,7 @@
 import Immutable from 'seamless-immutable'
 import { NEW_GEOMETRY, REMOVE_GEOMETRY } from '../../search/map/MapActions'
 import { UPDATE_QUERY, CLEAR_SEARCH } from '../../search/SearchActions'
-import { DateRange } from '../../search/temporal/TemporalActions'
+import { UPDATE_DATE_RANGE } from '../../search/temporal/TemporalActions'
 import { TOGGLE_FACET } from '../../search/facet/FacetActions'
 import { TOGGLE_SELECTION, CLEAR_SELECTIONS } from '../../result/collections/CollectionsActions'
 
@@ -25,11 +25,9 @@ export const search = (state = initialState, action) => {
     case REMOVE_GEOMETRY:
       return Immutable.set(state, 'geoJSON', initialState.geoJSON)
 
-    case DateRange.START_DATE:
-      return Immutable.merge(state, {startDateTime: action.datetime})
-
-    case DateRange.END_DATE:
-      return Immutable.merge(state, {endDateTime: action.datetime})
+    case UPDATE_DATE_RANGE:
+      return Immutable.merge(state, {startDateTime: action.startDate,
+        endDateTime: action.endDate })
 
     case TOGGLE_FACET:
       return Immutable.set(state, 'selectedFacets', action.selectedFacets)

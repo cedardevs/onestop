@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { startDate, endDate, DateRange } from './TemporalActions'
+import { updateDateRange } from './TemporalActions'
 import TemporalSearch from './TemporalComponent'
 
 const mapStateToProps = (state) => {
@@ -12,12 +12,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateOnChange: (text, dateSelected) => {
-      if (dateSelected === DateRange.START_DATE){
-        dispatch(startDate(text))
-      } else {
-        dispatch(endDate(text))
-      }
+    updateOnChange: (startDate, endDate) => {
+      dispatch(updateDateRange(startDate, endDate))
     }
   }
 }

@@ -1,18 +1,9 @@
-export const DateRange = {
-  START_DATE: 'START_DATE',
-  END_DATE: 'END_DATE'
-}
+export const UPDATE_DATE_RANGE = 'UPDATE_DATE_RANGE'
 
-export const startDate = datetime => {
+export const updateDateRange = (startDate, endDate) => {
   return {
-    type: DateRange.START_DATE,
-    datetime
-  }
-}
-
-export const endDate = datetime => {
-  return {
-    type: DateRange.END_DATE,
-    datetime
+    type: UPDATE_DATE_RANGE,
+    startDate,
+    endDate
   }
 }
