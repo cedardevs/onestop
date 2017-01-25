@@ -3,7 +3,7 @@ import _ from 'lodash'
 import { showLoading, hideLoading } from '../loading/LoadingActions'
 import { showErrors } from '../error/ErrorActions'
 import { facetsReceived, clearFacets } from './facet/FacetActions'
-import { assembleSearchRequestString } from '../utils/queryUtils'
+import { assembleSearchRequest } from '../utils/queryUtils'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -58,9 +58,11 @@ export const triggerSearch = (testing) => {
       return Promise.resolve()
     }
 
-    const searchBody = assembleSearchRequestString(state)
+    const body = assembleSearchRequest(state)
+    const hasQueries = body && body.queries && body.queries.length > 0
+    const hasFilters = body && body.filters && body.filters.length > 0
     // To avoid returning all results when hitting search w/empty fields
-    if (!searchBody) {
+    if (!hasQueries && !hasFilters) {
       return Promise.resolve()
     }
     dispatch(showLoading())
@@ -74,7 +76,7 @@ export const triggerSearch = (testing) => {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: searchBody
+      body: JSON.stringify(body)
     }
 
     return fetch(apiRoot, fetchParams)
