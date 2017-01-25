@@ -6,9 +6,6 @@ import styles from './list.css'
 class GranuleList extends React.Component {
   constructor(props) {
     super(props)
-    this.results = props.results
-    this.focusedIds = props.focusedIds
-    this.onMouseOver = props.onMouseOver
   }
 
   render() {
@@ -17,9 +14,9 @@ class GranuleList extends React.Component {
     const tags = 'Tags TBD'
     // FIXME Which granule fields are being displayed in table?
 
-    _.forEach(this.results, (value, key) => {
+    _.forEach(this.props.results, (value, key) => {
       rows.push(
-        <tr key={key} onMouseOver={() => this.onMouseOver(key)} onMouseLeave={() => this.onMouseOver(key)}>
+        <tr key={key} onMouseOver={() => this.props.onMouseOver(key)} onMouseLeave={() => this.props.onMouseOver(key)}>
           <td>{value.title}</td>
           {/*<td>{value.modifiedDate}</td>*/}
           {/*<td>{dataFormats}</td>*/}
@@ -55,6 +52,13 @@ class GranuleList extends React.Component {
           </div>
         </div>
   }
+}
+
+GranuleList.propTypes = {
+  results: PropTypes.object,
+  focusedIds: PropTypes.array,
+  selectedCollection: PropTypes.object,
+  onMouseOver: PropTypes.func,
 }
 
 export default GranuleList
