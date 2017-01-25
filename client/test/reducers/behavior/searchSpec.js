@@ -1,5 +1,6 @@
 import '../../specHelper'
 import Immutable from 'seamless-immutable'
+import { expect } from 'chai'
 import { search, initialState } from '../../../src/reducers/behavior/search'
 import { toggleSelection, clearSelections } from '../../../src/result/collections/CollectionsActions'
 import { newGeometry, removeGeometry } from '../../../src/search/map/MapActions'
@@ -9,9 +10,14 @@ describe('The search reducer', function () {
     const initialAction = {type: 'init'}
     const result = search(initialState, initialAction)
 
-    result.geoJSON.should.be.an.instanceOf(Object)
-    result.selectedIds.should.be.an.instanceOf(Array)
-    result.selectedFacets.should.be.an.instanceOf(Object)
+    result.should.deep.equal({
+      queryText: '',
+      geoJSON: null,
+      startDateTime: null,
+      endDateTime: null,
+      selectedFacets: {},
+      selectedIds: []
+    })
   })
 
   describe('geometry cases', function () {
@@ -35,7 +41,7 @@ describe('The search reducer', function () {
     it('defaults back to initial state for geometry removal', function () {
       const removeGeomAction = removeGeometry()
       const result = search({geoJSON: validGeoJSON}, removeGeomAction)
-      result.geoJSON.should.deep.equal(initialState.geoJSON)
+      expect(result.geoJSON).to.be.null
     })
   })
 

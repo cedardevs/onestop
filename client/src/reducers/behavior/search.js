@@ -7,7 +7,7 @@ import { TOGGLE_SELECTION, CLEAR_SELECTIONS } from '../../result/collections/Col
 
 export const initialState = Immutable({
   queryText: '',
-  geoJSON: {},
+  geoJSON: null,
   startDateTime: null,
   endDateTime: null,
   selectedFacets: {},
