@@ -10,7 +10,6 @@ export const SEARCH_COMPLETE = 'search_complete'
 export const UPDATE_QUERY = 'update_query'
 export const CLEAR_SEARCH = 'clear_search'
 export const COUNT_HITS = 'count_hits'
-export const GENERATE_COLLECTIONS_QUERY = 'GENERATE_COLLECTIONS_QUERY'
 
 export const updateQuery = (searchText) => {
   return {
@@ -32,8 +31,6 @@ export const completeSearch = (items) => {
     items
   }
 }
-
-export const generateCollectionsQuery = () => {return {type: GENERATE_COLLECTIONS_QUERY}}
 
 export const clearSearch = () => {
   return {
