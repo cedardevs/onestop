@@ -1,6 +1,4 @@
 import Immutable from 'seamless-immutable'
-import _ from 'lodash'
-import { SEARCH, SEARCH_COMPLETE } from '../../search/SearchActions'
 import { TOGGLE_SELECTION, CLEAR_SELECTIONS } from '../../result/collections/CollectionsActions'
 
 export const initialState = Immutable({
