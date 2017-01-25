@@ -1,22 +1,27 @@
 import Immutable from 'seamless-immutable'
-import { SEARCH_COMPLETE } from '../../search/SearchActions'
+import { SEARCH_COMPLETE, COUNT_HITS } from '../../search/SearchActions'
 import { FETCHED_GRANULES, CLEAR_GRANULES } from '../../result/granules/GranulesActions'
 import { FACETS_RECEIVED } from '../../search/facet/FacetActions'
 
 const initialState = Immutable({
   collections: {},
   granules: {},
-  facets: {}
+  facets: {},
+  totalCollections: 0
 })
 
 export const results = (state = initialState, action) => {
   switch(action.type) {
+
     case SEARCH_COMPLETE:
       let collections = {}
       action.items.forEach((val, key) => {
         collections[key] = val
       })
       return Immutable.set(state, 'collections', collections)
+
+    case COUNT_HITS:
+      return Immutable.set(state, 'totalCollections', action.totalHits)
 
     case FETCHED_GRANULES:
       const newGranules = action.granules.reduce(

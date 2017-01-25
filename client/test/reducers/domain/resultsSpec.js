@@ -73,7 +73,7 @@ describe('The results reducer', function () {
         },
         dataResolution:{}
       }
-    }
+    }, totalCollections: 0
     }
     let stateWithFacets = results(initialState, facetsRecAction)
     stateWithFacets.should.deep.equal(expectedState)
