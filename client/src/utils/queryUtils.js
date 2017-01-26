@@ -56,3 +56,22 @@ const assembleSelectedCollectionsFilters = ({selectedIds}) => {
     return {type: 'collection', values: selectedIds}
   }
 }
+
+export const encodeQueryString = (state) => {
+  const searchParams = state && state.behavior && state.behavior.search
+  if (_.isEmpty(searchParams)) {
+    return ''
+  }
+
+  // TODO - implement a better encoding scheme
+  return JSON.stringify(searchParams)
+}
+
+export const decodeQueryString = (queryString) => {
+  if (_.isEmpty(queryString)) {
+    return {}
+  }
+
+  // TODO - decode the brilliant encoding scheme from above
+  return {behavior: {search: JSON.parse(queryString)}}
+}

@@ -4,6 +4,7 @@ import { fetchGranules, clearGranules } from '../result/granules/GranulesActions
 import { toggleSelection, clearSelections } from '../result/collections/CollectionsActions'
 import { clearSearch, triggerSearch, updateQuery } from '../search/SearchActions'
 import { clearFacets } from '../search/facet/FacetActions'
+import { showCollections, showGranules } from '../actions/FlowActions'
 import Detail from './DetailComponent'
 
 const mapStateToProps = (state, reactProps) => {
@@ -24,6 +25,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(clearSearch())
       dispatch(updateQuery(text))
       dispatch(triggerSearch())
+      dispatch(showCollections())
     },
     showGranules: (id) => {
       dispatch(setFocus(null))
@@ -31,6 +33,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(toggleSelection(id))
       dispatch(clearGranules())
       dispatch(fetchGranules())
+      dispatch(showGranules())
     }
   }
 }

@@ -9,16 +9,13 @@ import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
 import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
-import { fetchConfig } from './config/ConfigActions'
-import { executeSearch } from './utils/refreshUtils'
+import { initialize } from './actions/FlowActions'
 import '../style/style'
 import './page.css'
 import store from './store'
 import history from './history'
 
-store.dispatch(fetchConfig())
-// Trigger search and granules will likely need to be staggered pending testing
-executeSearch()
+store.dispatch(initialize())
 
 const body =
   <Provider store={store}>
@@ -34,7 +31,7 @@ const body =
     </Router>
   </Provider>
 
-var appDiv = document.createElement('div')
+const appDiv = document.createElement('div')
 appDiv.setAttribute('id', 'app')
 appDiv.setAttribute('style', 'height:100%')
 document.body.appendChild(appDiv)

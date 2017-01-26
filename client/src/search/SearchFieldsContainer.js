@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import SearchFieldsComponent from './SearchFieldsComponent'
 import { triggerSearch, updateQuery, clearSearch } from './SearchActions'
 import { clearFacets } from './facet/FacetActions'
+import { showCollections } from '../actions/FlowActions'
 
 const mapStateToProps = (state) => {
   return {
@@ -17,6 +18,7 @@ const mapDispatchToProps = (dispatch) => {
     submit: () => {
       dispatch(clearFacets())
       dispatch(triggerSearch())
+      dispatch(showCollections())
     },
     updateQuery: (text) => dispatch(updateQuery(text)),
     clearSearch: () => dispatch(clearSearch())

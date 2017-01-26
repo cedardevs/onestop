@@ -4,10 +4,12 @@ import { hashHistory } from 'react-router'
 import Immutable from 'seamless-immutable'
 import thunk from 'redux-thunk'
 import reducer from './reducers/reducer'
-import { initialState } from './utils/refreshUtils'
-import _ from 'lodash'
+import { decodeQueryString } from './utils/queryUtils'
 
-const store = createStore(reducer, initialState(),
+const queryString = document.location.hash.split('?')[1]
+const initialState = Immutable(decodeQueryString(queryString))
+
+const store = createStore(reducer, initialState,
     applyMiddleware(
         thunk,
         routerMiddleware(hashHistory)
