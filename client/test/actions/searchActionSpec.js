@@ -45,8 +45,7 @@ describe('The search action', () => {
       {type: module.SEARCH},
       {type: FACETS_RECEIVED, metadata: expectedMetadata},
       {type: module.COUNT_HITS, totalHits: 2},
-      {type: module.SEARCH_COMPLETE, items: expectedItems,
-          view: 'collections'},
+      {type: module.SEARCH_COMPLETE, items: expectedItems},
       {type: LOADING_HIDE}
     ]
 
@@ -84,8 +83,7 @@ describe('The search action', () => {
         }
       },
       {type: CLEAR_FACETS},
-      {type: module.SEARCH_COMPLETE, items: new Map(),
-          view: 'collections'},
+      {type: module.SEARCH_COMPLETE, items: new Map()},
     ]
 
     const store = mockStore(testState)
@@ -134,8 +132,7 @@ describe('The search action', () => {
       ]
     }
     const action = module.completeSearch(items)
-    const expectedAction = {type: module.SEARCH_COMPLETE, items: items,
-          view: 'collections'}
+    const expectedAction = {type: module.SEARCH_COMPLETE, items: items}
 
     action.should.deep.equal(expectedAction)
   })

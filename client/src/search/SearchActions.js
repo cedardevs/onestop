@@ -27,7 +27,6 @@ export const startSearch = () => {
 export const completeSearch = (items) => {
   return {
     type: SEARCH_COMPLETE,
-    view: 'collections',
     items
   }
 }

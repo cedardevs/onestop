@@ -63,8 +63,7 @@ describe('The granule actions', function () {
       store.getActions().should.deep.equal([
         {type: LOADING_SHOW},
         {type: granuleActions.FETCHING_GRANULES},
-        {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data,
-          view: 'collections/files'},
+        {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data},
         {type: LOADING_HIDE}
       ])
     })
@@ -95,8 +94,7 @@ describe('The granule actions', function () {
       store.getActions().should.deep.equal([
         {type: LOADING_SHOW},
         {type: granuleActions.FETCHING_GRANULES},
-        {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data,
-          view: 'collections/files'},
+        {type: granuleActions.FETCHED_GRANULES, granules: successResponse.data},
         {type: LOADING_HIDE}
       ])
     })

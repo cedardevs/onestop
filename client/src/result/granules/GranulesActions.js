@@ -30,8 +30,7 @@ export const fetchingGranules = () => {
 export const fetchedGranules = granuleList => {
   return {
     type: FETCHED_GRANULES,
-    granules: granuleList,
-    view: 'collections/files'
+    granules: granuleList
   }
 }
 
