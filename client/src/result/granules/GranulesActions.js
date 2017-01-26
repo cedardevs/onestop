@@ -38,7 +38,7 @@ export const fetchedGranules = granuleList => {
 export const fetchGranules = () => {
   return (dispatch, getState) => {
     const state = getState()
-    if (state.behavior.granuleRequest.inFlight) {
+    if (state.behavior.request.granuleInFlight) {
       return Promise.resolve() // let the calling code know there's nothing to wait for
     }
 

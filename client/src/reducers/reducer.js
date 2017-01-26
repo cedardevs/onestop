@@ -3,8 +3,7 @@ import { combineReducers } from 'redux-seamless-immutable'
 import search from './behavior/search'
 import routing from './behavior/routing'
 import errors from './behavior/error'
-import collectionRequest from './behavior/collectionRequest'
-import granuleRequest from './behavior/granuleRequest'
+import request from './behavior/request'
 
 import config from './domain/config'
 import results from './domain/results'
@@ -25,8 +24,7 @@ const ui = combineReducers({
 })
 
 const behavior = combineReducers({
-  collectionRequest,
-  granuleRequest,
+  request,
   search,
   routing,
   errors

@@ -51,7 +51,7 @@ export const triggerSearch = (testing) => {
     // if a search is already in flight, let the calling code know there's nothing to wait for
     let state = getState()
 
-    if (state.behavior.collectionRequest.inFlight) {
+    if (state.behavior.request.collectionInFlight) {
       return Promise.resolve()
     }
 

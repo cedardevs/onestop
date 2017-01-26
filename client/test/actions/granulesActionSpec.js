@@ -44,13 +44,11 @@ describe('The granule actions', function () {
 
   it('fetches granules with selected collections', function () {
     const collections = ['A', 'B']
-    // const state = {apiHost: apiHost, collections: {selectedIds: collections},
-    //   granules: {inFlight: false}, search: {requestBody: '{}'}}
     const state = {
       apiHost: apiHost,
       behavior: {
-        granuleRequest: {
-          inFlight: false
+        request: {
+          granuleInFlight: false
         },
         search: {
           selectedIds: collections
@@ -77,8 +75,8 @@ describe('The granule actions', function () {
     const state = {
       apiHost: apiHost,
       behavior: {
-        granuleRequest: {
-          inFlight: false
+        request: {
+          granuleInFlight: false
         },
         search: {
           selectedIds: collections,

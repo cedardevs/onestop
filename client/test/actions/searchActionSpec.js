@@ -28,7 +28,7 @@ describe('The search action', () => {
         search: {
           queryText: {text: 'alaska'}
         },
-        collectionRequest: {inFlight: false}
+        request: {collectionInFlight: false}
       }
     })
     const testingRoot = 'http://localhost:9090'
@@ -63,7 +63,7 @@ describe('The search action', () => {
         search: {
           queryText: {text: 'alaska'}
         },
-        collectionRequest: {inFlight: false}
+        request: {collectionInFlight: false}
       }
     })
     const testingRoot = 'http://localhost:9090'
@@ -98,7 +98,7 @@ describe('The search action', () => {
   it('triggerSearch does not start a new search when a search is already in flight', () => {
     const testState = Immutable({
       behavior: {
-        collectionRequest: {inFlight: true}
+        request: {collectionInFlight: true}
       }
     })
 
