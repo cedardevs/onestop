@@ -5,7 +5,6 @@ import routing from './behavior/routing'
 import errors from './behavior/error'
 import collectionRequest from './behavior/collectionRequest'
 import granuleRequest from './behavior/granuleRequest'
-import collectionSelect from './behavior/collectionSelect'
 
 import config from './domain/config'
 import results from './domain/results'
@@ -28,7 +27,6 @@ const ui = combineReducers({
 const behavior = combineReducers({
   collectionRequest,
   granuleRequest,
-  collectionSelect,
   search,
   routing,
   errors
