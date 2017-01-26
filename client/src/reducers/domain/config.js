@@ -1,5 +1,5 @@
 import Immutable from 'seamless-immutable'
-import {CLEAR_CONFIG, SET_CONFIG} from '../../config/ConfigActions'
+import {CLEAR_CONFIG, SET_CONFIG} from '../../actions/ConfigActions'
 
 export const initialState = Immutable({})
 

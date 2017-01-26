@@ -3,7 +3,7 @@ import { push } from 'react-router-redux'
 import { encodeQueryString } from '../utils/queryUtils'
 import { triggerSearch } from '../search/SearchActions'
 import { fetchGranules } from '../result/granules/GranulesActions'
-import { fetchConfig } from '../config/ConfigActions'
+import { fetchConfig } from './ConfigActions'
 
 export const initialize = () => {
   return (dispatch, getState) => {
