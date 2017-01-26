@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import FacetList from './FacetListComponent'
-import { triggerSearch, updateQuery } from '../SearchActions'
+import { triggerSearch } from '../SearchActions'
 import { toggleFacet } from './FacetActions'
 import { showCollections } from '../../actions/FlowActions'
 

@@ -3,7 +3,7 @@ import { SEARCH_COMPLETE, COUNT_HITS } from '../../search/SearchActions'
 import { FETCHED_GRANULES, CLEAR_GRANULES } from '../../result/granules/GranulesActions'
 import { FACETS_RECEIVED } from '../../search/facet/FacetActions'
 
-const initialState = Immutable({
+export const initialState = Immutable({
   collections: {},
   granules: {},
   facets: {},
