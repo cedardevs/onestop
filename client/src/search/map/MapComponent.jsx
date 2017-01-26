@@ -99,11 +99,7 @@ class MapComponent extends React.Component {
 		if (this.props.features) {
       map.addLayer(resultsLayers)
     }
-    if (!this.props.selection && this.props.features){
-  		map.fitBounds(resultsLayers.getBounds())
-    } else {
-  		map.fitWorld()
-    }
+    this.fitMapToResults()
   }
 
   componentWillReceiveProps() {
@@ -115,7 +111,10 @@ class MapComponent extends React.Component {
   	// Add/remove layers on map to reflect store
     if (this.state._initialized) {
       if (this.props.selection) { this.updateSelectionLayer() }
-      if (this.props.features) { this.updateResultsLayers(nextProps) }
+      if (this.props.features) {
+        this.updateResultsLayers(nextProps)
+        this.fitMapToResults()
+      }
     }
   }
 
@@ -143,6 +142,17 @@ class MapComponent extends React.Component {
     })
     this.geoJsonFeatures = geoJsonFeatures
     this.focusedFeatures = focusedFeatures
+  }
+
+  fitMapToResults() {
+    const { map, resultsLayers } = this.state
+    const hasResults = resultsLayers && !_.isEmpty(resultsLayers.getLayers())
+    if (!this.props.selection && this.props.features && hasResults) {
+      map.fitBounds(resultsLayers.getBounds())
+    }
+    else {
+      map.fitWorld()
+    }
   }
 
   componentWillUnmount() {
