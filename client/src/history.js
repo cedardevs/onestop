@@ -3,7 +3,7 @@ import { hashHistory } from 'react-router'
 import store from './store.js'
 
 const history = syncHistoryWithStore(hashHistory, store, {
-  selectLocationState: (state) => state.routing
+  selectLocationState: (state) => state.behavior.routing
 })
 
 export default history

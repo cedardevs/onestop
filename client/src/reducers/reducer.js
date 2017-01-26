@@ -29,7 +29,9 @@ const behavior = combineReducers({
   collectionRequest,
   granuleRequest,
   collectionSelect,
-  search
+  search,
+  routing,
+  errors
 })
 
 // TODO: Pass search state elements to query removing the need for state duplication
@@ -37,9 +39,7 @@ const reducer = (state, action) => {
   return {
     domain: domain(state && state.domain || undefined, action),
     behavior: behavior(state && state.behavior || undefined, action),
-    ui: ui(state && state.ui || undefined, action),
-    errors: errors(state && state.errors || undefined, action),
-    routing: routing(state && state.routing || undefined, action, state && state.behavior && state.behavior.search)
+    ui: ui(state && state.ui || undefined, action)
   }
 }
 
