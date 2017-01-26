@@ -25,11 +25,11 @@ class SearchRequestParserService {
       //'parentIdentifier': 'parentIdentifier',
       'science': 'gcmdScience',
       'locations': 'gcmdLocations',
-      'instruments': 'gcmdInstruments',
-      'platforms': 'gcmdPlatforms',
-      'projects': 'gcmdProjects',
-      'dataCenters': 'gcmdDataCenters',
-      'dataResolution': 'gcmdDataResolution',
+      'instruments': 'gcmdInstruments.raw',
+      'platforms': 'gcmdPlatforms.raw',
+      'projects': 'gcmdProjects.raw',
+      'dataCenters': 'gcmdDataCenters.raw',
+      'dataResolution': 'gcmdDataResolution.raw',
   ]
 
 
