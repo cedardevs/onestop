@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { setFocus } from '../../detail/DetailActions'
+import { setFocus } from '../../actions/DetailActions'
 import CollectionGrid from './CollectionGridComponent'
 
 const mapStateToProps = (state) => {

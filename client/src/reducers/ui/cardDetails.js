@@ -1,5 +1,5 @@
 import Immutable from 'seamless-immutable'
-import {SET_FOCUS} from '../../detail/DetailActions'
+import {SET_FOCUS} from '../../actions/DetailActions'
 
 export const initialState = Immutable({
   focusedId: null

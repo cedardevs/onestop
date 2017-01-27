@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { setFocus } from './DetailActions'
+import { setFocus } from '../actions/DetailActions'
 import { fetchGranules, clearGranules } from '../actions/SearchActions'
 import { toggleSelection, clearSelections } from '../result/collections/CollectionsActions'
 import { clearSearch, triggerSearch, updateQuery } from '../actions/SearchActions'
