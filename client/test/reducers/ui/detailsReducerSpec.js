@@ -1,15 +1,14 @@
 import '../../specHelper'
 import { cardDetails, initialState } from '../../../src/reducers/ui/cardDetails'
+import { setFocus } from '../../../src/detail/DetailActions'
 
 describe('The cardDetails reducer',() => {
-  it('handles search request',() => {
+  it('handles set focus actions',() => {
     const initialState = initialState
-    const testItems = {'a': {id: 'a'}}
-    const initalAction =  { type: 'search_complete',
-                              searchText: 'test',
-                              items: testItems}
+    const id = 'a'
+    const action =  setFocus(id)
 
-    const result = cardDetails(initialState, initalAction)
-    result['a'].cardStatus.should.equal('SHOW_FRONT')
+    const result = cardDetails(initialState, action)
+    result.focusedId.should.equal(id)
   })
 })

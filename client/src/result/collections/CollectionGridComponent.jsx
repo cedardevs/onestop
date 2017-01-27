@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react'
 import _ from 'lodash'
 import CollectionTile from './CollectionTileComponent'
-import { CardStatus } from '../../detail/DetailActions'
 import styles from './collectionGrid.css'
 
 class CollectionGrid extends React.Component {
@@ -18,7 +17,6 @@ class CollectionGrid extends React.Component {
             title={val.title}
             thumbnail={val.thumbnail}
             description={val.description}
-            flipped={val.cardStatus != CardStatus.SHOW_FRONT}
             onCardClick={() => this.props.onCardClick(key)}
         />)
     })
