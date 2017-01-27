@@ -1,11 +1,12 @@
 import { connect } from 'react-redux'
 import LandingComponent from './LandingComponent'
-import { triggerSearch, updateQuery } from '../search/SearchActions'
-import { clearFacets } from '../search/facet/FacetActions'
+import { triggerSearch, clearFacets } from '../actions/SearchRequestActions'
+import { updateQuery } from '../actions/SearchParamActions'
+import { showCollections } from '../actions/FlowActions'
 
 const mapStateToProps = (state) => {
   return {
-    queryString: state.search.text
+    queryString: state.behavior.search.queryText.text
   }
 }
 
@@ -14,6 +15,7 @@ const mapDispatchToProps = (dispatch) => {
     submit: () => {
       dispatch(clearFacets())
       dispatch(triggerSearch())
+      dispatch(showCollections())
     },
     updateQuery: (text) => dispatch(updateQuery(text))
   }

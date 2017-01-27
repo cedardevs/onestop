@@ -1,5 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import watch from 'redux-watch'
+import store from '../../store'
 import L from 'leaflet'
 import 'esri-leaflet'
 import 'leaflet-draw'
@@ -25,7 +27,12 @@ class MapComponent extends React.Component {
   	Promise.resolve(this.mapDefaults())
   		.then(state => {
 				this.setState(state, ()=> {
-        	if (this.props.selection) { this.updateSelectionLayer(this.props) }
+          let { geoJsonSelection } = this.props
+          if (geoJsonSelection) {
+            let { editableLayers, style } = this.state
+            let layer = L.GeoJSON.geometryToLayer(geoJsonSelection, {style})
+            editableLayers.addLayer(layer)
+          }
           if (this.props.features) { this.updateResultsLayers(this.props) }
         })
 				this.mapSetup()
@@ -92,11 +99,7 @@ class MapComponent extends React.Component {
 		if (this.props.features) {
       map.addLayer(resultsLayers)
     }
-    if (!this.props.selection && this.props.features){
-  		map.fitBounds(resultsLayers.getBounds())
-    } else {
-  		map.fitWorld()
-    }
+    this.fitMapToResults()
   }
 
   componentWillReceiveProps() {
@@ -107,31 +110,24 @@ class MapComponent extends React.Component {
   componentWillUpdate(nextProps) {
   	// Add/remove layers on map to reflect store
     if (this.state._initialized) {
-      if (this.props.selection) { this.updateSelectionLayer(nextProps) }
-      if (this.props.features) { this.updateResultsLayers(nextProps) }
+      if (this.props.selection) { this.updateSelectionLayer() }
+      if (this.props.features) {
+        this.updateResultsLayers(nextProps)
+        this.fitMapToResults()
+      }
     }
   }
 
-  updateSelectionLayer({geoJsonSelection}) {
+  updateSelectionLayer() {
   	let { editableLayers, style } = this.state
-		if (!geoJsonSelection) {
-			if (editableLayers) {
-				editableLayers.clearLayers()
-			}
-		}
-		else {
-			// Compare old vs. new layer
-			if (editableLayers) {
-				const prevSelection = editableLayers.getLayers()[0] ?
-					editableLayers.getLayers()[0].toGeoJSON() : null
-        if (!prevSelection || prevSelection &&
-            !_.isEqual(geoJsonSelection.geometry.coordinates, prevSelection.geometry.coordinates)) {
-          editableLayers.clearLayers()
-          let layer = L.GeoJSON.geometryToLayer(geoJsonSelection, {style})
-          editableLayers.addLayer(layer)
-				}
-			}
-		}
+		let w = watch(store.getState, 'behavior.search.geoJSON')
+		store.subscribe(w((newGeoJson) => {
+      editableLayers.clearLayers()
+      if (!_.isEmpty(newGeoJson)){
+        let layer = L.GeoJSON.geometryToLayer(newGeoJson, {style})
+        editableLayers.addLayer(layer)
+      }
+		}))
   }
 
   updateResultsLayers({geoJsonFeatures, focusedFeatures}) {
@@ -146,6 +142,17 @@ class MapComponent extends React.Component {
     })
     this.geoJsonFeatures = geoJsonFeatures
     this.focusedFeatures = focusedFeatures
+  }
+
+  fitMapToResults() {
+    const { map, resultsLayers } = this.state
+    const hasResults = resultsLayers && !_.isEmpty(resultsLayers.getLayers())
+    if (!this.props.selection && this.props.features && hasResults) {
+      map.fitBounds(resultsLayers.getBounds())
+    }
+    else {
+      map.fitWorld()
+    }
   }
 
   componentWillUnmount() {

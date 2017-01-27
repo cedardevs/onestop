@@ -1,14 +1,15 @@
 import { connect } from 'react-redux'
 import SearchFieldsComponent from './SearchFieldsComponent'
-import { triggerSearch, updateQuery, clearSearch } from './SearchActions'
-import { clearFacets } from './facet/FacetActions'
+import { triggerSearch, clearFacets } from '../actions/SearchRequestActions'
+import { updateQuery, clearSearch } from '../actions/SearchParamActions'
+import { showCollections } from '../actions/FlowActions'
 
 const mapStateToProps = (state) => {
   return {
-    queryString: state.search.text,
-    startDateTime: state.search.startDateTime,
-    endDateTime: state.search.endDateTime,
-    geoJSON: state.search.geoJSON
+    queryString: state.behavior.search.queryText,
+    startDateTime: state.behavior.search.startDateTime,
+    endDateTime: state.behavior.search.endDateTime,
+    geoJSON: state.behavior.search.geoJSON
   }
 }
 
@@ -17,6 +18,7 @@ const mapDispatchToProps = (dispatch) => {
     submit: () => {
       dispatch(clearFacets())
       dispatch(triggerSearch())
+      dispatch(showCollections())
     },
     updateQuery: (text) => dispatch(updateQuery(text)),
     clearSearch: () => dispatch(clearSearch())

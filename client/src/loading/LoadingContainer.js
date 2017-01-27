@@ -3,7 +3,7 @@ import Loading from './LoadingComponent'
 
 const mapStateToProps = (state) => {
   return {
-    loading: state.loading ? 1 : 0
+    loading: state.ui.loading ? 1 : 0
   }
 }
 

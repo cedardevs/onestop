@@ -1,6 +1,6 @@
 import '../specHelper'
 import Immutable from 'seamless-immutable'
-import reducer from '../../src/reducer'
+import reducer from '../../src/reducers/reducer'
 
 
 describe('The main reducer', function() {
@@ -11,10 +11,11 @@ describe('The main reducer', function() {
     const result = reducer(initialState, initialAction)
 
     result.should.be.an.instanceOf(Object)
-    result.search.should.be.an.instanceOf(Object)
-    result.facets.should.be.an.instanceOf(Object)
-    result.collections.should.be.an.instanceOf(Object)
-    result.details.should.be.an.instanceOf(Object)
-    result.routing.should.be.an.instanceOf(Object)
+    result.domain.should.be.an.instanceOf(Object)
+    result.behavior.should.be.an.instanceOf(Object)
+    result.behavior.search.should.be.an.instanceOf(Object)
+    result.behavior.routing.should.be.an.instanceOf(Object)
+    result.behavior.errors.should.be.an.instanceOf(Object)
+    result.ui.should.be.an.instanceOf(Object)
   })
 })

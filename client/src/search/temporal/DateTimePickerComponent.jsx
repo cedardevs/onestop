@@ -54,20 +54,20 @@ class DateTimePicker extends React.Component {
     />
 
     return (
-        <div className={styles.pickerRow}>
-          <DatePicker
-              animation="slide-up"
-              disabled={false}
-              calendar={calendar}
-              value={props.value}
-              onChange={props.onChange}
-              style={{color: "black"}}
-          >
-            {renderInput}
-          </DatePicker>
-          <button id={props.id} className={`pure-button ${styles.clearButton}`} onClick={this.handleReset}>
-            <i className="fa fa-undo fa-fw fa-lg"></i></button>
-        </div>
+      <div className={styles.pickerRow}>
+        <DatePicker
+            animation="slide-up"
+            disabled={false}
+            calendar={calendar}
+            value={props.value}
+            onChange={props.onChange}
+            style={{color: "black"}}
+        >
+          {renderInput}
+        </DatePicker>
+        <button id={props.id} className={`pure-button ${styles.clearButton}`} onClick={this.handleReset}>
+          <i className="fa fa-undo fa-fw fa-lg"></i></button>
+      </div>
     )
   }
 

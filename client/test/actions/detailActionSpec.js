@@ -1,12 +1,12 @@
 import '../specHelper'
-import * as actions from '../../src/detail/DetailActions'
+import * as actions from '../../src/actions/FlowActions'
 
 describe('The detail action', function () {
 
-  it('set Card Status ', function () {
+  it('sets the focused id', function () {
     const id = 'a'
-    const detailsAction = actions.setCardStatus(id);
-    const expectedAction =  { type: 'SET_CARD_STATUS', id: 'a' }
+    const detailsAction = actions.setFocus(id)
+    const expectedAction =  { type: 'SET_FOCUS', id: 'a' }
 
     detailsAction.should.deep.equal(expectedAction)
   })

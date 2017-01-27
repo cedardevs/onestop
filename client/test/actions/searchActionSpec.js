@@ -1,90 +1,55 @@
 import '../specHelper'
-import * as module from '../../src/search/SearchActions'
-import { LOADING_SHOW, LOADING_HIDE } from '../../src/loading/LoadingActions'
-import { FACETS_RECEIVED, CLEAR_FACETS } from '../../src/search/facet/FacetActions'
-import { SET_ERRORS } from '../../src/error/ErrorActions'
-import { initialState } from '../../src/search/SearchReducer'
+import * as module from '../../src/actions/SearchRequestActions'
+import { UPDATE_QUERY, updateQuery } from '../../src/actions/SearchParamActions'
+import { LOADING_SHOW, LOADING_HIDE } from '../../src/actions/FlowActions'
+import { SET_ERRORS } from '../../src/actions/ErrorActions'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import Immutable from 'seamless-immutable'
 import nock from 'nock'
-import reducer from '../../src/reducer'
 import {searchQuery, errorQuery, errorsArray} from '../searchQuery'
+import {assembleSearchRequestString} from '../../src/utils/queryUtils'
 
 const middlewares = [ thunk ]
 const mockStore = configureMockStore(middlewares)
 
-const requestBody = JSON.stringify({queries: [{type: 'queryText', value: 'alaska'}], filters: [], facets: true})
-
 describe('The search action', () => {
 
+  beforeEach(() => {
+    nock.disableNetConnect()
+  })
   afterEach(() => {
     nock.cleanAll()
   })
 
   it('triggerSearch executes a search from requestBody', () => {
-
-    nock.disableNetConnect()
-
+    const testState = Immutable({
+      behavior: {
+        search: {
+          queryText: {text: 'alaska'}
+        },
+        request: {collectionInFlight: false}
+      }
+    })
     const testingRoot = 'http://localhost:9090'
+    const requestBody = assembleSearchRequestString(testState)
     searchQuery(testingRoot,requestBody)
 
-    const testSearchState = Immutable({requestBody: requestBody})
-    const initState = reducer(new Map(), {type: 'init'})
-    const testState = Immutable.merge(initState, {search: testSearchState})
-
+    const expectedMetadata = {"facets":{"science":[{"term":"land","count":2}]}, "total":2, "took":100}
     const expectedItems = new Map()
-    let expectedMetadata
-
     expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
     expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
-    expectedMetadata = {"facets":{"science":[{"term":"land","count":2}]}, "total":2, "took":100}
 
     const expectedActions = [
       {type: LOADING_SHOW},
       {type: module.SEARCH},
-      {type: FACETS_RECEIVED, metadata: expectedMetadata},
+      {type: module.FACETS_RECEIVED, metadata: expectedMetadata},
       {type: module.COUNT_HITS, totalHits: 2},
-      {type: module.SEARCH_COMPLETE, items: expectedItems,
-          view: 'collections', appState: ''},
+      {type: module.SEARCH_COMPLETE, items: expectedItems},
       {type: LOADING_HIDE}
     ]
 
     const store = mockStore(Immutable(testState))
-
-    return store.dispatch(module.triggerSearch(testingRoot))
-        .then(() => {
-          store.getActions().should.deep.equal(expectedActions)
-        })
-  })
-
-  it('triggerSearch executes a search from query params', () => {
-
-    nock.disableNetConnect()
-
-    const testingRoot = 'http://localhost:9090'
-    searchQuery(testingRoot, requestBody)
-
-    const expectedItems = new Map()
-    expectedItems.set("123ABC", {type: 'collection', field0: 'field0', field1: 'field1'})
-    expectedItems.set("789XYZ", {type: 'collection', field0: 'field00', field1: 'field01'})
-
-    let expectedMetadata
-    expectedMetadata = {"facets":{"science":[{"term":"land","count":2}]}, "total":2, "took":100}
-
-    const expectedActions = [
-      {type: LOADING_SHOW},
-      {type: module.SEARCH},
-      {type: FACETS_RECEIVED, metadata:expectedMetadata},
-      {type: module.COUNT_HITS, totalHits: 2},
-      {type: module.SEARCH_COMPLETE, items: expectedItems,
-      view: 'collections', appState: ''},
-      {type: LOADING_HIDE
-      }
-    ]
-
-    // Empty requestBody; params passed directly to triggerSearch
-    const store = mockStore(Immutable({'search':{'requestBody': requestBody}}))
     return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
@@ -92,10 +57,16 @@ describe('The search action', () => {
   })
 
   it('triggerSearch handles failed search requests', () => {
-
-    nock.disableNetConnect()
-
+    const testState = Immutable({
+      behavior: {
+        search: {
+          queryText: {text: 'alaska'}
+        },
+        request: {collectionInFlight: false}
+      }
+    })
     const testingRoot = 'http://localhost:9090'
+    const requestBody = assembleSearchRequestString(testState)
     errorQuery(testingRoot, requestBody)
 
     const expectedActions = [
@@ -111,13 +82,11 @@ describe('The search action', () => {
           ]
         }
       },
-      {type: CLEAR_FACETS},
-      {type: module.SEARCH_COMPLETE, items: new Map(),
-          view: 'collections', appState: ''},
+      {type: module.CLEAR_FACETS},
+      {type: module.SEARCH_COMPLETE, items: new Map()},
     ]
 
-    // Empty requestBody; params passed directly to triggerSearch
-    const store = mockStore(Immutable({'search':{'requestBody': requestBody}}))
+    const store = mockStore(testState)
     return store.dispatch(module.triggerSearch(testingRoot))
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
@@ -125,9 +94,11 @@ describe('The search action', () => {
   })
 
   it('triggerSearch does not start a new search when a search is already in flight', () => {
-    const testSearchState = Immutable({inFlight: true})
-    const fullState = Immutable({search: {}, facets: {}, results: {}, details: {}, routing: {}})
-    const testState = Immutable({search: testSearchState})
+    const testState = Immutable({
+      behavior: {
+        request: {collectionInFlight: true}
+      }
+    })
 
     const store = mockStore(testState)
     return store.dispatch(module.triggerSearch())
@@ -137,8 +108,8 @@ describe('The search action', () => {
   })
 
   it('updateQuery sets searchText', () => {
-    const action = module.updateQuery('bermuda triangle')
-    const expectedAction = {type: module.UPDATE_QUERY, searchText: 'bermuda triangle'}
+    const action = updateQuery('bermuda triangle')
+    const expectedAction = {type: UPDATE_QUERY, searchText: 'bermuda triangle'}
 
     action.should.deep.equal(expectedAction)
   })
@@ -161,9 +132,88 @@ describe('The search action', () => {
       ]
     }
     const action = module.completeSearch(items)
-    const expectedAction = {type: module.SEARCH_COMPLETE, items: items,
-          view: 'collections', appState: ''}
+    const expectedAction = {type: module.SEARCH_COMPLETE, items: items}
 
     action.should.deep.equal(expectedAction)
+  })
+})
+
+describe('The granule actions', function () {
+
+  beforeEach(nock.disableNetConnect)
+  afterEach(nock.cleanAll)
+
+  const apiHost = 'http://localhost:9090'
+  const searchEndpoint = '/onestop/api/search'
+  const successResponse = {
+    data: [{
+      type: 'granule',
+      id: '1',
+      attributes: {id: 1, title: 'one'},
+      behavior: ""
+    }, {
+      type: 'granule',
+      id: '2',
+      attributes: {id: 2, title: 'two'},
+    }],
+    meta: {}
+  }
+
+  it('fetches granules with selected collections', function () {
+    const collections = ['A', 'B']
+    const state = {
+      apiHost: apiHost,
+      behavior: {
+        request: {
+          granuleInFlight: false
+        },
+        search: {
+          selectedIds: collections
+        }
+      }
+    }
+    const store = mockStore(Immutable(state))
+    const expectedBody = assembleSearchRequestString(state, true)
+    nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
+
+    return store.dispatch(module.fetchGranules()).then(() => {
+      store.getActions().should.deep.equal([
+        {type: LOADING_SHOW},
+        {type: module.FETCHING_GRANULES},
+        {type: module.FETCHED_GRANULES, granules: successResponse.data},
+        {type: LOADING_HIDE}
+      ])
+    })
+  })
+
+  it('fetches granules with collection search params', function () {
+    const collections = ['A', 'B']
+    const state = {
+      apiHost: apiHost,
+      behavior: {
+        request: {
+          granuleInFlight: false
+        },
+        search: {
+          selectedIds: collections,
+          queryText: 'my query',
+          selectedFacets: {
+            location: ['Oceans']
+          }
+        }
+      }
+    }
+    const store = mockStore(Immutable(state))
+    const expectedBody = assembleSearchRequestString(state, true)
+    nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
+
+    return store.dispatch(module.fetchGranules()).then(() => {
+      store.getActions().should.deep.equal([
+        {type: LOADING_SHOW},
+        {type: module.FETCHING_GRANULES},
+        {type: module.FETCHED_GRANULES, granules: successResponse.data},
+        {type: LOADING_HIDE}
+      ])
+    })
   })
 })

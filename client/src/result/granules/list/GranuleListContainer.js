@@ -1,13 +1,14 @@
 import { connect } from 'react-redux'
-import { toggleGranuleFocus } from '../GranulesActions'
+import { toggleGranuleFocus } from '../../../actions/FlowActions'
 import GranuleList from './GranuleListComponent'
 
 const mapStateToProps = (state) => {
-  const id = state.collections.selectedIds[0]
+  const id = state.behavior.search.selectedIds[0]
+  const { collections, granules } = state.domain.results
   return {
-    results: state.granules.granules,
-    focusedIds: state.granules.focusedGranules,
-    selectedCollection: state.collections.results[id] || {}
+    results: granules,
+    focusedIds: state.ui.granuleDetails.focusedGranules,
+    selectedCollection: id && collections && collections[id] || {}
   }
 }
 

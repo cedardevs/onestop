@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-import { connect } from 'react-redux'
 
 export const UPDATE_TIME = 200
 export const MAX_PROGRESS = 90
