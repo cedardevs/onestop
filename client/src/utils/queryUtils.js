@@ -11,9 +11,9 @@ export const assembleSearchRequest = (state, granules = false) => {
 
   const queries = assembleQueries(search)
   let filters = _.concat(
-      assembleFacetFilters(search),
-      assembleGeometryFilters(search),
-      assembleTemporalFilters(search)
+    assembleFacetFilters(search),
+    assembleGeometryFilters(search),
+    assembleTemporalFilters(search)
   )
   if (granules) {
     filters = _.concat(assembleSelectedCollectionsFilters(search))

@@ -25,6 +25,14 @@ describe('The queryUtils', function () {
     })
   })
 
+  it(`encodes & decodes a queryString accurately`, function () {
+    const tempState = {behavior: {search: {yo: 'dawg'}}}
+    const encodedString = queryUtils.encodeQueryString(tempState)
+    encodedString.should.not.equal(tempState)
+    const decodedString = queryUtils.decodeQueryString(encodedString)
+    decodedString.should.deep.equal(tempState)
+  })
+
 })
 
 function collectionTestCases() {
