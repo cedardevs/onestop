@@ -1,12 +1,13 @@
 import { connect } from 'react-redux'
 import FacetList from './FacetListComponent'
-import { triggerSearch, updateQuery } from '../SearchActions'
-import { toggleFacet } from './FacetActions'
+import { triggerSearch } from '../../actions/SearchRequestActions'
+import { toggleFacet } from '../../actions/SearchParamActions'
+import { showCollections } from '../../actions/FlowActions'
 
 const mapStateToProps = (state) => {
   return {
-    facetMap: state.facets.allFacets,
-    selectedFacets: state.facets.selectedFacets
+    facetMap: state.domain.results.facets,
+    selectedFacets: state.behavior.search.selectedFacets
   }
 }
 
@@ -14,7 +15,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     toggleFacet: (category, facetName, selected) =>
       dispatch(toggleFacet(category, facetName, selected)),
-    submit: () => dispatch(triggerSearch())
+    submit: () => {
+      dispatch(triggerSearch())
+      dispatch(showCollections())
+    }
   }
 }
 

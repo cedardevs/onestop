@@ -1,10 +1,11 @@
 import { connect } from 'react-redux'
 import MapComponent from './MapComponent'
-import { newGeometry, removeGeometry } from './MapActions'
+import { newGeometry, removeGeometry } from '../../actions/SearchParamActions'
 
 const mapStateToProps = (state) => {
+  const { geoJSON } = state.behavior.search
   return {
-    geoJsonSelection: state.map.geoJSON ? state.map.geoJSON : null
+    geoJsonSelection: geoJSON
   }
 }
 

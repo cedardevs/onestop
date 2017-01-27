@@ -1,5 +1,5 @@
 import React from 'react'
-import { DateRange } from './TemporalActions'
+import moment from 'moment'
 import DateTimePicker from './DateTimePickerComponent'
 import styles from './temporal.css'
 
@@ -12,6 +12,7 @@ class TemporalSearch extends React.Component {
     this.disabledEndDate = this.disabledEndDate.bind(this)
     this.disabledStartDate = this.disabledStartDate.bind(this)
     this.onChange = this.onChange.bind(this)
+    this.updateState = this.updateState.bind(this)
     this.updateTemporalFilters = this.updateTemporalFilters.bind(this)
     this.state = this.initialState()
   }
@@ -24,15 +25,18 @@ class TemporalSearch extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({
-      startValue: this.startDateTime ? this.startDateTime : null,
-      endValue: this.endDateTime ? this.endDateTime : null
-    })
+    this.updateState(this)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({'startValue': nextProps.startDateTime})
-    this.setState({'endValue': nextProps.endDateTime})
+    this.updateState(nextProps)
+  }
+
+  updateState(props) {
+    this.setState({
+      startValue: props.startDateTime ? moment(props.startDateTime) : null,
+      endValue: props.endDateTime ? moment(props.endDateTime) : null
+    })
   }
 
   disabledEndDate(endValue) {
@@ -64,8 +68,10 @@ class TemporalSearch extends React.Component {
   }
 
   updateTemporalFilters() {
-    this.props.updateOnChange(this.state.startValue, DateRange.START_DATE)
-    this.props.updateOnChange(this.state.endValue, DateRange.END_DATE)
+    const { startValue, endValue } = this.state
+    let startString = startValue ? startValue.format() : ''
+    let endString = endValue ? endValue.format() : ''
+    this.props.updateOnChange(startString, endString)
     this.props.toggleSelf()
   }
 
@@ -78,14 +84,14 @@ class TemporalSearch extends React.Component {
               <DateTimePicker id="startValue"
                               value={this.state.startValue}
                               onChange={this.onChange.bind(this, 'startValue')}
-                              disabledDate={this.disabledStartDate}/>
+                              disabledDate={this.disabledStartDate} />
             </div>
             <div className={`pure-u-1 ${styles.pickerLabel}`}>End Date:</div>
             <div className={`pure-u-1`}>
               <DateTimePicker id="endValue"
                               value={this.state.endValue}
                               onChange={this.onChange.bind(this, 'endValue')}
-                              disabledDate={this.disabledEndDate}/>
+                              disabledDate={this.disabledEndDate} />
             </div>
             <div className={`pure-u-1 ${styles.bottomButtonPanel}`}>
               <button className={`pure-button ${styles.cancelButton}`} onClick={this.props.toggleSelf}>Cancel</button>

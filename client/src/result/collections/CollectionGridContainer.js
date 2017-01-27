@@ -1,12 +1,13 @@
 import { connect } from 'react-redux'
-import { setFocus } from '../../detail/DetailActions'
+import { setFocus } from '../../actions/FlowActions'
 import CollectionGrid from './CollectionGridComponent'
 
 const mapStateToProps = (state) => {
+  const { collections, totalCollections } = state.domain.results
   return {
-    results: state.collections.results,
-    totalHits: state.collections.totalHits,
-    returnedHits: state.collections.results && Object.keys(state.collections.results).length || 0, // TODO - use the total hits from the search response
+    results: collections,
+    totalHits: totalCollections,
+    returnedHits: collections && Object.keys(collections).length || 0
   }
 }
 

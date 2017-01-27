@@ -1,6 +1,6 @@
 import '../specHelper'
-import * as actions from '../../src/search/facet/FacetActions'
-import { expect } from 'chai'
+import { facetsReceived, clearFacets } from '../../src/actions/SearchRequestActions'
+import reducer from '../../src/reducers/reducer'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 
@@ -9,40 +9,22 @@ const mockStore = configureMockStore(middlewares)
 
 describe('The facet action', function () {
 
-  const metadata = {took: 2, total: 1, facets: {science: [{term: "Land Surface", count: 2}, {term: "Land Surface > Topography", count: 2}]}}
+  const initialState = reducer(undefined, {})
 
-  it('process new facets', function () {
-    const facetAction = actions.facetsReceived(metadata)
+  it('processes new facets', function () {
+    const metadata = {took: 2, total: 1, facets: {science: [{term: "Land Surface", count: 2}, {term: "Land Surface > Topography", count: 2}]}}
+    const facetAction = facetsReceived(metadata)
     const expectedAction = { type: 'FACETS_RECEIVED', metadata: metadata}
 
     facetAction.should.deep.equal(expectedAction)
   })
 
-  it('add facet to facets selected', function () {
-    const facets = {name: "a", value: "a", selected: true}
-    const expectedActions = { type: 'TOGGLE_FACET', selectedFacets: {a: ['a']}}
-
-    const store = mockStore({ facets: {selectedFacets: {} }})
-    store.dispatch(
-      actions.toggleFacet(facets.name, facets.value, facets.selected))
-    store.getActions()[0].should.deep.equal(expectedActions)
-  })
-
-  it('remove facet from facets selected', function () {
-    const facets = {name: "a", value: "a", selected: false}
-    const expectedActions = { type: 'TOGGLE_FACET', selectedFacets: {}}
-
-    const store = mockStore({ facets: {selectedFacets: {a:['a']} }})
-    store.dispatch(
-      actions.toggleFacet(facets.name, facets.value, facets.selected))
-    store.getActions()[0].should.deep.equal(expectedActions)
-  })
-
-  it('clear facets', function () {
+  it('clears facets', function () {
+    const state = reducer(initialState, {})
     const expectedActions = { type: 'CLEAR_FACETS' }
-    const store = mockStore({ facets: {selectedFacets: {} }})
-    store.dispatch(
-      actions.clearFacets())
-      store.getActions()[0].should.deep.equal(expectedActions)
-    })
+    const store = mockStore(state)
+
+    store.dispatch(clearFacets())
+    store.getActions()[0].should.deep.equal(expectedActions)
   })
+})
