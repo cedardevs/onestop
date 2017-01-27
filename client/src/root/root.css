@@ -44,8 +44,6 @@ input {
 }
 
 .orgBox {
-  display: flex;
-  align-items: center;
   padding-right: 15px;
 }
 
@@ -76,6 +74,12 @@ input {
   font-size: 1.5em;
   font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
   display: inline;
+}
+
+.logoLink {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
 }
 
 .landingComponents {
