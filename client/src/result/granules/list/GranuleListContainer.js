@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { toggleGranuleFocus } from '../../../actions/FlowActions'
+import { showCollections, toggleGranuleFocus } from '../../../actions/FlowActions'
 import GranuleList from './GranuleListComponent'
 
 const mapStateToProps = (state) => {
@@ -14,9 +14,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onMouseOver: (id) => {
-      dispatch(toggleGranuleFocus(id))
-    }
+    onMouseOver: (id) => dispatch(toggleGranuleFocus(id)),
+    showCollections: () => dispatch(showCollections())
   }
 }
 
