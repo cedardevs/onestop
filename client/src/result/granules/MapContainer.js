@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import _ from 'lodash'
 import MapComponent from '../../search/map/MapComponent'
-import { toggleGranuleFocus } from '../../search/SearchActions'
+import { toggleGranuleFocus } from '../../actions/SearchActions'
 
 const mapStateToProps = (state) => {
   let { granules } = state.domain.results

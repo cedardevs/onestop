@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import ErrorComponent from './ErrorComponent'
 import { push, goBack } from 'react-router-redux'
 import { clearErrors } from './ErrorActions'
-import { clearSearch } from '../search/SearchActions'
+import { clearSearch } from '../actions/SearchActions'
 
 const mapStateToProps = (state) => {
   return {

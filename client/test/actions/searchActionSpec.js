@@ -1,5 +1,5 @@
 import '../specHelper'
-import * as module from '../../src/search/SearchActions'
+import * as module from '../../src/actions/SearchActions'
 import { LOADING_SHOW, LOADING_HIDE } from '../../src/loading/LoadingActions'
 import { FACETS_RECEIVED, CLEAR_FACETS } from '../../src/search/facet/FacetActions'
 import { SET_ERRORS } from '../../src/error/ErrorActions'

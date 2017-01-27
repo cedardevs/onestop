@@ -1,6 +1,6 @@
 import Immutable from 'seamless-immutable'
 import _ from 'lodash'
-import {SEARCH_COMPLETE} from '../../search/SearchActions'
+import {SEARCH_COMPLETE} from '../../actions/SearchActions'
 import {SET_FOCUS, SET_CARD_STATUS, CardStatus} from '../../detail/DetailActions'
 
 export const initialState = Immutable({

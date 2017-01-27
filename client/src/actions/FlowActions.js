@@ -1,8 +1,8 @@
 import _ from 'lodash'
 import { push } from 'react-router-redux'
 import { encodeQueryString } from '../utils/queryUtils'
-import { triggerSearch } from '../search/SearchActions'
-import { fetchGranules } from '../search/SearchActions'
+import { triggerSearch } from './SearchActions'
+import { fetchGranules } from './SearchActions'
 import { fetchConfig } from './ConfigActions'
 
 export const initialize = () => {

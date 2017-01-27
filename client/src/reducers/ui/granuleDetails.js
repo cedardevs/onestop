@@ -1,5 +1,5 @@
 import Immutable from 'seamless-immutable'
-import { TOGGLE_GRANULE_FOCUS } from '../../search/SearchActions'
+import { TOGGLE_GRANULE_FOCUS } from '../../actions/SearchActions'
 
 export const initialState = Immutable({
   focusedGranules: []

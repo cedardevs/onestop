@@ -1,6 +1,6 @@
 import Immutable from 'seamless-immutable'
-import { SEARCH, SEARCH_COMPLETE } from '../../search/SearchActions'
-import { FETCHING_GRANULES, FETCHED_GRANULES } from '../../search/SearchActions'
+import { SEARCH, SEARCH_COMPLETE } from '../../actions/SearchActions'
+import { FETCHING_GRANULES, FETCHED_GRANULES } from '../../actions/SearchActions'
 
 export const initialState = Immutable({
   collectionInFlight: false,

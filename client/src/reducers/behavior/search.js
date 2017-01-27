@@ -1,6 +1,6 @@
 import Immutable from 'seamless-immutable'
 import { NEW_GEOMETRY, REMOVE_GEOMETRY } from '../../search/map/MapActions'
-import { UPDATE_QUERY, CLEAR_SEARCH } from '../../search/SearchActions'
+import { UPDATE_QUERY, CLEAR_SEARCH } from '../../actions/SearchActions'
 import { UPDATE_DATE_RANGE } from '../../search/temporal/TemporalActions'
 import { TOGGLE_FACET } from '../../search/facet/FacetActions'
 import { TOGGLE_SELECTION, CLEAR_SELECTIONS } from '../../result/collections/CollectionsActions'

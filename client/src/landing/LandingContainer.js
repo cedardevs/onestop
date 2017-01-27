@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import LandingComponent from './LandingComponent'
-import { triggerSearch, updateQuery } from '../search/SearchActions'
+import { triggerSearch, updateQuery } from '../actions/SearchActions'
 import { clearFacets } from '../search/facet/FacetActions'
 import { showCollections } from '../actions/FlowActions'
 

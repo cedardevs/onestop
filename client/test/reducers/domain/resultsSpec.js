@@ -1,7 +1,7 @@
 import '../../specHelper'
 import Immutable from 'seamless-immutable'
 import { results, initialState } from '../../../src/reducers/domain/results'
-import { fetchedGranules, clearGranules } from '../../../src/search/SearchActions'
+import { fetchedGranules, clearGranules } from '../../../src/actions/SearchActions'
 import { FACETS_RECEIVED } from '../../../src/search/facet/FacetActions'
 
 describe('The results reducer', function () {

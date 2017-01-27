@@ -1,7 +1,7 @@
 import store from '../store'
 import Immutable from 'seamless-immutable'
-import { triggerSearch } from '../search/SearchActions'
-import { fetchGranules } from '../search/SearchActions'
+import { triggerSearch } from '../actions/SearchActions'
+import { fetchGranules } from '../actions/SearchActions'
 
 const { baseUrl, encodedState } = parseUrl()
 

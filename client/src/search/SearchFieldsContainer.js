@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import SearchFieldsComponent from './SearchFieldsComponent'
-import { triggerSearch, updateQuery, clearSearch } from './SearchActions'
+import { triggerSearch, updateQuery, clearSearch } from '../actions/SearchActions'
 import { clearFacets } from './facet/FacetActions'
 import { showCollections } from '../actions/FlowActions'
 
