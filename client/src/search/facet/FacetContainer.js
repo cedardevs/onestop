@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import FacetList from './FacetListComponent'
-import { triggerSearch } from '../../actions/SearchActions'
-import { toggleFacet } from './FacetActions'
+import { triggerSearch } from '../../actions/SearchRequestActions'
+import { toggleFacet } from '../../actions/SearchParamActions'
 import { showCollections } from '../../actions/FlowActions'
 
 const mapStateToProps = (state) => {

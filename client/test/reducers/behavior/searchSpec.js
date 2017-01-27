@@ -2,8 +2,7 @@ import '../../specHelper'
 import Immutable from 'seamless-immutable'
 import { expect } from 'chai'
 import { search, initialState } from '../../../src/reducers/behavior/search'
-import { toggleSelection, clearSelections } from '../../../src/result/collections/CollectionsActions'
-import { newGeometry, removeGeometry } from '../../../src/search/map/MapActions'
+import { newGeometry, removeGeometry, toggleSelection, clearSelections } from '../../../src/actions/SearchParamActions'
 
 describe('The search reducer', function () {
   it('has a default state', function () {

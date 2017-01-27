@@ -1,7 +1,7 @@
 import '../../specHelper'
 import Immutable from 'seamless-immutable'
 import { granuleDetails, initialState } from '../../../src/reducers/ui/granuleDetails'
-import { toggleGranuleFocus } from '../../../src/actions/SearchActions'
+import { toggleGranuleFocus } from '../../../src/actions/SearchRequestActions'
 
 describe('The granuleDetails reducer', function() {
   it('has a default state', function () {

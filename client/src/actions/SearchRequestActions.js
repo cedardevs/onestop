@@ -2,19 +2,14 @@ import fetch from 'isomorphic-fetch'
 import _ from 'lodash'
 import { showLoading, hideLoading } from './LoadingActions'
 import { showErrors } from './ErrorActions'
-import { facetsReceived, clearFacets } from '../search/facet/FacetActions'
 import { assembleSearchRequest } from '../utils/queryUtils'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
-export const UPDATE_QUERY = 'update_query'
-export const CLEAR_SEARCH = 'clear_search'
 export const COUNT_HITS = 'count_hits'
 
-export const updateQuery    = (searchText) => ({type: UPDATE_QUERY, searchText})
 export const startSearch    = ()           => ({type: SEARCH})
 export const completeSearch = (items)      => ({type: SEARCH_COMPLETE, items})
-export const clearSearch    = ()           => ({type: CLEAR_SEARCH})
 export const countHits      = (totalHits)  => ({type: COUNT_HITS, totalHits})
 
 export const TOGGLE_GRANULE_FOCUS = 'toggle_granule_focus'
@@ -26,6 +21,12 @@ export const toggleGranuleFocus = (id)       => ({type: TOGGLE_GRANULE_FOCUS, id
 export const clearGranules      = ()         => ({type: CLEAR_GRANULES})
 export const fetchingGranules   = ()         => ({type: FETCHING_GRANULES})
 export const fetchedGranules    = (granules) => ({type: FETCHED_GRANULES, granules})
+
+export const FACETS_RECEIVED = 'FACETS_RECEIVED'
+export const CLEAR_FACETS = 'CLEAR_FACETS'
+
+export const facetsReceived = (metadata) => ({type: FACETS_RECEIVED, metadata})
+export const clearFacets    = ()         => ({type: CLEAR_FACETS})
 
 export const triggerSearch = (testing) => {
   const bodyBuilder = (state) => {

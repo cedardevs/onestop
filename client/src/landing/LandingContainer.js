@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import LandingComponent from './LandingComponent'
-import { triggerSearch, updateQuery } from '../actions/SearchActions'
-import { clearFacets } from '../search/facet/FacetActions'
+import { triggerSearch, clearFacets } from '../actions/SearchRequestActions'
+import { updateQuery } from '../actions/SearchParamActions'
 import { showCollections } from '../actions/FlowActions'
 
 const mapStateToProps = (state) => {

@@ -1,7 +1,7 @@
 import '../specHelper'
-import * as module from '../../src/actions/SearchActions'
+import * as module from '../../src/actions/SearchRequestActions'
+import { UPDATE_QUERY, updateQuery } from '../../src/actions/SearchParamActions'
 import { LOADING_SHOW, LOADING_HIDE } from '../../src/actions/LoadingActions'
-import { FACETS_RECEIVED, CLEAR_FACETS } from '../../src/search/facet/FacetActions'
 import { SET_ERRORS } from '../../src/actions/ErrorActions'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
@@ -43,7 +43,7 @@ describe('The search action', () => {
     const expectedActions = [
       {type: LOADING_SHOW},
       {type: module.SEARCH},
-      {type: FACETS_RECEIVED, metadata: expectedMetadata},
+      {type: module.FACETS_RECEIVED, metadata: expectedMetadata},
       {type: module.COUNT_HITS, totalHits: 2},
       {type: module.SEARCH_COMPLETE, items: expectedItems},
       {type: LOADING_HIDE}
@@ -82,7 +82,7 @@ describe('The search action', () => {
           ]
         }
       },
-      {type: CLEAR_FACETS},
+      {type: module.CLEAR_FACETS},
       {type: module.SEARCH_COMPLETE, items: new Map()},
     ]
 
@@ -108,8 +108,8 @@ describe('The search action', () => {
   })
 
   it('updateQuery sets searchText', () => {
-    const action = module.updateQuery('bermuda triangle')
-    const expectedAction = {type: module.UPDATE_QUERY, searchText: 'bermuda triangle'}
+    const action = updateQuery('bermuda triangle')
+    const expectedAction = {type: UPDATE_QUERY, searchText: 'bermuda triangle'}
 
     action.should.deep.equal(expectedAction)
   })

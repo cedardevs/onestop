@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import SearchFieldsComponent from './SearchFieldsComponent'
-import { triggerSearch, updateQuery, clearSearch } from '../actions/SearchActions'
-import { clearFacets } from './facet/FacetActions'
+import { triggerSearch, clearFacets } from '../actions/SearchRequestActions'
+import { updateQuery, clearSearch } from '../actions/SearchParamActions'
 import { showCollections } from '../actions/FlowActions'
 
 const mapStateToProps = (state) => {

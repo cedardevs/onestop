@@ -1,9 +1,10 @@
 import Immutable from 'seamless-immutable'
-import { NEW_GEOMETRY, REMOVE_GEOMETRY } from '../../search/map/MapActions'
-import { UPDATE_QUERY, CLEAR_SEARCH } from '../../actions/SearchActions'
-import { UPDATE_DATE_RANGE } from '../../search/temporal/TemporalActions'
-import { TOGGLE_FACET } from '../../search/facet/FacetActions'
-import { TOGGLE_SELECTION, CLEAR_SELECTIONS } from '../../result/collections/CollectionsActions'
+import {
+  UPDATE_QUERY, CLEAR_SEARCH,
+  NEW_GEOMETRY, REMOVE_GEOMETRY,
+  UPDATE_DATE_RANGE, TOGGLE_FACET,
+  TOGGLE_SELECTION, CLEAR_SELECTIONS
+} from '../../actions/SearchParamActions'
 
 export const initialState = Immutable({
   queryText: '',

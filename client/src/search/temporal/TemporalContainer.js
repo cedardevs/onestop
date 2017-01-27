@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { updateDateRange } from './TemporalActions'
+import { updateDateRange } from '../../actions/SearchParamActions'
 import TemporalSearch from './TemporalComponent'
 
 const mapStateToProps = (state) => {
