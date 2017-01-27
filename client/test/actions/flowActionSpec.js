@@ -3,16 +3,10 @@ import _ from 'lodash'
 import * as actions from '../../src/actions/FlowActions'
 import reducer from '../../src/reducers/reducer'
 import { expect, assert } from 'chai'
-import configureMockStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
 import sinon from 'sinon'
-
-const middlewares = [ thunk ]
-const mockStore = configureMockStore(middlewares)
 
 describe('The flow actions', function () {
 
-  const initialState = reducer(undefined, {})
   const mockState = {
      domain: {
         config: {
@@ -38,8 +32,6 @@ describe('The flow actions', function () {
   it('trigger search & update state', function () {
     const behaviorState = {behavior: {search: {selectedIds: []}}}
     const tempState = _.merge(mockState, behaviorState)
-
-    const store = mockStore(tempState)
     const fn = actions.initialize()
 
     const getState = sinon.stub().returns(tempState)
