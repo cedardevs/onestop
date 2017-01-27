@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { setFocus } from './DetailActions'
-import { fetchGranules, clearGranules } from '../result/granules/GranulesActions'
+import { fetchGranules, clearGranules } from '../search/SearchActions'
 import { toggleSelection, clearSelections } from '../result/collections/CollectionsActions'
 import { clearSearch, triggerSearch, updateQuery } from '../search/SearchActions'
 import { clearFacets } from '../search/facet/FacetActions'

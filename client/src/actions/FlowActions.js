@@ -2,7 +2,7 @@ import _ from 'lodash'
 import { push } from 'react-router-redux'
 import { encodeQueryString } from '../utils/queryUtils'
 import { triggerSearch } from '../search/SearchActions'
-import { fetchGranules } from '../result/granules/GranulesActions'
+import { fetchGranules } from '../search/SearchActions'
 import { fetchConfig } from './ConfigActions'
 
 export const initialize = () => {

@@ -1,7 +1,7 @@
 import '../../specHelper'
 import Immutable from 'seamless-immutable'
 import { request, initialState } from '../../../src/reducers/behavior/request'
-import { fetchingGranules, fetchedGranules } from '../../../src/result/granules/GranulesActions'
+import { fetchingGranules, fetchedGranules } from '../../../src/search/SearchActions'
 import { startSearch, completeSearch } from '../../../src/search/SearchActions'
 
 describe('The request reducer', function () {

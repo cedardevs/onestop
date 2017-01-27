@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { toggleGranuleFocus } from '../GranulesActions'
+import { toggleGranuleFocus } from '../../../search/SearchActions'
 import GranuleList from './GranuleListComponent'
 
 const mapStateToProps = (state) => {

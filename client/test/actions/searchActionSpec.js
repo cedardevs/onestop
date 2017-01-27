@@ -137,3 +137,83 @@ describe('The search action', () => {
     action.should.deep.equal(expectedAction)
   })
 })
+
+describe('The granule actions', function () {
+
+  beforeEach(nock.disableNetConnect)
+  afterEach(nock.cleanAll)
+
+  const apiHost = 'http://localhost:9090'
+  const searchEndpoint = '/onestop/api/search'
+  const successResponse = {
+    data: [{
+      type: 'granule',
+      id: '1',
+      attributes: {id: 1, title: 'one'},
+      behavior: ""
+    }, {
+      type: 'granule',
+      id: '2',
+      attributes: {id: 2, title: 'two'},
+    }],
+    meta: {}
+  }
+
+  it('fetches granules with selected collections', function () {
+    const collections = ['A', 'B']
+    const state = {
+      apiHost: apiHost,
+      behavior: {
+        request: {
+          granuleInFlight: false
+        },
+        search: {
+          selectedIds: collections
+        }
+      }
+    }
+    const store = mockStore(Immutable(state))
+    const expectedBody = assembleSearchRequestString(state, true)
+    nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
+
+    return store.dispatch(module.fetchGranules()).then(() => {
+      store.getActions().should.deep.equal([
+        {type: LOADING_SHOW},
+        {type: module.FETCHING_GRANULES},
+        {type: module.FETCHED_GRANULES, granules: successResponse.data},
+        {type: LOADING_HIDE}
+      ])
+    })
+  })
+
+  it('fetches granules with collection search params', function () {
+    const collections = ['A', 'B']
+    const state = {
+      apiHost: apiHost,
+      behavior: {
+        request: {
+          granuleInFlight: false
+        },
+        search: {
+          selectedIds: collections,
+          queryText: 'my query',
+          selectedFacets: {
+            location: ['Oceans']
+          }
+        }
+      }
+    }
+    const store = mockStore(Immutable(state))
+    const expectedBody = assembleSearchRequestString(state, true)
+    nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
+
+    return store.dispatch(module.fetchGranules()).then(() => {
+      store.getActions().should.deep.equal([
+        {type: LOADING_SHOW},
+        {type: module.FETCHING_GRANULES},
+        {type: module.FETCHED_GRANULES, granules: successResponse.data},
+        {type: LOADING_HIDE}
+      ])
+    })
+  })
+})

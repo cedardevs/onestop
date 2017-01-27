@@ -1,6 +1,6 @@
 import Immutable from 'seamless-immutable'
 import { SEARCH_COMPLETE, COUNT_HITS } from '../../search/SearchActions'
-import { FETCHED_GRANULES, CLEAR_GRANULES } from '../../result/granules/GranulesActions'
+import { FETCHED_GRANULES, CLEAR_GRANULES } from '../../search/SearchActions'
 import { FACETS_RECEIVED } from '../../search/facet/FacetActions'
 
 export const initialState = Immutable({
