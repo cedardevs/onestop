@@ -1,5 +1,5 @@
 import '../specHelper'
-import * as actions from '../../src/actions/DetailActions'
+import * as actions from '../../src/actions/FlowActions'
 
 describe('The detail action', function () {
 

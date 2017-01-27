@@ -1,6 +1,6 @@
 import '../../specHelper'
 import { cardDetails, initialState } from '../../../src/reducers/ui/cardDetails'
-import { setFocus } from '../../../src/actions/DetailActions'
+import { setFocus } from '../../../src/actions/FlowActions'
 
 describe('The cardDetails reducer',() => {
   it('handles set focus actions',() => {

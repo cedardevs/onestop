@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch'
 import _ from 'lodash'
-import { showLoading, hideLoading } from './LoadingActions'
+import { showLoading, hideLoading } from './FlowActions'
 import { showErrors } from './ErrorActions'
 import { assembleSearchRequest } from '../utils/queryUtils'
 
@@ -12,12 +12,10 @@ export const startSearch    = ()           => ({type: SEARCH})
 export const completeSearch = (items)      => ({type: SEARCH_COMPLETE, items})
 export const countHits      = (totalHits)  => ({type: COUNT_HITS, totalHits})
 
-export const TOGGLE_GRANULE_FOCUS = 'toggle_granule_focus'
 export const FETCHING_GRANULES = 'fetching_granules'
 export const FETCHED_GRANULES = 'fetched_granules'
 export const CLEAR_GRANULES = 'clear_granules'
 
-export const toggleGranuleFocus = (id)       => ({type: TOGGLE_GRANULE_FOCUS, id})
 export const clearGranules      = ()         => ({type: CLEAR_GRANULES})
 export const fetchingGranules   = ()         => ({type: FETCHING_GRANULES})
 export const fetchedGranules    = (granules) => ({type: FETCHED_GRANULES, granules})

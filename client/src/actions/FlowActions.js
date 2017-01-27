@@ -31,3 +31,33 @@ export const showGranules = () => {
     dispatch(push(`collections/files?${encodeQueryString(getState())}`))
   }
 }
+
+export const SET_FOCUS = 'SET_FOCUS'
+export const setFocus = (id) => {
+  return {
+    type: SET_FOCUS,
+    id: id
+  }
+}
+
+export const TOGGLE_GRANULE_FOCUS = 'toggle_granule_focus'
+export const toggleGranuleFocus = (id) => {
+  return {
+    type: TOGGLE_GRANULE_FOCUS,
+    id
+  }
+}
+
+export const LOADING_SHOW = 'LOADING_SHOW'
+export const showLoading = () => {
+  return {
+    type: LOADING_SHOW
+  }
+}
+
+export const LOADING_HIDE = 'LOADING_HIDE'
+export const hideLoading = () => {
+  return {
+    type: LOADING_HIDE
+  }
+}

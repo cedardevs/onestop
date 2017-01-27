@@ -1,7 +1,7 @@
 import '../specHelper'
 import * as module from '../../src/actions/SearchRequestActions'
 import { UPDATE_QUERY, updateQuery } from '../../src/actions/SearchParamActions'
-import { LOADING_SHOW, LOADING_HIDE } from '../../src/actions/LoadingActions'
+import { LOADING_SHOW, LOADING_HIDE } from '../../src/actions/FlowActions'
 import { SET_ERRORS } from '../../src/actions/ErrorActions'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
