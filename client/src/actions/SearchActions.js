@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch'
 import _ from 'lodash'
 import { showLoading, hideLoading } from '../loading/LoadingActions'
-import { showErrors } from '../error/ErrorActions'
+import { showErrors } from './ErrorActions'
 import { facetsReceived, clearFacets } from '../search/facet/FacetActions'
 import { assembleSearchRequest } from '../utils/queryUtils'
 

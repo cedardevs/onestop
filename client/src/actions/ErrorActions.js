@@ -3,7 +3,7 @@ import { push } from 'react-router-redux'
 export const CLEAR_ERRORS = 'CLEAR_ERRORS'
 export const SET_ERRORS = 'SET_ERRORS'
 
-export const clearErrors = (errors) => {
+export const clearErrors = () => {
   return {
     type: CLEAR_ERRORS
   }
