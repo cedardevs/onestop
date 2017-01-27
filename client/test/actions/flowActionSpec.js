@@ -30,16 +30,20 @@ describe('The flow actions', function () {
     }
   }
 
+  let dispatch
+  beforeEach(() => {
+    dispatch = sinon.stub()
+  })
+
   it('trigger search & update state', function () {
     const behaviorState = {behavior: {search: {selectedIds: []}}}
-    //const behaviorState = {behavior: {search: {selectedIds: [123]}}}
     const tempState = _.merge(mockState, behaviorState)
 
     const store = mockStore(tempState)
-    const dispatch = sinon.spy(store, 'dispatch')
     const fn = actions.initialize()
 
-    fn(dispatch, store.getState)
+    const getState = sinon.stub().returns(tempState)
+    fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
     assert( dispatchCalls == 2, `There were ${dispatchCalls} dispatch calls made`)
   })
@@ -48,32 +52,29 @@ describe('The flow actions', function () {
     const behaviorState = {behavior: {search: {selectedIds: [123]}}}
     const tempState = _.merge(mockState, behaviorState)
 
-    const store = mockStore(tempState)
-    const dispatch = sinon.spy(store, 'dispatch')
+    const getState = sinon.stub().returns(tempState)
     const fn = actions.initialize()
 
-    fn(dispatch, store.getState)
+    fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
     assert( dispatchCalls == 3, `There were ${dispatchCalls} dispatch calls made`)
   })
 
   it('dispatch a transition to the collections view', function () {
-    const store = mockStore(mockState)
-    const dispatch = sinon.spy(store, 'dispatch')
-    const fn = actions.initialize()
+    const getState = sinon.stub().returns(mockState)
+    const fn = actions.showCollections()
 
-    fn(dispatch, store.getState)
+    fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert( dispatchCalls == 3, `There were ${dispatchCalls} dispatch calls made`)
+    assert( dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
   })
 
   it('dispatch a transition to the granules view', function () {
-    const store = mockStore(mockState)
-    const dispatch = sinon.spy(store, 'dispatch')
-    const fn = actions.initialize()
+    const getState = sinon.stub().returns(mockState)
+    const fn = actions.showGranules()
 
-    fn(dispatch, store.getState)
+    fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert( dispatchCalls == 3, `There were ${dispatchCalls} dispatch calls made`)
+    assert( dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
   })
 })
