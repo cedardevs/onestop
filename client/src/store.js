@@ -6,13 +6,16 @@ import thunk from 'redux-thunk'
 import reducer from './reducers/reducer'
 import { decodeQueryString } from './utils/queryUtils'
 
-const queryString = document.location.hash.split('?')[1]
+let queryString = ''
+if(typeof document !== "undefined") {
+  queryString = document.location.hash.split('?')[1]
+}
 const initialState = Immutable(decodeQueryString(queryString))
 
 const store = createStore(reducer, initialState,
-    applyMiddleware(
-        thunk,
-        routerMiddleware(hashHistory)
-    ))
-
+  applyMiddleware(
+    thunk,
+    routerMiddleware(hashHistory)
+  ))
+  
 export default store
