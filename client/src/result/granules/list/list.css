@@ -10,6 +10,8 @@
 .navLink {
   color: #00a6d2;
   font-size: 1.15em;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .mapContainer {

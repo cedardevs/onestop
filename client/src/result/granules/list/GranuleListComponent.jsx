@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react'
-import { Link, hashHistory } from 'react-router'
 import _ from 'lodash'
 import MapContainer from '../MapContainer'
 import styles from './list.css'
@@ -27,8 +26,9 @@ class GranuleList extends React.Component {
     })
 
     return (
-      <div><Link to="collections" className={styles.navLink}>Return To Collection Results</Link>
-    <div className={`pure-g ${styles.mainWindow}`}>
+      <div>
+        <a className={styles.navLink} onClick={this.props.showCollections}>Return To Collection Results</a>
+        <div className={`pure-g ${styles.mainWindow}`}>
           <div className={`pure-u-1-2 ${styles.map}`}>
             <MapContainer style={styles.mapContainer}/>
           </div>
