@@ -9,7 +9,7 @@ import spock.lang.Unroll
 class SearchRequestParserServiceTest extends Specification {
 
   private slurper = new JsonSlurper()
-  private requestParser = new SearchRequestParserService()
+  private requestParser = new SearchRequestParserService(null)
 
   def "Request with #label creates empty elasticsearch request"() {
     given:
@@ -55,7 +55,44 @@ class SearchRequestParserServiceTest extends Specification {
               "bool" : {
                 "must" : {
                   "query_string" : {
-                    "query" : "winter"
+                    "query" : "winter",
+                    "lenient" : true
+                  }
+                }
+              }
+            },
+            "filter" : {
+              "bool" : { }
+            }
+          }
+        }""".stripIndent()
+
+    then:
+    !queryResult.toString().empty
+    queryResult.toString() == expectedQueryString
+  }
+
+  def "Test only queryText with field boosts configured"() {
+    given:
+    def config = new SearchConfig(fields: [title: 4])
+    config.initialize()
+    def parser = new SearchRequestParserService(config)
+
+    def request = '{"queries":[{"type":"queryText","value":"winter"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = parser.parseSearchQuery(params)
+    def expectedQueryString = """\
+        {
+          "bool" : {
+            "must" : {
+              "bool" : {
+                "must" : {
+                  "query_string" : {
+                    "query" : "winter",
+                    "fields" : [ "title^4.0" ],
+                    "lenient" : true
                   }
                 }
               }

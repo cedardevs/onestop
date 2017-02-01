@@ -27,6 +27,7 @@ dependencies {
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-devtools'
+  compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
   compile 'com.github.fge:json-schema-validator:2.2.6'
   compile 'org.apache.commons:commons-lang3:3.4'
   compile 'com.spatial4j:spatial4j:0.5' // Necessary for embedded ES to have geo_shape type available
