@@ -4,36 +4,44 @@ import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.elasticsearch.common.geo.ShapeRelation
 import org.elasticsearch.common.geo.builders.ShapeBuilder
+import org.elasticsearch.common.lucene.search.function.FieldValueFactorFunction
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders
 import org.elasticsearch.script.Script
 import org.elasticsearch.script.ScriptService
 import org.elasticsearch.search.aggregations.AggregationBuilder
 import org.elasticsearch.search.aggregations.AggregationBuilders
 import org.elasticsearch.search.aggregations.bucket.terms.Terms
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
 class SearchRequestParserService {
 
-  public SearchRequestParserService() {}
+  private SearchConfig config
+
+  @Autowired
+  SearchRequestParserService(SearchConfig config) {
+    this.config = config
+  }
 
 
   public static final Map<String, String> facetNameMappings = [
       //'parentIdentifier': 'parentIdentifier',
       'science': 'gcmdScience',
       'locations': 'gcmdLocations',
-      'instruments': 'gcmdInstruments',
-      'platforms': 'gcmdPlatforms',
-      'projects': 'gcmdProjects',
-      'dataCenters': 'gcmdDataCenters',
-      'dataResolution': 'gcmdDataResolution',
+      'instruments': 'gcmdInstruments.raw',
+      'platforms': 'gcmdPlatforms.raw',
+      'projects': 'gcmdProjects.raw',
+      'dataCenters': 'gcmdDataCenters.raw',
+      'dataResolution': 'gcmdDataResolution.raw',
   ]
 
 
-  public QueryBuilder parseSearchQuery(Map params) {
+  QueryBuilder parseSearchQuery(Map params) {
     log.debug("Queries: ${params.queries}")
     log.debug("Filters: ${params.filters}")
 
@@ -50,7 +58,7 @@ class SearchRequestParserService {
     return QueryBuilders.boolQuery().filter(filters).must(query)
   }
 
-  public AggregationBuilder createCollectionsAggregation() {
+  AggregationBuilder createCollectionsAggregation() {
 
     def scoreScript = new Script('_score', ScriptService.ScriptType.INLINE, 'expression', null)
 
@@ -61,7 +69,7 @@ class SearchRequestParserService {
     return collections
   }
 
-  public List<AggregationBuilder> createGCMDAggregations(boolean forCollections) {
+  List<AggregationBuilder> createGCMDAggregations(boolean forCollections) {
 
     def aggregations = facetNameMappings.collect { name, field ->
       AggregationBuilders.terms(name).field(field).order(Terms.Order.term(true)).size(0)
@@ -76,23 +84,48 @@ class SearchRequestParserService {
     return aggregations
   }
 
-  public Boolean shouldReturnCollections(Map params) {
+  Boolean shouldReturnCollections(Map params) {
     !params.filters.any { it.type == 'collection' }
   }
 
   private QueryBuilder assembleQuery(List<Map> queries) {
-    def builder = QueryBuilders.boolQuery()
+    def allTextQueries = QueryBuilders.boolQuery()
     if (!queries) {
-      return builder
+      return allTextQueries
     }
 
     def groupedQueries = queries.groupBy { it.type }
 
     groupedQueries.queryText.each {
-      builder.must(QueryBuilders.queryStringQuery(it.value))
+      def query = QueryBuilders.queryStringQuery(it.value as String)
+      config?.boosts?.each { field, boost ->
+        query.field(field, boost ?: 1f)
+      }
+      if (config?.minimumShouldMatch) {
+        query.minimumShouldMatch(config.minimumShouldMatch)
+      }
+      if (config?.phraseSlop) {
+        query.phraseSlop(config.phraseSlop)
+      }
+      if (config?.tieBreaker) {
+        query.tieBreaker(config.tieBreaker)
+      }
+      query.lenient(true)
+      allTextQueries.must(query)
     }
 
-    return builder
+    if (config?.dsmm?.factor || config?.dsmm?.modifier) {
+      def scoreFunction = ScoreFunctionBuilders.fieldValueFactorFunction('dsmmAverage')
+          .modifier(FieldValueFactorFunction.Modifier.valueOf((config.dsmm.modifier ?: 'log1p').toUpperCase()))
+          .factor(config.dsmm.factor ?: 1f)
+          .missing(0)
+      def dsmmQuery = QueryBuilders.functionScoreQuery(allTextQueries)
+          .add(scoreFunction)
+          .boostMode('sum')
+      return dsmmQuery
+    }
+
+    return allTextQueries
   }
 
   private QueryBuilder assembleFilters(List<Map> filters) {

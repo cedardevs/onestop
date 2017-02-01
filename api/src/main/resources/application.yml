@@ -38,3 +38,56 @@ elasticsearch:
       name: search_v3
       granuleType: granule
       collectionType: collection
+
+search:
+  minimumShouldMatch: 75%
+  tieBreaker: 0
+  phraseSlop: 0
+  dsmm:
+    factor: 1
+    modifier: log1p
+  fields:
+    title: 4
+    alternateTitle: 4
+    description: 1
+    keywords: 2
+    gcmdScience: 2
+    gcmdLocations: 2
+    gcmdInstruments: 2
+    gcmdPlatforms: 2
+    gcmdProjects: 2
+    gcmdDataCenters: 2
+    gcmdDataResolution: 2
+    topicCategories: 1 # different than keywords?
+    fileIdentifier: 1
+    parentIdentifier: 1
+    temporalBounding:
+      beginDate: 1
+      endDate: 1
+      instant: 1
+    spatialBounding: 1
+    dataFormats:
+      analyzed: 1
+#      NESTED (cannot be individually boosted):
+#    acquisitionInstruments:
+#      instrumentIdentifier: 1
+#      instrumentType: 1  # not analyzed... should we search it?
+#      instrumentDescription: 1
+#    acquisitionOperations:
+#      operationDescription: 1
+#      operationIdentifier: 1
+#      operationType: 1
+#    acquisitionPlatforms:
+#      platformIdentifier: 1
+#      platformDescription: 1
+#      platformSponsor: 1
+#    contacts:
+#      organizationName: 1
+#      individualName: 1
+    modifiedDate: 1  # why?
+    creationDate: 1  # why?
+    revisionDate: 1  # why?
+    publicationDate: 1  # why?
+    dsmmAverage: 1
+    _all: 1
+
