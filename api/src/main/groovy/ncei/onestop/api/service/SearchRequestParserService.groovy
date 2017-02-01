@@ -4,9 +4,11 @@ import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.elasticsearch.common.geo.ShapeRelation
 import org.elasticsearch.common.geo.builders.ShapeBuilder
+import org.elasticsearch.common.lucene.search.function.FieldValueFactorFunction
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.index.query.QueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.index.query.functionscore.ScoreFunctionBuilders
 import org.elasticsearch.script.Script
 import org.elasticsearch.script.ScriptService
 import org.elasticsearch.search.aggregations.AggregationBuilder
@@ -87,9 +89,9 @@ class SearchRequestParserService {
   }
 
   private QueryBuilder assembleQuery(List<Map> queries) {
-    def builder = QueryBuilders.boolQuery()
+    def allTextQueries = QueryBuilders.boolQuery()
     if (!queries) {
-      return builder
+      return allTextQueries
     }
 
     def groupedQueries = queries.groupBy { it.type }
@@ -109,10 +111,21 @@ class SearchRequestParserService {
         query.tieBreaker(config.tieBreaker)
       }
       query.lenient(true)
-      builder.must(query)
+      allTextQueries.must(query)
     }
 
-    return builder
+    if (config?.dsmm?.factor || config?.dsmm?.modifier) {
+      def scoreFunction = ScoreFunctionBuilders.fieldValueFactorFunction('dsmmAverage')
+          .modifier(FieldValueFactorFunction.Modifier.valueOf((config.dsmm.modifier ?: 'log1p').toUpperCase()))
+          .factor(config.dsmm.factor ?: 1f)
+          .missing(0)
+      def dsmmQuery = QueryBuilders.functionScoreQuery(allTextQueries)
+          .add(scoreFunction)
+          .boostMode('sum')
+      return dsmmQuery
+    }
+
+    return allTextQueries
   }
 
   private QueryBuilder assembleFilters(List<Map> filters) {

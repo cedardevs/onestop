@@ -88,5 +88,6 @@ search:
     creationDate: 1  # why?
     revisionDate: 1  # why?
     publicationDate: 1  # why?
+    dsmmAverage: 1
     _all: 1
 

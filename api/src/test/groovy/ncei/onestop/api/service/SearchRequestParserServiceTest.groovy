@@ -108,6 +108,54 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult.toString() == expectedQueryString
   }
 
+  def "Test only queryText with dsmm boosting configured"() {
+    given:
+    def config = new SearchConfig(dsmm: new SearchConfig.DSMMConfig(factor: 1, modifier: 'log1p'))
+    config.initialize()
+    def parser = new SearchRequestParserService(config)
+
+    def request = '{"queries":[{"type":"queryText","value":"winter"}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = parser.parseSearchQuery(params)
+    def expectedQueryString = """\
+        {
+          "bool" : {
+            "must" : {
+              "function_score" : {
+                "query" : {
+                  "bool" : {
+                    "must" : {
+                      "query_string" : {
+                        "query" : "winter",
+                        "lenient" : true
+                      }
+                    }
+                  }
+                },
+                "functions" : [ {
+                  "field_value_factor" : {
+                    "field" : "dsmmAverage",
+                    "factor" : 1.0,
+                    "missing" : 0.0,
+                    "modifier" : "log1p"
+                  }
+                } ],
+                "boost_mode" : "sum"
+              }
+            },
+            "filter" : {
+              "bool" : { }
+            }
+          }
+        }""".stripIndent()
+
+    then:
+    !queryResult.toString().empty
+    queryResult.toString() == expectedQueryString
+  }
+
   def 'Datetime filter request generates expected elasticsearch query'() {
     given:
     def request = '{"filters":[{"type":"datetime","before":"2011-11-11", "after":"2010-10-10"}]}'

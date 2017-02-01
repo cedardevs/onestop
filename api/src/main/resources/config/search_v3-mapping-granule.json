@@ -252,6 +252,9 @@
       "publicationDate": {
         "type": "date",
         "format": "date_optional_time"
+      },
+      "dsmmAverage": {
+        "type": "float"
       }
     }
   }
