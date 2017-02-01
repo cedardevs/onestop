@@ -19,7 +19,7 @@ class Detail extends React.Component {
     return <div className={styles.modal}>
       <div className={styles.modalContent}>
         <div className={`pure-g ${styles.header} ${styles.underscored}`}>
-          <div className={`pure-u-7-8 ${styles.title}`}>{item.title}</div>
+          <div className={`pure-u-7-8 ${styles.title}`} title={`${item.title}`}>{item.title}</div>
           <div className={'pure-u-1-8'}>
             <span className={styles.close} onClick={this.close}>x</span>
           </div>
