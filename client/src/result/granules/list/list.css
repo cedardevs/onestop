@@ -1,5 +1,9 @@
 @import '../../../../style/style.css';
 
+@define-extend granuleStandard {
+  margin: 2% 2% 0;
+}
+
 .mainWindow {
   letter-spacing: 0em !important;
   background-color: #000;
@@ -30,22 +34,44 @@
 }
 
 .description {
+  @extend granuleStandard;
   display: inline-block;
   font-size: 1em;
   vertical-align: top;
 }
 
 .title {
+  @extend granuleStandard;
   font-size: 1.5em;
   margin-bottom: 0.5em;
 }
 
 .table {
-  margin-top: 2em;
+  @extend granuleStandard;
   width: 100%;
   tbody {
     tr:hover {
       background-color: #144CBD;
     }
   }
+}
+.letterCircle {
+  border-radius: 50%;
+  width: 16px !important;
+  height: 16px;
+  padding: 6px;
+  margin: 4px;
+  color: white;
+  text-align: center;
+  font: 16px Arial, sans-serif;
+  text-decoration: none;
+}
+
+.legend {
+  @extend granuleStandard;
+  width: 100%;
+}
+
+.legendRow {
+  display: inline-block;
 }
