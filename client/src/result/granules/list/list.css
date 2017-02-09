@@ -48,7 +48,7 @@
 
 .table {
   @extend granuleStandard;
-  width: 100%;
+  width: 95%;
   tbody {
     tr:hover {
       background-color: #144CBD;
@@ -74,4 +74,8 @@
 
 .legendRow {
   display: inline-block;
+}
+
+.badgeCell {
+  min-width: 120px;
 }

@@ -37,7 +37,7 @@ class GranuleList extends React.Component {
       rows.push(
         <tr key={key} onMouseOver={() => this.props.onMouseOver(key)} onMouseLeave={() => this.props.onMouseOver(key)}>
           <td>{value.title}</td>
-          <td>{this.loadLinks(value.links)}</td>
+          <td className={styles.badgeCell}>{this.loadLinks(value.links)}</td>
         </tr>
       )
     })
