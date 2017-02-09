@@ -1,61 +1,50 @@
 @import '../../style/style.css';
 
-/*$ICON_SIZE: 25px;*/
-
-.container {
+.footer {
   font-size: 12px;
   width: 100%;
   color: white;
 }
 
-.noaaLinks {
-  font-size: 1.5em;
+ul.footerLinks {
+  list-style-type: none;
+  line-height: 2em;
+  font-weight: bold;
+  font-size: 1.1em;
+  display: inline-block;
+  li {
+    display: inline-block;
+    margin: 0px !important;
+    a {
+      color: white;
+      background-color: transparent;
+      text-decoration: none;
+      border-right: 1px solid white;
+      padding: 0px 10px !important;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+    &:last-child a {
+      border: none;
+      padding-right: 0;
+    }
+  }
 }
 
-.rowElement {
+.slogan {
+  font-style: italic;
+  font-size: 1.2em;
   display: inline-block;
   margin: 0 20px;
-}
-
-.about {
-  display: flex;
-  text-decoration: none;
-  color: white;
-  vertical-align: baseline;
-  margin-left: 1em ;
-  margin-top: 1.0em;
-  font-weight: 100;
-}
-
-.feedbackForm {
-  line-height: 1.5;
-  margin-top: 1.5em;
 }
 
 .logoPanel {
   float: left;
 }
 
-.externalLinksPanel {
-  font-size: .8em;
-  float: right;
-  text-align: right;
-}
-
-.feedback{
-  margin-top: 0.5em;
-  line-height: 2.0em;
-  text-align: right;
-  font-weight: 100;
-}
-
-.items {
-  margin-top: 1.5em;
-  font-weight: 100;
-}
-
 .noaaLogo {
-  background-image: url('../../img/NOAA_logo.png');
+  background-image: url('../../img/noaa_logo_circle_72x72.svg');
   background-size: contain;
   background-repeat: no-repeat;
   width: 50px;
@@ -74,75 +63,4 @@
   display: inline-block;
   margin: 5px;
   vertical-align: middle;
-}
-
-.slogan {
-  font-style: italic;
-  font-size: 1.2em;
-}
-
-
-.socialMediaLogo {
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 32px;
-  height: 32px;
-  display: inline-block;
-  margin: 0 20px;
-  vertical-align: middle;
-}
-.twitterLogo {
-  background-image: url('../../img/twitter42.png');
-}
-
-.facebookLogo {
-  background-image: url('../../img/facebook42.png');
-}
-
-.instagramLogo {
-  background-image: url('../../img/instagram42.png');
-}
-
-.youtubeLogo {
-  background-image: url('../../img/youtube42.png');
-}
-
-.socialMedia {
-  color: white;
-}
-
-.hidden {
-  visibility: hidden;
-}
-
-.externalResource {
-  display:inline-block;
-  padding: 0px 0px 0px 5px;
-  font-weight: 100;
-  text-decoration: none;
-}
-
-.resourceList {
-  list-style-type: none;
-  line-height: 2em;
-  font-weight: bold;
-  font-size: 1.1em;
-  display: inline-block;
-}
-
-.footerLink{
-  color: white;
-  background-color: transparent;
-  text-decoration: none;
-}
-
-.footerLink:hover {
-  background-color:  #2f6fad;
-}
-
-.pure-button {
-  background-color: #2f6fad;;
-  margin: 5px;
-  font-size: 1.2em;
-  line-height: 1.5;
 }
