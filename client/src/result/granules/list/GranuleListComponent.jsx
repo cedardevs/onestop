@@ -46,7 +46,7 @@ class GranuleList extends React.Component {
 
   loadLinks(links) {
     if (!links || !links.length) { return <div></div> }
-    return <div className={'pure-g'}>{links.map((link) => this.linkBadge(link))}</div>
+    return <div className={'pure-g'}>{links.map(link => this.linkBadge(link))}</div>
   }
 
   linkBadge({linkName, linkUrl}) {
@@ -54,12 +54,13 @@ class GranuleList extends React.Component {
     const {letter, color} = this.identifyFileSource(protocol)
     if (letter) {
       return <a href={linkUrl}
+                key={linkUrl}
                 className={`pure-u-1 pure-u-md-1-6 pure-u-lg-1-12
                   ${styles.letterCircle}`}
                 style={{background: color}}>
                   {letter}
               </a>
-    } else { return <div></div> }
+    } else { return <div key={linkUrl}></div> }
   }
 
   identifyFileSource(protocol) {
@@ -78,8 +79,8 @@ class GranuleList extends React.Component {
   render() {
     const { records, dataSource } = this.state
     const legendRows = _.filter(dataSource, source => source.legend )
-    const legend = <div className={styles.legend}>{legendRows.map( row => {
-      return <div className={`pure-u-sm-1-3 pure-u-md-1-6`}>
+    const legend = <div className={styles.legend}>{legendRows.map((row, idx) => {
+      return <div key={idx} className={`pure-u-sm-1-3 pure-u-md-1-6`}>
         <div className={`${styles.letterCircle} ${styles.legendRow}`}
           style={{background: row.color}}>
           {row.letter}
