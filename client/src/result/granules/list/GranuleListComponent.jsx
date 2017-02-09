@@ -14,7 +14,7 @@ class GranuleList extends React.Component {
       records: [],
       dataSource: [
         { id: 'OPeNDAP', letter: 'O', color: 'green', legend: false,
-          names: ['dap', 'opendap']},
+          names: ['opendap']},
         { id: 'Download', letter: 'D', color: 'blue', legend: false,
           names: ['download']},
         { id: 'FTP', letter: 'F', color: 'red', legend: false,
@@ -22,7 +22,9 @@ class GranuleList extends React.Component {
         { id: 'Web', letter: 'W', color: 'purple', legend: false,
           names: ['http', 'https']},
         { id: 'THREDDS', letter: 'T', color: 'grey', legend: false,
-          names: ['thredds']}]}
+          names: ['thredds']},
+        { id: 'NOAA Live Access Server', letter: 'L', color: 'aqua', legend: false,
+          names: ['noaa:las']}]}
   }
 
   componentWillReceiveProps(nextProps) {
@@ -50,12 +52,14 @@ class GranuleList extends React.Component {
   linkBadge({linkName, linkUrl}) {
     const protocol = linkName ? _.toLower(linkName) : ''
     const {letter, color} = this.identifyFileSource(protocol)
-    return <a href={linkUrl}
-              className={`pure-u-1 pure-u-md-1-6 pure-u-lg-1-12
-                ${styles.letterCircle}`}
+    if (letter) {
+      return <a href={linkUrl}
+                className={`pure-u-1 pure-u-md-1-6 pure-u-lg-1-12
+                  ${styles.letterCircle}`}
                 style={{background: color}}>
-              {letter}
-            </a>
+                  {letter}
+              </a>
+    } else { return <div></div> }
   }
 
   identifyFileSource(protocol) {
@@ -68,14 +72,12 @@ class GranuleList extends React.Component {
         this.setState(dataSource)
       }
     })
-    return finalSource || {letter: '?', color: 'maroon'}
+    return finalSource || {letter: ''}
   }
 
   render() {
     const { records, dataSource } = this.state
-    console.log(dataSource)
     const legendRows = _.filter(dataSource, source => source.legend )
-    console.log(legendRows)
     const legend = <div className={styles.legend}>{legendRows.map( row => {
       return <div className={`pure-u-sm-1-3 pure-u-md-1-6`}>
         <div className={`${styles.letterCircle} ${styles.legendRow}`}
