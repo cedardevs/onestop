@@ -7,6 +7,7 @@ import CollectionGridContainer from './result/collections/CollectionGridContaine
 import GranuleListContainer from './result/granules/list/GranuleListContainer'
 import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
+import Section508LandingContainer from './landing/Section508LandingContainer'
 import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
 import { initialize } from './actions/FlowActions'
@@ -22,6 +23,7 @@ const body =
     <Router history={history}>
       <Route path="/" name="Home" component={RootComponent}>
         <IndexRoute component={LandingContainer}/>
+        <Route name="Landing508" path="landing-508" component={Section508LandingContainer}/>
         <Route name="Collections" path="collections" component={ResultLayout}>
           <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
           <Route name="Files" path="files" component={GranuleListContainer}/>
