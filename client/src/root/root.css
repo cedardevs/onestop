@@ -30,7 +30,7 @@ input {
   background: $color-primary-darkest;
   box-shadow: 0 10px 5px rgb(0,0,0,.7);
   padding: $section-padding;
-  max-height: $header-height;
+  min-height: $header-height;
 }
 
 
@@ -43,7 +43,8 @@ input {
   display: inline;
 }
 
-.orgBox {
+.orgBox,
+.orgBoxLanding {
   padding-right: 15px;
 }
 
@@ -69,7 +70,8 @@ input {
   font-size: 0.8em;
 }
 
-.oneStopText {
+.oneStopText,
+.oneStopTextLanding {
   color: white;
   font-size: 1.5em;
   font-family: "Helvetica Neue",helvetica,Arial,sans-serif;

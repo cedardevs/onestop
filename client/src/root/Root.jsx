@@ -14,6 +14,8 @@ class RootComponent extends React.Component {
     super(props)
 
     this.renderSearchBarInHeader = this.renderSearchBarInHeader.bind(this)
+    this.renderOrgBoxStyle = this.renderOrgBoxStyle.bind(this)
+    this.renderLogoTextStyle = this.renderLogoTextStyle.bind(this)
 
     this.location = props.location.pathname
   }
@@ -32,6 +34,24 @@ class RootComponent extends React.Component {
     }
   }
 
+  renderOrgBoxStyle() {
+    if(this.location === '/') {
+      return `pure-u-1 ${styles.orgBoxLanding}`
+    }
+    else {
+      return `pure-u-5-24 ${styles.orgBox}`
+    }
+  }
+
+  renderLogoTextStyle() {
+    if(this.location === '/') {
+      return `${styles.oneStopTextLanding}`
+    }
+    else {
+      return `${styles.oneStopText}`
+    }
+  }
+
   render() {
     return <div className={styles.rootContainer}>
       <div className={styles.mainContent}>
@@ -39,13 +59,12 @@ class RootComponent extends React.Component {
         <DetailContainer/>
         <div id="header" className={styles.headerArea}>
           <div className={'pure-g'}>
-            <div className={`pure-u-5-24 ${styles.orgBox}`}>
+            <div className={`${this.renderOrgBoxStyle()}`}>
               <div className={styles.logoLinks}>
                 <a href="http://www.noaa.gov"><img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/></a>
-              <Link to='/' activeClassName="active" onlyActiveOnIndex={true}>
-                <span className={styles.oneStopText}><i
-                  className={`fa fa-stop-circle-o fa-md ${styles.oneStopText}`}></i>neStop</span>
-              </Link>
+                <Link to='/' activeClassName="active" onlyActiveOnIndex={true}>
+                  <span className={`${this.renderLogoTextStyle()}`}><i className={`fa fa-stop-circle-o fa-md ${this.renderLogoTextStyle()}`}></i>neStop</span>
+                </Link>
               </div>
             </div>
             {this.renderSearchBarInHeader()}
