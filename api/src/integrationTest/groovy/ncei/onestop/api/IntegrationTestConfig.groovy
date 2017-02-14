@@ -8,16 +8,15 @@ import org.elasticsearch.node.Node
 import org.elasticsearch.client.Client
 import org.elasticsearch.node.internal.InternalSettingsPreparer
 import org.elasticsearch.plugin.deletebyquery.DeleteByQueryPlugin
-import org.elasticsearch.plugins.Plugin
 import org.elasticsearch.script.expression.ExpressionPlugin
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Profile
 
 
 @Profile("integration")
-@Configuration
+@TestConfiguration
 class IntegrationTestConfig {
 
   // Config constants:
@@ -28,14 +27,16 @@ class IntegrationTestConfig {
   // Bean definitions:
 
   @Bean(name = "dataDirectory")
-  public File dataDirectory() {
+  File dataDirectory() {
     def tmpDir = File.createTempDir()
     return tmpDir
   }
 
   @Bean(name = "node", destroyMethod = "close")
   @DependsOn("dataDirectory")
-  public Node node() {
+  Node node() {
+    println 'creating test node'
+
     Settings settings = Settings.builder()
         .put("path.home", dataDirectory().toString())
         .put("cluster.name", CLUSTER_NAME)
@@ -55,7 +56,7 @@ class IntegrationTestConfig {
 
   @Bean(destroyMethod = "close")
   @DependsOn("node")
-  public Client client() {
+  Client client() {
     def node = node()
     def client = node.client()
     node.start()
