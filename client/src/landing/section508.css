@@ -1,0 +1,32 @@
+@import '../../style/style.css';
+
+.button {
+  max-height: 2.2em;
+  position: relative;
+  color: white;
+  background-color: $color-primary;
+  text-shadow: 0 0 5px black;
+  margin: 2em 2em 0 1em;
+}
+
+.form {
+  margin: 2em auto;
+  width: 80%;
+  font-size: 1.4em;
+}
+
+.formRow {
+  margin: 1em;
+}
+
+.formLabel {
+  margin: 1em 2em 1em 0 !important;
+  width: 8em;
+  display: inline-block;
+}
+
+.formInput {
+  width: 60%;
+  color: black;
+  display: inline-block;
+}
