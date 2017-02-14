@@ -12,6 +12,24 @@ import LoadingContainer from '../loading/LoadingContainer'
 class RootComponent extends React.Component {
   constructor(props) {
     super(props)
+
+    this.renderSearchBarInHeader = this.renderSearchBarInHeader.bind(this)
+
+    this.location = props.location.pathname
+  }
+
+  componentWillUpdate(nextProps) {
+    this.location = nextProps.location.pathname
+  }
+
+  renderSearchBarInHeader() {
+    if(this.location !== '/') {
+      return (
+        <div className={`pure-u-1 pure-u-sm-3-4 ${styles.landingComponents}`}>
+          <SearchFieldsContainer/>
+        </div>
+      )
+    }
   }
 
   render() {
@@ -22,15 +40,15 @@ class RootComponent extends React.Component {
         <div id="header" className={styles.headerArea}>
           <div className={'pure-g'}>
             <div className={`pure-u-5-24 ${styles.orgBox}`}>
-              <Link to='/' activeClassName="active" onlyActiveOnIndex={true} className={styles.logoLink}>
-                <img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/>
+              <div className={styles.logoLinks}>
+                <a href="http://www.noaa.gov"><img className={styles.logo} id='logo' src={logoPath} alt="NOAA Logo"/></a>
+              <Link to='/' activeClassName="active" onlyActiveOnIndex={true}>
                 <span className={styles.oneStopText}><i
                   className={`fa fa-stop-circle-o fa-md ${styles.oneStopText}`}></i>neStop</span>
               </Link>
+              </div>
             </div>
-            <div className={`pure-u-1 pure-u-sm-3-4 ${styles.landingComponents}`}>
-              <SearchFieldsContainer/>
-            </div>
+            {this.renderSearchBarInHeader()}
           </div>
         </div>
         <div className={styles.main}>

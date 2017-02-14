@@ -6,6 +6,7 @@ import dem from '../../img/dem.jpg'
 import ghrsst1 from '../../img/ghrsst1.jpg'
 import ghrsst2 from '../../img/ghrsst2.jpg'
 import CollectionTile from '../result/collections/CollectionTileComponent.jsx'
+import SearchFieldsContainer from '../search/SearchFieldsContainer'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -85,6 +86,7 @@ class LandingComponent extends React.Component {
       </div>
 
     return <div className={`pure-g ${styles.showcase}`}>
+      <div className={`pure-u-1`}> <SearchFieldsContainer/> </div> {/*FIXME*/}
       <div className={`pure-u-1`}>
         <div className={`${styles.topicContainer}`}>
           <h2>Search by Topic:</h2>
