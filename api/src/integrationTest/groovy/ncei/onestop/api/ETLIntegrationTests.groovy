@@ -6,15 +6,14 @@ import ncei.onestop.api.service.SearchIndexService
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.SpringApplicationContextLoader
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
 @ActiveProfiles("integration")
-@ContextConfiguration(loader = SpringApplicationContextLoader, classes = [Application, IntegrationTestConfig])
+@SpringBootTest(classes = [Application, IntegrationTestConfig])
 class ETLIntegrationTests extends Specification {
 
   @Autowired
