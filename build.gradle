@@ -14,6 +14,7 @@ buildscript {
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     classpath 'com.wiredforcode:gradle-spawn-plugin:0.6.0'
     classpath 'com.moowork.gradle:gradle-node-plugin:0.13'
+    classpath 'org.owasp:dependency-check-gradle:1.4.5'
   }
 }
 
@@ -21,8 +22,24 @@ subprojects {
   project.ext {
     esVersion = '2.4.1'
   }
-}
 
+  afterEvaluate {
+    if (project.plugins.hasPlugin('java')) {
+      project.apply plugin: 'org.owasp.dependencycheck'
+      project.tasks.findByName('check').dependsOn('dependencyCheck')
+
+      dependencyCheck {
+        suppressionFile = "${rootDir}/owasp-suppressions.xml"
+        failBuildOnCVSS = 4
+
+        // One of our dependencies has an un-parsable pom which causes dependency-checker
+        // to throw an exception. However, the checks still run and it still generates a
+        // report, so I think it's safe(ish) to ignore the error.
+        failOnError = false
+      }
+    }
+  }
+}
 
 apply plugin: 'com.gradle.build-scan'
 
