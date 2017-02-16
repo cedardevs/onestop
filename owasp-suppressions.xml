@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+  <suppress>
+    <notes><![CDATA[
+      Refers to a Groovy LDAP class which is not in use in this application
+      ]]></notes>
+    <filePath regex="true">.*\bgroovy-.*\.jar</filePath>
+    <cve>CVE-2016-6497</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      Has to do with weak permissions on a config file in default installations of tomcat on linux system.
+      Not related to usage of tomcat within this application. Note also that the packaged tomcat dependencies
+      are not used at all when the application is deployed into an external tomcat installation.
+      ]]></notes>
+    <filePath regex="true">.*\btomcat-.*\.jar</filePath>
+    <cve>CVE-2016-6325</cve>
+    <cve>CVE-2016-5425</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      Applies to spring framework versions 4.3.0 - 4.3.4, which are not in use in this application
+    ]]></notes>
+    <gav regex="true">^org\.springframework\.cloud:spring-cloud-context:.*$</gav>
+    <cve>CVE-2016-9878</cve>
+  </suppress>
+</suppressions>

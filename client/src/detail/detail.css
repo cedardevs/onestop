@@ -57,7 +57,11 @@
 
 .previewImg {
   width: 100%;
+  min-height: 12em;
   margin-bottom: 1em;
+  h3 {
+    text-align: center;
+  }
 }
 
 .linkRow {
@@ -94,17 +98,29 @@
 }
 
 .dsmmInfo {
-  visibility: hidden;
-  text-align: justify;
-  margin-right: 1em;
-}
-
-.infoIcon {
-  color: white;
-  margin-bottom: 1em;
-}
-
-.infoIcon:hover + .dsmmInfo {
-  color: #00a6d2;
-  visibility: visible;
+  position: relative;
+  display: inline-block;
+  i {
+    color: white;
+    margin: 0.5em;
+  }
+  a {
+    color: $color-visited-light;
+  }
+  .text {
+    visibility: hidden;
+    bottom: -0.5em;
+    left: 105%;
+    width: 30em;
+    position: absolute;
+    z-index: 1;
+    background-color: black;
+    border: solid thin white;
+    border-radius: 6px;
+    padding: 2em;
+    text-align: left;
+  }
+  &:hover .text {
+    visibility: visible;
+  }
 }
