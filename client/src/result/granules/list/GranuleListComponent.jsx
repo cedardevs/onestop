@@ -8,86 +8,69 @@ class GranuleList extends React.Component {
   constructor(props) {
     super(props)
     this.loadLinks = this.loadLinks.bind(this)
-    this.identifyFileSource = this.identifyFileSource.bind(this)
-    this.updateState = this.updateState.bind(this)
     this.state = {
-      records: [],
-      dataSource: [
-        { id: 'OPeNDAP', letter: 'O', color: 'green', legend: false,
-          names: ['opendap']},
-        { id: 'Download', letter: 'D', color: 'blue', legend: false,
-          names: ['download']},
-        { id: 'FTP', letter: 'F', color: 'red', legend: false,
-          names: ['ftp']},
-        { id: 'Web', letter: 'W', color: 'purple', legend: false,
-          names: ['http', 'https']},
-        { id: 'THREDDS', letter: 'T', color: 'grey', legend: false,
-          names: ['thredds']},
-        { id: 'NOAA Live Access Server', letter: 'L', color: 'aqua', legend: false,
-          names: ['noaa:las']}]}
+      results: [],
+      protocols: {
+        'download': {id: 'D', color: 'blue',   label: 'Download'},
+        'ftp':      {id: 'F', color: 'red',    label: 'FTP'},
+        'noaa:las': {id: 'L', color: 'aqua',   label: 'NOAA Live Access Server'},
+        'opendap':  {id: 'O', color: 'green',  label: 'OPeNDAP'},
+        'thredds':  {id: 'T', color: 'grey',   label: 'THREDDS'},
+        'http':     {id: 'W', color: 'purple', label: 'Web'},
+        'https':    {id: 'W', color: 'purple', label: 'Web'},
+      }
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    this.updateState(nextProps)
-  }
-
-  updateState(props) {
-    const rows = []
-    _.forEach(props.results, (value, key) => {
-      rows.push(
-        <tr key={key} onMouseOver={() => this.props.onMouseOver(key)} onMouseLeave={() => this.props.onMouseOver(key)}>
-          <td>{value.title}</td>
-          <td className={styles.badgeCell}>{this.loadLinks(value.links)}</td>
-        </tr>
-      )
-    })
-    this.setState({records: rows})
+    this.setState({results: nextProps.results || []})
   }
 
   loadLinks(links) {
     if (!links || !links.length) { return <div></div> }
-    return <div className={'pure-g'}>{links.map(link => this.linkBadge(link))}</div>
+    return <div className={`pure-u-1`} style={{display: 'flex', flexWrap: 'wrap'}}>
+      {links.map(link => this.linkBadge(link))}
+    </div>
   }
 
-  linkBadge({linkName, linkUrl}) {
-    const protocol = linkName ? _.toLower(linkName) : ''
-    const {letter, color} = this.identifyFileSource(protocol)
-    if (letter) {
-      return <a href={linkUrl}
-                key={linkUrl}
-                className={`pure-u-1 pure-u-md-1-6 pure-u-lg-1-12
-                  ${styles.letterCircle}`}
-                style={{background: color}}>
-                  {letter}
-              </a>
-    } else { return <div key={linkUrl}></div> }
+  linkBadge(link) {
+    const protocol = this.identifyProtocol(link)
+    const url = link.linkUrl
+    if (protocol) {
+      return <a href={url} key={url} title={url}
+                className={`${styles.letterCircle}`}
+                style={{background: protocol.color}}>
+        {protocol.id}
+      </a>
+    }
+    else { return <div key={url}></div> }
   }
 
-  identifyFileSource(protocol) {
-    const { dataSource } = this.state
-    let finalSource
-    _.forEach(dataSource, (source, idx)  => {
-      if (_.includes(source.names, protocol)) {
-        finalSource = source
-        dataSource[idx].legend = true
-        this.setState(dataSource)
-      }
-    })
-    return finalSource || {letter: ''}
+  identifyProtocol(link) {
+    const name = _.toLower(link.linkName || '')
+    return this.state.protocols[name]
   }
 
   render() {
-    const { records, dataSource } = this.state
-    const legendRows = _.filter(dataSource, source => source.legend )
-    const legend = <div className={styles.legend}>{legendRows.map((row, idx) => {
-      return <div key={idx} className={`pure-u-sm-1-3 pure-u-md-1-6`}>
-        <div className={`${styles.letterCircle} ${styles.legendRow}`}
-          style={{background: row.color}}>
-          {row.letter}
-        </div>
-        <div className={styles.legendRow}>{row.id}</div>
-      </div>
-    })}</div>
+    const usedProtocols = new Set()
+
+    const tableRows = _.map(this.state.results, (value, key) => {
+      _.forEach(value.links, (link) => usedProtocols.add(this.identifyProtocol(link)))
+      return <tr key={key} onMouseOver={() => this.props.onMouseOver(key)} onMouseLeave={() => this.props.onMouseOver(key)}>
+        <td>{value.title}</td>
+        <td className={styles.badgeCell}>{this.loadLinks(value.links)}</td>
+      </tr>
+    })
+
+    const legendRows = _.chain(_.toArray(usedProtocols))
+        .filter(_.identity)
+        .map((protocol, i) => {
+          return <div key={i} className={styles.legendRow}>
+            <div className={`${styles.letterCircle}`} style={{background: protocol.color}}>{protocol.id}</div>
+            <div className={`${styles.label}`}>{protocol.label}</div>
+          </div>
+        })
+        .value()
 
     return (
       <div>
@@ -104,7 +87,11 @@ class GranuleList extends React.Component {
               <div className={`${styles.description}`}>
                 {this.props.selectedCollection.description}
               </div>
-              <div className='pure-g'>{legend}</div>
+              <div className='pure-g'>
+                <div className={`pure-u-1 ${styles.legend}`}>
+                  {legendRows}
+                </div>
+              </div>
               <table className={`pure-table ${styles.table}`}>
                 <thead>
                 <tr>
@@ -112,7 +99,7 @@ class GranuleList extends React.Component {
                   <th>Data Access</th>
                 </tr>
                 </thead>
-                <tbody>{records}</tbody>
+                <tbody>{tableRows}</tbody>
               </table>
             </div>
           </div>

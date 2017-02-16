@@ -55,27 +55,32 @@
     }
   }
 }
-.letterCircle {
-  border-radius: 50%;
-  width: 16px !important;
-  height: 16px;
-  padding: 6px;
-  margin: 4px;
-  color: white;
-  text-align: center;
-  font: 16px Arial, sans-serif;
-  text-decoration: none;
-}
 
 .legend {
   @extend granuleStandard;
-  width: 100%;
+  display: flex;
+  flex-wrap: wrap-reverse;
+  .legendRow {
+    display: inline-flex;
+    .label {
+      font: 1.2em Arial, sans-serif;
+      margin: 0.6em 0;
+    }
+  }
 }
 
-.legendRow {
-  display: inline-block;
+.letterCircle {
+  border-radius: 50%;
+  width: 1.2em !important;
+  height: 1.2em;
+  padding: 0.3em;
+  margin: 0.3em;
+  color: white;
+  text-align: center;
+  font: 1.2em Arial, sans-serif;
+  text-decoration: none;
 }
 
 .badgeCell {
-  min-width: 120px;
+  min-width: 80px;
 }
