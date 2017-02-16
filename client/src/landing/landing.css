@@ -58,3 +58,22 @@ h1, h2, h3, h4, h5 {
   margin: 0 auto;
   width: 90%;
 }
+
+.searchComponent {
+  text-align: center;
+  padding-top: 0.5em;
+}
+
+.heroHeader {
+  padding-top: 0.5em;
+  padding-bottom: 0.25em;
+  text-align: center;
+  font-size: 3em;
+  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
+}
+
+.heroText {
+  text-align: center;
+  font-size: 1.25em;
+  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
+}
