@@ -10,7 +10,7 @@ let Footer = () => {
       href: "//www.ncdc.noaa.gov/about-ncdc/privacy",
       text: "Privacy Policy"
     }, {
-      href: "//www.rdc.noaa.gov/~foia/",
+      href: "//www.noaa.gov/foia-freedom-of-information-act",
       text: "Freedom of Information Act"
     }, {
       href: "//www.cio.noaa.gov/services_programs/info_quality.html",

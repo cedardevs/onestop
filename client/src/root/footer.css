@@ -10,7 +10,7 @@
 ul.footerLinks {
   list-style-type: none;
   line-height: 2em;
-  font-weight: bold;
+  font-weight: 400;
   font-size: 1.1em;
   display: inline-block;
   li {
