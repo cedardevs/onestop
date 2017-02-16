@@ -1,177 +1,231 @@
 @import '../../style/style.css';
 
 .rootContainer {
-  height: 100%;
+    height: 100%;
 }
 
 .mainContent {
-  min-height: 100%;
-  margin-bottom: calc(-$footer-height + 2 * -$section-padding);
+    min-height: 100%;
+    margin-bottom: calc(-$footer-height + 2 * -$section-padding);
 }
 
 .main {
-  min-height: 100%;
+    min-height: 100%;
 }
 
 .footer {
-  background: $color-primary-darkest;
-  position: relative;
-  height: $footer-height;
-  clear: both;
-  padding: $section-padding;
+    background: $color-primary-darkest;
+    position: relative;
+    height: $footer-height;
+    clear: both;
+    padding: $section-padding;
 }
 
 input {
-  border-radius: 0 !important;
+    border-radius: 0 !important;
 }
 
 .headerArea {
-  border-bottom: 1px solid color($color-primary-darkest lightness(-10%));
-  background: $color-primary-darkest;
-  box-shadow: 0 10px 5px rgb(0,0,0,.7);
-  padding: $section-padding;
-  min-height: $header-height;
+    border-bottom: 1px solid color($color-primary-darkest lightness(-10%));
+    background: $color-primary-darkest;
+    box-shadow: 0 10px 5px rgb(0,0,0,.7);
+    padding: $section-padding;
+    min-height: $header-height;
 }
 
+.nceiMenu {
+    font-size: 1.5em;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    padding-top: 1.25em;
+    display: inline;
+    text-align: right;
+}
 
-.logo {
-  height: 50px;
-  width: 50px;
-  min-height: 50px;
-  min-width: 50px;
-  padding: 0 10px;
-  display: inline;
+.nceiMenuItem {
+    text-decoration: none;
+    color: #d7d7d7;
+    font-weight: 300;
+    padding: 0em 0.5em;
+}
+
+.nceiMenuItem:hover {
+    color: white;
+}
+
+.selected {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    padding: 0em 0.5em;
+}
+
+.burgerMenuItem {
+    margin-right: -50%;
+}
+
+.noaaLogo {
+    height: 50px;
+    width: 50px;
+    min-height: 50px;
+    min-width: 50px;
+    padding: 0 10px;
+    display: inline;
+}
+
+.nceiLogo {
+    height: 60px;
+    width: 272px;
+    min-height: 60px;
+    min-width: 272px;
 }
 
 .orgBox,
 .orgBoxLanding {
-  padding-right: 15px;
+    padding-right: 15px;
 }
 
 
 .noaa,
 .doc {
-  text-decoration: none;
-  font-family: inherit;
-  color: inherit;
-  margin-right: auto;
-  font-weight: normal;
-  display: block;
-  padding-top: 10px;
-  line-height: 1.10526;
-  font-size: 1.9rem;
+    text-decoration: none;
+    font-family: inherit;
+    color: inherit;
+    margin-right: auto;
+    font-weight: normal;
+    display: block;
+    padding-top: 10px;
+    line-height: 1.10526;
+    font-size: 1.9rem;
 }
 
 .noaa {
-  font-size: 1.3em;
+    font-size: 1.3em;
 }
 
 .doc {
-  font-size: 0.8em;
+    font-size: 0.8em;
 }
 
 .oneStopText,
 .oneStopTextLanding {
-  color: white;
-  font-size: 1.5em;
-  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
-  display: inline;
+    color: white;
+    font-size: 1.5em;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    display: inline;
 }
 
 .logoLinks {
-  text-decoration: none;
-  display: flex;
-  align-items: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
 }
 
 .landingComponents {
-  color: black;
-  filter: alpha(opacity=30); /* For IE8 and earlier */
-  z-index: 1;
+    color: black;
+    filter: alpha(opacity=30); /* For IE8 and earlier */
+    z-index: 1;
 }
 
 .searchFields {
-  display: inline;
-  font-size: 1.2em;
-  height: 3em;
-  z-index: 1;
+    display: inline;
+    font-size: 1.2em;
+    height: 3em;
+    z-index: 1;
 }
 
 @media screen and (max-width:725px) {
-  .oneStopText {
-    display: none;
-  }
+    .oneStopText {
+        display: none;
+    }
 }
 
 @media screen and (max-width:580px) {
-  .orgBox {
-    display: none;
-  }
+    .orgBox {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 869px) {
+    .nceiMenu {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 870px) {
+    .nceiBurgerMenuLanding {
+        display: none;
+    }
+}
+
+.nceiBurgerMenu,
+.nceiBurgerMenuLanding {
+    padding-top: 1em;
+    text-align: right;
 }
 
 .searchContainer {
-  color: black;
-  margin-top: .9em;
-  width: 38%;
-  display: inline-block;
+    color: black;
+    margin-top: .9em;
+    width: 38%;
+    display: inline-block;
 }
 
 .mapContainer {
-  position: fixed;
-  z-index: 2;
-  left: 50%;
-  margin-top: 5%;
-  margin-left: -40%;
-  box-shadow: 14px 14px 5px rgb(0,0,0,.7);
-  border: 2px outset $color-primary;
-  height: 400px;
-  width: 80%;
-  max-width: 1000px;
+    position: fixed;
+    z-index: 2;
+    left: 50%;
+    margin-top: 5%;
+    margin-left: -40%;
+    box-shadow: 14px 14px 5px rgb(0,0,0,.7);
+    border: 2px outset $color-primary;
+    height: 400px;
+    width: 80%;
+    max-width: 1000px;
 }
 
 .clearButton {
-  margin-left: -1.26em;
-  height: 1em;
-  color: grey;
-  border: none;
-  font-size: 1.2em;
-  border: none;
-  text-shadow: none;
-  background-color: white;
+    margin-left: -1.26em;
+    height: 1em;
+    color: grey;
+    border: none;
+    font-size: 1.2em;
+    border: none;
+    text-shadow: none;
+    background-color: white;
 }
 
 .clearButton:hover {
-  color: #5a5a5a;
+    color: #5a5a5a;
 }
 
 .clearButton:focus {
-  outline: 0;
+    outline: 0;
 }
 
 .undoButton,
 .searchButton,
 .timeButton,
 .mapButton {
-  max-height: 2.2em;
-  position: relative;
-  color: white;
-  background-color: $color-primary;
-  text-shadow: 0 0 5px black;
-  margin-left: .5em;
+    max-height: 2.2em;
+    position: relative;
+    color: white;
+    background-color: $color-primary;
+    text-shadow: 0 0 5px black;
+    margin-left: .5em;
 }
 
 .searchButton:focus {
-  outline: 0;
+    outline: 0;
 }
 
 .timeButtonApplied,
 .mapButtonApplied {
-  max-height: 2.2em;
-  position: relative;
-  color: white;
-  background-color: $color-visited-light;
-  text-shadow: 0 0 5px black;
-  margin-left: .5em;
+    max-height: 2.2em;
+    position: relative;
+    color: white;
+    background-color: $color-visited-light;
+    text-shadow: 0 0 5px black;
+    margin-left: .5em;
 }
 
 /* fix for large, unclickable area on button */
@@ -181,15 +235,15 @@ input {
 .mapButton:before,
 .timeButtonApplied:before,
 .mapButtonApplied:before {
-  position:absolute;
-  content:'';
-  top:-1px;
-  right:-1px;
-  left:-1px;
-  bottom:-1px;
+    position:absolute;
+    content:'';
+    top:-1px;
+    right:-1px;
+    left:-1px;
+    bottom:-1px;
 }
 
 .icon {
-  text-align: center;
-  line-height: 64% !important;
+    text-align: center;
+    line-height: 64% !important;
 }
