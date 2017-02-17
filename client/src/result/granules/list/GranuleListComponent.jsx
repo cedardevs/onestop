@@ -22,7 +22,7 @@ class GranuleList extends React.Component {
     const usedProtocols = new Set()
     const tableRows = _.map(this.props.results, (value, key) => {
       _.forEach(value.links, (link) => usedProtocols.add(this.identifyProtocol(link)))
-      return <tr key={key} onMouseOver={() => this.props.onMouseOver(key)} onMouseLeave={() => this.props.onMouseOver(key)}>
+      return <tr key={key} onMouseEnter={() => this.props.toggleFocus(key)} onMouseLeave={() => this.props.toggleFocus(key)}>
         <td>{value.title}</td>
         <td className={styles.badgeCell}>{this.renderBadges(value.links)}</td>
       </tr>
@@ -103,7 +103,7 @@ GranuleList.propTypes = {
   results: PropTypes.object,
   focusedIds: PropTypes.array,
   selectedCollection: PropTypes.object,
-  onMouseOver: PropTypes.func,
+  toggleFocus: PropTypes.func,
   showCollections: PropTypes.func
 }
 
