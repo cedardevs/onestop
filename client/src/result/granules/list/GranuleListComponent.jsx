@@ -94,7 +94,7 @@ class GranuleList extends React.Component {
   }
 
   identifyProtocol(link) {
-    const name = _.toLower(link.linkName || '')
+    const name = _.toLower(link.linkProtocol || '')
     return this.protocols[name]
   }
 }
