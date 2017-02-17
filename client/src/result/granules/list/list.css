@@ -1,11 +1,13 @@
 @import '../../../../style/style.css';
 
-@define-extend granuleStandard {
-  margin: 2% 2% 0;
+@define-extend underscored {
+  border-bottom: 1px solid $color-gray;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
 }
 
 .mainWindow {
-  letter-spacing: 0em !important;
+  letter-spacing: 0 !important;
   background-color: #000;
   margin: 2em 0 2em;
   height: calc(100vh - 5em - $header-height - $footer-height*2);
@@ -23,59 +25,80 @@
   width: 100%;
 }
 
+.map {
+  height: 100%
+}
+
+.title {
+  @extend underscored;
+  font-size: 1.5em;
+  padding-top: 1em;
+}
+
+.description {
+  @extend underscored;
+  display: inline-block;
+  font-size: 1em;
+  vertical-align: top;
+}
+
 .granuleInfo {
   padding: 0 1em;
   height: 100%;
   overflow-y: auto;
 }
 
-.map {
-  height: 100%
-}
-
-.description {
-  @extend granuleStandard;
-  display: inline-block;
-  font-size: 1em;
-  vertical-align: top;
-}
-
-.title {
-  @extend granuleStandard;
-  font-size: 1.5em;
-  margin-bottom: 0.5em;
-}
-
 .table {
-  @extend granuleStandard;
-  width: 95%;
+  width: 100%%;
   tbody {
     tr:hover {
       background-color: #144CBD;
     }
   }
 }
-.letterCircle {
+
+@define-mixin badge $size: 1em {
   border-radius: 50%;
-  width: 16px !important;
-  height: 16px;
-  padding: 6px;
-  margin: 4px;
+  width: $size !important;
+  height: $size !important;
+  padding: calc($size / 4) !important;
+  margin: calc($size / 4) !important;
+  font: $size Arial, sans-serif;
   color: white;
   text-align: center;
-  font: 16px Arial, sans-serif;
   text-decoration: none;
 }
 
 .legend {
-  @extend granuleStandard;
-  width: 100%;
-}
-
-.legendRow {
-  display: inline-block;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  padding-bottom: 1em;
+  h1, h2, h3, h4, h5 {
+    margin: 0.6em 0 !important;
+  }
+  .legendItem {
+    display: inline-flex;
+    margin-left: 1em;
+    .badge {
+      @mixin badge 1.2em
+    }
+    .label {
+      font: 1.2em Arial, sans-serif;
+      margin: 0.6em 0 !important;
+    }
+  }
 }
 
 .badgeCell {
-  min-width: 120px;
+  width: 25%;
+  min-width: 4em;
+  div {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-end;
+    .badge {
+      @mixin badge
+    }
+  }
 }

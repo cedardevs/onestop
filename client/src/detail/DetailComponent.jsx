@@ -77,7 +77,7 @@ class Detail extends React.Component {
    return <li className={'pure-u'} key={index}>
      <a href={link.linkUrl} target="_blank"
              className={`pure-button pure-button-primary`}>
-       {link.linkName || 'Link'}
+       {link.linkProtocol || 'Link'}
      </a>
    </li>
   }
