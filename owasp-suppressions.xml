@@ -10,9 +10,10 @@
 
   <suppress>
     <notes><![CDATA[
-      Has to do with weak permissions on a config file in default installations of tomcat on linux system.
-      Not related to usage of tomcat within this application. Note also that the packaged tomcat dependencies
-      are not used at all when the application is deployed into an external tomcat installation.
+      Has to do with weak permissions on a config file in default installations of tomcat on linux systems.
+      Note that the default packaged war of this application does not contain this dependency as it is designed
+      to be deployed to an existing servlet container. Also, the -all version of the war should not experience
+      this vulnerability as it is a self-contained executable which does not create the config file in question.
       ]]></notes>
     <filePath regex="true">.*\btomcat-.*\.jar</filePath>
     <cve>CVE-2016-6325</cve>
