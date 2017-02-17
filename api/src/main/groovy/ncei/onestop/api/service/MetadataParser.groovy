@@ -349,7 +349,7 @@ class MetadataParser {
     def linkage = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'CI_OnlineResource' }
     linkage.each { e ->
       links.add([
-          linkName       : e.protocol.CharacterString.text() ?: null,
+          linkName       : e.name.CharacterString.text() ?: null,
           linkUrl        : e.linkage.URL.text() ?: null,
           linkDescription: e.description.CharacterString.text() ?: null,
           linkFunction   : e.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
