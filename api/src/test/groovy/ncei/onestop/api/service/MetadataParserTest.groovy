@@ -75,6 +75,7 @@ class MetadataParserTest extends Specification {
     ]] as Set
     parsedXml.links == [[
         linkName        : 'Super Important Access Link',
+        linkProtocol    : 'HTTP',
         linkUrl         : 'http://www.example.com',
         linkDescription : 'Everything Important, All In One Place',
         linkFunction    : 'search'
@@ -275,6 +276,7 @@ class MetadataParserTest extends Specification {
     then:
     links == [[
                   linkName        : 'Super Important Access Link',
+                  linkProtocol    : 'HTTP',
                   linkUrl         : 'http://www.example.com',
                   linkDescription : 'Everything Important, All In One Place',
                   linkFunction    : 'search'
