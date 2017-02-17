@@ -64,11 +64,11 @@ input {
 }
 
 .noaaLogo {
-    height: 50px;
-    width: 50px;
-    min-height: 50px;
-    min-width: 50px;
-    padding: 0 10px;
+    height: 60px;
+    width: 60px;
+    min-height: 60px;
+    min-width: 60px;
+    padding-right: 10px;
     display: inline;
 }
 
@@ -133,7 +133,7 @@ input {
     z-index: 1;
 }
 
-@media screen and (max-width:725px) {
+@media screen and (max-width:761px) {
     .oneStopText {
         display: none;
     }

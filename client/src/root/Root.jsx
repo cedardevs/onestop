@@ -62,7 +62,7 @@ class RootComponent extends React.Component {
               </ul>
             </div>
           </div>
-          <div className={`pure-u-2-3 ${styles.nceiBurgerMenuLanding}`}>
+{/*          <div className={`pure-u-2-3 ${styles.nceiBurgerMenuLanding}`}>
             <div className={styles.nceiMenuItem}>
               <a href="#" className={styles.nceiMenuItem}><i className={`fa fa-bars fa-3x`}></i></a>
               <ul>
@@ -75,7 +75,7 @@ class RootComponent extends React.Component {
                 <li><a href="#" className={styles.selected}>Search</a></li>
               </ul>
             </div>
-          </div>
+          </div>*/}
         </div>
       )
     }
