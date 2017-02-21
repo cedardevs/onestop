@@ -20,6 +20,34 @@
     group: onestop
     state: present
 
+- name: Create the installation directory
+  become: true
+  file:
+    path: "{{ install_base }}"
+    owner: onestop
+    group: onestop
+    state: directory
+
+- name: Download tomcat
+  become: true
+  get_url:
+    url: "{{ tomcat_url }}"
+    checksum: "{{ tomcat_checksum }}"
+    dest: "{{ install_base }}"
+    owner: onestop
+    group: onestop
+  register: tomcat_download
+
+- name: Install tomcat
+  become: true
+  unarchive:
+    remote_src: yes
+    src: "{{ tomcat_download.dest }}"
+    dest: "{{ install_base }}"
+    owner: onestop
+    group: onestop
+  register: tomcat_install
+
 - name: Download latest api snapshot
   become: true
   maven_artifact:
@@ -28,14 +56,14 @@
     artifact_id: onestop-api
     version: latest
     extension: war
-    dest: /usr/local/bin/onestop-api.war
+    dest: "{{ tomcat_base }}/webapps/onestop-api.war"
     state: present
-  register: download
+  register: api_download
 
 - name: Set the permissions on the api app
   become: true
   file:
-    path: "{{ download.dest }}"
+    path: "{{ api_download.dest }}"
     owner: onestop
     group: onestop
     mode: 440
@@ -44,26 +72,25 @@
   become: true
   template:
     src: templates/onestop-api.yml
-    dest: /usr/local/bin/onestop-api.yml
+    dest: "{{ config_path }}"
     owner: onestop
     group: onestop
     mode: 440
   register: conf
 
-#   CAN'T USE UNTIL ANSIBLE V2.2
-#- name: Stop the api service if something changed
-#  become: true
-#  systemd:
-#    name: onestop-api
-#    state: stopped
-#  when: download.changed or conf.changed
-
 - name: Stop the api service if something changed
   become: true
-  service:
+  systemd:
     name: onestop-api
     state: stopped
-  when: download.changed or conf.changed
+  when: tomcat_download.changed or api_download.changed or conf.changed
+
+#- name: Stop the api service if something changed
+#  become: true
+#  service:
+#    name: onestop-api
+#    state: stopped
+#  when: tomcat_download.changed or api_download.changed or conf.changed
 
 - name: Install the api as a systemd service
   become: true
@@ -74,18 +101,17 @@
     group: root
     mode: 664
 
-#   CAN'T USE UNTIL ANSIBLE V2.2
+- name: Start the api as a systemd service
+  become: true
+  systemd:
+    name: onestop-api
+    daemon_reload: yes
+    state: "{{ 'restarted' if tomcat_download.changed or api_download.changed or conf.changed else 'started'}}"
+    enabled: true
+
 #- name: Start the api as a system service
 #  become: true
-#  systemd:
+#  service:
 #    name: onestop-api
-#    daemon_reload: yes
-#    state: "{{ 'restarted' if download.changed or conf.changed else 'started'}}"
+#    state: "{{ 'restarted' if tomcat_download.changed or api_download.changed or conf.changed else 'started'}}"
 #    enabled: true
-
-- name: Start the api as a system service
-  become: true
-  service:
-    name: onestop-api
-    state: "{{ 'restarted' if download.changed or conf.changed else 'started'}}"
-    enabled: true
