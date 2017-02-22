@@ -3,36 +3,38 @@ import Section508LandingComponent from './Section508LandingComponent'
 import { triggerSearch, clearFacets } from '../actions/SearchRequestActions'
 import { updateQuery } from '../actions/SearchParamActions'
 import { showCollections } from '../actions/FlowActions'
-import { newGeometry, removeGeometry, updateDateRange } from '../actions/SearchParamActions'
+import { newGeometry, removeGeometry, updateDateRange, clearSearch } from '../actions/SearchParamActions'
 
 const mapStateToProps = (state) => {
-  const { startDateTime, endDateTime } = state.behavior.search
+  const { startDateTime, endDateTime, queryText } = state.behavior.search
   const coordinates = pullOutCoordinates(state.behavior.search)
   return {
     startDateTime: startDateTime,
     endDateTime: endDateTime,
     geoJsonSelection: coordinates,
-    queryString: state.behavior.search.queryText
+    queryString: queryText
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
     // Update geometry
-    handleNewGeometry: geoJSON => {console.log(geoJSON);dispatch(newGeometry(geoJSON))},
+    handleNewGeometry: geoJSON => dispatch(newGeometry(geoJSON)),
     removeGeometry: () => dispatch(removeGeometry()),
     // Update date range
-    updateOnChange: (startDate, endDate) => {
+    updateDates: (startDate, endDate) => {
       dispatch(updateDateRange(startDate, endDate))
     },
     // Update search text
-    updateQuery: text => dispatch(updateQuery(text)),
+    updateSearchText: text => dispatch(updateQuery(text)),
     // Submit search
     submit: () => {
       dispatch(clearFacets())
       dispatch(triggerSearch())
       dispatch(showCollections())
-    }
+    },
+    // Clear all search params
+    clearSearch: () => dispatch(clearSearch())
   }
 }
 

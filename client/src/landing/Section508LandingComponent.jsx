@@ -99,16 +99,21 @@ class Section508LandingComponent extends React.Component {
       </div>
     })
     const searchButton = <button className={`${styles.button} pure-button`}
-      onClick={this.submit}>Search</button>
-    const clearButton = <button className={`${styles.button} pure-button`}>Clear</button>
+      onClick={this.search}>Search</button>
+    const clearButton = <button className={`${styles.button} pure-button`}
+      onClick={(()=>{this.clearSearch()
+        && this.form.childNodes.forEach(x=> x.lastChild.value = '')})}>Clear</button>
 
     return(
-      <form onSubmit={this.submitSearch} className={`${styles.form} pure-form`}>
-        {form}
+      <div className={`${styles.formDiv} pure-form`}>
+        <form id='508-form' ref={form=>this.form=form}>
+          {form}
+        </form>)
         {searchButton}
         {clearButton}
-      </form>)
-  }
+      </div>
+      )
+    }
 
   render() {
     return this.generateForm()
