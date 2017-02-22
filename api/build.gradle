@@ -46,7 +46,7 @@ dependencies {
 }
 
 ext {
-  outputWar = file("${buildDir}/libs/${rootProject.name}-${project.name}-${project.version}.war")
+  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
 }
 
 bootRun {
@@ -54,7 +54,7 @@ bootRun {
 }
 
 war {
-  appendix = 'tmp' // changes output name so bootRepackage doesn't overwrite it
+  baseName = "${rootProject.name}-${project.name}"
   finalizedBy bootRepackage
 }
 
@@ -63,7 +63,7 @@ springBoot {
 }
 
 bootRepackage {
-  outputFile = outputWar
+  outputFile = fatWarPath
   excludeDevtools = true
   executable = true
   onlyIf { !tasks.getByName('war').state.upToDate }
@@ -74,7 +74,7 @@ task start(type: SpawnProcessTask) {
   onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
 
   directory projectDir.absolutePath
-  command "java -jar ${outputWar}"
+  command "${fatWarPath}"
   ready 'Started Application'
 }
 
@@ -98,6 +98,7 @@ sourceSets {
 }
 
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
+  mustRunAfter 'test'
   testClassesDir = sourceSets.integrationTest.output.classesDir
   classpath = sourceSets.integrationTest.runtimeClasspath
   reports.junitXml.destination = 'build/integration-test-results'
@@ -109,7 +110,7 @@ check.dependsOn integrationTest
 publishing {
   publications {
     main(MavenPublication) {
-      artifact outputWar
+      artifact war
       artifactId "${rootProject.name}-${project.name}"
     }
   }
