@@ -52,12 +52,12 @@ class Section508LandingComponent extends React.Component {
       default:
         // No action
     }
-    console.log(e.target.name, e.target.value)
   }
 
   // Checks for bounding box only at this point
   validateAndSubmitGeoJson(coordString) {
-    const coordArray = coordString.split(',').map(x=> parseFloat(x))
+    let numCoords
+    const coordArray = coordString.split(',').map((x, idx)=> { numCoords = idx; return parseFloat(x) })
     const sw = [coordArray[0], coordArray[1]]
     const nw = [coordArray[0], coordArray[3]]
     const ne = [coordArray[2], coordArray[3]]
@@ -71,15 +71,20 @@ class Section508LandingComponent extends React.Component {
         type: 'Polygon'
       }
     }
-    if(coordArray.length >= 5 && GeoValidate.isPolygonCoor(coordinates)){
+    if(coordArray.every(x=>(typeof x == 'number' && !isNaN(x)))
+      && coordArray.length >= 3
+      && GeoValidate.isPolygonCoor(coordinates)){
       this.props.handleNewGeometry(geoJSON)
+    } else {
+      this.props.removeGeometry()
     }
   }
 
+  // Search on Enter press
   handleKeyDown(e) {
     if (e.keyCode === 13) {
       e.preventDefault()
-      this.submitSearch()
+      this.submit()
     }
   }
 
