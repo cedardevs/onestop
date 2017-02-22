@@ -9,7 +9,7 @@
   margin: 2em 2em 0 1em;
 }
 
-.form {
+.formDiv {
   margin: 2em auto;
   width: 80%;
   font-size: 1.4em;
@@ -17,6 +17,7 @@
 
 .formRow {
   margin: 1em;
+  border: none !important;
 }
 
 .formLabel {
