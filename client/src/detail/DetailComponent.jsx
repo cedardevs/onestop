@@ -77,16 +77,15 @@ class Detail extends React.Component {
    return <li className={'pure-u'} key={index}>
      <a href={link.linkUrl} target="_blank"
              className={`pure-button pure-button-primary`}>
-       {link.linkName || 'Link'}
+       {link.linkProtocol || 'Link'}
      </a>
    </li>
   }
 
   renderImage() {
     const imgUrl = this.props.item.thumbnail && this.props.item.thumbnail.replace(/^https?:/, '')
-    return this.props.item.thumbnail ?
-        <img className={styles.previewImg} src={imgUrl}/> :
-        <h3 style={{textAlign: 'center'}}>No Image Available</h3>
+    const img = this.props.item.thumbnail ? <img src={imgUrl}/> : <h3>No Image Available</h3>
+    return <div className={styles.previewImg}>{img}</div>
   }
 
   getKeywordsByType(type) {
@@ -139,31 +138,35 @@ class Detail extends React.Component {
 
     let stars = []
     let i
-    for(i = 1; i <= fullStars; i++) { stars[i] = this.renderFullStar(i) }
+    for (i = 1; i <= fullStars; i++) { stars[i] = this.renderFullStar(i) }
 
-    if(halfStar) {
+    if (halfStar) {
       stars[i] = this.renderHalfStar(i)
       i++
     }
 
-    for(i = i; i <= 5; i++) { stars[i] = this.renderEmptyStar(i) }
+    for (i; i <= 5; i++) { stars[i] = this.renderEmptyStar(i) }
 
     return (
-        <div>{stars} <i className={`fa fa-info-circle ${styles.infoIcon}`}></i>
-          <div className={styles.dsmmInfo}>This is the average DSMM rating of this collection. The Data Stewardship
-            Maturity Matrix (DSMM) is a unified framework that defines criteria for the following nine components based
-            on measurable practices:
-            <ul>
-              <li>Data Quality Assessment</li>
-              <li>Accessibility</li>
-              <li>Data Quality Control Monitoring</li>
-              <li>Production Sustainability</li>
-              <li>Data Integrity</li>
-              <li>Preservability</li>
-              <li>Transparency Traceability</li>
-              <li>Usability</li>
-              <li>Data Quality Assurance</li>
-            </ul>
+        <div>
+          {stars}
+          <div className={`${styles.dsmmInfo}`}>
+            <i className={`fa fa-info-circle`}></i>
+            <div className={`${styles.text}`}> This is the average DSMM rating of this collection.
+              The <a href="http://doi.org/10.2481/dsj.14-049" target="_blank" title="Data Stewardship Maturity Matrix Information">
+                Data Stewardship Maturity Matrix (DSMM)</a> is a unified framework that defines criteria for the following nine components based on measurable practices:
+              <ul>
+                <li>Accessibility</li>
+                <li>Data Integrity</li>
+                <li>Data Quality Assessment</li>
+                <li>Data Quality Assurance</li>
+                <li>Data Quality Control Monitoring</li>
+                <li>Preservability</li>
+                <li>Production Sustainability</li>
+                <li>Transparency Traceability</li>
+                <li>Usability</li>
+              </ul>
+            </div>
           </div>
         </div>
     )

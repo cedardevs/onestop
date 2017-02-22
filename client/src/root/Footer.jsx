@@ -10,7 +10,7 @@ let Footer = () => {
       href: "//www.ncdc.noaa.gov/about-ncdc/privacy",
       text: "Privacy Policy"
     }, {
-      href: "//www.rdc.noaa.gov/~foia/",
+      href: "//www.noaa.gov/foia-freedom-of-information-act",
       text: "Freedom of Information Act"
     }, {
       href: "//www.cio.noaa.gov/services_programs/info_quality.html",
@@ -39,11 +39,7 @@ let Footer = () => {
   return (
       <div className={styles.footer}>
         <div className={'pure-g'}>
-          <div className={`pure-u-1-3 ${styles.logoPanel}`}>
-            <a href="//www.noaa.gov/" title="NOAA Home" className={`${styles.noaaLogo}`}/>
-            <span className={`${styles.slogan}`}>Science. Service. Stewardship.</span>
-          </div>
-          <div className={`pure-u-2-3`}>
+          <div className={`pure-u-1`}>
             <ul className={`${styles.footerLinks}`}>
               {links.map((link, i) => <li key={i}><a href={link.href} title={link.text}>{link.text}</a></li>)}
             </ul>

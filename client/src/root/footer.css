@@ -4,12 +4,13 @@
   font-size: 12px;
   width: 100%;
   color: white;
+  text-align: center;
 }
 
 ul.footerLinks {
   list-style-type: none;
   line-height: 2em;
-  font-weight: bold;
+  font-weight: 400;
   font-size: 1.1em;
   display: inline-block;
   li {
@@ -30,37 +31,4 @@ ul.footerLinks {
       padding-right: 0;
     }
   }
-}
-
-.slogan {
-  font-style: italic;
-  font-size: 1.2em;
-  display: inline-block;
-  margin: 0 20px;
-}
-
-.logoPanel {
-  float: left;
-}
-
-.noaaLogo {
-  background-image: url('../../img/noaa_logo_circle_72x72.svg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 50px;
-  height: 50px;
-  display: inline-block;
-  margin: 5px;
-  vertical-align: middle;
-}
-
-.ciresLogo {
-  background-image: url('../../img/ciresLogo.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 273px;
-  height: 48px;
-  display: inline-block;
-  margin: 5px;
-  vertical-align: middle;
 }

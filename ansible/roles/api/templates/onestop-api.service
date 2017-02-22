@@ -1,11 +1,22 @@
 [Unit]
-Description=OneStop API
-After=syslog.target
+Description=Apache Tomcat Running the OneStop API
+After=syslog.target network.target
 
 [Service]
-ExecStart=/usr/local/bin/onestop-api.war
-SuccessExitStatus=143
-Environment="SPRING_CONFIG_LOCATION=file:/usr/local/bin/onestop-api.yml"
+Type=forking
+
+Environment=CATALINA_PID={{ tomcat_base }}/temp/tomcat.pid
+Environment=CATALINA_HOME={{ tomcat_base }}
+Environment=CATALINA_BASE={{ tomcat_base }}
+Environment='CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC'
+Environment='JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom'
+Environment=SPRING_CONFIG_LOCATION=file:{{ config_path }}
+
+ExecStart={{ tomcat_base }}/bin/startup.sh
+ExecStop=/bin/kill -15 $MAINPID
+
+User=onestop
+Group=onestop
 
 [Install]
 WantedBy=multi-user.target

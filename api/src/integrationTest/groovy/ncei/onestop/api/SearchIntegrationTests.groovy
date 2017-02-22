@@ -6,22 +6,20 @@ import ncei.onestop.api.service.SearchIndexService
 import ncei.onestop.api.service.MetadataIndexService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.SpringApplicationContextLoader
-import org.springframework.boot.test.WebIntegrationTest
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.test.context.ActiveProfiles
-import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+
 @Unroll
-@WebIntegrationTest
 @ActiveProfiles("integration")
-@ContextConfiguration(loader = SpringApplicationContextLoader,
-    classes = [Application, IntegrationTestConfig])
+@SpringBootTest(classes = [Application, IntegrationTestConfig], webEnvironment = RANDOM_PORT)
 class SearchIntegrationTests extends Specification {
 
   @Autowired

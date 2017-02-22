@@ -161,6 +161,10 @@
             "type": "string",
             "index": "no"
           },
+          "linkProtocol": {
+            "type": "string",
+            "index": "no"
+          },
           "linkUrl": {
             "type": "string",
             "index": "no"

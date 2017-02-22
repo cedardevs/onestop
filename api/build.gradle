@@ -3,7 +3,7 @@ import com.wiredforcode.gradle.spawn.KillProcessTask
 
 apply plugin: 'war'
 apply plugin: 'groovy'
-apply plugin: 'spring-boot' // version declared in top-level buildscript
+apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
 apply plugin: "com.wiredforcode.spawn"
 apply from: "${rootDir}/gradle/publishing.gradle"
 
@@ -19,14 +19,15 @@ repositories {
 }
 
 dependencies {
-  compile 'org.codehaus.groovy:groovy-all:2.4.6'
+  compile 'org.codehaus.groovy:groovy:2.4.8'
+  compile 'org.codehaus.groovy:groovy-json:2.4.8'
+  compile 'org.codehaus.groovy:groovy-xml:2.4.8'
   compile "org.elasticsearch:elasticsearch:${project.esVersion}"
   compile "org.elasticsearch.module:lang-expression:${project.esVersion}"
   compile "org.elasticsearch.plugin:delete-by-query:${project.esVersion}"
   compile "org.elasticsearch.plugin:shield:${project.esVersion}"
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
-  compile 'org.springframework.boot:spring-boot-devtools'
   compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
   compile 'com.github.fge:json-schema-validator:2.2.6'
   compile 'org.apache.commons:commons-lang3:3.4'
@@ -34,16 +35,18 @@ dependencies {
   compile 'com.vividsolutions:jts:1.13' // Necessary for embedded ES to have geo_shape type available
   compile 'org.apache.lucene:lucene-expressions:5.5.0'
 
+  runtime 'org.springframework.boot:spring-boot-devtools'
+
   providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
-  testCompile "org.spockframework:spock-spring:1.0-groovy-2.4"
-  testCompile "org.spockframework:spock-core:1.0-groovy-2.4"
+  testCompile "org.spockframework:spock-spring:1.1-groovy-2.4-rc-3"
+  testCompile "org.spockframework:spock-core:1.1-groovy-2.4-rc-3"
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
 
 ext {
-  outputWar = file("${buildDir}/libs/${rootProject.name}-${project.name}-${project.version}.war")
+  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
 }
 
 bootRun {
@@ -51,7 +54,7 @@ bootRun {
 }
 
 war {
-  appendix = 'tmp' // changes output name so bootRepackage doesn't overwrite it
+  baseName = "${rootProject.name}-${project.name}"
   finalizedBy bootRepackage
 }
 
@@ -60,7 +63,7 @@ springBoot {
 }
 
 bootRepackage {
-  outputFile = outputWar
+  outputFile = fatWarPath
   excludeDevtools = true
   executable = true
   onlyIf { !tasks.getByName('war').state.upToDate }
@@ -71,7 +74,7 @@ task start(type: SpawnProcessTask) {
   onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
 
   directory projectDir.absolutePath
-  command "java -jar ${outputWar}"
+  command "${fatWarPath}"
   ready 'Started Application'
 }
 
@@ -95,6 +98,7 @@ sourceSets {
 }
 
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
+  mustRunAfter 'test'
   testClassesDir = sourceSets.integrationTest.output.classesDir
   classpath = sourceSets.integrationTest.runtimeClasspath
   reports.junitXml.destination = 'build/integration-test-results'
@@ -106,7 +110,7 @@ check.dependsOn integrationTest
 publishing {
   publications {
     main(MavenPublication) {
-      artifact outputWar
+      artifact war
       artifactId "${rootProject.name}-${project.name}"
     }
   }

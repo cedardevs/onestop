@@ -14,7 +14,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onMouseOver: (id) => dispatch(toggleGranuleFocus(id)),
+    toggleFocus: (id) => dispatch(toggleGranuleFocus(id)),
     showCollections: () => dispatch(showCollections())
   }
 }

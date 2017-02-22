@@ -20,7 +20,7 @@ def sourceDirs = ['node_modules', 'img', 'src', 'style']
 task compile(type: NodeTask) {
     dependsOn 'npmInstall'
     sourceDirs.each {
-        inputs.sourceDir(it)
+        inputs.dir(it).skipWhenEmpty()
     }
     outputs.dir('dist')
     script = file('node_modules/.bin/webpack')
@@ -49,9 +49,9 @@ assemble.dependsOn 'tarResults'
 npm_test {
     dependsOn 'compile'
     sourceDirs.each {
-        inputs.sourceDir(it)
+        inputs.dir(it).skipWhenEmpty()
     }
-    inputs.sourceDir('test')
+    inputs.dir('test').skipWhenEmpty()
 }
 
 task test {
