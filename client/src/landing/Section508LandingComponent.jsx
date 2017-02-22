@@ -6,7 +6,8 @@ import moment from 'moment'
 class Section508LandingComponent extends React.Component {
   constructor(props) {
     super(props)
-    this.submit = props.submit
+    this.search = props.submit
+    this.clearSearch = props.clearSearch
     this.updateQuery = this.updateQuery.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
     this.generateForm = this.generateForm.bind(this)
@@ -16,15 +17,16 @@ class Section508LandingComponent extends React.Component {
   initializeState() {
     return {
       formFields: [
-        { label: 'Search Text', name: 'search-text', placeholder: 'e.g. ocean', action: {}, value: 'queryString'},
-        { label: 'Start Date', name: 'start-date', placeholder: 'e.g. 1940-02-01T00:00:00Z', action: {}, value: 'startDateTime'},
-        { label: 'End Date', name: 'end-date', placeholder: 'e.g. 2017-02-13T00:00:00Z', action: {}, value: 'endDateTime'},
-        { label: 'Bounding Box', name: 'geometry', placeholder: `e.g. -180.00,-90.00,180.00,90.00 (W,S,E,N)`, action: {}, value: 'geoJsonSelection' }
+        { label: 'Search Text:', name: 'search-text', placeholder: 'e.g. ocean',
+          value: 'queryString'},
+        { label: 'Start Date:', name: 'start-date', placeholder: 'e.g. 1940-02-01T00:00:00Z',
+          value: 'startDateTime'},
+        { label: 'End Date:', name: 'end-date', placeholder: 'e.g. 2017-02-13T00:00:00Z',
+          value: 'endDateTime'},
+        { label: 'Bounding Box:', name: 'geometry', placeholder:
+          `e.g. -180.00,-90.00,180.00,90.00 (W,S,E,N)`, value: 'geoJsonSelection' }
       ]
     }
-  }
-
-  submitSearch() {
   }
 
   updateQuery(e) {
@@ -32,17 +34,17 @@ class Section508LandingComponent extends React.Component {
     value = value.trim()
     switch (name) {
       case 'search-text':
-        this.props.updateQuery(value)
+        this.props.updateSearchText(value)
         break
       case 'start-date':
-        if (moment(value).isValid()) {
-          this.props.updateOnChange(value, this.props.endDateTime || '')
-        }
+        let startDate = ''
+        if (moment(value).isValid()) { startDate = value }
+        this.props.updateDates(startDate, this.props.endDateTime || '')
         break
       case 'end-date':
-        if (moment(value).isValid()) {
-          this.props.updateOnChange(this.props.startDateTime || '', value)
-        }
+        let endDate = ''
+        if (moment(value).isValid()) { endDate = value }
+        this.props.updateDates(this.props.startDateTime || '', endDate)
         break
       case 'geometry':
         this.validateAndSubmitGeoJson(value)
