@@ -30,6 +30,9 @@ let Footer = () => {
     }, {
       href: "//www.nesdis.noaa.gov/",
       text: "NESDIS"
+    }, {
+      href: `${new RegExp(/^.*\//).exec(window.location.href)}landing-508`,
+      text: "508 Compliant Alternative Search Page"
     }
   ]
 
