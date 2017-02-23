@@ -71,8 +71,9 @@ class Section508LandingComponent extends React.Component {
         type: 'Polygon'
       }
     }
+    console.log(coordArray)
     if(coordArray.every(x=>(typeof x == 'number' && !isNaN(x)))
-      && coordArray.length >= 3
+      && coordArray.length >= 4
       && GeoValidate.isPolygonCoor(coordinates)){
       this.props.handleNewGeometry(geoJSON)
     } else {
@@ -101,14 +102,17 @@ class Section508LandingComponent extends React.Component {
     const searchButton = <button className={`${styles.button} pure-button`}
       onClick={this.search}>Search</button>
     const clearButton = <button className={`${styles.button} pure-button`}
-      onClick={(()=>{this.clearSearch()
-        && this.form.childNodes.forEach(x=> x.lastChild.value = '')})}>Clear</button>
+      onClick={(()=>{
+        this.clearSearch()
+        && this.form.childNodes.forEach(x=> x.lastChild.value = '')})}>
+        Clear
+      </button>
 
     return(
       <div className={`${styles.formDiv} pure-form`}>
         <form id='508-form' ref={form=>this.form=form}>
           {form}
-        </form>)
+        </form>
         {searchButton}
         {clearButton}
       </div>
