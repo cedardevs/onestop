@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { fetchGranules, clearGranules, clearFacets } from '../actions/SearchRequestActions'
-import { toggleSelection, clearSelections, updateQuery, clearSearch } from '../actions/SearchParamActions'
+import { toggleSelection, clearSelections, updateQuery, updateSearch } from '../actions/SearchParamActions'
 import { triggerSearch } from '../actions/SearchRequestActions'
 import { showCollections, showGranules, setFocus } from '../actions/FlowActions'
 import Detail from './DetailComponent'
@@ -20,7 +20,7 @@ const mapDispatchToProps = (dispatch) => {
     textSearch: (text) => {
       dispatch(setFocus(null))
       dispatch(clearFacets())
-      dispatch(clearSearch())
+      dispatch(updateSearch())
       dispatch(updateQuery(text))
       dispatch(triggerSearch())
       dispatch(showCollections())

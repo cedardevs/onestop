@@ -2,7 +2,9 @@ import '../../specHelper'
 import Immutable from 'seamless-immutable'
 import { expect } from 'chai'
 import { search, initialState } from '../../../src/reducers/behavior/search'
-import { newGeometry, removeGeometry, toggleSelection, clearSelections } from '../../../src/actions/SearchParamActions'
+import {
+  updateSearch, newGeometry, removeGeometry, toggleSelection, clearSelections
+} from '../../../src/actions/SearchParamActions'
 
 describe('The search reducer', function () {
   it('has a default state', function () {
@@ -16,6 +18,39 @@ describe('The search reducer', function () {
       endDateTime: null,
       selectedFacets: {},
       selectedIds: []
+    })
+  })
+
+  describe('updateSearch cases', function () {
+    it('updates all search params', function () {
+      const newSearchParams = {
+        queryText: 'new',
+        geoJSON: {type: 'Point', geometry: {type: 'Point', coordinates: [0, 0]}},
+        startDateTime: '2000-01-01T00:00:00Z',
+        endDateTime: '3000-01-01T00:00:00Z',
+        selectedFacets: {science: ["Oceans"]},
+        selectedIds: ['ABCXYZ']
+      }
+
+      const updateAction = updateSearch(newSearchParams)
+      const result = search(initialState, updateAction)
+      result.should.deep.equal(newSearchParams)
+    })
+
+    it('defaults to initial state for missing fields', function () {
+      const newSearchParams = {
+        queryText: 'new'
+      }
+
+      const updateAction = updateSearch(newSearchParams)
+      const result = search(initialState, updateAction)
+      result.should.deep.equal(Immutable.merge(initialState, newSearchParams))
+    })
+
+    it('works for empty or undefined params', function () {
+      search(initialState, updateSearch({})).should.deep.equal(initialState)
+      search(initialState, updateSearch(null)).should.deep.equal(initialState)
+      search(initialState, updateSearch(undefined)).should.deep.equal(initialState)
     })
   })
 
