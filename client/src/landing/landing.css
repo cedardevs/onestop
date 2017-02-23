@@ -61,19 +61,51 @@ h1, h2, h3, h4, h5 {
 
 .searchComponent {
   text-align: center;
-  padding-top: 0.5em;
 }
 
 .heroHeader {
-  padding-top: 0.5em;
-  padding-bottom: 0.25em;
   text-align: center;
-  font-size: 3em;
-  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
+  font-size: 3.5em;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 
 .heroText {
   text-align: center;
+  font-size: 1.5em;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.helpInfo {
+  text-align: left;
+  padding-top: 1em;
   font-size: 1.25em;
-  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
+
+  .helpText {
+    visibility: hidden;
+    position: absolute;
+    top: 13%;
+    left: 5%;
+    z-index: 1;
+    color: white;
+    background-color: black;
+    border: solid thin white;
+    border-radius: 6px;
+    padding: 0.5em 1em;
+    width: 40em;
+    text-align: left;
+  }
+
+  &:hover .helpText {
+     visibility: visible;
+  }
+}
+
+.highlightB {
+  color: $color-primary;
+}
+
+.highlightP {
+  color: $color-visited-light;
 }

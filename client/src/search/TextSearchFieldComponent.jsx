@@ -16,7 +16,7 @@ class TextSearchField extends React.Component {
   render() {
     return <input
         style={{width: '100%'}}
-        placeholder="Enter Search Term"
+        placeholder="Enter any term here to search NCEI data"
         onKeyDown={this.handleKeyDown}
         onChange={this.handleChange}
         value={this.state.value}
