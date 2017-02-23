@@ -1,24 +1,11 @@
 import _ from 'lodash'
+import watch from 'redux-watch'
 import { push } from 'react-router-redux'
-import { encodeQueryString } from '../utils/queryUtils'
-import { triggerSearch } from './SearchRequestActions'
-import { fetchGranules } from './SearchRequestActions'
+import { encodeQueryString, decodeQueryString } from '../utils/queryUtils'
+import { triggerSearch, fetchGranules } from './SearchRequestActions'
+import { updateSearch } from './SearchParamActions'
 import { fetchConfig } from './ConfigActions'
-
-export const initialize = () => {
-  return (dispatch, getState) => {
-    const state = getState()
-
-    dispatch(fetchConfig())
-    dispatch(triggerSearch())
-
-    const collectionsSelected = !_.isEmpty(state.behavior.search.selectedIds)
-    const granulesLoaded = !_.isEmpty(state.domain.results.granules)
-    if (collectionsSelected && !granulesLoaded) {
-      dispatch(fetchGranules())
-    }
-  }
-}
+import store from '../store'
 
 export const showCollections = () => {
   return (dispatch, getState) => {
@@ -61,3 +48,41 @@ export const hideLoading = () => {
     type: LOADING_HIDE
   }
 }
+
+export const initialize = () => {
+  return (dispatch) => {
+    dispatch(fetchConfig())
+    dispatch(loadData())
+  }
+}
+
+export const loadData = () => {
+  return (dispatch, getState) => {
+    const state = getState()
+    const collectionsSelected = !_.isEmpty(state.behavior.search.selectedIds)
+    const granulesLoaded = !_.isEmpty(state.domain.results.granules)
+
+    dispatch(triggerSearch())
+    if (collectionsSelected && !granulesLoaded) {
+      dispatch(fetchGranules())
+    }
+  }
+}
+
+// if the location query string changed and is out of sync with the query state,
+// update the query state and load collection/granule data as needed
+const applyNewQueryString = (newQueryString) => {
+  if (newQueryString.indexOf('?') === 0) {
+    newQueryString = newQueryString.slice(1)
+  }
+  const decodedQuery = decodeQueryString(newQueryString)
+  const searchFromQuery = _.omit(_.get(decodedQuery, 'behavior.search'), 'selectedIds')
+  const searchFromState = _.omit(_.get(store.getState(), 'behavior.search'), 'selectedIds')
+  if (!_.isEqual(searchFromQuery, searchFromState)) {
+    store.dispatch(updateSearch(searchFromQuery))
+    store.dispatch(loadData())
+  }
+}
+
+const w = watch(store.getState, 'behavior.routing.locationBeforeTransitions.search')
+store.subscribe(w(applyNewQueryString))

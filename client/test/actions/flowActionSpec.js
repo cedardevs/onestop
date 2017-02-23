@@ -1,13 +1,12 @@
 import '../specHelper'
 import _ from 'lodash'
 import * as actions from '../../src/actions/FlowActions'
-import reducer from '../../src/reducers/reducer'
 import { expect, assert } from 'chai'
 import sinon from 'sinon'
 
 describe('The flow actions', function () {
 
-  const mockState = {
+  const mockDefaultState = {
      domain: {
         config: {
            apiHost: ''
@@ -20,6 +19,9 @@ describe('The flow actions', function () {
       request: {
         collectionInFlight: false,
         granuleInFlight: false
+      },
+      search: {
+        selectedIds: []
       }
     }
   }
@@ -29,44 +31,51 @@ describe('The flow actions', function () {
     dispatch = sinon.stub()
   })
 
-  it('trigger search & update state', function () {
-    const behaviorState = {behavior: {search: {selectedIds: []}}}
-    const tempState = _.merge(mockState, behaviorState)
+  it('initialize triggers config and data loading', function () {
+    const getState = sinon.stub().returns(mockDefaultState)
     const fn = actions.initialize()
 
-    const getState = sinon.stub().returns(tempState)
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert( dispatchCalls == 2, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls == 2, `There were ${dispatchCalls} dispatch calls made`)
   })
 
-  it('triggers search & fetches granules', function () {
-    const behaviorState = {behavior: {search: {selectedIds: [123]}}}
-    const tempState = _.merge(mockState, behaviorState)
+  describe('loadData', function () {
+    it('loads only collections if no ids are selected', function () {
+      const getState = sinon.stub().returns(mockDefaultState)
+      const fn = actions.loadData()
 
-    const getState = sinon.stub().returns(tempState)
-    const fn = actions.initialize()
+      fn(dispatch, getState)
+      const dispatchCalls = dispatch.callCount
+      assert(dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
+    })
 
-    fn(dispatch, getState)
-    const dispatchCalls = dispatch.callCount
-    assert( dispatchCalls == 3, `There were ${dispatchCalls} dispatch calls made`)
+    it('loads collections and granules if ids are selected', function () {
+      const stateWithIds = _.merge(mockDefaultState, {behavior: {search: {selectedIds: [123]}}})
+      const getState = sinon.stub().returns(stateWithIds)
+      const fn = actions.loadData()
+
+      fn(dispatch, getState)
+      const dispatchCalls = dispatch.callCount
+      assert(dispatchCalls == 2, `There were ${dispatchCalls} dispatch calls made`)
+    })
   })
 
   it('dispatch a transition to the collections view', function () {
-    const getState = sinon.stub().returns(mockState)
+    const getState = sinon.stub().returns(mockDefaultState)
     const fn = actions.showCollections()
 
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert( dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
   })
 
   it('dispatch a transition to the granules view', function () {
-    const getState = sinon.stub().returns(mockState)
+    const getState = sinon.stub().returns(mockDefaultState)
     const fn = actions.showGranules()
 
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert( dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
   })
 })
