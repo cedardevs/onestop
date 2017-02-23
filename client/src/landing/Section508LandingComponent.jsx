@@ -38,12 +38,12 @@ class Section508LandingComponent extends React.Component {
         break
       case 'start-date':
         let startDate = ''
-        if (moment(value).isValid()) { startDate = value }
+        if (moment(value).isValid()) { startDate = moment(value).toISOString() }
         this.props.updateDates(startDate, this.props.endDateTime || '')
         break
       case 'end-date':
         let endDate = ''
-        if (moment(value).isValid()) { endDate = value }
+        if (moment(value).isValid()) { endDate = moment(value).toISOString() }
         this.props.updateDates(this.props.startDateTime || '', endDate)
         break
       case 'geometry':
@@ -85,7 +85,7 @@ class Section508LandingComponent extends React.Component {
   handleKeyDown(e) {
     if (e.keyCode === 13) {
       e.preventDefault()
-      this.submit()
+      this.search()
     }
   }
 
