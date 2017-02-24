@@ -8,7 +8,7 @@ html, body {
 body {
   @mixin bgImage '../img/isabel1.jpg';
   font-size: 12px;
-  font-family: "Helvetica Neue",helvetica,Arial,sans-serif;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   color: white;
 }
 
