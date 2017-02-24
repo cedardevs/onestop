@@ -45,54 +45,23 @@ input {
   min-width: 272px;
 }
 
-.noaa,
-.doc {
-  text-decoration: none;
-  font-family: inherit;
-  color: inherit;
-  margin-right: auto;
-  font-weight: normal;
-  display: block;
-  padding-top: 10px;
-  line-height: 1.10526;
-  font-size: 1.9rem;
-}
-
-.noaa {
-  font-size: 1.3em;
-}
-
-.doc {
-  font-size: 0.8em;
-}
-
-.oneStopText {
+.oneStopLink {
   color: white;
-  font-size: 1.5em;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-  display: inline;
-}
-
-.logoLinks {
   text-decoration: none;
-  display: flex;
-  align-items: center;
+  display: inline-block;
+  font-size: 2em;
+  margin-top: 0.7em;
+  vertical-align: top;
 }
 
 @media screen and (max-width:761px) {
-  .oneStopText {
+  .oneStopLink {
     display: none;
   }
 }
 
 @media screen and (max-width:580px) {
   .orgBox {
-    display: none;
-  }
-}
-
-@media screen and (max-width: 869px) {
-  .nceiMenu {
     display: none;
   }
 }

@@ -11,6 +11,17 @@ class HeaderComponent extends React.Component {
     super(props)
   }
 
+  render() {
+    return <div className={`pure-g ${styles.headerArea}`}>
+      <div className={`pure-u-1-4 ${styles.orgBox}`}>
+        {this.renderLogo()}
+      </div>
+      <div className={`pure-u-1 pure-u-sm-3-4`}>
+        {this.renderContent()}
+      </div>
+    </div>
+  }
+
   renderContent() {
     if (this.props.showSearch) {
       return <SearchFieldsContainer/>
@@ -27,13 +38,13 @@ class HeaderComponent extends React.Component {
 
   renderLogo() {
     if (this.props.showSearch) {
-      return <div className={styles.logoLinks}>
-        <a href="//www.noaa.gov"><img className={styles.noaaLogo} id='logo' src={noaaLogo} alt="NOAA Home"/></a>
-        <Link to='/' activeClassName="active" onlyActiveOnIndex={true}>
-          <span className={styles.oneStopText}>
-            <i className={`fa fa-stop-circle-o fa-md ${styles.oneStopText}`}/>neStop
-          </span>
-        </Link>
+      return <div>
+        <a href="//www.noaa.gov" title="NOAA Home">
+          <img className={styles.noaaLogo} id='logo' src={noaaLogo}/>
+        </a>
+        <a href="#" title="One Stop Home" className={styles.oneStopLink} onClick={() => this.props.goHome()}>
+          <i className={`fa fa-stop-circle-o fa-md`}/>neStop
+        </a>
       </div>
     }
     else {
@@ -42,21 +53,11 @@ class HeaderComponent extends React.Component {
       </a>
     }
   }
-
-  render() {
-    return <div className={`pure-g ${styles.headerArea}`}>
-      <div className={`pure-u-1-4 ${styles.orgBox}`}>
-        {this.renderLogo()}
-      </div>
-      <div className={`pure-u-1 pure-u-sm-3-4`}>
-        {this.renderContent()}
-      </div>
-    </div>
-  }
 }
 
 HeaderComponent.propTypes = {
-  showSearch: PropTypes.bool.isRequired
+  showSearch: PropTypes.bool.isRequired,
+  goHome: PropTypes.func.isRequired
 }
 
 HeaderComponent.defaultProps = {

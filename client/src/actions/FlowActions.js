@@ -19,6 +19,13 @@ export const showGranules = () => {
   }
 }
 
+export const showHome = () => {
+  return (dispatch) => {
+    dispatch(updateSearch())
+    dispatch(push(`/`))
+  }
+}
+
 export const SET_FOCUS = 'SET_FOCUS'
 export const setFocus = (id) => {
   return {

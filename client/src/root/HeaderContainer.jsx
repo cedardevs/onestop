@@ -1,12 +1,15 @@
 import { connect } from 'react-redux'
 import HeaderComponent from './HeaderComponent'
+import { showHome } from '../actions/FlowActions'
 
 const mapStateToProps = (state) => {
   return {}
 }
 
 const mapDispatchToProps = (dispatch) => {
-  return {}
+  return {
+    goHome: () => dispatch(showHome())
+  }
 }
 
 const HeaderContainer = connect(
