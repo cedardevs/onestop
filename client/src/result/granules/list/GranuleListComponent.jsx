@@ -57,15 +57,17 @@ class GranuleList extends React.Component {
                 <h3 className={styles.legendItem}>Access Protocols:</h3>
                 {legendItems}
               </div>
-              <table className={`pure-u-1 pure-table ${styles.table}`}>
-                <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Data Access</th>
-                </tr>
-                </thead>
-                <tbody>{tableRows}</tbody>
-              </table>
+              <div className={`pure-u-1`}>
+                <table className={`pure-table ${styles.table}`}>
+                  <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Data Access</th>
+                  </tr>
+                  </thead>
+                  <tbody>{tableRows}</tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
