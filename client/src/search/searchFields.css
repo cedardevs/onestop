@@ -1,0 +1,92 @@
+@import '../../style/style.css';
+
+.searchFields {
+  display: inline;
+  font-size: 1.2em;
+  height: 3em;
+  z-index: 1;
+}
+
+.searchContainer {
+  color: black;
+  margin-top: .9em;
+  width: 38%;
+  display: inline-block;
+}
+
+.mapContainer {
+  position: fixed;
+  z-index: 2;
+  left: 50%;
+  margin-top: 5%;
+  margin-left: -40%;
+  box-shadow: 14px 14px 5px rgb(0,0,0,.7);
+  border: 2px outset $color-primary;
+  height: 400px;
+  width: 80%;
+  max-width: 1000px;
+}
+
+.clearButton {
+  margin-left: -1.26em;
+  height: 1em;
+  color: grey;
+  border: none;
+  font-size: 1.2em;
+  text-shadow: none;
+  background-color: white;
+}
+
+.clearButton:hover {
+  color: #5a5a5a;
+}
+
+.clearButton:focus {
+  outline: 0;
+}
+
+.undoButton,
+.searchButton,
+.timeButton,
+.mapButton {
+  max-height: 2.2em;
+  position: relative;
+  color: white;
+  background-color: $color-primary;
+  text-shadow: 0 0 5px black;
+  margin-left: .5em;
+}
+
+.searchButton:focus {
+  outline: 0;
+}
+
+.timeButtonApplied,
+.mapButtonApplied {
+  max-height: 2.2em;
+  position: relative;
+  color: white;
+  background-color: $color-visited-light;
+  text-shadow: 0 0 5px black;
+  margin-left: .5em;
+}
+
+/* fix for large, unclickable area on button */
+.undoButton:before,
+.searchButton:before,
+.timeButton:before,
+.mapButton:before,
+.timeButtonApplied:before,
+.mapButtonApplied:before {
+  position:absolute;
+  content:'';
+  top:-1px;
+  right:-1px;
+  left:-1px;
+  bottom:-1px;
+}
+
+.icon {
+  text-align: center;
+  line-height: 64% !important;
+}

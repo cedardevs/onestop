@@ -5,7 +5,7 @@ import MapContainer from './map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
 import TextSearchField from './TextSearchFieldComponent'
 
-import styles from '../root/root.css'
+import styles from './searchFields.css'
 
 
 class SearchFieldsComponent extends React.Component {
