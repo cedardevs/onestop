@@ -1,0 +1,98 @@
+@import '../../style/style.css';
+
+input {
+  border-radius: 0 !important;
+}
+
+.headerArea {
+  border-bottom: 1px solid color($color-primary-darkest lightness(-10%));
+  background: $color-primary-darkest;
+  box-shadow: 0 10px 5px rgb(0,0,0,.7);
+  padding: $section-padding;
+  min-height: $header-height;
+}
+
+.headerLinks {
+  width: 100%;
+  font-size: 1.5em;
+  padding-top: 1.25em;
+  text-align: right;
+  a {
+    color: #d7d7d7;
+    font-weight: 300;
+    padding: 0em 0.5em;
+    transition: color 0.3s ease;
+    text-decoration: none;
+    &.selected, &:hover {
+      color: white;
+    }
+  }
+}
+
+.noaaLogo {
+  height: 60px;
+  width: 60px;
+  min-height: 60px;
+  min-width: 60px;
+  padding-right: 10px;
+  display: inline;
+}
+
+.nceiLogo {
+  height: 60px;
+  width: 272px;
+  min-height: 60px;
+  min-width: 272px;
+}
+
+.noaa,
+.doc {
+  text-decoration: none;
+  font-family: inherit;
+  color: inherit;
+  margin-right: auto;
+  font-weight: normal;
+  display: block;
+  padding-top: 10px;
+  line-height: 1.10526;
+  font-size: 1.9rem;
+}
+
+.noaa {
+  font-size: 1.3em;
+}
+
+.doc {
+  font-size: 0.8em;
+}
+
+.oneStopText {
+  color: white;
+  font-size: 1.5em;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  display: inline;
+}
+
+.logoLinks {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+@media screen and (max-width:761px) {
+  .oneStopText {
+    display: none;
+  }
+}
+
+@media screen and (max-width:580px) {
+  .orgBox {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 869px) {
+  .nceiMenu {
+    display: none;
+  }
+}
