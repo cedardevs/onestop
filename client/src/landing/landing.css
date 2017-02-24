@@ -77,29 +77,40 @@ h1, h2, h3, h4, h5 {
   line-height: 1.5;
 }
 
-.helpInfo {
-  text-align: left;
-  padding-top: 1em;
-  font-size: 1.25em;
+.helpPanel, .aboutPanel {
+  margin: 1.5em 0em;
+}
 
-  .helpText {
-    visibility: hidden;
-    position: absolute;
-    top: 13%;
-    left: 5%;
-    z-index: 1;
-    color: white;
-    background-color: black;
-    border: solid thin white;
-    border-radius: 6px;
-    padding: 0.5em 1em;
-    width: 40em;
-    text-align: left;
-  }
+.helpSection-enter {
+  opacity: 0.01;
+  transition: opacity 1s ease-in;
+}
 
-  &:hover .helpText {
-     visibility: visible;
-  }
+.helpSection-enter.helpSection-enter-active {
+  opacity: 1;
+}
+
+.helpSection-leave {
+  opacity: 1;
+  transition: opacity 1s ease-in;
+}
+
+.helpSection-leave.helpSection-leave-active {
+  opacity: 0.01;
+}
+
+.helpText {
+  color: white;
+  background-color: black;
+  border: solid thin white;
+  border-radius: 6px;
+  padding: 0.5em 1em;
+  text-align: justify;
+  font-size: 1em;
+}
+
+.helpItem {
+  margin-bottom: 0.5em;
 }
 
 .highlightB {
