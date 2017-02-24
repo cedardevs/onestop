@@ -30,8 +30,8 @@ class HeaderComponent extends React.Component {
       return <div className={`${styles.headerLinks}`}>
         <a href="#" title="Home">Home</a>
         <a href="//data.noaa.gov/dataset" title="NOAA Data Catalog">Data Catalog</a>
-        <a href="#" title="About">About</a>
-        <a href="#" title="Help">Help</a>
+        <a href="#" title="About" onClick={() => this.props.toggleAbout()}>About</a>
+        <a href="#" title="Help" onClick={() => this.props.toggleHelp()}>Help</a>
       </div>
     }
   }
@@ -57,7 +57,9 @@ class HeaderComponent extends React.Component {
 
 HeaderComponent.propTypes = {
   showSearch: PropTypes.bool.isRequired,
-  goHome: PropTypes.func.isRequired
+  goHome: PropTypes.func.isRequired,
+  toggleHelp: PropTypes.func.isRequired,
+  toggleAbout: PropTypes.func.isRequired
 }
 
 HeaderComponent.defaultProps = {

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import HeaderComponent from './HeaderComponent'
-import { showHome } from '../actions/FlowActions'
+import { showHome, toggleHelp, toggleAbout } from '../actions/FlowActions'
 
 const mapStateToProps = (state) => {
   return {}
@@ -8,7 +8,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    goHome: () => dispatch(showHome())
+    goHome: () => dispatch(showHome()),
+    toggleAbout: () => dispatch(toggleAbout()),
+    toggleHelp: () => dispatch(toggleHelp())
   }
 }
 
