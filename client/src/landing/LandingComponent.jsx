@@ -102,8 +102,8 @@ class LandingComponent extends React.Component {
     let helpContainer
     if(this.showHelp) {
       helpContainer = (
-        <div key="help" className={`pure-u-1 ${styles.helpPanel}`}>
-          <div className={`${styles.helpText}`}>
+        <div>
+          <div className={`pure-u-1 ${styles.helpText}`}>
             <b>A simple search term will suffice to start your data discovery within the OneStop portal. However,
               a few useful querying tips can help narrow down the initial returned results:</b>
             <ul className="fa-ul">
@@ -158,7 +158,13 @@ class LandingComponent extends React.Component {
 
     return (
       <div className={`pure-g ${styles.showcase}`}>
-        <ReactCSSTransitionGroup transitionName="helpSection" transitionEnterTimeout={300} transitionLeaveTimeout={300}>
+        <ReactCSSTransitionGroup
+          transitionName={ {
+            enter: styles['helpSection-enter'],
+            enterActive: styles['helpSection-enter-active'],
+            leave: styles['helpSection-leave'],
+            leaveActive: styles['helpSection-leave-active']
+          } } transitionEnterTimeout={2000} transitionLeaveTimeout={2000}>
           {helpContainer}
         </ReactCSSTransitionGroup>
         <div className={`pure-u-1 ${styles.heroHeader}`}><i className={`fa fa-stop-circle-o`}></i>neStop</div>
