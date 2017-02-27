@@ -54,14 +54,24 @@ input {
   vertical-align: top;
 }
 
-@media screen and (max-width:761px) {
+@media screen and (max-width: 761px) {
   .oneStopLink {
     display: none;
   }
 }
 
-@media screen and (max-width:580px) {
+@media screen and (max-width: 580px) {
   .orgBox {
     display: none;
+  }
+}
+
+@media screen and (max-width: 610px) {
+  .nceiLogo {
+    display: none;
+  }
+
+  .headerLinks {
+    text-align: center;
   }
 }
