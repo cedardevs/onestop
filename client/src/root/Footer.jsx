@@ -31,10 +31,15 @@ let Footer = () => {
       href: "//www.nesdis.noaa.gov/",
       text: "NESDIS"
     }, {
-      href: `${new RegExp(/^.*\//).exec(window.location.href)}landing-508`,
+      href: `${generate508link()}`,
       text: "508 Compliant Alternative Search Page"
     }
   ]
+
+  function generate508link() {
+    const landing508 = `${new RegExp(/^.*\//).exec(window.location.href)}`
+    return landing508.endsWith('508/') ? landing508 : `${landing508}508/` 
+  }
 
   return (
       <div className={styles.footer}>
