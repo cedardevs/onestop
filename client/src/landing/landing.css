@@ -3,6 +3,7 @@
 .topicContainer {
   padding: 2em;
   text-align: center;
+  height: 15em;
 
   h1, h2, h3, h4, h5 {
     text-align: left;
@@ -12,22 +13,28 @@
 .topicItem {
   display: inline-block;
   margin-right: 3em;
+  vertical-align: middle;
 
-h1, h2, h3, h4, h5 {
-  text-align: center;
-  margin-bottom: 0;
-}
-
-&:hover {
-   background-color: #0a4595;
-   border-radius: 5em;
- }
+  h1, h2, h3, h4, h5 {
+    text-align: center;
+    margin-bottom: 0;
+  }
+  img {
+    width: 6em;
+    height: 6em;
+    max-width: 100%;
+    transition: width 300ms ease, height 300ms ease;
+  }
+  img:hover {
+    width: 8em;
+    height: 8em;
+  }
 }
 
 .carouselContainer {
   padding: 10px 16px 30px;
   max-width: 500px;
-  margin: 0 2em;
+  margin: 0 auto;
   color: #fff;
   background: rgb(3,70,148,.75);
   box-shadow: 6px 8px 5px rgb(3,0,0,.7);
@@ -42,16 +49,16 @@ h1, h2, h3, h4, h5 {
   font-weight:bold;
   margin-left: 50px;
 
-&:hover   {
-  color: #dbdbdb;
-  border-radius: 5em;
+  &:hover   {
+    color: #dbdbdb;
+    border-radius: 5em;
   }
 }
 
 .containerItemImage {
-&:hover   {
-   filter: brightness(50%);
- }
+  &:hover {
+    filter: brightness(50%);
+  }
 }
 
 .showcase {
