@@ -23,11 +23,11 @@
     width: 6em;
     height: 6em;
     max-width: 100%;
-    transition: width 300ms ease, height 300ms ease;
+    transition: transform 200ms;
   }
-  img:hover {
-    width: 8em;
-    height: 8em;
+  &:hover img {
+    transform: scale(1.25);
+    transform-origin: center bottom;
   }
 }
 
