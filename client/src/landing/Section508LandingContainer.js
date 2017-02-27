@@ -31,7 +31,7 @@ const mapDispatchToProps = (dispatch) => {
     submit: () => {
       dispatch(clearFacets())
       dispatch(triggerSearch())
-      dispatch(showCollections())
+      dispatch(showCollections('508'))
     },
     // Clear all search params
     clearSearch: () => dispatch(clearSearch())
