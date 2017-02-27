@@ -3,9 +3,6 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import Slider from 'react-slick'
 import styles from './landing.css'
 import tsunami from '../../img/tsunami.jpg'
-import dem from '../../img/dem.jpg'
-import ghrsst1 from '../../img/ghrsst1.jpg'
-import ghrsst2 from '../../img/ghrsst2.jpg'
 import CollectionTile from '../result/collections/CollectionTileComponent.jsx'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 
@@ -29,65 +26,42 @@ class LandingComponent extends React.Component {
   }
 
   render() {
-
     let topics = [
-      {title: 'Economy', icon: 'money'},
-      {title: 'Climate', icon: 'globe'},
-      {title: 'Safety', icon: 'medkit'},
-      {title: 'Weather', icon: 'cloud'},
-      {title: 'Oceans', icon: 'anchor'},
-      {title: 'Air', icon: 'plane'},
-      {title: 'Solar', icon: 'sun-o'},
-      {title: 'Space', icon: 'rocket'}
+      {title: 'Weather', term: "weather", icon: require('../../img/topics/weather.png')},
+      {title: 'Climate', term: "climate", icon: require('../../img/topics/climate.png')},
+      {title: 'Satellites', term: "satellite", icon: require('../../img/topics/satellites.png')},
+      {title: 'Fisheries', term: "fisheries", icon: require('../../img/topics/fisheries.png')},
+      {title: 'Coasts', term: "coasts", icon: require('../../img/topics/coasts.png')},
+      {title: 'Oceans', term: "oceans", icon: require('../../img/topics/oceans.png')}
     ]
     topics = topics.map((topic, i) => {
-      return <div key={i} className={`${styles.topicItem}`} onClick={()=>this.search(topic.title.toLowerCase())}>
-        <i className={`fa fa-5x fa-${topic.icon}`} aria-hidden="true"/>
-        <h3>{topic.title}</h3>
+      return <div key={i} className={`${styles.topicItem}`} onClick={()=>this.search(topic.term)}>
+        <img src={topic.icon}/>
+        <h2>{topic.title}</h2>
       </div>
     })
 
-    var settings = {
+
+    const sliderSettings = {
       autoplay: true,
+      autoplaySpeed: 5000,
       dots: true,
       infinite: true,
       speed: 500,
       slidesToShow: 1,
       slidesToScroll: 1
     }
-    // Hard-coded for display, TODO: dynamically pull from API
-    const featuredContainer = <div className='container'>
-      	<Slider { ...{ ...settings, autoplaySpeed: 5000} }>
-            <div>
-                <CollectionTile height={200} width={400} margin="auto" title="Port Townsend DEM"
-                                onCardClick={()=>this.search('title:"Port Townsend"')} thumbnail={dem} />
-            </div>
-            <div>
-                <CollectionTile height={200} width={400} margin="auto" title="Tsunami"
-                                onCardClick={()=>this.search('Tsunami')} thumbnail={tsunami} />
-            </div>
-            <div>
-                <CollectionTile height={200} width={400} margin="auto" title="GHRSST"
-                                onCardClick={()=>this.search('GHRSST')} thumbnail={ghrsst1} />
-            </div>
-        </Slider>
+    let featured = [
+      {title: 'Port Townsend DEM', term: 'title:"Port Townsend"', image: require('../../img/dem.jpg')},
+      {title: 'Tsunami', term: 'tsunami', image: require('../../img/ghrsst1.jpg')},
+      {title: 'GHRSST', term: 'ghrsst', image: require('../../img/ghrsst2.jpg')}
+    ]
+    featured = featured.map((feature, i) => {
+      return <div key={i}>
+        <CollectionTile margin="auto" title={feature.title} height={200} width={400}
+                        onCardClick={()=>this.search(feature.term)} thumbnail={feature.image} />
       </div>
-    const trendingContainer = <div className='container'>
-      	<Slider { ...{ ...settings, autoplaySpeed: 5100} }>
-            <div>
-                <CollectionTile height={200} width={400} margin="auto" title="Tsunami"
-                                onCardClick={()=>this.search('tsunami')} thumbnail={tsunami} />
-            </div>
-            <div>
-                <CollectionTile height={200} width={400} margin="auto" title="GHRSST"
-                                onCardClick={()=>this.search('ghrsst')} thumbnail={ghrsst2} />
-            </div>
-            <div>
-                <CollectionTile height={200} width={400} margin="auto" title="Port Townsend DEM"
-                                onCardClick={()=>this.search('title:"Port Townsend"')} thumbnail={dem} />
-            </div>
-        </Slider>
-      </div>
+    })
 
     // TODO Populate this panel
     let aboutContainer
@@ -180,16 +154,14 @@ class LandingComponent extends React.Component {
             {topics}
           </div>
         </div>
-        <div className={`pure-u-1 pure-u-md-1-2`}>
+        <div className={`pure-u-1`}>
           <h2>Featured Data Sets:</h2>
           <div className={styles.carouselContainer}>
-            {featuredContainer}
-          </div>
-        </div>
-        <div className={`pure-u-1 pure-u-md-1-2`}>
-          <h2>Trending Data Sets:</h2>
-          <div className={styles.carouselContainer}>
-            {trendingContainer}
+            <div className='container'>
+              <Slider {...{sliderSettings}}>
+                {featured}
+              </Slider>
+            </div>
           </div>
         </div>
       </div>
