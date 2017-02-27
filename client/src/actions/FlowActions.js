@@ -20,15 +20,25 @@ export const initialize = () => {
   }
 }
 
-export const showCollections = () => {
+export const showCollections = (prefix = '') => {
   return (dispatch, getState) => {
-    dispatch(push(`collections?${encodeQueryString(getState())}`))
+    let pathname = `${prefix}/collections`
+    let locationDescriptor = {
+      pathname,
+      search: `?${encodeQueryString(getState())}`
+    }
+    dispatch(push(locationDescriptor))
   }
 }
 
-export const showGranules = () => {
+export const showGranules = (prefix = '') => {
   return (dispatch, getState) => {
-    dispatch(push(`collections/files?${encodeQueryString(getState())}`))
+    let pathname = `${prefix}/collections/files`
+    let locationDescriptor = {
+      pathname,
+      search: `?${encodeQueryString(getState())}`
+    }
+    dispatch(push(locationDescriptor))
   }
 }
 
