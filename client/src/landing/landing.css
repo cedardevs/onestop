@@ -85,24 +85,26 @@ h1, h2, h3, h4, h5 {
 
 .helpSection-enter {
   opacity: 0.01;
-  height: 0em;
+  margin-top: -100%;
 }
 
 .helpSection-enter.helpSection-enter-active {
   opacity: 1;
-  height: 30em;
-  transition: height 500ms 0ms ease-in, opacity 1000ms 500ms ease-in;
+  margin-top: 0;
+  transition: margin-top 500ms 0ms ease-in,
+              opacity 1000ms 500ms ease-in;
 }
 
 .helpSection-leave {
   opacity: 1;
-  height: 30em;
+  margin-top: 0;
 }
 
 .helpSection-leave.helpSection-leave-active {
   opacity: 0.01;
-  height: 0em;
-  transition: height 500ms 1000ms ease-in, opacity 1000ms 0ms ease-in;
+  margin-top: -100%;
+  transition: margin-top 500ms 1000ms ease-in,
+              opacity 1000ms 0ms ease-in;
 }
 
 .helpText {
