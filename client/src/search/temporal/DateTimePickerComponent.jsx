@@ -66,7 +66,7 @@ class DateTimePicker extends React.Component {
           {renderInput}
         </DatePicker>
         <button id={props.id} className={`pure-button ${styles.clearButton}`} onClick={this.handleReset}>
-          <i className="fa fa-undo fa-fw fa-lg"></i></button>
+          <i className="fa fa-times fa-fw fa-lg"></i></button>
       </div>
     )
   }
