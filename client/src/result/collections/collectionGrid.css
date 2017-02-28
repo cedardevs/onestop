@@ -3,3 +3,13 @@
   flex-wrap: wrap;
   margin-left: -20px;
 }
+
+.collectionsList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.collectionAttrs {
+  display: inline-block;
+}

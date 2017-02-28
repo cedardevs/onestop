@@ -66,7 +66,7 @@ class CollectionGrid extends React.Component {
           <li>
             <h3>{val.title}</h3>
             <div>{val.description}</div>
-            <div className={`${styles.underscored}`}>
+            <div>
               {this.renderLinks('More Info', this.getLinksByType('information', val.links), this.renderLink)}
               {this.renderLinks('Data Access', this.getLinksByType('download', val.links), this.renderLink)}
             </div>
@@ -85,7 +85,7 @@ class CollectionGrid extends React.Component {
       <div>
         Showing {this.props.returnedHits} of {this.props.totalHits} matching results
       </div>
-      <ul>
+      <ul className={styles.collectionsList}>
         {cards}
       </ul>
     </div>
