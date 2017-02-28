@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { showCollections, toggleGranuleFocus } from '../../../actions/FlowActions'
-import GranuleList from './GranuleListComponent'
+import GranuleList from './Section508GranuleListComponent'
 
 const mapStateToProps = (state) => {
   const id = state.behavior.search.selectedIds[0]
@@ -15,7 +15,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     toggleFocus: (id) => dispatch(toggleGranuleFocus(id)),
-    showCollections: () => dispatch(showCollections())
+    showCollections: () => dispatch(showCollections('508'))
   }
 }
 
