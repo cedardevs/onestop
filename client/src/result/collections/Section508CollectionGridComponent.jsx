@@ -40,6 +40,23 @@ class CollectionGrid extends React.Component {
    </li>
   }
 
+  getKeywordsByType(keywords) {
+    return keywords
+      .map((k) => k.split('>')) // split GCMD keywords apart
+      .reduce((list, keys) => list.concat(keys), []) // flatten
+      .map((k) => k.toLowerCase().trim()) // you can figure this one out
+      .filter((k, i, a) => a.indexOf(k) === i) // dedupe
+  }
+
+  renderKeyword(keyword, index) {
+    return <li className={'pure-u'} key={index}>
+      <a className={`pure-button ${styles['button-secondary']}`}
+         onClick={() => this.props.textSearch(keyword)}>
+        {keyword}
+      </a>
+    </li>
+  }
+
   render() {
     const cards = []
     _.forOwn(this.props.results, (val, key) => {
@@ -53,6 +70,13 @@ class CollectionGrid extends React.Component {
               {this.renderLinks('More Info', this.getLinksByType('information', val.links), this.renderLink)}
               {this.renderLinks('Data Access', this.getLinksByType('download', val.links), this.renderLink)}
             </div>
+            <div>
+              {this.renderLinks('Themes', this.getKeywordsByType(val['gcmdScience']), this.renderKeyword)}
+              {this.renderLinks('Places', this.getKeywordsByType(val['gcmdLocations']), this.renderKeyword)}
+            </div>
+            <a onClick={() => this.props.showGranules(key)} className={`pure-button pure-button-primary ${styles.granulesButton}`}>
+              Show Matching Files
+            </a>
           </li>
         </div>
       )

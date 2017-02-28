@@ -1,5 +1,7 @@
 import { connect } from 'react-redux'
-import { setFocus } from '../../actions/FlowActions'
+import { showCollections, showGranules, setFocus } from '../../actions/FlowActions'
+import { fetchGranules, clearGranules, clearFacets } from '../../actions/SearchRequestActions'
+import { toggleSelection, clearSelections, updateQuery, clearSearch } from '../../actions/SearchParamActions'
 import CollectionGrid from './Section508CollectionGridComponent'
 
 const mapStateToProps = (state) => {
@@ -15,6 +17,14 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onCardClick: (id) => {
       dispatch(setFocus(id))
+    },
+    showGranules: (id) => {
+      dispatch(setFocus(null))
+      dispatch(clearSelections())
+      dispatch(toggleSelection(id))
+      dispatch(clearGranules())
+      dispatch(fetchGranules())
+      dispatch(showGranules('508'))
     }
   }
 }
