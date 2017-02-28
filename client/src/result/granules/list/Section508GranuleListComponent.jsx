@@ -20,12 +20,14 @@ class GranuleList extends React.Component {
 
   render() {
     const usedProtocols = new Set()
-    const tableRows = _.map(this.props.results, (value, key) => {
+    const granuleList = _.map(this.props.results, (value, key) => {
       _.forEach(value.links, (link) => usedProtocols.add(this.identifyProtocol(link)))
-      return <tr key={key} onMouseEnter={() => this.props.toggleFocus(key)} onMouseLeave={() => this.props.toggleFocus(key)}>
-        <td>{value.title}</td>
-        <td className={styles.badgeCell}>{this.renderBadges(value.links)}</td>
-      </tr>
+      return <div key={key}>
+          <li>
+            <h3>{value.title}</h3>
+            <div>{this.renderBadges(value.links)}</div>
+          </li>
+        </div>
     })
     const legendItems = _.chain(_.toArray(usedProtocols))
         .filter()
@@ -41,33 +43,23 @@ class GranuleList extends React.Component {
     return (
       <div>
         <a className={styles.navLink} onClick={this.props.showCollections}>Return To Collection Results</a>
-        <div className={`pure-g ${styles.mainWindow}`}>
-          <div className={`pure-u-1-2 ${styles.map}`}>
-            <MapContainer style={styles.mapContainer}/>
-          </div>
-          <div className={`pure-u-1-2`}>
-            <div className={`pure-g ${styles.granuleInfo}`}>
-              <div className={`pure-u-1 ${styles.title}`}>
+        <div className={`${styles.mainWindow}`}>
+
+            <div className={`${styles.granuleInfo}`}>
+              <div className={`${styles.title}`}>
                 {this.props.selectedCollection.title}
               </div>
-              <div className={`pure-u-1 ${styles.description}`}>
+              <div className={`${styles.description}`}>
                 {this.props.selectedCollection.description}
               </div>
-              <div className={`pure-u-1 ${styles.legend}`}>
-                <h3 className={styles.legendItem}>Access Protocols:</h3>
+              <div className={`${styles.legend-508}`}>
+                <h3>Access Protocols:</h3>
                 {legendItems}
               </div>
-              <table className={`pure-u-1 pure-table ${styles.table}`}>
-                <thead>
-                <tr>
-                  <th>Title</th>
-                  <th>Data Access</th>
-                </tr>
-                </thead>
-                <tbody>{tableRows}</tbody>
-              </table>
+              <ul className={styles.granuleList}>
+                {granuleList}
+              </ul>
             </div>
-          </div>
         </div>
       </div>
     )
