@@ -63,7 +63,6 @@ class LandingComponent extends React.Component {
       </div>
     })
 
-    // TODO Populate this panel
     let aboutContainer
     if(this.showAbout) {
       aboutContainer = (

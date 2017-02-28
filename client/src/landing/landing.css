@@ -3,10 +3,12 @@
 .topicContainer {
   padding: 2em;
   text-align: center;
-  height: 15em;
+  min-height: 15em;
+  max-height: 90em;
 
   h1, h2, h3, h4, h5 {
     text-align: left;
+    margin-bottom: 1.1em;
   }
 }
 
@@ -17,7 +19,7 @@
 
   h1, h2, h3, h4, h5 {
     text-align: center;
-    margin-bottom: 0;
+    margin-bottom: 1.1em;
   }
   img {
     width: 6em;
