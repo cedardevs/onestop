@@ -88,24 +88,24 @@
 
 }
 
-.helpSection-enter {
+.infoPanel-enter {
   opacity: 0.01;
   margin-top: -100%;
 }
 
-.helpSection-enter.helpSection-enter-active {
+.infoPanel-enter.infoPanel-enter-active {
   opacity: 1;
   margin-top: 0;
   transition: margin-top 500ms 0ms ease-in,
               opacity 1000ms 500ms ease-in;
 }
 
-.helpSection-leave {
+.infoPanel-leave {
   opacity: 1;
   margin-top: 0;
 }
 
-.helpSection-leave.helpSection-leave-active {
+.infoPanel-leave.infoPanel-leave-active {
   opacity: 0.01;
   margin-top: -100%;
   transition: margin-top 500ms 1000ms ease-in,
@@ -121,6 +121,24 @@
   text-align: justify;
   font-size: 1em;
   margin: 1.5em 0em 1em;
+}
+
+.aboutText {
+  color: white;
+  background-color: black;
+  border: solid thin white;
+  border-radius: 6px;
+  font-size: 1em;
+  text-align: justify;
+  margin: 1.5em 0em 1em;
+  padding: 0.5em 1em;
+
+  p {
+    font-size: 2em;
+    text-decoration: underline;
+    text-align: center;
+    margin: 0 0 0.5em 0;
+  }
 }
 
 .helpItem {

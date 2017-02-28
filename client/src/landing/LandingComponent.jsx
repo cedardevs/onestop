@@ -67,8 +67,14 @@ class LandingComponent extends React.Component {
     let aboutContainer
     if(this.showAbout) {
       aboutContainer = (
-        <div key="about" className={`pure-u-1 ${styles.aboutPanel}`}>
-          About OneStop
+        <div>
+          <div className={`pure-u-1 ${styles.aboutText}`}>
+            <p>What Is OneStop?</p>
+            The OneStop Project is designed to improve NOAA's data discovery and access framework. Focusing on all layers of the framework
+            and not just the user interface, OneStop is addressing data format and metadata best practices, ensuring more data are available
+            through modern web services, working to improve the relevance of dataset searches, and advancing both collection-level metadata
+            management and granule level metadata systems to accommodate the wide variety and vast scale of NOAA's data.
+          </div>
         </div>
       )
     }
@@ -134,12 +140,21 @@ class LandingComponent extends React.Component {
       <div className={`pure-g ${styles.showcase}`}>
         <ReactCSSTransitionGroup
           transitionName={ {
-            enter: styles['helpSection-enter'],
-            enterActive: styles['helpSection-enter-active'],
-            leave: styles['helpSection-leave'],
-            leaveActive: styles['helpSection-leave-active']
+            enter: styles['infoPanel-enter'],
+            enterActive: styles['infoPanel-enter-active'],
+            leave: styles['infoPanel-leave'],
+            leaveActive: styles['infoPanel-leave-active']
           } } transitionEnterTimeout={2000} transitionLeaveTimeout={2000}>
           {helpContainer}
+        </ReactCSSTransitionGroup>
+        <ReactCSSTransitionGroup
+          transitionName={ {
+            enter: styles['infoPanel-enter'],
+            enterActive: styles['infoPanel-enter-active'],
+            leave: styles['infoPanel-leave'],
+            leaveActive: styles['infoPanel-leave-active']
+          } } transitionEnterTimeout={2000} transitionLeaveTimeout={2000}>
+          {aboutContainer}
         </ReactCSSTransitionGroup>
         <div className={`pure-u-1 ${styles.heroHeader}`}><i className={`fa fa-stop-circle-o`}></i>neStop</div>
         <div className={`pure-u-1 ${styles.heroText}`}>
