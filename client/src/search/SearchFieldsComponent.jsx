@@ -5,7 +5,7 @@ import MapContainer from './map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
 import TextSearchField from './TextSearchFieldComponent'
 
-import styles from '../root/root.css'
+import styles from './searchFields.css'
 
 
 class SearchFieldsComponent extends React.Component {
@@ -112,7 +112,7 @@ class SearchFieldsComponent extends React.Component {
           </ToggleDisplay>
           <button className={`pure-button ${styles.undoButton}`}
                   onClick={this.clearSearch} title="Clear Search Criteria">
-            <i className={`${styles.icon} fa fa-undo fa-2x`}></i>
+            <i className={`${styles.icon} fa fa-times fa-2x`}></i>
           </button>
           <button className={`pure-button ${styles.searchButton}`} onClick={this.submit} title="Search">
             <i className={`${styles.icon} fa fa-search fa-2x`}></i>

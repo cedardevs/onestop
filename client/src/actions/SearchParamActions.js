@@ -9,10 +9,11 @@ export const updateQuery = (searchText) => {
   }
 }
 
-export const CLEAR_SEARCH = 'clear_search'
-export const clearSearch = () => {
+export const UPDATE_SEARCH = 'update_search'
+export const updateSearch = (params) => {
   return {
-    type: CLEAR_SEARCH
+    type: UPDATE_SEARCH,
+    params
   }
 }
 
@@ -56,7 +57,6 @@ export const clearSelections = () => {
 }
 
 export const TOGGLE_FACET = 'TOGGLE_FACET'
-
 export const toggleFacet = (category, facetName, selected) => {
   return (dispatch, getState) => {
     const { selectedFacets } = getState().behavior.search

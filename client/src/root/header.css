@@ -1,0 +1,77 @@
+@import '../../style/style.css';
+
+input {
+  border-radius: 0 !important;
+}
+
+.headerArea {
+  border-bottom: 1px solid color($color-primary-darkest lightness(-10%));
+  background: $color-primary-darkest;
+  box-shadow: 0 10px 5px rgb(0,0,0,.7);
+  padding: $section-padding;
+  min-height: $header-height;
+}
+
+.headerLinks {
+  width: 100%;
+  font-size: 1.5em;
+  padding-top: 1.25em;
+  text-align: right;
+  a {
+    color: #d7d7d7;
+    font-weight: 300;
+    padding: 0em 0.5em;
+    transition: color 0.3s ease;
+    text-decoration: none;
+    &.selected, &:hover {
+      color: white;
+    }
+  }
+}
+
+.noaaLogo {
+  height: 60px;
+  width: 60px;
+  min-height: 60px;
+  min-width: 60px;
+  padding-right: 10px;
+  display: inline;
+}
+
+.nceiLogo {
+  height: 60px;
+  width: 272px;
+  min-height: 60px;
+  min-width: 272px;
+}
+
+.oneStopLink {
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 2em;
+  margin-top: 0.7em;
+  vertical-align: top;
+}
+
+@media screen and (max-width: 761px) {
+  .oneStopLink {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 580px) {
+  .orgBox {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 610px) {
+  .nceiLogo {
+    display: none;
+  }
+
+  .headerLinks {
+    text-align: center;
+  }
+}

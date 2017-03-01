@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import ErrorComponent from './ErrorComponent'
 import { push, goBack } from 'react-router-redux'
 import { clearErrors } from '../actions/ErrorActions'
-import { clearSearch } from '../actions/SearchParamActions'
+import { updateSearch } from '../actions/SearchParamActions'
 
 const mapStateToProps = (state) => {
   return {
@@ -18,7 +18,7 @@ const mapDispatchToProps = (dispatch) => {
     },
     goHome: () => {
       dispatch(clearErrors())
-      dispatch(clearSearch())
+      dispatch(updateSearch())
       dispatch(push('/'))
     }
   }

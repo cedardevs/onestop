@@ -3,31 +3,40 @@
 .topicContainer {
   padding: 2em;
   text-align: center;
+  min-height: 15em;
+  max-height: 90em;
 
   h1, h2, h3, h4, h5 {
     text-align: left;
+    margin-bottom: 1.1em;
   }
 }
 
 .topicItem {
   display: inline-block;
   margin-right: 3em;
+  vertical-align: middle;
 
-h1, h2, h3, h4, h5 {
-  text-align: center;
-  margin-bottom: 0;
-}
-
-&:hover {
-   background-color: #0a4595;
-   border-radius: 5em;
- }
+  h1, h2, h3, h4, h5 {
+    text-align: center;
+    margin-bottom: 1.1em;
+  }
+  img {
+    width: 6em;
+    height: 6em;
+    max-width: 100%;
+    transition: transform 200ms;
+  }
+  &:hover img {
+    transform: scale(1.25);
+    transform-origin: center bottom;
+  }
 }
 
 .carouselContainer {
   padding: 10px 16px 30px;
   max-width: 500px;
-  margin: 0 2em;
+  margin: 0 auto;
   color: #fff;
   background: rgb(3,70,148,.75);
   box-shadow: 6px 8px 5px rgb(3,0,0,.7);
@@ -42,16 +51,16 @@ h1, h2, h3, h4, h5 {
   font-weight:bold;
   margin-left: 50px;
 
-&:hover   {
-  color: #dbdbdb;
-  border-radius: 5em;
+  &:hover   {
+    color: #dbdbdb;
+    border-radius: 5em;
   }
 }
 
 .containerItemImage {
-&:hover   {
-   filter: brightness(50%);
- }
+  &:hover {
+    filter: brightness(50%);
+  }
 }
 
 .showcase {
@@ -66,46 +75,80 @@ h1, h2, h3, h4, h5 {
 .heroHeader {
   text-align: center;
   font-size: 3.5em;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  margin-top: 0.5em;
 }
 
 .heroText {
   text-align: center;
   font-size: 1.5em;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   font-style: italic;
   line-height: 1.5;
 }
 
-.helpInfo {
-  text-align: left;
-  padding-top: 1em;
-  font-size: 1.25em;
-
-  .helpText {
-    visibility: hidden;
-    position: absolute;
-    top: 13%;
-    left: 5%;
-    z-index: 1;
-    color: white;
-    background-color: black;
-    border: solid thin white;
-    border-radius: 6px;
-    padding: 0.5em 1em;
-    width: 40em;
-    text-align: left;
-  }
-
-  &:hover .helpText {
-     visibility: visible;
-  }
+.infoPanel-enter {
+  opacity: 0.01;
+  margin-top: -100%;
 }
 
-.highlightB {
-  color: $color-primary;
+.infoPanel-enter.infoPanel-enter-active {
+  opacity: 1;
+  margin-top: 0;
+  transition: margin-top 300ms 0ms ease-out,
+              opacity 200ms 300ms ease-out;
 }
 
-.highlightP {
-  color: $color-visited-light;
+.infoPanel-leave {
+  opacity: 1;
+  margin-top: 0;
+}
+
+.infoPanel-leave.infoPanel-leave-active {
+  opacity: 0.01;
+  margin-top: -100%;
+  transition: opacity 200ms 0ms ease-out,
+              margin-top 300ms 200ms ease-out;
+
+}
+
+.infoText {
+  background-color: black;
+  border: solid thin white;
+  border-radius: 6px;
+  padding: 0.5em 1em;
+  text-align: justify;
+  font-size: 1.2em;
+  margin: 1.5em 0 1em;
+
+  & > h1 {
+    text-align: center;
+    font-style: italic;
+    margin: 0 0 0.5em 0;
+  }
+  li {
+    margin-bottom: 1em;
+  }
+  .iconButton {
+    background-color: $color-primary;
+    padding: 0.2em 0.5em;
+    margin-left: 0.3em;
+    border-radius: 2px;
+    text-shadow: 0 0 5px black;;
+  }
+  .highlightB {
+    color: $color-primary;
+    font-weight: bold;
+  }
+  .highlightP {
+    color: $color-visited-light;
+    font-weight: bold;
+  }
+  ul.examples {
+    margin: 0.5em 0;
+    list-style-type: disc;
+    font-style: italic;
+    color: #d7d7d7;
+    li {
+      margin-bottom: 0;
+    }
+  }
 }

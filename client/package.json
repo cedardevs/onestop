@@ -5,7 +5,7 @@
   "repository": "ssh://git@github.com:cires-ncei/onestop.git",
   "license": "GPL-2.0",
   "scripts": {
-    "dev": "webpack-dev-server --hot --inline --progress --colors & find ./test -name '*Spec.js' | xargs mocha -R spec --watch",
+    "dev": "webpack-dev-server --hot --inline --progress --no-info --colors & find ./test -name '*Spec.js' | xargs mocha -R spec --watch",
     "test": "find ./test -name '*Spec.js' | xargs mocha -R spec",
     "build": "npm install && npm test && NODE_ENV=production webpack",
     "clean": "rm -rf dist"
@@ -13,6 +13,7 @@
   "dependencies": {
     "esri-leaflet": "^1.0.4",
     "font-awesome": "^4.6.3",
+    "geojson-validation": "^0.1.6",
     "isomorphic-fetch": "^2.2.1",
     "leaflet": "^0.7.7",
     "leaflet-draw": "^0.3.0",
@@ -22,7 +23,8 @@
     "rc-calendar": "^7.5.1",
     "rc-collapse": "^1.6.6",
     "rc-time-picker": "^2.2.1",
-    "react": "^15.4.0",
+    "react": "^15.4.2",
+    "react-addons-css-transition-group": "^15.4.2",
     "react-day-picker": "^2.4.1",
     "react-dom": "^15.4.0",
     "react-redux": "^4.4.5",

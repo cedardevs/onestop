@@ -9,8 +9,9 @@ import config from './domain/config'
 import results from './domain/results'
 
 import cardDetails from './ui/cardDetails'
-import loading from './ui/loading'
 import granuleDetails from './ui/granuleDetails'
+import toggles from './ui/toggles'
+import loading from './ui/loading'
 
 const domain = combineReducers({
   config,
@@ -19,8 +20,9 @@ const domain = combineReducers({
 
 const ui = combineReducers({
   cardDetails,
+  granuleDetails,
   loading,
-  granuleDetails
+  toggles
 })
 
 const behavior = combineReducers({
