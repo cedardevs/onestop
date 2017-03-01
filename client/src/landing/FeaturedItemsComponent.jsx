@@ -10,7 +10,6 @@ class FeaturedItemsComponent extends React.Component {
       {title: 'Tsunami', term: 'tsunami', image: require('../../img/tsunami.jpg')},
       {title: 'GHRSST', term: 'ghrsst', image: require('../../img/ghrsst2.jpg')}
     ]
-    this.setupTimer()
 
     this.state = {current: 0}
   }
@@ -63,6 +62,14 @@ class FeaturedItemsComponent extends React.Component {
 
   cancelTimer() {
     clearTimeout(this.timer)
+  }
+
+  componentWillMount() {
+    this.setupTimer()
+  }
+
+  componentWillUnmount() {
+    this.cancelTimer()
   }
 }
 
