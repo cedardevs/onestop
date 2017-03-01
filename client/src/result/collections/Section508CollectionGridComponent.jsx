@@ -8,36 +8,31 @@ class CollectionGrid extends React.Component {
     super(props)
   }
 
-  getLinks() {
-    return this.props && this.props.item && this.props.item.links || []
-  }
-
   getLinksByType(type, links) {
     return links.filter((link) => link.linkFunction === type)
   }
 
   renderLinks(label, links, linkRenderer) {
-    if (!links || links.length === 0) {
-      return <div></div>
-    }
+    if (!links || links.length === 0) { return <div></div> }
 
-    return <div className={'pure-g'}>
-      <div className={`pure-u-1-6 ${styles.linkRow}`}>
+    return <div>
+      <div>
         <span>{label}</span>
       </div>
-      <div className={`pure-u-5-6 ${styles.linkRow}`}>
-        <ul className={'pure-g'}>{links.map(linkRenderer)}</ul>
+      <div>
+        {links.map(linkRenderer)}
       </div>
     </div>
   }
 
   renderLink(link, index) {
-   return <li className={'pure-u'} key={index}>
-     <a href={link.linkUrl} target="_blank"
+    const { linkName, linkProtocol, linkUrl } = link
+    return <div key={index} className={`${styles.linkRow}`}>
+      <a href={linkUrl} target="_blank"
              className={`pure-button pure-button-primary`}>
-       {link.linkProtocol || 'Link'}
-     </a>
-   </li>
+       {linkProtocol || linkName || 'Link'}
+      </a>
+   </div>
   }
 
   getKeywordsByType(keywords) {
@@ -49,18 +44,17 @@ class CollectionGrid extends React.Component {
   }
 
   renderKeyword(keyword, index) {
-    return <li className={'pure-u'} key={index}>
+    return <div key={index} className={`${styles.linkRow}`}>
       <a className={`pure-button ${styles['button-secondary']}`}
          onClick={() => this.props.textSearch(keyword)}>
         {keyword}
       </a>
-    </li>
+    </div>
   }
 
   render() {
     const cards = []
     _.forOwn(this.props.results, (val, key) => {
-      console.log(val)
       cards.push(
         <div key={key}>
           <li>
