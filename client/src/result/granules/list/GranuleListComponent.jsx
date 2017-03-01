@@ -87,9 +87,8 @@ class GranuleList extends React.Component {
 
   renderBadge({protocol, url}) {
     return (
-        <a href={url} key={url} title={url}
-           className={`${styles.badge}`}
-           style={{background: protocol.color}}>
+        <a href={url} key={url} title={url} target="_blank"
+           className={`${styles.badge}`} style={{background: protocol.color}}>
           {protocol.id}
         </a>
     )
