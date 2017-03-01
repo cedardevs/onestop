@@ -20,10 +20,9 @@ class FeaturedItemsComponent extends React.Component {
         <ul className={`${styles.titles}`}>
           {this.featured.map((f, i) =>
               <li key={i} className={`${this.selectedClass(i)}`}
-                  onClick={() => this.onClick(i)}
                   onMouseEnter={() => this.onEnter(i)}
                   onMouseLeave={() => this.onLeave()}>
-                {f.title}
+                <a onClick={() => this.onClick(i)}>{f.title}</a>
               </li>
           )}
         </ul>
