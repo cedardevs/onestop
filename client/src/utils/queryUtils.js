@@ -59,7 +59,7 @@ const assembleSelectedCollectionsFilters = ({selectedIds}) => {
 
 export const encodeQueryString = (state) => {
   const searchParams = state && state.behavior && state.behavior.search
-  if (_.isEmpty(searchParams)) {
+  if (_.every(searchParams, (e) => { return(_.isEmpty(e)) })) {
     return ''
   }
 

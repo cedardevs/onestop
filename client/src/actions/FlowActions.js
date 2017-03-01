@@ -2,14 +2,17 @@ import _ from 'lodash'
 import watch from 'redux-watch'
 import { push } from 'react-router-redux'
 import { encodeQueryString, decodeQueryString } from '../utils/queryUtils'
-import { triggerSearch, fetchGranules } from './SearchRequestActions'
+import { triggerSearch, fetchGranules, clearCollections } from './SearchRequestActions'
 import { updateSearch } from './SearchParamActions'
 import { fetchConfig } from './ConfigActions'
 import store from '../store'
 
 export const showCollections = () => {
   return (dispatch, getState) => {
-    dispatch(push(`collections?${encodeQueryString(getState())}`))
+    let query = encodeQueryString(getState())
+    if(!_.isEmpty(query)) {
+      dispatch(push(`collections?${encodeQueryString(getState())}`))
+    }
   }
 }
 
@@ -23,6 +26,7 @@ export const showHome = () => {
   return (dispatch) => {
     dispatch(updateSearch())
     dispatch(push(`/`))
+    dispatch(clearCollections())
   }
 }
 
