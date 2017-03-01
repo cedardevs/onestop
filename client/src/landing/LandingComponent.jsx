@@ -1,9 +1,7 @@
 import React from 'react'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
-import Slider from 'react-slick'
 import styles from './landing.css'
-import tsunami from '../../img/tsunami.jpg'
-import CollectionTile from '../result/collections/CollectionTileComponent.jsx'
+import FeaturedItemsComponent from './FeaturedItemsComponent'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 
 class LandingComponent extends React.Component {
@@ -41,27 +39,6 @@ class LandingComponent extends React.Component {
       </div>
     })
 
-    const sliderSettings = {
-      autoplay: true,
-      autoplaySpeed: 5000,
-      dots: true,
-      infinite: true,
-      speed: 500,
-      slidesToShow: 1,
-      slidesToScroll: 1
-    }
-    let featured = [
-      {title: 'Port Townsend DEM', term: 'title:"Port Townsend"', image: require('../../img/dem.jpg')},
-      {title: 'Tsunami', term: 'tsunami', image: require('../../img/ghrsst1.jpg')},
-      {title: 'GHRSST', term: 'ghrsst', image: require('../../img/ghrsst2.jpg')}
-    ]
-    featured = featured.map((feature, i) => {
-      return <div key={i}>
-        <CollectionTile margin="auto" title={feature.title} height={200} width={400}
-                        onCardClick={()=>this.search(feature.term)} thumbnail={feature.image} />
-      </div>
-    })
-
     return (
       <div className={`pure-g ${styles.showcase}`}>
         <ReactCSSTransitionGroup
@@ -88,12 +65,8 @@ class LandingComponent extends React.Component {
         </div>
         <div className={`pure-u-1`}>
           <h2>Featured Data Sets:</h2>
-          <div className={styles.carouselContainer}>
-            <div className='container'>
-              <Slider {...{sliderSettings}}>
-                {featured}
-              </Slider>
-            </div>
+          <div className={`${styles.featuredContainer}`}>
+            <FeaturedItemsComponent doSearch={this.search.bind(this)}/>
           </div>
         </div>
       </div>

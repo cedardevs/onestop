@@ -12,6 +12,17 @@
   }
 }
 
+.featuredContainer {
+  width: 60em;
+  margin: 0 auto;
+  display: block;
+
+  h1, h2, h3, h4, h5 {
+    text-align: left;
+    margin-bottom: 1.1em;
+  }
+}
+
 .topicItem {
   display: inline-block;
   margin-right: 3em;
@@ -38,7 +49,7 @@
   max-width: 500px;
   margin: 0 auto;
   color: #fff;
-  background: rgb(3,70,148,.75);
+  background: $color-primary-darkest;
   box-shadow: 6px 8px 5px rgb(3,0,0,.7);
   img {
     margin: 0 auto;
@@ -107,7 +118,6 @@
   margin-top: -100%;
   transition: opacity 200ms 0ms ease-out,
               margin-top 300ms 200ms ease-out;
-
 }
 
 .infoText {
