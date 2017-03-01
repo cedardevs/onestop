@@ -38,7 +38,7 @@
   max-width: 500px;
   margin: 0 auto;
   color: #fff;
-  background: rgb(3,70,148,.75);
+  background: $color-primary-darkest;
   box-shadow: 6px 8px 5px rgb(3,0,0,.7);
   img {
     margin: 0 auto;
