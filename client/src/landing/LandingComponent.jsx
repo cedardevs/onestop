@@ -41,7 +41,6 @@ class LandingComponent extends React.Component {
       </div>
     })
 
-
     const sliderSettings = {
       autoplay: true,
       autoplaySpeed: 5000,
@@ -63,78 +62,6 @@ class LandingComponent extends React.Component {
       </div>
     })
 
-    let aboutContainer
-    if(this.showAbout) {
-      aboutContainer = (
-        <div>
-          <div className={`pure-u-1 ${styles.aboutText}`}>
-            <p>What Is OneStop?</p>
-            The OneStop Project is designed to improve NOAA's data discovery and access framework. Focusing on all layers of the framework
-            and not just the user interface, OneStop is addressing data format and metadata best practices, ensuring more data are available
-            through modern web services, working to improve the relevance of dataset searches, and advancing both collection-level metadata
-            management and granule level metadata systems to accommodate the wide variety and vast scale of NOAA's data.
-          </div>
-        </div>
-      )
-    }
-
-    let helpContainer
-    if(this.showHelp) {
-      helpContainer = (
-        <div>
-          <div className={`pure-u-1 ${styles.helpText}`}>
-            <b>A simple search term will suffice to start your data discovery within the OneStop portal. However,
-              a few useful querying tips can help narrow down the initial returned results:</b>
-            <ul className="fa-ul">
-              <li className={styles.helpItem}><i className={`fa-li fa fa-check-square-o`}></i>
-                Use the <i className={`fa fa-clock-o ${styles.highlightB}`}></i> time and <i
-                  className={`fa fa-globe ${styles.highlightB}`}></i> space
-                filters (located to the right of the input box) to limit results to only those that <u>intersect</u> the
-                given temporal and/or spatial
-                constraints. If a filter has been applied, the button background color will change from <i
-                  className={styles.highlightB}>blue</i> to
-                <i className={styles.highlightP}> purple</i>.
-              </li>
-              <li className={styles.helpItem}><i className="fa-li fa fa-check-square-o"></i>
-                If you're searching for a phrase, wrap it in double quotes for an exact match. Note, capitalization is
-                not important.<br/>
-                Example search: <i className={styles.highlightP}>"sea surface temperature"</i>
-              </li>
-              <li className={styles.helpItem}><i className="fa-li fa fa-check-square-o"></i>
-                Use boolean operators to specify whether terms in your query are optional, required, or must not appear
-                in results. The most straightforward
-                operators to use are <i className={styles.highlightB}>+ (must be present) and - (must not be
-                  present)</i>. A lack of an operator designates
-                a term as optional. Usage of double quotes allows for multi-word terms. The operators <i
-                  className={styles.highlightB}>OR, AND, and AND NOT </i>
-                can also be used; however, these introduce operator precedence which makes for a more complicated query
-                structure. Note that a hyphen character
-                within a word will be ignored and the query will be treated like two terms.<br/>
-                Example search: <i className={styles.highlightP}>temperature pressure +air -sea</i><br/>
-                Example search (same logic as above): <i className={styles.highlightP}>((temperature AND air) OR
-                  (pressure AND air) OR air) AND NOT sea</i>
-              </li>
-              <li className={styles.helpItem}><i className="fa-li fa fa-check-square-o"></i>
-                Not sure if you misspelled something? Not to worry, simply place the fuzzy operator after the word
-                you're unsure on.<br/>
-                Example search: <i className={styles.highlightP}>ghrst~</i>
-              </li>
-              <li className={styles.helpItem}><i className="fa-li fa fa-check-square-o"></i>
-                The title, description, and keywords of a data set's metadata can be searched directly by appending the
-                field name and a colon to
-                the beginning of your search term (remember -- no spaces before or after the colon and wrap multi-word
-                terms in parentheses). Exact
-                matches can be requested here as well.<br/>
-                Example search 1: <i className={styles.highlightP}>description:lakes</i><br/>
-                Example search 2: <i className={styles.highlightP}>title:"Tsunami Inundation"</i><br/>
-                Example search 3: <i className={styles.highlightP}>keywords:(ice deformation)</i>
-              </li>
-            </ul>
-          </div>
-        </div>
-      )
-    }
-
     return (
       <div className={`pure-g ${styles.showcase}`}>
         <ReactCSSTransitionGroup
@@ -143,17 +70,8 @@ class LandingComponent extends React.Component {
             enterActive: styles['infoPanel-enter-active'],
             leave: styles['infoPanel-leave'],
             leaveActive: styles['infoPanel-leave-active']
-          } } transitionEnterTimeout={2000} transitionLeaveTimeout={2000}>
-          {helpContainer}
-        </ReactCSSTransitionGroup>
-        <ReactCSSTransitionGroup
-          transitionName={ {
-            enter: styles['infoPanel-enter'],
-            enterActive: styles['infoPanel-enter-active'],
-            leave: styles['infoPanel-leave'],
-            leaveActive: styles['infoPanel-leave-active']
-          } } transitionEnterTimeout={2000} transitionLeaveTimeout={2000}>
-          {aboutContainer}
+          } } transitionEnterTimeout={500} transitionLeaveTimeout={500}>
+          {this.renderInfo()}
         </ReactCSSTransitionGroup>
         <div className={`pure-u-1 ${styles.heroHeader}`}><i className={`fa fa-stop-circle-o`}></i>neStop</div>
         <div className={`pure-u-1 ${styles.heroText}`}>
@@ -180,6 +98,90 @@ class LandingComponent extends React.Component {
         </div>
       </div>
     )
+  }
+
+  renderInfo() {
+    if (this.showAbout) { return this.renderAbout() }
+    if (this.showHelp) { return this.renderHelp() }
+  }
+
+  renderAbout() {
+    return <div>
+      <div className={`pure-u-1 ${styles.infoText}`}>
+        <h1>What Is OneStop?</h1>
+        The OneStop Project is designed to improve NOAA's data discovery and access framework. Focusing on all layers of the framework
+        and not just the user interface, OneStop is addressing data format and metadata best practices, ensuring more data are available
+        through modern web services, working to improve the relevance of dataset searches, and advancing both collection-level metadata
+        management and granule level metadata systems to accommodate the wide variety and vast scale of NOAA's data.
+      </div>
+    </div>
+  }
+
+  renderHelp() {
+    return <div>
+      <div className={`pure-u-1 ${styles.infoText}`}>
+        <h1>How to use this interface:</h1>
+        <p>
+          <b>To get started, just type a term into the search box below and hit the search button:</b>
+          <i className={`${styles.iconButton} fa fa-search`} aria-hidden="true"></i>
+        </p>
+        <p>
+          <b>Here are a few querying tips to help narrow your results down further:</b>
+        </p>
+        <ul className="fa-ul">
+          <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>
+            Use the <i className={`fa fa-clock-o ${styles.iconButton}`} aria-hidden="true"></i> time and
+            <i className={`fa fa-globe ${styles.iconButton}`} aria-hidden="true"></i> space filters
+            (to the right of the input box) to limit results to only those that <u>intersect</u> the given constraints.
+            <br/>
+            If a filter has been applied, the button will change from
+            <i className={styles.highlightB} aria-hidden="true"> blue </i> to
+            <i className={styles.highlightP} aria-hidden="true"> purple</i>.
+          </li>
+          <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>
+            Wrap a search phrase in double quotes for an exact match:
+            <ul className={`${styles.examples}`}>
+              <li>"sea surface temperature"</li>
+            </ul>
+            Note that capitalization is ignored.
+          </li>
+          <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>
+            Use <em>+</em> to indicate that a search term <em>must</em> appear in the results and <em>-</em> to
+            indicate that it <em>must not</em>.
+            <ul className={`${styles.examples}`}>
+              <li>temperature pressure +air -sea</li>
+            </ul>
+            Note that this causes <em>-</em> characters within terms to be ignored;
+            use double quotes to search for a term with a hyphen in it.
+          </li>
+          <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>
+            Using <em>AND</em>, <em>OR</em>, and <em>AND NOT</em> provides similar logic to <em>+</em> and <em>-</em>,
+            but they introduce operator precedence which makes for a more complicated query structure.
+            The following example gives the same results as the previous one:
+            <ul className={`${styles.examples}`}>
+              <li>((temperature AND air) OR (pressure AND air) OR air) AND NOT sea</li>
+            </ul>
+          </li>
+          <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>
+            Not sure if you misspelled something? Not to worry, simply place the fuzzy operator after the word
+            you're unsure on:
+            <ul className={`${styles.examples}`}>
+              <li>ghrst~</li>
+            </ul>
+          </li>
+          <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>
+            The title, description, and keywords of a data set's metadata can be searched directly by appending the
+            field name and a colon to the beginning of your search term (remember -- no spaces before or after the
+            colon and wrap multi-word terms in parentheses). Exact matches can be requested here as well:
+            <ul className={`${styles.examples}`}>
+              <li>description:lakes</li>
+              <li>title:"Tsunami Inundation"</li>
+              <li>keywords:(ice deformation)</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
   }
 
   componentDidMount() {

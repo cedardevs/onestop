@@ -85,11 +85,6 @@
   line-height: 1.5;
 }
 
-.helpPanel,
-.aboutPanel {
-
-}
-
 .infoPanel-enter {
   opacity: 0.01;
   margin-top: -100%;
@@ -98,8 +93,8 @@
 .infoPanel-enter.infoPanel-enter-active {
   opacity: 1;
   margin-top: 0;
-  transition: margin-top 500ms 0ms ease-in,
-              opacity 1000ms 500ms ease-in;
+  transition: margin-top 300ms 0ms ease-out,
+              opacity 200ms 300ms ease-out;
 }
 
 .infoPanel-leave {
@@ -110,47 +105,50 @@
 .infoPanel-leave.infoPanel-leave-active {
   opacity: 0.01;
   margin-top: -100%;
-  transition: margin-top 500ms 1000ms ease-in,
-              opacity 1000ms 0ms ease-in;
+  transition: opacity 200ms 0ms ease-out,
+              margin-top 300ms 200ms ease-out;
+
 }
 
-.helpText {
-  color: white;
+.infoText {
   background-color: black;
   border: solid thin white;
   border-radius: 6px;
   padding: 0.5em 1em;
   text-align: justify;
-  font-size: 1em;
-  margin: 1.5em 0em 1em;
-}
+  font-size: 1.2em;
+  margin: 1.5em 0 1em;
 
-.aboutText {
-  color: white;
-  background-color: black;
-  border: solid thin white;
-  border-radius: 6px;
-  font-size: 1em;
-  text-align: justify;
-  margin: 1.5em 0em 1em;
-  padding: 0.5em 1em;
-
-  p {
-    font-size: 2em;
-    text-decoration: underline;
+  & > h1 {
     text-align: center;
+    font-style: italic;
     margin: 0 0 0.5em 0;
   }
-}
-
-.helpItem {
-  margin-bottom: 0.5em;
-}
-
-.highlightB {
-  color: $color-primary;
-}
-
-.highlightP {
-  color: $color-visited-light;
+  li {
+    margin-bottom: 1em;
+  }
+  .iconButton {
+    background-color: $color-primary;
+    padding: 0.2em 0.5em;
+    margin-left: 0.3em;
+    border-radius: 2px;
+    text-shadow: 0 0 5px black;;
+  }
+  .highlightB {
+    color: $color-primary;
+    font-weight: bold;
+  }
+  .highlightP {
+    color: $color-visited-light;
+    font-weight: bold;
+  }
+  ul.examples {
+    margin: 0.5em 0;
+    list-style-type: disc;
+    font-style: italic;
+    color: #d7d7d7;
+    li {
+      margin-bottom: 0;
+    }
+  }
 }
