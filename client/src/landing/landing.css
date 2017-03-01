@@ -12,6 +12,17 @@
   }
 }
 
+.featuredContainer {
+  width: 60em;
+  margin: 0 auto;
+  display: block;
+
+  h1, h2, h3, h4, h5 {
+    text-align: left;
+    margin-bottom: 1.1em;
+  }
+}
+
 .topicItem {
   display: inline-block;
   margin-right: 3em;
@@ -107,7 +118,6 @@
   margin-top: -100%;
   transition: opacity 200ms 0ms ease-out,
               margin-top 300ms 200ms ease-out;
-
 }
 
 .infoText {

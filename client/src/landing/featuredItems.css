@@ -1,0 +1,31 @@
+@import '../../style/style.css';
+
+.featured {
+  h2 {
+    padding-left: 2em;
+  }
+  .title {
+    text-align: right;
+    font-weight: bold;
+    font-size: 1.25em;
+    padding: 1em;
+    background: #007ec6;
+    cursor: pointer;
+  }
+  .image {
+    position: absolute;
+    padding: 3em;
+    opacity: 0;
+    z-index: 0;
+    background: #007ec6;
+    cursor: pointer;
+  }
+  .selected {
+    background: #263f78;
+  }
+  .image.selected {
+    opacity: 1;
+    z-index: 10;
+    transition: opacity 500ms;
+  }
+}
