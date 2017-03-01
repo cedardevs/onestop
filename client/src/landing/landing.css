@@ -4,7 +4,6 @@
   padding: 2em;
   text-align: center;
   min-height: 15em;
-  max-height: 90em;
 
   h1, h2, h3, h4, h5 {
     text-align: left;
@@ -13,7 +12,8 @@
 }
 
 .featuredContainer {
-  width: 60em;
+  max-width: 60em;
+  min-height: 30em;
   margin: 0 auto;
   display: block;
 
@@ -77,6 +77,7 @@
 .showcase {
   margin: 0 auto;
   width: 90%;
+  max-width: 70em;
 }
 
 .searchComponent {

@@ -16,10 +16,11 @@ class FeaturedItemsComponent extends React.Component {
 
   render() {
     return <div className={`pure-g ${styles.featured}`}>
-      <div className={`pure-u-1-4 ${styles.titles}`}>
+      <div className={`pure-u-1 pure-u-md-1-4 ${styles.titles}`}>
         <ul className={`${styles.titles}`}>
           {this.featured.map((f, i) =>
               <li key={i} className={`${this.selectedClass(i)}`}
+                  onClick={() => this.onClick(i)}
                   onMouseEnter={() => this.onEnter(i)}
                   onMouseLeave={() => this.onLeave()}>
                 {f.title}
@@ -27,11 +28,11 @@ class FeaturedItemsComponent extends React.Component {
           )}
         </ul>
       </div>
-      <div className={`pure-u-3-4 ${styles.images}`}>
+      <div className={`pure-u-md-3-4 ${styles.images}`}>
         {this.featured.map((f, i) =>
             <img key={i} src={f.image} title={f.title}
                  className={`${styles.image} ${this.selectedClass(i)}`}
-                 onClick={() => this.props.doSearch(f.term)}
+                 onClick={() => this.onClick(i)}
                  onMouseEnter={() => this.onEnter(i)}
                  onMouseLeave={() => this.onLeave()}/>
         )}
@@ -41,6 +42,12 @@ class FeaturedItemsComponent extends React.Component {
 
   selectedClass(i) {
     return i === this.state.current ? styles.selected : ''
+  }
+
+  onClick(i) {
+    if (this.state.current === i) {
+      this.props.doSearch(this.featured[i].term)
+    }
   }
 
   onEnter(i) {

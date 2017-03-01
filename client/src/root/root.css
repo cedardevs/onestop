@@ -15,8 +15,7 @@
 
 .footer {
     background: $color-primary-darkest;
-    position: relative;
-    height: $footer-height;
+    min-height: $footer-height;
     clear: both;
     padding: $section-padding;
 }
