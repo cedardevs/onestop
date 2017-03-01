@@ -10,6 +10,7 @@ class FeaturedItemsComponent extends React.Component {
       {title: 'Tsunami', term: 'tsunami', image: require('../../img/tsunami.jpg')},
       {title: 'GHRSST', term: 'ghrsst', image: require('../../img/ghrsst2.jpg')}
     ]
+    this.setupTimer()
 
     this.state = {current: 0}
   }
@@ -20,7 +21,8 @@ class FeaturedItemsComponent extends React.Component {
         <ul className={`${styles.titles}`}>
           {this.featured.map((f, i) =>
               <li key={i} className={`${this.selectedClass(i)}`}
-                  onMouseEnter={() => this.setState({current: i})}>
+                  onMouseEnter={() => this.onEnter(i)}
+                  onMouseLeave={() => this.onLeave()}>
                 {f.title}
               </li>
           )}
@@ -30,7 +32,9 @@ class FeaturedItemsComponent extends React.Component {
         {this.featured.map((f, i) =>
             <img key={i} src={f.image} title={f.title}
                  className={`${styles.image} ${this.selectedClass(i)}`}
-                 onClick={() => this.props.doSearch(f.term)}/>
+                 onClick={() => this.props.doSearch(f.term)}
+                 onMouseEnter={() => this.onEnter(i)}
+                 onMouseLeave={() => this.onLeave()}/>
         )}
       </div>
     </div>
@@ -38,6 +42,27 @@ class FeaturedItemsComponent extends React.Component {
 
   selectedClass(i) {
     return i === this.state.current ? styles.selected : ''
+  }
+
+  onEnter(i) {
+    this.cancelTimer()
+    this.setState({current: i})
+  }
+
+  onLeave() {
+    this.setupTimer()
+  }
+
+  setupTimer() {
+    this.timer = setTimeout((self) => {
+      const newCurrent = (self.state.current + 1) % self.featured.length
+      self.setState({current: newCurrent})
+      self.setupTimer()
+    }, 4000, this)
+  }
+
+  cancelTimer() {
+    clearTimeout(this.timer)
   }
 }
 
