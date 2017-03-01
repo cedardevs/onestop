@@ -103,11 +103,10 @@ class SearchIntegrationTests extends Specification {
 
     and: 'The correct number of facets is returned'
     def aggs = result.body.meta.facets
-    aggs.size() == 7
+    aggs.size() == 6
 
     and: 'The facets are as expected'
     aggs.science != null
-    aggs.locations != null
     aggs.instruments != null
     aggs.platforms != null
     aggs.projects != null

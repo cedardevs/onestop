@@ -312,7 +312,7 @@ class SearchRequestParserServiceTest extends Specification {
 
     then:
     // This is about all that can be verified w/o changing the List to a Map unnecessarily...
-    aggs.size() == 7 // 7 GCMD types
+    aggs.size() == 6 // 6 GCMD types
     aggs.each { a ->
       a.class == TermsBuilder
     }
@@ -324,7 +324,7 @@ class SearchRequestParserServiceTest extends Specification {
 
     then:
     // This is about all that can be verified w/o changing the List to a Map unnecessarily...
-    aggs.size() == 7 // 7 GCMD types
+    aggs.size() == 6 // 6 GCMD types
     aggs.each { a ->
       a.class == TermsBuilder
     }
