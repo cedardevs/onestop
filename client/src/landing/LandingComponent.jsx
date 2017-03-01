@@ -120,7 +120,7 @@ class LandingComponent extends React.Component {
           </li>
           <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>
             Use <em>+</em> to indicate that a search term <em>must</em> appear in the results and <em>-</em> to
-            indicate that it <em>must not</em>.
+            indicate that it <em>must not</em>. Terms without a <em>+</em> or <em>-</em> are considered optional.
             <ul className={`${styles.examples}`}>
               <li>temperature pressure +air -sea</li>
             </ul>
