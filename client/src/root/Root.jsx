@@ -22,7 +22,7 @@ class RootComponent extends React.Component {
       <div className={styles.mainContent}>
         <BannerContainer/>
         <DetailContainer/>
-        <HeaderContainer showSearch={this.location !== '/'}/>
+        <HeaderContainer showSearch={this.showSearch()} showMenu={this.showMenu()}/>
         <div className={styles.main}>
           <LoadingContainer/>
           {this.props.children}
@@ -32,6 +32,14 @@ class RootComponent extends React.Component {
         <Footer/>
      </div>
    </div>
+  }
+
+  showSearch() {
+    return this.location !== '/' && this.location.indexOf('508') === -1
+  }
+
+  showMenu() {
+    return this.location === '/'
   }
 }
 

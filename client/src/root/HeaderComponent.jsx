@@ -26,7 +26,7 @@ class HeaderComponent extends React.Component {
     if (this.props.showSearch) {
       return <SearchFieldsContainer/>
     }
-    else {
+    else if (this.props.showMenu) {
       return <div className={`${styles.headerLinks}`}>
         <a href="#" title="Home">Home</a>
         <a href="//data.noaa.gov/dataset" title="NOAA Data Catalog">Data Catalog</a>
@@ -57,13 +57,15 @@ class HeaderComponent extends React.Component {
 
 HeaderComponent.propTypes = {
   showSearch: PropTypes.bool.isRequired,
+  showMenu: PropTypes.bool.isRequired,
   goHome: PropTypes.func.isRequired,
   toggleHelp: PropTypes.func.isRequired,
   toggleAbout: PropTypes.func.isRequired
 }
 
 HeaderComponent.defaultProps = {
-  showSearch: true
+  showSearch: true,
+  showMenu: false
 }
 
 export default HeaderComponent
