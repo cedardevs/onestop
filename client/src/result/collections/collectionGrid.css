@@ -2,6 +2,7 @@
   display: flex;
   flex-wrap: wrap;
   margin-left: -20px;
+  padding-left: 1em;
 }
 
 .collectionsList {

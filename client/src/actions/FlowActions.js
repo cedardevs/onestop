@@ -2,30 +2,34 @@ import _ from 'lodash'
 import watch from 'redux-watch'
 import { push } from 'react-router-redux'
 import { encodeQueryString, decodeQueryString } from '../utils/queryUtils'
-import { triggerSearch, fetchGranules } from './SearchRequestActions'
+import { triggerSearch, fetchGranules, clearCollections } from './SearchRequestActions'
 import { updateSearch } from './SearchParamActions'
 import { fetchConfig } from './ConfigActions'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
   return (dispatch, getState) => {
-    let pathname = `${prefix}/collections`
-    let locationDescriptor = {
-      pathname,
-      search: `?${encodeQueryString(getState())}`
+    const query = encodeQueryString(getState())
+    if (!_.isEmpty(query)) {
+      const locationDescriptor = {
+        pathname: `${prefix}/collections`,
+        search: `?${query}`
+      }
+      dispatch(push(locationDescriptor))
     }
-    dispatch(push(locationDescriptor))
   }
 }
 
 export const showGranules = (prefix = '') => {
   return (dispatch, getState) => {
-    let pathname = `${prefix}/collections/files`
-    let locationDescriptor = {
-      pathname,
-      search: `?${encodeQueryString(getState())}`
+    const query = encodeQueryString(getState())
+    if (!_.isEmpty(query)) {
+      const locationDescriptor = {
+        pathname: `${prefix}/collections/files`,
+        search: `?${query}`
+      }
+      dispatch(push(locationDescriptor))
     }
-    dispatch(push(locationDescriptor))
   }
 }
 
@@ -33,6 +37,7 @@ export const showHome = () => {
   return (dispatch) => {
     dispatch(updateSearch())
     dispatch(push(`/`))
+    dispatch(clearCollections())
   }
 }
 

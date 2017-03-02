@@ -12,6 +12,10 @@ export const startSearch    = ()           => ({type: SEARCH})
 export const completeSearch = (items)      => ({type: SEARCH_COMPLETE, items})
 export const countHits      = (totalHits)  => ({type: COUNT_HITS, totalHits})
 
+export const CLEAR_COLLECTIONS = 'clear_collections'
+
+export const clearCollections = () => ({type: CLEAR_COLLECTIONS})
+
 export const FETCHING_GRANULES = 'fetching_granules'
 export const FETCHED_GRANULES = 'fetched_granules'
 export const CLEAR_GRANULES = 'clear_granules'

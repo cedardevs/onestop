@@ -61,8 +61,18 @@ describe('The flow actions', function () {
     })
   })
 
-  it('dispatch a transition to the collections view', function () {
+  it('do not dispatch a transition to the collections view when no search params are present', function () {
     const getState = sinon.stub().returns(mockDefaultState)
+    const fn = actions.showCollections()
+
+    fn(dispatch, getState)
+    const dispatchCalls = dispatch.callCount
+    assert(dispatchCalls == 0, `There were ${dispatchCalls} dispatch calls made`)
+  })
+
+  it('dispatch a transition to the collections view when search params are present', function () {
+    const stateWithSearchParams = _.merge(mockDefaultState, {behavior: {search: {queryText: 'oceans'}}})
+    const getState = sinon.stub().returns(stateWithSearchParams)
     const fn = actions.showCollections()
 
     fn(dispatch, getState)
