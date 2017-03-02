@@ -12,14 +12,14 @@ class HeaderComponent extends React.Component {
   }
 
   render() {
-    return <div className={`pure-g ${styles.headerArea}`}>
+    return <header className={`pure-g ${styles.headerArea}`}>
       <div className={`pure-u-1-4 ${styles.orgBox}`}>
         {this.renderLogo()}
       </div>
       <div className={`pure-u-1 pure-u-sm-3-4`}>
         {this.renderContent()}
       </div>
-    </div>
+    </header>
   }
 
   renderContent() {
@@ -40,7 +40,7 @@ class HeaderComponent extends React.Component {
     if (this.props.showSearch) {
       return <div>
         <a href="//www.noaa.gov" title="NOAA Home">
-          <img className={styles.noaaLogo} id='logo' src={noaaLogo}/>
+          <img className={styles.noaaLogo} id='logo' alt="NOAA Logo" src={noaaLogo}/>
         </a>
         <a href="#" title="One Stop Home" className={styles.oneStopLink} onClick={() => this.props.goHome()}>
           <i className={`fa fa-stop-circle-o fa-md`}/>neStop
@@ -49,7 +49,7 @@ class HeaderComponent extends React.Component {
     }
     else {
       return <a href="//www.ncei.noaa.gov/" title="NCEI Home">
-        <img className={styles.nceiLogo} src={nceiLogo}/>
+        <img className={styles.nceiLogo} alt="NCEI Logo" src={nceiLogo}/>
       </a>
     }
   }
