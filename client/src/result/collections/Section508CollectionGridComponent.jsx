@@ -46,19 +46,19 @@ class Section508CollectionGridComponent extends React.Component {
     _.forOwn(this.props.results, (val, key) => {
       collections.push(
           <li key={key}>
-            <h3>{val.title}</h3>
+            <h3 title="Title">{val.title}</h3>
             <p title="Description">{val.description}</p>
-            <div>
+            <div title="Related Links">
               <span>Related Links:</span>
               {this.renderLinks('More Info', this.getLinksByType('information', val.links), this.renderLink)}
               {this.renderLinks('Data Access', this.getLinksByType('download', val.links), this.renderLink)}
             </div>
-            <div>
+            <div title="Associated Keywords">
               <span>Associated Keywords:</span>
               {this.renderLinks('Themes', this.getKeywordsByType(val['gcmdScience']), this.renderKeyword.bind(this))}
               {this.renderLinks('Places', this.getKeywordsByType(val['gcmdLocations']), this.renderKeyword.bind(this))}
             </div>
-            <div>
+            <div title="Associated Files">
               <span>Associated Files: </span>
               <a onClick={() => this.props.showGranules(key)} title="Show matching files">
                 Show Matching Files
