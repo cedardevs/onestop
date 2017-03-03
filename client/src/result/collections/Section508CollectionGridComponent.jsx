@@ -19,7 +19,7 @@ class Section508CollectionGridComponent extends React.Component {
   renderLink(link, index) {
     const { linkName, linkProtocol, linkUrl } = link
     return <li key={index}>
-      <a href={linkUrl} target="_blank" title={linkProtocol || linkName || 'Link'} style={{color: 'white'}}>
+      <a href={linkUrl} target="_blank" title={linkProtocol || linkName || 'Link'}>
         {linkProtocol || linkName || 'Link'}
       </a>
     </li>
@@ -47,7 +47,7 @@ class Section508CollectionGridComponent extends React.Component {
       collections.push(
           <li key={key}>
             <h3>{val.title}</h3>
-            <p>{val.description}</p>
+            <p title="Description">{val.description}</p>
             <div>
               <span>Related Links:</span>
               {this.renderLinks('More Info', this.getLinksByType('information', val.links), this.renderLink)}
@@ -67,7 +67,7 @@ class Section508CollectionGridComponent extends React.Component {
           </li>
       )
     })
-    return <div style={{background: 'black'}}>
+    return <div>
       <div>
         Showing {this.props.returnedHits} of {this.props.totalHits} matching results
       </div>
