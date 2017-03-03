@@ -80,9 +80,7 @@ class ResultLayout extends React.Component {
 
   render() {
     return <div id="layout" className={`pure-g ${styles.mainWindow}`}>
-      {this.renderFacetMenu()}
-      {this.renderFacetButton()}
-      <div className={`${this.renderResultsContainer()} ${styles.resultsContainer}`}>
+      <div className={`pure-u-1 ${styles.resultsContainer}`}>
         {this.props.children}
       </div>
     </div>
