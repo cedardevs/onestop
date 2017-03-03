@@ -20,7 +20,9 @@ export const assembleSearchRequest = (state, granules = false) => {
   }
   filters =  _.flatten(_.compact(filters))
 
-  return {queries: queries, filters: filters, facets: !granules}
+  const page = assemblePagination(search)
+
+  return {queries: queries, filters: filters, facets: !granules, page: page}
 }
 
 const assembleQueries = ({queryText}) => {
@@ -54,6 +56,15 @@ const assembleTemporalFilters = ({startDateTime, endDateTime}) => {
 const assembleSelectedCollectionsFilters = ({selectedIds}) => {
   if (selectedIds.length > 0) {
     return {type: 'collection', values: selectedIds}
+  }
+}
+
+const assemblePagination = ({pageOffset, pageMax}) => {
+  if(pageOffset && pageMax) {
+    return {max: pageMax, offset: pageOffset}
+  }
+  else {
+    return {max: 20, offset: 0}
   }
 }
 
