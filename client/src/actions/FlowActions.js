@@ -7,18 +7,29 @@ import { updateSearch } from './SearchParamActions'
 import { fetchConfig } from './ConfigActions'
 import store from '../store'
 
-export const showCollections = () => {
+export const showCollections = (prefix = '') => {
   return (dispatch, getState) => {
-    let query = encodeQueryString(getState())
-    if(!_.isEmpty(query)) {
-      dispatch(push(`collections?${encodeQueryString(getState())}`))
+    const query = encodeQueryString(getState())
+    if (!_.isEmpty(query)) {
+      const locationDescriptor = {
+        pathname: `${prefix}/collections`,
+        search: `?${query}`
+      }
+      dispatch(push(locationDescriptor))
     }
   }
 }
 
-export const showGranules = () => {
+export const showGranules = (prefix = '') => {
   return (dispatch, getState) => {
-    dispatch(push(`collections/files?${encodeQueryString(getState())}`))
+    const query = encodeQueryString(getState())
+    if (!_.isEmpty(query)) {
+      const locationDescriptor = {
+        pathname: `${prefix}/collections/files`,
+        search: `?${query}`
+      }
+      dispatch(push(locationDescriptor))
+    }
   }
 }
 

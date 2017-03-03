@@ -3,7 +3,7 @@ import Section508LandingComponent from './Section508LandingComponent'
 import { triggerSearch, clearFacets } from '../actions/SearchRequestActions'
 import { updateQuery } from '../actions/SearchParamActions'
 import { showCollections } from '../actions/FlowActions'
-import { newGeometry, removeGeometry, updateDateRange, clearSearch } from '../actions/SearchParamActions'
+import { newGeometry, removeGeometry, updateDateRange, updateSearch } from '../actions/SearchParamActions'
 
 const mapStateToProps = (state) => {
   const { startDateTime, endDateTime, queryText } = state.behavior.search
@@ -31,10 +31,10 @@ const mapDispatchToProps = (dispatch) => {
     submit: () => {
       dispatch(clearFacets())
       dispatch(triggerSearch())
-      dispatch(showCollections())
+      dispatch(showCollections('508'))
     },
     // Clear all search params
-    clearSearch: () => dispatch(clearSearch())
+    clearSearch: () => dispatch(updateSearch())
   }
 }
 

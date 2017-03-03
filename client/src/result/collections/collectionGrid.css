@@ -4,3 +4,18 @@
   margin-left: -20px;
   padding-left: 1em;
 }
+
+.collectionsList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.collectionAttrs {
+  display: inline-block;
+}
+
+.linkRow {
+  display: inline-block;
+  margin: .5em .5em .5em 0;
+}

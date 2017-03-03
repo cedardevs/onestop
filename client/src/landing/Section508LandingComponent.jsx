@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { PropTypes } from 'react'
 import styles from './section508.css'
 import GeoValidate from 'geojson-validation'
 import moment from 'moment'
@@ -6,27 +6,20 @@ import moment from 'moment'
 class Section508LandingComponent extends React.Component {
   constructor(props) {
     super(props)
-    this.search = props.submit
-    this.clearSearch = props.clearSearch
+
     this.updateQuery = this.updateQuery.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
-    this.generateForm = this.generateForm.bind(this)
-    this.state = this.initializeState()
-  }
 
-  initializeState() {
-    return {
-      formFields: [
-        { label: 'Search Text:', name: 'search-text', placeholder: 'e.g. ocean',
-          value: 'queryString'},
-        { label: 'Start Date:', name: 'start-date', placeholder: 'e.g. 1940-02-01T00:00:00Z',
-          value: 'startDateTime'},
-        { label: 'End Date:', name: 'end-date', placeholder: 'e.g. 2017-02-13T00:00:00Z',
-          value: 'endDateTime'},
-        { label: 'Bounding Box:', name: 'geometry', placeholder:
+    this.formFields = [
+      { label: 'Search Text:', name: 'search-text', placeholder: 'e.g. ocean',
+        value: 'queryString'},
+      { label: 'Start Date:', name: 'start-date', placeholder: 'e.g. 1940-02-01T00:00:00Z',
+        value: 'startDateTime'},
+      { label: 'End Date:', name: 'end-date', placeholder: 'e.g. 2017-02-13T00:00:00Z',
+        value: 'endDateTime'},
+      { label: 'Bounding Box:', name: 'geometry', placeholder:
           `e.g. -180.00,-90.00,180.00,90.00 (W,S,E,N)`, value: 'geoJsonSelection' }
-      ]
-    }
+    ]
   }
 
   updateQuery(e) {
@@ -71,7 +64,6 @@ class Section508LandingComponent extends React.Component {
         type: 'Polygon'
       }
     }
-    console.log(coordArray)
     if(coordArray.every(x=>(typeof x == 'number' && !isNaN(x)))
       && coordArray.length >= 4
       && GeoValidate.isPolygonCoor(coordinates)){
@@ -85,49 +77,49 @@ class Section508LandingComponent extends React.Component {
   handleKeyDown(e) {
     if (e.keyCode === 13) {
       e.preventDefault()
-      this.search()
+      this.props.submit()
     }
   }
 
-  generateForm() {
-    const { formFields } = this.state
-    let form = formFields.map(field => {
+  render() {
+    const formInputs = this.formFields.map(field => {
       return <div className={styles.formRow} key={field.name}>
         <label htmlFor={field.name} className={styles.formLabel}>{field.label}</label>
         <input type="text" className={styles.formInput} name={field.name}
-          id={field.name} placeholder={field.placeholder} onKeyDown={this.handleKeyDown}
-          onChange={this.updateQuery} defaultValue={_.get(this.props, field.value)}/>
+               id={field.name} placeholder={field.placeholder} onKeyDown={this.handleKeyDown}
+               onChange={this.updateQuery} value={_.get(this.props, field.value) || ''}/>
       </div>
     })
-    const searchButton = <button className={`${styles.button} pure-button`}
-      onClick={this.search}>Search</button>
-    const clearButton = <button className={`${styles.button} pure-button`}
-      onClick={(()=>{
-        this.clearSearch()
-        && this.form.childNodes.forEach(x=> x.lastChild.value = '')})}>
+
+    return <div className={`${styles.formDiv} pure-form`}>
+      <h1>Search Criteria</h1>
+      <form id='508-form'>
+        {formInputs}
+      </form>
+      <button className={`${styles.button} pure-button`}
+              onClick={this.props.submit}>
+        Search
+      </button>
+      <button className={`${styles.button} pure-button`}
+              onClick={(()=>{this.props.clearSearch()})}>
         Clear
       </button>
-
-    return(
-      <div className={`${styles.formDiv} pure-form`}>
-        <form id='508-form' ref={form=>this.form=form}>
-          {form}
-        </form>
-        {searchButton}
-        {clearButton}
-      </div>
-      )
-    }
-
-  render() {
-    return this.generateForm()
+    </div>
   }
 
-  componentDidMount() {
-    setTimeout(() => {
-      window.dispatchEvent(new Event('resize'))
-    }, 0)
-  }
+}
+
+Section508LandingComponent.propTypes = {
+  submit: PropTypes.func.isRequired,
+  clearSearch: PropTypes.func.isRequired,
+  updateSearchText: PropTypes.func.isRequired,
+  updateDates: PropTypes.func.isRequired,
+  handleNewGeometry: PropTypes.func.isRequired,
+  removeGeometry: PropTypes.func.isRequired,
+  queryString: PropTypes.string,
+  startDateTime: PropTypes.string,
+  endDateTime: PropTypes.string,
+  geoJsonSelection: PropTypes.string
 }
 
 export default Section508LandingComponent

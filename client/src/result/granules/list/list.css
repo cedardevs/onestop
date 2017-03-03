@@ -70,9 +70,12 @@
 }
 
 .legend {
+  justify-content: flex-end;
+}
+
+.legend, .legend-508 {
   display: flex;
   flex-flow: row wrap;
-  justify-content: flex-end;
   padding-bottom: 1em;
   h1, h2, h3, h4, h5 {
     margin: 0.6em 0 !important;
@@ -88,6 +91,12 @@
       margin: 0.6em 0 !important;
     }
   }
+}
+
+.granuleList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 .badgeCell {
