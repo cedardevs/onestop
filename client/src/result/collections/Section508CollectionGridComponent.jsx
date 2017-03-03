@@ -1,9 +1,7 @@
 import React, { PropTypes } from 'react'
 import _ from 'lodash'
-import CollectionTile from './CollectionTileComponent'
-import styles from './collectionGrid.css'
 
-class CollectionGrid extends React.Component {
+class Section508CollectionGridComponent extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -13,26 +11,18 @@ class CollectionGrid extends React.Component {
   }
 
   renderLinks(label, links, linkRenderer) {
-    if (!links || links.length === 0) { return <div></div> }
+    if (!links || links.length === 0) { return <ul></ul> }
 
-    return <div>
-      <div>
-        <span>{label}</span>
-      </div>
-      <div>
-        {links.map(linkRenderer)}
-      </div>
-    </div>
+    return <ul title={label}>{links.map(linkRenderer)}</ul>
   }
 
   renderLink(link, index) {
     const { linkName, linkProtocol, linkUrl } = link
-    return <div key={index} className={`${styles.linkRow}`}>
-      <a href={linkUrl} target="_blank"
-             className={`pure-button pure-button-primary`}>
-       {linkProtocol || linkName || 'Link'}
+    return <li key={index}>
+      <a href={linkUrl} target="_blank" title={linkProtocol || linkName || 'Link'} style={{color: 'white'}}>
+        {linkProtocol || linkName || 'Link'}
       </a>
-   </div>
+    </li>
   }
 
   getKeywordsByType(keywords) {
@@ -44,47 +34,56 @@ class CollectionGrid extends React.Component {
   }
 
   renderKeyword(keyword, index) {
-    return <div key={index} className={`${styles.linkRow}`}>
-      <a className={`pure-button ${styles['button-secondary']}`}
-         onClick={() => this.props.textSearch(keyword)}>
+    return <li key={index}>
+      <a title={keyword} onClick={() => this.props.textSearch(`"${keyword}"`)}>
         {keyword}
       </a>
-    </div>
+    </li>
   }
 
   render() {
-    const cards = []
+    const collections = []
     _.forOwn(this.props.results, (val, key) => {
-      cards.push(
-        <div key={key}>
-          <li>
+      collections.push(
+          <li key={key}>
             <h3>{val.title}</h3>
-            <div>{val.description}</div>
+            <p>{val.description}</p>
             <div>
+              <span>Related Links:</span>
               {this.renderLinks('More Info', this.getLinksByType('information', val.links), this.renderLink)}
               {this.renderLinks('Data Access', this.getLinksByType('download', val.links), this.renderLink)}
             </div>
             <div>
-              {this.renderLinks('Themes', this.getKeywordsByType(val['gcmdScience']), this.renderKeyword)}
-              {this.renderLinks('Places', this.getKeywordsByType(val['gcmdLocations']), this.renderKeyword)}
+              <span>Associated Keywords:</span>
+              {this.renderLinks('Themes', this.getKeywordsByType(val['gcmdScience']), this.renderKeyword.bind(this))}
+              {this.renderLinks('Places', this.getKeywordsByType(val['gcmdLocations']), this.renderKeyword.bind(this))}
             </div>
-            <a onClick={() => this.props.showGranules(key)} className={`pure-button pure-button-primary ${styles.granulesButton}`}>
-              Show Matching Files
-            </a>
+            <div>
+              <span>Associated Files: </span>
+              <a onClick={() => this.props.showGranules(key)} title="Show matching files">
+                Show Matching Files
+              </a>
+            </div>
           </li>
-        </div>
       )
     })
-    return <div>
+    return <div style={{background: 'black'}}>
       <div>
         Showing {this.props.returnedHits} of {this.props.totalHits} matching results
       </div>
-      <ul className={styles.collectionsList}>
-        {cards}
+      <ul>
+        {collections}
       </ul>
     </div>
   }
-
 }
 
-export default CollectionGrid
+Section508CollectionGridComponent.propTypes = {
+  textSearch: PropTypes.func.isRequired,
+  showGranules: PropTypes.func.isRequired,
+  returnedHits: PropTypes.number.isRequired,
+  totalHits: PropTypes.number.isRequired,
+  results: PropTypes.object.isRequired
+}
+
+export default Section508CollectionGridComponent

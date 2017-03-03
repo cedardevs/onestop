@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
-import { showCollections, showGranules, setFocus } from '../../actions/FlowActions'
-import { fetchGranules, clearGranules, clearFacets } from '../../actions/SearchRequestActions'
-import { toggleSelection, clearSelections, updateQuery, clearSearch } from '../../actions/SearchParamActions'
+import { showGranules, setFocus } from '../../actions/FlowActions'
+import { triggerSearch, fetchGranules, clearGranules } from '../../actions/SearchRequestActions'
+import { toggleSelection, clearSelections, updateQuery, updateSearch } from '../../actions/SearchParamActions'
 import CollectionGrid from './Section508CollectionGridComponent'
 
 const mapStateToProps = (state) => {
@@ -25,6 +25,11 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(clearGranules())
       dispatch(fetchGranules())
       dispatch(showGranules('508'))
+    },
+    textSearch: (text) => {
+      dispatch(updateSearch())
+      dispatch(updateQuery(text))
+      dispatch(triggerSearch())
     }
   }
 }
