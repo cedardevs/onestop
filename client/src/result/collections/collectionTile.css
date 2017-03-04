@@ -7,26 +7,35 @@ $cardWidth: 300px;
   text-align: center;
   width: $cardWidth;
   height: $cardHeight;
-}
 
-.tileContent {
-  box-sizing: border-box;
-  width: $cardWidth;
-  height: $cardHeight;
-  border: 1px solid $color-gray;
-  padding: 1em;
-  background: linear-gradient(rgba(10, 10, 10, 1), rgba(10, 10, 10, .5), rgba(10, 10, 10, .2), rgba(10, 10, 10, 0));
-  color: white;
-  overflow: hidden;
-  box-shadow: 6px 8px 5px rgb(0, 0, 0, .7);
-  &:hover {
-    box-shadow: 0 0 6px 2px color($color-primary lightness(-10%));
+  .tileContent {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    border: 1px solid $color-gray;
+    background: linear-gradient(rgba(10, 10, 10, 1), rgba(10, 10, 10, .5), rgba(10, 10, 10, .2), rgba(10, 10, 10, 0));
+    color: white;
+    overflow: hidden;
+    box-shadow: 6px 8px 5px rgb(0, 0, 0, .7);
+    &:hover {
+      box-shadow: 0 0 6px 2px color($color-primary lightness(-10%));
+    }
+    img {
+      position: relative;
+      z-index: -1;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+    }
+    h2 {
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-weight: normal;
+      font-size: 1em;
+      padding: 1em;
+      margin: 0 0 -3em 0;
+    }
   }
-}
-
-.titleText {
-  position: relative;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }

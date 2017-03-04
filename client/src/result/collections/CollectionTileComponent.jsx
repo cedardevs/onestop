@@ -7,28 +7,15 @@ const CollectionTile = (props) => {
           .replace(/^https?:/, '')
           .replace(/'/, '%27')
           .replace(/"/, '%22')
-  var backgroundImageStyles = {
-    background: `url('${thumbnailUrl}')`,
-    backgroundColor: 'black',
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center center'
-  }
-  var dimensionStyles = {
-    width: props.width || styles.tileContainer.width,
-    height: props.height || styles.tileContainer.height,
-    margin: props.margin || ""
-  }
 
   const handleClick = () => {
     props.onCardClick(props.recordId)
   }
 
-  return <div className={styles.tileContainer} style={dimensionStyles}>
-    <div style={backgroundImageStyles}>
-      <div className={styles.tileContent} style={dimensionStyles} onClick={handleClick}>
-        <div className={styles.titleText}>{props.title}</div>
-      </div>
+  return <div className={styles.tileContainer}>
+    <div className={styles.tileContent}>
+      <h2>{props.title}</h2>
+      <img src={thumbnailUrl} onClick={handleClick}/>
     </div>
   </div>
 }
