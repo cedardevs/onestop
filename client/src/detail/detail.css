@@ -124,3 +124,7 @@
     visibility: visible;
   }
 }
+
+.dsmmMissing {
+  color: grey;
+}
