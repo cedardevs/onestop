@@ -13,7 +13,6 @@ class CollectionGrid extends React.Component {
     _.forOwn(this.props.results, (val, key) => {
       cards.push(<CollectionTile
             key={key}
-            recordId={key}
             title={val.title}
             thumbnail={val.thumbnail}
             description={val.description}

@@ -1,35 +1,31 @@
 import React, { PropTypes } from 'react'
 import styles from './collectionTile.css'
 
-const CollectionTile = (props) => {
-  // Thumbnails are dynamically assigned so style's applied via JS
-  let thumbnailUrl = props.thumbnail && props.thumbnail
-          .replace(/^https?:/, '')
-          .replace(/'/, '%27')
-          .replace(/"/, '%22')
+class CollectionTile extends React.Component {
+  constructor(props) {
+    super(props)
 
-  const handleClick = () => {
-    props.onCardClick(props.recordId)
+    this.thumbnailUrl = this.props.thumbnail && this.props.thumbnail
+            .replace(/^https?:/, '')
+            .replace(/'/, '%27')
+            .replace(/"/, '%22')
   }
 
-  return <div className={styles.tileContainer}>
-    <div className={styles.tileContent}>
-      <h2>{props.title}</h2>
-      <img src={thumbnailUrl} onClick={handleClick}/>
+  render() {
+    return <div className={styles.tileContainer}>
+      <div className={styles.tileContent} onClick={() => this.props.onCardClick()}>
+        <h2>{this.props.title}</h2>
+        <img src={this.thumbnailUrl}/>
+      </div>
     </div>
-  </div>
+  }
+
 }
 
 CollectionTile.propTypes = {
-  id: PropTypes.string.isRequired,
   onCardClick: PropTypes.func.isRequired,
-  title: PropTypes.string.isRequired
+  title: PropTypes.string.isRequired,
+  thumbnail: PropTypes.string
 }
-
-CollectionTile.defaultProps = {
-  id: ''
-}
-
-CollectionTile.shouldComponentUpdate = (nextProps, nextState) => typeof nextProps.id !== 'undefined'
 
 export default CollectionTile
