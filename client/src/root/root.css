@@ -1,20 +1,16 @@
 @import '../../style/style.css';
 
 .rootContainer {
-  height: 100%;
-}
-
-.mainContent {
+  position: relative;
   min-height: 100%;
   margin-bottom: calc(-$footer-height + 2 * -$section-padding);
 }
 
-.main {
-  min-height: 100%;
-}
-
 .footer {
-  position: relative;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
   background: $color-primary-darkest;
   min-height: $footer-height;
   clear: both;

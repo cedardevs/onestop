@@ -1,7 +1,6 @@
 @import '../style/style.css';
 
-
-html, body {
+html {
   height: 100%;
 }
 
@@ -10,6 +9,8 @@ body {
   font-size: 12px;
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   color: white;
+  min-height: 100%;
+  margin-bottom: calc(-$footer-height + 2 * -$section-padding);
 }
 
 img {

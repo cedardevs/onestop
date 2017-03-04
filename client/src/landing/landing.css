@@ -13,9 +13,8 @@
 
 .featuredContainer {
   max-width: 60em;
-  min-height: 30em;
+  min-height: 35em;
   margin: 0 auto;
-  display: block;
 
   h1, h2, h3, h4, h5 {
     text-align: left;
