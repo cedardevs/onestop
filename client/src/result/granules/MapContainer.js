@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import _ from 'lodash'
 import MapComponent from '../../search/map/MapComponent'
 import { toggleGranuleFocus } from '../../actions/FlowActions'
+import { convertEnvelopeToPolygon } from '../../utils/geoUtils'
 
 const mapStateToProps = (state) => {
   let { granules } = state.domain.results
@@ -28,23 +29,11 @@ const MapContainer = connect(
 
 const convertToGeoJson = (recordData, id) => {
   // Currently defaulting to rendering bounding box coordinates
-  let geoJson = {
-    geometry: {
-      coordinates: bboxToCoords(recordData.spatialBounding.coordinates),
-      type: "Polygon"
-    },
+  return {
+    geometry: convertEnvelopeToPolygon(recordData.spatialBounding),
     properties: Object.assign({}, recordData, {id: id}),
     type: "Feature"
   }
-  return geoJson
-}
-
-const bboxToCoords = bbox => {
-  const southWest = [bbox[0][0], bbox[0][1]]
-  const southEast = [bbox[0][0], bbox[1][1]]
-  const northEast = [bbox[1][0], bbox[1][1]]
-  const northWest = [bbox[1][0], bbox[0][1]]
-  return [[southWest, southEast, northEast, northWest]]
 }
 
 export default MapContainer

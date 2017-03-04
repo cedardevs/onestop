@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import styles from './collectionTile.css'
+import MapThumbnailComponent from '../../common/MapThumbnailComponent'
 
 class CollectionTile extends React.Component {
   constructor(props) {
@@ -14,10 +15,18 @@ class CollectionTile extends React.Component {
   render() {
     return <div className={styles.tileContainer}>
       <div className={styles.tileContent} onClick={() => this.props.onCardClick()}>
-        <h2>{this.props.title}</h2>
-        <img src={this.thumbnailUrl}/>
+        <h2 className={styles.title}>{this.props.title}</h2>
+        {this.renderThumbnail()}
       </div>
     </div>
+  }
+
+  renderThumbnail() {
+    return this.thumbnailUrl ?
+        <img className={styles.thumbnail} src={this.thumbnailUrl}/> :
+        <div className={styles.thumbnail}>
+          <MapThumbnailComponent geometry={this.props.geometry}/>
+        </div>
   }
 
 }
@@ -25,7 +34,8 @@ class CollectionTile extends React.Component {
 CollectionTile.propTypes = {
   onCardClick: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
-  thumbnail: PropTypes.string
+  thumbnail: PropTypes.string,
+  geometry: PropTypes.object
 }
 
 export default CollectionTile

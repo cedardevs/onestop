@@ -16,6 +16,7 @@ class CollectionGrid extends React.Component {
             title={val.title}
             thumbnail={val.thumbnail}
             description={val.description}
+            geometry={val.spatialBounding}
             onCardClick={() => this.props.onCardClick(key)}
         />)
     })

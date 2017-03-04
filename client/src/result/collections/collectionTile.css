@@ -20,14 +20,14 @@ $cardWidth: 300px;
     &:hover {
       box-shadow: 0 0 6px 2px color($color-primary lightness(-10%));
     }
-    img {
+    .thumbnail {
       position: relative;
       z-index: -1;
       width: 100%;
       max-width: 100%;
       height: 100%;
     }
-    h2 {
+    .title {
       position: relative;
       overflow: hidden;
       white-space: nowrap;
