@@ -6,6 +6,16 @@ import styles from './collectionGrid.css'
 class CollectionGrid extends React.Component {
   constructor(props) {
     super(props)
+
+    this.renderShowMoreButton = this.renderShowMoreButton.bind(this)
+  }
+
+  renderShowMoreButton() {
+    if(this.props.returnedHits < this.props.totalHits) {
+      return <div className={styles.buttonContainer}>
+          <button className={`pure-button ${styles.button}`} onClick={() => this.props.fetchMoreResults()}>Show More Results</button>
+        </div>
+    }
   }
 
   render() {
@@ -27,7 +37,7 @@ class CollectionGrid extends React.Component {
       <div className={styles.gridWrapper}>
         {cards}
       </div>
-      <button className={styles.showMoreButton} onClick={() => this.props.fetchMoreResults()}>Show More Results</button>
+      {this.renderShowMoreButton()}
     </div>
   }
 }
