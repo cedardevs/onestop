@@ -8,7 +8,10 @@ import Detail from './DetailComponent'
 const mapStateToProps = (state, reactProps) => {
   const { focusedId } = state.ui.cardDetails
   const focusedItem = state.domain.results.collections[focusedId]
+  const { collections } = state.domain.results
+  const geometry = focusedId && collections[focusedId] && collections[focusedId].spatialBounding || '' 
   return {
+    geometry: geometry,
     id: focusedId,
     item: focusedItem
   }

@@ -64,6 +64,13 @@
   }
 }
 
+.previewMap {
+  z-index: 4;
+  width: 97%;
+  height: 16em;
+  padding: .2em 0 2em;
+}
+
 .linkRow {
   font-size: 1em;
   font-weight: bold;

@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import React, {PropTypes} from 'react'
+import MapThumbnailComponent from '../common/MapThumbnailComponent'
 import styles from './detail.css'
 
 class Detail extends React.Component {
@@ -85,8 +86,11 @@ class Detail extends React.Component {
 
   renderImage() {
     const imgUrl = this.props.item.thumbnail && this.props.item.thumbnail.replace(/^https?:/, '')
-    const img = this.props.item.thumbnail ? <img src={imgUrl}/> : <h3>No Image Available</h3>
-    return <div className={styles.previewImg}>{img}</div>
+    return imgUrl ?
+        <img className={styles.previewImg} src={imgUrl}/> :
+        <div className={styles.previewMap}>
+          <MapThumbnailComponent geometry={this.props.geometry}/>
+        </div>
   }
 
   getKeywordsByType(type) {
