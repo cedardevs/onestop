@@ -24,7 +24,8 @@ export const results = (state = initialState, action) => {
     case CLEAR_COLLECTIONS:
       return Immutable.merge(state, {
         collections: initialState.collections,
-        totalCollections: initialState.totalCollections
+        totalCollections: initialState.totalCollections,
+        collectionsPageOffset: initialState.collectionsPageOffset
       })
 
     case COUNT_HITS:
