@@ -8,7 +8,9 @@ export const assembleSearchRequestString = (state, granules, retrieveFacets) => 
 export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   const behavior = state.behavior || {}
   const search = behavior.search || {}
-  const pageOffset = state.domain.results.collectionsPageOffset || 0
+  const domain = state.domain || {}
+  const results = domain.results || {}
+  const pageOffset = results.collectionsPageOffset || 0
 
   const queries = assembleQueries(search)
   let filters = _.concat(

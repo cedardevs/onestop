@@ -15,7 +15,7 @@ describe('The results reducer', function () {
   })
 
   it('receives collection results', function () {
-
+// FIXME
   })
 
   it('merges received granules into the map of granules', function () {
@@ -58,20 +58,25 @@ describe('The results reducer', function () {
       procSelectedFacets:true
     }
 
-    let expectedState = { collections: {}, granules: {}, facets: {
-      science:{
-        "Oceans":{
-          count:5
-        },
-        "Oceans > Ocean Temperature":{
-          count:5
-        },
-        "Oceans > Ocean Temperature > Sea Surface Temperature":{
-          count:5
-        },
-        dataResolution:{}
-      }
-    }, totalCollections: 0
+    let expectedState = {
+      collections: {},
+      granules: {},
+      facets: {
+        science: {
+          "Oceans": {
+            count: 5
+          },
+          "Oceans > Ocean Temperature": {
+            count: 5
+          },
+          "Oceans > Ocean Temperature > Sea Surface Temperature": {
+            count: 5
+          },
+          dataResolution: {}
+        }
+      },
+      totalCollections: 0,
+      collectionsPageOffset: 0
     }
     let stateWithFacets = results(initialState, facetsRecAction)
     stateWithFacets.should.deep.equal(expectedState)

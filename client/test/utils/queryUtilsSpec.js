@@ -6,8 +6,8 @@ describe('The queryUtils', function () {
   describe('assembles collection requests', function () {
     collectionTestCases().forEach(function (testCase) {
       it(`with ${testCase.name}`, function () {
-        const objectResult = queryUtils.assembleSearchRequest(testCase.inputState)
-        const stringResult = queryUtils.assembleSearchRequestString(testCase.inputState)
+        const objectResult = queryUtils.assembleSearchRequest(testCase.inputState, false, true)
+        const stringResult = queryUtils.assembleSearchRequestString(testCase.inputState, false, true)
         objectResult.should.deep.equal(testCase.expectedResult)
         stringResult.should.equal(JSON.stringify(testCase.expectedResult))
       })
@@ -17,8 +17,8 @@ describe('The queryUtils', function () {
   describe('assembles granule requests', function () {
     granuleTestCases().forEach(function (testCase) {
       it(`with ${testCase.name}`, function () {
-        const objectResult = queryUtils.assembleSearchRequest(testCase.inputState, true)
-        const stringResult = queryUtils.assembleSearchRequestString(testCase.inputState, true)
+        const objectResult = queryUtils.assembleSearchRequest(testCase.inputState, true, false)
+        const stringResult = queryUtils.assembleSearchRequestString(testCase.inputState, true, false)
         objectResult.should.deep.equal(testCase.expectedResult)
         stringResult.should.equal(JSON.stringify(testCase.expectedResult))
       })

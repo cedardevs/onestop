@@ -22,8 +22,9 @@ describe('The search action', () => {
     nock.cleanAll()
   })
 
+  const testingRoot = 'http://localhost:9090'
+
   it('triggerSearch executes a search from requestBody', () => {
-    const testingRoot = 'http://localhost:9090'
     const testState = Immutable({
       behavior: {
         search: {
@@ -34,10 +35,13 @@ describe('The search action', () => {
       domain: {
         config: {
           apiHost: testingRoot
+        },
+        results: {
+          collectionsPageOffset: 0
         }
       }
     })
-    const requestBody = assembleSearchRequestString(testState)
+    const requestBody = assembleSearchRequestString(testState, false, true)
     searchQuery(testingRoot,requestBody)
 
     const expectedMetadata = {"facets":{"science":[{"term":"land","count":2}]}, "total":2, "took":100}
@@ -62,7 +66,6 @@ describe('The search action', () => {
   })
 
   it('triggerSearch handles failed search requests', () => {
-    const testingRoot = 'http://localhost:9090'
     const testState = Immutable({
       behavior: {
         search: {
@@ -73,10 +76,13 @@ describe('The search action', () => {
       domain: {
         config: {
           apiHost: testingRoot
+        },
+        results: {
+          collectionsPageOffset: 0
         }
       }
     })
-    const requestBody = assembleSearchRequestString(testState)
+    const requestBody = assembleSearchRequestString(testState, false, true)
     errorQuery(testingRoot, requestBody)
 
     const expectedActions = [
@@ -107,6 +113,11 @@ describe('The search action', () => {
     const testState = Immutable({
       behavior: {
         request: {collectionInFlight: true}
+      },
+      domain: {
+        results: {
+          collectionsPageOffset: 0
+        }
       }
     })
 
@@ -153,7 +164,7 @@ describe('The granule actions', function () {
   beforeEach(nock.disableNetConnect)
   afterEach(nock.cleanAll)
 
-  const apiHost = 'http://localhost:9090'
+  const testingRoot = 'http://localhost:9090'
   const searchEndpoint = '/onestop/api/search'
   const successResponse = {
     data: [{
@@ -172,7 +183,6 @@ describe('The granule actions', function () {
   it('fetches granules with selected collections', function () {
     const collections = ['A', 'B']
     const state = {
-      apiHost: apiHost,
       behavior: {
         request: {
           granuleInFlight: false
@@ -180,11 +190,19 @@ describe('The granule actions', function () {
         search: {
           selectedIds: collections
         }
+      },
+      domain: {
+        config: {
+          apiHost: testingRoot
+        },
+        results: {
+          collectionsPageOffset: 0
+        }
       }
     }
     const store = mockStore(Immutable(state))
-    const expectedBody = assembleSearchRequestString(state, true)
-    nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
+    const expectedBody = assembleSearchRequestString(state, true, false)
+    nock(testingRoot).post(searchEndpoint, expectedBody).reply(200, successResponse)
 
     return store.dispatch(module.fetchGranules()).then(() => {
       store.getActions().should.deep.equal([
@@ -199,7 +217,6 @@ describe('The granule actions', function () {
   it('fetches granules with collection search params', function () {
     const collections = ['A', 'B']
     const state = {
-      apiHost: apiHost,
       behavior: {
         request: {
           granuleInFlight: false
@@ -211,11 +228,19 @@ describe('The granule actions', function () {
             location: ['Oceans']
           }
         }
+      },
+      domain: {
+        config: {
+          apiHost: testingRoot
+        },
+        results: {
+          collectionsPageOffset: 0
+        }
       }
     }
     const store = mockStore(Immutable(state))
-    const expectedBody = assembleSearchRequestString(state, true)
-    nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
+    const expectedBody = assembleSearchRequestString(state, true, false)
+    nock(testingRoot).post(searchEndpoint, expectedBody).reply(200, successResponse)
 
     return store.dispatch(module.fetchGranules()).then(() => {
       store.getActions().should.deep.equal([
