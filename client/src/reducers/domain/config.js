@@ -1,7 +1,10 @@
 import Immutable from 'seamless-immutable'
 import {CLEAR_CONFIG, SET_CONFIG} from '../../actions/ConfigActions'
 
-export const initialState = Immutable({})
+export const initialState = Immutable({
+  banner: {},
+  apiHost: ''
+})
 
 export const config = (state = initialState, action) => {
   switch (action.type) {

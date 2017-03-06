@@ -7,7 +7,7 @@ import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import Immutable from 'seamless-immutable'
 import nock from 'nock'
-import {searchQuery, errorQuery, errorsArray} from '../searchQuery'
+import {searchQuery, errorQuery, errorsArray} from '../mockSearchQuery'
 import {assembleSearchRequestString} from '../../src/utils/queryUtils'
 
 const middlewares = [ thunk ]
@@ -23,15 +23,20 @@ describe('The search action', () => {
   })
 
   it('triggerSearch executes a search from requestBody', () => {
+    const testingRoot = 'http://localhost:9090'
     const testState = Immutable({
       behavior: {
         search: {
           queryText: {text: 'alaska'}
         },
         request: {collectionInFlight: false}
+      },
+      domain: {
+        config: {
+          apiHost: testingRoot
+        }
       }
     })
-    const testingRoot = 'http://localhost:9090'
     const requestBody = assembleSearchRequestString(testState)
     searchQuery(testingRoot,requestBody)
 
@@ -50,22 +55,27 @@ describe('The search action', () => {
     ]
 
     const store = mockStore(Immutable(testState))
-    return store.dispatch(module.triggerSearch(testingRoot))
+    return store.dispatch(module.triggerSearch())
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
         })
   })
 
   it('triggerSearch handles failed search requests', () => {
+    const testingRoot = 'http://localhost:9090'
     const testState = Immutable({
       behavior: {
         search: {
           queryText: {text: 'alaska'}
         },
         request: {collectionInFlight: false}
+      },
+      domain: {
+        config: {
+          apiHost: testingRoot
+        }
       }
     })
-    const testingRoot = 'http://localhost:9090'
     const requestBody = assembleSearchRequestString(testState)
     errorQuery(testingRoot, requestBody)
 
@@ -87,7 +97,7 @@ describe('The search action', () => {
     ]
 
     const store = mockStore(testState)
-    return store.dispatch(module.triggerSearch(testingRoot))
+    return store.dispatch(module.triggerSearch())
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
         })

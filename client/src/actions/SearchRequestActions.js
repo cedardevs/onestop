@@ -30,7 +30,7 @@ export const CLEAR_FACETS = 'CLEAR_FACETS'
 export const facetsReceived = (metadata) => ({type: FACETS_RECEIVED, metadata})
 export const clearFacets    = ()         => ({type: CLEAR_FACETS})
 
-export const triggerSearch = (testing) => {
+export const triggerSearch = () => {
   const bodyBuilder = (state) => {
     const body = assembleSearchRequest(state)
     const inFlight = state.behavior.request.collectionInFlight
@@ -62,7 +62,7 @@ export const triggerSearch = (testing) => {
     dispatch(completeSearch(new Map()))
   }
 
-  return buildSearchAction(bodyBuilder, prefetchHandler, successHandler, errorHandler, testing)
+  return buildSearchAction(bodyBuilder, prefetchHandler, successHandler, errorHandler)
 }
 
 export const fetchGranules = () => {
@@ -92,7 +92,7 @@ export const fetchGranules = () => {
 }
 
 
-const buildSearchAction = (bodyBuilder, prefetchHandler, successHandler, errorHandler, testing) => {
+const buildSearchAction = (bodyBuilder, prefetchHandler, successHandler, errorHandler) => {
   return (dispatch, getState) => {
     let state = getState()
 
@@ -103,7 +103,7 @@ const buildSearchAction = (bodyBuilder, prefetchHandler, successHandler, errorHa
 
     prefetchHandler(dispatch)
 
-    const host = testing || state.apiHost || ''
+    const host = state.domain.config.apiHost || ''
     const endpoint = host + "/onestop/api/search"
     const fetchParams = {
       method: 'POST',
