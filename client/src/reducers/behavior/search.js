@@ -13,9 +13,7 @@ export const initialState = Immutable({
   startDateTime: null,
   endDateTime: null,
   selectedFacets: {},
-  selectedIds: [],
-  pageOffset: null,
-  pageMax: null
+  selectedIds: []
 })
 
 export const search = (state = initialState, action) => {
