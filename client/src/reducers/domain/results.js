@@ -1,14 +1,13 @@
 import Immutable from 'seamless-immutable'
-import _ from 'lodash'
-import { SEARCH_COMPLETE, COUNT_HITS } from '../../actions/SearchRequestActions'
-import { FETCHED_GRANULES, FACETS_RECEIVED, CLEAR_GRANULES, CLEAR_COLLECTIONS } from '../../actions/SearchRequestActions'
+import { SEARCH_COMPLETE, COUNT_HITS, INCREMENT_COLLECTIONS_OFFSET, FETCHED_GRANULES,
+  FACETS_RECEIVED, CLEAR_GRANULES, CLEAR_COLLECTIONS } from '../../actions/SearchRequestActions'
 
 export const initialState = Immutable({
   collections: {},
   granules: {},
   facets: {},
   totalCollections: 0,
-  pageOffset: 0
+  collectionsPageOffset: 0
 })
 
 export const results = (state = initialState, action) => {
@@ -41,6 +40,9 @@ export const results = (state = initialState, action) => {
 
     case FACETS_RECEIVED:
       return Immutable.set(state, 'facets', action.metadata.facets)
+
+    case INCREMENT_COLLECTIONS_OFFSET:
+      return Immutable.set(state, 'collectionsPageOffset', state.collectionsPageOffset + 20)
 
     default:
       return state
