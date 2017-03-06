@@ -1,13 +1,16 @@
 import _ from 'lodash'
 import { recenterGeometry } from './geoUtils'
 
-export const assembleSearchRequestString = (state, granules = false) => {
-  return JSON.stringify(assembleSearchRequest(state, granules))
+export const assembleSearchRequestString = (state, granules, retrieveFacets) => {
+  return JSON.stringify(assembleSearchRequest(state, granules, retrieveFacets))
 }
 
-export const assembleSearchRequest = (state, granules = false) => {
+export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   const behavior = state.behavior || {}
   const search = behavior.search || {}
+  const domain = state.domain || {}
+  const results = domain.results || {}
+  const pageOffset = results.collectionsPageOffset || 0
 
   const queries = assembleQueries(search)
   let filters = _.concat(
@@ -20,7 +23,9 @@ export const assembleSearchRequest = (state, granules = false) => {
   }
   filters =  _.flatten(_.compact(filters))
 
-  return {queries: queries, filters: filters, facets: !granules}
+  const page = assemblePagination(pageOffset)
+
+  return {queries: queries, filters: filters, facets: retrieveFacets, page: page}
 }
 
 const assembleQueries = ({queryText}) => {
@@ -55,6 +60,10 @@ const assembleSelectedCollectionsFilters = ({selectedIds}) => {
   if (selectedIds.length > 0) {
     return {type: 'collection', values: selectedIds}
   }
+}
+
+const assemblePagination = (pageOffset) => {
+  return {max: 20, offset: pageOffset}
 }
 
 export const encodeQueryString = (state) => {

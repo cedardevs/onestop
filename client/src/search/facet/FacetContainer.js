@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import FacetList from './FacetListComponent'
-import { triggerSearch } from '../../actions/SearchRequestActions'
+import { clearCollections, triggerSearch } from '../../actions/SearchRequestActions'
 import { toggleFacet } from '../../actions/SearchParamActions'
 import { showCollections } from '../../actions/FlowActions'
 
@@ -16,6 +16,7 @@ const mapDispatchToProps = (dispatch) => {
     toggleFacet: (category, facetName, selected) =>
       dispatch(toggleFacet(category, facetName, selected)),
     submit: () => {
+      dispatch(clearCollections())
       dispatch(triggerSearch())
       dispatch(showCollections())
     }

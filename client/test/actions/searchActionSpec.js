@@ -7,7 +7,7 @@ import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import Immutable from 'seamless-immutable'
 import nock from 'nock'
-import {searchQuery, errorQuery, errorsArray} from '../searchQuery'
+import {searchQuery, errorQuery, errorsArray} from '../mockSearchQuery'
 import {assembleSearchRequestString} from '../../src/utils/queryUtils'
 
 const middlewares = [ thunk ]
@@ -22,6 +22,8 @@ describe('The search action', () => {
     nock.cleanAll()
   })
 
+  const testingRoot = 'http://localhost:9090'
+
   it('triggerSearch executes a search from requestBody', () => {
     const testState = Immutable({
       behavior: {
@@ -29,10 +31,17 @@ describe('The search action', () => {
           queryText: {text: 'alaska'}
         },
         request: {collectionInFlight: false}
+      },
+      domain: {
+        config: {
+          apiHost: testingRoot
+        },
+        results: {
+          collectionsPageOffset: 0
+        }
       }
     })
-    const testingRoot = 'http://localhost:9090'
-    const requestBody = assembleSearchRequestString(testState)
+    const requestBody = assembleSearchRequestString(testState, false, true)
     searchQuery(testingRoot,requestBody)
 
     const expectedMetadata = {"facets":{"science":[{"term":"land","count":2}]}, "total":2, "took":100}
@@ -50,7 +59,7 @@ describe('The search action', () => {
     ]
 
     const store = mockStore(Immutable(testState))
-    return store.dispatch(module.triggerSearch(testingRoot))
+    return store.dispatch(module.triggerSearch())
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
         })
@@ -63,10 +72,17 @@ describe('The search action', () => {
           queryText: {text: 'alaska'}
         },
         request: {collectionInFlight: false}
+      },
+      domain: {
+        config: {
+          apiHost: testingRoot
+        },
+        results: {
+          collectionsPageOffset: 0
+        }
       }
     })
-    const testingRoot = 'http://localhost:9090'
-    const requestBody = assembleSearchRequestString(testState)
+    const requestBody = assembleSearchRequestString(testState, false, true)
     errorQuery(testingRoot, requestBody)
 
     const expectedActions = [
@@ -87,7 +103,7 @@ describe('The search action', () => {
     ]
 
     const store = mockStore(testState)
-    return store.dispatch(module.triggerSearch(testingRoot))
+    return store.dispatch(module.triggerSearch())
         .then(() => {
           store.getActions().should.deep.equal(expectedActions)
         })
@@ -97,6 +113,11 @@ describe('The search action', () => {
     const testState = Immutable({
       behavior: {
         request: {collectionInFlight: true}
+      },
+      domain: {
+        results: {
+          collectionsPageOffset: 0
+        }
       }
     })
 
@@ -143,7 +164,7 @@ describe('The granule actions', function () {
   beforeEach(nock.disableNetConnect)
   afterEach(nock.cleanAll)
 
-  const apiHost = 'http://localhost:9090'
+  const testingRoot = 'http://localhost:9090'
   const searchEndpoint = '/onestop/api/search'
   const successResponse = {
     data: [{
@@ -162,7 +183,6 @@ describe('The granule actions', function () {
   it('fetches granules with selected collections', function () {
     const collections = ['A', 'B']
     const state = {
-      apiHost: apiHost,
       behavior: {
         request: {
           granuleInFlight: false
@@ -170,11 +190,19 @@ describe('The granule actions', function () {
         search: {
           selectedIds: collections
         }
+      },
+      domain: {
+        config: {
+          apiHost: testingRoot
+        },
+        results: {
+          collectionsPageOffset: 0
+        }
       }
     }
     const store = mockStore(Immutable(state))
-    const expectedBody = assembleSearchRequestString(state, true)
-    nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
+    const expectedBody = assembleSearchRequestString(state, true, false)
+    nock(testingRoot).post(searchEndpoint, expectedBody).reply(200, successResponse)
 
     return store.dispatch(module.fetchGranules()).then(() => {
       store.getActions().should.deep.equal([
@@ -189,7 +217,6 @@ describe('The granule actions', function () {
   it('fetches granules with collection search params', function () {
     const collections = ['A', 'B']
     const state = {
-      apiHost: apiHost,
       behavior: {
         request: {
           granuleInFlight: false
@@ -201,11 +228,19 @@ describe('The granule actions', function () {
             location: ['Oceans']
           }
         }
+      },
+      domain: {
+        config: {
+          apiHost: testingRoot
+        },
+        results: {
+          collectionsPageOffset: 0
+        }
       }
     }
     const store = mockStore(Immutable(state))
-    const expectedBody = assembleSearchRequestString(state, true)
-    nock(apiHost).post(searchEndpoint, expectedBody).reply(200, successResponse)
+    const expectedBody = assembleSearchRequestString(state, true, false)
+    nock(testingRoot).post(searchEndpoint, expectedBody).reply(200, successResponse)
 
     return store.dispatch(module.fetchGranules()).then(() => {
       store.getActions().should.deep.equal([

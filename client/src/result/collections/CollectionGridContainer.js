@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import { setFocus } from '../../actions/FlowActions'
+import { incrementCollectionsOffset, triggerSearch } from '../../actions/SearchRequestActions'
 import CollectionGrid from './CollectionGridComponent'
 
 const mapStateToProps = (state) => {
@@ -15,6 +16,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onCardClick: (id) => {
       dispatch(setFocus(id))
+    },
+    fetchMoreResults: () => {
+      dispatch(incrementCollectionsOffset())
+      dispatch(triggerSearch(false))
     }
   }
 }

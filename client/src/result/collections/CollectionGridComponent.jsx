@@ -27,6 +27,7 @@ class CollectionGrid extends React.Component {
       <div className={styles.gridWrapper}>
         {cards}
       </div>
+      <button className={styles.showMoreButton} onClick={() => this.props.fetchMoreResults()}>Show More Results</button>
     </div>
   }
 }

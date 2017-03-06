@@ -19,3 +19,9 @@
   display: inline-block;
   margin: .5em .5em .5em 0;
 }
+
+.showMoreButton {
+  color: white;
+  background-color: darkblue;
+  text-align: center;
+}

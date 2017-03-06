@@ -13,8 +13,10 @@ export const completeSearch = (items)      => ({type: SEARCH_COMPLETE, items})
 export const countHits      = (totalHits)  => ({type: COUNT_HITS, totalHits})
 
 export const CLEAR_COLLECTIONS = 'clear_collections'
+export const INCREMENT_COLLECTIONS_OFFSET = 'increment_collections_offset'
 
 export const clearCollections = () => ({type: CLEAR_COLLECTIONS})
+export const incrementCollectionsOffset = () => ({type: INCREMENT_COLLECTIONS_OFFSET})
 
 export const FETCHING_GRANULES = 'fetching_granules'
 export const FETCHED_GRANULES = 'fetched_granules'
@@ -30,9 +32,9 @@ export const CLEAR_FACETS = 'CLEAR_FACETS'
 export const facetsReceived = (metadata) => ({type: FACETS_RECEIVED, metadata})
 export const clearFacets    = ()         => ({type: CLEAR_FACETS})
 
-export const triggerSearch = (testing) => {
+export const triggerSearch = (retrieveFacets = true) => {
   const bodyBuilder = (state) => {
-    const body = assembleSearchRequest(state)
+    const body = assembleSearchRequest(state, false, retrieveFacets)
     const inFlight = state.behavior.request.collectionInFlight
     const hasQueries = body && body.queries && body.queries.length > 0
     const hasFilters = body && body.filters && body.filters.length > 0
@@ -50,7 +52,7 @@ export const triggerSearch = (testing) => {
       return map.set(resource.id, Object.assign({type: resource.type}, resource.attributes))
     }, new Map())
 
-    dispatch(facetsReceived(payload.meta))
+    if(retrieveFacets) { dispatch(facetsReceived(payload.meta)) }
     dispatch(countHits(payload.meta.total))
     dispatch(completeSearch(result))
     dispatch(hideLoading())
@@ -62,7 +64,7 @@ export const triggerSearch = (testing) => {
     dispatch(completeSearch(new Map()))
   }
 
-  return buildSearchAction(bodyBuilder, prefetchHandler, successHandler, errorHandler, testing)
+  return buildSearchAction(bodyBuilder, prefetchHandler, successHandler, errorHandler)
 }
 
 export const fetchGranules = () => {
@@ -72,7 +74,7 @@ export const fetchGranules = () => {
     if (granuleInFlight || !selectedCollections) {
       return undefined
     }
-    return assembleSearchRequest(state, true)
+    return assembleSearchRequest(state, true, false)
   }
   const prefetchHandler = (dispatch) => {
     dispatch(showLoading())
@@ -92,7 +94,7 @@ export const fetchGranules = () => {
 }
 
 
-const buildSearchAction = (bodyBuilder, prefetchHandler, successHandler, errorHandler, testing) => {
+const buildSearchAction = (bodyBuilder, prefetchHandler, successHandler, errorHandler) => {
   return (dispatch, getState) => {
     let state = getState()
 
@@ -103,7 +105,7 @@ const buildSearchAction = (bodyBuilder, prefetchHandler, successHandler, errorHa
 
     prefetchHandler(dispatch)
 
-    const host = testing || state.apiHost || ''
+    const host = state.domain.config.apiHost || ''
     const endpoint = host + "/onestop/api/search"
     const fetchParams = {
       method: 'POST',
