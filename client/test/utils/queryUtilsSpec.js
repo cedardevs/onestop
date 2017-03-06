@@ -43,7 +43,11 @@ function collectionTestCases() {
       expectedResult: {
         queries: [],
         filters: [],
-        facets: true
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0
+        }
       }
     },
     {
@@ -62,7 +66,11 @@ function collectionTestCases() {
           }
         ],
         filters: [],
-        facets: true
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0
+        }
       }
     },
     {
@@ -84,7 +92,11 @@ function collectionTestCases() {
             before: "2017-01-20"
           }
         ],
-        facets: true
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0
+        }
       }
     },
     {
@@ -115,7 +127,11 @@ function collectionTestCases() {
             }
           }
         ],
-        facets: true
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0
+        }
       }
     },
     {
@@ -138,7 +154,11 @@ function collectionTestCases() {
             values: ["Atmosphere"]
           }
         ],
-        facets: true
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0
+        }
       }
     },
     {
@@ -189,7 +209,11 @@ function collectionTestCases() {
             before: "2017-01-20"
           }
         ],
-        facets: true
+        facets: true,
+        page: {
+          max: 20,
+          offset: 0
+        }
       }
     }
   ]
@@ -214,7 +238,11 @@ function granuleTestCases() {
             "values": ["ABC123"]
           }
         ],
-        facets: false
+        facets: false,
+        page: {
+          max: 20,
+          offset: 0
+        }
       }
     },
     {
@@ -234,7 +262,11 @@ function granuleTestCases() {
             "values": ["ABC123", 'XYZ789']
           }
         ],
-        facets: false
+        facets: false,
+        page: {
+          max: 20,
+          offset: 0
+        }
       }
     },
     {
@@ -260,7 +292,11 @@ function granuleTestCases() {
             "values": ["ABC123", 'XYZ789']
           }
         ],
-        facets: false
+        facets: false,
+        page: {
+          max: 20,
+          offset: 0
+        }
       }
     }
   ]

@@ -17,7 +17,9 @@ describe('The search reducer', function () {
       startDateTime: null,
       endDateTime: null,
       selectedFacets: {},
-      selectedIds: []
+      selectedIds: [],
+      collectionsPageOffset: null,
+      pageMax: null
     })
   })
 
@@ -29,7 +31,9 @@ describe('The search reducer', function () {
         startDateTime: '2000-01-01T00:00:00Z',
         endDateTime: '3000-01-01T00:00:00Z',
         selectedFacets: {science: ["Oceans"]},
-        selectedIds: ['ABCXYZ']
+        selectedIds: ['ABCXYZ'],
+        collectionsPageOffset: 0,
+        pageMax: 20
       }
 
       const updateAction = updateSearch(newSearchParams)
