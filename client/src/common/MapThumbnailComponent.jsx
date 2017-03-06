@@ -12,7 +12,7 @@ class MapThumbnailComponent extends React.Component {
   }
 
   render() {
-    return <div style={{width: '100%', height: '100%'}} ref={(div) => this.renderMap()}></div>
+    return <div style={{width: '100%', height: '100%'}} ref={() => this.renderMap()}></div>
   }
 
   renderMap() {
