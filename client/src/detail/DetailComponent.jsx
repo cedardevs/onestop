@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import React, {PropTypes} from 'react'
 import styles from './detail.css'
 
@@ -136,16 +137,23 @@ class Detail extends React.Component {
     const fullStars = Math.floor(dsmmScore)
     const halfStar = dsmmScore % 1 >= 0.5
 
-    let stars = []
-    let i
-    for (i = 1; i <= fullStars; i++) { stars[i] = this.renderFullStar(i) }
-
-    if (halfStar) {
-      stars[i] = this.renderHalfStar(i)
-      i++
+    const stars = []
+    if (dsmmScore === 0) {
+      stars.push(<span key={42} className={styles.dsmmMissing}>DSMM Rating Unavailable</span>)
     }
-
-    for (i; i <= 5; i++) { stars[i] = this.renderEmptyStar(i) }
+    else {
+      for (let i = 0; i < 5; i++) {
+        if (i < fullStars) {
+          stars.push(this.renderFullStar(i))
+        }
+        else if (i === fullStars && halfStar) {
+          stars.push(this.renderHalfStar(i))
+        }
+        else {
+          stars.push(this.renderEmptyStar(i))
+        }
+      }
+    }
 
     return (
         <div>
