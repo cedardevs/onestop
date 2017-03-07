@@ -10,7 +10,8 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   const search = behavior.search || {}
   const domain = state.domain || {}
   const results = domain.results || {}
-  const pageOffset = results.collectionsPageOffset || 0
+  const pageOffset = (granules ? results.granulesPageOffset : results.collectionsPageOffset) || 0
+  const pageSize = results.pageSize || 20
 
   const queries = assembleQueries(search)
   let filters = _.concat(
@@ -23,7 +24,7 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   }
   filters =  _.flatten(_.compact(filters))
 
-  const page = assemblePagination(pageOffset)
+  const page = assemblePagination(pageSize, pageOffset)
 
   return {queries: queries, filters: filters, facets: retrieveFacets, page: page}
 }
@@ -62,8 +63,8 @@ const assembleSelectedCollectionsFilters = ({selectedIds}) => {
   }
 }
 
-const assemblePagination = (pageOffset) => {
-  return {max: 20, offset: pageOffset}
+const assemblePagination = (max, offset) => {
+  return {max: max, offset: offset}
 }
 
 export const encodeQueryString = (state) => {

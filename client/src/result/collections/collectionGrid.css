@@ -1,8 +1,11 @@
+@import '../../../style/style.css';
+
 .gridWrapper {
   display: flex;
   flex-wrap: wrap;
   margin-left: -20px;
   padding-left: 1em;
+  justify-content: center;
 }
 
 .collectionsList {
@@ -20,8 +23,15 @@
   margin: .5em .5em .5em 0;
 }
 
-.showMoreButton {
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.button {
   color: white;
-  background-color: darkblue;
+  background-color: $color-primary;
   text-align: center;
+  font-size: 1.25em;
+  margin: 1em 0em 2em;
 }

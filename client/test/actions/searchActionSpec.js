@@ -177,7 +177,9 @@ describe('The granule actions', function () {
       id: '2',
       attributes: {id: 2, title: 'two'},
     }],
-    meta: {}
+    meta: {
+      total: 42
+    }
   }
 
   it('fetches granules with selected collections', function () {
@@ -208,6 +210,7 @@ describe('The granule actions', function () {
       store.getActions().should.deep.equal([
         {type: LOADING_SHOW},
         {type: module.FETCHING_GRANULES},
+        {type: module.COUNT_GRANULES, totalGranules: successResponse.meta.total},
         {type: module.FETCHED_GRANULES, granules: successResponse.data},
         {type: LOADING_HIDE}
       ])
@@ -246,6 +249,7 @@ describe('The granule actions', function () {
       store.getActions().should.deep.equal([
         {type: LOADING_SHOW},
         {type: module.FETCHING_GRANULES},
+        {type: module.COUNT_GRANULES, totalGranules: successResponse.meta.total},
         {type: module.FETCHED_GRANULES, granules: successResponse.data},
         {type: LOADING_HIDE}
       ])

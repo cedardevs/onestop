@@ -111,3 +111,14 @@
     }
   }
 }
+
+tr.pageButton {
+  text-align: center;
+  border-top: 1px solid #cbcbcb;
+  button {
+    color: white;
+    background-color: $color-primary;
+    text-align: center;
+    font-size: 1.25em;
+  }
+}

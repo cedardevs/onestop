@@ -21,10 +21,14 @@ export const incrementCollectionsOffset = () => ({type: INCREMENT_COLLECTIONS_OF
 export const FETCHING_GRANULES = 'fetching_granules'
 export const FETCHED_GRANULES = 'fetched_granules'
 export const CLEAR_GRANULES = 'clear_granules'
+export const INCREMENT_GRANULES_OFFSET = 'increment_granules_offset'
+export const COUNT_GRANULES = 'count_granules'
 
-export const clearGranules      = ()         => ({type: CLEAR_GRANULES})
-export const fetchingGranules   = ()         => ({type: FETCHING_GRANULES})
-export const fetchedGranules    = (granules) => ({type: FETCHED_GRANULES, granules})
+export const clearGranules           = ()              => ({type: CLEAR_GRANULES})
+export const fetchingGranules        = ()              => ({type: FETCHING_GRANULES})
+export const fetchedGranules         = (granules)      => ({type: FETCHED_GRANULES, granules})
+export const incrementGranulesOffset = ()              => ({type: INCREMENT_GRANULES_OFFSET})
+export const countGranules           = (totalGranules) => ({type: COUNT_GRANULES, totalGranules})
 
 export const FACETS_RECEIVED = 'FACETS_RECEIVED'
 export const CLEAR_FACETS = 'CLEAR_FACETS'
@@ -81,6 +85,7 @@ export const fetchGranules = () => {
     dispatch(fetchingGranules())
   }
   const successHandler = (dispatch, payload) => {
+    dispatch(countGranules(payload.meta.total))
     dispatch(fetchedGranules(payload.data))
     dispatch(hideLoading())
   }

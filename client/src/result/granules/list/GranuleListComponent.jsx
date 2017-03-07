@@ -65,7 +65,10 @@ class GranuleList extends React.Component {
                     <th>Data Access</th>
                   </tr>
                   </thead>
-                  <tbody>{tableRows}</tbody>
+                  <tbody>
+                    {tableRows}
+                    {this.renderPaginationButton()}
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -98,6 +101,18 @@ class GranuleList extends React.Component {
     const name = _.toLower(link.linkProtocol || '')
     return this.protocols[name]
   }
+
+  renderPaginationButton() {
+    if (_.size(this.props.results) < this.props.totalHits) {
+      return <tr className={styles.pageButton}>
+        <td colSpan="2">
+          <button className="pure-button" onClick={() => this.props.fetchMoreResults()}>
+            Show More Results
+          </button>
+        </td>
+      </tr>
+    }
+  }
 }
 
 GranuleList.propTypes = {
@@ -105,7 +120,9 @@ GranuleList.propTypes = {
   focusedIds: PropTypes.array,
   selectedCollection: PropTypes.object,
   toggleFocus: PropTypes.func,
-  showCollections: PropTypes.func
+  showCollections: PropTypes.func,
+  fetchMoreResults: PropTypes.func,
+  totalHits: PropTypes.number
 }
 
 export default GranuleList
