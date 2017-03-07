@@ -76,7 +76,9 @@ describe('The results reducer', function () {
         }
       },
       totalCollections: 0,
-      collectionsPageOffset: 0
+      collectionsPageOffset: 0,
+      granulesPageOffset: 0,
+      pageSize: 20
     }
     let stateWithFacets = results(initialState, facetsRecAction)
     stateWithFacets.should.deep.equal(expectedState)
