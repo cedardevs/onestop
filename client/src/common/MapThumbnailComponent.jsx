@@ -20,14 +20,14 @@ class MapThumbnailComponent extends React.Component {
       this.map.remove()
     }
 
-    const geoJson = {
+    const geoJsonLayer = L.GeoJSON.geometryToLayer({
       type: "Feature",
       geometry: convertEnvelopeToPolygon(this.props.geometry)
-    }
+    })
     this.map = L.map(ReactDOM.findDOMNode(this), {
       layers: [
         L.esri.basemapLayer("Oceans"),
-        L.GeoJSON.geometryToLayer(geoJson)
+        geoJsonLayer
       ],
       zoomControl: false,
       attributionControl: false,
@@ -38,9 +38,19 @@ class MapThumbnailComponent extends React.Component {
       boxZoom: false,
       tap: false
     })
-    this.map.fitWorld()
+    this.fitMapToResults(geoJsonLayer)
+  }
+
+  fitMapToResults(geoJsonLayer) {
+    if (this.props.geometry) {
+      this.map.fitBounds(geoJsonLayer.getBounds())
+    }
+    else {
+      this.map.fitWorld()
+    }
   }
 }
+
 
 MapThumbnailComponent.propTypes = {
   geometry: PropTypes.object.isRequired
