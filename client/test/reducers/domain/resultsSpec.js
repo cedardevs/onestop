@@ -76,6 +76,7 @@ describe('The results reducer', function () {
         }
       },
       totalCollections: 0,
+      totalGranules: 0,
       collectionsPageOffset: 0,
       granulesPageOffset: 0,
       pageSize: 20
