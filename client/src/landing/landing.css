@@ -29,6 +29,9 @@
       transform: scale(1.25);
       transform-origin: center bottom;
     }
+    &:last-child {
+      padding-right: 0;
+    }
   }
 }
 
