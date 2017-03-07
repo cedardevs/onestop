@@ -1,15 +1,13 @@
 import React, { PropTypes } from 'react'
 import styles from './collectionTile.css'
+import {processUrl} from '../../utils/urlUtils'
 import MapThumbnailComponent from '../../common/MapThumbnailComponent'
 
 class CollectionTile extends React.Component {
   constructor(props) {
     super(props)
 
-    this.thumbnailUrl = this.props.thumbnail && this.props.thumbnail
-            .replace(/^https?:/, '')
-            .replace(/'/, '%27')
-            .replace(/"/, '%22')
+    this.thumbnailUrl = processUrl(this.props.thumbnail)
   }
 
   render() {

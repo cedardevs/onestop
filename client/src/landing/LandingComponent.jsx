@@ -63,12 +63,7 @@ class LandingComponent extends React.Component {
             {topics}
           </div>
         </div>
-        <div className={`pure-u-1`}>
-          <h2>Featured Data Sets:</h2>
-          <div className={`${styles.featuredContainer}`}>
-            <FeaturedItemsComponent doSearch={this.search.bind(this)}/>
-          </div>
-        </div>
+        {this.renderFeatured()}
       </div>
     )
   }
@@ -155,6 +150,17 @@ class LandingComponent extends React.Component {
         </ul>
       </div>
     </div>
+  }
+
+  renderFeatured() {
+    if (this.props.featured) {
+      return <div className={`pure-u-1`}>
+        <h2>Featured Data Sets:</h2>
+        <div className={`${styles.featuredContainer}`}>
+          <FeaturedItemsComponent doSearch={this.search.bind(this)} items={this.props.featured}/>
+        </div>
+      </div>
+    }
   }
 
   componentDidMount() {

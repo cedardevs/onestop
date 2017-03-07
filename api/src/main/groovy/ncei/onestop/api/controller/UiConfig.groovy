@@ -9,6 +9,7 @@ class UiConfig {
 
   Boolean granuleDetails
   BannerConfig banner
+  List<FeaturedConfig> featured
 
   static class BannerConfig {
     String message
@@ -18,6 +19,12 @@ class UiConfig {
   static class BannerColorConfig {
     String text
     String background
+  }
+
+  static class FeaturedConfig {
+    String title
+    String searchTerm
+    String imageUrl
   }
 
 }

@@ -1,24 +1,23 @@
 import React, { PropTypes } from 'react'
+import { processUrl } from '../utils/urlUtils'
 import styles from './featuredItems.css'
 
 class FeaturedItemsComponent extends React.Component {
   constructor(props) {
     super(props)
 
-    this.featured = [
-      {title: 'Port Townsend DEM', term: 'title:"Port Townsend"', image: require('../../img/dem.jpg')},
-      {title: 'Tsunami', term: 'tsunami', image: require('../../img/tsunami.jpg')},
-      {title: 'GHRSST', term: 'ghrsst', image: require('../../img/ghrsst2.jpg')}
-    ]
-
     this.state = {current: 0}
   }
 
   render() {
+    if (this.props.items.length === 0) {
+      return null
+    }
+
     return <div className={`pure-g ${styles.featured}`}>
       <div className={`pure-u-1 pure-u-md-1-4 ${styles.titles}`}>
         <ul className={`${styles.titles}`}>
-          {this.featured.map((f, i) =>
+          {this.props.items.map((f, i) =>
               <li key={i} className={`${this.selectedClass(i)}`}
                   onMouseEnter={() => this.onEnter(i)}
                   onMouseLeave={() => this.onLeave()}>
@@ -28,9 +27,9 @@ class FeaturedItemsComponent extends React.Component {
         </ul>
       </div>
       <div className={`pure-u-md-3-4 ${styles.images}`}>
-        {this.featured.map((f, i) =>
-            <img key={i} src={f.image} title={f.title}
-                 className={`${styles.image} ${this.selectedClass(i)}`}
+        {this.props.items.map((f, i) =>
+            <img key={i} src={processUrl(f.imageUrl)} title={f.title}
+                 className={`${this.selectedClass(i)}`}
                  onClick={() => this.onClick(i)}
                  onMouseEnter={() => this.onEnter(i)}
                  onMouseLeave={() => this.onLeave()}/>
@@ -45,7 +44,7 @@ class FeaturedItemsComponent extends React.Component {
 
   onClick(i) {
     if (this.state.current === i) {
-      this.props.doSearch(this.featured[i].term)
+      this.props.doSearch(this.props.items[i].searchTerm)
     }
   }
 
@@ -59,15 +58,19 @@ class FeaturedItemsComponent extends React.Component {
   }
 
   setupTimer() {
-    this.timer = setTimeout((self) => {
-      const newCurrent = (self.state.current + 1) % self.featured.length
-      self.setState({current: newCurrent})
-      self.setupTimer()
-    }, 4000, this)
+    if (this.props.items.length > 0) {
+      this.timer = setTimeout((self) => {
+        const newCurrent = (self.state.current + 1) % self.props.items.length
+        self.setState({current: newCurrent})
+        self.setupTimer()
+      }, 5000, this)
+    }
   }
 
   cancelTimer() {
-    clearTimeout(this.timer)
+    if (this.props.items.length > 0 && this.timer) {
+      clearTimeout(this.timer)
+    }
   }
 
   componentWillMount() {
@@ -80,7 +83,12 @@ class FeaturedItemsComponent extends React.Component {
 }
 
 FeaturedItemsComponent.propTypes = {
-  doSearch: PropTypes.func.isRequired
+  doSearch: PropTypes.func.isRequired,
+  items: PropTypes.arrayOf(PropTypes.shape({
+    title: PropTypes.string,
+    searchTerm: PropTypes.string,
+    imageUrl: PropTypes.string
+  })).isRequired
 }
 
 export default FeaturedItemsComponent
