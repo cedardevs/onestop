@@ -19,7 +19,7 @@ ui:
   featured:
       - title: GHRSST
         searchTerm: ghrsst
-        imageUrl: "http://products.cersat.fr/media/productpicto/toto_2.png"
+        imageUrl: "https://podaac.jpl.nasa.gov/Podaac/thumbnails/DMI_OI-DMI-L4-GLOB-v1.0.jpg"
       - title: Digital Elevation Models
         searchTerm: '"digital elevation"'
         imageUrl: "https://www.ngdc.noaa.gov/dem/image/download/1722"
