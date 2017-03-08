@@ -3,6 +3,7 @@
 .featured {
   ul.titles {
     list-style-type: none;
+    cursor: pointer;
     margin: 0;
     padding: 0;
     li {
@@ -39,6 +40,8 @@
     }
   }
   .images {
+    max-width: 55em;
+    max-height: 29em;
     @media screen and (max-width: 48em) {
       display: none;
     }
@@ -51,6 +54,8 @@
       background: #007ec6;
       cursor: pointer;
       border-radius: 0 1em 1em 1em;
+      width:90%;
+      height: 100%;
       &.selected {
         opacity: 1;
         z-index: 10;
