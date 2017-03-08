@@ -58,10 +58,11 @@ class FeaturedItemsComponent extends React.Component {
   }
 
   setupTimer() {
-    if (this.props.items.length > 0) {
+    if (!this.timer && this.props.items.length > 0) {
       this.timer = setTimeout((self) => {
         const newCurrent = (self.state.current + 1) % self.props.items.length
         self.setState({current: newCurrent})
+        this.timer = undefined
         self.setupTimer()
       }, 5000, this)
     }
@@ -73,7 +74,7 @@ class FeaturedItemsComponent extends React.Component {
     }
   }
 
-  componentWillMount() {
+  componentDidUpdate() {
     this.setupTimer()
   }
 
