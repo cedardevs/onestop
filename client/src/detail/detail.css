@@ -116,11 +116,12 @@
   }
   .text {
     visibility: hidden;
+    opacity: 0;
     bottom: -0.5em;
     left: 105%;
     width: 30em;
     position: absolute;
-    z-index: 1;
+    z-index: 1001;
     background-color: black;
     border: solid thin white;
     border-radius: 6px;
@@ -129,6 +130,8 @@
   }
   &:hover .text {
     visibility: visible;
+    opacity: 1;
+    transition: opacity 300ms;
   }
 }
 
