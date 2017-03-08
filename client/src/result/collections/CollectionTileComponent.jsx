@@ -12,19 +12,33 @@ class CollectionTile extends React.Component {
 
   render() {
     return <div className={styles.tileContainer}>
-      <div className={styles.tileContent} onClick={() => this.props.onCardClick()}>
-        <h2 className={styles.title}>{this.props.title}</h2>
-        {this.renderThumbnail()}
+      <div className={styles.tileContent} style={this.thumbnailStyle()}>
+        <div className={styles.overlay} onClick={() => this.props.onCardClick()}>
+          <h2 className={styles.title}>{this.props.title}</h2>
+          {this.renderThumbnailMap()}
+        </div>
       </div>
     </div>
   }
 
-  renderThumbnail() {
-    return this.thumbnailUrl ?
-        <img className={styles.thumbnail} src={this.thumbnailUrl}/> :
-        <div className={styles.thumbnail}>
-          <MapThumbnailComponent geometry={this.props.geometry}/>
-        </div>
+  renderThumbnailMap() {
+    if (!this.thumbnailUrl) {
+      return <div className={styles.mapContainer}>
+        <MapThumbnailComponent geometry={this.props.geometry}/>
+      </div>
+    }
+  }
+
+  thumbnailStyle() {
+    if (this.thumbnailUrl) {
+      return {
+        background: `url('${this.thumbnailUrl}')`,
+        backgroundColor: 'black',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center'
+      }
+    }
   }
 
 }
