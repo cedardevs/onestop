@@ -2,7 +2,7 @@ import _ from 'lodash'
 import watch from 'redux-watch'
 import { push } from 'react-router-redux'
 import { encodeQueryString, decodeQueryString } from '../utils/queryUtils'
-import { triggerSearch, fetchGranules, clearCollections } from './SearchRequestActions'
+import { triggerSearch, fetchGranules, clearCollections, clearGranules } from './SearchRequestActions'
 import { updateSearch } from './SearchParamActions'
 import { fetchConfig } from './ConfigActions'
 import store from '../store'
@@ -115,6 +115,8 @@ const applyNewQueryString = (newQueryString) => {
   const searchFromQuery = _.omit(_.get(decodedQuery, 'behavior.search'), 'selectedIds')
   const searchFromState = _.omit(_.get(store.getState(), 'behavior.search'), 'selectedIds')
   if (!_.isEqual(searchFromQuery, searchFromState)) {
+    store.dispatch(clearCollections())
+    store.dispatch(clearGranules())
     store.dispatch(updateSearch(searchFromQuery))
     store.dispatch(loadData())
   }
