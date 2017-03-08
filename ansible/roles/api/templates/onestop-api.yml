@@ -14,6 +14,12 @@ logging:
     ncei.onestop.api: DEBUG
 
 ui:
-  granuleDetails: true
   banner:
     message: THIS IS A BETA RELEASE - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and is only a partial implementation of its intended funtionality.
+  featured:
+      - title: GHRSST
+        searchTerm: ghrsst
+        imageUrl: "http://products.cersat.fr/media/productpicto/toto_2.png"
+      - title: Digital Elevation Models
+        searchTerm: '"digital elevation"'
+        imageUrl: "https://www.ngdc.noaa.gov/dem/image/download/1722"
