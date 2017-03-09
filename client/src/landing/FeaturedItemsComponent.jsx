@@ -18,7 +18,7 @@ class FeaturedItemsComponent extends React.Component {
       <div className={`pure-u-1 pure-u-md-1-4 ${styles.titles}`}>
         <ul className={`${styles.titles}`}>
           {this.props.items.map((f, i) =>
-              <li key={i} className={`${this.selectedClass(i)}`}
+              <li key={i} className={`${this.selectedTextClass(i)}`}
                   onClick={() => this.onClick(i)}
                   onMouseEnter={() => this.onEnter(i)}
                   onMouseLeave={() => this.onLeave()}>
@@ -27,20 +27,37 @@ class FeaturedItemsComponent extends React.Component {
           )}
         </ul>
       </div>
-      <div className={`pure-u-md-3-4 ${styles.images}`}>
+      <div className={`pure-u-md-3-4 ${styles.imagesContainer}`}>
         {this.props.items.map((f, i) =>
-            <img key={i} src={processUrl(f.imageUrl)} title={f.title}
-                 className={`${this.selectedClass(i)}`}
-                 onClick={() => this.onClick(i)}
-                 onMouseEnter={() => this.onEnter(i)}
-                 onMouseLeave={() => this.onLeave()}/>
+        <div key={i} className={`${styles.imageContent} ${this.selectedImageClass(i)}`} style={this.renderImageStyle(i, processUrl(f.imageUrl))}>
+          <div className={styles.overlay} title={f.title}
+               onClick={() => this.onClick(i)}
+               onMouseEnter={() => this.onEnter(i)}
+               onMouseLeave={() => this.onLeave()}>
+          </div>
+        </div>
         )}
       </div>
     </div>
   }
 
-  selectedClass(i) {
-    return i === this.state.current ? styles.selected : ''
+  selectedTextClass(i) {
+    return i === this.state.current ? styles.selectedText : ''
+  }
+
+  selectedImageClass(i) {
+    return i === this.state.current ? styles.selectedImage : ''
+  }
+
+  renderImageStyle(i, imageUrl) {
+    if(this.state.current === i) {
+      return {
+        background: `url('${imageUrl}')`,
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: 'contain',
+        backgroundPosition: 'center center'
+      }
+    }
   }
 
   onClick(i) {
