@@ -12,6 +12,7 @@ import cardDetails from './ui/cardDetails'
 import granuleDetails from './ui/granuleDetails'
 import toggles from './ui/toggles'
 import loading from './ui/loading'
+import background from './ui/background'
 
 const domain = combineReducers({
   config,
@@ -22,7 +23,8 @@ const ui = combineReducers({
   cardDetails,
   granuleDetails,
   loading,
-  toggles
+  toggles,
+  background
 })
 
 const behavior = combineReducers({

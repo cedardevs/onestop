@@ -85,6 +85,14 @@ export const hideLoading = () => {
   }
 }
 
+export const TOGGLE_BACKGROUND_IMAGE = 'TOGGLE_BACKGROUND_IMAGE'
+export const toggleBackgroundImage = (boolVisible)=> {
+  return {
+    type: TOGGLE_BACKGROUND_IMAGE,
+    visible: boolVisible
+  }
+}
+
 export const initialize = () => {
   return (dispatch) => {
     dispatch(fetchConfig())
