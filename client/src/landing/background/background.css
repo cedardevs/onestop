@@ -1,0 +1,9 @@
+@import '../../../style/style.css';
+
+.backgroundImage {
+  @mixin bgImage '../../../img/isabel1.jpg';
+}
+
+.backgroundColor {
+  background: #2e4250;
+}
