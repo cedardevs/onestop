@@ -29,11 +29,14 @@
       transform: scale(1.25);
       transform-origin: center bottom;
     }
+    &:last-child {
+      padding-right: 0;
+    }
   }
 }
 
 .featuredContainer {
-  max-width: 60em;
+  max-width: 80em;
   min-height: 35em;
   margin: 0 auto;
 
@@ -46,7 +49,8 @@
 .showcase {
   margin: 0 auto;
   width: 90%;
-  max-width: 70em;
+  max-width: 80em;
+  padding-bottom: 10em;
 }
 
 .searchComponent {

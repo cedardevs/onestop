@@ -1,6 +1,6 @@
-import _ from 'lodash'
 import React, {PropTypes} from 'react'
 import MapThumbnailComponent from '../common/MapThumbnailComponent'
+import {processUrl} from '../utils/urlUtils'
 import styles from './detail.css'
 
 class Detail extends React.Component {
@@ -85,7 +85,7 @@ class Detail extends React.Component {
   }
 
   renderImage() {
-    const imgUrl = this.props.item.thumbnail && this.props.item.thumbnail.replace(/^https?:/, '')
+    const imgUrl = processUrl(this.props.item.thumbnail)
     return imgUrl ?
         <img className={styles.previewImg} src={imgUrl}/> :
         <div className={styles.previewMap}>

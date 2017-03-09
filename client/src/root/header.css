@@ -20,7 +20,7 @@ input {
   a {
     color: #d7d7d7;
     font-weight: 300;
-    padding: 0em 0.5em;
+    padding: 0 0.5em;
     transition: color 0.3s ease;
     text-decoration: none;
     &.selected, &:hover {
@@ -30,19 +30,19 @@ input {
 }
 
 .noaaLogo {
-  height: 60px;
-  width: 60px;
-  min-height: 60px;
-  min-width: 60px;
-  padding-right: 10px;
+  height: 4.5em;
+  width: 4.5em;
+  min-height: 4.5em;
+  min-width: 4.5em;
+  padding-right: 1em;
   display: inline;
 }
 
 .nceiLogo {
-  height: 60px;
-  width: 272px;
-  min-height: 60px;
-  min-width: 272px;
+  height: 4.5em;
+  width: 20.5em;
+  min-height: 4.5em;
+  min-width: 20.5em;
 }
 
 .oneStopLink {

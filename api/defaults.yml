@@ -68,3 +68,7 @@
 #    colors:
 #      text:
 #      background:
+#  featured:
+#    - title:
+#      searchTerm:
+#      imageUrl:

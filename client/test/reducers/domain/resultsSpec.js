@@ -1,7 +1,7 @@
 import '../../specHelper'
 import Immutable from 'seamless-immutable'
 import { results, initialState } from '../../../src/reducers/domain/results'
-import { fetchedGranules, clearGranules, FACETS_RECEIVED } from '../../../src/actions/SearchRequestActions'
+import { completeSearch, clearCollections, fetchedGranules, clearGranules, FACETS_RECEIVED } from '../../../src/actions/SearchRequestActions'
 
 describe('The results reducer', function () {
 
@@ -14,8 +14,31 @@ describe('The results reducer', function () {
     result.facets.should.be.an.instanceOf(Object)
   })
 
-  it('receives collection results', function () {
-// FIXME
+  it('merges received collections into the map of collections', function () {
+    const firstSetCollections = new Map()
+    firstSetCollections.set('A', {id: 1})
+    const expectedFirstMap = {A: {id: 1}}
+    const firstRoundResult = results(initialState, completeSearch(firstSetCollections))
+    firstRoundResult.collections.should.deep.equal(expectedFirstMap)
+
+    const secondSetCollections = new Map()
+    secondSetCollections.set('B', {id: 2})
+    secondSetCollections.set('C', {id: 3})
+    const expectedSecondMap = {A: {id: 1}, B: {id: 2}, C: {id: 3}}
+    const secondRoundResult = results(firstRoundResult, completeSearch(secondSetCollections))
+    secondRoundResult.collections.should.deep.equal(expectedSecondMap)
+  })
+
+  it('can clear existing collection state', function () {
+    const stateWithCollections = Immutable({
+      collections: {A: {id: 123}},
+      totalCollections: 1,
+      collectionsPageOffset: 20
+    })
+    const result = results(stateWithCollections, clearCollections())
+    result.collections.should.deep.equal({})
+    result.totalCollections.should.equal(0)
+    result.collectionsPageOffset.should.equal(0)
   })
 
   it('merges received granules into the map of granules', function () {
@@ -31,9 +54,15 @@ describe('The results reducer', function () {
   })
 
   it('can clear existing granule state', function () {
-    const stateWithGranules = Immutable({granules: {A: {id: 'A'}}})
+    const stateWithGranules = Immutable({
+      granules: {A: {id: 'A'}},
+      totalGranules: 1,
+      granulesPageOffset: 20
+    })
     const result = results(stateWithGranules, clearGranules())
     result.granules.should.deep.equal({})
+    result.totalGranules.should.equal(0)
+    result.granulesPageOffset.should.equal(0)
   })
 
   it('should handle FACETS_RECEIVED', () => {

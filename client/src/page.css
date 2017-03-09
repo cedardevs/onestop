@@ -2,10 +2,11 @@
 
 html {
   height: 100%;
+  font-size: 10px;
 }
 
 body {
-  font-size: 12px;
+  font-size: 1.4rem;
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   color: white;
   min-height: 100%;
@@ -16,5 +17,4 @@ img {
   max-width: 90%;
   line-height: 1.7em;
   color: #7f8c8d;
-  font-size: 13px;
 }

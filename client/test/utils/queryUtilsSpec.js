@@ -215,6 +215,25 @@ function collectionTestCases() {
           offset: 0
         }
       }
+    },
+    {
+      name: "more results requested",
+      inputState: {
+        domain: {
+          results: {
+            collectionsPageOffset: 20
+          }
+        }
+      },
+      expectedResult: {
+        queries: [],
+        filters: [],
+        facets: true,
+        page: {
+          max: 20,
+          offset: 20
+        }
+      }
     }
   ]
 }
@@ -296,6 +315,30 @@ function granuleTestCases() {
         page: {
           max: 20,
           offset: 0
+        }
+      }
+    },
+    {
+      name: "more results requested",
+      inputState: {
+        behavior: {
+          search: {
+            selectedIds: []
+          }
+        },
+        domain: {
+          results: {
+            granulesPageOffset: 20
+          }
+        }
+      },
+      expectedResult: {
+        queries: [],
+        filters: [],
+        facets: false,
+        page: {
+          max: 20,
+          offset: 20
         }
       }
     }

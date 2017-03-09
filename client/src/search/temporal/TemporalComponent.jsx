@@ -80,7 +80,7 @@ class TemporalSearch extends React.Component {
         <div className={styles.temporalContainer}>
           <div className={`pure-form pure-g ${styles.temporalContent}`}>
             <div className={`pure-u-1 ${styles.pickerLabel}`}>Start Date:</div>
-            <div className={`pure-u-1`}>
+            <div className={`pure-u-1 ${styles.pickerInput}`}>
               <DateTimePicker id="startValue"
                               value={this.state.startValue}
                               onChange={this.onChange.bind(this, 'startValue')}

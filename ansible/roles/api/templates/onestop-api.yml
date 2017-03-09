@@ -14,6 +14,18 @@ logging:
     ncei.onestop.api: DEBUG
 
 ui:
-  granuleDetails: true
   banner:
     message: THIS IS A BETA RELEASE - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and is only a partial implementation of its intended funtionality.
+  featured:
+      - title: GHRSST
+        searchTerm: ghrsst
+        imageUrl: "https://podaac.jpl.nasa.gov/Podaac/thumbnails/DMI_OI-DMI-L4-GLOB-v1.0.jpg"
+      - title: Digital Elevation Models
+        searchTerm: '"digital elevation"'
+        imageUrl: "https://www.ngdc.noaa.gov/dem/image/download/1722"
+      - title: NWLON and PORTS
+        searchTerm: +nwlon +ports
+        imageUrl: "https://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:NDBC-COOPS"
+      - title: World Ocean Atlas 2013
+        searchTerm: '"world ocean atlas"'
+        imageUrl: "https://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:0114815"

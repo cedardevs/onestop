@@ -24,11 +24,18 @@ class MapThumbnailComponent extends React.Component {
       type: "Feature",
       geometry: convertEnvelopeToPolygon(this.props.geometry)
     })
+    geoJsonLayer.setStyle({
+      color: "red",
+      weight: 5,
+      opacity: 1
+    })
+
     this.map = L.map(ReactDOM.findDOMNode(this), {
       layers: [
         L.esri.basemapLayer("Oceans"),
         geoJsonLayer
       ],
+      maxZoom: 3,
       zoomControl: false,
       attributionControl: false,
       dragging: false,
