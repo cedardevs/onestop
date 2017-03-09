@@ -2,7 +2,7 @@
 
 .rootContainer {
   position: relative;
-  min-height: 100%;
+  min-height: 100vh;
   margin-bottom: calc(-$footer-height + 2 * -$section-padding);
 }
 
