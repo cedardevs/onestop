@@ -1,9 +1,9 @@
 @import '../../../style/style.css';
-$cardHeight: 140px;
-$cardWidth: 300px;
+$cardHeight: 10em;
+$cardWidth: 20em;
 
 .tileContainer {
-  padding: 15px;
+  padding: 1em;
   text-align: center;
   width: $cardWidth;
   height: $cardHeight;

@@ -16,15 +16,15 @@
 
 .mapContainer {
   position: fixed;
-  z-index: 2;
+  z-index: 20;
   left: 50%;
-  margin-top: 5%;
-  margin-left: -40%;
+  margin-top: 2em;
+  margin-left: -30%;
   box-shadow: 14px 14px 5px rgb(0,0,0,.7);
   border: 2px outset $color-primary;
-  height: 400px;
+  height: 30em;
   width: 80%;
-  max-width: 1000px;
+  max-width: 70em;
 }
 
 .clearButton {
