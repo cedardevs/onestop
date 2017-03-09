@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react'
 import _ from 'lodash'
+import styles from './collectionGrid.css'
 
 class Section508CollectionGridComponent extends React.Component {
   constructor(props) {
@@ -85,7 +86,7 @@ class Section508CollectionGridComponent extends React.Component {
       <div>
         Showing {this.props.returnedHits} of {this.props.totalHits} matching results
       </div>
-      <ul>
+      <ul className={styles.collectionList508}>
         {collections}
       </ul>
     </div>
