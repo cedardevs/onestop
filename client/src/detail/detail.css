@@ -18,6 +18,7 @@
   padding: 1.5em;
   border: 1px solid $color-gray;
   width: 90%;
+  max-width: 80em;
   overflow: auto;
 
   & p {
