@@ -5,5 +5,5 @@
 }
 
 .backgroundColor {
-  background: #2e4250;
+  background: $color-gray;
 }

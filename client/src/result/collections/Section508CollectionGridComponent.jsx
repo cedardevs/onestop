@@ -60,7 +60,7 @@ class Section508CollectionGridComponent extends React.Component {
     const collections = []
     _.forOwn(this.props.results, (val, key) => {
       collections.push(
-          <li key={key}>
+          <li key={key} className={styles.listItem}>
             <h3 title="Title">{val.title}</h3>
             <p title="Description">{val.description}</p>
             <div title="Related Links">
