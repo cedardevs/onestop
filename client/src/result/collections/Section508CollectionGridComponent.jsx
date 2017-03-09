@@ -4,6 +4,7 @@ import _ from 'lodash'
 class Section508CollectionGridComponent extends React.Component {
   constructor(props) {
     super(props)
+    this.updateBackground = this.updateBackground.bind(this)
   }
 
   getLinksByType(type, links) {
@@ -40,6 +41,19 @@ class Section508CollectionGridComponent extends React.Component {
       </a>
     </li>
   }
+
+  componentDidUpdate() {
+    this.updateBackground()
+  }
+
+  componentDidMount() {
+    this.updateBackground()
+  }
+
+  updateBackground() {
+    this.props.toggleBackgroundImage()
+  }
+
 
   render() {
     const collections = []
