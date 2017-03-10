@@ -29,7 +29,6 @@ class HeaderComponent extends React.Component {
     else if (this.props.showMenu) {
       return <div className={`${styles.headerLinks}`}>
         <a href="#" title="Home">Home</a>
-        <a href="//data.noaa.gov/dataset" title="NOAA Data Catalog">Data Catalog</a>
         <a href="#" title="About" onClick={() => this.props.toggleAbout()}>About</a>
         <a href="#" title="Help" onClick={() => this.props.toggleHelp()}>Help</a>
       </div>
