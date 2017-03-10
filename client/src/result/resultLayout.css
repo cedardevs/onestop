@@ -51,6 +51,7 @@
 .resultsContainer, .resultsContainer508 {
   font-size: 1.2em;
   font-family: inherit !important;
+  margin: 1em auto 8em;
 }
 
 .resultsContainer508 {
