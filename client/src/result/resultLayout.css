@@ -2,6 +2,7 @@
 
 .mainWindow {
   letter-spacing: 0em !important;
+  font-family: inherit;
 }
 
 .facetSideBar {
