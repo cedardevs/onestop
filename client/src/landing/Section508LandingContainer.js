@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import Section508LandingComponent from './Section508LandingComponent'
 import { triggerSearch, clearFacets } from '../actions/SearchRequestActions'
 import { updateQuery } from '../actions/SearchParamActions'
-import { showCollections, toggleBackgroundImage } from '../actions/FlowActions'
+import { showCollections } from '../actions/FlowActions'
 import { newGeometry, removeGeometry, updateDateRange, updateSearch } from '../actions/SearchParamActions'
 
 const mapStateToProps = (state) => {
@@ -34,8 +34,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(showCollections('508'))
     },
     // Clear all search params
-    clearSearch: () => dispatch(updateSearch()),
-    toggleBackgroundImage: () => dispatch(toggleBackgroundImage(true))
+    clearSearch: () => dispatch(updateSearch())
   }
 }
 

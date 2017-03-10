@@ -86,7 +86,7 @@ export const hideLoading = () => {
 }
 
 export const TOGGLE_BACKGROUND_IMAGE = 'TOGGLE_BACKGROUND_IMAGE'
-export const toggleBackgroundImage = (boolVisible)=> {
+const toggleBackgroundImage = (boolVisible)=> {
   return {
     type: TOGGLE_BACKGROUND_IMAGE,
     visible: boolVisible
@@ -130,5 +130,15 @@ const applyNewQueryString = (newQueryString) => {
   }
 }
 
-const w = watch(store.getState, 'behavior.routing.locationBeforeTransitions.search')
-store.subscribe(w(applyNewQueryString))
+const queryWatch = watch(store.getState, 'behavior.routing.locationBeforeTransitions.search')
+store.subscribe(queryWatch(applyNewQueryString))
+
+// Update background
+const updateBackground = (path) => {
+  store.dispatch(toggleBackgroundImage(
+    !(path.startsWith('/508/') && path !== '/508/'
+      || path.startsWith('508/') && path !== '508/'))) //Cover strange routing case. TODO: Regex test?
+}
+
+const pathWatch = watch(store.getState, 'behavior.routing.locationBeforeTransitions.pathname')
+store.subscribe(pathWatch(updateBackground))

@@ -9,7 +9,6 @@ class Section508LandingComponent extends React.Component {
 
     this.updateQuery = this.updateQuery.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
-    this.updateBackground = this.updateBackground.bind(this)
 
     this.formFields = [
       { label: 'Search Text:', name: 'search-text', placeholder: 'e.g. ocean',
@@ -80,18 +79,6 @@ class Section508LandingComponent extends React.Component {
       e.preventDefault()
       this.props.submit()
     }
-  }
-
-  componentDidUpdate() {
-    this.updateBackground()
-  }
-
-  componentDidMount() {
-    this.updateBackground()
-  }
-
-  updateBackground() {
-    this.props.toggleBackgroundImage()
   }
 
   render() {

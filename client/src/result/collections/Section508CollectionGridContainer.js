@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { showGranules, setFocus, toggleBackgroundImage } from '../../actions/FlowActions'
+import { showGranules, setFocus } from '../../actions/FlowActions'
 import { triggerSearch, fetchGranules, clearGranules } from '../../actions/SearchRequestActions'
 import { toggleSelection, clearSelections, updateQuery, updateSearch } from '../../actions/SearchParamActions'
 import CollectionGrid from './Section508CollectionGridComponent'
@@ -30,8 +30,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(updateSearch())
       dispatch(updateQuery(text))
       dispatch(triggerSearch())
-    },
-    toggleBackgroundImage: () => dispatch(toggleBackgroundImage(false))
+    }
   }
 }
 

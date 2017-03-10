@@ -5,7 +5,6 @@ import styles from './collectionGrid.css'
 class Section508CollectionGridComponent extends React.Component {
   constructor(props) {
     super(props)
-    this.updateBackground = this.updateBackground.bind(this)
   }
 
   getLinksByType(type, links) {
