@@ -35,13 +35,15 @@
   margin: 1em 0em 2em;
 }
 
+/*
+  box-shadow: 6px 8px 5px rgb(0,0,0,.7);
+  */
 .collectionList508 {
   list-style: none;
   padding: 0;
   margin: 0;
-  box-shadow: 6px 8px 5px rgb(0,0,0,.7);
   a {
-    color: $color-primary-alt;
+    color: white;
   }
 }
 
@@ -55,4 +57,12 @@
 
 .listItem:nth-child(even) {
   background-color: $color-primary-darker;
+}
+
+.keywordsAndLinks {
+  display: inline-block;
+  padding: .3em;
+  margin: .2em;
+  background-color: $color-primary-alt;
+  border-radius: .2em .4em;
 }

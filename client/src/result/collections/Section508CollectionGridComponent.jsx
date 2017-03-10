@@ -15,12 +15,12 @@ class Section508CollectionGridComponent extends React.Component {
   renderLinks(label, links, linkRenderer) {
     if (!links || links.length === 0) { return <ul></ul> }
 
-    return <ul title={label}>{links.map(linkRenderer)}</ul>
+    return <ul title={label} className={styles.collectionList508}>{links.map(linkRenderer)}</ul>
   }
 
   renderLink(link, index) {
     const { linkName, linkProtocol, linkUrl } = link
-    return <li key={index}>
+    return <li key={index} className={styles.keywordsAndLinks}>
       <a href={linkUrl} target="_blank" title={linkProtocol || linkName || 'Link'}>
         {linkProtocol || linkName || 'Link'}
       </a>
@@ -36,7 +36,7 @@ class Section508CollectionGridComponent extends React.Component {
   }
 
   renderKeyword(keyword, index) {
-    return <li key={index}>
+    return <li key={index} className={styles.keywordsAndLinks}>
       <a title={keyword} onClick={() => this.props.textSearch(`"${keyword}"`)}>
         {keyword}
       </a>
