@@ -1,7 +1,7 @@
 @import '../../../style/style.css';
 
 .backgroundImage {
-  @mixin bgImage '../../../img/isabel1.jpg';
+  @mixin bgImage '../../../img/NorthernHemisphere.jpg';
 }
 
 .backgroundColor {
