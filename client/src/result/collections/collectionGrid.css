@@ -35,9 +35,15 @@
   margin: 1em 0em 2em;
 }
 
-/*
-  box-shadow: 6px 8px 5px rgb(0,0,0,.7);
-  */
+.resultCount {
+  margin: .5em 0 1em;
+}
+
+.listContainer {
+  box-shadow: 1.3em 0.7em 0.5em 0.2em rgb(0,0,0,.7);
+  overflow-x: none;
+}
+
 .collectionList508 {
   list-style: none;
   padding: 0;
@@ -48,7 +54,10 @@
 }
 
 .listItem {
-  padding: 1em;
+  padding: .5em 1em 1em;
+  > div {
+    margin: .5em 0;
+  }
 }
 
 .listItem:nth-child(odd)	{
@@ -59,10 +68,21 @@
   background-color: $color-primary-darker;
 }
 
-.keywordsAndLinks {
+@define-extend keywordsAndLinks {
   display: inline-block;
   padding: .3em;
   margin: .2em;
+  border-radius: .1em .4em;
+}
+
+.keywords {
+  @extend keywordsAndLinks;
   background-color: $color-primary-alt;
-  border-radius: .2em .4em;
+}
+
+.links {
+  @extend keywordsAndLinks;
+  background-color: $color-green;
+  text-decoration: underline;
+  cursor: pointer;
 }

@@ -31,7 +31,7 @@ class CollectionGrid extends React.Component {
         />)
     })
     return <div>
-      <div>
+      <div className={styles.resultCount}>
         Showing {this.props.returnedHits} of {this.props.totalHits} matching results
       </div>
       <div className={styles.gridWrapper}>

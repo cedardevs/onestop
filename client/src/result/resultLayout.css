@@ -47,9 +47,13 @@
   border-bottom-right-radius: 25%;
 }
 
-.resultsContainer {
+.resultsContainer, .resultsContainer508 {
+  font-size: 1.2em;
+  font-family: inherit !important;
+}
+
+.resultsContainer508 {
   overflow-x: hidden;
   margin: 1em auto 8em;
-  font-size: 1.2em;
   max-width: 40em;
 }

@@ -20,7 +20,7 @@ class Section508CollectionGridComponent extends React.Component {
 
   renderLink(link, index) {
     const { linkName, linkProtocol, linkUrl } = link
-    return <li key={index} className={styles.keywordsAndLinks}>
+    return <li key={index} className={styles.links}>
       <a href={linkUrl} target="_blank" title={linkProtocol || linkName || 'Link'}>
         {linkProtocol || linkName || 'Link'}
       </a>
@@ -36,25 +36,12 @@ class Section508CollectionGridComponent extends React.Component {
   }
 
   renderKeyword(keyword, index) {
-    return <li key={index} className={styles.keywordsAndLinks}>
-      <a title={keyword} onClick={() => this.props.textSearch(`"${keyword}"`)}>
+    return <li key={index} className={styles.keywords}>
+      <div title={keyword} onClick={() => this.props.textSearch(`"${keyword}"`)}>
         {keyword}
-      </a>
+      </div>
     </li>
   }
-
-  componentDidUpdate() {
-    this.updateBackground()
-  }
-
-  componentDidMount() {
-    this.updateBackground()
-  }
-
-  updateBackground() {
-    this.props.toggleBackgroundImage()
-  }
-
 
   render() {
     const collections = []
@@ -75,7 +62,7 @@ class Section508CollectionGridComponent extends React.Component {
             </div>
             <div title="Associated Files">
               <span>Associated Files: </span>
-              <a onClick={() => this.props.showGranules(key)} title="Show matching files">
+              <a onClick={() => this.props.showGranules(key)} title="Show matching files" className={styles.links}>
                 Show Matching Files
               </a>
             </div>
@@ -83,12 +70,14 @@ class Section508CollectionGridComponent extends React.Component {
       )
     })
     return <div>
-      <div>
+      <div className={styles.resultCount}>
         Showing {this.props.returnedHits} of {this.props.totalHits} matching results
       </div>
-      <ul className={styles.collectionList508}>
-        {collections}
-      </ul>
+      <div className={styles.listContainer}>
+        <ul className={styles.collectionList508}>
+          {collections}
+        </ul>
+      </div>
     </div>
   }
 }
