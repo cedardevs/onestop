@@ -123,3 +123,58 @@ tr.pageButton {
     font-size: 1.25em;
   }
 }
+
+/* Section 508 style */
+.descriptionContainer {
+  padding: 1em;
+  background: $color-primary-darker;
+}
+
+.descriptionParagraph {
+  line-height: 1.4em;
+}
+
+.listContainer {
+  box-shadow: 1.3em 0.7em 0.5em 0.2em rgb(0,0,0,.7);
+  overflow-x: none;
+}
+
+.granuleList508 {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  a {
+    color: white;
+  }
+}
+
+.listItem {
+  padding: .5em 1em 1em;
+  > div {
+    margin: .5em 0;
+  }
+}
+
+.listItem:nth-child(odd)	{
+  background-color: $color-primary-darkest;
+}
+
+.listItem:nth-child(even) {
+  background-color: $color-primary-darker;
+}
+
+.linkRow {
+  display: inline-block;
+  margin: .5em .5em .5em 0;
+}
+
+.links {
+  display: inline-block;
+  padding: .3em;
+  margin: .2em;
+  border-radius: .1em .4em;
+  color: white;
+  background-color: $color-green;
+  text-decoration: underline;
+  cursor: pointer;
+}
