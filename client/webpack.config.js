@@ -1,83 +1,104 @@
-var webpack = require('webpack')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
-var precss = require('precss')
-var autoprefixer = require('autoprefixer')
-var postcssAssets = require('postcss-assets')
-var path = require('path')
-
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const precss = require('precss')
+const autoprefixer = require('autoprefixer')
+const postcssAssets = require('postcss-assets')
+const path = require('path')
 
 module.exports = {
-  entry: {
-    app: './src/index.jsx',
-    vendor: ['purecss', 'react', 'react-dom', 'react-router', 'redux', 'redux-thunk',
-      'leaflet']
+  entry: [
+    'react-hot-loader/patch',
+    // activate HMR for React
+
+    'webpack-dev-server/client?http://localhost:8080',
+    // bundle the client for webpack-dev-server
+    // and connect to the provided endpoint
+
+    'webpack/hot/only-dev-server',
+    // bundle the client for hot reloading
+    // only- means to only hot reload for successful updates
+
+    './index.jsx'
+    // the entry point of our app
+  ],
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/onestop/',
+    filename: 'bundle.js'
+  },
+  context: path.resolve(__dirname, 'src'),
+  devtool: 'inline-source-map',
+  devServer: {
+    hot: true,
+    // enable HMR on the server
+
+    contentBase: path.resolve(__dirname, 'dist'),
+    // match the output path
+
+    publicPath: '/'
+    // match the output `publicPath`
   },
   module: {
-    preLoaders: [{
+    rules: [{
+      enforce: 'pre',
       test: /\.js$/,
-      loader: "eslint",
+      use: 'eslint-loader',
       exclude: /node_modules/
-    }],
-    loaders: [{
+    },{
       test: /\.jsx?$/,
       exclude: /node_modules/,
-      loader: 'babel'
+      use: ['babel-loader']
     }, {
       test: /\.css$/,
       include: /node_modules/,
-      loaders: [
-        'style?sourceMap',
-        'css'
+      use: [
+        'style-loader?sourceMap',
+        'css-loader'
       ]
     }, {
       test: /\.css$/,
       exclude: /node_modules/,
-      loaders: [
-        'style?sourceMap',
-        'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
-        'postcss'
-      ]
+      use: [
+        'style-loader?sourceMap',
+        'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
+        'postcss-loader'
+      ],
+      options: {
+        plugins: function () {
+          return [
+            require('precss'),
+            require('autoprefixer')
+          ];
+        }
+      }
     }, {
       test: /\.(jpe?g|png|gif)$/,
-      loaders: [
-        'file?hash=sha512&digest=hex&name=[hash].[ext]',
-        'image-webpack?bypassOnDebug&optimizationLevel=7&interlaced=false'
+      use: [
+        'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
+        'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false'
       ],
     }, {
       test: /\.(svg)(\?v=\d+\.\d+\.\d+)?$/,
-      loader: 'url?limit=65000&mimetype=image/svg+xml&name=public/fonts/[name].[ext]'
+      use: 'url-loader?limit=65000&mimetype=image/svg+xml&name=public/fonts/[name].[ext]'
     }, {
         test: /\.(woff)(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'url?limit=65000&mimetype=application/font-woff&name=public/fonts/[name].[ext]'
+        use: 'url-loader?limit=65000&mimetype=application/font-woff&name=public/fonts/[name].[ext]'
     }, {
         test: /\.(woff2)(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'url?limit=65000&mimetype=application/font-woff2&name=public/fonts/[name].[ext]'
+        use: 'url-loader?limit=65000&mimetype=application/font-woff2&name=public/fonts/[name].[ext]'
     }, {
         test: /\.([ot]tf)(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'url?limit=65000&mimetype=application/octet-stream&name=public/fonts/[name].[ext]'
+        use: 'url-loader?limit=65000&mimetype=application/octet-stream&name=public/fonts/[name].[ext]'
     }, {
         test: /\.(eot)(\?v=\d+\.\d+\.\d+)?$/,
-        loader: 'url?limit=65000&mimetype=application/vnd.ms-fontobject&name=public/fonts/[name].[ext]'
+        use: 'url-loader?limit=65000&mimetype=application/vnd.ms-fontobject&name=public/fonts/[name].[ext]'
     }]
   },
-  postcss: function(){
-    return [postcssAssets({
-        loadPaths: ['**']
-      }), precss, autoprefixer]
-  },
   resolve: {
-    extensions: ['', '.js', '.jsx'],
-    root: [
-      path.resolve('./node_modules/leaflet/dist')
-    ]
-  },
-  output: {
-    path: __dirname + '/dist',
-    publicPath: './',
-    filename: 'bundle-[hash].js'
+    modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules'],
+    extensions: ['.js', '.jsx'],
   },
   devtool: '#eval-source-map',
-  debug: true,
   devServer: {
     publicPath: '/onestop/',
     contentBase: './dist',
@@ -90,20 +111,19 @@ module.exports = {
     }
   },
   plugins: [
-    // TODO - This is not working in the running app right now. Can fix later as needed.
-    // new webpack.DefinePlugin({
-    //   'process.env': {
-    //     'NODE_ENV': process && process.env && process.env.NODE_ENV || 'development'
-    //   }
-    // }),
     new webpack.optimize.UglifyJsPlugin({
       compress: {warnings: false},
       sourceMap: false
     }),
     new HtmlWebpackPlugin({
-      title: 'NOAA OneStop Demo',
-      favicon: './img/noaa-favicon.ico'
+      title: 'NOAA OneStop Demo'//,
+      //favicon: './img/noaa-favicon.ico'
     }),
-    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
+    //new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
+    new webpack.HotModuleReplacementPlugin(),
+    // enable HMR globally
+
+    new webpack.NamedModulesPlugin()
+    // prints more readable module names in the browser console on HMR updates
   ]
 }
