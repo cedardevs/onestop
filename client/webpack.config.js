@@ -47,7 +47,12 @@ module.exports = {
     },{
       test: /\.jsx?$/,
       exclude: /node_modules/,
-      use: ['babel-loader']
+      use: ['babel-loader'],
+      options: {
+        presets: [
+          [ 'es2015', { modules: false } ]
+        ]
+      }
     }, {
       test: /\.css$/,
       include: /node_modules/,
@@ -119,6 +124,7 @@ module.exports = {
       title: 'NOAA OneStop Demo'//,
       //favicon: './img/noaa-favicon.ico'
     }),
+    new HtmlWebpackPlugin({ title: 'Tree-shaking' }),
     //new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
     new webpack.HotModuleReplacementPlugin(),
     // enable HMR globally
