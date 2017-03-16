@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "webpack-dev-server --content-base dist/",
     "test": "NODE_ENV=test mocha --recursive ./test",
-    "build": "npm install && npm test && NODE_ENV=production webpack",
+    "build": "npm install && npm test && NODE_ENV=production ./node_modules/.bin/webpack -p",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -43,11 +43,11 @@
     "autoprefixer": "^6.3.6",
     "babel": "^6.5.0",
     "babel-cli": "^6.7.0",
-    "babel-core": "^6.13.2",
-    "babel-loader": "^6.4.0",
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
     "babel-plugin-webpack-alias": "^1.3.1",
     "babel-polyfill": "^6.7.4",
-    "babel-preset-es2015": "^6.13.2",
+    "babel-preset-es2015": "^6.24.0",
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-2": "^6.13.0",
     "chai": "^3.5.0",
@@ -77,13 +77,14 @@
     "sinon": "^1.17.7",
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
-    "webpack": "^2.1.0-beta.25",
-    "webpack-dev-server": "^2.1.0-beta.0"
+    "webpack": "^2.2.0",
+    "webpack-dev-server": "^2.2.1"
   },
   "babel": {
     "presets": [
       [
-        "es2015", {
+        "es2015",
+        {
           "modules": false
         }
       ],
@@ -92,7 +93,9 @@
     ],
     "env": {
       "test": {
-        "presets": ["es2015"]
+        "presets": [
+          "es2015"
+        ]
       }
     },
     "plugins": [

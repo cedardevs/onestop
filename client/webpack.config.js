@@ -44,38 +44,53 @@ module.exports = {
       test: /\.js$/,
       use: 'eslint-loader',
       exclude: /node_modules/
-    },{
+    }, {
       test: /\.jsx?$/,
       exclude: /node_modules/,
-      use: ['babel-loader'],
-      options: {
-        presets: [
-          [ 'es2015', { modules: false } ]
-        ]
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            [ 'es2015', { modules: false } ]
+          ]
+        }
       }
     }, {
       test: /\.css$/,
       include: /node_modules/,
-      use: [
-        'style-loader?sourceMap',
-        'css-loader'
-      ]
+      use: [{
+        loader: 'style-loader',
+        options: {
+          sourceMap: true
+        }
+      }, {
+        loader: 'css-loader'
+      }]
     }, {
       test: /\.css$/,
       exclude: /node_modules/,
-      use: [
-        'style-loader?sourceMap',
-        'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
-        'postcss-loader'
-      ],
-      options: {
-        plugins: function () {
-          return [
-            require('precss'),
-            require('autoprefixer')
-          ];
+
+      use: [{
+        loader: 'style-loader',
+        options: {
+          sourceMap: true
         }
-      }
+      }, {
+        loader: 'css-loader',
+        options: {
+          modules: true,
+          importLoaders: true,
+          localIdentName: '[name]__[local]___[hash:base64:5]',
+          plugins: function () {
+            return [
+              require('precss'),
+              require('autoprefixer')
+            ]
+          }
+        }
+      }, {
+        loader: 'postcss-loader'
+      }],
     }, {
       test: /\.(jpe?g|png|gif)$/,
       use: [
@@ -116,14 +131,14 @@ module.exports = {
     }
   },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {warnings: false},
-      sourceMap: false
-    }),
-    new HtmlWebpackPlugin({
-      title: 'NOAA OneStop Demo'//,
-      //favicon: './img/noaa-favicon.ico'
-    }),
+    // new webpack.optimize.UglifyJsPlugin({
+    //   compress: {warnings: false},
+    //   sourceMap: false
+    // }),
+    // new HtmlWebpackPlugin({
+    //   title: 'NOAA OneStop Demo'//,
+    //   //favicon: './img/noaa-favicon.ico'
+    // }),
     new HtmlWebpackPlugin({ title: 'Tree-shaking' }),
     //new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
     new webpack.HotModuleReplacementPlugin(),
