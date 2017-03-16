@@ -1,0 +1,40 @@
+# classpath config is included in compiled application
+server:
+  port: 8097
+  context-path: /onestop/api
+
+spring:
+  application:
+    name: onestop
+  http:
+    multipart:
+      location: /tmp
+      max-request-size: 5MB
+
+logging:
+  level:
+      ncei.onestop.api: INFO
+      org.gradle: WARN
+      org.apache.http: WARN
+      org.apache.http.wire: WARN
+      org.apache.http.headers: WARN
+      groovyx.net.http: WARN
+      groovyx.net.http.HttpURLClient: WARN
+      org.springframework: INFO
+      org.springframework.amqp: WARN
+      org.hibernate: WARN
+
+elasticsearch:
+  cluster:
+    name: elasticsearch
+  host: localhost
+  port: 9300
+  index:
+    staging:
+      name: staging_v1
+      granuleType: granule
+      collectionType: collection
+    search:
+      name: search_v3
+      granuleType: granule
+      collectionType: collection

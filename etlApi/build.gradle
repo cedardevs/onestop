@@ -1,0 +1,121 @@
+import com.wiredforcode.gradle.spawn.SpawnProcessTask
+import com.wiredforcode.gradle.spawn.KillProcessTask
+
+apply plugin: 'war'
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
+apply plugin: "com.wiredforcode.spawn"
+apply from: "${rootDir}/gradle/publishing.gradle"
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+  mavenCentral()
+  maven {
+    url "https://maven.elasticsearch.org/releases"
+  }
+}
+
+dependencies {
+  compile 'org.codehaus.groovy:groovy:2.4.8'
+  compile 'org.codehaus.groovy:groovy-json:2.4.8'
+  compile 'org.codehaus.groovy:groovy-xml:2.4.8'
+  compile "org.elasticsearch:elasticsearch:${project.esVersion}"
+  compile "org.elasticsearch.module:lang-expression:${project.esVersion}"
+  compile "org.elasticsearch.plugin:delete-by-query:${project.esVersion}"
+  compile "org.elasticsearch.plugin:shield:${project.esVersion}"
+  compile 'org.springframework.boot:spring-boot-starter-web'
+  compile 'org.springframework.boot:spring-boot-starter-actuator'
+  compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
+  compile 'com.github.fge:json-schema-validator:2.2.6'
+  compile 'org.apache.commons:commons-lang3:3.4'
+  compile 'com.spatial4j:spatial4j:0.5' // Necessary for embedded ES to have geo_shape type available
+  compile 'com.vividsolutions:jts:1.13' // Necessary for embedded ES to have geo_shape type available
+  compile 'org.apache.lucene:lucene-expressions:5.5.0'
+
+  runtime 'org.springframework.boot:spring-boot-devtools'
+
+  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+  testCompile "org.spockframework:spock-spring:1.1-groovy-2.4-rc-3"
+  testCompile "org.spockframework:spock-core:1.1-groovy-2.4-rc-3"
+  testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+  testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+ext {
+  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
+}
+
+bootRun {
+  dependsOn ':elasticsearch:start'
+}
+
+war {
+  baseName = "${rootProject.name}-${project.name}"
+  finalizedBy bootRepackage
+}
+
+jar {
+  baseName = "${project.name}"
+}
+
+springBoot {
+  backupSource = false
+}
+
+bootRepackage {
+  outputFile = fatWarPath
+  excludeDevtools = true
+  executable = true
+  onlyIf { !tasks.getByName('war').state.upToDate }
+}
+
+task start(type: SpawnProcessTask) {
+  dependsOn 'assemble', ':elasticsearch:start'
+  onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
+
+  directory projectDir.absolutePath
+  command "${fatWarPath}"
+  ready 'Started ncei.onestop.api.search.Application'
+}
+
+task stop(type: KillProcessTask) {
+  onlyIf { new File(projectDir, '.pid.lock').exists() }
+  directory projectDir.absolutePath
+}
+
+configurations.configure {
+  integrationTestCompile.extendsFrom testCompile
+  integrationTestRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+  integrationTest {
+    groovy.srcDir file('src/integrationTest/groovy')
+    //resources.srcDir file('src/integrationTest/resources')
+    compileClasspath += main.output + test.output + configurations.testRuntime
+    runtimeClasspath += output + compileClasspath
+  }
+}
+
+task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
+  mustRunAfter 'test'
+  testClassesDir = sourceSets.integrationTest.output.classesDir
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  reports.junitXml.destination = 'build/integration-test-results'
+  reports.html.destination = 'build/reports/integrationTests'
+}
+
+check.dependsOn integrationTest
+
+publishing {
+  publications {
+    main(MavenPublication) {
+      artifact war
+      artifactId "${rootProject.name}-${project.name}"
+    }
+  }
+}
