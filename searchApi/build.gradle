@@ -24,6 +24,7 @@ dependencies {
   compile 'org.codehaus.groovy:groovy-xml:2.4.8'
   compile "org.elasticsearch:elasticsearch:${project.esVersion}"
   compile "org.elasticsearch.module:lang-expression:${project.esVersion}"
+  compile "org.elasticsearch.plugin:delete-by-query:${project.esVersion}"
   compile "org.elasticsearch.plugin:shield:${project.esVersion}"
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
@@ -42,8 +43,8 @@ dependencies {
   testCompile "org.spockframework:spock-core:1.1-groovy-2.4-rc-3"
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
-  testCompile project(':etlApi')
-  testCompile project(':metadataApi')
+  testCompile project(path: ':etlApi', configuration: 'testSupport')
+  testCompile project(path: ':metadataApi', configuration: 'testSupport')
 }
 
 ext {
@@ -57,6 +58,20 @@ bootRun {
 war {
   baseName = "${rootProject.name}-${project.name}"
   finalizedBy bootRepackage
+}
+
+configurations {
+  testSupport
+}
+
+task testSupportJar(type: Jar) {
+  baseName = 'searchApi'
+  dependsOn classes
+  from sourceSets.main.output
+}
+
+artifacts {
+  testSupport testSupportJar
 }
 
 springBoot {

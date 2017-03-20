@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @Slf4j
 @ControllerAdvice
-class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
+class SearchGlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
 
   @Override
   protected ResponseEntity<Object> handleExceptionInternal(

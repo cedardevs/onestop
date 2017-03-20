@@ -1,4 +1,4 @@
-package ncei.onestop.api.metadata
+package ncei.onestop.api
 
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.shield.ShieldPlugin

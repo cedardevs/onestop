@@ -1,8 +1,10 @@
 package ncei.onestop.api.metadata
 
-import ncei.onestop.api.service.ETLService
-import ncei.onestop.api.service.MetadataIndexService
-import ncei.onestop.api.service.SearchIndexService
+import ncei.onestop.api.Application
+import ncei.onestop.api.etl.service.ETLService
+import ncei.onestop.api.etl.service.IndexAdminService
+import ncei.onestop.api.metadata.service.MetadataIndexService
+import ncei.onestop.api.search.service.SearchIndexService
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -37,6 +39,15 @@ class LoadIntegrationTests extends Specification {
   @Autowired
   private ETLService etlService
 
+  @Autowired
+  private IndexAdminService adminService
+
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
+  private String STAGING_INDEX
+
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
+  private String SEARCH_INDEX
+
   @Value('${local.server.port}')
   private String port
 
@@ -56,8 +67,8 @@ class LoadIntegrationTests extends Specification {
   private final String searchQuery = '{"queries":[]}'
 
   void setup() {
-    searchIndexService.recreate()
-    metadataIndexService.recreate()
+    adminService.recreate(STAGING_INDEX)
+    adminService.recreate(SEARCH_INDEX)
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
@@ -73,7 +84,7 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
-    metadataIndexService.refresh()
+    adminService.refresh(STAGING_INDEX)
 
     then: "Load returns CREATED"
     loadResult.statusCode == HttpStatus.CREATED
@@ -85,7 +96,7 @@ class LoadIntegrationTests extends Specification {
     getResult.body?.data?.id == docId
 
     when: "Update search index then search"
-    searchIndexService.refresh()
+    adminService.refresh(SEARCH_INDEX)
     def searchResult = restTemplate.exchange(searchRequest, Map)
     def hits = searchResult.body.data
 
@@ -109,7 +120,7 @@ class LoadIntegrationTests extends Specification {
     def deleteResult = restTemplate.exchange(deleteRequest, Map)
     getResult = restTemplate.exchange(getRequest, Map)
     searchResult = restTemplate.exchange(searchRequest, Map)
-    metadataIndexService.refresh()
+    adminService.refresh(STAGING_INDEX)
 
     then: "Document is deleted in staging and search indices"
     deleteResult.body.attributes.successes.count { it.found == true } == 3
@@ -182,7 +193,7 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.postForEntity(loadURI, parts, Map)
-    metadataIndexService.refresh()
+    adminService.refresh(STAGING_INDEX)
 
     then: "Load returns MULTI-STATUS"
     loadResult.statusCode == HttpStatus.MULTI_STATUS
@@ -223,9 +234,9 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
-    metadataIndexService.refresh()
+    adminService.refresh(STAGING_INDEX)
     etlService.rebuildSearchIndex()
-    searchIndexService.refresh()
+    adminService.refresh(SEARCH_INDEX)
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
     then:
@@ -242,9 +253,9 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
-    metadataIndexService.refresh()
+    adminService.refresh(STAGING_INDEX)
     etlService.rebuildSearchIndex()
-    searchIndexService.refresh()
+    adminService.refresh(SEARCH_INDEX)
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
     then:
@@ -270,9 +281,9 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }
-    metadataIndexService.refresh()
+    adminService.refresh(STAGING_INDEX)
     etlService.rebuildSearchIndex()
-    searchIndexService.refresh()
+    adminService.refresh(SEARCH_INDEX)
     def hitsC = restTemplate.exchange(searchRequestC, Map).body.data
     def hitsG = restTemplate.exchange(searchRequestG, Map).body.data
 

@@ -1,5 +1,6 @@
 package ncei.onestop.api.etl
 
+import ncei.onestop.api.etl.controller.ETLGlobalDefaultExceptionHandler
 import org.elasticsearch.client.Client
 import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.settings.Settings
@@ -46,6 +47,11 @@ class DefaultApplicationConfig {
 
     def client = builder.settings(settingsBuilder.build()).build()
     client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticHost), elasticPort))
+  }
+
+  @Bean
+  public ETLGlobalDefaultExceptionHandler globalDefaultExceptionHandler() {
+    return new ETLGlobalDefaultExceptionHandler()
   }
 
 }
