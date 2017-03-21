@@ -16,27 +16,27 @@ module.exports = {
 
     'webpack/hot/only-dev-server',
     // bundle the client for hot reloading
-    // only- means to only hot reload for successful updates
+    // hot reload for successful updates
 
     './index.jsx'
-    // the entry point of our app
   ],
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/onestop/',
-    filename: 'bundle.js'
+    filename: '[name].bundle.js'
   },
   context: path.resolve(__dirname, 'src'),
   devtool: 'inline-source-map',
   devServer: {
-    hot: true,
-    // enable HMR on the server
-
+    publicPath: '/onestop/',
     contentBase: path.resolve(__dirname, 'dist'),
-    // match the output path
-
-    publicPath: '/'
-    // match the output `publicPath`
+    hot: true,
+    proxy: {
+      '/onestop/api/*': {
+        target: 'http://localhost:8097/',
+        secure: false
+      }
+    }
   },
   module: {
     rules: [{
@@ -69,7 +69,6 @@ module.exports = {
     }, {
       test: /\.css$/,
       exclude: /node_modules/,
-
       use: [{
         loader: 'style-loader',
         options: {
@@ -118,28 +117,23 @@ module.exports = {
     modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules'],
     extensions: ['.js', '.jsx'],
   },
-  devtool: '#eval-source-map',
-  devServer: {
-    publicPath: '/onestop/',
-    contentBase: './dist',
-    hot: true,
-    proxy: {
-      '/onestop/api/*': {
-        target: 'http://localhost:8097/',
-        secure: false
-      }
-    }
-  },
   plugins: [
-    // new webpack.optimize.UglifyJsPlugin({
-    //   compress: {warnings: false},
-    //   sourceMap: false
-    // }),
-    // new HtmlWebpackPlugin({
-    //   title: 'NOAA OneStop Demo'//,
-    //   //favicon: './img/noaa-favicon.ico'
-    // }),
-    new HtmlWebpackPlugin({ title: 'Tree-shaking' }),
+    new HtmlWebpackPlugin({
+      title: 'NOAA OneStop Demo',
+      favicon: '../img/noaa-favicon.ico'
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {warnings: false},
+      sourceMap: true
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor',
+      filename: 'vendor.js',
+      minChunks(module, count) {
+        var context = module.context
+        return context && context.includes('node_modules')
+      }
+    }),
     //new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
     new webpack.HotModuleReplacementPlugin(),
     // enable HMR globally
