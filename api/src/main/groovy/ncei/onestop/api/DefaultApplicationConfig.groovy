@@ -24,6 +24,15 @@ class DefaultApplicationConfig {
   @Value('${elasticsearch.host}')
   String elasticHost
 
+  @Value('${elasticsearch.ssl.enabled:false}')
+  String sslEnabled
+
+  @Value('${elasticsearch.ssl.keystore.path')
+  String keystorePath
+
+  @Value('${elasticsearch.ssl.keystore.password')
+  String keystorePassword
+
   @Value('${elasticsearch.ro.user:}')
   String roUser
 
@@ -37,7 +46,7 @@ class DefaultApplicationConfig {
   String rwPassword
 
   @Bean(destroyMethod = 'close')
-  public Client searchClient() {
+  Client searchClient() {
     def builder = TransportClient.builder()
     def settingsBuilder = Settings.builder()
 
@@ -47,13 +56,22 @@ class DefaultApplicationConfig {
       builder.addPlugin(ShieldPlugin)
       settingsBuilder.put('shield.user', "${roUser}:${roPassword}")
     }
+    if (sslEnabled == 'true') {
+      settingsBuilder.put('shield.transport.ssl', 'true')
+    }
+    if (keystorePath) {
+      settingsBuilder.put('shield.ssl.keystore.path', keystorePath)
+    }
+    if (keystorePassword) {
+      settingsBuilder.put('shield.ssl.keystore.password', keystorePassword)
+    }
 
     def client = builder.settings(settingsBuilder.build()).build()
     client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticHost), elasticPort))
   }
 
   @Bean(destroyMethod = 'close')
-  public Client adminClient() {
+  Client adminClient() {
     def builder = TransportClient.builder()
     def settingsBuilder = Settings.builder()
 
@@ -63,6 +81,15 @@ class DefaultApplicationConfig {
     if (rwUser && rwPassword) {
       builder.addPlugin(ShieldPlugin)
       settingsBuilder.put('shield.user', "${rwUser}:${rwPassword}")
+    }
+    if (sslEnabled == 'true') {
+      settingsBuilder.put('shield.transport.ssl', 'true')
+    }
+    if (keystorePath) {
+      settingsBuilder.put('shield.ssl.keystore.path', keystorePath)
+    }
+    if (keystorePassword) {
+      settingsBuilder.put('shield.ssl.keystore.password', keystorePassword)
     }
 
     def client = builder.settings(settingsBuilder.build()).build()
