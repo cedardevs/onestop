@@ -28,8 +28,8 @@
 }
 
 .button {
-  color: white;
-  background-color: $color-primary;
+  color: white !important;
+  background-color: $color-primary !important;
   text-align: center;
   font-size: 1.25em;
   margin: 1em 0em 2em;
