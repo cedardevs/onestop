@@ -51,11 +51,23 @@ class AdminController {
     }
   }
 
+  @RequestMapping(path = '/admin/index/search/refresh', method = GET, produces = 'application/json')
+  Map refreshSearchIndex() {
+    adminService.refresh(SEARCH_INDEX)
+    return [acknowledged: true]
+  }
+
   @RequestMapping(path = '/admin/index/metadata/recreate', method = [GET, PUT], produces = 'application/json')
   Map recreateMetadataIndex(@RequestParam Boolean sure) {
     if (sure != null) {
       adminService.recreate(STAGING_INDEX)
       return [acknowledged: true]
     }
+  }
+
+  @RequestMapping(path = '/admin/index/metadata/refresh', method = GET, produces = 'application/json')
+  Map refreshMetadataIndex() {
+    adminService.refresh(STAGING_INDEX)
+    return [acknowledged: true]
   }
 }

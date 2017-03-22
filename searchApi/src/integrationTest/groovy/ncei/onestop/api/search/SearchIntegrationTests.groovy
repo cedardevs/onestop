@@ -2,10 +2,6 @@ package ncei.onestop.api.search
 
 import groovy.json.JsonOutput
 import ncei.onestop.api.Application
-import ncei.onestop.api.etl.service.ETLService
-import ncei.onestop.api.etl.service.IndexAdminService
-import ncei.onestop.api.metadata.service.MetadataIndexService
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
@@ -13,6 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
+import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -22,15 +19,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles("integration")
 @SpringBootTest(classes = [Application, IntegrationTestConfig], webEnvironment = RANDOM_PORT)
 class SearchIntegrationTests extends Specification {
-
-  @Autowired
-  private IndexAdminService adminService
-
-  @Autowired
-  private ETLService etlService
-
-  @Autowired
-  private MetadataIndexService metadataIndexService
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
   private String STAGING_INDEX
@@ -48,28 +36,43 @@ class SearchIntegrationTests extends Specification {
   private List datasets = ['GHRSST', 'DEM']
 
   private RestTemplate restTemplate
-  private String searchBaseUriString
   private URI searchBaseUri
 
 
   void setup() {
-    adminService.recreate(STAGING_INDEX)
-    adminService.recreate(SEARCH_INDEX)
+    def baseURI = "http://localhost:${port}/${contextPath}/"
+
+    restTemplate = new RestTemplate()
+    restTemplate.errorHandler = new TestResponseErrorHandler()
+    searchBaseUri = (baseURI + "search").toURI()
+
+    def recreateMetadataURI = (baseURI + "admin/index/metadata/recreate").toURI()
+    def recreateSearchURI = (baseURI + "admin/index/search/recreate").toURI()
+    def loadURI = (baseURI + "metadata").toURI()
+    def rebuildURI = (baseURI + "admin/index/search/rebuild").toURI()
+    def refreshURI = (baseURI + "admin/index/search/refresh").toURI()
+    def request
+
+    executeGetRequest(recreateMetadataURI)
+    executeGetRequest(recreateSearchURI)
 
     def cl = ClassLoader.systemClassLoader
     for (e in datasets) {
       for (i in 1..3) {
         def metadata = cl.getResourceAsStream("data/${e}/${i}.xml").text
-        metadataIndexService.loadMetadata(metadata)
+        request = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(metadata)
+        restTemplate.exchange(request, Map)
       }
     }
-    etlService.rebuildSearchIndex()
-    adminService.refresh(SEARCH_INDEX)
 
-    restTemplate = new RestTemplate()
-    restTemplate.errorHandler = new TestResponseErrorHandler()
-    searchBaseUriString = "http://localhost:${port}/${contextPath}/search"
-    searchBaseUri = searchBaseUriString.toURI()
+    executeGetRequest(rebuildURI)
+    sleep(1000) // Because rebuild is an async request...
+  }
+
+  // Helper method for setup:
+  private executeGetRequest(URI uri) {
+    def request = RequestEntity.get(uri).build()
+    restTemplate.exchange(request, Map)
   }
 
   def 'Valid query-only search with facets returns OK with expected results'() {
