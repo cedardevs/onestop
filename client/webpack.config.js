@@ -22,7 +22,7 @@ module.exports = {
   ],
   output: {
     path: path.resolve(__dirname, 'dist'),
-    publicPath: '/onestop/',
+    publicPath: './',
     filename: '[name].bundle.js'
   },
   context: path.resolve(__dirname, 'src'),
