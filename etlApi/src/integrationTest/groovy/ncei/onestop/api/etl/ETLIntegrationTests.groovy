@@ -1,5 +1,6 @@
 package ncei.onestop.api.etl
 
+import ncei.onestop.api.Application
 import ncei.onestop.api.etl.service.ETLService
 import ncei.onestop.api.etl.service.IndexAdminService
 import org.elasticsearch.client.Client
@@ -20,7 +21,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(classes = [Application, IntegrationTestConfig], webEnvironment = RANDOM_PORT)
 class ETLIntegrationTests extends Specification {
 
-  private RestTemplate restTemplate
+  RestTemplate restTemplate
+  URI loadURI
 
   @Autowired
   private Client client
@@ -50,10 +52,12 @@ class ETLIntegrationTests extends Specification {
   private String contextPath
 
   void setup() {
-    adminService.recreate(SEARCH_INDEX)
     adminService.recreate(STAGING_INDEX)
+    adminService.recreate(SEARCH_INDEX)
 
     restTemplate = new RestTemplate()
+    restTemplate.errorHandler = new TestResponseErrorHandler()
+    loadURI = "http://localhost:${port}/${contextPath}/metadata".toURI()
   }
 
   def 'update does nothing when staging is empty'() {
@@ -218,9 +222,9 @@ class ETLIntegrationTests extends Specification {
   }
 
   private insertMetadata(String document) {
-    URI loadURI = "http://localhost:${port}/${contextPath}/metadata".toURI()
     def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
-    restTemplate.exchange(loadRequest, Map)
+    def loadResult = restTemplate.exchange(loadRequest, Map)
+    println("Status code: ${loadResult.statusCode}; Body: ${loadResult.body.toString()}")
 
     //metadataIndexService.loadMetadata(document)
     adminService.refresh(STAGING_INDEX)

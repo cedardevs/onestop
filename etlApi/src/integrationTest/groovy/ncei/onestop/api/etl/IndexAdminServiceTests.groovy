@@ -1,5 +1,6 @@
 package ncei.onestop.api.etl
 
+import ncei.onestop.api.Application
 import ncei.onestop.api.etl.service.IndexAdminService
 import org.elasticsearch.client.Client
 import org.elasticsearch.common.io.stream.OutputStreamStreamOutput

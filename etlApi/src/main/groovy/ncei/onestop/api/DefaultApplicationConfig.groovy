@@ -1,4 +1,4 @@
-package ncei.onestop.api.etl
+package ncei.onestop.api
 
 import ncei.onestop.api.etl.controller.ETLGlobalDefaultExceptionHandler
 import org.elasticsearch.client.Client
