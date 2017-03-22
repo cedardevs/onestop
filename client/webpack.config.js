@@ -26,7 +26,7 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   context: path.resolve(__dirname, 'src'),
-  devtool: 'inline-source-map',
+  devtool: 'source-map',
   devServer: {
     publicPath: '/onestop/',
     contentBase: path.resolve(__dirname, 'dist'),
@@ -128,10 +128,8 @@ module.exports = {
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
-      filename: 'vendor.js',
-      minChunks(module, count) {
-        var context = module.context
-        return context && context.includes('node_modules')
+      minChunks: function (module) {
+        return module.context && module.context.indexOf('node_modules') !== -1
       }
     }),
     //new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
