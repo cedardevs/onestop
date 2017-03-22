@@ -102,6 +102,10 @@ module.exports = {
     new webpack.optimize.UglifyJsPlugin({
       compress: {warnings: false}
     }),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true,
+      debug: false
+    }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
       filename: 'vendor.js',
