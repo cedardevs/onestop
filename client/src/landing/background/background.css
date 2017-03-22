@@ -2,6 +2,10 @@
 
 .backgroundImage {
   @mixin bgImage '../../../img/Earth.jpg';
+  position: fixed;
+  z-index: -5000;
+  min-height: 100vh;
+  min-width: 100vw;
 }
 
 .backgroundColor {

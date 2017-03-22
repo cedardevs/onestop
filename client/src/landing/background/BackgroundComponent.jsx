@@ -19,7 +19,8 @@ class BackgroundComponent extends React.Component {
 
   render() {
     const bgStyle = this.state.background ? styles.backgroundImage : styles.backgroundColor
-    return <div className={bgStyle}>
+    return <div>
+      <div className={bgStyle}></div>
       {this.props.pageData}
       </div>
   }
