@@ -104,13 +104,6 @@ configurations.configure {
   integrationTestRuntime.extendsFrom testRuntime
 }
 
-test {
-  testLogging {
-    events "failed"
-    exceptionFormat "short"
-  }
-}
-
 sourceSets {
   integrationTest {
     groovy.srcDir file('src/integrationTest/groovy')
