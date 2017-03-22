@@ -34,6 +34,11 @@
 #  rw:
 #    user:
 #    pass:
+#  ssl:
+#    enabled: false
+#    keystore:
+#      path:
+#      password:
 #  index:
 #    prefix:
 
