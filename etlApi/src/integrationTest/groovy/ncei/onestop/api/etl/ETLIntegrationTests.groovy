@@ -223,10 +223,7 @@ class ETLIntegrationTests extends Specification {
 
   private insertMetadata(String document) {
     def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
-    def loadResult = restTemplate.exchange(loadRequest, Map)
-    println("Status code: ${loadResult.statusCode}; Body: ${loadResult.body.toString()}")
-
-    //metadataIndexService.loadMetadata(document)
+    restTemplate.exchange(loadRequest, Map)
     adminService.refresh(STAGING_INDEX)
   }
 
