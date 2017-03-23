@@ -103,7 +103,7 @@
 .badgeCell {
   width: 25%;
   min-width: 4em;
-  div {
+  .badgeLayout {
     display: flex;
     flex-flow: row wrap;
     justify-content: flex-end;
