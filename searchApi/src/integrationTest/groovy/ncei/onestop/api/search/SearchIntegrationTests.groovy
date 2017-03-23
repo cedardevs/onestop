@@ -271,12 +271,11 @@ class SearchIntegrationTests extends Specification {
     def items = result.body.data
     items.size() == 1
 
-    // FIXME Commenting this out for the time being -- search ranking results may be inconsistent across platforms
-//    and: "Expected result is returned"
-//    def actualIds = items.collect { it.attributes.fileIdentifier }
-//    actualIds.containsAll([
-//        'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
-//    ])
+    and: "Expected result is returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+    ])
   }
 
   def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {
