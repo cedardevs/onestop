@@ -92,6 +92,13 @@ class LoadIntegrationTests extends Specification {
     def getResult = restTemplate.exchange(getRequest, Map)
     getResult.body?.data?.id == docId
 
+    when: "Same metadata is loaded again"
+    loadResult = restTemplate.exchange(loadRequest, Map)
+    adminService.refresh(STAGING_INDEX)
+
+    then: "Load returns OK"
+    loadResult.statusCode == HttpStatus.OK
+
     when: "Update search index then search"
     adminService.refresh(SEARCH_INDEX)
     def searchResult = restTemplate.exchange(searchRequest, Map)
