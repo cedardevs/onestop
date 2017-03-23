@@ -45,8 +45,10 @@ const routesLayout =
 
 const body =
   <Provider store={store}>
-    <Background pageData={routesLayout}>
-    </Background>
+    <div>
+      <Background/>
+      {routesLayout}
+    </div>
   </Provider>
 
 const appDiv = document.createElement('div')
