@@ -41,7 +41,7 @@ class AdminController {
 
   @RequestMapping(path = '/admin/index/search/recreate', method = [GET, PUT], produces = 'application/json')
   Map recreateSearchIndex(@RequestParam Boolean sure) {
-    if (sure != null) {
+    if (sure) {
       searchIndexService.recreate()
       return [acknowledged: true]
     }
@@ -49,7 +49,7 @@ class AdminController {
 
   @RequestMapping(path = '/admin/index/metadata/recreate', method = [GET, PUT], produces = 'application/json')
   Map recreateMetadataIndex(@RequestParam Boolean sure) {
-    if (sure != null) {
+    if (sure) {
       metadataIndexService.recreate()
       return [acknowledged: true]
     }
