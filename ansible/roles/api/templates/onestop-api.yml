@@ -22,7 +22,7 @@ ui:
         imageUrl: "https://podaac.jpl.nasa.gov/Podaac/thumbnails/DMI_OI-DMI-L4-GLOB-v1.0.jpg"
       - title: Digital Elevation Models
         searchTerm: '"digital elevation"'
-        imageUrl: "https://www.ngdc.noaa.gov/dem/image/download/1722"
+        imageUrl: "https://www.ngdc.noaa.gov/dem/image/download/3583"
       - title: NWLON and PORTS
         searchTerm: +nwlon +ports
         imageUrl: "https://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:NDBC-COOPS"
