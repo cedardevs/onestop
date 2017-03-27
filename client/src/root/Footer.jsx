@@ -37,8 +37,8 @@ let Footer = () => {
   ]
 
   function generate508link() {
-    const landingHref = `${new RegExp(/^.*\//).exec(window.location.href)}`
-    return landingHref.endsWith('508/') ? landingHref : `${landingHref}508/`
+    const lHref = `${new RegExp(/^.*\//).exec(window.location.href)}`
+    return lHref.endsWith('508/') ? lHref : `${lHref.slice(0,lHref.indexOf('#')+2)}508/`
   }
 
   return (
