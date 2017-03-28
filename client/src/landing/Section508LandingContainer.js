@@ -11,8 +11,8 @@ const mapStateToProps = (state) => {
   return {
     startDateTime: startDateTime,
     endDateTime: endDateTime,
-    geoJsonSelection: coordinates,
-    queryString: queryText
+    geoJson: coordinates,
+    queryText: queryText
   }
 }
 
@@ -34,7 +34,8 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(showCollections('508'))
     },
     // Clear all search params
-    clearSearch: () => dispatch(updateSearch())
+    clearSearch: () => dispatch(updateSearch()),
+    updateSearch: (params) => dispatch(updateSearch(params))
   }
 }
 
