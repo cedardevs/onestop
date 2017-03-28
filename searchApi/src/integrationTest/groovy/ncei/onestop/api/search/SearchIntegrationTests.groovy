@@ -1,7 +1,9 @@
 package ncei.onestop.api.search
 
 import groovy.json.JsonOutput
+import ncei.onestop.api.search.service.SearchConfig
 import ncei.onestop.api.Application
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
@@ -9,7 +11,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -19,6 +20,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @ActiveProfiles("integration")
 @SpringBootTest(classes = [Application, IntegrationTestConfig], webEnvironment = RANDOM_PORT)
 class SearchIntegrationTests extends Specification {
+
+  @Autowired
+  SearchConfig config
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
   private String STAGING_INDEX

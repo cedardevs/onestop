@@ -1,10 +1,7 @@
 package ncei.onestop.api.metadata
 
 import ncei.onestop.api.Application
-import ncei.onestop.api.etl.service.ETLService
-import ncei.onestop.api.etl.service.IndexAdminService
 import ncei.onestop.api.metadata.service.MetadataIndexService
-import ncei.onestop.api.search.service.SearchIndexService
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -13,6 +10,7 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
+import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.FormHttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.LinkedMultiValueMap
@@ -31,16 +29,7 @@ class LoadIntegrationTests extends Specification {
   private Client client
 
   @Autowired
-  private SearchIndexService searchIndexService
-
-  @Autowired
   private MetadataIndexService metadataIndexService
-
-  @Autowired
-  private ETLService etlService
-
-  @Autowired
-  private IndexAdminService adminService
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
   private String STAGING_INDEX
@@ -60,17 +49,38 @@ class LoadIntegrationTests extends Specification {
   RestTemplate restTemplate
   URI loadURI
   URI searchURI
+  URI refreshMetadataURI
+  URI refreshSearchURI
+  URI rebuildSearchURI
+  URI updateSearchURI
 
   private final String searchQuery = '{"queries":[]}'
 
   void setup() {
-    adminService.recreate(STAGING_INDEX)
-    adminService.recreate(SEARCH_INDEX)
-
+    def baseURI = "http://localhost:${port}/${contextPath}/"
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    loadURI = "http://localhost:${port}/${contextPath}/metadata".toURI()
-    searchURI = "http://localhost:${port}/${contextPath}/search".toURI()
+
+    searchURI = (baseURI + "search").toURI()
+    loadURI = (baseURI + "metadata").toURI()
+    refreshMetadataURI = (baseURI + "admin/index/metadata/refresh").toURI()
+    refreshSearchURI = (baseURI + "admin/index/search/refresh").toURI()
+    rebuildSearchURI = (baseURI + "admin/index/search/rebuild").toURI()
+    updateSearchURI = (baseURI + "admin/index/search/update").toURI()
+
+    def recreateMetadataURI = (baseURI + "admin/index/metadata/recreate?sure=true").toURI()
+    def recreateSearchURI = (baseURI + "admin/index/search/recreate?sure=true").toURI()
+
+    executeGetRequest(recreateMetadataURI)
+    executeGetRequest(recreateSearchURI)
+
+    sleep(1000)
+  }
+
+  // Helper method:
+  private executeGetRequest(URI uri) {
+    def request = RequestEntity.get(uri).build()
+    restTemplate.exchange(request, Map)
   }
 
   def 'Document is stored, then searchable on reindex'() {
@@ -81,7 +91,7 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
-    adminService.refresh(STAGING_INDEX)
+    executeGetRequest(refreshMetadataURI)
 
     then: "Load returns CREATED"
     loadResult.statusCode == HttpStatus.CREATED
@@ -94,13 +104,13 @@ class LoadIntegrationTests extends Specification {
 
     when: "Same metadata is loaded again"
     loadResult = restTemplate.exchange(loadRequest, Map)
-    adminService.refresh(STAGING_INDEX)
+    executeGetRequest(refreshMetadataURI)
 
     then: "Load returns OK"
     loadResult.statusCode == HttpStatus.OK
 
     when: "Update search index then search"
-    adminService.refresh(SEARCH_INDEX)
+    executeGetRequest(refreshSearchURI)
     def searchResult = restTemplate.exchange(searchRequest, Map)
     def hits = searchResult.body.data
 
@@ -108,7 +118,8 @@ class LoadIntegrationTests extends Specification {
     hits.size() == 0
 
     when: "Reindex then search"
-    etlService.rebuildSearchIndex()
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000) // Async request
     searchResult = restTemplate.exchange(searchRequest, Map)
     hits = searchResult.body.data
 
@@ -124,7 +135,7 @@ class LoadIntegrationTests extends Specification {
     def deleteResult = restTemplate.exchange(deleteRequest, Map)
     getResult = restTemplate.exchange(getRequest, Map)
     searchResult = restTemplate.exchange(searchRequest, Map)
-    adminService.refresh(STAGING_INDEX)
+    executeGetRequest(refreshMetadataURI)
 
     then: "Document is deleted in staging and search indices"
     deleteResult.body.attributes.successes.count { it.found == true } == 3
@@ -146,7 +157,8 @@ class LoadIntegrationTests extends Specification {
     loadResult.statusCode == HttpStatus.CREATED
 
     when: "Reindex then search"
-    etlService.rebuildSearchIndex()
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000) // Async request
     def searchRequest = RequestEntity.post(searchURI).contentType(MediaType.APPLICATION_JSON).body(searchQuery)
     def searchResult = restTemplate.exchange(searchRequest, Map)
     def hits = searchResult.body.data
@@ -174,7 +186,8 @@ class LoadIntegrationTests extends Specification {
     fileId == 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
 
     when: "ETL updateSearchIndex requested"
-    etlService.updateSearchIndex()
+    executeGetRequest(updateSearchURI)
+    sleep(1000) // Async request
     searchResult = restTemplate.exchange(searchRequest, Map)
     hits = searchResult.body.data
 
@@ -197,7 +210,7 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.postForEntity(loadURI, parts, Map)
-    adminService.refresh(STAGING_INDEX)
+    executeGetRequest(refreshMetadataURI)
 
     then: "Load returns MULTI-STATUS"
     loadResult.statusCode == HttpStatus.MULTI_STATUS
@@ -238,9 +251,10 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
-    adminService.refresh(STAGING_INDEX)
-    etlService.rebuildSearchIndex()
-    adminService.refresh(SEARCH_INDEX)
+    executeGetRequest(refreshMetadataURI)
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000) // Async request
+    executeGetRequest(refreshSearchURI)
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
     then:
@@ -257,9 +271,10 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResult = restTemplate.exchange(loadRequest, Map)
-    adminService.refresh(STAGING_INDEX)
-    etlService.rebuildSearchIndex()
-    adminService.refresh(SEARCH_INDEX)
+    executeGetRequest(refreshMetadataURI)
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000) // Async request
+    executeGetRequest(refreshSearchURI)
     def hits = restTemplate.exchange(searchRequest, Map).body.data
 
     then:
@@ -285,9 +300,10 @@ class LoadIntegrationTests extends Specification {
 
     when:
     def loadResults = loadRequests.collect { restTemplate.exchange(it, Map) }
-    adminService.refresh(STAGING_INDEX)
-    etlService.rebuildSearchIndex()
-    adminService.refresh(SEARCH_INDEX)
+    executeGetRequest(refreshMetadataURI)
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000) // Async request
+    executeGetRequest(refreshSearchURI)
     def hitsC = restTemplate.exchange(searchRequestC, Map).body.data
     def hitsG = restTemplate.exchange(searchRequestG, Map).body.data
 
