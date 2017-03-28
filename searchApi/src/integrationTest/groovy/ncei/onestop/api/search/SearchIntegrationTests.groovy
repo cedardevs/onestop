@@ -46,11 +46,10 @@ class SearchIntegrationTests extends Specification {
     restTemplate.errorHandler = new TestResponseErrorHandler()
     searchBaseUri = (baseURI + "search").toURI()
 
-    def recreateMetadataURI = (baseURI + "admin/index/metadata/recreate").toURI()
-    def recreateSearchURI = (baseURI + "admin/index/search/recreate").toURI()
+    def recreateMetadataURI = (baseURI + "admin/index/metadata/recreate?sure=true").toURI()
+    def recreateSearchURI = (baseURI + "admin/index/search/recreate?sure=true").toURI()
     def loadURI = (baseURI + "metadata").toURI()
     def rebuildURI = (baseURI + "admin/index/search/rebuild").toURI()
-    def refreshURI = (baseURI + "admin/index/search/refresh").toURI()
     def request
 
     executeGetRequest(recreateMetadataURI)
