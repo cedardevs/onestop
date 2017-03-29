@@ -1,7 +1,6 @@
 package ncei.onestop.api.metadata
 
 import ncei.onestop.api.Application
-import ncei.onestop.api.metadata.service.MetadataIndexService
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -10,7 +9,6 @@ import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
-import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.FormHttpMessageConverter
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.LinkedMultiValueMap
@@ -27,9 +25,6 @@ class LoadIntegrationTests extends Specification {
 
   @Autowired
   private Client client
-
-  @Autowired
-  private MetadataIndexService metadataIndexService
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
   private String STAGING_INDEX

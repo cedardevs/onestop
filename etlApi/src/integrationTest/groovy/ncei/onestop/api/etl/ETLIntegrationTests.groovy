@@ -1,8 +1,6 @@
 package ncei.onestop.api.etl
 
 import ncei.onestop.api.Application
-import ncei.onestop.api.etl.service.ETLService
-import ncei.onestop.api.etl.service.IndexAdminService
 import org.elasticsearch.client.Client
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -23,15 +21,11 @@ class ETLIntegrationTests extends Specification {
 
   RestTemplate restTemplate
   URI loadURI
+  URI updateSearchURI
+  URI rebuildSearchURI
 
   @Autowired
   private Client client
-
-  @Autowired
-  private ETLService etlService
-
-  @Autowired
-  private IndexAdminService adminService
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
   private String SEARCH_INDEX
@@ -52,17 +46,27 @@ class ETLIntegrationTests extends Specification {
   private String contextPath
 
   void setup() {
-    adminService.recreate(STAGING_INDEX)
-    adminService.recreate(SEARCH_INDEX)
-
+    def baseURI = "http://localhost:${port}/${contextPath}/"
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    loadURI = "http://localhost:${port}/${contextPath}/metadata".toURI()
+
+    loadURI = (baseURI + "metadata").toURI()
+    updateSearchURI = (baseURI + "admin/index/search/update").toURI()
+    rebuildSearchURI = (baseURI + "admin/index/search/rebuild").toURI()
+
+    def recreateMetadataURI = (baseURI + "admin/index/metadata/recreate?sure=true").toURI()
+    def recreateSearchURI = (baseURI + "admin/index/search/recreate?sure=true").toURI()
+
+    executeGetRequest(recreateMetadataURI)
+    executeGetRequest(recreateSearchURI)
+
+    sleep(1000)
   }
 
   def 'update does nothing when staging is empty'() {
     when:
-    etlService.updateSearchIndex()
+    executeGetRequest(updateSearchURI)
+    sleep(1000)
 
     then:
     noExceptionThrown()
@@ -77,7 +81,8 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/C1.xml')
 
     when:
-    etlService.updateSearchIndex()
+    executeGetRequest(updateSearchURI)
+    sleep(1000)
 
     then:
     indexedCollectionVersions().keySet() == ['gov.noaa.nodc:NDBC-COOPS'] as Set
@@ -89,7 +94,8 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    etlService.updateSearchIndex()
+    executeGetRequest(updateSearchURI)
+    sleep(1000)
 
     then:
     indexedCollectionVersions().size() == 0
@@ -102,7 +108,8 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    etlService.updateSearchIndex()
+    executeGetRequest(updateSearchURI)
+    sleep(1000)
 
     then:
     indexedCollectionVersions().keySet() == ['gov.noaa.nodc:NDBC-COOPS'] as Set
@@ -114,11 +121,13 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/C1.xml')
     insertMetadataFromPath('data/COOPS/G1.xml')
     insertMetadataFromPath('data/COOPS/G2.xml')
-    etlService.updateSearchIndex()
+    executeGetRequest(updateSearchURI)
+    sleep(1000)
 
     when: 'touch one of the granules'
     insertMetadataFromPath('data/COOPS/G1.xml')
-    etlService.updateSearchIndex()
+    executeGetRequest(updateSearchURI)
+    sleep(1000)
 
     then: 'only that granule is reindexed'
     indexedCollectionVersions()['gov.noaa.nodc:NDBC-COOPS'] == 1
@@ -132,11 +141,13 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/C1.xml')
     insertMetadataFromPath('data/COOPS/G1.xml')
     insertMetadataFromPath('data/COOPS/G2.xml')
-    etlService.updateSearchIndex()
+    executeGetRequest(updateSearchURI)
+    sleep(1000)
 
     when: 'touch the collection'
     insertMetadataFromPath('data/COOPS/C1.xml')
-    etlService.updateSearchIndex()
+    executeGetRequest(updateSearchURI)
+    sleep(1000)
 
     then: 'the collection and both its granules are reindexed'
     def collections = indexedCollectionVersions()
@@ -150,7 +161,8 @@ class ETLIntegrationTests extends Specification {
 
   def 'rebuild does nothing when staging is empty'() {
     when:
-    etlService.rebuildSearchIndex()
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000)
 
     then:
     noExceptionThrown()
@@ -165,7 +177,8 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/C1.xml')
 
     when:
-    etlService.rebuildSearchIndex()
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000)
 
     then:
     indexedCollectionVersions().keySet() == ['gov.noaa.nodc:NDBC-COOPS'] as Set
@@ -177,7 +190,8 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    etlService.rebuildSearchIndex()
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000)
 
     then:
     indexedCollectionVersions().size() == 0
@@ -190,7 +204,8 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    etlService.rebuildSearchIndex()
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000)
 
     then:
     indexedCollectionVersions().keySet() == ['gov.noaa.nodc:NDBC-COOPS'] as Set
@@ -203,11 +218,13 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/C1.xml')
     insertMetadataFromPath('data/COOPS/G1.xml')
     insertMetadataFromPath('data/COOPS/G2.xml')
-    etlService.rebuildSearchIndex()
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000)
 
     when: 'touch the collection'
     insertMetadataFromPath('data/COOPS/C1.xml')
-    etlService.rebuildSearchIndex()
+    executeGetRequest(rebuildSearchURI)
+    sleep(1000)
 
     then: 'everything has a fresh version in a new index'
     indexedCollectionVersions().values().every { it == 1 }
@@ -224,7 +241,8 @@ class ETLIntegrationTests extends Specification {
   private insertMetadata(String document) {
     def loadRequest = RequestEntity.post(loadURI).contentType(MediaType.APPLICATION_XML).body(document)
     restTemplate.exchange(loadRequest, Map)
-    adminService.refresh(STAGING_INDEX)
+    def refreshMetadataURI = "http://localhost:${port}/${contextPath}/admin/index/metadata/refresh".toURI()
+    executeGetRequest(refreshMetadataURI)
   }
 
   private indexedCollectionVersions() {
@@ -236,10 +254,16 @@ class ETLIntegrationTests extends Specification {
   }
 
   private indexedItemVersions(String type) {
-    adminService.refresh(SEARCH_INDEX)
+    def refreshSearchURI = "http://localhost:${port}/${contextPath}/admin/index/search/refresh".toURI()
+    executeGetRequest(refreshSearchURI)
     return client.prepareSearch(SEARCH_INDEX)
         .setTypes(type).setVersion(true).addField('fileIdentifier')
         .execute().actionGet().hits.hits.collectEntries { [(it.field('fileIdentifier').value()): it.version()] }
+  }
+
+  private executeGetRequest(URI uri) {
+    def request = RequestEntity.get(uri).build()
+    restTemplate.exchange(request, Map)
   }
 
 }
