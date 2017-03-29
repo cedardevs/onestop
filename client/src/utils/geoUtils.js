@@ -50,3 +50,30 @@ export const convertEnvelopeToPolygon = (geometry) => {
     coordinates: pCoords
   }
 }
+
+export const convertBboxToGeoJson = (coordString) => {
+  const coordArray = coordString.split(',').map(x => parseFloat(x))
+  const sw = [coordArray[0], coordArray[1]]
+  const nw = [coordArray[0], coordArray[3]]
+  const ne = [coordArray[2], coordArray[3]]
+  const se = [coordArray[2], coordArray[1]]
+  const coordinates = [sw, nw, ne, se, sw]
+  if (!_.every(coordinates, (p) => p[0] >= -180 && p[0] <= 180 && p[1] >= -90 && p[1] <= 90)) {
+    return undefined
+  }
+  else {
+    return {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        coordinates: [coordinates],
+        type: 'Polygon'
+      }
+    }
+  }
+}
+
+export const convertGeoJsonToBbox = (geoJson) => {
+  const coordinates = geoJson && geoJson.geometry && geoJson.geometry.coordinates
+  return coordinates ? coordinates[0].filter((el,idx)=>[0,2].includes(idx)).toString() : ''
+}

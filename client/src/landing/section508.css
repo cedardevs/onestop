@@ -31,3 +31,10 @@
   color: black;
   display: inline-block;
 }
+
+.errors {
+  background-color: red;
+  padding: 0 3em;
+  border: solid thin white;
+  border-radius: 6px;
+}
