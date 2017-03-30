@@ -24,6 +24,17 @@ class GranuleList extends React.Component {
         <ul title="Access Links" className={styles.granuleList508}>{this.renderLinks(value.links)}</ul>
       </li>
     )
+    if (granuleList.length < this.props.totalHits) {
+      granuleList.push(<li key="showMore" className={styles.listItem}>
+        <div className={`${styles.showMore}`}>
+          <button className={`pure-button`}
+                  title="Show More Results"
+                  onClick={() => this.props.fetchMoreResults()}>
+            Show More Results
+          </button>
+        </div>
+      </li>)
+    }
 
     return (
       <div>
@@ -62,8 +73,10 @@ GranuleList.propTypes = {
   results: PropTypes.object,
   focusedIds: PropTypes.array,
   selectedCollection: PropTypes.object,
+  totalHits: PropTypes.number,
   toggleFocus: PropTypes.func,
-  showCollections: PropTypes.func
+  showCollections: PropTypes.func,
+  fetchMoreResults: PropTypes.func
 }
 
 export default GranuleList
