@@ -23,16 +23,17 @@ class HeaderComponent extends React.Component {
   }
 
   renderContent() {
-    if (this.props.showSearch) {
-      return <SearchFieldsContainer/>
-    }
-    else if (this.props.showMenu) {
-      return <div className={`${styles.headerLinks}`}>
-        <a href="#" title="Home">Home</a>
-        <a href="#" title="About" onClick={() => this.props.toggleAbout()}>About</a>
-        <a href="#" title="Help" onClick={() => this.props.toggleHelp()}>Help</a>
-      </div>
-    }
+    const menu = <nav className={styles.headerLinks}>
+              <a href={this.props.homeUrl} title="Home">Home</a>
+              <a title="About" onClick={() => this.props.toggleAbout()}>About</a>
+              <a title="Help" onClick={() => this.props.toggleHelp()}>Help</a>
+            </nav>
+    const { showSearch } = this.props
+    return <div>
+      <div className={`pure-u-1 pure-u-sm-3-4 ${styles.headerRow}`}>
+        {showSearch ? <SearchFieldsContainer/> : <div></div>}</div>
+      <div className={`pure-u-1 pure-u-sm-1-4 ${styles.headerRow}`}>{menu}</div>
+    </div>
   }
 
   renderLogo() {
@@ -56,15 +57,13 @@ class HeaderComponent extends React.Component {
 
 HeaderComponent.propTypes = {
   showSearch: PropTypes.bool.isRequired,
-  showMenu: PropTypes.bool.isRequired,
   goHome: PropTypes.func.isRequired,
   toggleHelp: PropTypes.func.isRequired,
   toggleAbout: PropTypes.func.isRequired
 }
 
 HeaderComponent.defaultProps = {
-  showSearch: true,
-  showMenu: false
+  showSearch: true
 }
 
 export default HeaderComponent

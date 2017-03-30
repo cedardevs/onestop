@@ -1,6 +1,7 @@
 import React from 'react'
 import BannerContainer from './banner/BannerContainer'
 import HeaderContainer from './HeaderContainer'
+import InfoContainer from '../common/info/infoContainer'
 import DetailContainer from '../detail/DetailContainer'
 import LoadingContainer from '../loading/LoadingContainer'
 import Footer from './Footer.jsx'
