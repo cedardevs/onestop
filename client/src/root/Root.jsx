@@ -23,8 +23,10 @@ class RootComponent extends React.Component {
       <div className={styles.mainContent}>
         <BannerContainer/>
         <DetailContainer/>
-        <HeaderContainer showSearch={this.showSearch()} showMenu={this.showMenu()}/>
+        <HeaderContainer showSearch={this.isNotLanding() && this.isNot508()}
+           homeUrl={this.homeUrl()}/>
         <div className={styles.main}>
+          <InfoContainer modalMode={this.isNotLanding()}/>
           <LoadingContainer/>
           {this.props.children}
         </div>
@@ -35,12 +37,16 @@ class RootComponent extends React.Component {
    </div>
   }
 
-  showSearch() {
-    return this.location !== '/' && this.location.indexOf('508') === -1
+  isNotLanding() {
+    return this.location !== '/' && this.location !== '/508/'
   }
 
-  showMenu() {
-    return this.location === '/'
+  isNot508() {
+    return this.location.indexOf('508') === -1
+  }
+
+  homeUrl() {
+    return `//${location.host}/onestop/#/${this.isNot508() ? '' : '508/'}`
   }
 }
 
