@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { showGranules, setFocus } from '../../actions/FlowActions'
-import { triggerSearch, fetchGranules, clearGranules } from '../../actions/SearchRequestActions'
+import { incrementCollectionsOffset, triggerSearch, fetchGranules, clearGranules } from '../../actions/SearchRequestActions'
 import { toggleSelection, clearSelections, updateQuery, updateSearch } from '../../actions/SearchParamActions'
 import CollectionGrid from './Section508CollectionGridComponent'
 
@@ -30,6 +30,10 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(updateSearch())
       dispatch(updateQuery(text))
       dispatch(triggerSearch())
+    },
+    fetchMoreResults: () => {
+      dispatch(incrementCollectionsOffset())
+      dispatch(triggerSearch(false))
     }
   }
 }
