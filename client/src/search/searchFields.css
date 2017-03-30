@@ -10,7 +10,8 @@
 .searchContainer {
   color: black;
   margin-top: .9em;
-  width: 38%;
+  max-width: 32em;
+  min-width: 22em;
   display: inline-block;
 }
 

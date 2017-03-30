@@ -16,3 +16,9 @@
   clear: both;
   padding: $section-padding;
 }
+
+.main {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}

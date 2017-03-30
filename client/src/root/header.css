@@ -17,6 +17,7 @@ input {
   font-size: 1.5em;
   padding-top: 1.25em;
   text-align: right;
+  display: inline-block;
   a {
     color: #d7d7d7;
     font-weight: 300;
@@ -27,6 +28,10 @@ input {
       color: white;
     }
   }
+}
+
+.headerRow {
+  display: inline-block;
 }
 
 .noaaLogo {
