@@ -3,8 +3,8 @@
 .button {
   max-height: 2.2em;
   position: relative;
-  color: white;
-  background-color: $color-primary;
+  color: white !important;
+  background-color: $color-primary !important;
   text-shadow: 0 0 5px black;
   margin: 2em 2em 0 1em;
 }
