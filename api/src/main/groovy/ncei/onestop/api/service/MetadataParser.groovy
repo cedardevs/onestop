@@ -352,7 +352,7 @@ class MetadataParser {
       links.add([
           linkName       : e.name.CharacterString.text() ?: null,
           linkProtocol   : e.protocol.CharacterString.text() ?: null,
-          linkUrl        : StringEscapeUtils.unescapeXml(e.linkage.URL.text()) ?: null,
+          linkUrl        : e.linkage.URL.text() ? StringEscapeUtils.unescapeXml(e.linkage.URL.text()) : null,
           linkDescription: e.description.CharacterString.text() ?: null,
           linkFunction   : e.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
       ])
