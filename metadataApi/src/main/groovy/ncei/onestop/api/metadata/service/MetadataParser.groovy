@@ -2,6 +2,7 @@ package ncei.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
+import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.text.WordUtils
 
 class MetadataParser {
@@ -110,7 +111,7 @@ class MetadataParser {
     title = idInfo.citation.CI_Citation.title.CharacterString.text()
     alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text() ?: null
     description = idInfo.abstract.CharacterString.text()
-    thumbnail = idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text()
+    thumbnail = StringEscapeUtils.unescapeXml(idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text())
 
     // Miscellaneous dates:
     modifiedDate = metadata.dateStamp.Date.text() ?: metadata.dateStamp.DateTime.text()
@@ -351,7 +352,7 @@ class MetadataParser {
       links.add([
           linkName       : e.name.CharacterString.text() ?: null,
           linkProtocol   : e.protocol.CharacterString.text() ?: null,
-          linkUrl        : e.linkage.URL.text() ?: null,
+          linkUrl        : e.linkage.URL.text() ? StringEscapeUtils.unescapeXml(e.linkage.URL.text()) : null,
           linkDescription: e.description.CharacterString.text() ?: null,
           linkFunction   : e.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
       ])

@@ -112,7 +112,7 @@ class MetadataParserTest extends Specification {
             role             : 'sponsor'
         ]
     ] as Set
-    parsedXml.thumbnail == 'https://www.example.com/image.png'
+    parsedXml.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
     parsedXml.modifiedDate == '2016-12-25T11:12:13'
     parsedXml.creationDate == null
     parsedXml.revisionDate == '2011-01-02'
@@ -156,7 +156,7 @@ class MetadataParserTest extends Specification {
     citationInfo.title == 'Important Organization\'s Important File\'s Super Important Title'
     citationInfo.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
     citationInfo.description == 'Wall of overly detailed, super informative, extra important text.'
-    citationInfo.thumbnail == 'https://www.example.com/image.png'
+    citationInfo.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
     citationInfo.modifiedDate == '2016-12-25T11:12:13'
     citationInfo.creationDate == null
     citationInfo.revisionDate == '2011-01-02'
