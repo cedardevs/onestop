@@ -37,6 +37,9 @@
 
 .resultCount {
   margin: .5em 0 1em;
+  h1 {
+    font-size: 1em;
+  }
 }
 
 .listContainer {

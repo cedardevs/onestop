@@ -82,7 +82,7 @@ class Section508CollectionGridComponent extends React.Component {
 
     return <div>
       <div className={styles.resultCount}>
-        Showing {this.props.returnedHits} of {this.props.totalHits} matching results
+        <h1>Search Results (showing {this.props.returnedHits} of {this.props.totalHits})</h1>
       </div>
       <div className={styles.listContainer}>
         <ul className={styles.collectionList508}>
