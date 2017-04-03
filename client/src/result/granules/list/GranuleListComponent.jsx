@@ -53,17 +53,19 @@ class GranuleList extends React.Component {
               <div className={`pure-u-1 ${styles.description}`}>
                 {this.props.selectedCollection.description}
               </div>
-              <div className={`pure-u-1 ${styles.legend}`}>
+              {_.isEmpty(legendItems)
+                ? <div></div>
+                : <div className={`pure-u-1 ${styles.legend}`}>
                 <h3 className={styles.legendItem}>Access Protocols:</h3>
                 {legendItems}
-              </div>
+              </div>}
               <div className={`pure-u-1`}>
                 <table className={`pure-table ${styles.table}`}>
                   <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Data Access</th>
-                  </tr>
+                    <tr>
+                      <th>Title</th>
+                      <th>Data Access</th>
+                    </tr>
                   </thead>
                   <tbody>
                     {tableRows}
@@ -85,7 +87,7 @@ class GranuleList extends React.Component {
         .sortBy((info) => info.protocol.id)
         .map(this.renderBadge.bind(this))
         .value()
-    return <div>{badges}</div>
+    return _.isEmpty(badges) ? <div>N/A</div> : <div className={styles.badgeLayout}>{badges}</div>
   }
 
   renderBadge({protocol, url}) {

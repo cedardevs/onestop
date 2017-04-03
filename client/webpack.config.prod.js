@@ -7,17 +7,6 @@ const path = require('path')
 
 module.exports = {
   entry: [
-    'react-hot-loader/patch',
-    // activate HMR for React
-
-    'webpack-dev-server/client?http://localhost:8080',
-    // bundle the client for webpack-dev-server
-    // and connect to the provided endpoint
-
-    'webpack/hot/only-dev-server',
-    // bundle the client for hot reloading
-    // hot reload for successful updates
-
     './index.jsx'
   ],
   output: {
@@ -26,18 +15,7 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   context: path.resolve(__dirname, 'src'),
-  devtool: 'source-map',
-  devServer: {
-    publicPath: '/onestop/',
-    contentBase: path.resolve(__dirname, 'dist'),
-    hot: true,
-    proxy: {
-      '/onestop/api/*': {
-        target: 'http://localhost:8097/',
-        secure: false
-      }
-    }
-  },
+  devtool: false,
   module: {
     rules: [{
       enforce: 'pre',
@@ -59,10 +37,7 @@ module.exports = {
       test: /\.css$/,
       include: /node_modules/,
       use: [{
-        loader: 'style-loader',
-        options: {
-          sourceMap: true
-        }
+        loader: 'style-loader'
       }, {
         loader: 'css-loader'
       }]
@@ -70,10 +45,7 @@ module.exports = {
       test: /\.css$/,
       exclude: /node_modules/,
       use: [{
-        loader: 'style-loader',
-        options: {
-          sourceMap: true
-        }
+        loader: 'style-loader'
       }, {
         loader: 'css-loader',
         options: {
@@ -122,21 +94,25 @@ module.exports = {
       title: 'NOAA OneStop Demo',
       favicon: '../img/noaa-favicon.ico'
     }),
+    new webpack.DefinePlugin({
+      'process.env':{
+        'NODE_ENV': JSON.stringify('production')
+      }
+    }),
     new webpack.optimize.UglifyJsPlugin({
-      compress: {warnings: false},
-      sourceMap: true
+      compress: {warnings: false}
+    }),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true,
+      debug: false
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
-      minChunks: function (module) {
-        return module.context && module.context.indexOf('node_modules') !== -1
+      filename: 'vendor.js',
+      minChunks(module, count) {
+        var context = module.context
+        return context && context.includes('node_modules')
       }
-    }),
-    //new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
-    new webpack.HotModuleReplacementPlugin(),
-    // enable HMR globally
-
-    new webpack.NamedModulesPlugin()
-    // prints more readable module names in the browser console on HMR updates
+    })
   ]
 }

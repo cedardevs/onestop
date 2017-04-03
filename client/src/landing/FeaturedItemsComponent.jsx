@@ -6,7 +6,11 @@ class FeaturedItemsComponent extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {current: 0}
+    this.state = {
+      current: 0,
+      carouselLength: 0,
+      timer: undefined
+    }
   }
 
   render() {
@@ -67,37 +71,58 @@ class FeaturedItemsComponent extends React.Component {
   }
 
   onEnter(i) {
-    this.cancelTimer()
+    this.state.timer.pause()
     this.setState({current: i})
   }
 
   onLeave() {
-    this.setupTimer()
+    this.state.timer.resume()
   }
 
-  setupTimer() {
-    if (!this.timer && this.props.items.length > 0) {
-      this.timer = setTimeout((self) => {
-        const newCurrent = (self.state.current + 1) % self.props.items.length
-        self.setState({current: newCurrent})
-        this.timer = undefined
-        self.setupTimer()
-      }, 5000, this)
+  setupTimer(items) {
+    const { carouselLength, timer } = this.state
+
+    if (items && (items.length || carouselLength !== items.length)) {
+      this.setState({carouselLength: items.length })
+      function Timer(callback, delay) {
+        var timerId, start, remaining = delay
+
+        this.pause = () => {
+          window.clearTimeout(timerId)
+          remaining -= new Date() - start
+        }
+
+        this.resume = () => {
+          start = new Date()
+          window.clearTimeout(timerId)
+          timerId = window.setTimeout(callback, remaining)
+        }
+
+        this.resume()
+      }
+
+      const self = this
+      if (!timer) (function setTimerState() {
+        self.setState({timer: new Timer(() => {
+          const { carouselLength, current } = self.state
+          const newCurrent = (current + 1) % carouselLength
+          self.setState({current: newCurrent})
+          setTimerState()
+        }, 5000)})
+      })()
     }
   }
 
-  cancelTimer() {
-    if (this.props.items.length > 0 && this.timer) {
-      clearTimeout(this.timer)
-    }
+  componentWillReceiveProps({items}) {
+    this.setupTimer(items)
   }
 
-  componentDidUpdate() {
-    this.setupTimer()
+  componentDidMount() {
+    this.setupTimer(this.props.items)
   }
 
   componentWillUnmount() {
-    this.cancelTimer()
+    this.state.timer.pause()
   }
 }
 

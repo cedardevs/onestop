@@ -28,8 +28,8 @@
 }
 
 .button {
-  color: white;
-  background-color: $color-primary;
+  color: white !important;
+  background-color: $color-primary !important;
   text-align: center;
   font-size: 1.25em;
   margin: 1em 0em 2em;
@@ -37,6 +37,9 @@
 
 .resultCount {
   margin: .5em 0 1em;
+  h1 {
+    font-size: 1em;
+  }
 }
 
 .listContainer {
@@ -54,35 +57,36 @@
 }
 
 .listItem {
+  color: white;
   padding: .5em 1em 1em;
   > div {
     margin: .5em 0;
   }
-}
-
-.listItem:nth-child(odd)	{
-  background-color: $color-primary-darkest;
-}
-
-.listItem:nth-child(even) {
-  background-color: $color-primary-darker;
-}
-
-@define-extend keywordsAndLinks {
-  display: inline-block;
-  padding: .3em;
-  margin: .2em;
-  border-radius: .1em .4em;
-}
-
-.keywords {
-  @extend keywordsAndLinks;
-  background-color: $color-primary-alt;
-}
-
-.links {
-  @extend keywordsAndLinks;
-  background-color: $color-green;
-  text-decoration: underline;
-  cursor: pointer;
+  &:nth-child(odd)	{
+    background-color: $color-primary-darkest;
+  }
+  &:nth-child(even) {
+    background-color: $color-primary-darker;
+  }
+  li {
+    display: inline-block;
+    margin: .2em;
+  }
+  button, a {
+    color: white;
+    padding: .3em;
+    border-radius: .1em .4em;
+    display: inline-block;
+    border: none;
+  }
+  button {
+    background-color: $color-primary-alt;
+  }
+  a {
+    background-color: $color-green;
+  }
+  div.showMore {
+    width: 100%;
+    text-align: center;
+  }
 }
