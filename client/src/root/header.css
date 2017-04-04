@@ -26,13 +26,9 @@ input {
     transition: color 0.3s ease;
     text-decoration: none;
     &.selected, &:hover {
-      color: white;
+      color: $color-primary;
     }
   }
-}
-
-.headerRow {
-  display: inline-block;
 }
 
 .noaaLogo {
