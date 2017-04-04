@@ -4,6 +4,7 @@
   width: 100%;
   color: white;
   text-align: center;
+  max-height: $footer-height;
 }
 
 ul.footerLinks {
