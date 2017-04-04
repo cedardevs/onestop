@@ -13,9 +13,10 @@ input {
 }
 
 .headerLinks {
+  position: absolute;
+  bottom: -4em;
   width: 100%;
   font-size: 1.5em;
-  padding-top: 1.25em;
   text-align: right;
   display: inline-block;
   a {
