@@ -80,3 +80,110 @@ input {
     text-align: center;
   }
 }
+
+.standardMenu {
+  position: relative;
+}
+
+$menu-threshold: 60em;
+@media (max-width: $menu-threshold){
+  .standardMenu {
+    display: none;
+  }
+}
+
+@media (min-width: $menu-threshold){
+  .burgerMenu {
+    display: none;
+  }
+}
+
+.burgerMenu {
+  overflow: hidden;
+  margin: 1em 0;
+}
+
+
+/* Burger menu */
+.burgerToggle {
+  display: inline-block;
+  width: 40px;
+  right: 0.9em;
+  margin: .5em;
+  position: absolute;
+  padding: .1em;
+  overflow: hidden;
+  z-index: 1;
+  user-select: none;
+  input {
+    display: block;
+    width: 40px;
+    height: 32px;
+    position: absolute;
+    top: -7px;
+    left: -5px;
+
+    cursor: pointer;
+
+    opacity: 0; /* hide this */
+    z-index: 2; /* and place it over the hamburger */
+
+    -webkit-touch-callout: none;
+  }
+  span {
+    display: block;
+    width: 33px;
+    height: 4px;
+    margin-bottom: 5px;
+    position: relative;
+    background: #cdcdcd;
+    border-radius: 3px;
+    z-index: 1;
+    transform-origin: 4px 0px;
+    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
+                background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
+                opacity 0.55s ease;
+  }
+
+  input:checked ~ span {
+    opacity: 1;
+    background: #232323;
+  }
+}
+
+$menu-distance: 13em;
+.menuContainer {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  min-height: 0;
+  height: 1em;
+  transition: min-height 0.4s ease-out;
+  .section {
+    overflow: hidden;
+    transition: flex 0.4s ease-out;
+    height: auto;
+    flex: 1;
+    background-color: white;
+  }
+  .collapsed {
+    flex: 0;
+    transition: flex 0.4s ease-in;
+  }
+  a {
+    display: flex;
+    font-size: 1.2em;
+    color: $color-primary-darkest;
+    margin: .5em auto;
+    justify-content: center;
+  }
+  .nav {
+    top: 1em;
+  }
+}
+
+.menuOpen {
+  min-height: $menu-distance;
+  transition: min-height 0.4s ease-in;
+}

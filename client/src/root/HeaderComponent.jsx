@@ -9,31 +9,49 @@ const nceiLogo = require('../../img/ncei_dark_test_75.png')
 class HeaderComponent extends React.Component {
   constructor(props) {
     super(props)
+    this.toggleBurgerMenu = this.toggleBurgerMenu.bind(this)
+    this.state = { menuOpen: false }
   }
+
+  toggleBurgerMenu() { this.setState({ menuOpen: !this.state.menuOpen }) }
 
   render() {
-    return <header className={`pure-g ${styles.headerArea}`}>
-      <div className={`pure-u-1-4 ${styles.orgBox}`}>
-        {this.renderLogo()}
+    const burgerToggle = <div className={styles.burgerToggle}>
+        <input type="checkbox" checked={this.state.menuOpen} onChange={this.toggleBurgerMenu}/>
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
-      <div className={`pure-u-1 pure-u-sm-3-4`}>
-        {this.renderContent()}
+    const menuContent = <ul>
+        <a href={this.props.homeUrl} title="Home">Home</a>
+        <a title="About" onClick={() => this.props.toggleAbout()}>About</a>
+        <a title="Help" onClick={() => this.props.toggleHelp()}>Help</a>
+      </ul>
+    const menu = <nav className={styles.headerLinks}>{menuContent}</nav>
+
+    return <header className={`${styles.headerArea}`}>
+      <div className={`pure-g`}>
+        <div className={`pure-u-1-4 ${styles.orgBox}`}>
+          {this.renderLogo()}
+        </div>
+        <div className={`pure-u-1 pure-u-sm-10-24 ${styles.headerRow}`}>
+          {this.props.showSearch ? <SearchFieldsContainer/> : <div></div>}
+        </div>
+        <div className={`pure-u-1 pure-u-sm-8-24 ${styles.headerRow}`}>
+          <div className={styles.standardMenu}>
+            {menu}
+          </div>
+        </div>
+      </div>
+      <div className={styles.burgerMenu}>
+        {burgerToggle}
+        <div className={`${styles.menuContainer} ${this.state.menuOpen ? styles.menuOpen : ''}`}>
+          <div className={`${styles.section} ${this.state.menuOpen ? '' : styles.collapsed}`}>
+            {menu}
+          </div>
+        </div>
       </div>
     </header>
-  }
-
-  renderContent() {
-    const menu = <nav className={styles.headerLinks}>
-              <a href={this.props.homeUrl} title="Home">Home</a>
-              <a title="About" onClick={() => this.props.toggleAbout()}>About</a>
-              <a title="Help" onClick={() => this.props.toggleHelp()}>Help</a>
-            </nav>
-    const { showSearch } = this.props
-    return <div>
-      <div className={`pure-u-1 pure-u-sm-3-4 ${styles.headerRow}`}>
-        {showSearch ? <SearchFieldsContainer/> : <div></div>}</div>
-      <div className={`pure-u-1 pure-u-sm-1-4 ${styles.headerRow}`}>{menu}</div>
-    </div>
   }
 
   renderLogo() {
