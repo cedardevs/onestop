@@ -8,13 +8,15 @@ class GranuleList extends React.Component {
   constructor(props) {
     super(props)
     this.protocols = {
-      'download': {id: 'D', color: 'blue',   label: 'Download'},
-      'ftp':      {id: 'F', color: 'red',    label: 'FTP'},
-      'noaa:las': {id: 'L', color: 'aqua',   label: 'NOAA Live Access Server'},
-      'opendap':  {id: 'O', color: 'green',  label: 'OPeNDAP'},
-      'thredds':  {id: 'T', color: 'grey',   label: 'THREDDS'},
-      'http':     {id: 'W', color: 'purple', label: 'Web'},
-      'https':    {id: 'W', color: 'purple', label: 'Web'},
+      'ogc:wcs':  {id: 'C', color: 'coral',     label: 'OGC Web Coverage Service'},
+      'download': {id: 'D', color: 'blue',      label: 'Download'},
+      'ftp':      {id: 'F', color: 'red',       label: 'FTP'},
+      'noaa:las': {id: 'L', color: 'aqua',      label: 'NOAA Live Access Server'},
+      'ogc:wms':  {id: 'M', color: 'goldenrod', label: 'OGC Web Map Service'},
+      'opendap':  {id: 'O', color: 'green',     label: 'OPeNDAP'},
+      'thredds':  {id: 'T', color: 'grey',      label: 'THREDDS'},
+      'http':     {id: 'W', color: 'purple',    label: 'Web'},
+      'https':    {id: 'W', color: 'purple',    label: 'Web'},
     }
   }
 
