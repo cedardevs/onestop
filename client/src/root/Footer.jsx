@@ -30,16 +30,8 @@ let Footer = () => {
     }, {
       href: "//www.nesdis.noaa.gov/",
       text: "NESDIS"
-    }, {
-      href: `${generate508link()}`,
-      text: "508 Compliant Alternative Search Page"
     }
   ]
-
-  function generate508link() {
-    const lHref = `${new RegExp(/^.*\//).exec(window.location.href)}`
-    return lHref.endsWith('508/') ? lHref : `${lHref.slice(0,lHref.indexOf('#')+2)}508/`
-  }
 
   return (
       <div className={styles.footer}>

@@ -26,6 +26,7 @@ class HeaderComponent extends React.Component {
         <a href={this.props.homeUrl} title="Home">Home</a>
         <a title="About" onClick={() => this.props.toggleAbout()}>About</a>
         <a title="Help" onClick={() => this.props.toggleHelp()}>Help</a>
+        {this.getMainOr508Link()}
       </ul>
     const menu = <nav className={styles.headerLinks}>{menuContent}</nav>
 
@@ -52,6 +53,17 @@ class HeaderComponent extends React.Component {
         </div>
       </div>
     </header>
+  }
+
+  getMainOr508Link() {
+    const lHref = `${new RegExp(/^.*\//).exec(window.location.href)}`
+    let linkTitle = 'Main Site'
+    let siteLink = `${lHref.slice(0,lHref.indexOf('#')+2)}`
+    if (window.location.href.indexOf('508') === -1) {
+      siteLink = `${siteLink}508/`
+      linkTitle = 'Accessible Site'
+    }
+    return <a title={linkTitle} href={siteLink}><span>{linkTitle}</span></a>
   }
 
   renderLogo() {
