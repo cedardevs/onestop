@@ -163,6 +163,11 @@ $menu-distance: 13em;
     height: auto;
     flex: 1;
     background-color: white;
+    nav {
+      top: 1em;
+      position: relative;
+      bottom: inherit;
+    }
   }
   .collapsed {
     flex: 0;
@@ -174,9 +179,6 @@ $menu-distance: 13em;
     color: $color-primary-darkest;
     margin: .5em auto;
     justify-content: center;
-  }
-  .nav {
-    top: 1em;
   }
 }
 
