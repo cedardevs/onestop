@@ -37,7 +37,7 @@ class HeaderComponent extends React.Component {
           {this.renderLogo()}
         </div>
         <div className={styles.searchBox}>
-          {this.props.showSearch ? <SearchFieldsContainer/> : <div></div>}
+          {this.props.showSearch ? <SearchFieldsContainer header={true}/> : <div></div>}
         </div>
         <div className={styles.standardMenu}>
           {menu}

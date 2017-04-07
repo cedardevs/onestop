@@ -83,7 +83,8 @@ class SearchFieldsComponent extends React.Component {
 
   render() {
     return (
-        <div className={`pure-form  ${styles.searchFields}`}>
+        <div className={`pure-form  ${styles.searchFields}
+          ${this.props.header ? styles.header : ''} `}>
           <div className={styles.searchLayout}>
             <div id="searchbox" className={styles.searchContainer}>
               <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery}
@@ -125,6 +126,10 @@ class SearchFieldsComponent extends React.Component {
         </div>
     )
   }
+}
+
+SearchFieldsComponent.defaultProps = {
+  header: false
 }
 
 export default SearchFieldsComponent

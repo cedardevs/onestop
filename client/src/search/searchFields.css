@@ -27,16 +27,18 @@
 
 $button-threshold: 96em;
 @media (max-width: $button-threshold){
-  .searchContainer {
-    width: 32em;
-  }
-  .buttonLayout {
-    display: flex;
-    justify-content: space-between;
-    > button {
-      width: 7em;
-      margin-left: 0;
-      margin-top: .5em;
+  .header {
+    .searchContainer {
+      width: 32em;
+    }
+    .buttonLayout {
+      display: flex;
+      justify-content: space-between;
+      > button {
+        width: 7em;
+        margin-left: 0;
+        margin-top: .5em;
+      }
     }
   }
 }
