@@ -73,17 +73,9 @@ class InfoComponent extends React.Component {
   }
 
   renderHelp() {
-    return <div className={`pure-u-1 ${styles.infoText}`}>
-        <h1>How to use this interface:</h1>
-        <p>
-          <b>To get started, just type a term into the search box below and hit the search button:</b>
-          <i className={`${styles.iconButton} fa fa-search`} aria-hidden="true"></i>
-        </p>
-        <p>
-          <b>Here are a few querying tips to help narrow your results down further:</b>
-        </p>
-        <ul className="fa-ul">
-          <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>
+    const accessibleVersion = window.location.hash.includes('508')
+
+    const mainSiteSnippet = <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>
             Use the <i className={`fa fa-clock-o ${styles.iconButton}`} aria-hidden="true"></i> time and
             <i className={`fa fa-globe ${styles.iconButton}`} aria-hidden="true"></i> space filters
             (to the right of the input box) to limit results to only those that <u>intersect</u> the given constraints.
@@ -92,6 +84,21 @@ class InfoComponent extends React.Component {
             <i className={styles.highlightB} aria-hidden="true"> blue </i> to
             <i className={styles.highlightP} aria-hidden="true"> purple</i>.
           </li>
+
+    const accessibleSiteSnippet = <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>Use the start/end date and bounding box text boxes to limit results to only those that <u>intersect</u> the given constraints.</li>
+
+    return <div className={`pure-u-1 ${styles.infoText}`}>
+        <h1>How to use this interface:</h1>
+        <p>
+          <b>To get started, just type a term into the Search {accessibleVersion ? 'Text ' : ''}box below and hit the Search Button</b>
+          {accessibleVersion ? '' :
+          <i className={`${styles.iconButton} fa fa-search`} aria-hidden="true"></i>}
+        </p>
+        <p>
+          <b>Here are a few querying tips to help narrow your results down further:</b>
+        </p>
+        <ul className="fa-ul">
+          {accessibleVersion ? accessibleSiteSnippet : mainSiteSnippet}
           <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>
             Wrap a search phrase in double quotes for an exact match:
             <ul className={`${styles.examples}`}>
