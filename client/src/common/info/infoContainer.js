@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
 import InfoComponent from './InfoComponent'
+import { toggleHelp, toggleAbout } from  '../../actions/FlowActions'
 
 const mapStateToProps = (state) => {
   return {
@@ -8,8 +9,16 @@ const mapStateToProps = (state) => {
   }
 }
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    toggleAbout: () => dispatch(toggleAbout()),
+    toggleHelp: () => dispatch(toggleHelp())
+  }
+}
+
 const InfoContainer = connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(InfoComponent)
 
 export default InfoContainer

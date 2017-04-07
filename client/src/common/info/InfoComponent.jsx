@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import styles from './info.css'
 
@@ -19,7 +20,7 @@ class InfoComponent extends React.Component {
     const showCaseStyle = `pure-g ${styles.showcase} ${modalMode ? styles.modalMode : ''}`
     const overlay = (this.showAbout || this.showHelp) && modalMode ? styles.overlay : ''
     return (
-      <div className={overlay}>
+      <div id='overlay' className={overlay}>
         <div className={showCaseStyle}>
           <ReactCSSTransitionGroup
             transitionName={ {
@@ -33,6 +34,26 @@ class InfoComponent extends React.Component {
         </div>
       </div>
     )
+  }
+
+  componentDidMount() {
+    document.addEventListener('click', this.handleClickOutside.bind(this), true)
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleClickOutside.bind(this), true)
+  }
+
+  handleClickOutside(event) {
+    const domNode = ReactDOM.findDOMNode(this)
+    const { title, id } = event.path[0]
+    if ((!domNode || !domNode.contains(event.target)
+     && title !== 'Help' && title !== 'About')
+     || id === 'overlay') {
+      if (this.showAbout) this.props.toggleAbout()
+      if (this.showHelp) this.props.toggleHelp()
+    }
+    console.log(event)
   }
 
   renderInfo() {
@@ -53,8 +74,7 @@ class InfoComponent extends React.Component {
   }
 
   renderHelp() {
-    return <div>
-      <div className={`pure-u-1 ${styles.infoText}`}>
+    return <div className={`pure-u-1 ${styles.infoText}`}>
         <h1>How to use this interface:</h1>
         <p>
           <b>To get started, just type a term into the search box below and hit the search button:</b>
@@ -116,7 +136,6 @@ class InfoComponent extends React.Component {
           </li>
         </ul>
       </div>
-    </div>
   }
 }
 

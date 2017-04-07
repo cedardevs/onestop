@@ -57,7 +57,7 @@
 
 .showcase {
   margin: 0 auto;
-  width: 90%;
+  width: 100%;
   max-width: 80em;
   z-index: 8;
 }
@@ -111,6 +111,8 @@
 }
 
 .infoText {
+  width: inherit;
+  max-width: 80em;
   background-color: rgba(0,0,0,.9);
   border: solid thin white;
   border-radius: 2px;
