@@ -47,11 +47,18 @@ class InfoComponent extends React.Component {
   handleClickOutside(event) {
     const domNode = ReactDOM.findDOMNode(this)
     const { title, id } = event.path[0]
-    if ((!domNode || !domNode.contains(event.target)
-     && title !== 'Help' && title !== 'About')
-     || id === 'overlay') {
-      if (this.showAbout) this.props.toggleAbout()
-      if (this.showHelp) this.props.toggleHelp()
+    const parentId = event.path[0].parentElement.id
+    if ((!domNode
+          || !domNode.contains(event.target)
+          && title !== 'Help'
+          && title !== 'About'
+        )
+      || id === 'overlay') {
+        if (this.showAbout) { this.props.toggleAbout() }
+        if (this.showHelp
+          && parentId !== 'searchButtons'
+          && parentId !== 'searchBox'
+        ) { this.props.toggleHelp() }
     }
   }
 

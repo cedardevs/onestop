@@ -86,14 +86,14 @@ class SearchFieldsComponent extends React.Component {
         <div className={`pure-form  ${styles.searchFields}
           ${this.props.header ? styles.header : ''} `}>
           <div className={styles.searchLayout}>
-            <div id="searchbox" className={styles.searchContainer}>
+            <div id='searchBox' className={styles.searchContainer}>
               <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery}
                                value={this.props.queryString}/>
             </div>
             <button className={`${styles.clearButton}`} onClick={this.clearQueryString}>x</button>
           </div>
 
-          <div className={styles.buttonLayout}>
+          <div id='searchButtons' className={styles.buttonLayout}>
             <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`}
                     onClick={this.toggleCalendar} title="Add Temporal Criteria">
               <i className={`${styles.icon} fa fa-clock-o fa-2x`}></i>
