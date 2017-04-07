@@ -53,7 +53,6 @@ class InfoComponent extends React.Component {
       if (this.showAbout) this.props.toggleAbout()
       if (this.showHelp) this.props.toggleHelp()
     }
-    console.log(event)
   }
 
   renderInfo() {
