@@ -107,7 +107,7 @@ class Section508LandingComponent extends React.Component {
     )
 
     return <div className={`${styles.formDiv} pure-form`}>
-      <h1>Enter Search Criteria</h1>
+      <h2>Enter Search Criteria</h2>
       {this.renderErrors()}
       <form id='508-form'>
         {formInputs}

@@ -16,3 +16,18 @@
   clear: both;
   padding: $section-padding;
 }
+
+.main {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.hiddenPageTitle {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

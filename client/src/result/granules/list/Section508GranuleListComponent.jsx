@@ -40,13 +40,13 @@ class GranuleList extends React.Component {
       <div>
         <a onClick={this.props.showCollections} title="Return To Collection Results" className={styles.links}>Return To Collection Results</a>
         <div className={styles.descriptionContainer}>
-          <h1>{this.props.selectedCollection.title}</h1>
+          <h2>{this.props.selectedCollection.title}</h2>
           <p title="Description" className={styles.descriptionParagraph}>
             {this.props.selectedCollection.description}</p>
         </div>
-        <ul title="Granule List" className={styles.granuleList508}>
+        <ol title="Granule List" className={styles.granuleList508}>
           {granuleList}
-        </ul>
+        </ol>
       </div>
     )
   }
