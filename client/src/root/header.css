@@ -12,13 +12,15 @@ input {
   min-height: $header-height;
 }
 
+.orgBox {
+  margin-right: 7em;
+}
+
 .headerLinks {
-  position: absolute;
-  bottom: -4em;
   width: 100%;
   font-size: 1.5em;
-  text-align: right;
   display: inline-block;
+  min-width: 25em;
   a {
     color: #d7d7d7;
     font-weight: 300;
@@ -29,6 +31,21 @@ input {
       color: $color-primary;
     }
   }
+  ul {
+    padding: 0;
+    list-style-type: none;
+  }
+}
+
+.headerRow {
+  > div {
+    display: inline-block;
+  }
+}
+
+.searchBox {
+  vertical-align: top;
+  margin-top: .9em;
 }
 
 .noaaLogo {
@@ -80,19 +97,8 @@ input {
 
 .standardMenu {
   position: relative;
-}
-
-$menu-threshold: 60em;
-@media (max-width: $menu-threshold){
-  .standardMenu {
-    display: none;
-  }
-}
-
-@media (min-width: $menu-threshold){
-  .burgerMenu {
-    display: none;
-  }
+  float: right;
+  top: 1em;
 }
 
 .burgerMenu {
@@ -100,6 +106,35 @@ $menu-threshold: 60em;
   margin: 1em 0;
 }
 
+$menu-threshold-1: 96em;
+$menu-threshold-2: 84em;
+@media (max-width: $menu-threshold-1)
+and (min-width: $menu-threshold-2){
+  .standardMenu {
+    top: 3em
+  }
+  .headerLinks {
+    font-size: 1.3em;
+  }
+  .searchBox {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: $menu-threshold-2){
+  .standardMenu {
+    display: none !important;
+  }
+  .searchBox {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: $menu-threshold-2){
+  .burgerMenu {
+    display: none;
+  }
+}
 
 /* Burger menu */
 .burgerToggle {
@@ -148,7 +183,7 @@ $menu-threshold: 60em;
   }
 }
 
-$menu-distance: 13em;
+$menu-distance: 20em;
 .menuContainer {
   overflow: hidden;
   display: flex;

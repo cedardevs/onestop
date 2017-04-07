@@ -27,21 +27,20 @@ class HeaderComponent extends React.Component {
         <a title="About" onClick={() => this.props.toggleAbout()}>About</a>
         <a title="Help" onClick={() => this.props.toggleHelp()}>Help</a>
         {this.getMainOr508Link()}
+        <a href='//data.noaa.gov/dataset' title='Previous Data Catalog'>Previous Catalog</a>
       </ul>
     const menu = <nav className={styles.headerLinks}>{menuContent}</nav>
 
     return <header className={`${styles.headerArea}`}>
-      <div className={`pure-g`}>
-        <div className={`pure-u-1-4 ${styles.orgBox}`}>
+      <div className={styles.headerRow}>
+        <div className={styles.orgBox}>
           {this.renderLogo()}
         </div>
-        <div className={`pure-u-1 pure-u-sm-10-24 ${styles.headerRow}`}>
+        <div className={styles.searchBox}>
           {this.props.showSearch ? <SearchFieldsContainer/> : <div></div>}
         </div>
-        <div className={`pure-u-1 pure-u-sm-8-24 ${styles.headerRow}`}>
-          <div className={styles.standardMenu}>
-            {menu}
-          </div>
+        <div className={styles.standardMenu}>
+          {menu}
         </div>
       </div>
       <div className={styles.burgerMenu}>
