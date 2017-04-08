@@ -19,6 +19,7 @@
 }
 
 .buttonLayout {
+  position: relative;
   display: inline-block;
   > button {
     display: inline-block;

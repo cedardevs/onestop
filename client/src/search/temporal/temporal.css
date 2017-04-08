@@ -1,10 +1,10 @@
 @import '../../../style/style.css';
 
 .temporalContainer {
-  position: fixed;
+  position: absolute;
+  top: 3em;
+  left: 1em;
   z-index: 2;
-  margin-top: 1em;
-  margin-left: 25%;
   box-shadow: 14px 14px 5px rgb(0, 0, 0, .7);
   border: 2px outset $ color-primary;
   height: 14em;
