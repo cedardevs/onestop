@@ -62,6 +62,7 @@ class DateTimePicker extends React.Component {
             value={props.value}
             onChange={props.onChange}
             style={{color: "black"}}
+            getCalendarContainer={()=>this.props.mountPoint}
         >
           {renderInput}
         </DatePicker>

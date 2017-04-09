@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import moment from 'moment'
 import DateTimePicker from './DateTimePickerComponent'
 import styles from './temporal.css'
@@ -20,12 +21,35 @@ class TemporalSearch extends React.Component {
   initialState() {
     return {
       startValue: null,
-      endValue: null
+      endValue: null,
+      startValueNode: null,
+      endValueNode: null
     }
   }
 
   componentDidMount() {
     this.updateState(this)
+    document.addEventListener('click', this.handleClickOutside.bind(this), true)
+    // Initialize node refs
+    this.setState({
+      startValueNode: ReactDOM.findDOMNode(this.startValue),
+      endValueNode: ReactDOM.findDOMNode(this.endValue)})
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleClickOutside.bind(this), true)
+  }
+
+  handleClickOutside(event) {
+    const domNode = ReactDOM.findDOMNode(this)
+    const { startValueNode, endValueNode } = this.state
+    const dateNode = startValueNode ? startValueNode : endValueNode
+    const { id } = event.path[0]
+    if (((!domNode || !domNode.contains(event.target))
+        && id !== 'timeButton')
+        && (!dateNode || !dateNode.contains(event.target))) {
+        this.props.toggleSelf()
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -78,26 +102,30 @@ class TemporalSearch extends React.Component {
   render() {
     return (
         <div className={styles.temporalContainer}>
-          <div className={`pure-form pure-g ${styles.temporalContent}`}>
+          <div id='temporalContent' className={`pure-form pure-g ${styles.temporalContent}`}>
             <div className={`pure-u-1 ${styles.pickerLabel}`}>Start Date:</div>
             <div className={`pure-u-1 ${styles.pickerInput}`}>
               <DateTimePicker id="startValue"
                               value={this.state.startValue}
                               onChange={this.onChange.bind(this, 'startValue')}
-                              disabledDate={this.disabledStartDate} />
+                              disabledDate={this.disabledStartDate}
+                              mountPoint={this.state.startValueNode}/>
             </div>
             <div className={`pure-u-1 ${styles.pickerLabel}`}>End Date:</div>
-            <div className={`pure-u-1`}>
+            <div className={`pure-u-1`} ref={endValue => this.endValue = endValue}>
               <DateTimePicker id="endValue"
                               value={this.state.endValue}
                               onChange={this.onChange.bind(this, 'endValue')}
-                              disabledDate={this.disabledEndDate} />
+                              disabledDate={this.disabledEndDate}
+                              mountPoint={this.state.endValueNode}/>
             </div>
             <div className={`pure-u-1 ${styles.bottomButtonPanel}`}>
               <button className={`pure-button ${styles.cancelButton}`} onClick={this.props.toggleSelf}>Cancel</button>
               <button className={`pure-button ${styles.submitButton}`} onClick={this.updateTemporalFilters}>Apply To Search</button>
             </div>
           </div>
+          <div ref={startValue => this.startValue = startValue}></div>
+          <div ref={endValue => this.endValue = endValue}></div>
         </div>
     )
   }
