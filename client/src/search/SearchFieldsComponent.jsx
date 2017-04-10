@@ -99,7 +99,8 @@ class SearchFieldsComponent extends React.Component {
               <i className={`${styles.icon} fa fa-clock-o fa-2x`}></i>
             </button>
             <ToggleDisplay show={this.state.showCalendar}>
-              <TemporalContainer ref="timeComponent" toggleSelf={this.toggleCalendar} />
+              <TemporalContainer ref="timeComponent" toggleSelf={this.toggleCalendar}
+                calendarVisible={this.state.showCalendar}/>
             </ToggleDisplay>
             <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`}
                     onClick={this.toggleMap} title="Add Spatial Criteria">

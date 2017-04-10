@@ -15,6 +15,7 @@ class TemporalSearch extends React.Component {
     this.onChange = this.onChange.bind(this)
     this.updateState = this.updateState.bind(this)
     this.updateTemporalFilters = this.updateTemporalFilters.bind(this)
+    this.handleClickOutside = this.handleClickOutside.bind(this)
     this.state = this.initialState()
   }
 
@@ -29,15 +30,14 @@ class TemporalSearch extends React.Component {
 
   componentDidMount() {
     this.updateState(this)
-    document.addEventListener('click', this.handleClickOutside.bind(this), true)
-    // Initialize node refs
+    document.addEventListener('click', this.handleClickOutside, true)
     this.setState({
       startValueNode: ReactDOM.findDOMNode(this.startValue),
       endValueNode: ReactDOM.findDOMNode(this.endValue)})
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this.handleClickOutside.bind(this), true)
+    document.removeEventListener('click', this.handleClickOutside, true)
   }
 
   handleClickOutside(event) {
@@ -47,7 +47,8 @@ class TemporalSearch extends React.Component {
     const { id } = event.path[0]
     if (((!domNode || !domNode.contains(event.target))
         && id !== 'timeButton')
-        && (!dateNode || !dateNode.contains(event.target))) {
+        && (!dateNode || !dateNode.contains(event.target))
+        && this.props.calendarVisible) {
         this.props.toggleSelf()
     }
   }
