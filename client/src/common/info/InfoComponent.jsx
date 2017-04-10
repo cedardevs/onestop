@@ -97,7 +97,7 @@ class InfoComponent extends React.Component {
     return <div className={`pure-u-1 ${styles.infoText}`}>
         <h1>How to use this interface:</h1>
         <p>
-          <b>To get started, just type a term into the Search {accessibleVersion ? 'Text ' : ''}box below and hit the Search Button</b>
+          <b>To get started, just type a term into the Search {accessibleVersion ? 'Text ' : ''}box on the home page and hit the Search Button</b>
           {accessibleVersion ? '' :
           <i className={`${styles.iconButton} fa fa-search`} aria-hidden="true"></i>}
         </p>
