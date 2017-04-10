@@ -24,13 +24,13 @@ class DefaultApplicationConfig {
   @Value('${elasticsearch.host}')
   String elasticHost
 
-  @Value('${elasticsearch.ssl.enabled:false}')
+  @Value('${elasticsearch.ssl.enabled:}')
   String sslEnabled
 
-  @Value('${elasticsearch.ssl.keystore.path')
+  @Value('${elasticsearch.ssl.keystore.path:}')
   String keystorePath
 
-  @Value('${elasticsearch.ssl.keystore.password')
+  @Value('${elasticsearch.ssl.keystore.password:}')
   String keystorePassword
 
   @Value('${elasticsearch.ro.user:}')

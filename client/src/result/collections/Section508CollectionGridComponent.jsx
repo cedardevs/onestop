@@ -36,9 +36,9 @@ class Section508CollectionGridComponent extends React.Component {
 
   renderKeyword(keyword, index) {
     return <li key={index} className={styles.keywords}>
-      <div title={keyword} onClick={() => this.props.textSearch(`"${keyword}"`)}>
+      <button title={keyword} onClick={() => this.props.textSearch(`"${keyword}"`)}>
         {keyword}
-      </div>
+      </button>
     </li>
   }
 
@@ -50,32 +50,44 @@ class Section508CollectionGridComponent extends React.Component {
             <h3 title="Title">{val.title}</h3>
             <p title="Description">{val.description}</p>
             <div title="Related Links">
-              <span>Related Links:</span>
+              <h4>Related Links:</h4>
               {this.renderLinks('More Info', this.getLinksByType('information', val.links), this.renderLink)}
               {this.renderLinks('Data Access', this.getLinksByType('download', val.links), this.renderLink)}
             </div>
             <div title="Associated Keywords">
-              <span>Associated Keywords:</span>
+              <h4>Associated Keywords:</h4>
               {this.renderLinks('Themes', this.getKeywordsByType(val['gcmdScience']), this.renderKeyword.bind(this))}
               {this.renderLinks('Places', this.getKeywordsByType(val['gcmdLocations']), this.renderKeyword.bind(this))}
             </div>
             <div title="Associated Files">
-              <span>Associated Files: </span>
-              <a onClick={() => this.props.showGranules(key)} title="Show matching files" className={styles.links}>
+              <h4>Associated Files: </h4>
+              <button onClick={() => this.props.showGranules(key)} title="Show matching files" className={styles.links}>
                 Show Matching Files
-              </a>
+              </button>
             </div>
           </li>
       )
     })
+    if (this.props.returnedHits < this.props.totalHits) {
+      collections.push(<li key="showMore" className={styles.listItem}>
+        <div className={`${styles.showMore}`}>
+          <button className={`pure-button`}
+                  title="Show More Results"
+                  onClick={() => this.props.fetchMoreResults()}>
+            Show More Results
+          </button>
+        </div>
+      </li>)
+    }
+
     return <div>
       <div className={styles.resultCount}>
-        Showing {this.props.returnedHits} of {this.props.totalHits} matching results
+        <h2>Search Results (showing {this.props.returnedHits} of {this.props.totalHits})</h2>
       </div>
       <div className={styles.listContainer}>
-        <ul className={styles.collectionList508}>
+        <ol className={styles.collectionList508}>
           {collections}
-        </ul>
+        </ol>
       </div>
     </div>
   }
@@ -84,6 +96,7 @@ class Section508CollectionGridComponent extends React.Component {
 Section508CollectionGridComponent.propTypes = {
   textSearch: PropTypes.func.isRequired,
   showGranules: PropTypes.func.isRequired,
+  fetchMoreResults: PropTypes.func,
   returnedHits: PropTypes.number.isRequired,
   totalHits: PropTypes.number.isRequired,
   results: PropTypes.object.isRequired
