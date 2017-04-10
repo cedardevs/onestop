@@ -23,11 +23,11 @@ class HeaderComponent extends React.Component {
         <span></span>
       </div>
     const menuContent = <ul>
-        <a href={this.props.homeUrl} title="Home">Home</a>
-        <a title="About" onClick={() => this.props.toggleAbout()}>About</a>
-        <a title="Help" onClick={() => this.props.toggleHelp()}>Help</a>
+        <button title="Home" onClick={() => location.href=this.props.homeUrl}>Home</button>
+        <button title="About" onClick={() => this.props.toggleAbout()}>About</button>
+        <button title="Help" onClick={() => this.props.toggleHelp()}>Help</button>
         {this.getMainOr508Link()}
-        <a href='//data.noaa.gov/dataset' title='Previous Data Catalog'>Previous Catalog</a>
+        <button title='Previous Data Catalog' onClick={() => location.href='//data.noaa.gov/dataset'}>Previous Catalog</button>
       </ul>
     const menu = <nav className={styles.headerLinks}>{menuContent}</nav>
 
@@ -62,7 +62,7 @@ class HeaderComponent extends React.Component {
       siteLink = `${siteLink}508/`
       linkTitle = 'Accessible Site'
     }
-    return <a title={linkTitle} href={siteLink}><span>{linkTitle}</span></a>
+    return <button title={linkTitle} onClick={()=>location.href=siteLink}><span>{linkTitle}</span></button>
   }
 
   renderLogo() {

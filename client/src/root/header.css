@@ -21,7 +21,12 @@ input {
   font-size: 1.5em;
   display: inline-block;
   min-width: 25em;
-  a {
+  button {
+    background:none!important;
+    border:none;
+    font: inherit;
+    outline: none !important;
+
     text-decoration: none;
     color: #d7d7d7;
     font-weight: 300;
@@ -31,9 +36,6 @@ input {
     &.selected, &:hover {
       color: $color-primary;
     }
-  }
-  a:hover {
-    text-decoration: underline;
   }
   ul {
     padding: 0;
