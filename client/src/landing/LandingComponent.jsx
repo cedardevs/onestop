@@ -35,7 +35,7 @@ class LandingComponent extends React.Component {
     topics = topics.map((topic, i) => {
       return <div key={i} className={`${styles.topicItem}`} onClick={()=>this.search(topic.term)}>
         <img src={topic.icon}/>
-        <h2>{topic.title}</h2>
+        <h3>{topic.title}</h3>
       </div>
     })
 
