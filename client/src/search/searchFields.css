@@ -87,8 +87,8 @@ $button-threshold: 96em;
 .mapButton {
   max-height: 2.2em;
   position: relative;
-  color: white;
-  background-color: $color-primary;
+  color: white !important;
+  background-color: $color-primary !important;
   text-shadow: 0 0 5px black;
   margin-left: .5em;
 }
@@ -101,8 +101,8 @@ $button-threshold: 96em;
 .mapButtonApplied {
   max-height: 2.2em;
   position: relative;
-  color: white;
-  background-color: $color-visited-light;
+  color: white !important; 
+  background-color: $color-visited-light !important;
   text-shadow: 0 0 5px black;
   margin-left: .5em;
 }

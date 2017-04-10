@@ -93,8 +93,8 @@
 }
 
 .button-secondary {
-  color: white;
-  background: #00a6d2;
+  color: white !important;
+  background: #00a6d2 !important;
 }
 
 .granulesButton {

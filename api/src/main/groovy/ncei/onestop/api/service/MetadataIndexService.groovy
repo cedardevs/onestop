@@ -46,6 +46,8 @@ class MetadataIndexService {
 
   public Map loadMetadata(MultipartFile[] documents) {
 
+    indexAdminService.ensureStaging()
+
     def data = []
 
     def bulkRequest = adminClient.prepareBulk()
@@ -121,6 +123,8 @@ class MetadataIndexService {
   }
 
   public Map loadMetadata(String document) {
+
+    indexAdminService.ensureStaging()
 
     def storageInfo = MetadataParser.parseIdentifierInfo(document)
     def internalId = storageInfo.id

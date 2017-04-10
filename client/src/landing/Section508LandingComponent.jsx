@@ -1,103 +1,119 @@
+import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import styles from './section508.css'
-import GeoValidate from 'geojson-validation'
 import moment from 'moment'
+import { convertBboxToGeoJson, convertGeoJsonToBbox } from '../utils/geoUtils'
 
 class Section508LandingComponent extends React.Component {
   constructor(props) {
     super(props)
 
-    this.updateQuery = this.updateQuery.bind(this)
+    this.updateFieldValue = this.updateFieldValue.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
 
-    this.formFields = [
-      { label: 'Search Text:', name: 'search-text', placeholder: 'e.g. ocean',
-        value: 'queryString'},
-      { label: 'Start Date:', name: 'start-date', placeholder: 'e.g. 1940-02-01T00:00:00Z',
-        value: 'startDateTime'},
-      { label: 'End Date:', name: 'end-date', placeholder: 'e.g. 2017-02-13T00:00:00Z',
-        value: 'endDateTime'},
-      { label: 'Bounding Box:', name: 'geometry', placeholder:
-          `e.g. -180.00,-90.00,180.00,90.00 (W,S,E,N)`, value: 'geoJsonSelection' }
-    ]
-  }
-
-  updateQuery(e) {
-    let { name, value } = e.target
-    value = value.trim()
-    switch (name) {
-      case 'search-text':
-        this.props.updateSearchText(value)
-        break
-      case 'start-date':
-        let startDate = ''
-        if (moment(value).isValid()) { startDate = moment(value).toISOString() }
-        this.props.updateDates(startDate, this.props.endDateTime || '')
-        break
-      case 'end-date':
-        let endDate = ''
-        if (moment(value).isValid()) { endDate = moment(value).toISOString() }
-        this.props.updateDates(this.props.startDateTime || '', endDate)
-        break
-      case 'geometry':
-        this.validateAndSubmitGeoJson(value)
-        break
-      default:
-        // No action
+    this.fields = {
+      queryText: {
+        label: 'Search Text',
+        placeholder: 'e.g. oceans',
+        toQueryValue: x => x,
+        toFieldValue: x => x
+      },
+      startDateTime: {
+        label: 'Start Date',
+        placeholder: 'e.g. 1940-02-01T00:00:00Z',
+        toQueryValue: this.stringToIsoDate,
+        toFieldValue: x => x
+      },
+      endDateTime: {
+        label: 'End Date',
+        placeholder: 'e.g. 2017-02-13T00:00:00Z',
+        toQueryValue: this.stringToIsoDate,
+        toFieldValue: x => x
+      },
+      geoJSON: {
+        label: 'Bounding Box',
+        placeholder: 'e.g. -180.00,-90.00,180.00,90.00 (W,S,E,N)',
+        toQueryValue: convertBboxToGeoJson,
+        toFieldValue: convertGeoJsonToBbox
+      },
     }
+
+    this.state = {
+      fields: this.getFieldsFromProps(props),
+      errors: {}
+    }
+
+    this.inputs = {} // set by ref callbacks to enabling focusing
   }
 
-  // Checks for bounding box only at this point
-  validateAndSubmitGeoJson(coordString) {
-    let numCoords
-    const coordArray = coordString.split(',').map((x, idx)=> { numCoords = idx; return parseFloat(x) })
-    const sw = [coordArray[0], coordArray[1]]
-    const nw = [coordArray[0], coordArray[3]]
-    const ne = [coordArray[2], coordArray[3]]
-    const se = [coordArray[2], coordArray[1]]
-    const coordinates = [[sw, nw, ne, se, sw]]
-    let geoJSON = {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        coordinates,
-        type: 'Polygon'
+  componentWillReceiveProps(props) {
+    this.setState({fields: this.getFieldsFromProps(props)})
+  }
+
+  getFieldsFromProps(props) {
+    return _.mapValues(this.fields, (fieldDef, name) => fieldDef.toFieldValue(props[name]))
+  }
+
+  updateFieldValue(e) {
+    const { name, value } = e.target
+    const newFields = Object.assign(this.state.fields, {[name]: value.trim()})
+    this.setState({fields: newFields})
+  }
+
+  validateAndSubmit() {
+    const results = _.reduce(this.fields, (collector, fieldDef, name) => {
+      const raw = this.state.fields[name]
+      if (!raw) { return collector }
+      const valid = fieldDef.toQueryValue(raw)
+      if (valid) {
+        return _.set(collector, `values.${name}`, valid)
       }
+      else {
+        return _.set(collector, `errors.${name}`, `Invalid value for the ${fieldDef.label}`)
+      }
+    }, {values: {}, errors: {}})
+
+    if (_.isEmpty(results.errors)) {
+      this.props.updateSearch(results.values)
+      this.props.submit()
     }
-    if(coordArray.every(x=>(typeof x == 'number' && !isNaN(x)))
-      && coordArray.length >= 4
-      && GeoValidate.isPolygonCoor(coordinates)){
-      this.props.handleNewGeometry(geoJSON)
-    } else {
-      this.props.removeGeometry()
+    else {
+      this.setState({errors: results.errors})
     }
+  }
+
+  stringToIsoDate(string) {
+    const parsedTime = moment(string, moment.ISO_8601)
+    return parsedTime.isValid() ? parsedTime.toISOString() : undefined
   }
 
   // Search on Enter press
   handleKeyDown(e) {
     if (e.keyCode === 13) {
       e.preventDefault()
-      this.props.submit()
+      this.validateAndSubmit()
     }
   }
 
   render() {
-    const formInputs = this.formFields.map(field => {
-      return <div className={styles.formRow} key={field.name}>
-        <label htmlFor={field.name} className={styles.formLabel}>{field.label}</label>
-        <input type="text" className={styles.formInput} name={field.name}
-               id={field.name} placeholder={field.placeholder} onKeyDown={this.handleKeyDown}
-               onChange={this.updateQuery} value={_.get(this.props, field.value) || ''}/>
+    console.log(this.state.focused)
+
+    const formInputs = _.map(this.fields, (fieldDef, name) => <div className={styles.formRow} key={name}>
+        <label htmlFor={name} className={styles.formLabel}>{fieldDef.label}</label>
+        <input type="text" className={styles.formInput} name={name} ref={it => this.inputs[name] = it}
+               id={name} placeholder={fieldDef.placeholder} onKeyDown={this.handleKeyDown}
+               onChange={this.updateFieldValue} value={this.state.fields[name] || ''}/>
       </div>
-    })
+    )
 
     return <div className={`${styles.formDiv} pure-form`}>
-      <h1>Search Criteria</h1>
+      <h2>Enter Search Criteria</h2>
+      {this.renderErrors()}
       <form id='508-form'>
         {formInputs}
       </form>
       <button className={`${styles.button} pure-button`}
-              onClick={this.props.submit}>
+              onClick={() => this.validateAndSubmit()}>
         Search
       </button>
       <button className={`${styles.button} pure-button`}
@@ -107,19 +123,34 @@ class Section508LandingComponent extends React.Component {
     </div>
   }
 
+  renderErrors() {
+    console.log(this.inputs)
+    const errors = this.state.errors
+    if (!_.isEmpty(errors)) {
+      return <div role="alert" className={styles.errors}>
+        <h4>There are {_.size(errors)} errors in the form</h4>
+        <ul>
+          {_.map(errors, (message, field) => <li key={field}>
+            <a onClick={() => this.inputs[field].focus()}
+               title={`Focus the ${this.fields[field].label} input`}>
+              {message}
+            </a>
+          </li>)}
+        </ul>
+      </div>
+    }
+  }
+
 }
 
 Section508LandingComponent.propTypes = {
   submit: PropTypes.func.isRequired,
   clearSearch: PropTypes.func.isRequired,
-  updateSearchText: PropTypes.func.isRequired,
-  updateDates: PropTypes.func.isRequired,
-  handleNewGeometry: PropTypes.func.isRequired,
-  removeGeometry: PropTypes.func.isRequired,
-  queryString: PropTypes.string,
+  updateSearch: PropTypes.func.isRequired,
+  queryText: PropTypes.string,
   startDateTime: PropTypes.string,
   endDateTime: PropTypes.string,
-  geoJsonSelection: PropTypes.string
+  geoJSON: PropTypes.object
 }
 
 export default Section508LandingComponent

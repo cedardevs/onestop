@@ -24,18 +24,29 @@ class GranuleList extends React.Component {
         <ul title="Access Links" className={styles.granuleList508}>{this.renderLinks(value.links)}</ul>
       </li>
     )
+    if (granuleList.length < this.props.totalHits) {
+      granuleList.push(<li key="showMore" className={styles.listItem}>
+        <div className={`${styles.showMore}`}>
+          <button className={`pure-button`}
+                  title="Show More Results"
+                  onClick={() => this.props.fetchMoreResults()}>
+            Show More Results
+          </button>
+        </div>
+      </li>)
+    }
 
     return (
       <div>
         <a onClick={this.props.showCollections} title="Return To Collection Results" className={styles.links}>Return To Collection Results</a>
         <div className={styles.descriptionContainer}>
-          <h1>{this.props.selectedCollection.title}</h1>
+          <h2>{this.props.selectedCollection.title}</h2>
           <p title="Description" className={styles.descriptionParagraph}>
             {this.props.selectedCollection.description}</p>
         </div>
-        <ul title="Granule List" className={styles.granuleList508}>
+        <ol title="Granule List" className={styles.granuleList508}>
           {granuleList}
-        </ul>
+        </ol>
       </div>
     )
   }
@@ -62,8 +73,10 @@ GranuleList.propTypes = {
   results: PropTypes.object,
   focusedIds: PropTypes.array,
   selectedCollection: PropTypes.object,
+  totalHits: PropTypes.number,
   toggleFocus: PropTypes.func,
-  showCollections: PropTypes.func
+  showCollections: PropTypes.func,
+  fetchMoreResults: PropTypes.func
 }
 
 export default GranuleList

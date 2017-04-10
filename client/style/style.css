@@ -1,2 +1,2 @@
-@import 'variables';
-@import 'mixins';
+@import './_variables.css';
+@import './_mixins.css';

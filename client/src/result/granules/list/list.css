@@ -153,14 +153,12 @@ tr.pageButton {
   > div {
     margin: .5em 0;
   }
-}
-
-.listItem:nth-child(odd)	{
-  background-color: $color-primary-darkest;
-}
-
-.listItem:nth-child(even) {
-  background-color: $color-primary-darker;
+  &:nth-child(odd)	{
+    background-color: $color-primary-darkest;
+  }
+  &:nth-child(even) {
+    background-color: $color-primary-darker;
+  }
 }
 
 .linkRow {
@@ -177,4 +175,16 @@ tr.pageButton {
   background-color: $color-green;
   text-decoration: underline;
   cursor: pointer;
+}
+.showMore {
+  width: 100%;
+  text-align: center;
+  button {
+    padding: .3em;
+    margin: .2em;
+    border: none;
+    border-radius: .1em .4em;
+    color: white;
+    background-color: $color-primary;
+  }
 }
