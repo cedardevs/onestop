@@ -69,6 +69,19 @@
   margin: auto;
 }
 
+.modalButton {
+  float: right;
+  height: 1.5em;
+  width: 2em;
+  padding: 0;
+  background-color: $color-primary-alt;
+  color: white;
+  border-radius: 1em;
+}
+.modalButton:hover {
+  background-color: $color-primary-alt-dark;
+}
+
 .searchComponent {
   text-align: center;
 }

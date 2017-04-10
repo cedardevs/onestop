@@ -70,6 +70,8 @@ class InfoComponent extends React.Component {
   renderAbout() {
     return <div>
       <div className={`pure-u-1 ${styles.infoText}`}>
+      <button onClick={this.props.toggleAbout} title='Close About' type='button' className={`${styles.modalButton} pure-button`}
+        id='modal_close' aria-label='close'>X</button>
         <h1>What Is OneStop?</h1>
         The OneStop Project is designed to improve NOAA's data discovery and access framework. Focusing on all layers of the framework
         and not just the user interface, OneStop is addressing data format and metadata best practices, ensuring more data are available
@@ -95,6 +97,8 @@ class InfoComponent extends React.Component {
     const accessibleSiteSnippet = <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>Use the start/end date and bounding box text boxes to limit results to only those that <u>intersect</u> the given constraints.</li>
 
     return <div className={`pure-u-1 ${styles.infoText}`}>
+      <button onClick={this.props.toggleHelp} title='Close Help' type='button' className={`${styles.modalButton} pure-button`}
+        id='modal_close' aria-label='close'>X</button>
         <h1>How to use this interface:</h1>
         <p>
           <b>To get started, just type a term into the Search {accessibleVersion ? 'Text ' : ''}box on the home page and hit the Search Button</b>
