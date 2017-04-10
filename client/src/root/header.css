@@ -117,10 +117,10 @@ $menu-threshold-2: 84em;
 @media (max-width: $menu-threshold-1)
 and (min-width: $menu-threshold-2){
   .standardMenu {
-    top: 3em
+    top: 2.2em
   }
   .headerLinks {
-    font-size: 1.3em;
+    font-size: 1.35em;
   }
   .searchBox {
     margin-top: 0;
@@ -214,7 +214,11 @@ $menu-distance: 20em;
     flex: 0;
     transition: flex 0.4s ease-in;
   }
-  a {
+  button {
+    background:none!important;
+    border: none;
+    outline: none !important;
+
     display: flex;
     font-size: 1.2em;
     color: $color-primary-darkest;

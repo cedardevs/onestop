@@ -73,10 +73,10 @@
   float: right;
   height: 1.5em;
   width: 2em;
-  padding: 0;
-  background-color: $color-primary-alt;
-  color: white;
-  border-radius: 1em;
+  padding: 0 !important;
+  background-color: $color-primary-alt !important;
+  color: white !important;
+  border-radius: 1em !important;
 }
 .modalButton:hover {
   background-color: $color-primary-alt-dark;
@@ -124,7 +124,7 @@
 }
 
 .infoText {
-  width: inherit;
+  width: inherit !important;
   max-width: 80em;
   background-color: rgba(0,0,0,.9);
   border: solid thin white;

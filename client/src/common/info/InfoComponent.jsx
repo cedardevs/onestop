@@ -68,8 +68,7 @@ class InfoComponent extends React.Component {
   }
 
   renderAbout() {
-    return <div>
-      <div className={`pure-u-1 ${styles.infoText}`}>
+    return <div className={`pure-u-1 ${styles.infoText}`}>
       <button onClick={this.props.toggleAbout} title='Close About' type='button' className={`${styles.modalButton} pure-button`}
         id='modal_close' aria-label='close'>X</button>
         <h1>What Is OneStop?</h1>
@@ -78,7 +77,6 @@ class InfoComponent extends React.Component {
         through modern web services, working to improve the relevance of dataset searches, and advancing both collection-level metadata
         management and granule level metadata systems to accommodate the wide variety and vast scale of NOAA's data.
       </div>
-    </div>
   }
 
   renderHelp() {
