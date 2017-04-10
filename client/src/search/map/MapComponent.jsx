@@ -104,7 +104,7 @@ class MapComponent extends React.Component {
 
   componentWillReceiveProps() {
   	let { map } = this.state
-		map.invalidateSize() // Necessary to redraw map which isn't initially visible
+		if (map) { map.invalidateSize() } // Necessary to redraw map which isn't initially visible
   }
 
   componentWillUpdate(nextProps) {
