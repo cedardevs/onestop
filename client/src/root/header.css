@@ -22,14 +22,18 @@ input {
   display: inline-block;
   min-width: 25em;
   a {
+    text-decoration: none;
     color: #d7d7d7;
     font-weight: 300;
     padding: 0 0.5em;
     transition: color 0.3s ease;
-    text-decoration: none;
+    cursor: pointer;
     &.selected, &:hover {
       color: $color-primary;
     }
+  }
+  a:hover {
+    text-decoration: underline;
   }
   ul {
     padding: 0;
