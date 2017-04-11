@@ -17,12 +17,12 @@ class HeaderComponent extends React.Component {
 
   render() {
     const burgerToggle = <div className={styles.burgerToggle}>
-        <input type="checkbox" checked={this.state.menuOpen} onChange={this.toggleBurgerMenu}/>
+      <input type="checkbox" checked={this.state.menuOpen} onChange={this.toggleBurgerMenu} aria-hidden="true"/>
         <span></span>
         <span></span>
         <span></span>
       </div>
-    const menuContent = <ul>
+    const menuContent = <ul role="menubar">
         <button title="Home" onClick={() => location.href=this.props.homeUrl}>Home</button>
         <button title="About" onClick={() => this.props.toggleAbout()}>About</button>
         <button title="Help" onClick={() => this.props.toggleHelp()}>Help</button>
@@ -39,11 +39,11 @@ class HeaderComponent extends React.Component {
         <div className={styles.searchBox}>
           {this.props.showSearch ? <SearchFieldsContainer header={true}/> : <div></div>}
         </div>
-        <div className={styles.standardMenu}>
+        <div className={styles.standardMenu} role="navigation">
           {menu}
         </div>
       </div>
-      <div className={styles.burgerMenu}>
+      <div className={styles.burgerMenu} role="navigation">
         {burgerToggle}
         <div className={`${styles.menuContainer} ${this.state.menuOpen ? styles.menuOpen : ''}`}>
           <div className={`${styles.section} ${this.state.menuOpen ? '' : styles.collapsed}`}>

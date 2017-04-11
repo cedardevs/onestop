@@ -26,8 +26,8 @@ class LandingComponent extends React.Component {
     ]
     topics = topics.map((topic, i) => {
       return <div key={i} className={`${styles.topicItem}`} onClick={()=>this.search(topic.term)}>
-        <img src={topic.icon}/>
-        <h3>{topic.title}</h3>
+        <img src={topic.icon} aria-hidden="true"/>
+        <button title={`${topic.title}`}>{topic.title}</button>
       </div>
     })
 
@@ -41,9 +41,9 @@ class LandingComponent extends React.Component {
           <SearchFieldsContainer/>
         </div>
         <div className={`pure-u-1`}>
-          <div className={`${styles.topicContainer}`}>
-            <h2>Search by Topic:</h2>
-            {topics}
+          <div className={`${styles.topicContainer}`} aria-labelledby="searchTopics">
+            <h2 id="searchTopics">Search by Topic:</h2>
+            <ul>{topics}</ul>
           </div>
         </div>
         {this.renderFeatured()}

@@ -85,7 +85,7 @@ class Section508CollectionGridComponent extends React.Component {
         <h2>Search Results (showing {this.props.returnedHits} of {this.props.totalHits})</h2>
       </div>
       <div className={styles.listContainer}>
-        <ol className={styles.collectionList508}>
+        <ol className={styles.collectionList508} aria-live="polite">
           {collections}
         </ol>
       </div>
