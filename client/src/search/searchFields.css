@@ -29,14 +29,11 @@
 $button-threshold: 96em;
 @media (max-width: $button-threshold){
   .header {
-    .searchContainer {
-      width: 32em;
-    }
     .buttonLayout {
       display: flex;
       justify-content: space-between;
       > button {
-        width: 7em;
+        width: 5em;
         margin-left: 0;
         margin-top: .5em;
       }
@@ -101,7 +98,7 @@ $button-threshold: 96em;
 .mapButtonApplied {
   max-height: 2.2em;
   position: relative;
-  color: white !important; 
+  color: white !important;
   background-color: $color-visited-light !important;
   text-shadow: 0 0 5px black;
   margin-left: .5em;

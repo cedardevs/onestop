@@ -112,14 +112,11 @@ input {
 }
 
 $menu-threshold-1: 96em;
-$menu-threshold-2: 84em;
+$menu-threshold-2: 78em;
 @media (max-width: $menu-threshold-1)
 and (min-width: $menu-threshold-2){
   .standardMenu {
     top: 2.2em
-  }
-  .headerLinks {
-    font-size: 1.35em;
   }
   .searchBox {
     margin-top: 0;
