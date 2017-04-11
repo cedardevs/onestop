@@ -15,6 +15,11 @@ class InfoComponent extends React.Component {
     this.showHelp = nextProps.showHelp
   }
 
+  componentDidUpdate() {
+    if (this.showAbout) { ReactDOM.findDOMNode(this.about).focus() }
+    if (this.showHelp) { ReactDOM.findDOMNode(this.help).focus() }
+  }
+
   render() {
     const { modalMode } = this.props
     const showCaseStyle = `pure-g ${styles.showcase} ${modalMode ? styles.modalMode : ''}`
@@ -68,7 +73,7 @@ class InfoComponent extends React.Component {
   }
 
   renderAbout() {
-    return <div className={`pure-u-1 ${styles.infoText}`}>
+    return <div className={`pure-u-1 ${styles.infoText}`} ref={about=>this.about=about}>
       <button onClick={this.props.toggleAbout} title='Close About' type='button' className={`${styles.modalButton} pure-button`}
         id='modal_close' aria-label='close'>X</button>
         <h1>What Is OneStop?</h1>
@@ -94,7 +99,7 @@ class InfoComponent extends React.Component {
 
     const accessibleSiteSnippet = <li className={styles.helpItem}><i className="fa-li fa fa-chevron-right" aria-hidden="true"></i>Use the start/end date and bounding box text boxes to limit results to only those that <u>intersect</u> the given constraints.</li>
 
-    return <div className={`pure-u-1 ${styles.infoText}`}>
+    return <div className={`pure-u-1 ${styles.infoText}`} ref={help=>this.help=help}>
       <button onClick={this.props.toggleHelp} title='Close Help' type='button' className={`${styles.modalButton} pure-button`}
         id='modal_close' aria-label='close'>X</button>
         <h1>How to use this interface:</h1>
