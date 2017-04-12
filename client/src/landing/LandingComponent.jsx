@@ -33,7 +33,9 @@ class LandingComponent extends React.Component {
 
     return (
       <div className={`pure-g ${styles.showcase}`}>
-        <div className={`pure-u-1 ${styles.heroHeader}`}><i className={`fa fa-stop-circle-o`}></i>neStop</div>
+        <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true"><i className={`fa fa-stop-circle-o`}></i>neStop
+        </div>
+        <h1 className={styles.hiddenPageTitle}>OneStop: A NOAA Data Search Platform</h1>
         <div className={`pure-u-1 ${styles.heroText}`}>
           Geophysical, oceans, coastal, weather and climate data discovery all in one place.
         </div>
