@@ -47,7 +47,8 @@ class RootComponent extends React.Component {
   }
 
   homeUrl() {
-    return `//${location.host}/onestop/#/${this.isNot508() ? '' : '508/'}`
+    const { host, pathname } = location
+    return `//${host}${pathname ? pathname : '/'}#/${this.isNot508() ? '' : '508/'}`
   }
 }
 
