@@ -96,8 +96,6 @@ class Section508LandingComponent extends React.Component {
   }
 
   render() {
-    console.log(this.state.focused)
-
     const formInputs = _.map(this.fields, (fieldDef, name) => <div className={styles.formRow} key={name}>
         <label htmlFor={name} className={styles.formLabel}>{fieldDef.label}</label>
         <input type="text" className={styles.formInput} name={name} ref={it => this.inputs[name] = it}
@@ -124,7 +122,6 @@ class Section508LandingComponent extends React.Component {
   }
 
   renderErrors() {
-    console.log(this.inputs)
     const errors = this.state.errors
     if (!_.isEmpty(errors)) {
       return <div role="alert" className={styles.errors}>
