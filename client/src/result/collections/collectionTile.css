@@ -5,8 +5,9 @@ $cardWidth: 20em;
 .tileContainer {
   padding: 1em;
   text-align: center;
-  width: $cardWidth;
+  max-width: $cardWidth;
   height: $cardHeight;
+  width: 100%;
 
   .tileContent {
     box-sizing: border-box;
