@@ -5,11 +5,12 @@ import { toggleSelection, clearSelections, updateQuery, updateSearch } from '../
 import CollectionGrid from './Section508CollectionGridComponent'
 
 const mapStateToProps = (state) => {
-  const { collections, totalCollections } = state.domain.results
+  const { collections, totalCollections, pageSize } = state.domain.results
   return {
     results: collections,
     totalHits: totalCollections,
-    returnedHits: collections && Object.keys(collections).length || 0
+    returnedHits: collections && Object.keys(collections).length || 0,
+    pageSize
   }
 }
 
