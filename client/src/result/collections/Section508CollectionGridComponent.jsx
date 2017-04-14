@@ -44,9 +44,19 @@ class Section508CollectionGridComponent extends React.Component {
 
   render() {
     const collections = []
+    const { returnedHits, totalHits, pageSize } = this.props
+    let focusCardNum = returnedHits - pageSize
     _.forOwn(this.props.results, (val, key) => {
+      let listItemProps = {
+        key,
+        className: styles.listItem,
+        tabIndex: 0
+      }
+      if (focusCardNum-- == 0  && pageSize !== returnedHits) {
+        listItemProps.ref = focusCard=>this.focusCard=focusCard
+      }
       collections.push(
-          <li key={key} className={styles.listItem}>
+          <li {...listItemProps}>
             <h3 title="Title">{val.title}</h3>
             <p title="Description">{val.description}</p>
             <div title="Related Links">
