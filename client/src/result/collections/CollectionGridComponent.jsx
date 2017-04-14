@@ -47,7 +47,8 @@ class CollectionGrid extends React.Component {
       cards.push(<CollectionTile {...cTileProps} />)
     })
     return <div>
-      <div className={styles.resultCount}>
+      <div className={styles.resultCount} tabIndex={0}
+        ref={resultCount=>this.resultCount=resultCount}>
         <h1>Search Results (showing {returnedHits} of {totalHits})</h1>
       </div>
       <div className={styles.gridWrapper}>
