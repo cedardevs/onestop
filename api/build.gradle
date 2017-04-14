@@ -19,9 +19,9 @@ repositories {
 }
 
 dependencies {
-  compile 'org.codehaus.groovy:groovy:2.4.8'
-  compile 'org.codehaus.groovy:groovy-json:2.4.8'
-  compile 'org.codehaus.groovy:groovy-xml:2.4.8'
+  compile 'org.codehaus.groovy:groovy:2.4.10'
+  compile 'org.codehaus.groovy:groovy-json:2.4.10'
+  compile 'org.codehaus.groovy:groovy-xml:2.4.10'
   compile "org.elasticsearch:elasticsearch:${project.esVersion}"
   compile "org.elasticsearch.module:lang-expression:${project.esVersion}"
   compile "org.elasticsearch.plugin:delete-by-query:${project.esVersion}"
