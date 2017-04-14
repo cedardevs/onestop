@@ -96,7 +96,8 @@ class Section508LandingComponent extends React.Component {
   }
 
   render() {
-    const formInputs = _.map(this.fields, (fieldDef, name) => <div className={styles.formRow} key={name}>
+    const formInputs = _.map(this.fields, (fieldDef, name) => <div className={styles.formRow} key={name}
+                                                                   data-id="formRow">
         <label htmlFor={name} className={styles.formLabel}>{fieldDef.label}</label>
         <input type="text" className={styles.formInput} name={name} ref={it => this.inputs[name] = it}
                id={name} placeholder={fieldDef.placeholder} onKeyDown={this.handleKeyDown}

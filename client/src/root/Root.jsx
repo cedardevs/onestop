@@ -21,7 +21,6 @@ class RootComponent extends React.Component {
   render() {
     return <div className={styles.rootContainer}>
       <div className={styles.mainContent}>
-        <h1 className={styles.hiddenPageTitle}>OneStop: A NOAA Data Search Platform</h1>
         <BannerContainer/>
         <DetailContainer/>
         <HeaderContainer showSearch={this.isNotLanding() && this.isNot508()}
