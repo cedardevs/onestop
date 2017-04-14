@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import CollectionTile from './CollectionTileComponent'
 import styles from './collectionGrid.css'
@@ -18,21 +19,36 @@ class CollectionGrid extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    const focusCard = ReactDOM.findDOMNode(this.focusCard)
+    if (_.isNull(focusCard)) {
+      ReactDOM.findDOMNode(this.resultCount).focus()
+    } else {
+      focusCard.focus()
+    }
+  }
+
   render() {
     const cards = []
+    const { returnedHits, totalHits, pageSize } = this.props
+    let focusCardNum = returnedHits - pageSize
     _.forOwn(this.props.results, (val, key) => {
-      cards.push(<CollectionTile
-            key={key}
-            title={val.title}
-            thumbnail={val.thumbnail}
-            description={val.description}
-            geometry={val.spatialBounding}
-            onCardClick={() => this.props.onCardClick(key)}
-        />)
+      let cTileProps = {
+            key: key,
+            title: val.title,
+            thumbnail:val.thumbnail,
+            description:val.description,
+            geometry:val.spatialBounding,
+            onCardClick:() => this.props.onCardClick(key)
+          }
+      if (focusCardNum-- == 0  && pageSize !== returnedHits) {
+        cTileProps.ref = focusCard=>this.focusCard=focusCard
+      }
+      cards.push(<CollectionTile {...cTileProps} />)
     })
     return <div>
       <div className={styles.resultCount}>
-        <h1>Search Results (showing {this.props.returnedHits} of {this.props.totalHits})</h1>
+        <h1>Search Results (showing {returnedHits} of {totalHits})</h1>
       </div>
       <div className={styles.gridWrapper}>
         {cards}
