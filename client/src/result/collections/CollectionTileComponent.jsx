@@ -11,14 +11,21 @@ class CollectionTile extends React.Component {
   }
 
   render() {
-    return <div className={styles.tileContainer} tabIndex={0}>
+    return <div className={styles.tileContainer}
+      onKeyPress={(e)=>this.handleKeyPress(e, this.props.onCardClick)}
+      tabIndex={0}>
       <div className={styles.tileContent} style={this.thumbnailStyle()}>
-        <div className={styles.overlay} onClick={() => this.props.onCardClick()}>
+        <div className={styles.overlay} onClick={() => this.props.onCardClick()}
+          >
           <h2 className={styles.title}>{this.props.title}</h2>
           {this.renderThumbnailMap()}
         </div>
       </div>
     </div>
+  }
+
+  handleKeyPress(event, actionHandler) {
+    if(event.key == 'Enter'){ actionHandler() }
   }
 
   renderThumbnailMap() {

@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import MapContainer from '../MapContainer'
 import styles from './list.css'
@@ -18,6 +19,11 @@ class GranuleList extends React.Component {
       'http':     {id: 'W', color: 'purple',    label: 'Web'},
       'https':    {id: 'W', color: 'purple',    label: 'Web'},
     }
+  }
+
+  componentDidUpdate() {
+    const granuleFocus = ReactDOM.findDOMNode(this.granuleFocus)
+    if (!_.isNull(granuleFocus)) { granuleFocus.focus() }
   }
 
   render() {
@@ -41,8 +47,10 @@ class GranuleList extends React.Component {
         .value()
 
     return (
-      <div>
-        <a className={styles.navLink} onClick={this.props.showCollections}>Return To Collection Results</a>
+      <div ref={granuleFocus=>this.granuleFocus=granuleFocus} tabIndex={0}>
+        <a className={styles.navLink}
+          tabIndex={0}
+          onClick={this.props.showCollections}>Return To Collection Results</a>
         <div className={`pure-g ${styles.mainWindow}`}>
           <div className={`pure-u-1-2 ${styles.map}`}>
             <MapContainer style={styles.mapContainer}/>
