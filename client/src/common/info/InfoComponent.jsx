@@ -50,7 +50,6 @@ class InfoComponent extends React.Component {
   }
 
   handleClickOutside(event) {
-    console.log(event)
     const domNode = ReactDOM.findDOMNode(this)
     const { title, id } = event.path[0]
     const parentId = event.path[0].parentElement.id
