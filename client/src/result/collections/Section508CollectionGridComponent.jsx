@@ -1,10 +1,20 @@
 import React, { PropTypes } from 'react'
+import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import styles from './collectionGrid.css'
 
 class Section508CollectionGridComponent extends React.Component {
   constructor(props) {
     super(props)
+  }
+
+  componentDidUpdate() {
+    const focusCard = ReactDOM.findDOMNode(this.focusCard)
+    if (_.isNull(focusCard)) {
+      ReactDOM.findDOMNode(this.resultCount).focus()
+    } else {
+      focusCard.focus()
+    }
   }
 
   getLinksByType(type, links) {
