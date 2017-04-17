@@ -31,7 +31,7 @@ const convertToGeoJson = (recordData, id) => {
   // Currently defaulting to rendering bounding box coordinates
   return {
     geometry: convertEnvelopeToPolygon(recordData.spatialBounding),
-    properties: Object.assign({}, recordData, {id: id}),
+    properties: _.assign({}, recordData, {id: id}),
     type: "Feature"
   }
 }

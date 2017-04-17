@@ -56,7 +56,7 @@ class Section508LandingComponent extends React.Component {
 
   updateFieldValue(e) {
     const { name, value } = e.target
-    const newFields = Object.assign(this.state.fields, {[name]: value.trim()})
+    const newFields = _.assign(this.state.fields, {[name]: value.trim()})
     this.setState({fields: newFields})
   }
 

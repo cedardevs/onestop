@@ -136,8 +136,8 @@ store.subscribe(queryWatch(applyNewQueryString))
 // Update background
 const updateBackground = (path) => {
   store.dispatch(toggleBackgroundImage(
-    !(path.startsWith('/508/') && path !== '/508/'
-      || path.startsWith('508/') && path !== '508/'))) //Cover strange routing case. TODO: Regex test?
+    !(_.startsWith(path, '/508/') && path !== '/508/'
+      || _.startsWith(path, '508/') && path !== '508/'))) //Cover strange routing case. TODO: Regex test?
 }
 
 const pathWatch = watch(store.getState, 'behavior.routing.locationBeforeTransitions.pathname')
