@@ -1,10 +1,20 @@
 import React, { PropTypes } from 'react'
+import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import styles from './collectionGrid.css'
 
 class Section508CollectionGridComponent extends React.Component {
   constructor(props) {
     super(props)
+  }
+
+  componentDidUpdate() {
+    const focusCard = ReactDOM.findDOMNode(this.focusCard)
+    if (_.isNull(focusCard)) {
+      ReactDOM.findDOMNode(this.resultCount).focus()
+    } else {
+      focusCard.focus()
+    }
   }
 
   getLinksByType(type, links) {
@@ -44,9 +54,19 @@ class Section508CollectionGridComponent extends React.Component {
 
   render() {
     const collections = []
+    const { returnedHits, totalHits, pageSize } = this.props
+    let focusCardNum = returnedHits - pageSize
     _.forOwn(this.props.results, (val, key) => {
+      let listItemProps = {
+        key,
+        className: styles.listItem,
+        tabIndex: 0
+      }
+      if (focusCardNum-- == 0  && pageSize !== returnedHits) {
+        listItemProps.ref = focusCard=>this.focusCard=focusCard
+      }
       collections.push(
-          <li key={key} className={styles.listItem}>
+          <li {...listItemProps}>
             <h3 title="Title">{val.title}</h3>
             <p title="Description">{val.description}</p>
             <div title="Related Links">
@@ -81,7 +101,8 @@ class Section508CollectionGridComponent extends React.Component {
     }
 
     return <div>
-      <div className={styles.resultCount}>
+      <div className={styles.resultCount} tabIndex={0}
+        ref={resultCount=>this.resultCount=resultCount}>
         <h2>Search Results (showing {this.props.returnedHits} of {this.props.totalHits})</h2>
       </div>
       <div className={styles.listContainer}>

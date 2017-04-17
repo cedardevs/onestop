@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import styles from './list.css'
 
@@ -15,6 +16,11 @@ class GranuleList extends React.Component {
       'http':     {id: 'W', color: 'purple', label: 'Web'},
       'https':    {id: 'W', color: 'purple', label: 'Web'},
     }
+  }
+
+  componentDidUpdate() {
+    const granuleFocus = ReactDOM.findDOMNode(this.granuleFocus)
+    if (!_.isNull(granuleFocus)) { granuleFocus.focus() }
   }
 
   render() {
@@ -37,8 +43,11 @@ class GranuleList extends React.Component {
     }
 
     return (
-      <div>
-        <a onClick={this.props.showCollections} title="Return To Collection Results" className={styles.links}>Return To Collection Results</a>
+      <div ref={granuleFocus=>this.granuleFocus=granuleFocus} tabIndex={0}>
+        <a onClick={this.props.showCollections}
+          title="Return To Collection Results"
+          tabIndex={0}
+          className={styles.links}>Return To Collection Results</a>
         <div className={styles.descriptionContainer}>
           <h2>{this.props.selectedCollection.title}</h2>
           <p title="Description" className={styles.descriptionParagraph}>

@@ -19,16 +19,22 @@ repositories {
 }
 
 dependencies {
-  compile 'org.codehaus.groovy:groovy:2.4.8'
-  compile 'org.codehaus.groovy:groovy-json:2.4.8'
-  compile 'org.codehaus.groovy:groovy-xml:2.4.8'
+  compile 'org.codehaus.groovy:groovy:2.4.10'
+  compile 'org.codehaus.groovy:groovy-json:2.4.10'
+  compile 'org.codehaus.groovy:groovy-xml:2.4.10'
   compile "org.elasticsearch:elasticsearch:${project.esVersion}"
   compile "org.elasticsearch.module:lang-expression:${project.esVersion}"
   compile "org.elasticsearch.plugin:delete-by-query:${project.esVersion}"
   compile "org.elasticsearch.plugin:shield:${project.esVersion}"
-  compile 'org.springframework.boot:spring-boot-starter-web'
-  compile 'org.springframework.boot:spring-boot-starter-actuator'
-  compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
+  compile ('org.springframework.boot:spring-boot-starter-web'){
+    exclude group: 'ch.qos.logback'
+  }
+  compile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'){
+    exclude group: 'ch.qos.logback', module:'logback-core' // need to exclude core because for some reason they includ 1.1.9 of core
+  }
+  compile (group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3')
+  compile ('org.springframework.boot:spring-boot-starter-actuator')
+  compile ('org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE')
   compile 'com.github.fge:json-schema-validator:2.2.6'
   compile 'org.apache.commons:commons-lang3:3.4'
   compile 'com.spatial4j:spatial4j:0.5' // Necessary for embedded ES to have geo_shape type available
