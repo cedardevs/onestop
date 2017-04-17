@@ -51,21 +51,23 @@ class InfoComponent extends React.Component {
 
   handleClickOutside(event) {
     const domNode = ReactDOM.findDOMNode(this)
-    const { title, id } = event.path[0]
-    const parentId = event.path[0].parentElement.id
-    const formRow508 = event.path[0].parentElement.dataset.id === 'formRow'
-    if ((!domNode
-          || !domNode.contains(event.target)
-          && title !== 'Help'
-          && title !== 'About'
-        )
-      || id === 'overlay') {
-        if (this.showAbout) { this.props.toggleAbout() }
-        if (this.showHelp
-          && parentId !== 'searchButtons'
-          && parentId !== 'searchBox'
-          && !formRow508
-        ) { this.props.toggleHelp() }
+    if (event && event.path){
+      const { title, id } = event.path[0]
+      const parentId = event.path[0].parentElement.id
+      const formRow508 = event.path[0].parentElement.dataset.id === 'formRow'
+      if ((!domNode
+            || !domNode.contains(event.target)
+            && title !== 'Help'
+            && title !== 'About'
+          )
+        || id === 'overlay') {
+          if (this.showAbout) { this.props.toggleAbout() }
+          if (this.showHelp
+            && parentId !== 'searchButtons'
+            && parentId !== 'searchBox'
+            && !formRow508
+          ) { this.props.toggleHelp() }
+      }
     }
   }
 

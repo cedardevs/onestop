@@ -44,12 +44,14 @@ class TemporalSearch extends React.Component {
     const domNode = ReactDOM.findDOMNode(this)
     const { startValueNode, endValueNode } = this.state
     const dateNode = startValueNode ? startValueNode : endValueNode
-    const { id } = event.path[0]
-    if (((!domNode || !domNode.contains(event.target))
-        && id !== 'timeButton')
-        && (!dateNode || !dateNode.contains(event.target))
-        && this.props.calendarVisible) {
-        this.props.toggleSelf()
+    if (event && event.path){
+      const { id } = event.path[0]
+      if (((!domNode || !domNode.contains(event.target))
+          && id !== 'timeButton')
+          && (!dateNode || !dateNode.contains(event.target))
+          && this.props.calendarVisible) {
+          this.props.toggleSelf()
+      }
     }
   }
 
