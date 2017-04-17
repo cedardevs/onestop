@@ -53,7 +53,7 @@ export const triggerSearch = (retrieveFacets = true) => {
   }
   const successHandler = (dispatch, payload) => {
     const result = _.reduce(payload.data, (map, resource) => {
-      return map.set(resource.id, Object.assign({type: resource.type}, resource.attributes))
+      return map.set(resource.id, _.assign({type: resource.type}, resource.attributes))
     }, new Map())
 
     if(retrieveFacets) { dispatch(facetsReceived(payload.meta)) }

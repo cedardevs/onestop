@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react'
+import _ from 'lodash'
 
 export const UPDATE_TIME = 200
 export const MAX_PROGRESS = 90
@@ -47,7 +48,7 @@ export class Loading extends React.Component {
       percent = 5
     }
 
-    this.setState(Object.assign(this.state, {progressInterval, percent}))
+    this.setState(_.assign(this.state, {progressInterval, percent}))
   }
 
   simulateProgress() {
@@ -91,7 +92,7 @@ export class Loading extends React.Component {
       opacity: shouldBeVisible ? '1' : '0',
     }
 
-    return Object.assign(style, this.props.style)
+    return _.assign(style, this.props.style)
   }
 
   render() {
