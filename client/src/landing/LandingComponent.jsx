@@ -55,8 +55,8 @@ class LandingComponent extends React.Component {
 
   renderFeatured() {
     if (this.props.featured) {
-      return <div className={`pure-u-1`}>
-        <h2>Featured Data Sets:</h2>
+      return <div className={`pure-u-1`} aria-labelledby="featuredDatasets">
+        <h2 id="featuredDatasets">Featured Data Sets:</h2>
         <div className={`${styles.featuredContainer}`}>
           <FeaturedItemsComponent doSearch={this.search.bind(this)} items={this.props.featured}/>
         </div>
