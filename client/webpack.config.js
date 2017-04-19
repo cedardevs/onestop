@@ -27,7 +27,7 @@ module.exports = {
     filename: '[name].bundle.js'
   },
   context: path.resolve(__dirname, 'src'),
-  devtool: 'source-map',
+  devtool: 'cheap-module-eval-source-map',
   devServer: {
     publicPath: '/onestop/',
     contentBase: path.resolve(__dirname, 'dist'),
@@ -117,15 +117,12 @@ module.exports = {
   resolve: {
     modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules'],
     extensions: ['.js', '.jsx'],
+    unsafeCache: true
   },
   plugins: [
     new HtmlWebpackPlugin({
       title: 'NOAA OneStop Demo',
       favicon: '../img/noaa-favicon.ico'
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      compress: {warnings: false},
-      sourceMap: true
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
