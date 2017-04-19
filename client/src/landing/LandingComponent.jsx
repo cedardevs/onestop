@@ -65,9 +65,11 @@ class LandingComponent extends React.Component {
   }
 
   componentDidMount() {
+    const evt = document.createEvent('UIEvents')
+    evt.initUIEvent('resize', true, false, window, 0)
     setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 0);
+      window.dispatchEvent(evt)
+    }, 0)
   }
 }
 
