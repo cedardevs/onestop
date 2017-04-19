@@ -76,8 +76,8 @@
 #  banner:
 #    message:
 #    colors:
-#      text:
-#      background:
+#      text: white
+#      background: red
 #  featured:
 #    - title:
 #      searchTerm:
