@@ -4,9 +4,11 @@ const precss = require('precss')
 const autoprefixer = require('autoprefixer')
 const postcssAssets = require('postcss-assets')
 const path = require('path')
+require('babel-polyfill')
 
 module.exports = {
   entry: [
+    'babel-polyfill',
     'react-hot-loader/patch',
     // activate HMR for React
 
@@ -17,7 +19,6 @@ module.exports = {
     'webpack/hot/only-dev-server',
     // bundle the client for hot reloading
     // hot reload for successful updates
-
     './index.jsx'
   ],
   output: {

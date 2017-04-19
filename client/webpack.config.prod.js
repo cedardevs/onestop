@@ -4,9 +4,11 @@ const precss = require('precss')
 const autoprefixer = require('autoprefixer')
 const postcssAssets = require('postcss-assets')
 const path = require('path')
+require('babel-polyfill')
 
 module.exports = {
   entry: [
+    'babel-polyfill',
     './index.jsx'
   ],
   output: {
