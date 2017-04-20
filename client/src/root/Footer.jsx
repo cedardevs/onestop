@@ -34,15 +34,19 @@ let Footer = () => {
   ]
 
   return (
-      <div className={styles.footer}>
-        <div className={'pure-g'}>
-          <div className={`pure-u-1`}>
-            <ul className={`${styles.footerLinks}`}>
-              {links.map((link, i) => <li key={i}><a href={link.href} title={link.text}>{link.text}</a></li>)}
-            </ul>
+      <nav role="footer">
+        <div className={styles.footer}>
+          <div className={'pure-g'}>
+            <div className={`pure-u-1`} >
+              <nav className={styles.headerLinks} role="external links">
+                <ul className={`${styles.footerLinks}`} >
+                    {links.map((link, i) => <li key={i} ><a href={link.href} title={link.text} >{link.text}</a></li>)}
+                </ul>
+              </nav>
+            </div>
           </div>
         </div>
-      </div>
+      </nav>
   )
 }
 
