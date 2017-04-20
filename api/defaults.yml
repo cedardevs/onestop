@@ -22,12 +22,17 @@
 # the Shield plugin installed. Adding user/pass credentials for
 # the 'ro' and 'rw' users will cause the app to utilize Shield
 # and pass the appropriate credentials when talking to elasticsearch.
+# Note also that the host param can contain more than one value; separate names
+# with a comma (no spaces)
 
 #elasticsearch:
 #  cluster:
 #    name: elasticsearch
 #  host: localhost
 #  port: 9300
+#  client:
+#    transport:
+#      sniff: true
 #  ro:
 #    user:
 #    pass:
@@ -71,8 +76,8 @@
 #  banner:
 #    message:
 #    colors:
-#      text:
-#      background:
+#      text: white
+#      background: red
 #  featured:
 #    - title:
 #      searchTerm:
