@@ -62,7 +62,7 @@ class HeaderComponent extends React.Component {
       siteLink = `${siteLink}508/`
       linkTitle = 'Accessible Site'
     }
-    return <button title={linkTitle} onClick={()=>location.href=siteLink}><span>{linkTitle}</span></button>
+    return <button title={linkTitle} onClick={()=>location.href=siteLink}> {linkTitle}</button>
   }
 
   renderLogo() {
