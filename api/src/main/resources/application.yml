@@ -94,3 +94,4 @@ search:
     dsmmAverage: 1
     _all: 1
 
+info.version: ${version}

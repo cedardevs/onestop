@@ -121,3 +121,9 @@ publishing {
     }
   }
 }
+
+processResources {
+  filesMatching("**/application.yml") {
+    expand( project.properties )
+  }
+}
