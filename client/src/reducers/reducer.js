@@ -6,6 +6,7 @@ import errors from './behavior/error'
 import request from './behavior/request'
 
 import config from './domain/config'
+import info from './domain/info'
 import results from './domain/results'
 
 import cardDetails from './ui/cardDetails'
@@ -16,6 +17,7 @@ import background from './ui/background'
 
 const domain = combineReducers({
   config,
+  info,
   results
 })
 

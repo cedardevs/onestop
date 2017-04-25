@@ -5,6 +5,7 @@ import { encodeQueryString, decodeQueryString } from '../utils/queryUtils'
 import { triggerSearch, fetchGranules, clearCollections, clearGranules } from './SearchRequestActions'
 import { updateSearch } from './SearchParamActions'
 import { fetchConfig } from './ConfigActions'
+import { fetchInfo } from './InfoActions'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
@@ -96,6 +97,7 @@ const toggleBackgroundImage = (boolVisible)=> {
 export const initialize = () => {
   return (dispatch) => {
     dispatch(fetchConfig())
+    dispatch(fetchInfo())
     dispatch(loadData())
   }
 }
