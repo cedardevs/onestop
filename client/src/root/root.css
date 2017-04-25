@@ -12,7 +12,6 @@
   bottom: 0;
   right: 0;
   background: $color-primary-darkest;
-  min-height: $footer-height;
   clear: both;
   padding: $section-padding;
 }

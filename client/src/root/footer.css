@@ -4,7 +4,6 @@
   width: 100%;
   color: white;
   text-align: center;
-  max-height: $footer-height;
 }
 
 ul.footerLinks {
@@ -13,6 +12,7 @@ ul.footerLinks {
   font-weight: 400;
   font-size: 1.1em;
   display: inline-block;
+  padding: 0 !important;
   li {
     display: inline-block;
     margin: 0px !important;
@@ -28,7 +28,19 @@ ul.footerLinks {
     }
     &:last-child a {
       border: none;
-      padding-right: 0;
     }
+  }
+}
+
+.versionInfo{
+  a {
+    color: white;
+    background-color: transparent;
+    text-decoration: none;
+    padding: 0px 10px !important;
+  &:hover {
+     text-decoration: underline;
+
+   }
   }
 }

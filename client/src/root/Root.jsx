@@ -1,10 +1,10 @@
 import React from 'react'
 import BannerContainer from './banner/BannerContainer'
 import HeaderContainer from './HeaderContainer'
+import FooterContainer from './FooterContainer'
 import InfoContainer from '../common/info/infoContainer'
 import DetailContainer from '../detail/DetailContainer'
 import LoadingContainer from '../loading/LoadingContainer'
-import Footer from './Footer.jsx'
 import styles from './root.css'
 
 class RootComponent extends React.Component {
@@ -32,7 +32,7 @@ class RootComponent extends React.Component {
         </div>
       </div>
       <div className={styles.footer}>
-        <Footer/>
+        <FooterContainer/>
      </div>
    </div>
   }
