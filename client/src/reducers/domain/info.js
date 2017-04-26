@@ -2,7 +2,7 @@ import Immutable from 'seamless-immutable'
 import {CLEAR_INFO, SET_INFO} from '../../actions/InfoActions'
 
 export const initialState = Immutable({
-    version: "foo"
+    version: ""
 })
 
 export const info = (state = initialState, action) => {
