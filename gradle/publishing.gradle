@@ -11,13 +11,8 @@ ext {
 }
 
 // only publish snapshot versions
-def buildNumber = System.getenv("TRAVIS_BUILD_NUMBER")
-if (buildNumber == null ){
-  version = version += '-SNAPSHOT'
-}
-else{
-  version = version += "-${buildNumber}"
-}
+version = version += '-SNAPSHOT'
+
 
 artifactory {
   contextUrl = 'https://oss.jfrog.org'
