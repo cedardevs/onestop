@@ -30,8 +30,9 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
 }
 
 const assembleQueries = ({queryText}) => {
-  if (queryText) {
-    return [{type: 'queryText', value: queryText}]
+  let trimmedText = _.trim(queryText)
+  if (trimmedText && trimmedText !== '*') {
+    return [{type: 'queryText', value: trimmedText}]
   }
   return []
 }
