@@ -5,7 +5,7 @@ import { encodeQueryString, decodeQueryString } from '../utils/queryUtils'
 import { triggerSearch, fetchGranules, clearCollections, clearGranules } from './SearchRequestActions'
 import { updateSearch } from './SearchParamActions'
 import { fetchConfig } from './ConfigActions'
-import { fetchInfo } from './InfoActions'
+import {fetchInfo, fetchCounts} from './InfoActions'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
@@ -98,6 +98,7 @@ export const initialize = () => {
   return (dispatch) => {
     dispatch(fetchConfig())
     dispatch(fetchInfo())
+    dispatch(fetchCounts())
     dispatch(loadData())
   }
 }

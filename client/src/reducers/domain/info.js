@@ -1,21 +1,29 @@
 import Immutable from 'seamless-immutable'
-import {CLEAR_INFO, SET_INFO} from '../../actions/InfoActions'
+import {CLEAR_INFO, SET_INFO, SET_TOTAL_COUNTS} from '../../actions/InfoActions'
 
 export const initialState = Immutable({
-    version: ""
+  version: "",
+  collectionsCount: 0,
+  granulesCount: 0
 })
 
 export const info = (state = initialState, action) => {
-    switch (action.type) {
-        case SET_INFO:
-            return Immutable.merge(state, action.info)
+  switch (action.type) {
+    case SET_INFO:
+      return Immutable.merge(state, action.info)
 
-        case CLEAR_INFO:
-            return initialState
+    case CLEAR_INFO:
+      return initialState
 
-        default:
-            return state
-    }
+    case SET_TOTAL_COUNTS:
+      return Immutable.merge(state, {
+        collectionsCount: action.counts.collections,
+        granulesCount: action.counts.granules
+      })
+
+    default:
+      return state
+  }
 }
 
 export default info
