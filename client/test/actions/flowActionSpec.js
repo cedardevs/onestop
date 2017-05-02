@@ -31,13 +31,13 @@ describe('The flow actions', function () {
     dispatch = sinon.stub()
   })
 
-  it('initialize triggers config, version info, and  data loading', function () {
+  it('initialize triggers config, version info, total counts, and data loading', function () {
     const getState = sinon.stub().returns(mockDefaultState)
     const fn = actions.initialize()
 
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls == 3, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls == 4, `There were ${dispatchCalls} dispatch calls made`)
   })
 
   describe('loadData', function () {
