@@ -108,10 +108,10 @@ class SearchFieldsComponent extends React.Component {
     let trimmedQuery = _.trim(this.props.queryString)
     // Validates query string; assumes temporal & spatial selections (if any) are validated in their respective components
     if (!trimmedQuery && !filtersApplied) {
-      this.setState({warning: 'You must enter search criteria'})
+      this.setState({warning: 'You must enter search criteria.'})
 
     } else if (trimmedQuery && trimmedQuery === '*') {
-      this.setState({warning: 'Asterisk is an invalid search query. Please enter a valid query and/or select filters to search.'})
+      this.setState({warning: 'An asterisk is an invalid search query.'})
 
     } else {
       this.setState({warning: ''})

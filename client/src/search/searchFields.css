@@ -133,5 +133,5 @@ $button-threshold: 96em;
   font-size: .75em;
   color: red;
   padding-top: 1em;
-  font-family: inherit;
+  text-align: center;
 }
