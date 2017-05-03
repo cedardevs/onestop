@@ -104,22 +104,17 @@ class SearchFieldsComponent extends React.Component {
 
 
   validateAndSubmit() {
-    console.log("validate & submit")
-
     let filtersApplied = !_.isEmpty(this.props.startDateTime) || !_.isEmpty(this.props.endDateTime) || !_.isEmpty(this.props.geoJSON)
     let trimmedQuery = _.trim(this.props.queryString)
     // Validates query string; assumes temporal & spatial selections (if any) are validated in their respective components
     if (!trimmedQuery && !filtersApplied) {
       this.setState({warning: 'You must enter search criteria'})
-      console.log("You must enter search criteria")
 
     } else if (trimmedQuery && trimmedQuery === '*') {
       this.setState({warning: 'Asterisk is an invalid search query. Please enter a valid query and/or select filters to search.'})
-      console.log("Invalid query: '*'")
 
     } else {
       this.setState({warning: ''})
-      console.log("Success!")
       this.submit()
     }
   }
