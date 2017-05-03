@@ -4,6 +4,7 @@ import TemporalContainer from './temporal/TemporalContainer'
 import MapContainer from './map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
 import TextSearchField from './TextSearchFieldComponent'
+import _ from 'lodash'
 
 import styles from './searchFields.css'
 
@@ -17,13 +18,17 @@ class SearchFieldsComponent extends React.Component {
     this.handleClick = this.handleClick.bind(this)
     this.handleKeyup = this.handleKeyup.bind(this)
     this.clearQueryString = this.clearQueryString.bind(this)
+    this.clearSearchParams = this.clearSearchParams.bind(this)
     this.toggleMap = this.toggleMap.bind(this)
     this.toggleCalendar = this.toggleCalendar.bind(this)
     this.mapButtonStyle = this.mapButtonStyle.bind(this)
     this.timeButtonStyle = this.timeButtonStyle.bind(this)
+    this.warningStyle = this.warningStyle.bind(this)
+    this.validateAndSubmit = this.validateAndSubmit.bind(this)
     this.state = {
       showMap: false,
-      showCalendar: false
+      showCalendar: false,
+      warning: ''
     }
   }
 
@@ -42,7 +47,13 @@ class SearchFieldsComponent extends React.Component {
   }
 
   clearQueryString() {
+    this.setState({warning: ''})
     this.updateQuery('')
+  }
+
+  clearSearchParams() {
+    this.setState({warning: ''})
+    this.clearSearch()
   }
 
   componentWillMount() {
@@ -81,13 +92,45 @@ class SearchFieldsComponent extends React.Component {
     }
   }
 
+  warningStyle() {
+    if (_.isEmpty(this.state.warning)) {
+      return styles.hidden
+    }
+    else {
+      return styles.warning
+    }
+
+  }
+
+
+  validateAndSubmit() {
+    console.log("validate & submit")
+
+    let filtersApplied = !_.isEmpty(this.props.startDateTime) || !_.isEmpty(this.props.endDateTime) || !_.isEmpty(this.props.geoJSON)
+    let trimmedQuery = _.trim(this.props.queryString)
+    // Validates query string; assumes temporal & spatial selections (if any) are validated in their respective components
+    if (!trimmedQuery && !filtersApplied) {
+      this.setState({warning: 'You must enter search criteria'})
+      console.log("You must enter search criteria")
+
+    } else if (trimmedQuery && trimmedQuery === '*') {
+      this.setState({warning: 'Asterisk is an invalid search query. Please enter a valid query and/or select filters to search.'})
+      console.log("Invalid query: '*'")
+
+    } else {
+      this.setState({warning: ''})
+      console.log("Success!")
+      this.submit()
+    }
+  }
+
   render() {
     return (
         <div className={`pure-form  ${styles.searchFields}
           ${this.props.header ? styles.header : ''} `}>
           <div className={styles.searchLayout}>
             <div id='searchBox' className={styles.searchContainer}>
-              <TextSearchField onEnterKeyDown={this.submit} onChange={this.updateQuery}
+              <TextSearchField onEnterKeyDown={this.validateAndSubmit} onChange={this.updateQuery}
                                value={this.props.queryString}/>
             </div>
             <button className={`${styles.clearButton}`} onClick={this.clearQueryString}>x</button>
@@ -117,13 +160,15 @@ class SearchFieldsComponent extends React.Component {
               />
             </ToggleDisplay>
             <button className={`pure-button ${styles.undoButton}`}
-                    onClick={this.clearSearch} title="Clear Search Criteria">
+                    onClick={this.clearSearchParams} title="Clear Search Criteria">
               <i className={`${styles.icon} fa fa-times fa-2x`}></i>
             </button>
-            <button className={`pure-button ${styles.searchButton}`} onClick={this.submit} title="Search">
+            <button className={`pure-button ${styles.searchButton}`} onClick={this.validateAndSubmit} title="Search">
               <i className={`${styles.icon} fa fa-search fa-2x`}></i>
             </button>
           </div>
+          <div className={`${this.warningStyle()}`} role="alert"><i className="fa fa-warning"
+                                                                    aria-hidden="true"></i> {this.state.warning}</div>
         </div>
     )
   }
