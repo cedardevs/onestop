@@ -26,7 +26,7 @@ export const setTotalCounts = (counts) => {
 
 export const fetchInfo = () => {
   return (dispatch, getState) => {
-    const apiHost = getState().domain.info.apiHost || ''
+    const apiHost = getState().domain.config.apiHost || ''
     const url = apiHost + '/onestop/api/info'
     const params = {headers: {'Accept': 'application/json'}}
     return fetch(url, params)
@@ -38,7 +38,7 @@ export const fetchInfo = () => {
 
 export const fetchCounts = () => {
   return (dispatch, getState) => {
-    const apiHost = getState().domain.info.apiHost || ''
+    const apiHost = getState().domain.config.apiHost || ''
     const url = apiHost + '/onestop/api/search/totalCounts'
     const params = {headers: {'Accept': 'application/json'}}
     return fetch(url, params)
