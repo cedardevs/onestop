@@ -29,15 +29,12 @@ install: true
 script:
   - ./gradlew build -Dscan
 deploy:
-  # Deploy only tags from master
   - provider: script
     skip_cleanup: true
     script: ./gradlew artifactoryPublish
     on:
       repo: cires-ncei/onestop
       branch: master
-      tags: true
-  # Deploy all commits from develop
   - provider: script
     skip_cleanup: true
     script: ./gradlew artifactoryPublish
