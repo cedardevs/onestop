@@ -24,7 +24,7 @@ artifactory {
       maven = true
     }
     defaults {
-      publications ('main', 'develop')
+      publications 'main'
     }
   }
 }
