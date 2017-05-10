@@ -27,9 +27,6 @@ class DefaultApplicationConfig {
   @Value('${elasticsearch.ssl.enabled:}')
   Boolean sslEnabled
 
-  @Value('${elasticsearch.client.transport.sniff:}')
-  Boolean sniffingEnabled
-
   @Value('${elasticsearch.ssl.keystore.path:}')
   String keystorePath
 
@@ -68,9 +65,6 @@ class DefaultApplicationConfig {
     if (keystorePassword) {
       settingsBuilder.put('shield.ssl.keystore.password', keystorePassword)
     }
-    if (sniffingEnabled) {
-      settingsBuilder.put('client.transport.sniff', 'true')
-    }
 
     def client = builder.settings(settingsBuilder.build()).build()
     elasticHost.each { host ->
@@ -99,9 +93,6 @@ class DefaultApplicationConfig {
     }
     if (keystorePassword) {
       settingsBuilder.put('shield.ssl.keystore.password', keystorePassword)
-    }
-    if (sniffingEnabled) {
-      settingsBuilder.put('client.transport.sniff', 'true')
     }
 
     def client = builder.settings(settingsBuilder.build()).build()

@@ -29,9 +29,6 @@ elasticsearch:
     name: elasticsearch
   host: localhost
   port: 9300
-  client:
-    transport:
-      sniff: true
   index:
     staging:
       name: staging_v1
