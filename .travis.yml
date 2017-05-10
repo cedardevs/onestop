@@ -29,15 +29,8 @@ install: true
 script:
   - ./gradlew build -Dscan
 deploy:
-  - provider: script
-    skip_cleanup: true
-    script: ./gradlew artifactoryPublish
-    on:
-      repo: cires-ncei/onestop
-      branch: master
-  - provider: script
-    skip_cleanup: true
-    script: ./gradlew artifactoryPublish
-    on:
-      repo: cires-ncei/onestop
-      branch: develop
+  provider: script
+  skip_cleanup: true
+  script: ./gradlew artifactoryPublish
+  on:
+    condition: "$TRAVIS_BRANCH == 'develop' || $TRAVIS_TAG =~ ^v[0-9].[0-9].[0-9]$"
