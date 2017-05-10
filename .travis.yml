@@ -34,3 +34,4 @@ deploy:
   script: ./gradlew artifactoryPublish
   on:
     condition: "$TRAVIS_BRANCH == 'develop' || $TRAVIS_TAG =~ ^v[0-9].[0-9].[0-9]$"
+    all_branches: true
