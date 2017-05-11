@@ -1,0 +1,25 @@
+version: '2'
+services:
+  client:
+    build: ../client/
+    ports:
+     - "8080:80"
+    networks:
+     - esnet
+
+  api:
+    build: ../api/
+    networks:
+     - esnet
+    expose:
+     - "8097"
+     - "8080"
+
+  elasticsearch:
+    build: ../elasticsearch
+    expose:
+
+
+
+networks:
+  esnet:
