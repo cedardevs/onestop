@@ -110,8 +110,8 @@ class SearchFieldsComponent extends React.Component {
     if (!trimmedQuery && !filtersApplied) {
       this.setState({warning: 'You must enter search criteria.'})
 
-    } else if (trimmedQuery && trimmedQuery === '*') {
-      this.setState({warning: 'An asterisk is an invalid search query.'})
+    } else if (trimmedQuery && (_.startsWith(trimmedQuery, '*') || _.startsWith(trimmedQuery, '?'))) {
+      this.setState({warning: 'Search query cannot start with asterisk or question mark.'})
 
     } else {
       this.setState({warning: ''})
