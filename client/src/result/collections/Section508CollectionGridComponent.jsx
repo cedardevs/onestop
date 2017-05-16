@@ -55,7 +55,13 @@ class Section508CollectionGridComponent extends React.Component {
   render() {
     const collections = []
     const { returnedHits, totalHits, pageSize } = this.props
-    let focusCardNum = returnedHits - pageSize
+    let focusCardNum
+    if (returnedHits === totalHits) {
+      focusCardNum = returnedHits - (returnedHits % pageSize)
+    }
+    else {
+      focusCardNum = returnedHits - pageSize
+    }
     _.forOwn(this.props.results, (val, key) => {
       let listItemProps = {
         key,

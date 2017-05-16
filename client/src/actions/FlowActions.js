@@ -3,13 +3,14 @@ import watch from 'redux-watch'
 import { push } from 'react-router-redux'
 import { encodeQueryString, decodeQueryString } from '../utils/queryUtils'
 import { triggerSearch, fetchGranules, clearCollections, clearGranules } from './SearchRequestActions'
-import { updateSearch } from './SearchParamActions'
+import {updateSearch, clearSelections} from './SearchParamActions'
 import { fetchConfig } from './ConfigActions'
 import {fetchInfo, fetchCounts} from './InfoActions'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
   return (dispatch, getState) => {
+    dispatch(clearSelections())
     const query = encodeQueryString(getState())
     if (!_.isEmpty(query)) {
       const locationDescriptor = {
@@ -123,11 +124,12 @@ const applyNewQueryString = (newQueryString) => {
     newQueryString = newQueryString.slice(1)
   }
   const decodedQuery = decodeQueryString(newQueryString)
-  const searchFromQuery = _.omit(_.get(decodedQuery, 'behavior.search'), 'selectedIds')
-  const searchFromState = _.omit(_.get(store.getState(), 'behavior.search'), 'selectedIds')
+  const searchFromQuery = _.get(decodedQuery, 'behavior.search')
+  const searchFromState = _.get(store.getState(), 'behavior.search')
   if (!_.isEqual(searchFromQuery, searchFromState)) {
     store.dispatch(clearCollections())
     store.dispatch(clearGranules())
+    store.dispatch(clearSelections())
     store.dispatch(updateSearch(searchFromQuery))
     store.dispatch(loadData())
   }
