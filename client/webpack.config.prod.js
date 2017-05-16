@@ -93,7 +93,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'NOAA OneStop Demo',
+      title: 'NOAA OneStop',
       favicon: '../img/noaa-favicon.ico'
     }),
     new webpack.DefinePlugin({
