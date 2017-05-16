@@ -61,23 +61,23 @@ describe('The flow actions', function () {
     })
   })
 
-  it('do not dispatch a transition to the collections view when no search params are present', function () {
+  it('do not dispatch a transition to the collections view, just a clearSelections action, when no search params are present', function () {
     const getState = sinon.stub().returns(mockDefaultState)
     const fn = actions.showCollections()
 
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls == 0, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
   })
 
-  it('dispatch a transition to the collections view when search params are present', function () {
+  it('dispatch a clearSelections action and transition to the collections view when search params are present', function () {
     const stateWithSearchParams = _.merge(mockDefaultState, {behavior: {search: {queryText: 'oceans'}}})
     const getState = sinon.stub().returns(stateWithSearchParams)
     const fn = actions.showCollections()
 
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls == 2, `There were ${dispatchCalls} dispatch calls made`)
   })
 
   it('dispatch a transition to the granules view', function () {
