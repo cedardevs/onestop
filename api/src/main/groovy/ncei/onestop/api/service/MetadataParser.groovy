@@ -39,6 +39,7 @@ class MetadataParser {
     def keywordsMap = parseKeywordsAndTopics(metadata)
     def acquisitionInfo = parseAcquisitionInfo(metadata)
     def dsmmMap = parseDSMM(metadata)
+    def spatialMap = parseSpatialInfo(metadata)
 
     // Build JSON:
     def json = [
@@ -58,7 +59,8 @@ class MetadataParser {
         gcmdDataCenters                 : keywordsMap.gcmdDataCenters,
         gcmdDataResolution              : keywordsMap.gcmdDataResolution,
         temporalBounding                : parseTemporalBounding(metadata),
-        spatialBounding                 : parseSpatialBounding(metadata),
+        spatialBounding                 : spatialMap.spatialBounding,
+        isGlobal                        : spatialMap.isGlobal,
         acquisitionInstruments          : acquisitionInfo.acquisitionInstruments,
         acquisitionOperations           : acquisitionInfo.acquisitionOperations,
         acquisitionPlatforms            : acquisitionInfo.acquisitionPlatforms,
@@ -258,9 +260,9 @@ class MetadataParser {
     return parseTemporalBounding(new XmlSlurper().parseText(xml))
   }
 
-  static Map parseSpatialBounding(GPathResult metadata) {
-
+  static Map parseSpatialInfo(GPathResult metadata) {
     def spatialBounding = [:]
+    def isGlobal = null
     def space = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
       e.@id.text() == 'boundingExtent'
     }.geographicElement
@@ -270,13 +272,25 @@ class MetadataParser {
       spatialBounding.put('coordinates', [
           [bbox.westBoundLongitude.Decimal.toFloat(), bbox.northBoundLatitude.Decimal.toFloat()],
           [bbox.eastBoundLongitude.Decimal.toFloat(), bbox.southBoundLatitude.Decimal.toFloat()]])
+      isGlobal = checkIsGlobal(bbox)
     }
-
-    return spatialBounding
+    return ["spatialBounding":spatialBounding, "isGlobal" : isGlobal]
   }
 
-  static Map parseSpatialBounding(String xml) {
-    return parseSpatialBounding(new XmlSlurper().parseText(xml))
+  static boolean checkIsGlobal(def boundingBox ){
+    if( (boundingBox.westBoundLongitude.Decimal.toFloat() == -180) &&
+            (boundingBox.eastBoundLongitude.Decimal.toFloat() == 180) &&
+            (boundingBox.northBoundLatitude.Decimal.toFloat() == 90 )  &&
+            (boundingBox.southBoundLatitude.Decimal.toFloat() == -90)){
+      return true
+    }
+    else{
+      return false
+    }
+  }
+
+  static Map parseSpatialInfo(String xml) {
+    return parseSpatialInfo(new XmlSlurper().parseText(xml))
   }
 
   static Map parseAcquisitionInfo(GPathResult metadata) {

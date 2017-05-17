@@ -52,6 +52,7 @@ class MetadataParserTest extends Specification {
             [180, -90]
         ]
     ]
+    parsedXml.isGlobal == true
     parsedXml.acquisitionInstruments == [[
         instrumentIdentifier  : 'SII > Super Important Instrument',
         instrumentType        : 'sensor',
@@ -213,16 +214,18 @@ class MetadataParserTest extends Specification {
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
-    def spatialBounding = MetadataParser.parseSpatialBounding(document)
+    def spatialBounding = MetadataParser.parseSpatialInfo(document)
 
     then:
-    spatialBounding == [
-        type        : 'envelope',
-        coordinates : [
-            [-180, 90],
-            [180, -90]
-        ]
-    ]
+    spatialBounding == [spatialBounding     :
+            [
+                    type       : 'envelope',
+                    coordinates: [
+                            [-180, 90],
+                            [180, -90]
+                    ]
+            ],
+            isGlobal: true]
   }
 
   def "Acquisition info is correctly parsed"() {

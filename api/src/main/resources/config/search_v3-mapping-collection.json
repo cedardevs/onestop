@@ -123,6 +123,10 @@
       "spatialBounding": {
         "type": "geo_shape"
       },
+      "isGlobal":{
+        "type": "boolean",
+        "index": "no"
+      },
       "acquisitionInstruments": {
         "type": "nested",
         "properties": {
