@@ -268,20 +268,35 @@ class MetadataParser {
     }.geographicElement
     def bbox = space.'**'.find { it -> it.name() == 'EX_GeographicBoundingBox' }
     if (bbox) {
+
       spatialBounding.put('type', 'envelope')
-      spatialBounding.put('coordinates', [
-          [bbox.westBoundLongitude.Decimal.toFloat(), bbox.northBoundLatitude.Decimal.toFloat()],
-          [bbox.eastBoundLongitude.Decimal.toFloat(), bbox.southBoundLatitude.Decimal.toFloat()]])
+      spatialBounding.put('coordinates', parseCoords(bbox))
+              //)
       isGlobal = checkIsGlobal(bbox)
     }
     return ["spatialBounding":spatialBounding, "isGlobal" : isGlobal]
   }
 
-  static boolean checkIsGlobal(def boundingBox ){
-    if( (boundingBox.westBoundLongitude.Decimal.toFloat() == -180) &&
-            (boundingBox.eastBoundLongitude.Decimal.toFloat() == 180) &&
-            (boundingBox.northBoundLatitude.Decimal.toFloat() == 90 )  &&
-            (boundingBox.southBoundLatitude.Decimal.toFloat() == -90)){
+  static def parseCoords(def bbox){
+    def westBound = (bbox.westBoundLongitude == "null" ||  bbox.westBoundLongitude == "") ? null : bbox.westBoundLongitude.Decimal.toFloat()
+    def eastBound = (bbox.eastBoundLongitude == "null" ||  bbox.eastBoundLongitude == "") ? null : bbox.eastBoundLongitude.Decimal.toFloat()
+    def northBound = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "")  ? null : bbox.northBoundLatitude.Decimal.toFloat()
+    def southBound = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toFloat()
+
+    return [
+          [westBound, northBound],
+          [eastBound, southBound]
+    ]
+  }
+
+  static def checkIsGlobal(def bbox ){
+    if( bbox.westBoundLongitude == "null" || bbox.eastBoundLongitude == "null" ||  bbox.northBoundLatitude == "null" || bbox.southBoundLatitude == "null") {
+      return null
+    }
+    if( (bbox.westBoundLongitude.Decimal.toFloat() == -180) &&
+            (bbox.eastBoundLongitude.Decimal.toFloat() == 180) &&
+            (bbox.northBoundLatitude.Decimal.toFloat() == 90 )  &&
+            (bbox.southBoundLatitude.Decimal.toFloat() == -90)){
       return true
     }
     else{

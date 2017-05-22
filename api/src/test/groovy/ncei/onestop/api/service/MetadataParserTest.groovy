@@ -228,6 +228,25 @@ class MetadataParserTest extends Specification {
             isGlobal: true]
   }
 
+  def "Null Spatial bounding is correctly parsed"(){
+      given:
+      def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-null-cords-metadata.xml").text
+
+      when:
+      def spatialBounding = MetadataParser.parseSpatialInfo(document)
+
+      then:
+      spatialBounding == [spatialBounding     :
+                                  [
+                                          type       : 'envelope',
+                                          coordinates: [
+                                                  [ null, null ],
+                                                  [ null , null ]
+                                          ]
+                                  ],
+                          isGlobal: null ]
+  }
+
   def "Acquisition info is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
