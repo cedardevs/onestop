@@ -3,7 +3,7 @@ import Immutable from 'seamless-immutable'
 import { expect } from 'chai'
 import { search, initialState } from '../../../src/reducers/behavior/search'
 import {
-  updateSearch, newGeometry, removeGeometry, toggleSelection, clearSelections
+  updateSearch, newGeometry, removeGeometry, toggleSelection, toggleExcludeGlobal,  clearSelections
 } from '../../../src/actions/SearchParamActions'
 
 describe('The search reducer', function () {
@@ -17,7 +17,8 @@ describe('The search reducer', function () {
       startDateTime: null,
       endDateTime: null,
       selectedFacets: {},
-      selectedIds: []
+      selectedIds: [],
+      excludeGlobal: null
     })
   })
 
@@ -29,7 +30,8 @@ describe('The search reducer', function () {
         startDateTime: '2000-01-01T00:00:00Z',
         endDateTime: '3000-01-01T00:00:00Z',
         selectedFacets: {science: ["Oceans"]},
-        selectedIds: ['ABCXYZ']
+        selectedIds: ['ABCXYZ'],
+        excludeGlobal: true,
       }
 
       const updateAction = updateSearch(newSearchParams)
@@ -120,6 +122,39 @@ describe('The search reducer', function () {
       const actionWithNoFacets = {type:"TOGGLE_FACETS", selectedFacets: {}}
       const reducerResp = search(initialState, actionWithNoFacets)
       reducerResp.selectedFacets.should.deep.equal({})
+    })
+  })
+
+  describe('toggleGlobal', function() {
+    it('should handle TOGGLE_EXCLUDE_GLOBAL starting at null', () => {
+      const toggleExcludeGlobalAction = {
+        type: "TOGGLE_EXCLUDE_GLOBAL"
+      }
+
+      const reducerResp = search(initialState, toggleExcludeGlobalAction)
+      reducerResp.excludeGlobal.should.equal(true)
+    })
+    it('should handle TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at true', () => {
+        const globalExcludedState = {
+            excludeGlobal: true,
+        }
+        const toggleExcludeGlobalAction = {
+            type: "TOGGLE_EXCLUDE_GLOBAL"
+        }
+
+        const reducerResp = search(globalExcludedState, toggleExcludeGlobalAction)
+        reducerResp.excludeGlobal.should.equal(false)
+    })
+    it('should handle TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at false', () => {
+        const globalExcludedState = {
+            excludeGlobal: false,
+        }
+        const toggleExcludeGlobalAction = {
+            type: "TOGGLE_EXCLUDE_GLOBAL"
+        }
+
+        const reducerResp = search(globalExcludedState, toggleExcludeGlobalAction)
+        reducerResp.excludeGlobal.should.equal(true)
     })
   })
 })

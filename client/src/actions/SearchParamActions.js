@@ -69,6 +69,15 @@ export const toggleFacet = (category, facetName, selected) => {
   }
 }
 
+export const TOGGLE_EXCLUDE_GLOBAL = 'TOGGLE_EXCLUDE_GLOBAL'
+export const toggleExcludeGlobal = () => {
+  return (dispatch, getState) => {
+    dispatch({
+       type: TOGGLE_EXCLUDE_GLOBAL
+    })
+  }
+}
+
 const updateSelectedFacets = (selectedFacets, category, facetName, selected ) => {
   if (selected) {
     const newList = selectedFacets[category]

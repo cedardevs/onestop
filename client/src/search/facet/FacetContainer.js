@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import FacetList from './FacetListComponent'
 import { clearCollections, triggerSearch } from '../../actions/SearchRequestActions'
-import { toggleFacet } from '../../actions/SearchParamActions'
+import { toggleFacet, toggleExcludeGlobal } from '../../actions/SearchParamActions'
 import { showCollections } from '../../actions/FlowActions'
 
 const mapStateToProps = (state) => {
@@ -19,6 +19,9 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(clearCollections())
       dispatch(triggerSearch())
       dispatch(showCollections())
+    },
+    toggleExcludeGlobal: () => {
+      dispatch(toggleExcludeGlobal())
     }
   }
 }
