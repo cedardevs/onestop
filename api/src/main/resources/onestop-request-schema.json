@@ -73,8 +73,22 @@
         },
         {
           "$ref": "#/definitions/collectionFilter"
+        },
+        {
+          "$ref": "#/definitions/excludeGlobalFilter"
         }
       ]
+    },
+    "excludeGlobalFilter": {
+      "type": "object",
+      "properties": {
+        "type": {
+           "enum" : ["excludeGlobal"]
+        },
+        "value":{
+          "type": "boolean"
+        }
+      }
     },
     "dateTimeFilter": {
       "type": "object",

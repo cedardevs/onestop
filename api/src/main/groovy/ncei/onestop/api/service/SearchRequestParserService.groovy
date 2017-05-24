@@ -175,6 +175,10 @@ class SearchRequestParserService {
       builder.must(QueryBuilders.termsQuery(fieldName, it.values))
     }
 
+    if(groupedFilters.excludeGlobal){
+      builder.must(QueryBuilders.termsQuery("isGlobal", false))
+    }
+
     // Collection filter -- force a union since an intersection on multiple parentIds will return nothing
     def parentIds = [] as Set
     groupedFilters.collection.each {
