@@ -101,10 +101,10 @@ class FacetList extends React.Component {
   populateAdditionalFacetsComponents(){
     const self = this
     return(
-        <div key="excludeGlobal">
-          <label>
-            <input type="checkbox" checked={this.state.excludeGlobal} onChange={self.toggleIsGlobalAndSubmit}/>   Exclude Global?
-          </label>
+        <div key="excludeGlobal"  className={styles.facetItem}>
+            <input type="checkbox" className={styles.additionalCheckFacet} checked={this.state.excludeGlobal}
+                   onChange={self.toggleIsGlobalAndSubmit}/>
+            <span className={styles.facetLabel}>  Exclude Global</span>
         </div>
     )
   }
@@ -113,6 +113,7 @@ class FacetList extends React.Component {
     return <div>
       <div className={`${styles.facetContainer}`}>
         <form className={`pure-form ${styles.formStyle}`}>
+          <span className={'pure-menu-heading'}>Additional Filters</span>
             {this.populateAdditionalFacetsComponents()}
           <span className={'pure-menu-heading'}>Categories</span>
           <Collapse defaultActiveKey="0">
