@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/cires-ncei/onestop.png?label=ready&title=Ready)](https://waffle.io/cires-ncei/onestop?utm_source=badge)
 OneStop Search
 ===
 
