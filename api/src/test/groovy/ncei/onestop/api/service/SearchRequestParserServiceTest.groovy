@@ -306,7 +306,7 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult.toString() == expectedQueryString
   }
 
-  def 'Facet filter request includes exclude global filter in query'() {
+  def 'Facet filter request includes exclude global filter in query when true'() {
     given:
     def request = '{"filters":[{"type": "excludeGlobal", "value": true}]}'
     def params = slurper.parseText(request)
@@ -327,6 +327,30 @@ class SearchRequestParserServiceTest extends Specification {
                   }
                 }
               }
+            }
+          }
+        }""".stripIndent()
+
+    then:
+    !queryResult.toString().empty
+    queryResult.toString() == expectedQueryString
+  }
+
+  def 'Facet filter request doesn\'t include exclude global filter in query when false'() {
+    given:
+    def request = '{"filters":[{"type": "excludeGlobal", "value": false}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQueryString = """\
+        {
+          "bool" : {
+            "must" : {
+              "bool" : { }
+            },
+            "filter" : {
+              "bool" : { }
             }
           }
         }""".stripIndent()

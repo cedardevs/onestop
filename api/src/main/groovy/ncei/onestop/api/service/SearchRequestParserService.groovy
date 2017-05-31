@@ -175,8 +175,13 @@ class SearchRequestParserService {
       builder.must(QueryBuilders.termsQuery(fieldName, it.values))
     }
 
-    if(groupedFilters.excludeGlobal){
-      builder.must(QueryBuilders.termsQuery("isGlobal", false))
+    // Exclude global filter:
+    if (groupedFilters.excludeGlobal) {
+      // Handling filter & null awkwardness of 'isGlobal' property -- passing false through excludes all non-global
+      // and null records from results, which isn't exactly what this filter implies
+      if (groupedFilters.excludeGlobal[0].value == true) {
+        builder.must(QueryBuilders.termsQuery("isGlobal", false))
+      }
     }
 
     // Collection filter -- force a union since an intersection on multiple parentIds will return nothing

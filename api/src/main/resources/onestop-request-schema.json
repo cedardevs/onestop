@@ -88,7 +88,12 @@
         "value":{
           "type": "boolean"
         }
-      }
+      },
+      "required": [
+        "type",
+        "value"
+      ],
+      "additionalProperties": false
     },
     "dateTimeFilter": {
       "type": "object",
