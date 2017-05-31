@@ -4,9 +4,14 @@ const precss = require('precss')
 const autoprefixer = require('autoprefixer')
 const postcssAssets = require('postcss-assets')
 const path = require('path')
+require('babel-polyfill')
+const modernizrrc = path.resolve(__dirname, '.modernizrrc.json')
+require(modernizrrc)
 
 module.exports = {
   entry: [
+    'babel-polyfill',
+    modernizrrc,
     './index.jsx'
   ],
   output: {
@@ -69,29 +74,20 @@ module.exports = {
         'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false'
       ],
     }, {
-      test: /\.(svg)(\?v=\d+\.\d+\.\d+)?$/,
-      use: 'url-loader?limit=65000&mimetype=image/svg+xml&name=public/fonts/[name].[ext]'
-    }, {
-        test: /\.(woff)(\?v=\d+\.\d+\.\d+)?$/,
-        use: 'url-loader?limit=65000&mimetype=application/font-woff&name=public/fonts/[name].[ext]'
-    }, {
-        test: /\.(woff2)(\?v=\d+\.\d+\.\d+)?$/,
-        use: 'url-loader?limit=65000&mimetype=application/font-woff2&name=public/fonts/[name].[ext]'
-    }, {
-        test: /\.([ot]tf)(\?v=\d+\.\d+\.\d+)?$/,
-        use: 'url-loader?limit=65000&mimetype=application/octet-stream&name=public/fonts/[name].[ext]'
-    }, {
-        test: /\.(eot)(\?v=\d+\.\d+\.\d+)?$/,
-        use: 'url-loader?limit=65000&mimetype=application/vnd.ms-fontobject&name=public/fonts/[name].[ext]'
+      test: /\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+      use: [{loader: 'file-loader?name=fonts/[name].[ext]'}]
     }]
   },
   resolve: {
     modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules'],
     extensions: ['.js', '.jsx'],
+    alias: {
+      modernizr$: path.resolve(__dirname, ".modernizrrc.json")
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: 'NOAA OneStop Demo',
+      title: 'NOAA OneStop',
       favicon: '../img/noaa-favicon.ico'
     }),
     new webpack.DefinePlugin({

@@ -10,3 +10,15 @@
     background-size: cover;
     max-height: $height;
   }
+
+@define-mixin bgImageNoGradient
+  $image,
+  $bgPos: center center {
+    background: url($image) black;
+    filter: alpha(opacity=30);
+    background-repeat: no-repeat;
+    background-position: $bgPos;
+    background-attachment: fixed;
+    background-size: cover;
+    max-height: $height;
+  }

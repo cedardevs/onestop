@@ -1,15 +1,28 @@
 @import '../../../style/style.css';
 
 .backgroundColor ,
-.backgroundImage {
+.background {
   position: fixed;
   z-index: -5000;
   min-height: 100vh;
   min-width: 100vw;
 }
 
-.backgroundImage {
-  @mixin bgImage '../../../img/Earth.jpg';
+:global{
+  .cssgradients {
+    :local {
+      .background {
+        @mixin bgImage '../../../img/Earth.jpg';
+      }
+    }
+  }
+  .no-cssgradients {
+    :local {
+      .background {
+        @mixin bgImageNoGradient '../../../img/Earth.jpg';
+      }
+    }
+  }
 }
 
 .backgroundColor {

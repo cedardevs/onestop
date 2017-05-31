@@ -1,5 +1,5 @@
 install_base: /opt/onestop-api
 config_path: /opt/onestop-api/onestop-api.yml
-tomcat_url: http://mirror.symnds.com/software/Apache/tomcat/tomcat-8/v8.5.13/bin/apache-tomcat-8.5.13.tar.gz
-tomcat_checksum: sha1:521a2f487926985211aff9863229eae2af9f3715
-tomcat_base: /opt/onestop-api/apache-tomcat-8.5.13
+tomcat_version: 8.5.13
+tomcat_url: http://archive.apache.org/dist/tomcat/tomcat-8/v{{tomcat_version}}/bin/apache-tomcat-{{tomcat_version}}.tar.gz
+tomcat_base: /opt/onestop-api/apache-tomcat-{{tomcat_version}}

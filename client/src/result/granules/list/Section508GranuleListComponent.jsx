@@ -47,7 +47,7 @@ class GranuleList extends React.Component {
         <a onClick={this.props.showCollections}
           title="Return To Collection Results"
           tabIndex={0}
-          className={styles.links}>Return To Collection Results</a>
+          className={styles.links}> Return To Collection Results</a>
         <div className={styles.descriptionContainer}>
           <h2>{this.props.selectedCollection.title}</h2>
           <p title="Description" className={styles.descriptionParagraph}>

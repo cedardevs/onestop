@@ -123,3 +123,15 @@ $button-threshold: 96em;
   text-align: center;
   line-height: 64% !important;
 }
+
+.hidden {
+  display: none;
+}
+
+.warning {
+  display: block;
+  font-size: .75em;
+  color: red;
+  padding-top: 1em;
+  text-align: center;
+}

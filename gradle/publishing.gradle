@@ -13,6 +13,7 @@ ext {
 // only publish snapshot versions
 version = version += '-SNAPSHOT'
 
+
 artifactory {
   contextUrl = 'https://oss.jfrog.org'
   publish {

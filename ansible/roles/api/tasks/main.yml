@@ -28,11 +28,30 @@
     group: onestop
     state: directory
 
+- name: Download tomcat checksum
+  become: true
+  get_url:
+    url: "{{ tomcat_url }}.sha1 "
+    dest: "{{ install_base}}"
+    owner: onestop
+    group: onestop
+  register: tomcat_checksum
+
+- name: debug checksum values
+  debug:
+    var: tomcat_checksum
+    verbosity: 2
+
+# we do a cut a the end to get only the checksum value from the file.
+- name: register checksum
+  shell: cat {{ tomcat_checksum.dest}} | cut -d' ' -f1
+  register: sha_checksum
+
 - name: Download tomcat
   become: true
   get_url:
     url: "{{ tomcat_url }}"
-    checksum: "{{ tomcat_checksum }}"
+    checksum: "sha1:{{ sha_checksum.stdout }}"
     dest: "{{ install_base }}"
     owner: onestop
     group: onestop

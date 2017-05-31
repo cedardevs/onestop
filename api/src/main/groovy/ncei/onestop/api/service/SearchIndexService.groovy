@@ -6,6 +6,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilder
+import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.aggregations.bucket.terms.Terms
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -53,6 +54,26 @@ class SearchIndexService {
   public Map search(Map searchParams) {
     def response = queryElasticSearch(searchParams)
     response
+  }
+
+  public Map totalCounts() {
+    def collectionResponse = searchClient.prepareSearch(SEARCH_INDEX).setTypes(COLLECTION_TYPE).setQuery(QueryBuilders.matchAllQuery()).setSize(0).execute().actionGet()
+    // TODO granule counts... requires scripting: search all granules where fileIdentifier != parentIdentifier (omits 'synthesized' granules)
+
+    return [
+        data: [
+            [
+                type : "count",
+                id   : "collection",
+                count: collectionResponse.hits.totalHits
+            ]/*,
+            [
+              type:  "count",
+              id:    "granule",
+              count: granuleResponse.hits.totalHits
+            ]*/
+        ]
+    ]
   }
 
   private Map queryElasticSearch(Map params) {
