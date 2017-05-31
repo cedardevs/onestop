@@ -124,8 +124,7 @@
         "type": "geo_shape"
       },
       "isGlobal":{
-        "type": "boolean",
-        "index": "no"
+        "type": "boolean"
       },
       "acquisitionInstruments": {
         "type": "nested",
