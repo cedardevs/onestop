@@ -11,11 +11,38 @@ class RootComponent extends React.Component {
   constructor(props) {
     super(props)
 
+    this.hasUnsupportedFeatures = this.hasUnsupportedFeatures.bind(this)
+
     this.location = props.location.pathname
+    this.state = {
+      browserWarning: this.hasUnsupportedFeatures()
+    }
   }
 
   componentWillUpdate(nextProps) {
     this.location = nextProps.location.pathname
+  }
+
+  hasUnsupportedFeatures(){
+    let browserWarning = false
+    const htmlClasses = document.documentElement.className.split(' ')
+    htmlClasses.forEach(htmlClass => {
+      if(htmlClass.startsWith('no-')){ browserWarning = true; return; }
+    })
+    return browserWarning
+  }
+
+  unsupportedBrowserWarning() {
+    const wikiUrl = 'https://github.com/cires-ncei/onestop/wiki/OneStop-Client-Supported-Browsers'
+    return <aside role='alert' className={styles.browserWarning}>
+        <span className={styles.close}
+          onClick={()=>{this.setState({browserWarning: false})}}>x</span>
+        <p>
+          The browser that you are using to view this page is not currently supported.
+          For a list of currently supported & tested browsers, please visit the
+          <span> <a href={wikiUrl}>OneStop Documentation</a></span>
+        </p>
+    </aside>
   }
 
   render() {
@@ -25,6 +52,7 @@ class RootComponent extends React.Component {
         <DetailContainer/>
         <HeaderContainer showSearch={this.isNotLanding() && this.isNot508()}
            homeUrl={this.homeUrl()}/>
+        {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div></div>}
         <div className={styles.main}>
           <InfoContainer modalMode={this.isNotLanding()}/>
           <LoadingContainer/>

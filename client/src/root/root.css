@@ -21,3 +21,32 @@
   position: relative;
   width: 100%;
 }
+
+
+.browserWarning {
+  background: $color-secondary-dark;
+  width: 96%;
+  margin: 1em auto;
+  padding: 0.3em 1em;
+  border-radius: 3px;
+  color: #fff;
+  a, a:visited {
+    color: rgb(169, 226, 255);
+  }
+  p {
+    text-align: center;
+  }
+}
+
+.close {
+  color: #fff;
+  display: inline-block;
+  float: right;
+  font-size: 1.2em;
+}
+.close:hover,
+.close:focus {
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: bold;
+}
