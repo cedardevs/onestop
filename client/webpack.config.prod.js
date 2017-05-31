@@ -5,10 +5,13 @@ const autoprefixer = require('autoprefixer')
 const postcssAssets = require('postcss-assets')
 const path = require('path')
 require('babel-polyfill')
+const modernizrrc = path.resolve(__dirname, '.modernizrrc.json')
+require(modernizrrc)
 
 module.exports = {
   entry: [
     'babel-polyfill',
+    modernizrrc,
     './index.jsx'
   ],
   output: {
@@ -90,6 +93,9 @@ module.exports = {
   resolve: {
     modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules'],
     extensions: ['.js', '.jsx'],
+    alias: {
+      modernizr$: path.resolve(__dirname, ".modernizrrc.json")
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({
