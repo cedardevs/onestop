@@ -39,6 +39,7 @@ class MetadataParser {
     def keywordsMap = parseKeywordsAndTopics(metadata)
     def acquisitionInfo = parseAcquisitionInfo(metadata)
     def dsmmMap = parseDSMM(metadata)
+    def spatialMap = parseSpatialInfo(metadata)
 
     // Build JSON:
     def json = [
@@ -58,7 +59,8 @@ class MetadataParser {
         gcmdDataCenters                 : keywordsMap.gcmdDataCenters,
         gcmdDataResolution              : keywordsMap.gcmdDataResolution,
         temporalBounding                : parseTemporalBounding(metadata),
-        spatialBounding                 : parseSpatialBounding(metadata),
+        spatialBounding                 : spatialMap.spatialBounding,
+        isGlobal                        : spatialMap.isGlobal,
         acquisitionInstruments          : acquisitionInfo.acquisitionInstruments,
         acquisitionOperations           : acquisitionInfo.acquisitionOperations,
         acquisitionPlatforms            : acquisitionInfo.acquisitionPlatforms,
@@ -258,25 +260,52 @@ class MetadataParser {
     return parseTemporalBounding(new XmlSlurper().parseText(xml))
   }
 
-  static Map parseSpatialBounding(GPathResult metadata) {
-
+  static Map parseSpatialInfo(GPathResult metadata) {
     def spatialBounding = [:]
+    def isGlobal = null
     def space = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
       e.@id.text() == 'boundingExtent'
     }.geographicElement
     def bbox = space.'**'.find { it -> it.name() == 'EX_GeographicBoundingBox' }
     if (bbox) {
-      spatialBounding.put('type', 'envelope')
-      spatialBounding.put('coordinates', [
-          [bbox.westBoundLongitude.Decimal.toFloat(), bbox.northBoundLatitude.Decimal.toFloat()],
-          [bbox.eastBoundLongitude.Decimal.toFloat(), bbox.southBoundLatitude.Decimal.toFloat()]])
-    }
 
-    return spatialBounding
+      spatialBounding.put('type', 'envelope')
+      spatialBounding.put('coordinates', parseCoords(bbox))
+              //)
+      isGlobal = checkIsGlobal(bbox)
+    }
+    return ["spatialBounding":spatialBounding, "isGlobal" : isGlobal]
   }
 
-  static Map parseSpatialBounding(String xml) {
-    return parseSpatialBounding(new XmlSlurper().parseText(xml))
+  static def parseCoords(def bbox){
+    def westBound = (bbox.westBoundLongitude == "null" ||  bbox.westBoundLongitude == "") ? null : bbox.westBoundLongitude.Decimal.toFloat()
+    def eastBound = (bbox.eastBoundLongitude == "null" ||  bbox.eastBoundLongitude == "") ? null : bbox.eastBoundLongitude.Decimal.toFloat()
+    def northBound = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "")  ? null : bbox.northBoundLatitude.Decimal.toFloat()
+    def southBound = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toFloat()
+
+    return [
+          [westBound, northBound],
+          [eastBound, southBound]
+    ]
+  }
+
+  static def checkIsGlobal(def bbox ){
+    if( bbox.westBoundLongitude == "null" || bbox.eastBoundLongitude == "null" ||  bbox.northBoundLatitude == "null" || bbox.southBoundLatitude == "null") {
+      return null
+    }
+    if( (bbox.westBoundLongitude.Decimal.toFloat() == -180) &&
+            (bbox.eastBoundLongitude.Decimal.toFloat() == 180) &&
+            (bbox.northBoundLatitude.Decimal.toFloat() == 90 )  &&
+            (bbox.southBoundLatitude.Decimal.toFloat() == -90)){
+      return true
+    }
+    else{
+      return false
+    }
+  }
+
+  static Map parseSpatialInfo(String xml) {
+    return parseSpatialInfo(new XmlSlurper().parseText(xml))
   }
 
   static Map parseAcquisitionInfo(GPathResult metadata) {
