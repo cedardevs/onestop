@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import styles from './resultLayout.css'
 import FacetContainer from '../search/facet/FacetContainer'
+import _ from 'lodash'
 
 class ResultLayout extends React.Component {
   constructor(props) {
@@ -11,13 +12,16 @@ class ResultLayout extends React.Component {
     this.renderFacetButton = this.renderFacetButton.bind(this)
     this.facetButtonImage = this.facetButtonImage.bind(this)
     this.renderResultsContainer = this.renderResultsContainer.bind(this)
+    this.renderSelectedFilters = this.renderSelectedFilters.bind(this)
 
     this.location = props.location.pathname
+    this.selectedFacets = props.selectedFacets
     this.collapseFacetMenu = false
   }
 
   componentWillUpdate(nextProps) {
     this.location = nextProps.location.pathname
+    this.selectedFacets = nextProps.selectedFacets
   }
 
   toggleFacetMenu() {
@@ -78,11 +82,32 @@ class ResultLayout extends React.Component {
     }
   }
 
+  renderSelectedFilters() {
+    if(!_.isEmpty(this.selectedFacets)) {
+      let appliedFilters = []
+
+      let filters = _.flatMap(this.selectedFacets, (facets) => {
+        return facets
+      })
+
+      _.forEach(filters, (value) => {
+          appliedFilters.push(value.split('>').pop().trim())
+      })
+
+      return (
+          <div className={`pure-u-1`}>
+            {appliedFilters}
+          </div>
+      )
+    }
+  }
+
   render() {
     return <div id="layout" className={`pure-g ${styles.mainWindow}`}>
       {this.renderFacetMenu()}
       {this.renderFacetButton()}
       <div className={`${this.renderResultsContainer()} ${styles.resultsContainer}`}>
+        {this.renderSelectedFilters()}
         {this.props.children}
       </div>
     </div>
