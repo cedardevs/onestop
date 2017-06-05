@@ -91,7 +91,7 @@ class ResultLayout extends React.Component {
   }
 
   renderSelectedFilters() {
-    if(!_.isEmpty(this.selectedFacets)) {
+    if (!this.location.includes("files") && !_.isEmpty(this.selectedFacets)) {
       let appliedFilters = []
 
       _.forEach(this.selectedFacets, (terms, category) => {
