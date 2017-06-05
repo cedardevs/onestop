@@ -13,15 +13,23 @@ class ResultLayout extends React.Component {
     this.facetButtonImage = this.facetButtonImage.bind(this)
     this.renderResultsContainer = this.renderResultsContainer.bind(this)
     this.renderSelectedFilters = this.renderSelectedFilters.bind(this)
+    this.clearFacetAndSubmitSearch = this.clearFacetAndSubmitSearch.bind(this)
 
     this.location = props.location.pathname
     this.selectedFacets = props.selectedFacets
+    this.toggleFacet = props.toggleFacet
+    this.submit = props.submit
     this.collapseFacetMenu = false
   }
 
   componentWillUpdate(nextProps) {
     this.location = nextProps.location.pathname
     this.selectedFacets = nextProps.selectedFacets
+  }
+
+  clearFacetAndSubmitSearch(category, term) {
+    this.toggleFacet(category, term, false)
+    this.submit()
   }
 
   toggleFacetMenu() {
@@ -86,17 +94,22 @@ class ResultLayout extends React.Component {
     if(!_.isEmpty(this.selectedFacets)) {
       let appliedFilters = []
 
-      let filters = _.flatMap(this.selectedFacets, (facets) => {
-        return facets
+      _.forEach(this.selectedFacets, (terms, category) => {
+        _.forEach(terms, (value) => {
+          let name = value.split('>').pop().trim()
+          let filter = (
+            <span className={`${styles.filter}`} key={`${value}`}>{name} <span className={`${styles.close}`}
+                                                                               onClick={() => this.clearFacetAndSubmitSearch(category, value)}>x</span></span>
+          )
+          appliedFilters.push(filter)
+        })
       })
 
-      _.forEach(filters, (value) => {
-          appliedFilters.push(value.split('>').pop().trim())
-      })
+
 
       return (
           <div className={`pure-u-1`}>
-            {appliedFilters}
+            <div className={`${styles.filters}`}>{appliedFilters}</div>
           </div>
       )
     }

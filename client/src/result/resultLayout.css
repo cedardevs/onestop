@@ -59,3 +59,24 @@
   margin: 1em auto 8em;
   max-width: 40em;
 }
+
+.filters {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.filter {
+  display: inline-flex;
+  background-color: teal;
+  border-radius: 0.5em;
+  padding-left: 0.5em;
+  margin-right: 0.5em;
+  margin-bottom: 0.25em;
+}
+
+.close {
+  color: lightgray;
+  padding: 0 0.5em;
+  cursor: pointer;
+}
+
