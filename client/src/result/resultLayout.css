@@ -67,11 +67,22 @@
 
 .filter {
   display: inline-flex;
-  background-color: teal;
   border-radius: 0.5em;
   padding-left: 0.5em;
   margin-right: 0.5em;
   margin-bottom: 0.25em;
+}
+
+.keyword {
+  background-color: teal;
+}
+
+.temporal {
+  background-color: maroon;
+}
+
+.spatial {
+  background-color: darkolivegreen;
 }
 
 .close {

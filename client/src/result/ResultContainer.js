@@ -1,12 +1,15 @@
 import { connect } from 'react-redux'
 import ResultLayout from './ResultLayout'
-import {toggleFacet} from '../actions/SearchParamActions'
+import {toggleFacet, updateDateRange} from '../actions/SearchParamActions'
 import {clearCollections, triggerSearch} from '../actions/SearchRequestActions'
 import {showCollections} from '../actions/FlowActions'
 
 const mapStateToProps = (state) => {
+  const {selectedFacets, startDateTime, endDateTime} = state.behavior.search
   return {
-    selectedFacets: state.behavior.search.selectedFacets
+    selectedFacets: selectedFacets,
+    startDateTime: startDateTime,
+    endDateTime: endDateTime
   }
 }
 
@@ -18,7 +21,9 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(clearCollections())
       dispatch(triggerSearch())
       dispatch(showCollections())
-    }
+    },
+    updateDateRange: (startDate, endDate) =>
+      dispatch(updateDateRange(startDate, endDate))
   }
 }
 

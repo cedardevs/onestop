@@ -13,11 +13,16 @@ class ResultLayout extends React.Component {
     this.facetButtonImage = this.facetButtonImage.bind(this)
     this.renderResultsContainer = this.renderResultsContainer.bind(this)
     this.renderSelectedFilters = this.renderSelectedFilters.bind(this)
+    this.renderTemporalFilters = this.renderTemporalFilters.bind(this)
     this.clearFacetAndSubmitSearch = this.clearFacetAndSubmitSearch.bind(this)
+    this.clearDateAndSubmitSearch = this.clearDateAndSubmitSearch.bind(this)
 
     this.location = props.location.pathname
     this.selectedFacets = props.selectedFacets
+    this.startDateTime = props.startDateTime
+    this.endDateTime = props.endDateTime
     this.toggleFacet = props.toggleFacet
+    this.updateDateRange = props.updateDateRange
     this.submit = props.submit
     this.collapseFacetMenu = false
   }
@@ -25,10 +30,17 @@ class ResultLayout extends React.Component {
   componentWillUpdate(nextProps) {
     this.location = nextProps.location.pathname
     this.selectedFacets = nextProps.selectedFacets
+    this.startDateTime = nextProps.startDateTime
+    this.endDateTime = nextProps.endDateTime
   }
 
   clearFacetAndSubmitSearch(category, term) {
     this.toggleFacet(category, term, false)
+    this.submit()
+  }
+
+  clearDateAndSubmitSearch(start, end) {
+    this.updateDateRange(start, end)
     this.submit()
   }
 
@@ -98,19 +110,44 @@ class ResultLayout extends React.Component {
         _.forEach(terms, (value) => {
           let name = value.split('>').pop().trim()
           let filter = (
-            <span className={`${styles.filter}`} key={`${value}`}>{name} <span className={`${styles.close}`}
-                                                                               onClick={() => this.clearFacetAndSubmitSearch(category, value)}>x</span></span>
+            <span className={`${styles.filter} ${styles.keyword}`} key={`${value}`}>{name} <span
+              className={`${styles.close}`}
+              onClick={() => this.clearFacetAndSubmitSearch(category, value)}>x</span></span>
           )
           appliedFilters.push(filter)
         })
       })
 
-
-
       return (
           <div className={`pure-u-1`}>
             <div className={`${styles.filters}`}>{appliedFilters}</div>
           </div>
+      )
+    }
+  }
+
+  renderTemporalFilters() {
+    if (!this.location.includes("files") && (this.startDateTime || this.endDateTime)) {
+      let appliedFilters = []
+      if (this.startDateTime) {
+        appliedFilters.push(
+          <span className={`${styles.filter} ${styles.temporal}`} key="start">After: {this.startDateTime} <span
+            className={`${styles.close}`}
+            onClick={() => this.clearDateAndSubmitSearch(null, this.endDateTime)}>x</span></span>
+        )
+      }
+      if (this.endDateTime) {
+        appliedFilters.push(
+          <span className={`${styles.filter} ${styles.temporal}`} key="end">Before: {this.endDateTime} <span
+            className={`${styles.close}`}
+            onClick={() => this.clearDateAndSubmitSearch(this.startDateTime, null)}>x</span></span>
+        )
+      }
+
+      return (
+        <div className={`pure-u-1`}>
+          <div className={`${styles.filters}`}>{appliedFilters}</div>
+        </div>
       )
     }
   }
@@ -121,6 +158,12 @@ class ResultLayout extends React.Component {
       {this.renderFacetButton()}
       <div className={`${this.renderResultsContainer()} ${styles.resultsContainer}`}>
         {this.renderSelectedFilters()}
+        {/*
+         TODO: Rendering temporal or spatial filters will require drill-down behavior on results view instead of currently
+         present new-search behavior (otherwise applied filters update store but don't modify the search until a new search
+         is sent -- i.e., time filter appears but doesn't apply)
+         */}
+        {/*{this.renderTemporalFilters()}*/}
         {this.props.children}
       </div>
     </div>
