@@ -114,6 +114,7 @@ module.exports = {
     extensions: ['.js', '.jsx'],
     unsafeCache: true,
     alias: {
+      'fa': path.resolve(__dirname, 'img/font-awesome/white/svg/'),
       modernizr$: path.resolve(__dirname, ".modernizrrc.json")
     }
   },
