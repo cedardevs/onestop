@@ -1,5 +1,6 @@
 import React, { PropTypes }  from 'react'
 import styles from './footer.css'
+import github from 'fa/github.svg'
 import 'purecss'
 
 class FooterComponent  extends React.Component {
@@ -51,7 +52,7 @@ class FooterComponent  extends React.Component {
                 </div>
                 <div className={`${styles.versionInfo}`}>
                   <a href ="https://github.com/cires-ncei/onestop/releases" >
-                    Version: {this.props.version} <i className={'fa fa-github'} aria-hidden="true"></i>
+                    Version: {this.props.version} <img src={github} className={styles.github} aria-hidden="true"></img>
                   </a>
                 </div>
               </div>
