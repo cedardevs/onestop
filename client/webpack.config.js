@@ -117,7 +117,10 @@ module.exports = {
   resolve: {
     modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules'],
     extensions: ['.js', '.jsx'],
-    unsafeCache: true
+    unsafeCache: true,
+    alias: {
+      'fa': path.resolve(__dirname, 'img/font-awesome/white/svg/')
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({
