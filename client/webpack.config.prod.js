@@ -23,6 +23,9 @@ module.exports = {
   devtool: false,
   module: {
     rules: [{
+      test: /\.modernizrrc.json/,
+      use: [ 'modernizr-loader', 'json-loader']
+    }, {
       enforce: 'pre',
       test: /\.js$/,
       use: 'eslint-loader',
