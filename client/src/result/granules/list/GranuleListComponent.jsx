@@ -55,7 +55,7 @@ class GranuleList extends React.Component {
           <div className={`pure-u-1-2 ${styles.map}`}>
             <MapContainer style={styles.mapContainer}/>
           </div>
-          <div className={`pure-u-1-2`}>
+          <div className={`pure-u-1-2 ${styles.granule}`}>
             <div className={`pure-g ${styles.granuleInfo}`}>
               <div className={`pure-u-1 ${styles.title}`}>
                 {this.props.selectedCollection.title}

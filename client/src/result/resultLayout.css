@@ -39,6 +39,12 @@
   cursor: pointer;
 }
 
+.facetButtonImage {
+  max-height: 1em;
+  max-width: 1em;
+  color: white;
+}
+
 .buttonColumn {
   min-height: 2.5em;
   max-height: 4em;

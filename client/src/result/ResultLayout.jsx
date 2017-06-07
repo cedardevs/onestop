@@ -1,4 +1,6 @@
 import React, { PropTypes } from 'react'
+import angleDoubleRight from 'fa/angle-double-right.svg'
+import angleDoubleLeft from 'fa/angle-double-left.svg'
 import styles from './resultLayout.css'
 import FacetContainer from '../search/facet/FacetContainer'
 import _ from 'lodash'
@@ -78,7 +80,7 @@ class ResultLayout extends React.Component {
 
       return <div className={`pure-u-1-24 ${buttonColumnStyling}`}>
         <span className={buttonStyling} onClick={this.toggleFacetMenu}>
-          <i className={`${this.facetButtonImage()}`}></i>
+          {this.facetButtonImage()}
         </span>
       </div>
     }
@@ -86,10 +88,9 @@ class ResultLayout extends React.Component {
 
   facetButtonImage() {
     if(this.collapseFacetMenu) {
-      return "fa fa-angle-double-right"
-    }
-    else {
-      return "fa fa-angle-double-left"
+      return <img src={angleDoubleRight} className={styles.facetButtonImage}></img>
+    } else {
+      return <img src={angleDoubleLeft} className={styles.facetButtonImage}></img>
     }
   }
 

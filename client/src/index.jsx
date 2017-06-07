@@ -58,7 +58,7 @@ document.body.appendChild(appDiv)
 const srcDiv = document.createElement('script')
 srcDiv.setAttribute('id', '_fed_an_ua_tag')
 srcDiv.setAttribute('type', 'text/javascript')
-srcDiv.setAttribute('src', '/scripts/federated-analytics.js?agency=DOC%26subagency=NOAA')
+srcDiv.setAttribute('src', 'https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=DOC%26subagency=NOAA')
 srcDiv.setAttribute('async', 'true')
 document.body.appendChild(srcDiv)
 

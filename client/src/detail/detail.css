@@ -101,8 +101,18 @@
   margin-bottom: 1em;
 }
 
+.infoCircle {
+  position: relative;
+  max-width: 1.1em;
+  max-height: 1.1em;
+  top: .1em;
+  left: .3em;
+}
+
 .star {
   color: yellow;
+  max-height: 1em;
+  max-width: 1em;
 }
 
 .dsmmInfo {

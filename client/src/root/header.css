@@ -48,6 +48,14 @@ input {
   }
 }
 
+.stopCircle {
+  position: relative;
+  top: .15em;
+  left: .07em;
+  max-width: 1.1em;
+  max-height: 1.1em;
+}
+
 .searchBox {
   vertical-align: top;
   margin-top: .9em;
