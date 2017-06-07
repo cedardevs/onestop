@@ -34,6 +34,7 @@ module.exports = {
   devServer: {
     publicPath: '/onestop/',
     contentBase: path.resolve(__dirname, 'dist'),
+    disableHostCheck: true,
     hot: true,
     proxy: {
       '/onestop/api/*': {
