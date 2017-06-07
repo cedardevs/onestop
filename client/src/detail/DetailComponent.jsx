@@ -1,6 +1,10 @@
 import React, {PropTypes} from 'react'
 import MapThumbnailComponent from '../common/MapThumbnailComponent'
 import {processUrl} from '../utils/urlUtils'
+import infoCircle from 'fa/info-circle.svg'
+import star from 'fa/star.svg'
+import starO from 'fa/star-o.svg'
+import starHalfO from 'fa/star-half-o.svg'
 import styles from './detail.css'
 
 class Detail extends React.Component {
@@ -163,7 +167,7 @@ class Detail extends React.Component {
         <div>
           {stars}
           <div className={`${styles.dsmmInfo}`}>
-            <i className={`fa fa-info-circle`}></i>
+            <img src={infoCircle} className={styles.infoCircle}></img>
             <div className={`${styles.text}`}> This is the average DSMM rating of this collection.
               The <a href="http://doi.org/10.2481/dsj.14-049" target="_blank" title="Data Stewardship Maturity Matrix Information">
                 Data Stewardship Maturity Matrix (DSMM)</a> is a unified framework that defines criteria for the following nine components based on measurable practices:
@@ -185,15 +189,15 @@ class Detail extends React.Component {
   }
 
   renderFullStar(i) {
-    return <i className={`${styles.star} fa fa-star`} key={i}></i>
+    return <img className={styles.star} src={star}></img>
   }
 
   renderHalfStar(i) {
-    return <i className={`${styles.star} fa fa-star-half-o`} key={i}></i>
+    return <img className={styles.star} src={starHalfO}></img>
   }
 
   renderEmptyStar(i) {
-    return <i className={`${styles.star} fa fa-star-o`} key={i}></i>
+    return <img className={styles.star} src={starO}></img>
   }
 }
 

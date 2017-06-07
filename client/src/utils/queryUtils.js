@@ -18,7 +18,8 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   let filters = _.concat(
     assembleFacetFilters(search),
     assembleGeometryFilters(search),
-    assembleTemporalFilters(search)
+    assembleTemporalFilters(search),
+    assembleAdditionalFilters(search)
   )
   if (granules) {
     filters = _.concat(assembleSelectedCollectionsFilters(search))
@@ -56,6 +57,12 @@ const assembleTemporalFilters = ({startDateTime, endDateTime}) => {
     return {type: 'datetime', after: startDateTime}
   } else if (endDateTime) {
     return {type: 'datetime', before: endDateTime}
+  }
+}
+
+const assembleAdditionalFilters = ( { excludeGlobal } ) => {
+  if( excludeGlobal ){
+  return { type: 'excludeGlobal', value: excludeGlobal }
   }
 }
 

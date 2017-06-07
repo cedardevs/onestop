@@ -134,11 +134,16 @@ class MapComponent extends React.Component {
 		// Apply colors to focused feature
     let { resultsLayers } = this.state
     const selectedStyle = {color: '#f9c642'}
+    const defaultStyle = {
+        color: '#0b4d92',
+        fillOpacity: 0.002,
+        opacity: 0.5
+    }
     resultsLayers.clearLayers()
     geoJsonFeatures.forEach(feature => {
-      resultsLayers.addLayer(L.geoJson(feature, {
-        style: (f) => focusedFeatures.indexOf(f.properties.id) >= 0 ? selectedStyle : {}
-      }))
+        resultsLayers.addLayer(L.geoJson(feature, {
+            style: (f) => focusedFeatures.indexOf(f.properties.id) >= 0 ? selectedStyle : defaultStyle
+        }))
     })
     this.geoJsonFeatures = geoJsonFeatures
     this.focusedFeatures = focusedFeatures

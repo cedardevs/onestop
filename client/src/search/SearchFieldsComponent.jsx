@@ -5,6 +5,10 @@ import MapContainer from './map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
 import TextSearchField from './TextSearchFieldComponent'
 import _ from 'lodash'
+import clock from 'fa/clock-o.svg'
+import globe from 'fa/globe.svg'
+import times from 'fa/times.svg'
+import search from 'fa/search.svg'
 
 import styles from './searchFields.css'
 
@@ -33,11 +37,24 @@ class SearchFieldsComponent extends React.Component {
   }
 
   handleClick(e) {
-    // Close map when user clicks outside of it
-    const map = ReactDOM.findDOMNode(this.refs.mapComponent)
-    if (this.state.showMap && !map.contains(e.target) && e.target.id !== 'mapButton') {
-      this.toggleMap()
-    }
+    const target = e.target || e.srcElement
+    this.calendarEvents(target, this.state, this.toggleCalendar)
+    this.mapEvents(target, this.state, this.toggleMap)
+  }
+
+  calendarEvents(target, { timeComponent, timeButton, showCalendar }, toggle) {
+    if (showCalendar
+     && !timeComponent.contains(target)
+     && !timeButton.contains(target)
+     && !target.classList[0].startsWith('rc-calendar'))
+     {
+    console.log('toggle')
+       toggle() }
+  }
+
+  mapEvents(target, { mapComponent, mapButton, showMap }, toggle) {
+    if (showMap && !mapComponent.contains(target)
+     && !mapButton.contains(target)) { toggle() }
   }
 
   handleKeyup(e) {
@@ -59,6 +76,17 @@ class SearchFieldsComponent extends React.Component {
   componentWillMount() {
     document.addEventListener('click', this.handleClick, false)
     document.addEventListener('keyup', this.handleKeyup, false)
+  }
+
+  componentDidMount() {
+    // Get component references for event tracking
+    this.setState({
+      mapComponent: ReactDOM.findDOMNode(this.mapComponent),
+      mapButton: ReactDOM.findDOMNode(this.mapButton),
+      timeComponent: ReactDOM.findDOMNode(this.timeComponent),
+      timeButton: ReactDOM.findDOMNode(this.timeButton)
+    })
+
   }
 
   componentWillUnmount() {
@@ -133,21 +161,23 @@ class SearchFieldsComponent extends React.Component {
 
           <div id='searchButtons' className={styles.buttonLayout}>
             <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`}
-                    onClick={this.toggleCalendar} title="Add Temporal Criteria">
-              <i className={`${styles.icon} fa fa-clock-o fa-2x`}></i>
+                    onClick={this.toggleCalendar} title="Add Temporal Criteria"
+                    ref={timeButton=>this.timeButton=timeButton}>
+              <img src={clock} />
             </button>
             <ToggleDisplay show={this.state.showCalendar}>
-              <TemporalContainer ref="timeComponent" toggleSelf={this.toggleCalendar}
+              <TemporalContainer ref={timeComponent=>this.timeComponent=timeComponent} toggleSelf={this.toggleCalendar}
                 calendarVisible={this.state.showCalendar}/>
             </ToggleDisplay>
             <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`}
-                    onClick={this.toggleMap} title="Add Spatial Criteria">
-              <i className={`${styles.icon} fa fa-globe fa-2x`}></i>
+                    onClick={this.toggleMap} title="Add Spatial Criteria"
+                    ref={mapButton=>this.mapButton=mapButton}>
+              <img src={globe} />
             </button>
             <ToggleDisplay show={this.state.showMap}>
               {/* 'updated' passed to trigger update but is unused*/}
               <MapContainer
-                  ref='mapComponent'
+                  ref={mapComponent=>this.mapComponent=mapComponent}
                   updated={this.state.showMap}
                   selection={true}
                   features={false}
@@ -156,10 +186,10 @@ class SearchFieldsComponent extends React.Component {
             </ToggleDisplay>
             <button className={`pure-button ${styles.undoButton}`}
                     onClick={this.clearSearchParams} title="Clear Search Criteria">
-              <i className={`${styles.icon} fa fa-times fa-2x`}></i>
+              <img src={times} />
             </button>
-            <button className={`pure-button ${styles.searchButton}`} onClick={this.validateAndSubmit} title="Search">
-              <i className={`${styles.icon} fa fa-search fa-2x`}></i>
+            <button className={`pure-button ${styles.searchButton}`} onClick={this.submit} title="Search">
+              <img src={search} />
             </button>
           </div>
           <div className={`${this.warningStyle()}`} role="alert"><i className="fa fa-warning"

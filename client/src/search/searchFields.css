@@ -23,6 +23,11 @@
   display: inline-block;
   > button {
     display: inline-block;
+    > img {
+      height: 2.2em;
+      bottom: .5em;
+      position: relative;
+    }
   }
 }
 

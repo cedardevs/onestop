@@ -58,9 +58,16 @@ form > div {
 
 .facetLabel {
     margin: 0 .2em .3em;
+    font-size: 1.2em;
 }
 
 .checkFacet {
     display: inline-block;
     margin-top: .9em;
+}
+
+.additionalCheckFacet {
+    display: inline-block;
+    margin-top: .7em;
+    margin-left: .9em;
 }
