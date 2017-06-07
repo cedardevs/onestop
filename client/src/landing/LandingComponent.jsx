@@ -2,6 +2,7 @@ import React from 'react'
 import styles from './landing.css'
 import FeaturedItemsComponent from './FeaturedItemsComponent'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
+import stopCircle from 'fa/stop-circle-o.svg'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -33,7 +34,8 @@ class LandingComponent extends React.Component {
 
     return (
       <div className={`pure-g ${styles.showcase}`}>
-        <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true"><i className={`fa fa-stop-circle-o`}></i>neStop
+        <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true">
+                        <img src={stopCircle} />neStop
         </div>
         <h1 className={styles.hiddenPageTitle}>OneStop: A NOAA Data Search Platform</h1>
         <div className={`pure-u-1 ${styles.heroText}`}>
