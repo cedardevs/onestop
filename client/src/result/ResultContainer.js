@@ -5,11 +5,11 @@ import {clearCollections, triggerSearch} from '../actions/SearchRequestActions'
 import {showCollections} from '../actions/FlowActions'
 
 const mapStateToProps = (state) => {
-  const {selectedFacets, startDateTime, endDateTime} = state.behavior.search
+  const { selectedFacets, startDateTime, endDateTime } = state.behavior.search
   return {
-    selectedFacets: selectedFacets,
-    startDateTime: startDateTime,
-    endDateTime: endDateTime
+    selectedFacets,
+    startDateTime,
+    endDateTime
   }
 }
 

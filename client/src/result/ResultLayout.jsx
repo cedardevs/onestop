@@ -104,25 +104,27 @@ class ResultLayout extends React.Component {
   }
 
   renderSelectedFilters() {
-    if (!this.location.includes("files") && !_.isEmpty(this.selectedFacets)) {
+    if (!this.location.includes("files")) {
       let appliedFilters = []
-
       _.forEach(this.selectedFacets, (terms, category) => {
         _.forEach(terms, (value) => {
           let name = value.split('>').pop().trim()
           let filter = (
-            <span className={`${styles.filter} ${styles.keyword}`} key={`${value}`}>{name} <span
-              className={`${styles.close}`}
-              onClick={() => this.clearFacetAndSubmitSearch(category, value)}>x</span></span>
+            <span className={styles.filter} key={`${value}`}>
+              {name}
+              <span className={`${styles.close}`}
+                onClick={() => this.clearFacetAndSubmitSearch(category, value)}>x
+              </span>
+            </span>
           )
           appliedFilters.push(filter)
         })
       })
 
       return (
-          <div className={`pure-u-1`}>
-            <div className={`${styles.filters}`}>{appliedFilters}</div>
-          </div>
+        <div className={`pure-u-1`}>
+          <div className={`${styles.filters}`}>{appliedFilters}</div>
+        </div>
       )
     }
   }
