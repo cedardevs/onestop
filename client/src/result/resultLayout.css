@@ -73,14 +73,16 @@
 
 .filter {
   display: inline-flex;
-  border-radius: 0.5em;
-  padding-left: 0.5em;
+  border-radius: 1em;
+  padding: .25em .1em .25em .5em;
   margin-right: 0.5em;
   margin-bottom: 0.25em;
+  background-color: teal;
 }
 
-.keyword {
-  background-color: teal;
+.filter:hover,
+.filter:focus {
+  background-color: color(teal tint(15%));
 }
 
 .temporal {
@@ -96,4 +98,3 @@
   padding: 0 0.5em;
   cursor: pointer;
 }
-
