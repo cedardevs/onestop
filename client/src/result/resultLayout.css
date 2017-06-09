@@ -65,3 +65,36 @@
   margin: 1em auto 8em;
   max-width: 40em;
 }
+
+.filters {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.filter {
+  display: inline-flex;
+  border-radius: 1em;
+  padding: .25em .1em .25em .5em;
+  margin-right: 0.5em;
+  margin-bottom: 0.25em;
+  background-color: teal;
+}
+
+.filter:hover,
+.filter:focus {
+  background-color: color(teal tint(15%));
+}
+
+.temporal {
+  background-color: maroon;
+}
+
+.spatial {
+  background-color: darkolivegreen;
+}
+
+.close {
+  color: lightgray;
+  padding: 0 0.5em;
+  cursor: pointer;
+}

@@ -1,7 +1,7 @@
 import React from 'react'
 import {render} from 'react-dom'
 import { Router, Route, IndexRoute } from 'react-router'
-import ResultLayout from './result/ResultLayout'
+import ResultContainer from './result/ResultContainer'
 import Section508ResultLayout from './result/Section508ResultLayout'
 import CollectionGridContainer from './result/collections/CollectionGridContainer'
 import GranuleListContainer from './result/granules/list/GranuleListContainer'
@@ -25,7 +25,7 @@ const routesLayout =
   <Router history={history}>
     <Route path="/" name="Home" component={RootComponent}>
       <IndexRoute component={LandingContainer}/>
-      <Route name="Collections" path="collections" component={ResultLayout}>
+      <Route name="Collections" path="collections" component={ResultContainer}>
         <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
         <Route name="Files" path="files" component={GranuleListContainer}/>
       </Route>
