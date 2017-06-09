@@ -96,7 +96,8 @@ class SearchRequestParserService {
     def groupedQueries = queries.groupBy { it.type }
 
     groupedQueries.queryText.each {
-      def query = QueryBuilders.queryStringQuery(it.value as String)
+      def text = (it.value as String).trim()
+      def query = QueryBuilders.queryStringQuery(text)
       config?.boosts?.each { field, boost ->
         query.field(field, boost ?: 1f)
       }

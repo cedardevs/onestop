@@ -48,12 +48,14 @@
     },
     "textQuery": {
       "type": "object",
+      "description": "Text query to search with that is valid so long as it does not have a leading wildcard ('*' or '?')",
       "properties": {
         "type": {
           "enum": ["queryText"]
         },
         "value": {
-          "type": "string"
+          "type": "string",
+          "pattern": "^(?!\\s*)(?!\\*|\\?)"
         }
       },
       "required": ["type", "value"],
