@@ -55,7 +55,7 @@
         },
         "value": {
           "type": "string",
-          "pattern": "^(?!\\s*)(?!\\*|\\?)"
+          "pattern": "^(?!\\s*[\\*\\?]+).*"
         }
       },
       "required": ["type", "value"],
