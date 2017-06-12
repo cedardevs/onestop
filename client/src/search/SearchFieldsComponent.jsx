@@ -188,7 +188,7 @@ class SearchFieldsComponent extends React.Component {
                     onClick={this.clearSearchParams} title="Clear Search Criteria">
               <img src={times} />
             </button>
-            <button className={`pure-button ${styles.searchButton}`} onClick={this.submit} title="Search">
+            <button className={`pure-button ${styles.searchButton}`} onClick={this.validateAndSubmit} title="Search">
               <img src={search} />
             </button>
           </div>
