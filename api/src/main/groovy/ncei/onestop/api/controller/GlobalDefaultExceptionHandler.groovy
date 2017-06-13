@@ -1,37 +1,44 @@
 package ncei.onestop.api.controller
 
 import groovy.util.logging.Slf4j
-import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import org.elasticsearch.ElasticsearchException
 
-import javax.servlet.http.HttpServletRequest
 
 @Slf4j
 @ControllerAdvice
 class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
 
-  @Override
-  protected ResponseEntity<Object> handleExceptionInternal(
-      Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+  @ExceptionHandler(value = [Exception.class])
+  protected ResponseEntity<Object> handleExceptions(Exception ex, WebRequest request) {
 
-    if (status.is5xxServerError()) {
-      log.error(ex)
+    def status, title, detail
+    if (ex instanceof ElasticsearchException) {
+      status = ex.status().getStatus()
+
+      if (status >= 400 && status < 500) {
+        title = 'Request Parsing Error'
+        detail = 'There was an error with your request, please revise and try again.'
+      }
+      if (status >= 500) {
+        title = 'Internal Error'
+        detail = 'There was an error on our end, please try again later.'
+      }
     }
 
+    // FIXME This should be more accurate for non-ES exceptions:
     def result = [
         errors: [
             [
-                status: status.value() as String,
-                title : buildTitle(status),
-                detail: buildDetail(status, ex)
+                status: status ?: 400,
+                title : title ?: "Sorry, something has gone wrong",
+                detail: detail ?: "Looks like something isn't working right now, please try again later"
             ]
         ],
         meta: [
@@ -41,24 +48,7 @@ class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
         ]
     ]
 
-    return super.handleExceptionInternal(ex, result, headers, status, request)
-  }
-
-  private static buildTitle(HttpStatus status) {
-    status.is5xxServerError() ?
-        "Sorry, something has gone wrong" :
-        status.reasonPhrase
-  }
-
-  private static buildDetail(HttpStatus status, Exception e = null) {
-    status.is5xxServerError() ?
-        "Looks like something isn't working on our end, please try again later" :
-        sanitizeExceptionMessage(e)
-  }
-
-  private static sanitizeExceptionMessage(Exception e) {
-    def message = e?.message ?: 'Bad Request'
-    return message.tokenize(':').first()
+    return handleExceptionInternal(ex, result, new HttpHeaders(), HttpStatus.valueOf(status), request)
   }
 
 }
