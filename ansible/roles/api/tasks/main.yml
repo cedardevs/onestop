@@ -128,6 +128,28 @@
     state: "{{ 'restarted' if tomcat_download.changed or api_download.changed or conf.changed else 'started'}}"
     enabled: true
 
+- name: Create the metadata directory
+  become: true
+  file:
+    path: "{{ install_base }}/metadata"
+    owner: onestop
+    group: onestop
+    state: directory
+
+- name: Copy over Tarball of metadata and unzip it
+  become:
+  unarchive:
+     remote_src: no
+     src: ../resources/sample_metadata.tar.gz
+     dest: "{{install_base}}/metadata"
+     owner: onestop
+     group: onestop
+     mode: o=rx
+
+- name: trigger the loading of all the metadata to catch any changes in how things are processed
+  become: true
+  script: ../resources/uploadToOnestopApi.sh {{install_base }}/metadata http://sciapps.colorado.edu/onestop/api/metadata
+
 #- name: Start the api as a system service
 #  become: true
 #  service:
