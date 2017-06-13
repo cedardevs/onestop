@@ -32,7 +32,6 @@ class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
       }
     }
 
-    // FIXME This should be more accurate for non-ES exceptions:
     def result = [
         errors: [
             [
@@ -48,7 +47,50 @@ class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
         ]
     ]
 
-    return handleExceptionInternal(ex, result, new HttpHeaders(), HttpStatus.valueOf(status), request)
+    return super.handleExceptionInternal(ex, result, new HttpHeaders(), HttpStatus.valueOf(status), request)
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleExceptionInternal(
+      Exception ex, Object body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+
+    if (status.is5xxServerError()) {
+      log.error(ex)
+    }
+
+    def result = [
+        errors: [
+            [
+                status: status.value() as String,
+                title : buildTitle(status),
+                detail: buildDetail(status, ex)
+            ]
+        ],
+        meta  : [
+            timestamp : System.currentTimeMillis(),
+            request   : request?.getDescription(false),
+            parameters: request?.parameterMap
+        ]
+    ]
+
+    return super.handleExceptionInternal(ex, result, headers, status, request)
+  }
+
+  private static buildTitle(HttpStatus status) {
+    status.is5xxServerError() ?
+        "Sorry, something has gone wrong" :
+        status.reasonPhrase
+  }
+
+  private static buildDetail(HttpStatus status, Exception e = null) {
+    status.is5xxServerError() ?
+        "Looks like something isn't working on our end, please try again later" :
+        sanitizeExceptionMessage(e)
+  }
+
+  private static sanitizeExceptionMessage(Exception e) {
+    def message = e?.message ?: 'Bad Request'
+    return message.tokenize(':').first()
   }
 
 }
