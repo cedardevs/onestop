@@ -2,7 +2,7 @@
   "name": "onestop-client",
   "version": "1.0.0",
   "description": "The web client for the OneStop discovery service",
-  "repository": "ssh://git@github.com:cires-ncei/onestop.git",
+  "repository": "ssh://git@github.com:cedardevs/onestop.git",
   "license": "GPL-2.0",
   "scripts": {
     "dev": "webpack-dev-server --progress --colors & npm run testAndWatch",

@@ -51,7 +51,7 @@ class FooterComponent  extends React.Component {
                   </div>
                 </div>
                 <div className={`${styles.versionInfo}`}>
-                  <a href ="https://github.com/cires-ncei/onestop/releases" >
+                  <a href ="https://github.com/cedardevs/onestop/releases" >
                     Version: {this.props.version} <img src={github} className={styles.github} aria-hidden="true"></img>
                   </a>
                 </div>
