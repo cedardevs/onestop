@@ -162,7 +162,7 @@ class JsonValidatorSpec extends Specification {
             """\
 {
   "queries": [
-    {"type": "queryText", "value": "temperature", "poo": "xxx"}
+    {"type": "queryText", "value": "temperature", "cat": "meow"}
   ]
 }""",
             """\
