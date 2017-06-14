@@ -18,15 +18,19 @@
       }
     },
     "facets": {
+      "description": "Flag to request counts of results by GCMD keywords in addition to results. Defaults to false if not provided.",
       "type": "boolean"
     },
     "page": {
+      "description": "Pagination of results",
       "type": "object",
       "properties": {
         "max": {
+          "description": "Maximum number of results returned. If the page object is not provided, this defaults to 100.",
           "type": "integer"
         },
         "offset": {
+          "description": "Number of records by which to offset results. If the page object is not provided, this defaults to 0.",
           "type": "integer"
         }
       },
@@ -80,6 +84,7 @@
       ]
     },
     "excludeGlobalFilter": {
+      "description": "Flag to request that geospatially global results be excluded. Defaults to false if not provided.",
       "type": "object",
       "properties": {
         "type": {
@@ -114,15 +119,18 @@
       "additionalProperties": false
     },
     "facetFilter": {
+      "description": "Filters results based on given GCMD keywords where returned results MUST have the specified keyword. Multiple facetFilter objects will be combined with logical OR; multiple values in a single facetFilter object will be combined with the logical AND.",
       "type": "object",
       "properties": {
         "type": {
           "enum": ["facet"]
         },
         "name": {
+          "description": "One of the GCMD keyword categories: science, instruments, platforms, projects, dataCenters, dataResolution.",
           "type": "string"
         },
         "values": {
+          "description": "Exact match GCMD keyword(s), e.g., \"Atmosphere > Atmospheric Temperature > Surface Temperature\"",
           "type": "array",
           "items": {
             "type": "string"
@@ -133,7 +141,7 @@
       "additionalProperties": false
     },
     "collectionFilter": {
-      "description": "Collections to filter results by (OR if multiple filters or multiple values in one filter). If any collection filters are provided, granules are returned.",
+      "description": "Collections to filter results by (logical OR if multiple filters or multiple values in one filter). If any collection filters are provided, granules are returned.",
       "type": "object",
       "properties": {
         "type": {
