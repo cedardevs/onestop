@@ -16,7 +16,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    toggleFocus: (id) => dispatch(toggleGranuleFocus(id)),
+    toggleFocus: (id, bool) => dispatch(toggleGranuleFocus(id, bool)),
     showCollections: () => dispatch(showCollections()),
     fetchMoreResults: () => {
       dispatch(incrementGranulesOffset())

@@ -66,10 +66,11 @@ export const setFocus = (id) => {
 }
 
 export const TOGGLE_GRANULE_FOCUS = 'toggle_granule_focus'
-export const toggleGranuleFocus = (id) => {
+export const toggleGranuleFocus = (id, bool) => {
   return {
     type: TOGGLE_GRANULE_FOCUS,
-    id
+    id,
+    focused: bool
   }
 }
 

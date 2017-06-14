@@ -33,7 +33,7 @@ class RootComponent extends React.Component {
   }
 
   unsupportedBrowserWarning() {
-    const wikiUrl = 'https://github.com/cires-ncei/onestop/wiki/OneStop-Client-Supported-Browsers'
+    const wikiUrl = 'https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers'
     return <aside role='alert' className={styles.browserWarning}>
         <span className={styles.close}
           onClick={()=>{this.setState({browserWarning: false})}}>x</span>
