@@ -33,18 +33,18 @@ class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     def result = [
-        errors: [
-            [
-                status: status ?: 400,
-                title : title ?: "Sorry, something has gone wrong",
-                detail: detail ?: "Looks like something isn't working right now, please try again later"
-            ]
-        ],
-        meta: [
-            timestamp: System.currentTimeMillis(),
-            request: request?.getDescription(false),
-            parameters: request?.parameterMap
+      errors: [
+        [
+          status: status ?: 500,
+          title : title ?: "Sorry, something has gone wrong",
+          detail: detail ?: "Looks like something isn't working right now, please try again later"
         ]
+      ],
+      meta: [
+        timestamp: System.currentTimeMillis(),
+        request: request?.getDescription(false),
+        parameters: request?.parameterMap
+      ]
     ]
 
     return super.handleExceptionInternal(ex, result, new HttpHeaders(), HttpStatus.valueOf(status), request)
