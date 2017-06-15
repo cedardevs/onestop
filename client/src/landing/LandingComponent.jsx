@@ -2,6 +2,7 @@ import React from 'react'
 import styles from './landing.css'
 import FeaturedItemsComponent from './FeaturedItemsComponent'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
+import stopCircle from 'fa/stop-circle-o.svg'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -33,11 +34,13 @@ class LandingComponent extends React.Component {
 
     return (
       <div className={`pure-g ${styles.showcase}`}>
-        <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true"><i className={`fa fa-stop-circle-o`}></i>neStop
+        <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true">
+                        <img src={stopCircle} />neStop
         </div>
         <h1 className={styles.hiddenPageTitle}>OneStop: A NOAA Data Search Platform</h1>
         <div className={`pure-u-1 ${styles.heroText}`}>
-          Geophysical, oceans, coastal, weather and climate data discovery all in one place.
+          Geophysical, oceans, coastal, weather and climate data discovery all in one place.<br/>
+          {this.buildCountString()}
         </div>
         <div className={`pure-u-1 ${styles.searchComponent}`}>
           <SearchFieldsContainer/>
@@ -55,8 +58,8 @@ class LandingComponent extends React.Component {
 
   renderFeatured() {
     if (this.props.featured) {
-      return <div className={`pure-u-1`}>
-        <h2>Featured Data Sets:</h2>
+      return <div className={`pure-u-1`} aria-labelledby="featuredDatasets">
+        <h2 id="featuredDatasets">Featured Data Sets:</h2>
         <div className={`${styles.featuredContainer}`}>
           <FeaturedItemsComponent doSearch={this.search.bind(this)} items={this.props.featured}/>
         </div>
@@ -65,9 +68,20 @@ class LandingComponent extends React.Component {
   }
 
   componentDidMount() {
+    const evt = document.createEvent('UIEvents')
+    evt.initUIEvent('resize', true, false, window, 0)
     setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 0);
+      window.dispatchEvent(evt)
+    }, 0)
+  }
+
+  buildCountString() {
+    let hasCollections = this.props.collectionsCount !== 0
+    let hasGranules = this.props.granulesCount !== 0
+
+    let granulesString = hasGranules ? `and ${this.props.granulesCount.toLocaleString()} granules ` : ''
+    let countString = hasCollections ? `${this.props.collectionsCount.toLocaleString()} collections ${granulesString} available to search` : ''
+    return countString
   }
 }
 

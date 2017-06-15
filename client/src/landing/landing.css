@@ -74,6 +74,13 @@ button {
   text-align: center;
   font-size: 3.5em;
   margin-top: 0.5em;
+  > img {
+    position: relative;
+    top: .15em;
+    left: .07em;
+    max-width: 1.1em;
+    max-height: 1.1em;
+  }
 }
 
 .hiddenPageTitle {
@@ -90,6 +97,7 @@ button {
   font-size: 1.5em;
   font-style: italic;
   line-height: 1.5;
+  padding-bottom: 0.25em;
 }
 
 .infoPanel-enter {

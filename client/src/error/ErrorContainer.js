@@ -6,7 +6,7 @@ import { updateSearch } from '../actions/SearchParamActions'
 
 const mapStateToProps = (state) => {
   return {
-    errors: state.errors
+    errors: state.behavior.errors
   }
 }
 

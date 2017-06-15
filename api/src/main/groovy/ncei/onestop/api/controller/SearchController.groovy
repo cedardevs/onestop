@@ -38,6 +38,12 @@ class SearchController {
     return searchIndexService.search(params)
   }
 
+  @RequestMapping(path = '/search/totalCounts', method = GET)
+  Map totalCounts() {
+    return searchIndexService.totalCounts()
+  }
+
+
   @RequestMapping(path = '/search/uiConfig', method = GET)
   UiConfig uiConfig() {
     return uiConfig

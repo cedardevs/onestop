@@ -3,7 +3,8 @@ import {
   UPDATE_QUERY, UPDATE_SEARCH,
   NEW_GEOMETRY, REMOVE_GEOMETRY,
   UPDATE_DATE_RANGE, TOGGLE_FACET,
-  TOGGLE_SELECTION, CLEAR_SELECTIONS
+  TOGGLE_EXCLUDE_GLOBAL, TOGGLE_SELECTION,
+  CLEAR_SELECTIONS
 } from '../../actions/SearchParamActions'
 import { CLEAR_FACETS } from '../../actions/SearchRequestActions'
 
@@ -13,7 +14,8 @@ export const initialState = Immutable({
   startDateTime: null,
   endDateTime: null,
   selectedFacets: {},
-  selectedIds: []
+  selectedIds: [],
+  excludeGlobal: null,
 })
 
 export const search = (state = initialState, action) => {
@@ -33,6 +35,9 @@ export const search = (state = initialState, action) => {
 
     case TOGGLE_FACET:
       return Immutable.set(state, 'selectedFacets', action.selectedFacets)
+
+    case TOGGLE_EXCLUDE_GLOBAL:
+      return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
 
     case TOGGLE_SELECTION:
       return Immutable.set(state, 'selectedIds', toggleId(state.selectedIds, action.id))

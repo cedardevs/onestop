@@ -1,16 +1,16 @@
 import fetch from 'isomorphic-fetch'
 import _ from 'lodash'
-import { showLoading, hideLoading } from './FlowActions'
-import { showErrors } from './ErrorActions'
-import { assembleSearchRequest } from '../utils/queryUtils'
+import {showLoading, hideLoading} from './FlowActions'
+import {showErrors} from './ErrorActions'
+import {assembleSearchRequest} from '../utils/queryUtils'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
 export const COUNT_HITS = 'count_hits'
 
-export const startSearch    = ()           => ({type: SEARCH})
-export const completeSearch = (items)      => ({type: SEARCH_COMPLETE, items})
-export const countHits      = (totalHits)  => ({type: COUNT_HITS, totalHits})
+export const startSearch = () => ({type: SEARCH})
+export const completeSearch = (items) => ({type: SEARCH_COMPLETE, items})
+export const countHits = (totalHits) => ({type: COUNT_HITS, totalHits})
 
 export const CLEAR_COLLECTIONS = 'clear_collections'
 export const INCREMENT_COLLECTIONS_OFFSET = 'increment_collections_offset'
@@ -24,17 +24,17 @@ export const CLEAR_GRANULES = 'clear_granules'
 export const INCREMENT_GRANULES_OFFSET = 'increment_granules_offset'
 export const COUNT_GRANULES = 'count_granules'
 
-export const clearGranules           = ()              => ({type: CLEAR_GRANULES})
-export const fetchingGranules        = ()              => ({type: FETCHING_GRANULES})
-export const fetchedGranules         = (granules)      => ({type: FETCHED_GRANULES, granules})
-export const incrementGranulesOffset = ()              => ({type: INCREMENT_GRANULES_OFFSET})
-export const countGranules           = (totalGranules) => ({type: COUNT_GRANULES, totalGranules})
+export const clearGranules = () => ({type: CLEAR_GRANULES})
+export const fetchingGranules = () => ({type: FETCHING_GRANULES})
+export const fetchedGranules = (granules) => ({type: FETCHED_GRANULES, granules})
+export const incrementGranulesOffset = () => ({type: INCREMENT_GRANULES_OFFSET})
+export const countGranules = (totalGranules) => ({type: COUNT_GRANULES, totalGranules})
 
 export const FACETS_RECEIVED = 'FACETS_RECEIVED'
 export const CLEAR_FACETS = 'CLEAR_FACETS'
 
 export const facetsReceived = (metadata) => ({type: FACETS_RECEIVED, metadata})
-export const clearFacets    = ()         => ({type: CLEAR_FACETS})
+export const clearFacets = () => ({type: CLEAR_FACETS})
 
 export const triggerSearch = (retrieveFacets = true) => {
   const bodyBuilder = (state) => {
@@ -56,7 +56,9 @@ export const triggerSearch = (retrieveFacets = true) => {
       return map.set(resource.id, _.assign({type: resource.type}, resource.attributes))
     }, new Map())
 
-    if(retrieveFacets) { dispatch(facetsReceived(payload.meta)) }
+    if (retrieveFacets) {
+      dispatch(facetsReceived(payload.meta))
+    }
     dispatch(countHits(payload.meta.total))
     dispatch(completeSearch(result))
     dispatch(hideLoading())
@@ -122,11 +124,11 @@ const buildSearchAction = (bodyBuilder, prefetchHandler, successHandler, errorHa
     }
 
     return fetch(endpoint, fetchParams)
-        .then(response => checkForErrors(response))
-        .then(response => response.json())
-        .then(json => successHandler(dispatch, json))
-        .catch(ajaxError => ajaxError.response.json().then(errorJson => errorHandler(dispatch, errorJson)))
-        .catch(jsError => errorHandler(dispatch, jsError))
+      .then(response => checkForErrors(response))
+      .then(response => response.json())
+      .then(json => successHandler(dispatch, json))
+      .catch(ajaxError => ajaxError.response.json().then(errorJson => errorHandler(dispatch, errorJson)))
+      .catch(jsError => jsError.response.json().then(errorJson => errorHandler(dispatch, errorJson)))
   }
 }
 
