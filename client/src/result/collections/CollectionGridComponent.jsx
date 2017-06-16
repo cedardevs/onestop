@@ -31,7 +31,13 @@ class CollectionGrid extends React.Component {
   render() {
     const cards = []
     const { returnedHits, totalHits, pageSize } = this.props
-    let focusCardNum = returnedHits - pageSize
+    let focusCardNum
+    if (returnedHits === totalHits) {
+      focusCardNum = returnedHits - (returnedHits % pageSize)
+    }
+    else {
+      focusCardNum = returnedHits - pageSize
+    }
     _.forOwn(this.props.results, (val, key) => {
       let cTileProps = {
             key: key,

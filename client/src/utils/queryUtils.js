@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import rison from 'rison'
 import { recenterGeometry } from './geoUtils'
 
 export const assembleSearchRequestString = (state, granules, retrieveFacets) => {
@@ -17,7 +18,8 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   let filters = _.concat(
     assembleFacetFilters(search),
     assembleGeometryFilters(search),
-    assembleTemporalFilters(search)
+    assembleTemporalFilters(search),
+    assembleAdditionalFilters(search)
   )
   if (granules) {
     filters = _.concat(assembleSelectedCollectionsFilters(search))
@@ -30,8 +32,9 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
 }
 
 const assembleQueries = ({queryText}) => {
-  if (queryText) {
-    return [{type: 'queryText', value: queryText}]
+  let trimmedText = _.trim(queryText)
+  if (trimmedText && trimmedText !== '*') {
+    return [{type: 'queryText', value: trimmedText}]
   }
   return []
 }
@@ -57,6 +60,12 @@ const assembleTemporalFilters = ({startDateTime, endDateTime}) => {
   }
 }
 
+const assembleAdditionalFilters = ( { excludeGlobal } ) => {
+  if( excludeGlobal ){
+  return { type: 'excludeGlobal', value: excludeGlobal }
+  }
+}
+
 const assembleSelectedCollectionsFilters = ({selectedIds}) => {
   if (selectedIds.length > 0) {
     return {type: 'collection', values: selectedIds}
@@ -72,16 +81,12 @@ export const encodeQueryString = (state) => {
   if (_.every(searchParams, (e) => { return(_.isEmpty(e)) })) {
     return ''
   }
-
-  // TODO - implement a better encoding scheme
-  return JSON.stringify(searchParams)
+  return rison.encode(searchParams)
 }
 
 export const decodeQueryString = (queryString) => {
   if (_.isEmpty(queryString)) {
     return {}
   }
-
-  // TODO - decode the brilliant encoding scheme from above
-  return {behavior: {search: JSON.parse(queryString)}}
+  return {behavior: {search: rison.decode(queryString)}}
 }

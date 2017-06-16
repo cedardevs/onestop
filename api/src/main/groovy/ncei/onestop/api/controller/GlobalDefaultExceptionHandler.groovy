@@ -1,22 +1,54 @@
 package ncei.onestop.api.controller
 
 import groovy.util.logging.Slf4j
-import org.springframework.core.annotation.AnnotationUtils
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.ResponseBody
-import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
+import org.elasticsearch.ElasticsearchException
 
-import javax.servlet.http.HttpServletRequest
 
 @Slf4j
 @ControllerAdvice
 class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
+
+  @ExceptionHandler(value = [Exception.class])
+  protected ResponseEntity<Object> handleExceptions(Exception ex, WebRequest request) {
+
+    def status, title, detail
+    if (ex instanceof ElasticsearchException) {
+      status = ex.status().getStatus()
+
+      if (status >= 400 && status < 500) {
+        title = 'Request Parsing Error'
+        detail = 'There was an error with your request, please revise and try again.'
+      }
+      if (status >= 500) {
+        title = 'Internal Error'
+        detail = 'There was an error on our end, please try again later.'
+      }
+    }
+
+    def result = [
+      errors: [
+        [
+          status: status ?: 500,
+          title : title ?: "Sorry, something has gone wrong",
+          detail: detail ?: "Looks like something isn't working right now, please try again later"
+        ]
+      ],
+      meta: [
+        timestamp: System.currentTimeMillis(),
+        request: request?.getDescription(false),
+        parameters: request?.parameterMap
+      ]
+    ]
+
+    return super.handleExceptionInternal(ex, result, new HttpHeaders(), HttpStatus.valueOf(status), request)
+  }
 
   @Override
   protected ResponseEntity<Object> handleExceptionInternal(
@@ -34,9 +66,9 @@ class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
                 detail: buildDetail(status, ex)
             ]
         ],
-        meta: [
-            timestamp: System.currentTimeMillis(),
-            request: request?.getDescription(false),
+        meta  : [
+            timestamp : System.currentTimeMillis(),
+            request   : request?.getDescription(false),
             parameters: request?.parameterMap
         ]
     ]

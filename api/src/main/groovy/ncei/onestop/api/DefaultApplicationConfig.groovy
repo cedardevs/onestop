@@ -21,11 +21,11 @@ class DefaultApplicationConfig {
   @Value('${elasticsearch.port}')
   Integer elasticPort
 
-  @Value('${elasticsearch.host}')
-  String elasticHost
+  @Value('#{\'${elasticsearch.host}\'.split(\',\')}')
+  List<String> elasticHost
 
   @Value('${elasticsearch.ssl.enabled:}')
-  String sslEnabled
+  Boolean sslEnabled
 
   @Value('${elasticsearch.ssl.keystore.path:}')
   String keystorePath
@@ -56,7 +56,7 @@ class DefaultApplicationConfig {
       builder.addPlugin(ShieldPlugin)
       settingsBuilder.put('shield.user', "${roUser}:${roPassword}")
     }
-    if (sslEnabled == 'true') {
+    if (sslEnabled) {
       settingsBuilder.put('shield.transport.ssl', 'true')
     }
     if (keystorePath) {
@@ -67,7 +67,10 @@ class DefaultApplicationConfig {
     }
 
     def client = builder.settings(settingsBuilder.build()).build()
-    client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticHost), elasticPort))
+    elasticHost.each { host ->
+      client = client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), elasticPort))
+    }
+    return client
   }
 
   @Bean(destroyMethod = 'close')
@@ -93,7 +96,11 @@ class DefaultApplicationConfig {
     }
 
     def client = builder.settings(settingsBuilder.build()).build()
-    client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(elasticHost), elasticPort))
+    elasticHost.each { host ->
+      client = client.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(host), elasticPort))
+    }
+    return client
   }
+
 
 }

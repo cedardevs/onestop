@@ -192,6 +192,44 @@ class SearchIntegrationTests extends Specification {
     ])
   }
 
+  def 'Valid query-and-exclude-global search returns OK with expected results'() {
+    setup:
+    def request = """\
+        {
+          "queries":
+            [
+              {"type": "queryText", "value": "ghrsst"}
+            ],
+          "filters":
+            [
+              {"type": "excludeGlobal", "value": true}
+            ]
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 2 items"
+    def items = result.body.data
+    items.size() == 2
+
+    and: "Expected result is returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED',
+        'gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R'
+    ])
+  }
+
   def 'Time filter with #situation an item\'s time range returns the correct results'() {
     setup:
     def ghrsst1FileId = 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'

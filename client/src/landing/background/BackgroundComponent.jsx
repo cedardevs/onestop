@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from './background.css'
+import Modernizr from 'modernizr'
 
 class BackgroundComponent extends React.Component {
   constructor(props) {
@@ -18,8 +19,7 @@ class BackgroundComponent extends React.Component {
   }
 
   render() {
-    const bgStyle = this.state.background ? styles.backgroundImage : styles.backgroundColor
-    return <div className={bgStyle}></div>
+    return <div className={styles.backgroundColor}><div className={styles.background}></div></div>
   }
 }
 

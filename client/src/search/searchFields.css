@@ -23,6 +23,11 @@
   display: inline-block;
   > button {
     display: inline-block;
+    > img {
+      height: 2.2em;
+      bottom: .5em;
+      position: relative;
+    }
   }
 }
 
@@ -122,4 +127,16 @@ $button-threshold: 96em;
 .icon {
   text-align: center;
   line-height: 64% !important;
+}
+
+.hidden {
+  display: none;
+}
+
+.warning {
+  display: block;
+  font-size: .75em;
+  color: red;
+  padding-top: 1em;
+  text-align: center;
 }
