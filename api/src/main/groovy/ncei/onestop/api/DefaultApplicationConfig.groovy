@@ -85,7 +85,7 @@ class DefaultApplicationConfig {
       builder.addPlugin(ShieldPlugin)
       settingsBuilder.put('shield.user', "${rwUser}:${rwPassword}")
     }
-    if (sslEnabled == 'true') {
+    if (sslEnabled) {
       settingsBuilder.put('shield.transport.ssl', 'true')
     }
     if (keystorePath) {
