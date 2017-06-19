@@ -6,6 +6,7 @@ import TimePickerPanel from 'rc-time-picker/lib/Panel'
 import moment from 'moment'
 import 'rc-calendar/assets/index.css'
 import 'rc-time-picker/assets/index.css'
+import times from 'fa/times.svg'
 import styles from './temporal.css'
 
 const format = 'YYYY-MM-DD HH:mm:ss'
@@ -67,7 +68,8 @@ class DateTimePicker extends React.Component {
           {renderInput}
         </DatePicker>
         <button id={props.id} className={`pure-button ${styles.clearButton}`} onClick={this.handleReset}>
-          <i className="fa fa-times fa-fw fa-lg"></i></button>
+          <img src={times} />
+        </button>
       </div>
     )
   }

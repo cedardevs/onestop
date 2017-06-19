@@ -11,17 +11,13 @@ describe('The granuleDetails reducer', function() {
   })
 
   it('toggles focused granules', function () {
-    const toggleA = toggleGranuleFocus('A')
-    const toggleB = toggleGranuleFocus('B')
+    const toggleATrue = toggleGranuleFocus('A', true)
+    const toggleAFalse = toggleGranuleFocus('A', false)
     // toggle A --> ['A']
-    const addedAResult = granuleDetails(initialState, toggleA)
+    const addedAResult = granuleDetails(initialState, toggleATrue)
     addedAResult.focusedGranules.should.deep.equal(['A'])
-    // toggle B --> ['A', 'B']
-    const addedBResult = granuleDetails(addedAResult, toggleB)
-    addedBResult.focusedGranules.should.deep.equal(['A', 'B'])
-    // toggle A --> ['B']
-    const removedAResult = granuleDetails(addedBResult, toggleA)
-    removedAResult.focusedGranules.should.deep.equal(['B'])
+    const removedAResult = granuleDetails(initialState, toggleAFalse)
+    removedAResult.focusedGranules.should.deep.equal([])
   })
 
 })

@@ -1,7 +1,7 @@
 import React from 'react'
 import {render} from 'react-dom'
 import { Router, Route, IndexRoute } from 'react-router'
-import ResultLayout from './result/ResultLayout'
+import ResultContainer from './result/ResultContainer'
 import Section508ResultLayout from './result/Section508ResultLayout'
 import CollectionGridContainer from './result/collections/CollectionGridContainer'
 import GranuleListContainer from './result/granules/list/GranuleListContainer'
@@ -25,7 +25,7 @@ const routesLayout =
   <Router history={history}>
     <Route path="/" name="Home" component={RootComponent}>
       <IndexRoute component={LandingContainer}/>
-      <Route name="Collections" path="collections" component={ResultLayout}>
+      <Route name="Collections" path="collections" component={ResultContainer}>
         <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
         <Route name="Files" path="files" component={GranuleListContainer}/>
       </Route>
@@ -55,11 +55,11 @@ appDiv.setAttribute('id', 'app')
 appDiv.setAttribute('style', 'height:100%')
 document.body.appendChild(appDiv)
 
-const srcDiv = document.createElement('script')
-srcDiv.setAttribute('id', '_fed_an_ua_tag')
-srcDiv.setAttribute('type', 'text/javascript')
-srcDiv.setAttribute('src', '/scripts/federated-analytics.js?agency=DOC%26subagency=NOAA')
-srcDiv.setAttribute('async', 'true')
-document.body.appendChild(srcDiv)
+const fedAnalyticsScript = document.createElement('script')
+fedAnalyticsScript.setAttribute('id', '_fed_an_ua_tag')
+fedAnalyticsScript.setAttribute('type', 'text/javascript')
+fedAnalyticsScript.setAttribute('src', '//dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=DOC%26subagency=NOAA')
+fedAnalyticsScript.setAttribute('async', 'true')
+document.body.appendChild(fedAnalyticsScript)
 
 render(body, appDiv)

@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
+import stopCircle from 'fa/stop-circle-o.svg'
 import styles from './header.css'
 
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
@@ -72,7 +73,7 @@ class HeaderComponent extends React.Component {
           <img className={styles.noaaLogo} id='logo' alt="NOAA Logo" src={noaaLogo}/>
         </a>
         <a href="#" title="One Stop Home" className={styles.oneStopLink} onClick={() => this.props.goHome()}>
-          <i className={`fa fa-stop-circle-o fa-md`}/>neStop
+          <img src={stopCircle} className={styles.stopCircle}></img>neStop
         </a>
       </div>
     }

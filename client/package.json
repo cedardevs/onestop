@@ -2,7 +2,7 @@
   "name": "onestop-client",
   "version": "1.0.0",
   "description": "The web client for the OneStop discovery service",
-  "repository": "ssh://git@github.com:cires-ncei/onestop.git",
+  "repository": "ssh://git@github.com:cedardevs/onestop.git",
   "license": "GPL-2.0",
   "scripts": {
     "dev": "webpack-dev-server --progress --colors & npm run testAndWatch",
@@ -14,7 +14,6 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "esri-leaflet": "^1.0.4",
-    "font-awesome": "^4.6.3",
     "isomorphic-fetch": "^2.2.1",
     "leaflet": "^0.7.7",
     "leaflet-draw": "^0.3.0",
@@ -37,6 +36,7 @@
     "redux-seamless-immutable": "^0.3.0",
     "redux-thunk": "^2.0.1",
     "redux-watch": "^1.1.1",
+    "rison": "^0.1.1",
     "seamless-immutable": "^7.0.1"
   },
   "devDependencies": {
@@ -60,7 +60,10 @@
     "file-loader": "^0.8.5",
     "html-webpack-plugin": "^2.28.0",
     "image-webpack-loader": "^1.8.0",
+    "json-loader": "^0.5.4",
     "mocha": "^2.4.5",
+    "modernizr": "^3.5.0",
+    "modernizr-loader": "^1.0.1",
     "nock": "^8.0.0",
     "path": "^0.12.7",
     "postcss-assets": "^4.1.0",
@@ -75,7 +78,7 @@
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
     "webpack": "^2.4.1",
-    "webpack-dev-server": "^2.2.1"
+    "webpack-dev-server": "^2.4.3"
   },
   "babel": {
     "presets": [

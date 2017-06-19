@@ -8,11 +8,14 @@ class FacetList extends React.Component {
   constructor(props) {
     super(props)
     this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(this)
+    this.toggleIsGlobalAndSubmit = this.toggleIsGlobalAndSubmit.bind(this)
     this.facetMap = props.facetMap
     this.populateFacetComponent = this.populateFacetComponent.bind(this)
+    this.populateAdditionalFacetsComponents  = this.populateAdditionalFacetsComponents.bind(this)
     this.populateSubPanel = this.populateSubPanel.bind(this)
     this.selectedFacets = props.selectedFacets
     this.toggleFacet = props.toggleFacet
+    this.toggleExcludeGlobal = props.toggleExcludeGlobal
     this.submit = props.submit
     this.state = this.getDefaultState()
   }
@@ -35,6 +38,11 @@ class FacetList extends React.Component {
     const selected = e.target.checked
 
     this.toggleFacet(name, value, selected)
+    this.submit()
+  }
+
+  toggleIsGlobalAndSubmit(){
+    this.toggleExcludeGlobal()
     this.submit()
   }
 
@@ -90,10 +98,23 @@ class FacetList extends React.Component {
     })
   }
 
+  populateAdditionalFacetsComponents(){
+    const self = this
+    return(
+        <div key="excludeGlobal"  className={styles.facetItem}>
+            <input type="checkbox" className={styles.additionalCheckFacet} checked={this.state.excludeGlobal}
+                   onChange={self.toggleIsGlobalAndSubmit}/>
+            <span className={styles.facetLabel}>  Exclude Global</span>
+        </div>
+    )
+  }
+
   render() {
     return <div>
       <div className={`${styles.facetContainer}`}>
         <form className={`pure-form ${styles.formStyle}`}>
+          <span className={'pure-menu-heading'}>Additional Filters</span>
+            {this.populateAdditionalFacetsComponents()}
           <span className={'pure-menu-heading'}>Categories</span>
           <Collapse defaultActiveKey="0">
             {this.populateFacetComponent()}

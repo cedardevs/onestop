@@ -96,7 +96,8 @@ class SearchRequestParserService {
     def groupedQueries = queries.groupBy { it.type }
 
     groupedQueries.queryText.each {
-      def query = QueryBuilders.queryStringQuery(it.value as String)
+      def text = (it.value as String).trim()
+      def query = QueryBuilders.queryStringQuery(text)
       config?.boosts?.each { field, boost ->
         query.field(field, boost ?: 1f)
       }
@@ -173,6 +174,15 @@ class SearchRequestParserService {
     groupedFilters.facet.each {
       def fieldName = facetNameMappings[it.name] ?: it.name
       builder.must(QueryBuilders.termsQuery(fieldName, it.values))
+    }
+
+    // Exclude global filter:
+    if (groupedFilters.excludeGlobal) {
+      // Handling filter & null awkwardness of 'isGlobal' property -- passing false through excludes all non-global
+      // and null records from results, which isn't exactly what this filter implies
+      if (groupedFilters.excludeGlobal[0].value == true) {
+        builder.must(QueryBuilders.termsQuery("isGlobal", false))
+      }
     }
 
     // Collection filter -- force a union since an intersection on multiple parentIds will return nothing

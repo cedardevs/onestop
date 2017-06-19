@@ -1,5 +1,5 @@
 elasticsearch:
-  host: "{{ groups.backend[0] }}"
+  host: "{{ groups.backend[0] }},{{ groups.backend[1] }},{{ groups.backend[2] }}"
   ro:
     user: "{{ ro_user }}"
     pass: "{{ ro_pass }}"

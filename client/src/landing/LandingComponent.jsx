@@ -2,6 +2,7 @@ import React from 'react'
 import styles from './landing.css'
 import FeaturedItemsComponent from './FeaturedItemsComponent'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
+import stopCircle from 'fa/stop-circle-o.svg'
 
 class LandingComponent extends React.Component {
   constructor(props) {
@@ -33,11 +34,13 @@ class LandingComponent extends React.Component {
 
     return (
       <div className={`pure-g ${styles.showcase}`}>
-        <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true"><i className={`fa fa-stop-circle-o`}></i>neStop
+        <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true">
+                        <img src={stopCircle} />neStop
         </div>
         <h1 className={styles.hiddenPageTitle}>OneStop: A NOAA Data Search Platform</h1>
         <div className={`pure-u-1 ${styles.heroText}`}>
-          Geophysical, oceans, coastal, weather and climate data discovery all in one place.
+          Geophysical, oceans, coastal, weather and climate data discovery all in one place.<br/>
+          {this.buildCountString()}
         </div>
         <div className={`pure-u-1 ${styles.searchComponent}`}>
           <SearchFieldsContainer/>
@@ -70,6 +73,15 @@ class LandingComponent extends React.Component {
     setTimeout(() => {
       window.dispatchEvent(evt)
     }, 0)
+  }
+
+  buildCountString() {
+    let hasCollections = this.props.collectionsCount !== 0
+    let hasGranules = this.props.granulesCount !== 0
+
+    let granulesString = hasGranules ? `and ${this.props.granulesCount.toLocaleString()} granules ` : ''
+    let countString = hasCollections ? `${this.props.collectionsCount.toLocaleString()} collections ${granulesString} available to search` : ''
+    return countString
   }
 }
 

@@ -44,55 +44,55 @@ class JsonValidatorSpec extends Specification {
 
         where:
         request << [
-          """\
+            """\
 {
 }""",
-          """\
+            """\
 {
   "queries": [
     {"type": "queryText", "value": "temperature"}
   ]
 }""",
-          """\
+            """\
 {
   "queries": [
     {"type": "queryText", "value": "temperature"}
   ],
   "facets": true
 }""",
-          """\
+            """\
 {
   "queries": [
     {"type": "queryText", "value": "temperature"}
   ],
   "facets": false
 }""",
-          """\
+            """\
 {
   "queries": [
     {"type": "queryText", "value": "temperature"},
     {"type": "queryText", "value": "pressure"}
   ]
 }""",
-          """\
+            """\
 {
   "filters": [
     {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
   ]
 }""",
-          """\
+            """\
 {
   "filters": [
     {"type": "facet", "name": "gcmdScience", "values": ["Atmosphere"]}
   ]
 }""",
-          """\
+            """\
 {
   "filters": [
     {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [22.123, -45.245]}}
   ]
 }""",
-          """\
+            """\
 {
   "filters": [
     {"type": "geometry", "relation": "intersects", "geometry":
@@ -100,7 +100,7 @@ class JsonValidatorSpec extends Specification {
     }
   ]
 }""",
-          """\
+            """\
 {
   "filters": [
     {"type": "facet", "name": "gcmdLocations", "values": ["Continent > North America"]},
@@ -111,20 +111,15 @@ class JsonValidatorSpec extends Specification {
     }
   ]
 }""",
-          """\
-{
-  "sort": "title",
-}""",
-          """\
+            """\
 {
   "page": { "max": 10, "offset": 10 }
 }""",
-          """\
+            """\
 {
-  "sort": "title",
   "page": { "max": 25, "offset": 10 }
 }""",
-          """\
+            """\
 {
   "queries": [
     {"type": "queryText", "value": "temperature"}
@@ -134,8 +129,13 @@ class JsonValidatorSpec extends Specification {
     {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
     {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [22.123, -45.245]}}
   ],
-  "sort": "title",
   "page": { "max": 100, "offset": 0 }
+}""",
+            """\
+{
+  "filters": [
+    { "type": "excludeGlobal", "value": true}
+  ]
 }"""
         ]
     }
@@ -152,45 +152,75 @@ class JsonValidatorSpec extends Specification {
 
         where:
         request << [
-          """\
+            """\
 {
   "queries": {
-    "queryText": {"value": "temperature", "poo": "xxx"}
+    "queryText": {"value": "temperature"}
   }
 }
 """,
-          """\
+            """\
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature", "cat": "meow"}
+  ]
+}""",
+            """\
+{
+  "queries": [
+    {"type": "queryText", "value": "?temperature"}
+  ]
+}""",
+            """\
+{
+  "queries": [
+    {"type": "queryText", "value": "*water"}
+  ]
+}""",
+            """\
+{
+  "queries": [
+    {"type": "queryText", "value": " *anything"}
+  ]
+}""",
+            """\
 {
   "facets": "false"
 }""",
-          """\
+            """\
 {
   "filters": [
     { "type": "datetime", "before": "2012-12-31", "after": "2012-01-01"}
   ]
 }""",
-          """\
+            """\
 {
   "filters": [
     { "type": "geopoint", "coordinates": {"lat": -100, "lon": -100}}
   ]
 }""",
-          """\
+            """\
 {
   "filters": [
     { "type": "geopoint", "coordinates": {"lat": 50, "lon": 200}}
   ]
 }""",
-          """\
+            """\
 {
   "filters": [
     { "type": "geopoint", "lat": -45.123, "lon": 75.245}
   ]
 }""",
-          """\
+            """\
 {
   "filters": [
     { "type": "bbox", "topLeft": {"lat": 45.99, "lon": -5.99}, "bottomRight": {"lat": 30.01, "lon": 36.49}}
+  ]
+}""",
+            """\
+{
+  "filters": [
+    { "type": "excludeGlobal", "value": "taco tuesday"}
   ]
 }"""
         ]
