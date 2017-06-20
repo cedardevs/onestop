@@ -1,5 +1,0 @@
-install_base: /opt/onestop-api
-config_path: /opt/onestop-api/onestop-api.yml
-tomcat_version: 8.5.13
-tomcat_url: http://archive.apache.org/dist/tomcat/tomcat-8/v{{tomcat_version}}/bin/apache-tomcat-{{tomcat_version}}.tar.gz
-tomcat_base: /opt/onestop-api/apache-tomcat-{{tomcat_version}}
