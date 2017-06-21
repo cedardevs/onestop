@@ -29,7 +29,7 @@ env:
     - secure: OR7u1Kws3r4cBlfF6TaDhRzKjlj9D23rJ4OzovPAz+CndYwUPdED6+AIpF6jPC0B4CPGyF+m0dmDuyqeof+nuQrCja5CsLgXXf0xcDvIz/WM/S5SXse0oT90krVUGk1Uxmx+wHE9KmM5xo0nhxwDZk6BYqqmCtB0S+WrEy0JMkhrizzELHO7W2TGwI28JykmBgfa0i42Dy1D5Z9WUMu4OO1EPyc/rEbLDWAxu7QEh4rYRDnhrkij78zEndxE8B33c1cStGpjcIPpoRa36z4kI39qq0FCYQW0g6cjPpQ8cwokggf6FWHQNN2edJMQJGC/DVXmGzGjuSc8M32Kkz1QSofCEnq2S9+nqXek0PAL/mx4wPWXujTa8QHCLZoYB9GAsjOr6glxsendlkHtNnVsTtJThiCgT2mjQdqFwslOjPbmO6Ys1gUJ3zTDxLVKX1VlpbwFoH7r5B8xTb+PcM+MMW+4ryPM2u5lSu/Q0khPE7shz110wk8bbjtvo+2K1q1fK/P3QAZAD5v3088C3YFZKUWGXPnfIFO+BNytABn3Q49F/oIy3ewJMIOdtc99zj/taZrsOpEgSuuON0vwPjSJINStQu6CcWBJApgLjVWobnqoB/MeeonddYCBoDfSh/L8W7BtnfPcZGFrUB1hxlr9s41I7oxykdQZrbYByiWGHb0=
 install: true
 script:
-  - ./gradlew build -Dscan
+  - ./gradlew clean build -Dscan
 deploy:
   provider: script
   skip_cleanup: true
