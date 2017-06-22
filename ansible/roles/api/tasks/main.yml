@@ -70,7 +70,7 @@
 - name: Download latest api snapshot
   become: true
   maven_artifact:
-    repository_url: https://oss.jfrog.org/oss-snapshot-local
+    repository_url: http://dl.bintray.com/cires-ncei/maven
     group_id: cires.ncei.onestop
     artifact_id: onestop-api
     version: latest
