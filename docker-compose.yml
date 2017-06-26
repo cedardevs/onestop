@@ -1,14 +1,14 @@
 version: '2'
 services:
-  # client:
-  #   build: ../client/
-  #   ports:
-  #    - "8080:80"
-  #   networks:
-  #    - esnet
-  #   dependsOn:
-  #     - api
-  #
+  client:
+    build: ./client/docker-client/
+    volumes:
+     - ./client/dist:/usr/share/nginx/html:ro
+    ports:
+     - 8080:80
+    depends_on:
+      - api
+
   api:
     build: ./api/docker-api/
     volumes:
