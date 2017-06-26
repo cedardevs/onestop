@@ -1,25 +1,25 @@
 version: '2'
 services:
-  client:
-    build: ../client/
-    ports:
-     - "8080:80"
-    networks:
-     - esnet
-
+  # client:
+  #   build: ../client/
+  #   ports:
+  #    - "8080:80"
+  #   networks:
+  #    - esnet
+  #   dependsOn:
+  #     - api
+  #
   api:
-    build: ../api/
-    networks:
-     - esnet
-    expose:
-     - "8097"
-     - "8080"
+    build: ./api/docker-api/
+    volumes:
+      - ./api/build/libs/onestop-api-all-1.1.1-SNAPSHOT.war:/usr/local/tomcat/webapps/onestop.war
+    ports:
+      - 8097:8097
+    depends_on:
+      - elasticsearch
 
   elasticsearch:
-    build: ../elasticsearch
-    expose:
-
-
-
-networks:
-  esnet:
+    build: ./elasticsearch/docker-es/
+    ports:
+     - 9300:9300
+     - 9200:9200
