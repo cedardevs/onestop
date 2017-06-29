@@ -1,18 +1,14 @@
-version: '2'
+version: '3'
 services:
   client:
-    build: ./client/docker-client/
-    volumes:
-     - ./client/dist:/usr/share/nginx/html:ro
+    build: ./client/
     ports:
      - 8080:80
     depends_on:
       - api
 
   api:
-    build: ./api/docker-api/
-    volumes:
-      - ./api/build/libs/onestop-api-all-1.1.1-SNAPSHOT.war:/usr/local/tomcat/webapps/onestop.war
+    build: ./api/
     ports:
       - 8097:8097
     depends_on:
