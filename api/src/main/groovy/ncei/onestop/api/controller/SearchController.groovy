@@ -34,7 +34,7 @@ class SearchController {
       response.status = HttpStatus.BAD_REQUEST.value()
       return [errors: validation.errors]
     }
-
+    log.info("incoming search params: ${params}")
     return searchIndexService.search(params)
   }
 

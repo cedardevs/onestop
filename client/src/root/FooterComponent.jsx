@@ -1,6 +1,7 @@
 import React, { PropTypes }  from 'react'
 import styles from './footer.css'
 import github from 'fa/github.svg'
+import A from 'LinkComponent'
 import 'purecss'
 
 class FooterComponent  extends React.Component {
@@ -37,7 +38,7 @@ class FooterComponent  extends React.Component {
                 text: "NESDIS"
             }
         ];
-
+        var strippedVersion = this.props.version.replace(/[^0-9\.]+/g, "");
         return (
             <nav role="footer">
               <div className={styles.footer}>
@@ -45,15 +46,15 @@ class FooterComponent  extends React.Component {
                   <div className={`pure-u-1`} >
                     <nav className={styles.headerLinks} role="external links">
                       <ul className={`${styles.footerLinks}`} >
-                          {links.map((link, i) => <li key={i} ><a href={link.href} title={link.text} >{link.text} </a></li>)}
+                          {links.map((link, i) => <li key={i} ><A href={link.href} title={link.text} >{link.text} </A></li>)}
                       </ul>
                     </nav>
                   </div>
                 </div>
                 <div className={`${styles.versionInfo}`}>
-                  <a href ="https://github.com/cedardevs/onestop/releases" >
-                    Version: {this.props.version} <img src={github} className={styles.github} aria-hidden="true"></img>
-                  </a>
+                  <A href ="https://github.com/cedardevs/onestop/releases" >
+                    Version: {strippedVersion} <img src={github} className={styles.github} aria-hidden="true"></img>
+                  </A>
                 </div>
               </div>
             </nav>

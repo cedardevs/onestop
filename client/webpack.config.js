@@ -110,7 +110,8 @@ module.exports = {
     }]
   },
   resolve: {
-    modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules'],
+    modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules',
+      path.resolve('./src/common/link')],
     extensions: ['.js', '.jsx'],
     unsafeCache: true,
     alias: {
