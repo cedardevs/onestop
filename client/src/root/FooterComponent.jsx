@@ -38,7 +38,7 @@ class FooterComponent  extends React.Component {
                 text: "NESDIS"
             }
         ];
-
+        var strippedVersion = this.props.version.replace(/[^0-9\.]+/g, "");
         return (
             <nav role="footer">
               <div className={styles.footer}>
@@ -53,7 +53,7 @@ class FooterComponent  extends React.Component {
                 </div>
                 <div className={`${styles.versionInfo}`}>
                   <A href ="https://github.com/cedardevs/onestop/releases" >
-                    Version: {this.props.version} <img src={github} className={styles.github} aria-hidden="true"></img>
+                    Version: {strippedVersion} <img src={github} className={styles.github} aria-hidden="true"></img>
                   </A>
                 </div>
               </div>
