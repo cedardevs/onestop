@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
+import A from 'LinkComponent'
 import styles from './list.css'
 
 class GranuleList extends React.Component {
@@ -67,7 +68,7 @@ class GranuleList extends React.Component {
         .sortBy((info) => info.protocol.id)
         .uniqBy((info) => info.url)
         .map(({protocol, url, name}) => <li key={url} className={styles.linkRow}>
-          <a href={url} title={`${protocol.label} link`} className={styles.links}>{name}</a>
+          <A href={url} title={`${protocol.label} link`} className={styles.links}>{name}</A>
         </li>)
         .value()
   }

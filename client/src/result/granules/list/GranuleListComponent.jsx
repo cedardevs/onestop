@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import MapContainer from '../MapContainer'
+import A from 'LinkComponent'
 import styles from './list.css'
 
 class GranuleList extends React.Component {
@@ -102,10 +103,10 @@ class GranuleList extends React.Component {
 
   renderBadge({protocol, url}) {
     return (
-        <a href={url} key={url} title={url} target="_blank"
+        <A href={url} key={url} title={url} target="_blank"
            className={`${styles.badge}`} style={{background: protocol.color}}>
           {protocol.id}
-        </a>
+        </A>
     )
   }
 
