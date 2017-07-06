@@ -5,6 +5,7 @@ import infoCircle from 'fa/info-circle.svg'
 import star from 'fa/star.svg'
 import starO from 'fa/star-o.svg'
 import starHalfO from 'fa/star-half-o.svg'
+import A from 'LinkComponent'
 import styles from './detail.css'
 
 class Detail extends React.Component {
@@ -81,10 +82,10 @@ class Detail extends React.Component {
 
   renderLink(link, index) {
    return <li className={'pure-u'} key={index}>
-     <a href={link.linkUrl} target="_blank"
+     <A href={link.linkUrl} target="_blank"
              className={`pure-button pure-button-primary`}>
        {link.linkProtocol || 'Link'}
-     </a>
+     </A>
    </li>
   }
 
@@ -169,8 +170,8 @@ class Detail extends React.Component {
           <div className={`${styles.dsmmInfo}`}>
             <img src={infoCircle} className={styles.infoCircle}></img>
             <div className={`${styles.text}`}> This is the average DSMM rating of this collection.
-              The <a href="http://doi.org/10.2481/dsj.14-049" target="_blank" title="Data Stewardship Maturity Matrix Information">
-                Data Stewardship Maturity Matrix (DSMM)</a> is a unified framework that defines criteria for the following nine components based on measurable practices:
+              The <A href="http://doi.org/10.2481/dsj.14-049" target="_blank" title="Data Stewardship Maturity Matrix Information">
+                Data Stewardship Maturity Matrix (DSMM)</A> is a unified framework that defines criteria for the following nine components based on measurable practices:
               <ul>
                 <li>Accessibility</li>
                 <li>Data Integrity</li>

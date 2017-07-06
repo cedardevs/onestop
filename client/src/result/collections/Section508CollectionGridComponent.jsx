@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
+import A from 'LinkComponent'
 import styles from './collectionGrid.css'
 
 class Section508CollectionGridComponent extends React.Component {
@@ -30,9 +31,9 @@ class Section508CollectionGridComponent extends React.Component {
   renderLink(link, index) {
     const { linkName, linkProtocol, linkUrl } = link
     return <li key={index} className={styles.links}>
-      <a href={linkUrl} target="_blank" title={linkProtocol || linkName || 'Link'}>
+      <A href={linkUrl} target="_blank" title={linkProtocol || linkName || 'Link'}>
         {linkProtocol || linkName || 'Link'}
-      </a>
+      </A>
     </li>
   }
 

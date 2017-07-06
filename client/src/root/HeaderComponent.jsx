@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react'
 import { Link } from 'react-router'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import stopCircle from 'fa/stop-circle-o.svg'
+import A from 'LinkComponent'
 import styles from './header.css'
 
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
@@ -69,9 +70,9 @@ class HeaderComponent extends React.Component {
   renderLogo() {
     if (this.props.showSearch) {
       return <div>
-        <a href="//www.noaa.gov" title="NOAA Home">
+        <A href="//www.noaa.gov" title="NOAA Home">
           <img className={styles.noaaLogo} id='logo' alt="NOAA Logo" src={noaaLogo}/>
-        </a>
+        </A>
         <a href="#" title="One Stop Home" className={styles.oneStopLink} onClick={() => this.props.goHome()}>
           <img src={stopCircle} className={styles.stopCircle}></img>neStop
         </a>
