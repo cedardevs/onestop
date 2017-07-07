@@ -1,5 +1,5 @@
 {
-  "granule": {
+  "collection": {
     "_all": {
       "enabled": false
     },
@@ -12,13 +12,13 @@
         "type": "string",
         "index": "not_analyzed"
       },
-      "parentIdentifier": {
+      "doi": {
         "type": "string",
         "index": "not_analyzed"
       },
       "title": {
         "type": "string",
-         "index": "no"
+        "index": "no"
       },
       "alternateTitle": {
         "type": "string",
@@ -69,8 +69,8 @@
         "properties": {
           "beginDate": {
             "type": "date",
-            "index": "no",
-            "format": "date_optional_time"
+            "format": "date_optional_time",
+            "index": "no"
           },
           "beginIndeterminate": {
             "type": "string",
@@ -78,8 +78,8 @@
           },
           "endDate": {
             "type": "date",
-            "index": "no",
-            "format": "date_optional_time"
+            "format": "date_optional_time",
+            "index": "no"
           },
           "endIndeterminate": {
             "type": "string",
@@ -87,8 +87,8 @@
           },
           "instant": {
             "type": "date",
-            "index": "no",
-            "format": "date_optional_time"
+            "format": "date_optional_time",
+            "index": "no"
           },
           "instantIndeterminate": {
             "type": "string",
@@ -99,7 +99,7 @@
       "spatialBounding": {
         "type": "geo_shape"
       },
-      "isGlobal":{
+      "isGlobal": {
         "type": "boolean",
         "index": "no"
       },
@@ -189,23 +189,67 @@
       },
       "modifiedDate": {
         "type": "date",
-        "index": "no",
-        "format": "date_optional_time"
+        "format": "date_optional_time",
+        "index": "no"
       },
       "creationDate": {
         "type": "date",
-        "index": "no",
-        "format": "date_optional_time"
+        "format": "date_optional_time",
+        "index": "no"
       },
       "revisionDate": {
         "type": "date",
-        "index": "no",
-        "format": "date_optional_time"
+        "format": "date_optional_time",
+        "index": "no"
       },
       "publicationDate": {
         "type": "date",
-        "index": "no",
-        "format": "date_optional_time"
+        "format": "date_optional_time",
+        "index": "no"
+      },
+      "dsmmAccessibility": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmDataIntegrity": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmDataQualityAssessment": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmDataQualityAssurance": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmDataQualityControlMonitoring": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmPreservability": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmProductionSustainability": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmTransparencyTraceability": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmUsability": {
+        "type": "byte",
+        "index": "no"
+      },
+      "dsmmAverage": {
+        "type": "float",
+        "index": "no"
+      },
+      "isoXml": {
+        "type": "binary",
+        "doc_values": false
       }
     }
   }

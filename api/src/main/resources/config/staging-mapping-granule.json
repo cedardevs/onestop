@@ -1,5 +1,5 @@
 {
-  "collection": {
+  "granule": {
     "_all": {
       "enabled": false
     },
@@ -12,7 +12,7 @@
         "type": "string",
         "index": "not_analyzed"
       },
-      "doi": {
+      "parentIdentifier": {
         "type": "string",
         "index": "not_analyzed"
       },
@@ -69,8 +69,8 @@
         "properties": {
           "beginDate": {
             "type": "date",
-            "format": "date_optional_time",
-            "index": "no"
+            "index": "no",
+            "format": "date_optional_time"
           },
           "beginIndeterminate": {
             "type": "string",
@@ -78,8 +78,8 @@
           },
           "endDate": {
             "type": "date",
-            "format": "date_optional_time",
-            "index": "no"
+            "index": "no",
+            "format": "date_optional_time"
           },
           "endIndeterminate": {
             "type": "string",
@@ -87,8 +87,8 @@
           },
           "instant": {
             "type": "date",
-            "format": "date_optional_time",
-            "index": "no"
+            "index": "no",
+            "format": "date_optional_time"
           },
           "instantIndeterminate": {
             "type": "string",
@@ -99,7 +99,7 @@
       "spatialBounding": {
         "type": "geo_shape"
       },
-      "isGlobal":{
+      "isGlobal": {
         "type": "boolean",
         "index": "no"
       },
@@ -189,67 +189,23 @@
       },
       "modifiedDate": {
         "type": "date",
-        "format": "date_optional_time",
-        "index": "no"
+        "index": "no",
+        "format": "date_optional_time"
       },
       "creationDate": {
         "type": "date",
-        "format": "date_optional_time",
-        "index": "no"
+        "index": "no",
+        "format": "date_optional_time"
       },
       "revisionDate": {
         "type": "date",
-        "format": "date_optional_time",
-        "index": "no"
+        "index": "no",
+        "format": "date_optional_time"
       },
       "publicationDate": {
         "type": "date",
-        "format": "date_optional_time",
-        "index": "no"
-      },
-      "dsmmAccessibility": {
-        "type": "byte",
-        "index": "no"
-      },
-      "dsmmDataIntegrity": {
-        "type": "byte",
-        "index": "no"
-      },
-      "dsmmDataQualityAssessment": {
-        "type": "byte",
-        "index": "no"
-      },
-      "dsmmDataQualityAssurance": {
-        "type": "byte",
-        "index": "no"
-      },
-      "dsmmDataQualityControlMonitoring": {
-        "type": "byte",
-        "index": "no"
-      },
-      "dsmmPreservability": {
-        "type": "byte",
-        "index": "no"
-      },
-      "dsmmProductionSustainability": {
-        "type": "byte",
-        "index": "no"
-      },
-      "dsmmTransparencyTraceability": {
-        "type": "byte",
-        "index": "no"
-      },
-      "dsmmUsability": {
-        "type": "byte",
-        "index": "no"
-      },
-      "dsmmAverage": {
-        "type": "float",
-        "index": "no"
-      },
-      "isoXml": {
-        "type": "binary",
-        "doc_values": false
+        "index": "no",
+        "format": "date_optional_time"
       }
     }
   }

@@ -1,5 +1,5 @@
 {
-  "granule": {
+  "collection": {
     "properties": {
       "stagedDate": {
         "type": "date",
@@ -9,7 +9,7 @@
         "type": "string",
         "index": "not_analyzed"
       },
-      "parentIdentifier": {
+      "doi": {
         "type": "string",
         "index": "not_analyzed"
       },
@@ -123,7 +123,7 @@
       "spatialBounding": {
         "type": "geo_shape"
       },
-      "isGlobal":{
+      "isGlobal": {
         "type": "boolean"
       },
       "acquisitionInstruments": {
@@ -259,6 +259,33 @@
       "publicationDate": {
         "type": "date",
         "format": "date_optional_time"
+      },
+      "dsmmAccessibility": {
+        "type": "byte"
+      },
+      "dsmmDataIntegrity": {
+        "type": "byte"
+      },
+      "dsmmDataQualityAssessment": {
+        "type": "byte"
+      },
+      "dsmmDataQualityAssurance": {
+        "type": "byte"
+      },
+      "dsmmDataQualityControlMonitoring": {
+        "type": "byte"
+      },
+      "dsmmPreservability": {
+        "type": "byte"
+      },
+      "dsmmProductionSustainability": {
+        "type": "byte"
+      },
+      "dsmmTransparencyTraceability": {
+        "type": "byte"
+      },
+      "dsmmUsability": {
+        "type": "byte"
       },
       "dsmmAverage": {
         "type": "float"

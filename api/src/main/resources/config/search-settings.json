@@ -3,7 +3,9 @@
     "analyzer": {
       "keyword_analyzer": {
         "tokenizer": "keyword_tokenizer",
-        "filter": ["trim"]
+        "filter": [
+          "trim"
+        ]
       }
     },
     "tokenizer": {
