@@ -20,7 +20,7 @@ buildscript {
 
 subprojects {
   project.ext {
-    esVersion = '2.4.1'
+    esVersion = '5.4.3'
   }
 
   afterEvaluate {
