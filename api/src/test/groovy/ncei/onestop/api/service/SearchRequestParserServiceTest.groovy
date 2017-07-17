@@ -1,7 +1,7 @@
 package ncei.onestop.api.service
 
 import groovy.json.JsonSlurper
-import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder
+import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -368,7 +368,7 @@ class SearchRequestParserServiceTest extends Specification {
     // This is about all that can be verified w/o changing the List to a Map unnecessarily...
     aggs.size() == 6 // 6 GCMD types
     aggs.each { a ->
-      a.class == TermsBuilder
+      a.class == TermsAggregationBuilder
     }
   }
 
@@ -380,7 +380,7 @@ class SearchRequestParserServiceTest extends Specification {
     // This is about all that can be verified w/o changing the List to a Map unnecessarily...
     aggs.size() == 6 // 6 GCMD types
     aggs.each { a ->
-      a.class == TermsBuilder
+      a.class == TermsAggregationBuilder
     }
   }
 }
