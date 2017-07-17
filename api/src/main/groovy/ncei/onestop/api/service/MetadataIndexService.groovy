@@ -3,12 +3,12 @@ package ncei.onestop.api.service
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.elasticsearch.action.WriteConsistencyLevel
-import org.elasticsearch.action.deletebyquery.DeleteByQueryAction
-import org.elasticsearch.action.deletebyquery.DeleteByQueryRequestBuilder
-import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse
+import org.elasticsearch.common.xcontent.XContentType
+import org.elasticsearch.index.reindex.DeleteByQueryAction
+import org.elasticsearch.index.reindex.BulkByScrollResponse
 import org.elasticsearch.client.Client
 import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.rest.RestStatus
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -53,7 +53,7 @@ class MetadataIndexService {
     def bulkRequest = adminClient.prepareBulk()
     def addRecordToBulk = { id, record, type ->
       def json = JsonOutput.toJson(record)
-      def insertRequest = adminClient.prepareIndex(STAGING_INDEX, type, id).setSource(json)
+      def insertRequest = adminClient.prepareIndex(STAGING_INDEX, type, id).setSource(json, XContentType.JSON)
       bulkRequest.add(insertRequest)
     }
 
@@ -111,8 +111,8 @@ class MetadataIndexService {
           ]
         }
         else {
-          data[i].attributes.status = response.response.isCreated() ? 201 : 200
-          data[i].attributes.created = response.response.isCreated()
+          data[i].attributes.status = response.status()
+          data[i].attributes.created = response.status() == RestStatus.CREATED
         }
       }
 
@@ -145,15 +145,14 @@ class MetadataIndexService {
       source.stagedDate = System.currentTimeMillis()
       source = JsonOutput.toJson(source)
       def response = adminClient.prepareIndex(STAGING_INDEX, type, internalId)
-          .setSource(source)
-          .setConsistencyLevel(WriteConsistencyLevel.QUORUM)
+          .setSource(source, XContentType.JSON)
           .execute().actionGet()
       return [
           data: [
               id        : externalId,
               type      : type,
               attributes: [
-                  created: response.created
+                  created: response.status() == RestStatus.CREATED
               ]
           ]
       ]
@@ -279,15 +278,28 @@ class MetadataIndexService {
     }
 
     if (removeCollectionGranules) {
-      DeleteByQueryResponse deleteResponse = new DeleteByQueryRequestBuilder(adminClient, DeleteByQueryAction.INSTANCE)
-          .setIndices([STAGING_INDEX, SEARCH_INDEX])
-          .setTypes(GRANULE_TYPE)
-          .setQuery(QueryBuilders.termQuery('parentIdentifer', internalId))
+      // TODO: Only keeping the old code here to see what response used to include until we can determine a better uniform response
+//      DeleteByQueryResponse deleteResponse = new DeleteByQueryRequestBuilder(adminClient, DeleteByQueryAction.INSTANCE)
+//          .setIndices([STAGING_INDEX, SEARCH_INDEX])
+//          .setTypes(GRANULE_TYPE)
+//          .setQuery(QueryBuilders.termQuery('parentIdentifer', internalId))
+//          .execute().actionGet()
+//      data.attributes.stagingGranulesFound = deleteResponse.getIndex(STAGING_INDEX).found
+//      data.attributes.stagingGranulesDeleted = deleteResponse.getIndex(STAGING_INDEX).deleted
+//      data.attributes.searchGranulesFound = deleteResponse.getIndex(SEARCH_INDEX).found
+//      data.attributes.searchGranulesDeleted = deleteResponse.getIndex(SEARCH_INDEX).deleted
+
+
+      BulkByScrollResponse response = DeleteByQueryAction.INSTANCE.newRequestBuilder(adminClient)
+          .abortOnVersionConflict(false)
+          .filter(QueryBuilders.boolQuery()
+          .must(QueryBuilders.typeQuery(GRANULE_TYPE))
+          .must(QueryBuilders.termQuery('parentIdentifer', internalId)))
+          .source(STAGING_INDEX, SEARCH_INDEX)
           .execute().actionGet()
-      data.attributes.stagingGranulesFound = deleteResponse.getIndex(STAGING_INDEX).found
-      data.attributes.stagingGranulesDeleted = deleteResponse.getIndex(STAGING_INDEX).deleted
-      data.attributes.searchGranulesFound = deleteResponse.getIndex(SEARCH_INDEX).found
-      data.attributes.searchGranulesDeleted = deleteResponse.getIndex(SEARCH_INDEX).deleted
+
+      // TODO: This is unfortunately inaccurate while there are two indices but once a DB is in place, metadata CRUD will change here anyway
+      data.attributes.totalGranulesDeleted = response.deleted
     }
 
     indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
