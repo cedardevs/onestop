@@ -33,11 +33,7 @@ dependencies {
   compile ('org.springframework.boot:spring-boot-starter-web'){
     exclude group: 'ch.qos.logback'
   }
-  compile (group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'){
-    exclude group: 'ch.qos.logback', module:'logback-core' // need to exclude core because for some reason they includ 1.1.9 of core
-  }
   compile "org.elasticsearch.client:transport:${project.esVersion}"
-  compile (group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3')
   compile (group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.8.2')
   compile ('org.springframework.boot:spring-boot-starter-actuator')
   compile ('org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE')
