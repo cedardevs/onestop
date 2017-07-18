@@ -21,6 +21,7 @@ buildscript {
 subprojects {
   project.ext {
     esVersion = '5.5.0'
+    groovyVersion = '2.4.12'
   }
 
   afterEvaluate {
