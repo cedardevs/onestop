@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.search.service
 
+import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
@@ -31,7 +32,7 @@ class SearchRequestBuilder {
 
     ]
 
-    return new NStringEntity(requestBody, ContentType.APPLICATION_JSON)
+    return new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
   }
 
   private Map assembleScoringContext(List<Map> queries) {
