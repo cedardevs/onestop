@@ -22,7 +22,7 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
     assembleAdditionalFilters(search)
   )
   if (granules) {
-    filters = _.concat(assembleSelectedCollectionsFilters(search))
+    filters = _.concat(filters, assembleSelectedCollectionsFilters(search))
   }
   filters =  _.flatten(_.compact(filters))
 
