@@ -37,7 +37,7 @@ class DefaultApplicationConfig {
   String roPassword
 
   @Bean(destroyMethod = 'close')
-  RestClient searchClient() {
+  RestClient restClient() {
 
     def hosts = []
     elasticHost.each { host ->
