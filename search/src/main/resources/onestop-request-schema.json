@@ -25,7 +25,7 @@
       "type": "object",
       "properties": {
         "max": {
-          "description": "Maximum number of results returned. If the page object is not provided, this defaults to 100.",
+          "description": "Maximum number of results returned. If the page object is not provided, this defaults to 10.",
           "type": "integer"
         },
         "offset": {
