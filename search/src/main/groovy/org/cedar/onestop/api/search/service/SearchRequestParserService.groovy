@@ -28,26 +28,21 @@ class SearchRequestParserService {
     this.config = config
   }
 
-  HttpEntity buildSearchQuery(Map params) {
+  Map parseSearchQuery(Map params) {
     log.debug("Queries: ${params.queries}")
     log.debug("Filters: ${params.filters}")
 
-    def requestBody = [
-        query: [
-            bool: [
-                must  : [],
-                filter: []
-            ]
-        ],
-        aggs : []
+    def requestQuery = [
+        bool: [
+            must  : assembleScoringContext(params.queries),
+            filter: assembleFilteringContext(params.filters)
+        ]
     ]
+    return requestQuery
+  }
 
-    requestBody.query.bool.must = assembleScoringContext(params.queries)
-    requestBody.query.bool.filter = assembleFilteringContext(params.filters)
-
-    log.debug("ES Request: \n${requestBody}")
-
-    return new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+  Boolean shouldReturnCollections(Map params) {
+    !params.filters.any { it.type == 'collection' }
   }
 
   private Map assembleScoringContext(List<Map> queries) {
