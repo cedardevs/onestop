@@ -45,6 +45,55 @@ class SearchRequestParserService {
     !params.filters.any { it.type == 'collection' }
   }
 
+  Map createCollectionsAggregation() {
+    return [
+        terms       : [
+            field: "parentIdentifier",
+            size : 0,
+            order: [
+                "score_agg.max": "desc"
+            ]
+        ],
+        aggregations: [
+            "score_agg": [
+                stats: [
+                    script: [
+                        inline: "_score",
+                        lang  : "expression"
+                    ]
+                ]
+            ]
+        ]
+    ]
+  }
+
+  Map createGCMDAggregations(boolean forCollections) {
+    def aggregations = []
+    facetNameMappings.each { name, field ->
+      def agg = [
+          terms: [
+              field: field,
+              size : 0,
+              order: [
+                  "_term": "asc"
+              ]
+          ]
+      ]
+      if (forCollections) {
+        agg.aggregations = [
+            byCollection: [
+                terms: [
+                    field: "parentIdentifier",
+                    size : 0
+                ]
+            ]
+        ]
+      }
+      aggregations.add([(name): agg])
+    }
+    return aggregations
+  }
+
   private Map assembleScoringContext(List<Map> queries) {
     def allTextQueries = []
 
@@ -173,7 +222,7 @@ class SearchRequestParserService {
       def fieldName = facetNameMappings[it.name] ?: it.name
       allFilters.add([
           terms: [
-              "${fieldName}": it.values
+              (fieldName): it.values
           ]
       ])
     }

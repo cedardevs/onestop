@@ -1,6 +1,5 @@
 package org.cedar.onestop.api.search.service
 
-import com.sun.org.apache.regexp.internal.RE
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
@@ -92,16 +91,45 @@ class ElasticsearchService {
     def getFacets = params.facets as boolean
     def pageParams = params.page as Map
 
-    def searchRequest = buildSearchRequest(query, getFacets, getCollections)
+    def requestBody = addAggregations(query, getFacets, getCollections)
+    return getCollections ? getCollectionResults(requestBody, pageParams) : getGranuleResults(requestBody, pageParams)
   }
 
-  private HttpEntity buildSearchRequest(Map query, boolean getFacets, boolean getCollections) {
-    def requestBody = []
+  private Map addAggregations(Map query, boolean getFacets, boolean getCollections) {
+    def aggregations = []
+
+    if (getFacets) {
+      def gcmdKeywords = searchRequestParserService.createGCMDAggregations(getCollections)
+      gcmdKeywords.each { k, v -> aggregations.add([(k): v]) }
+    }
+
+    if (getCollections) {
+      aggregations.add([collections: searchRequestParserService.createCollectionsAggregation()])
+    }
+
+    def requestBody = [
+        query       : query,
+        aggregations: aggregations
+    ]
+    return requestBody
+  }
+
+  private Map getCollectionResults(Map requestBody, Map pageParams) {
+    def result = []
+    // TODO need to set size in first request to 0 here; size & offset in multiget
     // TODO
-    return new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    // new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    return result
   }
 
-  private static Map parseResponse(Response response) {
+  private Map getGranuleResults(Map requestBody, Map pageParams) {
+    def result = []
+    // TODO set size/offset w/pageParams
+    // new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    return result
+  }
+
+  private Map parseResponse(Response response) {
     Map result = [statusCode: response?.getStatusLine()?.getStatusCode() ?: 500]
     try {
       if (response?.getEntity()) {
