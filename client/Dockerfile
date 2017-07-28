@@ -1,8 +1,8 @@
-FROM nginx
+FROM nginx:alpine
 
 # Install curl (debugging only; remove later)
-RUN apt-get update && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y --no-install-recommends curl \
+#    && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 80
 

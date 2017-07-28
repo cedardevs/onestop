@@ -13,11 +13,12 @@ services:
       - 8097:8097
     depends_on:
       - elasticsearch
+    environment:
+     - elasticsearch_host=elasticsearch
+     - elasticsearch_port=9300
 
   elasticsearch:
     build: ./elasticsearch/docker-es/
     ports:
      - 9300:9300
      - 9200:9200
-    volumes:
-     - ./elasticsearch/build/elasticsearch/elasticsearch-2.4.1/data:/usr/share/elasticsearch/data
