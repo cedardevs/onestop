@@ -1,10 +1,6 @@
 package org.cedar.onestop.api.search.service
 
-import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-import org.apache.http.HttpEntity
-import org.apache.http.entity.ContentType
-import org.apache.http.nio.entity.NStringEntity
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
