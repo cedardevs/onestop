@@ -96,15 +96,14 @@ class ElasticsearchService {
   }
 
   private Map addAggregations(Map query, boolean getFacets, boolean getCollections) {
-    def aggregations = []
+    def aggregations = [:]
 
     if (getFacets) {
-      def gcmdKeywords = searchRequestParserService.createGCMDAggregations(getCollections)
-      gcmdKeywords.each { k, v -> aggregations.add([(k): v]) }
+      aggregations.putAll(searchRequestParserService.createGCMDAggregations(getCollections))
     }
 
     if (getCollections) {
-      aggregations.add([collections: searchRequestParserService.createCollectionsAggregation()])
+      aggregations.put("collections", searchRequestParserService.createCollectionsAggregation())
     }
 
     def requestBody = [
@@ -115,18 +114,129 @@ class ElasticsearchService {
   }
 
   private Map getCollectionResults(Map requestBody, Map pageParams) {
-    def result = []
-    // TODO need to set size in first request to 0 here; size & offset in multiget
-    // TODO
-    // new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    requestBody.size = 0
+
+    String searchEndpoint = "/$SEARCH_INDEX/$GRANULE_TYPE/_search"
+    def granuleRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, granuleRequest))
+
+    def totalCount = searchResponse.aggregations.collections.buckets.size()
+    if (!totalCount) {
+      return [
+          data: [],
+          meta: [
+              total: 0,
+              took : searchResponse.tookInMillis
+          ]
+      ]
+    }
+
+    def offset = pageParams?.offset ?: 0
+    def max = pageParams?.max ?: 10
+
+    def collectionsToRetrieve = searchResponse.aggregations.collections.buckets
+        .stream()
+        .skip(offset)
+        .limit(max)
+        .map({ i -> i.key })
+        .collect()
+
+    def multiGetEndpoint = "/$SEARCH_INDEX/$COLLECTION_TYPE/_mget"
+    def multiGetRequest = new NStringEntity(JsonOutput.toJson([ids: collectionsToRetrieve]), ContentType.APPLICATION_JSON)
+    def multiGetResponse = parseResponse(restClient.performRequest("GET", multiGetEndpoint, Collections.EMPTY_MAP, multiGetRequest))
+    def result = [
+        data: multiGetResponse.docs.collect {
+          [id: it._id, type: it._type, attributes: it._source]
+        },
+        meta: [
+            total: totalCount,
+            took : searchResponse.took
+        ]
+    ]
+
+    def facets = prepareFacets(searchResponse, true)
+    if (facets) {
+      result.meta.facets = facets
+    }
     return result
   }
 
   private Map getGranuleResults(Map requestBody, Map pageParams) {
-    def result = []
-    // TODO set size/offset w/pageParams
-    // new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    requestBody.size = pageParams?.max ?: 10
+    requestBody.from = pageParams?.offset ?: 0
+
+    String searchEndpoint = "/$SEARCH_INDEX/$GRANULE_TYPE/_search"
+    def granuleRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, granuleRequest))
+    def result = [
+        data: searchResponse.hits.hits.collect {
+          [id: it._id, type: it._type, attributes: it._source]
+        },
+        meta: [
+            took : searchResponse.took,
+            total: searchResponse.hits.total
+        ]
+    ]
+
+    def facets = prepareFacets(searchResponse, false)
+    if (facets) {
+      result.meta.facets = facets
+    }
+
     return result
+  }
+
+  private static final topLevelKeywords = [
+      'science' : [
+          'Agriculture', 'Atmosphere', 'Biological Classification', 'Biosphere', 'Climate Indicators',
+          'Cryosphere', 'Human Dimensions', 'Land Surface', 'Oceans', 'Paleoclimate', 'Solid Earth',
+          'Spectral/Engineering', 'Sun-Earth Interactions', 'Terrestrial Hydrosphere'
+      ],
+      'location': [
+          'Continent', 'Geographic Region', 'Ocean', 'Solid Earth', 'Space', 'Vertical Location'
+      ]
+  ]
+
+  private Map prepareFacets(Map searchResponse, boolean collections) {
+    def aggregations = searchResponse.aggregations
+    if (!aggregations) {
+      return null
+    }
+    def facetNames = searchRequestParserService.facetNameMappings.keySet()
+    def hasFacets = false
+    def result = [:]
+    facetNames.each { name ->
+      def topLevelKeywords = topLevelKeywords[name]
+      def buckets = aggregations."$name"?.buckets
+      if (buckets) {
+        hasFacets = true
+      }
+      result[name] = cleanAggregation(topLevelKeywords, buckets, collections)
+    }
+    return hasFacets ? result : null
+  }
+
+  private Map cleanAggregation(List<String> topLevelKeywords, List<Map> originalAgg, boolean collections) {
+    def cleanAgg = [:]
+    originalAgg.each { e ->
+      def term = e.key
+      def count = collections ? e.byCollection.buckets.size() : e.doc_count
+      if (!topLevelKeywords) {
+        cleanAgg.put(term, [count: count])
+      } else {
+        if (term.contains('>')) {
+          def splitTerms = term.split('>', 2)
+          if (topLevelKeywords.contains(splitTerms[0].trim())) {
+            cleanAgg.put(term, [count: count])
+          }
+        } else {
+          if (topLevelKeywords.contains(term)) {
+            cleanAgg.put(term, [count: count])
+          }
+        }
+      }
+    }
+    return cleanAgg
   }
 
   private Map parseResponse(Response response) {
