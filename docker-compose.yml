@@ -1,14 +1,25 @@
 version: '3'
 services:
   client:
-    build: ./client/
+    build:
+      context: ./client/
+      args:
+        VERSION: ${VERSION}
+        DATE: ${DATE}
+        VCS_REF: ${VCS_REF}
     ports:
      - 8080:80
     depends_on:
       - api
 
   api:
-    build: ./api/
+    build:
+      context: ./api/
+      args:
+        VERSION: ${VERSION}
+        DATE: ${DATE}
+        VCS_REF: ${VCS_REF}
+        JAR_NAME: onestop-api-all
     ports:
       - 8097:8097
     depends_on:

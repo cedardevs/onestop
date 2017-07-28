@@ -1,5 +1,18 @@
 FROM openjdk:8
+ARG JAR_NAME
+ARG VCS_REF
+ARG VERSION
+ARG DATE
+
+LABEL org.label-schema.schema-version=1.0
+LABEL org.label-schema.version=${VERSION}
+LABEL org.label-schema.build-date=${DATE}
+LABEL org.label-schema.name="OneStop API"
+LABEL org.label-schema.vendor=CEDAR
+LABEL org.label-schema.vcs-url=https://github.com/cedardevs/onestop
+LABEL org.label-schema.vcs-ref=${VCS_REF}
+
 WORKDIR /usr/src/app
-COPY build/libs/onestop-api-all-1.2.0-SNAPSHOT.war /usr/src/app
+COPY build/libs/${JAR_NAME}-${VERSION}.war /usr/src/app
 EXPOSE 8097
-CMD ["java", "-jar", "/usr/src/app/onestop-api-all-1.2.0-SNAPSHOT.war", "--elasticsearch.host=elasticsearch"]
+CMD ["java", "-jar", "/usr/src/app/${JAR_NAME}-${VERSION}.war", "--elasticsearch.host=elasticsearch"]
