@@ -186,6 +186,7 @@ class ElasticsearchService {
     return result
   }
 
+  // TODO This really needs to be part of config that can change -- properly setup @RefreshScope beans & a Config Manager microservice...?
   private static final topLevelKeywords = [
       'science' : [
           'Agriculture', 'Atmosphere', 'Biological Classification', 'Biosphere', 'Climate Indicators',
