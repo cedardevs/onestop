@@ -30,8 +30,8 @@ class SearchRequestParserService {
 
     def requestQuery = [
         bool: [
-            must  : assembleScoringContext(params.queries),
-            filter: assembleFilteringContext(params.filters)
+            must  : assembleScoringContext(params.queries) ?: [:],
+            filter: assembleFilteringContext(params.filters) ?: [:]
         ]
     ]
     return requestQuery
@@ -64,7 +64,7 @@ class SearchRequestParserService {
   }
 
   Map createGCMDAggregations(boolean forCollections) {
-    def aggregations = []
+    def aggregations = [:]
     facetNameMappings.each { name, field ->
       def agg = [
           terms: [
@@ -85,13 +85,16 @@ class SearchRequestParserService {
             ]
         ]
       }
-      aggregations.add([(name): agg])
+      aggregations.put(name, agg)
     }
     return aggregations
   }
 
-  private Map assembleScoringContext(List<Map> queries) {
+  private List<Map> assembleScoringContext(List<Map> queries) {
     def allTextQueries = []
+    if (!queries) {
+      return null
+    }
 
     def groupedQueries = queries.groupBy { it.type }
 
@@ -136,10 +139,10 @@ class SearchRequestParserService {
                   ]
               ],
               field_value_factor: [
-                  field   : "dsmmAverage",
+                  field   : 'dsmmAverage',
                   modifier: "${config.dsmm.modifier ?: 'log1p'}",
-                  factor  : "${config.dsmm.factor ?: 1f}",
-                  missing : 0
+                  factor  : config.dsmm.factor ?: 1f,
+                  missing : 0 // FIXME make this a field that can be set in the config; 0 may be the wrong value if not using log1p
               ],
               boost_mode        : 'sum'
           ]
@@ -148,13 +151,15 @@ class SearchRequestParserService {
       allTextQueries.each { query ->
         functionScoreQuery.function_score.query.bool.must.add(query)
       }
-      return functionScoreQuery
+      def thisIsRidiculousAndOnlyHereBecauseQueriesAreArrays = [] // FIXME #171 >:[
+      thisIsRidiculousAndOnlyHereBecauseQueriesAreArrays.add(functionScoreQuery)
+      return thisIsRidiculousAndOnlyHereBecauseQueriesAreArrays
     } else {
       return allTextQueries
     }
   }
 
-  private Map assembleFilteringContext(List<Map> filters) {
+  private List<Map> assembleFilteringContext(List<Map> filters) {
     /*For filters:
      * union: A | B | A & B; intersection: A & B
      - union with bool > must > bool > should [] for multiple selections on same term
@@ -163,6 +168,9 @@ class SearchRequestParserService {
      - intersection probably bool > must > bool > must (single term)
 */
     def allFilters = []
+    if (!filters) {
+      return null
+    }
 
     def groupedFilters = filters.groupBy { it.type }
 
