@@ -1,0 +1,35 @@
+version: '3'
+services:
+  client:
+    build:
+      context: ./client/
+      args:
+        VERSION: ${VERSION}
+        DATE: ${DATE}
+        VCS_REF: ${VCS_REF}
+    ports:
+     - 8080:80
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ./api/
+      args:
+        VERSION: ${VERSION}
+        DATE: ${DATE}
+        VCS_REF: ${VCS_REF}
+        JAR_NAME: onestop-api-all
+    ports:
+      - 8097:8097
+    depends_on:
+      - elasticsearch
+    environment:
+     - elasticsearch_host=elasticsearch
+     - elasticsearch_port=9300
+
+  elasticsearch:
+    build: ./elasticsearch/docker-es/
+    ports:
+     - 9300:9300
+     - 9200:9200
