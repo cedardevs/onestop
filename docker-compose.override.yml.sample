@@ -1,5 +1,0 @@
-version: '3'
-services:
-  elasticsearch:
-    volumes:
-     - /tmp/esvol:/usr/share/elasticsearch/data

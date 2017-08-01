@@ -4,8 +4,8 @@ OneStop Search
 [![Build Status](https://travis-ci.org/cedardevs/onestop.svg?branch=master)](https://travis-ci.org/cedardevs/onestop)
 [ ![Download](https://api.bintray.com/packages/cires-ncei/maven/onestop/images/download.svg) ](https://bintray.com/cires-ncei/maven/onestop/_latestVersion)
 
-OneStop search software is used to allow discovery and access to the
-National Oceanic and Atmospheric Administration’s publicly available
+OneStop search software is used to allow discovery and access to the 
+National Oceanic and Atmospheric Administration’s publicly available 
 data holdings. It is being developed on a grant by a team of researchers
 from the University of Colorado (more legal info below).
 
@@ -70,7 +70,7 @@ As an example, here is how you could install the entire system on a single Fedor
         proxy_pass http://127.0.0.1:8097/onestop/api/search;
     }
     ```
-
+    
 You should now be able to hit your web server, see the UI, and execute search queries (probably with no results yet).
 For more detailed information about each component, see the sections below.
 
@@ -80,15 +80,6 @@ You can build the software from source by running `./gradlew build` from the roo
 
 This will use Gradle to download the necessary dependencies, run the tests, and compile the software.
 The API and client artifacts will be located at `api/build/libs/onestop-api-[version].war` and `client/build/libs/onestop-client-[version].tar`, respectively.
-
-### Docker
-
-After building the project, you can run it locally with the following command:
-```
-env VERSION=1.2.0-SNAPSHOT VCS_REF="$(git rev-parse --short HEAD)" DATE="$(env TZ=0 date +"%Y-%m-%dT%H:%M:%SZ")" docker-compose up -d
-```
-
-In order to mount a disk to the elastic search container, to either save the data between runs or to provide preloaded data, copy docker-compose.override.yml.sample to docker-compose.override.yml. Configuration in the override will automatically be applied when running docker-compose up.
 
 ### API
 
@@ -117,26 +108,26 @@ the app with the credentials for the two users.
 Readonly User:
 ```json
 {
-  "cluster": [ "transport_client" ],
-  "indices": [
+  "cluster": [ "transport_client" ], 
+  "indices": [ 
     {
-      "names": [ "search_*" ],
-      "privileges": [ "read" ]
+      "names": [ "search_*" ], 
+      "privileges": [ "read" ] 
     }
-  ]
+  ] 
 }
 ```
 
 Read/Write User:
 ```json
 {
-  "cluster": [ "transport_client", "manage" ],
-  "indices": [
+  "cluster": [ "transport_client", "manage" ], 
+  "indices": [ 
     {
-      "names": [ "search_*", "staging_*" ],
-      "privileges": [ "all" ]
+      "names": [ "search_*", "staging_*" ], 
+      "privileges": [ "all" ] 
     }
-  ]
+  ] 
 }
 ```
 
@@ -158,7 +149,7 @@ e.g. with an environment variable:
 
 `SPRING_CONFIG_LOCATION=file:/my/config/path/config.yml ./onestop-api.war`
 
-See the [API's default config values](api/defaults.yml) for a full picture of the values that can be set.
+See the [API's default config values](api/defaults.yml) for a full picture of the values that can be set. 
 
 ### Client
 
@@ -200,7 +191,7 @@ All metadata documents must have a `<gmd:fileIdentifier>` tag containing either 
   <gmd:fileIdentifier>
     <gco:CharacterString>[IDENTIFIER]</gco:CharacterString>
   </gmd:fileIdentifier>
-  ...
+  ... 
 </gmi:MI_Metadata>  
 ```
 
@@ -219,7 +210,7 @@ the `fileIdentifier` of the parent record verbatim. For example:
   <gmd:parentIdentifier>
     <gco:CharacterString>[PARENT'S FILE IDENTIFIER]</gco:CharacterString>
   </gmd:parentIdentifier>
-  ...
+  ... 
 </gmi:MI_Metadata>  
 ```
 
@@ -256,10 +247,10 @@ tag in one or more of the uploaded metadata documents.
 
 ## Legal
 
-This software was developed by Team Foam-Cat,
-under the OneStop project: 1553647,
+This software was developed by Team Foam-Cat, 
+under the OneStop project: 1553647, 
 NOAA award number NA12OAR4320127 to CIRES.
-This code is licensed under GPL version 2.
+This code is licensed under GPL version 2. 
 © 2016 The Regents of the University of Colorado.
 
 This program is free software; you can redistribute it and/or
