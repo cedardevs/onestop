@@ -43,10 +43,15 @@ subprojects {
   }
 }
 
+task promote(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
+  executable "bash"
+  args "-c", "curl -X POST -u \"$bintrayUser:$bintrayKey\" -H \"Content-Length: 0\"\
+    \"http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/$travisBuildNumber?params=releaseVersion=$baseVersion\""
+}
+
 apply plugin: 'com.gradle.build-scan'
 
 group = 'cires.ncei.onestop'
-version = '0.0.55'
 
 subprojects.each {
   it.group = group

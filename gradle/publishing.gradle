@@ -8,6 +8,7 @@ apply plugin: 'com.jfrog.artifactory'
 ext {
   bintrayUser = System.getenv('BINTRAY_USER')
   bintrayKey = System.getenv('BINTRAY_KEY')
+  travisBuildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
   baseVersion = version
 }
 
@@ -28,6 +29,7 @@ artifactory {
       publications 'main'
     }
   }
+  clientConfig.info.setBuildNumber("$travisBuildNumber")
 }
 
 artifactoryPublish {
