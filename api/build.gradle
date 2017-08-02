@@ -143,7 +143,7 @@ task dockerImage(type: Exec, description: 'Creates a docker image with the curre
   dependsOn bootRepackage
   executable "bash"
   args "-c", "docker build --no-cache \
-    --build-arg VCS_REF=${git rev-parse --short HEAD} \
+    --build-arg VCS_REF=\$(git rev-parse --short HEAD) \
     --build-arg VERSION=${project.version} \
     --build-arg DATE=" + getDateTime() + " \
     -t cedardevs/${rootProject.name}-${project.name}:${project.version} ."
