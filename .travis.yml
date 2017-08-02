@@ -38,3 +38,5 @@ deploy:
   # publish SNAPSHOT build and images to artifactory
   # run promote if the commit was tagged with a version
   script: bash -c "if [[ $TRAVIS_TAG =~ ^v[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*-test[0-9]*$ ]]; then ./gradlew artifactoryPublish promote; elif [[ $TRAVIS_BRANCH == '161-docker-publishing-and-es5' ]]; then ./gradlew artifactoryPublish; fi"
+  on:
+    all_branches: true
