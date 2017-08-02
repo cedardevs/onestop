@@ -1,0 +1,221 @@
+{
+  "fileIdentifier": "gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R",
+  "parentIdentifier": "gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R",
+  "doi": null,
+  "title": "GHRSST Level 2P Western Pacific Regional Skin Sea Surface Temperature from the Multifunctional Transport Satellite 1R (MTSAT-1R) (GDS version 1)",
+  "alternateTitle": "Sea Surface Temperature, 80E-180E and 55S-55N, at 0.05 degree resolution from MTSAT-1R Imager Sectors every 1.0 hour",
+  "description": "Multi-functional Transport Satellites (MTSAT) are a series of geostationary weather satellites operated by the Japan Meteorological Agency (JMA). MTSAT carries an aeronautical mission to assist air navigation, plus a meteorological mission to provide imagery over the Asia-Pacific region for the hemisphere centered on 140 East. The meteorological mission includes an imager giving nominal hourly full Earth disk images in five spectral bands (one visible, four infrared). MTSAT are spin stabilised satellites. With this system images are built up by scanning with a mirror that is tilted in small successive steps from the north pole to south pole at a rate such that on each rotation of the satellite an adjacent strip of the Earth is scanned. It takes about 25 minutes to scan the full Earth's disk. This builds a picture 10,000 pixels for the visible images (1.25 km resolution) and 2,500 pixels (4 km resolution) for the infrared images. The MTSAT-1R (also known as Himawari 6) and it's radiometer (MTSAT-1R Imager) was successfully launched on 26 February 2005. For this Group for High Resolution Sea Surface Temperature (GHRSST) dataset, skin sea surface temperature (SST) measurements are calculated from the IR channels of the MTSAT-1R Imager full resolution data in satellite projection on a hourly basis. L2P datasets including Single Sensor Error Statistics (SSES) are then derived following the GHRSST Data Processing Specification (GDS) version 1.5.",
+  "keywords": [
+    "SEA SURFACE TEMPERATURE",
+    "MTSAT Imager",
+    "satellite data",
+    "MTSAT-1R SATELLITE",
+    "US DOC; NOAA; NESDIS; Office of Satellite Data Processing and Distribution",
+    "US NASA; Jet Propulsion Laboratory; Physical Oceanography Distributed Active Archive Center",
+    "Group for High Resolution Sea Surface Temperature (GHRSST)",
+    "World-Wide Distribution",
+    "oceanography"
+  ],
+  "topicCategories": [
+    "environment",
+    "oceans",
+    "biota",
+    "climatologyMeteorologyAtmosphere"
+  ],
+  "gcmdScience": [
+    "Oceans > Ocean Temperature > Sea Surface Temperature > Skin Sea Surface Temperature"
+  ],
+  "gcmdLocations": [
+    "Arctic Ocean",
+    "Alaska > Unalaska",
+    "Geographic Region > Global Ocean",
+    "Western Pacific Ocean"
+  ],
+  "gcmdInstruments": [
+  ],
+  "gcmdPlatforms": [
+  ],
+  "gcmdProjects": [
+  ],
+  "gcmdDataCenters": [
+    "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce"
+  ],
+  "gcmdDataResolution": [
+  ],
+  "temporalBounding": {
+    "beginDate": "2009-11-22",
+    "beginIndeterminate": null,
+    "endDate": "2012-12-26",
+    "endIndeterminate": null,
+    "instant": null,
+    "instantIndeterminate": null
+  },
+  "spatialBounding": {
+    "type": "envelope",
+    "coordinates": [
+      [
+        60.0,
+        73.0
+      ],
+      [
+        -143.0,
+        -73.0
+      ]
+    ]
+  },
+  "isGlobal": false,
+  "acquisitionInstruments": [
+    {
+      "instrumentIdentifier": "MTSAT 1R Imager > Multifunctional Transport Satellites 1R Imager",
+      "instrumentType": "sensor",
+      "instrumentDescription": "MTSAT 1R carries a 5 channel scanning radiometer with four IR channels and one visible channel."
+    }
+  ],
+  "acquisitionOperations": [
+  ],
+  "acquisitionPlatforms": [
+    {
+      "platformIdentifier": "MTSAT1R > Multi-functional Transport Satellite 1 Replacement",
+      "platformDescription": "The Multi-functional Transport Satellite (MTSAT) series fulfills a meteorological function for the Japan Meteorological Agency and an aviation control function for the Civil Aviation Bureau of the Ministry of Land, Infrastructure and Transport.",
+      "platformSponsor": [
+        "NOAA/NESDIS/OSDPD",
+        "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
+      ]
+    }
+  ],
+  "dataFormats": [
+    "NETCDF"
+  ],
+  "links": [
+    {
+      "linkName": "Granule Search",
+      "linkProtocol": "HTTP",
+      "linkUrl": "http://www.nodc.noaa.gov/geoportal/rest/find/document?searchText=fileIdentifier%3AGHRSST-OSDPD-L2P-MTSAT1R*%20OR%20fileIdentifier%3AOSDPD-L2P-MTSAT1R*&start=1&max=100&f=SearchPage",
+      "linkDescription": "Granule Search",
+      "linkFunction": "search"
+    },
+    {
+      "linkName": "Descriptive Information",
+      "linkProtocol": "HTTP",
+      "linkUrl": "http://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R",
+      "linkDescription": "Navigate directly to the URL for a descriptive web page with download links.",
+      "linkFunction": "information"
+    },
+    {
+      "linkName": "THREDDS",
+      "linkProtocol": "THREDDS",
+      "linkUrl": "http://data.nodc.noaa.gov/thredds/catalog/ghrsst/L2P/MTSAT1R/OSDPD/",
+      "linkDescription": "These data are available through a variety of services via a THREDDS (Thematic Real-time Environmental Distributed Data Services) Data Server (TDS). Depending on the dataset, the TDS can provide WMS, WCS, DAP, HTTP, and other data access and metadata services as well. For more information on the TDS, see http://www.unidata.ucar.edu/software/thredds/current/tds/.",
+      "linkFunction": "download"
+    },
+    {
+      "linkName": "OPeNDAP",
+      "linkProtocol": "DAP",
+      "linkUrl": "http://data.nodc.noaa.gov/opendap/ghrsst/L2P/MTSAT1R/OSDPD/",
+      "linkDescription": "These data are available through the Data Access Protocol (DAP) via an OPeNDAP Hyrax server. For a listing of OPeNDAP clients which may be used to access OPeNDAP-enabled data sets, please see the OPeNDAP website at http://opendap.org/.",
+      "linkFunction": "download"
+    },
+    {
+      "linkName": "HTTP",
+      "linkProtocol": "HTTP",
+      "linkUrl": "http://data.nodc.noaa.gov/ghrsst/L2P/MTSAT1R/OSDPD/",
+      "linkDescription": "Navigate directly to the URL for data access and direct download.",
+      "linkFunction": "download"
+    },
+    {
+      "linkName": "FTP",
+      "linkProtocol": "FTP",
+      "linkUrl": "ftp://ftp.nodc.noaa.gov/pub/data.nodc/ghrsst/L2P/MTSAT1R/OSDPD/",
+      "linkDescription": "These data are available through the File Transfer Protocol (FTP). You may use\n                      any FTP client to download these data.",
+      "linkFunction": "download"
+    }
+  ],
+  "contacts": [
+    {
+      "individualName": null,
+      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "role": "custodian"
+    },
+    {
+      "individualName": "Robert Potash",
+      "organizationName": "OSDPD > NOAA Office of Satellite Data Processing and Distribution",
+      "role": "pointOfContact"
+    },
+    {
+      "individualName": null,
+      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "role": "publisher"
+    },
+    {
+      "individualName": null,
+      "organizationName": "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+      "role": "publisher"
+    },
+    {
+      "individualName": "Edward M. Armstrong",
+      "organizationName": "US NASA; Jet Propulsion Laboratory (JPL)",
+      "role": "resourceProvider"
+    },
+    {
+      "individualName": null,
+      "organizationName": "US NASA; Jet Propulsion Laboratory; Physical Oceanography Distributed Active Archive Center (JPL PO.DAAC)",
+      "role": "resourceProvider"
+    },
+    {
+      "individualName": null,
+      "organizationName": "US DOC; NOAA; NESDIS; Office of Satellite and Product Operations (OSDPD)",
+      "role": "originator"
+    },
+    {
+      "individualName": null,
+      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "role": "pointOfContact"
+    },
+    {
+      "individualName": null,
+      "organizationName": "Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)",
+      "role": "custodian"
+    },
+    {
+      "individualName": "NOAA/NESDIS/OSDPD",
+      "organizationName": null,
+      "role": "originator"
+    },
+    {
+      "individualName": null,
+      "organizationName": "NOAA/NESDIS",
+      "role": "publisher"
+    },
+    {
+      "individualName": null,
+      "organizationName": "Group for High Resolution Sea Surface Temperature",
+      "role": "custodian"
+    },
+    {
+      "individualName": null,
+      "organizationName": "NOAA/NESDIS/OSDPD",
+      "role": "sponsor"
+    },
+    {
+      "individualName": null,
+      "organizationName": "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA",
+      "role": "sponsor"
+    }
+  ],
+  "thumbnail": "http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R",
+  "modifiedDate": "2016-04-24T22:38:49",
+  "creationDate": null,
+  "revisionDate": null,
+  "publicationDate": "2011-09-03",
+  "dsmmAccessibility": 0,
+  "dsmmDataIntegrity": 0,
+  "dsmmDataQualityAssessment": 0,
+  "dsmmDataQualityAssurance": 0,
+  "dsmmDataQualityControlMonitoring": 0,
+  "dsmmPreservability": 0,
+  "dsmmProductionSustainability": 0,
+  "dsmmTransparencyTraceability": 0,
+  "dsmmUsability": 0,
+  "dsmmAverage": 0
+}

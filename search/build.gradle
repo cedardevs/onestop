@@ -38,6 +38,10 @@ dependencies {
   testCompile "org.spockframework:spock-core:${project.spockVersion}"
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
+  testCompile ("org.elasticsearch:elasticsearch:${project.esVersion}"){
+    exclude group: 'com.fasterxml.jackson.core'
+  }
+  testCompile "org.elasticsearch.client:transport:${project.esVersion}"
 }
 
 ext {
