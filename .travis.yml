@@ -38,5 +38,5 @@ deploy:
   skip_cleanup: true
   script: ./gradlew artifactoryPublish
   on:
-    condition: $TRAVIS_BRANCH == '161-docker-publishing-and-es5' || $TRAVIS_TAG =~ ^v[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*-test$
+    condition: $TRAVIS_BRANCH == '161-docker-publishing-and-es5' || $TRAVIS_TAG =~ ^v[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*-test[0-9]*$
     all_branches: true
