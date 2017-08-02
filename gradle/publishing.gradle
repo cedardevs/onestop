@@ -8,6 +8,7 @@ apply plugin: 'com.jfrog.artifactory'
 ext {
   bintrayUser = System.getenv('BINTRAY_USER')
   bintrayKey = System.getenv('BINTRAY_KEY')
+  baseVersion = version
 }
 
 // only publish snapshot versions
