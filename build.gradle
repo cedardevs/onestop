@@ -18,6 +18,8 @@ buildscript {
   }
 }
 
+apply from: "${rootDir}/gradle/publishing.gradle"
+
 subprojects {
   project.ext {
     esVersion = '2.4.1'
