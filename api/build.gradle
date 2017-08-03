@@ -158,6 +158,8 @@ task publishImage(type: Exec, description: 'Publishes the docker image', group: 
   args "-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && docker logout"
 }
 
+artifactoryPublish.dependsOn publishImage
+
 task promote(type: Exec, description: 'Publishes the promoted docker image', group: 'publish') {
   dependsOn dockerImage
   executable "bash"
@@ -168,5 +170,3 @@ task promote(type: Exec, description: 'Publishes the promoted docker image', gro
     docker push cedardevs/${rootProject.name}-${project.name}:latest && \
     docker logout"
 }
-
-artifactoryPublish.dependsOn promote
