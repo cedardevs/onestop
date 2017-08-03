@@ -38,6 +38,6 @@ deploy:
   skip_cleanup: true
   # publish SNAPSHOT build and images to artifactory
   # run promote if the commit was tagged with a version
-  script: bash -c "if [[ \"$TRAVIS_TAG\" == ^v[0-9][0-9]*.[0-9][0-9]*.[0-9][0-9]*-test[0-9]*$ ]]; then ./gradlew artifactoryPublish promote; elif [[ \"$TRAVIS_BRANCH\" == '161-docker-publishing-and-es5' ]]; then ./gradlew artifactoryPublish; fi"
+  script: bash -c "if [[ \"$TRAVIS_TAG\" == v* ]]; then echo \"Promoting version $TRAVIS_TAG\" ; ./gradlew artifactoryPublish promote; elif [[ \"$TRAVIS_BRANCH\" == '161-docker-publishing-and-es5' ]]; then echo 'Publishing Snapshots'; ./gradlew artifactoryPublish; else echo 'Skipping publish.'; fi"
   on:
     all_branches: true
