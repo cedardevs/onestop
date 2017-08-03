@@ -18,8 +18,6 @@ buildscript {
   }
 }
 
-apply from: "${rootDir}/gradle/publishing.gradle"
-
 subprojects {
   project.ext {
     esVersion = '2.4.1'
@@ -47,8 +45,8 @@ subprojects {
 
 task promote(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
   executable "bash"
-  args "-c", "curl -X POST -u \"$bintrayUser:$bintrayKey\" -H \"Content-Length: 0\"\
-    \"http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/$travisBuildNumber?params=releaseVersion=$baseVersion\""
+  args "-c", "curl -X POST -u \"$BINTRAY_USER:$BINTRAY_KEY\" -H \"Content-Length: 0\"\
+    \"http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/$TRAVIS_BUILD_NUMBER?params=releaseVersion=${project.version}\""
 }
 
 apply plugin: 'com.gradle.build-scan'
