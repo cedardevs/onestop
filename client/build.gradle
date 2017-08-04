@@ -79,7 +79,6 @@ publishing {
 }
 
 task dockerImage(type: Exec, description: 'Creates a docker image with the current jar.', group: 'docker') {
-  dependsOn bootRepackage
   executable "bash"
   args "-c", "docker build --no-cache \
     --build-arg VCS_REF=\$(git rev-parse --short HEAD) \
