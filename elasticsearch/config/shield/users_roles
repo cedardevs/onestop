@@ -1,0 +1,4 @@
+admin:es_admin
+user:es_search
+transport_client:es_search
+power_user:es_etl
