@@ -41,28 +41,28 @@ class SearchIntegrationTests extends Specification {
   private String GRANULE_TYPE
 
   private MediaType contentType = MediaType.APPLICATION_JSON_UTF8
-  private List datasets = ['GHRSST', 'DEM']
-  private List collections = ['C1', 'C2', 'C3']
-  private List granules = ['G1', 'G2', 'G3']
 
   private RestTemplate restTemplate
   private String searchBaseUriString
   private URI searchBaseUri
 
   void setup() {
-    String cEndpoint = "/$SEARCH_INDEX/$COLLECTION_TYPE"
-    String gEndpoint = "/$SEARCH_INDEX/$GRANULE_TYPE"
     def cl = ClassLoader.systemClassLoader
-    for (e in datasets) {
-      for (c in collections) {
+    def indexJson = cl.getResourceAsStream('indexSettings.json').text
+    def indexSettings = new NStringEntity(indexJson, ContentType.APPLICATION_JSON)
+    restClient.performRequest('DELETE', '_all')
+    restClient.performRequest('PUT', 'search', Collections.EMPTY_MAP, indexSettings)
+
+    for (e in ['GHRSST', 'DEM']) {
+      for (c in ['C1', 'C2', 'C3']) {
         def metadata = cl.getResourceAsStream("data/${e}/${c}.json").text
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-        restClient.performRequest('PUT', cEndpoint, Collections.EMPTY_MAP, record)
+        restClient.performRequest('PUT', '/search/collection', Collections.EMPTY_MAP, record)
       }
-      for (g in granules) {
+      for (g in ['G1', 'G2', 'G3']) {
         def metadata = cl.getResourceAsStream("data/${e}/${g}.json").text
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-        restClient.performRequest('PUT', gEndpoint, Collections.EMPTY_MAP, record)
+        restClient.performRequest('PUT', '/search/granule', Collections.EMPTY_MAP, record)
       }
     }
 

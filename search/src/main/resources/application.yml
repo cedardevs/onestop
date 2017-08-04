@@ -20,6 +20,7 @@ logging:
       org.hibernate: WARN
 
 elasticsearch:
+  version: ${esVersion}
   host: localhost
   port: 9200
   index:

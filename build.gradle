@@ -47,7 +47,7 @@ subprojects {
 
 apply plugin: 'com.gradle.build-scan'
 
-group = 'cires.ncei.onestop'
+group = 'org.cedar.onestop'
 version = '1.2.0'
 
 subprojects.each {
