@@ -1,9 +1,12 @@
 package org.cedar.onestop.api.search
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.RestClient
+import org.elasticsearch.client.Response
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
@@ -48,22 +51,31 @@ class SearchIntegrationTests extends Specification {
   private URI searchBaseUri
 
   void setup() {
+    def json = new JsonSlurper()
     def cl = ClassLoader.systemClassLoader
     def indexJson = cl.getResourceAsStream('indexSettings.json').text
     def indexSettings = new NStringEntity(indexJson, ContentType.APPLICATION_JSON)
-    restClient.performRequest('DELETE', '_all')
-    restClient.performRequest('PUT', 'search', Collections.EMPTY_MAP, indexSettings)
+    Response response = restClient.performRequest('DELETE', '_all')
+    println("DELETE _all: ${response}") // FIXME debug
+    response = restClient.performRequest('PUT', 'search', Collections.EMPTY_MAP, indexSettings)
+    println("PUT new index: ${response}") // FIXME debug
 
     for (e in ['GHRSST', 'DEM']) {
       for (c in ['C1', 'C2', 'C3']) {
         def metadata = cl.getResourceAsStream("data/${e}/${c}.json").text
+        def id = json.parseText(metadata).fileIdentifier
+        String endpoint = "/search/collection/${id}"
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-        restClient.performRequest('PUT', '/search/collection', Collections.EMPTY_MAP, record)
+        response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, record)
+        println("PUT new collection: ${response}") // FIXME debug
       }
       for (g in ['G1', 'G2', 'G3']) {
         def metadata = cl.getResourceAsStream("data/${e}/${g}.json").text
+        def id = json.parseText(metadata).fileIdentifier
+        String endpoint = "/search/granule/${id}"
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-        restClient.performRequest('PUT', '/search/granule', Collections.EMPTY_MAP, record)
+        response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, record)
+        println("PUT new granule: ${response}") // FIXME debug
       }
     }
 

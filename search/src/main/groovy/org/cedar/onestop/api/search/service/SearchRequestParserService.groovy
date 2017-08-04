@@ -12,11 +12,11 @@ class SearchRequestParserService {
 
   public static final Map<String, String> facetNameMappings = [
       'science'       : 'gcmdScience',
-      'instruments'   : 'gcmdInstruments.raw',
-      'platforms'     : 'gcmdPlatforms.raw',
-      'projects'      : 'gcmdProjects.raw',
-      'dataCenters'   : 'gcmdDataCenters.raw',
-      'dataResolution': 'gcmdDataResolution.raw',
+      'instruments'   : 'gcmdInstruments',
+      'platforms'     : 'gcmdPlatforms',
+      'projects'      : 'gcmdProjects',
+      'dataCenters'   : 'gcmdDataCenters',
+      'dataResolution': 'gcmdDataResolution',
   ]
 
   @Autowired
@@ -45,7 +45,7 @@ class SearchRequestParserService {
     return [
         terms       : [
             field: "parentIdentifier",
-            size : 0,
+            size : Integer.MAX_VALUE,
             order: [
                 "score_agg.max": "desc"
             ]
@@ -69,7 +69,7 @@ class SearchRequestParserService {
       def agg = [
           terms: [
               field: field,
-              size : 0,
+              size : Integer.MAX_VALUE,
               order: [
                   "_term": "asc"
               ]
@@ -80,7 +80,7 @@ class SearchRequestParserService {
             byCollection: [
                 terms: [
                     field: "parentIdentifier",
-                    size : 0
+                    size : Integer.MAX_VALUE
                 ]
             ]
         ]

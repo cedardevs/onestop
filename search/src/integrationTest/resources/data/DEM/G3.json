@@ -1,7 +1,6 @@
 {
   "fileIdentifier": "gov.noaa.ngdc.mgg.dem:4970",
   "parentIdentifier": "gov.noaa.ngdc.mgg.dem:4970",
-  "doi": null,
   "title": "U.S. Coastal Relief Model - Southern California Version 2",
   "alternateTitle": null,
   "description": "NGDC's U.S. Coastal Relief Model (CRM) provides a comprehensive view of the U.S. coastal zone integrating offshore bathymetry with land topography into a seamless representation of the coast. The CRM spans the U.S. East and West Coasts, the northern coast of the Gulf of Mexico, Puerto Rico, and Hawaii, reaching out to, and in places even beyond, the continental slope. Bathymetric and topographic data sources include: NGDC's NOS hydrographic surveys and multibeam bathymetry; the U.S. Geological Survey (USGS); and other federal government agencies and academic institutions. Bathymetric contours from the International Bathymetric Chart of the Caribbean Sea and the Gulf of Mexico project were also used. Digital elevation models (DEMs) of the Great Lakes, Southern Alaska, and high-resolution DEMs of U.S. coastal communities and territories are also available.",

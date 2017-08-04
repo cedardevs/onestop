@@ -12,23 +12,51 @@
     "Adak",
     "Adak Island",
     "Andreanof Islands",
-    "Aleutian Islands"
-  ],
-  "topicCategories": [
-    "elevation"
-  ],
-  "gcmdScience": [
+    "Aleutian Islands",
     "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
     "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
     "Oceans > Bathymetry/Seafloor Topography > Water Depth",
     "Land Surface > Topography > Terrain Elevation",
     "Land Surface > Topography > Topographical Relief Maps",
-    "Oceans > Coastal Processes > Coastal Elevation"
-  ],
-  "gcmdLocations": [
+    "Oceans > Coastal Processes > Coastal Elevation",
     "Continent > North America > United States Of America > Alaska",
     "Ocean > Pacific Ocean > North Pacific Ocean",
     "Ocean > Pacific Ocean > North Pacific Ocean > Aleutian Islands",
+    "Vertical Location > Land Surface",
+    "Vertical Location > Sea Floor",
+    "DEM > Digital Elevation Model",
+    "ICSU-WDS > International Council for Science - World Data System",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "H: 1 meter - < 30 meters",
+    "V: < 1 meter"
+  ],
+  "topicCategories": [
+    "elevation"
+  ],
+  "gcmdScience": [
+    "Oceans",
+    "Oceans > Bathymetry/Seafloor Topography",
+    "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
+    "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
+    "Oceans > Bathymetry/Seafloor Topography > Water Depth",
+    "Land Surface",
+    "Land Surface > Topography",
+    "Land Surface > Topography > Terrain Elevation",
+    "Land Surface > Topography > Topographical Relief Maps",
+    "Oceans > Coastal Processes",
+    "Oceans > Coastal Processes > Coastal Elevation"
+  ],
+  "gcmdLocations": [
+    "Continent",
+    "Continent > North America",
+    "Continent > North America > United States Of America",
+    "Continent > North America > United States Of America > Alaska",
+    "Ocean",
+    "Ocean > Pacific Ocean",
+    "Ocean > Pacific Ocean > North Pacific Ocean",
+    "Ocean > Pacific Ocean > North Pacific Ocean > Aleutian Islands",
+    "Vertical Location",
     "Vertical Location > Land Surface",
     "Vertical Location > Sea Floor"
   ],

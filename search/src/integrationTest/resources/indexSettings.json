@@ -1,26 +1,4 @@
 {
-  "settings": {
-    "analysis": {
-      "analyzer": {
-        "keyword_analyzer": {
-          "tokenizer": "keyword_tokenizer",
-          "filter": [
-            "trim"
-          ]
-        }
-      },
-      "tokenizer": {
-        "keyword_tokenizer": {
-          "type": "path_hierarchy",
-          "delimiter": ">"
-        }
-      }
-    },
-    "index": {
-      "refresh_interval": "-1",
-      "number_of_replicas": "1"
-    }
-  },
   "mappings": {
     "collection": {
       "properties": {
@@ -50,62 +28,25 @@
           "type": "text"
         },
         "gcmdScience": {
-          "type": "text",
-          "analyzer": "keyword_analyzer",
-          "fields": {
-            "analyzed": {
-              "type": "text"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdLocations": {
-          "type": "text",
-          "analyzer": "keyword_analyzer",
-          "fields": {
-            "analyzed": {
-              "type": "text"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdInstruments": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdPlatforms": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdProjects": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdDataCenters": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdDataResolution": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "temporalBounding": {
           "type": "object",
@@ -146,13 +87,7 @@
           "type": "nested",
           "properties": {
             "instrumentIdentifier": {
-              "type": "text",
-              "fields": {
-                "hierarchy": {
-                  "type": "text",
-                  "analyzer": "keyword_analyzer"
-                }
-              }
+              "type": "keyword"
             },
             "instrumentType": {
               "type": "keyword"
@@ -331,62 +266,25 @@
           "type": "text"
         },
         "gcmdScience": {
-          "type": "text",
-          "analyzer": "keyword_analyzer",
-          "fields": {
-            "analyzed": {
-              "type": "text"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdLocations": {
-          "type": "text",
-          "analyzer": "keyword_analyzer",
-          "fields": {
-            "analyzed": {
-              "type": "text"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdInstruments": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdPlatforms": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdProjects": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdDataCenters": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "gcmdDataResolution": {
-          "type": "text",
-          "fields": {
-            "raw": {
-              "type": "keyword"
-            }
-          }
+          "type": "keyword"
         },
         "temporalBounding": {
           "type": "object",
@@ -427,13 +325,7 @@
           "type": "nested",
           "properties": {
             "instrumentIdentifier": {
-              "type": "text",
-              "fields": {
-                "hierarchy": {
-                  "type": "text",
-                  "analyzer": "keyword_analyzer"
-                }
-              }
+              "type": "keyword"
             },
             "instrumentType": {
               "type": "keyword"
