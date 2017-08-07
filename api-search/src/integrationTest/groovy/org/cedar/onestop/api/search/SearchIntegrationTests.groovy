@@ -15,7 +15,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
-import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -55,35 +54,41 @@ class SearchIntegrationTests extends Specification {
     def cl = ClassLoader.systemClassLoader
     def indexJson = cl.getResourceAsStream('indexSettings.json').text
     def indexSettings = new NStringEntity(indexJson, ContentType.APPLICATION_JSON)
+    String endpoint = "${SEARCH_INDEX}"
     Response response = restClient.performRequest('DELETE', '_all')
-    println("DELETE _all: ${response}") // FIXME debug
-    response = restClient.performRequest('PUT', 'search', Collections.EMPTY_MAP, indexSettings)
-    println("PUT new index: ${response}") // FIXME debug
+    println("DELETE _all: ${response}")
+    response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, indexSettings)
+    println("PUT new index: ${response}")
 
     for (e in ['GHRSST', 'DEM']) {
       for (c in ['C1', 'C2', 'C3']) {
         def metadata = cl.getResourceAsStream("data/${e}/${c}.json").text
         def id = json.parseText(metadata).fileIdentifier
-        String endpoint = "/search/collection/${id}"
+        endpoint = "/${SEARCH_INDEX}/collection/${id}"
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
         response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, record)
-        println("PUT new collection: ${response}") // FIXME debug
+        println("PUT new collection: ${response}")
       }
       for (g in ['G1', 'G2', 'G3']) {
         def metadata = cl.getResourceAsStream("data/${e}/${g}.json").text
         def id = json.parseText(metadata).fileIdentifier
-        String endpoint = "/search/granule/${id}"
+        endpoint = "/${SEARCH_INDEX}/granule/${id}"
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
         response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, record)
-        println("PUT new granule: ${response}") // FIXME debug
+        println("PUT new granule: ${response}")
       }
     }
+
+    endpoint = "/${SEARCH_INDEX}/_refresh"
+    response = restClient.performRequest('POST', endpoint)
+    println("Refresh search index: ${response}")
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
     searchBaseUriString = "http://localhost:${port}/${contextPath}/search"
     searchBaseUri = searchBaseUriString.toURI()
   }
+
 
   def 'Valid query-only search with facets returns OK with expected results'() {
     setup:
@@ -139,7 +144,6 @@ class SearchIntegrationTests extends Specification {
     !locationTerms.contains('Alaska > Unalaska')
   }
 
-  @Ignore
   def 'Valid filter-only search returns OK with expected results'() {
     setup:
     def request = """\
@@ -175,7 +179,6 @@ class SearchIntegrationTests extends Specification {
     ])
   }
 
-  @Ignore
   def 'Valid query-and-filter search returns OK with expected result'() {
     setup:
     def request = """\
@@ -213,7 +216,6 @@ class SearchIntegrationTests extends Specification {
     ])
   }
 
-  @Ignore
   def 'Valid query-and-exclude-global search returns OK with expected results'() {
     setup:
     def request = """\
@@ -252,7 +254,6 @@ class SearchIntegrationTests extends Specification {
     ])
   }
 
-  @Ignore
   def 'Time filter with #situation an item\'s time range returns the correct results'() {
     setup:
     def ghrsst1FileId = 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
@@ -293,7 +294,6 @@ class SearchIntegrationTests extends Specification {
     null                   | '2008-02-01T00:00:00Z' | true    | 'end time after'
   }
 
-  @Ignore
   def 'Search with pagination specified returns OK with expected results'() {
     setup:
     def request = """\
@@ -327,11 +327,10 @@ class SearchIntegrationTests extends Specification {
     and: "Expected result is returned"
     def actualIds = items.collect { it.attributes.fileIdentifier }
     actualIds.containsAll([
-        'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
+        'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
     ])
   }
 
-  @Ignore
   def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {
     setup:
     def invalidSchemaRequest = """\
@@ -357,7 +356,6 @@ class SearchIntegrationTests extends Specification {
     result.body.errors.every { it.detail instanceof String }
   }
 
-  @Ignore
   def 'Invalid search; returns UNSUPPORTED_MEDIA_TYPE error when request body not specified as json content'() {
     setup:
     def request = """\
@@ -381,7 +379,6 @@ class SearchIntegrationTests extends Specification {
     result.body.data == null
   }
 
-  @Ignore
   def 'Invalid search; returns BAD_REQUEST error when no request body'() {
     def requestEntity = RequestEntity
         .post(searchBaseUri)
@@ -398,7 +395,6 @@ class SearchIntegrationTests extends Specification {
     result.body.data == null
   }
 
-  @Ignore
   def 'Invalid search; returns BAD_REQUEST error when request body is malformed json'() {
     setup:
     def badJsonSearch = """\
@@ -424,7 +420,6 @@ class SearchIntegrationTests extends Specification {
     errors.any { it.title?.contains("Bad Request") }
   }
 
-  @Ignore
   def 'Invalid search; returns BAD_REQUEST error when request body is invalid'() {
     setup:
     def invalidJsonSearch = """\
