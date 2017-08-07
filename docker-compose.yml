@@ -1,5 +1,6 @@
 version: '3'
 services:
+
   client:
     build:
       context: ./client/
@@ -10,26 +11,44 @@ services:
     ports:
      - 8080:80
     depends_on:
-      - api
+      - api-search
 
-  api:
+  # api:
+  #   build:
+  #     context: ./api/
+  #     args:
+  #       VERSION: ${VERSION}
+  #       DATE: ${DATE}
+  #       VCS_REF: ${VCS_REF}
+  #       JAR_NAME: onestop-api-all
+  #   ports:
+  #     - 8097:8097
+  #   depends_on:
+  #     - elasticsearch
+  #   environment:
+  #    - elasticsearch_host=elasticsearch
+  #    - elasticsearch_port=9300
+
+  api-search:
     build:
-      context: ./api/
+      context: ./api-search/
       args:
         VERSION: ${VERSION}
         DATE: ${DATE}
         VCS_REF: ${VCS_REF}
-        JAR_NAME: onestop-api-all
+        JAR_NAME: onestop-api-search-all
     ports:
       - 8097:8097
     depends_on:
       - elasticsearch
     environment:
      - elasticsearch_host=elasticsearch
-     - elasticsearch_port=9300
+     - elasticsearch_port=9200
 
   elasticsearch:
-    build: ./elasticsearch/docker-es/
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+    environment:
+     - xpack.security.enabled=false
     ports:
      - 9300:9300
      - 9200:9200
