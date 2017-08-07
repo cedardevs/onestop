@@ -1,9 +1,8 @@
 rootProject.name = 'onestop'
 
 include 'ansible'
-//include 'api'
+include 'api-search'
 include 'client'
 include 'elasticsearch'
 include 'etl'
-include 'search'
 
