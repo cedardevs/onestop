@@ -14,7 +14,14 @@
     "US NASA; Jet Propulsion Laboratory; Physical Oceanography Distributed Active Archive Center",
     "Group for High Resolution Sea Surface Temperature (GHRSST)",
     "World-Wide Distribution",
-    "oceanography"
+    "oceanography",
+    "Oceans > Ocean Temperature > Sea Surface Temperature > Skin Sea Surface Temperature",
+    "Arctic Ocean",
+    "Alaska > Unalaska",
+    "Geographic Region > Global Ocean",
+    "Western Pacific Ocean",
+    "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce"
   ],
   "topicCategories": [
     "environment",
@@ -23,11 +30,16 @@
     "climatologyMeteorologyAtmosphere"
   ],
   "gcmdScience": [
+    "Oceans",
+    "Oceans > Ocean Temperature",
+    "Oceans > Ocean Temperature > Sea Surface Temperature",
     "Oceans > Ocean Temperature > Sea Surface Temperature > Skin Sea Surface Temperature"
   ],
   "gcmdLocations": [
     "Arctic Ocean",
     "Alaska > Unalaska",
+    "Alaska",
+    "Geographic Region",
     "Geographic Region > Global Ocean",
     "Western Pacific Ocean"
   ],

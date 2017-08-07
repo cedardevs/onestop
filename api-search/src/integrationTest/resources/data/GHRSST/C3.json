@@ -22,7 +22,12 @@
     "US NASA; Jet Propulsion Laboratory; Physical Oceanography Distributed Active Archive Center",
     "Group for High Resolution Sea Surface Temperature (GHRSST)",
     "World-Wide Distribution",
-    "oceanography"
+    "oceanography",
+    "Oceans > Ocean Temperature > Sea Surface Temperature > Foundation Sea Surface Temperature",
+    "Geographic Region > Global Ocean",
+    "Global",
+    "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce"
   ],
   "topicCategories": [
     "environment",
@@ -31,9 +36,13 @@
     "climatologyMeteorologyAtmosphere"
   ],
   "gcmdScience": [
+    "Oceans",
+    "Oceans > Ocean Temperature",
+    "Oceans > Ocean Temperature > Sea Surface Temperature",
     "Oceans > Ocean Temperature > Sea Surface Temperature > Foundation Sea Surface Temperature"
   ],
   "gcmdLocations": [
+    "Geographic Region",
     "Geographic Region > Global Ocean",
     "Global"
   ],
