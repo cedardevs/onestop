@@ -1,6 +1,6 @@
 server:
-  port: 8098
-  context-path: /onestop/search
+  port: 8097
+  context-path: /onestop/api
 
 spring:
   application:
