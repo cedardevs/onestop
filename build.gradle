@@ -45,10 +45,15 @@ subprojects {
   }
 }
 
+task promote(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
+  executable "bash"
+  args "-c", "curl -X POST -u \"\$BINTRAY_USER:\$BINTRAY_KEY\" -H \"Content-Length: 0\"\
+    \"http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version\""
+}
+
 apply plugin: 'com.gradle.build-scan'
 
 group = 'org.cedar.onestop'
-version = '1.2.0'
 
 subprojects.each {
   it.group = group

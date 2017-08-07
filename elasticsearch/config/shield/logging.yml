@@ -1,0 +1,26 @@
+# default configuration for the audit trail logs
+#
+# Error Levels:
+#
+# ERROR   authentication_failed, access_denied, tampered_request, connection_denied
+# WARN    authentication_failed, access_denied, tampered_request, connection_denied, anonymous_access
+# INFO    authentication_failed, access_denied, tampered_request, connection_denied, anonymous_access, access_granted
+# DEBUG   doesn't output additional entry types beyond INFO, but extends the information emmitted for each entry
+# TRACE   authentication_failed, access_denied, tampered_request, connection_denied, anonymous_access, access_granted, connection_granted, authentication_failed [<realm>]. In addition, internal system requests (self-management requests triggered by elasticsearch itself) will also be logged for "access_granted" entry type.
+#
+
+logger:
+  shield.audit.logfile: INFO, access_log
+
+additivity:
+  shield.audit.logfile: false
+
+appender:
+
+  access_log:
+    type: dailyRollingFile
+    file: ${path.logs}/${cluster.name}-access.log
+    datePattern: "'.'yyyy-MM-dd"
+    layout:
+      type: pattern
+      conversionPattern: "[%d{ISO8601}] %m%n"
