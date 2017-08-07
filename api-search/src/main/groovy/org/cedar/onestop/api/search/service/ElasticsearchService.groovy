@@ -115,6 +115,7 @@ class ElasticsearchService {
 
   private Map getCollectionResults(Map requestBody, Map pageParams) {
     requestBody.size = 0
+    requestBody = pruneEmptyElements(requestBody)
 
     String searchEndpoint = "/$SEARCH_INDEX/$GRANULE_TYPE/_search"
     def granuleRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
@@ -164,6 +165,7 @@ class ElasticsearchService {
   private Map getGranuleResults(Map requestBody, Map pageParams) {
     requestBody.size = pageParams?.max ?: 10
     requestBody.from = pageParams?.offset ?: 0
+    requestBody = pruneEmptyElements(requestBody)
 
     String searchEndpoint = "/$SEARCH_INDEX/$GRANULE_TYPE/_search"
     def granuleRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
@@ -251,5 +253,10 @@ class ElasticsearchService {
       log.warn("Failed to parse elasticsearch response as json", e)
     }
     return result
+  }
+
+  private Map pruneEmptyElements(Map requestBody) {
+    def prunedRequest = requestBody.collectEntries { k, v -> [k, v instanceof Map ? pruneEmptyElements(v) : v]}.findAll { k, v -> v }
+    return prunedRequest
   }
 }
