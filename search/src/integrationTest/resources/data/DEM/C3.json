@@ -11,7 +11,18 @@
     "INFOTERRA > Subject disciplines > Geomorphology > Geomorphology",
     "Coastal Bathymetry",
     "Outer Continental Shelf",
-    "Coastal Topography"
+    "Coastal Topography",
+    "Oceans > Marine Geophysics > Continental Shelves",
+    "Oceans > Bathymetry > Seafloor Topography",
+    "Oceans > Marine Geophysics > Continental Rises/Slopes",
+    "Oceans > Bathymetry > Water Depths",
+    "Oceans > Coastal Processes > Coastal Elevation",
+    "Sea Floor",
+    "Pacific Ocean",
+    "North America",
+    "ICSU-WDS > International Council for Science - World Data System",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
   ],
   "topicCategories": [
     "oceans",
@@ -19,10 +30,14 @@
     "elevation"
   ],
   "gcmdScience": [
+    "Oceans",
+    "Oceans > Marine Geophysics",
     "Oceans > Marine Geophysics > Continental Shelves",
-    "Oceans > Bathymetry > Seafloor Topography",
     "Oceans > Marine Geophysics > Continental Rises/Slopes",
+    "Oceans > Bathymetry",
+    "Oceans > Bathymetry > Seafloor Topography",
     "Oceans > Bathymetry > Water Depths",
+    "Oceans > Coastal Processes",
     "Oceans > Coastal Processes > Coastal Elevation"
   ],
   "gcmdLocations": [

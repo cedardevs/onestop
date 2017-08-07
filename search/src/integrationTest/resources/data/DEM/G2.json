@@ -8,20 +8,39 @@
     "Bathymetric Digital Elevation Model",
     "Gridded elevations",
     "Mariana Trench",
-    "Pacific Ocean"
+    "Pacific Ocean",
+    "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
+    "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
+    "Oceans > Bathymetry/Seafloor Topography > Water Depth",
+    "Ocean > Pacific Ocean > Western Pacific Ocean",
+    "Ocean > Pacific Ocean > Western Pacific Ocean > Guam",
+    "Ocean > Pacific Ocean > Western Pacific Ocean > Micronesia > Northern Mariana Islands",
+    "Vertical Location > Sea Floor",
+    "DEM > Digital Elevation Model",
+    "ICSU-WDS > International Council for Science - World Data System",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "H: 100 meters - < 250 meters",
+    "V: 1 meter - < 10 meters"
   ],
   "topicCategories": [
     "elevation"
   ],
   "gcmdScience": [
+    "Oceans",
+    "Oceans > Bathymetry/Seafloor Topography",
     "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
     "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
     "Oceans > Bathymetry/Seafloor Topography > Water Depth"
   ],
   "gcmdLocations": [
+    "Ocean",
+    "Ocean > Pacific Ocean",
     "Ocean > Pacific Ocean > Western Pacific Ocean",
     "Ocean > Pacific Ocean > Western Pacific Ocean > Guam",
+    "Ocean > Pacific Ocean > Western Pacific Ocean > Micronesia",
     "Ocean > Pacific Ocean > Western Pacific Ocean > Micronesia > Northern Mariana Islands",
+    "Vertical Location",
     "Vertical Location > Sea Floor"
   ],
   "gcmdInstruments": [

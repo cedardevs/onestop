@@ -119,7 +119,7 @@
           "type": "nested",
           "properties": {
             "platformIdentifier": {
-              "type": "text"
+              "type": "keyword"
             },
             "platformDescription": {
               "type": "text"
