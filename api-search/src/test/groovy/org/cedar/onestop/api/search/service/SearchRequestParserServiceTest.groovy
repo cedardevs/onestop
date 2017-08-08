@@ -280,42 +280,42 @@ class SearchRequestParserServiceTest extends Specification {
         science       : [
             terms: [
                 field: 'gcmdScience',
-                size : 0,
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
         instruments   : [
             terms: [
-                field: 'gcmdInstruments.raw',
-                size : 0,
+                field: 'gcmdInstruments',
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
         platforms     : [
             terms: [
-                field: 'gcmdPlatforms.raw',
-                size : 0,
+                field: 'gcmdPlatforms',
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
         projects      : [
             terms: [
-                field: 'gcmdProjects.raw',
-                size : 0,
+                field: 'gcmdProjects',
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
         dataCenters   : [
             terms: [
-                field: 'gcmdDataCenters.raw',
-                size : 0,
+                field: 'gcmdDataCenters',
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ],
         dataResolution: [
             terms: [
-                field: 'gcmdDataResolution.raw',
-                size : 0,
+                field: 'gcmdDataResolution',
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
         ]
@@ -332,89 +332,89 @@ class SearchRequestParserServiceTest extends Specification {
         science       : [
             terms       : [
                 field: 'gcmdScience',
-                size : 0,
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ],
             aggregations: [
                 byCollection: [
                     terms: [
                         field: 'parentIdentifier',
-                        size : 0
+                        size : Integer.MAX_VALUE
                     ]
                 ]
             ]
         ],
         instruments   : [
             terms       : [
-                field: 'gcmdInstruments.raw',
-                size : 0,
+                field: 'gcmdInstruments',
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ],
             aggregations: [
                 byCollection: [
                     terms: [
                         field: 'parentIdentifier',
-                        size : 0
+                        size : Integer.MAX_VALUE
                     ]
                 ]
             ]
         ],
         platforms     : [
             terms       : [
-                field: 'gcmdPlatforms.raw',
-                size : 0,
+                field: 'gcmdPlatforms',
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ],
             aggregations: [
                 byCollection: [
                     terms: [
                         field: 'parentIdentifier',
-                        size : 0
+                        size : Integer.MAX_VALUE
                     ]
                 ]
             ]
         ],
         projects      : [
             terms       : [
-                field: 'gcmdProjects.raw',
-                size : 0,
+                field: 'gcmdProjects',
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ],
             aggregations: [
                 byCollection: [
                     terms: [
                         field: 'parentIdentifier',
-                        size : 0
+                        size : Integer.MAX_VALUE
                     ]
                 ]
             ]
         ],
         dataCenters   : [
             terms       : [
-                field: 'gcmdDataCenters.raw',
-                size : 0,
+                field: 'gcmdDataCenters',
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ],
             aggregations: [
                 byCollection: [
                     terms: [
                         field: 'parentIdentifier',
-                        size : 0
+                        size : Integer.MAX_VALUE
                     ]
                 ]
             ]
         ],
         dataResolution: [
             terms       : [
-                field: 'gcmdDataResolution.raw',
-                size : 0,
+                field: 'gcmdDataResolution',
+                size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ],
             aggregations: [
                 byCollection: [
                     terms: [
                         field: 'parentIdentifier',
-                        size : 0
+                        size : Integer.MAX_VALUE
                     ]
                 ]
             ]
