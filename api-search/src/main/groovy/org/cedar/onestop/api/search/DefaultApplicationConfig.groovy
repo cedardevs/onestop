@@ -44,7 +44,7 @@ class DefaultApplicationConfig {
       hosts.add(new HttpHost(host, elasticPort))
     }
 
-    def builder = RestClient.builder(hosts)
+    def builder = RestClient.builder(hosts as HttpHost[])
 
     if (keystorePath && keystorePassword) {
       // FIXME: Not sure what we need for prod security setup... this code is missing a setup SSLContext
