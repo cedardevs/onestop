@@ -4,7 +4,7 @@ server:
 
 spring:
   application:
-    name: onestop
+    name: onestop-search-api
 
 logging:
   level:
