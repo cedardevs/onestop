@@ -1,7 +1,7 @@
 package org.cedar.onestop.api.metadata.controller
 
 import groovy.util.logging.Slf4j
-import ncei.onestop.api.service.MetadataIndexService
+import org.cedar.onestop.api.metadata.service.MetadataIndexService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable

@@ -60,6 +60,14 @@ class SearchIntegrationTests extends Specification {
     response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, indexSettings)
     println("PUT new index: ${response}")
 
+    println("Failing some stuff...") // fixme debug
+    try {
+      restClient.performRequest('GET', 'potato')
+    } catch(e) {
+      println("Failed response: ${e.response}")
+    }
+
+
     for (e in ['GHRSST', 'DEM']) {
       for (c in ['C1', 'C2', 'C3']) {
         def metadata = cl.getResourceAsStream("data/${e}/${c}.json").text

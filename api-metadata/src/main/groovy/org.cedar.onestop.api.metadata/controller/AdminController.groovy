@@ -1,9 +1,9 @@
 package org.cedar.onestop.api.metadata.controller
 
 import groovy.util.logging.Slf4j
-import ncei.onestop.api.service.ETLService
-import ncei.onestop.api.service.MetadataIndexService
-import ncei.onestop.api.service.SearchIndexService
+import org.cedar.onestop.api.metadata.service.ETLService
+import org.cedar.onestop.api.metadata.service.MetadataIndexService
+import org.cedar.onestop.api.metadata.service.SearchIndexService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam

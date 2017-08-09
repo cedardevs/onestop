@@ -1,14 +1,11 @@
 package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.elasticsearch.common.xcontent.XContentType
-import org.elasticsearch.index.reindex.DeleteByQueryAction
-import org.elasticsearch.index.reindex.BulkByScrollResponse
-import org.elasticsearch.client.Client
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.rest.RestStatus
+import org.elasticsearch.client.Response
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -33,14 +30,14 @@ class MetadataIndexService {
   @Value('${elasticsearch.index.staging.granuleType}')
   String GRANULE_TYPE
 
-  private Client adminClient
+  private RestClient restClient
   private IndexAdminService indexAdminService
 
   private String invalidFileIdPattern = /.*(?![-._:])\p{Punct}.*|.*\s.*/
 
   @Autowired
-  public MetadataIndexService(Client adminClient, IndexAdminService indexAdminService) {
-    this.adminClient = adminClient
+  public MetadataIndexService(RestClient restClient, IndexAdminService indexAdminService) {
+    this.restClient = restClient
     this.indexAdminService = indexAdminService
   }
 
@@ -160,17 +157,18 @@ class MetadataIndexService {
   }
 
   public Map getMetadata(String id) {
-
-    def response = adminClient.prepareGet(STAGING_INDEX, null, id).execute().actionGet()
+    // Synthesized granules do not exist in staging so this will only ever match a single record across both types
+    String endPoint = "${STAGING_INDEX}/_all/${id}"
     def externalId = id.contains('doi:10.') ? id.replace('-', '/') : id
+    def response = parseResponse(restClient.performRequest("GET", endPoint))
 
-    if (response.exists) {
+    if (response.found) {
       return [
           data: [
               id        : externalId,
-              type      : response.type,
+              type      : response._type,
               attributes: [
-                  source: response.source
+                  source: response._source
               ]
           ]
       ]
@@ -306,6 +304,22 @@ class MetadataIndexService {
     return data
   }
 
+  private Map parseResponse(Response response) {
+    Map result = [statusCode: response?.getStatusLine()?.getStatusCode() ?: 500]
+    try {
+      if (response?.getEntity()) {
+        result += new JsonSlurper().parse(response?.getEntity()?.getContent()) as Map
+      }
+    }
+    catch (e) {
+      log.warn("Failed to parse elasticsearch response as json", e)
+    }
+    return result
+  }
+
+
+  ///////////////////////////////////////////////////////////////////////
+  // FIXME -- Should these methods be consolidated to a separate service?
   void refresh() {
     indexAdminService.refresh(STAGING_INDEX)
   }
