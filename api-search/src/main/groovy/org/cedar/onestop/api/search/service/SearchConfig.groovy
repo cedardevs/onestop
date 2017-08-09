@@ -23,6 +23,7 @@ class SearchConfig {
   static class DSMMConfig {
     Float factor
     String modifier
+    Integer missing
   }
 
   @PostConstruct

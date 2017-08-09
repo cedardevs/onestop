@@ -36,6 +36,7 @@ search:
   dsmm:
     factor: 1
     modifier: log1p
+    missing: 0
   fields:
     title: 4
     alternateTitle: 4
