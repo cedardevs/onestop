@@ -1,6 +1,7 @@
 package org.cedar.onestop.api.search.controller
 
 import groovy.util.logging.Slf4j
+import org.elasticsearch.client.ResponseException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,6 +19,20 @@ class GlobalDefaultExceptionHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleExceptions(Exception ex, WebRequest request) {
 
     def status, title, detail
+
+    if (ex instanceof ResponseException) {
+      status = ex.response.statusLine.statusCode
+
+      if (status >= 400 && status < 500) {
+        title = 'Request Parsing Error'
+        detail = 'There was an error with your request, please revise and try again.'
+      }
+      if (status >= 500) {
+        title = 'Internal Error'
+        detail = 'There was an error on our end, please try again later.'
+      }
+    }
+
     def result = [
       errors: [
         [
