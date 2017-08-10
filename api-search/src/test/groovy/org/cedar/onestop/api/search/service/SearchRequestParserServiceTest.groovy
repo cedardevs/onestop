@@ -45,11 +45,12 @@ class SearchRequestParserServiceTest extends Specification {
         bool: [
             must  : [[
                          query_string: [
-                             query      : "winter",
-                             fields     : ["_all"],
-                             phrase_slop: 0,
-                             tie_breaker: 0,
-                             lenient    : true
+                             query               : "winter",
+                             fields              : ["_all"],
+                             phrase_slop         : 0,
+                             tie_breaker         : 0,
+                             minimum_should_match: '75%',
+                             lenient             : true
                          ]]],
             filter: [:]
         ]
@@ -74,11 +75,12 @@ class SearchRequestParserServiceTest extends Specification {
         bool: [
             must  : [[
                          query_string: [
-                             query      : "winter",
-                             fields     : ["title^4.0"],
-                             phrase_slop: 0,
-                             tie_breaker: 0,
-                             lenient    : true
+                             query               : "winter",
+                             fields              : ["title^4.0"],
+                             phrase_slop         : 0,
+                             tie_breaker         : 0,
+                             minimum_should_match: '75%',
+                             lenient             : true
                          ]]],
             filter: [:]
         ]
@@ -108,11 +110,12 @@ class SearchRequestParserServiceTest extends Specification {
                             bool: [
                                 must: [[
                                            query_string: [
-                                               query      : "winter",
-                                               fields     : ["_all"],
-                                               phrase_slop: 0,
-                                               tie_breaker: 0,
-                                               lenient    : true
+                                               query               : "winter",
+                                               fields              : ["_all"],
+                                               phrase_slop         : 0,
+                                               tie_breaker         : 0,
+                                               minimum_should_match: '75%',
+                                               lenient             : true
                                            ]]]]
                         ],
                         field_value_factor: [
@@ -208,6 +211,48 @@ class SearchRequestParserServiceTest extends Specification {
 
     when:
     def queryResult = requestParser.parseSearchQuery(params)
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Collection filter request generates expected elasticsearch query'() {
+    given:
+    def request = '{"filters":[{"type":"collection","values":["TESTID"]}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [:],
+            filter: [
+                [terms: [
+                    parentIdentifier: ["TESTID"] as Set
+                ]]
+            ]]
+    ]
+
+    then:
+    queryResult == expectedQuery
+  }
+
+  def 'Collection filters ignore repeats and force a union query'() {
+    given:
+    def request = '{"filters":[{"type":"collection","values":["TESTID1"]},{"type":"collection","values":["TESTID1","TESTID2"]}]}'
+    def params = slurper.parseText(request)
+
+    when:
+    def queryResult = requestParser.parseSearchQuery(params)
+    def expectedQuery = [
+        bool: [
+            must  : [:],
+            filter: [
+                [terms: [
+                    parentIdentifier: ["TESTID1", "TESTID2"] as Set
+                ]]
+            ]]
+    ]
 
     then:
     queryResult == expectedQuery

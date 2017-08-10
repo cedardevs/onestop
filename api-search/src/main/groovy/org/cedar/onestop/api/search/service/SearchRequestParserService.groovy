@@ -91,87 +91,62 @@ class SearchRequestParserService {
   }
 
   private List<Map> assembleScoringContext(List<Map> queries) {
-    def allTextQueries = []
     if (!queries) {
       return null
     }
 
     def groupedQueries = queries.groupBy { it.type }
-
-    groupedQueries.queryText.each {
-      def text = (it.value as String).trim()
-      def queryObject = [
+    def allTextQueries = groupedQueries.queryText.collect {
+      return [
           query_string: [
-              query      : text,
-              fields     : [],
-              phrase_slop: 0,
-              tie_breaker: 0,
-              lenient    : true
+              query               : (it.value as String).trim(),
+              // FIXME: Test if default of _all is necessary; if so, we should control the fields in it. #190
+              fields              : config?.boosts?.collect({ field, boost -> "${field}^${boost ?: 1}" }) ?: ['_all'],
+              phrase_slop         : config?.phraseSlop ?: 0,
+              tie_breaker         : config?.tieBreaker ?: 0,
+              minimum_should_match: config?.minimumShouldMatch ?: '75%',
+              lenient             : true
           ]
       ]
-
-      config?.boosts?.each { field, boost ->
-        queryObject.query_string.fields.add("${field}^${boost ?: 1}")
-      }
-      if (!queryObject.query_string.fields) {
-        // FIXME: Need to test if this is necessary; also if we're to use '_all' still, we should control the fields in it
-        queryObject.query_string.fields.add("_all")
-      }
-      if (config?.minimumShouldMatch) {
-        queryObject.query_string.minimum_should_match = config.minimumShouldMatch
-      }
-      if (config?.phraseSlop) {
-        queryObject.query_string.phrase_slop = config.phraseSlop
-      }
-      if (config?.tieBreaker) {
-        queryObject.query_string.tie_breaker = config.tieBreaker
-      }
-
-      allTextQueries.add(queryObject)
     }
 
     if (config?.dsmm?.factor || config?.dsmm?.modifier) {
-      def functionScoreQuery = [
+      // FIXME returning as an array because our queries are arrays... ridiculous! #171 >:[
+      return [[
           function_score: [
               query             : [
                   bool: [
-                      must: []
+                      must: allTextQueries
                   ]
               ],
               field_value_factor: [
                   field   : 'dsmmAverage',
                   modifier: "${config.dsmm.modifier ?: 'log1p'}",
                   factor  : config.dsmm.factor ?: 1f,
-                  missing : 0 // FIXME make this a field that can be set in the config; 0 may be the wrong value if not using log1p
+                  missing : config.dsmm.missing ?: 0
               ],
               boost_mode        : 'sum'
           ]
-      ]
-
-      allTextQueries.each { query ->
-        functionScoreQuery.function_score.query.bool.must.add(query)
-      }
-      def thisIsRidiculousAndOnlyHereBecauseQueriesAreArrays = [] // FIXME #171 >:[
-      thisIsRidiculousAndOnlyHereBecauseQueriesAreArrays.add(functionScoreQuery)
-      return thisIsRidiculousAndOnlyHereBecauseQueriesAreArrays
-    } else {
+      ]]
+    }
+    else {
       return allTextQueries
     }
   }
 
+  /* For filters:
+   *  - union: A | B | A & B; intersection: A & B
+   *  - union with bool > must > bool > should [] for multiple selections on same term
+   *  - union of multiple unions is  bool > must >> bool > should []
+   *    -- (does this mean a match must come from each nested filter?)
+   *  - intersection probably bool > must > bool > must (single term)
+   */
   private List<Map> assembleFilteringContext(List<Map> filters) {
-    /*For filters:
-     * union: A | B | A & B; intersection: A & B
-     - union with bool > must > bool > should [] for multiple selections on same term
-     - union of multiple unions is  bool > must >> bool > should []
-            -- (does this mean a match must come from each nested filter?)
-     - intersection probably bool > must > bool > must (single term)
-*/
-    def allFilters = []
     if (!filters) {
       return null
     }
 
+    def allFilters = []
     def groupedFilters = filters.groupBy { it.type }
 
     // Temporal filters:

@@ -17,11 +17,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST
 @RestController
 class SearchController {
 
+  private UiConfig uiConfig
   private ElasticsearchService esService
 
   @Autowired
-  public SearchController(ElasticsearchService esService) {
+  public SearchController(ElasticsearchService esService, UiConfig uiConfig) {
     this.esService = esService
+    this.uiConfig = uiConfig
   }
 
   // POST in order to support request bodies from clients that won't send bodies with GETs
@@ -41,4 +43,10 @@ class SearchController {
   Map totalCounts() {
     return esService.totalCounts()
   }
+
+  @RequestMapping(path = '/search/uiConfig', method = GET)
+  UiConfig uiConfig() {
+    return uiConfig
+  }
+
 }

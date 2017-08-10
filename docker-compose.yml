@@ -45,6 +45,22 @@ services:
      - elasticsearch_host=elasticsearch
      - elasticsearch_port=9200
 
+  api-metadata:
+    build:
+      context: ./api-metadata/
+      args:
+        VERSION: ${VERSION}
+        DATE: ${DATE}
+        VCS_REF: ${VCS_REF}
+        JAR_NAME: onestop-api-metadata-all
+    ports:
+      - 8097:8097
+    depends_on:
+      - elasticsearch
+    environment:
+     - elasticsearch_host=elasticsearch
+     - elasticsearch_port=9200
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
     environment:
