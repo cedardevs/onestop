@@ -2,7 +2,7 @@ package org.cedar.onestop.api.metadata.controller
 
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.metadata.service.ETLService
-import org.cedar.onestop.api.metadata.service.MetadataIndexService
+import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.service.SearchIndexService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.RequestMapping
@@ -18,10 +18,10 @@ class AdminController {
 
   private ETLService etlService
   private SearchIndexService searchIndexService
-  private MetadataIndexService metadataIndexService
+  private MetadataManagementService metadataIndexService
 
   @Autowired
-  AdminController(ETLService etlService, SearchIndexService searchIndexService, MetadataIndexService metadataIndexService) {
+  AdminController(ETLService etlService, SearchIndexService searchIndexService, MetadataManagementService metadataIndexService) {
     this.etlService = etlService
     this.searchIndexService = searchIndexService
     this.metadataIndexService = metadataIndexService

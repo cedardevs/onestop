@@ -16,7 +16,7 @@ import java.util.regex.Pattern
 
 @Slf4j
 @Service
-class MetadataIndexService {
+class MetadataManagementService {
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
   String STAGING_INDEX
@@ -31,19 +31,19 @@ class MetadataIndexService {
   String GRANULE_TYPE
 
   private RestClient restClient
-  private IndexAdminService indexAdminService
+  private ElasticsearchService esService
 
   private String invalidFileIdPattern = /.*(?![-._:])\p{Punct}.*|.*\s.*/
 
   @Autowired
-  public MetadataIndexService(RestClient restClient, IndexAdminService indexAdminService) {
+  public MetadataManagementService(RestClient restClient, ElasticsearchService esService) {
     this.restClient = restClient
-    this.indexAdminService = indexAdminService
+    this.esService = esService
   }
 
   public Map loadMetadata(MultipartFile[] documents) {
 
-    indexAdminService.ensureStaging()
+    indexAdminService.ensureStagingIndex()
 
     def data = []
 
@@ -121,16 +121,18 @@ class MetadataIndexService {
 
   public Map loadMetadata(String document) {
 
-    indexAdminService.ensureStaging()
+    indexAdminService.ensureStagingIndex()
 
     def storageInfo = MetadataParser.parseIdentifierInfo(document)
     def internalId = storageInfo.id
     def externalId = storageInfo.doi ?: storageInfo.id
     if (Pattern.matches(invalidFileIdPattern, internalId)) {
       return [
-          errors: [
-              [status: 400, title: 'Bad Request', detail: 'Load request failed due to bad fileIdentifier value: ' + externalId]
-          ]
+          errors: [[
+                  status: 400,
+                  title: 'Bad Request',
+                  detail: 'Load request failed due to bad fileIdentifier value: ' + externalId
+              ]]
       ]
     }
     else {
@@ -160,7 +162,7 @@ class MetadataIndexService {
     // Synthesized granules do not exist in staging so this will only ever match a single record across both types
     String endPoint = "${STAGING_INDEX}/_all/${id}"
     def externalId = id.contains('doi:10.') ? id.replace('-', '/') : id
-    def response = parseResponse(restClient.performRequest("GET", endPoint))
+    def response = esService.parseResponse(restClient.performRequest("GET", endPoint))
 
     if (response.found) {
       return [
@@ -304,19 +306,6 @@ class MetadataIndexService {
     return data
   }
 
-  private Map parseResponse(Response response) {
-    Map result = [statusCode: response?.getStatusLine()?.getStatusCode() ?: 500]
-    try {
-      if (response?.getEntity()) {
-        result += new JsonSlurper().parse(response?.getEntity()?.getContent()) as Map
-      }
-    }
-    catch (e) {
-      log.warn("Failed to parse elasticsearch response as json", e)
-    }
-    return result
-  }
-
 
   ///////////////////////////////////////////////////////////////////////
   // FIXME -- Should these methods be consolidated to a separate service?
@@ -330,7 +319,7 @@ class MetadataIndexService {
 
   public void recreate() {
     drop()
-    indexAdminService.ensureStaging()
+    indexAdminService.ensureStagingIndex()
   }
 
 }
