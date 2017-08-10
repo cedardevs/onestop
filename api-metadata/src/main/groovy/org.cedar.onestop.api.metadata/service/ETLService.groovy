@@ -34,10 +34,10 @@ class ETLService {
   private String GRANULE_TYPE
 
   private Client adminClient
-  private IndexAdminService indexAdminService
+  private ElasticsearchService indexAdminService
 
   @Autowired
-  ETLService(Client adminClient, IndexAdminService indexAdminService) {
+  ETLService(Client adminClient, ElasticsearchService indexAdminService) {
     this.adminClient = adminClient
     this.indexAdminService = indexAdminService
   }
