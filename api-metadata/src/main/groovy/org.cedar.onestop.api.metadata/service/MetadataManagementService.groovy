@@ -1,10 +1,8 @@
 package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -43,16 +41,10 @@ class MetadataManagementService {
 
   public Map loadMetadata(MultipartFile[] documents) {
 
-    indexAdminService.ensureStagingIndex()
+    esService.ensureStagingIndex()
 
     def data = []
-
-    def bulkRequest = adminClient.prepareBulk()
-    def addRecordToBulk = { id, record, type ->
-      def json = JsonOutput.toJson(record)
-      def insertRequest = adminClient.prepareIndex(STAGING_INDEX, type, id).setSource(json, XContentType.JSON)
-      bulkRequest.add(insertRequest)
-    }
+    def entitiesToLoad = [:]
 
     def stagedDate = System.currentTimeMillis()
     documents.each { rawDoc ->
@@ -76,15 +68,13 @@ class MetadataManagementService {
             title : 'Load request failed due to bad fileIdentifier value',
             detail: externalId
         ]
+        data.add(dataRecord)
       }
       else {
         try {
           def source = MetadataParser.parseXMLMetadataToMap(document)
           source.stagedDate = stagedDate
-          if (type == COLLECTION_TYPE) {
-            source.isoXml = document
-          }
-          addRecordToBulk(internalId, source, type)
+          entitiesToLoad.put(internalId, [source: JsonOutput.toJson(source), record: dataRecord])
         }
         catch (Exception e) {
           dataRecord.attributes.status = 400
@@ -92,36 +82,19 @@ class MetadataManagementService {
               title : 'Load request failed due to malformed XML',
               detail: ExceptionUtils.getRootCauseMessage(e)
           ]
+          data.add(dataRecord)
         }
       }
-      data.add(dataRecord)
     }
 
-    if (bulkRequest.numberOfActions() > 0) {
-      def bulkResponses = bulkRequest.get().items
-      bulkResponses.eachWithIndex { response, i ->
-        if (response.isFailed()) {
-          data[i].attributes.status = response.failure.status.status
-          data[i].attributes.error = [
-              title : 'Load request failed, elasticsearch rejected document',
-              detail: response.failureMessage
-          ]
-        }
-        else {
-          data[i].attributes.status = response.status()
-          data[i].attributes.created = response.status() == RestStatus.CREATED
-        }
-      }
-
-      return [
-          data: data
-      ]
-    }
+    def results = esService.performMultiLoad(entitiesToLoad)
+    data.addAll(results)
+    return data
   }
 
   public Map loadMetadata(String document) {
 
-    indexAdminService.ensureStagingIndex()
+    esService.ensureStagingIndex()
 
     def storageInfo = MetadataParser.parseIdentifierInfo(document)
     def internalId = storageInfo.id
@@ -138,23 +111,33 @@ class MetadataManagementService {
     else {
       def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
       def source = MetadataParser.parseXMLMetadataToMap(document)
-      if (type == COLLECTION_TYPE) {
-        source.isoXml = document
-      }
       source.stagedDate = System.currentTimeMillis()
       source = JsonOutput.toJson(source)
-      def response = adminClient.prepareIndex(STAGING_INDEX, type, internalId)
-          .setSource(source, XContentType.JSON)
-          .execute().actionGet()
-      return [
-          data: [
-              id        : externalId,
-              type      : type,
-              attributes: [
-                  created: response.status() == RestStatus.CREATED
-              ]
-          ]
-      ]
+
+      def endPoint = "/${STAGING_INDEX}/${type}/${internalId}"
+      def response = esService.performRequest('PUT', endPoint, source)
+      def status = response.statusCode
+      if(status == HttpStatus.CREATED.value() || status == HttpStatus.OK.value()) {
+        return [
+            data: [
+                id        : externalId,
+                type      : type,
+                attributes: [
+                    created: response.statusCode == HttpStatus.CREATED.value()
+                ]
+            ]
+        ]
+      }
+      else {
+        return [
+            errors: [[
+                         status: status,
+                         title: 'Bad Request',
+                         detail: "Load request of [${externalId}] failed due to: ${response.error?.reason}"
+                     ]]
+        ]
+      }
+
     }
   }
 
@@ -304,22 +287,6 @@ class MetadataManagementService {
 
     indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
     return data
-  }
-
-
-  ///////////////////////////////////////////////////////////////////////
-  // FIXME -- Should these methods be consolidated to a separate service?
-  void refresh() {
-    indexAdminService.refresh(STAGING_INDEX)
-  }
-
-  void drop() {
-    indexAdminService.drop(STAGING_INDEX)
-  }
-
-  public void recreate() {
-    drop()
-    indexAdminService.ensureStagingIndex()
   }
 
 }
