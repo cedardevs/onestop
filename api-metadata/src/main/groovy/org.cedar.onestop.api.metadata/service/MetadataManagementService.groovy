@@ -43,7 +43,7 @@ class MetadataManagementService {
 
     esService.ensureStagingIndex()
 
-    def data = []
+    def resultRecordMap = [:]
     def entitiesToLoad = [:]
 
     def stagedDate = System.currentTimeMillis()
@@ -54,7 +54,7 @@ class MetadataManagementService {
       def externalId = storageInfo.doi ?: storageInfo.id
       def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
 
-      def dataRecord = [
+      def resultRecord = [
           id        : externalId,
           type      : type,
           attributes: [
@@ -63,33 +63,42 @@ class MetadataManagementService {
       ]
 
       if (Pattern.matches(invalidFileIdPattern, internalId)) {
-        dataRecord.attributes.status = 400
-        dataRecord.attributes.error = [
+        resultRecord.attributes.status = 400
+        resultRecord.attributes.error = [
             title : 'Load request failed due to bad fileIdentifier value',
             detail: externalId
         ]
-        data.add(dataRecord)
       }
       else {
         try {
           def source = MetadataParser.parseXMLMetadataToMap(document)
           source.stagedDate = stagedDate
-          entitiesToLoad.put(internalId, [source: JsonOutput.toJson(source), record: dataRecord])
+          entitiesToLoad.put(internalId, [source: JsonOutput.toJson(source), type: type])
         }
         catch (Exception e) {
-          dataRecord.attributes.status = 400
-          dataRecord.attributes.error = [
+          resultRecord.attributes.status = 400
+          resultRecord.attributes.error = [
               title : 'Load request failed due to malformed XML',
               detail: ExceptionUtils.getRootCauseMessage(e)
           ]
-          data.add(dataRecord)
         }
       }
+      resultRecordMap.put(internalId, resultRecord)
     }
 
     def results = esService.performMultiLoad(entitiesToLoad)
-    data.addAll(results)
-    return data
+    results.each { k, v ->
+      def resultRecord = resultRecordMap.get(k)
+      resultRecord.attributes.status = v.status
+      if (!v.error) {
+        resultRecord.attributes.created = v.status == HttpStatus.CREATED.value()
+      }
+      else {
+        resultRecord.attributes.error = v.error
+      }
+    }
+
+    return [ data: resultRecordMap.values() ]
   }
 
   public Map loadMetadata(String document) {

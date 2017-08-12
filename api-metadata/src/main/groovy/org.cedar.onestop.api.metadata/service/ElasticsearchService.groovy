@@ -103,20 +103,19 @@ class ElasticsearchService {
     }
   }
 
-  public List performMultiLoad(Map dataRecords) {
-    List resultRecords = Collections.synchronizedList(new ArrayList(dataRecords.size()))
+  public Map performMultiLoad(Map dataRecords) {
+    Map resultRecords = Collections.synchronizedMap(new HashMap())
     final CountDownLatch latch = new CountDownLatch(dataRecords.size())
 
     dataRecords.each { k, v ->
-      String endpoint = "/${STAGING_INDEX}/${v.record.type}/${k}"
+      String endpoint = "/${STAGING_INDEX}/${v.type}/${k}"
       HttpEntity source = new NStringEntity(v.source, ContentType.APPLICATION_JSON)
-      def result = [:].putAll(v.record)
       restClient.performRequestAsync('PUT', endpoint, Collections.EMPTY_MAP, source, new ResponseListener() {
         @Override
         void onSuccess(Response response) {
-          result.attributes.status = response.statusLine.statusCode
-          result.attributes.created = response.statusLine.statusCode == HttpStatus.CREATED.value()
-          resultRecords.add(result)
+          resultRecords.put(k, [
+              status: response.statusLine.statusCode
+          ])
           latch.countDown()
         }
 
@@ -137,9 +136,10 @@ class ElasticsearchService {
                 detail: exception.message
             ]
           }
-          result.attributes.status = status
-          result.attributes.error = error
-          resultRecords.add()
+          resultRecords.put(k, [
+              status: status,
+              error: error
+          ])
           latch.countDown()
         }
       })
