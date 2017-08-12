@@ -88,7 +88,7 @@ class MetadataManagementService {
 
     def results = esService.performMultiLoad(entitiesToLoad)
     results.each { k, v ->
-      def resultRecord = resultRecordMap.get(k)
+      def resultRecord = [:].putAll(resultRecordMap.get(k))
       resultRecord.attributes.status = v.status
       if (!v.error) {
         resultRecord.attributes.created = v.status == HttpStatus.CREATED.value()
@@ -96,6 +96,7 @@ class MetadataManagementService {
       else {
         resultRecord.attributes.error = v.error
       }
+      resultRecordMap.put(k, resultRecord)
     }
 
     return [ data: resultRecordMap.values() ]
