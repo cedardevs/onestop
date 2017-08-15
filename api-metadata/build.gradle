@@ -1,10 +1,6 @@
-import com.wiredforcode.gradle.spawn.SpawnProcessTask
-import com.wiredforcode.gradle.spawn.KillProcessTask
-
 apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
-apply plugin: "com.wiredforcode.spawn"
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 sourceCompatibility = 1.8
