@@ -1,6 +1,5 @@
 rootProject.name = 'onestop'
 
-include 'ansible'
 include 'api-metadata'
 include 'api-search'
 include 'client'

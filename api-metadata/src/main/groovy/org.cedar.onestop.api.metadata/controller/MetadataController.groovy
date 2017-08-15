@@ -19,18 +19,18 @@ import static org.springframework.web.bind.annotation.RequestMethod.*
 @RestController
 class MetadataController {
 
-  private MetadataManagementService metadataIndexService
+  private MetadataManagementService metadataService
 
   @Autowired
-  public MetadataController(MetadataManagementService metadataIndexService) {
-    this.metadataIndexService = metadataIndexService
+  public MetadataController(MetadataManagementService metadataService) {
+    this.metadataService = metadataService
   }
 
   @RequestMapping(path = '/metadata', method = POST, produces = 'application/json')
   Map load(@RequestParam("files") MultipartFile[] metadataRecords, HttpServletResponse response) {
     log.debug("Received ${metadataRecords.length} metadata files to load")
 
-    def result = metadataIndexService.loadMetadata(metadataRecords)
+    def result = metadataService.loadMetadata(metadataRecords)
     response.status = HttpStatus.MULTI_STATUS.value()
     return result
   }
@@ -38,7 +38,7 @@ class MetadataController {
   @RequestMapping(path = '/metadata', method = POST,
       consumes = 'application/xml', produces = 'application/json')
   Map load(@RequestBody String xml, HttpServletResponse response) {
-    def result = metadataIndexService.loadMetadata(xml)
+    def result = metadataService.loadMetadata(xml)
     if(result.data) {
       response.status = result.data.attributes.created ? HttpStatus.CREATED.value() : HttpStatus.OK.value()
     } else {
@@ -50,7 +50,7 @@ class MetadataController {
 
   @RequestMapping(path = '/metadata/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveJson(@PathVariable String id, HttpServletResponse response) {
-    def result = metadataIndexService.getMetadata(id)
+    def result = metadataService.getMetadata(id)
     if (result.data) {
       response.status = HttpStatus.OK.value()
     } else {
@@ -67,7 +67,7 @@ class MetadataController {
 
   @RequestMapping(path = '/metadata/{id}', method = DELETE, produces = 'application/json')
   Map delete(@PathVariable String id, @RequestParam(value = 'type', required = false) String type, HttpServletResponse response) {
-    def result = metadataIndexService.deleteMetadata(id, type)
+    def result = metadataService.deleteMetadata(id, type)
     if (result.errors) {
       response.status = result.errors.status
     }

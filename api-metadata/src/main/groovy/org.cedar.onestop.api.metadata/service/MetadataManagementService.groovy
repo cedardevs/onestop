@@ -1,10 +1,8 @@
 package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -43,16 +41,10 @@ class MetadataManagementService {
 
   public Map loadMetadata(MultipartFile[] documents) {
 
-    indexAdminService.ensureStagingIndex()
+    esService.ensureStagingIndex()
 
-    def data = []
-
-    def bulkRequest = adminClient.prepareBulk()
-    def addRecordToBulk = { id, record, type ->
-      def json = JsonOutput.toJson(record)
-      def insertRequest = adminClient.prepareIndex(STAGING_INDEX, type, id).setSource(json, XContentType.JSON)
-      bulkRequest.add(insertRequest)
-    }
+    def resultRecordMap = [:]
+    def entitiesToLoad = [:]
 
     def stagedDate = System.currentTimeMillis()
     documents.each { rawDoc ->
@@ -62,7 +54,7 @@ class MetadataManagementService {
       def externalId = storageInfo.doi ?: storageInfo.id
       def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
 
-      def dataRecord = [
+      def resultRecord = [
           id        : externalId,
           type      : type,
           attributes: [
@@ -71,8 +63,8 @@ class MetadataManagementService {
       ]
 
       if (Pattern.matches(invalidFileIdPattern, internalId)) {
-        dataRecord.attributes.status = 400
-        dataRecord.attributes.error = [
+        resultRecord.attributes.status = 400
+        resultRecord.attributes.error = [
             title : 'Load request failed due to bad fileIdentifier value',
             detail: externalId
         ]
@@ -81,47 +73,38 @@ class MetadataManagementService {
         try {
           def source = MetadataParser.parseXMLMetadataToMap(document)
           source.stagedDate = stagedDate
-          if (type == COLLECTION_TYPE) {
-            source.isoXml = document
-          }
-          addRecordToBulk(internalId, source, type)
+          entitiesToLoad.put(internalId, [source: JsonOutput.toJson(source), type: type])
         }
         catch (Exception e) {
-          dataRecord.attributes.status = 400
-          dataRecord.attributes.error = [
+          resultRecord.attributes.status = 400
+          resultRecord.attributes.error = [
               title : 'Load request failed due to malformed XML',
               detail: ExceptionUtils.getRootCauseMessage(e)
           ]
         }
       }
-      data.add(dataRecord)
+      resultRecordMap.put(internalId, resultRecord)
     }
 
-    if (bulkRequest.numberOfActions() > 0) {
-      def bulkResponses = bulkRequest.get().items
-      bulkResponses.eachWithIndex { response, i ->
-        if (response.isFailed()) {
-          data[i].attributes.status = response.failure.status.status
-          data[i].attributes.error = [
-              title : 'Load request failed, elasticsearch rejected document',
-              detail: response.failureMessage
-          ]
-        }
-        else {
-          data[i].attributes.status = response.status()
-          data[i].attributes.created = response.status() == RestStatus.CREATED
-        }
+    def results = esService.performMultiLoad(entitiesToLoad)
+    results.each { k, v ->
+      def resultRecord = [:].putAll(resultRecordMap.get(k))
+      resultRecord.attributes.status = v.status
+      if (!v.error) {
+        resultRecord.attributes.created = v.status == HttpStatus.CREATED.value()
       }
-
-      return [
-          data: data
-      ]
+      else {
+        resultRecord.attributes.error = v.error
+      }
+      resultRecordMap.put(k, resultRecord)
     }
+
+    return [ data: resultRecordMap.values() ]
   }
 
   public Map loadMetadata(String document) {
 
-    indexAdminService.ensureStagingIndex()
+    esService.ensureStagingIndex()
 
     def storageInfo = MetadataParser.parseIdentifierInfo(document)
     def internalId = storageInfo.id
@@ -138,23 +121,33 @@ class MetadataManagementService {
     else {
       def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
       def source = MetadataParser.parseXMLMetadataToMap(document)
-      if (type == COLLECTION_TYPE) {
-        source.isoXml = document
-      }
       source.stagedDate = System.currentTimeMillis()
       source = JsonOutput.toJson(source)
-      def response = adminClient.prepareIndex(STAGING_INDEX, type, internalId)
-          .setSource(source, XContentType.JSON)
-          .execute().actionGet()
-      return [
-          data: [
-              id        : externalId,
-              type      : type,
-              attributes: [
-                  created: response.status() == RestStatus.CREATED
-              ]
-          ]
-      ]
+
+      def endPoint = "/${STAGING_INDEX}/${type}/${internalId}"
+      def response = esService.performRequest('PUT', endPoint, source)
+      def status = response.statusCode
+      if(status == HttpStatus.CREATED.value() || status == HttpStatus.OK.value()) {
+        return [
+            data: [
+                id        : externalId,
+                type      : type,
+                attributes: [
+                    created: response.statusCode == HttpStatus.CREATED.value()
+                ]
+            ]
+        ]
+      }
+      else {
+        return [
+            errors: [[
+                         status: status,
+                         title: 'Bad Request',
+                         detail: "Load request of [${externalId}] failed due to: ${response.error?.reason}"
+                     ]]
+        ]
+      }
+
     }
   }
 
@@ -304,22 +297,6 @@ class MetadataManagementService {
 
     indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
     return data
-  }
-
-
-  ///////////////////////////////////////////////////////////////////////
-  // FIXME -- Should these methods be consolidated to a separate service?
-  void refresh() {
-    indexAdminService.refresh(STAGING_INDEX)
-  }
-
-  void drop() {
-    indexAdminService.drop(STAGING_INDEX)
-  }
-
-  public void recreate() {
-    drop()
-    indexAdminService.ensureStagingIndex()
   }
 
 }

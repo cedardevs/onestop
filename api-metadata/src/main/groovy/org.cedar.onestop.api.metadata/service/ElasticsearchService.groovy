@@ -2,16 +2,20 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
+import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.Response
 import org.elasticsearch.client.ResponseException
+import org.elasticsearch.client.ResponseListener
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 import javax.annotation.PostConstruct
+import java.util.concurrent.CountDownLatch
 
 @Slf4j
 @Service
@@ -22,12 +26,6 @@ class ElasticsearchService {
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
   String SEARCH_INDEX
-
-  @Value('${elasticsearch.index.staging.collectionType}')
-  String COLLECTION_TYPE
-
-  @Value('${elasticsearch.index.staging.granuleType}')
-  String GRANULE_TYPE
 
   @Value('${elasticsearch.index.prefix:}')
   String PREFIX
@@ -51,6 +49,15 @@ class ElasticsearchService {
 
   public void ensureSearchIndex() {
     ensureIndex(SEARCH_INDEX)
+  }
+
+  private void ensureIndex(String index) {
+    def indexExists = checkAliasExists(index)
+    if(!indexExists) {
+      def realName = create(index)
+      String endPoint = "/${index}/_alias/${realName}"
+      restClient.performRequest('PUT', endPoint)
+    }
   }
 
   public String create(String baseName) {
@@ -78,6 +85,11 @@ class ElasticsearchService {
     }
   }
 
+  private Boolean checkAliasExists(String name) {
+    def status = restClient.performRequest('HEAD', name).statusLine.statusCode
+    return status == 200
+  }
+
   public Map performRequest(String requestType, String endpoint, String requestBody = null) {
     try {
       def response = requestBody ?
@@ -91,13 +103,50 @@ class ElasticsearchService {
     }
   }
 
-  private void ensureIndex(String index) {
-    def indexExists = checkAliasExists(index)
-    if(!indexExists) {
-      def realName = create(index)
-      String endPoint = "/${index}/_alias/${realName}"
-      restClient.performRequest('PUT', endPoint)
+  public Map performMultiLoad(Map dataRecords) {
+    Map resultRecords = Collections.synchronizedMap(new HashMap())
+    final CountDownLatch latch = new CountDownLatch(dataRecords.size())
+
+    dataRecords.each { k, v ->
+      String endpoint = "/${STAGING_INDEX}/${v.type}/${k}"
+      HttpEntity source = new NStringEntity(v.source, ContentType.APPLICATION_JSON)
+      restClient.performRequestAsync('PUT', endpoint, Collections.EMPTY_MAP, source, new ResponseListener() {
+        @Override
+        void onSuccess(Response response) {
+          resultRecords.put(k, [
+              status: response.statusLine.statusCode
+          ])
+          latch.countDown()
+        }
+
+        @Override
+        void onFailure(Exception exception) {
+          def status, error
+          if(exception instanceof ResponseException) {
+            status = exception.response.statusLine.statusCode
+            error = [
+                title: 'Load request failed, elasticsearch rejected document',
+                detail: exception.message
+            ]
+          }
+          else {
+            status = 500
+            error = [
+                title: 'Load request failed, elasticsearch connection failure',
+                detail: exception.message
+            ]
+          }
+          resultRecords.put(k, [
+              status: status,
+              error: error
+          ])
+          latch.countDown()
+        }
+      })
     }
+
+    latch.await()
+    return resultRecords
   }
 
   private Map parseResponse(Response response) {
@@ -109,15 +158,6 @@ class ElasticsearchService {
       result += new JsonSlurper().parse(response.entity.content) as Map
     }
     return result
-  }
-
-  private Boolean checkAliasExists(String name) {
-    def status = restClient.performRequest('HEAD', name).statusLine.statusCode
-    if (status == 200) {
-      return true
-    } else {
-      return false
-    }
   }
 
 }
