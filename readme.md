@@ -83,10 +83,18 @@ The API and client artifacts will be located at `api/build/libs/onestop-api-[ver
 
 ### Docker
 
-After building the project, you can run it locally with the following command:
-```
-env VERSION=1.2.0-SNAPSHOT VCS_REF="$(git rev-parse --short HEAD)" DATE="$(env TZ=0 date +"%Y-%m-%dT%H:%M:%SZ")" docker-compose up -d
-```
+There are two ways to run the system locally with docker-compose.
+
+#### With the latest published container
+
+1. On a clean system, or with `docker image ls` and `docker image rmi` make sure there are no existing OneStop images
+1. Run `docker-compose up -d`. This will download the latest images from Docker Hub.
+
+Use caution to make sure the containers are using the version of the image you expect. If there are any locally built images, they may be used instead.
+
+#### With the code currently in development
+
+1. Run `./gradlew dockerComposeUp`. This is a shortcut for running `.gradlew build` and then `docker-compose up -d`. This will always rebuild the modules, rebuild the images, and start the system locally with the current code.
 
 In order to mount a disk to the elastic search container, to either save the data between runs or to provide preloaded data, copy docker-compose.override.yml.sample to docker-compose.override.yml. Configuration in the override will automatically be applied when running docker-compose up.
 

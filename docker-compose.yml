@@ -2,12 +2,7 @@ version: '3'
 services:
 
   client:
-    build:
-      context: ./client/
-      args:
-        VERSION: ${VERSION}
-        DATE: ${DATE}
-        VCS_REF: ${VCS_REF}
+    image: cedardevs/onestop-client:latest
     ports:
      - 8080:80
     depends_on:
@@ -30,13 +25,7 @@ services:
   #    - elasticsearch_port=9300
 
   api-search:
-    build:
-      context: ./api-search/
-      args:
-        VERSION: ${VERSION}
-        DATE: ${DATE}
-        VCS_REF: ${VCS_REF}
-        JAR_NAME: onestop-api-search-all
+    image: cedardevs/onestop-api-search:latest
     ports:
       - 8097:8097
     depends_on:
@@ -45,21 +34,15 @@ services:
      - elasticsearch_host=elasticsearch
      - elasticsearch_port=9200
 
-  api-metadata:
-    build:
-      context: ./api-metadata/
-      args:
-        VERSION: ${VERSION}
-        DATE: ${DATE}
-        VCS_REF: ${VCS_REF}
-        JAR_NAME: onestop-api-metadata-all
-    ports:
-      - 8097:8097
-    depends_on:
-      - elasticsearch
-    environment:
-     - elasticsearch_host=elasticsearch
-     - elasticsearch_port=9200
+  # api-metadata:
+  #   image: cedardevs/onestop-api-metadata:latest
+  #   ports:
+  #     - 8097:8097
+  #   depends_on:
+  #     - elasticsearch
+  #   environment:
+  #    - elasticsearch_host=elasticsearch
+  #    - elasticsearch_port=9200
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
