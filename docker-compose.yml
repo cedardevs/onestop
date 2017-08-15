@@ -45,7 +45,7 @@ services:
   #    - elasticsearch_port=9200
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-latest}
     environment:
      - xpack.security.enabled=false
     ports:
