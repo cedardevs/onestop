@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 
-import java.util.regex.Pattern
-
 @Slf4j
 @Service
 class MetadataManagementService {
@@ -31,14 +29,13 @@ class MetadataManagementService {
   private RestClient restClient
   private ElasticsearchService esService
 
-  private String invalidFileIdPattern = /.*(?![-._:])\p{Punct}.*|.*\s.*/
-
   @Autowired
   public MetadataManagementService(RestClient restClient, ElasticsearchService esService) {
     this.restClient = restClient
     this.esService = esService
   }
 
+  // FIXME:
   public Map loadMetadata(MultipartFile[] documents) {
 
     esService.ensureStagingIndex()
@@ -62,26 +59,17 @@ class MetadataManagementService {
           ]
       ]
 
-      if (Pattern.matches(invalidFileIdPattern, internalId)) {
+      try {
+        def source = MetadataParser.parseXMLMetadataToMap(document)
+        source.stagedDate = stagedDate
+        entitiesToLoad.put(internalId, [source: JsonOutput.toJson(source), type: type])
+      }
+      catch (Exception e) {
         resultRecord.attributes.status = 400
         resultRecord.attributes.error = [
-            title : 'Load request failed due to bad fileIdentifier value',
-            detail: externalId
+            title : 'Load request failed due to malformed XML',
+            detail: ExceptionUtils.getRootCauseMessage(e)
         ]
-      }
-      else {
-        try {
-          def source = MetadataParser.parseXMLMetadataToMap(document)
-          source.stagedDate = stagedDate
-          entitiesToLoad.put(internalId, [source: JsonOutput.toJson(source), type: type])
-        }
-        catch (Exception e) {
-          resultRecord.attributes.status = 400
-          resultRecord.attributes.error = [
-              title : 'Load request failed due to malformed XML',
-              detail: ExceptionUtils.getRootCauseMessage(e)
-          ]
-        }
       }
       resultRecordMap.put(internalId, resultRecord)
     }
@@ -107,60 +95,83 @@ class MetadataManagementService {
     esService.ensureStagingIndex()
 
     def storageInfo = MetadataParser.parseIdentifierInfo(document)
-    def internalId = storageInfo.id
-    def externalId = storageInfo.doi ?: storageInfo.id
-    if (Pattern.matches(invalidFileIdPattern, internalId)) {
-      return [
-          errors: [[
-                  status: 400,
-                  title: 'Bad Request',
-                  detail: 'Load request failed due to bad fileIdentifier value: ' + externalId
-              ]]
-      ]
-    }
-    else {
-      def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
-      def source = MetadataParser.parseXMLMetadataToMap(document)
-      source.stagedDate = System.currentTimeMillis()
-      source = JsonOutput.toJson(source)
+    def fileId = storageInfo.fileId
+    def doi = storageInfo.doi
+    def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
+    def source = MetadataParser.parseXMLMetadataToMap(document)
+    source.stagedDate = System.currentTimeMillis()
+    source = JsonOutput.toJson(source)
 
-      def endPoint = "/${STAGING_INDEX}/${type}/${internalId}"
-      def response = esService.performRequest('PUT', endPoint, source)
-      def status = response.statusCode
-      if(status == HttpStatus.CREATED.value() || status == HttpStatus.OK.value()) {
-        return [
-            data: [
-                id        : externalId,
-                type      : type,
-                attributes: [
-                    created: response.statusCode == HttpStatus.CREATED.value()
-                ]
+    def endpoint = "${STAGING_INDEX}/${type}/_search"
+    def searchParams = []
+    searchParams.add([term: [fileIdentifier: fileId]])
+    if (doi) { searchParams.add( [term: [doi: doi]] ) }
+    def requestBody = JsonOutput.toJson([
+        query: [
+            bool: [
+                should: searchParams
             ]
-        ]
+        ],
+        _source: false
+    ])
+    def response = esService.performRequest('GET', endpoint, requestBody)
+    def internalIds = response.hits.hits*._id
+    if (internalIds) {
+      if (internalIds.size() == 1) {
+        // Record exists, so perform an update
+        endpoint = "${STAGING_INDEX}/${type}/${internalIds[0]}"
+        response = esService.performRequest('PUT', endpoint, source)
       }
       else {
         return [
             errors: [[
-                         status: status,
-                         title: 'Bad Request',
-                         detail: "Load request of [${externalId}] failed due to: ${response.error?.reason}"
+                         status: HttpStatus.CONFLICT.value(),
+                         title: 'Ambiguous metadata records in existence; metadata not loaded.',
+                         detail: "Please GET records with ids [ ${String.join(', ', internalIds)} ] and DELETE any " +
+                             "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
                      ]]
         ]
       }
+    }
+    else {
+      // Record doesn't exist, so create a new one
+      endpoint = "${STAGING_INDEX}/${type}/"
+      response = esService.performRequest('POST', endpoint, source)
+    }
 
+    def status = response.statusCode
+    if (status == HttpStatus.CREATED.value() || status == HttpStatus.OK.value()) {
+      return [
+          data: [
+              id        : response._id,
+              type      : response._type,
+              attributes: [
+                  fileIdentifier: fileId,
+                  doi: doi,
+                  created: response.created
+              ]
+          ]
+      ]
+    }
+    else {
+      return [
+          errors: [[
+                       status: status,
+                       title: 'Bad Request',
+                       detail: "Load request of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ] failed due to: ${response.error?.reason}"
+                   ]]
+      ]
     }
   }
 
-  public Map getMetadata(String id) {
-    // Synthesized granules do not exist in staging so this will only ever match a single record across both types
-    String endPoint = "${STAGING_INDEX}/_all/${id}"
-    def externalId = id.contains('doi:10.') ? id.replace('-', '/') : id
-    def response = esService.parseResponse(restClient.performRequest("GET", endPoint))
+  public Map getMetadata(String esId) {
+    String endpoint = "${STAGING_INDEX}/_all/${esId}"
+    def response = esService.performRequest("GET", endpoint)
 
     if (response.found) {
       return [
           data: [
-              id        : externalId,
+              id        : response._id,
               type      : response._type,
               attributes: [
                   source: response._source
@@ -172,33 +183,78 @@ class MetadataManagementService {
       return [
           status: HttpStatus.NOT_FOUND.value(),
           title : 'No such document',
-          detail: "Metadata with ID ${externalId} does not exist" as String
+          detail: "Metadata with Elasticsearch ID [ ${esId} ] does not exist."
       ]
     }
   }
 
-  public Map deleteMetadata(String internalId, String type) {
+  public Map findMetadata(String fileId, String doi) {
+    def endpoint = "${STAGING_INDEX}/_search"
+    def searchParams = []
+    if (fileId) { searchParams.add( [term: [fileIdentifier: fileId]] ) }
+    if (doi) { searchParams.add( [term: [doi: doi]] ) }
+    def requestBody = JsonOutput.toJson([
+        query: [
+            bool: [
+                should: searchParams
+            ]
+        ]
+    ])
+    def response = esService.performRequest('GET', endpoint, requestBody)
 
-    def externalId = internalId.contains('doi:10.') ? internalId.replace('-', '/') : internalId
+    if (response.hits) {
+      def result = [ data: [] ]
+      def resources = response.hits.collect {
+        [
+            id: it._id,
+            type: it._type,
+            attributes: [
+                source: it._soucre
+            ]
+        ]
+      }
+      result.data.addAll(resources)
+      return result
+    }
+    else {
+      return [
+          status: HttpStatus.NOT_FOUND.value(),
+          title : 'No such document',
+          detail: "Metadata with fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ] not found."
+      ]
+    }
+  }
 
-    def bulkRequest = adminClient.prepareBulk()
-    def data = [
-        id        : externalId,
-        type      : type,
+  //fixme
+  public Map deleteMetadata(String internalId) {
+
+        def data = [
+        id        : internalId,
         attributes: [
             successes: [],
             failures : []
         ]
     ]
 
+    String endpoint = "${STAGING_INDEX}/${GRANULE_TYPE}/${internalId}"
+    def response = esService.performRequest('DELETE', endpoint)
+    if (response.found) {
+
+    }
+
+
+
+
+
+
+
     def removeCollectionGranules = false
     switch(type) {
       case COLLECTION_TYPE:
+        endpoint = "${STAGING_INDEX}/${GRANULE_TYPE}/${internalId}"
         removeCollectionGranules = true
       case GRANULE_TYPE:
-        [STAGING_INDEX, SEARCH_INDEX].each { index ->
-          bulkRequest.add(adminClient.prepareDelete(index, type, internalId))
-        }
+        endpoint = "${STAGING_INDEX}/${GRANULE_TYPE}/${internalId}"
         break
       default:
         def docs = adminClient.prepareMultiGet()
@@ -297,6 +353,10 @@ class MetadataManagementService {
 
     indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
     return data
+  }
+
+  public findAndDeleteMetadata(String fileIdentifier, String doi, String type) {
+    // todo
   }
 
 }

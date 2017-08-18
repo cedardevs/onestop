@@ -20,7 +20,7 @@ class MetadataParser {
     })
 
     return [
-        id      : doi ? doi.replace('/', '-') : slurped.fileIdentifier.CharacterString.text(),
+        fileId  : slurped.fileIdentifier.CharacterString.text(),
         doi     : doi,
         parentId: slurped.parentIdentifier.Anchor.text() ?: slurped.parentIdentifier.CharacterString.text() ?: null
     ]

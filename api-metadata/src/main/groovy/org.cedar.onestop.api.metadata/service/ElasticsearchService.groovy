@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.metadata.service
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.http.HttpEntity
@@ -58,6 +59,26 @@ class ElasticsearchService {
       String endPoint = "/${index}/_alias/${realName}"
       restClient.performRequest('PUT', endPoint)
     }
+  }
+
+  public void disableIndexRefresh(String index) {
+    String endpoint = "/${index}/_settings"
+    def request = JsonOutput.toJson([
+        index: [
+            refresh_interval: "-1"
+        ]
+    ])
+    restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, new NStringEntity(request), ContentType.APPLICATION_JSON)
+  }
+
+  public void enableIndexRefresh(String index) {
+    String endpoint = "/${index}/_settings"
+    def request = JsonOutput.toJson([
+        index: [
+            refresh_interval: "15s"
+        ]
+    ])
+    restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, new NStringEntity(request), ContentType.APPLICATION_JSON)
   }
 
   public String create(String baseName) {

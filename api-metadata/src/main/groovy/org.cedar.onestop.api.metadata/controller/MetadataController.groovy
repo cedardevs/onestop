@@ -39,9 +39,13 @@ class MetadataController {
       consumes = 'application/xml', produces = 'application/json')
   Map load(@RequestBody String xml, HttpServletResponse response) {
     def result = metadataService.loadMetadata(xml)
-    if(result.data) {
+    if (result.data) {
       response.status = result.data.attributes.created ? HttpStatus.CREATED.value() : HttpStatus.OK.value()
-    } else {
+    }
+    else if (result.errors) {
+      response.status = result.errors[0].status
+    }
+    else {
       response.status = HttpStatus.BAD_REQUEST.value()
     }
     return result
@@ -53,21 +57,40 @@ class MetadataController {
     def result = metadataService.getMetadata(id)
     if (result.data) {
       response.status = HttpStatus.OK.value()
-    } else {
+    }
+    else {
       response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
     }
     return result
   }
 
-  @RequestMapping(path = '/metadata/doi:10{prefix}/{suffix}', method = [GET, HEAD], produces = 'application/json')
-  Map retrieveJson(@PathVariable String prefix, @PathVariable String suffix, HttpServletResponse response) {
-    def id = "doi:10${prefix}-${suffix}"
-    return retrieveJson(id, response)
+  @RequestMapping(path = '/metadata', method = [GET, HEAD], produces = 'application/json')
+  Map retrieveJson(@RequestParam(value="fileId", required=false) String fileId,
+                   @RequestParam(value="doi", required=false) String doi, HttpServletResponse response) {
+    if (!fileId && !doi) {
+      response.status = HttpStatus.BAD_REQUEST.value()
+      return [
+          errors: [
+              id    : null,
+              status: HttpStatus.BAD_REQUEST.value(),
+              title : 'No identifiers provided with request',
+              detail: 'Provide a fileId and/or doi request parameter'
+          ]
+      ]
+    }
+    def result = metadataService.findMetadata(fileId, doi)
+    if (result.data) {
+      response.status = HttpStatus.OK.value()
+    }
+    else {
+      response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
+    }
+    return result
   }
 
   @RequestMapping(path = '/metadata/{id}', method = DELETE, produces = 'application/json')
-  Map delete(@PathVariable String id, @RequestParam(value = 'type', required = false) String type, HttpServletResponse response) {
-    def result = metadataService.deleteMetadata(id, type)
+  Map delete(@PathVariable String id, HttpServletResponse response) {
+    def result = metadataService.deleteMetadata(id)
     if (result.errors) {
       response.status = result.errors.status
     }
@@ -80,11 +103,28 @@ class MetadataController {
     return result
   }
 
-  @RequestMapping(path = '/metadata/doi:10{prefix}/{suffix}', method = DELETE, produces = 'application/json')
-  Map delete(@PathVariable String prefix, @PathVariable String suffix,
-             @RequestParam(value = 'type', required = false) String type, HttpServletResponse response) {
-    def id = "doi:10${prefix}-${suffix}"
-    return delete(id, type, response)
+  @RequestMapping(path = '/metadata', method = DELETE, produces = 'application/json')
+  Map delete(@RequestParam(value="fileId", required=false) String fileId,
+             @RequestParam(value="doi", required=false) String doi, HttpServletResponse response) {
+    if (!fileId && !doi) {
+      response.status = HttpStatus.BAD_REQUEST.value()
+      return [
+          errors: [
+              id    : null,
+              status: HttpStatus.BAD_REQUEST.value(),
+              title : 'No identifiers provided with request',
+              detail: 'Provide a fileId and/or doi request parameter'
+          ]
+      ]
+    }
+    def result = metadataService.findAndDeleteMetadata(fileId, doi)
+    if (result.data) { // FIXME not going to return data
+      response.status = HttpStatus.OK.value()
+    }
+    else {
+      response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
+    }
+    return result
   }
 
 }
