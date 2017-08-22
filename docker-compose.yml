@@ -7,6 +7,8 @@ services:
      - 8080:80
     depends_on:
       - api-search
+    environment:
+     - UPSTREAM_HOST=api-search
 
   # api:
   #   build:
@@ -26,13 +28,14 @@ services:
 
   api-search:
     image: cedardevs/onestop-api-search:latest
-    ports:
-      - 8097:8097
+    # ports:
+    #   - 8097:8097
     depends_on:
       - elasticsearch
     environment:
      - elasticsearch_host=elasticsearch
      - elasticsearch_port=9200
+     - logging_level_ncei.onestop.api=DEBUG
 
   # api-metadata:
   #   image: cedardevs/onestop-api-metadata:latest
@@ -45,7 +48,7 @@ services:
   #    - elasticsearch_port=9200
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-latest}
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-5.5.1}
     environment:
      - xpack.security.enabled=false
     ports:
