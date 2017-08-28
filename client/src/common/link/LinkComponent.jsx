@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import {isGovExternal} from '../../utils/urlUtils'
 import './link.css'
 
 class LinkComponent extends React.Component {
@@ -7,30 +7,37 @@ class LinkComponent extends React.Component {
     super(props)
   }
 
-  generateLink() {
-    const leavingSiteMsg = `You are exiting an NCEI website.
-\nThank you for visiting our site. We have provided\
- a link because it has information that may interest you. NCEI does not\
- endorse the views expressed, the information presented, or any commercial\
- products that may be advertised or available on that site`
-
-    const { host } = location
-    let { href } = this.props
-    if (href && href.split('/', 3).includes(host)) {
-      return <a></a>
-    } else {
-      let {href, ...aProps} = this.props
-      return <a {...aProps}
-        onClick={()=> {
-          if (window.confirm(leavingSiteMsg)) {
-            window.location.href = href
-          }
-        }}></a>
-    }
+  render() {
+    const { href, target, onClick, ...others } = this.props
+    return <a
+        href={href}
+        target={target}
+        onClick={this.buildOnClick(href, target, onClick)}
+        {...others}>
+      {this.props.children}
+    </a>
   }
 
-  render() {
-    return this.generateLink()
+  buildOnClick(href, target, onClick) {
+    const leavingSiteMsg = `The site you are navigating to is not hosted by the US Government.
+
+Thank you for visiting our site. We have provided \
+this link because it has information that may interest you, but we do not \
+endorse the views expressed, the information presented, or any commercial \
+products that may be advertised or available on that site.`
+
+    return (e) => {
+      if (typeof onClick === 'function') {
+        onClick()
+      }
+
+      if (isGovExternal(href)) {
+        e.preventDefault()
+        if (window.confirm(leavingSiteMsg)) {
+          target ? window.open(href, target) : window.location.href = href
+        }
+      }
+    }
   }
 }
 
