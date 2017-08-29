@@ -3,7 +3,6 @@ package org.cedar.onestop.api.metadata.service
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -26,12 +25,10 @@ class MetadataManagementService {
   @Value('${elasticsearch.index.staging.granuleType}')
   String GRANULE_TYPE
 
-  private RestClient restClient
   private ElasticsearchService esService
 
   @Autowired
-  public MetadataManagementService(RestClient restClient, ElasticsearchService esService) {
-    this.restClient = restClient
+  public MetadataManagementService(ElasticsearchService esService) {
     this.esService = esService
   }
 
@@ -191,8 +188,8 @@ class MetadataManagementService {
   public Map findMetadata(String fileId, String doi) {
     def endpoint = "${STAGING_INDEX}/_search"
     def searchParams = []
-    if (fileId) { searchParams.add( [term: [fileIdentifier: fileId]] ) }
-    if (doi) { searchParams.add( [term: [doi: doi]] ) }
+    if (fileId) { searchParams.add( [match: [fileIdentifier: fileId]] ) }
+    if (doi) { searchParams.add( [match: [doi: doi]] ) }
     def requestBody = JsonOutput.toJson([
         query: [
             bool: [
@@ -225,138 +222,123 @@ class MetadataManagementService {
     }
   }
 
-  //fixme
-  public Map deleteMetadata(String internalId) {
+  public Map deleteMetadata(String esId) {
 
-        def data = [
-        id        : internalId,
-        attributes: [
-            successes: [],
-            failures : []
-        ]
-    ]
-
-    String endpoint = "${STAGING_INDEX}/${GRANULE_TYPE}/${internalId}"
-    def response = esService.performRequest('DELETE', endpoint)
-    if (response.found) {
-
-    }
-
-
-
-
-
-
-
-    def removeCollectionGranules = false
-    switch(type) {
-      case COLLECTION_TYPE:
-        endpoint = "${STAGING_INDEX}/${GRANULE_TYPE}/${internalId}"
-        removeCollectionGranules = true
-      case GRANULE_TYPE:
-        endpoint = "${STAGING_INDEX}/${GRANULE_TYPE}/${internalId}"
-        break
-      default:
-        def docs = adminClient.prepareMultiGet()
-          .add(SEARCH_INDEX, COLLECTION_TYPE, internalId)
-          .add(SEARCH_INDEX, GRANULE_TYPE, internalId)
-          .get().responses
-        def foundDocs = docs.count { it.response.exists }
-        if (foundDocs == 2) {
-          if (docs.any { it.response.source.parentIdentifier == externalId }) {
-            // No-granule collection
-            data.type = COLLECTION_TYPE
-            bulkRequest.add(adminClient.prepareDelete(STAGING_INDEX, COLLECTION_TYPE, internalId))
-            [COLLECTION_TYPE, GRANULE_TYPE].each { t ->
-              bulkRequest.add((adminClient.prepareDelete(SEARCH_INDEX, t, internalId)))
-            }
-          }
-          else {
-            // Collection & unrelated granule
-            return [
-              errors: [
-                id    : externalId,
-                status: HttpStatus.CONFLICT.value(),
-                title : 'Ambiguous delete request received',
-                detail: "Collection and granule metadata found with ID ${externalId}. Try request again with 'type' request param specified." as String
+    def record = getMetadata(esId)
+    if (record.data) {
+      def result = [
+          response: [
+              data: [
+                  id        : esId
+              ],
+              meta: [
+                  searchIndex: [
+                      totalRecordsFound: 0,
+                      recordsDeleted: 0,
+                      failures: []
+                  ],
+                  stagingIndex: [
+                      totalRecordsFound: 0,
+                      recordsDeleted: 0,
+                      failures: []
+                  ]
               ]
-            ]
-          }
-        }
-
-        else if (foundDocs == 1) {
-          // Collection or granule
-          if (docs[0].type == COLLECTION_TYPE) {
-            removeCollectionGranules = true
-          }
-          data.type = docs[0].type
-          [STAGING_INDEX, SEARCH_INDEX].each { index ->
-            bulkRequest.add(adminClient.prepareDelete(index, docs[0].type, internalId))
-          }
-        }
-
-        else if (!foundDocs) {
-          return [
-            errors: [
-              id    : externalId,
-              status: HttpStatus.NOT_FOUND.value(),
-              title : 'No such document',
-              detail: "Metadata with ID ${externalId} does not exist" as String
-            ]
           ]
+      ]
+      String stagingEndpoint, searchEndpoint
+      def stagingResponse, searchResponse
+
+      if (record.data.type == GRANULE_TYPE) {
+        // The delete request is for a single GRANULE
+        result.response.data.type = GRANULE_TYPE
+
+        stagingEndpoint = "${STAGING_INDEX}/${GRANULE_TYPE}/${esId}"
+        searchEndpoint = "${SEARCH_INDEX}/${GRANULE_TYPE}/${esId}"
+        stagingResponse = esService.performRequest('DELETE', stagingEndpoint)
+        searchResponse = esService.performRequest('DELETE', searchEndpoint)
+
+        result.response.meta.stagingIndex.result = stagingResponse.result
+        if (stagingResponse.result == 'deleted') {
+          result.response.meta.stagingIndex.totalRecordsFound = 1
+          result.response.meta.stagingIndex.recordsDeleted = 1
         }
-        break
-    }
+        // FIXME handle error message if record not deleted
 
-    def bulkResponse = bulkRequest.execute().actionGet()
-    bulkResponse.items.each { i ->
-      if(i.failed) {
-        data.attributes.failures.add([
-            index : i.index.substring(0, i.index.indexOf('_')),
-            type  : i.type,
-            detail: i.failureMessage
-        ])
+        // Not finding anything in search is okay -- we may be deleting a fresh record that hasn't yet been ETLed
+        result.response.meta.searchIndex.result = searchResponse.result
+        if (searchResponse.result == 'deleted') {
+          result.response.meta.searchIndex.totalRecordsFound = 1
+          result.response.meta.searchIndex.recordsDeleted = 1
+        }
+
+        result.status = HttpStatus.OK.value()
       }
+
+
       else {
-        data.attributes.successes.add([
-            index : i.index.substring(0, i.index.indexOf('_')),
-            type  : i.type,
-            found : i.response.isFound()
-        ])
+        // The delete request is for a COLLECTION
+        def fileId = record.data.attributes.source.fileIdentifier
+        def doi = record.data.attributes.source.doi
+
+        result.response.data.type = COLLECTION_TYPE
+        result.response.meta.fileIdentifier = fileId
+        result.response.meta.doi = doi
+
+        // Use delete_by_query to match collection & associated granules all at once
+        def query = [
+            query: [
+                bool: [
+                    should: [
+                        [match: [ _id: esId ]],
+                        [match: [ parentIdentifier: fileId ]]
+                    ]
+                ]
+            ]
+        ]
+        if (doi) { query.query.bool.should.add( [match: [ doi: doi ]] ) } // Search with null throws error
+
+        def deleteResponses = esService.performDeleteByQuery(JsonOutput.toJson(query), [STAGING_INDEX, SEARCH_INDEX])
+        stagingResponse = deleteResponses.get(STAGING_INDEX)
+        if (!stagingResponse.error) {
+          result.response.meta.stagingIndex.totalRecordsFound = stagingResponse.total
+          result.response.meta.stagingIndex.recordsDeleted = stagingResponse.deleted
+          result.response.meta.stagingIndex.failures = stagingResponse.failures
+          result.response.meta.stagingIndex.batches = stagingResponse.batches
+          result.response.meta.stagingIndex.versionConflicts = stagingResponse.version_conflicts
+          result.response.meta.stagingIndex.took = stagingResponse.took
+        }
+        else {
+          result.response.meta.stagingIndex.failures.add(stagingResponse.error)
+        }
+
+        searchResponse = deleteResponses.get(SEARCH_INDEX)
+        if (!searchResponse.error) {
+          result.response.meta.searchIndex.totalRecordsFound = searchResponse.total
+          result.response.meta.searchIndex.recordsDeleted = searchResponse.deleted
+          result.response.meta.searchIndex.failures = searchResponse.failures
+          result.response.meta.searchIndex.batches = searchResponse.batches
+          result.response.meta.searchIndex.versionConflicts = searchResponse.version_conflicts
+          result.response.meta.searchIndex.took = searchResponse.took
+        }
+        else {
+          result.response.meta.searchIndex.failures.add(searchResponse.error)
+        }
+
+        result.status = HttpStatus.MULTI_STATUS.value()
       }
+
+      return result
     }
 
-    if (removeCollectionGranules) {
-      // TODO: Only keeping the old code here to see what response used to include until we can determine a better uniform response
-//      DeleteByQueryResponse deleteResponse = new DeleteByQueryRequestBuilder(adminClient, DeleteByQueryAction.INSTANCE)
-//          .setIndices([STAGING_INDEX, SEARCH_INDEX])
-//          .setTypes(GRANULE_TYPE)
-//          .setQuery(QueryBuilders.termQuery('parentIdentifer', internalId))
-//          .execute().actionGet()
-//      data.attributes.stagingGranulesFound = deleteResponse.getIndex(STAGING_INDEX).found
-//      data.attributes.stagingGranulesDeleted = deleteResponse.getIndex(STAGING_INDEX).deleted
-//      data.attributes.searchGranulesFound = deleteResponse.getIndex(SEARCH_INDEX).found
-//      data.attributes.searchGranulesDeleted = deleteResponse.getIndex(SEARCH_INDEX).deleted
 
-
-      BulkByScrollResponse response = DeleteByQueryAction.INSTANCE.newRequestBuilder(adminClient)
-          .abortOnVersionConflict(false)
-          .filter(QueryBuilders.boolQuery()
-          .must(QueryBuilders.typeQuery(GRANULE_TYPE))
-          .must(QueryBuilders.termQuery('parentIdentifer', internalId)))
-          .source(STAGING_INDEX, SEARCH_INDEX)
-          .execute().actionGet()
-
-      // TODO: This is unfortunately inaccurate while there are two indices but once a DB is in place, metadata CRUD will change here anyway
-      data.attributes.totalGranulesDeleted = response.deleted
+    else {
+      // Record does not exist -- return NOT_FOUND response
+      return record
     }
-
-    indexAdminService.refresh(STAGING_INDEX, SEARCH_INDEX)
-    return data
   }
 
   public findAndDeleteMetadata(String fileIdentifier, String doi, String type) {
-    // todo
+    // TODO: Use granule logic from delete by esId function
   }
 
 }

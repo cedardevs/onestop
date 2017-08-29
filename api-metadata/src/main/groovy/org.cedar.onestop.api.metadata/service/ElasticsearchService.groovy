@@ -170,6 +170,42 @@ class ElasticsearchService {
     return resultRecords
   }
 
+  public Map performDeleteByQuery(String query, List<String> indices, String type = null) {
+    Map resultRecords = Collections.synchronizedMap(new HashMap())
+    final CountDownLatch latch = new CountDownLatch(indices.size())
+
+    indices.each { i ->
+      String endpoint = "${i}/${(type ? type : '') + '/'}_delete_by_query"
+      HttpEntity queryBody = new NStringEntity(query, ContentType.APPLICATION_JSON)
+      restClient.performRequestAsync('POST', endpoint, Collections.EMPTY_MAP, queryBody, new ResponseListener() {
+        @Override
+        void onSuccess(Response response) {
+          resultRecords.put(i, parseResponse(response))
+          latch.countDown()
+        }
+
+        @Override
+        void onFailure(Exception exception) {
+          if (exception instanceof ResponseException) {
+            resultRecords.put(i, parseResponse(exception.response))
+          }
+          else {
+            resultRecords.put(i, [
+                error: [
+                    title: "Delete_by_query on ${i} index failed",
+                    detail: exception.message
+                ]
+            ])
+          }
+          latch.countDown()
+        }
+      })
+    }
+
+    latch.await()
+    return resultRecords
+  }
+
   private Map parseResponse(Response response) {
     Map result = [
         request: response.requestLine,
