@@ -46,10 +46,9 @@ class MetadataParserTest extends Specification {
         instantIndeterminate: null
     ]
     parsedXml.spatialBounding == [
-        type        : 'envelope',
+        type        : 'polygon',
         coordinates : [
-            [-180, 90],
-            [180, -90]
+            [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]
         ]
     ]
     parsedXml.isGlobal == true
@@ -214,18 +213,18 @@ class MetadataParserTest extends Specification {
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
-    def spatialBounding = MetadataParser.parseSpatialInfo(document)
+    def result = MetadataParser.parseSpatialInfo(document)
 
     then:
-    spatialBounding == [spatialBounding     :
-            [
-                    type       : 'envelope',
-                    coordinates: [
-                            [-180, 90],
-                            [180, -90]
-                    ]
-            ],
-            isGlobal: true]
+    result == [
+        spatialBounding: [
+            type: 'polygon',
+            coordinates: [
+                [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]
+            ]
+        ],
+        isGlobal: true
+    ]
   }
 
   def "Null Spatial bounding is correctly parsed"(){
@@ -236,15 +235,7 @@ class MetadataParserTest extends Specification {
       def spatialBounding = MetadataParser.parseSpatialInfo(document)
 
       then:
-      spatialBounding == [spatialBounding     :
-                                  [
-                                          type       : 'envelope',
-                                          coordinates: [
-                                                  [ null, null ],
-                                                  [ null , null ]
-                                          ]
-                                  ],
-                          isGlobal: null ]
+      spatialBounding == [spatialBounding: null, isGlobal: false]
   }
 
   def "Acquisition info is correctly parsed"() {
