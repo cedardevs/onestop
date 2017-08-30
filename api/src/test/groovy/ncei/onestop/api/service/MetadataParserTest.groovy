@@ -208,7 +208,7 @@ class MetadataParserTest extends Specification {
     ]
   }
 
-  def "Spatial bounding is correctly parsed"() {
+  def "Polygon spatial bounding is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
@@ -224,6 +224,23 @@ class MetadataParserTest extends Specification {
             ]
         ],
         isGlobal: true
+    ]
+  }
+
+  def "Point spatial bounding is correctly parsed"(){
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-point-cords-metadata.xml").text
+
+    when:
+    def spatialBounding = MetadataParser.parseSpatialInfo(document)
+
+    then:
+    spatialBounding == [
+        spatialBounding: [
+            type: 'point',
+            coordinates: [-105, 40]
+        ],
+        isGlobal: false
     ]
   }
 
