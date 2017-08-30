@@ -190,15 +190,15 @@ class Detail extends React.Component {
   }
 
   renderFullStar(i) {
-    return <img className={styles.star} src={star}></img>
+    return <img key={i} className={styles.star} src={star}></img>
   }
 
   renderHalfStar(i) {
-    return <img className={styles.star} src={starHalfO}></img>
+    return <img key={i} className={styles.star} src={starHalfO}></img>
   }
 
   renderEmptyStar(i) {
-    return <img className={styles.star} src={starO}></img>
+    return <img key={i} className={styles.star} src={starO}></img>
   }
 }
 

@@ -9,17 +9,16 @@ class GranuleList extends React.Component {
 
   constructor(props) {
     super(props)
-    this.protocols = {
-      'ogc:wcs':  {id: 'C', color: 'coral',     label: 'OGC Web Coverage Service'},
-      'download': {id: 'D', color: 'blue',      label: 'Download'},
-      'ftp':      {id: 'F', color: 'red',       label: 'FTP'},
-      'noaa:las': {id: 'L', color: 'aqua',      label: 'NOAA Live Access Server'},
-      'ogc:wms':  {id: 'M', color: 'goldenrod', label: 'OGC Web Map Service'},
-      'opendap':  {id: 'O', color: 'green',     label: 'OPeNDAP'},
-      'thredds':  {id: 'T', color: 'grey',      label: 'THREDDS'},
-      'http':     {id: 'W', color: 'purple',    label: 'Web'},
-      'https':    {id: 'W', color: 'purple',    label: 'Web'},
-    }
+    this.protocols = [
+      {id: 'C', names: ['ogc:wcs'],       color: 'coral',     label: 'OGC Web Coverage Service'},
+      {id: 'D', names: ['download'],      color: 'blue',      label: 'Download'},
+      {id: 'F', names: ['ftp'],           color: 'red',       label: 'FTP'},
+      {id: 'L', names: ['noaa:las'],      color: 'aqua',      label: 'NOAA Live Access Server'},
+      {id: 'M', names: ['ogc:wms'],       color: 'goldenrod', label: 'OGC Web Map Service'},
+      {id: 'O', names: ['opendap'],       color: 'green',     label: 'OPeNDAP'},
+      {id: 'T', names: ['thredds'],       color: 'grey',      label: 'THREDDS'},
+      {id: 'W', names: ['http', 'https'], color: 'purple',    label: 'Web'},
+    ]
   }
 
   componentDidUpdate() {
@@ -39,6 +38,7 @@ class GranuleList extends React.Component {
     const legendItems = _.chain(_.toArray(usedProtocols))
         .filter()
         .sortBy('id')
+        .uniqBy('id')
         .map((protocol, i) => {
           return <div key={i} className={styles.legendItem}>
             <div className={`${styles.badge}`} style={{background: protocol.color}}>{protocol.id}</div>
@@ -112,7 +112,7 @@ class GranuleList extends React.Component {
 
   identifyProtocol(link) {
     const name = _.toLower(link.linkProtocol || '')
-    return this.protocols[name]
+    return _.find(this.protocols, p => p.names.includes(name))
   }
 
   renderPaginationButton() {
