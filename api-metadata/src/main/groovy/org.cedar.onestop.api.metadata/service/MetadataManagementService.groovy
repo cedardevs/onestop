@@ -167,13 +167,13 @@ class MetadataManagementService {
 
     if (response.found) {
       return [
-          data: [
+          data: [[
               id        : response._id,
               type      : response._type,
               attributes: [
                   source: response._source
               ]
-          ]
+          ]]
       ]
     }
     else {
@@ -223,122 +223,99 @@ class MetadataManagementService {
   }
 
   public Map deleteMetadata(String esId) {
-
     def record = getMetadata(esId)
-    if (record.data) {
-      def result = [
-          response: [
-              data: [
-                  id        : esId
-              ],
-              meta: [
-                  searchIndex: [
-                      totalRecordsFound: 0,
-                      recordsDeleted: 0,
-                      failures: []
-                  ],
-                  stagingIndex: [
-                      totalRecordsFound: 0,
-                      recordsDeleted: 0,
-                      failures: []
-                  ]
-              ]
-          ]
-      ]
-      String stagingEndpoint, searchEndpoint
-      def stagingResponse, searchResponse
-
-      if (record.data.type == GRANULE_TYPE) {
-        // The delete request is for a single GRANULE
-        result.response.data.type = GRANULE_TYPE
-
-        stagingEndpoint = "${STAGING_INDEX}/${GRANULE_TYPE}/${esId}"
-        searchEndpoint = "${SEARCH_INDEX}/${GRANULE_TYPE}/${esId}"
-        stagingResponse = esService.performRequest('DELETE', stagingEndpoint)
-        searchResponse = esService.performRequest('DELETE', searchEndpoint)
-
-        result.response.meta.stagingIndex.result = stagingResponse.result
-        if (stagingResponse.result == 'deleted') {
-          result.response.meta.stagingIndex.totalRecordsFound = 1
-          result.response.meta.stagingIndex.recordsDeleted = 1
-        }
-        // FIXME handle error message if record not deleted
-
-        // Not finding anything in search is okay -- we may be deleting a fresh record that hasn't yet been ETLed
-        result.response.meta.searchIndex.result = searchResponse.result
-        if (searchResponse.result == 'deleted') {
-          result.response.meta.searchIndex.totalRecordsFound = 1
-          result.response.meta.searchIndex.recordsDeleted = 1
-        }
-
-        result.status = HttpStatus.OK.value()
-      }
-
-
-      else {
-        // The delete request is for a COLLECTION
-        def fileId = record.data.attributes.source.fileIdentifier
-        def doi = record.data.attributes.source.doi
-
-        result.response.data.type = COLLECTION_TYPE
-        result.response.meta.fileIdentifier = fileId
-        result.response.meta.doi = doi
-
-        // Use delete_by_query to match collection & associated granules all at once
-        def query = [
-            query: [
-                bool: [
-                    should: [
-                        [match: [ _id: esId ]],
-                        [match: [ parentIdentifier: fileId ]]
-                    ]
-                ]
-            ]
-        ]
-        if (doi) { query.query.bool.should.add( [match: [ doi: doi ]] ) } // Search with null throws error
-
-        def deleteResponses = esService.performDeleteByQuery(JsonOutput.toJson(query), [STAGING_INDEX, SEARCH_INDEX])
-        stagingResponse = deleteResponses.get(STAGING_INDEX)
-        if (!stagingResponse.error) {
-          result.response.meta.stagingIndex.totalRecordsFound = stagingResponse.total
-          result.response.meta.stagingIndex.recordsDeleted = stagingResponse.deleted
-          result.response.meta.stagingIndex.failures = stagingResponse.failures
-          result.response.meta.stagingIndex.batches = stagingResponse.batches
-          result.response.meta.stagingIndex.versionConflicts = stagingResponse.version_conflicts
-          result.response.meta.stagingIndex.took = stagingResponse.took
-        }
-        else {
-          result.response.meta.stagingIndex.failures.add(stagingResponse.error)
-        }
-
-        searchResponse = deleteResponses.get(SEARCH_INDEX)
-        if (!searchResponse.error) {
-          result.response.meta.searchIndex.totalRecordsFound = searchResponse.total
-          result.response.meta.searchIndex.recordsDeleted = searchResponse.deleted
-          result.response.meta.searchIndex.failures = searchResponse.failures
-          result.response.meta.searchIndex.batches = searchResponse.batches
-          result.response.meta.searchIndex.versionConflicts = searchResponse.version_conflicts
-          result.response.meta.searchIndex.took = searchResponse.took
-        }
-        else {
-          result.response.meta.searchIndex.failures.add(searchResponse.error)
-        }
-
-        result.status = HttpStatus.MULTI_STATUS.value()
-      }
-
-      return result
-    }
-
-
+    if (record.data) { return delete(record) }
     else {
       // Record does not exist -- return NOT_FOUND response
       return record
     }
   }
 
-  public findAndDeleteMetadata(String fileIdentifier, String doi, String type) {
-    // TODO: Use granule logic from delete by esId function
+  public Map deleteMetadata(String fileId, String doi) {
+    def record = findMetadata(fileId, doi)
+    if (record.data) { return delete(record) }
+    else {
+      // Record does not exist -- return NOT_FOUND response
+      return record
+    }
+  }
+
+  private Map delete(Map record) {
+
+    def result = [
+        response: [
+            data: [],
+            meta: [
+                searchIndex: [
+                    totalRecordsFound: 0,
+                    recordsDeleted: 0,
+                    failures: []
+                ],
+                stagingIndex: [
+                    totalRecordsFound: 0,
+                    recordsDeleted: 0,
+                    failures: []
+                ]
+            ]
+        ]
+    ]
+    def dataRecords = record.data.collect {
+      [
+          id: it.id,
+          type: it.type
+      ]
+    }
+    result.response.data.addAll(dataRecords)
+
+    def fileId = record.data.attributes.source.fileIdentifier
+    def doi = record.data.attributes.source.doi
+
+    result.response.meta.fileIdentifier = fileId
+    result.response.meta.doi = doi
+
+    // Use delete_by_query to match collection & associated granules all at once
+    def query = [
+        query: [
+            bool: [
+                should: [
+                    [match: [ parentIdentifier: fileId ]]
+                ]
+            ]
+        ]
+    ]
+    dataRecords.each { i -> query.query.bool.should.add( [match: [ _id: i.id ]] ) }
+    if (doi) { query.query.bool.should.add( [match: [ doi: doi ]] ) } // Search with null throws error
+
+    def deleteResponses = esService.performDeleteByQuery(JsonOutput.toJson(query), [STAGING_INDEX, SEARCH_INDEX])
+
+    def stagingResponse = deleteResponses.get(STAGING_INDEX)
+    if (!stagingResponse.error) {
+      result.response.meta.stagingIndex.totalRecordsFound = stagingResponse.total
+      result.response.meta.stagingIndex.recordsDeleted = stagingResponse.deleted
+      result.response.meta.stagingIndex.failures = stagingResponse.failures
+      result.response.meta.stagingIndex.batches = stagingResponse.batches
+      result.response.meta.stagingIndex.versionConflicts = stagingResponse.version_conflicts
+      result.response.meta.stagingIndex.took = stagingResponse.took
+    }
+    else {
+      result.response.meta.stagingIndex.failures.add(stagingResponse.error)
+    }
+
+    def searchResponse = deleteResponses.get(SEARCH_INDEX)
+    if (!searchResponse.error) {
+      result.response.meta.searchIndex.totalRecordsFound = searchResponse.total
+      result.response.meta.searchIndex.recordsDeleted = searchResponse.deleted
+      result.response.meta.searchIndex.failures = searchResponse.failures
+      result.response.meta.searchIndex.batches = searchResponse.batches
+      result.response.meta.searchIndex.versionConflicts = searchResponse.version_conflicts
+      result.response.meta.searchIndex.took = searchResponse.took
+    }
+    else {
+      result.response.meta.searchIndex.failures.add(searchResponse.error)
+    }
+
+    result.status = HttpStatus.MULTI_STATUS.value()
+    return result
   }
 
 }
