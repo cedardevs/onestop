@@ -261,47 +261,43 @@ class MetadataParser {
   }
 
   static Map parseSpatialInfo(GPathResult metadata) {
-    def spatialBounding = [:]
-    def isGlobal = null
     def space = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
       e.@id.text() == 'boundingExtent'
     }.geographicElement
     def bbox = space.'**'.find { it -> it.name() == 'EX_GeographicBoundingBox' }
-    if (bbox) {
 
-      spatialBounding.put('type', 'envelope')
-      spatialBounding.put('coordinates', parseCoords(bbox))
-              //)
-      isGlobal = checkIsGlobal(bbox)
-    }
-    return ["spatialBounding":spatialBounding, "isGlobal" : isGlobal]
+    def spatialBounding = parseBounding(bbox)
+    def isGlobal = checkIsGlobal(spatialBounding)
+
+    return ["spatialBounding": spatialBounding, "isGlobal": isGlobal]
   }
 
-  static def parseCoords(def bbox){
-    def westBound = (bbox.westBoundLongitude == "null" ||  bbox.westBoundLongitude == "") ? null : bbox.westBoundLongitude.Decimal.toFloat()
-    def eastBound = (bbox.eastBoundLongitude == "null" ||  bbox.eastBoundLongitude == "") ? null : bbox.eastBoundLongitude.Decimal.toFloat()
-    def northBound = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "")  ? null : bbox.northBoundLatitude.Decimal.toFloat()
-    def southBound = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toFloat()
+  static def parseBounding(def bbox) {
+    if (!bbox) { return null }
 
-    return [
-          [westBound, northBound],
-          [eastBound, southBound]
-    ]
+    def west = (bbox.westBoundLongitude == "null" ||  bbox.westBoundLongitude == "") ? null : bbox.westBoundLongitude.Decimal.toFloat()
+    def east = (bbox.eastBoundLongitude == "null" ||  bbox.eastBoundLongitude == "") ? null : bbox.eastBoundLongitude.Decimal.toFloat()
+    def north = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "")  ? null : bbox.northBoundLatitude.Decimal.toFloat()
+    def south = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toFloat()
+
+    if (!west || !east || !north || !south) { return null }
+
+    def type = (west == east && north == south) ? 'point' : 'polygon'
+    def coordinates = type == 'point' ? [west, north] : [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+
+    return [type: type, coordinates: coordinates]
   }
 
-  static def checkIsGlobal(def bbox ){
-    if( bbox.westBoundLongitude == "null" || bbox.eastBoundLongitude == "null" ||  bbox.northBoundLatitude == "null" || bbox.southBoundLatitude == "null") {
-      return null
-    }
-    if( (bbox.westBoundLongitude.Decimal.toFloat() == -180) &&
-            (bbox.eastBoundLongitude.Decimal.toFloat() == 180) &&
-            (bbox.northBoundLatitude.Decimal.toFloat() == 90 )  &&
-            (bbox.southBoundLatitude.Decimal.toFloat() == -90)){
-      return true
-    }
-    else{
-      return false
-    }
+  static def checkIsGlobal(def bounds) {
+    if (bounds?.type != 'polygon') { return false }
+
+    def coords = bounds.coordinates[0]
+    def west = coords[0][0]
+    def east = coords[1][0]
+    def north = coords[2][1]
+    def south = coords[0][1]
+
+    return west == -180 && east == 180 && north == 90 && south == -90
   }
 
   static Map parseSpatialInfo(String xml) {

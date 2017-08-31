@@ -143,15 +143,16 @@ class SearchIntegrationTests extends Specification {
     result.statusCode == HttpStatus.OK
     result.headers.getContentType() == contentType
 
-    and: "Result contains 2 items"
+    and: "Result contains 3 items"
     def items = result.body.data
-    items.size() == 2
+    items.size() == 3
 
     and: "Expected results are returned"
     def actualIds = items.collect { it.attributes.fileIdentifier }
     actualIds.containsAll([
         'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
-        'gov.noaa.ngdc.mgg.dem:4870'
+        'gov.noaa.ngdc.mgg.dem:4870',
+        'gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R'
     ])
   }
 
