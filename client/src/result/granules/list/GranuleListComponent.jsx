@@ -48,11 +48,11 @@ class GranuleList extends React.Component {
         .value()
 
     return (
-      <div ref={granuleFocus=>this.granuleFocus=granuleFocus} tabIndex={0}>
+      <div ref={granuleFocus=>this.granuleFocus=granuleFocus}>
         <a className={styles.navLink}
           tabIndex={0}
           onClick={this.props.showCollections}>Return To Collection Results</a>
-        <div className={`pure-g ${styles.mainWindow}`}>
+        <div className={`pure-g ${styles.mainWindow}`} tabIndex={0}>
           <div className={`pure-u-1-2 ${styles.map}`}>
             <MapContainer style={styles.mapContainer}/>
           </div>
