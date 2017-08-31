@@ -54,7 +54,7 @@ class MapComponent extends React.Component {
       // Define map with defaults
       map: L.map(ReactDOM.findDOMNode(this), {
         minZoom: 2,
-        maxZoom: 20,
+        maxZoom: 5,
         layers: [
             L.esri.basemapLayer("Oceans"),
             L.esri.basemapLayer("OceansLabels")
