@@ -1,4 +1,5 @@
 import React, {PropTypes} from 'react'
+import ShowMore from 'react-show-more'
 import MapThumbnailComponent from '../common/MapThumbnailComponent'
 import {processUrl} from '../utils/urlUtils'
 import infoCircle from 'fa/info-circle.svg'
@@ -40,7 +41,10 @@ class Detail extends React.Component {
           <div className={`pure-u-1 pure-u-md-2-3`}>
             <div className={`pure-g`}>
               <div className={`pure-u-1 ${styles.underscored}`}>
-                <p>{item.description}</p>
+                <ShowMore lines={5} more="Show more..."
+                          anchorClass={`${styles.showMore} pure-button button-small`}>
+                  {item.description}
+                </ShowMore>
               </div>
             </div>
             <div className={`${styles.underscored}`}>
