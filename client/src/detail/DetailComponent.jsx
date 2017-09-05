@@ -41,8 +41,8 @@ class Detail extends React.Component {
           <div className={`pure-u-1 pure-u-md-2-3`}>
             <div className={`pure-g`}>
               <div className={`pure-u-1 ${styles.underscored}`}>
-                <ShowMore lines={5} more="Show more..."
-                          anchorClass={`${styles.showMore} pure-button button-small`}>
+                <ShowMore lines={5}
+                          anchorClass={`${styles.showMore}`}>
                   {item.description}
                 </ShowMore>
               </div>

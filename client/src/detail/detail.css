@@ -36,11 +36,11 @@
 .showMore {
   display: block;
   color: white;
-  background: black !important;
-  text-align: center;
+  text-align: right;
   font-style: italic;
   font-weight: bold;
   text-decoration: underline;
+  padding: .5 em;
 }
 
 .header {
