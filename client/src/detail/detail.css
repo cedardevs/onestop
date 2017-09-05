@@ -29,7 +29,18 @@
 .underscored {
   border-bottom: 1px solid $color-gray;
   margin-bottom: 1em;
+  padding-bottom: 1em;
   text-align: justify;
+}
+
+.showMore {
+  display: block;
+  color: white;
+  text-align: right;
+  font-style: italic;
+  font-weight: bold;
+  text-decoration: underline;
+  padding: .5 em;
 }
 
 .header {
