@@ -139,9 +139,9 @@ def loadToTarget( Map source, Map target ) {
 
 // Creates a task to load from each source into local & server targets
 targets.each { target ->
-  tasks.create("etlAllTo${target.name}")
+  tasks.create(name: "etlAllTo${target.name}", group: 'ETL')
     .dependsOn( sources.collect { source ->
-      tasks.create("etl${source.name}To${target.name}")
+      tasks.create(name: "etl${source.name}To${target.name}", group: 'ETL')
         .doFirst(loadToTarget(source, target))
   })
 }

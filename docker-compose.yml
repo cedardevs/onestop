@@ -1,70 +1,56 @@
 version: '3'
-services:
 
+services:
   client:
-    build:
-      context: ./client/
-      args:
-        VERSION: ${VERSION}
-        DATE: ${DATE}
-        VCS_REF: ${VCS_REF}
+    image: cedardevs/onestop-client:latest
     ports:
-     - 8080:80
+      - 8080:80
     depends_on:
       - api-search
+    environment:
+      - UPSTREAM_HOST=api-search
 
-  # api:
-  #   build:
-  #     context: ./api/
-  #     args:
-  #       VERSION: ${VERSION}
-  #       DATE: ${DATE}
-  #       VCS_REF: ${VCS_REF}
-  #       JAR_NAME: onestop-api-all
-  #   ports:
-  #     - 8097:8097
-  #   depends_on:
-  #     - elasticsearch
-  #   environment:
-  #    - elasticsearch_host=elasticsearch
-  #    - elasticsearch_port=9300
+#  api:
+#    build:
+#      context: ./api/
+#      args:
+#        VERSION: ${VERSION}
+#        DATE: ${DATE}
+#        VCS_REF: ${VCS_REF}
+#        JAR_NAME: onestop-api-all
+#    ports:
+#      - 8097:8097
+#    depends_on:
+#      - elasticsearch
+#    environment:
+#      - elasticsearch_host=elasticsearch
+#      - elasticsearch_port=9300
 
   api-search:
-    build:
-      context: ./api-search/
-      args:
-        VERSION: ${VERSION}
-        DATE: ${DATE}
-        VCS_REF: ${VCS_REF}
-        JAR_NAME: onestop-api-search-all
-    ports:
-      - 8097:8097
+    image: cedardevs/onestop-api-search:latest
+#    ports:
+#      - 8097:8097
     depends_on:
       - elasticsearch
     environment:
-     - elasticsearch_host=elasticsearch
-     - elasticsearch_port=9200
+      - elasticsearch_host=elasticsearch
+      - elasticsearch_port=9200
+      - logging_level_ncei.onestop.api=DEBUG
 
-  api-metadata:
-    build:
-      context: ./api-metadata/
-      args:
-        VERSION: ${VERSION}
-        DATE: ${DATE}
-        VCS_REF: ${VCS_REF}
-        JAR_NAME: onestop-api-metadata-all
-    ports:
-      - 8097:8097
-    depends_on:
-      - elasticsearch
-    environment:
-     - elasticsearch_host=elasticsearch
-     - elasticsearch_port=9200
+#  api-metadata:
+#    image: cedardevs/onestop-api-metadata:latest
+#    ports:
+#      - 8097:8097
+#    depends_on:
+#      - elasticsearch
+#    environment:
+#      - elasticsearch_host=elasticsearch
+#      - elasticsearch_port=9200
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-5.5.1}
     environment:
-     - xpack.security.enabled=false
+      - xpack.security.enabled=false
     ports:
-     - 9300:9300
-     - 9200:9200
+      - 9300:9300
+      - 9200:9200

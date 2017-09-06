@@ -453,4 +453,18 @@ class SearchIntegrationTests extends Specification {
     errors.any { it.title?.contains("Bad Request") }
   }
 
+  def 'totalCounts reports counts of collections and granules'() {
+    def requestEntity = RequestEntity.get(new URI("$searchBaseUri/totalCounts")).build()
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then:
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+    result.body.data.size() == 2
+    result.body.data*.id.containsAll(['collection', 'granule'])
+    result.body.data*.count.every({ it instanceof Number })
+  }
+
 }

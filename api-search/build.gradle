@@ -1,12 +1,7 @@
-import com.wiredforcode.gradle.spawn.SpawnProcessTask
-import com.wiredforcode.gradle.spawn.KillProcessTask
-
 apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
-apply plugin: "com.wiredforcode.spawn"
 apply from: "${rootDir}/gradle/publishing.gradle"
-
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -37,14 +32,11 @@ dependencies {
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile 'org.testcontainers:testcontainers:1.4.2'
 
+  testCompile project(':index-configuration')
 }
 
 ext {
   fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
-}
-
-bootRun {
-  dependsOn ':elasticsearch:start'
 }
 
 war {
@@ -61,20 +53,6 @@ bootRepackage {
   excludeDevtools = true
   executable = true
   onlyIf { !tasks.getByName('war').state.upToDate }
-}
-
-task start(type: SpawnProcessTask) {
-  dependsOn 'assemble', ':elasticsearch:start'
-  onlyIf { !(new File(projectDir, '.pid.lock').exists()) }
-
-  directory projectDir.absolutePath
-  command "${fatWarPath}"
-  ready 'Started Application'
-}
-
-task stop(type: KillProcessTask) {
-  onlyIf { new File(projectDir, '.pid.lock').exists() }
-  directory projectDir.absolutePath
 }
 
 configurations.configure {
@@ -116,7 +94,6 @@ processResources {
   }
 }
 
-
 static def getDateTime() {
   return new Date().format("YYYY-MM-DD'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC'))
 }
@@ -129,7 +106,8 @@ task dockerImage(type: Exec, description: 'Creates a docker image with the curre
     --build-arg VERSION=${project.version} \
     --build-arg DATE=" + getDateTime() + " \
     --build-arg JAR_NAME=${rootProject.name}-${project.name}-all \
-    -t cedardevs/${rootProject.name}-${project.name}:${project.version} ."
+    -t cedardevs/${rootProject.name}-${project.name}:${project.version} . && \
+    docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest"
 }
 
 assemble.dependsOn dockerImage
@@ -147,7 +125,6 @@ task promote(type: Exec, description: 'Publishes the promoted docker image', gro
   executable "bash"
   args "-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && \
     docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:$baseVersion && \
-    docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest &&\
     docker push cedardevs/${rootProject.name}-${project.name}:$baseVersion &&\
     docker push cedardevs/${rootProject.name}-${project.name}:latest && \
     docker logout"

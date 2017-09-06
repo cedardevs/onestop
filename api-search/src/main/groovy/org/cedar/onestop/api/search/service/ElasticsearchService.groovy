@@ -45,7 +45,7 @@ class ElasticsearchService {
     String collectionEndpoint = "/$SEARCH_INDEX/$COLLECTION_TYPE/_search"
     HttpEntity collectionRequest = new NStringEntity(JsonOutput.toJson([
         query: [
-            match_all: []
+            match_all: [:]
         ],
         size : 0
     ]), ContentType.APPLICATION_JSON)
