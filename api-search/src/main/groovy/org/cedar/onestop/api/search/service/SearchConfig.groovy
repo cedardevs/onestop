@@ -14,17 +14,10 @@ class SearchConfig {
   String minimumShouldMatch
   Integer phraseSlop
   Float tieBreaker
-  DSMMConfig dsmm = new DSMMConfig()
   Map<String, Object> fields = [:]
 
   private Map<String, Float> boosts
   Map<String, Float> getBoosts() { return boosts }
-
-  static class DSMMConfig {
-    Float factor
-    String modifier
-    Integer missing
-  }
 
   @PostConstruct
   initialize() {

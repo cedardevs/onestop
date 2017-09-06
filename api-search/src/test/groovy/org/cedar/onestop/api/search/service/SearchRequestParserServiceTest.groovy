@@ -43,15 +43,31 @@ class SearchRequestParserServiceTest extends Specification {
     def queryResult = requestParser.parseSearchQuery(params)
     def expectedQuery = [
         bool: [
-            must  : [[
-                         query_string: [
-                             query               : "winter",
-                             fields              : ["_all"],
-                             phrase_slop         : 0,
-                             tie_breaker         : 0,
-                             minimum_should_match: '75%',
-                             lenient             : true
-                         ]]],
+            must  : [
+                [
+                    function_score: [
+                        query             : [
+                            bool: [
+                                must: [[
+                                           query_string: [
+                                               query               : "winter",
+                                               fields              : ["_all"],
+                                               phrase_slop         : 0,
+                                               tie_breaker         : 0,
+                                               minimum_should_match: '75%',
+                                               lenient             : true
+                                           ]]]]
+                        ],
+                        field_value_factor: [
+                            field   : 'dsmmAverage',
+                            modifier: 'log1p',
+                            factor  : 1.0,
+                            missing : 0
+                        ],
+                        boost_mode        : 'sum'
+                    ]
+                ]
+            ],
             filter: [:]
         ]
     ]
@@ -73,36 +89,6 @@ class SearchRequestParserServiceTest extends Specification {
     def queryResult = parser.parseSearchQuery(params)
     def expectedQuery = [
         bool: [
-            must  : [[
-                         query_string: [
-                             query               : "winter",
-                             fields              : ["title^4.0"],
-                             phrase_slop         : 0,
-                             tie_breaker         : 0,
-                             minimum_should_match: '75%',
-                             lenient             : true
-                         ]]],
-            filter: [:]
-        ]
-    ]
-
-    then:
-    queryResult == expectedQuery
-  }
-
-  def "Test only queryText with dsmm boosting configured"() {
-    given:
-    def config = new SearchConfig(dsmm: new SearchConfig.DSMMConfig(factor: 1, modifier: 'log1p'))
-    config.initialize()
-    def parser = new SearchRequestParserService(config)
-
-    def request = '{"queries":[{"type":"queryText","value":"winter"}]}'
-    def params = slurper.parseText(request)
-
-    when:
-    def queryResult = parser.parseSearchQuery(params)
-    def expectedQuery = [
-        bool: [
             must  : [
                 [
                     function_score: [
@@ -111,7 +97,7 @@ class SearchRequestParserServiceTest extends Specification {
                                 must: [[
                                            query_string: [
                                                query               : "winter",
-                                               fields              : ["_all"],
+                                               fields              : ["title^4.0"],
                                                phrase_slop         : 0,
                                                tie_breaker         : 0,
                                                minimum_should_match: '75%',
