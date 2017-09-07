@@ -52,7 +52,7 @@ class SearchIntegrationTests extends Specification {
   void setup() {
     def json = new JsonSlurper()
     def cl = ClassLoader.systemClassLoader
-    def indexJson = cl.getResourceAsStream('indexSettings.json').text
+    def indexJson = cl.getResourceAsStream('searchIndex.json').text
     def indexSettings = new NStringEntity(indexJson, ContentType.APPLICATION_JSON)
     String endpoint = "${SEARCH_INDEX}"
     Response response = restClient.performRequest('DELETE', '_all')
