@@ -56,37 +56,36 @@ class ElasticsearchService {
     def indexExists = checkAliasExists(index)
     if(!indexExists) {
       def realName = create(index)
-      String endPoint = "/${index}/_alias/${realName}"
-      restClient.performRequest('PUT', endPoint)
+      String endPoint = "/${realName}/_alias/${index}"
+      performRequest('PUT', endPoint)
     }
   }
 
   public void disableIndexRefresh(String index) {
     String endpoint = "/${index}/_settings"
-    def request = JsonOutput.toJson([
+    def request = [
         index: [
             refresh_interval: "-1"
         ]
-    ])
-    restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, new NStringEntity(request), ContentType.APPLICATION_JSON)
+    ]
+    performRequest('PUT', endpoint, request)
   }
 
   public void enableIndexRefresh(String index) {
     String endpoint = "/${index}/_settings"
-    def request = JsonOutput.toJson([
+    def request = [
         index: [
             refresh_interval: "15s"
         ]
-    ])
-    restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, new NStringEntity(request), ContentType.APPLICATION_JSON)
+    ]
+    performRequest('PUT', endpoint, request)
   }
 
   public String create(String baseName) {
     String indexName = "${baseName}-${System.currentTimeMillis()}"
     def cl = Thread.currentThread().contextClassLoader
-    def indexJson = cl.getResourceAsStream("config/${baseName - PREFIX}-settings.json").text
-    def indexSettings = new NStringEntity(indexJson, ContentType.APPLICATION_JSON)
-    restClient.performRequest('PUT', indexName, Collections.EMPTY_MAP, indexSettings)
+    def indexJson = cl.getResourceAsStream("${baseName}Index.json").text
+    performRequest('PUT', indexName, indexJson)
 
     log.debug "Created new index [${indexName}]"
     return indexName
@@ -94,12 +93,20 @@ class ElasticsearchService {
 
   public void refresh(String... indices) {
     String endpoint = "/${indices.join(',')}/_refresh"
-    restClient.performRequest('POST', endpoint)
+    performRequest('POST', endpoint)
+  }
+
+  public void dropStagingIndex() {
+    drop(STAGING_INDEX)
+  }
+
+  public void dropSearchIndex() {
+    drop(SEARCH_INDEX)
   }
 
   public void drop(String indexName) {
     try {
-      restClient.performRequest('DELETE', indexName)
+      performRequest('DELETE', indexName)
       log.debug "Dropped index [${indexName}]"
     } catch(e) {
       log.warn "Failed to drop index [${indexName}] because it was not found"
@@ -111,11 +118,15 @@ class ElasticsearchService {
     return status == 200
   }
 
-  public Map performRequest(String requestType, String endpoint, String requestBody = null) {
+  public Map performRequest(String method, String endpoint, Map requestBody) {
+    performRequest(method, endpoint, JsonOutput.toJson(requestBody))
+  }
+
+  public Map performRequest(String method, String endpoint, String requestBody = null) {
     try {
       def response = requestBody ?
-          restClient.performRequest(requestType, endpoint, Collections.EMPTY_MAP, new NStringEntity(requestBody, ContentType.APPLICATION_JSON)) :
-          restClient.performRequest(requestType, endpoint)
+          restClient.performRequest(method, endpoint, Collections.EMPTY_MAP, new NStringEntity(requestBody, ContentType.APPLICATION_JSON)) :
+          restClient.performRequest(method, endpoint)
       return parseResponse(response)
     }
 
@@ -222,7 +233,7 @@ class ElasticsearchService {
     return resultRecords
   }
 
-  private Map parseResponse(Response response) {
+  private static Map parseResponse(Response response) {
     Map result = [
         request: response.requestLine,
         statusCode: response.statusLine.statusCode

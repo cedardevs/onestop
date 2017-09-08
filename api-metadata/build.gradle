@@ -21,6 +21,7 @@ dependencies {
   compile 'com.github.fge:json-schema-validator:2.2.6'
   compile 'org.apache.commons:commons-lang3:3.4'
   compile 'org.apache.lucene:lucene-expressions:5.5.0'
+  compile project(':index-configuration')
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
@@ -31,7 +32,6 @@ dependencies {
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile 'org.testcontainers:testcontainers:1.4.2'
-
 }
 
 ext {
