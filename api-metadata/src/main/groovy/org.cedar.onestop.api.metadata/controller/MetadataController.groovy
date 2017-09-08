@@ -19,6 +19,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.*
 @RestController
 class MetadataController {
 
+  /** FIXME:
+   *  Need to ensure responses from metadataService are correctly handled
+   * **/
+
   private MetadataManagementService metadataService
 
   @Autowired
@@ -89,13 +93,14 @@ class MetadataController {
   }
 
   @RequestMapping(path = '/metadata/{id}', method = DELETE, produces = 'application/json')
-  Map delete(@PathVariable String id, HttpServletResponse response) {
-    def result = metadataService.deleteMetadata(id)
+  Map delete(@PathVariable String id, @RequestParam(value="recursive", required=false, defaultValue="true") Boolean recursive, HttpServletResponse response) {
+    // FIXME!!!!
+    def result = metadataService.deleteMetadata(id, recursive)
     if (result.errors) {
       response.status = result.errors.status
     }
-    else if(result.attributes.failures) {
-      response.status = HttpStatus.INTERNAL_SERVER_ERROR.value() // FIXME Actual failures are problem with elasticsearch?
+    else if (result.attributes.failures) {
+      response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
     }
     else {
       response.status = HttpStatus.OK.value()
@@ -105,20 +110,22 @@ class MetadataController {
 
   @RequestMapping(path = '/metadata', method = DELETE, produces = 'application/json')
   Map delete(@RequestParam(value="fileId", required=false) String fileId,
-             @RequestParam(value="doi", required=false) String doi, HttpServletResponse response) {
+             @RequestParam(value="doi", required=false) String doi,
+             @RequestParam(value="purge", required=false, defaultValue="true") Boolean purge, HttpServletResponse response) {
+    // FIXME!!!!
     if (!fileId && !doi) {
       response.status = HttpStatus.BAD_REQUEST.value()
       return [
-          errors: [
+          errors: [[
               id    : null,
               status: HttpStatus.BAD_REQUEST.value(),
               title : 'No identifiers provided with request',
               detail: 'Provide a fileId and/or doi request parameter'
-          ]
+          ]]
       ]
     }
-    def result = metadataService.findAndDeleteMetadata(fileId, doi)
-    if (result.data) { // FIXME not going to return data
+    def result = metadataService.deleteMetadata(fileId, doi, purge)
+    if (result.data) {
       response.status = HttpStatus.OK.value()
     }
     else {

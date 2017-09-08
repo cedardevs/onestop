@@ -3,6 +3,7 @@ package org.cedar.onestop.api.metadata.service
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.apache.http.HttpRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -32,46 +33,71 @@ class MetadataManagementService {
     this.esService = esService
   }
 
-  // FIXME:
   public Map loadMetadata(MultipartFile[] documents) {
 
     esService.ensureStagingIndex()
 
-    def resultRecordMap = [:]
-    def entitiesToLoad = [:]
+    def resultRecords = []
+    def entitiesToLoad = []
 
     def stagedDate = System.currentTimeMillis()
-    documents.each { rawDoc ->
-      def document = rawDoc.inputStream.text
-      def storageInfo = MetadataParser.parseIdentifierInfo(document)
-      def internalId = storageInfo.id
-      def externalId = storageInfo.doi ?: storageInfo.id
-      def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
-
+    documents.eachWithIndex { rawDoc, i ->
       def resultRecord = [
-          id        : externalId,
-          type      : type,
+          id        : null,
+          type      : null,
           attributes: [
               filename: rawDoc.originalFilename
           ]
       ]
 
       try {
+        def document = rawDoc.inputStream.text
+        def storageInfo = MetadataParser.parseIdentifierInfo(document)
+        def fileId = storageInfo.fileId
+        def doi = storageInfo.doi
+        def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
+
         def source = MetadataParser.parseXMLMetadataToMap(document)
         source.stagedDate = stagedDate
-        entitiesToLoad.put(internalId, [source: JsonOutput.toJson(source), type: type])
+        def record = findMetadata(fileId, doi)
+        def internalIds = record.data?.collect { it.id }
+
+        def esId = null
+        if (internalIds) {
+          if (internalIds.size() == 1) {
+            // Record exists already
+            esId = internalIds[0]
+          }
+          else {
+            resultRecord.attributes.status = HttpStatus.CONFLICT.value()
+            resultRecord.attributes.error = [
+                title: 'Ambiguous metadata records in existence; metadata not loaded.',
+                detail: "Please GET records with ids [ ${String.join(', ', internalIds)} ] and DELETE any " +
+                    "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
+            ]
+          }
+        }
+        entitiesToLoad.add(i, [source: JsonOutput.toJson(source), type: type, id: esId])
       }
+
       catch (Exception e) {
-        resultRecord.attributes.status = 400
+        resultRecord.attributes.status = HttpStatus.BAD_REQUEST.value()
         resultRecord.attributes.error = [
             title : 'Load request failed due to malformed XML',
             detail: ExceptionUtils.getRootCauseMessage(e)
         ]
       }
-      resultRecordMap.put(internalId, resultRecord)
+      resultRecords.add(i, resultRecord)
     }
 
-    def results = esService.performMultiLoad(entitiesToLoad)
+    // todo: pre-populate resultRecords? need id, type, status, created
+
+
+
+
+
+
+    def results = esService.performMultiLoad(STAGING_INDEX, entitiesToLoad)
     results.each { k, v ->
       def resultRecord = [:].putAll(resultRecordMap.get(k))
       resultRecord.attributes.status = v.status
@@ -91,28 +117,29 @@ class MetadataManagementService {
 
     esService.ensureStagingIndex()
 
-    def storageInfo = MetadataParser.parseIdentifierInfo(document)
-    def fileId = storageInfo.fileId
-    def doi = storageInfo.doi
-    def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
-    def source = MetadataParser.parseXMLMetadataToMap(document)
+    def fileId, doi, type, source
+    try {
+      def storageInfo = MetadataParser.parseIdentifierInfo(document)
+      fileId = storageInfo.fileId
+      doi = storageInfo.doi
+      type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
+      source = MetadataParser.parseXMLMetadataToMap(document)
+    }
+    catch (Exception e) {
+      return [
+          errors: [[
+                       status: HttpStatus.BAD_REQUEST.value(),
+                       title: 'Load request failed due to malformed XML.',
+                       detail: ExceptionUtils.getRootCauseMessage(e)
+                   ]]
+      ]
+    }
     source.stagedDate = System.currentTimeMillis()
     source = JsonOutput.toJson(source)
 
-    def endpoint = "${STAGING_INDEX}/${type}/_search"
-    def searchParams = []
-    searchParams.add([term: [fileIdentifier: fileId]])
-    if (doi) { searchParams.add( [term: [doi: doi]] ) }
-    def requestBody = JsonOutput.toJson([
-        query: [
-            bool: [
-                should: searchParams
-            ]
-        ],
-        _source: false
-    ])
-    def response = esService.performRequest('GET', endpoint, requestBody)
-    def internalIds = response.hits.hits*._id
+    def record = findMetadata(fileId, doi)
+    def internalIds = record.data?.collect { it.id }
+    def endpoint, response
     if (internalIds) {
       if (internalIds.size() == 1) {
         // Record exists, so perform an update
@@ -188,8 +215,8 @@ class MetadataManagementService {
   public Map findMetadata(String fileId, String doi) {
     def endpoint = "${STAGING_INDEX}/_search"
     def searchParams = []
-    if (fileId) { searchParams.add( [match: [fileIdentifier: fileId]] ) }
-    if (doi) { searchParams.add( [match: [doi: doi]] ) }
+    if (fileId) { searchParams.add( [term: [fileIdentifier: fileId]] ) }
+    if (doi) { searchParams.add( [term: [doi: doi]] ) }
     def requestBody = JsonOutput.toJson([
         query: [
             bool: [
@@ -222,7 +249,7 @@ class MetadataManagementService {
     }
   }
 
-  public Map deleteMetadata(String esId) {
+  public Map deleteMetadata(String esId, boolean purge) {
     def record = getMetadata(esId)
     if (record.data) { return delete(record) }
     else {
@@ -231,7 +258,7 @@ class MetadataManagementService {
     }
   }
 
-  public Map deleteMetadata(String fileId, String doi) {
+  public Map deleteMetadata(String fileId, String doi, boolean purge) {
     def record = findMetadata(fileId, doi)
     if (record.data) { return delete(record) }
     else {
@@ -240,7 +267,7 @@ class MetadataManagementService {
     }
   }
 
-  private Map delete(Map record) {
+  private Map delete(Map record, boolean purge) {
 
     def result = [
         response: [
@@ -286,20 +313,19 @@ class MetadataManagementService {
     dataRecords.each { i -> query.query.bool.should.add( [match: [ _id: i.id ]] ) }
     if (doi) { query.query.bool.should.add( [match: [ doi: doi ]] ) } // Search with null throws error
 
-    def deleteResponses = esService.performDeleteByQuery(JsonOutput.toJson(query), [STAGING_INDEX, SEARCH_INDEX])
 
-    def stagingResponse = deleteResponses.get(STAGING_INDEX)
-    if (!stagingResponse.error) {
-      result.response.meta.stagingIndex.totalRecordsFound = stagingResponse.total
-      result.response.meta.stagingIndex.recordsDeleted = stagingResponse.deleted
-      result.response.meta.stagingIndex.failures = stagingResponse.failures
-      result.response.meta.stagingIndex.batches = stagingResponse.batches
-      result.response.meta.stagingIndex.versionConflicts = stagingResponse.version_conflicts
-      result.response.meta.stagingIndex.took = stagingResponse.took
+    def indicesToPurge = [SEARCH_INDEX]
+    if (purge) {
+      indicesToPurge.add(STAGING_INDEX)
     }
     else {
-      result.response.meta.stagingIndex.failures.add(stagingResponse.error)
+      dataRecords.each {
+        def response = esService.performRequest('DELETE', "${STAGING_INDEX}/${it.type}/${it.id}")
+        if (response.found) { result.response.meta.stagingIndex.totalRecordsFound += 1 }
+        if (response.result == 'deleted') { result.response.meta.stagingIndex.recordsDeleted +=1 }
+      }
     }
+    def deleteResponses = esService.performDeleteByQuery(JsonOutput.toJson(query), indicesToPurge)
 
     def searchResponse = deleteResponses.get(SEARCH_INDEX)
     if (!searchResponse.error) {
@@ -312,6 +338,21 @@ class MetadataManagementService {
     }
     else {
       result.response.meta.searchIndex.failures.add(searchResponse.error)
+    }
+
+    if (purge) {
+      def stagingResponse = deleteResponses.get(STAGING_INDEX)
+      if (!stagingResponse.error) {
+        result.response.meta.stagingIndex.totalRecordsFound = stagingResponse.total
+        result.response.meta.stagingIndex.recordsDeleted = stagingResponse.deleted
+        result.response.meta.stagingIndex.failures = stagingResponse.failures
+        result.response.meta.stagingIndex.batches = stagingResponse.batches
+        result.response.meta.stagingIndex.versionConflicts = stagingResponse.version_conflicts
+        result.response.meta.stagingIndex.took = stagingResponse.took
+      }
+      else {
+        result.response.meta.stagingIndex.failures.add(stagingResponse.error)
+      }
     }
 
     result.status = HttpStatus.MULTI_STATUS.value()

@@ -124,18 +124,34 @@ class ElasticsearchService {
     }
   }
 
-  public Map performMultiLoad(Map dataRecords) {
-    Map resultRecords = Collections.synchronizedMap(new HashMap())
+  /**
+   * @param index
+   * @param dataRecords List of Map objects with id, type, and source fields. If id is not populated, record is created; otherwise, it's updated.
+   * @return List of records in same order as dataRecords, with a status field and, in event of error, an error object
+   */
+  public List performMultiLoad(String index, List dataRecords) {
+    List resultRecords = Collections.synchronizedList(new ArrayList())
     final CountDownLatch latch = new CountDownLatch(dataRecords.size())
 
-    dataRecords.each { k, v ->
-      String endpoint = "/${STAGING_INDEX}/${v.type}/${k}"
+    dataRecords.eachWithIndex { record, i ->
+      String endpoint, method
+      if (record.id) {
+        endpoint = "${index}/${record.type}/${record.id}"
+        method = 'PUT'
+      }
+      else {
+        endpoint = "${index}/${record.type}"
+        method = 'POST'
+      }
       HttpEntity source = new NStringEntity(v.source, ContentType.APPLICATION_JSON)
-      restClient.performRequestAsync('PUT', endpoint, Collections.EMPTY_MAP, source, new ResponseListener() {
+
+      restClient.performRequestAsync(method, endpoint, Collections.EMPTY_MAP, source, new ResponseListener() {
         @Override
         void onSuccess(Response response) {
-          resultRecords.put(k, [
-              status: response.statusLine.statusCode
+          def result = parseResponse(response)
+          resultRecords.add(i, [
+              status: response.statusLine.statusCode,
+              id: result._id
           ])
           latch.countDown()
         }
@@ -157,7 +173,7 @@ class ElasticsearchService {
                 detail: exception.message
             ]
           }
-          resultRecords.put(k, [
+          resultRecords.add(i, [
               status: status,
               error: error
           ])
@@ -175,7 +191,7 @@ class ElasticsearchService {
     final CountDownLatch latch = new CountDownLatch(indices.size())
 
     indices.each { i ->
-      String endpoint = "${i}/${(type ? type : '') + '/'}_delete_by_query"
+      String endpoint = "${i}/${(type ?: '') + '/'}_delete_by_query"
       HttpEntity queryBody = new NStringEntity(query, ContentType.APPLICATION_JSON)
       restClient.performRequestAsync('POST', endpoint, Collections.EMPTY_MAP, queryBody, new ResponseListener() {
         @Override
