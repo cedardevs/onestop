@@ -37,6 +37,8 @@ class ETLIntegrationTests extends Specification {
   private String GRANULE_TYPE
 
   void setup() {
+    elasticsearchService.dropStagingIndex()
+    elasticsearchService.dropSearchIndex()
     elasticsearchService.ensureIndices()
   }
 
@@ -48,8 +50,7 @@ class ETLIntegrationTests extends Specification {
     noExceptionThrown()
 
     and:
-    indexedCollectionVersions().size() == 0
-    indexedGranuleVersions().size() == 0
+    documentsByType(SEARCH_INDEX).every({it.size() == 0})
   }
 
   @spock.lang.Ignore
@@ -133,7 +134,6 @@ class ETLIntegrationTests extends Specification {
     granules['CO-OPS.NOS_9410170_201503_D1_v00'] == 2
   }
 
-  @spock.lang.Ignore
   def 'rebuild does nothing when staging is empty'() {
     when:
     etlService.rebuildSearchIndex()
@@ -142,11 +142,9 @@ class ETLIntegrationTests extends Specification {
     noExceptionThrown()
 
     and:
-    indexedCollectionVersions().size() == 0
-    indexedGranuleVersions().size() == 0
+    documentsByType(SEARCH_INDEX).every({it.size() == 0})
   }
 
-  @spock.lang.Ignore
   def 'rebuilding with a collection indexes a collection and a synthesized granule'() {
     setup:
     insertMetadataFromPath('data/COOPS/C1.xml')
@@ -155,11 +153,11 @@ class ETLIntegrationTests extends Specification {
     etlService.rebuildSearchIndex()
 
     then:
-    indexedCollectionVersions().keySet() == ['gov.noaa.nodc:NDBC-COOPS'] as Set
-    indexedGranuleVersions().keySet()  == ['gov.noaa.nodc:NDBC-COOPS'] as Set
+    def indexed = documentsByType(SEARCH_INDEX)
+    indexed[COLLECTION_TYPE]*._source*.fileIdentifier == ['gov.noaa.nodc:NDBC-COOPS']
+    indexed[GRANULE_TYPE]*._source*.fileIdentifier == ['gov.noaa.nodc:NDBC-COOPS']
   }
 
-  @spock.lang.Ignore
   def 'rebuilding with an orphan granule indexes nothing'() {
     setup:
     insertMetadataFromPath('data/COOPS/G1.xml')
@@ -168,11 +166,9 @@ class ETLIntegrationTests extends Specification {
     etlService.rebuildSearchIndex()
 
     then:
-    indexedCollectionVersions().size() == 0
-    indexedGranuleVersions().size() == 0
+    documentsByType(SEARCH_INDEX).every({it.size() == 0})
   }
 
-  @spock.lang.Ignore
   def 'rebuilding with a collection and granule indexes a collection and a granule'() {
     setup:
     insertMetadataFromPath('data/COOPS/C1.xml')
@@ -180,13 +176,30 @@ class ETLIntegrationTests extends Specification {
 
     when:
     etlService.rebuildSearchIndex()
+    def staged = documentsByType(STAGING_INDEX)
+    def indexed = documentsByType(SEARCH_INDEX)
 
-    then:
-    indexedCollectionVersions().keySet() == ['gov.noaa.nodc:NDBC-COOPS'] as Set
-    indexedGranuleVersions().keySet()  == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
+    then: // one collection and one granule are indexed
+    indexed[COLLECTION_TYPE].size() == 1
+    indexed[GRANULE_TYPE].size() == 1
+
+    def indexedCollection = indexed[COLLECTION_TYPE][0]
+    def indexedGranule = indexed[GRANULE_TYPE][0]
+    def stagedCollection = staged[COLLECTION_TYPE][0]
+    def stagedGranule = staged[GRANULE_TYPE][0]
+
+    and: // the collection is the same as staging
+    indexedCollection._id == stagedCollection._id
+    indexedCollection._source == stagedCollection._source
+
+    and: // the granule is the staged collection with fields overridden by the staged granule
+    indexedGranule._id == stagedGranule._id
+    def expectedGranule = stagedCollection._source + stagedGranule._source.findAll({k, v -> v})
+    indexedGranule._source.each { k, v ->
+      assert v == expectedGranule[k]
+    }
   }
 
-  @spock.lang.Ignore
   def 'rebuilding with an updated collection builds a whole new index'() {
     setup:
     insertMetadataFromPath('data/GHRSST/1.xml')
@@ -198,33 +211,44 @@ class ETLIntegrationTests extends Specification {
     when: 'touch the collection'
     insertMetadataFromPath('data/COOPS/C1.xml')
     etlService.rebuildSearchIndex()
+    def indexed = documentsByType(SEARCH_INDEX)
 
     then: 'everything has a fresh version in a new index'
-    indexedCollectionVersions().values().every { it == 1 }
-    indexedGranuleVersions().values().every { it == 1 }
+    indexed[COLLECTION_TYPE].size() == 2
+    indexed[COLLECTION_TYPE].every({it._version == 1})
+    indexed[GRANULE_TYPE].size() == 3
+    indexed[GRANULE_TYPE].every({it._version == 1})
   }
 
 
   //---- Helpers -----
 
-  private insertMetadataFromPath(String path) {
+  private void insertMetadataFromPath(String path) {
     insertMetadata(ClassLoader.systemClassLoader.getResourceAsStream(path).text)
   }
 
-  private insertMetadata(String document) {
+  private void insertMetadata(String document) {
     metadataIndexService.loadMetadata(document)
     elasticsearchService.refresh(STAGING_INDEX)
   }
 
-  private indexedCollectionVersions() {
+  private Map indexedCollectionVersions() {
     indexedItemVersions(COLLECTION_TYPE)
   }
 
-  private indexedGranuleVersions() {
+  private Map indexedGranuleVersions() {
     indexedItemVersions(GRANULE_TYPE)
   }
 
-  private indexedItemVersions(String type) {
+  private Map documentsByType(String index) {
+    elasticsearchService.refresh(index)
+    def endpoint = "$index/_search"
+    def request = [version: true]
+    def response = elasticsearchService.performRequest('GET', endpoint, request)
+    return response.hits.hits.groupBy({it._type})
+  }
+
+  private Map indexedItemVersions(String type) {
     elasticsearchService.refresh(SEARCH_INDEX)
     def endpoint = "$SEARCH_INDEX/$type/_search"
     def request = [
@@ -232,8 +256,7 @@ class ETLIntegrationTests extends Specification {
         _source: 'fileIdentifier'
     ]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
-    println response
-    return response.hits.hits.collectEntries { [(it.field('fileIdentifier').value()): it.version()] }
+    return response.hits.hits.collectEntries { [(it._source.fileIdentifier): it._version] }
   }
 
 }

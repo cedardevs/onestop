@@ -124,12 +124,13 @@ class ElasticsearchService {
 
   public Map performRequest(String method, String endpoint, String requestBody = null) {
     try {
+      log.debug("Performing request: ${method} ${endpoint} ${requestBody}")
       def response = requestBody ?
           restClient.performRequest(method, endpoint, Collections.EMPTY_MAP, new NStringEntity(requestBody, ContentType.APPLICATION_JSON)) :
           restClient.performRequest(method, endpoint)
+      log.debug("Got response: $response")
       return parseResponse(response)
     }
-
     catch(ResponseException e) {
       return parseResponse(e.response)
     }

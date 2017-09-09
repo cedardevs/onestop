@@ -1,0 +1,329 @@
+{
+  "fileid":"gov.noaa.ngdc.mgg.dem:258",
+  "title":"Adak, Alaska Coastal Digital Elevation Model",
+  "description":"NOAA's National Geophysical Data Center (NGDC) is building high-resolution digital elevation models (DEMs) for select U.S. coastal regions. These integrated bathymetric-topographic DEMs are used to support tsunami forecasting and modeling efforts at the NOAA Center for Tsunami Research, Pacific Marine Environmental Laboratory (PMEL). The DEMs are part of the tsunami forecast system SIFT (Short-term Inundation Forecasting for Tsunamis) currently being developed by PMEL for the NOAA Tsunami Warning Centers, and are used in the MOST (Method of Splitting Tsunami) model developed by PMEL to simulate tsunami generation, propagation, and inundation. Bathymetric, topographic, and shoreline data used in DEM compilation are obtained from various sources, including NGDC, the U.S. National Ocean Service (NOS), the U.S. Geological Survey (USGS), the U.S. Army Corps of Engineers (USACE), the Federal Emergency Management Agency (FEMA), and other federal, state, and local\n          government agencies, academic institutions, and private companies. DEMs are referenced to the vertical tidal datum of Mean High Water (MHW) and horizontal datum of World Geodetic System 1984 (WGS84). Cell size for the DEMs ranges from 1/3 arc-second (~10 meters) to 3 arc-seconds (~90 meters).",
+  "keywords_s":[
+    "Earth Science > Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
+    "Earth Science > Oceans > Bathymetry/Seafloor Topography > Bathymetry",
+    "Earth Science > Oceans > Bathymetry/Seafloor Topography > Water Depth",
+    "Earth Science > Land Surface > Topography > Terrain Elevation",
+    "Earth Science > Land Surface > Topography > Topographical Relief Maps",
+    "Earth Science > Oceans > Coastal Processes > Coastal Elevation",
+    "DEM > Digital Elevation Model",
+    "ICSU-WDS > International Council for Science - World Data System",
+    "H: 1 meter - < 30 meters",
+    "V: < 1 meter",
+    "Coastal Relief",
+    "Gridded elevations",
+    "Integrated bathymetry and topography",
+    "Continent > North America > United States of America > Alaska",
+    "Ocean > Pacific Ocean > North Pacific Ocean",
+    "Ocean > Pacific Ocean > North Pacific Ocean > Aleutian Islands",
+    "Vertical Location > Land Surface",
+    "Vertical Location > Sea Floor",
+    "Adak",
+    "Adak Island",
+    "Andreanof Islands",
+    "Aleutian Islands",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "elevation",
+    "DATA ANALYSIS AND VISUALIZATION > GEOGRAPHIC INFORMATION SYSTEMS > WEB-BASED GEOGRAPHIC INFORMATION SYSTEMS",
+    "DATA MANAGEMENT/DATA HANDLING > DATA SEARCH AND RETRIEVAL",
+    "DATA ANALYSIS AND VISUALIZATION > VISUALIZATION/IMAGE PROCESSING",
+    "DATA ANALYSIS AND VISUALIZATION > GEOGRAPHIC INFORMATION SYSTEMS > WEB-BASED GEOGRAPHIC INFORMATION SYSTEMS",
+    "DATA MANAGEMENT/DATA HANDLING > DATA SEARCH AND RETRIEVAL",
+    "DATA ANALYSIS AND VISUALIZATION > VISUALIZATION/IMAGE PROCESSING"
+  ],
+  "links_s":[
+    "http://www.epsg-registry.org/export.htm?gml=urn:ogc:def:crs:EPSG::4326",
+    "http://www.epsg-registry.org/",
+    "http://www.epsg-registry.org/export.htm?gml=urn:ogc:def:datum:EPSG::5868",
+    "http://www.epsg-registry.org/",
+    "http://www.ngdc.noaa.gov/dem/squareCellGrid/download/258",
+    "http://www.ngdc.noaa.gov/mgg/inundation/tsunami/inundation.html",
+    "http://gcmd.nasa.gov/MailComments/MailComments.jsf?rcpt=gcmduso",
+    "http://gcmd.nasa.gov/learn/keyword_list.html",
+    "http://gcmd.nasa.gov/MailComments/MailComments.jsf?rcpt=gcmduso",
+    "http://gcmd.nasa.gov/learn/keyword_list.html",
+    "http://www.ngdc.noaa.gov/mgg/inundation/tsunami/inundation.html",
+    "http://www.ngdc.noaa.gov/dem/squareCellGrid/map",
+    "http://www.ngdc.noaa.gov/dem/squareCellGrid/search",
+    "http://www.ngdc.noaa.gov/dem/squareCellGrid/getReport/258",
+    "http://ngdc.noaa.gov/mgg/coastal/coastal.html",
+    "http://noaa.maps.arcgis.com/home/item.html?id=feb3c625dc094112bb5281c17679c769",
+    "http://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/dem_extents/MapServer",
+    "http://gcmd.nasa.gov/MailComments/MailComments.jsf?rcpt=gcmduso",
+    "http://gcmd.nasa.gov/learn/keyword_list.html",
+    "http://gis.ngdc.noaa.gov/arcgis/rest/services/dem_hillshades/ImageServer",
+    "http://gis.ngdc.noaa.gov/arcgis/services/dem_hillshades/ImageServer/WMSServer?request=GetCapabilities&service=WMS",
+    "http://ngdc.noaa.gov/mgg/coastal/coastal.html",
+    "http://noaa.maps.arcgis.com/home/item.html?id=d41f39c8a6684c54b62c8f1ab731d5ad",
+    "http://gis.ngdc.noaa.gov/arcgis/rest/services/dem_hillshades/ImageServer",
+    "http://gcmd.nasa.gov/MailComments/MailComments.jsf?rcpt=gcmduso",
+    "http://gcmd.nasa.gov/learn/keyword_list.html",
+    "http://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/dem_extents/MapServer",
+    "http://maps.ngdc.noaa.gov/arcgis/services/web_mercator/dem_extents/MapServer/WMSServer?request=GetCapabilities&service=WMS",
+    "http://www.ngdc.noaa.gov/dem/squareCellGrid/getArchive/258?gridFormat=ESRI+Arc+ASCII",
+    "http://www.ngdc.noaa.gov/dem/squareCellGrid/download/258",
+    "http://www.ngdc.noaa.gov/dem/squareCellGrid/search",
+    "http://www.ngdc.noaa.gov/dem/squareCellGrid/map",
+    "http://www.ngdc.noaa.gov/mgg/bathymetry/hydro.html",
+    "http://www.nauticalcharts.noaa.gov/mcd/enc/index.htm",
+    "http://www.ngdc.noaa.gov/mgg/bathymetry/multibeam.html",
+    "http://srtm.usgs.gov/",
+    "http://www.ngdc.noaa.gov/mgg/global/global.html"
+  ],
+  "thumbnail_s":"http://www.ngdc.noaa.gov/dem/squareCellGrid/getGraphic/258",
+  "contact_organizations_s":[
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "European Petroleum Survey Group",
+    "European Petroleum Survey Group",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "NASA",
+    "NASA",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/OAR/PMEL/NCTR > NOAA Center for Tsunami Research, Pacific Marine Environmental Laboratory, OAR, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "Kelly S. Carignan",
+    "Lisa A. Taylor",
+    "Barry W. Eakins",
+    "Robin R. Warnken",
+    "Elliot Lim",
+    "Pamela R. Medley",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "NASA",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "NASA",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NOS/OCS > Office of Coast Survey, National Ocean Service, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "University of California, Scripps Institute of Oceanography",
+    "NASA > National Aeronautics and Space Administration",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce"
+  ],
+  "contact_people_s":[
+    "Jesse Varner",
+    "Jesse Varner",
+    "Barry W. Eakins",
+    "Kelly Carignan",
+    "Anna Milan"
+  ],
+  "apiso_Identifier_s":"gov.noaa.ngdc.mgg.dem:258",
+  "apiso_Title_txt":"Adak, Alaska Coastal Digital Elevation Model",
+  "apiso_Abstract_txt":"NOAA's National Geophysical Data Center (NGDC) is building high-resolution digital elevation models (DEMs) for select U.S. coastal regions. These integrated bathymetric-topographic DEMs are used to support tsunami forecasting and modeling efforts at the NOAA Center for Tsunami Research, Pacific Marine Environmental Laboratory (PMEL). The DEMs are part of the tsunami forecast system SIFT (Short-term Inundation Forecasting for Tsunamis) currently being developed by PMEL for the NOAA Tsunami Warning Centers, and are used in the MOST (Method of Splitting Tsunami) model developed by PMEL to simulate tsunami generation, propagation, and inundation. Bathymetric, topographic, and shoreline data used in DEM compilation are obtained from various sources, including NGDC, the U.S. National Ocean Service (NOS), the U.S. Geological Survey (USGS), the U.S. Army Corps of Engineers (USACE), the Federal Emergency Management Agency (FEMA), and other federal, state, and local\n          government agencies, academic institutions, and private companies. DEMs are referenced to the vertical tidal datum of Mean High Water (MHW) and horizontal datum of World Geodetic System 1984 (WGS84). Cell size for the DEMs ranges from 1/3 arc-second (~10 meters) to 3 arc-seconds (~90 meters).",
+  "apiso_BrowseGraphic_s":"http://www.ngdc.noaa.gov/dem/squareCellGrid/getGraphic/258",
+  "apiso_OrganizationName_txt":"DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+  "apiso_Subject_txt":[
+    "Earth Science > Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
+    "Earth Science > Oceans > Bathymetry/Seafloor Topography > Bathymetry",
+    "Earth Science > Oceans > Bathymetry/Seafloor Topography > Water Depth",
+    "Earth Science > Land Surface > Topography > Terrain Elevation",
+    "Earth Science > Land Surface > Topography > Topographical Relief Maps",
+    "Earth Science > Oceans > Coastal Processes > Coastal Elevation",
+    "DEM > Digital Elevation Model",
+    "ICSU-WDS > International Council for Science - World Data System",
+    "H: 1 meter - < 30 meters",
+    "V: < 1 meter",
+    "Coastal Relief",
+    "Gridded elevations",
+    "Integrated bathymetry and topography",
+    "Continent > North America > United States of America > Alaska",
+    "Ocean > Pacific Ocean > North Pacific Ocean",
+    "Ocean > Pacific Ocean > North Pacific Ocean > Aleutian Islands",
+    "Vertical Location > Land Surface",
+    "Vertical Location > Sea Floor",
+    "Adak",
+    "Adak Island",
+    "Andreanof Islands",
+    "Aleutian Islands",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "elevation",
+    "DATA ANALYSIS AND VISUALIZATION > GEOGRAPHIC INFORMATION SYSTEMS > WEB-BASED GEOGRAPHIC INFORMATION SYSTEMS",
+    "DATA MANAGEMENT/DATA HANDLING > DATA SEARCH AND RETRIEVAL",
+    "DATA ANALYSIS AND VISUALIZATION > VISUALIZATION/IMAGE PROCESSING",
+    "DATA ANALYSIS AND VISUALIZATION > GEOGRAPHIC INFORMATION SYSTEMS > WEB-BASED GEOGRAPHIC INFORMATION SYSTEMS",
+    "DATA MANAGEMENT/DATA HANDLING > DATA SEARCH AND RETRIEVAL",
+    "DATA ANALYSIS AND VISUALIZATION > VISUALIZATION/IMAGE PROCESSING"
+  ],
+  "apiso_TopicCategory_s":"elevation",
+  "apiso_KeywordType_s":[
+    "theme",
+    "theme",
+    "project",
+    "theme",
+    "theme",
+    "place",
+    "place",
+    "dataCenter",
+    "theme",
+    "theme"
+  ],
+  "apiso_Type_s":"dataset",
+  "apiso_Modified_dt":"2015-09-03T00:00:00Z",
+  "apiso_AccessConstraints_s":[
+    "Not to be used for navigation. Although these data are of high quality and useful for planning and modeling purposes, they are not suitable for navigation. For navigation, please refer to the NOS nautical chart series.",
+    "Produced by the NOAA National Geophysical Data Center. Not subject to copyright protection within the United States.",
+    "While every effort has been made to ensure that these data are accurate and reliable within the limits of the current state of the art, NOAA cannot assume liability for any damages caused by any errors or omissions in the data, nor as a result of the failure of the data to function on a particular system. NOAA makes no warranty, expressed or implied, nor does the fact of distribution constitute such a warranty.",
+    "These data not to be used for navigation. Although these data are of high quality and useful for planning and modeling purposes, they are not suitable for navigation. For official navigation products, please refer to the U.S. nautical charts available from the NOAA Office of Coast Survey: http://www.nauticalcharts.noaa.gov.",
+    "These data not to be used for navigation. Although these data are of high quality and useful for planning and modeling purposes, they are not suitable for navigation. For official navigation products, please refer to the U.S. nautical charts available from the NOAA Office of Coast Survey: http://www.nauticalcharts.noaa.gov."
+  ],
+  "apiso_HasSecurityConstraints_b":true,
+  "apiso_ServiceType_s":[
+    "ArcGIS Image Service",
+    "ArcGIS Map Service"
+  ],
+  "apiso_ServiceTypeVersion_s":[
+    "10.2",
+    "10.2"
+  ],
+  "apiso_CouplingType_s":[
+    "tight",
+    "tight"
+  ],
+  "resources_nst":[
+    {
+      "url_s":"http://gis.ngdc.noaa.gov/arcgis/rest/services/dem_hillshades/ImageServer",
+      "url_type_s":"ImageServer"
+    },
+    {
+      "url_s":"http://gis.ngdc.noaa.gov/arcgis/services/dem_hillshades/ImageServer/WMSServer?request=GetCapabilities&service=WMS",
+      "url_type_s":"WMS"
+    },
+    {
+      "url_s":"http://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/dem_extents/MapServer",
+      "url_type_s":"MapServer"
+    },
+    {
+      "url_s":"http://maps.ngdc.noaa.gov/arcgis/services/web_mercator/dem_extents/MapServer/WMSServer?request=GetCapabilities&service=WMS",
+      "url_type_s":"WMS"
+    }
+  ],
+  "envelope_geo":[
+    {
+      "type":"envelope",
+      "coordinates":[
+        [
+          -177.24,
+          52.16
+        ],
+        [
+          -175.78,
+          51.25
+        ]
+      ]
+    },
+    {
+      "type":"envelope",
+      "coordinates":[
+        [
+          -180,
+          90
+        ],
+        [
+          180,
+          -90
+        ]
+      ]
+    },
+    {
+      "type":"envelope",
+      "coordinates":[
+        [
+          -180,
+          90
+        ],
+        [
+          180,
+          -90
+        ]
+      ]
+    }
+  ],
+  "envelope_cen_pt":[
+    {
+      "lat":51.705,
+      "lon":-176.51
+    },
+    {
+      "lat":0,
+      "lon":0
+    },
+    {
+      "lat":0,
+      "lon":0
+    }
+  ],
+  "apiso_CRS":{
+    "id_s":"urn:ogc:def:datum:EPSG::5868",
+    "authority_s":"Mean High Water height"
+  },
+  "timeperiod_nst":[
+    {
+      "begin_dt":"1933-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2009-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"1933-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2005-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"2008-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2008-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"1989-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"1998-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"2004-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2004-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"2000-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2000-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    },
+    {
+      "begin_dt":"2008-01-01T00:00:00Z",
+      "begin_indeterminate_s":null,
+      "end_dt":"2008-01-01T23:59:59.999Z",
+      "end_indeterminate_s":null
+    }
+  ],
+  "apiso_ResponsiblePartyRole_txt":"pointOfContact",
+  "apiso_grid_dimensions_num_i":"3",
+  "apiso_grid_cell_geometry_s":"area",
+  "sys_created_dt":"2016-06-15T17:52:17.313Z",
+  "sys_modified_dt":"2016-06-15T17:52:17.313Z",
+  "sys_xmlmodified_dt":"2016-06-15T17:52:17.313Z",
+  "sys_owner_s":"gptadmin",
+  "sys_metadatatype_s":"iso19115-2"
+}
