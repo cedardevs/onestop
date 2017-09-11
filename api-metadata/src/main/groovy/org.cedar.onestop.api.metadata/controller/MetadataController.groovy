@@ -19,10 +19,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.*
 @RestController
 class MetadataController {
 
-  /** FIXME:
-   *  Need to ensure responses from metadataService are correctly handled
-   * **/
-
   private MetadataManagementService metadataService
 
   @Autowired
@@ -74,12 +70,12 @@ class MetadataController {
     if (!fileId && !doi) {
       response.status = HttpStatus.BAD_REQUEST.value()
       return [
-          errors: [
+          errors: [[
               id    : null,
               status: HttpStatus.BAD_REQUEST.value(),
               title : 'No identifiers provided with request',
               detail: 'Provide a fileId and/or doi request parameter'
-          ]
+          ]]
       ]
     }
     def result = metadataService.findMetadata(fileId, doi)
@@ -94,25 +90,15 @@ class MetadataController {
 
   @RequestMapping(path = '/metadata/{id}', method = DELETE, produces = 'application/json')
   Map delete(@PathVariable String id, @RequestParam(value="recursive", required=false, defaultValue="true") Boolean recursive, HttpServletResponse response) {
-    // FIXME!!!!
     def result = metadataService.deleteMetadata(id, recursive)
-    if (result.errors) {
-      response.status = result.errors.status
-    }
-    else if (result.attributes.failures) {
-      response.status = HttpStatus.INTERNAL_SERVER_ERROR.value()
-    }
-    else {
-      response.status = HttpStatus.OK.value()
-    }
-    return result
+    response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
+    return result.response
   }
 
   @RequestMapping(path = '/metadata', method = DELETE, produces = 'application/json')
   Map delete(@RequestParam(value="fileId", required=false) String fileId,
              @RequestParam(value="doi", required=false) String doi,
-             @RequestParam(value="purge", required=false, defaultValue="true") Boolean purge, HttpServletResponse response) {
-    // FIXME!!!!
+             @RequestParam(value="recursive", required=false, defaultValue="true") Boolean recursive, HttpServletResponse response) {
     if (!fileId && !doi) {
       response.status = HttpStatus.BAD_REQUEST.value()
       return [
@@ -124,14 +110,9 @@ class MetadataController {
           ]]
       ]
     }
-    def result = metadataService.deleteMetadata(fileId, doi, purge)
-    if (result.data) {
-      response.status = HttpStatus.OK.value()
-    }
-    else {
-      response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
-    }
-    return result
+    def result = metadataService.deleteMetadata(fileId, doi, recursive)
+    response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
+    return result.response
   }
 
 }

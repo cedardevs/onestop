@@ -3,7 +3,6 @@ package org.cedar.onestop.api.metadata.service
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.apache.http.HttpRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -77,6 +76,8 @@ class MetadataManagementService {
             ]
           }
         }
+        resultRecord.id = esId
+        resultRecord.type = type
         entitiesToLoad.add(i, [source: JsonOutput.toJson(source), type: type, id: esId])
       }
 
@@ -90,27 +91,21 @@ class MetadataManagementService {
       resultRecords.add(i, resultRecord)
     }
 
-    // todo: pre-populate resultRecords? need id, type, status, created
-
-
-
-
-
 
     def results = esService.performMultiLoad(STAGING_INDEX, entitiesToLoad)
-    results.each { k, v ->
-      def resultRecord = [:].putAll(resultRecordMap.get(k))
-      resultRecord.attributes.status = v.status
-      if (!v.error) {
-        resultRecord.attributes.created = v.status == HttpStatus.CREATED.value()
+    results.eachWithIndex { result, i ->
+      def resultRecord = results.get(i)
+      resultRecord.attributes.status = result.status
+      if (!result.error) {
+        resultRecord.attributes.created = result.status == HttpStatus.CREATED.value()
       }
       else {
-        resultRecord.attributes.error = v.error
+        resultRecord.attributes.error = result.error
       }
-      resultRecordMap.put(k, resultRecord)
+      resultRecords.add(i, resultRecord)
     }
 
-    return [ data: resultRecordMap.values() ]
+    return [ data: resultRecords ]
   }
 
   public Map loadMetadata(String document) {
@@ -249,25 +244,25 @@ class MetadataManagementService {
     }
   }
 
-  public Map deleteMetadata(String esId, boolean purge) {
+  public Map deleteMetadata(String esId, boolean recursive) {
     def record = getMetadata(esId)
-    if (record.data) { return delete(record) }
+    if (record.data) { return delete(record, recursive) }
     else {
       // Record does not exist -- return NOT_FOUND response
       return record
     }
   }
 
-  public Map deleteMetadata(String fileId, String doi, boolean purge) {
+  public Map deleteMetadata(String fileId, String doi, boolean recursive) {
     def record = findMetadata(fileId, doi)
-    if (record.data) { return delete(record) }
+    if (record.data) { return delete(record, recursive) }
     else {
       // Record does not exist -- return NOT_FOUND response
       return record
     }
   }
 
-  private Map delete(Map record, boolean purge) {
+  private Map delete(Map record, boolean recursive) {
 
     def result = [
         response: [
@@ -305,17 +300,17 @@ class MetadataManagementService {
         query: [
             bool: [
                 should: [
-                    [match: [ parentIdentifier: fileId ]]
+                    [term: [ parentIdentifier: fileId ]]
                 ]
             ]
         ]
     ]
-    dataRecords.each { i -> query.query.bool.should.add( [match: [ _id: i.id ]] ) }
-    if (doi) { query.query.bool.should.add( [match: [ doi: doi ]] ) } // Search with null throws error
+    dataRecords.each { i -> query.query.bool.should.add( [term: [ _id: i.id ]] ) }
+    if (doi) { query.query.bool.should.add( [term: [ doi: doi ]] ) } // Search with null throws error
 
 
     def indicesToPurge = [SEARCH_INDEX]
-    if (purge) {
+    if (recursive) {
       indicesToPurge.add(STAGING_INDEX)
     }
     else {
@@ -340,7 +335,7 @@ class MetadataManagementService {
       result.response.meta.searchIndex.failures.add(searchResponse.error)
     }
 
-    if (purge) {
+    if (recursive) {
       def stagingResponse = deleteResponses.get(STAGING_INDEX)
       if (!stagingResponse.error) {
         result.response.meta.stagingIndex.totalRecordsFound = stagingResponse.total
