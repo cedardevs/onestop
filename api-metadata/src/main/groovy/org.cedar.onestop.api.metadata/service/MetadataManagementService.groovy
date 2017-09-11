@@ -227,8 +227,7 @@ class MetadataManagementService {
     def response = esService.performRequest('GET', endpoint, requestBody)
 
     if (response.hits) {
-      def result = [ data: [] ]
-      def resources = response.hits.collect {
+      def resources = response.hits.hits.collect {
         [
             id: it._id,
             type: it._type,
@@ -237,8 +236,7 @@ class MetadataManagementService {
             ]
         ]
       }
-      result.data.addAll(resources)
-      return result
+      return [ data: resources ]
     }
     else {
       return [
