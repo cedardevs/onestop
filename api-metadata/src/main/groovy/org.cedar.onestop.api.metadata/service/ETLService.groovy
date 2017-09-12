@@ -203,9 +203,10 @@ class ETLService {
     log.debug("Starting indexing of collection ${collection._id}")
 
     def reindexScript = """\
+        ctx._source['internalParentIdentifier'] = params.parentId;
         for (String f : params.defaults.keySet()) {
           if (ctx._source[f] == null) {
-            ctx._source[f] = params.defaults[f]
+            ctx._source[f] = params.defaults[f];
           }
         }""".replaceAll(/\s+/, ' ')
     def parentIds = [collection._source.fileIdentifier, collection._source.doi].findAll()
@@ -228,7 +229,7 @@ class ETLService {
         ],
         script: [
             lang: "painless",
-            params: [defaults: collection._source],
+            params: [parentId: collection._id, defaults: collection._source],
             inline: reindexScript
         ]
     ]

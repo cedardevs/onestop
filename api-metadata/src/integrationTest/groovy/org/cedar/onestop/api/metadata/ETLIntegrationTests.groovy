@@ -189,7 +189,9 @@ class ETLIntegrationTests extends Specification {
 
     and: // the granule is the staged collection with fields overridden by the staged granule
     indexedGranule._id == stagedGranule._id
-    def expectedGranule = stagedCollection._source + stagedGranule._source.findAll({k, v -> v})
+    def expectedGranule = stagedCollection._source +
+                          stagedGranule._source.findAll({k, v -> v}) +
+                          [internalParentIdentifier: stagedCollection._id]
     indexedGranule._source.each { k, v ->
       assert v == expectedGranule[k]
     }
