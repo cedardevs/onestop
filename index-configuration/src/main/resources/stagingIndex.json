@@ -294,6 +294,9 @@
         "parentIdentifier": {
           "type": "keyword"
         },
+        "internalParentIdentifier": {
+          "type": "keyword"
+        },
         "title": {
           "type": "text",
           "index": false

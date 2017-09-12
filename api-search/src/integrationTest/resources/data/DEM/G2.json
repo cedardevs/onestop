@@ -1,6 +1,7 @@
 {
   "fileIdentifier": "gov.noaa.ngdc.mgg.dem:4870",
   "parentIdentifier": "gov.noaa.ngdc.mgg.dem:4870",
+  "internalParentIdentifier": "e5820283-3686-44d0-8edd-28a086eb500e",
   "title": "Mariana Trench Bathymetric Digital Elevation Model",
   "alternateTitle": null,
   "description": "NOAA's National Geophysical Data Center (NGDC) created a bathymetric digital elevation model (DEM) for the Mariana Trench and adjacent seafloor in the Western Pacific Ocean.\n                    Bathymetric data used in DEM compilation were obtained from various sources, including internation, federal and academic partners. The DEM is referenced to the horizontal datum of\n                    World Geodetic System 1984 (WGS 84) and the vertical datum of sea level. Grid spacings for the Mariana Trench DEM is 6 arc-seconds (~180 meters). Please note that while positive\n                    elevations (elevations greater than 0 meters) are present in the DEM over 'dry' land (i.e. islands such as Guam and the Northern Mariana Islands), they should be ignored as the\n                    focus of DEM development was solely in the bathymetric realm.",

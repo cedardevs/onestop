@@ -58,7 +58,7 @@ class ElasticsearchService {
                 must: [
                     script: [
                         script: [
-                            inline: "doc['fileIdentifier'] != doc['parentIdentifier']",
+                            inline: "String uid = doc['_uid'].value; int hashIndex = uid.indexOf('#'); String id = uid.substring(hashIndex + 1); doc['internalParentIdentifier'].value != id",
                             lang  : "painless"
                         ]
                     ]

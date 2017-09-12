@@ -67,11 +67,29 @@ class SearchIntegrationTests extends Specification {
       println("Failed response: ${e.response}")
     }
 
+    Map ids = [
+      'GHRSST': [
+        'C1': '920d8155-f764-4777-b7e5-14442b7275b8',
+        'C2': '882511bc-e99e-4597-b634-47a59ddf9fda',
+        'C3': '42ea683d-e4e7-434c-8823-abff32e00f34',
+        'G1': '29fc971a-16e5-428f-9a7e-3e147bfff46f',
+        'G2': 'cd524d1b-9c07-486f-b136-07e5f35a9a69',
+        'G3': '3aa2865d-a63d-44a7-a00b-4eab57fcad3f'
+      ],
+      'DEM': [
+        'C1': 'e7a36e60-1bcb-47b1-ac0d-3c2a2a743f9b',
+        'C2': 'e5820283-3686-44d0-8edd-28a086eb500e',
+        'C3': '1415b3db-c602-4dbb-a502-4091fe9df1cf',
+        'G1': '654f007b-9388-4ea1-b089-040a7fe1d7a4',
+        'G2': '6f040968-0463-483f-a1fa-4400faaff8bd',
+        'G3': '8232aca2-5e82-42b0-9e45-17c3263254c5'
+      ]
+    ]
 
     for (e in ['GHRSST', 'DEM']) {
       for (c in ['C1', 'C2', 'C3']) {
         def metadata = cl.getResourceAsStream("data/${e}/${c}.json").text
-        def id = json.parseText(metadata).fileIdentifier
+        def id = ids[e][c]
         endpoint = "/${SEARCH_INDEX}/collection/${id}"
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
         response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, record)
@@ -79,7 +97,7 @@ class SearchIntegrationTests extends Specification {
       }
       for (g in ['G1', 'G2', 'G3']) {
         def metadata = cl.getResourceAsStream("data/${e}/${g}.json").text
-        def id = json.parseText(metadata).fileIdentifier
+        def id = ids[e][g]
         endpoint = "/${SEARCH_INDEX}/granule/${id}"
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
         response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, record)
@@ -96,7 +114,6 @@ class SearchIntegrationTests extends Specification {
     searchBaseUriString = "http://localhost:${port}/${contextPath}/search"
     searchBaseUri = searchBaseUriString.toURI()
   }
-
 
   def 'Valid query-only search with facets returns OK with expected results'() {
     setup:

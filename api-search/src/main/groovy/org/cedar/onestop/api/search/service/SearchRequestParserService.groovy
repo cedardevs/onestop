@@ -44,7 +44,7 @@ class SearchRequestParserService {
   Map createCollectionsAggregation() {
     return [
         terms       : [
-            field: "parentIdentifier",
+            field: "internalParentIdentifier",
             size : Integer.MAX_VALUE,
             order: [
                 "score_agg.max": "desc"
@@ -79,7 +79,7 @@ class SearchRequestParserService {
         agg.aggregations = [
             byCollection: [
                 terms: [
-                    field: "parentIdentifier",
+                    field: "internalParentIdentifier",
                     size : Integer.MAX_VALUE
                 ]
             ]
@@ -213,7 +213,7 @@ class SearchRequestParserService {
     }
     if (parentIds) {
       allFilters.add([
-          terms: [parentIdentifier: parentIds]
+          terms: [internalParentIdentifier: parentIds]
       ])
     }
 

@@ -1,6 +1,7 @@
 {
   "fileIdentifier": "gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R",
   "parentIdentifier": null,
+  "internalParentIdentifier": null,
   "doi": null,
   "title": "GHRSST Level 2P Western Pacific Regional Skin Sea Surface Temperature from the Multifunctional Transport Satellite 1R (MTSAT-1R) (GDS version 1)",
   "alternateTitle": "Sea Surface Temperature, 80E-180E and 55S-55N, at 0.05 degree resolution from MTSAT-1R Imager Sectors every 1.0 hour",

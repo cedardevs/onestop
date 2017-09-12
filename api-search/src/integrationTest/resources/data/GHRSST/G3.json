@@ -1,6 +1,8 @@
 {
   "fileIdentifier": "gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB",
   "parentIdentifier": "gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB",
+  "internalParentIdentifier": "42ea683d-e4e7-434c-8823-abff32e00f34",
+  "doi": "doi:10.5072/FK2MG7P66T",
   "title": "GHRSST Level 4 OSPO Global Nighttime Foundation Sea Surface Temperature Analysis (GDS version 2)",
   "alternateTitle": "OSPO L4 SST Analysis (GDS2)",
   "description": "A Group for High Resolution Sea Surface Temperature (GHRSST) Level 4 sea surface\n          temperature analysis produced daily on an operational basis at the Office of Satellite and Product Operations\n          (OSPO) using optimal interpolation (OI) on a global 0.054 degree grid. The Geo-Polar Blended Sea Surface\n          Temperature (SST) Analysis combines multi-satellite retrievals of sea surface temperature into a single\n          analysis of SST. This analysis includes only nighttime data.The Operational Sea Surface Temperature and\n          Sea Ice Analysis (OSTIA) analysis uses satellite data from sensors that include the Advanced Very High\n          Resolution Radiometer (AVHRR), the Visible Infrared Imager Radiometer Suite (VIIRS), the Geostationary\n          Operational Environmental Satellite (GOES) imager, the Japanese Advanced Meteorological Imager (JAMI) and in\n          situ data from ships, drifting and moored buoys. This analysis was specifically produced to be used as a lower\n          boundary condition in Numerical Weather Prediction (NWP) models. This dataset adheres to the GHRSST Data\n          Processing Specification (GDS) version 2 format specifications.",

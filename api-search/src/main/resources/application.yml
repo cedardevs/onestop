@@ -51,7 +51,7 @@ search:
     gcmdDataResolution: 2
     topicCategories: 1 # different than keywords?
     fileIdentifier: 1
-    parentIdentifier: 1
+    internalParentIdentifier: 1
     temporalBounding:
       beginDate: 1
       endDate: 1

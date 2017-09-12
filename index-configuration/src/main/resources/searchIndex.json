@@ -250,6 +250,9 @@
         "parentIdentifier": {
           "type": "keyword"
         },
+        "internalParentIdentifier": {
+          "type": "keyword"
+        },
         "title": {
           "type": "text"
         },

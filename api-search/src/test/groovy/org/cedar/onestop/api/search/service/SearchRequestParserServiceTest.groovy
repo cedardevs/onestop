@@ -228,7 +228,7 @@ class SearchRequestParserServiceTest extends Specification {
             must  : [:],
             filter: [
                 [terms: [
-                    parentIdentifier: ["TESTID"] as Set
+                    internalParentIdentifier: ["TESTID"] as Set
                 ]]
             ]]
     ]
@@ -249,7 +249,7 @@ class SearchRequestParserServiceTest extends Specification {
             must  : [:],
             filter: [
                 [terms: [
-                    parentIdentifier: ["TESTID1", "TESTID2"] as Set
+                    internalParentIdentifier: ["TESTID1", "TESTID2"] as Set
                 ]]
             ]]
     ]
@@ -383,7 +383,7 @@ class SearchRequestParserServiceTest extends Specification {
             aggregations: [
                 byCollection: [
                     terms: [
-                        field: 'parentIdentifier',
+                        field: 'internalParentIdentifier',
                         size : Integer.MAX_VALUE
                     ]
                 ]
@@ -398,7 +398,7 @@ class SearchRequestParserServiceTest extends Specification {
             aggregations: [
                 byCollection: [
                     terms: [
-                        field: 'parentIdentifier',
+                        field: 'internalParentIdentifier',
                         size : Integer.MAX_VALUE
                     ]
                 ]
@@ -413,7 +413,7 @@ class SearchRequestParserServiceTest extends Specification {
             aggregations: [
                 byCollection: [
                     terms: [
-                        field: 'parentIdentifier',
+                        field: 'internalParentIdentifier',
                         size : Integer.MAX_VALUE
                     ]
                 ]
@@ -428,7 +428,7 @@ class SearchRequestParserServiceTest extends Specification {
             aggregations: [
                 byCollection: [
                     terms: [
-                        field: 'parentIdentifier',
+                        field: 'internalParentIdentifier',
                         size : Integer.MAX_VALUE
                     ]
                 ]
@@ -443,7 +443,7 @@ class SearchRequestParserServiceTest extends Specification {
             aggregations: [
                 byCollection: [
                     terms: [
-                        field: 'parentIdentifier',
+                        field: 'internalParentIdentifier',
                         size : Integer.MAX_VALUE
                     ]
                 ]
@@ -458,7 +458,7 @@ class SearchRequestParserServiceTest extends Specification {
             aggregations: [
                 byCollection: [
                     terms: [
-                        field: 'parentIdentifier',
+                        field: 'internalParentIdentifier',
                         size : Integer.MAX_VALUE
                     ]
                 ]

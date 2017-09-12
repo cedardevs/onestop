@@ -1,6 +1,7 @@
 {
   "fileIdentifier": "gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED",
   "parentIdentifier": "gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED",
+  "internalParentIdentifier": "920d8155-f764-4777-b7e5-14442b7275b8",
   "doi": null,
   "title": "GHRSST Level 4 EUR Mediterranean Sea Regional Foundation Sea Surface Temperature Analysis (GDS version 2)",
   "alternateTitle": "Analysed L4 foundation sea surface temperature over Mediterranean Sea",

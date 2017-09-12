@@ -1,6 +1,7 @@
 {
   "fileIdentifier": "gov.noaa.ngdc.mgg.dem:258",
   "parentIdentifier": "gov.noaa.ngdc.mgg.dem:258",
+  "internalParentIdentifier": "e7a36e60-1bcb-47b1-ac0d-3c2a2a743f9b",
   "title": "Adak, Alaska Coastal Digital Elevation Model",
   "alternateTitle": null,
   "description": "NOAA's National Geophysical Data Center (NGDC) is building high-resolution digital elevation models (DEMs) for select U.S. coastal regions. These integrated bathymetric-topographic DEMs are used to support tsunami forecasting and modeling efforts at the NOAA Center for Tsunami Research, Pacific Marine Environmental Laboratory (PMEL). The DEMs are part of the tsunami forecast system SIFT (Short-term Inundation Forecasting for Tsunamis) currently being developed by PMEL for the NOAA Tsunami Warning Centers, and are used in the MOST (Method of Splitting Tsunami) model developed by PMEL to simulate tsunami generation, propagation, and inundation. Bathymetric, topographic, and shoreline data used in DEM compilation are obtained from various sources, including NGDC, the U.S. National Ocean Service (NOS), the U.S. Geological Survey (USGS), the U.S. Army Corps of Engineers (USACE), the Federal Emergency Management Agency (FEMA), and other federal, state, and local\n          government agencies, academic institutions, and private companies. DEMs are referenced to the vertical tidal datum of Mean High Water (MHW) and horizontal datum of World Geodetic System 1984 (WGS84). Cell size for the DEMs ranges from 1/3 arc-second (~10 meters) to 3 arc-seconds (~90 meters).",
