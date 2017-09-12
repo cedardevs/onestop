@@ -1,6 +1,7 @@
 {
   "fileIdentifier": "CO-OPS.NOS_9410170_201503_D1_v00",
   "parentIdentifier": "gov.noaa.nodc:NDBC-COOPS",
+  "internalParentIdentifier": "fcf83ec9-964b-45b9-befe-378ea6ce52cb",
   "title": "NDBC-COOPS_9410170_201503_D1_v00 - CO-OPS buoy 9410170 for 201503, deployment 1",
   "alternateTitle": null,
   "description": "The National Water Level Observation Network (NWLON) is a network of long-term water level staions operated and maintained by CO-OPS. NWLON stations are located on shore-based platforms, and primarily collect real-time water level measurements.  As of January 2013, approximately 180 of 210 NWLON stations also collect real-time meteorological data. About 20 CO-OPS Physical Oceanographic Real-Time Systems (PORTS) comprise a group of water level stations, and 65 of these stations also collect real-time meteorological data. Data parameters include barometric pressure, wind direction, speed and gust, air temperature, and water temperature.",

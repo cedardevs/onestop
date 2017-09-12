@@ -1,6 +1,7 @@
 {
   "fileIdentifier": "gov.noaa.nodc:NDBC-COOPS",
   "parentIdentifier": null,
+  "internalParentIdentifier": null,
   "doi": null,
   "title": "Coastal meteorological and water temperature data from National Water Level Observation Network (NWLON) and Physical Oceanographic Real-Time System (PORTS) stations of the NOAA Center for Operational Oceanographic Products and Services (CO-OPS)",
   "alternateTitle": null,

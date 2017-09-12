@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Unroll
+import spock.lang.Ignore
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -67,41 +68,65 @@ class SearchIntegrationTests extends Specification {
       println("Failed response: ${e.response}")
     }
 
-    Map ids = [
-      'GHRSST': [
-        'C1': '920d8155-f764-4777-b7e5-14442b7275b8',
-        'C2': '882511bc-e99e-4597-b634-47a59ddf9fda',
-        'C3': '42ea683d-e4e7-434c-8823-abff32e00f34',
-        'G1': '29fc971a-16e5-428f-9a7e-3e147bfff46f',
-        'G2': 'cd524d1b-9c07-486f-b136-07e5f35a9a69',
-        'G3': '3aa2865d-a63d-44a7-a00b-4eab57fcad3f'
-      ],
+    Map data = [
       'DEM': [
-        'C1': 'e7a36e60-1bcb-47b1-ac0d-3c2a2a743f9b',
-        'C2': 'e5820283-3686-44d0-8edd-28a086eb500e',
-        'C3': '1415b3db-c602-4dbb-a502-4091fe9df1cf',
-        'G1': '654f007b-9388-4ea1-b089-040a7fe1d7a4',
-        'G2': '6f040968-0463-483f-a1fa-4400faaff8bd',
-        'G3': '8232aca2-5e82-42b0-9e45-17c3263254c5'
+        'C1': [
+          id: 'e7a36e60-1bcb-47b1-ac0d-3c2a2a743f9b',
+          granules: ['G1' : null]
+        ],
+        'C2': [
+          id: 'e5820283-3686-44d0-8edd-28a086eb500e',
+          granules: ['G2' : null]
+        ],
+        'C3': [
+          id: '1415b3db-c602-4dbb-a502-4091fe9df1cf',
+          granules: ['G3' : null]
+        ],
+      ],
+      'GHRSST': [
+        'C1': [
+          id: '920d8155-f764-4777-b7e5-14442b7275b8',
+          granules: ['G1' : null]
+        ],
+        'C2': [
+          id: '882511bc-e99e-4597-b634-47a59ddf9fda',
+          granules: ['G2' : null]
+        ],
+        'C3': [
+          id: '42ea683d-e4e7-434c-8823-abff32e00f34',
+          granules: ['G3' : null]
+        ],
+      ],
+      'COOPS': [
+        'C1': [
+          id: 'fcf83ec9-964b-45b9-befe-378ea6ce52cb',
+          granules: [
+            'G1': [id: '783089c4-3484-4f70-ac8d-d4818d0cd0dd'],
+            'G2': [id: 'a207b48f-29fc-4d79-a676-1f265cd9971f'],
+          ]
+        ]
       ]
     ]
 
-    for (e in ['GHRSST', 'DEM']) {
-      for (c in ['C1', 'C2', 'C3']) {
-        def metadata = cl.getResourceAsStream("data/${e}/${c}.json").text
-        def id = ids[e][c]
+    data.each{ name, dataset ->
+      dataset.each { collection, collectionData ->
+        def metadata = cl.getResourceAsStream("data/${name}/${collection}.json").text
+        def id = collectionData.id
+
         endpoint = "/${SEARCH_INDEX}/collection/${id}"
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
         response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, record)
         println("PUT new collection: ${response}")
-      }
-      for (g in ['G1', 'G2', 'G3']) {
-        def metadata = cl.getResourceAsStream("data/${e}/${g}.json").text
-        def id = ids[e][g]
-        endpoint = "/${SEARCH_INDEX}/granule/${id}"
-        HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-        response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, record)
-        println("PUT new granule: ${response}")
+
+        collectionData.granules.each { granule, granuleData ->
+          metadata = cl.getResourceAsStream("data/${name}/${granule}.json").text
+          id = granuleData? granuleData.id : collectionData.id
+
+          endpoint = "/${SEARCH_INDEX}/granule/${id}"
+          record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
+          response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, record)
+          println("PUT new granule: ${response}")
+        }
       }
     }
 
@@ -138,16 +163,17 @@ class SearchIntegrationTests extends Specification {
     result.statusCode == HttpStatus.OK
     result.headers.getContentType() == contentType
 
-    and: "Result contains 3 items"
+    and: "Result contains 4 items"
     def items = result.body.data
-    items.size() == 3
+    items.size() == 4
 
     and: "Expected results are returned"
     def actualIds = items.collect { it.attributes.fileIdentifier }
     actualIds.containsAll([
         'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED',
         'gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R',
-        'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB'
+        'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
+        'gov.noaa.nodc:NDBC-COOPS'
     ])
 
     and: 'The correct number of facets is returned'
@@ -482,6 +508,14 @@ class SearchIntegrationTests extends Specification {
     result.body.data.size() == 2
     result.body.data*.id.containsAll(['collection', 'granule'])
     result.body.data*.count.every({ it instanceof Number })
+    def collectionResult = result.body.data.find { r ->
+      r.id == 'collection'
+      }
+    collectionResult.count == 7
+    def granuleResult = result.body.data.find { r ->
+      r.id == 'granule'
+      }
+    granuleResult.count == 2
   }
 
 }
