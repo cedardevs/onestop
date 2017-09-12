@@ -53,7 +53,6 @@ class ETLIntegrationTests extends Specification {
     documentsByType(SEARCH_INDEX).every({it.size() == 0})
   }
 
-  @spock.lang.Ignore
   def 'updating a new collection indexes a collection and a synthesized granule'() {
     setup:
     insertMetadataFromPath('data/COOPS/C1.xml')
@@ -66,7 +65,6 @@ class ETLIntegrationTests extends Specification {
     indexedGranuleVersions().keySet()  == ['gov.noaa.nodc:NDBC-COOPS'] as Set
   }
 
-  @spock.lang.Ignore
   def 'updating an orphan granule indexes nothing'() {
     setup:
     insertMetadataFromPath('data/COOPS/G1.xml')
@@ -79,7 +77,6 @@ class ETLIntegrationTests extends Specification {
     indexedGranuleVersions().size() == 0
   }
 
-  @spock.lang.Ignore
   def 'updating a collection and granule indexes a collection and a granule'() {
     setup:
     insertMetadataFromPath('data/COOPS/C1.xml')
@@ -93,7 +90,6 @@ class ETLIntegrationTests extends Specification {
     indexedGranuleVersions().keySet()  == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
   }
 
-  @spock.lang.Ignore
   def 'touching a granule and updating reindexes only that granule'() {
     setup:
     insertMetadataFromPath('data/COOPS/C1.xml')
@@ -111,7 +107,6 @@ class ETLIntegrationTests extends Specification {
     indexedGranuleVersions()['CO-OPS.NOS_8638614_201602_D1_v00'] == 2
   }
 
-  @spock.lang.Ignore
   def 'touching a collection and updating reindexes that collection and its granules'() {
     setup:
     insertMetadataFromPath('data/GHRSST/1.xml')

@@ -113,6 +113,18 @@ class ElasticsearchService {
     }
   }
 
+  public void moveAliasToIndex(String alias, String index, Boolean dropOldIndices = false) {
+    def oldIndices = performRequest('GET', "_alias/$alias").keySet()*.toString()
+    oldIndices = oldIndices.findAll({ it.startsWith(alias) })
+    def actions = oldIndices.collect { [remove: [index: it, alias: alias]] }
+    actions << [add: [index: index, alias: alias]]
+    performRequest('POST', '_aliases', [actions: actions])
+
+    if (dropOldIndices) {
+      oldIndices.each { drop(it) }
+    }
+  }
+
   private Boolean checkAliasExists(String name) {
     def status = restClient.performRequest('HEAD', name).statusLine.statusCode
     return status == 200
@@ -124,7 +136,7 @@ class ElasticsearchService {
 
   public Map performRequest(String method, String endpoint, String requestBody = null) {
     try {
-      log.debug("Performing request: ${method} ${endpoint} ${requestBody}")
+      log.debug("Performing elasticsearch request: ${method} ${endpoint} ${requestBody}")
       def response = requestBody ?
           restClient.performRequest(method, endpoint, Collections.EMPTY_MAP, new NStringEntity(requestBody, ContentType.APPLICATION_JSON)) :
           restClient.performRequest(method, endpoint)
@@ -132,7 +144,9 @@ class ElasticsearchService {
       return parseResponse(response)
     }
     catch(ResponseException e) {
-      return parseResponse(e.response)
+      def response = parseResponse(e.response)
+      log.error("Elasticsearch request failed: $response")
+      return response
     }
   }
 
