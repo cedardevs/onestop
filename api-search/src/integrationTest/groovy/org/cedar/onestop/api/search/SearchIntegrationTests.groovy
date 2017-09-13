@@ -17,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 import spock.lang.Unroll
-import spock.lang.Ignore
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
@@ -61,7 +60,6 @@ class SearchIntegrationTests extends Specification {
     response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, indexSettings)
     println("PUT new index: ${response}")
 
-    println("Failing some stuff...") // fixme debug
     try {
       restClient.performRequest('GET', 'potato')
     } catch(e) {
