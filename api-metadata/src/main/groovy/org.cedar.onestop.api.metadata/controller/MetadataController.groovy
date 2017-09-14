@@ -65,7 +65,7 @@ class MetadataController {
   }
 
   @RequestMapping(path = '/metadata', method = [GET, HEAD], produces = 'application/json')
-  Map retrieveJson(@RequestParam(value="fileId", required=false) String fileId,
+  Map retrieveJson(@RequestParam(value="fileIdentifier", required=false) String fileId,
                    @RequestParam(value="doi", required=false) String doi, HttpServletResponse response) {
     if (!fileId && !doi) {
       response.status = HttpStatus.BAD_REQUEST.value()
@@ -96,7 +96,7 @@ class MetadataController {
   }
 
   @RequestMapping(path = '/metadata', method = DELETE, produces = 'application/json')
-  Map delete(@RequestParam(value="fileId", required=false) String fileId,
+  Map delete(@RequestParam(value="fileIdentifier", required=false) String fileId,
              @RequestParam(value="doi", required=false) String doi,
              @RequestParam(value="recursive", required=false, defaultValue="true") Boolean recursive, HttpServletResponse response) {
     if (!fileId && !doi) {

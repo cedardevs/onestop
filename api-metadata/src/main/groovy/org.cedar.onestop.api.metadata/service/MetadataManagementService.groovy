@@ -32,87 +32,90 @@ class MetadataManagementService {
     this.esService = esService
   }
 
+  /**
+   * Output shape:
+   * {
+   *   "data": [
+   *     {
+   *       "id": <>,
+   *       "type": <>,
+   *       "attributes": <parsed source>,
+   *       "meta": {
+   *         "filename": "<original filename>,
+   *         "status": 200|201|400...
+   *         "created": true|false,
+   *         "error": null|{...}
+   *       }
+   *     },
+   *     ...
+   *   ]
+   * }
+   *
+   * @param documents
+   * @return
+   */
   public Map loadMetadata(MultipartFile[] documents) {
-
     esService.ensureStagingIndex()
+    def results = []
+    def bulkRequest = new StringBuilder()
+    def loadedIndices = []
 
-    def resultRecords = []
-    def entitiesToLoad = []
-
-    def stagedDate = System.currentTimeMillis()
     documents.eachWithIndex { rawDoc, i ->
-      def resultRecord = [
-          id        : null,
-          type      : null,
-          attributes: [
-              filename: rawDoc.originalFilename
+      def document = rawDoc.inputStream.text
+      def source = MetadataParser.parseXMLMetadataToMap(document)
+      def type = source.parentIdentifier ? GRANULE_TYPE : COLLECTION_TYPE
+      def fileId = source.fileIdentifier as String
+      def doi = source.doi as String
+      source.stagedDate = System.currentTimeMillis()
+      def record = findMetadata(fileId, doi)
+      def existingIds = record.data*.id
+      def esId = existingIds?.size() == 1 ? existingIds[0] : null
+      def result = [
+          id: esId,
+          type: type,
+          attributes: source,
+          meta: [
+              filename: rawDoc.originalFilename,
           ]
       ]
 
-      try {
-        def document = rawDoc.inputStream.text
-        def storageInfo = MetadataParser.parseIdentifierInfo(document)
-        def fileId = storageInfo.fileId
-        def doi = storageInfo.doi
-        def type = storageInfo.parentId ? GRANULE_TYPE : COLLECTION_TYPE
-
-        def source = MetadataParser.parseXMLMetadataToMap(document)
-        source.stagedDate = stagedDate
-        def record = findMetadata(fileId, doi)
-        def internalIds = record.data?.collect { it.id }
-
-        def esId = null
-        if (internalIds) {
-          if (internalIds.size() == 1) {
-            // Record exists already
-            esId = internalIds[0]
-          }
-          else {
-            resultRecord.attributes.status = HttpStatus.CONFLICT.value()
-            resultRecord.attributes.error = [
-                title: 'Ambiguous metadata records in existence; metadata not loaded.',
-                detail: "Please GET records with ids [ ${String.join(', ', internalIds)} ] and DELETE any " +
-                    "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
-            ]
-          }
-        }
-        resultRecord.id = esId
-        resultRecord.type = type
-        entitiesToLoad.add(i, [source: JsonOutput.toJson(source), type: type, id: esId])
-      }
-
-      catch (Exception e) {
-        resultRecord.attributes.status = HttpStatus.BAD_REQUEST.value()
-        resultRecord.attributes.error = [
-            title : 'Load request failed due to malformed XML',
-            detail: ExceptionUtils.getRootCauseMessage(e)
+      if (existingIds?.size() > 1) {
+        result.meta.status = HttpStatus.CONFLICT.value()
+        result.meta.error = [
+            title: 'Ambiguous metadata records in existence; metadata not loaded.',
+            detail: "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
+                "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
         ]
       }
-      resultRecords.add(i, resultRecord)
-    }
-
-
-    def results = esService.performMultiLoad(STAGING_INDEX, entitiesToLoad)
-    results.eachWithIndex { result, i ->
-      def resultRecord = results.get(i)
-      resultRecord.attributes.status = result.status
-      if (!result.error) {
-        resultRecord.attributes.created = result.status == HttpStatus.CREATED.value()
-      }
       else {
-        resultRecord.attributes.error = result.error
+        def bulkCommand = [index: [_index: STAGING_INDEX, _type: type, _id: esId]]
+        bulkRequest << JsonOutput.toJson(bulkCommand)
+        bulkRequest << '\n'
+        bulkRequest << JsonOutput.toJson(source)
+        bulkRequest << '\n'
+        loadedIndices << i
       }
-      resultRecords.add(i, resultRecord)
+      results << result
     }
 
-    return [ data: resultRecords ]
+    def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequest.toString())
+    bulkResponse.items.eachWithIndex { result, i ->
+      def resultRecord = results.get(loadedIndices[i])
+      resultRecord.id = result.index._id
+      resultRecord.meta.status = result.index.status
+      resultRecord.meta.created = result.index.created
+      if (result.error) {
+        resultRecord.meta.error = result.error
+      }
+    }
+
+    return [data: results]
   }
 
   public Map loadMetadata(String document) {
-
     esService.ensureStagingIndex()
-
     def fileId, doi, type, source
+
     try {
       def storageInfo = MetadataParser.parseIdentifierInfo(document)
       fileId = storageInfo.fileId
@@ -183,6 +186,7 @@ class MetadataManagementService {
     }
   }
 
+  // TODO - optional source filtering to just get ids?
   public Map getMetadata(String esId) {
     String endpoint = "${STAGING_INDEX}/_all/${esId}"
     def response = esService.performRequest("GET", endpoint)
@@ -192,9 +196,7 @@ class MetadataManagementService {
           data: [[
               id        : response._id,
               type      : response._type,
-              attributes: [
-                  source: response._source
-              ]
+              attributes: response._source
           ]]
       ]
     }
@@ -207,6 +209,7 @@ class MetadataManagementService {
     }
   }
 
+  // TODO - optional source filtering to just get ids?
   public Map findMetadata(String fileId, String doi) {
     def endpoint = "${STAGING_INDEX}/_search"
     def searchParams = []
@@ -221,14 +224,12 @@ class MetadataManagementService {
     ])
     def response = esService.performRequest('GET', endpoint, requestBody)
 
-    if (response.hits) {
+    if (response.hits.total > 0) {
       def resources = response.hits.hits.collect {
         [
             id: it._id,
             type: it._type,
-            attributes: [
-                source: it._soucre
-            ]
+            attributes: it._source
         ]
       }
       return [ data: resources ]
@@ -261,95 +262,44 @@ class MetadataManagementService {
   }
 
   private Map delete(Map record, boolean recursive) {
-
-    def result = [
-        response: [
-            data: [],
-            meta: [
-                searchIndex: [
-                    totalRecordsFound: 0,
-                    recordsDeleted: 0,
-                    failures: []
-                ],
-                stagingIndex: [
-                    totalRecordsFound: 0,
-                    recordsDeleted: 0,
-                    failures: []
-                ]
-            ]
-        ]
-    ]
-    def dataRecords = record.data.collect {
-      [
-          id: it.id,
-          type: it.type
-      ]
+    // collect up the ids, types, and potential granule parentIds to be deleted
+    def ids = []
+    def parentIds = []
+    def toBeDeleted = []
+    record.data.each {
+      toBeDeleted << [id: it.id, type: it.type]
+      ids << it.id
+      if (recursive) {
+        if (it.attributes?.fileIdentifier) {
+          parentIds << it.attributes.fileIdentifier
+        }
+        if (it.attributes?.doi) {
+          parentIds << it.attributes.doi
+        }
+      }
     }
-    result.response.data.addAll(dataRecords)
-
-    def fileId = record.data.attributes.source.fileIdentifier
-    def doi = record.data.attributes.source.doi
-
-    result.response.meta.fileIdentifier = fileId
-    result.response.meta.doi = doi
 
     // Use delete_by_query to match collection & associated granules all at once
     def query = [
         query: [
             bool: [
                 should: [
-                    [term: [ parentIdentifier: fileId ]]
+                    [terms: [parentIdentifier: parentIds]],
+                    [terms: [_id: ids]]
                 ]
             ]
         ]
     ]
-    dataRecords.each { i -> query.query.bool.should.add( [term: [ _id: i.id ]] ) }
-    if (doi) { query.query.bool.should.add( [term: [ doi: doi ]] ) } // Search with null throws error
+    def endpoint = "$STAGING_INDEX,$SEARCH_INDEX/$COLLECTION_TYPE,$GRANULE_TYPE/_delete_by_query?wait_for_completion=true"
+    def deleteResponse = esService.performRequest('POST', endpoint, query)
 
-
-    def indicesToPurge = [SEARCH_INDEX]
-    if (recursive) {
-      indicesToPurge.add(STAGING_INDEX)
-    }
-    else {
-      dataRecords.each {
-        def response = esService.performRequest('DELETE', "${STAGING_INDEX}/${it.type}/${it.id}")
-        if (response.found) { result.response.meta.stagingIndex.totalRecordsFound += 1 }
-        if (response.result == 'deleted') { result.response.meta.stagingIndex.recordsDeleted +=1 }
-      }
-    }
-    def deleteResponses = esService.performDeleteByQuery(JsonOutput.toJson(query), indicesToPurge)
-
-    def searchResponse = deleteResponses.get(SEARCH_INDEX)
-    if (!searchResponse.error) {
-      result.response.meta.searchIndex.totalRecordsFound = searchResponse.total
-      result.response.meta.searchIndex.recordsDeleted = searchResponse.deleted
-      result.response.meta.searchIndex.failures = searchResponse.failures
-      result.response.meta.searchIndex.batches = searchResponse.batches
-      result.response.meta.searchIndex.versionConflicts = searchResponse.version_conflicts
-      result.response.meta.searchIndex.took = searchResponse.took
-    }
-    else {
-      result.response.meta.searchIndex.failures.add(searchResponse.error)
-    }
-
-    if (recursive) {
-      def stagingResponse = deleteResponses.get(STAGING_INDEX)
-      if (!stagingResponse.error) {
-        result.response.meta.stagingIndex.totalRecordsFound = stagingResponse.total
-        result.response.meta.stagingIndex.recordsDeleted = stagingResponse.deleted
-        result.response.meta.stagingIndex.failures = stagingResponse.failures
-        result.response.meta.stagingIndex.batches = stagingResponse.batches
-        result.response.meta.stagingIndex.versionConflicts = stagingResponse.version_conflicts
-        result.response.meta.stagingIndex.took = stagingResponse.took
-      }
-      else {
-        result.response.meta.stagingIndex.failures.add(stagingResponse.error)
-      }
-    }
-
-    result.status = HttpStatus.MULTI_STATUS.value()
-    return result
+    return [
+        response: [
+            data: toBeDeleted,
+            meta: deleteResponse
+        ],
+        status: deleteResponse.failures ? HttpStatus.MULTI_STATUS.value() : HttpStatus.OK.value()
+    ]
   }
 
 }
