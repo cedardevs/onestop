@@ -110,28 +110,23 @@ class SearchRequestParserService {
       ]
     }
 
-    if (config?.dsmm?.factor || config?.dsmm?.modifier) {
-      // FIXME returning as an array because our queries are arrays... ridiculous! #171 >:[
-      return [[
-          function_score: [
-              query             : [
-                  bool: [
-                      must: allTextQueries
-                  ]
-              ],
-              field_value_factor: [
-                  field   : 'dsmmAverage',
-                  modifier: "${config.dsmm.modifier ?: 'log1p'}",
-                  factor  : config.dsmm.factor ?: 1f,
-                  missing : config.dsmm.missing ?: 0
-              ],
-              boost_mode        : 'sum'
-          ]
-      ]]
-    }
-    else {
-      return allTextQueries
-    }
+    // FIXME returning as an array because our queries are arrays... ridiculous! #171 >:[
+    return [[
+        function_score: [
+            query             : [
+                bool: [
+                    must: allTextQueries
+                ]
+            ],
+            field_value_factor: [
+                field   : 'dsmmAverage',
+                modifier: 'log1p',
+                factor  : 1f,
+                missing : 0
+            ],
+            boost_mode        : 'sum'
+        ]
+    ]]
   }
 
   /* For filters:
