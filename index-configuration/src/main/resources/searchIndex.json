@@ -1,12 +1,21 @@
 {
+  "settings": {
+    "index": {
+      "refresh_interval": "15s"
+    }
+  },
   "mappings": {
     "collection": {
+      "dynamic": "strict",
       "properties": {
         "stagedDate": {
           "type": "date",
           "format": "epoch_millis"
         },
         "fileIdentifier": {
+          "type": "keyword"
+        },
+        "parentIdentifier": {
           "type": "keyword"
         },
         "doi": {
@@ -239,6 +248,7 @@
       }
     },
     "granule": {
+      "dynamic": "strict",
       "properties": {
         "stagedDate": {
           "type": "date",
@@ -251,6 +261,9 @@
           "type": "keyword"
         },
         "internalParentIdentifier": {
+          "type": "keyword"
+        },
+        "doi": {
           "type": "keyword"
         },
         "title": {
@@ -446,6 +459,33 @@
         "publicationDate": {
           "type": "date",
           "format": "date_optional_time"
+        },
+        "dsmmAccessibility": {
+          "type": "byte"
+        },
+        "dsmmDataIntegrity": {
+          "type": "byte"
+        },
+        "dsmmDataQualityAssessment": {
+          "type": "byte"
+        },
+        "dsmmDataQualityAssurance": {
+          "type": "byte"
+        },
+        "dsmmDataQualityControlMonitoring": {
+          "type": "byte"
+        },
+        "dsmmPreservability": {
+          "type": "byte"
+        },
+        "dsmmProductionSustainability": {
+          "type": "byte"
+        },
+        "dsmmTransparencyTraceability": {
+          "type": "byte"
+        },
+        "dsmmUsability": {
+          "type": "byte"
         },
         "dsmmAverage": {
           "type": "float"

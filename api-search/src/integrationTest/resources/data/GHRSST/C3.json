@@ -1,7 +1,6 @@
 {
   "fileIdentifier": "gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB",
   "parentIdentifier": null,
-  "internalParentIdentifier": null,
   "doi": "doi:10.5072/FK2MG7P66T",
   "title": "GHRSST Level 4 OSPO Global Nighttime Foundation Sea Surface Temperature Analysis (GDS version 2)",
   "alternateTitle": "OSPO L4 SST Analysis (GDS2)",
