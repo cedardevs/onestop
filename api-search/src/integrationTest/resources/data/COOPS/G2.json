@@ -147,16 +147,10 @@
     "instantIndeterminate": null
   },
   "spatialBounding": {
-    "type": "envelope",
+    "type": "point",
     "coordinates": [
-      [
-        -117.174,
-        32.714
-      ],
-      [
-        -117.174,
-        32.714
-      ]
+      -117.174,
+      32.714
     ]
   },
   "isGlobal": false,

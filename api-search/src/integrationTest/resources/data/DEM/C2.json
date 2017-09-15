@@ -69,15 +69,29 @@
     "instantIndeterminate": null
   },
   "spatialBounding": {
-    "type": "envelope",
+    "type": "polygon",
     "coordinates": [
       [
-        139.0,
-        22.0
-      ],
-      [
-        150.0,
-        10.0
+        [
+          139.0,
+          10.0
+        ],
+        [
+          150.0,
+          10.0
+        ],
+        [
+          150.0,
+          22.0
+        ],
+        [
+          139.0,
+          22.0
+        ],
+        [
+          139.0,
+          10.0
+        ]
       ]
     ]
   },
