@@ -239,8 +239,11 @@ class ETLService {
       return reindexed
     }
 
-    def synthesizedGranule = (collection._source as Map) +
-        [fileIdentifier: collection._source.fileIdentifier, parentIdentifier: collection._source.fileIdentifier]
+    def synthesizedGranule = (collection._source as Map) + [
+        fileIdentifier: collection._source.fileIdentifier,
+        parentIdentifier: collection._source.fileIdentifier,
+        internalParentIdentifier: collection._id
+    ]
     elasticsearchService.performRequest('POST', "$to/$GRANULE_TYPE", synthesizedGranule)
     return 1
   }
