@@ -244,7 +244,7 @@ class ETLService {
         parentIdentifier: collection._source.fileIdentifier,
         internalParentIdentifier: collection._id
     ]
-    elasticsearchService.performRequest('POST', "$to/$GRANULE_TYPE", synthesizedGranule)
+    elasticsearchService.performRequest('PUT', "$to/$GRANULE_TYPE/$collection._id", synthesizedGranule)
     return 1
   }
 
