@@ -61,8 +61,16 @@ class ETLIntegrationTests extends Specification {
     etlService.updateSearchIndex()
 
     then:
-    indexedCollectionVersions().keySet() == ['gov.noaa.nodc:NDBC-COOPS'] as Set
-    indexedGranuleVersions().keySet()  == ['gov.noaa.nodc:NDBC-COOPS'] as Set
+    def indexed = documentsByType(SEARCH_INDEX)
+    def collection = indexed[COLLECTION_TYPE][0]
+    collection._source.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS'
+
+    and:
+    def granule = indexed[GRANULE_TYPE][0]
+    granule._id == collection._id
+    granule._source.fileIdentifier == collection._source.fileIdentifier
+    granule._source.parentIdentifier == collection._source.fileIdentifier
+    granule._source.internalParentIdentifier == collection._id
   }
 
   def 'updating an orphan granule indexes nothing'() {
