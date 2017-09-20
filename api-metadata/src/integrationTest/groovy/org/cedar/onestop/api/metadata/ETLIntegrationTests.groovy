@@ -98,6 +98,23 @@ class ETLIntegrationTests extends Specification {
     indexedGranuleVersions().keySet()  == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
   }
 
+  def 'updating twice does nothing the second time'() {
+    setup:
+    insertMetadataFromPath('data/COOPS/C1.xml')
+
+    when:
+    etlService.updateSearchIndex()
+
+    then:
+    indexedCollectionVersions()['gov.noaa.nodc:NDBC-COOPS'] == 1
+
+    when: 'again!'
+    etlService.updateSearchIndex()
+
+    then: 'no change'
+    indexedCollectionVersions()['gov.noaa.nodc:NDBC-COOPS'] == 1
+  }
+
   def 'touching a granule and updating reindexes only that granule'() {
     setup:
     insertMetadataFromPath('data/COOPS/C1.xml')

@@ -57,12 +57,11 @@ class ETLService {
     def newSearchIndex = elasticsearchService.create(SEARCH_INDEX)
 
     try {
-      def count = 0L
-      etlCollections(STAGING_INDEX, newSearchIndex)
+      def etlResult = etlCollections(STAGING_INDEX, newSearchIndex)
       elasticsearchService.refresh(newSearchIndex)
       elasticsearchService.moveAliasToIndex(SEARCH_INDEX, newSearchIndex, true)
       def end = System.currentTimeMillis()
-      log.info "reindexed ${count} records in ${(end - start) / 1000}s"
+      log.info "reindexed ${etlResult.total} records in ${(end - start) / 1000}s"
     }
     catch (Exception e) {
       log.error "Search reindexing failed because of: " + ExceptionUtils.getRootCauseMessage(e)
@@ -97,7 +96,7 @@ class ETLService {
         query: [
             bool: [
                 must: [
-                    [range: [stagedDate: [gte: maxSearchStagedDate]]]
+                    [range: [stagedDate: [gt: maxSearchStagedDate]]]
                 ],
                 must_not: [
                     [terms: [parentIdentifier: indexedCollections.fileIdentifiers + indexedCollections.dois]],
@@ -158,7 +157,7 @@ class ETLService {
           query: [
               bool: [
                   filter: [
-                      [range: [stagedDate: [gte: stagedAfter]]]
+                      [range: [stagedDate: [gt: stagedAfter]]]
                   ]
               ]
           ],
