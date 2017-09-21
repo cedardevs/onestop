@@ -127,7 +127,7 @@ class ElasticsearchService {
           data: [],
           meta: [
               total: 0,
-              took : searchResponse.tookInMillis
+              took : searchResponse.took
           ]
       ]
     }
