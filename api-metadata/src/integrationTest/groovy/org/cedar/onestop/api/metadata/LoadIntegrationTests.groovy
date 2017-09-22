@@ -23,16 +23,14 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class LoadIntegrationTests extends Specification {
 
   /**
-   * Tests cover:
-   *  - [*] Load single record (confirm with GET)
-   *  - [*] Load multiple records (confirm with GET)
-   *  - [*] GET by ES id
-   *  - [*] GET by fileId; doi; fileId & doi
-   *  - [*] DELETE by ES id (recursive & not recursive)
-   *  - [*] DELETE by fileId; doi; fileId & doi (recursive & not recursive)
-   *  - [ ] Verify error responses
-   *
-   * Anything in old tests related to what appears in Search index should really be tested in ETL
+   * These tests cover:
+   *  - Load single record (confirm with GET)
+   *  - Load multiple records (confirm with GET)
+   *  - GET by ES id
+   *  - GET by fileId; doi; fileId & doi
+   *  - DELETE by ES id (recursive & not recursive)
+   *  - DELETE by fileId; doi; fileId & doi (recursive & not recursive)
+   *  - Verify error responses
    */
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
