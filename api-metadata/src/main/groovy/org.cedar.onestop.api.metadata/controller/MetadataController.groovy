@@ -40,7 +40,7 @@ class MetadataController {
   Map load(@RequestBody String xml, HttpServletResponse response) {
     def result = metadataService.loadMetadata(xml)
     if (result.data) {
-      response.status = result.data.attributes.created ? HttpStatus.CREATED.value() : HttpStatus.OK.value()
+      response.status = result.data.meta.created ? HttpStatus.CREATED.value() : HttpStatus.OK.value()
     }
     else if (result.errors) {
       response.status = result.errors[0].status
