@@ -184,7 +184,9 @@ class ETLService {
         bulkRequest << "\n"
         count++
       }
-      elasticsearchService.performRequest('POST', '_bulk', bulkRequest.toString())
+
+      // Don't send empty request -- errors out & not required
+      if(bulkRequest) { elasticsearchService.performRequest('POST', '_bulk', bulkRequest.toString()) }
       offset += PAGE_SIZE
     }
     return [fileIdentifiers: fileIdentifiers, dois: dois, total: count]
