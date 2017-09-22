@@ -77,7 +77,7 @@ class MetadataManagementService {
         def fileId = source.fileIdentifier as String
         def doi = source.doi as String
         source.stagedDate = System.currentTimeMillis()
-        def existingRecord = findMetadata(fileId, doi)
+        def existingRecord = findMetadata(fileId, doi, true)
         def existingIds = existingRecord.data*.id
         def esId = existingIds?.size() == 1 ? existingIds[0] : null
         def result = [
@@ -146,9 +146,11 @@ class MetadataManagementService {
     }
   }
 
-  // TODO - optional source filtering to just get ids?
-  public Map getMetadata(String esId) {
+  public Map getMetadata(String esId, boolean idsOnly = false) {
     String endpoint = "${STAGING_INDEX}/_all/${esId}"
+    if (idsOnly) {
+      endpoint += '?_source=fileIdentifier,doi'
+    }
     def response = esService.performRequest("GET", endpoint)
 
     if (response.found) {
@@ -169,19 +171,19 @@ class MetadataManagementService {
     }
   }
 
-  // TODO - optional source filtering to just get ids?
-  public Map findMetadata(String fileId, String doi) {
+  public Map findMetadata(String fileId, String doi, boolean idsOnly = false) {
     def endpoint = "${STAGING_INDEX}/_search"
     def searchParams = []
     if (fileId) { searchParams.add( [term: [fileIdentifier: fileId]] ) }
     if (doi) { searchParams.add( [term: [doi: doi]] ) }
-    def requestBody = JsonOutput.toJson([
+    def requestBody = [
         query: [
             bool: [
                 should: searchParams
             ]
-        ]
-    ])
+        ],
+        _source: idsOnly ? ['fileIdentifier', 'doi'] : true
+    ]
     def response = esService.performRequest('GET', endpoint, requestBody)
 
     if (response.hits.total > 0) {
@@ -204,7 +206,7 @@ class MetadataManagementService {
   }
 
   public Map deleteMetadata(String esId, boolean recursive) {
-    def record = getMetadata(esId)
+    def record = getMetadata(esId, true)
     if (record.data) { return delete(record, recursive) }
     else {
       // Record does not exist -- return NOT_FOUND response
@@ -213,7 +215,7 @@ class MetadataManagementService {
   }
 
   public Map deleteMetadata(String fileId, String doi, boolean recursive) {
-    def record = findMetadata(fileId, doi)
+    def record = findMetadata(fileId, doi, true)
     if (record.data) { return delete(record, recursive) }
     else {
       // Record does not exist -- return NOT_FOUND response
