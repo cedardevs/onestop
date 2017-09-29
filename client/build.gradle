@@ -67,6 +67,15 @@ build {
     dependsOn 'assemble', 'check'
 }
 
+task sourceJar(type: Jar) {
+  classifier "sources"
+
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
+build.dependsOn sourceJar
+
 publishing {
     publications {
         main(MavenPublication) {
@@ -74,6 +83,7 @@ publishing {
                 extension 'tar.gz'
             }
             artifactId "${rootProject.name}-${project.name}"
+            artifact tasks.sourceJar
         }
     }
 }
