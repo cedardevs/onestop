@@ -79,11 +79,21 @@ task integrationTest(type: Test, description: 'Runs the integration tests', grou
 
 check.dependsOn integrationTest
 
+task sourceJar(type: Jar) {
+  classifier "sources"
+
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
+build.dependsOn sourceJar
+
 publishing {
   publications {
     main(MavenPublication) {
       artifact war
       artifactId "${rootProject.name}-${project.name}"
+      artifact tasks.sourceJar
     }
   }
 }

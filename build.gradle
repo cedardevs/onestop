@@ -69,7 +69,7 @@ buildScan {
   licenseAgree = 'yes'
 }
 
-task dockerComposeUp(type: Exec, description: 'Runs the entire system in docker containers.', group: 'docker', dependsOn: [":api-search:build", ":client:build"]) {
+task dockerComposeUp(type: Exec, description: 'Runs the entire system in docker containers.', group: 'docker', dependsOn: [":api-search:build", ":api-metadata:build", ":client:build"]) {
     executable "bash"
     args "-c", "ES_VERSION=$project.esVersion docker-compose up -d"
 }
