@@ -71,10 +71,10 @@ sourceSets {
 
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
   mustRunAfter 'test'
-  testClassesDir = sourceSets.integrationTest.output.classesDir
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
-  reports.junitXml.destination = 'build/integration-test-results'
-  reports.html.destination = 'build/reports/integrationTests'
+  reports.junitXml.destination = file("${buildDir}/integration-test-results")
+  reports.html.destination =  file("${buildDir}/reports/integrationTests")
 }
 
 check.dependsOn integrationTest
