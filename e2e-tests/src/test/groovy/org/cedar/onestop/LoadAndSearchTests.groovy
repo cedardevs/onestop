@@ -102,7 +102,7 @@ class LoadAndSearchTests extends Specification {
     then:
     deleteResult.statusCode == HttpStatus.OK
 
-    sleep(16000) // to ensure the delete finishes
+    sleep(2000) // to ensure the delete finishes
 
     when:
     def searchResult2 = restTemplate.exchange(searchRequst, Map)

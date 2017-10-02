@@ -54,26 +54,6 @@ class ElasticsearchService {
     }
   }
 
-  public void disableIndexRefresh(String index) {
-    String endpoint = "/${index}/_settings"
-    def request = [
-        index: [
-            refresh_interval: "-1"
-        ]
-    ]
-    performRequest('PUT', endpoint, request)
-  }
-
-  public void enableIndexRefresh(String index) {
-    String endpoint = "/${index}/_settings"
-    def request = [
-        index: [
-            refresh_interval: "15s"
-        ]
-    ]
-    performRequest('PUT', endpoint, request)
-  }
-
   public String create(String baseName) {
     String indexName = "${baseName}-${System.currentTimeMillis()}"
     def cl = Thread.currentThread().contextClassLoader
