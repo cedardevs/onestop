@@ -1,0 +1,28 @@
+apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
+apply plugin: 'groovy'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  testCompile "org.codehaus.groovy:groovy:${project.groovyVersion}"
+  testCompile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
+  testCompile "org.spockframework:spock-spring:${project.spockVersion}"
+  testCompile "org.spockframework:spock-core:${project.spockVersion}"
+  testCompile 'org.springframework.boot:spring-boot-starter-test'
+  testCompile 'org.springframework.boot:spring-boot-starter-web'
+  testCompile 'org.testcontainers:testcontainers:1.4.2'
+}
+
+test {
+  dependsOn ':api-search:dockerImage', ':api-metadata:dockerImage'
+  mustRunAfter ':api-search:integrationTest', ':api-metadata:integrationTest'
+}
+
+bootRepackage {
+  enabled = false
+}

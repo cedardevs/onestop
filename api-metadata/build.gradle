@@ -52,7 +52,7 @@ bootRepackage {
 sourceSets {
   integrationTest {
     groovy.srcDir file('src/integrationTest/groovy')
-    //resources.srcDir file('src/integrationTest/resources')
+    resources.srcDir file("${project(':e2e-tests').projectDir}/src/test/resources")
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
   }
