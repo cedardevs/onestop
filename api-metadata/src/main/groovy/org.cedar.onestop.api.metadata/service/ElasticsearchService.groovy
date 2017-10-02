@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
-import javax.annotation.PostConstruct
-
 @Slf4j
 @Service
 class ElasticsearchService {
@@ -34,7 +32,6 @@ class ElasticsearchService {
     this.restClient = restClient
   }
 
-  @PostConstruct
   public void ensureIndices() {
     ensureStagingIndex()
     ensureSearchIndex()
