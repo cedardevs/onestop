@@ -282,7 +282,7 @@ class MetadataParser {
 
     if (!west || !east || !north || !south) { return null }
 
-    def type = (west == east && north == south) ? 'point' : 'polygon'
+    def type = (west == east && north == south) ? 'Point' : 'Polygon'
     def coordinates = type == 'point' ? [west, north] : [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
 
     return [type: type, coordinates: coordinates]
