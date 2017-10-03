@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.search
 
+import groovy.util.logging.Slf4j
 import org.apache.http.HttpHost
 import org.apache.http.auth.AuthScope
 import org.apache.http.auth.UsernamePasswordCredentials
@@ -12,8 +13,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 
-import java.security.KeyStore
-
+@Slf4j
 @Configuration
 @Profile("default")
 class DefaultApplicationConfig {
@@ -24,11 +24,8 @@ class DefaultApplicationConfig {
   @Value('#{\'${elasticsearch.host}\'.split(\',\')}')
   List<String> elasticHost
 
-  @Value('${elasticsearch.ssl.keystore.path:}')
-  String keystorePath
-
-  @Value('${elasticsearch.ssl.keystore.password:}')
-  String keystorePassword
+  @Value('${elasticsearch.ssl.enabled:}')
+  Boolean sslEnabled
 
   @Value('${elasticsearch.ro.user:}')
   String roUser
@@ -38,41 +35,27 @@ class DefaultApplicationConfig {
 
   @Bean(destroyMethod = 'close')
   RestClient restClient() {
-
     def hosts = []
     elasticHost.each { host ->
-      hosts.add(new HttpHost(host, elasticPort))
+      hosts.add(new HttpHost(host, elasticPort, sslEnabled ? 'https' : 'http'))
     }
 
     def builder = RestClient.builder(hosts as HttpHost[])
-
-    if (keystorePath && keystorePassword) {
-      // FIXME: Not sure what we need for prod security setup... this code is missing a setup SSLContext
-//      KeyStore keystore = KeyStore.getInstance("jks")
-//      try (InputStream is = Files.newInputStream(keystorePath)) {
-//        keystore.load(is, keystorePassword.toCharArray())
-//      }
-//      builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
-//        @Override
-//        HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-//          return httpClientBuilder.setSSLContext(sslcontext)
-//        }
-//      })
-    }
-
-    if (roUser && roPassword) {
-      final credentials = new BasicCredentialsProvider()
-      credentials.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(roUser, roPassword))
-      // FIXME: Below should be setup outside of SSL enabling & credentials, otherwise we're overriding params
-      builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
-        @Override
-        HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-          return httpClientBuilder.setDefaultCredentialsProvider(credentials)
+    builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+      @Override
+      HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+        if (roUser && roPassword) {
+          final credentials = new BasicCredentialsProvider()
+          credentials.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(roUser, roPassword))
+          httpClientBuilder = httpClientBuilder.setDefaultCredentialsProvider(credentials)
         }
-      })
-    }
 
-
+        // causes the builder to take system properties into account when building the
+        // default ssl context, e.g. javax.net.ssl.trustStore, etc.
+        httpClientBuilder = httpClientBuilder.useSystemProperties()
+        return httpClientBuilder
+      }
+    })
 
     return builder.build()
   }
