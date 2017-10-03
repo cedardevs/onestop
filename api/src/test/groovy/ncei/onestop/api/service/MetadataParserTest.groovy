@@ -46,7 +46,7 @@ class MetadataParserTest extends Specification {
         instantIndeterminate: null
     ]
     parsedXml.spatialBounding == [
-        type        : 'polygon',
+        type        : 'Polygon',
         coordinates : [
             [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]
         ]
@@ -218,7 +218,7 @@ class MetadataParserTest extends Specification {
     then:
     result == [
         spatialBounding: [
-            type: 'polygon',
+            type: 'Polygon',
             coordinates: [
                 [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]
             ]
@@ -237,7 +237,7 @@ class MetadataParserTest extends Specification {
     then:
     spatialBounding == [
         spatialBounding: [
-            type: 'point',
+            type: 'Point',
             coordinates: [-105, 40]
         ],
         isGlobal: false
