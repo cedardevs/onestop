@@ -19,7 +19,7 @@ buildscript {
 }
 
 ext {
-  esVersion = '5.5.1'
+  esVersion = '5.5.3'
 }
 
 subprojects {
