@@ -283,13 +283,13 @@ class MetadataParser {
     if (!west || !east || !north || !south) { return null }
 
     def type = (west == east && north == south) ? 'Point' : 'Polygon'
-    def coordinates = type == 'point' ? [west, north] : [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+    def coordinates = type == 'Point' ? [west, north] : [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
 
     return [type: type, coordinates: coordinates]
   }
 
   static def checkIsGlobal(def bounds) {
-    if (bounds?.type != 'polygon') { return false }
+    if (bounds?.type != 'Polygon') { return false }
 
     def coords = bounds.coordinates[0]
     def west = coords[0][0]
