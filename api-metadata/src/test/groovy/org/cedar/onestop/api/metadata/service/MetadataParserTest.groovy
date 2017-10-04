@@ -20,16 +20,38 @@ class MetadataParserTest extends Specification {
     parsedXml.title == 'Important Organization\'s Important File\'s Super Important Title'
     parsedXml.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
     parsedXml.description == 'Wall of overly detailed, super informative, extra important text.'
-    parsedXml.keywords == ['Air temperature', 'Water temperature', 'Wind speed', 'Wind direction'] as Set
-    parsedXml.topicCategories == ['environment', 'oceans'] as Set
-    parsedXml.gcmdScience == [
+    parsedXml.keywords == [
+        'Air temperature', 'Water temperature', 'Wind speed', 'Wind direction',
         'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
         'Oceans > Salinity/Density > Salinity',
+        'Volcanoes > This Keyword > Is Invalid',
+        'Geographic Region > Arctic',
+        'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
+        'Liquid Earth > This Keyword > Is Invalid',
+        'SIO > Super Important Organization'
+    ] as Set
+    parsedXml.topicCategories == ['environment', 'oceans'] as Set
+    parsedXml.gcmdScience == [
+        'Atmosphere',
+        'Atmosphere > Atmospheric Temperature',
+        'Atmosphere > Atmospheric Temperature > Surface Temperature',
+        'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
+        'Oceans',
+        'Oceans > Salinity/Density',
+        'Oceans > Salinity/Density > Salinity',
+        'Volcanoes',
+        'Volcanoes > This Keyword',
         'Volcanoes > This Keyword > Is Invalid'
     ] as Set
     parsedXml.gcmdLocations == [
+        'Geographic Region',
         'Geographic Region > Arctic',
+        'Ocean',
+        'Ocean > Atlantic Ocean',
+        'Ocean > Atlantic Ocean > North Atlantic Ocean',
         'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
+        'Liquid Earth',
+        'Liquid Earth > This Keyword',
         'Liquid Earth > This Keyword > Is Invalid'
     ] as Set
     parsedXml.gcmdInstruments == [] as Set
@@ -171,16 +193,38 @@ class MetadataParserTest extends Specification {
     def parsedXml = MetadataParser.parseKeywordsAndTopics(document)
 
     then:
-    parsedXml.keywords == ['Air temperature', 'Water temperature', 'Wind speed', 'Wind direction'] as Set
-    parsedXml.topicCategories == ['environment', 'oceans'] as Set
-    parsedXml.gcmdScience == [
+    parsedXml.keywords == [
+        'Air temperature', 'Water temperature', 'Wind speed', 'Wind direction',
         'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
         'Oceans > Salinity/Density > Salinity',
+        'Volcanoes > This Keyword > Is Invalid',
+        'Geographic Region > Arctic',
+        'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
+        'Liquid Earth > This Keyword > Is Invalid',
+        'SIO > Super Important Organization'
+    ] as Set
+    parsedXml.topicCategories == ['environment', 'oceans'] as Set
+    parsedXml.gcmdScience == [
+        'Atmosphere',
+        'Atmosphere > Atmospheric Temperature',
+        'Atmosphere > Atmospheric Temperature > Surface Temperature',
+        'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
+        'Oceans',
+        'Oceans > Salinity/Density',
+        'Oceans > Salinity/Density > Salinity',
+        'Volcanoes',
+        'Volcanoes > This Keyword',
         'Volcanoes > This Keyword > Is Invalid'
     ] as Set
     parsedXml.gcmdLocations == [
+        'Geographic Region',
         'Geographic Region > Arctic',
+        'Ocean',
+        'Ocean > Atlantic Ocean',
+        'Ocean > Atlantic Ocean > North Atlantic Ocean',
         'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
+        'Liquid Earth',
+        'Liquid Earth > This Keyword',
         'Liquid Earth > This Keyword > Is Invalid'
     ] as Set
     parsedXml.gcmdInstruments == [] as Set

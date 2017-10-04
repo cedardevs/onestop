@@ -173,32 +173,50 @@ class MetadataParser {
         def namespace = e.thesaurusName.CI_Citation.title.CharacterString.text()
 
         if (text) {
+          text = text.trim()
           if (namespace.toLowerCase().contains('gcmd')) {
             switch (namespace) {
               case { it.toLowerCase().contains('science') }:
                 text = WordUtils.capitalizeFully(text,
                     " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
                 text = text.replace('Earth Science > ', '')
-                gcmdScience.add(text)
+                keywords.add(text)
+                def i = text.length()
+                while (i > 0) {
+                  text = text.substring(0, i).trim()
+                  gcmdScience.add(text)
+                  i = text.lastIndexOf('>', i)
+                }
                 break
               case { it.toLowerCase().contains('location') || it.toLowerCase().contains('place') }:
-                def locationKeywords = WordUtils.capitalizeFully(text,
+                text = WordUtils.capitalizeFully(text,
                     " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
-                gcmdLocations.add(locationKeywords)
+                keywords.add(text)
+                def i = text.length()
+                while (i > 0) {
+                  text = text.substring(0, i).trim()
+                  gcmdLocations.add(text)
+                  i = text.lastIndexOf('>', i)
+                }
                 break
               case { it.toLowerCase().contains('platform') }:
+                keywords.add(text)
                 gcmdPlatforms.add(text)
                 break
               case { it.toLowerCase().contains('instrument') }:
+                keywords.add(text)
                 gcmdInstruments.add(text)
                 break
               case { it.toLowerCase().contains('data center') }:
+                keywords.add(text)
                 gcmdDataCenters.add(text)
                 break
               case { it.toLowerCase().contains('data resolution') }:
+                keywords.add(text)
                 gcmdDataResolution.add(text)
                 break
               case { it.toLowerCase().contains('project') }:
+                keywords.add(text)
                 gcmdProjects.add(text)
                 break
               default:
