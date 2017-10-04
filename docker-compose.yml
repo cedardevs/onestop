@@ -10,26 +10,10 @@ services:
     environment:
       - UPSTREAM_HOST=api-search
 
-#  api:
-#    build:
-#      context: ./api/
-#      args:
-#        VERSION: ${VERSION}
-#        DATE: ${DATE}
-#        VCS_REF: ${VCS_REF}
-#        JAR_NAME: onestop-api-all
-#    ports:
-#      - 8097:8097
-#    depends_on:
-#      - elasticsearch
-#    environment:
-#      - elasticsearch_host=elasticsearch
-#      - elasticsearch_port=9300
-
   api-search:
     image: cedardevs/onestop-api-search:latest
-#    ports:
-#      - 8097:8097
+    ports:
+      - 8097:8097
     depends_on:
       - elasticsearch
     environment:
@@ -40,7 +24,7 @@ services:
   api-metadata:
     image: cedardevs/onestop-api-metadata:latest
     ports:
-      - 8097:8097
+      - 8098:8098
     depends_on:
       - elasticsearch
     environment:

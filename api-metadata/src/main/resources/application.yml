@@ -1,5 +1,5 @@
 server:
-  port: 8097
+  port: 8098
   context-path: /onestop/api
 
 spring:

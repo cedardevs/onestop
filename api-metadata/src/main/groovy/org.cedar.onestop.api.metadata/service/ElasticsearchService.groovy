@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
-import javax.annotation.PostConstruct
-
 @Slf4j
 @Service
 class ElasticsearchService {
@@ -34,7 +32,6 @@ class ElasticsearchService {
     this.restClient = restClient
   }
 
-  @PostConstruct
   public void ensureIndices() {
     ensureStagingIndex()
     ensureSearchIndex()
@@ -55,26 +52,6 @@ class ElasticsearchService {
       String endPoint = "/${realName}/_alias/${index}"
       performRequest('PUT', endPoint)
     }
-  }
-
-  public void disableIndexRefresh(String index) {
-    String endpoint = "/${index}/_settings"
-    def request = [
-        index: [
-            refresh_interval: "-1"
-        ]
-    ]
-    performRequest('PUT', endpoint, request)
-  }
-
-  public void enableIndexRefresh(String index) {
-    String endpoint = "/${index}/_settings"
-    def request = [
-        index: [
-            refresh_interval: "15s"
-        ]
-    ]
-    performRequest('PUT', endpoint, request)
   }
 
   public String create(String baseName) {

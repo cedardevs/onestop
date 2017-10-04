@@ -1,9 +1,4 @@
 {
-  "settings": {
-    "index": {
-      "refresh_interval": "15s"
-    }
-  },
   "mappings": {
     "collection": {
       "dynamic": "strict",

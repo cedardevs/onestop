@@ -52,7 +52,7 @@ bootRepackage {
 sourceSets {
   integrationTest {
     groovy.srcDir file('src/integrationTest/groovy')
-    //resources.srcDir file('src/integrationTest/resources')
+    resources.srcDir file("${project(':e2e-tests').projectDir}/src/test/resources")
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
   }
@@ -60,10 +60,10 @@ sourceSets {
 
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
   mustRunAfter 'test'
-  testClassesDir = sourceSets.integrationTest.output.classesDir
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
-  reports.junitXml.destination = 'build/integration-test-results'
-  reports.html.destination = 'build/reports/integrationTests'
+  reports.junitXml.destination = file("${buildDir}/integration-test-results")
+  reports.html.destination = file("${buildDir}/reports/integrationTests")
 }
 
 check.dependsOn integrationTest
@@ -99,32 +99,34 @@ static def getDateTime() {
 
 task dockerImage(type: Exec, description: 'Creates a docker image with the current jar.', group: 'docker') {
   dependsOn bootRepackage
-  executable "bash"
-  args "-c", "docker build --no-cache \
-    --build-arg VCS_REF=\$(git rev-parse --short HEAD) \
-    --build-arg VERSION=${project.version} \
-    --build-arg DATE=" + getDateTime() + " \
-    --build-arg JAR_NAME=${rootProject.name}-${project.name}-all \
-    -t cedardevs/${rootProject.name}-${project.name}:${project.version} . && \
-    docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest"
+  executable = "bash"
+  args = ["-c", "docker build --no-cache " +
+      "--build-arg VCS_REF=\$(git rev-parse --short HEAD) " +
+      "--build-arg VERSION=${project.version} " +
+      "--build-arg DATE=${getDateTime()} " +
+      "--build-arg JAR_NAME=${rootProject.name}-${project.name}-all " +
+      "-t cedardevs/${rootProject.name}-${project.name}:${project.version} . && " +
+      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest"]
 }
 
 assemble.dependsOn dockerImage
 
 task publishImage(type: Exec, description: 'Publishes the docker image', group: 'publish') {
   dependsOn "dockerImage"
-  executable "bash"
-  args "-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && docker logout"
+  executable = "bash"
+  args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && " +
+      "docker logout"]
 }
 
 artifactoryPublish.dependsOn publishImage
 
 task promote(type: Exec, description: 'Publishes the promoted docker image', group: 'publish') {
   dependsOn dockerImage
-  executable "bash"
-  args "-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && \
-    docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:$baseVersion && \
-    docker push cedardevs/${rootProject.name}-${project.name}:$baseVersion &&\
-    docker push cedardevs/${rootProject.name}-${project.name}:latest && \
-    docker logout"
+  executable = "bash"
+  args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
+      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:$baseVersion && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:$baseVersion && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:latest && " +
+      "docker logout"]
 }

@@ -53,6 +53,7 @@ class ETLService {
   public void rebuildSearchIndex() {
     log.info "starting rebuilding process"
     def start = System.currentTimeMillis()
+    elasticsearchService.ensureIndices()
     elasticsearchService.refresh(STAGING_INDEX)
     def newSearchIndex = elasticsearchService.create(SEARCH_INDEX)
 
@@ -82,6 +83,7 @@ class ETLService {
   public void updateSearchIndex() {
     log.info "Starting search index update process"
     def start = System.currentTimeMillis()
+    elasticsearchService.ensureIndices()
     elasticsearchService.refresh(STAGING_INDEX, SEARCH_INDEX)
 
     // reindex collections (and their granules) which have been updated

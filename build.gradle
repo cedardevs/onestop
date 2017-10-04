@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '1.5.1.RELEASE'
+    springBootVersion = '1.5.7.RELEASE'
   }
   repositories {
     maven {
@@ -8,7 +8,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.gradle:build-scan-plugin:1.0'
+    classpath 'com.gradle:build-scan-plugin:1.9'
     classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1'
     classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
@@ -50,9 +50,9 @@ subprojects {
 }
 
 task promote(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
-  executable "bash"
-  args "-c", "curl -X POST -u \"\$BINTRAY_USER:\$BINTRAY_KEY\" -H \"Content-Length: 0\"\
-    \"http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version\""
+  executable = "bash"
+  args = ["-c", "curl -X POST -u \"\$BINTRAY_USER:\$BINTRAY_KEY\" -H \"Content-Length: 0\"" +
+    "http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version\""]
 }
 
 apply plugin: 'com.gradle.build-scan'
@@ -70,11 +70,11 @@ buildScan {
 }
 
 task dockerComposeUp(type: Exec, description: 'Runs the entire system in docker containers.', group: 'docker', dependsOn: [":api-search:build", ":api-metadata:build", ":client:build"]) {
-    executable "bash"
-    args "-c", "ES_VERSION=$project.esVersion docker-compose up -d"
+    executable = "bash"
+    args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d"]
 }
 
 task dockerComposeDown(type: Exec, description: 'Stops the entire system in docker containers.', group: 'docker') {
-  executable "bash"
-  args "-c", "docker-compose down"
+  executable = "bash"
+  args = ["-c", "docker-compose down"]
 }

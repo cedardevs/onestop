@@ -18,11 +18,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST
 class SearchController {
 
   private UiConfig uiConfig
-  private ElasticsearchService esService
+  private ElasticsearchService elasticsearchService
 
   @Autowired
-  public SearchController(ElasticsearchService esService, UiConfig uiConfig) {
-    this.esService = esService
+  public SearchController(ElasticsearchService elasticsearchService, UiConfig uiConfig) {
+    this.elasticsearchService = elasticsearchService
     this.uiConfig = uiConfig
   }
 
@@ -36,12 +36,12 @@ class SearchController {
       return [errors: validation.errors]
     }
     log.info("incoming search params: ${params}")
-    return esService.search(params)
+    return elasticsearchService.search(params)
   }
 
   @RequestMapping(path = '/search/totalCounts', method = GET)
   Map totalCounts() {
-    return esService.totalCounts()
+    return elasticsearchService.totalCounts()
   }
 
   @RequestMapping(path = '/search/uiConfig', method = GET)
