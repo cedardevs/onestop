@@ -60,12 +60,6 @@ class SearchIntegrationTests extends Specification {
     response = restClient.performRequest('PUT', endpoint, Collections.EMPTY_MAP, indexSettings)
     println("PUT new index: ${response}")
 
-    try {
-      restClient.performRequest('GET', 'potato')
-    } catch(e) {
-      println("Failed response: ${e.response}")
-    }
-
     Map data = [
       'DEM': [
         'C1': [
