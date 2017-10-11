@@ -1,0 +1,132 @@
+apply plugin: 'war'
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
+apply from: "${rootDir}/gradle/publishing.gradle"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
+  compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
+  compile "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
+  compile "org.elasticsearch.client:rest:${project.esVersion}"
+  compile 'org.springframework.boot:spring-boot-starter-web'
+  compile 'org.springframework.boot:spring-boot-starter-actuator'
+  compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
+  compile 'com.github.fge:json-schema-validator:2.2.6'
+  compile 'org.apache.commons:commons-lang3:3.4'
+  compile 'org.apache.lucene:lucene-expressions:5.5.0'
+  compile project(':index-configuration')
+
+  runtime 'org.springframework.boot:spring-boot-devtools'
+
+  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+  testCompile "org.spockframework:spock-spring:${project.spockVersion}"
+  testCompile "org.spockframework:spock-core:${project.spockVersion}"
+  testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+  testCompile 'org.springframework.boot:spring-boot-starter-test'
+  testCompile 'org.testcontainers:testcontainers:1.4.2'
+}
+
+ext {
+  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
+}
+
+springBoot {
+  backupSource = false
+}
+
+bootRepackage {
+  outputFile = fatWarPath
+  excludeDevtools = true
+  executable = true
+  onlyIf { !tasks.getByName('war').state.upToDate }
+}
+
+sourceSets {
+  integrationTest {
+    groovy.srcDir file('src/integrationTest/groovy')
+    resources.srcDir file("${project(':e2e-tests').projectDir}/src/test/resources")
+    compileClasspath += main.output + test.output + configurations.testRuntime
+    runtimeClasspath += output + compileClasspath
+  }
+}
+
+task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
+  mustRunAfter 'test'
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  reports.junitXml.destination = file("${buildDir}/integration-test-results")
+  reports.html.destination = file("${buildDir}/reports/integrationTests")
+}
+
+check.dependsOn integrationTest
+
+task sourceJar(type: Jar) {
+  classifier "sources"
+
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
+build.dependsOn sourceJar
+
+publishing {
+  publications {
+    main(MavenPublication) {
+      artifact war
+      artifactId "${rootProject.name}-${project.name}"
+      artifact tasks.sourceJar
+    }
+  }
+}
+
+processResources {
+  filesMatching("**/application.yml") {
+    expand( project.properties )
+  }
+}
+
+static def getDateTime() {
+  return new Date().format("YYYY-MM-DD'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC'))
+}
+
+task dockerImage(type: Exec, description: 'Creates a docker image with the current jar.', group: 'docker') {
+  dependsOn bootRepackage
+  executable = "bash"
+  args = ["-c", "docker build --no-cache " +
+      "--build-arg VCS_REF=\$(git rev-parse --short HEAD) " +
+      "--build-arg VERSION=${project.version} " +
+      "--build-arg DATE=${getDateTime()} " +
+      "--build-arg JAR_NAME=${rootProject.name}-${project.name}-all " +
+      "-t cedardevs/${rootProject.name}-${project.name}:${project.version} . && " +
+      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest"]
+}
+
+assemble.dependsOn dockerImage
+
+task publishImage(type: Exec, description: 'Publishes the docker image', group: 'publish') {
+  dependsOn "dockerImage"
+  executable = "bash"
+  args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && " +
+      "docker logout"]
+}
+
+artifactoryPublish.dependsOn publishImage
+
+task promote(type: Exec, description: 'Publishes the promoted docker image', group: 'publish') {
+  dependsOn dockerImage
+  executable = "bash"
+  args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
+      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:$baseVersion && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:$baseVersion && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:latest && " +
+      "docker logout"]
+}

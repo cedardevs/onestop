@@ -1,0 +1,36 @@
+server:
+  port: 8098
+  context-path: /onestop/api
+
+spring:
+  application:
+    name: onestop-metadata-api
+
+logging:
+  level:
+      org.cedar.onestop.api.search: INFO
+      org.gradle: WARN
+      org.apache.http: WARN
+      org.apache.http.wire: WARN
+      org.apache.http.headers: WARN
+      groovyx.net.http: WARN
+      groovyx.net.http.HttpURLClient: WARN
+      org.springframework: INFO
+      org.springframework.amqp: WARN
+      org.hibernate: WARN
+
+elasticsearch:
+  version: ${esVersion}
+  host: localhost
+  port: 9200
+  index:
+    search:
+      name: search
+      granuleType: granule
+      collectionType: collection
+    staging:
+      name: staging
+      granuleType: granule
+      collectionType: collection
+
+info.version: ${version}

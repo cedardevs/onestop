@@ -1,0 +1,318 @@
+{
+  "fileIdentifier": "gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB",
+  "parentIdentifier": null,
+  "doi": "doi:10.5072/FK2MG7P66T",
+  "title": "GHRSST Level 4 OSPO Global Nighttime Foundation Sea Surface Temperature Analysis (GDS version 2)",
+  "alternateTitle": "OSPO L4 SST Analysis (GDS2)",
+  "description": "A Group for High Resolution Sea Surface Temperature (GHRSST) Level 4 sea surface\n          temperature analysis produced daily on an operational basis at the Office of Satellite and Product Operations\n          (OSPO) using optimal interpolation (OI) on a global 0.054 degree grid. The Geo-Polar Blended Sea Surface\n          Temperature (SST) Analysis combines multi-satellite retrievals of sea surface temperature into a single\n          analysis of SST. This analysis includes only nighttime data.The Operational Sea Surface Temperature and\n          Sea Ice Analysis (OSTIA) analysis uses satellite data from sensors that include the Advanced Very High\n          Resolution Radiometer (AVHRR), the Visible Infrared Imager Radiometer Suite (VIIRS), the Geostationary\n          Operational Environmental Satellite (GOES) imager, the Japanese Advanced Meteorological Imager (JAMI) and in\n          situ data from ships, drifting and moored buoys. This analysis was specifically produced to be used as a lower\n          boundary condition in Numerical Weather Prediction (NWP) models. This dataset adheres to the GHRSST Data\n          Processing Specification (GDS) version 2 format specifications.",
+  "keywords": [
+    "ICE - COVERAGE",
+    "SEA SURFACE TEMPERATURE",
+    "AVHRR-3",
+    "GOES Imager",
+    "MTSAT 2 Imager",
+    "VIIRS",
+    "satellite data",
+    "GOES-13 SATELLITE",
+    "GOES-15 SATELLITE",
+    "MetOp-B",
+    "MTSAT-2 SATELLITE",
+    "Suomi NPP",
+    "US DOC; NOAA; NESDIS; Office of Satellite and Product Operations",
+    "US NASA; Jet Propulsion Laboratory; Physical Oceanography Distributed Active Archive Center",
+    "Group for High Resolution Sea Surface Temperature (GHRSST)",
+    "World-Wide Distribution",
+    "oceanography",
+    "Oceans > Ocean Temperature > Sea Surface Temperature > Foundation Sea Surface Temperature",
+    "Geographic Region > Global Ocean",
+    "Global",
+    "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce"
+  ],
+  "topicCategories": [
+    "environment",
+    "oceans",
+    "biota",
+    "climatologyMeteorologyAtmosphere"
+  ],
+  "gcmdScience": [
+    "Oceans",
+    "Oceans > Ocean Temperature",
+    "Oceans > Ocean Temperature > Sea Surface Temperature",
+    "Oceans > Ocean Temperature > Sea Surface Temperature > Foundation Sea Surface Temperature"
+  ],
+  "gcmdLocations": [
+    "Geographic Region",
+    "Geographic Region > Global Ocean",
+    "Global"
+  ],
+  "gcmdInstruments": [
+  ],
+  "gcmdPlatforms": [
+  ],
+  "gcmdProjects": [
+  ],
+  "gcmdDataCenters": [
+    "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce"
+  ],
+  "gcmdDataResolution": [
+  ],
+  "temporalBounding": {
+    "beginDate": "2014-06-02",
+    "beginIndeterminate": null,
+    "endDate": null,
+    "endIndeterminate": "now",
+    "instant": null,
+    "instantIndeterminate": null
+  },
+  "spatialBounding": {
+    "type": "polygon",
+    "coordinates": [
+      [
+        [
+          -180.0,
+          -90.0
+        ],
+        [
+          180.0,
+          -90.0
+        ],
+        [
+          180.0,
+          90.0
+        ],
+        [
+          -180.0,
+          90.0
+        ],
+        [
+          -180.0,
+          -90.0
+        ]
+      ]
+    ]
+  },
+  "isGlobal": true,
+  "acquisitionInstruments": [
+    {
+      "instrumentIdentifier": "VIIRS > Visible Infrared Imaging Radiometer Suite",
+      "instrumentType": "sensor",
+      "instrumentDescription": "VIIRS is a 22-band radiometer to collect infrared and visible light for earth system monitoring"
+    },
+    {
+      "instrumentIdentifier": "AVHRR-3 > Advanced Very High Resolution Radiometer-3",
+      "instrumentType": "sensor",
+      "instrumentDescription": "The AVHRR is a radiation-detection imager that can be used for remotely determining cloud cover and the surface temperature. Note that the term surface can mean the surface of the Earth, the upper surfaces of clouds, or the surface of a body of water."
+    },
+    {
+      "instrumentIdentifier": "InSitu > Ships and Moored and Drifting Buoys",
+      "instrumentType": "sensor",
+      "instrumentDescription": "In situ SST data from drifting and moored buoys, and ships."
+    },
+    {
+      "instrumentIdentifier": "GOES-13 Imager > Geostationary Operational Environmental Satellite 13-Imager",
+      "instrumentType": "sensor",
+      "instrumentDescription": "he GOES Imager is a multi-channel instrument designed to sense radiant and solar-reflected energy from sampled areas of the Earth. The multi-element spectral channels simultaneously sweep east-west a"
+    },
+    {
+      "instrumentIdentifier": "MTSAT 2 Imager > Multifunction Transport 2 Imager",
+      "instrumentType": "sensor",
+      "instrumentDescription": "MTSAT 2 carries a 5 channel scanning radiometer with four IR channels and one visible channel."
+    },
+    {
+      "instrumentIdentifier": "GOES-15 Imager > Geostationary Operational Environmental Satellite 15-Imager",
+      "instrumentType": "sensor",
+      "instrumentDescription": "Geostationary Operational Environmental Satellite 15-Imager"
+    }
+  ],
+  "acquisitionOperations": [
+  ],
+  "acquisitionPlatforms": [
+    {
+      "platformIdentifier": "NOAA-19 > National Oceanic & Atmospheric Administration-19",
+      "platformDescription": "NOAA (national oceanic and atmospheric administration) satellite number 19",
+      "platformSponsor": [
+        "Office of Satellite Products and Operations",
+        "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
+      ]
+    },
+    {
+      "platformIdentifier": "InSitu > InSitu",
+      "platformDescription": "In situ SST data from drifting and moored buoys, and ships at various depths.",
+      "platformSponsor": [
+        "Office of Satellite Products and Operations",
+        "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
+      ]
+    },
+    {
+      "platformIdentifier": "MetOp-A > Meteorological Operational Satellite - A",
+      "platformDescription": "MetOp-A is the first in a series of three polar-orbiting European meteorological satellites, launched on 19 October 2006 as part of the EUMETSAT Polar System.",
+      "platformSponsor": [
+        "Office of Satellite Products and Operations",
+        "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
+      ]
+    },
+    {
+      "platformIdentifier": "MTSAT2 > The Multi-functional Transport Satellite 2",
+      "platformDescription": "The Multi-functional Transport Satellite (MTSAT) series fulfills a meteorological function for the Japan Meteorological Agency and an aviation control function for the Civil Aviation Bureau of the Ministry of Land, Infrastructure and Transport",
+      "platformSponsor": [
+        "Office of Satellite Products and Operations",
+        "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
+      ]
+    },
+    {
+      "platformIdentifier": "GOES-15 > Geostationary Operational Environmental Satellite 15",
+      "platformDescription": "Geostationary Operational Environmental Satellite 15",
+      "platformSponsor": [
+        "Office of Satellite Products and Operations",
+        "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
+      ]
+    },
+    {
+      "platformIdentifier": "GOES-13 > Geostationary Operational Environmental Satellite 13",
+      "platformDescription": null,
+      "platformSponsor": [
+        "Office of Satellite Products and Operations",
+        "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
+      ]
+    },
+    {
+      "platformIdentifier": "Suomi NPP > Suomi Suomi National Polar-orbiting Partnership",
+      "platformDescription": "Suomi National Polar-orbiting Partnership is a joint mission between NASA, DOD and NOAA.",
+      "platformSponsor": [
+        "Office of Satellite Products and Operations",
+        "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
+      ]
+    }
+  ],
+  "dataFormats": [
+    "NETCDF"
+  ],
+  "links": [
+    {
+      "linkName": "Granule Search",
+      "linkProtocol": "HTTP",
+      "linkUrl": "http://www.nodc.noaa.gov/geoportal/rest/find/document?searchText=fileIdentifier%3AGHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB*%20OR%20fileIdentifier%3AGeo_Polar_Blended_Night-OSPO-L4-GLOB*&start=1&max=100&f=SearchPage",
+      "linkDescription": "Granule Search",
+      "linkFunction": "search"
+    },
+    {
+      "linkName": "Descriptive Information",
+      "linkProtocol": "HTTP",
+      "linkUrl": "http://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB",
+      "linkDescription": "Navigate directly to the URL for a descriptive web page with download links.",
+      "linkFunction": "information"
+    },
+    {
+      "linkName": "THREDDS",
+      "linkProtocol": "THREDDS",
+      "linkUrl": "http://data.nodc.noaa.gov/thredds/catalog/ghrsst/L4/GLOB/OSPO/Geo_Polar_Blended_Night/",
+      "linkDescription": "These data are available through a variety of services via a THREDDS (Thematic Real-time Environmental Distributed Data Services) Data Server (TDS). Depending on the dataset, the TDS can provide WMS, WCS, DAP, HTTP, and other data access and metadata services as well. For more information on the TDS, see http://www.unidata.ucar.edu/software/thredds/current/tds/.",
+      "linkFunction": "download"
+    },
+    {
+      "linkName": "OPeNDAP",
+      "linkProtocol": "DAP",
+      "linkUrl": "http://data.nodc.noaa.gov/opendap/ghrsst/L4/GLOB/OSPO/Geo_Polar_Blended_Night/",
+      "linkDescription": "These data are available through the Data Access Protocol (DAP) via an OPeNDAP Hyrax server. For a listing of OPeNDAP clients which may be used to access OPeNDAP-enabled data sets, please see the OPeNDAP website at http://opendap.org/.",
+      "linkFunction": "download"
+    },
+    {
+      "linkName": "HTTP",
+      "linkProtocol": "HTTP",
+      "linkUrl": "http://data.nodc.noaa.gov/ghrsst/L4/GLOB/OSPO/Geo_Polar_Blended_Night/",
+      "linkDescription": "Navigate directly to the URL for data access and direct download.",
+      "linkFunction": "download"
+    },
+    {
+      "linkName": "FTP",
+      "linkProtocol": "FTP",
+      "linkUrl": "ftp://ftp.nodc.noaa.gov/pub/data.nodc/ghrsst/L4/GLOB/OSPO/Geo_Polar_Blended_Night/",
+      "linkDescription": "These data are available through the File Transfer Protocol (FTP). You may use\n                      any FTP client to download these data.",
+      "linkFunction": "download"
+    }
+  ],
+  "contacts": [
+    {
+      "individualName": null,
+      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "role": "custodian"
+    },
+    {
+      "individualName": "Edward Armstrong",
+      "organizationName": "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA",
+      "role": "pointOfContact"
+    },
+    {
+      "individualName": null,
+      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "role": "publisher"
+    },
+    {
+      "individualName": "Edward M. Armstrong",
+      "organizationName": "US NASA; Jet Propulsion Laboratory (JPL)",
+      "role": "resourceProvider"
+    },
+    {
+      "individualName": null,
+      "organizationName": "US NASA; Jet Propulsion Laboratory; Physical Oceanography Distributed Active Archive Center (JPL PO.DAAC)",
+      "role": "resourceProvider"
+    },
+    {
+      "individualName": null,
+      "organizationName": "US DOC; NOAA; NESDIS; Office of Satellite and Product Operations (OSPO)",
+      "role": "originator"
+    },
+    {
+      "individualName": null,
+      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "role": "pointOfContact"
+    },
+    {
+      "individualName": null,
+      "organizationName": "Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)",
+      "role": "custodian"
+    },
+    {
+      "individualName": "Office of Satellite Products and Operations",
+      "organizationName": null,
+      "role": "originator"
+    },
+    {
+      "individualName": null,
+      "organizationName": "The GHRSST Project Office",
+      "role": "publisher"
+    },
+    {
+      "individualName": null,
+      "organizationName": "Group for High Resolution Sea Surface Temperature",
+      "role": "custodian"
+    },
+    {
+      "individualName": null,
+      "organizationName": "Office of Satellite Products and Operations",
+      "role": "sponsor"
+    },
+    {
+      "individualName": null,
+      "organizationName": "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA",
+      "role": "sponsor"
+    }
+  ],
+  "thumbnail": "http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB",
+  "modifiedDate": "2016-06-13T03:49:32",
+  "creationDate": null,
+  "revisionDate": null,
+  "publicationDate": "2016-04-24",
+  "dsmmAccessibility": 0,
+  "dsmmDataIntegrity": 0,
+  "dsmmDataQualityAssessment": 0,
+  "dsmmDataQualityAssurance": 0,
+  "dsmmDataQualityControlMonitoring": 0,
+  "dsmmPreservability": 0,
+  "dsmmProductionSustainability": 0,
+  "dsmmTransparencyTraceability": 0,
+  "dsmmUsability": 0,
+  "dsmmAverage": 0
+}
