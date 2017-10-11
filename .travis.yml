@@ -18,8 +18,10 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - .gradle
-    - api/build
-    - api/dist
+    - api-search/build
+    - api-search/dist
+    - api-metadata/build
+    - api-metadata/dist
     - buildSrc/.gradle
     - buildSrc/build
     - client/.gradle
