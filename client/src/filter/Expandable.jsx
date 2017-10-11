@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import FilterSection from './ExpandableSection';
+import ExpandableSection from './ExpandableSection';
 
-const styleFilterMenu = {
+const styleExpandable = {
 	color: '#FFFFFF',
 	backgroundColor: '#1C577F'
 };
@@ -14,8 +14,10 @@ export default class Expandable extends Component {
 			if(section.content === null) {
 				isLeaf = true;
 			}
+			console.log('Section...')
+			console.log(section)
 			return (
-				<FilterSection
+				<ExpandableSection
 					key={key}
 					isLeaf={isLeaf}
 					heading={section.heading}
@@ -27,6 +29,6 @@ export default class Expandable extends Component {
 			);
 		});
 
-		return <div style={styleFilterMenu}>{expandableSections}</div>;
+		return <div style={styleExpandable}>{expandableSections}</div>;
 	}
 }

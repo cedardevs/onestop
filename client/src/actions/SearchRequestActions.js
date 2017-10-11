@@ -128,7 +128,7 @@ const buildSearchAction = (bodyBuilder, prefetchHandler, successHandler, errorHa
       .then(response => response.json())
       .then(json => successHandler(dispatch, json))
       .catch(ajaxError => ajaxError.response.json().then(errorJson => errorHandler(dispatch, errorJson)))
-      .catch(jsError => jsError.response.json().then(errorJson => errorHandler(dispatch, errorJson)))
+      .catch(jsError => errorHandler(dispatch, jsError))
   }
 }
 

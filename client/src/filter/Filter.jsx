@@ -1,36 +1,40 @@
 import React, { Component } from 'react';
 
 import FilterMenu from './Expandable'
-import SpaceFilter from './SpaceFilter';
+import SpatialFilterContainer from './SpatialFilterContainer';
 import TimeFilter from './TimeFilter';
-import FacetFilter from './FacetFilter';
+import FacetFilterContainer from './FacetFilterContainer';
 
-import { exampleFacets2, metaFacetsConverter } from '../utils/filterUtils'
 
 class Filter extends Component {
-    render() {
+  constructor(props) {
+    super(props)
+    this.submit = props.submit
+  }
 
-        const filterSections = [
-            {
-                heading: 'Space',
-                content: <SpaceFilter />
-            },
-            {
-                heading: 'Time',
-                content: <TimeFilter />
-            },
-            {
-                heading: 'Keywords',
-                content: <FacetFilter facets={exampleFacets2} />
-            },
-        ];
 
-        return (
-            <div className="App">
-                <FilterMenu sections={filterSections} />
-            </div>
-        );
-    }
+  render() {
+    const filterSections = [
+      {
+        heading: 'Space',
+        content: <SpatialFilterContainer submit={this.submit} />
+      },
+      {
+        heading: 'Time',
+        content: <TimeFilter />
+      },
+      {
+        heading: 'Keywords',
+        content: <FacetFilterContainer submit={this.submit} />
+      },
+    ];
+
+    return (
+      <div className="App">
+          <FilterMenu sections={filterSections} />
+      </div>
+    );
+  }
 }
 
 export default Filter;

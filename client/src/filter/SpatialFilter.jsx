@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-export default class SpaceFilter extends Component {
+export default class SpatialFilter extends Component {
 	render() {
 		return <p>Space Filter</p>;
 	}
