@@ -123,7 +123,7 @@ class SearchIndexService {
       max = pageParams.max
     }
     else {
-      // Default first 100 results returned
+      // Default first 100 results returned // FIXME ENSURE THIS IS NOW 10 IN MICROSERVICE
       offset = 0
       max = 100
     }

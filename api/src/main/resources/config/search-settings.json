@@ -1,0 +1,22 @@
+{
+  "analysis": {
+    "analyzer": {
+      "keyword_analyzer": {
+        "tokenizer": "keyword_tokenizer",
+        "filter": [
+          "trim"
+        ]
+      }
+    },
+    "tokenizer": {
+      "keyword_tokenizer": {
+        "type": "path_hierarchy",
+        "delimiter": ">"
+      }
+    }
+  },
+  "index": {
+    "refresh_interval": "-1",
+    "number_of_replicas": "1"
+  }
+}

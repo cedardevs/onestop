@@ -67,6 +67,15 @@ build {
     dependsOn 'assemble', 'check'
 }
 
+task sourceJar(type: Jar) {
+  classifier "sources"
+
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
+build.dependsOn sourceJar
+
 publishing {
     publications {
         main(MavenPublication) {
@@ -74,6 +83,7 @@ publishing {
                 extension 'tar.gz'
             }
             artifactId "${rootProject.name}-${project.name}"
+            artifact tasks.sourceJar
         }
     }
 }
@@ -82,33 +92,35 @@ static def getDateTime() {
   return new Date().format("YYYY-MM-DD'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC'))
 }
 
-task dockerImage(type: Exec, description: 'Creates a docker image with the current jar.', group: 'docker') {
+task dockerImage(type: Exec, description: 'Creates a docker image with the current build.', group: 'docker') {
   dependsOn tarResults
-  executable "bash"
-  args "-c", "docker build --no-cache \
-    --build-arg VCS_REF=\$(git rev-parse --short HEAD) \
-    --build-arg VERSION=${project.version} \
-    --build-arg DATE=" + getDateTime() + " \
-    -t cedardevs/${rootProject.name}-${project.name}:${project.version} ."
+  commandLine = "bash"
+  args = ["-c", "docker build --no-cache " +
+      "--build-arg VCS_REF=\$(git rev-parse --short HEAD) " +
+      "--build-arg VERSION=${project.version} " +
+      "--build-arg DATE=${getDateTime()} " +
+      "-t cedardevs/${rootProject.name}-${project.name}:${project.version} . && " +
+      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest"]
 }
 
 assemble.dependsOn dockerImage
 
 task publishImage(type: Exec, description: 'Publishes the docker image', group: 'publish') {
   dependsOn "dockerImage"
-  executable "bash"
-  args "-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && docker logout"
+  executable = "bash"
+  args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && " +
+      "docker logout"]
 }
 
 artifactoryPublish.dependsOn publishImage
 
 task promote(type: Exec, description: 'Publishes the promoted docker image', group: 'publish') {
   dependsOn dockerImage
-  executable "bash"
-  args "-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && \
-    docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:$baseVersion && \
-    docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest &&\
-    docker push cedardevs/${rootProject.name}-${project.name}:$baseVersion &&\
-    docker push cedardevs/${rootProject.name}-${project.name}:latest && \
-    docker logout"
+  executable = "bash"
+  args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
+      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:$baseVersion && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:$baseVersion && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:latest && " +
+      "docker logout"]
 }

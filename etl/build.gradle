@@ -84,11 +84,6 @@ def targets = [
         url  : 'http://localhost:8097/onestop/api/metadata'
     ],
     [
-        name : 'CUApi',
-        class: Loader,
-        url  : 'https://sciapps.colorado.edu/onestop/api/metadata'
-    ],
-    [
         name : 'LocalGeoportal',
         class: GeoportalLoader,
         url  : "http://localhost:8888/rest/metadata/item"
@@ -139,9 +134,9 @@ def loadToTarget( Map source, Map target ) {
 
 // Creates a task to load from each source into local & server targets
 targets.each { target ->
-  tasks.create("etlAllTo${target.name}")
+  tasks.create(name: "etlAllTo${target.name}", group: "ETL to ${target.name}")
     .dependsOn( sources.collect { source ->
-      tasks.create("etl${source.name}To${target.name}")
+      tasks.create(name: "etl${source.name}To${target.name}", group: "ETL to ${target.name}")
         .doFirst(loadToTarget(source, target))
   })
 }
