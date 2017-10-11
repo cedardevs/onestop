@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
-import FilterMenu from './FilterMenu'
+import FilterMenu from './Expandable'
 import SpaceFilter from './SpaceFilter';
 import TimeFilter from './TimeFilter';
 import FacetFilter from './FacetFilter';
 
 import { exampleFacets2, metaFacetsConverter } from '../utils/filterUtils'
 
-class App extends Component {
+class Filter extends Component {
     render() {
 
         const filterSections = [
@@ -33,4 +33,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default Filter;

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import FilterMenu from './FilterMenu';
+import FilterMenu from './Expandable';
 import _ from 'lodash';
 
 export default class FacetFilter extends Component {
@@ -18,7 +18,6 @@ export default class FacetFilter extends Component {
 
         Object.keys(this.props.facets).forEach( heading => {
 			const content = this.props.facets[heading]
-			console.log("content", content);
 			if(!_.isObject(content)) {
 				return;
 			}
@@ -31,7 +30,6 @@ export default class FacetFilter extends Component {
 					content: <FacetFilter facets={content.children}/>
 				})
             } else if("children" in content && _.isEmpty(content.children)) {
-				// Leaf Facet
 				sections.push({
 					count: content.count,
                     term: content.term ? content.term : null,
@@ -39,18 +37,36 @@ export default class FacetFilter extends Component {
 					content: null
 				})
 			} else {
-				isSubsection = false;
 				// High-Level Facet Section
+                isSubsection = false;
+                let headingHighLevel = null;
+                switch (heading) {
+                    case 'science':
+                        headingHighLevel = "Data Theme";
+                        break;
+                    case 'instruments':
+                        headingHighLevel = "Instruments";
+                        break;
+                    case 'platforms':
+                        headingHighLevel = "Platforms";
+                        break;
+                    case 'projects':
+                        headingHighLevel = "Projects";
+                        break;
+                    case 'dataCenters':
+                        headingHighLevel = "Data Centers";
+                        break;
+                    default:
+                        headingHighLevel = heading;
+                }
 				sections.push({
 					count: null,
 					term: content.term ? content.term : null,
-					heading: heading,
+					heading: headingHighLevel,
 					content: <FacetFilter facets={content} />
 				})
 			}
 		});
-
-		console.log("sections:", sections);
 
 		return <FilterMenu sections={sections} isSubsection={isSubsection} />
 	}

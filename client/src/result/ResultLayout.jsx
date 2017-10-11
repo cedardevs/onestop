@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 import angleDoubleRight from 'fa/angle-double-right.svg'
 import angleDoubleLeft from 'fa/angle-double-left.svg'
 import styles from './resultLayout.css'
-import FacetContainer from '../search/facet/FacetContainer'
+// import FacetContainer from '../search/facet/FacetContainer'
 import FilterContainer from '../filter/FilterContainer'
 import _ from 'lodash'
 
