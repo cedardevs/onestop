@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import FilterMenu from './Expandable'
+import Expandable from './Expandable'
 import SpatialFilterContainer from './SpatialFilterContainer';
 import TimeFilter from './TimeFilter';
 import FacetFilterContainer from './FacetFilterContainer';
@@ -31,7 +31,7 @@ class Filter extends Component {
 
     return (
       <div className="App">
-          <FilterMenu sections={filterSections} />
+          <Expandable sections={filterSections} />
       </div>
     );
   }

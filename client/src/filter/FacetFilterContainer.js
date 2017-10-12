@@ -1,10 +1,11 @@
 import { connect } from 'react-redux'
 import FacetFilter from './FacetFilter'
 import { toggleFacet } from '../actions/SearchParamActions'
+import { buildKeywordHierarchyMap } from '../utils/filterUtils'
 
 const mapStateToProps = (state) => {
   return {
-    facetMap: state.domain.results.facets,
+    facetMap: buildKeywordHierarchyMap(state.domain.results.facets),
     selectedFacets: state.behavior.search.selectedFacets
   }
 }

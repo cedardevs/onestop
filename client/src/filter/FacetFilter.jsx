@@ -10,62 +10,11 @@ export default class FacetFilter extends Component {
     this.selectedFacets = props.selectedFacets
     this.toggleFacet = props.toggleFacet
     this.submit = props.submit
-    this.state = this.getDefaultState()
-  }
-
-  getDefaultState() {
-    return {
-      terms : {
-        "science": "Data Theme"
-      },
-      allCategoryMap: {}
-    }
   }
 
   componentWillUpdate(nextProps) {
     this.facetMap = nextProps.facetMap
     this.selectedFacets = nextProps.selectedFacets
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if(!_.isEqual(this.facetMap, nextProps.facetMap)) {
-
-      const parsedMap = {}
-      _.map(nextProps.facetMap, (terms, category) => {
-        console.log(category)
-        console.log(terms)
-        if (!_.isEmpty(terms)) { // Don't load categories that have no results
-          let categoryMap = {}
-
-          if(category === 'science') {
-            categoryMap = this.buildHierarchyMap(category, terms)
-          }
-          else {
-            Object.keys(terms).map( term => {
-              const name = term.split(' > ')
-              categoryMap[name[0]] = {
-                count: terms[term].count,
-                children: {},
-                parent: null,
-                term: term
-              }
-            })
-          }
-
-          parsedMap[category] = categoryMap
-        }
-      })
-      console.log(parsedMap)
-
-      this.setState({
-        allCategoryMap: parsedMap
-      })
-    }
-
-  }
-
-  toTitleCase(str){
-    return _.startCase(_.toLower((str.split(/(?=[A-Z])/).join(" "))))
   }
 
   updateStoreAndSubmitSearch(e) {
@@ -82,54 +31,13 @@ export default class FacetFilter extends Component {
       || false
   }
 
-  buildHierarchyMap(category, terms) {
-    console.log(category)
-    console.log(terms)
-
-    var createChildrenHierarchy = (map, hierarchy, term, value) => {
-      const lastTerm = hierarchy.pop()
-      if(!_.isEmpty(hierarchy)) {
-        let i;
-        for(i = 0; i < hierarchy.length; i++) {
-          // Since hierarchical strings are received in alphabetical order, this traversal
-          // down the nested object won't error out
-          //_.defaults(map, map[hierarchy[i]].children)
-          map = map[hierarchy[i]].children = map[hierarchy[i]].children || {}
-        }
-      }
-
-      map = map[lastTerm] = value
-      return map
-    }
-
-    let categoryMap = {}
-
-    Object.keys(terms).map( term => {
-      let hierarchy = term.split(' > ')
-      const parentTerm = hierarchy[hierarchy.length - 2]
-      const value = {
-        count: terms[term].count,
-        children: {},
-        parent: parentTerm ? parentTerm : null,
-        term: term
-      }
-
-      createChildrenHierarchy(categoryMap, hierarchy, term, value)
-    })
-
-    console.log(categoryMap)
-    return categoryMap
-  }
-
-
 	render() {
-    let self = this
     let sections = []
     let isSubsection = true
 
-    Object.keys(this.state.allCategoryMap).forEach(heading => {
+    Object.keys(this.facetMap).forEach( heading => {
       console.log(heading)
-      const content = this.state.allCategoryMap[heading]
+      const content = this.facetMap[heading]
       if (!_.isObject(content)) {
         return
       }
@@ -139,7 +47,7 @@ export default class FacetFilter extends Component {
           count: content.count,
           term: content.term ? content.term : null,
           heading: heading,
-          content: <FacetFilter facets={content.children}/>
+          content: <FacetFilter facetMap={content.children}/>
         })
       } else if ("children" in content && _.isEmpty(content.children)) {
         sections.push({
@@ -151,12 +59,11 @@ export default class FacetFilter extends Component {
       } else {
         // High-Level Facet Section
         isSubsection = false;
-        let headingHighLevel = self.state.terms[heading.toLowerCase()] || self.toTitleCase(heading)
         sections.push({
           count: null,
           term: content.term ? content.term : null,
-          heading: headingHighLevel,
-          content: <FacetFilter facets={content}/>
+          heading: heading,
+          content: <FacetFilter facetMap={content}/>
         })
       }
     })
