@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import Expandable from './Expandable';
 import _ from 'lodash';
+import Checkbox from '../common/input/Checkbox'
 
 export default class FacetFilter extends Component {
   constructor(props) {
     super(props)
-    this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(this)
     this.facetMap = props.facetMap
     this.selectedFacets = props.selectedFacets
-    this.toggleFacet = props.toggleFacet
+    // this.toggleFacet = props.toggleFacet
     this.submit = props.submit
+    this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(this)
   }
 
   componentWillUpdate(nextProps) {
@@ -18,17 +19,13 @@ export default class FacetFilter extends Component {
   }
 
   updateStoreAndSubmitSearch(e) {
-    const {name, value} = e.target.dataset
-    const selected = e.target.checked
+    console.log("updateStoreAndSubmitSearch::",this.props)
+    const heading = e.value.heading
+    const term = e.value.term
+    const selected = e.checked
 
-    this.toggleFacet(name, value, selected)
+    toggleFacet(heading, term, selected)
     this.submit()
-  }
-
-  isSelected(category, facet) {
-    return this.selectedFacets[category]
-      && this.selectedFacets[category].includes(facet)
-      || false
   }
 
 	render() {
@@ -36,7 +33,6 @@ export default class FacetFilter extends Component {
     let isSubsection = true
 
     Object.keys(this.facetMap).forEach( heading => {
-      console.log(heading)
       const content = this.facetMap[heading]
       if (!_.isObject(content)) {
         return
@@ -47,14 +43,16 @@ export default class FacetFilter extends Component {
           count: content.count,
           term: content.term ? content.term : null,
           heading: heading,
-          content: <FacetFilter facetMap={content.children}/>
+          content: <FacetFilter facetMap={content.children}/>,
+          checkbox: <Checkbox value={{term: content.term, heading: heading}} onChange={this.updateStoreAndSubmitSearch} />
         })
       } else if ("children" in content && _.isEmpty(content.children)) {
         sections.push({
           count: content.count,
           term: content.term ? content.term : null,
           heading: heading,
-          content: null
+          content: null,
+          checkbox: <Checkbox value={{term: content.term, heading: heading}} onChange={this.updateStoreAndSubmitSearch} />
         })
       } else {
         // High-Level Facet Section

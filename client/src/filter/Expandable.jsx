@@ -23,6 +23,7 @@ export default class Expandable extends Component {
 					count={section.count}
 					term={section.term}
 					isSubsection={this.props.isSubsection}
+          checkbox={section.checkbox}
 				/>
 			);
 		});
