@@ -22,11 +22,10 @@ const buildHierarchyMap = (category, terms) => {
 
   Object.keys(terms).map( term => {
     let hierarchy = term.split(' > ')
-    const parentTerm = hierarchy[hierarchy.length - 2]
     const value = {
       count: terms[term].count,
       children: {},
-      parent: parentTerm ? parentTerm : null,
+      category: category,
       term: term
     }
 
@@ -54,7 +53,7 @@ export const buildKeywordHierarchyMap = facetMap => {
           categoryMap[name[0]] = {
             count: terms[term].count,
             children: {},
-            parent: null,
+            category: category,
             term: term
           }
         })

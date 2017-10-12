@@ -8,7 +8,7 @@ export default class FacetFilter extends Component {
     super(props)
     this.facetMap = props.facetMap
     this.selectedFacets = props.selectedFacets
-    // this.toggleFacet = props.toggleFacet
+    this.toggleFacet = props.toggleFacet
     this.submit = props.submit
     this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(this)
   }
@@ -19,12 +19,12 @@ export default class FacetFilter extends Component {
   }
 
   updateStoreAndSubmitSearch(e) {
-    console.log("updateStoreAndSubmitSearch::",this.props)
-    const heading = e.value.heading
+    console.log("updateStoreAndSubmitSearch::", this.props)
+    const category = e.value.category
     const term = e.value.term
     const selected = e.checked
 
-    toggleFacet(heading, term, selected)
+    this.toggleFacet(category, term, selected)
     this.submit()
   }
 
@@ -43,8 +43,8 @@ export default class FacetFilter extends Component {
           count: content.count,
           term: content.term ? content.term : null,
           heading: heading,
-          content: <FacetFilter facetMap={content.children}/>,
-          checkbox: <Checkbox value={{term: content.term, heading: heading}} onChange={this.updateStoreAndSubmitSearch} />
+          content: <FacetFilter facetMap={content.children} toggleFacet={this.toggleFacet} submit={this.submit}/>,
+          checkbox: <Checkbox value={{term: content.term, category: content.category}} onChange={this.updateStoreAndSubmitSearch} />
         })
       } else if ("children" in content && _.isEmpty(content.children)) {
         sections.push({
@@ -52,7 +52,7 @@ export default class FacetFilter extends Component {
           term: content.term ? content.term : null,
           heading: heading,
           content: null,
-          checkbox: <Checkbox value={{term: content.term, heading: heading}} onChange={this.updateStoreAndSubmitSearch} />
+          checkbox: <Checkbox value={{term: content.term, category: content.category}} onChange={this.updateStoreAndSubmitSearch} />
         })
       } else {
         // High-Level Facet Section
@@ -61,7 +61,7 @@ export default class FacetFilter extends Component {
           count: null,
           term: content.term ? content.term : null,
           heading: heading,
-          content: <FacetFilter facetMap={content}/>
+          content: <FacetFilter facetMap={content} toggleFacet={this.toggleFacet} submit={this.submit} />
         })
       }
     })

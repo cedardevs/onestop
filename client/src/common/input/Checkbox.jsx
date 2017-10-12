@@ -111,6 +111,7 @@ class Checkbox extends Component {
 					value={this.props.value}
 					checked={this.state.checked}
 					style={styleInput}
+					id={`${this.props.value.category}-${this.props.value.term}`}
 				/>
 				<label style={styleLabel} />
 				<div style={styleInteract} />
