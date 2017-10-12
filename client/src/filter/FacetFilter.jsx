@@ -28,6 +28,12 @@ export default class FacetFilter extends Component {
     this.submit()
   }
 
+  isSelected(category, facet) {
+    return this.selectedFacets[category]
+      && this.selectedFacets[category].includes(facet)
+      || false
+  }
+
 	render() {
     let sections = []
     let isSubsection = true
