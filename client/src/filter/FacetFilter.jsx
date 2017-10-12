@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import Expandable from './Expandable';
 import _ from 'lodash';
 
@@ -128,7 +127,8 @@ export default class FacetFilter extends Component {
     let sections = []
     let isSubsection = true
 
-    Object.keys(categoryMap).forEach(heading => {
+    Object.keys(this.state.allCategoryMap).forEach(heading => {
+      console.log(heading)
       const content = this.state.allCategoryMap[heading]
       if (!_.isObject(content)) {
         return

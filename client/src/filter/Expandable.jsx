@@ -14,8 +14,6 @@ export default class Expandable extends Component {
 			if(section.content === null) {
 				isLeaf = true;
 			}
-			console.log('Section...')
-			console.log(section)
 			return (
 				<ExpandableSection
 					key={key}
