@@ -31,8 +31,6 @@ dependencies {
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile 'org.testcontainers:testcontainers:1.4.2'
-
-  testCompile project(':index-configuration')
 }
 
 ext {
@@ -63,7 +61,7 @@ configurations.configure {
 sourceSets {
   integrationTest {
     groovy.srcDir file('src/integrationTest/groovy')
-    //resources.srcDir file('src/integrationTest/resources')
+    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
   }

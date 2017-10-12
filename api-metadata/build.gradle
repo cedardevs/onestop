@@ -21,7 +21,6 @@ dependencies {
   compile 'com.github.fge:json-schema-validator:2.2.6'
   compile 'org.apache.commons:commons-lang3:3.4'
   compile 'org.apache.lucene:lucene-expressions:5.5.0'
-  compile project(':index-configuration')
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
@@ -55,6 +54,9 @@ sourceSets {
     resources.srcDir file("${project(':e2e-tests').projectDir}/src/test/resources")
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
+  }
+  main {
+    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
   }
 }
 
