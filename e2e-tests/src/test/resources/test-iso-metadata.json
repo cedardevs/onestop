@@ -1,0 +1,190 @@
+{
+"id": null,
+"type": "collection",
+"attributes": {
+    "fileIdentifier": "gov.super.important:PARENT-ID",
+    "parentIdentifier": null,
+    "doi": "doi:10.5072/FK2TEST",
+    "title": "Important Organization's Important File's Super Important Title",
+    "alternateTitle": "Still (But Slightly Less) Important Alternate Title",
+    "description": "Wall of overly detailed, super informative, extra important text.",
+    "keywords": [
+        "SIO > Super Important Organization",
+        "Air temperature",
+        "Water temperature",
+        "Wind speed",
+        "Wind direction",
+        "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
+        "Oceans > Salinity/Density > Salinity",
+        "Volcanoes > This Keyword > Is Invalid",
+        "Geographic Region > Arctic",
+        "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
+        "Liquid Earth > This Keyword > Is Invalid"
+    ],
+    "topicCategories": [
+        "environment",
+        "oceans"
+    ],
+    "gcmdScience": [
+        "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
+        "Atmosphere > Atmospheric Temperature > Surface Temperature",
+        "Atmosphere > Atmospheric Temperature",
+        "Atmosphere",
+        "Oceans > Salinity/Density > Salinity",
+        "Oceans > Salinity/Density",
+        "Oceans",
+        "Volcanoes > This Keyword > Is Invalid",
+        "Volcanoes > This Keyword",
+        "Volcanoes"
+    ],
+    "gcmdLocations": [
+        "Geographic Region > Arctic",
+        "Geographic Region",
+        "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
+        "Ocean > Atlantic Ocean > North Atlantic Ocean",
+        "Ocean > Atlantic Ocean",
+        "Ocean",
+        "Liquid Earth > This Keyword > Is Invalid",
+        "Liquid Earth > This Keyword",
+        "Liquid Earth"
+    ],
+    "gcmdInstruments": [
+
+    ],
+    "gcmdPlatforms": [
+
+    ],
+    "gcmdProjects": [
+
+    ],
+    "gcmdDataCenters": [
+        "SIO > Super Important Organization"
+    ],
+    "gcmdDataResolution": [
+
+    ],
+    "temporalBounding": {
+        "beginDate": "2005-05-09",
+        "beginIndeterminate": null,
+        "endDate": null,
+        "endIndeterminate": "now",
+        "instant": null,
+        "instantIndeterminate": null
+    },
+    "spatialBounding": {
+        "type": "Polygon",
+        "coordinates": [
+            [
+                [
+                    -180.0,
+                    -90.0
+                ],
+                [
+                    180.0,
+                    -90.0
+                ],
+                [
+                    180.0,
+                    90.0
+                ],
+                [
+                    -180.0,
+                    90.0
+                ],
+                [
+                    -180.0,
+                    -90.0
+                ]
+            ]
+        ]
+    },
+    "isGlobal": true,
+    "acquisitionInstruments": [
+        {
+            "instrumentIdentifier": "SII > Super Important Instrument",
+            "instrumentType": "sensor",
+            "instrumentDescription": "The Super Important Organization's (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system."
+        }
+    ],
+    "acquisitionOperations": [
+        {
+            "operationDescription": null,
+            "operationIdentifier": "Super Important Project",
+            "operationStatus": null,
+            "operationType": null
+        }
+    ],
+    "acquisitionPlatforms": [
+        {
+            "platformIdentifier": "TS-18 > TumbleSat-18",
+            "platformDescription": "The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.",
+            "platformSponsor": [
+                "Super Important Organization",
+                "Other (Kind Of) Important Organization"
+            ]
+        }
+    ],
+    "dataFormats": [
+        "NETCDF",
+        "CSV",
+        "ASCII"
+    ],
+    "links": [
+        {
+            "linkName": "Super Important Access Link",
+            "linkProtocol": "HTTP",
+            "linkUrl": "http://www.example.com",
+            "linkDescription": "Everything Important, All In One Place",
+            "linkFunction": "search"
+        }
+    ],
+    "contacts": [
+        {
+            "individualName": null,
+            "organizationName": "Super Important Organization",
+            "role": "custodian"
+        },
+        {
+            "individualName": null,
+            "organizationName": "Super Important Organization",
+            "role": "publisher"
+        },
+        {
+            "individualName": "John Smith",
+            "organizationName": "University of Awesome",
+            "role": "pointOfContact"
+        },
+        {
+            "individualName": null,
+            "organizationName": "Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)",
+            "role": "custodian"
+        },
+        {
+            "individualName": null,
+            "organizationName": "Super Important Organization",
+            "role": "sponsor"
+        },
+        {
+            "individualName": null,
+            "organizationName": "Other (Kind Of) Important Organization",
+            "role": "sponsor"
+        }
+    ],
+    "thumbnail": "https://www.example.com/exportImage?soCool=yes&format=png",
+    "modifiedDate": "2016-12-25T11:12:13",
+    "creationDate": null,
+    "revisionDate": "2011-01-02",
+    "publicationDate": "2010-11-15",
+    "dsmmAccessibility": 4,
+    "dsmmDataIntegrity": 0,
+    "dsmmDataQualityAssessment": 2,
+    "dsmmDataQualityAssurance": 3,
+    "dsmmDataQualityControlMonitoring": 1,
+    "dsmmPreservability": 5,
+    "dsmmProductionSustainability": 4,
+    "dsmmTransparencyTraceability": 2,
+    "dsmmUsability": 3,
+    "dsmmAverage": 2.6666666667,
+    "stagedDate": null
+  }
+}
