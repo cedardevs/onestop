@@ -39,5 +39,3 @@ services:
     ports:
       - 9300:9300
       - 9200:9200
-    volumes:
-      - ./build/elasticsearch/data:/usr/share/elasticsearch/data
