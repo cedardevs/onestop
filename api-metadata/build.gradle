@@ -17,6 +17,7 @@ dependencies {
   compile "org.elasticsearch.client:rest:${project.esVersion}"
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
+  compile 'org.springframework.boot:spring-boot-devtools'
   compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
   compile 'com.github.fge:json-schema-validator:2.2.6'
   compile 'org.apache.commons:commons-lang3:3.4'
@@ -46,6 +47,11 @@ bootRepackage {
   excludeDevtools = true
   executable = true
   onlyIf { !tasks.getByName('war').state.upToDate }
+}
+
+bootRun {
+  dependsOn ':dockerComposeInfraUp'
+  finalizedBy ':dockerComposeInfraDown'
 }
 
 sourceSets {
