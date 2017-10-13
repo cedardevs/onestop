@@ -56,9 +56,6 @@ sourceSets {
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
   }
-  test {
-    resources.srcDir file("${project(':e2e-tests').projectDir}/src/test/resources")
-  }
 }
 
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {

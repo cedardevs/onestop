@@ -132,7 +132,6 @@ class LoadAndSearchTests extends Specification {
     when:
     def paths = [
         'test-iso-metadata-collection.xml',
-        'test-iso-metadata.xml',
     ]
     def body = new LinkedMultiValueMap<String, Object>()
     paths.each { body.add("files", new ClassPathResource(it)) }
