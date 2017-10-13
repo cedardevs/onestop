@@ -150,10 +150,10 @@ class LoadAndSearchTests extends Specification {
 
 sleep(2000) // to ensure the ETL finishes
 
-    def esSearchRequest = RequestEntity.get("${esApiBase}/_search".toURI()).build()
-    def esSearchResult = restTemplate.exchange(esSearchRequest, Map)
-    println('esSearchResult')
-    println(esSearchResult)
+    // def esSearchRequest = RequestEntity.get("${esApiBase}/_search".toURI()).build()
+    // def esSearchResult = restTemplate.exchange(esSearchRequest, Map)
+    // println('esSearchResult')
+    // println(esSearchResult)
 
     loadResult.statusCode == HttpStatus.MULTI_STATUS
     println('Zeb look here too')
@@ -181,6 +181,7 @@ println(new JsonBuilder( searchResult.body.data[0] ).toPrettyString())
 when:
     def resultWithoutId = searchResult.body.data[0]
     resultWithoutId.id = null
+    resultWithoutId.stagedDate = null
     def expectedJson = (new JsonSlurper()).parseText('''{
     "id": null,
     "type": "collection",
@@ -368,7 +369,7 @@ when:
         "dsmmTransparencyTraceability": 2,
         "dsmmUsability": 3,
         "dsmmAverage": 2.6666666667,
-        "stagedDate": 1507841471906
+        "stagedDate": null
     }
 }''')
     then:
