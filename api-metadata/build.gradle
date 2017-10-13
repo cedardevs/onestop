@@ -50,8 +50,8 @@ bootRepackage {
 }
 
 bootRun {
-  dependsOn ':dockerComposeInfraUp'
-  finalizedBy ':dockerComposeInfraDown'
+  dependsOn ':dockerComposeInfraStart'
+  finalizedBy ':dockerComposeInfraStop'
 }
 
 sourceSets {
