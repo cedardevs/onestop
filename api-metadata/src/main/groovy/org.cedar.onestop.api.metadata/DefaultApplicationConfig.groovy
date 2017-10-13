@@ -46,7 +46,7 @@ class DefaultApplicationConfig {
       HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
         if (rwUser && rwPassword) {
           final credentials = new BasicCredentialsProvider()
-          credentials.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(roUser, roPassword))
+          credentials.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(rwUser, rwPassword))
           httpClientBuilder = httpClientBuilder.setDefaultCredentialsProvider(credentials)
         }
 
