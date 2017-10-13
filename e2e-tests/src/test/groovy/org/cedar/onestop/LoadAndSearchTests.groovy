@@ -131,6 +131,7 @@ class LoadAndSearchTests extends Specification {
   void 'full json output'() {
     when:
     def paths = [
+        'test-iso-metadata-collection.xml',
         'test-iso-metadata.xml',
     ]
     def body = new LinkedMultiValueMap<String, Object>()

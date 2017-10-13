@@ -2,7 +2,7 @@
 "id": null,
 "type": "collection",
 "attributes": {
-    "fileIdentifier": "gov.super.important:FILE-ID",
+    "fileIdentifier": "gov.super.important:PARENT-ID",
     "parentIdentifier": null,
     "doi": "doi:10.5072/FK2TEST",
     "title": "Important Organization's Important File's Super Important Title",
