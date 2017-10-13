@@ -41,7 +41,7 @@ class LoadAndSearchTests extends Specification {
   }
 
   def setup() {
-    // delete all indicies between tests
+    // delete all indices between tests
     def deleteRequest = RequestEntity.delete("${esApiBase}/_all".toURI()).build()
     def deleteResult = restTemplate.exchange(deleteRequest, Map)
   }
@@ -143,7 +143,6 @@ class LoadAndSearchTests extends Specification {
     def updateResult = restTemplate.exchange(updateRequest, Map)
 
     then:
-
     loadResult.statusCode == HttpStatus.MULTI_STATUS
     updateResult.statusCode == HttpStatus.OK
 
@@ -161,16 +160,17 @@ class LoadAndSearchTests extends Specification {
     searchResult.body.data[0].id != null
     searchResult.body.data[0].attributes.stagedDate != null
 
-    when:
+    when: // remove the fields that are unique each time:
     def resultWithoutId = searchResult.body.data[0]
-    // remove the fields that are unique each time:
     resultWithoutId.id = null
     resultWithoutId.attributes.stagedDate = null
     def expectedJson = (new JsonSlurper()).parseText( ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.json").text)
 
+    // TODO - Next time we come through here, think about consolidating all our matching xml and json
+    // TODO - test files into this subproject and then sharing with api-metadata and api-search
+
     then:
     resultWithoutId == expectedJson
-
   }
 
 }
