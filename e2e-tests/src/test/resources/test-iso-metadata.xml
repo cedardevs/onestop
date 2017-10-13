@@ -4,9 +4,6 @@
   <gmd:fileIdentifier>
     <gco:CharacterString>gov.super.important:FILE-ID</gco:CharacterString>
   </gmd:fileIdentifier>
-  <gmd:parentIdentifier>
-    <gco:CharacterString>gov.super.important:PARENT-ID</gco:CharacterString>
-  </gmd:parentIdentifier>
   <gmd:characterSet>
     <gmd:MD_CharacterSetCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
   </gmd:characterSet>
@@ -808,4 +805,3 @@
   </gmd:dataQualityInfo>
 
 </gmi:MI_Metadata>
-
