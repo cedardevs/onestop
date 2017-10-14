@@ -79,7 +79,7 @@ class ETLService {
    *     b) have not already been reindexed in (2)
    * 4) Reindex those granules
    */
-  @Scheduled(fixedDelay = 600000L) // 10 minutes after previous run ends
+  @Scheduled(initialDelay = 60000L, fixedDelay = 600000L) // 1 minute after startup then every 10 minutes after previous run ends
   public void updateSearchIndex() {
     log.info "Starting search index update process"
     def start = System.currentTimeMillis()
