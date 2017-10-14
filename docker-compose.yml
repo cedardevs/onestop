@@ -7,8 +7,10 @@ services:
       - 8080:80
     depends_on:
       - api-search
+      - geoportal-search
     environment:
-      - UPSTREAM_HOST=api-search
+      - "ONESTOP_ENDPOINT=api-search:8097"
+      - "GEOPORTAL_ENDPOINT=geoportal-search:8080"
 
   api-search:
     image: cedardevs/onestop-api-search:latest
@@ -39,3 +41,8 @@ services:
     ports:
       - 9300:9300
       - 9200:9200
+
+  geoportal-search:
+    build: geoportal-search
+    ports:
+      - 8080
