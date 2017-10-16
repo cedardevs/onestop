@@ -108,7 +108,8 @@ processResources {
   }
 }
 
-task dockerImage(type: BuildDockerImageTask) {
+task dockerImage(type: BuildDockerImageTask, description: 'Creates a docker image with the current jar.', group: 'docker') {
+  dependsOn bootRepackage
   additionalBuildArgs = [
     JAR_NAME: "${rootProject.name}-${project.name}-all",
   ]

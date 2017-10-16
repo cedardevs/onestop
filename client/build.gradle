@@ -88,7 +88,8 @@ publishing {
     }
 }
 
-task dockerImage(type: BuildDockerImageTask) {
+task dockerImage(type: BuildDockerImageTask, description: 'Creates a docker image with the current build.', group: 'docker') {
+  dependsOn tarResults		
   rootProjectName = "${rootProject.name}" // task class could not resolve ${rootProject}
 }
 
