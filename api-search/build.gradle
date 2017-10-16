@@ -108,20 +108,11 @@ processResources {
   }
 }
 
-static def getDateTime() {
-  return new Date().format("YYYY-MM-DD'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC'))
-}
-
-task dockerImage(type: Exec, description: 'Creates a docker image with the current jar.', group: 'docker') {
-  dependsOn bootRepackage
-  executable = "bash"
-  args = ["-c", "docker build --no-cache " +
-    "--build-arg VCS_REF=\$(git rev-parse --short HEAD) " +
-    "--build-arg VERSION=${project.version} " +
-    "--build-arg DATE=${getDateTime()} " +
-    "--build-arg JAR_NAME=${rootProject.name}-${project.name}-all " +
-    "-t cedardevs/${rootProject.name}-${project.name}:${project.version} . && " +
-    "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest"]
+task dockerImage(type: BuildDockerImageTask) {
+  additionalBuildArgs = [
+    JAR_NAME: "${rootProject.name}-${project.name}-all",
+  ]
+  rootProjectName = "${rootProject.name}" // task class could not resolve ${rootProject}
 }
 
 assemble.dependsOn dockerImage
