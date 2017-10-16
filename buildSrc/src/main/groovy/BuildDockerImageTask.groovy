@@ -16,7 +16,7 @@ class BuildDockerImageTask extends DefaultTask {
   // TODO make output a file with the hashid of the built image for tracking changes to output
 
   // TODO description: 'Creates a docker image with the current jar.', group: 'docker'
-  
+
   @Optional
   @Input Map<String, String> additionalBuildArgs
 
@@ -38,7 +38,9 @@ class BuildDockerImageTask extends DefaultTask {
             "--build-arg ${it.key}=${it.value} "
             }.join(" ") +
           "-t cedardevs/${rootProjectName}-${project.name}:${project.version} . && " +
-          "docker tag cedardevs/${rootProjectName}-${project.name}:${project.version} cedardevs/${rootProjectName}-${project.name}:latest"]
+          "docker tag cedardevs/${rootProjectName}-${project.name}:${project.version} cedardevs/${rootProjectName}-${project.name}:latest &&" +
+          "docker tag cedardevs/${rootProjectName}-${project.name}:${project.version} cedardevs/${rootProjectName}-${project.name}:latest-SNAPSHOT"
+          ]
     }
   }
 
