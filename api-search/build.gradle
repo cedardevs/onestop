@@ -113,7 +113,6 @@ task dockerImage(type: BuildDockerImageTask, description: 'Creates a docker imag
   additionalBuildArgs = [
     JAR_NAME: "${rootProject.name}-${project.name}-all",
   ]
-  rootProjectName = "${rootProject.name}" // task class could not resolve ${rootProject}
 }
 
 assemble.dependsOn dockerImage
