@@ -99,9 +99,10 @@ task dockerImage(type: Exec, description: 'Creates a docker image with the curre
       "--build-arg VCS_REF=\$(git rev-parse --short HEAD) " +
       "--build-arg VERSION=${project.version} " +
       "--build-arg DATE=${getDateTime()} " +
-      "-t cedardevs/${rootProject.name}-${project.name}:${project.version} . && " +
-      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest && " +
-      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT"
+      "-t cedardevs/${rootProject.name}-${project.name}:${project.version} " +
+      "-t cedardevs/${rootProject.name}-${project.name}:latest " +
+      "-t cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT " +
+      "."
       ]
 }
 
