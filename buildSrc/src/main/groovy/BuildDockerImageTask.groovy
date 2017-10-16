@@ -37,9 +37,10 @@ class BuildDockerImageTask extends DefaultTask {
           additionalBuildArgs.collect {
             "--build-arg ${it.key}=${it.value} "
             }.join(" ") +
-          "-t cedardevs/${rootProjectName}-${project.name}:${project.version} . && " +
-          "docker tag cedardevs/${rootProjectName}-${project.name}:${project.version} cedardevs/${rootProjectName}-${project.name}:latest &&" +
-          "docker tag cedardevs/${rootProjectName}-${project.name}:${project.version} cedardevs/${rootProjectName}-${project.name}:latest-SNAPSHOT"
+            "-t cedardevs/${rootProject.name}-${project.name}:${project.version} " +
+            "-t cedardevs/${rootProject.name}-${project.name}:latest " +
+            "-t cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT " +
+            "."
           ]
     }
   }
