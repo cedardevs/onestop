@@ -2,8 +2,7 @@ import React, { PropTypes } from 'react'
 import angleDoubleRight from 'fa/angle-double-right.svg'
 import angleDoubleLeft from 'fa/angle-double-left.svg'
 import styles from './resultLayout.css'
-// import FacetContainer from '../search/facet/FacetContainer'
-import FilterContainer from '../filter/FilterContainer'
+import Filters from '../filter/Filters'
 import _ from 'lodash'
 
 class ResultLayout extends React.Component {
@@ -58,8 +57,7 @@ class ResultLayout extends React.Component {
     }
     else {
       return <div className={`pure-u-10-24 pure-u-md-7-24 pure-u-lg-5-24 ${styles.facetSideBar}`}>
-        {/*<FacetContainer/>*/}
-        <FilterContainer/>
+        <Filters/>
       </div>
     }
   }

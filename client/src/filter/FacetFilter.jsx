@@ -1,77 +1,186 @@
 import React, { Component } from 'react';
-import Expandable from './Expandable';
-import _ from 'lodash';
-import Checkbox from '../common/input/Checkbox'
+import Expandable from '../common/Expandable';
+import Facet from './Facet';
 
 export default class FacetFilter extends Component {
-  constructor(props) {
-    super(props)
-    this.facetMap = props.facetMap
-    this.selectedFacets = props.selectedFacets
-    this.toggleFacet = props.toggleFacet
-    this.submit = props.submit
-    this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(this)
-  }
+	constructor(props) {
+		super(props);
+		this.facetMap = props.facetMap;
+		this.selectedFacets = props.selectedFacets;
+		this.toggleFacet = props.toggleFacet;
+		this.submit = props.submit;
+		this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(
+			this,
+		);
+		this.state = { activeFacets: [], openExpandables: {} };
+	}
 
-  componentWillUpdate(nextProps) {
-    this.facetMap = nextProps.facetMap
-    this.selectedFacets = nextProps.selectedFacets
-  }
+	componentWillUpdate(nextProps) {
+		this.facetMap = nextProps.facetMap;
+		this.selectedFacets = nextProps.selectedFacets;
+	}
 
-  updateStoreAndSubmitSearch(e) {
-    console.log("updateStoreAndSubmitSearch::", this.props)
-    const category = e.value.category
-    const term = e.value.term
-    const selected = e.checked
+	updateStoreAndSubmitSearch(e) {
+		if (event.checked) {
+			// the term was checked, so we add it to internal state.activeFacets array
+			this.setState(prevState => {
+				return {
+					activeFacets: prevState.activeFacets.concat([
+						{ term: e.value.term, category: e.value.category },
+					]),
+				};
+			});
+		} else {
+			// the term was unchecked, so we remove it from internal state.activeFacets array
+			this.setState(prevState => {
+				return {
+					activeFacets: prevState.activeFacets.filter(
+						facet =>
+							facet.term !== e.value.term &&
+							facet.category !== e.value.category,
+					),
+				};
+			});
+		}
 
-    this.toggleFacet(category, term, selected)
-    this.submit()
-  }
+		const category = e.value.category;
+		const term = e.value.term;
+		const selected = e.checked;
 
-  isSelected(category, facet) {
-    return this.selectedFacets[category]
-      && this.selectedFacets[category].includes(facet)
-      || false
-  }
+		this.toggleFacet(category, term, selected);
+		this.submit();
+	}
+
+	isSelected(category, facet) {
+		return (
+			(this.selectedFacets[category] &&
+				this.selectedFacets[category].includes(facet)) ||
+			false
+		);
+	}
+
+	handleExpandableToggle = event => {
+		this.setState(prevState => {
+			let openExpandables = Object.assign({}, prevState.openExpandables);
+			if (event.open) {
+				openExpandables[event.value] = true;
+			} else {
+				openExpandables[event.value] = false;
+			}
+
+			return {
+				...prevState,
+				openExpandables: openExpandables,
+			};
+		});
+	};
+
+	createFacetComponent = facet => {
+		// handle any nulls that might get into this function
+		let facetComponent = null;
+		if (!facet) {
+			return facetComponent;
+		}
+
+		// parent facets (has expandable sub-facets)
+		if ('children' in facet && !_.isEmpty(facet.children)) {
+			const expandableKey = `${facet.category}-${facet.term}`;
+			const facetKey = `facet-${facet.category}-${facet.term}`;
+
+			facetComponent = (
+				<Expandable
+					open={!!this.state.openExpandables[expandableKey]}
+					key={expandableKey}
+					value={expandableKey}
+					heading={
+						<Facet
+							key={facetKey}
+							term={facet.term}
+							category={facet.category}
+							count={facet.count}
+							onChange={this.updateStoreAndSubmitSearch}
+						/>
+					}
+					styleHeading={{
+						padding: '0.618em',
+						backgroundColor: this.props.backgroundColor
+							? this.props.backgroundColor
+							: 'initial',
+					}}
+					content={this.createFacetComponent(facet.children)}
+					styleContent={{
+						marginLeft: this.props.marginNest ? this.props.marginNest : '1em',
+					}}
+					showArrow={true}
+					onToggle={this.handleExpandableToggle}
+				/>
+			);
+		} else if ('children' in facet && _.isEmpty(facet.children)) {
+			// leaf facet (contains no sub-layer facets)
+			const leafFacetKey = `facet-${facet.category}-${facet.term}`;
+
+			facetComponent = (
+				<Facet
+					key={leafFacetKey}
+					term={facet.term}
+					category={facet.category}
+					count={facet.count}
+					style={{
+						padding: '0.618em',
+						backgroundColor: this.props.backgroundColor
+							? this.props.backgroundColor
+							: 'initial',
+					}}
+					onChange={this.updateStoreAndSubmitSearch}
+				/>
+			);
+		} else {
+			// for each key recurse
+			let facetComponents = [];
+			Object.keys(facet).forEach(subFacet => {
+				facetComponents.push(this.createFacetComponent(facet[subFacet]));
+			});
+			return facetComponents;
+		}
+		return facetComponent;
+	};
 
 	render() {
-    let sections = []
-    let isSubsection = true
+		let expandableCategories = [];
+		const categories = Object.keys(this.facetMap);
 
-    Object.keys(this.facetMap).forEach( heading => {
-      const content = this.facetMap[heading]
-      if (!_.isObject(content)) {
-        return
-      }
-      if ("children" in content && !_.isEmpty(content.children)) {
-        // Facet with Children
-        sections.push({
-          count: content.count,
-          term: content.term ? content.term : null,
-          heading: heading,
-          content: <FacetFilter facetMap={content.children} toggleFacet={this.toggleFacet} submit={this.submit}/>,
-          checkbox: <Checkbox value={{term: content.term, category: content.category}} onChange={this.updateStoreAndSubmitSearch} />
-        })
-      } else if ("children" in content && _.isEmpty(content.children)) {
-        sections.push({
-          count: content.count,
-          term: content.term ? content.term : null,
-          heading: heading,
-          content: null,
-          checkbox: <Checkbox value={{term: content.term, category: content.category}} onChange={this.updateStoreAndSubmitSearch} />
-        })
-      } else {
-        // High-Level Facet Section
-        isSubsection = false;
-        sections.push({
-          count: null,
-          term: content.term ? content.term : null,
-          heading: heading,
-          content: <FacetFilter facetMap={content} toggleFacet={this.toggleFacet} submit={this.submit} />
-        })
-      }
-    })
+		categories.forEach((category, categoryIndex) => {
+			// show hamburger menu for high-level categories
+			const highLevelHeading = <span>&#9776;&nbsp;{category}</span>;
 
-    return <Expandable sections={sections} isSubsection={isSubsection}/>
+			// do recursive magic for nested expandables
+			const expandableFacets = this.createFacetComponent(
+				this.facetMap[category],
+			);
+
+			const expandableKey = `${categoryIndex}-${category}`;
+
+			// high-level categories (e.g. - "Data Themes" | "Platforms" | "Projects" | "Data Centers" | "Data Resolution")
+			expandableCategories.push(
+				<Expandable
+					open={!!this.state.openExpandables[expandableKey]}
+					key={expandableKey}
+					value={expandableKey}
+					heading={highLevelHeading}
+					styleHeading={{
+						backgroundColor: '#17478F',
+						padding: '0.618em',
+					}}
+					content={expandableFacets}
+					styleContent={{
+						marginLeft: this.props.marginNest ? this.props.marginNest : '1em',
+						marginBottom: '1px'
+					}}
+					onToggle={this.handleExpandableToggle}
+				/>,
+			);
+		});
+
+		return <div>{expandableCategories}</div>;
 	}
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 const styleCheckbox = {
 	width: '1em',
-    height: '1em',
+	height: '1em',
 	position: 'relative',
 };
 
@@ -49,69 +49,72 @@ class Checkbox extends Component {
 		this.state = { checked: !!props.checked, hovering: false, pressing: false };
 
 		this.handleChange = this.handleChange.bind(this);
-        this.handleMouseOver = this.handleMouseOver.bind(this);
-        this.handleMouseOut = this.handleMouseOut.bind(this);
-        this.handleMouseDown = this.handleMouseDown.bind(this);
-    }
+		this.handleMouseOver = this.handleMouseOver.bind(this);
+		this.handleMouseOut = this.handleMouseOut.bind(this);
+		this.handleMouseDown = this.handleMouseDown.bind(this);
+	}
 
 	handleChange(event) {
-	    console.log("handleChange");
-	    const { value, onChange } = this.props;
-        if(onChange) {
-            onChange({ checked: !this.state.checked, value: this.props.value });
-        }
-        // prevent parent click from propagating (only fire onClick of checkbox (not parent component onClicks too)
+		const { value, onChange } = this.props;
+		if (onChange) {
+			onChange({ checked: !this.state.checked, value: value });
+		}
+		// prevent parent click from propagating (only fire onClick of checkbox (not parent component onClicks too)
 		event.stopPropagation();
-        this.setState(prevState => ({
-            checked: !prevState.checked,
-            hovering: prevState.hovering,
-            pressing: false
-        }));
+		this.setState(prevState => ({
+			checked: !prevState.checked,
+			hovering: prevState.hovering,
+			pressing: false,
+		}));
 	}
 
 	handleMouseOver(event) {
-        this.setState(prevState => ({
-            checked: prevState.checked,
-            hovering: true,
-            pressing: prevState.pressing
-        }))
-    }
+		this.setState(prevState => ({
+			checked: prevState.checked,
+			hovering: true,
+			pressing: prevState.pressing,
+		}));
+	}
 
-    handleMouseOut(event) {
-        this.setState(prevState => ({
-            checked: prevState.checked,
-            hovering: false,
-            pressing: false
-        }))
-    }
+	handleMouseOut(event) {
+		this.setState(prevState => ({
+			checked: prevState.checked,
+			hovering: false,
+			pressing: false,
+		}));
+	}
 
-    handleMouseDown(event) {
-        this.setState(prevState => ({
-            checked: prevState.checked,
-            hovering: prevState.hovering,
-            pressing: true
-        }))
-    }
+	handleMouseDown(event) {
+		this.setState(prevState => ({
+			checked: prevState.checked,
+			hovering: prevState.hovering,
+			pressing: true,
+		}));
+	}
 
 	render() {
-
-	    let styleInteract = styleCheckmark;
-	    if(this.state.checked || (this.state.hovering && this.state.pressing)) {
-            styleInteract = {...styleCheckmark, ...styleCheckmarkChecked }
-        }
-        else if(this.state.hovering) {
-            styleInteract = {...styleCheckmark, ...styleCheckmarkHover }
-        }
+		let styleInteract = styleCheckmark;
+		if (this.state.checked || (this.state.hovering && this.state.pressing)) {
+			styleInteract = { ...styleCheckmark, ...styleCheckmarkChecked };
+		} else if (this.state.hovering) {
+			styleInteract = { ...styleCheckmark, ...styleCheckmarkHover };
+		}
 
 		return (
-			<div style={styleCheckbox} onClick={this.handleChange} onMouseOver={this.handleMouseOver} onMouseOut={this.handleMouseOut} onMouseDown={this.handleMouseDown}>
+			<div
+				style={styleCheckbox}
+				onClick={this.handleChange}
+				onMouseOver={this.handleMouseOver}
+				onMouseOut={this.handleMouseOut}
+				onMouseDown={this.handleMouseDown}
+			>
 				<input
 					type="checkbox"
 					name={this.props.name}
 					value={this.props.value}
 					checked={this.state.checked}
 					style={styleInput}
-					id={`${this.props.value.category}-${this.props.value.term}`}
+					// id={`${this.props.value.category}-${this.props.value.term}`}
 				/>
 				<label style={styleLabel} />
 				<div style={styleInteract} />
