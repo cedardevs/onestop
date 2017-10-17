@@ -136,7 +136,7 @@ tr.pageButton {
 }
 
 .listContainer {
-  box-shadow: 1.3em 0.7em 0.5em 0.2em rgb(0,0,0,.7);
+  box-shadow: 1.3em 0.7em 0.5em 0.2em rgba(0,0,0,.7);
   overflow-x: none;
 }
 

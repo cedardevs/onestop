@@ -58,7 +58,7 @@ $button-threshold: 96em;
   left: 50%;
   margin-top: 2em;
   margin-left: -30%;
-  box-shadow: 14px 14px 5px rgb(0,0,0,.7);
+  box-shadow: 14px 14px 5px rgba(0,0,0,.7);
   border: 2px outset $color-primary;
   height: 30em;
   width: 80%;
@@ -79,10 +79,6 @@ $button-threshold: 96em;
   color: #5a5a5a;
 }
 
-.clearButton:focus {
-  outline: 0;
-}
-
 .undoButton,
 .searchButton,
 .timeButton,
@@ -93,10 +89,6 @@ $button-threshold: 96em;
   background-color: $color-primary !important;
   text-shadow: 0 0 5px black;
   margin-left: .5em;
-}
-
-.searchButton:focus {
-  outline: 0;
 }
 
 .timeButtonApplied,

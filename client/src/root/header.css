@@ -7,7 +7,7 @@ input {
 .headerArea {
   border-bottom: 1px solid color($color-primary-darkest lightness(-10%));
   background: $color-primary-darkest;
-  box-shadow: 0 10px 5px rgb(0,0,0,.7);
+  box-shadow: 0 10px 5px rgba(0,0,0,.7);
   padding: $section-padding;
   min-height: $header-height;
 }
@@ -24,7 +24,6 @@ input {
     background:none!important;
     border:none;
     font: inherit;
-    outline: none !important;
 
     text-decoration: none;
     color: #d7d7d7;
@@ -221,7 +220,6 @@ $menu-distance: 20em;
   button {
     background:none!important;
     border: none;
-    outline: none !important;
 
     display: flex;
     font-size: 1.2em;
