@@ -3,6 +3,7 @@
 .mainWindow {
   letter-spacing: 0em !important;
   font-family: inherit;
+  background-color: rgba(60, 90, 139, .3); /* Contrast: version 1 */
 }
 
 .facetSideBar {
@@ -57,7 +58,8 @@
 .resultsContainer, .resultsContainer508 {
   font-size: 1.2em;
   font-family: inherit !important;
-  margin: 1em auto 8em;
+  /*margin: 1em auto 8em;*/ /* Contrast: orginal */
+  margin: 0em auto; /* Contrast: version 1 */
 }
 
 .resultsContainer508 {
