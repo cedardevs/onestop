@@ -3,7 +3,8 @@
 .mainWindow {
   letter-spacing: 0em !important;
   font-family: inherit;
-  background-color: rgba(60, 90, 139, .3); /* Contrast: version 1 */
+  /* background-color: rgba(60, 90, 139, .3);*/ /* Contrast: version 1 */
+  background-color: black; /* Contrast: version 2 */
 }
 
 .facetSideBar {

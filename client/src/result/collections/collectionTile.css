@@ -3,7 +3,8 @@ $cardHeight: 10em;
 $cardWidth: 20em;
 
 .tileContainer {
-  padding: 1em;
+  /*padding: 1em;*/ /* Original, Version 1 and 2 */
+  padding: .5ex; /* Version 3 */
   text-align: center;
   max-width: $cardWidth;
   height: $cardHeight;
@@ -16,10 +17,12 @@ $cardWidth: 20em;
     /*border: 1px solid $color-gray;*/ /* Contrast: orginal */
 
     /* Contrast: version 1 */
-    border-left: 3px inset rgba(10,10,10,.9);
+    /*border-left: 3px inset rgba(10,10,10,.9);
     border-top: 3px inset rgba(10,10,10,.9);
     border-bottom: 2px inset rgba(10,10,10,.9);
-    border-right: 2px inset rgba(10,10,10,.9);
+    border-right: 2px inset rgba(10,10,10,.9);*/
+
+    border: .5ex solid $color-gray; /* Contrast: version 2 */
 
     color: white;
     overflow: hidden;
@@ -36,11 +39,11 @@ $cardWidth: 20em;
       background: linear-gradient(rgba(10, 10, 10, 1), rgba(10, 10, 10, .5), rgba(10, 10, 10, .2), rgba(10, 10, 10, 0));
     }
     /* Contrast: version 1 */
-    .overlay2 {
+    /*.overlay2 {
       width: 100%;
       height: 100%;
       background: linear-gradient(to right, rgba(10, 10, 10, .8), rgba(10, 10, 10, .3), rgba(10, 10, 10, .1), rgba(10, 10, 10, 0), rgba(10, 10, 10, 0), rgba(10, 10, 10, 0), rgba(10, 10, 10, 0));
-    }
+    }*/
     .mapContainer {
       position: relative;
       z-index: -1;
