@@ -34,6 +34,11 @@ task compile(type: NodeTask) {
     }
 }
 
+task start(type: Exec, dependsOn: [":dockerComposeBackendStart"]) {
+  executable = "bash"
+  args = ["-c", "npm run dev"]
+}
+
 task tarResults(type: Tar) {
     dependsOn 'compile'
 

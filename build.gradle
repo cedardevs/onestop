@@ -89,6 +89,16 @@ task dockerComposeInfraStop(type: Exec, description: 'Stops the infrastructure n
   args = ["-c", "docker-compose stop elasticsearch"]
 }
 
+task dockerComposeBackendStart(type: Exec, description: 'Runs intrastructure and api modules needed to run the client.', group: 'docker', dependsOn: [":api-search:build", ":api-metadata:build", ":dockerComposeInfraStart"]) {
+  executable = "bash"
+  args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d api-metadata api-search"]
+}
+
+task dockerComposeBackendStop(type: Exec, description: 'Stops intrastructure and api modules needed to run the client.', group: 'docker', dependsOn: [":dockerComposeInfraStop"]) {
+  executable = "bash"
+  args = ["-c", "docker-compose stop api-metadata api-search"]
+}
+
 task dockerComposeClean(type: Exec, description: 'Stops and removes the entire system of docker containers', group: 'docker') {
   executable = "bash"
   args = ["-c", "docker-compose down"]
