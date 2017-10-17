@@ -16,11 +16,11 @@ class CollectionTile extends React.Component {
       >
       <div className={styles.tileContent} style={this.thumbnailStyle()}>
         <div className={styles.overlay2}>
-        <div className={styles.overlay} onClick={() => this.props.onCardClick()}
-          >
-          <h2 className={styles.title}>{this.props.title}</h2>
-          {this.renderThumbnailMap()}
-        </div>
+          <div className={styles.overlay} onClick={() => this.props.onCardClick()}
+            >
+            <h2 className={styles.title}>{this.props.title}</h2>
+            {this.renderThumbnailMap()}
+          </div>
         </div>
       </div>
     </div>
