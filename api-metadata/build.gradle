@@ -17,11 +17,11 @@ dependencies {
   compile "org.elasticsearch.client:rest:${project.esVersion}"
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
+  compile 'org.springframework.boot:spring-boot-devtools'
   compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
   compile 'com.github.fge:json-schema-validator:2.2.6'
   compile 'org.apache.commons:commons-lang3:3.4'
   compile 'org.apache.lucene:lucene-expressions:5.5.0'
-  compile project(':index-configuration')
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
@@ -49,12 +49,20 @@ bootRepackage {
   onlyIf { !tasks.getByName('war').state.upToDate }
 }
 
+bootRun {
+  dependsOn ':dockerComposeInfraStart'
+  finalizedBy ':dockerComposeInfraStop'
+}
+
 sourceSets {
   integrationTest {
     groovy.srcDir file('src/integrationTest/groovy')
     resources.srcDir file("${project(':e2e-tests').projectDir}/src/test/resources")
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
+  }
+  main {
+    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
   }
 }
 
@@ -105,8 +113,11 @@ task dockerImage(type: Exec, description: 'Creates a docker image with the curre
       "--build-arg VERSION=${project.version} " +
       "--build-arg DATE=${getDateTime()} " +
       "--build-arg JAR_NAME=${rootProject.name}-${project.name}-all " +
-      "-t cedardevs/${rootProject.name}-${project.name}:${project.version} . && " +
-      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest"]
+      "-t cedardevs/${rootProject.name}-${project.name}:${project.version} " +
+      "-t cedardevs/${rootProject.name}-${project.name}:latest " +
+      "-t cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT " +
+      "."
+      ]
 }
 
 assemble.dependsOn dockerImage
@@ -116,6 +127,7 @@ task publishImage(type: Exec, description: 'Publishes the docker image', group: 
   executable = "bash"
   args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
       "docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT && " +
       "docker logout"]
 }
 

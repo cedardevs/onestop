@@ -17,6 +17,7 @@ dependencies {
   compile "org.elasticsearch.client:rest:${project.esVersion}"
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
+  compile 'org.springframework.boot:spring-boot-devtools'
   compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
   compile 'com.github.fge:json-schema-validator:2.2.6'
   compile 'org.apache.commons:commons-lang3:3.4'
@@ -31,8 +32,6 @@ dependencies {
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile 'org.testcontainers:testcontainers:1.4.2'
-
-  testCompile project(':index-configuration')
 }
 
 ext {
@@ -55,6 +54,11 @@ bootRepackage {
   onlyIf { !tasks.getByName('war').state.upToDate }
 }
 
+bootRun {
+  dependsOn ':dockerComposeInfraStart'
+  finalizedBy ':dockerComposeInfraStop'
+}
+
 configurations.configure {
   integrationTestCompile.extendsFrom testCompile
   integrationTestRuntime.extendsFrom testRuntime
@@ -63,7 +67,7 @@ configurations.configure {
 sourceSets {
   integrationTest {
     groovy.srcDir file('src/integrationTest/groovy')
-    //resources.srcDir file('src/integrationTest/resources')
+    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
   }
@@ -116,8 +120,11 @@ task dockerImage(type: Exec, description: 'Creates a docker image with the curre
     "--build-arg VERSION=${project.version} " +
     "--build-arg DATE=${getDateTime()} " +
     "--build-arg JAR_NAME=${rootProject.name}-${project.name}-all " +
-    "-t cedardevs/${rootProject.name}-${project.name}:${project.version} . && " +
-    "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:latest"]
+    "-t cedardevs/${rootProject.name}-${project.name}:${project.version} " +
+    "-t cedardevs/${rootProject.name}-${project.name}:latest " +
+    "-t cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT " +
+    "."
+    ]
 }
 
 assemble.dependsOn dockerImage
@@ -127,6 +134,7 @@ task publishImage(type: Exec, description: 'Publishes the docker image', group: 
   executable = "bash"
   args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
       "docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT && " +
       "docker logout"]
 }
 

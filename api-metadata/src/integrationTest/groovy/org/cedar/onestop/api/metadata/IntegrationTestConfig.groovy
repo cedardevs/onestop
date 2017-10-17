@@ -27,6 +27,7 @@ class IntegrationTestConfig {
         .withEnv("xpack.security.enabled", "false")
         .withEnv("transport.host", "127.0.0.1")
         .withEnv("http.host", "0.0.0.0")
+        .withEnv("ES_JAVA_OPTS", "-Xms1g -Xmx1g")
     return esContainer
   }
 

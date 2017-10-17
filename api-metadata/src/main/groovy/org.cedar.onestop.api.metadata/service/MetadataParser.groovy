@@ -164,69 +164,43 @@ class MetadataParser {
 
     topicCategories.addAll(idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text())
 
-    def descriptiveKeywords = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
-    descriptiveKeywords.each { e ->
-      def keywordGroup = e.'**'.findAll { it.name() == 'keyword' }
-      keywordGroup.each { k ->
-
+    def keywordGroups = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
+    keywordGroups.each { group ->
+      def keywordsInGroup = group.'**'.findAll { it.name() == 'keyword' }
+      keywordsInGroup.each { k ->
         def text = k.CharacterString.text() ?: k.Anchor.text()
-        def namespace = e.thesaurusName.CI_Citation.title.CharacterString.text()
+        def namespace = group.thesaurusName.CI_Citation.title.CharacterString.text()
 
         if (text) {
           text = text.trim()
           if (namespace.toLowerCase().contains('gcmd')) {
             switch (namespace) {
               case { it.toLowerCase().contains('science') }:
-                text = WordUtils.capitalizeFully(text,
-                    " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
-                text = text.replace('Earth Science > ', '')
-                keywords.add(text)
-                def i = text.length()
-                while (i > 0) {
-                  text = text.substring(0, i).trim()
-                  gcmdScience.add(text)
-                  i = text.lastIndexOf('>', i)
-                }
+                text = normalizeHierarchyKeyword(text)
+                gcmdScience.addAll(tokenizeHierarchyKeyword(text))
                 break
               case { it.toLowerCase().contains('location') || it.toLowerCase().contains('place') }:
-                text = WordUtils.capitalizeFully(text,
-                    " " as char, "/" as char, "." as char, "(" as char, "-" as char, "_" as char)
-                keywords.add(text)
-                def i = text.length()
-                while (i > 0) {
-                  text = text.substring(0, i).trim()
-                  gcmdLocations.add(text)
-                  i = text.lastIndexOf('>', i)
-                }
+                text = normalizeHierarchyKeyword(text)
+                gcmdLocations.addAll(tokenizeHierarchyKeyword(text))
                 break
               case { it.toLowerCase().contains('platform') }:
-                keywords.add(text)
                 gcmdPlatforms.add(text)
                 break
               case { it.toLowerCase().contains('instrument') }:
-                keywords.add(text)
                 gcmdInstruments.add(text)
                 break
               case { it.toLowerCase().contains('data center') }:
-                keywords.add(text)
                 gcmdDataCenters.add(text)
                 break
               case { it.toLowerCase().contains('data resolution') }:
-                keywords.add(text)
                 gcmdDataResolution.add(text)
                 break
               case { it.toLowerCase().contains('project') }:
-                keywords.add(text)
                 gcmdProjects.add(text)
                 break
-              default:
-                keywords.add(text)
-                break
             }
-
-          } else {
-            keywords.add(text)
           }
+          keywords.add(text)
         }
       }
     }
@@ -242,6 +216,24 @@ class MetadataParser {
         gcmdDataCenters   : gcmdDataCenters,
         gcmdDataResolution: gcmdDataResolution
     ]
+  }
+
+  static final char[] capitalizingDelimiters = [' ', '/', '.', '(', '-', '_'].collect({ it as char })
+
+  static String normalizeHierarchyKeyword(String text) {
+    return WordUtils.capitalizeFully(text, capitalizingDelimiters)
+        .replace('Earth Science > ', '')
+  }
+
+  static List<String> tokenizeHierarchyKeyword(String text) {
+    def result = []
+    def i = text.length()
+    while (i > 0) {
+      text = text.substring(0, i).trim()
+      result.add(text)
+      i = text.lastIndexOf('>', i)
+    }
+    return result
   }
 
   static Map parseKeywordsAndTopics(String xml) {

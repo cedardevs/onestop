@@ -12,6 +12,7 @@ import org.testcontainers.containers.DockerComposeContainer
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
+import groovy.json.JsonSlurper
 
 class LoadAndSearchTests extends Specification {
 
@@ -28,15 +29,17 @@ class LoadAndSearchTests extends Specification {
 
   def setupSpec() {
     def pollingConditions = new PollingConditions()
-    pollingConditions.within(30, {
+    pollingConditions.within(60, {
       restTemplate.exchange(RequestEntity.get(esApiBase.toURI()).build(), Map).statusCode == HttpStatus.OK
-    })
-    pollingConditions.within(30, {
       restTemplate.exchange(RequestEntity.get("${searchApiBase}/info".toURI()).build(), Map).statusCode == HttpStatus.OK
-    })
-    pollingConditions.within(30, {
       restTemplate.exchange(RequestEntity.get("${metadataApiBase}/info".toURI()).build(), Map).statusCode == HttpStatus.OK
     })
+  }
+
+  def setup() {
+    // delete all indices between tests
+    def deleteRequest = RequestEntity.delete("${esApiBase}/_all".toURI()).build()
+    def deleteResult = restTemplate.exchange(deleteRequest, Map)
   }
 
   @Test
@@ -118,6 +121,52 @@ class LoadAndSearchTests extends Specification {
     then:
     granuleResult2.statusCode == HttpStatus.OK
     granuleResult2.body.data.size() == 0
+  }
+
+  @Test
+  void 'full json output'() {
+    when:
+    def paths = [
+        'test-iso-metadata-collection.xml',
+    ]
+    def body = new LinkedMultiValueMap<String, Object>()
+    paths.each { body.add("files", new ClassPathResource(it)) }
+    def loadRequest = RequestEntity.post("${metadataApiBase}/metadata".toURI())
+        .contentType(MediaType.MULTIPART_FORM_DATA)
+        .body(body)
+    def loadResult = restTemplate.exchange(loadRequest, Map)
+    def updateRequest = RequestEntity.get("${metadataApiBase}/admin/index/search/update".toURI()).build()
+    def updateResult = restTemplate.exchange(updateRequest, Map)
+
+    then:
+    loadResult.statusCode == HttpStatus.MULTI_STATUS
+    updateResult.statusCode == HttpStatus.OK
+
+    sleep(2000) // to ensure the ETL finishes
+
+    when:
+    def searchRequst = RequestEntity.post("${searchApiBase}/search".toURI())
+        .contentType(MediaType.APPLICATION_JSON)
+        .body('{"queries":[{ "type": "queryText", "value": "super"}]}')
+    def searchResult = restTemplate.exchange(searchRequst, Map)
+
+    then:
+    searchResult.statusCode == HttpStatus.OK
+    searchResult.body.data.size() == 1
+    searchResult.body.data[0].id != null
+    searchResult.body.data[0].attributes.stagedDate != null
+
+    when: // remove the fields that are unique each time:
+    def resultWithoutId = searchResult.body.data[0]
+    resultWithoutId.id = null
+    resultWithoutId.attributes.stagedDate = null
+    def expectedJson = (new JsonSlurper()).parseText( ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.json").text)
+
+    // TODO - Next time we come through here, think about consolidating all our matching xml and json
+    // TODO - test files into this subproject and then sharing with api-metadata and api-search
+
+    then:
+    resultWithoutId == expectedJson
   }
 
 }
