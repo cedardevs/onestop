@@ -26,14 +26,15 @@ class Filters extends Component {
 		super(props);
 
 		this.filters = [
-			{
-				heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
-				content: <MapFilter />,
-			},
-			{
-				heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
-				content: <TimeFilter />,
-			},
+			// TODO: reintroduce these filters when we officially move them from the top menu search component
+			// {
+			// 	heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
+			// 	content: <MapFilter />,
+			// },
+			// {
+			// 	heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
+			// 	content: <TimeFilter />,
+			// },
 			{
 				heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
 				content: <FacetFilterContainer submit={props.submit} />,
