@@ -30,7 +30,7 @@
 .facetButtonCollapsed {
   font-size: 2.5em;
   padding-top: 33%;
-  padding-left: 33%; /** TODO Look here? **/
+  padding-left: 33%;
   color: #FFFFFF;
 }
 
@@ -58,7 +58,7 @@
 .resultsContainer, .resultsContainer508 {
   font-size: 1.2em;
   font-family: inherit !important;
-  margin: 0em auto;
+  margin: 1em auto 8em;
 }
 
 .resultsContainer508 {
@@ -76,8 +76,8 @@
 .filter {
   display: inline-flex;
   border-radius: 1em;
-  padding: .25em .1em .25em .5em; /** TODO and here **/
-  margin-right: 0.5em; /** TODO and here **/
+  padding: .25em .1em .25em .5em;
+  margin-right: 0.5em;
   margin-bottom: 0.25em;
   background-color: teal;
 }
