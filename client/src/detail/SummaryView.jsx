@@ -7,7 +7,7 @@ import starHalfO from 'fa/star-half-o.svg'
 import styles from './detail-views.css'
 import A from 'LinkComponent'
 import MapThumbnailComponent from '../common/MapThumbnailComponent'
-import { processUrl } from '../utils/urlUtils'
+
 
 class SummaryView extends React.Component {
   constructor(props) {
@@ -30,7 +30,6 @@ class SummaryView extends React.Component {
 
     const startDate = this.props.item.temporalBounding.beginDate
     const endDate = this.props.item.temporalBounding.endDate ? this.props.item.temporalBounding.endDate : 'present'
-    //const instruments = this.getKeywordsByType('gcmdInstruments').map ( k => <div className={styles.keyword2} key={k}>{k}</div> )
 
     return (
       <div>

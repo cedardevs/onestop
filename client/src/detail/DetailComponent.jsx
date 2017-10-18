@@ -3,6 +3,7 @@ import ShowMore from 'react-show-more'
 import A from 'LinkComponent'
 import styles from './detail-container.css'
 import SummaryView from "./SummaryView";
+import { processUrl } from '../utils/urlUtils'
 
 class Detail extends React.Component {
   constructor(props) {
@@ -21,7 +22,9 @@ class Detail extends React.Component {
     return <div className={styles.modal}>
       <div className={styles.modalContent}>
         <div className={`pure-g ${styles.header} ${styles.underscored}`}>
-          <div className={`pure-u-11-12 ${styles.title}`} title={`${item.title}`}>{item.title}</div>
+          <div className={`pure-u-11-12 ${styles.title}`} title={`${item.title}`}>
+            <ShowMore lines={1} anchorClass={`${styles.showMore}`}>{item.title}</ShowMore>
+          </div>
           <div className={'pure-u-1-12'}>
             <span className={styles.close} onClick={this.close}>x</span>
           </div>
@@ -30,10 +33,6 @@ class Detail extends React.Component {
       </div>
     </div>
 
-    // {/*<ShowMore lines={5}*/}
-    // {/*anchorClass={`${styles.showMore}`}>*/}
-    // {/*{item.description}*/}
-    // {/*</ShowMore>*/}
     // {/*{this.renderLinks('More Info', this.getLinksByType('information'), this.renderLink)}*/}
     // {/*{this.renderLinks('Data Access', this.getLinksByType('download'), this.renderLink)}*/}
   }
