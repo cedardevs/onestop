@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import styles from './collectionTile.css'
 import {processUrl} from '../../utils/urlUtils'
 import MapThumbnailComponent from '../../common/MapThumbnailComponent'

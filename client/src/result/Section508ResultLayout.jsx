@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import styles from './resultLayout.css'
 import FacetContainer from '../search/facet/Section508FacetContainer'
 

@@ -1,4 +1,5 @@
-import React, {PropTypes} from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import ShowMore from 'react-show-more'
 import MapThumbnailComponent from '../common/MapThumbnailComponent'
 import {processUrl} from '../utils/urlUtils'
