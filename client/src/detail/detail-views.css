@@ -1,0 +1,102 @@
+/* All Views */
+.sectionHeading {
+  font-size: 1.25em;
+  margin-top: 1em;
+  margin-bottom: 0.25em;
+}
+
+.previewImg {
+  width: 100%;
+  min-height: 12em;
+  margin-bottom: 1em;
+
+  h3 {
+    text-align: center;
+  }
+}
+
+/*************************/
+/* Summary View */
+
+.atAGlance {
+  font-size: 1.5em;
+  text-align: center;
+  font-style: italic;
+  border-bottom: 1px solid lightgray;
+  margin: 0 1em;
+}
+
+.previewMap {
+  z-index: 4;
+  width: 97%;
+  height: 16em;
+  padding: .2em 0 2em;
+}
+
+.keywords {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: left;
+  align-content: center;
+}
+
+.keyword {
+  color: white;
+  padding: 0.35em;
+  border-radius: 0.1em 0.4em;
+  margin: 0.25em 0.2em;
+  flex: 0 1 auto;
+}
+
+.infoCircle {
+  position: relative;
+  max-width: 1.1em;
+  max-height: 1.1em;
+  top: .1em;
+  left: .3em;
+}
+
+.star {
+  color: yellow;
+  max-height: 1em;
+  max-width: 1em;
+}
+
+.dsmmInfo {
+  position: relative;
+  display: inline-block;
+i {
+  color: white;
+  margin: 0.5em;
+}
+a {
+  color: $color-visited-light;
+}
+.text {
+  visibility: hidden;
+  opacity: 0;
+  bottom: -0.5em;
+  left: 105%;
+  width: 30em;
+  position: absolute;
+  z-index: 1001;
+  background-color: black;
+  border: solid thin white;
+  border-radius: 6px;
+  padding: 2em;
+  text-align: left;
+}
+&:hover .text {
+   visibility: visible;
+   opacity: 1;
+   transition: opacity 300ms;
+ }
+}
+
+.dsmmMissing {
+  color: grey;
+}
+
+
+/*************************/
+/* Description View */
