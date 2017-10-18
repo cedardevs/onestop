@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom'
 import L from 'leaflet'
 import 'esri-leaflet'
-import { convertEnvelopeToPolygon } from '../utils/geoUtils'
 
 class MapThumbnailComponent extends React.Component {
   constructor(props) {
@@ -22,13 +21,15 @@ class MapThumbnailComponent extends React.Component {
 
     const geoJsonLayer = L.GeoJSON.geometryToLayer({
       type: "Feature",
-      geometry: convertEnvelopeToPolygon(this.props.geometry)
+      geometry: this.props.geometry
     })
-    geoJsonLayer.setStyle({
-      color: "red",
-      weight: 5,
-      opacity: 1
-    })
+    if(this.props.geometry.type !== 'Point') {
+      geoJsonLayer.setStyle({
+        color: "red",
+        weight: 5,
+        opacity: 1
+      })
+    }
 
     this.map = L.map(ReactDOM.findDOMNode(this), {
       layers: [
@@ -49,7 +50,10 @@ class MapThumbnailComponent extends React.Component {
   }
 
   fitMapToResults(geoJsonLayer) {
-    if (this.props.geometry) {
+    if (this.props.geometry && this.props.geometry.type === 'Point') {
+      this.map.setView(this.props.geometry.coordinates, 2)
+    }
+    else if (this.props.geometry) {
       this.map.fitBounds(geoJsonLayer.getBounds())
     }
     else {

@@ -31,25 +31,25 @@ export const recenterGeometry = (geometry) => {
   return _.assign({}, geometry, {coordinates: newCoordinates})
 }
 
-export const convertEnvelopeToPolygon = (geometry) => {
-  if (geometry.type.toLowerCase() !== 'envelope') {
-    return geometry
-  }
-
-  const eCoords = geometry.coordinates
-  const pCoords = [
-    [
-      [eCoords[0][0], eCoords[0][1]],
-      [eCoords[0][0], eCoords[1][1]],
-      [eCoords[1][0], eCoords[1][1]],
-      [eCoords[1][0], eCoords[0][1]]
-    ]
-  ]
-  return {
-    type: "Polygon",
-    coordinates: pCoords
-  }
-}
+// export const convertEnvelopeToPolygon = (geometry) => {
+//   if (geometry.type.toLowerCase() !== 'envelope') {
+//     return geometry
+//   }
+//
+//   const eCoords = geometry.coordinates
+//   const pCoords = [
+//     [
+//       [eCoords[0][0], eCoords[0][1]],
+//       [eCoords[0][0], eCoords[1][1]],
+//       [eCoords[1][0], eCoords[1][1]],
+//       [eCoords[1][0], eCoords[0][1]]
+//     ]
+//   ]
+//   return {
+//     type: "Polygon",
+//     coordinates: pCoords
+//   }
+// }
 
 export const convertBboxToGeoJson = (coordString) => {
   const coordArray = coordString.split(',').map(x => parseFloat(x))
