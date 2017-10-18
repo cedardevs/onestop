@@ -3,8 +3,7 @@
 .mainWindow {
   letter-spacing: 0em !important;
   font-family: inherit;
-  /* background-color: rgba(60, 90, 139, .3);*/ /* Contrast: version 1 */
-  background-color: black; /* Contrast: version 2 */
+  background-color: rgba(60, 90, 139, .3);
 }
 
 .facetSideBar {
@@ -31,7 +30,7 @@
 .facetButtonCollapsed {
   font-size: 2.5em;
   padding-top: 33%;
-  padding-left: 33%;
+  padding-left: 33%; /** TODO Look here? **/
   color: #FFFFFF;
 }
 
@@ -59,14 +58,14 @@
 .resultsContainer, .resultsContainer508 {
   font-size: 1.2em;
   font-family: inherit !important;
-  /*margin: 1em auto 8em;*/ /* Contrast: orginal */
-  margin: 0em auto; /* Contrast: version 1 */
+  margin: 0em auto;
 }
 
 .resultsContainer508 {
   overflow-x: hidden;
   margin: 1em auto 8em;
   max-width: 40em;
+  background-color: black;
 }
 
 .filters {
@@ -77,8 +76,8 @@
 .filter {
   display: inline-flex;
   border-radius: 1em;
-  padding: .25em .1em .25em .5em;
-  margin-right: 0.5em;
+  padding: .25em .1em .25em .5em; /** TODO and here **/
+  margin-right: 0.5em; /** TODO and here **/
   margin-bottom: 0.25em;
   background-color: teal;
 }
