@@ -78,18 +78,53 @@ export const toggleExcludeGlobal = () => {
   }
 }
 
-const updateSelectedFacets = (selectedFacets, category, facetName, selected ) => {
-  if (selected) {
-    const newList = selectedFacets[category]
-        && selectedFacets[category].concat([facetName])
-        || [facetName]
-    return Immutable.set(selectedFacets, category, newList)
-  } else {
-    let idx = selectedFacets[category].indexOf(facetName)
-    let newList = selectedFacets[category]
-        .slice(0, idx)
-        .concat(selectedFacets[category].slice(idx + 1))
-    return !_.isEmpty(newList) ? Immutable.set(selectedFacets, category, newList)
-        : Immutable.without(selectedFacets, category)
-  }
+const updateSelectedFacets = (selectedFacets, category, term, selected ) => {
+
+    const selectedTerms = selectedFacets[category];
+
+    // add to selected facets, if needed
+    if(selected) {
+        if(!selectedTerms) {
+            // both category and term aren't yet in the selectedTerms
+            return Immutable.set(selectedFacets, category, [term]);
+        }
+        else if(!selectedTerms.includes(term)) {
+            // the term isn't yet in the selectedTerms
+            return Immutable.set(selectedFacets, category, selectedTerms.concat([term]));
+        }
+        else {
+            // already selected, no need to duplicate term
+            return selectedFacets;
+        }
+    }
+    // remove from selected facets, if needed
+    else {
+        if (!selectedTerms) {
+            // can't remove if category doesn't exist in selectedFacets
+            return selectedFacets;
+        }
+        else {
+            // search for index of term to be removed from selectedFacets
+            let removeIndex = selectedTerms.indexOf(term)
+            // the term exists to be removed
+            if (removeIndex > -1) {
+                const beforeRemove = selectedTerms.slice(0, removeIndex);
+                const afterRemove = selectedTerms.slice(removeIndex + 1);
+                const newTerms = beforeRemove.concat(afterRemove);
+
+                // remove the whole category from selectedFacets if the new terms array is empty
+                if (_.isEmpty(newTerms)) {
+                    return Immutable.without(selectedFacets, category);
+                }
+                // otherwise replace the category terms array with the newTerms
+                else {
+                    return Immutable.set(selectedFacets, category, newTerms);
+                }
+            }
+            // the term does not exist to be removed
+            else {
+                return selectedFacets;
+            }
+        }
+    }
 }

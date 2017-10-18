@@ -2,6 +2,38 @@ import React, { Component } from 'react';
 import Expandable from '../common/Expandable';
 import Facet from './Facet';
 
+const styleExpandableCategoryHeading = {
+    backgroundColor: '#17478F',
+    padding: '0.618em',
+}
+
+const styleExpandableCategoryContent = marginNest => {
+	return {
+        marginLeft: marginNest ? marginNest : '1em',
+        marginBottom: '1px'
+    }
+}
+
+const styleExpandableHeading = backgroundColor => {
+	return {
+		padding: '0.618em',
+		backgroundColor: backgroundColor ? backgroundColor : 'initial',
+	};
+};
+
+const styleExpandableContent = marginNest => {
+	return {
+		marginLeft: marginNest ? marginNest : '1em',
+	};
+};
+
+const styleLeafFacet = backgroundColor => {
+	return {
+		padding: '0.618em',
+		backgroundColor: backgroundColor ? backgroundColor : 'initial',
+	};
+};
+
 export default class FacetFilter extends Component {
 	constructor(props) {
 		super(props);
@@ -12,7 +44,7 @@ export default class FacetFilter extends Component {
 		this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(
 			this,
 		);
-		this.state = { activeFacets: [], openExpandables: {} };
+		this.state = { openExpandables: {} };
 	}
 
 	componentWillUpdate(nextProps) {
@@ -21,42 +53,21 @@ export default class FacetFilter extends Component {
 	}
 
 	updateStoreAndSubmitSearch(e) {
-		if (event.checked) {
-			// the term was checked, so we add it to internal state.activeFacets array
-			this.setState(prevState => {
-				return {
-					activeFacets: prevState.activeFacets.concat([
-						{ term: e.value.term, category: e.value.category },
-					]),
-				};
-			});
-		} else {
-			// the term was unchecked, so we remove it from internal state.activeFacets array
-			this.setState(prevState => {
-				return {
-					activeFacets: prevState.activeFacets.filter(
-						facet =>
-							facet.term !== e.value.term &&
-							facet.category !== e.value.category,
-					),
-				};
-			});
-		}
-
 		const category = e.value.category;
 		const term = e.value.term;
 		const selected = e.checked;
-
 		this.toggleFacet(category, term, selected);
 		this.submit();
 	}
 
-	isSelected(category, facet) {
-		return (
-			(this.selectedFacets[category] &&
-				this.selectedFacets[category].includes(facet)) ||
-			false
-		);
+	isSelected(category, term) {
+		const selectedTerms = this.selectedFacets[category]
+		if(!selectedTerms) {
+			return false;
+		}
+		else {
+			return selectedTerms.includes(term);
+		}
 	}
 
 	handleExpandableToggle = event => {
@@ -94,6 +105,7 @@ export default class FacetFilter extends Component {
 					value={expandableKey}
 					heading={
 						<Facet
+							selected={this.isSelected(facet.category, facet.term)}
 							key={facetKey}
 							term={facet.term}
 							category={facet.category}
@@ -101,16 +113,9 @@ export default class FacetFilter extends Component {
 							onChange={this.updateStoreAndSubmitSearch}
 						/>
 					}
-					styleHeading={{
-						padding: '0.618em',
-						backgroundColor: this.props.backgroundColor
-							? this.props.backgroundColor
-							: 'initial',
-					}}
+					styleHeading={styleExpandableHeading(this.props.backgroundColor)}
 					content={this.createFacetComponent(facet.children)}
-					styleContent={{
-						marginLeft: this.props.marginNest ? this.props.marginNest : '1em',
-					}}
+					styleContent={styleExpandableContent(this.props.marginNest)}
 					showArrow={true}
 					onToggle={this.handleExpandableToggle}
 				/>
@@ -121,16 +126,12 @@ export default class FacetFilter extends Component {
 
 			facetComponent = (
 				<Facet
+					selected={this.isSelected(facet.category, facet.term)}
 					key={leafFacetKey}
 					term={facet.term}
 					category={facet.category}
 					count={facet.count}
-					style={{
-						padding: '0.618em',
-						backgroundColor: this.props.backgroundColor
-							? this.props.backgroundColor
-							: 'initial',
-					}}
+					style={styleLeafFacet(this.props.backgroundColor)}
 					onChange={this.updateStoreAndSubmitSearch}
 				/>
 			);
@@ -147,7 +148,7 @@ export default class FacetFilter extends Component {
 
 	render() {
 		let expandableCategories = [];
-		const categories = Object.keys(this.facetMap);
+		const categories = Object.keys(this.props.facetMap);
 
 		categories.forEach((category, categoryIndex) => {
 			// show hamburger menu for high-level categories
@@ -155,7 +156,7 @@ export default class FacetFilter extends Component {
 
 			// do recursive magic for nested expandables
 			const expandableFacets = this.createFacetComponent(
-				this.facetMap[category],
+				this.props.facetMap[category],
 			);
 
 			const expandableKey = `${categoryIndex}-${category}`;
@@ -167,15 +168,9 @@ export default class FacetFilter extends Component {
 					key={expandableKey}
 					value={expandableKey}
 					heading={highLevelHeading}
-					styleHeading={{
-						backgroundColor: '#17478F',
-						padding: '0.618em',
-					}}
+					styleHeading={styleExpandableCategoryHeading}
 					content={expandableFacets}
-					styleContent={{
-						marginLeft: this.props.marginNest ? this.props.marginNest : '1em',
-						marginBottom: '1px'
-					}}
+					styleContent={styleExpandableCategoryContent(this.props.marginNest)}
 					onToggle={this.handleExpandableToggle}
 				/>,
 			);

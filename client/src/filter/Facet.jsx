@@ -28,6 +28,7 @@ export default class Facet extends Component {
 			<div style={{ ...styleContainer, ...this.props.style }}>
 				<div style={styleCheckbox}>
 					<Checkbox
+						checked={this.props.selected}
 						value={{ term: this.props.term, category: this.props.category }}
 						onChange={this.props.onChange}
 					/>

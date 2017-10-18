@@ -54,6 +54,16 @@ class Checkbox extends Component {
 		this.handleMouseDown = this.handleMouseDown.bind(this);
 	}
 
+	componentWillReceiveProps(nextProps) {
+		// keep checkbox checked state in sync with props passed in
+		if(nextProps.checked !== this.props.checked) {
+			this.setState(prevState => ({
+				...prevState,
+				checked: nextProps.checked
+			}));
+		}
+    }
+
 	handleChange(event) {
 		const { value, onChange } = this.props;
 		if (onChange) {
