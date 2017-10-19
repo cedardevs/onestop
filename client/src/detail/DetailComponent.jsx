@@ -1,5 +1,6 @@
 import React, {PropTypes} from 'react'
 import ShowMore from 'react-show-more'
+import _ from 'lodash'
 import A from 'LinkComponent'
 import styles from './detail-container.css'
 import SummaryView from "./SummaryView";
@@ -33,6 +34,10 @@ class Detail extends React.Component {
       </div>
     </div>
 
+    // console.log('geometry', this.props.item.spatialBounding)
+    // const imgUrl = processUrl(this.props.item.thumbnail)
+    // return imgUrl ?
+    //   <img className={styles.previewImg} src={imgUrl}/> :
     // {/*{this.renderLinks('More Info', this.getLinksByType('information'), this.renderLink)}*/}
     // {/*{this.renderLinks('Data Access', this.getLinksByType('download'), this.renderLink)}*/}
   }

@@ -97,6 +97,17 @@ a {
   color: grey;
 }
 
+.showMoreButton {
+  text-align: right;
+  /*background-color: #be6a00;*/
+}
+
+.showMoreButton:hover,
+.showMoreButton:focus {
+  /*background-color: color(#be6a00 tint(15%));*/
+  cursor: pointer;
+}
+
 
 /*************************/
 /* Description View */
