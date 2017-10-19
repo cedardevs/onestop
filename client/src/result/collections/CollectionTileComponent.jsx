@@ -31,7 +31,7 @@ class CollectionTile extends React.Component {
   renderThumbnailMap() {
     if (!this.thumbnailUrl) {
       return <div className={styles.mapContainer}>
-        <MapThumbnailComponent geometry={this.props.geometry}/>
+        <MapThumbnailComponent geometry={this.props.geometry} interactive={false}/>
       </div>
     }
   }

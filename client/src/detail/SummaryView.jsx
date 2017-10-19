@@ -13,23 +13,37 @@ class SummaryView extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      showAll: false
+      showAllThemes: false,
+      showAllInstruments: false,
+      showAllPlatforms: false
     }
 
-    this.handleShowAll = this.handleShowAll.bind(this);
+    this.handleShowGCMD = this.handleShowGCMD.bind(this)
   }
 
-  handleShowAll() {
-    this.setState(prevState => {
-      showAll: !prevState.showAll
-    });
+  handleShowGCMD(type) {
+    if (type === 'gcmdScience') {
+      this.setState({
+        showAllThemes: !this.state.showAllThemes
+      })
+    }
+    else if (type === 'gcmdInstruments') {
+      this.setState({
+        showAllInstruments: !this.state.showAllInstruments
+      })
+    }
+    else if (type === 'gcmdPlatforms') {
+      this.setState({
+        showAllPlatforms: !this.state.showAllPlatforms
+      })
+    }
   }
 
 
   render() {
 
     const startDate = this.props.item.temporalBounding.beginDate
-    const endDate = this.props.item.temporalBounding.endDate ? this.props.item.temporalBounding.endDate : 'present'
+    const endDate = this.props.item.temporalBounding.endDate ? this.props.item.temporalBounding.endDate : 'Present'
 
     return (
       <div>
@@ -39,19 +53,20 @@ class SummaryView extends React.Component {
             <div className={styles.sectionHeading}>Time Period: </div>
             <div>{startDate} to {endDate}</div>
             <div className={styles.sectionHeading}>Spatial Bounding: </div>
-            {this.renderGeometryOnMap()}
+            <div className={styles.previewMap}>
+              <MapThumbnailComponent geometry={this.props.item.spatialBounding} interactive={true}/>
+            </div>
             <div>Coordinates: TODO</div>
             <div className={styles.sectionHeading}>DSMM Rating: </div>
             {this.renderDSMMRating()}
           </div>
           <div className={`pure-u-1-2`}>
             <div className={styles.sectionHeading}>Themes:</div>
-            <div className={styles.keywords}>{this.renderGCMDKeywords('gcmdScience', '#008445')}</div>
-            <button onClick={()=>{this.handleShowAll()}}>blah</button>
+            {this.renderGCMDKeywords('gcmdScience', '#008445', this.state.showAllThemes)}
             <div className={styles.sectionHeading}>Instruments:</div>
-            <div className={styles.keywords}>{this.renderGCMDKeywords('gcmdInstruments', '#0965a1')}</div>
+            {this.renderGCMDKeywords('gcmdInstruments', '#0965a1', this.state.showAllInstruments)}
             <div className={styles.sectionHeading}>Platforms:</div>
-            <div className={styles.keywords}>{this.renderGCMDKeywords('gcmdPlatforms', '#008445')}</div>
+            {this.renderGCMDKeywords('gcmdPlatforms', '#008445', this.state.showAllPlatforms)}
           </div>
         </div>
       </div>
@@ -118,17 +133,7 @@ class SummaryView extends React.Component {
     return <img key={i} className={styles.star} src={starO}></img>
   }
 
-  renderGeometryOnMap() {
-    // console.log('geometry', this.props.item.spatialBounding)
-    // const imgUrl = processUrl(this.props.item.thumbnail)
-    // return imgUrl ?
-    //   <img className={styles.previewImg} src={imgUrl}/> :
-      return <div className={styles.previewMap}>
-        <MapThumbnailComponent geometry={this.props.item.spatialBounding}/>
-      </div>
-  }
-
-  renderGCMDKeywords(type, bgColor) {
+  renderGCMDKeywords(type, bgColor, showAll) {
     let keywords = this.props.item && this.props.item[type] || []
 
     if (!_.isEmpty(keywords)) {
@@ -143,8 +148,18 @@ class SummaryView extends React.Component {
         keywords = keywords
           .map((k) => _.startCase(k.substring(k.indexOf('>') + 1).trim().toLowerCase()) ) // Format is 'SHORT NAME > Long Name' but handles if string doesn't have angle bracket
       }
+      keywords = keywords.map( (k, index) => index > 2 && !showAll ? null : <div className={styles.keyword} style={{backgroundColor: bgColor}} key={k}>{k}</div>  )
 
-      return keywords.map( (k, index) => index > 2 && !this.state.showAll ? null : <div className={styles.keyword} style={{backgroundColor: bgColor}} key={k}>{k}</div>  )
+      if (keywords.length > 3) {
+        return ( <div>
+          <div className={styles.keywords}>{keywords}</div>
+            <div className={styles.showMoreButton} onClick={()=>{this.handleShowGCMD(type)}}>{!showAll ? 'Show All' : 'Collapse'}</div>
+          </div>
+        )
+      }
+      else {
+        return <div className={styles.keywords}>{keywords}</div>
+      }
     }
 
     else {
