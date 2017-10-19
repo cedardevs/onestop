@@ -7,7 +7,7 @@ import DetailContainer from '../detail/DetailContainer'
 import LoadingContainer from '../loading/LoadingContainer'
 import styles from './root.css'
 
-import Background from '../landing/background/BackgroundContainer'
+import Background from '../landing/background/BackgroundComponent'
 
 class RootComponent extends React.Component {
   constructor(props) {
