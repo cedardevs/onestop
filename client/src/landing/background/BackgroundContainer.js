@@ -2,10 +2,7 @@ import { connect } from 'react-redux'
 import BackgroundComponent from './BackgroundComponent'
 
 const mapStateToProps = (state) => {
-  const { showImage } = state.ui.background
-  return {
-    showImage
-  }
+  return {}
 }
 
 const BackgroundContainer = connect(
@@ -13,3 +10,7 @@ const BackgroundContainer = connect(
 )(BackgroundComponent)
 
 export default BackgroundContainer
+
+
+
+// TODO DELETE THIS CONTAINER IT DOES NOTHING

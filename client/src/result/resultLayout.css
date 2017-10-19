@@ -3,7 +3,6 @@
 .mainWindow {
   letter-spacing: 0em !important;
   font-family: inherit;
-  background-color: rgba(60, 90, 139, .3);
 }
 
 .facetSideBar {
@@ -65,7 +64,6 @@
   overflow-x: hidden;
   margin: 1em auto 8em;
   max-width: 40em;
-  background-color: black;
 }
 
 .filters {
