@@ -7,6 +7,8 @@ import DetailContainer from '../detail/DetailContainer'
 import LoadingContainer from '../loading/LoadingContainer'
 import styles from './root.css'
 
+import Background from '../landing/background/BackgroundComponent'
+
 class RootComponent extends React.Component {
   constructor(props) {
     super(props)
@@ -46,23 +48,28 @@ class RootComponent extends React.Component {
   }
 
   render() {
-    return <div className={styles.rootContainer}>
-      <div className={styles.mainContent}>
-        <BannerContainer/>
-        <DetailContainer/>
-        <HeaderContainer showSearch={this.isNotLanding() && this.isNot508()}
-           homeUrl={this.homeUrl()}/>
-        {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div></div>}
-        <div className={styles.main}>
-          <InfoContainer modalMode={this.isNotLanding()}/>
-          <LoadingContainer/>
-          {this.props.children}
+    return (
+      <div>
+        <Background showImage={this.isNot508()} showOverlay={this.isNotLanding() && this.isNot508()}/>
+        <div className={styles.rootContainer}>
+        <div className={styles.mainContent}>
+          <BannerContainer/>
+          <DetailContainer/>
+          <HeaderContainer showSearch={this.isNotLanding() && this.isNot508()}
+             homeUrl={this.homeUrl()}/>
+          {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div></div>}
+          <div className={styles.main}>
+            <InfoContainer modalMode={this.isNotLanding()}/>
+            <LoadingContainer/>
+            {this.props.children}
+          </div>
         </div>
-      </div>
-      <div className={styles.footer}>
-        <FooterContainer/>
+        <div className={styles.footer}>
+          <FooterContainer/>
+       </div>
      </div>
    </div>
+   )
   }
 
   isNotLanding() {
@@ -70,7 +77,7 @@ class RootComponent extends React.Component {
   }
 
   isNot508() {
-    return this.location.indexOf('508') === -1
+    return this.location.indexOf('508') === -1 // TODO move this to redux state
   }
 
   homeUrl() {

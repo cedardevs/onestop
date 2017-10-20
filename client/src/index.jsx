@@ -9,7 +9,6 @@ import Section508CollectionGridContainer from './result/collections/Section508Co
 import Section508GranuleListContainer from './result/granules/list/Section508GranuleListContainer'
 import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
-import Background from './landing/background/BackgroundContainer'
 import Section508LandingContainer from './landing/Section508LandingContainer'
 import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
@@ -45,7 +44,6 @@ const routesLayout =
 const body =
   <Provider store={store}>
     <div>
-      <Background/>
       {routesLayout}
     </div>
   </Provider>
