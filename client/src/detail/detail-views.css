@@ -30,7 +30,7 @@
   z-index: 4;
   width: 97%;
   height: 16em;
-  padding: .2em 0 2em;
+  padding-top: 0.25em;
 }
 
 .keywords {
@@ -99,13 +99,13 @@ a {
 
 .showMoreButton {
   text-align: right;
-  /*background-color: #be6a00;*/
+  text-decoration: underline;
 }
 
 .showMoreButton:hover,
 .showMoreButton:focus {
-  /*background-color: color(#be6a00 tint(15%));*/
   cursor: pointer;
+  font-style: italic;
 }
 
 

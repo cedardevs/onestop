@@ -50,14 +50,15 @@ class SummaryView extends React.Component {
         <div className={styles.atAGlance}>Collection At A Glance</div>
         <div className={`pure-g`}>
           <div className={`pure-u-1-2`}>
-            <div className={styles.sectionHeading}>Time Period: </div>
-            <div>{startDate} to {endDate}</div>
-            <div className={styles.sectionHeading}>Spatial Bounding: </div>
+            <div className={styles.sectionHeading}>Time Period:</div>
+            <div>{startDate && endDate ? `${startDate} to ${endDate}` : 'Not Provided'}</div>
+            <div className={styles.sectionHeading}>Spatial Bounding Map:</div>
             <div className={styles.previewMap}>
               <MapThumbnailComponent geometry={this.props.item.spatialBounding} interactive={true}/>
             </div>
-            <div>Coordinates: TODO</div>
-            <div className={styles.sectionHeading}>DSMM Rating: </div>
+            <div className={styles.sectionHeading}>Bounding Coordinates:</div>
+            <div>{this.buildCoordinatesString()}</div>
+            <div className={styles.sectionHeading}>DSMM Rating:</div>
             {this.renderDSMMRating()}
           </div>
           <div className={`pure-u-1-2`}>
@@ -167,6 +168,18 @@ class SummaryView extends React.Component {
     }
   }
 
+  buildCoordinatesString() {
+    // For point, want: "Point at [0], [1] (longitude, latitude)"
+    // For polygon want: "Bounding box covering [0][0], [0][1], [2][0], [2][1] (N, W, S, E)"
+    const geometry = this.props.item.spatialBounding
+    const deg = '\u00B0'
+    if (geometry.type.toLowerCase() === 'point') {
+      return `Point at ${geometry.coordinates[0]}${deg}, ${geometry.coordinates[1]}${deg} (longitude, latitude).`
+    }
+    else {
+      return `Bounding box covering ${geometry.coordinates[0][0][0]}${deg}, ${geometry.coordinates[0][0][1]}${deg}, ${geometry.coordinates[0][2][0]}${deg}, ${geometry.coordinates[0][2][1]}${deg} (W, N, E, S).`
+    }
+  }
 }
 
 SummaryView.propTypes = {
