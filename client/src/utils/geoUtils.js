@@ -47,7 +47,9 @@ export const ensureDatelineFriendlyPolygon = (geometry) => {
 }
 
 export const convertNegativeLongitudes = (coordinates) => {
-  return coordinates.map((pair) => pair[0] < 0 ? [pair[0] + 360, pair[1]] : pair)
+  const crossesDateline = Math.abs(coordinates[0][0] - coordinates[1][0]) > 180
+  return coordinates.map( (pair) =>
+    (crossesDateline && pair[0] < 0 && pair[0] > -180) ? [pair[0] + 360, pair[1]] : pair )
 }
 
 export const convertBboxToGeoJson = (coordString) => {
