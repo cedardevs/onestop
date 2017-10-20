@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 const style = {
-	userSelect: 'none',
 };
 
 const styleHeading = {
@@ -20,7 +19,9 @@ const styleHeadingHidden = {
 
 const styleHeadingContent = {};
 
-const styleArrow = {};
+const styleArrow = {
+	userSelect: 'none'
+};
 
 const styleContent = {
 	textAlign: 'left',
