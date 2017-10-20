@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
-const style = {
-};
+const style = {};
 
 const styleHeading = {
 	display: 'flex',
@@ -44,13 +43,10 @@ export default class Expandable extends Component {
 		super(props);
 		this.state = {
 			open: props.open,
-			hovering: false,
 			showArrow: props.showArrow,
 		};
 
 		this.handleClick = this.handleClick.bind(this);
-		this.handleMouseOver = this.handleMouseOver.bind(this);
-		this.handleMouseOut = this.handleMouseOut.bind(this);
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -73,20 +69,6 @@ export default class Expandable extends Component {
 				open: newOpen,
 			};
 		});
-	}
-
-	handleMouseOver() {
-		this.setState(prevState => ({
-			...prevState,
-			hovering: true,
-		}));
-	}
-
-	handleMouseOut() {
-		this.setState(prevState => ({
-			...prevState,
-			hovering: false,
-		}));
 	}
 
 	render() {
@@ -114,8 +96,6 @@ export default class Expandable extends Component {
 						...styleHeadingHide,
 					}}
 					onClick={this.handleClick}
-					onMouseOver={this.handleMouseOver}
-					onMouseOut={this.handleMouseOut}
 				>
 					<div style={styleHeadingContent}>{this.props.heading}</div>
 					<div style={styleArrow}>{arrow}</div>
