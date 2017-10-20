@@ -31,17 +31,23 @@ export const recenterGeometry = (geometry) => {
   return _.assign({}, geometry, {coordinates: newCoordinates})
 }
 
-export const ensurePolygon = (geometry) => {
-  if (geometry.type.toLowerCase() === 'polygon') {
-    return geometry
+export const ensureDatelineFriendlyPolygon = (geometry) => {
+  let coords
+  if (geometry.type.toLowerCase() === 'point') {
+    coords = Array(5).fill(geometry.coordinates)
   }
-
-  const point = geometry.coordinates
-  const polyCoords = [Array(5).fill(point)]
+  else {
+    coords = geometry.coordinates[0]
+  }
   return {
     type: 'Polygon',
-    coordinates: polyCoords
+    coordinates: [convertNegativeLongitudes(coords)]
   }
+
+}
+
+export const convertNegativeLongitudes = (coordinates) => {
+  return coordinates.map((pair) => pair[0] < 0 ? [pair[0] + 360, pair[1]] : pair)
 }
 
 export const convertBboxToGeoJson = (coordString) => {

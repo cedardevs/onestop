@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import L from 'leaflet'
 import 'esri-leaflet'
 import _ from 'lodash'
-import { ensurePolygon } from '../utils/geoUtils'
+import { ensureDatelineFriendlyPolygon } from '../utils/geoUtils'
 
 class MapThumbnailComponent extends React.Component {
   constructor(props) {
@@ -27,7 +27,7 @@ class MapThumbnailComponent extends React.Component {
 
     const geoJsonLayer = L.GeoJSON.geometryToLayer({
       type: "Feature",
-      geometry: ensurePolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
+      geometry: ensureDatelineFriendlyPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
     })
     geoJsonLayer.setStyle({
       color: "red",
