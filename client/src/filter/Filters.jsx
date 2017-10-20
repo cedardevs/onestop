@@ -10,6 +10,10 @@ import mapFilterIcon from '../../img/font-awesome/white/svg/globe.svg';
 import timeFilterIcon from '../../img/font-awesome/white/svg/calendar.svg';
 import facetFilterIcon from '../../img/font-awesome/white/svg/key.svg';
 
+const styleFilters = {
+	borderTop: "1px solid white"
+}
+
 const styleFilterHeadings = {
 	fontWeight: 'bold',
 	backgroundColor: '#222C37',
@@ -59,16 +63,18 @@ class Filters extends Component {
 	render() {
 		const expandableFilters = this.filters.map((filter, index) => {
 			return (
-				<Expandable
-					key={index}
-					value={index}
-					open={index === this.state.openIndex}
-					onToggle={this.handleFilterToggle}
-					heading={filter.heading}
-					styleHeading={styleFilterHeadings}
-					content={filter.content}
-					styleContent={styleFilterContents}
-				/>
+				<div style={styleFilters}>
+                    <Expandable
+                        key={index}
+                        value={index}
+                        open={index === this.state.openIndex}
+                        onToggle={this.handleFilterToggle}
+                        heading={filter.heading}
+                        styleHeading={styleFilterHeadings}
+                        content={filter.content}
+                        styleContent={styleFilterContents}
+                    />
+				</div>
 			);
 		});
 
