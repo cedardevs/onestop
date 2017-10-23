@@ -52,7 +52,7 @@ class RootComponent extends React.Component {
       <div>
         <Background showImage={this.isNot508()} showOverlay={this.isNotLanding() && this.isNot508()}/>
         <div className={styles.rootContainer}>
-        <div className={styles.mainContent}>
+        <div>
           <BannerContainer/>
           <DetailContainer/>
           <HeaderContainer showSearch={this.isNotLanding() && this.isNot508()}
