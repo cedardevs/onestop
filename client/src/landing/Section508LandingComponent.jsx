@@ -1,5 +1,6 @@
 import _ from 'lodash'
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import styles from './section508.css'
 import moment from 'moment'
 import { convertBboxToGeoJson, convertGeoJsonToBbox } from '../utils/geoUtils'
