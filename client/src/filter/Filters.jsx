@@ -72,7 +72,7 @@ class Filters extends Component {
 	render() {
 		const expandableFilters = this.filters.map((filter, index) => {
 			return (
-				<div style={styleFilters}>
+				<div key={index} style={styleFilters}>
                     <Expandable
                         key={index}
                         value={index}
