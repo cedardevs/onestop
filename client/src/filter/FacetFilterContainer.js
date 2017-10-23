@@ -11,8 +11,6 @@ import { showCollections } from '../actions/FlowActions';
 
 const mapStateToProps = state => {
 	return {
-		marginNest: '1em',
-		backgroundColor: '#3E97D1',
 		facetMap: buildKeywordHierarchyMap(state.domain.results.facets),
 		selectedFacets: state.behavior.search.selectedFacets,
 	};

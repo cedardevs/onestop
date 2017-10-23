@@ -25,6 +25,11 @@ const styleFilterContents = {
 	borderBottom: '1px solid white',
 };
 
+const styleFacetFilterContents = {
+	marginNest: '1em',
+	backgroundColor: '#3E97D1',
+};
+
 class Filters extends Component {
 	constructor(props) {
 		super(props);
@@ -41,7 +46,11 @@ class Filters extends Component {
 			// },
 			{
 				heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
-				content: <FacetFilterContainer submit={props.submit} />,
+				content: <FacetFilterContainer
+					submit={props.submit}
+					marginNest={styleFacetFilterContents.marginNest}
+					backgroundColor={styleFacetFilterContents.backgroundColor}
+					/>,
 			},
 		];
 
