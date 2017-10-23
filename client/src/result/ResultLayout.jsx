@@ -157,8 +157,8 @@ class ResultLayout extends React.Component {
 
   render() {
     return <div id="layout" className={`pure-g ${styles.mainWindow}`}>
-      {this.renderFacetMenu()}
-      {this.renderFacetButton()}
+      {/*{this.renderFacetMenu()}*/}
+      {/*{this.renderFacetButton()}*/}
       <div className={`${this.renderResultsContainer()} ${styles.resultsContainer}`}>
         {this.renderSelectedFilters()}
         {/*

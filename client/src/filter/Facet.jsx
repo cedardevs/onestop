@@ -13,6 +13,7 @@ const styleCheckbox = {
 
 const styleTerm = {
 	width: '100%',
+	color: '#FFF'
 };
 
 export default class Facet extends Component {
