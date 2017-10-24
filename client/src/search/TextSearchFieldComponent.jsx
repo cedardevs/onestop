@@ -20,6 +20,7 @@ class TextSearchField extends React.Component {
         onKeyDown={this.handleKeyDown}
         onChange={this.handleChange}
         value={this.state.value}
+        aria-label="Search Text"
     />
   }
 
