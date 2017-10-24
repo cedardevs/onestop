@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ShowMore from 'react-show-more';
 import A from 'LinkComponent';
-import styles from './detail-container.css';
+import styles from './DetailStyles.css';
 import Tabs from './Tabs';
 import SummaryView from './SummaryView';
 import DescriptionView from './DescriptionView';

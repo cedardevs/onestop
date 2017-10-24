@@ -3,7 +3,7 @@ import { fetchGranules, clearGranules, clearFacets } from '../actions/SearchRequ
 import { toggleSelection, clearSelections, updateQuery, updateSearch } from '../actions/SearchParamActions'
 import { triggerSearch } from '../actions/SearchRequestActions'
 import { showCollections, showGranules, setFocus } from '../actions/FlowActions'
-import Detail from './DetailComponent'
+import Detail from './Detail'
 
 const mapStateToProps = (state, reactProps) => {
   const { focusedId } = state.ui.cardDetails
