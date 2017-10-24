@@ -192,8 +192,7 @@ class SearchFieldsComponent extends React.Component {
               <img src={search} />
             </button>
           </div>
-          <div className={`${this.warningStyle()}`} role="alert"><i className="fa fa-warning"
-                                                                    aria-hidden="true"></i> {this.state.warning}</div>
+          <div className={`${this.warningStyle()}`} role="alert">{this.state.warning}</div>
         </div>
     )
   }
