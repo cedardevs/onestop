@@ -94,7 +94,7 @@ publishing {
 }
 
 static def getDateTime() {
-  return new Date().format("YYYY-MM-DD'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC'))
+  return new Date().format("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC'))
 }
 
 task dockerImage(type: Exec, description: 'Creates a docker image with the current build.', group: 'docker') {
