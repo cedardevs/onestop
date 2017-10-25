@@ -187,7 +187,6 @@ a {
 .showMoreButton:hover,
 .showMoreButton:focus {
   cursor: pointer;
-  font-style: italic;
 }
 
 
