@@ -4,7 +4,7 @@ import infoCircle from 'fa/info-circle.svg'
 import star from 'fa/star.svg'
 import starO from 'fa/star-o.svg'
 import starHalfO from 'fa/star-half-o.svg'
-import styles from './SummaryViewStyles.css'
+import styles from './DetailStyles.css'
 import A from 'LinkComponent'
 import MapThumbnailComponent from '../common/MapThumbnailComponent'
 
