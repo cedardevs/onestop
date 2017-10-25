@@ -36,7 +36,7 @@ class BuildDockerImageTask extends DefaultTask {
   }
 
   static getDateTime() {
-    return new Date().format("YYYY-MM-DD'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC'))
+    return new Date().format("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC'))
   }
 
 }
