@@ -48,7 +48,7 @@ const styleHideContentArrowImage = {
 const styleHiddenContent = {
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     alignSelf: "center",
     height: "100%",

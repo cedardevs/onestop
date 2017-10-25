@@ -1,5 +1,6 @@
 import { connect } from 'react-redux'
-import ResultLayout from './ResultLayout'
+// import ResultLayout from './ResultLayout'
+import Result from './Result'
 import {toggleFacet, updateDateRange} from '../actions/SearchParamActions'
 import {clearCollections, triggerSearch} from '../actions/SearchRequestActions'
 import {showCollections} from '../actions/FlowActions'
@@ -30,6 +31,6 @@ const mapDispatchToProps = (dispatch) => {
 const ResultContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(ResultLayout)
+)(Result)
 
 export default ResultContainer

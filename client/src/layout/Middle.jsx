@@ -11,7 +11,7 @@ const styleMiddle = {
 
 const styleMiddleContent = (padding) => {
     return {
-        padding: padding
+        padding: 0
     }
 }
 

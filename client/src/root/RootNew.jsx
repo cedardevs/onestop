@@ -6,8 +6,9 @@ import React, { Component } from 'react'
 import FlexColumn from '../common/FlexColumn'
 import Checkbox from '../common/input/Checkbox'
 
-import ContextMenuItem from '../layout/menus/ContextMenuItem'
 import Container from '../layout/Container'
+
+import Background from '../landing/background/BackgroundComponent'
 
 import BannerContainer from './banner/BannerContainer'
 import DetailContainer from '../detail/DetailContainer'
@@ -19,9 +20,6 @@ import InfoContainer from '../common/info/infoContainer'
 import LoadingContainer from '../loading/LoadingContainer'
 
 import FooterContainer from './FooterContainer'
-
-
-
 
 // normalize();
 // setupPage('#root');
@@ -49,7 +47,7 @@ export default class Root extends Component {
 
         this.location = props.location.pathname
 
-        this.state = { leftVisible: true, rightVisible: false, tabCurrent: "Entities", browserWarning: this.hasUnsupportedFeatures() };
+        this.state = { leftVisible: true, rightVisible: false, tabCurrent: "Search Results", browserWarning: this.hasUnsupportedFeatures() };
 
     }
 
@@ -120,13 +118,6 @@ export default class Root extends Component {
             onChange={this.handleRightVisibility}
         />
 
-        const menu = <FlexColumn
-            items={[
-                <ContextMenuItem key="1" content={checkboxLeftVisible}/>,
-                <ContextMenuItem key="2" content={checkboxRightVisible}/>
-            ]}
-        />
-
         const header = (
             <div>
                 <BannerContainer/>
@@ -137,43 +128,27 @@ export default class Root extends Component {
             </div>
         )
 
+        const left = this.isNotLanding() ? <Filters/> : null;
+
         const middle = (
             <div>
                 <InfoContainer modalMode={this.isNotLanding()}/>
                 <LoadingContainer/>
+                <Background showImage={this.isNot508()} showOverlay={this.isNotLanding() && this.isNot508()}/>
                 {this.props.children}
             </div>
         )
 
         let tabbedContent = new Map();
-        tabbedContent.set("Entities", {
-            left: <Filters/>,
+        tabbedContent.set("Search Results", {
+            left: left,
             middle: middle,
-            right: "Entities right"
+            right: null
         })
-        // tabbedContent.set("Relationships", {
-        //     left: "Relationships left",
-        //     middle: "Relationships middle",
-        //     right: "Relationships right"
-        // })
-        // tabbedContent.set("Endpoints", {
-        //     left: "Endpoints left",
-        //     middle: "Endpoints middle",
-        //     right: "Endpoints right"
-        // })
-
-        // let d = new Date()
-        // tabbedContent.set("Overview", {
-        //     left: "Overview left",
-        //     middle: "Overview middle ".repeat(500),
-        //     right: d.toString()
-        // })
-
 
         const content = tabbedContent.get(this.state.tabCurrent)
         return (
             <Container
-                menu={ menu }
                 header={ header }
                 left={content.left}
                 leftWidth={256}

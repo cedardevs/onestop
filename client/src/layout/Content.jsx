@@ -19,9 +19,9 @@ export default class Content extends Component {
         return (
             <FlexRow
                 items={[
-                    <Left content={this.props.left} width={this.props.leftWidth} padding={this.props.padding} visible={this.props.leftVisible} key={"left"}/>,
+                    this.props.left ? <Left content={this.props.left} width={this.props.leftWidth} padding={this.props.padding} visible={this.props.leftVisible} key={"left"}/> : null,
                     <Middle content={this.props.middle} tabs={this.props.tabs} currentTab={this.props.tabCurrent} onTabChange={this.props.onTabChange} padding={this.props.padding} key={"middle"}/>,
-                    <Right content={this.props.right} width={this.props.rightWidth} padding={this.props.padding} visible={this.props.rightVisible} key={"right"}/>
+                    this.props.right ? <Right content={this.props.right} width={this.props.rightWidth} padding={this.props.padding} visible={this.props.rightVisible} key={"right"}/> : null
                 ]}
                 style={styles}
             />

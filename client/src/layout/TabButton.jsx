@@ -19,7 +19,6 @@ const styleTabButtonInput = () => {
 const styleTabButtonLabel = (active, padding) => {
     return {
         width: '100%',
-        height: '100%',
         padding: padding,
         fontWeight: active ? 'bold' : 'normal'
     }

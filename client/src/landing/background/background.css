@@ -3,7 +3,11 @@
 .backgroundOverlay ,
 .backgroundImage ,
 .backgroundSolid {
-  position: fixed;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
   z-index: -5000;
   min-height: 100vh;
   min-width: 100vw;
