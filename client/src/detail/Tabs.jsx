@@ -27,6 +27,7 @@ const styleTabButtonLabel = active => {
 		width: '100%',
 		height: '100%',
 		fontWeight: active ? 'bold' : 'normal',
+		fontSize: '1.3em',
 		padding: '0.618em',
         textDecoration: active ? 'underline' : 'none',
         cursor: 'pointer'

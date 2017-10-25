@@ -24,7 +24,7 @@ class Detail extends React.Component {
 
 		let tabData = [];
 		tabData.push({
-			title: 'Summary',
+			title: 'At A Glance',
 			content: <SummaryView id={this.props.id} item={this.props.item} />,
 		});
 		tabData.push({

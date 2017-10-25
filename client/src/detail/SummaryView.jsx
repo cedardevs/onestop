@@ -46,7 +46,6 @@ class SummaryView extends React.Component {
 
     return (
       <div>
-        <div className={styles.atAGlance}>Collection At A Glance</div>
         <div className={`pure-g`}>
           <div className={`pure-u-1-2`}>
             <div className={styles.sectionHeading}>Time Period:</div>
