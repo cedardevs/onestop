@@ -1,3 +1,4 @@
+/* Detail Container */
 @import '../../style/style.css';
 
 .modal {
@@ -21,7 +22,7 @@
   max-width: 80em;
   overflow: auto;
 
-  & p {
+& p {
     margin-top: 0;
   }
 }
@@ -30,16 +31,6 @@
   border-bottom: 1px solid $color-gray;
   margin-bottom: 1em;
   text-align: justify;
-}
-
-.showMore {
-  font-size: 0.75em;
-  display: block;
-  color: white;
-  text-align: right;
-  font-style: italic;
-  text-decoration: underline;
-  padding: .5em;
 }
 
 .header {
@@ -69,20 +60,20 @@
   font-size: 1em;
   font-weight: bold;
 
-  & span {
+& span {
     float: right;
     margin-bottom: 1em;
   }
 
-  & ul {
+& ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
-    & li {
-      margin-left: 1em;
-      margin-bottom: 1em;
-    }
+& li {
+    margin-left: 1em;
+    margin-bottom: 1em;
   }
+}
 }
 
 .button-secondary {
@@ -92,4 +83,122 @@
 
 .granulesButton {
   margin-bottom: 1em;
+}
+
+
+/*************************/
+/* Shared */
+
+.sectionHeading {
+  font-size: 1.25em;
+  margin-top: 1em;
+  margin-bottom: 0.25em;
+}
+
+.showMore {
+  display: block;
+  color: white;
+  text-align: right;
+  font-style: italic;
+  font-weight: bold;
+  text-decoration: underline;
+  padding: .5em;
+}
+
+/*************************/
+/* Summary View */
+
+.previewMap {
+  z-index: 4;
+  width: 97%;
+  height: 16em;
+  padding-top: 0.25em;
+}
+
+.keywords {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: left;
+  align-content: center;
+}
+
+.keyword {
+  color: white;
+  padding: 0.35em;
+  border-radius: 0.1em 0.4em;
+  margin: 0.25em 0.2em;
+  flex: 0 1 auto;
+}
+
+.infoCircle {
+  position: relative;
+  max-width: 1.1em;
+  max-height: 1.1em;
+  top: .1em;
+  left: .3em;
+}
+
+.star {
+  color: yellow;
+  max-height: 1em;
+  max-width: 1em;
+}
+
+.dsmmInfo {
+  position: relative;
+  display: inline-block;
+i {
+  color: white;
+  margin: 0.5em;
+}
+a {
+  color: $color-visited-light;
+}
+.text {
+  visibility: hidden;
+  opacity: 0;
+  bottom: -0.5em;
+  left: 105%;
+  width: 30em;
+  position: absolute;
+  z-index: 1001;
+  background-color: black;
+  border: solid thin white;
+  border-radius: 6px;
+  padding: 2em;
+  text-align: left;
+}
+&:hover .text {
+   visibility: visible;
+   opacity: 1;
+   transition: opacity 300ms;
+ }
+}
+
+.dsmmMissing {
+  color: grey;
+}
+
+.showMoreButton {
+  text-align: right;
+  text-decoration: underline;
+}
+
+.showMoreButton:hover,
+.showMoreButton:focus {
+  cursor: pointer;
+}
+
+
+/*************************/
+/* Description View */
+
+.previewImg {
+  width: 100%;
+  min-height: 12em;
+  margin-bottom: 1em;
+}
+
+.descriptionText {
+  font-size: 1.15em;
 }
