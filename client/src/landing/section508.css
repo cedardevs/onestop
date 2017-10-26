@@ -38,3 +38,10 @@
   border: solid thin white;
   border-radius: 6px;
 }
+
+.accessibilityStatement {
+  margin: 2em auto;
+  width: 80%;
+  border: gray solid;
+  padding: 1em;
+}

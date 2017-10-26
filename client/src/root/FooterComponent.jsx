@@ -32,7 +32,7 @@ class FooterComponent  extends React.Component {
                 href: "//www.commerce.gov/",
                 text: "Department of Commerce"
             }, {
-                href: "//www.noaa.gov/",
+                href: "http://www.noaa.gov/",
                 text: "NOAA"
             }, {
                 href: "//www.nesdis.noaa.gov/",

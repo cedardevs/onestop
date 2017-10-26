@@ -106,21 +106,35 @@ class Section508LandingComponent extends React.Component {
       </div>
     )
 
-    return <div className={`${styles.formDiv} pure-form`}>
-      <h2>Enter Search Criteria</h2>
-      {this.renderErrors()}
-      <form id='508-form'>
-        {formInputs}
-      </form>
-      <button className={`${styles.button} pure-button`}
-              onClick={() => this.validateAndSubmit()}>
-        Search
-      </button>
-      <button className={`${styles.button} pure-button`}
-              onClick={(()=>{this.props.clearSearch()})}>
-        Clear
-      </button>
-    </div>
+    return (
+      <div>
+        <div className={`${styles.formDiv} pure-form`}>
+          <h2>Enter Search Criteria</h2>
+          {this.renderErrors()}
+          <form id='508-form'>
+            {formInputs}
+          </form>
+          <button className={`${styles.button} pure-button`}
+                  onClick={() => this.validateAndSubmit()}>
+            Search
+          </button>
+          <button className={`${styles.button} pure-button`}
+                  onClick={(()=>{this.props.clearSearch()})}>
+            Clear
+          </button>
+        </div>
+        <div className={styles.accessibilityStatement}>
+          <h2>Accessibility Statement</h2>
+          <p>NOAA OneStop is committed to providing access to all individuals who are seeking information from our
+            website. We strive to meet or exceed requirements of Section 508 of the Rehabilitation Act, as amended
+            in 1998.</p>
+          <p>We recognize not all pages on our site are fully accessible at this time, however our accessible site aims
+            to meet Level AA accessibility and provides users with access to all of the same datasets. We will
+            continue to make improvements across our entire site until all pages are fully compliant.</p>
+          <p>If you experience any challenges while accessing parts of our site, please contact <a href={'mailto:ncei.info@noaa.gov'} style={{color: '#55ace4'}}>ncei.info@noaa.gov</a></p>
+        </div>
+      </div>
+    )
   }
 
   renderErrors() {

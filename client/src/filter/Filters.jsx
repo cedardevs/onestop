@@ -37,14 +37,17 @@ class Filters extends Component {
 		this.filters = [
 			// TODO: reintroduce these filters when we officially move them from the top menu search component
 			// {
+			//  name: "map",
 			// 	heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
 			// 	content: <MapFilter />,
 			// },
 			// {
+			//  name: "time",
 			// 	heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
 			// 	content: <TimeFilter />,
 			// },
 			{
+				name: "keywords",
 				heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
 				content: <FacetFilterContainer
 					submit={props.submit}
@@ -76,7 +79,7 @@ class Filters extends Component {
                     <Expandable
                         key={index}
                         value={index}
-                        open={index === this.state.openIndex}
+                        open={index === this.state.openIndex || filter.name === "keywords"} /* force keywords open */
                         onToggle={this.handleFilterToggle}
                         heading={filter.heading}
                         styleHeading={styleFilterHeadings}

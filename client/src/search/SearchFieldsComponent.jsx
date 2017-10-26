@@ -156,12 +156,12 @@ class SearchFieldsComponent extends React.Component {
               <TextSearchField onEnterKeyDown={this.validateAndSubmit} onChange={this.updateQuery}
                                value={this.props.queryString}/>
             </div>
-            <button className={`${styles.clearButton}`} onClick={this.clearQueryString}>x</button>
+            <button className={`${styles.clearButton}`} onClick={this.clearQueryString} aria-label="Clear Search Text">x</button>
           </div>
 
           <div id='searchButtons' className={styles.buttonLayout}>
             <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`}
-                    onClick={this.toggleCalendar} title="Add Temporal Criteria"
+                    onClick={this.toggleCalendar} aria-label="Add Temporal Criteria"
                     ref={timeButton=>this.timeButton=timeButton}>
               <img src={clock} />
             </button>
@@ -170,7 +170,7 @@ class SearchFieldsComponent extends React.Component {
                 calendarVisible={this.state.showCalendar}/>
             </ToggleDisplay>
             <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`}
-                    onClick={this.toggleMap} title="Add Spatial Criteria"
+                    onClick={this.toggleMap} aria-label="Add Spatial Criteria"
                     ref={mapButton=>this.mapButton=mapButton}>
               <img src={globe} />
             </button>
@@ -185,15 +185,14 @@ class SearchFieldsComponent extends React.Component {
               />
             </ToggleDisplay>
             <button className={`pure-button ${styles.undoButton}`}
-                    onClick={this.clearSearchParams} title="Clear Search Criteria">
+                    onClick={this.clearSearchParams} aria-label="Clear Search Criteria">
               <img src={times} />
             </button>
-            <button className={`pure-button ${styles.searchButton}`} onClick={this.validateAndSubmit} title="Search">
+            <button className={`pure-button ${styles.searchButton}`} onClick={this.validateAndSubmit} aria-label="Submit Search">
               <img src={search} />
             </button>
           </div>
-          <div className={`${this.warningStyle()}`} role="alert"><i className="fa fa-warning"
-                                                                    aria-hidden="true"></i> {this.state.warning}</div>
+          <div className={`${this.warningStyle()}`} role="alert">{this.state.warning}</div>
         </div>
     )
   }

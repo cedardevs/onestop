@@ -4,10 +4,9 @@ import infoCircle from 'fa/info-circle.svg'
 import star from 'fa/star.svg'
 import starO from 'fa/star-o.svg'
 import starHalfO from 'fa/star-half-o.svg'
-import styles from './detail-views.css'
+import styles from './DetailStyles.css'
 import A from 'LinkComponent'
 import MapThumbnailComponent from '../common/MapThumbnailComponent'
-
 
 class SummaryView extends React.Component {
   constructor(props) {
@@ -47,7 +46,6 @@ class SummaryView extends React.Component {
 
     return (
       <div>
-        <div className={styles.atAGlance}>Collection At A Glance</div>
         <div className={`pure-g`}>
           <div className={`pure-u-1-2`}>
             <div className={styles.sectionHeading}>Time Period:</div>

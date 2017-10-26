@@ -150,7 +150,7 @@ export default class FacetFilter extends Component {
 		let expandableCategories = [];
 		const categories = Object.keys(this.props.facetMap);
 
-		categories.forEach((category, categoryIndex) => {
+		categories.forEach(category => {
 			// show hamburger menu for high-level categories
 			const highLevelHeading = <span>&#9776;&nbsp;{category}</span>;
 
@@ -159,7 +159,7 @@ export default class FacetFilter extends Component {
 				this.props.facetMap[category],
 			);
 
-			const expandableKey = `${categoryIndex}-${category}`;
+			const expandableKey = `${category}`;
 
 			// high-level categories (e.g. - "Data Themes" | "Platforms" | "Projects" | "Data Centers" | "Data Resolution")
 			expandableCategories.push(

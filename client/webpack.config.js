@@ -122,8 +122,15 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      inject: false,
+      template: require('html-webpack-template'),
       title: 'NOAA OneStop',
-      favicon: '../img/noaa-favicon.ico'
+      favicon: '../img/noaa-favicon.ico',
+      lang: 'en-US'//,
+      // googleAnalytics: {
+      //   trackingId: '',
+      //   pageViewOnLoad: true
+      // }
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
