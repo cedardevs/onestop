@@ -108,13 +108,7 @@ export default class Tabs extends Component {
 	}
 
 	handleChange(event) {
-		const { onChange } = this.props;
 		const index = Number(event.currentTarget.value);
-		if (onChange) {
-			onChange({
-				activeIndex: index,
-			});
-		}
 		if(this.props.data[index].action) {
 			this.props.data[index].action(this.props.data[index].actionParam)
 		}
