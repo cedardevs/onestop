@@ -13,7 +13,7 @@ const mapStateToProps = (state, reactProps) => {
   return {
     // geometry: geometry,
     id: focusedId,
-    item: focusedItem
+    item: focusedItem,
   }
 }
 

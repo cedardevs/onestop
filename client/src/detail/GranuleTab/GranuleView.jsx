@@ -48,9 +48,9 @@ export default class GranuleView extends Component {
         <div className={`pure-u-1-2 ${styles.map}`}>
           <MapContainer style={styles.mapContainer}/>
         </div>
-        {this.renderLoadingMessage()}
         <div className={`pure-u-1-2 ${styles.granule}`}>
           <div className={`pure-g ${styles.granuleInfo}`}>
+            {this.renderLoadingMessage()}
             {_.isEmpty(legendItems)
               ? <div></div>
               : <div className={`pure-u-1 ${styles.legend}`}>
@@ -78,10 +78,12 @@ export default class GranuleView extends Component {
   }
 
   renderLoadingMessage() {
-    const styleShowMessage = _.isEmpty(this.props.results) ? {} : {display: 'none'}
-    return (<div style={styleShowMessage}>
-      Please wait a moment while the results load...
-    </div>)
+    const styleShowMessage = _.isEmpty(this.props.results) ?
+      {} : {display: 'none'}
+    return (
+          <div className={`pure-u-1 ${styles.message}`} style={styleShowMessage}>
+            Please wait a moment while the results load...
+      </div>)
   }
 
   renderBadges(links) {

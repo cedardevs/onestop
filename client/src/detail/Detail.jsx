@@ -14,6 +14,7 @@ class Detail extends React.Component {
 
     this.close = this.close.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.showGranules = this.showGranules.bind(this)
   }
 
   render() {
@@ -34,8 +35,7 @@ class Detail extends React.Component {
       {
         title: 'Matching Files',
         content: <GranuleViewContainer id={this.props.id} item={this.props.item} />,
-        action: this.props.showGranules,
-        actionParam: this.props.id,
+        action: this.showGranules,
       },
     ];
 
@@ -63,6 +63,19 @@ class Detail extends React.Component {
     );
   }
 
+  showGranules() {
+    if(!this.state.granulesLoaded ) {
+      this.props.showGranules(this.props.id)
+      // change the state to indicate granules have been loaded so we don't reload if the user flips back and forth between tabs.
+  		this.setState(prevState => {
+  			return {
+  				...prevState,
+  				granulesLoaded: true,
+  			};
+  		});
+		}
+  }
+
   close() {
     this.props.dismiss();
   }
@@ -79,6 +92,15 @@ class Detail extends React.Component {
       document.addEventListener('keydown', this.handleKeyDown, false);
     } else {
       document.removeEventListener('keydown', this.handleKeyDown, false);
+    }
+    if (nextProps.id && nextProps.id != this.props.id) {
+      // reset state of granules loaded each time the collection changes
+      this.setState(prevState => {
+  			return {
+  				...prevState,
+  				granulesLoaded: false,
+  			};
+  		});
     }
   }
 

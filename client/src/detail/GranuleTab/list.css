@@ -2,7 +2,6 @@
 
 .mainWindow {
   letter-spacing: 0 !important;
-  background-color: #000;
   margin: 2em auto;
   max-width: 100em;
   height: calc(100vh - 5em - $header-height - $footer-height*2);
@@ -43,6 +42,10 @@
   color: white;
   text-align: center;
   text-decoration: none;
+}
+
+.message {
+  padding: 1em;
 }
 
 .legend {
