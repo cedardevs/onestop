@@ -80,4 +80,13 @@ describe('The flow actions', function () {
     assert(dispatchCalls == 2, `There were ${dispatchCalls} dispatch calls made`)
   })
 
+  it('dispatch a transition to the granules view', function () {
+    const getState = sinon.stub().returns(mockDefaultState)
+    const fn = actions.showGranules()
+
+    fn(dispatch, getState)
+    const dispatchCalls = dispatch.callCount
+    assert(dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
+  })
+
 })
