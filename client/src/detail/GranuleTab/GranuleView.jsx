@@ -1,15 +1,9 @@
 import React, {Component} from 'react'
-// import ShowMore from 'react-show-more'
-// import { processUrl } from '../utils/urlUtils'
-// import MapThumbnailComponent from '../common/MapThumbnailComponent'
-// import styles from './DetailStyles.css'
-// import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import MapContainer from './GranuleMapContainer'
-// import MapContainer from '../result/granules/MapContainer'
 import A from 'LinkComponent'
-import styles from '../result/granules/list/list.css'
+import styles from './list.css'
 
 export default class GranuleView extends Component {
   constructor(props) {

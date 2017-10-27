@@ -6,7 +6,7 @@ import styles from './DetailStyles.css'
 import Tabs from './Tabs'
 import SummaryView from './SummaryView'
 import DescriptionView from './DescriptionView'
-import GranuleViewContainer from './GranuleViewContainer'
+import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
 
 class Detail extends React.Component {
   constructor(props) {

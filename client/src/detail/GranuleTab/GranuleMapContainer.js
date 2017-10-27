@@ -1,9 +1,9 @@
 import { connect } from 'react-redux'
 import _ from 'lodash'
-import MapComponent from '../search/map/MapComponent'
-import { toggleGranuleFocus } from '../actions/FlowActions'
+import MapComponent from '../../search/map/MapComponent'
+import { toggleGranuleFocus } from '../../actions/FlowActions'
 
-import { ensureDatelineFriendlyPolygon } from '../utils/geoUtils'
+import { ensureDatelineFriendlyPolygon } from '../../utils/geoUtils'
 
 const mapStateToProps = (state) => {
   let { granules } = state.domain.results
