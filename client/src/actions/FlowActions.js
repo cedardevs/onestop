@@ -22,19 +22,6 @@ export const showCollections = (prefix = '') => {
   }
 }
 
-export const showGranules = (prefix = '') => {
-  return (dispatch, getState) => {
-    const query = encodeQueryString(getState())
-    if (!_.isEmpty(query)) {
-      const locationDescriptor = {
-        pathname: `${prefix}/collections/files`,
-        search: `?${query}`
-      }
-      dispatch(push(locationDescriptor))
-    }
-  }
-}
-
 export const showHome = () => {
   return (dispatch) => {
     dispatch(updateSearch())

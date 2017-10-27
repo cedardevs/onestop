@@ -115,6 +115,9 @@ export default class Tabs extends Component {
 				activeIndex: index,
 			});
 		}
+		if(this.props.data[index].action) {
+			this.props.data[index].action(this.props.data[index].actionParam)
+		}
 		this.setState(prevState => {
 			return {
 				...prevState,
