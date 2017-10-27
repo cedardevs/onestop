@@ -62,6 +62,7 @@ group = 'org.cedar.onestop'
 subprojects.each {
   it.group = group
   it.version = version
+  it.ext.buildDate = "${new Date().format("YYYY-MM-dd", TimeZone.getTimeZone('UTC'))}"
 }
 
 buildScan {
