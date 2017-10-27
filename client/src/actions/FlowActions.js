@@ -22,6 +22,20 @@ export const showCollections = (prefix = '') => {
   }
 }
 
+export const showGranules = (prefix = '') => {
+  // this is only needed for the 508 site now
+  return (dispatch, getState) => {
+    const query = encodeQueryString(getState())
+    if (!_.isEmpty(query)) {
+      const locationDescriptor = {
+        pathname: `${prefix}/collections/files`,
+        search: `?${query}`
+      }
+      dispatch(push(locationDescriptor))
+    }
+  }
+}
+
 export const showHome = () => {
   return (dispatch) => {
     dispatch(updateSearch())
