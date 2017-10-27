@@ -1,10 +1,4 @@
 @import '../../../style/style.css';
-/*
-@define-extend underscored {
-  border-bottom: 1px solid $color-gray;
-  padding-bottom: 1em;
-  margin-bottom: 1em;
-}*/
 
 .mainWindow {
   letter-spacing: 0 !important;
@@ -13,13 +7,6 @@
   max-width: 100em;
   height: calc(100vh - 5em - $header-height - $footer-height*2);
 }
-
-/*.navLink {
-  color: #00a6d2;
-  font-size: 1.15em;
-  text-decoration: underline;
-  cursor: pointer;
-}*/
 
 .mapContainer {
   height: 100%;
@@ -30,19 +17,6 @@
 .map {
   height: 100%
 }
-
-.title {
-  @extend underscored;
-  font-size: 1.5em;
-  padding-top: 1em;
-}
-
-/*.description {
-  @extend underscored;
-  display: inline-block;
-  font-size: 1em;
-  vertical-align: top;
-}*/
 
 .granuleInfo {
   padding: 0 1em;
@@ -95,12 +69,6 @@
   }
 }
 
-/*.granuleList {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}*/
-
 .badgeCell {
   width: 25%;
   min-width: 4em;
@@ -125,48 +93,6 @@ tr.pageButton {
   }
 }
 
-/* Section 508 style */
-/*.descriptionContainer {
-  padding: 1em;
-  background: $color-primary-darker;
-}*/
-
-/*.descriptionParagraph {
-  line-height: 1.4em;
-}
-
-.listContainer {
-  box-shadow: 1.3em 0.7em 0.5em 0.2em rgba(0,0,0,.7);
-  overflow-x: none;
-}
-
-.granuleList508 {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  a {
-    color: white;
-  }
-}*/
-
-/*.listItem {
-  padding: .5em 1em 1em;
-  > div {
-    margin: .5em 0;
-  }
-  &:nth-child(odd)	{
-    background-color: $color-primary-darkest;
-  }
-  &:nth-child(even) {
-    background-color: $color-primary-darker;
-  }
-}
-
-.linkRow {
-  display: inline-block;
-  margin: .5em .5em .5em 0;
-}*/
-
 .links {
   display: inline-block;
   padding: .3em;
@@ -177,15 +103,3 @@ tr.pageButton {
   text-decoration: underline;
   cursor: pointer;
 }
-/*.showMore {
-  width: 100%;
-  text-align: center;
-  button {
-    padding: .3em;
-    margin: .2em;
-    border: none;
-    border-radius: .1em .4em;
-    color: white;
-    background-color: $color-primary;
-  }
-}*/
