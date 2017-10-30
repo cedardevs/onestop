@@ -40,6 +40,8 @@ services:
       - elasticsearch
     ports:
       - 8080
+    environment:
+      - "ELASTICSEARCH_ENDPOINT=http://elasticsearch:9200/search/granule/_search"
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-5.5.1}

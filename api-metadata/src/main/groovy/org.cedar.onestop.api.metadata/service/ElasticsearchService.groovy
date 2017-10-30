@@ -57,7 +57,8 @@ class ElasticsearchService {
   public String create(String baseName) {
     String indexName = "${baseName}-${System.currentTimeMillis()}"
     def cl = Thread.currentThread().contextClassLoader
-    def indexJson = cl.getResourceAsStream("${baseName}Index.json").text
+    def jsonFilename = baseName.replaceFirst("^${PREFIX}", '') + 'Index.json'
+    def indexJson = cl.getResourceAsStream(jsonFilename).text
     performRequest('PUT', indexName, indexJson)
 
     log.debug "Created new index [${indexName}]"

@@ -58,7 +58,7 @@
         }),
 
         "Onestop": gs.Object.create(gs.target.elastic.CustomElasticTarget).mixin({
-          "searchUrl": "http://elasticsearch:9200/search/collection/_search"
+          "searchUrl": "ELASTICSEARCH_ENDPOINT"
         })
 
       };
