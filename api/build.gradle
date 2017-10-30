@@ -18,6 +18,10 @@ repositories {
   }
 }
 
+configurations {
+  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+}
+
 dependencies {
   compile 'org.codehaus.groovy:groovy:2.4.10'
   compile 'org.codehaus.groovy:groovy-json:2.4.10'
@@ -42,7 +46,7 @@ dependencies {
   compile (group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3')
   compile ('org.springframework.boot:spring-boot-starter-actuator')
   compile ('org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE')
-  compile 'com.github.fge:json-schema-validator:2.2.6'
+  compile 'com.github.java-json-tools:json-schema-validator:2.2.8'
   compile 'org.apache.commons:commons-lang3:3.4'
   compile 'com.spatial4j:spatial4j:0.5' // Necessary for embedded ES to have geo_shape type available
   compile 'com.vividsolutions:jts:1.13' // Necessary for embedded ES to have geo_shape type available

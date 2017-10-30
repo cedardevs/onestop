@@ -27,4 +27,20 @@
     <gav regex="true">^org\.springframework\.cloud:spring-cloud-context:.*$</gav>
     <cve>CVE-2016-9878</cve>
   </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+   file name: validation-api-1.1.0.Final.jar
+   ]]></notes>
+    <gav regex="true">^javax\.validation:validation-api:.*$</gav>
+    <cve>CVE-2013-4499</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+   file name: mailapi-1.4.3.jar
+   ]]></notes>
+    <gav regex="true">^javax\.mail:mailapi:.*$</gav>
+    <cpe>cpe:/a:mail_project:mail</cpe>
+  </suppress>
 </suppressions>
