@@ -1,15 +1,14 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
-import MapContainer from '../MapContainer'
+import MapContainer from './GranuleMapContainer'
 import A from 'LinkComponent'
 import styles from './list.css'
 
-class GranuleList extends React.Component {
-
+export default class GranuleView extends Component {
   constructor(props) {
     super(props)
+
     this.protocols = [
       {id: 'C', names: ['ogc:wcs'],       color: 'coral',     label: 'OGC Web Coverage Service'},
       {id: 'D', names: ['download'],      color: 'blue',      label: 'Download'},
@@ -22,12 +21,8 @@ class GranuleList extends React.Component {
     ]
   }
 
-  componentDidUpdate() {
-    const granuleFocus = ReactDOM.findDOMNode(this.granuleFocus)
-    if (!_.isNull(granuleFocus)) { granuleFocus.focus() }
-  }
-
   render() {
+
     const usedProtocols = new Set()
     const tableRows = _.map(this.props.results, (value, key) => {
       _.forEach(value.links, (link) => usedProtocols.add(this.identifyProtocol(link)))
@@ -49,47 +44,46 @@ class GranuleList extends React.Component {
         .value()
 
     return (
-      <div ref={granuleFocus=>this.granuleFocus=granuleFocus} tabIndex={0}>
-        <a className={styles.navLink}
-          tabIndex={0}
-          onClick={this.props.showCollections}>Return To Collection Results</a>
-        <div className={`pure-g ${styles.mainWindow}`}>
-          <div className={`pure-u-1-2 ${styles.map}`}>
-            <MapContainer style={styles.mapContainer}/>
-          </div>
-          <div className={`pure-u-1-2 ${styles.granule}`}>
-            <div className={`pure-g ${styles.granuleInfo}`}>
-              <div className={`pure-u-1 ${styles.title}`}>
-                {this.props.selectedCollection.title}
-              </div>
-              <div className={`pure-u-1 ${styles.description}`}>
-                {this.props.selectedCollection.description}
-              </div>
-              {_.isEmpty(legendItems)
-                ? <div></div>
-                : <div className={`pure-u-1 ${styles.legend}`}>
-                <h3 className={styles.legendItem}>Access Protocols:</h3>
-                {legendItems}
-              </div>}
-              <div className={`pure-u-1`}>
-                <table className={`pure-table ${styles.table}`}>
-                  <thead>
-                    <tr>
-                      <th>Title</th>
-                      <th>Data Access</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tableRows}
-                    {this.renderPaginationButton()}
-                  </tbody>
-                </table>
-              </div>
+      <div className={`pure-g ${styles.mainWindow}`}>
+        <div className={`pure-u-1-2 ${styles.map}`}>
+          <MapContainer style={styles.mapContainer}/>
+        </div>
+        <div className={`pure-u-1-2 ${styles.granule}`}>
+          <div className={`pure-g ${styles.granuleInfo}`}>
+            {this.renderLoadingMessage()}
+            {_.isEmpty(legendItems)
+              ? <div></div>
+              : <div className={`pure-u-1 ${styles.legend}`}>
+              <h3 className={styles.legendItem}>Access Protocols:</h3>
+              {legendItems}
+            </div>}
+            <div className={`pure-u-1`}>
+              <table className={`pure-table ${styles.table}`}>
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Data Access</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableRows}
+                  {this.renderPaginationButton()}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
     )
+  }
+
+  renderLoadingMessage() {
+    const styleShowMessage = _.isEmpty(this.props.results) ?
+      {} : {display: 'none'}
+    return (
+          <div className={`pure-u-1 ${styles.message}`} style={styleShowMessage}>
+            Please wait a moment while the results load...
+      </div>)
   }
 
   renderBadges(links) {
@@ -128,15 +122,3 @@ class GranuleList extends React.Component {
     }
   }
 }
-
-GranuleList.propTypes = {
-  results: PropTypes.object,
-  focusedIds: PropTypes.array,
-  selectedCollection: PropTypes.object,
-  toggleFocus: PropTypes.func,
-  showCollections: PropTypes.func,
-  fetchMoreResults: PropTypes.func,
-  totalHits: PropTypes.number
-}
-
-export default GranuleList

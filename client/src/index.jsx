@@ -4,7 +4,6 @@ import { Router, Route, IndexRoute } from 'react-router'
 import ResultContainer from './result/ResultContainer'
 import Section508ResultLayout from './result/Section508ResultLayout'
 import CollectionGridContainer from './result/collections/CollectionGridContainer'
-import GranuleListContainer from './result/granules/list/GranuleListContainer'
 import Section508CollectionGridContainer from './result/collections/Section508CollectionGridContainer'
 import Section508GranuleListContainer from './result/granules/list/Section508GranuleListContainer'
 import ErrorContainer from './error/ErrorContainer'
@@ -26,7 +25,6 @@ const routesLayout =
       <IndexRoute component={LandingContainer}/>
       <Route name="Collections" path="collections" component={ResultContainer}>
         <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
-        <Route name="Files" path="files" component={GranuleListContainer}/>
       </Route>
       <Route name="Error" path="error" component={ErrorContainer}/>
     </Route>
