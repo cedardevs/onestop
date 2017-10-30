@@ -1,5 +1,5 @@
-import React, { PropTypes } from 'react'
-import { Link } from 'react-router'
+import React from 'react'
+import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import stopCircle from 'fa/stop-circle-o.svg'
 import A from 'LinkComponent'
@@ -31,7 +31,7 @@ class HeaderComponent extends React.Component {
         {this.getMainOr508Link()}
         <button title='Previous Data Catalog' onClick={() => location.href='//data.noaa.gov/dataset'}>Previous Catalog</button>
       </ul>
-    const menu = <nav className={styles.headerLinks}>{menuContent}</nav>
+    const menu = <nav className={styles.headerLinks} aria-label="Main Navigation">{menuContent}</nav>
 
     return <header className={`${styles.headerArea}`}>
       <div className={styles.headerRow}>

@@ -37,7 +37,8 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           presets: [
-            [ 'es2015', { modules: false } ]
+            [ 'env', { modules: false } ],
+            'react', 'stage-0'
           ]
         }
       }
@@ -92,8 +93,11 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      inject: false,
+      template: require('html-webpack-template'),
       title: 'NOAA OneStop',
-      favicon: '../img/noaa-favicon.ico'
+      favicon: '../img/noaa-favicon.ico',
+      lang: 'en-US'
     }),
     new webpack.DefinePlugin({
       'process.env':{

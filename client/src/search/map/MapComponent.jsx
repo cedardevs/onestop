@@ -30,7 +30,7 @@ class MapComponent extends React.Component {
           let { geoJsonSelection } = this.props
           if (geoJsonSelection) {
             let { editableLayers, style } = this.state
-            let layer = L.GeoJSON.geometryToLayer(geoJsonSelection, {style})
+            let layer = L.geoJson(geoJsonSelection, {style: style})
             editableLayers.addLayer(layer)
           }
           if (this.props.features) { this.updateResultsLayers(this.props) }
@@ -45,7 +45,7 @@ class MapComponent extends React.Component {
 		let mapSettings = {
       _initialized: true,
 			style: {
-				color: '#00FF00',
+				color: '#00ffc8',
         weight: 3,
 				opacity: 0.65
 			},
@@ -56,7 +56,7 @@ class MapComponent extends React.Component {
         minZoom: 2,
         maxZoom: 5,
         layers: [
-            L.esri.basemapLayer("Oceans"),
+            L.esri.basemapLayer("Imagery"),
             L.esri.basemapLayer("OceansLabels")
         ],
         attributionControl: false
@@ -67,7 +67,8 @@ class MapComponent extends React.Component {
   }
 
   drawDefaults(layerGroup){
-		const drawStyle = { color: "#ffe800",
+		const drawStyle = {
+		  color: "#FFA268",
       weight: 3,
 			opacity: 0.65
 		}
@@ -124,7 +125,7 @@ class MapComponent extends React.Component {
 		store.subscribe(w((newGeoJson) => {
       editableLayers.clearLayers()
       if (!_.isEmpty(newGeoJson)){
-        let layer = L.GeoJSON.geometryToLayer(newGeoJson, {style})
+        let layer = L.geoJson(newGeoJson, {style: style})
         editableLayers.addLayer(layer)
       }
 		}))
@@ -133,9 +134,9 @@ class MapComponent extends React.Component {
   updateResultsLayers({geoJsonFeatures, focusedFeatures}) {
 		// Apply colors to focused feature
     let { resultsLayers } = this.state
-    const selectedStyle = {color: '#f9c642'}
+    const selectedStyle = {color: '#FFA268'}
     const defaultStyle = {
-        color: '#0b4d92',
+        color: '#00ffc8',
         fillOpacity: 0.002,
         opacity: 0.5
     }

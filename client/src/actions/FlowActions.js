@@ -23,6 +23,7 @@ export const showCollections = (prefix = '') => {
 }
 
 export const showGranules = (prefix = '') => {
+  // this is only needed for the 508 site now
   return (dispatch, getState) => {
     const query = encodeQueryString(getState())
     if (!_.isEmpty(query)) {

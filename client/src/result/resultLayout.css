@@ -8,10 +8,7 @@
 .facetSideBar {
   min-height: 100vh;
   display: none;
-  /*width: 230px;*/
-  /*border: 1px solid color($color-primary lightness(-10%));*/
   background-color: $color-primary;
-  margin-bottom: calc($footer-height + 2 * $section-padding);
 }
 
 .facetButtonExpanded {

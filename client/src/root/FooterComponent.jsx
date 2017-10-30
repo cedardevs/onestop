@@ -1,4 +1,5 @@
-import React, { PropTypes }  from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import styles from './footer.css'
 import github from 'fa/github.svg'
 import A from 'LinkComponent'
@@ -31,7 +32,7 @@ class FooterComponent  extends React.Component {
                 href: "//www.commerce.gov/",
                 text: "Department of Commerce"
             }, {
-                href: "//www.noaa.gov/",
+                href: "http://www.noaa.gov/",
                 text: "NOAA"
             }, {
                 href: "//www.nesdis.noaa.gov/",

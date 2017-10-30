@@ -4,12 +4,10 @@ import { Router, Route, IndexRoute } from 'react-router'
 import ResultContainer from './result/ResultContainer'
 import Section508ResultLayout from './result/Section508ResultLayout'
 import CollectionGridContainer from './result/collections/CollectionGridContainer'
-import GranuleListContainer from './result/granules/list/GranuleListContainer'
 import Section508CollectionGridContainer from './result/collections/Section508CollectionGridContainer'
 import Section508GranuleListContainer from './result/granules/list/Section508GranuleListContainer'
 import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
-import Background from './landing/background/BackgroundContainer'
 import Section508LandingContainer from './landing/Section508LandingContainer'
 import {Provider} from 'react-redux'
 import RootComponent from './root/Root'
@@ -27,7 +25,6 @@ const routesLayout =
       <IndexRoute component={LandingContainer}/>
       <Route name="Collections" path="collections" component={ResultContainer}>
         <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
-        <Route name="Files" path="files" component={GranuleListContainer}/>
       </Route>
       <Route name="Error" path="error" component={ErrorContainer}/>
     </Route>
@@ -45,7 +42,6 @@ const routesLayout =
 const body =
   <Provider store={store}>
     <div>
-      <Background/>
       {routesLayout}
     </div>
   </Provider>
@@ -56,10 +52,17 @@ appDiv.setAttribute('style', 'height:100%')
 document.body.appendChild(appDiv)
 
 const fedAnalyticsScript = document.createElement('script')
-fedAnalyticsScript.setAttribute('id', '_fed_an_ua_tag')
-fedAnalyticsScript.setAttribute('type', 'text/javascript')
-fedAnalyticsScript.setAttribute('src', '//dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=DOC%26subagency=NOAA')
-fedAnalyticsScript.setAttribute('async', 'true')
+fedAnalyticsScript.insertAdjacentHTML('afterbegin',
+  'window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;' +
+  'ga(\'create\', \'UA-108560292-1\', \'data.noaa.gov\');' +
+  'ga(\'set\', \'anonymizeIp\', true);' +
+  'ga(\'send\', \'pageview\');')
 document.body.appendChild(fedAnalyticsScript)
+
+const googleAnalytics = document.createElement('script')
+googleAnalytics.setAttribute('src', 'https://www.google-analytics.com/analytics.js')
+googleAnalytics.setAttribute('type', 'text/javascript')
+googleAnalytics.setAttribute('async', 'true')
+document.body.appendChild(googleAnalytics)
 
 render(body, appDiv)

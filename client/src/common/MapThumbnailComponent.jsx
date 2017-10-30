@@ -1,14 +1,20 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import L from 'leaflet'
 import 'esri-leaflet'
-import { convertEnvelopeToPolygon } from '../utils/geoUtils'
+import _ from 'lodash'
+import { ensureDatelineFriendlyPolygon } from '../utils/geoUtils'
 
 class MapThumbnailComponent extends React.Component {
   constructor(props) {
     super(props)
 
     this.map = undefined // defined by render ref callback
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return !_.isEqual(this.props.geometry, nextProps.geometry)
   }
 
   render() {
@@ -22,7 +28,7 @@ class MapThumbnailComponent extends React.Component {
 
     const geoJsonLayer = L.GeoJSON.geometryToLayer({
       type: "Feature",
-      geometry: convertEnvelopeToPolygon(this.props.geometry)
+      geometry: ensureDatelineFriendlyPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
     })
     geoJsonLayer.setStyle({
       color: "red",
@@ -32,25 +38,26 @@ class MapThumbnailComponent extends React.Component {
 
     this.map = L.map(ReactDOM.findDOMNode(this), {
       layers: [
-        L.esri.basemapLayer("Oceans"),
+        L.esri.basemapLayer("Imagery"),
+        L.esri.basemapLayer("OceansLabels"),
         geoJsonLayer
       ],
-      maxZoom: 3,
-      zoomControl: false,
+      maxZoom: this.props.interactive ? 10 : 3,
+      zoomControl: this.props.interactive,
       attributionControl: false,
-      dragging: false,
-      touchZoom: false,
-      scrollWheelZoom: false,
-      doubleClickZoom: false,
-      boxZoom: false,
-      tap: false
+      dragging: this.props.interactive,
+      touchZoom: this.props.interactive,
+      scrollWheelZoom: this.props.interactive,
+      doubleClickZoom: this.props.interactive,
+      boxZoom: this.props.interactive,
+      tap: this.props.interactive
     })
     this.fitMapToResults(geoJsonLayer)
   }
 
   fitMapToResults(geoJsonLayer) {
     if (this.props.geometry) {
-      this.map.fitBounds(geoJsonLayer.getBounds())
+      this.map.fitBounds(geoJsonLayer.getBounds(), { maxZoom: 3 })
     }
     else {
       this.map.fitWorld()
@@ -60,7 +67,8 @@ class MapThumbnailComponent extends React.Component {
 
 
 MapThumbnailComponent.propTypes = {
-  geometry: PropTypes.object.isRequired
+  geometry: PropTypes.object.isRequired,
+  interactive: PropTypes.bool.isRequired
 }
 
 export default MapThumbnailComponent

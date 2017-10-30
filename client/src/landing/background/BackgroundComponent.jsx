@@ -5,21 +5,13 @@ import Modernizr from 'modernizr'
 class BackgroundComponent extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {
-      background: true
-    }
-  }
-
-  componentDidMount(){
-    this.setState({background: this.props.showImage})
-  }
-
-  componentWillReceiveProps(nextProps){
-    this.setState({background: nextProps.showImage})
   }
 
   render() {
-    return <div className={styles.backgroundColor}><div className={styles.background}></div></div>
+    var backgroundStyle = this.props.showImage? styles.backgroundImage : styles.backgroundSolid
+    var backgroundOverlay = this.props.showOverlay? styles.backgroundOverlay : {}
+
+    return <div className={backgroundStyle}><div className={backgroundOverlay}></div></div>
   }
 }
 

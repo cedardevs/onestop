@@ -165,7 +165,7 @@ class InfoComponent extends React.Component {
           </li>
         </ul>
       <b>If you'd prefer to interact directly with the OneStop API, you can find more information about it <A
-        target="_blank" href='https://github.com/cedardevs/onestop/wiki/OneStop-Search-API'>here</A></b>
+        target="_blank" href='https://github.com/cedardevs/onestop/wiki/OneStop-Search-API' style={{color: '#277cb2'}}>here</A></b>
       </div>
   }
 }

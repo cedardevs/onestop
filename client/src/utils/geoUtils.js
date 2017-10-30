@@ -31,24 +31,25 @@ export const recenterGeometry = (geometry) => {
   return _.assign({}, geometry, {coordinates: newCoordinates})
 }
 
-export const convertEnvelopeToPolygon = (geometry) => {
-  if (geometry.type.toLowerCase() !== 'envelope') {
-    return geometry
+export const ensureDatelineFriendlyPolygon = (geometry) => {
+  let coords
+  if (geometry.type.toLowerCase() === 'point') {
+    coords = Array(5).fill(geometry.coordinates)
+  }
+  else {
+    coords = geometry.coordinates[0]
+  }
+  return {
+    type: 'Polygon',
+    coordinates: [convertNegativeLongitudes(coords)]
   }
 
-  const eCoords = geometry.coordinates
-  const pCoords = [
-    [
-      [eCoords[0][0], eCoords[0][1]],
-      [eCoords[0][0], eCoords[1][1]],
-      [eCoords[1][0], eCoords[1][1]],
-      [eCoords[1][0], eCoords[0][1]]
-    ]
-  ]
-  return {
-    type: "Polygon",
-    coordinates: pCoords
-  }
+}
+
+export const convertNegativeLongitudes = (coordinates) => {
+  const crossesDateline = coordinates[0][0] > coordinates[1][0]
+  return coordinates.map( (pair) =>
+    (crossesDateline && pair[0] < 0 && pair[0] > -180) ? [pair[0] + 360, pair[1]] : pair )
 }
 
 export const convertBboxToGeoJson = (coordString) => {

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import styles from './collectionTile.css'
 import {processUrl} from '../../utils/urlUtils'
 import MapThumbnailComponent from '../../common/MapThumbnailComponent'
@@ -13,7 +14,7 @@ class CollectionTile extends React.Component {
   render() {
     return <div className={styles.tileContainer}
       onKeyPress={(e)=>this.handleKeyPress(e, this.props.onCardClick)}
-      tabIndex={0}>
+      >
       <div className={styles.tileContent} style={this.thumbnailStyle()}>
         <div className={styles.overlay} onClick={() => this.props.onCardClick()}
           >
@@ -31,7 +32,7 @@ class CollectionTile extends React.Component {
   renderThumbnailMap() {
     if (!this.thumbnailUrl) {
       return <div className={styles.mapContainer}>
-        <MapThumbnailComponent geometry={this.props.geometry}/>
+        <MapThumbnailComponent geometry={this.props.geometry} interactive={false}/>
       </div>
     }
   }

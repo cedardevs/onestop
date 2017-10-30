@@ -7,10 +7,6 @@
 }
 
 .footer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  right: 0;
   background: $color-primary-darkest;
   clear: both;
   padding: $section-padding;
@@ -20,6 +16,7 @@
   overflow: hidden;
   position: relative;
   width: 100%;
+  min-height: 100vh;
 }
 
 
