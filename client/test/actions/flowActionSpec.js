@@ -88,4 +88,5 @@ describe('The flow actions', function () {
     const dispatchCalls = dispatch.callCount
     assert(dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
   })
+
 })

@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '1.5.7.RELEASE'
+    springBootVersion = '1.5.8.RELEASE'
   }
   repositories {
     maven {
@@ -14,7 +14,7 @@ buildscript {
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     classpath 'com.wiredforcode:gradle-spawn-plugin:0.6.0'
     classpath 'com.moowork.gradle:gradle-node-plugin:0.13'
-    classpath 'org.owasp:dependency-check-gradle:1.4.5'
+    classpath 'org.owasp:dependency-check-gradle:2.1.1'
   }
 }
 
@@ -37,6 +37,7 @@ subprojects {
 //      project.tasks.findByName('check').dependsOn('dependencyCheck')
 
       dependencyCheck {
+        skipConfigurations = ["providedRuntime"]
         suppressionFile = "${rootDir}/owasp-suppressions.xml"
         failBuildOnCVSS = 4
 
@@ -62,6 +63,7 @@ group = 'org.cedar.onestop'
 subprojects.each {
   it.group = group
   it.version = version
+  it.ext.buildDate = "${new Date().format("YYYY-MM-dd", TimeZone.getTimeZone('UTC'))}"
 }
 
 buildScan {
@@ -69,7 +71,8 @@ buildScan {
   licenseAgree = 'yes'
 }
 
-task dockerComposeStart(type: Exec, description: 'Runs the entire system in docker containers', group: 'docker', dependsOn: [":api-search:build", ":api-metadata:build", ":client:build"]) {
+task dockerComposeStart(type: Exec, description: 'Runs the entire system in docker containers', group: 'docker') {
+  dependsOn ":api-search:build", ":api-metadata:build", ":client:build", "geoportal-search:build"
   executable = "bash"
   args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d"]
 }
@@ -89,7 +92,8 @@ task dockerComposeInfraStop(type: Exec, description: 'Stops the infrastructure n
   args = ["-c", "docker-compose stop elasticsearch"]
 }
 
-task dockerComposeBackendStart(type: Exec, description: 'Runs intrastructure and api modules needed to run the client.', group: 'docker', dependsOn: [":api-search:build", ":api-metadata:build", ":dockerComposeInfraStart"]) {
+task dockerComposeBackendStart(type: Exec, description: 'Runs intrastructure and api modules needed to run the client.', group: 'docker') {
+  dependsOn ":api-search:build", ":api-metadata:build", ":dockerComposeInfraStart"
   executable = "bash"
   args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d api-metadata api-search"]
 }
