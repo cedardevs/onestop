@@ -5,32 +5,52 @@ import MapThumbnailComponent from '../common/MapThumbnailComponent'
 import styles from './DetailStyles.css'
 
 export default class DescriptionView extends Component {
-  constructor(props) {
-    super(props)
-
-  }
 
   render() {
+
+  const { item } = this.props;
+
+    // thumbnail might be undefined or an empty string, so check for both
+    const thumbnail = item.thumbnail && item.thumbnail.length > 0 ? item.thumbnail : undefined;
+
+    // geometry used, if available, to show map
+    const geometry = item.spatialBounding;
+
+    // provide default description
+    const description = item.description ? item.description : "No description available"
+
     return (
       <div className={`pure-g`}>
         <div className={`pure-u-1-2`}>
-          {this.renderCollectionImage()}
+          {this.renderCollectionImage(thumbnail, geometry)}
         </div>
         <div className={`pure-u-1-2 ${styles.descriptionText}`}>
           <ShowMore lines={10} anchorClass={`${styles.showMore}`}>
-            {this.props.item.description ? this.props.item.description : 'No description available'}
+            {description}
           </ShowMore>
         </div>
       </div>
     )
   }
 
-  renderCollectionImage() {
-    const imgUrl = processUrl(this.props.item.thumbnail)
-    return imgUrl ?
-      <img className={styles.previewImg} src={imgUrl}/> :
-      <div className={styles.previewMap}>
-        <MapThumbnailComponent geometry={this.props.geometry} interactive={false}/>
-      </div>
+  renderCollectionImage(thumbnail, geometry) {
+      const imgUrl = processUrl(thumbnail)
+      if(imgUrl) {
+          return <img className={styles.previewImg} src={imgUrl}/>
+      }
+      else if(geometry) {
+          return (
+              <div className={styles.previewMap}>
+                  <MapThumbnailComponent geometry={geometry} interactive={false}/>
+              </div>
+          )
+      }
+      else {
+          return (
+              <div className={styles.previewMap}>
+                  No preview image or map available.
+              </div>
+          )
+      }
   }
 }
