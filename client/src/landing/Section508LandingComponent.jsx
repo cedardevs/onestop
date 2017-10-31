@@ -16,7 +16,7 @@ class Section508LandingComponent extends React.Component {
       queryText: {
         label: 'Search Text',
         placeholder: 'e.g. oceans',
-        toQueryValue: x => x,
+        toQueryValue: x => x.trim(),
         toFieldValue: x => x
       },
       startDateTime: {
@@ -57,7 +57,7 @@ class Section508LandingComponent extends React.Component {
 
   updateFieldValue(e) {
     const { name, value } = e.target
-    const newFields = _.assign(this.state.fields, {[name]: value.trim()})
+    const newFields = _.assign(this.state.fields, {[name]: value})
     this.setState({fields: newFields})
   }
 
@@ -84,7 +84,7 @@ class Section508LandingComponent extends React.Component {
   }
 
   stringToIsoDate(string) {
-    const parsedTime = moment(string, moment.ISO_8601)
+    const parsedTime = moment(string.trim(), moment.ISO_8601)
     return parsedTime.isValid() ? parsedTime.toISOString() : undefined
   }
 
