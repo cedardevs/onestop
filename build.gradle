@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '1.5.7.RELEASE'
+    springBootVersion = '1.5.8.RELEASE'
   }
   repositories {
     maven {
@@ -14,7 +14,7 @@ buildscript {
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     classpath 'com.wiredforcode:gradle-spawn-plugin:0.6.0'
     classpath 'com.moowork.gradle:gradle-node-plugin:0.13'
-    classpath 'org.owasp:dependency-check-gradle:1.4.5'
+    classpath 'org.owasp:dependency-check-gradle:2.1.1'
   }
 }
 
@@ -37,6 +37,7 @@ subprojects {
 //      project.tasks.findByName('check').dependsOn('dependencyCheck')
 
       dependencyCheck {
+        skipConfigurations = ["providedRuntime"]
         suppressionFile = "${rootDir}/owasp-suppressions.xml"
         failBuildOnCVSS = 4
 
