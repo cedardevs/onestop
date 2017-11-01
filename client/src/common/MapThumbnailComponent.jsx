@@ -26,22 +26,26 @@ class MapThumbnailComponent extends React.Component {
       this.map.remove()
     }
 
-    const geoJsonLayer = L.GeoJSON.geometryToLayer({
-      type: "Feature",
-      geometry: ensureDatelineFriendlyPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
-    })
-    geoJsonLayer.setStyle({
-      color: "red",
-      weight: 5,
-      opacity: 1
-    })
+    let geoJsonLayer
+    let layers = [
+      L.esri.basemapLayer("Imagery"),
+      L.esri.basemapLayer("ImageryLabels")
+    ]
+    if(this.props.geometry) {
+      geoJsonLayer = L.GeoJSON.geometryToLayer({
+        type: "Feature",
+        geometry: ensureDatelineFriendlyPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
+      })
+      geoJsonLayer.setStyle({
+        color: "red",
+        weight: 5,
+        opacity: 1
+      })
+      layers.push(geoJsonLayer)
+    }
 
     this.map = L.map(ReactDOM.findDOMNode(this), {
-      layers: [
-        L.esri.basemapLayer("Imagery"),
-        L.esri.basemapLayer("ImageryLabels"),
-        geoJsonLayer
-      ],
+      layers: layers,
       maxZoom: this.props.interactive ? 10 : 3,
       zoomControl: this.props.interactive,
       attributionControl: false,
@@ -67,7 +71,7 @@ class MapThumbnailComponent extends React.Component {
 
 
 MapThumbnailComponent.propTypes = {
-  geometry: PropTypes.object.isRequired,
+  geometry: PropTypes.object,
   interactive: PropTypes.bool.isRequired
 }
 
