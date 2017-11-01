@@ -39,7 +39,7 @@ class MapThumbnailComponent extends React.Component {
     this.map = L.map(ReactDOM.findDOMNode(this), {
       layers: [
         L.esri.basemapLayer("Imagery"),
-        L.esri.basemapLayer("OceansLabels"),
+        L.esri.basemapLayer("ImageryLabels"),
         geoJsonLayer
       ],
       maxZoom: this.props.interactive ? 10 : 3,
