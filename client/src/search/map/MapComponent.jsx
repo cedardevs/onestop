@@ -57,7 +57,7 @@ class MapComponent extends React.Component {
         maxZoom: 5,
         layers: [
             L.esri.basemapLayer("Imagery"),
-            L.esri.basemapLayer("OceansLabels")
+            L.esri.basemapLayer("ImageryLabels")
         ],
         attributionControl: false
       }),

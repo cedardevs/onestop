@@ -170,13 +170,19 @@ class SummaryView extends React.Component {
     // For point, want: "Point at [0], [1] (longitude, latitude)"
     // For polygon want: "Bounding box covering [0][0], [0][1], [2][0], [2][1] (N, W, S, E)"
     const geometry = this.props.item.spatialBounding
-    const deg = '\u00B0'
-    if (geometry.type.toLowerCase() === 'point') {
-      return `Point at ${geometry.coordinates[0]}${deg}, ${geometry.coordinates[1]}${deg} (longitude, latitude).`
+    if(geometry) {
+      const deg = '\u00B0'
+      if (geometry.type.toLowerCase() === 'point') {
+        return `Point at ${geometry.coordinates[0]}${deg}, ${geometry.coordinates[1]}${deg} (longitude, latitude).`
+      }
+      else {
+        return `Bounding box covering ${geometry.coordinates[0][0][0]}${deg}, ${geometry.coordinates[0][0][1]}${deg}, ${geometry.coordinates[0][2][0]}${deg}, ${geometry.coordinates[0][2][1]}${deg} (W, N, E, S).`
+      }
     }
     else {
-      return `Bounding box covering ${geometry.coordinates[0][0][0]}${deg}, ${geometry.coordinates[0][0][1]}${deg}, ${geometry.coordinates[0][2][0]}${deg}, ${geometry.coordinates[0][2][1]}${deg} (W, N, E, S).`
+      return 'No spatial bounding provided.'
     }
+
   }
 }
 
