@@ -88,6 +88,7 @@ const styleTitleBlur = {
 
 const styleMapContainer = {
     position: "absolute",
+    top: 0,
     zIndex: -1,
     width: "100%",
     maxWidth: "100%",
