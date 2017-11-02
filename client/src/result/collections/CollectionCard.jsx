@@ -5,8 +5,8 @@ import MapThumbnail from '../../common/MapThumbnail';
 
 const styleContainer = {
 	textAlign: 'center',
-	maxWidth: '20em',
-	height: '12.4em',
+	maxWidth: '25em',
+	height: '15.5em',
 	width: '100%',
 };
 

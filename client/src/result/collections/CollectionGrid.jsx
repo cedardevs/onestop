@@ -35,8 +35,8 @@ const styleGrid = {
 };
 
 const styleGridItemContainer = {
-	width: '20em',
-	height: '12.4em',
+	width: '25em',
+	height: '15.5em',
 	color: 'black',
 	backgroundColor: 'white',
 	margin: '0 2em 2em 0',
