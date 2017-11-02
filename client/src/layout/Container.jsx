@@ -28,10 +28,6 @@ export default class Container extends Component {
                             leftWidth={this.props.leftWidth}
                             leftVisible={this.props.leftVisible}
 
-                            tabs={this.props.tabs}
-                            tabCurrent={this.props.tabCurrent}
-                            onTabChange={this.props.onTabChange}
-
                             middle={this.props.middle}
 
                             right={this.props.right}

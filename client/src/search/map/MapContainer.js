@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import MapComponent from './MapComponent'
+import Map from './Map'
 import { newGeometry, removeGeometry } from '../../actions/SearchParamActions'
 
 const mapStateToProps = (state) => {
@@ -19,6 +19,6 @@ const mapDispatchToProps = (dispatch) => {
 const MapContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(MapComponent)
+)(Map)
 
 export default MapContainer

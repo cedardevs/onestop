@@ -16,7 +16,8 @@ const styleVisible = (width) => {
         flex: '0 0 ' + width + 'px',
         width: width + 'px',
         minWidth: "3.236em",
-        position: 'relative'
+        position: 'relative',
+        overflow: 'hidden'
     }
 }
 
@@ -27,7 +28,8 @@ const styleHidden = (width) => {
         flex: '0 1 0',
         width: width + 'px',
         minWidth: "2em",
-        position: 'relative'
+        position: 'relative',
+        overflow: 'initial'
     }
 }
 
@@ -58,7 +60,7 @@ const styleHiddenContent = {
 }
 
 const styleHiddentContentImage = {
-    height: "auto",
+    height: "1em",
 }
 
 const styleHiddentContentVerticalText = {

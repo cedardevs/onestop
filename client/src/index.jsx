@@ -2,7 +2,7 @@ import React from 'react'
 import {render} from 'react-dom'
 import { Router, Route, IndexRoute } from 'react-router'
 import ResultContainer from './result/ResultContainer'
-import Section508ResultLayout from './result/Section508ResultLayout'
+import Section508Result from './result/Section508Result'
 import CollectionGridContainer from './result/collections/CollectionGridContainer'
 import Section508CollectionGridContainer from './result/collections/Section508CollectionGridContainer'
 import Section508GranuleListContainer from './result/granules/list/Section508GranuleListContainer'
@@ -10,8 +10,7 @@ import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
 import Section508LandingContainer from './landing/Section508LandingContainer'
 import {Provider} from 'react-redux'
-// import RootComponent from './root/Root'
-import RootComponent from './root/RootNew'
+import RootComponent from './root/Root'
 import { initialize } from './actions/FlowActions'
 import '../style/style'
 import styles from './page.css'
@@ -32,7 +31,7 @@ const routesLayout =
 
     <Route path="508" name="Home" component={RootComponent}>
       <IndexRoute component={Section508LandingContainer}/>
-      <Route name="Collections" path="collections" component={Section508ResultLayout}>
+      <Route name="Collections" path="collections" component={Section508Result}>
         <IndexRoute displayName="Collections" component={Section508CollectionGridContainer}/>
         <Route name="Files" path="files" component={Section508GranuleListContainer}/>
       </Route>

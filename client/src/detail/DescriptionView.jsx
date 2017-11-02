@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import ShowMore from 'react-show-more'
 import { processUrl } from '../utils/urlUtils'
-import MapThumbnailComponent from '../common/MapThumbnailComponent'
+import MapThumbnail from '../common/MapThumbnail'
 import styles from './DetailStyles.css'
 
 export default class DescriptionView extends Component {
@@ -41,7 +41,7 @@ export default class DescriptionView extends Component {
       else if(geometry) {
           return (
               <div className={styles.previewMap}>
-                  <MapThumbnailComponent geometry={geometry} interactive={false}/>
+                  <MapThumbnail geometry={geometry} interactive={false}/>
               </div>
           )
       }

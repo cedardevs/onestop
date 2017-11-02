@@ -2,13 +2,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import stopCircle from 'fa/stop-circle-o.svg'
-import A from 'LinkComponent'
+import A from '../common/link/Link'
 import styles from './header.css'
 
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 const nceiLogo = require('../../img/ncei_dark_test_75.png')
 
-class HeaderComponent extends React.Component {
+class Header extends React.Component {
   constructor(props) {
     super(props)
     this.toggleBurgerMenu = this.toggleBurgerMenu.bind(this)
@@ -86,15 +86,15 @@ class HeaderComponent extends React.Component {
   }
 }
 
-HeaderComponent.propTypes = {
+Header.propTypes = {
   showSearch: PropTypes.bool.isRequired,
   goHome: PropTypes.func.isRequired,
   toggleHelp: PropTypes.func.isRequired,
   toggleAbout: PropTypes.func.isRequired
 }
 
-HeaderComponent.defaultProps = {
+Header.defaultProps = {
   showSearch: true
 }
 
-export default HeaderComponent
+export default Header

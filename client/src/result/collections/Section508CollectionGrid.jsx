@@ -2,10 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
-import A from 'LinkComponent'
+import A from '../../common/link/Link'
 import styles from './collectionGrid.css'
 
-class Section508CollectionGridComponent extends React.Component {
+class Section508CollectionGrid extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -122,7 +122,7 @@ class Section508CollectionGridComponent extends React.Component {
   }
 }
 
-Section508CollectionGridComponent.propTypes = {
+Section508CollectionGrid.propTypes = {
   textSearch: PropTypes.func.isRequired,
   showGranules: PropTypes.func.isRequired,
   fetchMoreResults: PropTypes.func,
@@ -131,4 +131,4 @@ Section508CollectionGridComponent.propTypes = {
   results: PropTypes.object.isRequired
 }
 
-export default Section508CollectionGridComponent
+export default Section508CollectionGrid

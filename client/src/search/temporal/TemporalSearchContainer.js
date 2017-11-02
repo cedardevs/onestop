@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import { updateDateRange } from '../../actions/SearchParamActions'
-import TemporalSearch from './TemporalComponent'
+import TemporalSearch from './TemporalSearch'
 
 const mapStateToProps = (state) => {
   const { startDateTime, endDateTime } = state.behavior.search
@@ -18,9 +18,9 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const TemporalContainer = connect(
+const TemporalSearchContainer = connect(
     mapStateToProps,
     mapDispatchToProps
 )(TemporalSearch)
 
-export default TemporalContainer
+export default TemporalSearchContainer

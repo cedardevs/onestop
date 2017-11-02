@@ -5,8 +5,8 @@ import star from 'fa/star.svg'
 import starO from 'fa/star-o.svg'
 import starHalfO from 'fa/star-half-o.svg'
 import styles from './DetailStyles.css'
-import A from 'LinkComponent'
-import MapThumbnailComponent from '../common/MapThumbnailComponent'
+import A from '../common/link/Link'
+import MapThumbnail from '../common/MapThumbnail'
 
 class SummaryView extends React.Component {
   constructor(props) {
@@ -52,7 +52,7 @@ class SummaryView extends React.Component {
             <div>{startDate && endDate ? `${startDate} to ${endDate}` : 'Not Provided'}</div>
             <div className={styles.sectionHeading}>Spatial Bounding Map:</div>
             <div className={styles.previewMap}>
-              <MapThumbnailComponent geometry={this.props.item.spatialBounding} interactive={true}/>
+              <MapThumbnail geometry={this.props.item.spatialBounding} interactive={true}/>
             </div>
             <div className={styles.sectionHeading}>Bounding Coordinates:</div>
             <div>{this.buildCoordinatesString()}</div>

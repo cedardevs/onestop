@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import TemporalContainer from './temporal/TemporalContainer'
+import TemporalSearchContainer from './temporal/TemporalSearchContainer'
 import MapContainer from './map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
-import TextSearchField from './TextSearchFieldComponent'
+import TextSearchField from './TextSearchField'
 import _ from 'lodash'
 import clock from 'fa/clock-o.svg'
 import globe from 'fa/globe.svg'
@@ -13,7 +13,7 @@ import search from 'fa/search.svg'
 import styles from './searchFields.css'
 
 
-class SearchFieldsComponent extends React.Component {
+class SearchFields extends React.Component {
   constructor(props) {
     super(props)
     this.submit = props.submit
@@ -166,7 +166,7 @@ class SearchFieldsComponent extends React.Component {
               <img src={clock} />
             </button>
             <ToggleDisplay show={this.state.showCalendar}>
-              <TemporalContainer ref={timeComponent=>this.timeComponent=timeComponent} toggleSelf={this.toggleCalendar}
+              <TemporalSearchContainer ref={timeComponent=>this.timeComponent=timeComponent} toggleSelf={this.toggleCalendar}
                 calendarVisible={this.state.showCalendar}/>
             </ToggleDisplay>
             <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`}
@@ -198,8 +198,8 @@ class SearchFieldsComponent extends React.Component {
   }
 }
 
-SearchFieldsComponent.defaultProps = {
+SearchFields.defaultProps = {
   header: false
 }
 
-export default SearchFieldsComponent
+export default SearchFields

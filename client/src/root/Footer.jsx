@@ -2,10 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styles from './footer.css'
 import github from 'fa/github.svg'
-import A from 'LinkComponent'
-import 'purecss'
+import A from '../common/link/Link'
 
-class FooterComponent  extends React.Component {
+class Footer extends React.Component {
 
     constructor(props) {
         super(props)
@@ -43,15 +42,11 @@ class FooterComponent  extends React.Component {
         return (
             <nav role="footer">
               <div className={styles.footer}>
-                <div className={'pure-g'}>
-                  <div className={`pure-u-1`} >
-                    <nav className={styles.headerLinks} role="external links">
-                      <ul className={`${styles.footerLinks}`} >
-                          {links.map((link, i) => <li key={i} ><A href={link.href} title={link.text} >{link.text} </A></li>)}
-                      </ul>
-                    </nav>
-                  </div>
-                </div>
+                <nav className={styles.headerLinks} role="external links">
+                  <ul className={`${styles.footerLinks}`} >
+                      {links.map((link, i) => <li key={i} ><A href={link.href} title={link.text} >{link.text} </A></li>)}
+                  </ul>
+                </nav>
                 <div className={`${styles.versionInfo}`}>
                   <A target="_blank" href ="https://github.com/cedardevs/onestop/releases" >
                     Version: {strippedVersion} <img src={github} className={styles.github} aria-hidden="true"></img>
@@ -64,12 +59,12 @@ class FooterComponent  extends React.Component {
 
 }
 
-FooterComponent.propTypes = {
+Footer.propTypes = {
     version: PropTypes.string.isRequired
 }
 
-FooterComponent.defaultProps = {
+Footer.defaultProps = {
     version: ""
 }
 
-export default FooterComponent
+export default Footer

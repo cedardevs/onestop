@@ -1,10 +1,10 @@
 import React from 'react'
 import styles from './landing.css'
-import FeaturedItemsComponent from './FeaturedItemsComponent'
+import FeaturedItems from './FeaturedItems'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import stopCircle from 'fa/stop-circle-o.svg'
 
-class LandingComponent extends React.Component {
+class Landing extends React.Component {
   constructor(props) {
     super(props)
     this.submit = props.submit
@@ -61,7 +61,7 @@ class LandingComponent extends React.Component {
       return <div className={`pure-u-1`} aria-labelledby="featuredDatasets">
         <h2 id="featuredDatasets">Featured Data Sets:</h2>
         <div className={`${styles.featuredContainer}`}>
-          <FeaturedItemsComponent doSearch={this.search.bind(this)} items={this.props.featured}/>
+          <FeaturedItems doSearch={this.search.bind(this)} items={this.props.featured}/>
         </div>
       </div>
     }
@@ -85,4 +85,4 @@ class LandingComponent extends React.Component {
   }
 }
 
-export default LandingComponent
+export default Landing

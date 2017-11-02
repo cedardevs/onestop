@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import MapContainer from './GranuleMapContainer'
-import A from 'LinkComponent'
+import A from '../../common/link/Link'
 import styles from './list.css'
 
 export default class GranuleView extends Component {

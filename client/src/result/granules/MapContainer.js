@@ -1,15 +1,13 @@
 import { connect } from 'react-redux'
 import _ from 'lodash'
-import Map from '../../search/map/Map'
+import MapComponent from '../../search/map/Map'
 import { toggleGranuleFocus } from '../../actions/FlowActions'
-
-import { ensureDatelineFriendlyPolygon } from '../../utils/geoUtils'
 
 const mapStateToProps = (state) => {
   let { granules } = state.domain.results
   let featureCollection = []
   _.forOwn(granules, (data, id) => {
-    if(data.spatialBounding) { featureCollection.push(convertToGeoJson(data, id)) }
+    featureCollection.push(convertToGeoJson(data, id))
   })
   return {
     geoJsonFeatures: featureCollection,
@@ -26,12 +24,12 @@ const mapDispatchToProps = (dispatch) => {
 const MapContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(Map)
+)(MapComponent)
 
 const convertToGeoJson = (recordData, id) => {
   // Currently defaulting to rendering bounding box coordinates
   return {
-    geometry: ensureDatelineFriendlyPolygon(recordData.spatialBounding),
+    geometry: recordData.spatialBounding,
     properties: _.assign({}, recordData, {id: id}),
     type: "Feature"
   }

@@ -7,7 +7,7 @@ import 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
 
-class MapComponent extends React.Component {
+class Map extends React.Component {
 	constructor(props) {
 		super(props)
 		this.handleNewGeometry = props.handleNewGeometry
@@ -192,10 +192,10 @@ class MapComponent extends React.Component {
   }
 }
 
-MapComponent.defaultProps = {
+Map.defaultProps = {
   selection: false,
   features: true
 }
 
 
-export default MapComponent
+export default Map

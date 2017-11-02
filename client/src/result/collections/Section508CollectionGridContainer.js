@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import { showCollections, showGranules, setFocus } from '../../actions/FlowActions'
 import { incrementCollectionsOffset, triggerSearch, fetchGranules, clearCollections, clearGranules } from '../../actions/SearchRequestActions'
 import { toggleSelection, clearSelections, updateQuery, updateSearch } from '../../actions/SearchParamActions'
-import CollectionGrid from './Section508CollectionGridComponent'
+import Section508CollectionGrid from './Section508CollectionGrid'
 
 const mapStateToProps = (state) => {
   const { collections, totalCollections, pageSize } = state.domain.results
@@ -41,9 +41,9 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const CollectionGridContainer = connect(
+const Section508CollectionGridContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(CollectionGrid)
+)(Section508CollectionGrid)
 
-export default CollectionGridContainer
+export default Section508CollectionGridContainer

@@ -5,10 +5,10 @@ import clock from 'fa/clock-o.svg'
 import globe from 'fa/globe.svg'
 import search from 'fa/search.svg'
 import chevronRight from 'fa/chevron-right.svg'
-import A from 'LinkComponent'
+import A from '../../common/link/Link'
 import styles from './info.css'
 
-class InfoComponent extends React.Component {
+class Info extends React.Component {
   constructor(props) {
     super(props)
     this.showAbout = props.showAbout
@@ -170,4 +170,4 @@ class InfoComponent extends React.Component {
   }
 }
 
-export default InfoComponent
+export default Info

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { showCollections, toggleGranuleFocus } from '../../../actions/FlowActions'
 import { incrementGranulesOffset, fetchGranules } from '../../../actions/SearchRequestActions'
-import GranuleList from './Section508GranuleListComponent'
+import Section508GranuleList from './Section508GranuleList'
 
 const mapStateToProps = (state) => {
   const id = state.behavior.search.selectedIds[0]
@@ -25,9 +25,9 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 
-const GranuleListContainer = connect(
+const Section508GranuleListContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(GranuleList)
+)(Section508GranuleList)
 
-export default GranuleListContainer
+export default Section508GranuleListContainer

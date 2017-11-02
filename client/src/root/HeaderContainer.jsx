@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import HeaderComponent from './HeaderComponent'
+import Header from './Header'
 import { showHome, toggleHelp, toggleAbout } from '../actions/FlowActions'
 
 const mapStateToProps = (state) => {
@@ -17,6 +17,6 @@ const mapDispatchToProps = (dispatch) => {
 const HeaderContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(HeaderComponent)
+)(Header)
 
 export default HeaderContainer

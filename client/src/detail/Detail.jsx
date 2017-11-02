@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import ShowMore from 'react-show-more'
-// import A from 'LinkComponent'
+// import A from '../common/link/Link'
 import styles from './DetailStyles.css'
 import Tabs from './Tabs'
 import SummaryView from './SummaryView'

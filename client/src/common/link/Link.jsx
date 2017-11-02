@@ -2,7 +2,7 @@ import React from 'react'
 import {isGovExternal} from '../../utils/urlUtils'
 import './link.css'
 
-class LinkComponent extends React.Component {
+class Link extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -41,4 +41,4 @@ products that may be advertised or available on that site.`
   }
 }
 
-export default LinkComponent
+export default Link

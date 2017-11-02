@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { processUrl } from '../utils/urlUtils'
 import styles from './featuredItems.css'
 
-class FeaturedItemsComponent extends React.Component {
+class FeaturedItems extends React.Component {
   constructor(props) {
     super(props)
 
@@ -127,7 +127,7 @@ class FeaturedItemsComponent extends React.Component {
   }
 }
 
-FeaturedItemsComponent.propTypes = {
+FeaturedItems.propTypes = {
   doSearch: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string,
@@ -136,4 +136,4 @@ FeaturedItemsComponent.propTypes = {
   })).isRequired
 }
 
-export default FeaturedItemsComponent
+export default FeaturedItems

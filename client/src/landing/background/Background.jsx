@@ -2,7 +2,7 @@ import React from 'react'
 import styles from './background.css'
 import Modernizr from 'modernizr'
 
-class BackgroundComponent extends React.Component {
+class Background extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -15,4 +15,4 @@ class BackgroundComponent extends React.Component {
   }
 }
 
-export default BackgroundComponent
+export default Background

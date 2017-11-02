@@ -2,10 +2,10 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
-import A from 'LinkComponent'
+import A from '../../../common/link/Link'
 import styles from './list.css'
 
-class GranuleList extends React.Component {
+class Section508GranuleList extends React.Component {
 
   constructor(props) {
     super(props)
@@ -80,7 +80,7 @@ class GranuleList extends React.Component {
   }
 }
 
-GranuleList.propTypes = {
+Section508GranuleList.propTypes = {
   results: PropTypes.object,
   focusedIds: PropTypes.array,
   selectedCollection: PropTypes.object,
@@ -90,4 +90,4 @@ GranuleList.propTypes = {
   fetchMoreResults: PropTypes.func
 }
 
-export default GranuleList
+export default Section508GranuleList

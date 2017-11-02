@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import moment from 'moment'
-import DateTimePicker from './DateTimePickerComponent'
+import DateTimePicker from './DateTimePicker'
 import styles from './temporal.css'
 
 

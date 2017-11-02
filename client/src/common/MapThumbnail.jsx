@@ -6,7 +6,7 @@ import 'esri-leaflet'
 import _ from 'lodash'
 import { ensureDatelineFriendlyPolygon } from '../utils/geoUtils'
 
-class MapThumbnailComponent extends React.Component {
+class MapThumbnail extends React.Component {
   constructor(props) {
     super(props)
 
@@ -70,9 +70,9 @@ class MapThumbnailComponent extends React.Component {
 }
 
 
-MapThumbnailComponent.propTypes = {
+MapThumbnail.propTypes = {
   geometry: PropTypes.object,
   interactive: PropTypes.bool.isRequired
 }
 
-export default MapThumbnailComponent
+export default MapThumbnail

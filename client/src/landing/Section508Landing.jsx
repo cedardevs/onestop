@@ -5,7 +5,7 @@ import styles from './section508.css'
 import moment from 'moment'
 import { convertBboxToGeoJson, convertGeoJsonToBbox } from '../utils/geoUtils'
 
-class Section508LandingComponent extends React.Component {
+class Section508Landing extends React.Component {
   constructor(props) {
     super(props)
 
@@ -156,7 +156,7 @@ class Section508LandingComponent extends React.Component {
 
 }
 
-Section508LandingComponent.propTypes = {
+Section508Landing.propTypes = {
   submit: PropTypes.func.isRequired,
   clearSearch: PropTypes.func.isRequired,
   updateSearch: PropTypes.func.isRequired,
@@ -166,4 +166,4 @@ Section508LandingComponent.propTypes = {
   geoJSON: PropTypes.object
 }
 
-export default Section508LandingComponent
+export default Section508Landing
