@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { processUrl } from '../../utils/urlUtils';
 import MapThumbnail from '../../common/MapThumbnail';
 
-const styleContainer = {
-	textAlign: 'center',
-	maxWidth: '25em',
+const styleCard = {
+	width: '25em',
 	height: '15.5em',
-	width: '100%',
+	margin: '0 2em 2em 0',
+    textAlign: 'center'
 };
 
 const styleContent = {
@@ -179,11 +179,6 @@ export default class CollectionCard extends Component {
 
 	render() {
 
-	    const styleContainerMerged = {
-            ...styleContainer,
-            ...this.props.style
-        }
-
 		const styleContentMerged = {
 			...styleContent,
 			...this.thumbnailStyle(),
@@ -203,7 +198,7 @@ export default class CollectionCard extends Component {
 
 		return (
 			<div
-				style={styleContainerMerged}
+				style={styleCard}
 				onKeyPress={e => this.handleKeyPress(e, this.props.onClick)}
 			>
 				<div style={styleContentMerged}>

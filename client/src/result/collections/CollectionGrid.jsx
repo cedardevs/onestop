@@ -34,14 +34,6 @@ const styleGrid = {
 	margin: '0 0 0 2em',
 };
 
-const styleGridItemContainer = {
-	width: '25em',
-	height: '15.5em',
-	color: 'black',
-	backgroundColor: 'white',
-	margin: '0 2em 2em 0',
-};
-
 const styleShowMore = {
 	display: 'flex',
 	justifyContent: 'center',
@@ -134,7 +126,6 @@ export default class CollectionGrid extends Component {
 			let tileProps = {
 				key: key,
 				cardKey: key,
-				style: styleGridItemContainer,
 				title: result.title,
 				thumbnail: result.thumbnail,
 				description: result.description,
