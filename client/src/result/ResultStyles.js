@@ -1,6 +1,5 @@
 export const styleResult = {
     paddingTop: "1.618em",
-    fontSize: "1.2em"
 }
 
 export const styleResult508 = {
