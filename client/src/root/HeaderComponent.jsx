@@ -70,7 +70,7 @@ class HeaderComponent extends React.Component {
   renderLogo() {
     if (this.props.showSearch) {
       return <div>
-        <A href="//www.noaa.gov" title="NOAA Home">
+        <A href="http://www.noaa.gov" title="NOAA Home">
           <img className={styles.noaaLogo} id='logo' alt="NOAA Logo" src={noaaLogo}/>
         </A>
         <a href="#" title="One Stop Home" className={styles.oneStopLink} onClick={() => this.props.goHome()}>
