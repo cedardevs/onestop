@@ -17,13 +17,13 @@ class FooterComponent  extends React.Component {
                 href: "//www.ncdc.noaa.gov/about-ncdc/privacy",
                 text: "Privacy Policy"
             }, {
-                href: "//www.noaa.gov/foia-freedom-of-information-act",
+                href: "http://www.noaa.gov/foia-freedom-of-information-act",
                 text: "Freedom of Information Act"
             }, {
-                href: "//www.cio.noaa.gov/services_programs/info_quality.html",
+                href: "http://www.cio.noaa.gov/services_programs/info_quality.html",
                 text: "Information Quality"
             }, {
-                href: "//www.noaa.gov/disclaimer.html",
+                href: "http://www.noaa.gov/disclaimer.html",
                 text: "Disclaimer"
             }, {
                 href: "//www.ncdc.noaa.gov/survey",
