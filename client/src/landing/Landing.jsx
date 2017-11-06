@@ -12,8 +12,8 @@ class Landing extends React.Component {
   }
 
   search(query) {
-    this.updateQuery(query);
-    this.submit(query);
+    this.updateQuery(query)
+    this.submit(query)
   }
 
   render() {
@@ -26,33 +26,33 @@ class Landing extends React.Component {
       {title: 'Oceans', term: "oceans", icon: require('../../img/topics/oceans.png')}
     ]
     topics = topics.map((topic, i) => {
-      return <div key={i} className={`${styles.topicItem}`} onClick={()=>this.search(topic.term)}>
+      return <div key={i} className={`${styles.topicItem}`} onClick={() => this.search(topic.term)}>
         <img src={topic.icon} aria-hidden="true"/>
         <button title={`${topic.title}`}>{topic.title}</button>
       </div>
     })
 
     return (
-      <div className={`pure-g ${styles.showcase}`}>
-        <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true">
-                        <img src={stopCircle} />neStop
-        </div>
-        <h1 className={styles.hiddenPageTitle}>OneStop: A NOAA Data Search Platform</h1>
-        <div className={`pure-u-1 ${styles.heroText}`}>
-          Geophysical, oceans, coastal, weather and climate data discovery all in one place.<br/>
-          {this.buildCountString()}
-        </div>
-        <div className={`pure-u-1 ${styles.searchComponent}`}>
-          <SearchFieldsContainer/>
-        </div>
-        <div className={`pure-u-1`}>
-          <div className={`${styles.topicContainer}`} aria-labelledby="searchTopics">
-            <h2 id="searchTopics">Search by Topic:</h2>
-            <ul>{topics}</ul>
+        <div className={`pure-g ${styles.showcase}`}>
+          <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true">
+            <img src={stopCircle}/>neStop
           </div>
+          <h1 className={styles.hiddenPageTitle}>OneStop: A NOAA Data Search Platform</h1>
+          <div className={`pure-u-1 ${styles.heroText}`}>
+            Geophysical, oceans, coastal, weather and climate data discovery all in one place.<br/>
+            {this.buildCountString()}
+          </div>
+          <div className={`pure-u-1 ${styles.searchComponent}`}>
+            <SearchFieldsContainer/>
+          </div>
+          <div className={`pure-u-1`}>
+            <div className={`${styles.topicContainer}`} aria-labelledby="searchTopics">
+              <h2 id="searchTopics">Search by Topic:</h2>
+              <ul>{topics}</ul>
+            </div>
+          </div>
+          {this.renderFeatured()}
         </div>
-        {this.renderFeatured()}
-      </div>
     )
   }
 

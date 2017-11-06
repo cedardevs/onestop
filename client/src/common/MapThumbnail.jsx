@@ -31,7 +31,7 @@ class MapThumbnail extends React.Component {
       L.esri.basemapLayer("Imagery"),
       L.esri.basemapLayer("ImageryLabels")
     ]
-    if(this.props.geometry) {
+    if (this.props.geometry) {
       geoJsonLayer = L.GeoJSON.geometryToLayer({
         type: "Feature",
         geometry: ensureDatelineFriendlyPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
@@ -61,7 +61,7 @@ class MapThumbnail extends React.Component {
 
   fitMapToResults(geoJsonLayer) {
     if (this.props.geometry) {
-      this.map.fitBounds(geoJsonLayer.getBounds(), { maxZoom: 3 })
+      this.map.fitBounds(geoJsonLayer.getBounds(), {maxZoom: 3})
     }
     else {
       this.map.fitWorld()

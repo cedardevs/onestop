@@ -5,7 +5,7 @@ import Section508GranuleList from './Section508GranuleList'
 
 const mapStateToProps = (state) => {
   const id = state.behavior.search.selectedIds[0]
-  const { collections, granules, totalGranules } = state.domain.results
+  const {collections, granules, totalGranules} = state.domain.results
   return {
     results: granules,
     focusedIds: state.ui.granuleDetails.focusedGranules,
@@ -26,8 +26,8 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 const Section508GranuleListContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(Section508GranuleList)
 
 export default Section508GranuleListContainer

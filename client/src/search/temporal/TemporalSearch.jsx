@@ -33,7 +33,8 @@ class TemporalSearch extends React.Component {
     document.addEventListener('click', this.handleClickOutside, true)
     this.setState({
       startValueNode: ReactDOM.findDOMNode(this.startValue),
-      endValueNode: ReactDOM.findDOMNode(this.endValue)})
+      endValueNode: ReactDOM.findDOMNode(this.endValue)
+    })
   }
 
   componentWillUnmount() {
@@ -42,15 +43,15 @@ class TemporalSearch extends React.Component {
 
   handleClickOutside(event) {
     const domNode = ReactDOM.findDOMNode(this)
-    const { startValueNode, endValueNode } = this.state
+    const {startValueNode, endValueNode} = this.state
     const dateNode = startValueNode ? startValueNode : endValueNode
-    if (event && event.path){
-      const { id } = event.path[0]
+    if (event && event.path) {
+      const {id} = event.path[0]
       if (((!domNode || !domNode.contains(event.target))
-          && id !== 'timeButton')
+              && id !== 'timeButton')
           && (!dateNode || !dateNode.contains(event.target))
           && this.props.calendarVisible) {
-          this.props.toggleSelf()
+        this.props.toggleSelf()
       }
     }
   }
@@ -68,22 +69,22 @@ class TemporalSearch extends React.Component {
 
   disabledEndDate(endValue) {
     if (!endValue) {
-      return false;
+      return false
     }
-    const startValue = this.state.startValue;
+    const startValue = this.state.startValue
     if (!startValue) {
-      return false;
+      return false
     }
     return endValue.isBefore(startValue)
   }
 
   disabledStartDate(startValue) {
     if (!startValue) {
-      return false;
+      return false
     }
-    const endValue = this.state.endValue;
+    const endValue = this.state.endValue
     if (!endValue) {
-      return false;
+      return false
     }
     return endValue.isBefore(startValue)
   }
@@ -95,7 +96,7 @@ class TemporalSearch extends React.Component {
   }
 
   updateTemporalFilters() {
-    const { startValue, endValue } = this.state
+    const {startValue, endValue} = this.state
     let startString = startValue ? startValue.format() : ''
     let endString = endValue ? endValue.format() : ''
     this.props.updateOnChange(startString, endString)

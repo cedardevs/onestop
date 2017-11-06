@@ -24,13 +24,15 @@ class Section508CollectionGrid extends React.Component {
   }
 
   renderLinks(label, links, linkRenderer) {
-    if (!links || links.length === 0) { return <ul></ul> }
+    if (!links || links.length === 0) {
+      return <ul></ul>
+    }
 
     return <ul title={label} className={styles.collectionList508}>{links.map(linkRenderer)}</ul>
   }
 
   renderLink(link, index) {
-    const { linkName, linkProtocol, linkUrl } = link
+    const {linkName, linkProtocol, linkUrl} = link
     return <li key={index} className={styles.links}>
       <A href={linkUrl} target="_blank" title={linkProtocol || linkName || 'Link'}>
         {linkProtocol || linkName || 'Link'}
@@ -40,10 +42,10 @@ class Section508CollectionGrid extends React.Component {
 
   getKeywordsByType(keywords) {
     return keywords
-      .map((k) => k.split('>')) // split GCMD keywords apart
-      .reduce((list, keys) => list.concat(keys), []) // flatten
-      .map((k) => k.toLowerCase().trim()) // you can figure this one out
-      .filter((k, i, a) => a.indexOf(k) === i) // dedupe
+        .map((k) => k.split('>')) // split GCMD keywords apart
+        .reduce((list, keys) => list.concat(keys), []) // flatten
+        .map((k) => k.toLowerCase().trim()) // you can figure this one out
+        .filter((k, i, a) => a.indexOf(k) === i) // dedupe
   }
 
   renderKeyword(keyword, index) {
@@ -56,7 +58,7 @@ class Section508CollectionGrid extends React.Component {
 
   render() {
     const collections = []
-    const { returnedHits, totalHits, pageSize } = this.props
+    const {returnedHits, totalHits, pageSize} = this.props
     let focusCardNum
     if (returnedHits === totalHits) {
       focusCardNum = returnedHits - (returnedHits % pageSize)
@@ -70,8 +72,8 @@ class Section508CollectionGrid extends React.Component {
         className: styles.listItem,
         tabIndex: 0
       }
-      if (focusCardNum-- == 0  && pageSize !== returnedHits) {
-        listItemProps.ref = focusCard=>this.focusCard=focusCard
+      if (focusCardNum-- == 0 && pageSize !== returnedHits) {
+        listItemProps.ref = focusCard => this.focusCard = focusCard
       }
       collections.push(
           <li {...listItemProps}>
@@ -110,7 +112,7 @@ class Section508CollectionGrid extends React.Component {
 
     return <div>
       <div className={styles.resultCount} tabIndex={0}
-        ref={resultCount=>this.resultCount=resultCount}>
+           ref={resultCount => this.resultCount = resultCount}>
         <h2>Search Results (showing {this.props.returnedHits} of {this.props.totalHits})</h2>
       </div>
       <div className={styles.listContainer}>

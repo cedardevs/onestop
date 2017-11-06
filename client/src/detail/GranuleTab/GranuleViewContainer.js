@@ -5,7 +5,7 @@ import GranuleView from './GranuleView'
 
 const mapStateToProps = (state, reactProps) => {
   const id = state.behavior.search.selectedIds[0]
-  const { granules, totalGranules } = state.domain.results
+  const {granules, totalGranules} = state.domain.results
   return {
     results: granules,
     totalHits: totalGranules

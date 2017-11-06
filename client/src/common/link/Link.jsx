@@ -1,5 +1,5 @@
 import React from 'react'
-import {isGovExternal} from '../../utils/urlUtils'
+import { isGovExternal } from '../../utils/urlUtils'
 import './link.css'
 
 class Link extends React.Component {
@@ -8,7 +8,7 @@ class Link extends React.Component {
   }
 
   render() {
-    const { href, target, onClick, ...others } = this.props
+    const {href, target, onClick, ...others} = this.props
     return <a
         href={href}
         target={target}

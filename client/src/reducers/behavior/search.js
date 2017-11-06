@@ -30,8 +30,10 @@ export const search = (state = initialState, action) => {
       return Immutable.set(state, 'geoJSON', initialState.geoJSON)
 
     case UPDATE_DATE_RANGE:
-      return Immutable.merge(state, {startDateTime: action.startDate,
-        endDateTime: action.endDate })
+      return Immutable.merge(state, {
+        startDateTime: action.startDate,
+        endDateTime: action.endDate
+      })
 
     case TOGGLE_FACET:
       return Immutable.set(state, 'selectedFacets', action.selectedFacets)
@@ -59,9 +61,11 @@ export const search = (state = initialState, action) => {
 export default search
 
 const toggleId = (selectedIds, value, idx = 0) => {
-  if (idx === selectedIds.length){
+  if (idx === selectedIds.length) {
     return selectedIds.concat([value])
-  } else if (selectedIds[idx] === value){
+  } else if (selectedIds[idx] === value) {
     return selectedIds.slice(0, idx).concat(selectedIds.slice(idx + 1))
-  } else { return toggleId(selectedIds, value, idx + 1) }
+  } else {
+    return toggleId(selectedIds, value, idx + 1)
+  }
 }

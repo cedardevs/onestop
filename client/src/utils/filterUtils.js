@@ -1,12 +1,12 @@
-import _ from 'lodash';
+import _ from 'lodash'
 
 const buildHierarchyMap = (category, terms) => {
 
   var createChildrenHierarchy = (map, hierarchy, term, value) => {
     const lastTerm = hierarchy.pop()
-    if(!_.isEmpty(hierarchy)) {
-      let i;
-      for(i = 0; i < hierarchy.length; i++) {
+    if (!_.isEmpty(hierarchy)) {
+      let i
+      for (i = 0; i < hierarchy.length; i++) {
         // Since hierarchical strings are received in alphabetical order, this traversal
         // down the nested object won't error out
         //_.defaults(map, map[hierarchy[i]].children)
@@ -20,7 +20,7 @@ const buildHierarchyMap = (category, terms) => {
 
   let categoryMap = {}
 
-  Object.keys(terms).map( term => {
+  Object.keys(terms).map(term => {
     let hierarchy = term.split(' > ')
     const value = {
       count: terms[term].count,
@@ -42,13 +42,13 @@ export const buildKeywordHierarchyMap = facetMap => {
       let heading
       let categoryMap = {}
 
-      if(category === 'science') {
+      if (category === 'science') {
         heading = 'Data Theme'
         categoryMap = buildHierarchyMap(category, terms)
       }
       else {
         heading = _.startCase(_.toLower((category.split(/(?=[A-Z])/).join(" "))))
-        Object.keys(terms).map( term => {
+        Object.keys(terms).map(term => {
           const name = term.split(' > ')
           categoryMap[name[0]] = {
             count: terms[term].count,

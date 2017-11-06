@@ -5,7 +5,7 @@ import { incrementCollectionsOffset, triggerSearch } from '../../actions/SearchR
 import CollectionGrid from './CollectionGrid'
 
 const mapStateToProps = (state) => {
-  const { collections, totalCollections, pageSize } = state.domain.results
+  const {collections, totalCollections, pageSize} = state.domain.results
   return {
     results: collections,
     totalHits: totalCollections,

@@ -5,7 +5,7 @@ import { showCollections } from '../actions/FlowActions'
 import { updateSearch } from '../actions/SearchParamActions'
 
 const mapStateToProps = (state) => {
-  const { queryText, startDateTime, endDateTime, geoJSON } = state.behavior.search
+  const {queryText, startDateTime, endDateTime, geoJSON} = state.behavior.search
   return {
     queryText: queryText,
     startDateTime: startDateTime,

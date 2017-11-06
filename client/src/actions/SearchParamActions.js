@@ -59,7 +59,7 @@ export const clearSelections = () => {
 export const TOGGLE_FACET = 'TOGGLE_FACET'
 export const toggleFacet = (category, facetName, selected) => {
   return (dispatch, getState) => {
-    const { selectedFacets } = getState().behavior.search
+    const {selectedFacets} = getState().behavior.search
     const newSelectedFacets = updateSelectedFacets(selectedFacets, category,
         facetName, selected)
     dispatch({
@@ -73,58 +73,58 @@ export const TOGGLE_EXCLUDE_GLOBAL = 'TOGGLE_EXCLUDE_GLOBAL'
 export const toggleExcludeGlobal = () => {
   return (dispatch, getState) => {
     dispatch({
-       type: TOGGLE_EXCLUDE_GLOBAL
+      type: TOGGLE_EXCLUDE_GLOBAL
     })
   }
 }
 
-const updateSelectedFacets = (selectedFacets, category, term, selected ) => {
+const updateSelectedFacets = (selectedFacets, category, term, selected) => {
 
-    const selectedTerms = selectedFacets[category];
+  const selectedTerms = selectedFacets[category]
 
-    // add to selected facets, if needed
-    if(selected) {
-        if(!selectedTerms) {
-            // both category and term aren't yet in the selectedTerms
-            return Immutable.set(selectedFacets, category, [term]);
-        }
-        else if(!selectedTerms.includes(term)) {
-            // the term isn't yet in the selectedTerms
-            return Immutable.set(selectedFacets, category, selectedTerms.concat([term]));
-        }
-        else {
-            // already selected, no need to duplicate term
-            return selectedFacets;
-        }
+  // add to selected facets, if needed
+  if (selected) {
+    if (!selectedTerms) {
+      // both category and term aren't yet in the selectedTerms
+      return Immutable.set(selectedFacets, category, [term])
     }
-    // remove from selected facets, if needed
+    else if (!selectedTerms.includes(term)) {
+      // the term isn't yet in the selectedTerms
+      return Immutable.set(selectedFacets, category, selectedTerms.concat([term]))
+    }
     else {
-        if (!selectedTerms) {
-            // can't remove if category doesn't exist in selectedFacets
-            return selectedFacets;
-        }
-        else {
-            // search for index of term to be removed from selectedFacets
-            let removeIndex = selectedTerms.indexOf(term)
-            // the term exists to be removed
-            if (removeIndex > -1) {
-                const beforeRemove = selectedTerms.slice(0, removeIndex);
-                const afterRemove = selectedTerms.slice(removeIndex + 1);
-                const newTerms = beforeRemove.concat(afterRemove);
-
-                // remove the whole category from selectedFacets if the new terms array is empty
-                if (_.isEmpty(newTerms)) {
-                    return Immutable.without(selectedFacets, category);
-                }
-                // otherwise replace the category terms array with the newTerms
-                else {
-                    return Immutable.set(selectedFacets, category, newTerms);
-                }
-            }
-            // the term does not exist to be removed
-            else {
-                return selectedFacets;
-            }
-        }
+      // already selected, no need to duplicate term
+      return selectedFacets
     }
+  }
+  // remove from selected facets, if needed
+  else {
+    if (!selectedTerms) {
+      // can't remove if category doesn't exist in selectedFacets
+      return selectedFacets
+    }
+    else {
+      // search for index of term to be removed from selectedFacets
+      let removeIndex = selectedTerms.indexOf(term)
+      // the term exists to be removed
+      if (removeIndex > -1) {
+        const beforeRemove = selectedTerms.slice(0, removeIndex)
+        const afterRemove = selectedTerms.slice(removeIndex + 1)
+        const newTerms = beforeRemove.concat(afterRemove)
+
+        // remove the whole category from selectedFacets if the new terms array is empty
+        if (_.isEmpty(newTerms)) {
+          return Immutable.without(selectedFacets, category)
+        }
+        // otherwise replace the category terms array with the newTerms
+        else {
+          return Immutable.set(selectedFacets, category, newTerms)
+        }
+      }
+      // the term does not exist to be removed
+      else {
+        return selectedFacets
+      }
+    }
+  }
 }

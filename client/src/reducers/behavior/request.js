@@ -8,7 +8,7 @@ export const initialState = Immutable({
 })
 
 export const request = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case SEARCH:
       return Immutable.set(state, 'collectionInFlight', true)
 

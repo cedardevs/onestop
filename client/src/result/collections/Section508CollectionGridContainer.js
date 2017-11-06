@@ -1,11 +1,17 @@
 import { connect } from 'react-redux'
 import { showCollections, showGranules, setFocus } from '../../actions/FlowActions'
-import { incrementCollectionsOffset, triggerSearch, fetchGranules, clearCollections, clearGranules } from '../../actions/SearchRequestActions'
+import {
+  incrementCollectionsOffset,
+  triggerSearch,
+  fetchGranules,
+  clearCollections,
+  clearGranules
+} from '../../actions/SearchRequestActions'
 import { toggleSelection, clearSelections, updateQuery, updateSearch } from '../../actions/SearchParamActions'
 import Section508CollectionGrid from './Section508CollectionGrid'
 
 const mapStateToProps = (state) => {
-  const { collections, totalCollections, pageSize } = state.domain.results
+  const {collections, totalCollections, pageSize} = state.domain.results
   return {
     results: collections,
     totalHits: totalCollections,

@@ -6,10 +6,12 @@ import { toggleGranuleFocus } from '../../actions/FlowActions'
 import { ensureDatelineFriendlyPolygon } from '../../utils/geoUtils'
 
 const mapStateToProps = (state) => {
-  let { granules } = state.domain.results
+  let {granules} = state.domain.results
   let featureCollection = []
   _.forOwn(granules, (data, id) => {
-    if(data.spatialBounding) { featureCollection.push(convertToGeoJson(data, id)) }
+    if (data.spatialBounding) {
+      featureCollection.push(convertToGeoJson(data, id))
+    }
   })
   return {
     geoJsonFeatures: featureCollection,

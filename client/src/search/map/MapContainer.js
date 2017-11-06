@@ -3,7 +3,7 @@ import Map from './Map'
 import { newGeometry, removeGeometry } from '../../actions/SearchParamActions'
 
 const mapStateToProps = (state) => {
-  const { geoJSON } = state.behavior.search
+  const {geoJSON} = state.behavior.search
   return {
     geoJsonSelection: geoJSON
   }

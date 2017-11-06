@@ -3,7 +3,7 @@ import { updateDateRange } from '../../actions/SearchParamActions'
 import TemporalSearch from './TemporalSearch'
 
 const mapStateToProps = (state) => {
-  const { startDateTime, endDateTime } = state.behavior.search
+  const {startDateTime, endDateTime} = state.behavior.search
   return {
     startDateTime: startDateTime,
     endDateTime: endDateTime

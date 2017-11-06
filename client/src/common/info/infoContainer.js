@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import Info from './Info'
-import { toggleHelp, toggleAbout } from  '../../actions/FlowActions'
+import { toggleHelp, toggleAbout } from '../../actions/FlowActions'
 
 const mapStateToProps = (state) => {
   return {

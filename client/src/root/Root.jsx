@@ -20,92 +20,102 @@ import styles from './root.css'
 // component
 export default class Root extends Component {
 
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props)
 
-        this.hasUnsupportedFeatures = this.hasUnsupportedFeatures.bind(this)
-        this.location = props.location.pathname
-        this.state = { leftVisible: true, rightVisible: false, tabCurrent: "Search Results", browserWarning: this.hasUnsupportedFeatures() };
+    this.hasUnsupportedFeatures = this.hasUnsupportedFeatures.bind(this)
+    this.location = props.location.pathname
+    this.state = {
+      leftVisible: true,
+      rightVisible: false,
+      tabCurrent: "Search Results",
+      browserWarning: this.hasUnsupportedFeatures()
     }
+  }
 
-    componentWillUpdate(nextProps) {
-        this.location = nextProps.location.pathname
-    }
+  componentWillUpdate(nextProps) {
+    this.location = nextProps.location.pathname
+  }
 
-    hasUnsupportedFeatures(){
-        let browserWarning = false
-        const htmlClasses = document.documentElement.className.split(' ')
-        htmlClasses.forEach(htmlClass => {
-            if(htmlClass.startsWith('no-')){ browserWarning = true; return; }
-        })
-        return browserWarning
-    }
+  hasUnsupportedFeatures() {
+    let browserWarning = false
+    const htmlClasses = document.documentElement.className.split(' ')
+    htmlClasses.forEach(htmlClass => {
+      if (htmlClass.startsWith('no-')) {
+        browserWarning = true
+        return
+      }
+    })
+    return browserWarning
+  }
 
-    unsupportedBrowserWarning() {
-        const wikiUrl = 'https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers'
-        return <aside role='alert' className={styles.browserWarning}>
+  unsupportedBrowserWarning() {
+    const wikiUrl = 'https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers'
+    return <aside role='alert' className={styles.browserWarning}>
         <span className={styles.close}
-              onClick={()=>{this.setState({browserWarning: false})}}>x</span>
-            <p>
-                The browser that you are using to view this page is not currently supported.
-                For a list of currently supported & tested browsers, please visit the
-                <span> <a href={wikiUrl}>OneStop Documentation</a></span>
-            </p>
-        </aside>
-    }
+              onClick={() => {
+                this.setState({browserWarning: false})
+              }}>x</span>
+      <p>
+        The browser that you are using to view this page is not currently supported.
+        For a list of currently supported & tested browsers, please visit the
+        <span> <a href={wikiUrl}>OneStop Documentation</a></span>
+      </p>
+    </aside>
+  }
 
-    isNotLanding() {
-        return this.location !== '/' && this.location !== '/508/'
-    }
+  isNotLanding() {
+    return this.location !== '/' && this.location !== '/508/'
+  }
 
-    isNot508() {
-        return this.location.indexOf('508') === -1 // TODO move this to redux state
-    }
+  isNot508() {
+    return this.location.indexOf('508') === -1 // TODO move this to redux state
+  }
 
-    homeUrl() {
-        const { host, pathname } = location
-        return `//${host}${pathname ? pathname : '/'}#/${this.isNot508() ? '' : '508/'}`
-    }
+  homeUrl() {
+    const {host, pathname} = location
+    return `//${host}${pathname ? pathname : '/'}#/${this.isNot508() ? '' : '508/'}`
+  }
 
-    render() {
+  render() {
 
-        const header = (
-            <div>
-                <BannerContainer/>
-                <DetailContainer/>
-                <HeaderContainer showSearch={this.isNotLanding() && this.isNot508()}
-            homeUrl={this.homeUrl()}/>
-                {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div></div>}
-            </div>
-        )
+    const header = (
+        <div>
+          <BannerContainer/>
+          <DetailContainer/>
+          <HeaderContainer showSearch={this.isNotLanding() && this.isNot508()}
+                           homeUrl={this.homeUrl()}/>
+          {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div></div>}
+        </div>
+    )
 
-        const left = this.isNotLanding() ? <Filters/> : null;
+    const left = this.isNotLanding() ? <Filters/> : null
 
-        const middle = (
-            <div>
-                <InfoContainer modalMode={this.isNotLanding()}/>
-                <LoadingContainer/>
-                <Background showImage={this.isNot508()} showOverlay={this.isNotLanding() && this.isNot508()}/>
-                {this.props.children}
-            </div>
-        )
+    const middle = (
+        <div>
+          <InfoContainer modalMode={this.isNotLanding()}/>
+          <LoadingContainer/>
+          <Background showImage={this.isNot508()} showOverlay={this.isNotLanding() && this.isNot508()}/>
+          {this.props.children}
+        </div>
+    )
 
-        return (
-            <Container
-                header={ header }
+    return (
+        <Container
+            header={header}
 
-                left={left}
-                leftWidth={256}
-                leftVisible={this.state.leftVisible}
+            left={left}
+            leftWidth={256}
+            leftVisible={this.state.leftVisible}
 
-                middle={middle}
+            middle={middle}
 
-                right={null}
-                rightWidth={256}
-                rightVisible={this.state.rightVisible}
+            right={null}
+            rightWidth={256}
+            rightVisible={this.state.rightVisible}
 
-                footer={<FooterContainer/>}
-            />
-        )
-    }
+            footer={<FooterContainer/>}
+        />
+    )
+  }
 }
