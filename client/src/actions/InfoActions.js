@@ -30,9 +30,9 @@ export const fetchInfo = () => {
     const url = apiHost + '/onestop/api/info'
     const params = {headers: {'Accept': 'application/json'}}
     return fetch(url, params)
-      .then(response => response.json())
-      .then((json) => dispatch(setInfo(json)))
-      .catch(error => console.debug('no info file available'))
+        .then(response => response.json())
+        .then((json) => dispatch(setInfo(json)))
+        .catch(error => console.debug('no info file available'))
   }
 }
 
@@ -42,9 +42,9 @@ export const fetchCounts = () => {
     const url = apiHost + '/onestop/api/search/totalCounts'
     const params = {headers: {'Accept': 'application/json'}}
     return fetch(url, params)
-      .then(response => response.json())
-      .then(json => parseCounts(json, dispatch))
-      .catch(error => console.debug('OneStop total record counts unavailable'))
+        .then(response => response.json())
+        .then(json => parseCounts(json, dispatch))
+        .catch(error => console.debug('OneStop total record counts unavailable'))
   }
 }
 

@@ -2,35 +2,37 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
-import A from 'LinkComponent'
+import A from '../../../common/link/Link'
 import styles from './list.css'
 
-class GranuleList extends React.Component {
+class Section508GranuleList extends React.Component {
 
   constructor(props) {
     super(props)
     this.protocols = {
-      'download': {id: 'D', color: 'blue',   label: 'Download'},
-      'ftp':      {id: 'F', color: 'red',    label: 'FTP'},
-      'noaa:las': {id: 'L', color: 'aqua',   label: 'NOAA Live Access Server'},
-      'opendap':  {id: 'O', color: 'green',  label: 'OPeNDAP'},
-      'thredds':  {id: 'T', color: 'grey',   label: 'THREDDS'},
-      'http':     {id: 'W', color: 'purple', label: 'Web'},
-      'https':    {id: 'W', color: 'purple', label: 'Web'},
+      'download': {id: 'D', color: 'blue', label: 'Download'},
+      'ftp': {id: 'F', color: 'red', label: 'FTP'},
+      'noaa:las': {id: 'L', color: 'aqua', label: 'NOAA Live Access Server'},
+      'opendap': {id: 'O', color: 'green', label: 'OPeNDAP'},
+      'thredds': {id: 'T', color: 'grey', label: 'THREDDS'},
+      'http': {id: 'W', color: 'purple', label: 'Web'},
+      'https': {id: 'W', color: 'purple', label: 'Web'},
     }
   }
 
   componentDidUpdate() {
     const granuleFocus = ReactDOM.findDOMNode(this.granuleFocus)
-    if (!_.isNull(granuleFocus)) { granuleFocus.focus() }
+    if (!_.isNull(granuleFocus)) {
+      granuleFocus.focus()
+    }
   }
 
   render() {
     const granuleList = _.map(this.props.results, (value, key) =>
-      <li key={key} className={styles.listItem}>
-        <span title="Title">{value.title}</span>
-        <ul title="Access Links" className={styles.granuleList508}>{this.renderLinks(value.links)}</ul>
-      </li>
+        <li key={key} className={styles.listItem}>
+          <span title="Title">{value.title}</span>
+          <ul title="Access Links" className={styles.granuleList508}>{this.renderLinks(value.links)}</ul>
+        </li>
     )
     if (granuleList.length < this.props.totalHits) {
       granuleList.push(<li key="showMore" className={styles.listItem}>
@@ -45,20 +47,20 @@ class GranuleList extends React.Component {
     }
 
     return (
-      <div ref={granuleFocus=>this.granuleFocus=granuleFocus} tabIndex={0}>
-        <a onClick={this.props.showCollections}
-          title="Return To Collection Results"
-          tabIndex={0}
-          className={styles.links}> Return To Collection Results</a>
-        <div className={styles.descriptionContainer}>
-          <h2>{this.props.selectedCollection.title}</h2>
-          <p title="Description" className={styles.descriptionParagraph}>
-            {this.props.selectedCollection.description}</p>
+        <div ref={granuleFocus => this.granuleFocus = granuleFocus} tabIndex={0}>
+          <a onClick={this.props.showCollections}
+             title="Return To Collection Results"
+             tabIndex={0}
+             className={styles.links}> Return To Collection Results</a>
+          <div className={styles.descriptionContainer}>
+            <h2>{this.props.selectedCollection.title}</h2>
+            <p title="Description" className={styles.descriptionParagraph}>
+              {this.props.selectedCollection.description}</p>
+          </div>
+          <ol title="Granule List" className={styles.granuleList508}>
+            {granuleList}
+          </ol>
         </div>
-        <ol title="Granule List" className={styles.granuleList508}>
-          {granuleList}
-        </ol>
-      </div>
     )
   }
 
@@ -80,7 +82,7 @@ class GranuleList extends React.Component {
   }
 }
 
-GranuleList.propTypes = {
+Section508GranuleList.propTypes = {
   results: PropTypes.object,
   focusedIds: PropTypes.array,
   selectedCollection: PropTypes.object,
@@ -90,4 +92,4 @@ GranuleList.propTypes = {
   fetchMoreResults: PropTypes.func
 }
 
-export default GranuleList
+export default Section508GranuleList

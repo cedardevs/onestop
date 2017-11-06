@@ -25,7 +25,7 @@ class DateTimePicker extends React.Component {
   }
 
   getValueString(value) {
-    if(value.value !== null && value.value !== undefined) {
+    if (value.value !== null && value.value !== undefined) {
       return value.value.utc().format(format)
     } else {
       return ''
@@ -55,22 +55,22 @@ class DateTimePicker extends React.Component {
     />
 
     return (
-      <div className={styles.pickerRow}>
-        <DatePicker
-            animation="slide-up"
-            disabled={false}
-            calendar={calendar}
-            value={props.value}
-            onChange={props.onChange}
-            style={{color: "black"}}
-            getCalendarContainer={()=>this.props.mountPoint}
-        >
-          {renderInput}
-        </DatePicker>
-        <button id={props.id} className={`pure-button ${styles.clearButton}`} onClick={this.handleReset}>
-          <img src={times} />
-        </button>
-      </div>
+        <div className={styles.pickerRow}>
+          <DatePicker
+              animation="slide-up"
+              disabled={false}
+              calendar={calendar}
+              value={props.value}
+              onChange={props.onChange}
+              style={{color: "black"}}
+              getCalendarContainer={() => this.props.mountPoint}
+          >
+            {renderInput}
+          </DatePicker>
+          <button id={props.id} className={`pure-button ${styles.clearButton}`} onClick={this.handleReset}>
+            <img src={times}/>
+          </button>
+        </div>
     )
   }
 

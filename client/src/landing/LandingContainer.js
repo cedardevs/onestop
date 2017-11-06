@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import LandingComponent from './LandingComponent'
+import Landing from './Landing'
 import { triggerSearch, clearFacets } from '../actions/SearchRequestActions'
 import { updateQuery } from '../actions/SearchParamActions'
 import { showCollections } from '../actions/FlowActions'
@@ -27,6 +27,6 @@ const mapDispatchToProps = (dispatch) => {
 const LandingContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(LandingComponent)
+)(Landing)
 
 export default LandingContainer

@@ -6,7 +6,7 @@ import 'esri-leaflet'
 import _ from 'lodash'
 import { ensureDatelineFriendlyPolygon } from '../utils/geoUtils'
 
-class MapThumbnailComponent extends React.Component {
+class MapThumbnail extends React.Component {
   constructor(props) {
     super(props)
 
@@ -31,7 +31,7 @@ class MapThumbnailComponent extends React.Component {
       L.esri.basemapLayer("Imagery"),
       L.esri.basemapLayer("ImageryLabels")
     ]
-    if(this.props.geometry) {
+    if (this.props.geometry) {
       geoJsonLayer = L.GeoJSON.geometryToLayer({
         type: "Feature",
         geometry: ensureDatelineFriendlyPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
@@ -61,7 +61,7 @@ class MapThumbnailComponent extends React.Component {
 
   fitMapToResults(geoJsonLayer) {
     if (this.props.geometry) {
-      this.map.fitBounds(geoJsonLayer.getBounds(), { maxZoom: 3 })
+      this.map.fitBounds(geoJsonLayer.getBounds(), {maxZoom: 3})
     }
     else {
       this.map.fitWorld()
@@ -70,9 +70,9 @@ class MapThumbnailComponent extends React.Component {
 }
 
 
-MapThumbnailComponent.propTypes = {
+MapThumbnail.propTypes = {
   geometry: PropTypes.object,
   interactive: PropTypes.bool.isRequired
 }
 
-export default MapThumbnailComponent
+export default MapThumbnail

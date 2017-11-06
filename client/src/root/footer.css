@@ -33,6 +33,7 @@ ul.footerLinks {
 }
 
 .versionInfo{
+  margin-bottom: 1.618em;
   a {
     color: white;
     background-color: transparent;

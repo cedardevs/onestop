@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { processUrl } from '../utils/urlUtils'
 import styles from './featuredItems.css'
 
-class FeaturedItemsComponent extends React.Component {
+class FeaturedItems extends React.Component {
   constructor(props) {
     super(props)
 
@@ -34,13 +34,14 @@ class FeaturedItemsComponent extends React.Component {
       </div>
       <div className={`pure-u-md-3-4 ${styles.imagesContainer}`}>
         {this.props.items.map((f, i) =>
-        <div key={i} className={`${styles.imageContent} ${this.selectedImageClass(i)}`} style={this.renderImageStyle(i, processUrl(f.imageUrl))}>
-          <div className={styles.overlay} title={f.title}
-               onClick={() => this.onClick(i)}
-               onMouseEnter={() => this.onEnter(i)}
-               onMouseLeave={() => this.onLeave()}>
-          </div>
-        </div>
+            <div key={i} className={`${styles.imageContent} ${this.selectedImageClass(i)}`}
+                 style={this.renderImageStyle(i, processUrl(f.imageUrl))}>
+              <div className={styles.overlay} title={f.title}
+                   onClick={() => this.onClick(i)}
+                   onMouseEnter={() => this.onEnter(i)}
+                   onMouseLeave={() => this.onLeave()}>
+              </div>
+            </div>
         )}
       </div>
     </div>
@@ -55,7 +56,7 @@ class FeaturedItemsComponent extends React.Component {
   }
 
   renderImageStyle(i, imageUrl) {
-    if(this.state.current === i) {
+    if (this.state.current === i) {
       return {
         background: `url('${imageUrl}')`,
         backgroundRepeat: 'no-repeat',
@@ -81,10 +82,11 @@ class FeaturedItemsComponent extends React.Component {
   }
 
   setupTimer(items) {
-    const { carouselLength, timer } = this.state
+    const {carouselLength, timer} = this.state
 
     if (items && (items.length || carouselLength !== items.length)) {
-      this.setState({carouselLength: items.length })
+      this.setState({carouselLength: items.length})
+
       function Timer(callback, delay) {
         var timerId, start, remaining = delay
 
@@ -104,12 +106,14 @@ class FeaturedItemsComponent extends React.Component {
 
       const self = this
       if (!timer) (function setTimerState() {
-        self.setState({timer: new Timer(() => {
-          const { carouselLength, current } = self.state
-          const newCurrent = (current + 1) % carouselLength
-          self.setState({current: newCurrent})
-          setTimerState()
-        }, 5000)})
+        self.setState({
+          timer: new Timer(() => {
+            const {carouselLength, current} = self.state
+            const newCurrent = (current + 1) % carouselLength
+            self.setState({current: newCurrent})
+            setTimerState()
+          }, 5000)
+        })
       })()
     }
   }
@@ -127,7 +131,7 @@ class FeaturedItemsComponent extends React.Component {
   }
 }
 
-FeaturedItemsComponent.propTypes = {
+FeaturedItems.propTypes = {
   doSearch: PropTypes.func.isRequired,
   items: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string,
@@ -136,4 +140,4 @@ FeaturedItemsComponent.propTypes = {
   })).isRequired
 }
 
-export default FeaturedItemsComponent
+export default FeaturedItems

@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import TemporalContainer from './temporal/TemporalContainer'
+import TemporalSearchContainer from './temporal/TemporalSearchContainer'
 import MapContainer from './map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
-import TextSearchField from './TextSearchFieldComponent'
+import TextSearchField from './TextSearchField'
 import _ from 'lodash'
 import clock from 'fa/clock-o.svg'
 import globe from 'fa/globe.svg'
@@ -13,7 +13,7 @@ import search from 'fa/search.svg'
 import styles from './searchFields.css'
 
 
-class SearchFieldsComponent extends React.Component {
+class SearchFields extends React.Component {
   constructor(props) {
     super(props)
     this.submit = props.submit
@@ -42,19 +42,21 @@ class SearchFieldsComponent extends React.Component {
     this.mapEvents(target, this.state, this.toggleMap)
   }
 
-  calendarEvents(target, { timeComponent, timeButton, showCalendar }, toggle) {
+  calendarEvents(target, {timeComponent, timeButton, showCalendar}, toggle) {
     if (showCalendar
-     && !timeComponent.contains(target)
-     && !timeButton.contains(target)
-     && !target.classList[0].startsWith('rc-calendar'))
-     {
-    console.log('toggle')
-       toggle() }
+        && !timeComponent.contains(target)
+        && !timeButton.contains(target)
+        && !target.classList[0].startsWith('rc-calendar')) {
+      console.log('toggle')
+      toggle()
+    }
   }
 
-  mapEvents(target, { mapComponent, mapButton, showMap }, toggle) {
+  mapEvents(target, {mapComponent, mapButton, showMap}, toggle) {
     if (showMap && !mapComponent.contains(target)
-     && !mapButton.contains(target)) { toggle() }
+        && !mapButton.contains(target)) {
+      toggle()
+    }
   }
 
   handleKeyup(e) {
@@ -162,22 +164,25 @@ class SearchFieldsComponent extends React.Component {
           <div id='searchButtons' className={styles.buttonLayout}>
             <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`}
                     onClick={this.toggleCalendar} aria-label="Add Temporal Criteria"
-                    ref={timeButton=>this.timeButton=timeButton}>
-              <img src={clock} />
+                    ref={timeButton => this.timeButton = timeButton}>
+              <img src={clock}/>
             </button>
             <ToggleDisplay show={this.state.showCalendar}>
-              <TemporalContainer ref={timeComponent=>this.timeComponent=timeComponent} toggleSelf={this.toggleCalendar}
-                calendarVisible={this.state.showCalendar}/>
+              <TemporalSearchContainer
+                  ref={timeComponent => this.timeComponent = timeComponent}
+                  toggleSelf={this.toggleCalendar}
+                  calendarVisible={this.state.showCalendar}
+              />
             </ToggleDisplay>
             <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`}
                     onClick={this.toggleMap} aria-label="Add Spatial Criteria"
-                    ref={mapButton=>this.mapButton=mapButton}>
-              <img src={globe} />
+                    ref={mapButton => this.mapButton = mapButton}>
+              <img src={globe}/>
             </button>
             <ToggleDisplay show={this.state.showMap}>
               {/* 'updated' passed to trigger update but is unused*/}
               <MapContainer
-                  ref={mapComponent=>this.mapComponent=mapComponent}
+                  ref={mapComponent => this.mapComponent = mapComponent}
                   updated={this.state.showMap}
                   selection={true}
                   features={false}
@@ -186,10 +191,11 @@ class SearchFieldsComponent extends React.Component {
             </ToggleDisplay>
             <button className={`pure-button ${styles.undoButton}`}
                     onClick={this.clearSearchParams} aria-label="Clear Search Criteria">
-              <img src={times} />
+              <img src={times}/>
             </button>
-            <button className={`pure-button ${styles.searchButton}`} onClick={this.validateAndSubmit} aria-label="Submit Search">
-              <img src={search} />
+            <button className={`pure-button ${styles.searchButton}`} onClick={this.validateAndSubmit}
+                    aria-label="Submit Search">
+              <img src={search}/>
             </button>
           </div>
           <div className={`${this.warningStyle()}`} role="alert">{this.state.warning}</div>
@@ -198,8 +204,8 @@ class SearchFieldsComponent extends React.Component {
   }
 }
 
-SearchFieldsComponent.defaultProps = {
+SearchFields.defaultProps = {
   header: false
 }
 
-export default SearchFieldsComponent
+export default SearchFields

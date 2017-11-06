@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import ShowMore from 'react-show-more'
-// import A from 'LinkComponent'
+// import A from '../common/link/Link'
 import styles from './DetailStyles.css'
 import Tabs from './Tabs'
 import SummaryView from './SummaryView'
@@ -10,7 +10,7 @@ import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
 
 class Detail extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.close = this.close.bind(this)
     this.handleKeyDown = this.handleKeyDown.bind(this)
@@ -19,88 +19,88 @@ class Detail extends React.Component {
 
   render() {
     if (!this.props.id || !this.props.item) {
-      return <div style={{ display: 'none' }} />
+      return <div style={{display: 'none'}}/>
     }
-    const item = this.props.item;
+    const item = this.props.item
 
     let tabData = [
       {
         title: 'Summary',
-        content: <SummaryView id={this.props.id} item={this.props.item} />,
+        content: <SummaryView id={this.props.id} item={this.props.item}/>,
       },
       {
         title: 'Description',
-        content: <DescriptionView id={this.props.id} item={this.props.item} />,
+        content: <DescriptionView id={this.props.id} item={this.props.item}/>,
       },
       {
         title: 'Matching Files',
-        content: <GranuleViewContainer id={this.props.id} item={this.props.item} />,
+        content: <GranuleViewContainer id={this.props.id} item={this.props.item}/>,
         action: this.showGranules,
       },
-    ];
+    ]
 
     return (
-      <div className={styles.modal}>
-        <div className={styles.modalContent}>
-          <div className={`pure-g ${styles.header} ${styles.underscored}`}>
-            <div
-              className={`pure-u-11-12 ${styles.title}`}
-              title={`${item.title}`}
-            >
-              <ShowMore lines={1} anchorClass={`${styles.showMore}`}>
-                {item.title}
-              </ShowMore>
-            </div>
-            <div className={'pure-u-1-12'}>
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <div className={`pure-g ${styles.header} ${styles.underscored}`}>
+              <div
+                  className={`pure-u-11-12 ${styles.title}`}
+                  title={`${item.title}`}
+              >
+                <ShowMore lines={1} anchorClass={`${styles.showMore}`}>
+                  {item.title}
+                </ShowMore>
+              </div>
+              <div className={'pure-u-1-12'}>
 							<span className={styles.close} onClick={this.close}>
 								x
 							</span>
+              </div>
             </div>
+            <Tabs data={tabData} activeIndex={0}/>
           </div>
-          <Tabs data={tabData} activeIndex={0} />
         </div>
-      </div>
-    );
+    )
   }
 
   showGranules() {
-    if(!this.state.granulesLoaded ) {
+    if (!this.state.granulesLoaded) {
       this.props.showGranules(this.props.id)
       // change the state to indicate granules have been loaded so we don't reload if the user flips back and forth between tabs.
-  		this.setState(prevState => {
-  			return {
-  				...prevState,
-  				granulesLoaded: true,
-  			};
-  		});
-		}
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          granulesLoaded: true,
+        }
+      })
+    }
   }
 
   close() {
-    this.props.dismiss();
+    this.props.dismiss()
   }
 
   handleKeyDown(event) {
     if (event.keyCode === 27) {
       // esc
-      this.close();
+      this.close()
     }
   }
 
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.id) {
-      document.addEventListener('keydown', this.handleKeyDown, false);
+      document.addEventListener('keydown', this.handleKeyDown, false)
     } else {
-      document.removeEventListener('keydown', this.handleKeyDown, false);
+      document.removeEventListener('keydown', this.handleKeyDown, false)
     }
     if (nextProps.id && nextProps.id != this.props.id) {
       // reset state of granules loaded each time the collection changes
       this.setState(prevState => {
-  			return {
-  				...prevState,
-  				granulesLoaded: false,
-  			};
-  		});
+        return {
+          ...prevState,
+          granulesLoaded: false,
+        }
+      })
     }
   }
 
@@ -153,6 +153,6 @@ class Detail extends React.Component {
 Detail.propTypes = {
   id: PropTypes.string,
   item: PropTypes.object,
-};
+}
 
-export default Detail;
+export default Detail

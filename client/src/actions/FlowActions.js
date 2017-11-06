@@ -3,9 +3,9 @@ import watch from 'redux-watch'
 import { push } from 'react-router-redux'
 import { encodeQueryString, decodeQueryString } from '../utils/queryUtils'
 import { triggerSearch, fetchGranules, clearCollections, clearGranules } from './SearchRequestActions'
-import {updateSearch, clearSelections} from './SearchParamActions'
+import { updateSearch, clearSelections } from './SearchParamActions'
 import { fetchConfig } from './ConfigActions'
-import {fetchInfo, fetchCounts} from './InfoActions'
+import { fetchInfo, fetchCounts } from './InfoActions'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
@@ -90,7 +90,7 @@ export const hideLoading = () => {
 }
 
 export const TOGGLE_BACKGROUND_IMAGE = 'TOGGLE_BACKGROUND_IMAGE'
-const toggleBackgroundImage = (boolVisible)=> {
+const toggleBackgroundImage = (boolVisible) => {
   return {
     type: TOGGLE_BACKGROUND_IMAGE,
     visible: boolVisible
@@ -143,8 +143,8 @@ store.subscribe(queryWatch(applyNewQueryString))
 // Update background
 const updateBackground = (path) => {
   store.dispatch(toggleBackgroundImage(
-    !(_.startsWith(path, '/508/') && path !== '/508/'
-      || _.startsWith(path, '508/') && path !== '508/'))) //Cover strange routing case. TODO: Regex test?
+      !(_.startsWith(path, '/508/') && path !== '/508/'
+          || _.startsWith(path, '508/') && path !== '508/'))) //Cover strange routing case. TODO: Regex test?
 }
 
 const pathWatch = watch(store.getState, 'behavior.routing.locationBeforeTransitions.pathname')

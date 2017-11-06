@@ -2,35 +2,38 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import stopCircle from 'fa/stop-circle-o.svg'
-import A from 'LinkComponent'
+import A from '../common/link/Link'
 import styles from './header.css'
 
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 const nceiLogo = require('../../img/ncei_dark_test_75.png')
 
-class HeaderComponent extends React.Component {
+class Header extends React.Component {
   constructor(props) {
     super(props)
     this.toggleBurgerMenu = this.toggleBurgerMenu.bind(this)
-    this.state = { menuOpen: false }
+    this.state = {menuOpen: false}
   }
 
-  toggleBurgerMenu() { this.setState({ menuOpen: !this.state.menuOpen }) }
+  toggleBurgerMenu() {
+    this.setState({menuOpen: !this.state.menuOpen})
+  }
 
   render() {
     const burgerToggle = <div className={styles.burgerToggle}>
       <input type="checkbox" checked={this.state.menuOpen} onChange={this.toggleBurgerMenu} aria-hidden="true"/>
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
     const menuContent = <ul role="menubar">
-        <button title="Home" onClick={() => location.href=this.props.homeUrl}>Home</button>
-        <button title="About" onClick={() => this.props.toggleAbout()}>About</button>
-        <button title="Help" onClick={() => this.props.toggleHelp()}>Help</button>
-        {this.getMainOr508Link()}
-        <button title='Previous Data Catalog' onClick={() => location.href='//data.noaa.gov/dataset'}>Previous Catalog</button>
-      </ul>
+      <button title="Home" onClick={() => location.href = this.props.homeUrl}>Home</button>
+      <button title="About" onClick={() => this.props.toggleAbout()}>About</button>
+      <button title="Help" onClick={() => this.props.toggleHelp()}>Help</button>
+      {this.getMainOr508Link()}
+      <button title='Previous Data Catalog' onClick={() => location.href = '//data.noaa.gov/dataset'}>Previous Catalog
+      </button>
+    </ul>
     const menu = <nav className={styles.headerLinks} aria-label="Main Navigation">{menuContent}</nav>
 
     return <header className={`${styles.headerArea}`}>
@@ -59,12 +62,12 @@ class HeaderComponent extends React.Component {
   getMainOr508Link() {
     const lHref = `${new RegExp(/^.*\//).exec(window.location.href)}`
     let linkTitle = 'Main Site'
-    let siteLink = `${lHref.slice(0,lHref.indexOf('#')+2)}`
+    let siteLink = `${lHref.slice(0, lHref.indexOf('#') + 2)}`
     if (window.location.href.indexOf('508') === -1) {
       siteLink = `${siteLink}508/`
       linkTitle = 'Accessible Site'
     }
-    return <button title={linkTitle} onClick={()=>location.href=siteLink}> {linkTitle}</button>
+    return <button title={linkTitle} onClick={() => location.href = siteLink}> {linkTitle}</button>
   }
 
   renderLogo() {
@@ -86,15 +89,15 @@ class HeaderComponent extends React.Component {
   }
 }
 
-HeaderComponent.propTypes = {
+Header.propTypes = {
   showSearch: PropTypes.bool.isRequired,
   goHome: PropTypes.func.isRequired,
   toggleHelp: PropTypes.func.isRequired,
   toggleAbout: PropTypes.func.isRequired
 }
 
-HeaderComponent.defaultProps = {
+Header.defaultProps = {
   showSearch: true
 }
 
-export default HeaderComponent
+export default Header

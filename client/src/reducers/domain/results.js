@@ -17,7 +17,7 @@ export const initialState = Immutable({
 })
 
 export const results = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
 
     case SEARCH_COMPLETE:
       let newCollections = {}

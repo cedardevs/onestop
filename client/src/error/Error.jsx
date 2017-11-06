@@ -7,7 +7,7 @@ const defaultError = {
   detail: 'Looks like something has gone wrong on our end. Please try again later.'
 }
 
-class ErrorComponent extends React.Component {
+class Error extends React.Component {
   constructor(props) {
     super(props)
 
@@ -28,14 +28,15 @@ class ErrorComponent extends React.Component {
   }
 
   getErrorsArray(errors) {
+    console.log("errors:", errors)
     if (_.isArray(errors) && errors.length > 0) {
       return errors
     }
     else if (_.isObject(errors)) {
-      return [ errors ]
+      return [errors]
     }
     else {
-      return [ defaultError ]
+      return [defaultError]
     }
   }
 
@@ -59,7 +60,7 @@ class ErrorComponent extends React.Component {
     return <div className="pure-g">
       <div className="pure-u-md-1-4"></div>
       <div className={`pure-u-md-1-2 pure-u-1 ${style.messageContainer}`}>
-        {this.errors.map( (error, i) => {
+        {this.errors.map((error, i) => {
           return <div key={i}>
             <h2>{error.title}</h2>
             <p>{error.detail}</p>
@@ -76,4 +77,4 @@ class ErrorComponent extends React.Component {
   }
 }
 
-export default ErrorComponent
+export default Error

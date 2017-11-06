@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
-import {TOGGLE_ABOUT, TOGGLE_HELP} from '../../actions/FlowActions'
-import {SEARCH} from '../../actions/SearchRequestActions'
+import { TOGGLE_ABOUT, TOGGLE_HELP } from '../../actions/FlowActions'
+import { SEARCH } from '../../actions/SearchRequestActions'
 
 export const initialState = Immutable({
   about: false,
@@ -9,7 +9,7 @@ export const initialState = Immutable({
 })
 
 export const info = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case TOGGLE_ABOUT:
       return exclusiveToggle(state, 'about')
 

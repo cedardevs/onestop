@@ -5,7 +5,7 @@ import styles from './section508.css'
 import moment from 'moment'
 import { convertBboxToGeoJson, convertGeoJsonToBbox } from '../utils/geoUtils'
 
-class Section508LandingComponent extends React.Component {
+class Section508Landing extends React.Component {
   constructor(props) {
     super(props)
 
@@ -56,7 +56,7 @@ class Section508LandingComponent extends React.Component {
   }
 
   updateFieldValue(e) {
-    const { name, value } = e.target
+    const {name, value} = e.target
     const newFields = _.assign(this.state.fields, {[name]: value})
     this.setState({fields: newFields})
   }
@@ -64,7 +64,9 @@ class Section508LandingComponent extends React.Component {
   validateAndSubmit() {
     const results = _.reduce(this.fields, (collector, fieldDef, name) => {
       const raw = this.state.fields[name]
-      if (!raw) { return collector }
+      if (!raw) {
+        return collector
+      }
       const valid = fieldDef.toQueryValue(raw)
       if (valid) {
         return _.set(collector, `values.${name}`, valid)
@@ -99,41 +101,45 @@ class Section508LandingComponent extends React.Component {
   render() {
     const formInputs = _.map(this.fields, (fieldDef, name) => <div className={styles.formRow} key={name}
                                                                    data-id="formRow">
-        <label htmlFor={name} className={styles.formLabel}>{fieldDef.label}</label>
-        <input type="text" className={styles.formInput} name={name} ref={it => this.inputs[name] = it}
-               id={name} placeholder={fieldDef.placeholder} onKeyDown={this.handleKeyDown}
-               onChange={this.updateFieldValue} value={this.state.fields[name] || ''}/>
-      </div>
+          <label htmlFor={name} className={styles.formLabel}>{fieldDef.label}</label>
+          <input type="text" className={styles.formInput} name={name} ref={it => this.inputs[name] = it}
+                 id={name} placeholder={fieldDef.placeholder} onKeyDown={this.handleKeyDown}
+                 onChange={this.updateFieldValue} value={this.state.fields[name] || ''}/>
+        </div>
     )
 
     return (
-      <div>
-        <div className={`${styles.formDiv} pure-form`}>
-          <h2>Enter Search Criteria</h2>
-          {this.renderErrors()}
-          <form id='508-form'>
-            {formInputs}
-          </form>
-          <button className={`${styles.button} pure-button`}
-                  onClick={() => this.validateAndSubmit()}>
-            Search
-          </button>
-          <button className={`${styles.button} pure-button`}
-                  onClick={(()=>{this.props.clearSearch()})}>
-            Clear
-          </button>
+        <div>
+          <div className={`${styles.formDiv} pure-form`}>
+            <h2>Enter Search Criteria</h2>
+            {this.renderErrors()}
+            <form id='508-form'>
+              {formInputs}
+            </form>
+            <button className={`${styles.button} pure-button`}
+                    onClick={() => this.validateAndSubmit()}>
+              Search
+            </button>
+            <button className={`${styles.button} pure-button`}
+                    onClick={(() => {
+                      this.props.clearSearch()
+                    })}>
+              Clear
+            </button>
+          </div>
+          <div className={styles.accessibilityStatement}>
+            <h2>Accessibility Statement</h2>
+            <p>NOAA OneStop is committed to providing access to all individuals who are seeking information from our
+              website. We strive to meet or exceed requirements of Section 508 of the Rehabilitation Act, as amended
+              in 1998.</p>
+            <p>We recognize not all pages on our site are fully accessible at this time, however our accessible site
+              aims
+              to meet Level AA accessibility and provides users with access to all of the same datasets. We will
+              continue to make improvements across our entire site until all pages are fully compliant.</p>
+            <p>If you experience any challenges while accessing parts of our site, please contact <a
+                href={'mailto:ncei.info@noaa.gov'} style={{color: '#55ace4'}}>ncei.info@noaa.gov</a></p>
+          </div>
         </div>
-        <div className={styles.accessibilityStatement}>
-          <h2>Accessibility Statement</h2>
-          <p>NOAA OneStop is committed to providing access to all individuals who are seeking information from our
-            website. We strive to meet or exceed requirements of Section 508 of the Rehabilitation Act, as amended
-            in 1998.</p>
-          <p>We recognize not all pages on our site are fully accessible at this time, however our accessible site aims
-            to meet Level AA accessibility and provides users with access to all of the same datasets. We will
-            continue to make improvements across our entire site until all pages are fully compliant.</p>
-          <p>If you experience any challenges while accessing parts of our site, please contact <a href={'mailto:ncei.info@noaa.gov'} style={{color: '#55ace4'}}>ncei.info@noaa.gov</a></p>
-        </div>
-      </div>
     )
   }
 
@@ -156,7 +162,7 @@ class Section508LandingComponent extends React.Component {
 
 }
 
-Section508LandingComponent.propTypes = {
+Section508Landing.propTypes = {
   submit: PropTypes.func.isRequired,
   clearSearch: PropTypes.func.isRequired,
   updateSearch: PropTypes.func.isRequired,
@@ -166,4 +172,4 @@ Section508LandingComponent.propTypes = {
   geoJSON: PropTypes.object
 }
 
-export default Section508LandingComponent
+export default Section508Landing

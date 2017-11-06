@@ -7,57 +7,59 @@ import 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
 
-class MapComponent extends React.Component {
-	constructor(props) {
-		super(props)
-		this.handleNewGeometry = props.handleNewGeometry
-		this.removeGeometry = props.removeGeometry
-		this.geoJsonSelection = props.geoJsonSelection
-		this.geoJsonFeatures = props.geoJsonFeatures
+class Map extends React.Component {
+  constructor(props) {
+    super(props)
+    this.handleNewGeometry = props.handleNewGeometry
+    this.removeGeometry = props.removeGeometry
+    this.geoJsonSelection = props.geoJsonSelection
+    this.geoJsonFeatures = props.geoJsonFeatures
     this.focusedFeatures = props.focusedFeatures
     this.style = props.style
-		this.mapDefaults = this.mapDefaults.bind(this)
-		this.state = {
+    this.mapDefaults = this.mapDefaults.bind(this)
+    this.state = {
       _initialized: false
     }
-	}
-
-  componentDidMount() {
-  	// Build the map defaults. When finished, use them to set the state then set up the map
-  	Promise.resolve(this.mapDefaults())
-  		.then(state => {
-				this.setState(state, ()=> {
-          let { geoJsonSelection } = this.props
-          if (geoJsonSelection) {
-            let { editableLayers, style } = this.state
-            let layer = L.geoJson(geoJsonSelection, {style: style})
-            editableLayers.addLayer(layer)
-          }
-          if (this.props.features) { this.updateResultsLayers(this.props) }
-        })
-				this.mapSetup()
-			})
   }
 
-	mapDefaults() {
+  componentDidMount() {
+    // Build the map defaults. When finished, use them to set the state then set up the map
+    Promise.resolve(this.mapDefaults())
+        .then(state => {
+          this.setState(state, () => {
+            let {geoJsonSelection} = this.props
+            if (geoJsonSelection) {
+              let {editableLayers, style} = this.state
+              let layer = L.geoJson(geoJsonSelection, {style: style})
+              editableLayers.addLayer(layer)
+            }
+            if (this.props.features) {
+              this.updateResultsLayers(this.props)
+            }
+          })
+          this.mapSetup()
+        })
+  }
+
+  mapDefaults() {
     let resultsLayers = new L.FeatureGroup()
-		let editableLayers = new L.FeatureGroup()
-		let mapSettings = {
+    let editableLayers = new L.FeatureGroup()
+    let mapSettings = {
       _initialized: true,
-			style: {
-				color: '#00ffc8',
+      style: {
+        color: '#00ffc8',
         weight: 3,
-				opacity: 0.65
-			},
-			resultsLayers,
+        opacity: 0.65
+      },
+      resultsLayers,
       editableLayers,
       // Define map with defaults
       map: L.map(ReactDOM.findDOMNode(this), {
         minZoom: 2,
         maxZoom: 5,
         layers: [
-            L.esri.basemapLayer("Imagery"),
-            L.esri.basemapLayer("ImageryLabels")
+          L.esri.basemapLayer("Imagery"),
+          L.esri.basemapLayer("ImageryLabels")
         ],
         attributionControl: false
       }),
@@ -66,12 +68,12 @@ class MapComponent extends React.Component {
     return mapSettings
   }
 
-  drawDefaults(layerGroup){
-		const drawStyle = {
-		  color: "#FFA268",
+  drawDefaults(layerGroup) {
+    const drawStyle = {
+      color: "#FFA268",
       weight: 3,
-			opacity: 0.65
-		}
+      opacity: 0.65
+    }
     return new L.Control.Draw({
       edit: {
         featureGroup: layerGroup
@@ -91,27 +93,31 @@ class MapComponent extends React.Component {
   }
 
   mapSetup() {
-  	let { map, drawControl, editableLayers, resultsLayers } = this.state
-		this.loadDrawEventHandlers()
-		if (this.props.selection) {
+    let {map, drawControl, editableLayers, resultsLayers} = this.state
+    this.loadDrawEventHandlers()
+    if (this.props.selection) {
       map.addControl(this.drawDefaults(editableLayers))
       map.addLayer(editableLayers)
     }
-		if (this.props.features) {
+    if (this.props.features) {
       map.addLayer(resultsLayers)
     }
     this.fitMapToResults()
   }
 
   componentWillReceiveProps() {
-  	let { map } = this.state
-		if (map) { map.invalidateSize() } // Necessary to redraw map which isn't initially visible
+    let {map} = this.state
+    if (map) {
+      map.invalidateSize()
+    } // Necessary to redraw map which isn't initially visible
   }
 
   componentWillUpdate(nextProps) {
-  	// Add/remove layers on map to reflect store
+    // Add/remove layers on map to reflect store
     if (this.state._initialized) {
-      if (this.props.selection) { this.updateSelectionLayer() }
+      if (this.props.selection) {
+        this.updateSelectionLayer()
+      }
       if (this.props.features) {
         this.updateResultsLayers(nextProps)
         this.fitMapToResults()
@@ -120,38 +126,38 @@ class MapComponent extends React.Component {
   }
 
   updateSelectionLayer() {
-  	let { editableLayers, style } = this.state
-		let w = watch(store.getState, 'behavior.search.geoJSON')
-		store.subscribe(w((newGeoJson) => {
+    let {editableLayers, style} = this.state
+    let w = watch(store.getState, 'behavior.search.geoJSON')
+    store.subscribe(w((newGeoJson) => {
       editableLayers.clearLayers()
-      if (!_.isEmpty(newGeoJson)){
+      if (!_.isEmpty(newGeoJson)) {
         let layer = L.geoJson(newGeoJson, {style: style})
         editableLayers.addLayer(layer)
       }
-		}))
+    }))
   }
 
   updateResultsLayers({geoJsonFeatures, focusedFeatures}) {
-		// Apply colors to focused feature
-    let { resultsLayers } = this.state
+    // Apply colors to focused feature
+    let {resultsLayers} = this.state
     const selectedStyle = {color: '#FFA268'}
     const defaultStyle = {
-        color: '#00ffc8',
-        fillOpacity: 0.002,
-        opacity: 0.5
+      color: '#00ffc8',
+      fillOpacity: 0.002,
+      opacity: 0.5
     }
     resultsLayers.clearLayers()
     geoJsonFeatures.forEach(feature => {
-        resultsLayers.addLayer(L.geoJson(feature, {
-            style: (f) => focusedFeatures.indexOf(f.properties.id) >= 0 ? selectedStyle : defaultStyle
-        }))
+      resultsLayers.addLayer(L.geoJson(feature, {
+        style: (f) => focusedFeatures.indexOf(f.properties.id) >= 0 ? selectedStyle : defaultStyle
+      }))
     })
     this.geoJsonFeatures = geoJsonFeatures
     this.focusedFeatures = focusedFeatures
   }
 
   fitMapToResults() {
-    const { map, resultsLayers } = this.state
+    const {map, resultsLayers} = this.state
     const hasResults = resultsLayers && !_.isEmpty(resultsLayers.getLayers())
     if (!this.props.selection && this.props.features && hasResults) {
       map.fitBounds(resultsLayers.getBounds())
@@ -162,13 +168,13 @@ class MapComponent extends React.Component {
   }
 
   componentWillUnmount() {
-    let { map } = this.state
+    let {map} = this.state
     map.off('click', this.onMapClick)
     map = null
   }
 
-  loadDrawEventHandlers(){
-    let { map } = this.state
+  loadDrawEventHandlers() {
+    let {map} = this.state
     map.on('draw:drawstart', (e) => {
       this.removeGeometry()
     })
@@ -187,15 +193,15 @@ class MapComponent extends React.Component {
 
   render() {
     return (
-      <div className={this.style}></div>
+        <div className={this.style}></div>
     )
   }
 }
 
-MapComponent.defaultProps = {
+Map.defaultProps = {
   selection: false,
   features: true
 }
 
 
-export default MapComponent
+export default Map
