@@ -17,7 +17,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: './',
-    filename: '[name].bundle.js'
+    filename: '[name]-[hash].bundle.js'
   },
   context: path.resolve(__dirname, 'src'),
   devtool: false,
@@ -74,12 +74,14 @@ module.exports = {
     }, {
       test: /\.(jpe?g|png|gif)$/,
       use: [
-        'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
+        'file-loader?hash=sha512&digest=hex&name=[name]-[hash].[ext]',
         'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false'
       ],
     }, {
       test: /\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
-      use: [{loader: 'file-loader?name=fonts/[name].[ext]'}]
+      use: [
+          'file-loader?name=fonts/[name]-[hash].[ext]'
+      ]
     }]
   },
   resolve: {
@@ -113,7 +115,6 @@ module.exports = {
     }),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
-      filename: 'vendor.js',
       minChunks(module, count) {
         var context = module.context
         return context && context.includes('node_modules')
