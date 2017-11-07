@@ -10,7 +10,6 @@ body {
   font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   color: white;
   min-height: 100%;
-  margin-bottom: calc(-$footer-height + 2 * -$section-padding);
 }
 
 img {

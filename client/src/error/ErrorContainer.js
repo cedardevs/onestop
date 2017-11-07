@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import ErrorComponent from './ErrorComponent'
+import Error from './Error'
 import { push, goBack } from 'react-router-redux'
 import { clearErrors } from '../actions/ErrorActions'
 import { updateSearch } from '../actions/SearchParamActions'
@@ -27,6 +27,6 @@ const mapDispatchToProps = (dispatch) => {
 const ErrorContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(ErrorComponent)
+)(Error)
 
 export default ErrorContainer

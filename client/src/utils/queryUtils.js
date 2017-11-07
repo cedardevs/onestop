@@ -16,15 +16,15 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
 
   const queries = assembleQueries(search)
   let filters = _.concat(
-    assembleFacetFilters(search),
-    assembleGeometryFilters(search),
-    assembleTemporalFilters(search),
-    assembleAdditionalFilters(search)
+      assembleFacetFilters(search),
+      assembleGeometryFilters(search),
+      assembleTemporalFilters(search),
+      assembleAdditionalFilters(search)
   )
   if (granules) {
     filters = _.concat(filters, assembleSelectedCollectionsFilters(search))
   }
-  filters =  _.flatten(_.compact(filters))
+  filters = _.flatten(_.compact(filters))
 
   const page = assemblePagination(pageSize, pageOffset)
 
@@ -40,7 +40,7 @@ const assembleQueries = ({queryText}) => {
 }
 
 const assembleFacetFilters = ({selectedFacets}) => {
-  return _.map(selectedFacets, (v, k) => ({'type':'facet', 'name': k, 'values': v}))
+  return _.map(selectedFacets, (v, k) => ({'type': 'facet', 'name': k, 'values': v}))
 }
 
 const assembleGeometryFilters = ({geoJSON}) => {
@@ -60,9 +60,9 @@ const assembleTemporalFilters = ({startDateTime, endDateTime}) => {
   }
 }
 
-const assembleAdditionalFilters = ( { excludeGlobal } ) => {
-  if( excludeGlobal ){
-  return { type: 'excludeGlobal', value: excludeGlobal }
+const assembleAdditionalFilters = ({excludeGlobal}) => {
+  if (excludeGlobal) {
+    return {type: 'excludeGlobal', value: excludeGlobal}
   }
 }
 
@@ -78,7 +78,9 @@ const assemblePagination = (max, offset) => {
 
 export const encodeQueryString = (state) => {
   const searchParams = state && state.behavior && state.behavior.search
-  if (_.every(searchParams, (e) => { return(_.isEmpty(e)) })) {
+  if (_.every(searchParams, (e) => {
+        return (_.isEmpty(e))
+      })) {
     return ''
   }
   return rison.encode(searchParams)

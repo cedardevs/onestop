@@ -1,8 +1,8 @@
 import fetch from 'isomorphic-fetch'
 import _ from 'lodash'
-import {showLoading, hideLoading} from './FlowActions'
-import {showErrors} from './ErrorActions'
-import {assembleSearchRequest} from '../utils/queryUtils'
+import { showLoading, hideLoading } from './FlowActions'
+import { showErrors } from './ErrorActions'
+import { assembleSearchRequest } from '../utils/queryUtils'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -124,11 +124,11 @@ const buildSearchAction = (bodyBuilder, prefetchHandler, successHandler, errorHa
     }
 
     return fetch(endpoint, fetchParams)
-      .then(response => checkForErrors(response))
-      .then(response => response.json())
-      .then(json => successHandler(dispatch, json))
-      .catch(ajaxError => ajaxError.response.json().then(errorJson => errorHandler(dispatch, errorJson)))
-      .catch(jsError => errorHandler(dispatch, jsError))
+        .then(response => checkForErrors(response))
+        .then(response => response.json())
+        .then(json => successHandler(dispatch, json))
+        .catch(ajaxError => ajaxError.response.json().then(errorJson => errorHandler(dispatch, errorJson)))
+        .catch(jsError => errorHandler(dispatch, jsError))
   }
 }
 

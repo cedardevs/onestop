@@ -1,8 +1,8 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import MapContainer from './GranuleMapContainer'
-import A from 'LinkComponent'
+import A from '../../common/link/Link'
 import styles from './list.css'
 
 export default class GranuleView extends Component {
@@ -10,14 +10,14 @@ export default class GranuleView extends Component {
     super(props)
 
     this.protocols = [
-      {id: 'C', names: ['ogc:wcs'],       color: 'coral',     label: 'OGC Web Coverage Service'},
-      {id: 'D', names: ['download'],      color: 'blue',      label: 'Download'},
-      {id: 'F', names: ['ftp'],           color: 'red',       label: 'FTP'},
-      {id: 'L', names: ['noaa:las'],      color: 'aqua',      label: 'NOAA Live Access Server'},
-      {id: 'M', names: ['ogc:wms'],       color: 'goldenrod', label: 'OGC Web Map Service'},
-      {id: 'O', names: ['opendap'],       color: 'green',     label: 'OPeNDAP'},
-      {id: 'T', names: ['thredds'],       color: 'grey',      label: 'THREDDS'},
-      {id: 'W', names: ['http', 'https'], color: 'purple',    label: 'Web'},
+      {id: 'C', names: ['ogc:wcs'], color: 'coral', label: 'OGC Web Coverage Service'},
+      {id: 'D', names: ['download'], color: 'blue', label: 'Download'},
+      {id: 'F', names: ['ftp'], color: 'red', label: 'FTP'},
+      {id: 'L', names: ['noaa:las'], color: 'aqua', label: 'NOAA Live Access Server'},
+      {id: 'M', names: ['ogc:wms'], color: 'goldenrod', label: 'OGC Web Map Service'},
+      {id: 'O', names: ['opendap'], color: 'green', label: 'OPeNDAP'},
+      {id: 'T', names: ['thredds'], color: 'grey', label: 'THREDDS'},
+      {id: 'W', names: ['http', 'https'], color: 'purple', label: 'Web'},
     ]
   }
 
@@ -26,7 +26,8 @@ export default class GranuleView extends Component {
     const usedProtocols = new Set()
     const tableRows = _.map(this.props.results, (value, key) => {
       _.forEach(value.links, (link) => usedProtocols.add(this.identifyProtocol(link)))
-      return <tr key={key} onMouseEnter={() => this.props.toggleFocus(key, true)} onMouseLeave={() => this.props.toggleFocus(key, false)}>
+      return <tr key={key} onMouseEnter={() => this.props.toggleFocus(key, true)}
+                 onMouseLeave={() => this.props.toggleFocus(key, false)}>
         <td>{value.title}</td>
         <td className={styles.badgeCell}>{this.renderBadges(value.links)}</td>
       </tr>
@@ -44,46 +45,46 @@ export default class GranuleView extends Component {
         .value()
 
     return (
-      <div className={`pure-g ${styles.mainWindow}`}>
-        <div className={`pure-u-1-2 ${styles.map}`}>
-          <MapContainer style={styles.mapContainer}/>
-        </div>
-        <div className={`pure-u-1-2 ${styles.granule}`}>
-          <div className={`pure-g ${styles.granuleInfo}`}>
-            {this.renderLoadingMessage()}
-            {_.isEmpty(legendItems)
-              ? <div></div>
-              : <div className={`pure-u-1 ${styles.legend}`}>
-              <h3 className={styles.legendItem}>Access Protocols:</h3>
-              {legendItems}
-            </div>}
-            <div className={`pure-u-1`}>
-              <table className={`pure-table ${styles.table}`}>
-                <thead>
+        <div className={`pure-g ${styles.mainWindow}`}>
+          <div className={`pure-u-1-2 ${styles.map}`}>
+            <MapContainer style={styles.mapContainer}/>
+          </div>
+          <div className={`pure-u-1-2 ${styles.granule}`}>
+            <div className={`pure-g ${styles.granuleInfo}`}>
+              {this.renderLoadingMessage()}
+              {_.isEmpty(legendItems)
+                  ? <div></div>
+                  : <div className={`pure-u-1 ${styles.legend}`}>
+                    <h3 className={styles.legendItem}>Access Protocols:</h3>
+                    {legendItems}
+                  </div>}
+              <div className={`pure-u-1`}>
+                <table className={`pure-table ${styles.table}`}>
+                  <thead>
                   <tr>
                     <th>Title</th>
                     <th>Data Access</th>
                   </tr>
-                </thead>
-                <tbody>
+                  </thead>
+                  <tbody>
                   {tableRows}
                   {this.renderPaginationButton()}
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </div>
     )
   }
 
   renderLoadingMessage() {
     const styleShowMessage = _.isEmpty(this.props.results) ?
-      {} : {display: 'none'}
+        {} : {display: 'none'}
     return (
-          <div className={`pure-u-1 ${styles.message}`} style={styleShowMessage}>
-            Please wait a moment while the results load...
-      </div>)
+        <div className={`pure-u-1 ${styles.message}`} style={styleShowMessage}>
+          Please wait a moment while the results load...
+        </div>)
   }
 
   renderBadges(links) {

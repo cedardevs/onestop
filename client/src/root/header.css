@@ -7,7 +7,6 @@ input {
 .headerArea {
   border-bottom: 1px solid color($color-primary-darkest lightness(-10%));
   background: $color-primary-darkest;
-  box-shadow: 0 10px 5px rgba(0,0,0,.7);
   padding: $section-padding;
   min-height: $header-height;
 }

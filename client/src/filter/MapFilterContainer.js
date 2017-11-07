@@ -1,21 +1,21 @@
-import { connect } from 'react-redux';
-import SpatialFilter from './MapFilter';
-import { toggleExcludeGlobal } from '../actions/SearchParamActions';
+import { connect } from 'react-redux'
+import SpatialFilter from './MapFilter'
+import { toggleExcludeGlobal } from '../actions/SearchParamActions'
 
 const mapStateToProps = state => {
-	return {};
-};
+  return {}
+}
 
 const mapDispatchToProps = dispatch => {
-	return {
-		toggleExcludeGlobal: () => {
-			dispatch(toggleExcludeGlobal());
-		},
-	};
-};
+  return {
+    toggleExcludeGlobal: () => {
+      dispatch(toggleExcludeGlobal())
+    },
+  }
+}
 
 const MapFilterContainer = connect(mapStateToProps, mapDispatchToProps)(
-	SpatialFilter,
-);
+    SpatialFilter,
+)
 
-export default MapFilterContainer;
+export default MapFilterContainer
