@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import _ from 'lodash'
 
 const styleDefault = {
   display: 'inline-flex',
@@ -78,7 +79,15 @@ export default class AppliedFacet extends Component {
       styleFocus,
     } = this.props
 
-    const name = term ? term.split('>').pop().trim() : "DNE"
+    let name
+      if (term) {
+        let longName = term.split('>').pop().trim()
+        name = (longName === longName.toUpperCase()) ? _.startCase(longName.toLowerCase()) : longName
+      }
+      else {
+        name = "DNE"
+      }
+
 
     const stylesMerged = {
       ...styleDefault,

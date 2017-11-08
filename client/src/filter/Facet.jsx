@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Checkbox from '../common/input/Checkbox'
+import _ from 'lodash'
 
 const styleContainer = {
   display: 'flex',
@@ -21,7 +22,9 @@ export default class Facet extends Component {
     const termHierarchy = term.split('>').map(t => {
       return t.trim()
     })
-    return termHierarchy[termHierarchy.length - 1]
+    const name = termHierarchy[termHierarchy.length - 1]
+    let label = (name === name.toUpperCase()) ? _.startCase(name.toLowerCase()) : name
+    return label
   }
 
   render() {
