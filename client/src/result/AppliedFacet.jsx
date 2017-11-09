@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import _ from 'lodash'
+import { titleCaseKeyword } from "../utils/keywordUtils"
 
 const styleDefault = {
   display: 'inline-flex',
@@ -79,15 +79,7 @@ export default class AppliedFacet extends Component {
       styleFocus,
     } = this.props
 
-    let name
-      if (term) {
-        let longName = term.split('>').pop().trim()
-        name = (longName === longName.toUpperCase()) ? _.startCase(longName.toLowerCase()) : longName
-      }
-      else {
-        name = "DNE"
-      }
-
+    const name = titleCaseKeyword(term) || 'DNE'
 
     const stylesMerged = {
       ...styleDefault,

@@ -7,6 +7,7 @@ import starHalfO from 'fa/star-half-o.svg'
 import styles from './DetailStyles.css'
 import A from '../common/link/Link'
 import MapThumbnail from '../common/MapThumbnail'
+import { titleCaseKeyword } from "../utils/keywordUtils"
 
 class SummaryView extends React.Component {
   constructor(props) {
@@ -146,16 +147,7 @@ class SummaryView extends React.Component {
             .filter((k, i, a) => a.indexOf(k) === i) // dedupe
       }
       else {
-        keywords = keywords
-          .map((k) => k.split('>').pop().trim()) // Only want 'Long Name' in 'SHORT NAME > Long Name'
-          .map((k) => {
-            if (k === k.toUpperCase()) {
-              return _.startCase(k.toLowerCase())
-            }
-            else {
-              return k
-            }
-          })
+        keywords = keywords.map(titleCaseKeyword)
       }
       keywords = keywords.map((k, index) => index > 2 && !showAll ? null :
           <div className={styles.keyword} style={{backgroundColor: bgColor}} key={k}>{k}</div>)

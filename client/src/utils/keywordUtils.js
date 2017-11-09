@@ -1,8 +1,7 @@
 import _ from 'lodash'
 
 const buildHierarchyMap = (category, terms) => {
-
-  var createChildrenHierarchy = (map, hierarchy, term, value) => {
+  const createChildrenHierarchy = (map, hierarchy, term, value) => {
     const lastTerm = hierarchy.pop()
     if (!_.isEmpty(hierarchy)) {
       let i
@@ -64,4 +63,11 @@ export const buildKeywordHierarchyMap = facetMap => {
   })
 
   return hierarchyMap
+}
+
+// pulls out the last term in a GCMD-style keyword and attempts to
+export const titleCaseKeyword = term => {
+  if (!term) { return null }
+  const trimmed = term.split('>').pop().trim()
+  return (trimmed === trimmed.toUpperCase()) ? _.startCase(trimmed.toLowerCase()) : trimmed
 }
