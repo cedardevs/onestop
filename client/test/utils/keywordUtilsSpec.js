@@ -26,10 +26,6 @@ describe('The keyword utils', function () {
           output: 'Thermistor'
         },
         {
-          input: 'CRYOSPHERE > SNOW/ICE',
-          output: 'Snow/Ice'
-        },
-        {
           input: 'Ocean Carbon > Biogeochemistry; Southern Ocean Iron Experiment (OCB-SOFeX)',
           output: 'Biogeochemistry; Southern Ocean Iron Experiment (OCB-SOFeX)'
         }
