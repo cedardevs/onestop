@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import Loading from './LoadingComponent'
+import LoadingBar from './LoadingBar'
 
 const mapStateToProps = (state) => {
   return {
@@ -7,8 +7,8 @@ const mapStateToProps = (state) => {
   }
 }
 
-const LoadingContainer = connect(
+const LoadingBarContainer = connect(
     mapStateToProps
-)(Loading)
+)(LoadingBar)
 
-export default LoadingContainer
+export default LoadingBarContainer

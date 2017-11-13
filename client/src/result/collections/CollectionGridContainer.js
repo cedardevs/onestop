@@ -7,6 +7,7 @@ import CollectionGrid from './CollectionGrid'
 const mapStateToProps = (state) => {
   const {collections, totalCollections, pageSize} = state.domain.results
   return {
+    loading: state.ui.loading ? 1 : 0,
     results: collections,
     totalHits: totalCollections,
     returnedHits: collections && Object.keys(collections).length || 0,
