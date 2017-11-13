@@ -6,7 +6,7 @@ import { setFocus } from '../actions/FlowActions'
 import Detail from './Detail'
 
 const mapStateToProps = (state, reactProps) => {
-  const { focusedId } = state.ui.cardDetails
+  const {focusedId} = state.ui.cardDetails
   const focusedItem = state.domain.results.collections[focusedId]
   // const { collections } = state.domain.results
   // const geometry = focusedId && collections[focusedId] && collections[focusedId].spatialBounding || ''

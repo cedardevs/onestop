@@ -6,7 +6,7 @@ export const initialState = Immutable({
 })
 
 export const granuleDetails = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case TOGGLE_GRANULE_FOCUS:
       return Immutable.set(state, 'focusedGranules', action.focused ? [action.id] : [])
 

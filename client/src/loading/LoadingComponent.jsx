@@ -37,8 +37,8 @@ export class Loading extends React.Component {
   }
 
   launch() {
-    let { progressInterval, percent } = this.state
-    const { animationTimeout } = this.state
+    let {progressInterval, percent} = this.state
+    const {animationTimeout} = this.state
 
     if (!progressInterval) {
       progressInterval = setInterval(
@@ -53,7 +53,7 @@ export class Loading extends React.Component {
   }
 
   simulateProgress() {
-    let { progressInterval, percent, animationTimeout } = this.state
+    let {progressInterval, percent, animationTimeout} = this.state
 
     if (percent === 100) {
       clearInterval(progressInterval)
@@ -65,11 +65,11 @@ export class Loading extends React.Component {
       percent = percent + this.props.progressIncrease
     }
 
-    this.setState({ percent, progressInterval, animationTimeout })
+    this.setState({percent, progressInterval, animationTimeout})
   }
 
   reset() {
-    let { progressInterval, animationTimeout } = this.state
+    let {progressInterval, animationTimeout} = this.state
     if (progressInterval) {
       clearInterval(progressInterval)
     }
@@ -101,8 +101,8 @@ export class Loading extends React.Component {
 
     return (
         <div>
-          <div style={style} className={this.props.className} />
-          <div style={{ display: 'table', clear: 'both' }} />
+          <div style={style} className={this.props.className}/>
+          <div style={{display: 'table', clear: 'both'}}/>
         </div>
     )
   }

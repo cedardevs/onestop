@@ -1,4 +1,4 @@
-import {createStore, applyMiddleware} from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import { routerMiddleware } from 'react-router-redux'
 import { hashHistory } from 'react-router'
 import Immutable from 'seamless-immutable'
@@ -7,15 +7,15 @@ import reducer from './reducers/reducer'
 import { decodeQueryString } from './utils/queryUtils'
 
 let queryString = ''
-if(typeof document !== "undefined") {
+if (typeof document !== "undefined") {
   queryString = document.location.hash.split('?')[1]
 }
 const initialState = Immutable(decodeQueryString(queryString))
 
 const store = createStore(reducer, initialState,
-  applyMiddleware(
-    thunk,
-    routerMiddleware(hashHistory)
-  ))
-  
+    applyMiddleware(
+        thunk,
+        routerMiddleware(hashHistory)
+    ))
+
 export default store

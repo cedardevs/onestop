@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import SearchFieldsComponent from './SearchFieldsComponent'
+import SearchFields from './SearchFields'
 import { triggerSearch, clearFacets, clearCollections } from '../actions/SearchRequestActions'
 import { updateQuery, updateSearch } from '../actions/SearchParamActions'
 import { showCollections } from '../actions/FlowActions'
@@ -29,6 +29,6 @@ const mapDispatchToProps = (dispatch) => {
 const SearchFieldsContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(SearchFieldsComponent)
+)(SearchFields)
 
 export default SearchFieldsContainer
