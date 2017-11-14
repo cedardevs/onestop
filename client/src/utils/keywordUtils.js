@@ -21,7 +21,7 @@ const buildHierarchyMap = (category, terms) => {
   let categoryMap = {}
 
   Object.keys(terms).map(term => {
-    let hierarchy = term.split('>').map( e => e.trim()) // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
+    let hierarchy = term.split('>').map(e => e.trim()) // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
     const value = {
       count: terms[term].count,
       children: {},
@@ -48,7 +48,6 @@ export const buildKeywordHierarchyMap = facetMap => {
       else {
         heading = _.startCase(_.toLower((category.split(/(?=[A-Z])/).join(" "))))
         Object.keys(terms).map(term => {
-          //const name = term.split(' > ')
           categoryMap[term] = {
             count: terms[term].count,
             children: {},
@@ -68,7 +67,6 @@ export const buildKeywordHierarchyMap = facetMap => {
 // pulls out the last term in a GCMD-style keyword and attempts to maintain intended acronyms
 export const titleCaseKeyword = term => {
   if (!term) { return null }
-  // const trimmed = _.trim(term.split('>').pop(), '\\t')
   const trimmed = term.split('>').pop().trim()
   return (trimmed === trimmed.toUpperCase()) ? _.startCase(trimmed.toLowerCase()) : trimmed
 }
