@@ -38,6 +38,7 @@ const routesLayout =
           <Route name="Files" path="files" component={Section508GranuleListContainer}/>
         </Route>
         <Route name="Error" path="error" component={ErrorContainer}/>
+        <Route name="Help" path="help" component={Help}/>
       </Route>
     </Router>
 
