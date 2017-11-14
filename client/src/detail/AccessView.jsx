@@ -11,8 +11,9 @@ const styleTableRow = {
 }
 
 const styleTableHeading = {
-    color: "#000",
-    backgroundColor: "#E0E0E0",
+    color: "white",
+    backgroundColor: "#222",
+    borderRight: "1px solid gray",
     whiteSpace: "nowrap",
     width: "1%",
     padding: "1.618em"
