@@ -11,7 +11,7 @@ import HeaderContainer from './HeaderContainer'
 import Filters from '../filter/Filters'
 
 import InfoContainer from '../common/info/infoContainer'
-import LoadingContainer from '../loading/LoadingContainer'
+import LoadingBarContainer from '../loading/LoadingBarContainer'
 
 import FooterContainer from './FooterContainer'
 
@@ -94,7 +94,7 @@ export default class Root extends Component {
     const middle = (
         <div>
           <InfoContainer modalMode={this.isNotLanding()}/>
-          <LoadingContainer/>
+          <LoadingBarContainer/>
           <Background showImage={this.isNot508()} showOverlay={this.isNotLanding() && this.isNot508()}/>
           {this.props.children}
         </div>
