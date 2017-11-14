@@ -10,6 +10,7 @@ import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
 import Section508LandingContainer from './landing/Section508LandingContainer'
 import Help from './common/info/Help'
+import About from './common/info/About'
 import { Provider } from 'react-redux'
 import RootComponent from './root/Root'
 import { initialize } from './actions/FlowActions'
@@ -29,6 +30,7 @@ const routesLayout =
         </Route>
         <Route name="Error" path="error" component={ErrorContainer}/>
         <Route name="Help" path="help" component={Help}/>
+        <Route name="About" path="about" component={About}/>
       </Route>
 
       <Route path="508" name="Home" component={RootComponent}>
@@ -39,6 +41,7 @@ const routesLayout =
         </Route>
         <Route name="Error" path="error" component={ErrorContainer}/>
         <Route name="Help" path="help" component={Help}/>
+        <Route name="About" path="about" component={About}/>
       </Route>
     </Router>
 

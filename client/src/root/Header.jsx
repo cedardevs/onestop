@@ -29,7 +29,7 @@ class Header extends React.Component {
     </div>
     const menuContent = <ul role="menubar">
       <a href={this.props.homeUrl} title="Home">Home</a>
-      <Link title="About" to="/about">About</Link>
+      {(window.location.href.indexOf('508') === -1) ? <Link title="About" to="/about">About</Link> : <Link title="About" to="/508/about">About</Link>}
       {(window.location.href.indexOf('508') === -1) ? <Link title="Help" to="/help">Help</Link> : <Link title="Help" to="/508/help">Help</Link>}
       {this.getMainOr508Link()}
       <a href='//data.noaa.gov/dataset' title='Previous Data Catalog'>Previous Catalog</a>
