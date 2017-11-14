@@ -13,7 +13,7 @@ if (typeof document !== "undefined") {
 const initialState = Immutable(decodeQueryString(queryString))
 
 const getCompose = () => {
-  if (typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ !== null) {
+  if (typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) {
     return window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
   }
   return compose
