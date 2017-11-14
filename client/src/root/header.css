@@ -19,9 +19,7 @@ input {
   width: 100%;
   font-size: 1.5em;
   display: inline-block;
-  button {
-    background:none!important;
-    border:none;
+  a {
     font: inherit;
 
     text-decoration: none;
