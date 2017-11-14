@@ -1,5 +1,7 @@
 import '../specHelper'
+import Immutable from 'seamless-immutable'
 import * as queryUtils from '../../src/utils/queryUtils'
+import { initialState } from "../../src/reducers/behavior/search"
 
 describe('The queryUtils', function () {
 
@@ -26,11 +28,13 @@ describe('The queryUtils', function () {
   })
 
   it(`encodes & decodes a queryString accurately`, function () {
-    const tempState = {behavior: {search: {yo: 'dawg'}}}
-    const encodedString = queryUtils.encodeQueryString(tempState)
-    encodedString.should.not.equal(tempState)
-    const decodedString = queryUtils.decodeQueryString(encodedString)
-    decodedString.should.deep.equal(tempState)
+    queryTestCases().forEach((testCase) => {
+      const tempState = {behavior: {search: testCase.state}}
+      const encodedString = queryUtils.encodeQueryString(tempState)
+      encodedString.should.equal(testCase.string)
+      const decodedString = queryUtils.decodeQueryString(encodedString)
+      decodedString.should.deep.equal(tempState)
+    })
   })
 
 })
@@ -342,5 +346,95 @@ function granuleTestCases() {
         }
       }
     }
+  ]
+}
+
+function queryTestCases() {
+  return [
+    {
+      string: '',
+      state: initialState
+    },
+    {
+      string: 'q=ocean',
+      state: Immutable.merge(initialState, {
+        queryText: 'ocean'
+      })
+    },
+    {
+      string: 's=2010-01-01T00%3A00%3A00Z',
+      state: Immutable.merge(initialState, {
+        startDateTime: '2010-01-01T00:00:00Z'
+      })
+    },
+    {
+      string: 'e=2010-01-01T00%3A00%3A00Z',
+      state: Immutable.merge(initialState, {
+        endDateTime: '2010-01-01T00:00:00Z'
+      })
+    },
+    {
+      string: 'i=ABC,with%20a%20space',
+      state: Immutable.merge(initialState, {
+        selectedIds: ['ABC', 'with a space' ]
+      })
+    },
+    {
+      string: 'eg=1',
+      state: Immutable.merge(initialState, {
+        excludeGlobal: true
+      })
+    },
+    {
+      string: 'f=science:Oceans,Oceans%20%3E%20Sea%20Surface%20Temperature;platforms:DEM%20%3E%20Digital%20Elevation%20Model',
+      state: Immutable.merge(initialState, {
+        selectedFacets: {
+          science: ['Oceans', 'Oceans > Sea Surface Temperature'],
+          platforms: ['DEM > Digital Elevation Model']
+        }
+      })
+    },
+    {
+      string: 'g=-83.9531260728836,29.234001989998085,-70.5937510728836,38.552746685071774',
+      state: Immutable.merge(initialState, {
+        geoJSON: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-83.9531260728836, 29.234001989998085],
+                [-83.9531260728836, 38.552746685071774],
+                [-70.5937510728836, 38.552746685071774],
+                [-70.5937510728836, 29.234001989998085],
+                [-83.9531260728836, 29.234001989998085]
+              ]
+            ]
+          }
+        }
+      })
+    },
+    {
+      string: 'q=ocean&g=-83,29,-70,38&s=2010-01-01T00%3A00%3A00Z&e=2010-01-01T00%3A00%3A00Z&f=platforms:DEM%20%3E%20Digital%20Elevation%20Model&i=ABC&eg=1',
+      state: Immutable.merge(initialState, {
+        queryText: 'ocean',
+        startDateTime: '2010-01-01T00:00:00Z',
+        endDateTime: '2010-01-01T00:00:00Z',
+        selectedIds: ['ABC'],
+        excludeGlobal: true,
+        selectedFacets: {
+          platforms: ['DEM > Digital Elevation Model']
+        },
+        geoJSON: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[[-83, 29], [-83, 38], [-70, 38], [-70, 29], [-83, 29]]]
+          }
+        }
+      })
+    },
   ]
 }
