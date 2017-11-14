@@ -9,6 +9,7 @@ import Section508GranuleListContainer from './result/granules/list/Section508Gra
 import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
 import Section508LandingContainer from './landing/Section508LandingContainer'
+import Help from './common/info/Help'
 import { Provider } from 'react-redux'
 import RootComponent from './root/Root'
 import { initialize } from './actions/FlowActions'
@@ -27,6 +28,7 @@ const routesLayout =
           <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
         </Route>
         <Route name="Error" path="error" component={ErrorContainer}/>
+        <Route name="Help" path="help" component={Help}/>
       </Route>
 
       <Route path="508" name="Home" component={RootComponent}>
