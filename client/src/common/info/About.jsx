@@ -5,7 +5,7 @@ export default class Help extends React.Component {
   render() {
     return (
       <div>
-        <h1>What Is OneStop?</h1>
+        <h1>OneStop Overview</h1>
         <p>
           The OneStop Project is designed to improve NOAA's data discovery and access framework. Focusing on all layers
           of the framework and not just the user interface, OneStop is addressing data format and metadata best practices,
