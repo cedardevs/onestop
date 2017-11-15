@@ -1,0 +1,15 @@
+.about {
+    font-size: 1.618em;
+    background-color: #111;
+    background-color:rgba(17, 17, 17, 0.8);
+    padding: 1.618em;
+    min-height: 100vh;
+}
+
+.about h1 {
+    margin: 0 0 0.618em 0;
+}
+
+.about h2 {
+    margin: 0 0 0.618em 0;
+}

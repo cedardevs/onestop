@@ -71,6 +71,14 @@ export default class Root extends Component {
     return this.location.indexOf('508') === -1 // TODO move this to redux state
   }
 
+  isAboutPage() {
+    return this.location === '/about' || this.location === '/508/about'
+  }
+
+  isHelpPage() {
+    return this.location === '/help' || this.location === '/508/help'
+  }
+
   homeUrl() {
     const {host, pathname} = location
     return `//${host}${pathname ? pathname : '/'}#/${this.isNot508() ? '' : '508/'}`
@@ -88,7 +96,7 @@ export default class Root extends Component {
         </div>
     )
 
-    const left = this.isNotLanding() ? <Filters/> : null
+    const left = this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage() ? <Filters/> : null
 
     const middle = (
         <div>

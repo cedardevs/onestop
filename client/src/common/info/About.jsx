@@ -1,10 +1,11 @@
 import React from 'react'
+import styles from './About.css';
 
 export default class Help extends React.Component {
 
   render() {
     return (
-      <div>
+      <section className={styles.about}>
         <h1>OneStop Overview</h1>
         <p>
           The OneStop Project is designed to improve NOAA's data discovery and access framework. Focusing on all layers
@@ -14,7 +15,7 @@ export default class Help extends React.Component {
           wide variety and vast scale of NOAA's data.
         </p>
         <h2>{this.buildCountString()}</h2>
-      </div>
+      </section>
     )
   }
 
