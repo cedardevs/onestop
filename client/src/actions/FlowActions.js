@@ -44,20 +44,6 @@ export const showHome = () => {
   }
 }
 
-export const TOGGLE_HELP = 'TOGGLE_HELP'
-export const toggleHelp = () => {
-  return {
-    type: TOGGLE_HELP
-  }
-}
-
-export const TOGGLE_ABOUT = 'TOGGLE_ABOUT'
-export const toggleAbout = () => {
-  return {
-    type: TOGGLE_ABOUT
-  }
-}
-
 export const SET_FOCUS = 'SET_FOCUS'
 export const setFocus = (id) => {
   return {
