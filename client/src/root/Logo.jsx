@@ -1,19 +1,13 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import stopCircle from 'fa/stop-circle-o.svg'
 
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 
-const stylesLogoWrapper = {
-  padding: '0 1.618em 0 0',
-}
+//-- Styles
 
-const stylesOneStopLink = {
-  color: 'white',
-  textDecoration: 'none',
-  display: 'inline',
-  fontSize: '2em',
-  marginTop: '0.7em',
-  verticalAlign: 'top',
+const stylesLogoWrapper = {
+  padding: '0 2.618em 0 0',
 }
 
 const stylesNoaaLogoWrapper = {
@@ -30,6 +24,15 @@ const stylesNoaaLogo = {
 
 const stylesTextWrapper = {
   display: 'inline-block',
+}
+
+const stylesOneStopLink = {
+  color: 'white',
+  textDecoration: 'none',
+  display: 'inline',
+  fontSize: '2em',
+  marginTop: '0.7em',
+  verticalAlign: 'top',
 }
 
 const stylesStopCircle = {
@@ -52,10 +55,17 @@ const stylesNceiText = {
   padding: '0 0 0 0.5em'
 }
 
-export default class Logo extends Component {
+//-- Component
 
+export default class Logo extends Component {
   constructor(props) {
     super(props)
+  }
+
+  handleClick = () => {
+    if (typeof this.props.onClick === 'function') {
+      this.props.onClick()
+    }
   }
 
   render() {
@@ -74,4 +84,8 @@ export default class Logo extends Component {
       </div>
     </div>
   }
+}
+
+Logo.propTypes = {
+  onClick: PropTypes.func,
 }

@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
-import A from '../common/link/Link'
 import styles from './header.css'
 import Logo from "./Logo"
 
@@ -35,7 +34,9 @@ class Header extends React.Component {
 
     return <header className={`${styles.headerArea}`}>
       <div className={styles.headerRow}>
-        <Logo onClick={this.props.goHome}/>
+        <div className={styles.orgBox}>
+          <Logo onClick={this.props.goHome}/>
+        </div>
         <div className={styles.searchBox}>
           {this.props.showSearch ? <SearchFieldsContainer header={true}/> : <div></div>}
         </div>
