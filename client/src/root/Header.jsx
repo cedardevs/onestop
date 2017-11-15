@@ -1,12 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
-import stopCircle from 'fa/stop-circle-o.svg'
-import A from '../common/link/Link'
 import styles from './header.css'
-
-const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
-const nceiLogo = require('../../img/ncei_dark_test_75.png')
+import Logo from "./Logo"
 
 class Header extends React.Component {
   constructor(props) {
@@ -39,7 +35,7 @@ class Header extends React.Component {
     return <header className={`${styles.headerArea}`}>
       <div className={styles.headerRow}>
         <div className={styles.orgBox}>
-          {this.renderLogo()}
+          <Logo onClick={this.props.goHome}/>
         </div>
         <div className={styles.searchBox}>
           {this.props.showSearch ? <SearchFieldsContainer header={true}/> : <div></div>}
@@ -68,24 +64,6 @@ class Header extends React.Component {
       linkTitle = 'Accessible Site'
     }
     return <button title={linkTitle} onClick={() => location.href = siteLink}> {linkTitle}</button>
-  }
-
-  renderLogo() {
-    if (this.props.showSearch) {
-      return <div>
-        <A href="http://www.noaa.gov" title="NOAA Home">
-          <img className={styles.noaaLogo} id='logo' alt="NOAA Logo" src={noaaLogo}/>
-        </A>
-        <a href="#" title="One Stop Home" className={styles.oneStopLink} onClick={() => this.props.goHome()}>
-          <img src={stopCircle} className={styles.stopCircle}></img>neStop
-        </a>
-      </div>
-    }
-    else {
-      return <a href="//www.ncei.noaa.gov/" title="NCEI Home">
-        <img className={styles.nceiLogo} alt="NCEI Logo" src={nceiLogo}/>
-      </a>
-    }
   }
 }
 

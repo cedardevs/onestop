@@ -31,7 +31,7 @@
   }
 }
 
-$button-threshold: 96em;
+$button-threshold: 100em;
 @media (max-width: $button-threshold){
   .header {
     .buttonLayout {
