@@ -114,7 +114,9 @@ export default class CollectionGrid extends Component {
   }
 
   render() {
-    const {results, returnedHits, totalHits, pageSize} = this.props
+    const {loading, results, returnedHits, totalHits, pageSize} = this.props
+
+    const headingText = loading ? `Loading...` : `Search Results (showing ${returnedHits} of ${totalHits})`
 
     const styleResultCountMerged = {
       ...styleResultCount,
@@ -146,7 +148,7 @@ export default class CollectionGrid extends Component {
           <div style={styleResultCountContainer}>
             <h1 style={styleResultCountMerged} tabIndex={0} ref={resultCount => (this.resultCount = resultCount)}
                 onFocus={this.handleFocusResultsCount} onBlur={this.handleBlurResultsCount}>
-              Search Results (showing {returnedHits} of {totalHits})
+                {headingText}
             </h1>
           </div>
           <div style={styleGrid}>{cards}</div>

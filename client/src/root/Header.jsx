@@ -1,12 +1,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import {Link} from 'react-router'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
-import stopCircle from 'fa/stop-circle-o.svg'
-import A from '../common/link/Link'
 import styles from './header.css'
-
-const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
-const nceiLogo = require('../../img/ncei_dark_test_75.png')
+import Logo from "./Logo"
 
 class Header extends React.Component {
   constructor(props) {
@@ -27,19 +24,18 @@ class Header extends React.Component {
       <span></span>
     </div>
     const menuContent = <ul role="menubar">
-      <button title="Home" onClick={() => location.href = this.props.homeUrl}>Home</button>
-      <button title="About" onClick={() => this.props.toggleAbout()}>About</button>
-      <button title="Help" onClick={() => this.props.toggleHelp()}>Help</button>
+      <a href={this.props.homeUrl} title="Home">Home</a>
+      {(window.location.href.indexOf('508') === -1) ? <Link title="About" to="/about">About</Link> : <Link title="About" to="/508/about">About</Link>}
+      {(window.location.href.indexOf('508') === -1) ? <Link title="Help" to="/help">Help</Link> : <Link title="Help" to="/508/help">Help</Link>}
       {this.getMainOr508Link()}
-      <button title='Previous Data Catalog' onClick={() => location.href = '//data.noaa.gov/dataset'}>Previous Catalog
-      </button>
+      <a href='//data.noaa.gov/dataset' title='Previous Data Catalog'>Previous Catalog</a>
     </ul>
     const menu = <nav className={styles.headerLinks} aria-label="Main Navigation">{menuContent}</nav>
 
     return <header className={`${styles.headerArea}`}>
       <div className={styles.headerRow}>
         <div className={styles.orgBox}>
-          {this.renderLogo()}
+          <Logo onClick={this.props.goHome}/>
         </div>
         <div className={styles.searchBox}>
           {this.props.showSearch ? <SearchFieldsContainer header={true}/> : <div></div>}
@@ -67,33 +63,13 @@ class Header extends React.Component {
       siteLink = `${siteLink}508/`
       linkTitle = 'Accessible Site'
     }
-    return <button title={linkTitle} onClick={() => location.href = siteLink}> {linkTitle}</button>
-  }
-
-  renderLogo() {
-    if (this.props.showSearch) {
-      return <div>
-        <A href="http://www.noaa.gov" title="NOAA Home">
-          <img className={styles.noaaLogo} id='logo' alt="NOAA Logo" src={noaaLogo}/>
-        </A>
-        <a href="#" title="One Stop Home" className={styles.oneStopLink} onClick={() => this.props.goHome()}>
-          <img src={stopCircle} className={styles.stopCircle}></img>neStop
-        </a>
-      </div>
-    }
-    else {
-      return <a href="//www.ncei.noaa.gov/" title="NCEI Home">
-        <img className={styles.nceiLogo} alt="NCEI Logo" src={nceiLogo}/>
-      </a>
-    }
+    return <a title={linkTitle} href={siteLink}><span>{linkTitle}</span></a>
   }
 }
 
 Header.propTypes = {
   showSearch: PropTypes.bool.isRequired,
-  goHome: PropTypes.func.isRequired,
-  toggleHelp: PropTypes.func.isRequired,
-  toggleAbout: PropTypes.func.isRequired
+  goHome: PropTypes.func.isRequired
 }
 
 Header.defaultProps = {

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Checkbox from '../common/input/Checkbox'
+import { titleCaseKeyword } from "../utils/keywordUtils"
 
 const styleContainer = {
   display: 'flex',
@@ -17,13 +18,6 @@ const styleTerm = {
 }
 
 export default class Facet extends Component {
-  labelForTerm = term => {
-    const termHierarchy = term.split('>').map(t => {
-      return t.trim()
-    })
-    return termHierarchy[termHierarchy.length - 1]
-  }
-
   render() {
     return (
         <div style={{...styleContainer, ...this.props.style}}>
@@ -35,7 +29,7 @@ export default class Facet extends Component {
             />
           </div>
           <div style={styleTerm}>
-            {this.labelForTerm(this.props.term)} ({this.props.count})
+            {titleCaseKeyword(this.props.term)} ({this.props.count})
           </div>
         </div>
     )
