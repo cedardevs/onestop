@@ -1,9 +1,16 @@
+.wrapper {
+    width: 100%;
+    background-color: #111;
+}
+
 .help {
     font-size: 1.318em;
     background-color: #111;
     background-color:rgba(17, 17, 17, 0.8);
     padding: 1.618em;
     min-height: 100vh;
+    margin: 0 auto;
+    max-width: 45em;
 }
 
 .help h1 {
@@ -37,7 +44,6 @@
     padding: 0 0.309em;
     position: relative;
     top: .15em;
-    left: .07em;
     max-width: 1.1em;
     max-height: 1.1em;
 }
