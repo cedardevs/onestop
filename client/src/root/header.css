@@ -7,12 +7,8 @@ input {
 .headerArea {
   border-bottom: 1px solid color($color-primary-darkest lightness(-10%));
   background: $color-primary-darkest;
-  padding: $section-padding;
+  padding: 1em 1.618em 1em 1.618em;
   min-height: $header-height;
-}
-
-.orgBox {
-  margin-right: 7em;
 }
 
 .headerLinks {
@@ -46,26 +42,9 @@ input {
   }
 }
 
-.stopCircle {
-  position: relative;
-  top: .15em;
-  left: .07em;
-  max-width: 1.1em;
-  max-height: 1.1em;
-}
-
 .searchBox {
   vertical-align: top;
   margin-top: .9em;
-}
-
-.noaaLogo {
-  height: 4.5em;
-  width: 4.5em;
-  min-height: 4.5em;
-  min-width: 4.5em;
-  padding: 0 1em 1em 0;
-  display: inline;
 }
 
 .nceiLogo {
@@ -73,15 +52,6 @@ input {
   width: 20.5em;
   min-height: 4.5em;
   min-width: 20.5em;
-}
-
-.oneStopLink {
-  color: white;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 2em;
-  margin-top: 0.7em;
-  vertical-align: top;
 }
 
 @media screen and (max-width: 761px) {
@@ -121,9 +91,6 @@ $menu-threshold-1: 96em;
 $menu-threshold-2: 78em;
 @media (max-width: $menu-threshold-1)
 and (min-width: $menu-threshold-2){
-  .standardMenu {
-    top: 2.2em
-  }
   .searchBox {
     margin-top: 0;
   }
