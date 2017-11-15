@@ -244,17 +244,22 @@ class MetadataParser {
 
     def time = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
       e.@id.text() == 'boundingExtent'
-    }.temporalElement.EX_TemporalExtent.extent
-    def beginDate = time.TimePeriod.beginPosition.text() ?:
-        time.TimePeriod.begin.TimeInstant.timePosition.text() ?: null
-    def beginIndeterminate = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
-        time.TimePeriod.begin.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
-    def endDate = time.TimePeriod.endPosition.text() ?:
-        time.TimePeriod.end.TimeInstant.timePosition.text() ?: null
-    def endIndeterminate = time.TimePeriod.endPosition.@indeterminatePosition.text() ?:
-        time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
-    def instant = time.TimeInstant.timePosition.text() ?: null
-    def instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
+    }?.temporalElement?.EX_TemporalExtent?.extent
+
+    def beginDate, beginIndeterminate, endDate, endIndeterminate, instant, instantIndeterminate
+    if(time) {
+      beginDate = time.TimePeriod.beginPosition.text() ?:
+          time.TimePeriod.begin.TimeInstant.timePosition.text() ?: null
+      beginIndeterminate = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
+          time.TimePeriod.begin.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
+      endDate = time.TimePeriod.endPosition.text() ?:
+          time.TimePeriod.end.TimeInstant.timePosition.text() ?: null
+      endIndeterminate = time.TimePeriod.endPosition.@indeterminatePosition.text() ?:
+          time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
+      instant = time.TimeInstant.timePosition.text() ?: null
+      instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
+    }
+
 
     return [
         beginDate           : beginDate,
@@ -273,8 +278,8 @@ class MetadataParser {
   static Map parseSpatialInfo(GPathResult metadata) {
     def space = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
       e.@id.text() == 'boundingExtent'
-    }.geographicElement
-    def bbox = space.'**'.find { it -> it.name() == 'EX_GeographicBoundingBox' }
+    }?.geographicElement
+    def bbox = space?.'**'?.find { it -> it.name() == 'EX_GeographicBoundingBox' }
 
     def spatialBounding = parseBounding(bbox)
     def isGlobal = checkIsGlobal(spatialBounding)
