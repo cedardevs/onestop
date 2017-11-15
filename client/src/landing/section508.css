@@ -9,6 +9,10 @@
   margin: 2em 2em 0 1em;
 }
 
+.showcase {
+  min-height: 100vh;
+}
+
 .formDiv {
   margin: 2em auto;
   width: 80%;

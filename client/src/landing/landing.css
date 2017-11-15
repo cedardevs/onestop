@@ -64,6 +64,7 @@ button {
   width: 90%;
   max-width: 80em;
   padding-bottom: 10em;
+  min-height: 100vh;
 }
 
 .searchComponent {
