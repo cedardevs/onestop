@@ -85,8 +85,6 @@ export default class Root extends Component {
   }
 
   render() {
-
-    console.log("this.location:", this.location);
     const header = (
         <div>
           <BannerContainer/>
