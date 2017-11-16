@@ -72,11 +72,11 @@ export default class Root extends Component {
   }
 
   isAboutPage() {
-    return this.location === '/about' || this.location === '/508/about'
+    return this.location.startsWith('/about') || this.location.startsWith('/508/about')
   }
 
   isHelpPage() {
-    return this.location === '/help' || this.location === '/508/help'
+    return this.location.startsWith('/help') || this.location.startsWith('/508/help')
   }
 
   homeUrl() {
@@ -85,7 +85,6 @@ export default class Root extends Component {
   }
 
   render() {
-
     const header = (
         <div>
           <BannerContainer/>
