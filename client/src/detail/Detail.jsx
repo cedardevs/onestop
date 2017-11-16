@@ -7,6 +7,7 @@ import Tabs from './Tabs'
 import SummaryView from './SummaryView'
 import DescriptionView from './DescriptionView'
 import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
+import AccessView from './AccessView'
 
 class Detail extends React.Component {
   constructor(props) {
@@ -22,8 +23,7 @@ class Detail extends React.Component {
       return <div style={{display: 'none'}}/>
     }
     const item = this.props.item
-
-    let tabData = [
+    const tabData = [
       {
         title: 'Summary',
         content: <SummaryView id={this.props.id} item={this.props.item}/>,
@@ -34,8 +34,16 @@ class Detail extends React.Component {
       },
       {
         title: 'Matching Files',
-        content: <GranuleViewContainer id={this.props.id} item={this.props.item}/>,
+        content: (
+            <GranuleViewContainer id={this.props.id} item={this.props.item}/>
+        ),
         action: this.showGranules,
+      },
+      {
+        title: 'Access',
+        content: (
+            <AccessView id={this.props.id} item={this.props.item}/>
+        )
       },
     ]
 

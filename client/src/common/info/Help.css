@@ -1,0 +1,64 @@
+.wrapper {
+    width: 100%;
+    background-color: #111;
+}
+
+.help {
+    font-size: 1.318em;
+    background-color: #111;
+    background-color:rgba(17, 17, 17, 0.8);
+    padding: 1.618em;
+    min-height: 100vh;
+    margin: 0 auto;
+    max-width: 45em;
+}
+
+.help h1 {
+    margin: 0 0 0.618em 0;
+}
+
+.tips li {
+    margin-bottom: 1.618em;
+}
+
+.examples {
+    margin-top: 1em;
+}
+
+.examples li {
+    margin: 0 0 0.618em 0;
+    padding: 0;
+    color: #DDD;
+    font-style: italic;
+}
+
+.icon {
+    margin: 0;
+    padding: 0 0.309em;
+}
+
+.icon img {
+    background-color: #3E7BAD;
+    border-radius: 0.105em;
+
+    padding: 0 0.309em;
+    position: relative;
+    top: .15em;
+    max-width: 1.1em;
+    max-height: 1.1em;
+}
+
+.note {
+    color: lightgreen;
+    font-weight: bold;
+}
+
+.blue {
+    color: #3E7BAD;
+    font-weight: bold;
+}
+
+.purple {
+    color: #836BCB;
+    font-weight: bold;
+}

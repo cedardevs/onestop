@@ -10,8 +10,7 @@ import HeaderContainer from './HeaderContainer'
 
 import Filters from '../filter/Filters'
 
-import InfoContainer from '../common/info/infoContainer'
-import LoadingContainer from '../loading/LoadingContainer'
+import LoadingBarContainer from '../loading/LoadingBarContainer'
 
 import FooterContainer from './FooterContainer'
 
@@ -72,13 +71,20 @@ export default class Root extends Component {
     return this.location.indexOf('508') === -1 // TODO move this to redux state
   }
 
+  isAboutPage() {
+    return this.location.startsWith('/about') || this.location.startsWith('/508/about')
+  }
+
+  isHelpPage() {
+    return this.location.startsWith('/help') || this.location.startsWith('/508/help')
+  }
+
   homeUrl() {
     const {host, pathname} = location
     return `//${host}${pathname ? pathname : '/'}#/${this.isNot508() ? '' : '508/'}`
   }
 
   render() {
-
     const header = (
         <div>
           <BannerContainer/>
@@ -89,12 +95,11 @@ export default class Root extends Component {
         </div>
     )
 
-    const left = this.isNotLanding() ? <Filters/> : null
+    const left = this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage() ? <Filters/> : null
 
     const middle = (
         <div>
-          <InfoContainer modalMode={this.isNotLanding()}/>
-          <LoadingContainer/>
+          <LoadingBarContainer/>
           <Background showImage={this.isNot508()} showOverlay={this.isNotLanding() && this.isNot508()}/>
           {this.props.children}
         </div>

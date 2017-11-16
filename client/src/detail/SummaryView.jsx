@@ -7,6 +7,7 @@ import starHalfO from 'fa/star-half-o.svg'
 import styles from './DetailStyles.css'
 import A from '../common/link/Link'
 import MapThumbnail from '../common/MapThumbnail'
+import { titleCaseKeyword } from "../utils/keywordUtils"
 
 class SummaryView extends React.Component {
   constructor(props) {
@@ -142,12 +143,11 @@ class SummaryView extends React.Component {
         keywords = keywords
             .map((k) => k.split('>')) // split GCMD keywords apart
             .reduce((list, keys) => list.concat(keys), []) // flatten
-            .map((k) => _.startCase(k.toLowerCase().trim())) // you can figure this one out
+            .map((k) => k.trim()) // you can figure this one out
             .filter((k, i, a) => a.indexOf(k) === i) // dedupe
       }
       else {
-        keywords = keywords
-            .map((k) => _.startCase(k.substring(k.indexOf('>') + 1).trim().toLowerCase())) // Format is 'SHORT NAME > Long Name' but handles if string doesn't have angle bracket
+        keywords = keywords.map(titleCaseKeyword)
       }
       keywords = keywords.map((k, index) => index > 2 && !showAll ? null :
           <div className={styles.keyword} style={{backgroundColor: bgColor}} key={k}>{k}</div>)
