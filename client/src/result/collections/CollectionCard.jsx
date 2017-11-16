@@ -21,10 +21,15 @@ const styleContent = {
   color: 'white',
   overflow: 'hidden',
   boxShadow: '6px 8px 5px rgba(0, 0, 0, .7)',
+  position: "relative"
 }
 
 const styleOverlay = {
-  position: "relative",
+  position: "absolute",
+  top: 0,
+  left: 0,
+  bottom: 0,
+  right: 0,
   display: "inline-flex",
   flexDirection: "column",
   alignItems: "flex-start",
@@ -37,9 +42,9 @@ const styleOverlay = {
   font: "inherit",
   lineHeight: "normal",
   overflow: "visible",
+  borderRadius: 0,
   padding: 0,
   margin: 0,
-
   boxShadow: "inset 1ex 4ex 1.5ex 1ex rgba(0,0,0,.8)",
 }
 
