@@ -8,6 +8,7 @@ import SummaryView from './SummaryView'
 import DescriptionView from './DescriptionView'
 import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
 import AccessView from './AccessView'
+import VideoView from './VideoView'
 
 class Detail extends React.Component {
   constructor(props) {
@@ -23,7 +24,7 @@ class Detail extends React.Component {
       return <div style={{display: 'none'}}/>
     }
     const item = this.props.item
-    const tabData = [
+    let tabData = [
       {
         title: 'Summary',
         content: <SummaryView id={this.props.id} item={this.props.item}/>,
@@ -47,7 +48,19 @@ class Detail extends React.Component {
       },
     ]
 
-    return (
+      // TODO: make these real links
+      // const videoLinks = item.links.filter(link => link.linkFunction === "video");
+      const videoLinks = ["//www.youtube.com/embed/Q0CbN8sfihY", "//www.youtube.com/embed/yxfZBun1uBU"]
+      if(videoLinks.length > 0) {
+        tabData.push({
+            title: videoLinks.length === 1 ? "Video" : "Videos",
+            content: (
+                <VideoView id={this.props.id} links={videoLinks} />
+            )
+        })
+      }
+
+          return (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <div className={`pure-g ${styles.header} ${styles.underscored}`}>
