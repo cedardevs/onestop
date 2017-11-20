@@ -52,7 +52,7 @@ const stylesNceiText = {
   fontSize: '0.4em',
   display: 'block',
   textTransform: 'uppercase',
-  padding: '0 0 0 0.5em'
+  padding: '0 0 0 0.5em',
 }
 
 //-- Component
@@ -69,20 +69,39 @@ export default class Logo extends Component {
   }
 
   render() {
-    return <div style={stylesLogoWrapper}>
-      <div style={stylesNoaaLogoWrapper}>
-        <a href="#" title="One Stop Home" aria-hidden={true} onClick={() => this.props.onClick()}>
-          <img style={stylesNoaaLogo} id='logo' alt="NOAA Logo" src={noaaLogo}/>
-        </a>
+    return (
+      <div style={stylesLogoWrapper}>
+        <div style={stylesNoaaLogoWrapper}>
+          <a
+            href="#"
+            title="One Stop Home"
+            aria-hidden={true}
+            onClick={() => this.props.onClick()}
+          >
+            <img
+              style={stylesNoaaLogo}
+              id="logo"
+              alt="NOAA Logo"
+              src={noaaLogo}
+            />
+          </a>
+        </div>
+        <div style={stylesTextWrapper}>
+          <a
+            href="#"
+            title="One Stop Home"
+            style={stylesOneStopLink}
+            onClick={() => this.props.onClick()}
+          >
+            <span style={stylesOneStopText}>
+              <img src={stopCircle} style={stylesStopCircle} />neStop
+            </span>
+            <span style={stylesNceiText}>National Oceanic and</span>
+            <span style={stylesNceiText}>Atmospheric Administration</span>
+          </a>
+        </div>
       </div>
-      <div style={stylesTextWrapper}>
-        <a href="#" title="One Stop Home" style={stylesOneStopLink} onClick={() => this.props.onClick()}>
-          <span style={stylesOneStopText}><img src={stopCircle} style={stylesStopCircle}/>neStop</span>
-          <span style={stylesNceiText}>National Oceanic and</span>
-          <span style={stylesNceiText}>Atmospheric Administration</span>
-        </a>
-      </div>
-    </div>
+    )
   }
 }
 

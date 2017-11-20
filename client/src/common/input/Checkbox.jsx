@@ -46,7 +46,7 @@ const styleCheckmarkChecked = {
 class Checkbox extends Component {
   constructor(props) {
     super(props)
-    this.state = {checked: !!props.checked, hovering: false, pressing: false}
+    this.state = { checked: !!props.checked, hovering: false, pressing: false }
 
     this.handleChange = this.handleChange.bind(this)
     this.handleMouseOver = this.handleMouseOver.bind(this)
@@ -59,15 +59,15 @@ class Checkbox extends Component {
     if (nextProps.checked !== this.props.checked) {
       this.setState(prevState => ({
         ...prevState,
-        checked: nextProps.checked
+        checked: nextProps.checked,
       }))
     }
   }
 
   handleChange(event) {
-    const {value, onChange} = this.props
+    const { value, onChange } = this.props
     if (onChange) {
-      onChange({checked: !this.state.checked, value: value})
+      onChange({ checked: !this.state.checked, value: value })
     }
     // prevent parent click from propagating (only fire onClick of checkbox (not parent component onClicks too)
     event.stopPropagation()
@@ -105,31 +105,30 @@ class Checkbox extends Component {
   render() {
     let styleInteract = styleCheckmark
     if (this.state.checked || (this.state.hovering && this.state.pressing)) {
-      styleInteract = {...styleCheckmark, ...styleCheckmarkChecked}
+      styleInteract = { ...styleCheckmark, ...styleCheckmarkChecked }
     } else if (this.state.hovering) {
-      styleInteract = {...styleCheckmark, ...styleCheckmarkHover}
+      styleInteract = { ...styleCheckmark, ...styleCheckmarkHover }
     }
 
     return (
-        <div
-            style={styleCheckbox}
-            onClick={this.handleChange}
-            onMouseOver={this.handleMouseOver}
-            onMouseOut={this.handleMouseOut}
-            onMouseDown={this.handleMouseDown}
-        >
-          <input
-              type="checkbox"
-              name={this.props.name}
-              value={this.props.value}
-              checked={this.state.checked}
-              onChange={() => {
-              }}
-              style={styleInput}
-          />
-          <label style={styleLabel}/>
-          <div style={styleInteract}/>
-        </div>
+      <div
+        style={styleCheckbox}
+        onClick={this.handleChange}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+        onMouseDown={this.handleMouseDown}
+      >
+        <input
+          type="checkbox"
+          name={this.props.name}
+          value={this.props.value}
+          checked={this.state.checked}
+          onChange={() => {}}
+          style={styleInput}
+        />
+        <label style={styleLabel} />
+        <div style={styleInteract} />
+      </div>
     )
   }
 }

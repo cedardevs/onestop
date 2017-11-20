@@ -1,10 +1,14 @@
 import Immutable from 'seamless-immutable'
 import {
-  UPDATE_QUERY, UPDATE_SEARCH,
-  NEW_GEOMETRY, REMOVE_GEOMETRY,
-  UPDATE_DATE_RANGE, TOGGLE_FACET,
-  TOGGLE_EXCLUDE_GLOBAL, TOGGLE_SELECTION,
-  CLEAR_SELECTIONS
+  UPDATE_QUERY,
+  UPDATE_SEARCH,
+  NEW_GEOMETRY,
+  REMOVE_GEOMETRY,
+  UPDATE_DATE_RANGE,
+  TOGGLE_FACET,
+  TOGGLE_EXCLUDE_GLOBAL,
+  TOGGLE_SELECTION,
+  CLEAR_SELECTIONS,
 } from '../../actions/SearchParamActions'
 import { CLEAR_FACETS } from '../../actions/SearchRequestActions'
 
@@ -32,7 +36,7 @@ export const search = (state = initialState, action) => {
     case UPDATE_DATE_RANGE:
       return Immutable.merge(state, {
         startDateTime: action.startDate,
-        endDateTime: action.endDate
+        endDateTime: action.endDate,
       })
 
     case TOGGLE_FACET:
@@ -42,7 +46,11 @@ export const search = (state = initialState, action) => {
       return Immutable.set(state, 'excludeGlobal', !state.excludeGlobal)
 
     case TOGGLE_SELECTION:
-      return Immutable.set(state, 'selectedIds', toggleId(state.selectedIds, action.id))
+      return Immutable.set(
+        state,
+        'selectedIds',
+        toggleId(state.selectedIds, action.id)
+      )
 
     case CLEAR_FACETS:
       return Immutable.set(state, 'selectedFacets', initialState.selectedFacets)

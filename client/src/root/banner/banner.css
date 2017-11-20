@@ -1,18 +1,18 @@
 @import '../../../style/style.css';
 
 .banner {
-    background: red;
-    text-align: center;
-    height: $banner-height;
-    font-size: 1.2em;
-    display: table;
-    height: 100%;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
+  background: red;
+  text-align: center;
+  height: $banner-height;
+  font-size: 1.2em;
+  display: table;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
 }
 
 .banner a {
-    margin-left: 1em;
-    color: white;
+  margin-left: 1em;
+  color: white;
 }

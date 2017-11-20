@@ -5,7 +5,7 @@
   position: absolute;
   top: 3em;
   left: 1em;
-  box-shadow: 14px 14px 5px rgba(0, 0, 0, .7);
+  box-shadow: 14px 14px 5px rgba(0, 0, 0, 0.7);
   border: 2px outset $ color-primary;
   width: 30%;
   min-width: 20em;
@@ -42,7 +42,7 @@
   > button {
     > img {
       height: 2em;
-      bottom: .5em;
+      bottom: 0.5em;
       position: relative;
     }
   }

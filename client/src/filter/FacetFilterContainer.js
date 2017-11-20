@@ -30,7 +30,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 const FacetFilterContainer = connect(mapStateToProps, mapDispatchToProps)(
-    FacetFilter
+  FacetFilter
 )
 
 export default FacetFilterContainer

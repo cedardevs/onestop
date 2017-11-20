@@ -7,15 +7,12 @@ class ResultLayout extends React.Component {
   }
 
   render() {
-
     const styleResult508Merged = {
       ...styleResult,
-      ...styleResult508
+      ...styleResult508,
     }
 
-    return (<div style={styleResult508Merged}>
-      {this.props.children}
-    </div>)
+    return <div style={styleResult508Merged}>{this.props.children}</div>
   }
 }
 

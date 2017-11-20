@@ -10,7 +10,7 @@ const styleExpandableCategoryHeading = {
 const styleExpandableCategoryContent = marginNest => {
   return {
     marginLeft: marginNest ? marginNest : '1em',
-    marginBottom: '1px'
+    marginBottom: '1px',
   }
 }
 
@@ -41,10 +41,8 @@ export default class FacetFilter extends Component {
     this.selectedFacets = props.selectedFacets
     this.toggleFacet = props.toggleFacet
     this.submit = props.submit
-    this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(
-        this,
-    )
-    this.state = {openExpandables: {}}
+    this.updateStoreAndSubmitSearch = this.updateStoreAndSubmitSearch.bind(this)
+    this.state = { openExpandables: {} }
   }
 
   componentWillUpdate(nextProps) {
@@ -64,8 +62,7 @@ export default class FacetFilter extends Component {
     const selectedTerms = this.selectedFacets[category]
     if (!selectedTerms) {
       return false
-    }
-    else {
+    } else {
       return selectedTerms.includes(term)
     }
   }
@@ -99,41 +96,41 @@ export default class FacetFilter extends Component {
       const facetKey = `facet-${facet.category}-${facet.term}`
 
       facetComponent = (
-          <Expandable
-              open={!!this.state.openExpandables[expandableKey]}
-              key={expandableKey}
-              value={expandableKey}
-              heading={
-                <Facet
-                    selected={this.isSelected(facet.category, facet.term)}
-                    key={facetKey}
-                    term={facet.term}
-                    category={facet.category}
-                    count={facet.count}
-                    onChange={this.updateStoreAndSubmitSearch}
-                />
-              }
-              styleHeading={styleExpandableHeading(this.props.backgroundColor)}
-              content={this.createFacetComponent(facet.children)}
-              styleContent={styleExpandableContent(this.props.marginNest)}
-              showArrow={true}
-              onToggle={this.handleExpandableToggle}
-          />
+        <Expandable
+          open={!!this.state.openExpandables[expandableKey]}
+          key={expandableKey}
+          value={expandableKey}
+          heading={
+            <Facet
+              selected={this.isSelected(facet.category, facet.term)}
+              key={facetKey}
+              term={facet.term}
+              category={facet.category}
+              count={facet.count}
+              onChange={this.updateStoreAndSubmitSearch}
+            />
+          }
+          styleHeading={styleExpandableHeading(this.props.backgroundColor)}
+          content={this.createFacetComponent(facet.children)}
+          styleContent={styleExpandableContent(this.props.marginNest)}
+          showArrow={true}
+          onToggle={this.handleExpandableToggle}
+        />
       )
     } else if ('children' in facet && _.isEmpty(facet.children)) {
       // leaf facet (contains no sub-layer facets)
       const leafFacetKey = `facet-${facet.category}-${facet.term}`
 
       facetComponent = (
-          <Facet
-              selected={this.isSelected(facet.category, facet.term)}
-              key={leafFacetKey}
-              term={facet.term}
-              category={facet.category}
-              count={facet.count}
-              style={styleLeafFacet(this.props.backgroundColor)}
-              onChange={this.updateStoreAndSubmitSearch}
-          />
+        <Facet
+          selected={this.isSelected(facet.category, facet.term)}
+          key={leafFacetKey}
+          term={facet.term}
+          category={facet.category}
+          count={facet.count}
+          style={styleLeafFacet(this.props.backgroundColor)}
+          onChange={this.updateStoreAndSubmitSearch}
+        />
       )
     } else {
       // for each key recurse
@@ -156,23 +153,23 @@ export default class FacetFilter extends Component {
 
       // do recursive magic for nested expandables
       const expandableFacets = this.createFacetComponent(
-          this.props.facetMap[category],
+        this.props.facetMap[category]
       )
 
       const expandableKey = `${category}`
 
       // high-level categories (e.g. - "Data Themes" | "Platforms" | "Projects" | "Data Centers" | "Data Resolution")
       expandableCategories.push(
-          <Expandable
-              open={!!this.state.openExpandables[expandableKey]}
-              key={expandableKey}
-              value={expandableKey}
-              heading={highLevelHeading}
-              styleHeading={styleExpandableCategoryHeading}
-              content={expandableFacets}
-              styleContent={styleExpandableCategoryContent(this.props.marginNest)}
-              onToggle={this.handleExpandableToggle}
-          />,
+        <Expandable
+          open={!!this.state.openExpandables[expandableKey]}
+          key={expandableKey}
+          value={expandableKey}
+          heading={highLevelHeading}
+          styleHeading={styleExpandableCategoryHeading}
+          content={expandableFacets}
+          styleContent={styleExpandableCategoryContent(this.props.marginNest)}
+          onToggle={this.handleExpandableToggle}
+        />
       )
     })
 

@@ -9,7 +9,8 @@
     "test": "NODE_ENV=test mocha --recursive ./test",
     "testAndWatch": "NODE_ENV=test mocha --recursive ./test -w --watch-extensions js,jsx",
     "build": "npm install && npm test && NODE_ENV=production ./node_modules/.bin/webpack --config webpack.config.prod.js -p",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "format":  "find src -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --write --single-quote --trailing-comma=es5 --no-semi"
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",

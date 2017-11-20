@@ -78,30 +78,30 @@ export default class AppliedTime extends Component {
       styleFocus,
     } = this.props
     const name = term
-        .split('>')
-        .pop()
-        .trim()
+      .split('>')
+      .pop()
+      .trim()
 
     const stylesMerged = {
       ...styleDefault,
       ...style,
-      ...(this.state.hovering ? {...styleHoverDefault, styleHover} : {}),
-      ...(this.state.focusing ? {...styleFocusDefault, styleFocus} : {}),
+      ...(this.state.hovering ? { ...styleHoverDefault, styleHover } : {}),
+      ...(this.state.focusing ? { ...styleFocusDefault, styleFocus } : {}),
     }
 
     return (
-        <span
-            style={stylesMerged}
-            onMouseOver={this.handleMouseOver}
-            onMouseOut={this.handleMouseOut}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-        >
-                {label} {dateTime}
-          <span style={styleClose} onClick={onUnselect}>
-					x
-				</span>
-			</span>
+      <span
+        style={stylesMerged}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+      >
+        {label} {dateTime}
+        <span style={styleClose} onClick={onUnselect}>
+          x
+        </span>
+      </span>
     )
   }
 }

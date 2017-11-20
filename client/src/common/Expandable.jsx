@@ -19,7 +19,7 @@ const styleHeadingHidden = {
 const styleHeadingContent = {}
 
 const styleArrow = {
-  userSelect: 'none'
+  userSelect: 'none',
 }
 
 const styleContent = {
@@ -62,7 +62,7 @@ export default class Expandable extends Component {
     this.setState(prevState => {
       const newOpen = !prevState.open
       if (this.props.onToggle) {
-        this.props.onToggle({open: newOpen, value: this.props.value})
+        this.props.onToggle({ open: newOpen, value: this.props.value })
       }
       return {
         ...prevState,
@@ -73,44 +73,44 @@ export default class Expandable extends Component {
 
   render() {
     const arrow = this.props.showArrow ? (
-        this.state.open ? (
-            <span>&nbsp;&#9660;</span>
-        ) : (
-            <span>&nbsp;&#9654;</span>
-        )
+      this.state.open ? (
+        <span>&nbsp;&#9660;</span>
+      ) : (
+        <span>&nbsp;&#9654;</span>
+      )
     ) : null
 
     const styleHeadingHide = this.state.open
-        ? styleHeadingShown
-        : styleHeadingHidden
+      ? styleHeadingShown
+      : styleHeadingHidden
     const styleContentVisibility = this.state.open
-        ? styleContentShown
-        : styleContentHidden
+      ? styleContentShown
+      : styleContentHidden
 
     return (
-        <div style={style}>
-          <div
-              style={{
-                ...styleHeading,
-                ...this.props.styleHeading,
-                ...styleHeadingHide,
-              }}
-              onClick={this.handleClick}
-          >
-            <div style={styleHeadingContent}>{this.props.heading}</div>
-            <div style={styleArrow}>{arrow}</div>
-          </div>
-
-          <div
-              style={{
-                ...styleContent,
-                ...this.props.styleContent,
-                ...styleContentVisibility,
-              }}
-          >
-            {this.props.content}
-          </div>
+      <div style={style}>
+        <div
+          style={{
+            ...styleHeading,
+            ...this.props.styleHeading,
+            ...styleHeadingHide,
+          }}
+          onClick={this.handleClick}
+        >
+          <div style={styleHeadingContent}>{this.props.heading}</div>
+          <div style={styleArrow}>{arrow}</div>
         </div>
+
+        <div
+          style={{
+            ...styleContent,
+            ...this.props.styleContent,
+            ...styleContentVisibility,
+          }}
+        >
+          {this.props.content}
+        </div>
+      </div>
     )
   }
 }

@@ -7,7 +7,6 @@ import AppliedMapFilter from './AppliedMapFilter'
 import { styleResult } from './ResultStyles'
 
 export default class Result extends Component {
-
   constructor(props) {
     super(props)
 
@@ -39,29 +38,29 @@ export default class Result extends Component {
 
   render() {
     return (
-        <div style={styleResult}>
-          <AppliedFacetFilter
-              location={this.location}
-              selectedFacets={this.selectedFacets}
-              onUnselectFacet={this.unselectFacetAndSubmitSearch}
-          />
+      <div style={styleResult}>
+        <AppliedFacetFilter
+          location={this.location}
+          selectedFacets={this.selectedFacets}
+          onUnselectFacet={this.unselectFacetAndSubmitSearch}
+        />
 
-          {/*
+        {/*
 				 TODO: Rendering time or map filters will require drill-down behavior on result view instead of currently
 				 present new-search behavior (otherwise applied filters update store but don't modify the search until a new search
 				 is sent -- i.e., time filter appears but doesn't apply)
 				 */}
 
-          {/*<AppliedTimeFilter*/}
-          {/*location={this.location}*/}
-          {/*startDateTime={this.startDateTime}*/}
-          {/*endDateTime={this.endDateTime}*/}
-          {/*onUnselectDateTime={this.unselectDateTimeAndSubmitSearch}*/}
-          {/*/>*/}
-          {/*<AppliedMapFilter />*/}
+        {/*<AppliedTimeFilter*/}
+        {/*location={this.location}*/}
+        {/*startDateTime={this.startDateTime}*/}
+        {/*endDateTime={this.endDateTime}*/}
+        {/*onUnselectDateTime={this.unselectDateTimeAndSubmitSearch}*/}
+        {/*/>*/}
+        {/*<AppliedMapFilter />*/}
 
-          {this.props.children}
-        </div>
+        {this.props.children}
+      </div>
     )
   }
 }

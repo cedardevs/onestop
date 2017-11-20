@@ -8,7 +8,9 @@ const initialState = Immutable({
 const routing = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_CHANGE:
-      return Immutable.merge(state, {locationBeforeTransitions: action.payload})
+      return Immutable.merge(state, {
+        locationBeforeTransitions: action.payload,
+      })
 
     default:
       return state

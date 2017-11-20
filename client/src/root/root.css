@@ -19,7 +19,6 @@
   min-height: 100vh;
 }
 
-
 .browserWarning {
   background: $color-secondary-dark;
   width: 96%;
@@ -27,7 +26,8 @@
   padding: 0.3em 1em;
   border-radius: 3px;
   color: #fff;
-  a, a:visited {
+  a,
+  a:visited {
     color: rgb(169, 226, 255);
   }
   p {
