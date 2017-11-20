@@ -1,15 +1,15 @@
 import _ from 'lodash'
 
 const buildHierarchyMap = (category, terms) => {
-
-  var createChildrenHierarchy = (map, hierarchy, term, value) => {
+  const createChildrenHierarchy = (map, hierarchy, term, value) => {
+    // This function traverses down the hierarchy specified in the given map, creating empty 'children' objects ONLY if
+    //   they don't already exist (otherwise just changes the reference). Since hierarchical strings are received tokenized
+    //   and in alphabetical order (e.g.: 'Atmosphere', 'Atmosphere > Aerosols', 'Biosphere', etc.) this traversal down
+    //   the nested object won't error out from one level to the next.
     const lastTerm = hierarchy.pop()
     if (!_.isEmpty(hierarchy)) {
       let i
       for (i = 0; i < hierarchy.length; i++) {
-        // Since hierarchical strings are received in alphabetical order, this traversal
-        // down the nested object won't error out
-        //_.defaults(map, map[hierarchy[i]].children)
         map = map[hierarchy[i]].children = map[hierarchy[i]].children || {}
       }
     }
@@ -21,14 +21,13 @@ const buildHierarchyMap = (category, terms) => {
   let categoryMap = {}
 
   Object.keys(terms).map(term => {
-    let hierarchy = term.split(' > ')
+    let hierarchy = term.split('>').map(e => e.trim()) // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
     const value = {
       count: terms[term].count,
       children: {},
       category: category,
       term: term
     }
-
     createChildrenHierarchy(categoryMap, hierarchy, term, value)
   })
 
@@ -49,8 +48,7 @@ export const buildKeywordHierarchyMap = facetMap => {
       else {
         heading = _.startCase(_.toLower((category.split(/(?=[A-Z])/).join(" "))))
         Object.keys(terms).map(term => {
-          const name = term.split(' > ')
-          categoryMap[name[0]] = {
+          categoryMap[term] = {
             count: terms[term].count,
             children: {},
             category: category,
@@ -64,4 +62,11 @@ export const buildKeywordHierarchyMap = facetMap => {
   })
 
   return hierarchyMap
+}
+
+// pulls out the last term in a GCMD-style keyword and attempts to maintain intended acronyms
+export const titleCaseKeyword = term => {
+  if (!term) { return null }
+  const trimmed = term.split('>').pop().trim()
+  return (trimmed === trimmed.toUpperCase()) ? _.startCase(trimmed.toLowerCase()) : trimmed
 }

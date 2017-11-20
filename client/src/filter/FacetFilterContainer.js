@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import FacetFilter from './FacetFilter'
 import { toggleFacet } from '../actions/SearchParamActions'
-import { buildKeywordHierarchyMap } from '../utils/filterUtils'
+import { buildKeywordHierarchyMap } from '../utils/keywordUtils'
 
 import {
   clearCollections,

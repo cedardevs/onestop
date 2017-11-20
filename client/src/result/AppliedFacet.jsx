@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { titleCaseKeyword } from "../utils/keywordUtils"
 
 const styleDefault = {
   display: 'inline-flex',
@@ -78,7 +79,7 @@ export default class AppliedFacet extends Component {
       styleFocus,
     } = this.props
 
-    const name = term ? term.split('>').pop().trim() : "DNE"
+    const name = titleCaseKeyword(term) || 'DNE'
 
     const stylesMerged = {
       ...styleDefault,

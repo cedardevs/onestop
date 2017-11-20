@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import MapContainer from './GranuleMapContainer'
 import A from '../../common/link/Link'
@@ -13,11 +12,12 @@ export default class GranuleView extends Component {
       {id: 'C', names: ['ogc:wcs'], color: 'coral', label: 'OGC Web Coverage Service'},
       {id: 'D', names: ['download'], color: 'blue', label: 'Download'},
       {id: 'F', names: ['ftp'], color: 'red', label: 'FTP'},
+      {id: 'H', names: ['http', 'https'], color: 'purple', label: 'HTTP/HTTPS'},
       {id: 'L', names: ['noaa:las'], color: 'aqua', label: 'NOAA Live Access Server'},
       {id: 'M', names: ['ogc:wms'], color: 'goldenrod', label: 'OGC Web Map Service'},
       {id: 'O', names: ['opendap'], color: 'green', label: 'OPeNDAP'},
       {id: 'T', names: ['thredds'], color: 'grey', label: 'THREDDS'},
-      {id: 'W', names: ['http', 'https'], color: 'purple', label: 'Web'},
+      {id: 'W', names: [''], color: '#e69500', label: 'Web'},
     ]
   }
 
@@ -56,7 +56,7 @@ export default class GranuleView extends Component {
                   ? <div></div>
                   : <div className={`pure-u-1 ${styles.legend}`}>
                     <h3 className={styles.legendItem}>Access Protocols:</h3>
-                    {legendItems}
+                  <div>{legendItems}</div>
                   </div>}
               <div className={`pure-u-1`}>
                 <table className={`pure-table ${styles.table}`}>

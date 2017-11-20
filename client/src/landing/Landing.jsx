@@ -40,7 +40,6 @@ class Landing extends React.Component {
           <h1 className={styles.hiddenPageTitle}>OneStop: A NOAA Data Search Platform</h1>
           <div className={`pure-u-1 ${styles.heroText}`}>
             Geophysical, oceans, coastal, weather and climate data discovery all in one place.<br/>
-            {this.buildCountString()}
           </div>
           <div className={`pure-u-1 ${styles.searchComponent}`}>
             <SearchFieldsContainer/>
@@ -73,15 +72,6 @@ class Landing extends React.Component {
     setTimeout(() => {
       window.dispatchEvent(evt)
     }, 0)
-  }
-
-  buildCountString() {
-    let hasCollections = this.props.collectionsCount !== 0
-    let hasGranules = this.props.granulesCount !== 0
-
-    let granulesString = hasGranules ? `and ${this.props.granulesCount.toLocaleString()} granules ` : ''
-    let countString = hasCollections ? `${this.props.collectionsCount.toLocaleString()} collections ${granulesString} available to search` : ''
-    return countString
   }
 }
 

@@ -109,7 +109,7 @@ class Section508Landing extends React.Component {
     )
 
     return (
-        <div>
+        <div className={styles.showcase}>
           <div className={`${styles.formDiv} pure-form`}>
             <h2>Enter Search Criteria</h2>
             {this.renderErrors()}
@@ -126,6 +126,8 @@ class Section508Landing extends React.Component {
                     })}>
               Clear
             </button>
+
+
           </div>
           <div className={styles.accessibilityStatement}>
             <h2>Accessibility Statement</h2>
