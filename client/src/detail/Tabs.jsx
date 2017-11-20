@@ -12,7 +12,7 @@ const styleTabButton = (active, first = false) => {
     color: '#F9F9F9',
     backgroundColor: active ? '#111' : '#222',
     borderRadius: '0.618em 0.618em 0 0',
-    textAlign: 'center'
+    textAlign: 'center',
   }
 }
 
@@ -30,30 +30,30 @@ const styleTabButtonLabel = active => {
     fontSize: '1.3em',
     padding: '0.618em',
     textDecoration: active ? 'underline' : 'none',
-    cursor: 'pointer'
+    cursor: 'pointer',
   }
 }
 
 class TabButton extends Component {
   render() {
-    const {first, title, value, active, onChange} = this.props
+    const { first, title, value, active, onChange } = this.props
     const tabID = `${title} - ${value}`
 
     return (
-        <div style={styleTabButton(active, first)}>
-          <input
-              style={styleTabButtonInput()}
-              id={tabID}
-              type="radio"
-              name={title}
-              value={value}
-              checked={active}
-              onChange={onChange}
-          />
-          <label style={styleTabButtonLabel(active)} htmlFor={tabID}>
-            {this.props.title}
-          </label>
-        </div>
+      <div style={styleTabButton(active, first)}>
+        <input
+          style={styleTabButtonInput()}
+          id={tabID}
+          type="radio"
+          name={title}
+          value={value}
+          checked={active}
+          onChange={onChange}
+        />
+        <label style={styleTabButtonLabel(active)} htmlFor={tabID}>
+          {this.props.title}
+        </label>
+      </div>
     )
   }
 }
@@ -76,8 +76,8 @@ const styleTabButtons = {
 const styleContent = {
   border: '1px solid #3E7BAD',
   borderTopWidth: '0',
-  backgroundColor: "#111",
-  padding: "1.618em"
+  backgroundColor: '#111',
+  padding: '1.618em',
 }
 
 export default class Tabs extends Component {
@@ -120,7 +120,7 @@ export default class Tabs extends Component {
   }
 
   render() {
-    const {data} = this.props
+    const { data } = this.props
     let tabButtons = []
     let tabContent = null
     if (data) {
@@ -131,24 +131,22 @@ export default class Tabs extends Component {
           tabContent = tab.content
         }
         tabButtons.push(
-            <TabButton
-                key={index}
-                first={index === 0}
-                title={tab.title}
-                value={index}
-                active={active}
-                onChange={this.handleChange}
-            />,
+          <TabButton
+            key={index}
+            first={index === 0}
+            title={tab.title}
+            value={index}
+            active={active}
+            onChange={this.handleChange}
+          />
         )
       })
     }
     return (
-        <div style={styleTabs}>
-          <FlexRow items={tabButtons} style={styleTabButtons}/>
-          <div style={styleContent}>
-            {tabContent}
-          </div>
-        </div>
+      <div style={styleTabs}>
+        <FlexRow items={tabButtons} style={styleTabButtons} />
+        <div style={styleContent}>{tabContent}</div>
+      </div>
     )
   }
 }

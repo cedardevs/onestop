@@ -19,7 +19,7 @@
 
 .linkRow {
   display: inline-block;
-  margin: .5em .5em .5em 0;
+  margin: 0.5em 0.5em 0.5em 0;
 }
 
 .buttonContainer {
@@ -36,7 +36,7 @@
 }
 
 .resultCount {
-  margin: .5em 0 1em;
+  margin: 0.5em 0 1em;
   h1 {
     font-size: 1em;
   }
@@ -47,7 +47,7 @@
 }
 
 .listContainer {
-  box-shadow: 1.3em 0.7em 0.5em 0.2em rgb(0,0,0,.7);
+  box-shadow: 1.3em 0.7em 0.5em 0.2em rgb(0, 0, 0, 0.7);
   overflow-x: none;
 }
 
@@ -62,11 +62,11 @@
 
 .listItem {
   color: white;
-  padding: .5em 1em 1em;
+  padding: 0.5em 1em 1em;
   > div {
-    margin: .5em 0;
+    margin: 0.5em 0;
   }
-  &:nth-child(odd)	{
+  &:nth-child(odd) {
     background-color: $color-primary-darkest;
   }
   &:nth-child(even) {
@@ -74,12 +74,13 @@
   }
   li {
     display: inline-block;
-    margin: .2em;
+    margin: 0.2em;
   }
-  button, a {
+  button,
+  a {
     color: white;
-    padding: .3em;
-    border-radius: .1em .4em;
+    padding: 0.3em;
+    border-radius: 0.1em 0.4em;
     display: inline-block;
     border: none;
   }

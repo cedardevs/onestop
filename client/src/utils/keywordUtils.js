@@ -26,7 +26,7 @@ const buildHierarchyMap = (category, terms) => {
       count: terms[term].count,
       children: {},
       category: category,
-      term: term
+      term: term,
     }
     createChildrenHierarchy(categoryMap, hierarchy, term, value)
   })
@@ -37,22 +37,22 @@ const buildHierarchyMap = (category, terms) => {
 export const buildKeywordHierarchyMap = facetMap => {
   const hierarchyMap = {}
   _.map(facetMap, (terms, category) => {
-    if (!_.isEmpty(terms)) { // Don't load categories that have no results
+    if (!_.isEmpty(terms)) {
+      // Don't load categories that have no results
       let heading
       let categoryMap = {}
 
       if (category === 'science') {
         heading = 'Data Theme'
         categoryMap = buildHierarchyMap(category, terms)
-      }
-      else {
-        heading = _.startCase(_.toLower((category.split(/(?=[A-Z])/).join(" "))))
+      } else {
+        heading = _.startCase(_.toLower(category.split(/(?=[A-Z])/).join(' ')))
         Object.keys(terms).map(term => {
           categoryMap[term] = {
             count: terms[term].count,
             children: {},
             category: category,
-            term: term
+            term: term,
           }
         })
       }
@@ -66,7 +66,14 @@ export const buildKeywordHierarchyMap = facetMap => {
 
 // pulls out the last term in a GCMD-style keyword and attempts to maintain intended acronyms
 export const titleCaseKeyword = term => {
-  if (!term) { return null }
-  const trimmed = term.split('>').pop().trim()
-  return (trimmed === trimmed.toUpperCase()) ? _.startCase(trimmed.toLowerCase()) : trimmed
+  if (!term) {
+    return null
+  }
+  const trimmed = term
+    .split('>')
+    .pop()
+    .trim()
+  return trimmed === trimmed.toUpperCase()
+    ? _.startCase(trimmed.toLowerCase())
+    : trimmed
 }

@@ -15,7 +15,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 const MapFilterContainer = connect(mapStateToProps, mapDispatchToProps)(
-    SpatialFilter,
+  SpatialFilter
 )
 
 export default MapFilterContainer

@@ -24,7 +24,8 @@ input {
     padding: 0 0.5em;
     transition: color 0.3s ease;
     cursor: pointer;
-    &.selected, &:hover {
+    &.selected,
+    &:hover {
       color: $color-primary;
     }
   }
@@ -42,7 +43,7 @@ input {
 
 .searchBox {
   vertical-align: top;
-  margin-top: .9em;
+  margin-top: 0.9em;
 }
 
 .nceiLogo {
@@ -87,14 +88,13 @@ input {
 
 $menu-threshold-1: 96em;
 $menu-threshold-2: 80em;
-@media (max-width: $menu-threshold-1)
-and (min-width: $menu-threshold-2){
+@media (max-width: $menu-threshold-1) and (min-width: $menu-threshold-2) {
   .searchBox {
     margin-top: 0;
   }
 }
 
-@media (max-width: $menu-threshold-2){
+@media (max-width: $menu-threshold-2) {
   .standardMenu {
     display: none !important;
   }
@@ -103,7 +103,7 @@ and (min-width: $menu-threshold-2){
   }
 }
 
-@media (min-width: $menu-threshold-2){
+@media (min-width: $menu-threshold-2) {
   .burgerMenu {
     display: none;
   }
@@ -114,9 +114,9 @@ and (min-width: $menu-threshold-2){
   display: inline-block;
   width: 40px;
   right: 0.9em;
-  margin: .5em;
+  margin: 0.5em;
   position: absolute;
-  padding: .1em;
+  padding: 0.1em;
   overflow: hidden;
   z-index: 1;
   user-select: none;
@@ -145,9 +145,8 @@ and (min-width: $menu-threshold-2){
     border-radius: 3px;
     z-index: 1;
     transform-origin: 4px 0px;
-    transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
-                background 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
-                opacity 0.55s ease;
+    transition: transform 0.5s cubic-bezier(0.77, 0.2, 0.05, 1),
+      background 0.5s cubic-bezier(0.77, 0.2, 0.05, 1), opacity 0.55s ease;
   }
 
   input:checked ~ span {
@@ -180,12 +179,12 @@ $menu-distance: 20em;
     transition: flex 0.4s ease-in;
   }
   button {
-    background:none!important;
+    background: none !important;
     border: none;
 
     display: flex;
     font-size: 1.2em;
-    margin: .5em auto;
+    margin: 0.5em auto;
     justify-content: center;
   }
 }

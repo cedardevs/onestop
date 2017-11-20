@@ -4,7 +4,7 @@ import { CLEAR_CONFIG, SET_CONFIG } from '../../actions/ConfigActions'
 export const initialState = Immutable({
   banner: {},
   apiHost: '',
-  featured: []
+  featured: [],
 })
 
 export const config = (state = initialState, action) => {

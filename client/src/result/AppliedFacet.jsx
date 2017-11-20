@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { titleCaseKeyword } from "../utils/keywordUtils"
+import { titleCaseKeyword } from '../utils/keywordUtils'
 
 const styleDefault = {
   display: 'inline-flex',
@@ -84,23 +84,23 @@ export default class AppliedFacet extends Component {
     const stylesMerged = {
       ...styleDefault,
       ...style,
-      ...(this.state.hovering ? {...styleHoverDefault, styleHover} : {}),
-      ...(this.state.focusing ? {...styleFocusDefault, styleFocus} : {}),
+      ...(this.state.hovering ? { ...styleHoverDefault, styleHover } : {}),
+      ...(this.state.focusing ? { ...styleFocusDefault, styleFocus } : {}),
     }
 
     return (
-        <span
-            style={stylesMerged}
-            onMouseOver={this.handleMouseOver}
-            onMouseOut={this.handleMouseOut}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-        >
-				{name}
-          <span style={styleClose} onClick={onUnselect}>
-					x
-				</span>
-			</span>
+      <span
+        style={stylesMerged}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+      >
+        {name}
+        <span style={styleClose} onClick={onUnselect}>
+          x
+        </span>
+      </span>
     )
   }
 }

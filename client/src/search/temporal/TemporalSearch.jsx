@@ -4,7 +4,6 @@ import moment from 'moment'
 import DateTimePicker from './DateTimePicker'
 import styles from './temporal.css'
 
-
 class TemporalSearch extends React.Component {
   constructor(props) {
     super(props)
@@ -24,7 +23,7 @@ class TemporalSearch extends React.Component {
       startValue: null,
       endValue: null,
       startValueNode: null,
-      endValueNode: null
+      endValueNode: null,
     }
   }
 
@@ -33,7 +32,7 @@ class TemporalSearch extends React.Component {
     document.addEventListener('click', this.handleClickOutside, true)
     this.setState({
       startValueNode: ReactDOM.findDOMNode(this.startValue),
-      endValueNode: ReactDOM.findDOMNode(this.endValue)
+      endValueNode: ReactDOM.findDOMNode(this.endValue),
     })
   }
 
@@ -43,14 +42,16 @@ class TemporalSearch extends React.Component {
 
   handleClickOutside(event) {
     const domNode = ReactDOM.findDOMNode(this)
-    const {startValueNode, endValueNode} = this.state
+    const { startValueNode, endValueNode } = this.state
     const dateNode = startValueNode ? startValueNode : endValueNode
     if (event && event.path) {
-      const {id} = event.path[0]
-      if (((!domNode || !domNode.contains(event.target))
-              && id !== 'timeButton')
-          && (!dateNode || !dateNode.contains(event.target))
-          && this.props.calendarVisible) {
+      const { id } = event.path[0]
+      if (
+        (!domNode || !domNode.contains(event.target)) &&
+        id !== 'timeButton' &&
+        (!dateNode || !dateNode.contains(event.target)) &&
+        this.props.calendarVisible
+      ) {
         this.props.toggleSelf()
       }
     }
@@ -63,7 +64,7 @@ class TemporalSearch extends React.Component {
   updateState(props) {
     this.setState({
       startValue: props.startDateTime ? moment(props.startDateTime) : null,
-      endValue: props.endDateTime ? moment(props.endDateTime) : null
+      endValue: props.endDateTime ? moment(props.endDateTime) : null,
     })
   }
 
@@ -91,12 +92,12 @@ class TemporalSearch extends React.Component {
 
   onChange(field, value) {
     this.setState({
-      [field]: value
+      [field]: value,
     })
   }
 
   updateTemporalFilters() {
-    const {startValue, endValue} = this.state
+    const { startValue, endValue } = this.state
     let startString = startValue ? startValue.format() : ''
     let endString = endValue ? endValue.format() : ''
     this.props.updateOnChange(startString, endString)
@@ -105,32 +106,52 @@ class TemporalSearch extends React.Component {
 
   render() {
     return (
-        <div className={styles.temporalContainer}>
-          <div id='temporalContent' className={`pure-form pure-g ${styles.temporalContent}`}>
-            <div className={`pure-u-1 ${styles.pickerLabel}`}>Start Date:</div>
-            <div className={`pure-u-1 ${styles.pickerInput}`}>
-              <DateTimePicker id="startValue"
-                              value={this.state.startValue}
-                              onChange={this.onChange.bind(this, 'startValue')}
-                              disabledDate={this.disabledStartDate}
-                              mountPoint={this.state.startValueNode}/>
-            </div>
-            <div className={`pure-u-1 ${styles.pickerLabel}`}>End Date:</div>
-            <div className={`pure-u-1`} ref={endValue => this.endValue = endValue}>
-              <DateTimePicker id="endValue"
-                              value={this.state.endValue}
-                              onChange={this.onChange.bind(this, 'endValue')}
-                              disabledDate={this.disabledEndDate}
-                              mountPoint={this.state.endValueNode}/>
-            </div>
-            <div className={`pure-u-1 ${styles.bottomButtonPanel}`}>
-              <button className={`pure-button ${styles.cancelButton}`} onClick={this.props.toggleSelf}>Cancel</button>
-              <button className={`pure-button ${styles.submitButton}`} onClick={this.updateTemporalFilters}>Apply To Search</button>
-            </div>
+      <div className={styles.temporalContainer}>
+        <div
+          id="temporalContent"
+          className={`pure-form pure-g ${styles.temporalContent}`}
+        >
+          <div className={`pure-u-1 ${styles.pickerLabel}`}>Start Date:</div>
+          <div className={`pure-u-1 ${styles.pickerInput}`}>
+            <DateTimePicker
+              id="startValue"
+              value={this.state.startValue}
+              onChange={this.onChange.bind(this, 'startValue')}
+              disabledDate={this.disabledStartDate}
+              mountPoint={this.state.startValueNode}
+            />
           </div>
-          <div ref={startValue => this.startValue = startValue}></div>
-          <div ref={endValue => this.endValue = endValue}></div>
+          <div className={`pure-u-1 ${styles.pickerLabel}`}>End Date:</div>
+          <div
+            className={`pure-u-1`}
+            ref={endValue => (this.endValue = endValue)}
+          >
+            <DateTimePicker
+              id="endValue"
+              value={this.state.endValue}
+              onChange={this.onChange.bind(this, 'endValue')}
+              disabledDate={this.disabledEndDate}
+              mountPoint={this.state.endValueNode}
+            />
+          </div>
+          <div className={`pure-u-1 ${styles.bottomButtonPanel}`}>
+            <button
+              className={`pure-button ${styles.cancelButton}`}
+              onClick={this.props.toggleSelf}
+            >
+              Cancel
+            </button>
+            <button
+              className={`pure-button ${styles.submitButton}`}
+              onClick={this.updateTemporalFilters}
+            >
+              Apply To Search
+            </button>
+          </div>
         </div>
+        <div ref={startValue => (this.startValue = startValue)} />
+        <div ref={endValue => (this.endValue = endValue)} />
+      </div>
     )
   }
 }

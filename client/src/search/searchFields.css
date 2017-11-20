@@ -25,14 +25,14 @@
     display: inline-block;
     > img {
       height: 2.2em;
-      bottom: .5em;
+      bottom: 0.5em;
       position: relative;
     }
   }
 }
 
 $button-threshold: 100em;
-@media (max-width: $button-threshold){
+@media (max-width: $button-threshold) {
   .header {
     .buttonLayout {
       display: flex;
@@ -40,13 +40,13 @@ $button-threshold: 100em;
       > button {
         width: 5em;
         margin-left: 0;
-        margin-top: .5em;
+        margin-top: 0.5em;
       }
     }
   }
 }
 
-@media (min-width: $button-threshold){
+@media (min-width: $button-threshold) {
   .burgerMenu {
     display: none;
   }
@@ -58,7 +58,7 @@ $button-threshold: 100em;
   left: 50%;
   margin-top: 2em;
   margin-left: -30%;
-  box-shadow: 14px 14px 5px rgba(0,0,0,.7);
+  box-shadow: 14px 14px 5px rgba(0, 0, 0, 0.7);
   border: 2px outset $color-primary;
   height: 30em;
   width: 80%;
@@ -88,7 +88,7 @@ $button-threshold: 100em;
   color: white !important;
   background-color: $color-primary !important;
   text-shadow: 0 0 5px black;
-  margin-left: .5em;
+  margin-left: 0.5em;
 }
 
 .timeButtonApplied,
@@ -98,7 +98,7 @@ $button-threshold: 100em;
   color: white !important;
   background-color: $color-visited-light !important;
   text-shadow: 0 0 5px black;
-  margin-left: .5em;
+  margin-left: 0.5em;
 }
 
 /* fix for large, unclickable area on button */
@@ -108,12 +108,12 @@ $button-threshold: 100em;
 .mapButton:before,
 .timeButtonApplied:before,
 .mapButtonApplied:before {
-  position:absolute;
-  content:'';
-  top:-1px;
-  right:-1px;
-  left:-1px;
-  bottom:-1px;
+  position: absolute;
+  content: '';
+  top: -1px;
+  right: -1px;
+  left: -1px;
+  bottom: -1px;
 }
 
 .icon {
@@ -127,7 +127,7 @@ $button-threshold: 100em;
 
 .warning {
   display: block;
-  font-size: .75em;
+  font-size: 0.75em;
   color: red;
   padding-top: 1em;
   text-align: center;

@@ -21,36 +21,46 @@ import history from './history'
 
 store.dispatch(initialize())
 
-const routesLayout =
-    <Router history={history}>
-      <Route path="/" name="Home" component={RootComponent}>
-        <IndexRoute component={LandingContainer}/>
-        <Route name="Collections" path="collections" component={ResultContainer}>
-          <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
-        </Route>
-        <Route name="Error" path="error" component={ErrorContainer}/>
-        <Route name="Help" path="help" component={Help}/>
-        <Route name="About" path="about" component={AboutContainer}/>
+const routesLayout = (
+  <Router history={history}>
+    <Route path="/" name="Home" component={RootComponent}>
+      <IndexRoute component={LandingContainer} />
+      <Route name="Collections" path="collections" component={ResultContainer}>
+        <IndexRoute
+          displayName="Collections"
+          component={CollectionGridContainer}
+        />
       </Route>
+      <Route name="Error" path="error" component={ErrorContainer} />
+      <Route name="Help" path="help" component={Help} />
+      <Route name="About" path="about" component={AboutContainer} />
+    </Route>
 
-      <Route path="508" name="Home" component={RootComponent}>
-        <IndexRoute component={Section508LandingContainer}/>
-        <Route name="Collections" path="collections" component={Section508Result}>
-          <IndexRoute displayName="Collections" component={Section508CollectionGridContainer}/>
-          <Route name="Files" path="files" component={Section508GranuleListContainer}/>
-        </Route>
-        <Route name="Error" path="error" component={ErrorContainer}/>
-        <Route name="Help" path="help" component={Help}/>
-        <Route name="About" path="about" component={AboutContainer}/>
+    <Route path="508" name="Home" component={RootComponent}>
+      <IndexRoute component={Section508LandingContainer} />
+      <Route name="Collections" path="collections" component={Section508Result}>
+        <IndexRoute
+          displayName="Collections"
+          component={Section508CollectionGridContainer}
+        />
+        <Route
+          name="Files"
+          path="files"
+          component={Section508GranuleListContainer}
+        />
       </Route>
-    </Router>
+      <Route name="Error" path="error" component={ErrorContainer} />
+      <Route name="Help" path="help" component={Help} />
+      <Route name="About" path="about" component={AboutContainer} />
+    </Route>
+  </Router>
+)
 
-const body =
-    <Provider store={store}>
-      <div>
-        {routesLayout}
-      </div>
-    </Provider>
+const body = (
+  <Provider store={store}>
+    <div>{routesLayout}</div>
+  </Provider>
+)
 
 const appDiv = document.createElement('div')
 appDiv.setAttribute('id', 'app')
@@ -58,15 +68,20 @@ appDiv.setAttribute('style', 'height:100%')
 document.body.appendChild(appDiv)
 
 const fedAnalyticsScript = document.createElement('script')
-fedAnalyticsScript.insertAdjacentHTML('afterbegin',
-    'window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;' +
-    'ga(\'create\', \'UA-108560292-1\', \'data.noaa.gov\');' +
-    'ga(\'set\', \'anonymizeIp\', true);' +
-    'ga(\'send\', \'pageview\');')
+fedAnalyticsScript.insertAdjacentHTML(
+  'afterbegin',
+  'window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;' +
+    "ga('create', 'UA-108560292-1', 'data.noaa.gov');" +
+    "ga('set', 'anonymizeIp', true);" +
+    "ga('send', 'pageview');"
+)
 document.body.appendChild(fedAnalyticsScript)
 
 const googleAnalytics = document.createElement('script')
-googleAnalytics.setAttribute('src', 'https://www.google-analytics.com/analytics.js')
+googleAnalytics.setAttribute(
+  'src',
+  'https://www.google-analytics.com/analytics.js'
+)
 googleAnalytics.setAttribute('type', 'text/javascript')
 googleAnalytics.setAttribute('async', 'true')
 document.body.appendChild(googleAnalytics)

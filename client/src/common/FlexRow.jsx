@@ -2,16 +2,12 @@ import React, { Component } from 'react'
 
 const style = {
   display: 'flex',
-  flexDirection: 'row'
+  flexDirection: 'row',
 }
 
 export default class FlexRow extends Component {
   render() {
     const styles = Object.assign({}, style, this.props.style)
-    return (
-        <div style={styles}>
-          {this.props.items}
-        </div>
-    )
+    return <div style={styles}>{this.props.items}</div>
   }
 }

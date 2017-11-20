@@ -5,7 +5,11 @@
   text-align: center;
   min-height: 15em;
 
-  h1, h2, h3, h4, h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     text-align: left;
     margin-bottom: 0;
   }
@@ -15,20 +19,24 @@
     padding: 2em 3em 0 0;
     vertical-align: middle;
 
-button {
-  background: none;
-  display: block;
-  font-weight: bold;
-  font-size: 1.17em;
-  border: none;
-  text-align: center;
-  vertical-align: middle;
-  margin-bottom: 1.1em;
-  text-decoration: none;
-  padding: 0.3em 0em 0em 0.65em;;
-}
+    button {
+      background: none;
+      display: block;
+      font-weight: bold;
+      font-size: 1.17em;
+      border: none;
+      text-align: center;
+      vertical-align: middle;
+      margin-bottom: 1.1em;
+      text-decoration: none;
+      padding: 0.3em 0em 0em 0.65em;
+    }
 
-    h1, h2, h3, h4, h5 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
       text-align: center;
       margin-bottom: 1.1em;
     }
@@ -53,7 +61,11 @@ button {
   min-height: 35em;
   margin: 0 auto;
 
-  h1, h2, h3, h4, h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     text-align: left;
     margin-bottom: 1.1em;
   }
@@ -77,8 +89,8 @@ button {
   margin-top: 0.5em;
   > img {
     position: relative;
-    top: .15em;
-    left: .07em;
+    top: 0.15em;
+    left: 0.07em;
     max-width: 1.1em;
     max-height: 1.1em;
   }
@@ -109,8 +121,7 @@ button {
 .infoPanel-enter.infoPanel-enter-active {
   opacity: 1;
   margin-top: 0;
-  transition: margin-top 300ms 0ms ease-out,
-              opacity 200ms 300ms ease-out;
+  transition: margin-top 300ms 0ms ease-out, opacity 200ms 300ms ease-out;
 }
 
 .infoPanel-leave {
@@ -121,8 +132,7 @@ button {
 .infoPanel-leave.infoPanel-leave-active {
   opacity: 0.01;
   margin-top: -100%;
-  transition: opacity 200ms 0ms ease-out,
-              margin-top 300ms 200ms ease-out;
+  transition: opacity 200ms 0ms ease-out, margin-top 300ms 200ms ease-out;
 }
 
 .infoText {
@@ -147,7 +157,7 @@ button {
     padding: 0.2em 0.5em;
     margin-left: 0.3em;
     border-radius: 2px;
-    text-shadow: 0 0 5px black;;
+    text-shadow: 0 0 5px black;
   }
   .highlightB {
     color: $color-primary;

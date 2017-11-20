@@ -28,7 +28,7 @@
 
 .granule,
 .map {
-  height: 100%
+  height: 100%;
 }
 
 .title {
@@ -54,7 +54,7 @@
   width: 100%;
   tbody {
     tr:hover {
-      background-color: #144CBD;
+      background-color: #144cbd;
     }
   }
 }
@@ -75,18 +75,23 @@
   justify-content: flex-end;
 }
 
-.legend, .legend-508 {
+.legend,
+.legend-508 {
   display: flex;
   flex-flow: row wrap;
   padding-bottom: 1em;
-  h1, h2, h3, h4, h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     margin: 0.6em 0 !important;
   }
   .legendItem {
     display: inline-flex;
     margin-left: 1em;
     .badge {
-      @mixin badge 1.2em
+      @mixin badge 1.2em;
     }
     .label {
       font: 1.2em Arial, sans-serif;
@@ -109,7 +114,7 @@
     flex-flow: row wrap;
     justify-content: flex-end;
     .badge {
-      @mixin badge
+      @mixin badge;
     }
   }
 }
@@ -136,7 +141,7 @@ tr.pageButton {
 }
 
 .listContainer {
-  box-shadow: 1.3em 0.7em 0.5em 0.2em rgba(0,0,0,.7);
+  box-shadow: 1.3em 0.7em 0.5em 0.2em rgba(0, 0, 0, 0.7);
   overflow-x: none;
 }
 
@@ -150,11 +155,11 @@ tr.pageButton {
 }
 
 .listItem {
-  padding: .5em 1em 1em;
+  padding: 0.5em 1em 1em;
   > div {
-    margin: .5em 0;
+    margin: 0.5em 0;
   }
-  &:nth-child(odd)	{
+  &:nth-child(odd) {
     background-color: $color-primary-darkest;
   }
   &:nth-child(even) {
@@ -164,14 +169,14 @@ tr.pageButton {
 
 .linkRow {
   display: inline-block;
-  margin: .5em .5em .5em 0;
+  margin: 0.5em 0.5em 0.5em 0;
 }
 
 .links {
   display: inline-block;
-  padding: .3em;
-  margin: .2em;
-  border-radius: .1em .4em;
+  padding: 0.3em;
+  margin: 0.2em;
+  border-radius: 0.1em 0.4em;
   color: white;
   background-color: $color-green;
   text-decoration: underline;
@@ -181,10 +186,10 @@ tr.pageButton {
   width: 100%;
   text-align: center;
   button {
-    padding: .3em;
-    margin: .2em;
+    padding: 0.3em;
+    margin: 0.2em;
     border: none;
-    border-radius: .1em .4em;
+    border-radius: 0.1em 0.4em;
     color: white;
     background-color: $color-primary;
   }

@@ -20,54 +20,52 @@ class Detail extends React.Component {
 
   render() {
     if (!this.props.id || !this.props.item) {
-      return <div style={{display: 'none'}}/>
+      return <div style={{ display: 'none' }} />
     }
     const item = this.props.item
     const tabData = [
       {
         title: 'Summary',
-        content: <SummaryView id={this.props.id} item={this.props.item}/>,
+        content: <SummaryView id={this.props.id} item={this.props.item} />,
       },
       {
         title: 'Description',
-        content: <DescriptionView id={this.props.id} item={this.props.item}/>,
+        content: <DescriptionView id={this.props.id} item={this.props.item} />,
       },
       {
         title: 'Matching Files',
         content: (
-            <GranuleViewContainer id={this.props.id} item={this.props.item}/>
+          <GranuleViewContainer id={this.props.id} item={this.props.item} />
         ),
         action: this.showGranules,
       },
       {
         title: 'Access',
-        content: (
-            <AccessView id={this.props.id} item={this.props.item}/>
-        )
+        content: <AccessView id={this.props.id} item={this.props.item} />,
       },
     ]
 
     return (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <div className={`pure-g ${styles.header} ${styles.underscored}`}>
-              <div
-                  className={`pure-u-11-12 ${styles.title}`}
-                  title={`${item.title}`}
-              >
-                <ShowMore lines={1} anchorClass={`${styles.showMore}`}>
-                  {item.title}
-                </ShowMore>
-              </div>
-              <div className={'pure-u-1-12'}>
-							<span className={styles.close} onClick={this.close}>
-								x
-							</span>
-              </div>
+      <div className={styles.modal}>
+        <div className={styles.modalContent}>
+          <div className={`pure-g ${styles.header} ${styles.underscored}`}>
+            <div
+              className={`pure-u-11-12 ${styles.title}`}
+              title={`${item.title}`}
+            >
+              <ShowMore lines={1} anchorClass={`${styles.showMore}`}>
+                {item.title}
+              </ShowMore>
             </div>
-            <Tabs data={tabData} activeIndex={0}/>
+            <div className={'pure-u-1-12'}>
+              <span className={styles.close} onClick={this.close}>
+                x
+              </span>
+            </div>
           </div>
+          <Tabs data={tabData} activeIndex={0} />
         </div>
+      </div>
     )
   }
 
