@@ -49,8 +49,7 @@ class Detail extends React.Component {
     ]
 
       // TODO: make these real links
-      // const videoLinks = item.links.filter(link => link.linkFunction === "video");
-      const videoLinks = ["//www.youtube.com/embed/Q0CbN8sfihY", "//www.youtube.com/embed/yxfZBun1uBU"]
+      const videoLinks = item.links.filter(link => link.linkProtocol === "video:youtube")
       if(videoLinks.length > 0) {
         tabData.push({
             title: videoLinks.length === 1 ? "Video" : "Videos",

@@ -1,17 +1,81 @@
 import React from 'react'
 import Expandable from '../common/Expandable'
 
-const styleVideoHeading = {
-    border: "1px solid white",
-    backgroundColor: "green"
+const styleMain = {
+  display: 'flex',
+  flexFlow: 'nowrap'
+  // justifyContent: 'center'
 }
 
-const styleVideoContent = {
-    border: "1px solid white",
-    backgroundColor: "magenta"
+const styleList = {
+  listStyleType: 'none',
+  width: '25%',
+  height: 'auto',
+  backgroundColor: '#242C36',
+  padding: 0,
+  borderRadius: '0.1em 0.4em',
+  margin: '0.1em',
+  flex: 0
+}
+
+const styleListElement = {
+  fontSize: '1.15em',
+  padding: '0.3em',
+  margin: '1em 0.75em',
+  borderRadius: '0.1em 0.4em',
+  border: '1px darkgray solid',
+  textAlign: 'center',
+  cursor: 'pointer'
+}
+
+const styleListElementSelected = {
+  backgroundColor: 'black'
+}
+
+const styleVideos = {
+  flex: 1,
+  width: '100%'
+}
+
+const styleVideoContainer = {
+  // position: 'relative',
+  // paddingBottom: '56.25%',
+  // paddingTop: '30px',
+  // height: 0,
+  // overflow: 'hidden',
+  opacity: 0,
+  display: 'none'
+}
+
+const styleShownVideo = {
+  opacity: 1,
+  display: 'block'
+}
+
+const styleIFrame = {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  maxWidth: '800px',
+  maxHeight: '450px'
 }
 
 export default class VideoView extends React.Component {
+
+  constructor(props) {
+    super(props)
+
+    this.listElementSelected = this.listElementSelected.bind(this)
+    this.videoShown = this.videoShown.bind(this)
+    this.onClick = this.onClick.bind(this)
+
+    this.state = {
+      current: 0
+    }
+  }
+
   collectVideos = () => {
     // collect any video iframes in the component
     this.figures = this.sectionRef.querySelectorAll("figure[class='video']")
@@ -66,40 +130,62 @@ export default class VideoView extends React.Component {
     window.removeEventListener('resize', this.windowResizing)
   }
 
-  headingElement = (title) => {
-      return (
-          <div>
-              {title}
-          </div>
-      )
+  listElementSelected(i) {
+    return i === this.state.current ? styleListElementSelected : ''
+  }
+
+  videoShown(i) {
+    return i === this.state.current ? styleShownVideo : ''
+  }
+
+  onClick(i) {
+    this.setState({
+      current: i
+    })
   }
 
   render() {
-    const { links } = this.props;
+    const { links } = this.props
+    let embeddedVideos =[]
+    let titleList = []
 
-    const embeddedVideos = links.map((link, index) => {
-      const videoFigure = (
-        <figure key={index} className="video">
+    links.forEach((link, index) => {
+      embeddedVideos.push(
+        <figure key={index} className="video" style={{
+          ...styleVideoContainer,
+          ...this.videoShown(index)
+        }}>
           <iframe
-            src={link}
+            src={link.linkUrl}
             frameBorder="0"
             data-aspectratio="0.5625"
             style={{ width: '800px', height: '450px' }}
+            // style={styleIFrame}
             allowFullScreen={true}
           />
         </figure>
       )
-      return <Expandable open={false} heading={"This is the star wars trailer for accessibility purposes."} content={videoFigure} />
+
+      titleList.push(
+        <li key={index} onClick={() => this.onClick(index)} style={{
+          ...styleListElement,
+          ...this.listElementSelected(index)
+        }}>{link.linkName}</li>
+      )
     })
 
     return (
-      <section
-        ref={sectionRef => {
-          this.sectionRef = sectionRef
-        }}
-      >
-        {embeddedVideos}
-      </section>
+      <div style={styleMain}>
+        <ul style={styleList}>
+          {titleList}
+        </ul>
+        <div style={styleVideos} ref={sectionRef => {this.sectionRef = sectionRef}}>
+          {embeddedVideos}
+        </div>
+      </div>
     )
   }
 }
+
+
+
