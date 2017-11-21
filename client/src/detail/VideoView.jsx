@@ -1,20 +1,20 @@
 import React from 'react'
-import Expandable from '../common/Expandable'
 
 const styleMain = {
   display: 'flex',
-  flexFlow: 'nowrap'
-  // justifyContent: 'center'
+  flexFlow: 'nowrap',
+  justifyContent: 'space-between',
 }
 
 const styleList = {
   listStyleType: 'none',
-  width: '25%',
+  width: '30em',
+  minWidth: '15em',
   height: 'auto',
   backgroundColor: '#242C36',
-  padding: 0,
+  padding: '0.1em',
   borderRadius: '0.1em 0.4em',
-  margin: '0.1em',
+  margin: 0,
   flex: 0
 }
 
@@ -34,32 +34,18 @@ const styleListElementSelected = {
 
 const styleVideos = {
   flex: 1,
-  width: '100%'
+  width: '100%',
+    overflow: 'hidden'
 }
 
 const styleVideoContainer = {
-  // position: 'relative',
-  // paddingBottom: '56.25%',
-  // paddingTop: '30px',
-  // height: 0,
-  // overflow: 'hidden',
-  opacity: 0,
-  display: 'none'
+    margin: 0,
+    padding: 0
 }
 
 const styleShownVideo = {
   opacity: 1,
   display: 'block'
-}
-
-const styleIFrame = {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  maxWidth: '800px',
-  maxHeight: '450px'
 }
 
 export default class VideoView extends React.Component {
@@ -80,7 +66,7 @@ export default class VideoView extends React.Component {
     // collect any video iframes in the component
     this.figures = this.sectionRef.querySelectorAll("figure[class='video']")
     this.iframes = this.sectionRef.querySelectorAll(
-      "iframe[src^='//www.youtube.com']"
+      "iframe[src*='//www.youtube.com']"
     )
     this.iframes.forEach(iframe => {
       // calculate and set aspect ratio
@@ -99,7 +85,9 @@ export default class VideoView extends React.Component {
       // get width of a figure (expecting all to be same 100% of article)
       const figureRect = this.figures[0].getBoundingClientRect()
       const newWidth = figureRect.width
+      console.log("newWidth:", newWidth);
       this.iframes.forEach(iframe => {
+        console.log("iframe:", iframe)
         // maintain aspectRatio when setting new dimensions
         const aspectRatio = iframe.getAttribute('data-aspectratio')
         iframe.style.width = newWidth + 'px'
@@ -135,7 +123,7 @@ export default class VideoView extends React.Component {
   }
 
   videoShown(i) {
-    return i === this.state.current ? styleShownVideo : ''
+    return i === this.state.current
   }
 
   onClick(i) {
@@ -150,21 +138,20 @@ export default class VideoView extends React.Component {
     let titleList = []
 
     links.forEach((link, index) => {
-      embeddedVideos.push(
-        <figure key={index} className="video" style={{
-          ...styleVideoContainer,
-          ...this.videoShown(index)
-        }}>
-          <iframe
-            src={link.linkUrl}
-            frameBorder="0"
-            data-aspectratio="0.5625"
-            style={{ width: '800px', height: '450px' }}
-            // style={styleIFrame}
-            allowFullScreen={true}
-          />
-        </figure>
-      )
+
+      if(this.videoShown(index)) {
+          embeddedVideos.push(
+              <figure key={index} className="video" style={styleVideoContainer}>
+                <iframe
+                    src={link.linkUrl}
+                    frameBorder="0"
+                    data-aspectratio="0.5625"
+                    style={{ width: '800px', height: '450px' }}
+                    allowFullScreen={true}
+                />
+              </figure>
+          )
+      }
 
       titleList.push(
         <li key={index} onClick={() => this.onClick(index)} style={{
