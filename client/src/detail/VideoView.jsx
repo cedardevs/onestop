@@ -85,9 +85,7 @@ export default class VideoView extends React.Component {
       // get width of a figure (expecting all to be same 100% of article)
       const figureRect = this.figures[0].getBoundingClientRect()
       const newWidth = figureRect.width
-      console.log("newWidth:", newWidth);
       this.iframes.forEach(iframe => {
-        console.log("iframe:", iframe)
         // maintain aspectRatio when setting new dimensions
         const aspectRatio = iframe.getAttribute('data-aspectratio')
         iframe.style.width = newWidth + 'px'
@@ -127,6 +125,7 @@ export default class VideoView extends React.Component {
   }
 
   onClick(i) {
+    this.windowResizing()
     this.setState({
       current: i
     })
