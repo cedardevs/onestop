@@ -34,19 +34,31 @@ const styleHidden = (width) => {
   }
 }
 
-const styleHideContentArrow = {
+const styleHideContentArrowWrapper = {
+  backgroundColor: "#242C36",
   position: "absolute",
-  top: 1,
+  top: "1px",
   right: 0,
-  backgroundColor: "#4B7AA8",
-  paddingLeft: "0.618em",
-  paddingRight: "0.618em",
-  cursor: "pointer"
+  padding: "4px"
+}
+
+const styleHideContentArrow = {
+  // position: "absolute",
+  top: "6px",
+  right: "6px",
+  backgroundColor: "#5396CC",
+  padding: "0.105em 0.618em",
+  cursor: "pointer",
+  borderRadius: "0.105em"
+}
+
+const styleHideContentArrowHover = {
+  backgroundColor: "#277CB2"
 }
 
 const styleHideContentArrowImage = {
   width: "2em",
-  height: "41px",
+  height: "31px",
 }
 
 const styleHiddenContent = {
@@ -74,14 +86,18 @@ export default class Left extends Component {
 
   componentWillMount() {
     this.setState({
-      visible: this.props.visible
+      visible: this.props.visible,
+      hovering: false
     })
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.visible !== this.state.visible) {
-      this.setState({
-        visible: nextProps.visible
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          visible: nextProps.visible
+        }
       })
     }
   }
@@ -89,8 +105,11 @@ export default class Left extends Component {
   handleOpen = (event) => {
     event.stopPropagation()
     if (!this.state.visible) {
-      this.setState({
-        visible: true
+      this.setState(prevState => {
+          return {
+              ...prevState,
+              visible: true
+          }
       })
     }
   }
@@ -99,9 +118,28 @@ export default class Left extends Component {
     event.stopPropagation()
     if (this.state.visible) {
       this.setState({
-        visible: false
+        visible: false,
+        hovering: false
       })
     }
+  }
+
+  handleMouseOver = (event) => {
+      this.setState(prevState => {
+        return {
+            ...prevState,
+            hovering: true
+        }
+      })
+  }
+
+  handleMouseOut = (event) => {
+      this.setState(prevState => {
+          return {
+              ...prevState,
+              hovering: false
+          }
+      })
   }
 
   render() {
@@ -109,9 +147,15 @@ export default class Left extends Component {
     const classVisible = styleVisible(width)
     const classHidden = styleHidden(width)
     const classes = this.state.visible ? classVisible : classHidden
+    const stylesArrow = {
+        ...styleHideContentArrow,
+        ...(this.state.hovering ? styleHideContentArrowHover : {})
+    }
     const hideContentArrow = (
-        <div style={styleHideContentArrow} onClick={this.handleClose}>
-          <img style={styleHideContentArrowImage} src={arrowLeft}/>
+        <div style={styleHideContentArrowWrapper}>
+          <div style={stylesArrow} onClick={this.handleClose} onMouseOver={this.handleMouseOver} onMouseOut={this.handleMouseOut}>
+            <img style={styleHideContentArrowImage} src={arrowLeft}/>
+          </div>
         </div>
     )
     const hiddenContent = (

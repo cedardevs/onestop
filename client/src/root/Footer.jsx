@@ -28,6 +28,9 @@ class Footer extends React.Component {
         href: "//www.ncdc.noaa.gov/survey",
         text: "Take Our Survey"
       }, {
+        href: "mailto:noaa.data.catalog@noaa.gov?Subject=NOAA%20Data%20Catalog",
+        text: "Contact Us"
+      }, {
         href: "//www.commerce.gov/",
         text: "Department of Commerce"
       }, {

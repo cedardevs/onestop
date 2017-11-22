@@ -5,6 +5,7 @@
   font-size: 1.2em;
   height: 3em;
   z-index: 1;
+  background-color: orange;
 }
 
 .searchContainer {
@@ -19,6 +20,7 @@
 }
 
 .buttonLayout {
+  background-color: purple;
   position: relative;
   display: inline-block;
   > button {
