@@ -68,7 +68,7 @@ class DateTimePicker extends React.Component {
             {renderInput}
           </DatePicker>
           <button id={props.id} className={`pure-button ${styles.clearButton}`} onClick={this.handleReset}>
-            <img src={times}/>
+            <img alt='reset time' src={times}/>
           </button>
         </div>
     )

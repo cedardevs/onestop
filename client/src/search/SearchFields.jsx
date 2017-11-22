@@ -165,7 +165,7 @@ class SearchFields extends React.Component {
             <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`}
                     onClick={this.toggleCalendar} aria-label="Add Temporal Criteria"
                     ref={timeButton => this.timeButton = timeButton}>
-              <img src={clock}/>
+              <img alt='temporal filter' src={clock}/>
             </button>
             <ToggleDisplay show={this.state.showCalendar}>
               <TemporalSearchContainer
@@ -177,7 +177,7 @@ class SearchFields extends React.Component {
             <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`}
                     onClick={this.toggleMap} aria-label="Add Spatial Criteria"
                     ref={mapButton => this.mapButton = mapButton}>
-              <img src={globe}/>
+              <img alt='spatial filter' src={globe}/>
             </button>
             <ToggleDisplay show={this.state.showMap}>
               {/* 'updated' passed to trigger update but is unused*/}
@@ -191,11 +191,11 @@ class SearchFields extends React.Component {
             </ToggleDisplay>
             <button className={`pure-button ${styles.undoButton}`}
                     onClick={this.clearSearchParams} aria-label="Clear Search Criteria">
-              <img src={times}/>
+              <img alt='clear search' src={times}/>
             </button>
             <button className={`pure-button ${styles.searchButton}`} onClick={this.validateAndSubmit}
                     aria-label="Submit Search">
-              <img src={search}/>
+              <img alt='submit' src={search}/>
             </button>
           </div>
           <div className={`${this.warningStyle()}`} role="alert">{this.state.warning}</div>

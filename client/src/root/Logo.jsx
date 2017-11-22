@@ -77,7 +77,7 @@ export default class Logo extends Component {
       </div>
       <div style={stylesTextWrapper}>
         <a href="#" title="One Stop Home" style={stylesOneStopLink} onClick={() => this.props.onClick()}>
-          <span style={stylesOneStopText}><img src={stopCircle} style={stylesStopCircle}/>neStop</span>
+          <span style={stylesOneStopText}><img alt='O' src={stopCircle} style={stylesStopCircle}/>neStop</span>
           <span style={stylesNceiText}>National Oceanic and</span>
           <span style={stylesNceiText}>Atmospheric Administration</span>
         </a>

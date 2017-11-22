@@ -27,15 +27,15 @@ class Landing extends React.Component {
     ]
     topics = topics.map((topic, i) => {
       return <div key={i} className={`${styles.topicItem}`} onClick={() => this.search(topic.term)}>
-        <img src={topic.icon} aria-hidden="true"/>
-        <button title={`${topic.title}`}>{topic.title}</button>
+        <img src={topic.icon} alt={topic.title} aria-hidden="true"/>
+        <button title={topic.title}>{topic.title}</button>
       </div>
     })
 
     return (
         <div className={`pure-g ${styles.showcase}`}>
           <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true">
-            <img src={stopCircle}/>neStop
+            <img alt='O' src={stopCircle}/>neStop
           </div>
           <h1 className={styles.hiddenPageTitle}>OneStop: A NOAA Data Search Platform</h1>
           <div className={`pure-u-1 ${styles.heroText}`}>
