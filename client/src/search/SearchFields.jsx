@@ -14,8 +14,18 @@ import globe from 'fa/globe.svg'
 import times from 'fa/times.svg'
 import search from 'fa/search.svg'
 
-// import styles from './searchFields.css'
-const styles = {}
+const styleMap = {
+  position: 'fixed',
+  zIndex: '20',
+  left: '50%',
+  marginTop: '2em',
+  marginLeft: '-30%',
+  boxShadow: '14px 14px 5px rgba(0,0,0,.7)',
+  border: '2px outset $color-primary',
+  height: '30em',
+  width: '80%',
+  maxWidth: '70em',
+}
 
 class SearchFields extends React.Component {
   constructor(props) {
@@ -29,14 +39,13 @@ class SearchFields extends React.Component {
     this.clearSearchParams = this.clearSearchParams.bind(this)
     this.toggleMap = this.toggleMap.bind(this)
     this.toggleCalendar = this.toggleCalendar.bind(this)
-    this.mapButtonStyle = this.mapButtonStyle.bind(this)
-    this.timeButtonStyle = this.timeButtonStyle.bind(this)
     this.warningStyle = this.warningStyle.bind(this)
     this.validateAndSubmit = this.validateAndSubmit.bind(this)
     this.state = {
       showMap: false,
       showCalendar: false,
       warning: '',
+      hoveringWarningClose: false
     }
   }
 
@@ -46,6 +55,18 @@ class SearchFields extends React.Component {
     this.mapEvents(target, this.state, this.toggleMap)
   }
 
+  handleMouseOverWarningClose = event => {
+    this.setState({
+        hoveringWarningClose: true
+    })
+  }
+
+  handleMouseOutWarningClose = event => {
+      this.setState({
+          hoveringWarningClose: false
+      })
+  }
+
   calendarEvents(target, { timeComponent, timeButton, showCalendar }, toggle) {
     if (
       showCalendar &&
@@ -53,7 +74,6 @@ class SearchFields extends React.Component {
       !timeButton.contains(target) &&
       !target.classList[0].startsWith('rc-calendar')
     ) {
-      console.log('toggle')
       toggle()
     }
   }
@@ -112,27 +132,36 @@ class SearchFields extends React.Component {
     this.setState({ showCalendar: !this.state.showCalendar })
   }
 
-  mapButtonStyle() {
-    if (this.props.geoJSON) {
-      return styles.mapButtonApplied
-    } else {
-      return styles.mapButton
-    }
-  }
-
-  timeButtonStyle() {
-    if (this.props.startDateTime || this.props.endDateTime) {
-      return styles.timeButtonApplied
-    } else {
-      return styles.timeButton
-    }
-  }
-
   warningStyle() {
     if (_.isEmpty(this.state.warning)) {
-      return styles.hidden
+      return {
+        display: 'none',
+      }
     } else {
-      return styles.warning
+      return {
+        position: 'absolute',
+        top: 'calc(100% + 0.309em)',
+        lineHeight: '1.618em',
+        fontSize: '1em',
+        color: 'white',
+        backgroundColor: 'red',
+        borderRadius: '1em',
+        padding: '0.618em',
+      }
+    }
+  }
+
+  warningCloseStyle() {
+    if(this.state.hoveringWarningClose) {
+      return {
+        cursor: "pointer",
+        fontWeight: "bold"
+      }
+    }
+    else {
+      return {
+          cursor: "pointer",
+      }
     }
   }
 
@@ -159,55 +188,122 @@ class SearchFields extends React.Component {
   }
 
   render() {
+    let styleTimeButton = { marginRight: '2px', flexShrink: '0' }
+    if (this.props.startDateTime || this.props.endDateTime) {
+      styleTimeButton['background'] = '#8967d2'
+    }
     const timeButton = (
       <Button
+        key="timeButton"
+        ref={timeButton => (this.timeButton = timeButton)}
         icon={clock}
         onClick={this.toggleCalendar}
         ariaLabel={'Add Temporal Criteria'}
-        style={{marginRight: "2px"}}
+        style={styleTimeButton}
       />
     )
 
+    let styleMapButton = { marginRight: '2px', flexShrink: '0' }
+    if (this.props.geoJSON) {
+      styleMapButton['background'] = '#8967d2'
+    }
     const mapButton = (
       <Button
+        key="mapButton"
+        ref={mapButton => (this.mapButton = mapButton)}
         icon={globe}
         onClick={this.toggleMap}
         ariaLabel={'Add Spatial Criteria'}
-        style={{marginRight: "2px"}}
+        style={styleMapButton}
       />
     )
 
     const undoButton = (
       <Button
+        key="undoButton"
         icon={times}
         onClick={this.clearSearchParams}
         ariaLabel={'Clear Search Criteria'}
-        style={{marginRight: "2px"}}
+        style={{ marginRight: '2px', flexShrink: '0' }}
       />
     )
 
     const searchButton = (
       <Button
+        key="searchButton"
         icon={search}
         onClick={this.validateAndSubmit}
         ariaLabel={'Submit Search'}
+        style={{ flexShrink: '0' }}
       />
     )
 
+    let searchFieldStyle = null
+    if (this.props.home) {
+      searchFieldStyle = {
+        position: 'relative',
+        marginRight: '1em',
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+      }
+    } else {
+      searchFieldStyle = {
+        position: 'relative',
+        marginRight: '1em',
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+      }
+    }
+
     return (
-      <section style={{marginRight:"1em"}}>
+      <section style={searchFieldStyle}>
+        <div style={this.warningStyle()} role="alert">
+          {this.state.warning}{' '}
+          <span
+            style={this.warningCloseStyle()}
+            onClick={this.clearQueryString}
+            onMouseOver={this.handleMouseOverWarningClose}
+            onMouseeOut={this.handleMouseOutWarningClose}
+          >
+            x
+          </span>
+        </div>
+
         <TextSearchField
           onEnterKeyDown={this.validateAndSubmit}
           onChange={this.updateQuery}
           onClear={this.clearQueryString}
           value={this.props.queryString}
         />
-        <div>
-          <FlexRow
-            style={{ justifyContent: 'center', marginTop: '0.309em' }}
-            items={[timeButton, mapButton, undoButton, searchButton]}
+        <FlexRow
+          style={{ justifyContent: 'center', marginTop: '0.309em' }}
+          items={[timeButton, mapButton, undoButton, searchButton]}
+        />
+
+        <ToggleDisplay show={this.state.showCalendar}>
+          <TemporalSearchContainer
+            ref={timeComponent => (this.timeComponent = timeComponent)}
+            toggleSelf={this.toggleCalendar}
+            calendarVisible={this.state.showCalendar}
           />
-        </div>
+        </ToggleDisplay>
+
+        <ToggleDisplay show={this.state.showMap}>
+          {/* 'updated' passed to trigger update but is unused*/}
+          <MapContainer
+            ref={mapComponent => (this.mapComponent = mapComponent)}
+            updated={this.state.showMap}
+            selection={true}
+            features={false}
+            style={styleMap}
+          />
+        </ToggleDisplay>
       </section>
     )
   }

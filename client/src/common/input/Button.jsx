@@ -127,6 +127,7 @@ export default class Button extends Component {
     const {
       text,
       icon,
+      styleIcon,
       onClick,
       style,
       styleHover,
@@ -144,6 +145,8 @@ export default class Button extends Component {
       ...(icon && !text ? styleIconPadding : {}),
     }
 
+    const styleIconResolved = styleIcon ? styleIcon : { width: '2em', height: '2em' }
+
     return (
       <button
         style={stylesMerged}
@@ -157,7 +160,7 @@ export default class Button extends Component {
         aria-label={ariaLabel}
       >
         {icon ? (
-          <img src={icon} style={{ width: '2em', height: '2em' }} />
+          <img src={icon} style={styleIconResolved} />
         ) : null}
         {text}
       </button>

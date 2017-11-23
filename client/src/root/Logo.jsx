@@ -7,9 +7,9 @@ const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 //-- Styles
 
 const stylesLogoWrapper = {
-  padding: '0 1em 0 0',
+  padding: '0 1.618em 0 0',
   display: 'flex',
-  flex: "0",
+  flex: "0 0 max-content",
   alignItems: "center",
   flexWrap: 'nowrap',
 }
@@ -26,8 +26,9 @@ const stylesNoaaLogo = {
 }
 
 const stylesTextWrapper = {
-  display: 'inline-block',
+  display: 'inline-flex',
   whiteSpace: "nowrap",
+  flex: "0 0 max-content"
 }
 
 const stylesOneStopLink = {
@@ -96,7 +97,7 @@ export default class Logo extends Component {
             onClick={() => this.props.onClick()}
           >
             <span style={stylesOneStopText}>
-              <img src={stopCircle} style={stylesStopCircle} />neStop
+              <img src={stopCircle} style={stylesStopCircle} alt={"OneStop"}/>neStop
             </span>
             <span style={stylesNceiText}>National Oceanic and</span>
             <span style={stylesNceiText}>Atmospheric Administration</span>

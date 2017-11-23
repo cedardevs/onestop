@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Button from '../common/input/Button'
 
 import arrowRight from "../../img/font-awesome/white/svg/arrow-right.svg"
 import arrowLeft from "../../img/font-awesome/white/svg/arrow-left.svg"
@@ -20,8 +21,6 @@ const styleVisible = (width) => {
   }
 }
 
-// const styleVisible
-
 const styleHidden = (width) => {
   return {
     backgroundColor: defaultBackgroundColor,
@@ -40,25 +39,6 @@ const styleHideContentArrowWrapper = {
   top: "1px",
   right: 0,
   padding: "4px"
-}
-
-const styleHideContentArrow = {
-  // position: "absolute",
-  top: "6px",
-  right: "6px",
-  backgroundColor: "#5396CC",
-  padding: "0.105em 0.618em",
-  cursor: "pointer",
-  borderRadius: "0.105em"
-}
-
-const styleHideContentArrowHover = {
-  backgroundColor: "#277CB2"
-}
-
-const styleHideContentArrowImage = {
-  width: "2em",
-  height: "31px",
 }
 
 const styleHiddenContent = {
@@ -147,15 +127,14 @@ export default class Left extends Component {
     const classVisible = styleVisible(width)
     const classHidden = styleHidden(width)
     const classes = this.state.visible ? classVisible : classHidden
-    const stylesArrow = {
-        ...styleHideContentArrow,
-        ...(this.state.hovering ? styleHideContentArrowHover : {})
-    }
     const hideContentArrow = (
         <div style={styleHideContentArrowWrapper}>
-          <div style={stylesArrow} onClick={this.handleClose} onMouseOver={this.handleMouseOver} onMouseOut={this.handleMouseOut}>
-            <img style={styleHideContentArrowImage} src={arrowLeft}/>
-          </div>
+            <Button
+                icon={arrowLeft}
+                styleIcon={{width:"1em", height:"31px"}}
+                onClick={this.handleClose}
+                ariaLabel={'Hide Filter Menu'}
+            />
         </div>
     )
     const hiddenContent = (

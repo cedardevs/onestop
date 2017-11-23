@@ -5,6 +5,7 @@ const styleSearchField = {
   maxWidth: '32em',
   minWidth: '22em',
   display: 'inline-block',
+  marginRight: '0.309em'
 }
 
 const styleTextField = {
