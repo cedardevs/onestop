@@ -160,7 +160,7 @@ export default class Button extends Component {
         aria-label={ariaLabel}
       >
         {icon ? (
-          <img src={icon} style={styleIconResolved} />
+          <img src={icon} style={styleIconResolved} alt={ariaLabel}/>
         ) : null}
         {text}
       </button>
