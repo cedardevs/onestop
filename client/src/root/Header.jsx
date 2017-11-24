@@ -48,12 +48,6 @@ const styleLinkListItem = (firstItem, lastItem) => {
 class Header extends React.Component {
   constructor(props) {
     super(props)
-    this.toggleBurgerMenu = this.toggleBurgerMenu.bind(this)
-    this.state = { menuOpen: false }
-  }
-
-  toggleBurgerMenu() {
-    this.setState({ menuOpen: !this.state.menuOpen })
   }
 
   getMainOr508Link() {
