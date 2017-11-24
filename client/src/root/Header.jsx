@@ -90,7 +90,7 @@ class Header extends React.Component {
       )
 
     const menuContent = (
-      <ul role="menubar" style={styleLinkList}>
+      <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>
           <a href={this.props.homeUrl} title="Home" className={styles.link}>
             Home
@@ -109,11 +109,11 @@ class Header extends React.Component {
     )
 
     const search = this.props.showSearch ? (
-      <SearchFieldsContainer key="search" header={true} />
+      <SearchFieldsContainer key="search"/>
     ) : null
 
     const menu = (
-      <nav key="menu" aria-label="Main Navigation" style={styleNav}>
+      <nav key="menu" aria-label="Main" style={styleNav}>
         {menuContent}
       </nav>
     )

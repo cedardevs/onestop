@@ -269,7 +269,7 @@ class SearchFields extends React.Component {
             style={this.warningCloseStyle()}
             onClick={this.clearQueryString}
             onMouseOver={this.handleMouseOverWarningClose}
-            onMouseeOut={this.handleMouseOutWarningClose}
+            onMouseOut={this.handleMouseOutWarningClose}
           >
             x
           </span>
@@ -307,10 +307,6 @@ class SearchFields extends React.Component {
       </section>
     )
   }
-}
-
-SearchFields.defaultProps = {
-  header: false,
 }
 
 export default SearchFields
