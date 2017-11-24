@@ -67,7 +67,6 @@ export default class Left extends Component {
   componentWillMount() {
     this.setState({
       visible: this.props.visible,
-      hovering: false
     })
   }
 
@@ -99,28 +98,10 @@ export default class Left extends Component {
     if (this.state.visible) {
       this.setState({
         visible: false,
-        hovering: false
       })
     }
   }
 
-  handleMouseOver = (event) => {
-      this.setState(prevState => {
-        return {
-            ...prevState,
-            hovering: true
-        }
-      })
-  }
-
-  handleMouseOut = (event) => {
-      this.setState(prevState => {
-          return {
-              ...prevState,
-              hovering: false
-          }
-      })
-  }
 
   render() {
     const width = this.props.width ? this.props.width : defaultWidth
