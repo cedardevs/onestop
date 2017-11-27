@@ -16,13 +16,10 @@ const styleHoverDefault = {
 }
 
 const stylePressDefault = {
-  outline: '1px solid yellow',
 }
 
 const styleFocusDefault = {
-  /* DO NOT REMOVE */
-  /* placeholder if we decide universal styles for button focus */
-  /* more than likely, you will pass in props.styleFocus to customize or override per specific button */
+    outline: '2px dashed white',
 }
 
 const styleIconPadding = {
