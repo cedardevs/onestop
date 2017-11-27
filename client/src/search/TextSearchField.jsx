@@ -1,43 +1,121 @@
 import React from 'react'
 
-class TextSearchField extends React.Component {
+const styleSearchField = {
+  color: 'black',
+  maxWidth: '32em',
+  minWidth: '22em',
+  display: 'inline-block',
+  marginRight: '0.309em'
+}
 
+const styleTextField = {
+  width: '100%',
+  padding: '0.618em',
+  border: '1px solid #ccc',
+  boxShadow: 'inset 0 1px 3px #ddd',
+  borderRadius: '2px',
+  boxSizing: 'border-box',
+}
+
+const styleClearButton = {
+  marginLeft: '-1.618em',
+  height: '1em',
+  color: 'grey',
+  border: 'none',
+  fontSize: '1.2em',
+  textShadow: 'none',
+  backgroundColor: 'white',
+}
+
+const styleClearButtonHover = {
+  color: '#5a5a5a',
+}
+
+class TextSearchField extends React.Component {
   constructor(props) {
     super(props)
-
-    this.onChange = props.onChange
-    this.onEnterKeyDown = props.onEnterKeyDown
-    this.state = {value: props.value}
-
-    this.handleChange = this.handleChange.bind(this)
-    this.handleKeyDown = this.handleKeyDown.bind(this)
+    this.state = { value: props.value }
   }
 
-  render() {
-    return <input
-        style={{width: '100%'}}
-        placeholder="Enter any term here to search NCEI data"
-        onKeyDown={this.handleKeyDown}
-        onChange={this.handleChange}
-        value={this.state.value}
-        aria-label="Search Text"
-    />
-  }
-
-  handleChange(e) {
-    this.setState({value: e.target.value})
-    this.onChange(e.target.value)
-  }
-
-  handleKeyDown(e) {
-    if (e.keyCode === 13) {
-      e.preventDefault()
-      this.onEnterKeyDown(e.target.value)
-    }
+  componentWillMount() {
+    this.setState({
+      value: this.props.value,
+      hoveringClear: false,
+    })
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({'value': nextProps.value})
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        value: nextProps.value,
+      }
+    })
+  }
+
+  handleChange = event => {
+    const { onChange } = this.props
+    this.setState({ value: event.target.value })
+    onChange(event.target.value)
+  }
+
+  handleKeyDown = event => {
+    const { onEnterKeyDown } = this.props
+    if (event.keyCode === 13) {
+      event.preventDefault()
+      onEnterKeyDown(event.target.value)
+    }
+  }
+
+  handleMouseOverClear = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        hoveringClear: true,
+      }
+    })
+  }
+
+  handleMouseOutClear = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        hoveringClear: false,
+      }
+    })
+  }
+
+  render() {
+    const { onClear } = this.props
+
+    const styleClearButtonMerged = {
+      ...styleClearButton,
+      ...(this.state.hoveringClear ? styleClearButtonHover : {}),
+    }
+
+    return (
+      <div>
+        <div style={styleSearchField}>
+          <input
+            style={styleTextField}
+            placeholder="Enter any term here to search NCEI data"
+            onKeyDown={this.handleKeyDown}
+            onChange={this.handleChange}
+            value={this.state.value}
+            aria-label="Search Text"
+          />
+        </div>
+        <button
+          style={styleClearButtonMerged}
+          onClick={onClear}
+          onMouseOver={this.handleMouseOverClear}
+          onMouseOut={this.handleMouseOutClear}
+          aria-label="Clear Search Text"
+        >
+          x
+        </button>
+      </div>
+    )
   }
 }
 
