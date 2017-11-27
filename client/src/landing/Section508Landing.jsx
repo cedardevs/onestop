@@ -3,7 +3,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styles from './section508.css'
 import moment from 'moment'
+import Button from '../common/input/Button'
 import { convertBboxToGeoJson, convertGeoJsonToBbox } from '../utils/geoUtils'
+
+const styleButton = {
+    margin: "1em 0 0 0.618em"
+}
 
 class Section508Landing extends React.Component {
   constructor(props) {
@@ -116,16 +121,14 @@ class Section508Landing extends React.Component {
             <form id='508-form'>
               {formInputs}
             </form>
-            <button className={`${styles.button} pure-button`}
-                    onClick={() => this.validateAndSubmit()}>
-              Search
-            </button>
-            <button className={`${styles.button} pure-button`}
-                    onClick={(() => {
-                      this.props.clearSearch()
-                    })}>
-              Clear
-            </button>
+
+
+            <Button
+                text="Search"
+                onClick={() => this.validateAndSubmit()}
+                title={'Search'}
+                style={styleButton}
+            />
 
 
           </div>
