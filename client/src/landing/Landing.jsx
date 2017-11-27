@@ -33,18 +33,18 @@ class Landing extends React.Component {
     })
 
     return (
-        <div className={`pure-g ${styles.showcase}`}>
-          <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true">
+        <div className={`${styles.showcase}`}>
+          <div className={`${styles.heroHeader}`} aria-hidden="true">
             <img alt='O' src={stopCircle}/>neStop
           </div>
           <h1 style={defaultStyles.hideOffscreen}>OneStop: A NOAA Data Search Platform</h1>
-          <div className={`pure-u-1 ${styles.heroText}`}>
+          <div className={`${styles.heroText}`}>
             Geophysical, oceans, coastal, weather and climate data discovery all in one place.<br/>
           </div>
           <div className={`${styles.searchComponent}`}>
             <SearchFieldsContainer home={true}/>
           </div>
-          <div className={`pure-u-1`}>
+          <div>
             <div className={`${styles.topicContainer}`} aria-labelledby="searchTopics">
               <h2 id="searchTopics">Search by Topic:</h2>
               <ul>{topics}</ul>
