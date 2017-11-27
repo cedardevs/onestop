@@ -10,8 +10,8 @@ export default class Help extends React.Component {
 		const accessibleVersion = window.location.hash.includes('508')
 
     const mainSiteSnippet = <li>
-      Use the time <span className={styles.icon} aria-hidden="true"><img src={clock}></img></span> and
-      space <span className={styles.icon} aria-hidden="true"><img src={globe}></img></span> filters
+      Use the time <span className={styles.icon} aria-hidden="true"><img alt='temporal icon' src={clock}></img></span> and
+      space <span className={styles.icon} aria-hidden="true"><img alt='spatial icon' src={globe}></img></span> filters
       (to the right of the input box) to limit results to only those that <u>intersect</u> the given constraints.
       <br/>
       If a filter has been applied, the button will change from
@@ -29,7 +29,7 @@ export default class Help extends React.Component {
             <p>
               <b>To get started, just type a term into the Search {accessibleVersion ? 'Text ' : ''}Box on the home page
                 and click the Search Button</b>
-              {accessibleVersion ? '' :  <i className={styles.icon} aria-hidden="true"><img src={search}></img></i>}
+							{accessibleVersion ? '' :  <i className={styles.icon} aria-hidden="true"><img alt='search icon' src={search}></img></i>}
             </p>
 
             <p>

@@ -1,18 +1,22 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import stopCircle from 'fa/stop-circle-o.svg'
+import defaultStyles from '../common/defaultStyles'
 
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 
 //-- Styles
 
 const stylesLogoWrapper = {
-  padding: '0 2.618em 0 0',
+  padding: '0 1.618em 0 0',
+  display: 'flex',
+  flex: "0 0 max-content",
+  alignItems: "center",
+  flexWrap: 'nowrap',
 }
 
 const stylesNoaaLogoWrapper = {
-  display: 'inline-block',
-  padding: '0 1em 0 0',
+  padding: '0 0.618em 0 0',
 }
 
 const stylesNoaaLogo = {
@@ -23,7 +27,9 @@ const stylesNoaaLogo = {
 }
 
 const stylesTextWrapper = {
-  display: 'inline-block',
+  display: 'inline-flex',
+  whiteSpace: "nowrap",
+  flex: "0 0 max-content"
 }
 
 const stylesOneStopLink = {
@@ -31,8 +37,6 @@ const stylesOneStopLink = {
   textDecoration: 'none',
   display: 'inline',
   fontSize: '2em',
-  marginTop: '0.7em',
-  verticalAlign: 'top',
 }
 
 const stylesStopCircle = {
@@ -52,7 +56,7 @@ const stylesNceiText = {
   fontSize: '0.4em',
   display: 'block',
   textTransform: 'uppercase',
-  padding: '0 0 0 0.5em'
+  padding: '0 0 0 0.5em',
 }
 
 //-- Component
@@ -69,20 +73,40 @@ export default class Logo extends Component {
   }
 
   render() {
-    return <div style={stylesLogoWrapper}>
-      <div style={stylesNoaaLogoWrapper}>
-        <a href="#" title="One Stop Home" aria-hidden={true} onClick={() => this.props.onClick()}>
-          <img style={stylesNoaaLogo} id='logo' alt="NOAA Logo" src={noaaLogo}/>
-        </a>
+    return (
+      <div style={stylesLogoWrapper}>
+        <div style={stylesNoaaLogoWrapper}>
+          <a
+            href="#"
+            title="One Stop Home"
+            aria-hidden={true}
+            onClick={() => this.props.onClick()}
+          >
+            <img
+              style={stylesNoaaLogo}
+              id="logo"
+              alt="NOAA Logo"
+              src={noaaLogo}
+            />
+          </a>
+        </div>
+        <div style={stylesTextWrapper}>
+          <a
+            href="#"
+            title="One Stop Home"
+            style={stylesOneStopLink}
+            onClick={() => this.props.onClick()}
+          >
+            <span style={defaultStyles.hideOffscreen}>OneStop</span>
+            <span aria-hidden='true' style={stylesOneStopText}>
+              <img src={stopCircle} style={stylesStopCircle} alt={"OneStop"}/>neStop
+            </span>
+            <span style={stylesNceiText}>National Oceanic and</span>
+            <span style={stylesNceiText}>Atmospheric Administration</span>
+          </a>
+        </div>
       </div>
-      <div style={stylesTextWrapper}>
-        <a href="#" title="One Stop Home" style={stylesOneStopLink} onClick={() => this.props.onClick()}>
-          <span style={stylesOneStopText}><img src={stopCircle} style={stylesStopCircle}/>neStop</span>
-          <span style={stylesNceiText}>National Oceanic and</span>
-          <span style={stylesNceiText}>Atmospheric Administration</span>
-        </a>
-      </div>
-    </div>
+    )
   }
 }
 

@@ -36,7 +36,7 @@ export default class DescriptionView extends Component {
   renderCollectionImage(thumbnail, geometry) {
     const imgUrl = processUrl(thumbnail)
     if (imgUrl) {
-      return <img className={styles.previewImg} src={imgUrl}/>
+      return <img className={styles.previewImg} src={imgUrl} alt='collection result image' aria-hidden='true'/>
     }
     else if (geometry) {
       return (

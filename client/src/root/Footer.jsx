@@ -28,6 +28,9 @@ class Footer extends React.Component {
         href: "//www.ncdc.noaa.gov/survey",
         text: "Take Our Survey"
       }, {
+        href: "mailto:noaa.data.catalog@noaa.gov?Subject=NOAA%20OneStop%20Feedback",
+        text: "Contact Us"
+      }, {
         href: "//www.commerce.gov/",
         text: "Department of Commerce"
       }, {
@@ -40,16 +43,16 @@ class Footer extends React.Component {
     ]
     var strippedVersion = this.props.version.replace(/[^0-9\.]+/g, "")
     return (
-        <nav role="footer">
+        <nav aria-label='Footer'>
           <div className={styles.footer}>
-            <nav className={styles.headerLinks} role="external links">
+            <div className={styles.headerLinks}>
               <ul className={`${styles.footerLinks}`}>
                 {links.map((link, i) => <li key={i}><A href={link.href} title={link.text}>{link.text} </A></li>)}
               </ul>
-            </nav>
+            </div>
             <div className={`${styles.versionInfo}`}>
               <A target="_blank" href="https://github.com/cedardevs/onestop/releases">
-                Version: {strippedVersion} <img src={github} className={styles.github} aria-hidden="true"></img>
+                Version: {strippedVersion} <img src={github} alt='github releases' className={styles.github} aria-hidden="true"></img>
               </A>
             </div>
           </div>

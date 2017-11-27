@@ -193,7 +193,7 @@ class Map extends React.Component {
 
   render() {
     return (
-        <div className={this.style}></div>
+        <div style={this.props.style}></div>
     )
   }
 }

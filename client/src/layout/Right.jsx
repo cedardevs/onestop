@@ -117,14 +117,23 @@ export default class Right extends Component {
     const classes = this.state.visible ? classVisible : classHidden
     const hideContentArrow = (
         <div style={styleHideContentArrow} onClick={this.handleClose}>
-          <img style={styleHideContentArrowImage} src={arrowRight}/>
+          <img
+            style={styleHideContentArrowImage}
+            alt='close right panel'
+            src={arrowRight}/>
         </div>
     )
     const hiddenContent = (
         <div style={styleHiddenContent}>
-          <img style={styleHiddentContentImage} src={arrowLeft}/>
+          <img
+            style={styleHiddentContentImage}
+            alt='expand right panel'
+            src={arrowLeft}/>
           {verticalText(this.props.openText ? this.props.openText : defaultOpenText)}
-          <img style={styleHiddentContentImage} src={arrowLeft}/>
+          <img
+            style={styleHiddentContentImage}
+            alt='expand right panel'
+            src={arrowLeft}/>
         </div>
     )
     return (

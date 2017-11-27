@@ -100,7 +100,7 @@ class SummaryView extends React.Component {
         <div>
           {stars}
           <div className={`${styles.dsmmInfo}`}>
-            <img src={infoCircle} className={styles.infoCircle}></img>
+            <img src={infoCircle} className={styles.infoCircle} alt='DSMM rating info'></img>
             <div className={`${styles.text}`}> This is the average DSMM rating of this collection.
               The <A href="http://doi.org/10.2481/dsj.14-049" target="_blank"
                      title="Data Stewardship Maturity Matrix Information">
