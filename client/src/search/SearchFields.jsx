@@ -5,13 +5,27 @@ import MapContainer from './map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
 import TextSearchField from './TextSearchField'
 import _ from 'lodash'
+
+import FlexRow from '../common/FlexRow'
+import Button from '../common/input/Button'
+
 import clock from 'fa/clock-o.svg'
 import globe from 'fa/globe.svg'
 import times from 'fa/times.svg'
 import search from 'fa/search.svg'
 
-import styles from './searchFields.css'
-
+const styleMap = {
+  position: 'fixed',
+  zIndex: '20',
+  left: '50%',
+  marginTop: '2em',
+  marginLeft: '-30%',
+  boxShadow: '14px 14px 5px rgba(0,0,0,.7)',
+  border: '2px outset $color-primary',
+  height: '30em',
+  width: '80%',
+  maxWidth: '70em',
+}
 
 class SearchFields extends React.Component {
   constructor(props) {
@@ -25,14 +39,13 @@ class SearchFields extends React.Component {
     this.clearSearchParams = this.clearSearchParams.bind(this)
     this.toggleMap = this.toggleMap.bind(this)
     this.toggleCalendar = this.toggleCalendar.bind(this)
-    this.mapButtonStyle = this.mapButtonStyle.bind(this)
-    this.timeButtonStyle = this.timeButtonStyle.bind(this)
     this.warningStyle = this.warningStyle.bind(this)
     this.validateAndSubmit = this.validateAndSubmit.bind(this)
     this.state = {
       showMap: false,
       showCalendar: false,
-      warning: ''
+      warning: '',
+      hoveringWarningClose: false
     }
   }
 
@@ -42,36 +55,52 @@ class SearchFields extends React.Component {
     this.mapEvents(target, this.state, this.toggleMap)
   }
 
-  calendarEvents(target, {timeComponent, timeButton, showCalendar}, toggle) {
-    if (showCalendar
-        && !timeComponent.contains(target)
-        && !timeButton.contains(target)
-        && !target.classList[0].startsWith('rc-calendar')) {
-      console.log('toggle')
+  handleMouseOverWarningClose = event => {
+    this.setState({
+        hoveringWarningClose: true
+    })
+  }
+
+  handleMouseOutWarningClose = event => {
+      this.setState({
+          hoveringWarningClose: false
+      })
+  }
+
+  calendarEvents(target, { timeComponent, timeButton, showCalendar }, toggle) {
+    if (
+      showCalendar &&
+      !timeComponent.contains(target) &&
+      !timeButton.contains(target) &&
+      !target.classList[0].startsWith('rc-calendar')
+    ) {
       toggle()
     }
   }
 
-  mapEvents(target, {mapComponent, mapButton, showMap}, toggle) {
-    if (showMap && !mapComponent.contains(target)
-        && !mapButton.contains(target)) {
+  mapEvents(target, { mapComponent, mapButton, showMap }, toggle) {
+    if (
+      showMap &&
+      !mapComponent.contains(target) &&
+      !mapButton.contains(target)
+    ) {
       toggle()
     }
   }
 
   handleKeyup(e) {
     if (e.keyCode === 27) {
-      this.setState({showMap: false, showCalendar: false})
+      this.setState({ showMap: false, showCalendar: false })
     }
   }
 
   clearQueryString() {
-    this.setState({warning: ''})
+    this.setState({ warning: '' })
     this.updateQuery('')
   }
 
   clearSearchParams() {
-    this.setState({warning: ''})
+    this.setState({ warning: '' })
     this.clearSearch()
   }
 
@@ -86,9 +115,8 @@ class SearchFields extends React.Component {
       mapComponent: ReactDOM.findDOMNode(this.mapComponent),
       mapButton: ReactDOM.findDOMNode(this.mapButton),
       timeComponent: ReactDOM.findDOMNode(this.timeComponent),
-      timeButton: ReactDOM.findDOMNode(this.timeButton)
+      timeButton: ReactDOM.findDOMNode(this.timeButton),
     })
-
   }
 
   componentWillUnmount() {
@@ -97,115 +125,188 @@ class SearchFields extends React.Component {
   }
 
   toggleMap() {
-    this.setState({showMap: !this.state.showMap})
+    this.setState({ showMap: !this.state.showMap })
   }
 
   toggleCalendar() {
-    this.setState({showCalendar: !this.state.showCalendar})
-  }
-
-  mapButtonStyle() {
-    if (this.props.geoJSON) {
-      return styles.mapButtonApplied
-    }
-    else {
-      return styles.mapButton
-    }
-  }
-
-  timeButtonStyle() {
-    if (this.props.startDateTime || this.props.endDateTime) {
-      return styles.timeButtonApplied
-    }
-    else {
-      return styles.timeButton
-    }
+    this.setState({ showCalendar: !this.state.showCalendar })
   }
 
   warningStyle() {
     if (_.isEmpty(this.state.warning)) {
-      return styles.hidden
+      return {
+        display: 'none',
+      }
+    } else {
+      return {
+        position: 'absolute',
+        top: 'calc(100% + 0.309em)',
+        lineHeight: '1.618em',
+        fontSize: '1em',
+        color: 'white',
+        backgroundColor: 'red',
+        borderRadius: '1em',
+        padding: '0.618em',
+      }
     }
-    else {
-      return styles.warning
-    }
-
   }
 
+  warningCloseStyle() {
+    if(this.state.hoveringWarningClose) {
+      return {
+        cursor: "pointer",
+        fontWeight: "bold"
+      }
+    }
+    else {
+      return {
+          cursor: "pointer",
+      }
+    }
+  }
 
   validateAndSubmit() {
-    let filtersApplied = !_.isEmpty(this.props.startDateTime) || !_.isEmpty(this.props.endDateTime) || !_.isEmpty(this.props.geoJSON)
+    let filtersApplied =
+      !_.isEmpty(this.props.startDateTime) ||
+      !_.isEmpty(this.props.endDateTime) ||
+      !_.isEmpty(this.props.geoJSON)
     let trimmedQuery = _.trim(this.props.queryString)
     // Validates query string; assumes temporal & spatial selections (if any) are validated in their respective components
     if (!trimmedQuery && !filtersApplied) {
-      this.setState({warning: 'You must enter search criteria.'})
-
-    } else if (trimmedQuery && (_.startsWith(trimmedQuery, '*') || _.startsWith(trimmedQuery, '?'))) {
-      this.setState({warning: 'Search query cannot start with asterisk or question mark.'})
-
+      this.setState({ warning: 'You must enter search criteria.' })
+    } else if (
+      trimmedQuery &&
+      (_.startsWith(trimmedQuery, '*') || _.startsWith(trimmedQuery, '?'))
+    ) {
+      this.setState({
+        warning: 'Search query cannot start with asterisk or question mark.',
+      })
     } else {
-      this.setState({warning: ''})
+      this.setState({ warning: '' })
       this.submit()
     }
   }
 
   render() {
-    return (
-        <div className={`pure-form  ${styles.searchFields}
-          ${this.props.header ? styles.header : ''} `}>
-          <div className={styles.searchLayout}>
-            <div id='searchBox' className={styles.searchContainer}>
-              <TextSearchField onEnterKeyDown={this.validateAndSubmit} onChange={this.updateQuery}
-                               value={this.props.queryString}/>
-            </div>
-            <button className={`${styles.clearButton}`} onClick={this.clearQueryString} aria-label="Clear Search Text">x</button>
-          </div>
+    let styleTimeButton = { marginRight: '2px', flexShrink: '0' }
+    if (this.props.startDateTime || this.props.endDateTime) {
+      styleTimeButton['background'] = '#8967d2'
+    }
+    const timeButton = (
+      <Button
+        key="timeButton"
+        ref={timeButton => (this.timeButton = timeButton)}
+        icon={clock}
+        onClick={this.toggleCalendar}
+        ariaLabel={'Add Temporal Criteria'}
+        style={styleTimeButton}
+      />
+    )
 
-          <div id='searchButtons' className={styles.buttonLayout}>
-            <button id="timeButton" className={`pure-button ${this.timeButtonStyle()}`}
-                    onClick={this.toggleCalendar} aria-label="Add Temporal Criteria"
-                    ref={timeButton => this.timeButton = timeButton}>
-              <img alt='temporal filter' src={clock}/>
-            </button>
-            <ToggleDisplay show={this.state.showCalendar}>
-              <TemporalSearchContainer
-                  ref={timeComponent => this.timeComponent = timeComponent}
-                  toggleSelf={this.toggleCalendar}
-                  calendarVisible={this.state.showCalendar}
-              />
-            </ToggleDisplay>
-            <button id="mapButton" className={`pure-button ${this.mapButtonStyle()}`}
-                    onClick={this.toggleMap} aria-label="Add Spatial Criteria"
-                    ref={mapButton => this.mapButton = mapButton}>
-              <img alt='spatial filter' src={globe}/>
-            </button>
-            <ToggleDisplay show={this.state.showMap}>
-              {/* 'updated' passed to trigger update but is unused*/}
-              <MapContainer
-                  ref={mapComponent => this.mapComponent = mapComponent}
-                  updated={this.state.showMap}
-                  selection={true}
-                  features={false}
-                  style={styles.mapContainer}
-              />
-            </ToggleDisplay>
-            <button className={`pure-button ${styles.undoButton}`}
-                    onClick={this.clearSearchParams} aria-label="Clear Search Criteria">
-              <img alt='clear search' src={times}/>
-            </button>
-            <button className={`pure-button ${styles.searchButton}`} onClick={this.validateAndSubmit}
-                    aria-label="Submit Search">
-              <img alt='submit' src={search}/>
-            </button>
-          </div>
-          <div className={`${this.warningStyle()}`} role="alert">{this.state.warning}</div>
+    let styleMapButton = { marginRight: '2px', flexShrink: '0' }
+    if (this.props.geoJSON) {
+      styleMapButton['background'] = '#8967d2'
+    }
+    const mapButton = (
+      <Button
+        key="mapButton"
+        ref={mapButton => (this.mapButton = mapButton)}
+        icon={globe}
+        onClick={this.toggleMap}
+        ariaLabel={'Add Spatial Criteria'}
+        style={styleMapButton}
+      />
+    )
+
+    const undoButton = (
+      <Button
+        key="undoButton"
+        icon={times}
+        onClick={this.clearSearchParams}
+        ariaLabel={'Clear Search Criteria'}
+        style={{ marginRight: '2px', flexShrink: '0' }}
+      />
+    )
+
+    const searchButton = (
+      <Button
+        key="searchButton"
+        icon={search}
+        onClick={this.validateAndSubmit}
+        ariaLabel={'Submit Search'}
+        style={{ flexShrink: '0' }}
+      />
+    )
+
+    let searchFieldStyle = null
+    if (this.props.home) {
+      searchFieldStyle = {
+        position: 'relative',
+        marginRight: '1em',
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+      }
+    } else {
+      searchFieldStyle = {
+        position: 'relative',
+        marginRight: '1em',
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        alignSelf: 'flex-end',
+      }
+    }
+
+    return (
+      <section style={searchFieldStyle}>
+        <div style={this.warningStyle()} role="alert">
+          {this.state.warning}{' '}
+          <span
+            style={this.warningCloseStyle()}
+            onClick={this.clearQueryString}
+            onMouseOver={this.handleMouseOverWarningClose}
+            onMouseOut={this.handleMouseOutWarningClose}
+          >
+            x
+          </span>
         </div>
+
+        <TextSearchField
+          onEnterKeyDown={this.validateAndSubmit}
+          onChange={this.updateQuery}
+          onClear={this.clearQueryString}
+          value={this.props.queryString}
+        />
+        <FlexRow
+          style={{ justifyContent: 'center', marginTop: '0.309em' }}
+          items={[timeButton, mapButton, undoButton, searchButton]}
+        />
+
+        <ToggleDisplay show={this.state.showCalendar}>
+          <TemporalSearchContainer
+            ref={timeComponent => (this.timeComponent = timeComponent)}
+            toggleSelf={this.toggleCalendar}
+            calendarVisible={this.state.showCalendar}
+          />
+        </ToggleDisplay>
+
+        <ToggleDisplay show={this.state.showMap}>
+          {/* 'updated' passed to trigger update but is unused*/}
+          <MapContainer
+            ref={mapComponent => (this.mapComponent = mapComponent)}
+            updated={this.state.showMap}
+            selection={true}
+            features={false}
+            style={styleMap}
+          />
+        </ToggleDisplay>
+      </section>
     )
   }
-}
-
-SearchFields.defaultProps = {
-  header: false
 }
 
 export default SearchFields
