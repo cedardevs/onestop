@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Expandable from '../common/Expandable'
 import Facet from './Facet'
+import _ from 'lodash'
 
 const styleExpandableCategoryHeading = {
   backgroundColor: '#17478F',
@@ -97,6 +98,7 @@ export default class FacetFilter extends Component {
     if ('children' in facet && !_.isEmpty(facet.children)) {
       const expandableKey = `${facet.category}-${facet.term}`
       const facetKey = `facet-${facet.category}-${facet.term}`
+      const facetId = _.concat(_.words(facet.category), _.words(facet.term)).join('-')
 
       facetComponent = (
           <Expandable
@@ -105,6 +107,7 @@ export default class FacetFilter extends Component {
               value={expandableKey}
               heading={
                 <Facet
+                    id={facetId}
                     selected={this.isSelected(facet.category, facet.term)}
                     key={facetKey}
                     term={facet.term}
@@ -123,9 +126,11 @@ export default class FacetFilter extends Component {
     } else if ('children' in facet && _.isEmpty(facet.children)) {
       // leaf facet (contains no sub-layer facets)
       const leafFacetKey = `facet-${facet.category}-${facet.term}`
+      const facetId = _.concat(_.words(facet.category), _.words(facet.term)).join('-')
 
       facetComponent = (
           <Facet
+              id={facetId}
               selected={this.isSelected(facet.category, facet.term)}
               key={leafFacetKey}
               term={facet.term}

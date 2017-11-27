@@ -111,12 +111,17 @@ export default class Left extends Component {
     const classes = this.state.visible ? classVisible : classHidden
     const hideContentArrow = (
         <div style={styleHideContentArrow} onClick={this.handleClose}>
-          <img style={styleHideContentArrowImage} src={arrowLeft}/>
+          <img style={styleHideContentArrowImage}
+            alt='close left panel'
+            src={arrowLeft}/>
         </div>
     )
     const hiddenContent = (
         <div style={styleHiddenContent}>
-          <img style={styleHiddentContentImage} src={arrowRight}/>
+          <img style={styleHiddentContentImage}
+            alt='expand left panel'
+            src={arrowRight}
+            />
           <span style={styleHiddentContentVerticalText}>S</span>
           <span style={styleHiddentContentVerticalText}>R</span>
           <span style={styleHiddentContentVerticalText}>E</span>
@@ -124,7 +129,10 @@ export default class Left extends Component {
           <span style={styleHiddentContentVerticalText}>L</span>
           <span style={styleHiddentContentVerticalText}>I</span>
           <span style={styleHiddentContentVerticalText}>F</span>
-          <img style={styleHiddentContentImage} src={arrowRight}/>
+          <img style={styleHiddentContentImage}
+            alt='expand left panel'
+            src={arrowRight}
+            />
         </div>
     )
     return (
