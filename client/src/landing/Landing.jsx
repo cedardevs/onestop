@@ -41,8 +41,8 @@ class Landing extends React.Component {
           <div className={`pure-u-1 ${styles.heroText}`}>
             Geophysical, oceans, coastal, weather and climate data discovery all in one place.<br/>
           </div>
-          <div className={`pure-u-1 ${styles.searchComponent}`}>
-            <SearchFieldsContainer/>
+          <div className={`${styles.searchComponent}`}>
+            <SearchFieldsContainer home={true}/>
           </div>
           <div className={`pure-u-1`}>
             <div className={`${styles.topicContainer}`} aria-labelledby="searchTopics">

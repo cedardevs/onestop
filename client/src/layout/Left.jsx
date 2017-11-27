@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Button from '../common/input/Button'
 
 import arrowRight from "../../img/font-awesome/white/svg/arrow-right.svg"
 import arrowLeft from "../../img/font-awesome/white/svg/arrow-left.svg"
@@ -20,8 +21,6 @@ const styleVisible = (width) => {
   }
 }
 
-// const styleVisible
-
 const styleHidden = (width) => {
   return {
     backgroundColor: defaultBackgroundColor,
@@ -34,19 +33,12 @@ const styleHidden = (width) => {
   }
 }
 
-const styleHideContentArrow = {
+const styleHideContentArrowWrapper = {
+  backgroundColor: "#242C36",
   position: "absolute",
-  top: 1,
+  top: "1px",
   right: 0,
-  backgroundColor: "#4B7AA8",
-  paddingLeft: "0.618em",
-  paddingRight: "0.618em",
-  cursor: "pointer"
-}
-
-const styleHideContentArrowImage = {
-  width: "2em",
-  height: "41px",
+  padding: "4px"
 }
 
 const styleHiddenContent = {
@@ -74,14 +66,17 @@ export default class Left extends Component {
 
   componentWillMount() {
     this.setState({
-      visible: this.props.visible
+      visible: this.props.visible,
     })
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.visible !== this.state.visible) {
-      this.setState({
-        visible: nextProps.visible
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          visible: nextProps.visible
+        }
       })
     }
   }
@@ -89,8 +84,11 @@ export default class Left extends Component {
   handleOpen = (event) => {
     event.stopPropagation()
     if (!this.state.visible) {
-      this.setState({
-        visible: true
+      this.setState(prevState => {
+          return {
+              ...prevState,
+              visible: true
+          }
       })
     }
   }
@@ -99,7 +97,7 @@ export default class Left extends Component {
     event.stopPropagation()
     if (this.state.visible) {
       this.setState({
-        visible: false
+        visible: false,
       })
     }
   }
@@ -110,18 +108,18 @@ export default class Left extends Component {
     const classHidden = styleHidden(width)
     const classes = this.state.visible ? classVisible : classHidden
     const hideContentArrow = (
-        <div style={styleHideContentArrow} onClick={this.handleClose}>
-          <img style={styleHideContentArrowImage}
-            alt='close left panel'
-            src={arrowLeft}/>
+        <div style={styleHideContentArrowWrapper}>
+            <Button
+                icon={arrowLeft}
+                styleIcon={{width:"1em", height:"31px"}}
+                onClick={this.handleClose}
+                title={'Hide Filter Menu'}
+            />
         </div>
     )
     const hiddenContent = (
         <div style={styleHiddenContent}>
-          <img style={styleHiddentContentImage}
-            alt='expand left panel'
-            src={arrowRight}
-            />
+          <img style={styleHiddentContentImage} alt='Show Filter Menu' src={arrowRight}/>
           <span style={styleHiddentContentVerticalText}>S</span>
           <span style={styleHiddentContentVerticalText}>R</span>
           <span style={styleHiddentContentVerticalText}>E</span>
@@ -129,10 +127,7 @@ export default class Left extends Component {
           <span style={styleHiddentContentVerticalText}>L</span>
           <span style={styleHiddentContentVerticalText}>I</span>
           <span style={styleHiddentContentVerticalText}>F</span>
-          <img style={styleHiddentContentImage}
-            alt='expand left panel'
-            src={arrowRight}
-            />
+          <img style={styleHiddentContentImage} alt='Show Filter Menu' src={arrowRight}/>
         </div>
     )
     return (
