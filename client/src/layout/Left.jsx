@@ -113,7 +113,7 @@ export default class Left extends Component {
                 icon={arrowLeft}
                 styleIcon={{width:"1em", height:"31px"}}
                 onClick={this.handleClose}
-                ariaLabel={'Hide Filter Menu'}
+                title={'Hide Filter Menu'}
             />
         </div>
     )

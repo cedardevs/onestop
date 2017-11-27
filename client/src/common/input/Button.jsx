@@ -133,7 +133,7 @@ export default class Button extends Component {
       styleHover,
       stylePress,
       styleFocus,
-      ariaLabel
+      title
     } = this.props
 
     const stylesMerged = {
@@ -157,10 +157,10 @@ export default class Button extends Component {
         onMouseUp={this.handleMouseUp}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
-        aria-label={ariaLabel}
+        title={title}
       >
         {icon ? (
-          <img src={icon} style={styleIconResolved} alt={ariaLabel}/>
+          <img src={icon} style={styleIconResolved} aria-hidden={true} alt={title}/>
         ) : null}
         {text}
       </button>

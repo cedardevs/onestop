@@ -188,7 +188,7 @@ class SearchFields extends React.Component {
   }
 
   render() {
-    let styleTimeButton = { marginRight: '2px', flexShrink: '0' }
+    let styleTimeButton = { marginRight: '0.309em', flexShrink: '0' }
     if (this.props.startDateTime || this.props.endDateTime) {
       styleTimeButton['background'] = '#8967d2'
     }
@@ -198,12 +198,12 @@ class SearchFields extends React.Component {
         ref={timeButton => (this.timeButton = timeButton)}
         icon={clock}
         onClick={this.toggleCalendar}
-        ariaLabel={'Add Temporal Criteria'}
+        title={'Filter by Time'}
         style={styleTimeButton}
       />
     )
 
-    let styleMapButton = { marginRight: '2px', flexShrink: '0' }
+    let styleMapButton = { marginRight: '0.309em', flexShrink: '0' }
     if (this.props.geoJSON) {
       styleMapButton['background'] = '#8967d2'
     }
@@ -213,7 +213,7 @@ class SearchFields extends React.Component {
         ref={mapButton => (this.mapButton = mapButton)}
         icon={globe}
         onClick={this.toggleMap}
-        ariaLabel={'Add Spatial Criteria'}
+        title={'Filter by Location'}
         style={styleMapButton}
       />
     )
@@ -223,8 +223,8 @@ class SearchFields extends React.Component {
         key="undoButton"
         icon={times}
         onClick={this.clearSearchParams}
-        ariaLabel={'Clear Search Criteria'}
-        style={{ marginRight: '2px', flexShrink: '0' }}
+        title={'Reset Search'}
+        style={{ marginRight: '0.309em', flexShrink: '0' }}
       />
     )
 
@@ -233,7 +233,7 @@ class SearchFields extends React.Component {
         key="searchButton"
         icon={search}
         onClick={this.validateAndSubmit}
-        ariaLabel={'Submit Search'}
+        title={'Search'}
         style={{ flexShrink: '0' }}
       />
     )
@@ -261,6 +261,8 @@ class SearchFields extends React.Component {
       }
     }
 
+    const textBoxMargin = this.props.home ? {marginRight: '0.309em'} : null
+
     return (
       <section style={searchFieldStyle}>
         <div style={this.warningStyle()} role="alert">
@@ -275,12 +277,14 @@ class SearchFields extends React.Component {
           </span>
         </div>
 
-        <TextSearchField
-          onEnterKeyDown={this.validateAndSubmit}
-          onChange={this.updateQuery}
-          onClear={this.clearQueryString}
-          value={this.props.queryString}
-        />
+        <div style={textBoxMargin}>
+          <TextSearchField
+            onEnterKeyDown={this.validateAndSubmit}
+            onChange={this.updateQuery}
+            onClear={this.clearQueryString}
+            value={this.props.queryString}
+          />
+        </div>
         <FlexRow
           style={{ justifyContent: 'center', marginTop: '0.309em' }}
           items={[timeButton, mapButton, undoButton, searchButton]}
