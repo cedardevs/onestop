@@ -155,6 +155,7 @@ export default class Button extends Component {
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         title={title}
+        aria-label={title || text}
       >
         {icon ? (
           <img src={icon} style={styleIconResolved} aria-hidden={true} alt={title}/>
