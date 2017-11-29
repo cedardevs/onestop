@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import ShowMore from 'react-show-more'
+// import ShowMore from 'react-show-more'
 import { processUrl } from '../utils/urlUtils'
 import MapThumbnail from '../common/MapThumbnail'
 import styles from './DetailStyles.css'
@@ -25,9 +25,9 @@ export default class DescriptionView extends Component {
             {this.renderCollectionImage(thumbnail, geometry)}
           </div>
           <div className={`pure-u-1-2 ${styles.descriptionText}`}>
-            <ShowMore lines={10} anchorClass={`${styles.showMore}`}>
+            {/*<ShowMore lines={10} anchorClass={`${styles.showMore}`}>*/}
               {description}
-            </ShowMore>
+            {/*</ShowMore>*/}
           </div>
         </div>
     )

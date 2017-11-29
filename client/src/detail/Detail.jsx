@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ShowMore from 'react-show-more'
+// import ShowMore from 'react-show-more'
 // import A from '../common/link/Link'
 import styles from './DetailStyles.css'
 import Tabs from './Tabs'
@@ -55,9 +55,9 @@ class Detail extends React.Component {
                   className={`pure-u-11-12 ${styles.title}`}
                   title={`${item.title}`}
               >
-                <ShowMore lines={1} anchorClass={`${styles.showMore}`}>
+                {/*<ShowMore lines={1} anchorClass={`${styles.showMore}`}>*/}
                   {item.title}
-                </ShowMore>
+                {/*</ShowMore>*/}
               </div>
               <div className={'pure-u-1-12'}>
 							<span className={styles.close} onClick={this.close}>

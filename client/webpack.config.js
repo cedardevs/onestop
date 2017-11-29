@@ -33,7 +33,6 @@ module.exports = {
   devtool: 'cheap-module-eval-source-map',
   devServer: {
     publicPath: '/onestop/',
-    contentBase: path.resolve(__dirname, 'dist'),
     disableHostCheck: true,
     hot: true,
     proxy: {
@@ -102,8 +101,31 @@ module.exports = {
     }, {
       test: /\.(jpe?g|png|gif)$/,
       use: [
-        'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
-        'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false'
+          {
+            loader: 'file-loader',
+              options: {
+                hash: 'sha512',
+                  digestType: 'hex',
+                  name: '[hash].[ext]'
+              }
+          },
+          {
+            loader: 'image-webpack-loader',
+              options: {
+                bypassOnDebug: true,
+                mozjpeg: {
+                  progressive: true,
+                  quality: 65
+                },
+                optipng: {
+                  optimizationLevel: 7
+                },
+                gifsicle: {
+                    optimizationLevel: 7,
+                    interlaced: false
+                }
+              }
+          }
       ],
     }, {
       test: /\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,

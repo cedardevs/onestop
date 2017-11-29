@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
+import PropTypes from 'prop-types'
 import _ from 'lodash'
 import infoCircle from 'fa/info-circle.svg'
 import star from 'fa/star.svg'
@@ -7,7 +8,7 @@ import starHalfO from 'fa/star-half-o.svg'
 import styles from './DetailStyles.css'
 import A from '../common/link/Link'
 import MapThumbnail from '../common/MapThumbnail'
-import { titleCaseKeyword } from "../utils/keywordUtils"
+import { titleCaseKeyword } from '../utils/keywordUtils'
 
 class SummaryView extends React.Component {
   constructor(props) {
@@ -15,7 +16,7 @@ class SummaryView extends React.Component {
     this.state = {
       showAllThemes: false,
       showAllInstruments: false,
-      showAllPlatforms: false
+      showAllPlatforms: false,
     }
 
     this.handleShowGCMD = this.handleShowGCMD.bind(this)
@@ -24,17 +25,17 @@ class SummaryView extends React.Component {
   handleShowGCMD(type) {
     if (type === 'gcmdScience') {
       this.setState({
-        showAllThemes: !this.state.showAllThemes
+        showAllThemes: !this.state.showAllThemes,
       })
     }
     else if (type === 'gcmdInstruments') {
       this.setState({
-        showAllInstruments: !this.state.showAllInstruments
+        showAllInstruments: !this.state.showAllInstruments,
       })
     }
     else if (type === 'gcmdPlatforms') {
       this.setState({
-        showAllPlatforms: !this.state.showAllPlatforms
+        showAllPlatforms: !this.state.showAllPlatforms,
       })
     }
   }
