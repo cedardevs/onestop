@@ -7,11 +7,6 @@
   height: calc(100vh - 5em - $header-height - $footer-height*2);
 }
 
-.mapContainer {
-  height: 100%;
-  width: 100%;
-}
-
 .granule,
 .map {
   height: 100%

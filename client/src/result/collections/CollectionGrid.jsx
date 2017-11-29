@@ -60,7 +60,7 @@ export default class CollectionGrid extends Component {
     if (this.props.returnedHits < this.props.totalHits) {
       return (
           <div style={styleShowMore}>
-            <Button text="Show More Results" onClick={() => this.props.fetchMoreResults()}/>
+            <Button text="Show More Results" onClick={() => this.props.fetchMoreResults()} style={{marginBottom:"1.618em"}}/>
           </div>
       )
     }

@@ -4,6 +4,11 @@ import MapContainer from './GranuleMapContainer'
 import A from '../../common/link/Link'
 import styles from './list.css'
 
+const styleMapContainer = {
+  height: '100%',
+  width: '100%',
+}
+
 export default class GranuleView extends Component {
   constructor(props) {
     super(props)
@@ -47,7 +52,7 @@ export default class GranuleView extends Component {
     return (
         <div className={`pure-g ${styles.mainWindow}`}>
           <div className={`pure-u-1-2 ${styles.map}`}>
-            <MapContainer style={styles.mapContainer}/>
+            <MapContainer style={styleMapContainer}/>
           </div>
           <div className={`pure-u-1-2 ${styles.granule}`}>
             <div className={`pure-g ${styles.granuleInfo}`}>

@@ -3,6 +3,7 @@ import styles from './landing.css'
 import FeaturedItems from './FeaturedItems'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import stopCircle from 'fa/stop-circle-o.svg'
+import defaultStyles from '../common/defaultStyles'
 
 class Landing extends React.Component {
   constructor(props) {
@@ -27,24 +28,23 @@ class Landing extends React.Component {
     ]
     topics = topics.map((topic, i) => {
       return <div key={i} className={`${styles.topicItem}`} onClick={() => this.search(topic.term)}>
-        <img src={topic.icon} aria-hidden="true"/>
-        <button title={`${topic.title}`}>{topic.title}</button>
+        <button><img src={topic.icon} alt={topic.title} aria-hidden="true"/><div>{topic.title}</div></button>
       </div>
     })
 
     return (
-        <div className={`pure-g ${styles.showcase}`}>
-          <div className={`pure-u-1 ${styles.heroHeader}`} aria-hidden="true">
-            <img src={stopCircle}/>neStop
+        <div className={`${styles.showcase}`}>
+          <div className={`${styles.heroHeader}`} aria-hidden="true">
+            <img alt='O' src={stopCircle}/>neStop
           </div>
-          <h1 className={styles.hiddenPageTitle}>OneStop: A NOAA Data Search Platform</h1>
-          <div className={`pure-u-1 ${styles.heroText}`}>
+          <h1 style={defaultStyles.hideOffscreen}>OneStop: A NOAA Data Search Platform</h1>
+          <div className={`${styles.heroText}`}>
             Geophysical, oceans, coastal, weather and climate data discovery all in one place.<br/>
           </div>
-          <div className={`pure-u-1 ${styles.searchComponent}`}>
-            <SearchFieldsContainer/>
+          <div className={`${styles.searchComponent}`}>
+            <SearchFieldsContainer home={true}/>
           </div>
-          <div className={`pure-u-1`}>
+          <div>
             <div className={`${styles.topicContainer}`} aria-labelledby="searchTopics">
               <h2 id="searchTopics">Search by Topic:</h2>
               <ul>{topics}</ul>

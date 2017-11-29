@@ -10,6 +10,10 @@ const styleInput = {
   visibility: 'hidden',
 }
 
+const styleLabelSpan = {
+  visibility: 'hidden',
+}
+
 const styleLabel = {
   cursor: 'pointer',
   position: 'absolute',
@@ -119,6 +123,7 @@ class Checkbox extends Component {
             onMouseDown={this.handleMouseDown}
         >
           <input
+              id={this.props.id}
               type="checkbox"
               name={this.props.name}
               value={this.props.value}
@@ -127,7 +132,7 @@ class Checkbox extends Component {
               }}
               style={styleInput}
           />
-          <label style={styleLabel}/>
+        <label htmlFor={this.props.id} style={styleLabel}><span style={styleLabelSpan}>{this.props.label}</span></label>
           <div style={styleInteract}/>
         </div>
     )
