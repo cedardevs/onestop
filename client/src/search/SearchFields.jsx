@@ -72,7 +72,7 @@ class SearchFields extends React.Component {
       showCalendar &&
       !timeComponent.contains(target) &&
       !timeButton.contains(target) &&
-      !target.classList[0].startsWith('rc-calendar')
+      !_.startsWith(target.classList[0], 'rc-calendar')
     ) {
       toggle()
     }
