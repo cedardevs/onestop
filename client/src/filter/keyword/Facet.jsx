@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import Checkbox from '../common/input/Checkbox'
-import { titleCaseKeyword } from "../utils/keywordUtils"
+import Checkbox from '../../common/input/Checkbox'
+import { titleCaseKeyword } from "../../utils/keywordUtils"
 
 const styleContainer = {
   display: 'flex',

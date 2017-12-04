@@ -2,9 +2,9 @@ import React, { Component } from 'react'
 
 import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
-import TimeFilter from './TimeFilter'
-import FacetFilterContainer from './FacetFilterContainer'
-import MapFilter from './MapFilter'
+import TimeFilter from './time/TimeFilter'
+import FacetFilterContainer from './keyword/FacetFilterContainer'
+import MapFilter from './spatial/MapFilter'
 
 import mapFilterIcon from '../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../img/font-awesome/white/svg/calendar.svg'

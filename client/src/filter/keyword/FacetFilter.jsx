@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Expandable from '../common/Expandable'
+import Expandable from '../../common/Expandable'
 import Facet from './Facet'
 import _ from 'lodash'
 
