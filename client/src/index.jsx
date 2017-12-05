@@ -23,26 +23,26 @@ store.dispatch(initialize())
 
 const routesLayout =
     <Router history={history}>
-      <Route path="/" name="Home" component={RootComponent}>
-        <IndexRoute component={LandingContainer}/>
-        <Route name="Collections" path="collections" component={ResultContainer}>
-          <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
-        </Route>
-        <Route name="Error" path="error" component={ErrorContainer}/>
-        <Route name="Help" path="help" component={Help}/>
-        <Route name="About" path="about" component={AboutContainer}/>
-      </Route>
+          <Route path="/" name="Home" component={RootComponent}>
+            <IndexRoute component={LandingContainer}/>
+            <Route name="Collections" path="collections" component={ResultContainer}>
+              <IndexRoute displayName="Collections" component={CollectionGridContainer}/>
+            </Route>
+            <Route name="Error" path="error" component={ErrorContainer}/>
+            <Route name="Help" path="help" component={Help}/>
+            <Route name="About" path="about" component={AboutContainer}/>
+          </Route>
 
-      <Route path="508" name="Home" component={RootComponent}>
-        <IndexRoute component={Section508LandingContainer}/>
-        <Route name="Collections" path="collections" component={Section508Result}>
-          <IndexRoute displayName="Collections" component={Section508CollectionGridContainer}/>
-          <Route name="Files" path="files" component={Section508GranuleListContainer}/>
-        </Route>
-        <Route name="Error" path="error" component={ErrorContainer}/>
-        <Route name="Help" path="help" component={Help}/>
-        <Route name="About" path="about" component={AboutContainer}/>
-      </Route>
+          <Route path="508" name="Home" component={RootComponent}>
+            <IndexRoute component={Section508LandingContainer}/>
+            <Route name="Collections" path="collections" component={Section508Result}>
+              <IndexRoute displayName="Collections" component={Section508CollectionGridContainer}/>
+              <Route name="Files" path="files" component={Section508GranuleListContainer}/>
+            </Route>
+            <Route name="Error" path="error" component={ErrorContainer}/>
+            <Route name="Help" path="help" component={Help}/>
+            <Route name="About" path="about" component={AboutContainer}/>
+          </Route>
     </Router>
 
 const body =

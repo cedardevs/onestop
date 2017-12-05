@@ -24,7 +24,7 @@ task compile(type: NodeTask) {
     }
     outputs.dir('dist')
     script = file('node_modules/.bin/webpack')
-    args = ['--bail', '--config', 'webpack.config.prod.js', '-p']
+    args = ['--bail', '-p']
     execOverrides {
         it.environment 'NODE_ENV', 'production'
     }
