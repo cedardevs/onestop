@@ -1,8 +1,5 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const precss = require('precss')
-const autoprefixer = require('autoprefixer')
-const postcssAssets = require('postcss-assets')
 const path = require('path')
 require('babel-polyfill')
 const modernizrrc = path.resolve(__dirname, '.modernizrrc.json')
@@ -109,23 +106,6 @@ module.exports = {
                   name: '[hash].[ext]'
               }
           },
-          {
-            loader: 'image-webpack-loader',
-              options: {
-                bypassOnDebug: true,
-                mozjpeg: {
-                  progressive: true,
-                  quality: 65
-                },
-                optipng: {
-                  optimizationLevel: 7
-                },
-                gifsicle: {
-                    optimizationLevel: 7,
-                    interlaced: false
-                }
-              }
-          }
       ],
     }, {
       test: /\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
