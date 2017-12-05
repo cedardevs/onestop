@@ -27,7 +27,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     publicPath: './',
-    filename: '[name].bundle.js'
+    filename: '[name]-[hash].bundle.js'
   },
   context: path.resolve(__dirname, 'src'),
   devtool: 'cheap-module-eval-source-map',
