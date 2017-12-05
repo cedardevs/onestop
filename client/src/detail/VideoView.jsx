@@ -1,9 +1,11 @@
 import React from 'react'
+import { govExternalYouTubeMsg } from '../utils/urlUtils'
 
 const styleMain = {
   display: 'flex',
   flexFlow: 'nowrap',
   justifyContent: 'space-between',
+  marginBottom: '1.618em',
 }
 
 const styleList = {
@@ -48,15 +50,16 @@ const styleShownVideo = {
   display: 'block',
 }
 
+const styleDisclaimer = {
+  margin: 0,
+  fontStyle: 'italic',
+  textAlign: 'center',
+}
+
 export default class VideoView extends React.Component {
 
   constructor(props) {
     super(props)
-
-    this.listElementSelected = this.listElementSelected.bind(this)
-    this.videoShown = this.videoShown.bind(this)
-    this.onClick = this.onClick.bind(this)
-
     this.state = {
       current: 0,
     }
@@ -64,14 +67,13 @@ export default class VideoView extends React.Component {
 
   collectVideos = () => {
     // collect any video iframes in the component
-    this.figures = this.sectionRef.querySelectorAll('figure[class=\'video\']')
-    this.iframes = this.sectionRef.querySelectorAll(
-        'iframe[src*=\'//www.youtube.com\']',
-    )
+    this.figures = this.sectionRef.querySelectorAll(`figure[class='video']`)
+    this.iframes = this.sectionRef.querySelectorAll(`iframe[src*='//www.youtube.com']`)
+
     this.iframes.forEach(iframe => {
       // calculate and set aspect ratio
-      let rect = iframe.getBoundingClientRect()
-      let aspectRatio = rect.height / rect.width
+      const rect = iframe.getBoundingClientRect()
+      const aspectRatio = rect.height / rect.width
       iframe.setAttribute('data-aspectratio', aspectRatio)
       // remove any explicit width and height attributes that may be set
       iframe.removeAttribute('height')
@@ -94,6 +96,21 @@ export default class VideoView extends React.Component {
     }
   }
 
+  listElementSelected = i => {
+    return i === this.state.current ? styleListElementSelected : ''
+  }
+
+  videoShown = i => {
+    return i === this.state.current
+  }
+
+  onClick = i => {
+    this.windowResizing()
+    this.setState({
+      current: i,
+    })
+  }
+
   windowResizing = () => {
     // prevent resize work unless threshold is reached
     // this helps ensure the new width doesn't stick on a transient value
@@ -114,21 +131,6 @@ export default class VideoView extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.windowResizing)
-  }
-
-  listElementSelected(i) {
-    return i === this.state.current ? styleListElementSelected : ''
-  }
-
-  videoShown(i) {
-    return i === this.state.current
-  }
-
-  onClick(i) {
-    this.windowResizing()
-    this.setState({
-      current: i,
-    })
   }
 
   render() {
@@ -162,15 +164,18 @@ export default class VideoView extends React.Component {
     })
 
     return (
-        <div style={styleMain}>
-          <ul style={styleList}>
-            {titleList}
-          </ul>
-          <div style={styleVideos} ref={sectionRef => {
-            this.sectionRef = sectionRef
-          }}>
-            {embeddedVideos}
+        <div>
+          <div style={styleMain}>
+            <ul style={styleList}>
+              {titleList}
+            </ul>
+            <div style={styleVideos} ref={sectionRef => {
+              this.sectionRef = sectionRef
+            }}>
+              {embeddedVideos}
+            </div>
           </div>
+          <p style={styleDisclaimer}>Disclaimer: {govExternalYouTubeMsg}</p>
         </div>
     )
   }
