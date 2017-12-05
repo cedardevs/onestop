@@ -1,7 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import ShowMore from 'react-show-more'
-// import A from '../common/link/Link'
 import styles from './DetailStyles.css'
 import Tabs from './Tabs'
 import SummaryView from './SummaryView'
@@ -44,22 +43,21 @@ class Detail extends React.Component {
         title: 'Access',
         content: (
             <AccessView id={this.props.id} item={this.props.item}/>
-        )
+        ),
       },
     ]
 
-      // TODO: make these real links
-      const videoLinks = item.links.filter(link => link.linkProtocol === "video:youtube")
-      if(videoLinks.length > 0) {
-        tabData.push({
-            title: videoLinks.length === 1 ? "Video" : "Videos",
-            content: (
-                <VideoView id={this.props.id} links={videoLinks} />
-            )
-        })
-      }
+    const videoLinks = item.links.filter(link => link.linkProtocol === 'video:youtube')
+    if (videoLinks.length > 0) {
+      tabData.push({
+        title: videoLinks.length === 1 ? 'Video' : 'Videos',
+        content: (
+            <VideoView id={this.props.id} links={videoLinks}/>
+        ),
+      })
+    }
 
-          return (
+    return (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
             <div className={`pure-g ${styles.header} ${styles.underscored}`}>

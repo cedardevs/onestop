@@ -15,7 +15,7 @@ const styleList = {
   padding: '0.1em',
   borderRadius: '0.1em 0.4em',
   margin: 0,
-  flex: 0
+  flex: 0,
 }
 
 const styleListElement = {
@@ -25,27 +25,27 @@ const styleListElement = {
   borderRadius: '0.1em 0.4em',
   border: '1px darkgray solid',
   textAlign: 'center',
-  cursor: 'pointer'
+  cursor: 'pointer',
 }
 
 const styleListElementSelected = {
-  backgroundColor: 'black'
+  backgroundColor: 'black',
 }
 
 const styleVideos = {
   flex: 1,
   width: '100%',
-    overflow: 'hidden'
+  overflow: 'hidden',
 }
 
 const styleVideoContainer = {
-    margin: 0,
-    padding: 0
+  margin: 0,
+  padding: 0,
 }
 
 const styleShownVideo = {
   opacity: 1,
-  display: 'block'
+  display: 'block',
 }
 
 export default class VideoView extends React.Component {
@@ -58,15 +58,15 @@ export default class VideoView extends React.Component {
     this.onClick = this.onClick.bind(this)
 
     this.state = {
-      current: 0
+      current: 0,
     }
   }
 
   collectVideos = () => {
     // collect any video iframes in the component
-    this.figures = this.sectionRef.querySelectorAll("figure[class='video']")
+    this.figures = this.sectionRef.querySelectorAll('figure[class=\'video\']')
     this.iframes = this.sectionRef.querySelectorAll(
-      "iframe[src*='//www.youtube.com']"
+        'iframe[src*=\'//www.youtube.com\']',
     )
     this.iframes.forEach(iframe => {
       // calculate and set aspect ratio
@@ -127,48 +127,51 @@ export default class VideoView extends React.Component {
   onClick(i) {
     this.windowResizing()
     this.setState({
-      current: i
+      current: i,
     })
   }
 
   render() {
-    const { links } = this.props
-    let embeddedVideos =[]
+    const {links} = this.props
+    let embeddedVideos = []
     let titleList = []
 
     links.forEach((link, index) => {
-
-      if(this.videoShown(index)) {
-          embeddedVideos.push(
-              <figure key={index} className="video" style={styleVideoContainer}>
-                <iframe
-                    src={link.linkUrl}
-                    frameBorder="0"
-                    data-aspectratio="0.5625"
-                    style={{ width: '800px', height: '450px' }}
-                    allowFullScreen={true}
-                />
-              </figure>
-          )
+      if (this.videoShown(index)) {
+        const url = link.linkUrl
+        const linkWithOptions = url.indexOf('?') > 0 ? `${url}&rel=0` : `${url}?rel=0`
+        embeddedVideos.push(
+            <figure key={index} className="video" style={styleVideoContainer}>
+              <iframe
+                  src={linkWithOptions}
+                  frameBorder="0"
+                  data-aspectratio="0.5625"
+                  style={{width: '800px', height: '450px'}}
+                  allowFullScreen={true}
+              />
+            </figure>,
+        )
       }
 
       titleList.push(
-        <li key={index} onClick={() => this.onClick(index)} style={{
-          ...styleListElement,
-          ...this.listElementSelected(index)
-        }}>{link.linkName}</li>
+          <li key={index} onClick={() => this.onClick(index)} style={{
+            ...styleListElement,
+            ...this.listElementSelected(index)
+          }}>{link.linkName}</li>,
       )
     })
 
     return (
-      <div style={styleMain}>
-        <ul style={styleList}>
-          {titleList}
-        </ul>
-        <div style={styleVideos} ref={sectionRef => {this.sectionRef = sectionRef}}>
-          {embeddedVideos}
+        <div style={styleMain}>
+          <ul style={styleList}>
+            {titleList}
+          </ul>
+          <div style={styleVideos} ref={sectionRef => {
+            this.sectionRef = sectionRef
+          }}>
+            {embeddedVideos}
+          </div>
         </div>
-      </div>
     )
   }
 }
