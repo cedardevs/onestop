@@ -2,7 +2,7 @@ apply plugin: "com.moowork.node"
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 node {
-    version = '6.3.1'
+    version = '8.9.1'
     download = true
 }
 
