@@ -15,7 +15,7 @@ import { Provider } from 'react-redux'
 import RootComponent from './root/Root'
 import { initialize } from './actions/FlowActions'
 import '../style/style'
-import styles from './page.css'
+import './page.css'
 import store from './store'
 import history from './history'
 

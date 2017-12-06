@@ -36,11 +36,11 @@ class Filters extends Component {
 
     this.filters = [
       // TODO: reintroduce these filters when we officially move them from the top menu search component
-      // {
-      //  name: "map",
-      // 	heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
-      // 	content: <MapFilter />,
-      // },
+      {
+       name: "map",
+      	heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
+      	content: <MapFilter />,
+      },
       // {
       //  name: "time",
       // 	heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
@@ -75,7 +75,7 @@ class Filters extends Component {
   render() {
     const expandableFilters = this.filters.map((filter, index) => {
       return (
-          <div key={index} style={styleFilters}>
+          <div key={index}>
             <Expandable
                 key={index}
                 value={index}
@@ -90,7 +90,7 @@ class Filters extends Component {
       )
     })
 
-    return <div>{expandableFilters}</div>
+    return <div style={styleFilters}>{expandableFilters}</div>
   }
 }
 

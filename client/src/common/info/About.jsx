@@ -1,6 +1,8 @@
 import React from 'react'
 import styles from './About.css';
 
+import ArcGISMap from '../../search/map/ArcGISMap'
+
 export default class Help extends React.Component {
 
   render() {
@@ -16,6 +18,9 @@ export default class Help extends React.Component {
               wide variety and vast scale of NOAA's data.
             </p>
             <h2>{this.buildCountString()}</h2>
+
+            <ArcGISMap/>
+
           </section>
         </div>
     )

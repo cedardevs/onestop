@@ -308,6 +308,7 @@ class SearchFields extends React.Component {
             style={styleMap}
           />
         </ToggleDisplay>
+
       </section>
     )
   }
