@@ -3,12 +3,14 @@ import React, { Component } from 'react'
 import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
 import TimeFilter from './TimeFilter'
-import FacetFilterContainer from './FacetFilterContainer'
+import FacetFilterContainer from './facet/FacetFilterContainer'
 import MapFilter from './MapFilter'
 
 import mapFilterIcon from '../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../img/font-awesome/white/svg/calendar.svg'
 import facetFilterIcon from '../../img/font-awesome/white/svg/key.svg'
+
+import defaultStyles from '../common/defaultStyles'
 
 const styleFilters = {
   borderTop: "1px solid white"
@@ -27,7 +29,7 @@ const styleFilterContents = {
 
 const styleFacetFilterContents = {
   marginNest: '1em',
-  backgroundColor: '#3E97D1',
+  backgroundColor: 'rgba(62, 151, 209, 1)',//'#3E97D1', TODO
 }
 
 class Filters extends Component {
@@ -38,13 +40,13 @@ class Filters extends Component {
       // TODO: reintroduce these filters when we officially move them from the top menu search component
       // {
       //  name: "map",
-      // 	heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
-      // 	content: <MapFilter />,
+      //   heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
+      //   content: <MapFilter />,
       // },
       // {
       //  name: "time",
-      // 	heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
-      // 	content: <TimeFilter />,
+      //   heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
+      //   content: <TimeFilter />,
       // },
       {
         name: "keywords",
@@ -60,7 +62,6 @@ class Filters extends Component {
     this.state = {
       openIndex: -1,
     }
-    this.handleFilterToggle = this.handleFilterToggle.bind(this)
   }
 
   handleFilterToggle = event => {
@@ -90,7 +91,10 @@ class Filters extends Component {
       )
     })
 
-    return <div>{expandableFilters}</div>
+    return <div>
+      <h1 style={defaultStyles.hideOffscreen}>Filters</h1>
+      {expandableFilters}
+    </div>
   }
 }
 

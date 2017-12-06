@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 
-const style = {}
+const styleHideFocus = {
+  outline: 'none',
+}
 
 const styleHeading = {
   display: 'flex',
@@ -16,8 +18,6 @@ const styleHeadingHidden = {
   borderBottom: 0,
 }
 
-const styleHeadingContent = {}
-
 const styleArrow = {
   userSelect: 'none'
 }
@@ -28,14 +28,16 @@ const styleContent = {
 }
 
 const styleContentShown = {
-  maxHeight: '10000px',
   transition: 'max-height 1.25s ease-in',
 }
 
 const styleContentHidden = {
-  maxHeight: 0,
   transition: 'max-height 1.25s ease-out',
   transitionDelay: '-1s',
+}
+
+const styleFocusDefault = {
+  outline: '2px dashed white',
 }
 
 export default class Expandable extends Component {
@@ -44,9 +46,10 @@ export default class Expandable extends Component {
     this.state = {
       open: props.open,
       showArrow: props.showArrow,
+      maxHeight: props.open? '10000px':0,
+      display: props.open? 'block':'none',
+      focusing: false,
     }
-
-    this.handleClick = this.handleClick.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -54,19 +57,69 @@ export default class Expandable extends Component {
       this.setState({
         ...this.state,
         open: nextProps.open,
+        maxHeight: nextProps.open? '10000px':0,
+        display: nextProps.open? 'block':'none',
       })
     }
   }
 
-  handleClick() {
+  toggle = () => {
     this.setState(prevState => {
       const newOpen = !prevState.open
       if (this.props.onToggle) {
         this.props.onToggle({open: newOpen, value: this.props.value})
       }
+      // these transitions do occasionally have timing issues, but I've only seen them when rapidly toggling a single element on and off..
+      var transition = {}
+      if (newOpen && prevState.display === 'none') {
+        transition = {display: 'block'}
+        setTimeout( () =>
+          this.setState( { maxHeight: '10000px' }), 15
+        )
+      }
+      if (!newOpen && prevState.display === 'block') {
+        transition = {maxHeight: 0}
+        setTimeout( () =>
+          this.setState( { display: 'none' }), 500
+        )
+      }
       return {
         ...prevState,
         open: newOpen,
+        ...transition,
+      }
+    })
+  }
+
+  handleClick = (event) => {
+    event.preventDefault()
+    this.toggle()
+  }
+
+  handleKeyPressed = (e) => {
+    if (e.keyCode == 32) { // space
+      e.preventDefault() // prevent scrolling down on space press
+      this.toggle()
+    }
+    if (e.keyCode == 13) { // enter
+      this.toggle()
+    }
+  }
+
+  handleFocus = (e) => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
+  }
+
+  handleBlur = (e) => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
       }
     })
   }
@@ -83,30 +136,59 @@ export default class Expandable extends Component {
     const styleHeadingHide = this.state.open
         ? styleHeadingShown
         : styleHeadingHidden
-    const styleContentVisibility = this.state.open
+    const styleContentVisibilityTransition = this.state.open
         ? styleContentShown
         : styleContentHidden
+    const styleContentVisibility = {
+      maxHeight: this.state.maxHeight,
+      display: this.state.display,
+    }
+
+    const ariaHidden = this.state.display === 'none'
+    const tabbable = !(this.props.tabbable === false)
+    const tabIndex = tabbable ? '0' : '-1'
+    const role = tabbable ? 'button' : undefined
+    const ariaExpanded = tabbable ? this.state.open : undefined
+
+    const {styleFocus, styleWrapper} = this.props
+
+    const stylesMerged = {
+      ...styleHeading,
+      ...this.props.styleHeading,
+      ...styleHeadingHide,
+      ...styleHideFocus, // focus is shown on an interior element instead
+    }
+
+    const styleFocused = {
+      ...(this.state.focusing ? { ...styleFocusDefault, ...styleFocus } : {}),
+    }
+
+    const styleContentMerged = {
+      ...styleContent,
+      ...this.props.styleContent,
+      ...styleContentVisibilityTransition,
+      ...styleContentVisibility,
+    }
 
     return (
-        <div style={style}>
+        <div style={styleWrapper}>
           <div
-              style={{
-                ...styleHeading,
-                ...this.props.styleHeading,
-                ...styleHeadingHide,
-              }}
+              style={stylesMerged}
               onClick={this.handleClick}
+              onKeyDown={this.handleKeyPressed}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
+              tabIndex={tabIndex}
+              role={role}
+              aria-expanded={ariaExpanded}
           >
-            <div style={styleHeadingContent}>{this.props.heading}</div>
-            <div style={styleArrow}>{arrow}</div>
+            <div style={styleFocused}>{this.props.heading}</div>
+            <div aria-hidden='true' style={styleArrow}>{arrow}</div>
           </div>
 
           <div
-              style={{
-                ...styleContent,
-                ...this.props.styleContent,
-                ...styleContentVisibility,
-              }}
+              style={styleContentMerged}
+              aria-hidden={ariaHidden}
           >
             {this.props.content}
           </div>

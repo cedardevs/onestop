@@ -146,7 +146,7 @@ export default class CollectionGrid extends Component {
     return (
         <div>
           <div style={styleResultCountContainer}>
-            <h1 style={styleResultCountMerged} tabIndex={0} ref={resultCount => (this.resultCount = resultCount)}
+            <h1 style={styleResultCountMerged} tabIndex={-1} ref={resultCount => (this.resultCount = resultCount)}
                 onFocus={this.handleFocusResultsCount} onBlur={this.handleBlurResultsCount}>
                 {headingText}
             </h1>
