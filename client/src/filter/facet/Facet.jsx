@@ -97,7 +97,7 @@ export default class FacetTreeItem extends Component {
       content = <div style={this.props.styleFacet}>{facet}</div>
     }
 
-    const ariaLabel = `${label} result${count>1?'s':''}`
+    const ariaLabel = `${label} match${count>1?'es':''}`
 
     // if there are no children, undefined prevents the property from appearing on the element
     const ariaExpanded = hasChildren? open: undefined
