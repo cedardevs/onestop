@@ -29,7 +29,7 @@ const styleFilterContents = {
 
 const styleFacetFilterContents = {
   marginNest: '1em',
-  backgroundColor: 'rgba(62, 151, 209, 1)',//'#3E97D1', TODO
+  backgroundColor: '#3E97D1',
 }
 
 class Filters extends Component {
