@@ -71,24 +71,5 @@
     "url-loader": "^0.6.2",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.4"
-  },
-  "babel": {
-    "presets": [
-      [
-        "env",
-        {
-          "modules": false
-        }
-      ],
-      "react",
-      "stage-2"
-    ],
-    "env": {
-      "test": {
-        "presets": [
-          "env"
-        ]
-      }
-    }
   }
 }
