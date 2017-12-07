@@ -1,27 +1,27 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import CollectionCard from './CollectionCard'
 import Button from '../../common/input/Button'
 
 const styleResultCountContainer = {
-  display: "block",
-  padding: "0em 2em 1.618em 2em"
+  display: 'block',
+  padding: '0em 2em 1.618em 2em',
 }
 
 const styleResultCount = {
-  display: "inline",
-  fontSize: "1.2em",
+  display: 'inline',
+  fontSize: '1.2em',
   margin: 0,
-  padding: "0.309em"
+  padding: '0.309em',
 }
 
 const styleResultCountFocus = {
-  backgroundColor: "#3E97D1"
+  backgroundColor: '#3E97D1',
 }
 
 const styleResultCountFocusBlur = {
-  backgroundColor: "transparent"
+  backgroundColor: 'transparent',
 }
 
 const styleGrid = {
@@ -37,8 +37,8 @@ const styleGrid = {
 const styleShowMore = {
   display: 'flex',
   justifyContent: 'center',
-  paddingLeft: "2em",
-  paddingRight: "2em"
+  paddingLeft: '2em',
+  paddingRight: '2em',
 }
 
 export default class CollectionGrid extends Component {
@@ -51,7 +51,7 @@ export default class CollectionGrid extends Component {
     this.setState(prevState => {
       return {
         focusingResultsCount: false,
-        focusedCardKey: null
+        focusedCardKey: null,
       }
     })
   }
@@ -59,15 +59,18 @@ export default class CollectionGrid extends Component {
   renderShowMoreButton() {
     if (this.props.returnedHits < this.props.totalHits) {
       return (
-          <div style={styleShowMore}>
-            <Button text="Show More Results" onClick={() => this.props.fetchMoreResults()} style={{marginBottom:"1.618em"}}/>
-          </div>
+        <div style={styleShowMore}>
+          <Button
+            text="Show More Results"
+            onClick={() => this.props.fetchMoreResults()}
+            style={{marginBottom: '1.618em'}}
+          />
+        </div>
       )
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
-
     const prevResultsLength = Object.keys(prevProps.results).length
     const currResultsLength = Object.keys(this.props.results).length
 
@@ -90,7 +93,7 @@ export default class CollectionGrid extends Component {
     this.setState(prevState => {
       return {
         ...prevState,
-        focusingResultsCount: true
+        focusingResultsCount: true,
       }
     })
   }
@@ -99,7 +102,7 @@ export default class CollectionGrid extends Component {
     this.setState(prevState => {
       return {
         ...prevState,
-        focusingResultsCount: false
+        focusingResultsCount: false,
       }
     })
   }
@@ -108,7 +111,7 @@ export default class CollectionGrid extends Component {
     this.setState(prevState => {
       return {
         ...prevState,
-        focusedCardKey: event.cardKey
+        focusedCardKey: event.cardKey,
       }
     })
   }
@@ -116,11 +119,15 @@ export default class CollectionGrid extends Component {
   render() {
     const {loading, results, returnedHits, totalHits, pageSize} = this.props
 
-    const headingText = loading ? `Loading...` : `Search Results (showing ${returnedHits} of ${totalHits})`
+    const headingText = loading
+      ? `Loading...`
+      : `Search Results (showing ${returnedHits} of ${totalHits})`
 
     const styleResultCountMerged = {
       ...styleResultCount,
-      ...(this.state.focusingResultsCount ? styleResultCountFocus : styleResultCountFocusBlur )
+      ...(this.state.focusingResultsCount
+        ? styleResultCountFocus
+        : styleResultCountFocusBlur),
     }
 
     let cards = []
@@ -133,27 +140,32 @@ export default class CollectionGrid extends Component {
         description: result.description,
         geometry: result.spatialBounding,
         onClick: () => this.props.onCardClick(key),
-        onFocus: this.handleFocusCard
+        onFocus: this.handleFocusCard,
       }
 
       if (this.state.focusedCardKey === key) {
-        tileProps.ref = focusCard => this.focusCard = focusCard
+        tileProps.ref = focusCard => (this.focusCard = focusCard)
       }
 
       cards.push(<CollectionCard {...tileProps} />)
     })
 
     return (
-        <div>
-          <div style={styleResultCountContainer}>
-            <h1 style={styleResultCountMerged} tabIndex={-1} ref={resultCount => (this.resultCount = resultCount)}
-                onFocus={this.handleFocusResultsCount} onBlur={this.handleBlurResultsCount}>
-                {headingText}
-            </h1>
-          </div>
-          <div style={styleGrid}>{cards}</div>
-          {this.renderShowMoreButton()}
+      <div>
+        <div style={styleResultCountContainer}>
+          <h1
+            style={styleResultCountMerged}
+            tabIndex={-1}
+            ref={resultCount => (this.resultCount = resultCount)}
+            onFocus={this.handleFocusResultsCount}
+            onBlur={this.handleBlurResultsCount}
+          >
+            {headingText}
+          </h1>
         </div>
+        <div style={styleGrid}>{cards}</div>
+        {this.renderShowMoreButton()}
+      </div>
     )
   }
 }

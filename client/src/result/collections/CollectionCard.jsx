@@ -1,13 +1,13 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import { processUrl } from '../../utils/urlUtils'
+import {processUrl} from '../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
 
 const styleCard = {
   width: '25em',
   height: '15.5em',
   margin: '0 2em 2em 0',
-  textAlign: 'center'
+  textAlign: 'center',
 }
 
 const styleContent = {
@@ -21,87 +21,86 @@ const styleContent = {
   color: 'white',
   overflow: 'hidden',
   boxShadow: '6px 8px 5px rgba(0, 0, 0, .7)',
-  position: "relative"
+  position: 'relative',
 }
 
 const styleOverlay = {
-  position: "absolute",
+  position: 'absolute',
   top: 0,
   left: 0,
   bottom: 0,
   right: 0,
-  display: "inline-flex",
-  flexDirection: "column",
-  alignItems: "flex-start",
-  background: "none",
-  width: "100%",
-  height: "100%",
-  boxSizing: "content-box",
+  display: 'inline-flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  background: 'none',
+  width: '100%',
+  height: '100%',
+  boxSizing: 'content-box',
   border: 0,
-  color: "inherit",
-  font: "inherit",
-  lineHeight: "normal",
-  overflow: "visible",
+  color: 'inherit',
+  font: 'inherit',
+  lineHeight: 'normal',
+  overflow: 'visible',
   borderRadius: 0,
   padding: 0,
   margin: 0,
-  boxShadow: "inset 1ex 4ex 1.5ex 1ex rgba(0,0,0,.8)",
+  boxShadow: 'inset 1ex 4ex 1.5ex 1ex rgba(0,0,0,.8)',
 }
 
 const styleOverlayHover = {
-  color: "white",
-  boxShadow: "inset 1ex 4ex 1.5ex 1ex #22488A",
+  color: 'white',
+  boxShadow: 'inset 1ex 4ex 1.5ex 1ex #22488A',
 }
 
 const styleOverlayFocus = {
-  color: "white",
-  boxShadow: "inset 1ex 4ex 1.5ex 1ex #3E97D1",
+  color: 'white',
+  boxShadow: 'inset 1ex 4ex 1.5ex 1ex #3E97D1',
 }
 
 const styleOverlayBlur = {
-  color: "inherit",
-  boxShadow: "inset 1ex 4ex 1.5ex 1ex rgba(0,0,0,.8)",
+  color: 'inherit',
+  boxShadow: 'inset 1ex 4ex 1.5ex 1ex rgba(0,0,0,.8)',
 }
 
 const styleTitle = {
-  position: "absolute",
-  boxSizing: "border-box",
-  width: "100%",
+  position: 'absolute',
+  boxSizing: 'border-box',
+  width: '100%',
   top: 0,
   left: 0,
   right: 0,
-  overflow: "hidden",
-  whiteSpace: "nowrap",
-  textOverflow: "ellipsis",
-  fontWeight: "normal",
-  fontSize: "1em",
-  padding: "0.618em 1em 0.618em 1em",
-  margin: 0
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis',
+  fontWeight: 'normal',
+  fontSize: '1em',
+  padding: '0.618em 1em 0.618em 1em',
+  margin: 0,
 }
 
 const styleTitleHover = {
-  fontWeight: "bold"
+  fontWeight: 'bold',
 }
 
 const styleTitleFocus = {
-  fontWeight: "bold"
+  fontWeight: 'bold',
 }
 
 const styleTitleBlur = {
-  fontWeight: "normal"
+  fontWeight: 'normal',
 }
 
 const styleMapContainer = {
-  position: "absolute",
+  position: 'absolute',
   top: 0,
   zIndex: -1,
-  width: "100%",
-  maxWidth: "100%",
-  height: "100%"
+  width: '100%',
+  maxWidth: '100%',
+  height: '100%',
 }
 
 export default class CollectionCard extends Component {
-
   constructor(props) {
     super(props)
     this.thumbnailUrl = processUrl(this.props.thumbnail)
@@ -111,7 +110,7 @@ export default class CollectionCard extends Component {
     this.setState(prevState => {
       return {
         hovering: false,
-        focusing: false
+        focusing: false,
       }
     })
   }
@@ -137,54 +136,50 @@ export default class CollectionCard extends Component {
   renderThumbnailMap() {
     if (!this.thumbnailUrl) {
       return (
-          <div style={styleMapContainer}>
-            <MapThumbnail
-                geometry={this.props.geometry}
-                interactive={false}
-            />
-          </div>
+        <div style={styleMapContainer}>
+          <MapThumbnail geometry={this.props.geometry} interactive={false} />
+        </div>
       )
     }
   }
 
-  handleMouseOver = (event) => {
+  handleMouseOver = event => {
     this.setState(prevState => {
       return {
         ...prevState,
-        hovering: true
+        hovering: true,
       }
     })
   }
 
-  handleMouseOut = (event) => {
+  handleMouseOut = event => {
     this.setState(prevState => {
       return {
         ...prevState,
-        hovering: false
+        hovering: false,
       }
     })
   }
 
-  handleFocus = (event) => {
+  handleFocus = event => {
     this.setState(prevState => {
       return {
         ...prevState,
-        focusing: true
+        focusing: true,
       }
     })
   }
 
-  handleBlur = (event) => {
+  handleBlur = event => {
     this.setState(prevState => {
       return {
         ...prevState,
-        focusing: false
+        focusing: false,
       }
     })
   }
 
   render() {
-
     const styleContentMerged = {
       ...styleContent,
       ...this.thumbnailStyle(),
@@ -193,28 +188,34 @@ export default class CollectionCard extends Component {
     const styleOverlayMerged = {
       ...styleOverlay,
       ...(this.state.focusing ? styleOverlayFocus : styleOverlayBlur),
-      ...(this.state.hovering ? styleOverlayHover : {})
+      ...(this.state.hovering ? styleOverlayHover : {}),
     }
 
     const styleTitleMerged = {
       ...styleTitle,
       ...(this.state.focusing ? styleTitleFocus : styleTitleBlur),
-      ...(this.state.hovering ? styleTitleHover : {})
+      ...(this.state.hovering ? styleTitleHover : {}),
     }
 
     return (
-        <div
-            style={styleCard}
-            onKeyPress={e => this.handleKeyPress(e, this.props.onClick)}
-        >
-          <div style={styleContentMerged}>
-            <button style={styleOverlayMerged} onClick={() => this.props.onClick()} onMouseOver={this.handleMouseOver}
-                    onMouseOut={this.handleMouseOut} onFocus={this.handleFocus} onBlur={this.handleBlur}>
-              <h2 style={styleTitleMerged}>{this.props.title}</h2>
-              {this.renderThumbnailMap()}
-            </button>
-          </div>
+      <div
+        style={styleCard}
+        onKeyPress={e => this.handleKeyPress(e, this.props.onClick)}
+      >
+        <div style={styleContentMerged}>
+          <button
+            style={styleOverlayMerged}
+            onClick={() => this.props.onClick()}
+            onMouseOver={this.handleMouseOver}
+            onMouseOut={this.handleMouseOut}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+          >
+            <h2 style={styleTitleMerged}>{this.props.title}</h2>
+            {this.renderThumbnailMap()}
+          </button>
         </div>
+      </div>
     )
   }
 }

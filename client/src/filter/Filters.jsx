@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 
 import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
@@ -13,7 +13,7 @@ import facetFilterIcon from '../../img/font-awesome/white/svg/key.svg'
 import defaultStyles from '../common/defaultStyles'
 
 const styleFilters = {
-  borderTop: "1px solid white"
+  borderTop: '1px solid white',
 }
 
 const styleFilterHeadings = {
@@ -49,13 +49,15 @@ class Filters extends Component {
       //   content: <TimeFilter />,
       // },
       {
-        name: "keywords",
-        heading: <FilterHeading icon={facetFilterIcon} text="Keywords"/>,
-        content: <FacetFilterContainer
+        name: 'keywords',
+        heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
+        content: (
+          <FacetFilterContainer
             submit={props.submit}
             marginNest={styleFacetFilterContents.marginNest}
             backgroundColor={styleFacetFilterContents.backgroundColor}
-        />,
+          />
+        ),
       },
     ]
 
@@ -68,33 +70,37 @@ class Filters extends Component {
     this.setState(prevState => ({
       ...prevState,
       openIndex: event.open
-          ? this.filters.findIndex((filter, index) => index === event.value)
-          : -1,
+        ? this.filters.findIndex((filter, index) => index === event.value)
+        : -1,
     }))
   }
 
   render() {
     const expandableFilters = this.filters.map((filter, index) => {
       return (
-          <div key={index} style={styleFilters}>
-            <Expandable
-                key={index}
-                value={index}
-                open={index === this.state.openIndex || filter.name === "keywords"} /* force keywords open */
-                onToggle={this.handleFilterToggle}
-                heading={filter.heading}
-                styleHeading={styleFilterHeadings}
-                content={filter.content}
-                styleContent={styleFilterContents}
-            />
-          </div>
+        <div key={index} style={styleFilters}>
+          <Expandable
+            key={index}
+            value={index}
+            open={
+              index === this.state.openIndex || filter.name === 'keywords'
+            } /* force keywords open */
+            onToggle={this.handleFilterToggle}
+            heading={filter.heading}
+            styleHeading={styleFilterHeadings}
+            content={filter.content}
+            styleContent={styleFilterContents}
+          />
+        </div>
       )
     })
 
-    return <div>
-      <h1 style={defaultStyles.hideOffscreen}>Filters</h1>
-      {expandableFilters}
-    </div>
+    return (
+      <div>
+        <h1 style={defaultStyles.hideOffscreen}>Filters</h1>
+        {expandableFilters}
+      </div>
+    )
   }
 }
 

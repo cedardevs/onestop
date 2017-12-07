@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import L from 'leaflet'
 import 'esri-leaflet'
 import _ from 'lodash'
-import { ensureDatelineFriendlyPolygon } from '../utils/geoUtils'
+import {ensureDatelineFriendlyPolygon} from '../utils/geoUtils'
 
 class MapThumbnail extends React.Component {
   constructor(props) {
@@ -18,7 +18,12 @@ class MapThumbnail extends React.Component {
   }
 
   render() {
-    return <div style={{width: '100%', height: '100%'}} ref={() => this.renderMap()}></div>
+    return (
+      <div
+        style={{width: '100%', height: '100%'}}
+        ref={() => this.renderMap()}
+      />
+    )
   }
 
   renderMap() {
@@ -28,18 +33,18 @@ class MapThumbnail extends React.Component {
 
     let geoJsonLayer
     let layers = [
-      L.esri.basemapLayer("Imagery"),
-      L.esri.basemapLayer("ImageryLabels")
+      L.esri.basemapLayer('Imagery'),
+      L.esri.basemapLayer('ImageryLabels'),
     ]
     if (this.props.geometry) {
       geoJsonLayer = L.GeoJSON.geometryToLayer({
-        type: "Feature",
-        geometry: ensureDatelineFriendlyPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
+        type: 'Feature',
+        geometry: ensureDatelineFriendlyPolygon(this.props.geometry), // allows use of setStyle, which does not exist for GeoJSON points
       })
       geoJsonLayer.setStyle({
-        color: "red",
+        color: 'red',
         weight: 5,
-        opacity: 1
+        opacity: 1,
       })
       layers.push(geoJsonLayer)
     }
@@ -54,7 +59,7 @@ class MapThumbnail extends React.Component {
       scrollWheelZoom: this.props.interactive,
       doubleClickZoom: this.props.interactive,
       boxZoom: this.props.interactive,
-      tap: this.props.interactive
+      tap: this.props.interactive,
     })
     this.fitMapToResults(geoJsonLayer)
   }
@@ -69,10 +74,9 @@ class MapThumbnail extends React.Component {
   }
 }
 
-
 MapThumbnail.propTypes = {
   geometry: PropTypes.object,
-  interactive: PropTypes.bool.isRequired
+  interactive: PropTypes.bool.isRequired,
 }
 
 export default MapThumbnail

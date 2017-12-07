@@ -1,4 +1,4 @@
-import { LOADING_SHOW, LOADING_HIDE } from '../../actions/FlowActions'
+import {LOADING_SHOW, LOADING_HIDE} from '../../actions/FlowActions'
 
 export const initialState = false
 

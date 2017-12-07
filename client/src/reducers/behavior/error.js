@@ -1,5 +1,5 @@
 import Immutable from 'seamless-immutable'
-import { CLEAR_ERRORS, SET_ERRORS } from '../../actions/ErrorActions'
+import {CLEAR_ERRORS, SET_ERRORS} from '../../actions/ErrorActions'
 
 export const initialState = Immutable(new Set())
 

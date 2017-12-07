@@ -5,7 +5,7 @@ const styleSearchField = {
   maxWidth: '32em',
   minWidth: '22em',
   display: 'inline-block',
-  marginRight: '0.309em'
+  marginRight: '0.309em',
 }
 
 const styleTextField = {
@@ -34,7 +34,7 @@ const styleClearButtonHover = {
 class TextSearchField extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { value: props.value }
+    this.state = {value: props.value}
   }
 
   componentWillMount() {
@@ -54,13 +54,13 @@ class TextSearchField extends React.Component {
   }
 
   handleChange = event => {
-    const { onChange } = this.props
-    this.setState({ value: event.target.value })
+    const {onChange} = this.props
+    this.setState({value: event.target.value})
     onChange(event.target.value)
   }
 
   handleKeyDown = event => {
-    const { onEnterKeyDown } = this.props
+    const {onEnterKeyDown} = this.props
     if (event.keyCode === 13) {
       event.preventDefault()
       onEnterKeyDown(event.target.value)
@@ -86,7 +86,7 @@ class TextSearchField extends React.Component {
   }
 
   render() {
-    const { onClear } = this.props
+    const {onClear} = this.props
 
     const styleClearButtonMerged = {
       ...styleClearButton,

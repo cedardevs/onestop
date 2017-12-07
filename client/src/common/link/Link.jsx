@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { buildGovExternalOnClick } from '../../utils/urlUtils'
+import React, {Component} from 'react'
+import {buildGovExternalOnClick} from '../../utils/urlUtils'
 import './link.css'
 
 class Link extends Component {
@@ -9,13 +9,16 @@ class Link extends Component {
 
   render() {
     const {href, target, onClick, ...others} = this.props
-    return <a
+    return (
+      <a
         href={href}
         target={target}
         onClick={buildGovExternalOnClick(href, target, onClick)}
-        {...others}>
-      {this.props.children}
-    </a>
+        {...others}
+      >
+        {this.props.children}
+      </a>
+    )
   }
 }
 
