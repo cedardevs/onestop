@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Expandable from '../../common/Expandable'
 import Checkbox from '../../common/input/Checkbox'
 
@@ -12,7 +12,7 @@ const styleHideFocus = {
   outline: 'none', // The focused state is being passed to a child component to display
 }
 
-export default class FacetTreeItem extends Component {
+export default class FacetTreeItem extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -49,7 +49,6 @@ export default class FacetTreeItem extends Component {
   }
 
   render() {
-
     const {facetId, category, term, count, children, hasChildren, tabIndex} = this.props
     const {open, selected, focusing} = this.state
 
@@ -60,47 +59,38 @@ export default class FacetTreeItem extends Component {
 
     const styleFocus = this.props.styleFocus ? styleHideFocus : {}
 
-    const facet = (
-        <div
-          style={styleFacetContainer}
-          >
-            <Checkbox
-                label={label}
-                id={`checkbox-${facetId}`}
-                tabIndex={tabIndex}
-                checked={selected}
-                value={{term: term, category: category, id: facetId}}
-                onChange={this.props.handleSelectToggleMouse}
-                styleFocus={this.props.styleCheckboxFocus}
-            />
-        </div>)
-
-    var content
-
-    if (hasChildren) {
-      content = (
-          <Expandable
-              open={open}
-              value={facetId}
-              heading={facet}
-              tabbable={false}
-              styleHeading={this.props.styleFacet}
-              styleContent={this.props.styleChildren}
-              styleFocus={styleFocus}
-              showArrow={true}
-              content={<div role='group'>{children}</div>}
-              onToggle={this.props.handleExpandableToggle}
+    const facet =
+        <div style={styleFacetContainer}>
+          <Checkbox
+            label={label}
+            id={`checkbox-${facetId}`}
+            tabIndex={tabIndex}
+            checked={selected}
+            value={{term: term, category: category, id: facetId}}
+            onChange={this.props.handleSelectToggleMouse}
+            styleFocus={this.props.styleCheckboxFocus}
           />
-      )
-    }
-    else {
-      content = <div style={this.props.styleFacet}>{facet}</div>
-    }
+        </div>
+
+    const content = hasChildren ?
+      <Expandable
+        open={open}
+        value={facetId}
+        heading={facet}
+        tabbable={false}
+        styleHeading={this.props.styleFacet}
+        styleContent={this.props.styleChildren}
+        styleFocus={styleFocus}
+        showArrow={true}
+        content={<div role='group'>{children}</div>}
+        onToggle={this.props.handleExpandableToggle}
+      /> :
+      <div style={this.props.styleFacet}>{facet}</div>
 
     const ariaLabel = `${label} match${count>1?'es':''}`
 
     // if there are no children, undefined prevents the property from appearing on the element
-    const ariaExpanded = hasChildren? open: undefined
+    const ariaExpanded = hasChildren ? open : undefined
 
     return (
       <div
@@ -117,8 +107,9 @@ export default class FacetTreeItem extends Component {
         aria-label={ariaLabel}
         aria-expanded={ariaExpanded}
         aria-selected={selected}
-
-        >{content}</div>
+      >
+        {content}
+      </div>
     )
   }
 }

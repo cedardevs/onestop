@@ -1,6 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react'
 import Facet from './Facet'
 import _ from 'lodash'
+import { Key } from '../../utils/keyboardUtils'
 
 /**
   This component contains the content of a facet category. It is essentially a
@@ -27,14 +28,14 @@ const styleRovingFocusCheckbox = {
   boxShadow: '0 0 2px 2px #12347C',
 }
 
-
 const styleExpandableContent = marginNest => {
   return {
     marginLeft: marginNest ? marginNest : '1em',
   }
 }
 
-export default class FacetTree extends Component {
+
+export default class FacetTree extends React.Component {
   constructor(props) {
     super(props)
 
@@ -46,8 +47,7 @@ export default class FacetTree extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    var self = this
-    self.setState(prevState => {
+    this.setState(prevState => {
       return {
         ...prevState,
          // reset facet references before reparsing the map, which should populate them again
@@ -55,14 +55,14 @@ export default class FacetTree extends Component {
         facetLookup: {},
       }
     })
-    if(!_.isEqual({}, self.props.facetMap)) {
+    if(!_.isEqual({}, this.props.facetMap)) {
       // parse map with the top layer being marked as visible: true.
       // note this function uses side effects to alter the facetMap itself,
       // then we simply store that in state
-      self.parseMap(self.props.facetMap, 1)
-      self.setState(prevState => {
+      this.parseMap(this.props.facetMap, 1)
+      this.setState(prevState => {
         let facetMap = Object.assign({}, prevState.facetMap)
-        facetMap = self.props.facetMap
+        facetMap = this.props.facetMap
         return {
           ...prevState,
           facetMap: facetMap,
@@ -72,20 +72,16 @@ export default class FacetTree extends Component {
   }
 
   handleExpandableToggle = event => {
-    var self = this
     this.setState(prevState => {
-
-      var node = this.state.facetLookup[event.value]
-      if(node) {
+      let node = this.state.facetLookup[event.value]
+      if (node) {
         node.open = event.open
-        var updateVisibility = (children, visibility) => {
-          var updateVisibilityFunc = (value, key) => {
+        let updateVisibility = (children, visibility) => {
+          _.each(children, (value, key) => {
             value.visible = visibility
             updateVisibility(value.children, visibility && value.open)
-          }
-          _.each(children, updateVisibilityFunc)
+          })
         }
-
         updateVisibility(node.children, node.open)
 
         return {
@@ -97,14 +93,11 @@ export default class FacetTree extends Component {
   }
 
   updateRovingIndex = (facetId) => {
-    var self = this
     this.setState(prevState => {
-
-      // var oldIndex = this.state.facetLookup(self.state.rovingIndex)
       const oldIndex = prevState.facetLookup[prevState.rovingIndex]
       oldIndex.tabIndex = '-1'
 
-      var newIndex = prevState.facetLookup[facetId]
+      const newIndex = prevState.facetLookup[facetId]
       newIndex.tabIndex = '0'
 
       return {
@@ -118,15 +111,15 @@ export default class FacetTree extends Component {
 
   triggerRight = () => {
     const id = this.state.rovingIndex
-    var node = this.state.facetLookup[id]
+    const node = this.state.facetLookup[id]
     if (!node.open) {
       // open node
       this.handleExpandableToggle({open: true, value: id})
     }
     else {
       // move focus to first child
-      var facetId = node.relations.children[0]
-      if(facetId) {
+      const facetId = node.relations.children[0]
+      if (facetId) {
         this.updateRovingIndex(facetId)
       }
     }
@@ -134,32 +127,28 @@ export default class FacetTree extends Component {
 
   triggerLeft = () => {
     const id = this.state.rovingIndex
-    var node = this.state.facetLookup[id]
+    const node = this.state.facetLookup[id]
     if (node.open) {
       // close node
       this.handleExpandableToggle({open: false, value: id})
     }
     else {
       // move focus to parent
-      var facetId = node.relations.parent
-      if(facetId) {
+      const facetId = node.relations.parent
+      if (facetId) {
         this.updateRovingIndex(facetId)
       }
     }
   }
 
   moveFocusDown = () => {
-    var self = this // scope
     const id = this.state.rovingIndex
     const orderIndex = _.indexOf(this.state.allFacetsInOrder, id)
 
     if (orderIndex < this.state.allFacetsInOrder.length - 1) {
-      const nextVisible = _.find(this.state.allFacetsInOrder, function(facetId) {
-
-        var node = self.state.facetLookup[facetId]
-        return node.visible
-
-      }, orderIndex+1)
+      const nextVisible = _.find(this.state.allFacetsInOrder, (facetId) => {
+        return this.state.facetLookup[facetId].visible
+      }, orderIndex + 1)
 
       if(nextVisible) {
         this.updateRovingIndex(nextVisible)
@@ -168,15 +157,11 @@ export default class FacetTree extends Component {
   }
 
   moveFocusToEnd = () => {
-    var self = this // scope
-    const nextVisible = _.findLast(this.state.allFacetsInOrder, function(facetId) {
-
-      var node = self.state.facetLookup[facetId]
-      return node.visible
-
+    const nextVisible = _.findLast(this.state.allFacetsInOrder, (facetId) => {
+      return this.state.facetLookup[facetId].visible
     })
 
-    if(nextVisible) {
+    if (nextVisible) {
       this.updateRovingIndex(nextVisible)
     }
   }
@@ -186,15 +171,11 @@ export default class FacetTree extends Component {
   }
 
   moveFocusUp = () => {
-    var self = this // scope
     const id = this.state.rovingIndex
     const orderIndex = _.indexOf(this.state.allFacetsInOrder, id)
     if (orderIndex > 0) {
-      const nextVisible = _.findLast(this.state.allFacetsInOrder, function(facetId) {
-
-        var node = self.state.facetLookup[facetId]
-        return node.visible
-
+      const nextVisible = _.findLast(this.state.allFacetsInOrder, (facetId) => {
+        return this.state.facetLookup[facetId].visible
       }, orderIndex-1)
 
       this.updateRovingIndex(nextVisible)
@@ -203,12 +184,7 @@ export default class FacetTree extends Component {
 
   isSelected = (category, term) => {
     const selectedTerms = this.props.selectedFacets[category]
-    if (!selectedTerms) {
-      return false
-    }
-    else {
-      return selectedTerms.includes(term)
-    }
+    return selectedTerms ? selectedTerms.includes(term) : false
   }
 
   handleSelectToggleMouse = (e) => {
@@ -224,44 +200,38 @@ export default class FacetTree extends Component {
 
     if ('children' in facet) {
       const hasChildren = !_.isEmpty(facet.children)
-      const children = hasChildren? this.createFacetComponent(facet.children, facet):null
+      const children = hasChildren ? this.createFacetComponent(facet.children, facet) : null
 
-      facetComponent = (
-          <Facet
-            facetId={facet.id}
-            key={facet.id}
+      return <Facet
+        facetId={facet.id}
+        key={facet.id}
 
-            category={facet.category}
-            term={facet.term}
-            count={facet.count}
+        category={facet.category}
+        term={facet.term}
+        count={facet.count}
 
-            open={facet.open}
-            selected={this.isSelected(facet.category, facet.term)}
+        open={facet.open}
+        selected={this.isSelected(facet.category, facet.term)}
 
-            tabIndex={facet.tabIndex}
-            focused={this.state.focus}
+        tabIndex={facet.tabIndex}
+        focused={this.state.focus}
 
-            children={children}
-            hasChildren={hasChildren}
+        children={children}
+        hasChildren={hasChildren}
 
-            handleSelectToggleMouse={this.handleSelectToggleMouse}
-            handleExpandableToggle={this.handleExpandableToggle}
+        handleSelectToggleMouse={this.handleSelectToggleMouse}
+        handleExpandableToggle={this.handleExpandableToggle}
 
-            styleFacet={styleFacet(this.props.backgroundColor)}
-            styleFocus={styleRovingFocus}
-            styleCheckboxFocus={styleRovingFocusCheckbox}
-            styleChildren={styleExpandableContent(this.props.marginNest)}
-            />
-      )
-    } else {
-      // for each key recurse
-      let facetComponents = []
-      Object.keys(facet).forEach(subFacet => {
-        facetComponents.push(this.createFacetComponent(facet[subFacet]))
-      })
-      return (facetComponents)
+        styleFacet={styleFacet(this.props.backgroundColor)}
+        styleFocus={styleRovingFocus}
+        styleCheckboxFocus={styleRovingFocusCheckbox}
+        styleChildren={styleExpandableContent(this.props.marginNest)}
+      />
     }
-    return facetComponent
+    else {
+      // for each key recurse
+      return Object.keys(facet).map((subFacet) => this.createFacetComponent(facet[subFacet]))
+    }
   }
 
   parseMap = (map, level, parentOpen, parentId) => {
@@ -270,17 +240,14 @@ export default class FacetTree extends Component {
       return []
     }
 
-    _.each(map, function (value,key) {
-      const keyParts = _.concat(_.words(value.category), _.words(value.term))
+    _.each(map, (value, key) => {
       value.relations = {}
       value.open = false // always default to everything collapsed
       value.tabIndex = '-1'
     })
 
-    if (level == 1) { // id first layer to set the initial tab focus
-      const value = _.map(map, function(value,key) {
-        return value
-      })[0]
+    if (level === 1) { // id first layer to set the initial tab focus
+      const value = _.map(map, (value, key) => value)[0]
       value.tabIndex = '0'
       this.setState(prevState => {
         return {
@@ -290,14 +257,8 @@ export default class FacetTree extends Component {
       })
     }
 
-    const siblings = _.map(map, function(value, key) {
-      return value.id
-    })
-
-    var self = this // scoping fix
-    _.each(map, function (value,key) {
-
-      self.setState(prevState => {
+    _.each(map, (value, key) => {
+      this.setState(prevState => {
 
         // update state that lets us quickly traverse the nodes in up/down order
         let allFacetsInOrder = Object.assign([], prevState.allFacetsInOrder)
@@ -315,44 +276,43 @@ export default class FacetTree extends Component {
       })
 
       value.relations.parent = parentId
-      value.relations.children = self.parseMap(value.children, level+1, parentOpen && value.open, value.id )
-
-      value.visible = (level==1) || !!parentOpen
+      value.relations.children = this.parseMap(value.children, level + 1, parentOpen && value.open, value.id)
+      value.visible = (level === 1) || !!parentOpen
     })
 
-    return siblings
+    return _.map(map, (value, key) => value.id) // return siblings
   }
 
   handleKeyPressed = (e) => {
     // do nothing if modifiers are pressed
-    if( e.metaKey || e.shiftKey || e.ctrlKey || e.altKey ) return
+    if (e.metaKey || e.shiftKey || e.ctrlKey || e.altKey) { return }
 
     e.stopPropagation()
 
-    if (e.keyCode == 32 || e.keyCode == 13) { // space and enter
+    if (e.keyCode === Key.SPACE || e.keyCode === Key.ENTER) {
       e.preventDefault() // prevent scrolling down on space press
       const {facetId, category, term} = this.state.facetLookup[this.state.rovingIndex]
       const selected = this.isSelected(category, term)
       this.props.handleSelectToggle({id: facetId, category: category, term: term}, !selected)
     }
-    if (e.keyCode == 36) { // home
+    if (e.keyCode === Key.HOME) {
       this.moveFocusToStart()
     }
-    if (e.keyCode == 35) { // end
+    if (e.keyCode === Key.END) {
       this.moveFocusToEnd()
     }
-    if (e.keyCode == 38) { // up
+    if (e.keyCode === Key.UP) {
       e.preventDefault() // prevent scrolling behavior
       this.moveFocusUp()
     }
-    if (e.keyCode == 40) { // down
+    if (e.keyCode === Key.DOWN) {
       e.preventDefault() // prevent scrolling behavior
       this.moveFocusDown()
     }
-    if (e.keyCode == 37) { // left
+    if (e.keyCode === Key.LEFT) {
       this.triggerLeft()
     }
-    if (e.keyCode == 39) { // right
+    if (e.keyCode === Key.RIGHT) {
       this.triggerRight()
     }
   }
@@ -360,7 +320,8 @@ export default class FacetTree extends Component {
   handleKeyDown = (e) => {
     // prevent the default behavior for tree control keys
     // these are the control keys used by the tree menu
-    if ( !e.metaKey && !e.shiftKey && !e.ctrlKey && !e.altKey && [13,32,35,36,37,38,39,40].includes(e.keyCode) ) {
+    const treeControlKeys = [Key.SPACE, Key.ENTER, Key.HOME, Key.END, Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT]
+    if ( !e.metaKey && !e.shiftKey && !e.ctrlKey && !e.altKey && treeControlKeys.includes(e.keyCode) ) {
       e.preventDefault()
     }
   }
@@ -370,15 +331,13 @@ export default class FacetTree extends Component {
 
     return (
       <div
-
         role='tree'
         aria-labelledby={this.props.headerId}
         aria-multiselectable='true'
 
         onKeyUp={this.handleKeyPressed} // onKeyDown isnt an actual keypress
         onKeyDown={this.handleKeyDown}
-
-        >
+      >
         {facetHierarchy}
       </div>
     )

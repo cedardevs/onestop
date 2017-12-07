@@ -114,7 +114,6 @@ class Checkbox extends Component {
   }
 
   render() {
-
     const styleCheckbox = {
       ...styleCheckboxContainer,
       ...(this.state.focused && this.props.styleFocus ? this.props.styleFocus : {}),

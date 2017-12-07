@@ -45,18 +45,16 @@ export default class FacetFilter extends Component {
     this.handleExpandableToggle(event.value, event.open)
   }
 
-  updateStoreAndSubmitSearch = (facet, select) => {
+  updateStoreAndSubmitSearch = (facet, selected) => {
     const category = facet.category
     const term = facet.term
-    const selected = select
     this.props.toggleFacet(category, term, selected)
     this.props.submit()
   }
 
   render() {
     let expandableCategories = []
-    var self = this
-    _.each( this.props.facetMap, function(value, category) {
+    _.each( this.props.facetMap, (value, category) => {
       // show hamburger menu for high-level categories
       const expandableKey = `${category}`
       const headerId = `header-filter-${category.replace(' ','-','g')}`
@@ -67,29 +65,28 @@ export default class FacetFilter extends Component {
 
       const expandableFacets = <FacetTree
         headerId={headerId}
-        facetMap={self.props.facetMap[category]}
-        selectedFacets={self.props.selectedFacets}
-        handleSelectToggle={self.updateStoreAndSubmitSearch}
-        backgroundColor={self.props.backgroundColor}
-        marginNest={self.props.marginNest}
+        facetMap={this.props.facetMap[category]}
+        selectedFacets={this.props.selectedFacets}
+        handleSelectToggle={this.updateStoreAndSubmitSearch}
+        backgroundColor={this.props.backgroundColor}
+        marginNest={this.props.marginNest}
         />
 
       // high-level categories (e.g. - "Data Themes" | "Platforms" | "Projects" | "Data Centers" | "Data Resolution")
       expandableCategories.push(
           <Expandable
-              open={!!self.state.openExpandables[expandableKey]}
+              open={!!this.state.openExpandables[expandableKey]}
               key={expandableKey}
               value={expandableKey}
               heading={highLevelHeading}
               styleHeading={styleExpandableCategoryHeading}
               content={expandableFacets}
               styleWrapper={styleExpandableWrapper}
-              styleContent={styleExpandableCategoryContent(self.props.marginNest)}
-              onToggle={self.handleExpandToggleMouse}
-          />,
+              styleContent={styleExpandableCategoryContent(this.props.marginNest)}
+              onToggle={this.handleExpandToggleMouse}
+          />
       )
     })
-
     return <div>{expandableCategories}</div>
   }
 }

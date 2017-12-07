@@ -20,6 +20,9 @@ const styleIconImage = {
 const styleText = {
   width: '100%',
   alignSelf: 'center',
+  fontSize: '1em',
+  fontWeight: 'normal',
+  margin: '0'
 }
 
 export default class FilterHeading extends Component {
@@ -33,7 +36,7 @@ export default class FilterHeading extends Component {
                 alt={`${this.props.text} Icon`}
             />
           </div>
-          <h2 style={{...{fontSize: '1em', fontWeight: 'normal', margin: '0' }, ...styleText}}>{this.props.text}</h2>
+          <h2 style={styleText}>{this.props.text}</h2>
         </div>
     )
   }

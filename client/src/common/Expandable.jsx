@@ -73,9 +73,7 @@ export default class Expandable extends Component {
       var transition = {}
       if (newOpen && prevState.display === 'none') {
         transition = {display: 'block'}
-        setTimeout( () =>
-          this.setState( { maxHeight: '10000px' }), 15
-        )
+        setTimeout(() => this.setState({maxHeight: '10000px'}), 15)
       }
       if (!newOpen && prevState.display === 'block') {
         transition = {maxHeight: 0}
@@ -97,11 +95,11 @@ export default class Expandable extends Component {
   }
 
   handleKeyPressed = (e) => {
-    if (e.keyCode == 32) { // space
+    if (e.keyCode === 32) { // space
       e.preventDefault() // prevent scrolling down on space press
       this.toggle()
     }
-    if (e.keyCode == 13) { // enter
+    if (e.keyCode === 13) { // enter
       this.toggle()
     }
   }

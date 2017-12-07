@@ -103,16 +103,6 @@ export default class Left extends Component {
     }
   }
 
-  handleKeyPressed = (e) => {
-    if (e.keyCode == 32) { // space
-      e.preventDefault() // prevent scrolling down on space press
-      this.handleOpen(e)
-    }
-    if (e.keyCode == 13) { // enter
-      this.handleOpen(e)
-    }
-  }
-
   render() {
     const width = this.props.width ? this.props.width : defaultWidth
     const classVisible = styleVisible(width)
@@ -144,8 +134,7 @@ export default class Left extends Component {
         </button>
     )
     return (
-        <div style={classes}
-          >
+        <div style={classes}>
           {this.state.visible ? hideContentArrow : null}
           {this.state.visible ? this.props.content : hiddenContent}
         </div>
