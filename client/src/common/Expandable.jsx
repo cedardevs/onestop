@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import React from 'react'
+import { Key } from '../utils/keyboardUtils'
 
 const styleHideFocus = {
   outline: 'none',
@@ -19,7 +20,7 @@ const styleHeadingHidden = {
 }
 
 const styleArrow = {
-  userSelect: 'none'
+  userSelect: 'none',
 }
 
 const styleContent = {
@@ -40,14 +41,14 @@ const styleFocusDefault = {
   outline: '2px dashed white',
 }
 
-export default class Expandable extends Component {
+export default class Expandable extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       open: props.open,
       showArrow: props.showArrow,
-      maxHeight: props.open? '10000px':0,
-      display: props.open? 'block':'none',
+      maxHeight: props.open ? '10000px' : 0,
+      display: props.open ? 'block' : 'none',
       focusing: false,
     }
   }
@@ -57,35 +58,33 @@ export default class Expandable extends Component {
       this.setState({
         ...this.state,
         open: nextProps.open,
-        maxHeight: nextProps.open? '10000px':0,
-        display: nextProps.open? 'block':'none',
+        maxHeight: nextProps.open ? '10000px' : 0,
+        display: nextProps.open ? 'block' : 'none',
       })
     }
   }
 
   toggle = () => {
     this.setState(prevState => {
-      const newOpen = !prevState.open
+      const isOpen = prevState.open
+      const isDisplayed = prevState.display === 'block'
+      const shouldClose = isOpen && isDisplayed
+      const shouldOpen = !isOpen && !isDisplayed
+
       if (this.props.onToggle) {
-        this.props.onToggle({open: newOpen, value: this.props.value})
+        this.props.onToggle({open: !isOpen, value: this.props.value})
       }
+
       // these transitions do occasionally have timing issues, but I've only seen them when rapidly toggling a single element on and off..
-      var transition = {}
-      if (newOpen && prevState.display === 'none') {
-        transition = {display: 'block'}
+      if (shouldOpen) {
         setTimeout(() => this.setState({maxHeight: '10000px'}), 15)
       }
-      if (!newOpen && prevState.display === 'block') {
-        transition = {maxHeight: 0}
-        setTimeout( () =>
-          this.setState( { display: 'none' }), 500
-        )
+      if (shouldClose) {
+        setTimeout(() => this.setState({display: 'none'}), 500)
       }
-      return {
-        ...prevState,
-        open: newOpen,
-        ...transition,
-      }
+
+      const immediateTransition = shouldOpen ? {display: 'block'} : shouldClose ? {maxHeight: 0} : {}
+      return {open: !isOpen, ...immediateTransition}
     })
   }
 
@@ -95,11 +94,11 @@ export default class Expandable extends Component {
   }
 
   handleKeyPressed = (e) => {
-    if (e.keyCode === 32) { // space
+    if (e.keyCode === Key.SPACE) {
       e.preventDefault() // prevent scrolling down on space press
       this.toggle()
     }
-    if (e.keyCode === 13) { // enter
+    if (e.keyCode === Key.ENTER) {
       this.toggle()
     }
   }
@@ -124,19 +123,19 @@ export default class Expandable extends Component {
 
   render() {
     const arrow = this.props.showArrow ? (
-        this.state.open ? (
-            <span>&nbsp;&#9660;</span>
-        ) : (
-            <span>&nbsp;&#9654;</span>
-        )
+      this.state.open ? (
+        <span>&nbsp;&#9660;</span>
+      ) : (
+        <span>&nbsp;&#9654;</span>
+      )
     ) : null
 
     const styleHeadingHide = this.state.open
-        ? styleHeadingShown
-        : styleHeadingHidden
+      ? styleHeadingShown
+      : styleHeadingHidden
     const styleContentVisibilityTransition = this.state.open
-        ? styleContentShown
-        : styleContentHidden
+      ? styleContentShown
+      : styleContentHidden
     const styleContentVisibility = {
       maxHeight: this.state.maxHeight,
       display: this.state.display,
@@ -158,7 +157,7 @@ export default class Expandable extends Component {
     }
 
     const styleFocused = {
-      ...(this.state.focusing ? { ...styleFocusDefault, ...styleFocus } : {}),
+      ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {}),
     }
 
     const styleContentMerged = {
@@ -169,28 +168,28 @@ export default class Expandable extends Component {
     }
 
     return (
-        <div style={styleWrapper}>
-          <div
-              style={stylesMerged}
-              onClick={this.handleClick}
-              onKeyDown={this.handleKeyPressed}
-              onFocus={this.handleFocus}
-              onBlur={this.handleBlur}
-              tabIndex={tabIndex}
-              role={role}
-              aria-expanded={ariaExpanded}
-          >
-            <div style={styleFocused}>{this.props.heading}</div>
-            <div aria-hidden='true' style={styleArrow}>{arrow}</div>
-          </div>
-
-          <div
-              style={styleContentMerged}
-              aria-hidden={ariaHidden}
-          >
-            {this.props.content}
-          </div>
+      <div style={styleWrapper}>
+        <div
+          style={stylesMerged}
+          onClick={this.handleClick}
+          onKeyDown={this.handleKeyPressed}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          tabIndex={tabIndex}
+          role={role}
+          aria-expanded={ariaExpanded}
+        >
+          <div style={styleFocused}>{this.props.heading}</div>
+          <div aria-hidden='true' style={styleArrow}>{arrow}</div>
         </div>
+
+        <div
+          style={styleContentMerged}
+          aria-hidden={ariaHidden}
+        >
+          {this.props.content}
+        </div>
+      </div>
     )
   }
 }
