@@ -40,9 +40,9 @@
     }
   }
   .selectedText {
-  background: #263f78 !important;
-  @media screen and (max-width: 48em) {
-    background: #007ec6 !important;
+    background: #263f78 !important;
+    @media screen and (max-width: 48em) {
+      background: #007ec6 !important;
     }
   }
   .imagesContainer {
@@ -67,7 +67,7 @@
       width: 90%;
       height: 90%;
       &.selectedImage {
-         opacity: 1;
+        opacity: 1;
         z-index: 10;
         display: block;
         transition: opacity 500ms;
@@ -75,7 +75,7 @@
       .overlay {
         width: 100%;
         height: 100%;
-       }
+      }
     }
   }
 }

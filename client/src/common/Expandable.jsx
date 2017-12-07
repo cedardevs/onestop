@@ -1,5 +1,5 @@
 import React from 'react'
-import { Key } from '../utils/keyboardUtils'
+import {Key} from '../utils/keyboardUtils'
 
 const styleHideFocus = {
   outline: 'none',
@@ -83,17 +83,19 @@ export default class Expandable extends React.Component {
         setTimeout(() => this.setState({display: 'none'}), 500)
       }
 
-      const immediateTransition = shouldOpen ? {display: 'block'} : shouldClose ? {maxHeight: 0} : {}
+      const immediateTransition = shouldOpen
+        ? {display: 'block'}
+        : shouldClose ? {maxHeight: 0} : {}
       return {open: !isOpen, ...immediateTransition}
     })
   }
 
-  handleClick = (event) => {
+  handleClick = event => {
     event.preventDefault()
     this.toggle()
   }
 
-  handleKeyPressed = (e) => {
+  handleKeyPressed = e => {
     if (e.keyCode === Key.SPACE) {
       e.preventDefault() // prevent scrolling down on space press
       this.toggle()
@@ -103,7 +105,7 @@ export default class Expandable extends React.Component {
     }
   }
 
-  handleFocus = (e) => {
+  handleFocus = e => {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -112,7 +114,7 @@ export default class Expandable extends React.Component {
     })
   }
 
-  handleBlur = (e) => {
+  handleBlur = e => {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -122,12 +124,10 @@ export default class Expandable extends React.Component {
   }
 
   render() {
-    const arrow = this.props.showArrow ? (
-      this.state.open ? (
-        <span>&nbsp;&#9660;</span>
-      ) : (
-        <span>&nbsp;&#9654;</span>
-      )
+    const arrow = this.props.showArrow ? this.state.open ? (
+      <span>&nbsp;&#9660;</span>
+    ) : (
+      <span>&nbsp;&#9654;</span>
     ) : null
 
     const styleHeadingHide = this.state.open
@@ -180,13 +180,12 @@ export default class Expandable extends React.Component {
           aria-expanded={ariaExpanded}
         >
           <div style={styleFocused}>{this.props.heading}</div>
-          <div aria-hidden='true' style={styleArrow}>{arrow}</div>
+          <div aria-hidden="true" style={styleArrow}>
+            {arrow}
+          </div>
         </div>
 
-        <div
-          style={styleContentMerged}
-          aria-hidden={ariaHidden}
-        >
+        <div style={styleContentMerged} aria-hidden={ariaHidden}>
           {this.props.content}
         </div>
       </div>

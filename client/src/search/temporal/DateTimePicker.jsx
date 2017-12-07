@@ -12,7 +12,6 @@ import styles from './temporal.css'
 const format = 'YYYY-MM-DD HH:mm:ss'
 
 class DateTimePicker extends React.Component {
-
   constructor(props) {
     super(props)
     this.handleReset = this.handleReset.bind(this)
@@ -27,53 +26,63 @@ class DateTimePicker extends React.Component {
   getValueString(value) {
     if (value.value !== null && value.value !== undefined) {
       return value.value.utc().format(format)
-    } else {
+    }
+    else {
       return ''
     }
   }
 
   render() {
     const props = this.props
-    const timePicker = <TimePickerPanel
+    const timePicker = (
+      <TimePickerPanel
         className={styles.timePicker}
         showHour={true}
         showMinute={true}
         showSecond={true}
-    />
-    const calendar = <Calendar
+      />
+    )
+    const calendar = (
+      <Calendar
         locale={enUS}
         defaultValue={moment().utc().hour(0).minute(0).second(0)}
         timePicker={timePicker}
         disabledDate={props.disabledDate}
         showDateInput={false}
-    />
-    const renderInput = (value) => <input
+      />
+    )
+    const renderInput = value => (
+      <input
         className={`pure-input-2-3 ${styles.inputField}`}
-        placeholder={"Choose a date"}
+        placeholder={'Choose a date'}
         value={this.getValueString(value)}
         readOnly
-    />
+      />
+    )
 
     return (
-        <div className={styles.pickerRow}>
-          <DatePicker
-              animation="slide-up"
-              disabled={false}
-              calendar={calendar}
-              value={props.value}
-              onChange={props.onChange}
-              style={{color: "black"}}
-              getCalendarContainer={() => this.props.mountPoint}
-          >
-            {renderInput}
-          </DatePicker>
-          <button id={props.id} className={`pure-button ${styles.clearButton}`} onClick={this.handleReset}>
-            <img alt='reset time' src={times}/>
-          </button>
-        </div>
+      <div className={styles.pickerRow}>
+        <DatePicker
+          animation="slide-up"
+          disabled={false}
+          calendar={calendar}
+          value={props.value}
+          onChange={props.onChange}
+          style={{color: 'black'}}
+          getCalendarContainer={() => this.props.mountPoint}
+        >
+          {renderInput}
+        </DatePicker>
+        <button
+          id={props.id}
+          className={`pure-button ${styles.clearButton}`}
+          onClick={this.handleReset}
+        >
+          <img alt="reset time" src={times} />
+        </button>
+      </div>
     )
   }
-
 }
 
 export default DateTimePicker

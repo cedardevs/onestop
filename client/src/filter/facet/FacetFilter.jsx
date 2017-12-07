@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import Expandable from '../../common/Expandable'
 import FacetTree from './FacetTreeContainer'
 import _ from 'lodash'
@@ -41,7 +41,7 @@ export default class FacetFilter extends Component {
     })
   }
 
-  handleExpandToggleMouse = (event) => {
+  handleExpandToggleMouse = event => {
     this.handleExpandableToggle(event.value, event.open)
   }
 
@@ -54,37 +54,45 @@ export default class FacetFilter extends Component {
 
   render() {
     let expandableCategories = []
-    _.each( this.props.facetMap, (value, category) => {
+    _.each(this.props.facetMap, (value, category) => {
       // show hamburger menu for high-level categories
       const expandableKey = `${category}`
-      const headerId = `header-filter-${category.replace(' ','-','g')}`
+      const headerId = `header-filter-${category.replace(' ', '-', 'g')}`
 
-      const highLevelHeading = <h3
-        id={headerId}
-        style={{fontSize: '1em', fontWeight: 'normal', display: 'inline', }}><span aria-hidden='true'>&#9776;&nbsp;</span>{category}</h3>
+      const highLevelHeading = (
+        <h3
+          id={headerId}
+          style={{fontSize: '1em', fontWeight: 'normal', display: 'inline'}}
+        >
+          <span aria-hidden="true">&#9776;&nbsp;</span>
+          {category}
+        </h3>
+      )
 
-      const expandableFacets = <FacetTree
-        headerId={headerId}
-        facetMap={this.props.facetMap[category]}
-        selectedFacets={this.props.selectedFacets}
-        handleSelectToggle={this.updateStoreAndSubmitSearch}
-        backgroundColor={this.props.backgroundColor}
-        marginNest={this.props.marginNest}
+      const expandableFacets = (
+        <FacetTree
+          headerId={headerId}
+          facetMap={this.props.facetMap[category]}
+          selectedFacets={this.props.selectedFacets}
+          handleSelectToggle={this.updateStoreAndSubmitSearch}
+          backgroundColor={this.props.backgroundColor}
+          marginNest={this.props.marginNest}
         />
+      )
 
       // high-level categories (e.g. - "Data Themes" | "Platforms" | "Projects" | "Data Centers" | "Data Resolution")
       expandableCategories.push(
-          <Expandable
-              open={!!this.state.openExpandables[expandableKey]}
-              key={expandableKey}
-              value={expandableKey}
-              heading={highLevelHeading}
-              styleHeading={styleExpandableCategoryHeading}
-              content={expandableFacets}
-              styleWrapper={styleExpandableWrapper}
-              styleContent={styleExpandableCategoryContent(this.props.marginNest)}
-              onToggle={this.handleExpandToggleMouse}
-          />
+        <Expandable
+          open={!!this.state.openExpandables[expandableKey]}
+          key={expandableKey}
+          value={expandableKey}
+          heading={highLevelHeading}
+          styleHeading={styleExpandableCategoryHeading}
+          content={expandableFacets}
+          styleWrapper={styleExpandableWrapper}
+          styleContent={styleExpandableCategoryContent(this.props.marginNest)}
+          onToggle={this.handleExpandToggleMouse}
+        />
       )
     })
     return <div>{expandableCategories}</div>

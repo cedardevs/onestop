@@ -1,5 +1,5 @@
 import React from 'react'
-import { govExternalYouTubeMsg } from '../utils/urlUtils'
+import {govExternalYouTubeMsg} from '../utils/urlUtils'
 
 const styleMain = {
   display: 'flex',
@@ -57,7 +57,6 @@ const styleDisclaimer = {
 }
 
 export default class VideoView extends React.Component {
-
   constructor(props) {
     super(props)
     this.state = {
@@ -68,7 +67,9 @@ export default class VideoView extends React.Component {
   collectVideos = () => {
     // collect any video iframes in the component
     this.figures = this.sectionRef.querySelectorAll(`figure[class='video']`)
-    this.iframes = this.sectionRef.querySelectorAll(`iframe[src*='//www.youtube.com']`)
+    this.iframes = this.sectionRef.querySelectorAll(
+      `iframe[src*='//www.youtube.com']`
+    )
 
     this.iframes.forEach(iframe => {
       // calculate and set aspect ratio
@@ -141,45 +142,50 @@ export default class VideoView extends React.Component {
     links.forEach((link, index) => {
       if (this.videoShown(index)) {
         const url = link.linkUrl
-        const linkWithOptions = url.indexOf('?') > 0 ? `${url}&rel=0` : `${url}?rel=0`
+        const linkWithOptions =
+          url.indexOf('?') > 0 ? `${url}&rel=0` : `${url}?rel=0`
         embeddedVideos.push(
-            <figure key={index} className="video" style={styleVideoContainer}>
-              <iframe
-                  src={linkWithOptions}
-                  frameBorder="0"
-                  data-aspectratio="0.5625"
-                  style={{width: '800px', height: '450px'}}
-                  allowFullScreen={true}
-              />
-            </figure>,
+          <figure key={index} className="video" style={styleVideoContainer}>
+            <iframe
+              src={linkWithOptions}
+              frameBorder="0"
+              data-aspectratio="0.5625"
+              style={{width: '800px', height: '450px'}}
+              allowFullScreen={true}
+            />
+          </figure>
         )
       }
 
       titleList.push(
-          <li key={index} onClick={() => this.onClick(index)} style={{
+        <li
+          key={index}
+          onClick={() => this.onClick(index)}
+          style={{
             ...styleListElement,
-            ...this.listElementSelected(index)
-          }}>{link.linkName}</li>,
+            ...this.listElementSelected(index),
+          }}
+        >
+          {link.linkName}
+        </li>
       )
     })
 
     return (
-        <div>
-          <div style={styleMain}>
-            <ul style={styleList}>
-              {titleList}
-            </ul>
-            <div style={styleVideos} ref={sectionRef => {
+      <div>
+        <div style={styleMain}>
+          <ul style={styleList}>{titleList}</ul>
+          <div
+            style={styleVideos}
+            ref={sectionRef => {
               this.sectionRef = sectionRef
-            }}>
-              {embeddedVideos}
-            </div>
+            }}
+          >
+            {embeddedVideos}
           </div>
-          <p style={styleDisclaimer}>Disclaimer: {govExternalYouTubeMsg}</p>
         </div>
+        <p style={styleDisclaimer}>Disclaimer: {govExternalYouTubeMsg}</p>
+      </div>
     )
   }
 }
-
-
-

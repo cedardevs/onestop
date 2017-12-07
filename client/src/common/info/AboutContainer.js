@@ -1,19 +1,17 @@
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import About from './About'
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     collectionsCount: state.domain.info.collectionsCount,
-    granulesCount: state.domain.info.granulesCount
+    granulesCount: state.domain.info.granulesCount,
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {}
 }
 
-const AboutContainer = connect(
-  mapStateToProps, mapDispatchToProps
-)(About)
+const AboutContainer = connect(mapStateToProps, mapDispatchToProps)(About)
 
 export default AboutContainer
