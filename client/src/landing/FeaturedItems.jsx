@@ -127,7 +127,9 @@ class FeaturedItems extends React.Component {
   }
 
   componentWillUnmount() {
-    this.state.timer.pause()
+    if(this.state.timer) {
+      this.state.timer.pause()
+    }
   }
 }
 

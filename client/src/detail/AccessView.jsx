@@ -111,6 +111,7 @@ export default class AccessView extends React.Component {
         return (
             <div>
                 <table style={styleTable}>
+                    <tbody>
                     <tr style={styleTableRow}>
                         <th style={styleTableHeading}>Information</th>
                         <td style={styleTableCell}>
@@ -133,6 +134,7 @@ export default class AccessView extends React.Component {
                         {/*<th style={styleTableHeading}>Citations</th>*/}
                         {/*<td style={styleTableCell}></td>*/}
                     {/*</tr>*/}
+                    </tbody>
                 </table>
             </div>
         )

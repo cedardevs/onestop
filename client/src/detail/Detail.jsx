@@ -1,13 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ShowMore from 'react-show-more'
-// import A from '../common/link/Link'
 import styles from './DetailStyles.css'
 import Tabs from './Tabs'
 import SummaryView from './SummaryView'
 import DescriptionView from './DescriptionView'
 import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
 import AccessView from './AccessView'
+import VideoView from './VideoView'
 
 class Detail extends React.Component {
   constructor(props) {
@@ -23,7 +22,7 @@ class Detail extends React.Component {
       return <div style={{display: 'none'}}/>
     }
     const item = this.props.item
-    const tabData = [
+    let tabData = [
       {
         title: 'Summary',
         content: <SummaryView id={this.props.id} item={this.props.item}/>,
@@ -43,9 +42,19 @@ class Detail extends React.Component {
         title: 'Access',
         content: (
             <AccessView id={this.props.id} item={this.props.item}/>
-        )
+        ),
       },
     ]
+
+    const videoLinks = item.links.filter(link => link.linkProtocol === 'video:youtube')
+    if (videoLinks.length > 0) {
+      tabData.push({
+        title: videoLinks.length === 1 ? 'Video' : 'Videos',
+        content: (
+            <VideoView id={this.props.id} links={videoLinks}/>
+        ),
+      })
+    }
 
     return (
         <div className={styles.modal}>
@@ -55,14 +64,12 @@ class Detail extends React.Component {
                   className={`pure-u-11-12 ${styles.title}`}
                   title={`${item.title}`}
               >
-                <ShowMore lines={1} anchorClass={`${styles.showMore}`}>
-                  {item.title}
-                </ShowMore>
+                {item.title}
               </div>
               <div className={'pure-u-1-12'}>
-							<span className={styles.close} onClick={this.close}>
-								x
-							</span>
+                <span className={styles.close} onClick={this.close}>
+                  x
+                </span>
               </div>
             </div>
             <Tabs data={tabData} activeIndex={0}/>

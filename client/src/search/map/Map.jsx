@@ -125,6 +125,10 @@ class Map extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    this.state.map.invalidateSize()
+  }
+
   updateSelectionLayer() {
     let {editableLayers, style} = this.state
     let w = watch(store.getState, 'behavior.search.geoJSON')
