@@ -46,7 +46,7 @@ export default class FacetTree extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidMount(nextProps) {
     this.setState(prevState => {
       return {
         ...prevState,
