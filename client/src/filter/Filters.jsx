@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
-import TimeFilter from './time/TimeFilter'
+import TimeFilterContainer from './time/TimeFilterContainer'
 import FacetFilterContainer from './keyword/FacetFilterContainer'
 import MapFilter from './spatial/MapFilter'
 
@@ -41,16 +41,15 @@ class Filters extends Component {
       // 	heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
       // 	content: <MapFilter />,
       // },
-      // {
-      //  name: "time",
-      // 	heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
-      // 	content: <TimeFilter />,
-      // },
+      {
+       name: "time",
+      	heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
+      	content: <TimeFilterContainer />,
+      },
       {
         name: "keywords",
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords"/>,
         content: <FacetFilterContainer
-            submit={props.submit}
             marginNest={styleFacetFilterContents.marginNest}
             backgroundColor={styleFacetFilterContents.backgroundColor}
         />,
