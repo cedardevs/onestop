@@ -10,8 +10,9 @@ import {
 import {showCollections} from '../../actions/FlowActions'
 
 const mapStateToProps = state => {
+  console.log('what did we build?', buildKeywordHierarchyMap(state.domain.results.facets))
   return {
-    facetMap: buildKeywordHierarchyMap(state.domain.results.facets),
+    facetMap: buildKeywordHierarchyMap(state.domain.results.facets, state.behavior.search.selectedFacets),
     selectedFacets: state.behavior.search.selectedFacets,
   }
 }

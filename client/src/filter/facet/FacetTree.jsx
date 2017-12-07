@@ -188,11 +188,11 @@ export default class FacetTree extends React.Component {
       this.updateRovingIndex(nextVisible)
     }
   }
-
-  isSelected = (category, term) => {
-    const selectedTerms = this.props.selectedFacets[category]
-    return selectedTerms ? selectedTerms.includes(term) : false
-  }
+  //
+  // isSelected = (category, term) => {
+  //   const selectedTerms = this.props.selectedFacets[category]
+  //   return selectedTerms ? selectedTerms.includes(term) : false
+  // }
 
   handleSelectToggleMouse = e => {
     this.props.handleSelectToggle(e.value, e.checked)
@@ -236,64 +236,65 @@ export default class FacetTree extends React.Component {
     else {
       // for each key recurse
       return Object.keys(facet).map(subFacet =>
+        // TODO console.log when this happens??
         this.createFacetComponent(facet[subFacet])
       )
     }
   }
-
-  parseMap = (map, level, parentOpen, parentId) => {
-    if (_.isEqual({}, map)) {
-      // cannot parse empty map
-      return []
-    }
-
-    _.each(map, (value, key) => {
-      value.relations = {}
-      value.open = false // always default to everything collapsed
-      value.tabIndex = '-1'
-    })
-
-    if (level === 1) {
-      // id first layer to set the initial tab focus
-      const value = _.map(map, (value, key) => value)[0]
-      value.tabIndex = '0'
-      this.setState(prevState => {
-        return {
-          ...prevState,
-          rovingIndex: value.id,
-        }
-      })
-    }
-
-    _.each(map, (value, key) => {
-      this.setState(prevState => {
-        // update state that lets us quickly traverse the nodes in up/down order
-        let allFacetsInOrder = Object.assign([], prevState.allFacetsInOrder)
-        allFacetsInOrder.push(value.id)
-
-        // update state that lets us set focus to another node or update visibility, since it is a property that combines the state of several nodes
-        let facetLookup = Object.assign({}, prevState.facetLookup)
-        facetLookup[value.id] = value
-
-        return {
-          ...prevState,
-          allFacetsInOrder: allFacetsInOrder,
-          facetLookup: facetLookup,
-        }
-      })
-
-      value.relations.parent = parentId
-      value.relations.children = this.parseMap(
-        value.children,
-        level + 1,
-        parentOpen && value.open,
-        value.id
-      )
-      value.visible = level === 1 || !!parentOpen
-    })
-
-    return _.map(map, (value, key) => value.id) // return siblings
-  }
+  //
+  // parseMap = (map, level, parentOpen, parentId) => {
+  //   if (_.isEqual({}, map)) {
+  //     // cannot parse empty map
+  //     return []
+  //   }
+  //
+  //   _.each(map, (value, key) => {
+  //     value.relations = {}
+  //     value.open = false // always default to everything collapsed
+  //     value.tabIndex = '-1'
+  //   })
+  //
+  //   if (level === 1) {
+  //     // id first layer to set the initial tab focus
+  //     const value = _.map(map, (value, key) => value)[0]
+  //     value.tabIndex = '0'
+  //     this.setState(prevState => {
+  //       return {
+  //         ...prevState,
+  //         rovingIndex: value.id,
+  //       }
+  //     })
+  //   }
+  //
+  //   _.each(map, (value, key) => {
+  //     this.setState(prevState => {
+  //       // update state that lets us quickly traverse the nodes in up/down order
+  //       let allFacetsInOrder = Object.assign([], prevState.allFacetsInOrder)
+  //       allFacetsInOrder.push(value.id)
+  //
+  //       // update state that lets us set focus to another node or update visibility, since it is a property that combines the state of several nodes
+  //       let facetLookup = Object.assign({}, prevState.facetLookup)
+  //       facetLookup[value.id] = value
+  //
+  //       return {
+  //         ...prevState,
+  //         allFacetsInOrder: allFacetsInOrder,
+  //         facetLookup: facetLookup,
+  //       }
+  //     })
+  //
+  //     value.relations.parent = parentId
+  //     value.relations.children = this.parseMap(
+  //       value.children,
+  //       level + 1,
+  //       parentOpen && value.open,
+  //       value.id
+  //     )
+  //     value.visible = level === 1 || !!parentOpen
+  //   })
+  //
+  //   return _.map(map, (value, key) => value.id) // return siblings
+  // }
 
   handleKeyPressed = e => {
     // do nothing if modifiers are pressed
