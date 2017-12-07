@@ -67,21 +67,25 @@ describe('The keyword utils', function () {
                     count: 2,
                     children: {},
                     category: 'science',
-                    term: 'Atmosphere > Air > Particles'
+                    term: 'Atmosphere > Air > Particles',
+                    id: 'science-Atmosphere-Air-Particles',
                   }
                 },
                 category: 'science',
-                term: 'Atmosphere > Air'
+                term: 'Atmosphere > Air',
+                id: 'science-Atmosphere-Air',
               },
               'Wind': {
                 count: 1,
                 children: {},
                 category: 'science',
-                term: 'Atmosphere > Wind'
+                term: 'Atmosphere > Wind',
+                id: 'science-Atmosphere-Wind',
               }
             },
             category: 'science',
-            term: 'Atmosphere'
+            term: 'Atmosphere',
+            id: 'science-Atmosphere',
           },
           'Land Surface': {
             count: 2,
@@ -90,17 +94,20 @@ describe('The keyword utils', function () {
                 count: 2,
                 children: {},
                 category: 'science',
-                term: 'Land Surface > Topography'
+                term: 'Land Surface > Topography',
+                id: 'science-Land-Surface-Topography',
               }
             },
             category: 'science',
-            term: 'Land Surface'
+            term: 'Land Surface',
+            id: 'science-Land-Surface',
           },
           'Oceans': {
             count: 1,
             children: {},
             category: 'science',
-            term: 'Oceans'
+            term: 'Oceans',
+            id: 'science-Oceans',
           }
         }
       }
@@ -132,11 +139,13 @@ describe('The keyword utils', function () {
                     count: 1,
                     children: {},
                     category: 'science',
-                    term: "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave > Brightness Temperature"
+                    term: "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave > Brightness Temperature",
+                    id: 'science-Spectral-Engineering-microwave-Brightness-Temperature',
                   }
                 },
                 category: 'science',
-                term: "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
+                term: "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave",
+                id: 'science-Spectral-Engineering-microwave',
               },
               "Microwave": {
                 count: 6,
@@ -145,21 +154,25 @@ describe('The keyword utils', function () {
                     count: 1,
                     children: {},
                     category: 'science',
-                    term: "Spectral/Engineering > Microwave > Antenna Temperature"
+                    term: "Spectral/Engineering > Microwave > Antenna Temperature",
+                    id: 'science-Spectral-Engineering-Microwave-Antenna-Temperature'
                   },
                   "Brightness Temperature": {
                     count: 6,
                     children: {},
                     category: 'science',
-                    term: "Spectral/Engineering > Microwave > Brightness Temperature"
+                    term: "Spectral/Engineering > Microwave > Brightness Temperature",
+                    id: 'science-Spectral-Engineering-Microwave-Brightness-Temperature',
                   }
                 },
                 category: 'science',
-                term: "Spectral/Engineering > Microwave"
+                term: "Spectral/Engineering > Microwave",
+                id: 'science-Spectral-Engineering-Microwave'
               }
             },
             category: 'science',
-            term: "Spectral/Engineering"
+            term: "Spectral/Engineering",
+            id: 'science-Spectral-Engineering',
           }
         }
       }
@@ -181,13 +194,15 @@ describe('The keyword utils', function () {
             count: 10,
             children: {},
             category: 'totesDifferentCategory',
-            term: 'Short Name > Long Name'
+            term: 'Short Name > Long Name',
+            id: 'totes-Different-Category-Short-Name-Long-Name',
           },
           'TLA > Three Letter Acronym': {
             count: 5,
             children: {},
             category: 'totesDifferentCategory',
-            term: 'TLA > Three Letter Acronym'
+            term: 'TLA > Three Letter Acronym',
+            id: 'totes-Different-Category-TLA-Three-Letter-Acronym',
           }
         }
       }

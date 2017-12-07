@@ -42,6 +42,7 @@ const styleHideContentArrowWrapper = {
 }
 
 const styleHiddenContent = {
+  background: '#277CB2', // $color_primary
   display: "flex",
   flexDirection: "column",
   justifyContent: "flex-start",
@@ -114,24 +115,26 @@ export default class Left extends Component {
                 styleIcon={{width:"1em", height:"31px"}}
                 onClick={this.handleClose}
                 title={'Hide Filter Menu'}
+                ariaExpanded={true}
             />
         </div>
     )
     const hiddenContent = (
-        <div style={styleHiddenContent}>
-          <img style={styleHiddentContentImage} alt='Show Filter Menu' src={arrowRight}/>
-          <span style={styleHiddentContentVerticalText}>S</span>
-          <span style={styleHiddentContentVerticalText}>R</span>
-          <span style={styleHiddentContentVerticalText}>E</span>
-          <span style={styleHiddentContentVerticalText}>T</span>
-          <span style={styleHiddentContentVerticalText}>L</span>
-          <span style={styleHiddentContentVerticalText}>I</span>
-          <span style={styleHiddentContentVerticalText}>F</span>
-          <img style={styleHiddentContentImage} alt='Show Filter Menu' src={arrowRight}/>
-        </div>
+        <button onClick={this.handleOpen} aria-label='Show Filter Menu' aria-expanded='false'
+          style={styleHiddenContent}>
+          <img style={styleHiddentContentImage} aria-hidden='true' alt='Show Filter Menu' src={arrowRight}/>
+          <span aria-hidden='true' style={styleHiddentContentVerticalText}>S</span>
+          <span aria-hidden='true' style={styleHiddentContentVerticalText}>R</span>
+          <span aria-hidden='true' style={styleHiddentContentVerticalText}>E</span>
+          <span aria-hidden='true' style={styleHiddentContentVerticalText}>T</span>
+          <span aria-hidden='true' style={styleHiddentContentVerticalText}>L</span>
+          <span aria-hidden='true' style={styleHiddentContentVerticalText}>I</span>
+          <span aria-hidden='true' style={styleHiddentContentVerticalText}>F</span>
+          <img style={styleHiddentContentImage} aria-hidden='true' alt='Show Filter Menu' src={arrowRight}/>
+        </button>
     )
     return (
-        <div style={classes} onClick={this.handleOpen}>
+        <div style={classes}>
           {this.state.visible ? hideContentArrow : null}
           {this.state.visible ? this.props.content : hiddenContent}
         </div>

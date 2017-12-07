@@ -21,12 +21,14 @@ const buildHierarchyMap = (category, terms) => {
   let categoryMap = {}
 
   Object.keys(terms).map(term => {
+    const idParts = _.concat(_.words(category), _.words(term))
     let hierarchy = term.split('>').map(e => e.trim()) // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
     const value = {
       count: terms[term].count,
       children: {},
       category: category,
-      term: term
+      term: term,
+      id: idParts.join('-'),
     }
     createChildrenHierarchy(categoryMap, hierarchy, term, value)
   })
@@ -48,11 +50,13 @@ export const buildKeywordHierarchyMap = facetMap => {
       else {
         heading = _.startCase(_.toLower((category.split(/(?=[A-Z])/).join(" "))))
         Object.keys(terms).map(term => {
+          const idParts = _.concat(_.words(category), _.words(term))
           categoryMap[term] = {
             count: terms[term].count,
             children: {},
             category: category,
-            term: term
+            term: term,
+            id: idParts.join('-'),
           }
         })
       }
