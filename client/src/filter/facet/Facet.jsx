@@ -2,7 +2,7 @@ import React from 'react'
 import Expandable from '../../common/Expandable'
 import Checkbox from '../../common/input/Checkbox'
 
-import {titleCaseKeyword} from '../../utils/keywordUtils'
+// import {titleCaseKeyword} from '../../utils/keywordUtils'
 
 /**
   This component is a node in the facet tree.
@@ -57,10 +57,11 @@ export default class FacetTreeItem extends React.Component {
       children,
       hasChildren,
       tabIndex,
+      keyword,
     } = this.props
     const {open, selected, focusing} = this.state
 
-    const keyword = titleCaseKeyword(term)
+    // const keyword = titleCaseKeyword(term)
     const label = `${keyword} (${count})`
 
     const styleFacetContainer =
