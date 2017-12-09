@@ -41,17 +41,36 @@ export default class FacetTree extends React.Component {
     this.state = {
       facetMap: {},
       allFacetsInOrder: [],
-      facetLookup: {},
+      facetLookup: {}, // TODO change to a function to do a find on the list
     }
   }
 
   componentDidMount(nextProps) {
+//     console.log(this.props)
+//     //props we care about: hierarchy, facetMap
+//     facet.open = false // always default to everything collapsed
+//     facet.tabIndex = '-1'
+//
+// rovingIndex: value.id, // set state
+
     this.setState(prevState => {
+      // do with new facet map only (init state)
+      const facets = this.props.facetMap // TODO rename facetMap to facetList?
+      _.each(facets, (facet) => {
+        // TODO replace with map merge
+        facet.open = false
+        facet.tabIndex = '-1'
+      })
+      const firstFocused = facets[0]
+      firstFocused.tabIndex = 0
+
       return {
         ...prevState,
         // reset facet references before reparsing the map, which should populate them again
-        allFacetsInOrder: [],
-        facetLookup: {},
+        // allFacetsInOrder: [],
+        // facetLookup: {},
+        facetList: facets,
+        rovingIndex: firstFocused.id,
       }
     })
     if (!_.isEqual({}, this.props.facetMap)) {
@@ -68,6 +87,12 @@ export default class FacetTree extends React.Component {
         }
       })
     }
+  }
+
+  facetLookup = (id) => {
+    return _.find(this.state.facetList, (facet) => {
+      return facet.id === id
+    })
   }
 
   handleExpandableToggle = event => {
@@ -198,25 +223,23 @@ export default class FacetTree extends React.Component {
     this.props.handleSelectToggle(e.value, e.checked)
   }
 
-  createFacetComponent = (facet) => {
+  createFacetComponent = (facetInMap) => {
     // if (!facet || _.isEqual({}, facet)) { // TODO why is this reaching this part ???
     //   // cannot parse empty map
     //   return []
     // }
-    console.log('create', facet, typeof(facet), Array.isArray(facet))
     // handle any nulls that might get into this function
+    const facet = this.facetLookup(facetInMap.id)
+    // console.log(facetInMap, facet)
     let facetComponent = null
     if (!facet) {
       return facetComponent
     }
-
-    console.log('wtf is facet', facet)
-
-    if (!Array.isArray(facet)) {
-      console.log('actual child', facet)
-      const hasChildren = !_.isEmpty(facet.children)
+    const facetChildren = _.map(facetInMap.children, facet => this.createFacetComponent(facet))
+    // if (!Array.isArray(facet)) {
+      const hasChildren = !_.isEmpty(facetInMap.children)
       const children = hasChildren
-        ? this.createFacetComponent(facet.children, facet)
+        ? facetChildren//this.createFacetComponent(facet.children, facet)
         : null
 
       return (
@@ -228,7 +251,7 @@ export default class FacetTree extends React.Component {
           count={facet.count}
           open={facet.open}
           keyword={facet.keyword}
-          selected={this.selected}
+          selected={facet.selected}
           tabIndex={facet.tabIndex}
           focused={this.state.focus}
           children={children}
@@ -241,19 +264,19 @@ export default class FacetTree extends React.Component {
           styleChildren={styleExpandableContent(this.props.marginNest)}
         />
       )
-    }
-    else {
-      // for each key recurse
-      // return Object.keys(facet).map(subFacet =>
-      //   // TODO console.log when this happens??
-      //   this.createFacetComponent(facet[subFacet])
-      // )
-      console.log('heck?', facet, typeof(facet))
-      // _.each(facet, facet=> {
-      //   console.log('each facet is',facet)
-      // })
-      return _.map(facet, facet => this.createFacetComponent(facet))
-    }
+    // }
+    // else {
+    //   // for each key recurse
+    //   // return Object.keys(facet).map(subFacet =>
+    //   //   // TODO console.log when this happens??
+    //   //   this.createFacetComponent(facet[subFacet])
+    //   // )
+    //   // _.each(facet, facet=> {
+    //   //   console.log('each facet is',facet)
+    //   // })
+    //   return _.map(facet, facet => this.createFacetComponent(facet))
+    // }
+    return facetChildren// _.map(facetInMap.children, facet => this.createFacetComponent(facet))
   }
   //
   parseMap = (map, level, parentOpen, parentId) => {
@@ -272,7 +295,6 @@ export default class FacetTree extends React.Component {
     if (level === 1) {
       // id first layer to set the initial tab focus
       const value = _.map(map, (value) => value)[0]
-      console.log("????", map, value)
       value.tabIndex = '0'
       this.setState(prevState => {
         return {
@@ -378,7 +400,8 @@ export default class FacetTree extends React.Component {
   }
 
   render() {
-    const facetHierarchy = this.createFacetComponent(this.state.facetMap)
+    const facetHierarchy = _.map(this.props.hierarchy, (facet) => {return this.createFacetComponent(facet)})
+    // this.createFacetComponent(this.props.hierarchy)
 
     return (
       <div

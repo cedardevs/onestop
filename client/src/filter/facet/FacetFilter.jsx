@@ -74,6 +74,7 @@ export default class FacetFilter extends Component {
         <FacetTree
           headerId={facetCategory.id}
           facetMap={facetCategory.keywordFacets}
+          hierarchy={facetCategory.hierarchy}
 //selectedFacets={this.props.selectedFacets}
           handleSelectToggle={this.updateStoreAndSubmitSearch}
           backgroundColor={this.props.backgroundColor}
