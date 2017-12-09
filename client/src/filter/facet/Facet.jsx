@@ -58,6 +58,7 @@ export default class FacetTreeItem extends React.Component {
       hasChildren,
       tabIndex,
       keyword,
+      facetMap,
     } = this.props
     const {open, selected, focusing} = this.state
 
@@ -86,7 +87,7 @@ export default class FacetTreeItem extends React.Component {
     const content = hasChildren ? (
       <Expandable
         open={open}
-        value={facetId}
+        value={facetMap}
         heading={facet}
         tabbable={false}
         styleHeading={this.props.styleFacet}
