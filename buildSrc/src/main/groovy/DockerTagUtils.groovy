@@ -30,16 +30,11 @@ class DockerTagUtils {
     return truncatedVersionParts(number).collect({it + suffix})
   }
 
-  static getDockerVersions(Project project) {
-    return getVersionVariants(project.version as String) + [
-        'latest',
-        'latest-SNAPSHOT',
-    ]
-  }
-
-  static getDockerTags(Project project) {
+  static getDockerTags(Project project, Boolean includeLatest = false) {
     def repositoryName = "${DOCKER_ORG}/${project.rootProject.name}-${project.name}"
-    return getDockerVersions(project).collect({"${repositoryName}:${it}"})
+    def latestVersions = includeLatest ? ['latest'] : []
+    def allVersions = latestVersions + getVersionVariants(project.version as String)
+    return allVersions.collect({"${repositoryName}:${it}"})
   }
 
 }

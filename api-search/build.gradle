@@ -122,13 +122,8 @@ task dockerImage(type: BuildDockerImageTask) {
 
 assemble.dependsOn dockerImage
 
-task publishImage(type: Exec, description: 'Publishes the docker image', group: 'publish') {
+task publishImage(type: PublishDockerImageTask) {
   dependsOn "dockerImage"
-  executable = "bash"
-  args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
-      "docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && " +
-      "docker push cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT && " +
-      "docker logout"]
 }
 
 artifactoryPublish.dependsOn publishImage

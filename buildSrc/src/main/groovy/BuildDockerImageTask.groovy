@@ -36,7 +36,7 @@ class BuildDockerImageTask extends DefaultTask {
         "--build-arg DATE=${getDateTime()} ",
     ]
     def buildArgs = additionalBuildArgs.collect({"--build-arg ${it.key}=${it.value}"})
-    def tagArgs = DockerTagUtils.getDockerTags(project).collect({"-t ${it}"})
+    def tagArgs = DockerTagUtils.getDockerTags(project, true).collect({"-t ${it}"})
     def finalArgs = ['.']
     def allArgs = defaultArgs + buildArgs + tagArgs + finalArgs
     def command = allArgs.join(' ')
