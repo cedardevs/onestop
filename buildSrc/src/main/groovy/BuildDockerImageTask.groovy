@@ -28,18 +28,22 @@ class BuildDockerImageTask extends DefaultTask {
   Map<String, String> additionalBuildArgs
 
   @TaskAction
-  buildImage() {
+  def buildImage() {
+    def defaultArgs = [
+        "docker build --no-cache",
+        "--build-arg VCS_REF=\$(git rev-parse --short HEAD) ",
+        "--build-arg VERSION=${project.version} ",
+        "--build-arg DATE=${getDateTime()} ",
+    ]
+    def buildArgs = additionalBuildArgs.collect({"--build-arg ${it.key}=${it.value}"})
+    def tagArgs = DockerTagUtils.getDockerTags(project).collect({"-t ${it}"})
+    def finalArgs = ['.']
+    def allArgs = defaultArgs + buildArgs + tagArgs + finalArgs
+    def command = allArgs.join(' ')
+
     project.exec {
-      executable = "bash"
-      args = ["-c", "docker build --no-cache " +
-          "--build-arg VCS_REF=\$(git rev-parse --short HEAD) " +
-          "--build-arg VERSION=${project.version} " +
-          "--build-arg DATE=${getDateTime()} " +
-          additionalBuildArgs.collect({ "--build-arg ${it.key}=${it.value}" }).join(" ") + " " +
-          "-t cedardevs/${project.rootProject.name}-${project.name}:${project.version} " +
-          "-t cedardevs/${project.rootProject.name}-${project.name}:latest " +
-          "-t cedardevs/${project.rootProject.name}-${project.name}:latest-SNAPSHOT " +
-          "."]
+      executable = 'bash'
+      args = ['-c', command]
     }
   }
 
