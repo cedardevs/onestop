@@ -11,10 +11,18 @@ import org.gradle.api.tasks.TaskAction
  */
 class BuildDockerImageTask extends DefaultTask {
 
+  @Override
+  String getDescription() {
+    return 'Builds a docker image from the project directory'
+  }
+
+  @Override
+  String getGroup() {
+    return 'docker'
+  }
+
   // TODO make compiled jar and Dockerfile input that will be used for detecting changes
   // TODO make output a file with the hashid of the built image for tracking changes to output
-
-  // TODO description: 'Creates a docker image with the current jar.', group: 'docker'
 
   @Optional @Input
   Map<String, String> additionalBuildArgs

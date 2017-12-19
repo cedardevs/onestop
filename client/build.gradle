@@ -91,7 +91,7 @@ publishing {
     }
 }
 
-task dockerImage(type: BuildDockerImageTask, description: 'Creates a docker image with the current build.', group: 'docker') {
+task dockerImage(type: BuildDockerImageTask) {
   dependsOn tarResults
 }
 
