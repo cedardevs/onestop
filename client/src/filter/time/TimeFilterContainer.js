@@ -17,7 +17,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    updateTime: (startDate, endDate) => {
+    updateDateRange: (startDate, endDate) => {
       dispatch(updateDateRange(startDate, endDate))
     },
     submit: () => {
