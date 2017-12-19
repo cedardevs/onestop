@@ -1,39 +1,81 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const precss = require('precss')
-const autoprefixer = require('autoprefixer')
-const postcssAssets = require('postcss-assets')
 const path = require('path')
 require('babel-polyfill')
 const modernizrrc = path.resolve(__dirname, '.modernizrrc.json')
 require(modernizrrc)
+const nodeEnv = process.env.NODE_ENV || "development"
+const isProd = nodeEnv === "production"
+
+const basePlugins = [
+  new HtmlWebpackPlugin({
+    inject: false,
+    template: require('html-webpack-template'),
+    title: 'NOAA OneStop',
+    favicon: '../img/noaa-favicon.ico',
+    lang: 'en-US'
+  }),
+  new webpack.optimize.CommonsChunkPlugin({
+    name: 'vendor',
+    minChunks: function (module) {
+      return module.context && module.context.indexOf('node_modules') !== -1
+    }
+  }),
+]
+
+const devPlugins = [
+  // enable HMR globally
+  new webpack.HotModuleReplacementPlugin(),
+
+  // prints more readable module names in the browser console on HMR updates
+  new webpack.NamedModulesPlugin(),
+]
+
+const prodPlugins = [
+  new webpack.DefinePlugin({
+    'process.env':{
+      'NODE_ENV': JSON.stringify('production')
+    }
+  }),
+  new webpack.optimize.UglifyJsPlugin({
+    compress: {warnings: false}
+  }),
+  new webpack.LoaderOptionsPlugin({
+    minimize: true,
+    debug: false
+  }),
+]
+
+const devEntryPoints = [
+  'babel-polyfill',
+  modernizrrc,
+
+  // bundle the client for webpack-dev-server and connect to the provided endpoint
+  'webpack-dev-server/client?http://localhost:8080',
+
+  // bundle the client for hot reloading hot reload for successful updates
+  'webpack/hot/only-dev-server',
+
+  './index.jsx',
+]
+
+const prodEntryPoints = [
+  'babel-polyfill',
+  modernizrrc,
+  './index.jsx'
+]
 
 module.exports = {
-  entry: [
-    'babel-polyfill',
-    modernizrrc,
-    'react-hot-loader/patch',
-    // activate HMR for React
-
-    'webpack-dev-server/client?http://localhost:8080',
-    // bundle the client for webpack-dev-server
-    // and connect to the provided endpoint
-
-    'webpack/hot/only-dev-server',
-    // bundle the client for hot reloading
-    // hot reload for successful updates
-    './index.jsx'
-  ],
+  entry: isProd ? prodEntryPoints : devEntryPoints,
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build/dist'),
     publicPath: './',
-    filename: '[name].bundle.js'
+    filename: '[name]-[hash].bundle.js'
   },
   context: path.resolve(__dirname, 'src'),
-  devtool: 'cheap-module-eval-source-map',
-  devServer: {
+  devtool: isProd ? false : 'cheap-module-eval-source-map',
+  devServer: isProd ? {} : {
     publicPath: '/onestop/',
-    contentBase: path.resolve(__dirname, 'dist'),
     disableHostCheck: true,
     hot: true,
     proxy: {
@@ -59,7 +101,9 @@ module.exports = {
         loader: 'babel-loader',
         options: {
           presets: [
-            [ 'es2015', { modules: false } ]
+            [ 'env', { modules: false } ],
+            'react',
+            'stage-0'
           ]
         }
       }
@@ -69,7 +113,7 @@ module.exports = {
       use: [{
         loader: 'style-loader',
         options: {
-          sourceMap: true
+          sourceMap: !isProd
         }
       }, {
         loader: 'css-loader'
@@ -80,7 +124,7 @@ module.exports = {
       use: [{
         loader: 'style-loader',
         options: {
-          sourceMap: true
+          sourceMap: !isProd
         }
       }, {
         loader: 'css-loader',
@@ -101,8 +145,14 @@ module.exports = {
     }, {
       test: /\.(jpe?g|png|gif)$/,
       use: [
-        'file-loader?hash=sha512&digest=hex&name=[hash].[ext]',
-        'image-webpack-loader?bypassOnDebug&optimizationLevel=7&interlaced=false'
+          {
+            loader: 'file-loader',
+              options: {
+                hash: 'sha512',
+                  digestType: 'hex',
+                  name: '[hash].[ext]'
+              }
+          },
       ],
     }, {
       test: /\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
@@ -113,28 +163,11 @@ module.exports = {
     modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules',
       path.resolve('./src/common/link')],
     extensions: ['.js', '.jsx'],
-    unsafeCache: true,
+    unsafeCache: !isProd,
     alias: {
       'fa': path.resolve(__dirname, 'img/font-awesome/white/svg/'),
       modernizr$: path.resolve(__dirname, ".modernizrrc.json")
     }
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: 'NOAA OneStop',
-      favicon: '../img/noaa-favicon.ico'
-    }),
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      minChunks: function (module) {
-        return module.context && module.context.indexOf('node_modules') !== -1
-      }
-    }),
-    //new webpack.optimize.CommonsChunkPlugin("vendor", "vendor-bundle-[hash].js")
-    new webpack.HotModuleReplacementPlugin(),
-    // enable HMR globally
-
-    new webpack.NamedModulesPlugin()
-    // prints more readable module names in the browser console on HMR updates
-  ]
+  plugins: isProd ? basePlugins.concat(prodPlugins) : basePlugins.concat(devPlugins)
 }

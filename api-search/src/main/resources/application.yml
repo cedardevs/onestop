@@ -79,3 +79,4 @@ search:
     _all: 1
 
 info.version: ${version}
+info.buildDate: ${buildDate}

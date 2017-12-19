@@ -1,16 +1,16 @@
-import { connect } from 'react-redux'
-import ErrorComponent from './ErrorComponent'
-import { push, goBack } from 'react-router-redux'
-import { clearErrors } from '../actions/ErrorActions'
-import { updateSearch } from '../actions/SearchParamActions'
+import {connect} from 'react-redux'
+import Error from './Error'
+import {push, goBack} from 'react-router-redux'
+import {clearErrors} from '../actions/ErrorActions'
+import {updateSearch} from '../actions/SearchParamActions'
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
-    errors: state.behavior.errors
+    errors: state.behavior.errors,
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     goBack: () => {
       dispatch(clearErrors())
@@ -20,13 +20,10 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(clearErrors())
       dispatch(updateSearch())
       dispatch(push('/'))
-    }
+    },
   }
 }
 
-const ErrorContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(ErrorComponent)
+const ErrorContainer = connect(mapStateToProps, mapDispatchToProps)(Error)
 
 export default ErrorContainer

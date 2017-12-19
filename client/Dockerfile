@@ -16,7 +16,7 @@ LABEL org.label-schema.vcs-ref=${VCS_REF}
 
 EXPOSE 80
 
-COPY dist /usr/share/nginx/html
+COPY build/dist /usr/share/nginx/html
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 WORKDIR /usr/app
 COPY docker/entrypoint.sh /usr/app

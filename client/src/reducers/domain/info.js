@@ -2,9 +2,9 @@ import Immutable from 'seamless-immutable'
 import {CLEAR_INFO, SET_INFO, SET_TOTAL_COUNTS} from '../../actions/InfoActions'
 
 export const initialState = Immutable({
-  version: "",
+  version: '',
   collectionsCount: 0,
-  granulesCount: 0
+  granulesCount: 0,
 })
 
 export const info = (state = initialState, action) => {
@@ -18,7 +18,7 @@ export const info = (state = initialState, action) => {
     case SET_TOTAL_COUNTS:
       return Immutable.merge(state, {
         collectionsCount: action.counts.collections,
-        granulesCount: action.counts.granules
+        granulesCount: action.counts.granules,
       })
 
     default:

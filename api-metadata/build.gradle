@@ -10,6 +10,10 @@ repositories {
   mavenCentral()
 }
 
+configurations {
+  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+}
+
 dependencies {
   compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
@@ -19,7 +23,7 @@ dependencies {
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-devtools'
   compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
-  compile 'com.github.fge:json-schema-validator:2.2.6'
+  compile 'com.github.java-json-tools:json-schema-validator:2.2.8'
   compile 'org.apache.commons:commons-lang3:3.4'
   compile 'org.apache.lucene:lucene-expressions:5.5.0'
 
@@ -32,6 +36,7 @@ dependencies {
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile 'org.testcontainers:testcontainers:1.4.2'
+  testCompile 'net.bytebuddy:byte-buddy:1.7.8'
 }
 
 ext {
@@ -96,6 +101,7 @@ publishing {
 }
 
 processResources {
+  outputs.upToDateWhen { false }
   filesMatching("**/application.yml") {
     expand( project.properties )
   }
@@ -115,6 +121,7 @@ task publishImage(type: Exec, description: 'Publishes the docker image', group: 
   executable = "bash"
   args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
       "docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT && " +
       "docker logout"]
 }
 

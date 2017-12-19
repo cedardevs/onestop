@@ -3,9 +3,9 @@
 .temporalContainer {
   z-index: 10;
   position: absolute;
-  top: 3em;
-  left: 1em;
-  box-shadow: 14px 14px 5px rgb(0, 0, 0, .7);
+  top: calc(100% + 0.309em);
+  left: 0;
+  box-shadow: 14px 14px 5px rgba(0, 0, 0, .7);
   border: 2px outset $ color-primary;
   width: 30%;
   min-width: 20em;

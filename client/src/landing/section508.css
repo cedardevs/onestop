@@ -1,12 +1,7 @@
 @import '../../style/style.css';
 
-.button {
-  max-height: 2.2em;
-  position: relative;
-  color: white !important;
-  background-color: $color-primary !important;
-  text-shadow: 0 0 5px black;
-  margin: 2em 2em 0 1em;
+.showcase {
+  min-height: 100vh;
 }
 
 .formDiv {
@@ -37,4 +32,11 @@
   padding: 0 3em;
   border: solid thin white;
   border-radius: 6px;
+}
+
+.accessibilityStatement {
+  margin: 2em auto;
+  width: 80%;
+  border: gray solid;
+  padding: 1em;
 }

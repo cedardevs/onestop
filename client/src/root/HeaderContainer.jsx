@@ -1,22 +1,17 @@
-import { connect } from 'react-redux'
-import HeaderComponent from './HeaderComponent'
-import { showHome, toggleHelp, toggleAbout } from '../actions/FlowActions'
+import {connect} from 'react-redux'
+import Header from './Header'
+import {showHome} from '../actions/FlowActions'
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {}
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     goHome: () => dispatch(showHome()),
-    toggleAbout: () => dispatch(toggleAbout()),
-    toggleHelp: () => dispatch(toggleHelp())
   }
 }
 
-const HeaderContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(HeaderComponent)
+const HeaderContainer = connect(mapStateToProps, mapDispatchToProps)(Header)
 
 export default HeaderContainer

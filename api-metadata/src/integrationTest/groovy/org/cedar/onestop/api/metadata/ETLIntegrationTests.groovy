@@ -10,7 +10,6 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 import spock.lang.Unroll
 
-@spock.lang.Ignore
 @Unroll
 @ActiveProfiles("integration")
 @SpringBootTest(classes = [Application, IntegrationTestConfig])

@@ -47,7 +47,7 @@
 }
 
 .listContainer {
-  box-shadow: 1.3em 0.7em 0.5em 0.2em rgb(0,0,0,.7);
+  box-shadow: 1.3em 0.7em 0.5em 0.2em rgb(0, 0, 0, .7);
   overflow-x: none;
 }
 
@@ -66,7 +66,7 @@
   > div {
     margin: .5em 0;
   }
-  &:nth-child(odd)	{
+  &:nth-child(odd) {
     background-color: $color-primary-darkest;
   }
   &:nth-child(even) {
@@ -76,7 +76,8 @@
     display: inline-block;
     margin: .2em;
   }
-  button, a {
+  button,
+  a {
     color: white;
     padding: .3em;
     border-radius: .1em .4em;

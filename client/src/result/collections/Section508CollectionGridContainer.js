@@ -1,25 +1,40 @@
-import { connect } from 'react-redux'
-import { showCollections, showGranules, setFocus } from '../../actions/FlowActions'
-import { incrementCollectionsOffset, triggerSearch, fetchGranules, clearCollections, clearGranules } from '../../actions/SearchRequestActions'
-import { toggleSelection, clearSelections, updateQuery, updateSearch } from '../../actions/SearchParamActions'
-import CollectionGrid from './Section508CollectionGridComponent'
+import {connect} from 'react-redux'
+import {
+  showCollections,
+  showGranules,
+  setFocus,
+} from '../../actions/FlowActions'
+import {
+  incrementCollectionsOffset,
+  triggerSearch,
+  fetchGranules,
+  clearCollections,
+  clearGranules,
+} from '../../actions/SearchRequestActions'
+import {
+  toggleSelection,
+  clearSelections,
+  updateQuery,
+  updateSearch,
+} from '../../actions/SearchParamActions'
+import Section508CollectionGrid from './Section508CollectionGrid'
 
-const mapStateToProps = (state) => {
-  const { collections, totalCollections, pageSize } = state.domain.results
+const mapStateToProps = state => {
+  const {collections, totalCollections, pageSize} = state.domain.results
   return {
     results: collections,
     totalHits: totalCollections,
-    returnedHits: collections && Object.keys(collections).length || 0,
-    pageSize
+    returnedHits: (collections && Object.keys(collections).length) || 0,
+    pageSize,
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    onCardClick: (id) => {
+    onCardClick: id => {
       dispatch(setFocus(id))
     },
-    showGranules: (id) => {
+    showGranules: id => {
       dispatch(setFocus(null))
       dispatch(clearSelections())
       dispatch(toggleSelection(id))
@@ -27,7 +42,7 @@ const mapDispatchToProps = (dispatch) => {
       dispatch(fetchGranules())
       dispatch(showGranules('508'))
     },
-    textSearch: (text) => {
+    textSearch: text => {
       dispatch(updateSearch())
       dispatch(updateQuery(text))
       dispatch(clearCollections())
@@ -37,13 +52,13 @@ const mapDispatchToProps = (dispatch) => {
     fetchMoreResults: () => {
       dispatch(incrementCollectionsOffset())
       dispatch(triggerSearch(false))
-    }
+    },
   }
 }
 
-const CollectionGridContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(CollectionGrid)
+const Section508CollectionGridContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Section508CollectionGrid)
 
-export default CollectionGridContainer
+export default Section508CollectionGridContainer

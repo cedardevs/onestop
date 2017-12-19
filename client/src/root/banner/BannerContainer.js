@@ -1,10 +1,10 @@
-import { connect } from 'react-redux'
-import BannerComponent from './BannerComponent'
+import {connect} from 'react-redux'
+import Banner from './Banner'
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return state.domain.config.banner ? state.domain.config.banner : {}
 }
 
-const BannerContainer = connect(mapStateToProps)(BannerComponent)
+const BannerContainer = connect(mapStateToProps)(Banner)
 
 export default BannerContainer

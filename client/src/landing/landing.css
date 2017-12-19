@@ -5,7 +5,11 @@
   text-align: center;
   min-height: 15em;
 
-  h1, h2, h3, h4, h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     text-align: left;
     margin-bottom: 0;
   }
@@ -15,26 +19,30 @@
     padding: 2em 3em 0 0;
     vertical-align: middle;
 
-button {
-  background: none;
-  display: block;
-  font-weight: bold;
-  font-size: 1.17em;
-  border: none;
-  text-align: center;
-  vertical-align: middle;
-  margin-bottom: 1.1em;
-  text-decoration: none;
-  padding: 0.3em 0em 0em 0.65em;;
-}
+    button {
+      background: none;
+      display: block;
+      font-weight: bold;
+      font-size: 1.17em;
+      border: none;
+      text-align: center;
+      vertical-align: middle;
+      margin-bottom: 1.1em;
+      text-decoration: none;
+      padding: 0.3em 0em 0em 0.65em;
+    }
 
-    h1, h2, h3, h4, h5 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
       text-align: center;
       margin-bottom: 1.1em;
     }
     img {
-      width: 6em;
-      height: 6em;
+      width: 5em;
+      height: 5em;
       max-width: 100%;
       transition: transform 200ms;
     }
@@ -53,7 +61,11 @@ button {
   min-height: 35em;
   margin: 0 auto;
 
-  h1, h2, h3, h4, h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     text-align: left;
     margin-bottom: 1.1em;
   }
@@ -64,9 +76,12 @@ button {
   width: 90%;
   max-width: 80em;
   padding-bottom: 10em;
+  min-height: 100vh;
 }
 
 .searchComponent {
+  width: auto;
+  margin: 0 auto 0 auto;
   text-align: center;
 }
 
@@ -81,15 +96,6 @@ button {
     max-width: 1.1em;
     max-height: 1.1em;
   }
-}
-
-.hiddenPageTitle {
-  position: absolute;
-  left: -10000px;
-  top: auto;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
 }
 
 .heroText {
@@ -108,8 +114,7 @@ button {
 .infoPanel-enter.infoPanel-enter-active {
   opacity: 1;
   margin-top: 0;
-  transition: margin-top 300ms 0ms ease-out,
-              opacity 200ms 300ms ease-out;
+  transition: margin-top 300ms 0ms ease-out, opacity 200ms 300ms ease-out;
 }
 
 .infoPanel-leave {
@@ -120,8 +125,7 @@ button {
 .infoPanel-leave.infoPanel-leave-active {
   opacity: 0.01;
   margin-top: -100%;
-  transition: opacity 200ms 0ms ease-out,
-              margin-top 300ms 200ms ease-out;
+  transition: opacity 200ms 0ms ease-out, margin-top 300ms 200ms ease-out;
 }
 
 .infoText {
@@ -146,7 +150,7 @@ button {
     padding: 0.2em 0.5em;
     margin-left: 0.3em;
     border-radius: 2px;
-    text-shadow: 0 0 5px black;;
+    text-shadow: 0 0 5px black;
   }
   .highlightB {
     color: $color-primary;

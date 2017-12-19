@@ -7,8 +7,10 @@ services:
       - 8080:80
     depends_on:
       - api-search
+      - geoportal-search
     environment:
-      - UPSTREAM_HOST=api-search
+      - "ONESTOP_ENDPOINT=api-search:8097"
+      - "GEOPORTAL_ENDPOINT=geoportal-search:8080"
 
   api-search:
     image: cedardevs/onestop-api-search:latest
@@ -31,6 +33,15 @@ services:
       - elasticsearch_host=elasticsearch
       - elasticsearch_port=9200
       - logging_level_org.cedar.onestop.api=DEBUG
+
+  geoportal-search:
+    image: cedardevs/onestop-geoportal-search:latest
+    depends_on:
+      - elasticsearch
+    ports:
+      - 8080
+    environment:
+      - "ELASTICSEARCH_ENDPOINT=http://elasticsearch:9200/search/granule/_search"
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:${ES_VERSION:-5.5.1}

@@ -19,8 +19,8 @@ dependencies {
 }
 
 test {
-  dependsOn ':api-search:dockerImage', ':api-metadata:dockerImage'
-  mustRunAfter ':api-search:integrationTest', ':api-metadata:integrationTest'
+  dependsOn rootProject.getTasksByName('dockerImage', true)
+  mustRunAfter rootProject.getTasksByName('integrationTest', true)
 }
 
 bootRepackage {

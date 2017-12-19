@@ -1,0 +1,11 @@
+export const styleResult = {
+  paddingTop: '1.618em',
+  minHeight: '100vh',
+}
+
+export const styleResult508 = {
+  overflowX: 'hidden',
+  maxWidth: '40em',
+  margin: '1em auto 8em',
+  minHeight: '100vh',
+}

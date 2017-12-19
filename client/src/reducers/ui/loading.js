@@ -3,7 +3,7 @@ import {LOADING_SHOW, LOADING_HIDE} from '../../actions/FlowActions'
 export const initialState = false
 
 export const loading = (state = initialState, action) => {
-  switch(action.type) {
+  switch (action.type) {
     case LOADING_SHOW:
       return true
 

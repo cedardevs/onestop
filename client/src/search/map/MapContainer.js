@@ -1,24 +1,21 @@
-import { connect } from 'react-redux'
-import MapComponent from './MapComponent'
-import { newGeometry, removeGeometry } from '../../actions/SearchParamActions'
+import {connect} from 'react-redux'
+import Map from './Map'
+import {newGeometry, removeGeometry} from '../../actions/SearchParamActions'
 
-const mapStateToProps = (state) => {
-  const { geoJSON } = state.behavior.search
+const mapStateToProps = state => {
+  const {geoJSON} = state.behavior.search
   return {
-    geoJsonSelection: geoJSON
+    geoJsonSelection: geoJSON,
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     handleNewGeometry: geoJSON => dispatch(newGeometry(geoJSON)),
-    removeGeometry: () => dispatch(removeGeometry())
+    removeGeometry: () => dispatch(removeGeometry()),
   }
 }
 
-const MapContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(MapComponent)
+const MapContainer = connect(mapStateToProps, mapDispatchToProps)(Map)
 
 export default MapContainer

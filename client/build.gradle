@@ -1,16 +1,14 @@
-import com.moowork.gradle.node.task.NodeTask
-
 apply plugin: "com.moowork.node"
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 node {
-    version = '6.3.1'
+    version = '8.9.1'
     download = true
 }
 
 clean {
     doFirst {
-        file("${projectDir}/dist").deleteDir()
+        file("${buildDir}/dist").deleteDir()
         file("${buildDir}/libs").deleteDir()
     }
 }
@@ -22,22 +20,27 @@ task compile(type: NodeTask) {
     sourceDirs.each {
         inputs.dir(it).skipWhenEmpty()
     }
-    outputs.dir('dist')
+    outputs.dir("${buildDir}/dist")
     script = file('node_modules/.bin/webpack')
-    args = ['--bail', '--config', 'webpack.config.prod.js', '-p']
+    args = ['--bail', '-p']
     execOverrides {
         it.environment 'NODE_ENV', 'production'
     }
     doFirst {
         // Remove previous outputs. Doesn't run if the task if UP-TO-DATE
-        file("${projectDir}/dist").deleteDir()
+        file("${buildDir}/dist").deleteDir()
     }
+}
+
+task start(type: Exec, dependsOn: [":dockerComposeBackendStart"]) {
+  executable = "bash"
+  args = ["-c", "npm run dev"]
 }
 
 task tarResults(type: Tar) {
     dependsOn 'compile'
 
-    from "${projectDir}/dist"
+    from "${buildDir}/dist"
     baseName = 'onestop-client'
     version = project.version
     compression = 'gzip'
@@ -89,7 +92,7 @@ publishing {
 }
 
 task dockerImage(type: BuildDockerImageTask, description: 'Creates a docker image with the current build.', group: 'docker') {
-  dependsOn tarResults		
+  dependsOn tarResults
 }
 
 assemble.dependsOn dockerImage
@@ -99,6 +102,7 @@ task publishImage(type: Exec, description: 'Publishes the docker image', group: 
   executable = "bash"
   args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
       "docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && " +
+      "docker push cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT && " +
       "docker logout"]
 }
 
