@@ -139,8 +139,7 @@ const buildSearchAction = (
 
     prefetchHandler(dispatch)
 
-    const host = state.domain.config.apiHost || ''
-    const endpoint = host + '/onestop/api/search'
+    const endpoint = state.domain.api.host + state.domain.api.path + '/search'
     const fetchParams = {
       method: 'POST',
       headers: {
