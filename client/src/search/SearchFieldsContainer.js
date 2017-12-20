@@ -7,8 +7,6 @@ import { showCollections } from '../actions/FlowActions'
 const mapStateToProps = (state) => {
   return {
     queryString: state.behavior.search.queryText,
-    startDateTime: state.behavior.search.startDateTime,
-    endDateTime: state.behavior.search.endDateTime,
     geoJSON: state.behavior.search.geoJSON
   }
 }
