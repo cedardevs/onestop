@@ -62,35 +62,59 @@ export default class TimeFilter extends Component {
       endDateDay: '',
       startValueValid: true,
       endValueValid: true,
+      dateRangeValid: true,
+      warning: ''
+    }
+  }
+
+  warningStyle() {
+    if(_.isEmpty(this.state.warning)) {
+      return {
+        display: 'none'
+      }
+    }
+    else {
+      return {
+        color: '#b00101',
+        textAlign: 'center',
+        margin: '0.75em 0 0.5em',
+        fontWeight: 'bold',
+        fontSize: '1.15em'
+      }
     }
   }
 
   onChange(field, value) {
-    console.log(field, value)
     let stateClone = { ...this.state }
     stateClone[field] = value
 
     this.setState({
       [field]: value,
+      warning: '',
       startValueValid: this.isValidDate(stateClone.startDateYear, stateClone.startDateMonth, stateClone.startDateDay),
       endValueValid: this.isValidDate(stateClone.endDateYear, stateClone.endDateMonth, stateClone.endDateDay),
+      dateRangeValid: this.isValidDateRange(
+        moment(this.textToNumeric(stateClone.startDateYear, stateClone.startDateMonth, stateClone.startDateDay)),
+        moment(this.textToNumeric(stateClone.endDateYear, stateClone.endDateMonth, stateClone.endDateDay)))
     })
   }
 
   textToNumeric = (year, month, day) => {
-    let dayNumber = _.toNumber(day)
-
     return {
-      year: _.toNumber(year),
+      year: year ? _.toNumber(year) : null,
       month: month ? _.toNumber(month) : null,
-      day: !_.isNaN(dayNumber) ? dayNumber : null
+      day: day ? _.toNumber(day) : null
     }
   }
 
   isValidDate = (year, month, day) => {
+    // No date given is technically valid (since a complete range is unnecessary)
+    if(!year && !month && ! day) {
+      return true
+    }
+
     // Valid date can be year only, year & month only, or full date
     let numeric = this.textToNumeric(year, month, day)
-    console.log(numeric)
 
     const now = moment()
     const givenDate = moment(numeric)
@@ -98,8 +122,6 @@ export default class TimeFilter extends Component {
     let validYear = _.isFinite(numeric.year) && _.isInteger(numeric.year) && numeric.year <= now.year()
     let validMonth = numeric.month ? numeric.month && numeric.year && moment([numeric.year, numeric.month]).isSameOrBefore(now) : true
     let validDay = numeric.day ? _.isFinite(numeric.day) && _.isInteger(numeric.day) && givenDate.isValid() && givenDate.isSameOrBefore(now) : true
-
-    console.log('date validation: ', numeric.year, numeric.month, numeric.day, validYear, validMonth, validDay)
 
     return validYear && validMonth && validDay
   }
@@ -112,15 +134,6 @@ export default class TimeFilter extends Component {
     else { return true }
   }
 
-  getDate = (year, month, day) => {
-    year = _.toNumber(year)
-    month = month ? _.toNumber(month) : null
-    day = _.toNumber(day)
-    if (_.isNaN(day)) { day = null }
-
-    return moment([year, month, day])
-  }
-
   clearDates = () => {
     this.setState(this.initialState())
     this.props.updateDateRange(null, null)
@@ -128,14 +141,26 @@ export default class TimeFilter extends Component {
   }
 
   applyDates = () => {
-    let startDate = this.textToNumeric(this.state.startDateYear, this.state.startDateMonth, this.state.startDateDay)
-    let endDate = this.textToNumeric(this.state.endDateYear, this.state.endDateMonth, this.state.endDateDay)
+    if(!this.state.startValueValid || !this.state.endValueValid) {
+      this.setState({
+        warning: 'Invalid start and/or end date provided.'
+      })
+    }
+    else if(!this.state.dateRangeValid) {
+      this.setState({
+        warning: 'Invalid date range provided.'
+      })
+    }
+    else {
+      let startDate = this.textToNumeric(this.state.startDateYear, this.state.startDateMonth, this.state.startDateDay)
+      let endDate = this.textToNumeric(this.state.endDateYear, this.state.endDateMonth, this.state.endDateDay)
 
-    let startDateString = moment(startDate).utc().startOf('day').format()
-    let endDateString = moment(endDate).utc().startOf('day').format()
+      let startDateString = !_.every(startDate, _.isNull) ? moment(startDate).utc().startOf('day').format() : null
+      let endDateString = !_.every(endDate, _.isNull) ? moment(endDate).utc().startOf('day').format() : null
 
-    this.props.updateDateRange(startDateString, endDateString)
-    this.props.submit()
+      this.props.updateDateRange(startDateString, endDateString)
+      this.props.submit()
+    }
   }
 
   render() {
@@ -159,7 +184,7 @@ export default class TimeFilter extends Component {
 
     return (
       <div style={styleTimeFilter}>
-        <p>Filter your search results by providing a start date, end date, or date range.</p>
+        <p>Filter your search results by providing a start date, end date, or date range. Use year, year and month, or full dates. Future dates are not accepted.</p>
         <form>
           <fieldset style={styleFieldset} onChange={(event) => this.onChange(event.target.name, event.target.value)}>
             <legend>Start Date: </legend>
@@ -222,6 +247,9 @@ export default class TimeFilter extends Component {
         <div style={styleButtons}>
           {clearButton}
           {applyButton}
+        </div>
+        <div style={this.warningStyle()} role='alert'>
+          {this.state.warning}
         </div>
       </div>
     )
