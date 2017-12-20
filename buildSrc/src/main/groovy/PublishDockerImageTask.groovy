@@ -15,7 +15,8 @@ class PublishDockerImageTask extends DefaultTask {
 
   @TaskAction
   def publish() {
-    def tags = DockerTagUtils.getDockerTags(project)
+    def isRelease = project.isRelease as Boolean // from root project
+    def tags = DockerTagUtils.getDockerTags(project, isRelease)
     def commands = ["docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD"] +
         tags.collect({"docker push ${it}"}) +
         ["docker logout"]

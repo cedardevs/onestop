@@ -101,14 +101,4 @@ task publishImage(type: PublishDockerImageTask) {
   dependsOn "dockerImage"
 }
 
-artifactoryPublish.dependsOn publishImage
-
-task promote(type: Exec, description: 'Publishes the promoted docker image', group: 'publish') {
-  dependsOn dockerImage
-  executable = "bash"
-  args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
-      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:$baseVersion && " +
-      "docker push cedardevs/${rootProject.name}-${project.name}:$baseVersion && " +
-      "docker push cedardevs/${rootProject.name}-${project.name}:latest && " +
-      "docker logout"]
-}
+publish.dependsOn publishImage
