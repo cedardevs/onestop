@@ -41,6 +41,7 @@ const styleButtons = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-around',
+  marginBottom: '0.5em'
 }
 
 
