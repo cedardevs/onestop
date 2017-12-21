@@ -4,7 +4,7 @@ import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
 import TimeFilterContainer from './time/TimeFilterContainer'
 import FacetFilterContainer from './facet/FacetFilterContainer'
-import MapFilter from './MapFilter'
+//import MapFilter from './MapFilter'
 
 import mapFilterIcon from '../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../img/font-awesome/white/svg/calendar.svg'
@@ -45,7 +45,7 @@ class Filters extends Component {
       // },
       {
        name: "time",
-      	heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
+      	heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
       	content: <TimeFilterContainer />,
       },
       {
