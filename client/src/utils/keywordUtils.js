@@ -21,12 +21,14 @@ const buildHierarchyMap = (category, terms) => {
   let categoryMap = {}
 
   Object.keys(terms).map(term => {
+    const idParts = _.concat(_.words(category), _.words(term))
     let hierarchy = term.split('>').map(e => e.trim()) // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
     const value = {
       count: terms[term].count,
       children: {},
       category: category,
-      term: term
+      term: term,
+      id: idParts.join('-'),
     }
     createChildrenHierarchy(categoryMap, hierarchy, term, value)
   })
@@ -37,7 +39,8 @@ const buildHierarchyMap = (category, terms) => {
 export const buildKeywordHierarchyMap = facetMap => {
   const hierarchyMap = {}
   _.map(facetMap, (terms, category) => {
-    if (!_.isEmpty(terms)) { // Don't load categories that have no results
+    if (!_.isEmpty(terms)) {
+      // Don't load categories that have no results
       let heading
       let categoryMap = {}
 
@@ -46,13 +49,15 @@ export const buildKeywordHierarchyMap = facetMap => {
         categoryMap = buildHierarchyMap(category, terms)
       }
       else {
-        heading = _.startCase(_.toLower((category.split(/(?=[A-Z])/).join(" "))))
+        heading = _.startCase(_.toLower(category.split(/(?=[A-Z])/).join(' ')))
         Object.keys(terms).map(term => {
+          const idParts = _.concat(_.words(category), _.words(term))
           categoryMap[term] = {
             count: terms[term].count,
             children: {},
             category: category,
-            term: term
+            term: term,
+            id: idParts.join('-'),
           }
         })
       }
@@ -66,7 +71,11 @@ export const buildKeywordHierarchyMap = facetMap => {
 
 // pulls out the last term in a GCMD-style keyword and attempts to maintain intended acronyms
 export const titleCaseKeyword = term => {
-  if (!term) { return null }
+  if (!term) {
+    return null
+  }
   const trimmed = term.split('>').pop().trim()
-  return (trimmed === trimmed.toUpperCase()) ? _.startCase(trimmed.toLowerCase()) : trimmed
+  return trimmed === trimmed.toUpperCase()
+    ? _.startCase(trimmed.toLowerCase())
+    : trimmed
 }

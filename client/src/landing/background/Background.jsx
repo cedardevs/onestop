@@ -8,12 +8,18 @@ class Background extends React.Component {
   }
 
   render() {
-    var backgroundStyle = this.props.showImage ? styles.backgroundImage : styles.backgroundSolid
-    var backgroundOverlay = this.props.showOverlay ? styles.backgroundOverlay : {}
+    var backgroundStyle = this.props.showImage
+      ? styles.backgroundImage
+      : styles.backgroundSolid
+    var backgroundOverlay = this.props.showOverlay
+      ? styles.backgroundOverlay
+      : {}
 
-    return <div className={backgroundStyle}>
-      <div className={backgroundOverlay}></div>
-    </div>
+    return (
+      <div className={backgroundStyle}>
+        <div className={backgroundOverlay} />
+      </div>
+    )
   }
 }
 

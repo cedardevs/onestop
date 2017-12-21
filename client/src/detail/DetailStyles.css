@@ -14,7 +14,7 @@
 }
 
 .modalContent {
-  background-color: #242C36;
+  background-color: #242c36;
   margin: 10% auto;
   padding: 1.5em;
   border: 1px solid $color-gray;
@@ -22,7 +22,7 @@
   max-width: 80em;
   overflow: auto;
 
-& p {
+  & p {
     margin-top: 0;
   }
 }
@@ -60,20 +60,20 @@
   font-size: 1em;
   font-weight: bold;
 
-& span {
+  & span {
     float: right;
     margin-bottom: 1em;
   }
 
-& ul {
+  & ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
-& li {
-    margin-left: 1em;
-    margin-bottom: 1em;
+    & li {
+      margin-left: 1em;
+      margin-bottom: 1em;
+    }
   }
-}
 }
 
 .button-secondary {
@@ -84,7 +84,6 @@
 .granulesButton {
   margin-bottom: 1em;
 }
-
 
 /*************************/
 /* Shared */
@@ -147,32 +146,32 @@
 .dsmmInfo {
   position: relative;
   display: inline-block;
-i {
-  color: white;
-  margin: 0.5em;
-}
-a {
-  color: $color-visited-light;
-}
-.text {
-  visibility: hidden;
-  opacity: 0;
-  bottom: -0.5em;
-  left: 105%;
-  width: 30em;
-  position: absolute;
-  z-index: 1001;
-  background-color: black;
-  border: solid thin white;
-  border-radius: 6px;
-  padding: 2em;
-  text-align: left;
-}
-&:hover .text {
-   visibility: visible;
-   opacity: 1;
-   transition: opacity 300ms;
- }
+  i {
+    color: white;
+    margin: 0.5em;
+  }
+  a {
+    color: $color-visited-light;
+  }
+  .text {
+    visibility: hidden;
+    opacity: 0;
+    bottom: -0.5em;
+    left: 105%;
+    width: 30em;
+    position: absolute;
+    z-index: 1001;
+    background-color: black;
+    border: solid thin white;
+    border-radius: 6px;
+    padding: 2em;
+    text-align: left;
+  }
+  &:hover .text {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 300ms;
+  }
 }
 
 .dsmmMissing {
@@ -188,7 +187,6 @@ a {
 .showMoreButton:focus {
   cursor: pointer;
 }
-
 
 /*************************/
 /* Description View */

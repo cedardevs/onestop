@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 
 const styleDefault = {
   color: 'white',
@@ -15,15 +15,14 @@ const styleHoverDefault = {
   background: 'linear-gradient(#277CB2, #28323E)',
 }
 
-const stylePressDefault = {
-}
+const stylePressDefault = {}
 
 const styleFocusDefault = {
-    outline: '2px dashed white',
+  outline: '2px dashed white',
 }
 
 const styleIconPadding = {
-  padding: "0 0.618em",
+  padding: '0 0.618em',
 }
 
 export default class Button extends Component {
@@ -130,19 +129,22 @@ export default class Button extends Component {
       styleHover,
       stylePress,
       styleFocus,
-      title
+      title,
+      ariaExpanded,
     } = this.props
 
     const stylesMerged = {
       ...styleDefault,
       ...style,
-      ...(this.state.hovering ? { ...styleHoverDefault, styleHover } : {}),
-      ...(this.state.pressing ? { ...stylePressDefault, stylePress } : {}),
-      ...(this.state.focusing ? { ...styleFocusDefault, styleFocus } : {}),
+      ...(this.state.hovering ? {...styleHoverDefault, styleHover} : {}),
+      ...(this.state.pressing ? {...stylePressDefault, stylePress} : {}),
+      ...(this.state.focusing ? {...styleFocusDefault, styleFocus} : {}),
       ...(icon && !text ? styleIconPadding : {}),
     }
 
-    const styleIconResolved = styleIcon ? styleIcon : { width: '2em', height: '2em' }
+    const styleIconResolved = styleIcon
+      ? styleIcon
+      : {width: '2em', height: '2em'}
 
     return (
       <button
@@ -155,10 +157,16 @@ export default class Button extends Component {
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         title={title}
+        aria-expanded={ariaExpanded}
         aria-label={title || text}
       >
         {icon ? (
-          <img src={icon} style={styleIconResolved} aria-hidden={true} alt={title}/>
+          <img
+            src={icon}
+            style={styleIconResolved}
+            aria-hidden={true}
+            alt={title}
+          />
         ) : null}
         {text}
       </button>

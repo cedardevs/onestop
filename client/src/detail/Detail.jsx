@@ -19,62 +19,60 @@ class Detail extends React.Component {
 
   render() {
     if (!this.props.id || !this.props.item) {
-      return <div style={{display: 'none'}}/>
+      return <div style={{display: 'none'}} />
     }
     const item = this.props.item
     let tabData = [
       {
         title: 'Summary',
-        content: <SummaryView id={this.props.id} item={this.props.item}/>,
+        content: <SummaryView id={this.props.id} item={this.props.item} />,
       },
       {
         title: 'Description',
-        content: <DescriptionView id={this.props.id} item={this.props.item}/>,
+        content: <DescriptionView id={this.props.id} item={this.props.item} />,
       },
       {
         title: 'Matching Files',
         content: (
-            <GranuleViewContainer id={this.props.id} item={this.props.item}/>
+          <GranuleViewContainer id={this.props.id} item={this.props.item} />
         ),
         action: this.showGranules,
       },
       {
         title: 'Access',
-        content: (
-            <AccessView id={this.props.id} item={this.props.item}/>
-        ),
+        content: <AccessView id={this.props.id} item={this.props.item} />,
       },
     ]
 
-    const videoLinks = item.links.filter(link => link.linkProtocol === 'video:youtube')
+    const videoLinks = item.links.filter(
+      link => link.linkProtocol === 'video:youtube'
+    )
     if (videoLinks.length > 0) {
       tabData.push({
         title: videoLinks.length === 1 ? 'Video' : 'Videos',
-        content: (
-            <VideoView id={this.props.id} links={videoLinks}/>
-        ),
+        content: <VideoView id={this.props.id} links={videoLinks} />,
       })
     }
 
     return (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <div className={`pure-g ${styles.header} ${styles.underscored}`}>
-              <div
-                  className={`pure-u-11-12 ${styles.title}`}
-                  title={`${item.title}`}
-              >
-                {item.title}
-              </div>
-              <div className={'pure-u-1-12'}>
-                <span className={styles.close} onClick={this.close}>
-                  x
-                </span>
-              </div>
+      <div className={styles.modal}>
+        <div className={styles.modalContent}>
+          <div className={`pure-g ${styles.header} ${styles.underscored}`}>
+            <div
+              className={`pure-u-11-12 ${styles.title}`}
+              title={`${item.title}`}
+            >
+              {item.title}
             </div>
-            <Tabs data={tabData} activeIndex={0}/>
+            <div className={'pure-u-1-12'}>
+              <span className={styles.close} onClick={this.close}>
+                x
+              </span>
+            </div>
           </div>
+          <Tabs data={tabData} activeIndex={0} />
         </div>
+      </div>
     )
   }
 
@@ -105,7 +103,8 @@ class Detail extends React.Component {
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.id) {
       document.addEventListener('keydown', this.handleKeyDown, false)
-    } else {
+    }
+    else {
       document.removeEventListener('keydown', this.handleKeyDown, false)
     }
     if (nextProps.id && nextProps.id != this.props.id) {

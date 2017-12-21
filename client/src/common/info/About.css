@@ -1,22 +1,22 @@
 .wrapper {
-    width: 100%;
-    background-color: #111;
+  width: 100%;
+  background-color: #111;
 }
 
 .about {
-    font-size: 1.318em;
-    background-color: #111;
-    background-color:rgba(17, 17, 17, 0.8);
-    padding: 1.618em;
-    min-height: 100vh;
-    margin: 0 auto;
-    max-width: 45em;
+  font-size: 1.318em;
+  background-color: #111;
+  background-color: rgba(17, 17, 17, 0.8);
+  padding: 1.618em;
+  min-height: 100vh;
+  margin: 0 auto;
+  max-width: 45em;
 }
 
 .about h1 {
-    margin: 0 0 0.618em 0;
+  margin: 0 0 0.618em 0;
 }
 
 .about h2 {
-    margin: 0 0 0.618em 0;
+  margin: 0 0 0.618em 0;
 }

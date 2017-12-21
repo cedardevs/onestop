@@ -41,7 +41,7 @@ class SearchFields extends React.Component {
     this.state = {
       showMap: false,
       warning: '',
-      hoveringWarningClose: false
+      hoveringWarningClose: false,
     }
   }
 
@@ -52,14 +52,14 @@ class SearchFields extends React.Component {
 
   handleMouseOverWarningClose = event => {
     this.setState({
-        hoveringWarningClose: true
+      hoveringWarningClose: true,
     })
   }
 
   handleMouseOutWarningClose = event => {
-      this.setState({
-          hoveringWarningClose: false
-      })
+    this.setState({
+      hoveringWarningClose: false,
+    })
   }
 
   mapEvents(target, { mapComponent, mapButton, showMap }, toggle) {
@@ -79,12 +79,12 @@ class SearchFields extends React.Component {
   }
 
   clearQueryString() {
-    this.setState({ warning: '' })
+    this.setState({warning: ''})
     this.updateQuery('')
   }
 
   clearSearchParams() {
-    this.setState({ warning: '' })
+    this.setState({warning: ''})
     this.clearSearch()
   }
 
@@ -107,7 +107,7 @@ class SearchFields extends React.Component {
   }
 
   toggleMap() {
-    this.setState({ showMap: !this.state.showMap })
+    this.setState({showMap: !this.state.showMap})
   }
 
   warningStyle() {
@@ -115,7 +115,8 @@ class SearchFields extends React.Component {
       return {
         display: 'none',
       }
-    } else {
+    }
+    else {
       return {
         position: 'absolute',
         top: 'calc(100% + 0.309em)',
@@ -130,15 +131,15 @@ class SearchFields extends React.Component {
   }
 
   warningCloseStyle() {
-    if(this.state.hoveringWarningClose) {
+    if (this.state.hoveringWarningClose) {
       return {
-        cursor: "pointer",
-        fontWeight: "bold"
+        cursor: 'pointer',
+        fontWeight: 'bold',
       }
     }
     else {
       return {
-          cursor: "pointer",
+        cursor: 'pointer',
       }
     }
   }
@@ -148,16 +149,18 @@ class SearchFields extends React.Component {
     let trimmedQuery = _.trim(this.props.queryString)
     // Validates query string; assumes temporal & spatial selections (if any) are validated in their respective components
     if (!trimmedQuery && !filtersApplied) {
-      this.setState({ warning: 'You must enter search criteria.' })
-    } else if (
+      this.setState({warning: 'You must enter search criteria.'})
+    }
+    else if (
       trimmedQuery &&
       (_.startsWith(trimmedQuery, '*') || _.startsWith(trimmedQuery, '?'))
     ) {
       this.setState({
         warning: 'Search query cannot start with asterisk or question mark.',
       })
-    } else {
-      this.setState({ warning: '' })
+    }
+    else {
+      this.setState({warning: ''})
       this.submit()
     }
   }
@@ -184,7 +187,7 @@ class SearchFields extends React.Component {
         icon={times}
         onClick={this.clearSearchParams}
         title={'Reset Search'}
-        style={{ marginRight: '0.309em', flexShrink: '0' }}
+        style={{marginRight: '0.309em', flexShrink: '0'}}
       />
     )
 
@@ -194,7 +197,7 @@ class SearchFields extends React.Component {
         icon={search}
         onClick={this.validateAndSubmit}
         title={'Search'}
-        style={{ flexShrink: '0' }}
+        style={{flexShrink: '0'}}
       />
     )
 
@@ -209,7 +212,8 @@ class SearchFields extends React.Component {
         alignItems: 'center',
         alignSelf: 'flex-end',
       }
-    } else {
+    }
+    else {
       searchFieldStyle = {
         position: 'relative',
         marginRight: '1em',

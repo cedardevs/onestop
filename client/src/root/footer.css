@@ -32,17 +32,16 @@ ul.footerLinks {
   }
 }
 
-.versionInfo{
+.versionInfo {
   margin-bottom: 1.618em;
   a {
     color: white;
     background-color: transparent;
     text-decoration: none;
     padding: 0px 10px !important;
-  &:hover {
-     text-decoration: underline;
-
-   }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 

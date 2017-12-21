@@ -1,7 +1,7 @@
 @import '../../../style/style.css';
 
-.backgroundOverlay ,
-.backgroundImage ,
+.backgroundOverlay,
+.backgroundImage,
 .backgroundSolid {
   position: absolute;
   top: 0;
@@ -16,7 +16,7 @@
   background-color: rgba(60, 90, 139, .3);
 }
 
-:global{
+:global {
   .cssgradients {
     :local {
       .backgroundImage {
