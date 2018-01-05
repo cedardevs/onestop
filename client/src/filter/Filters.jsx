@@ -4,7 +4,7 @@ import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
 import TimeFilterContainer from './time/TimeFilterContainer'
 import FacetFilterContainer from './facet/FacetFilterContainer'
-import MapFilterContainer from './MapFilterContainer'
+import MapFilterContainer from './spatial/MapFilterContainer'
 
 import mapFilterIcon from '../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../img/font-awesome/white/svg/calendar.svg'

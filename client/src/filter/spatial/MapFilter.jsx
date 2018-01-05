@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
-import FlexColumn from '../common/FlexColumn'
-import FlexRow from '../common/FlexRow'
-import Button from '../common/input/Button'
+import FlexColumn from '../../common/FlexColumn'
+import FlexRow from '../../common/FlexRow'
+import Button from '../../common/input/Button'
 
 import MapFilterBoundingBoxInput from './MapFilterBoundingBoxInput'
-import ArcGISMap from '../search/map/ArcGISMap'
+import ArcGISMap from '../../search/map/ArcGISMap'
 
-import mapIcon from '../../img/font-awesome/white/svg/globe.svg'
-import Checkbox from "../common/input/Checkbox";
+import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
+import Checkbox from "../../common/input/Checkbox";
 
 const styleMapFilter = {
   backgroundColor: '#5396CC',

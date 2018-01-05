@@ -1,9 +1,9 @@
 import { connect } from 'react-redux'
 import MapFilter from './MapFilter'
-import { toggleExcludeGlobal } from '../actions/SearchParamActions'
-import { toggleMap, updateBounds } from '../actions/FlowActions'
-import { clearCollections, triggerSearch } from "../actions/SearchRequestActions"
-import { showCollections } from "../actions/FlowActions"
+import { toggleExcludeGlobal } from '../../actions/SearchParamActions'
+import { toggleMap, updateBounds } from '../../actions/FlowActions'
+import { clearCollections, triggerSearch } from "../../actions/SearchRequestActions"
+import { showCollections } from "../../actions/FlowActions"
 
 const mapStateToProps = state => {
   return {

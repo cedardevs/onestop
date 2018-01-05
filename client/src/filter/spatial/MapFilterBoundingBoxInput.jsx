@@ -1,7 +1,7 @@
 import React from 'react'
-import FlexColumn from '../common/FlexColumn'
-import FlexRow from '../common/FlexRow'
-import TextInput from '../common/input/TextInput'
+import FlexColumn from '../../common/FlexColumn'
+import FlexRow from '../../common/FlexRow'
+import TextInput from '../../common/input/TextInput'
 
 const DirectionID = {
   WEST: 'west',
