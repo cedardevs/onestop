@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 
 import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
-import TimeFilter from './TimeFilter'
+import TimeFilterContainer from './time/TimeFilterContainer'
 import FacetFilterContainer from './facet/FacetFilterContainer'
 import MapFilterContainer from './MapFilterContainer'
 
@@ -37,17 +37,16 @@ class Filters extends Component {
     super(props)
 
     this.filters = [
-      // TODO: reintroduce these filters when we officially move them from the top menu search component
       {
        name: "map",
        heading: <FilterHeading icon={mapFilterIcon} text="Spatial" />,
        content: <MapFilterContainer />,
       },
-      // {
-      //  name: "time",
-      //   heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
-      //   content: <TimeFilter />,
-      // },
+      {
+       name: "time",
+      	heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
+      	content: <TimeFilterContainer />,
+      },
       {
         name: 'keywords',
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
