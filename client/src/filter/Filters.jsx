@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 
 import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
@@ -30,7 +30,7 @@ const styleFacetFilterContents = {
   backgroundColor: '#3E97D1',
 }
 
-class Filters extends React.Component {
+class Filters extends Component {
   constructor(props) {
     super(props)
 
@@ -38,7 +38,7 @@ class Filters extends React.Component {
       // TODO: reintroduce these filters when we officially move them from the top menu search component
       {
        name: "map",
-      	heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
+      	heading: <FilterHeading icon={mapFilterIcon} text="Spatial" />,
       	content: <MapFilterContainer />,
       },
       // {

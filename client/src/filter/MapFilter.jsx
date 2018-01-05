@@ -1,12 +1,13 @@
-import React from 'react'
+import React, { Component } from 'react'
 import FlexColumn from '../common/FlexColumn'
 import FlexRow from '../common/FlexRow'
 import Button from '../common/input/Button'
 
-import MapFitlerBoundingBoxInput from './MapFilterBoundingBoxInput'
+import MapFilterBoundingBoxInput from './MapFilterBoundingBoxInput'
 import ArcGISMap from '../search/map/ArcGISMap'
 
 import mapIcon from '../../img/font-awesome/white/svg/globe.svg'
+import Checkbox from "../common/input/Checkbox";
 
 const styleMapFilter = {
   backgroundColor: '#5396CC',
@@ -28,7 +29,7 @@ const styleApplyClear = {
   alignSelf: 'stretch',
 }
 
-export default class MapFilter extends React.Component {
+export default class MapFilter extends Component {
 
   handleShowMap = () => {
     const { showMap, toggleMap } = this.props
@@ -44,6 +45,11 @@ export default class MapFilter extends React.Component {
     }
   }
 
+  toggleExcludeGlobalResults = () => {
+    this.props.toggleExcludeGlobal()
+    this.props.submit()
+  }
+
   render() {
 
     const { toggleExcludeGlobal, showMap, bounds, boundsSource, updateBounds, geoJSON } = this.props
@@ -51,7 +57,7 @@ export default class MapFilter extends React.Component {
     // TODO: implement with ArcGIS/React interface for accessibility
     const inputBoundingBox = null
     // const inputBoundingBox = (
-    //   <MapFitlerBoundingBoxInput key="MapFilter::inputBoundingBox" bounds={bounds} boundsSource={boundsSource} updateBounds={updateBounds} />
+    //   <MapFilterBoundingBoxInput key="MapFilter::inputBoundingBox" bounds={bounds} boundsSource={boundsSource} updateBounds={updateBounds} />
     // )
 
     const styleShowOrApplyBackground = geoJSON ? { background: '#8967d2' } : {}
@@ -82,6 +88,17 @@ export default class MapFilter extends React.Component {
       <FlexColumn items={[inputBoundingBox, showMap ? buttonApply : buttonShowMap]} />
     )
 
+    const excludeGlobalCheckbox = (
+      <div style={{display: 'flex'}}>
+        <Checkbox
+          label='Exclude Global Results'
+          id={'excludeGlobalCheckbox'}
+          onChange={this.toggleExcludeGlobalResults}
+        />
+        <div style={{ariaHidden: true, width: '100%', marginLeft: '0.616em'}}>Exclude Global Results</div>
+      </div>
+    )
+
     return (
       <div style={styleMapFilter}>
         <p style={styleDescription}>
@@ -94,6 +111,9 @@ export default class MapFilter extends React.Component {
         {/*</p>*/}
         {/*<h4>Bounding Box:</h4>*/}
         {inputColumn}
+        <div style={{borderBottom: '1px solid white', margin: '2em 0 1em 0'}}></div>
+        <h4>Additional Filtering Options:</h4>
+        {excludeGlobalCheckbox}
       </div>
     )
   }
