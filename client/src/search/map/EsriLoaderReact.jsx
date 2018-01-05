@@ -26,6 +26,7 @@ class EsriLoaderReact extends React.PureComponent {
   }
 
   render() {
+    // return <div style={{backgroundColor: "magenta", width: '100%', height: "50px"}} />
     const { renderMapContainer, mapContainerStyle, children } = this.props
     if (!renderMapContainer) {
       return children
@@ -55,7 +56,7 @@ EsriLoaderReact.propTypes = {
 
 EsriLoaderReact.defaultProps = {
   renderMapContainer: true,
-  mapContainerStyle: { border: '1px solid #eee', minHeight: '400px', display: 'flex' },
+  mapContainerStyle: { position: 'absolute', width: '100%', height: '100%', margin: 0, padding: 0, backgroundColor: "#111" },
   onError: (error, info) => console.error(error),
 }
 

@@ -5,6 +5,7 @@ import { newGeometry, removeGeometry } from '../../actions/SearchParamActions'
 const mapStateToProps = (state) => {
   const {geoJSON} = state.behavior.search
   return {
+    showMap: state.ui.mapFilter.showMap,
     geoJsonSelection: geoJSON
   }
 }

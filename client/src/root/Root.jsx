@@ -11,6 +11,8 @@ import HeaderContainer from './HeaderContainer'
 import Filters from '../filter/Filters'
 
 import LoadingBarContainer from '../loading/LoadingBarContainer'
+// import ArcGISMapContainer from '../search/map/ArcGISMapContainer'
+import MapContainer from '../search/map/MapContainer'
 
 import FooterContainer from './FooterContainer'
 
@@ -101,6 +103,12 @@ export default class Root extends Component {
         <div>
           <LoadingBarContainer/>
           <Background showImage={this.isNot508()} showOverlay={this.isNotLanding() && this.isNot508()}/>
+          {/*TODO: replace this with ArcGIS map?*/}
+          <MapContainer
+            selection={true}
+            features={false}
+          />
+          {/*<ArcGISMapContainer/>*/}
           {this.props.children}
         </div>
     )

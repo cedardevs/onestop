@@ -73,6 +73,7 @@ class TextInput extends React.Component {
 
     this.setState({
       value: initialValue,
+      valid: true,
       hovering: false,
       pressing: false,
       pressingGlobal: false,
@@ -91,6 +92,21 @@ class TextInput extends React.Component {
     document.removeEventListener('mousedown', this.handleGlobalMouseDown, false)
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.value !== this.props.value) {
+      this.setState(prevProps => {
+        return {
+          ...prevProps,
+          value: nextProps.value,
+          // if we don't provide a validate function, then we should always be valid (don't show error styling)
+          valid: nextProps.validate
+            ? nextProps.validate(this.state.value, nextProps.id)
+            : true,
+        }
+      })
+    }
+  }
+
   // keyboard events
   // boolean altKey
   // number charCode
@@ -105,21 +121,21 @@ class TextInput extends React.Component {
   // boolean shiftKey
   // number which
   handleKeyDown = event => {
-    console.log(':::handleKeyDown:::\n', event)
+    // console.log(':::handleKeyDown:::\n', event)
   }
 
   handleKeyPress = event => {
-    console.log(':::handleKeyPress:::\n', event)
+    // console.log(':::handleKeyPress:::\n', event)
   }
 
   handleKeyUp = event => {
-    console.log(':::handleKeyUp:::\n', event)
+    // console.log(':::handleKeyUp:::\n', event)
   }
 
   // focus events
   // DOMEventTarget relatedTarget
   handleFocus = event => {
-    console.log(':::handleFocus:::\n', event)
+    // console.log(':::handleFocus:::\n', event)
     this.setState(prevState => {
       return {
         ...prevState,
@@ -129,7 +145,7 @@ class TextInput extends React.Component {
   }
 
   handleBlur = event => {
-    console.log(':::handleBlur:::\n', event)
+    // console.log(':::handleBlur:::\n', event)
     this.setState(prevState => {
       return {
         ...prevState,
@@ -141,14 +157,28 @@ class TextInput extends React.Component {
 
   // form events
   handleChange = event => {
-    console.log(':::handleChange:::\n', event)
+    // console.log(':::handleChange:::\n', event)
+    const { onChange, validate, id } = this.props
     const newValue = event.currentTarget.value
-    this.setState({ value: newValue })
+    this.setState(
+      {
+        value: newValue,
+        // if we don't provide a validate function, then we should always be valid (don't show error styling)
+        valid: validate
+          ? validate(newValue, id)
+          : true,
+      },
+      () => {
+        if (onChange) {
+          onChange(event)
+        }
+      }
+    )
   }
 
   handleSubmit = event => {
-    console.log(':::handleSubmit:::\n', event)
-    console.log('input was submitted: ' + this.state.value)
+    // console.log(':::handleSubmit:::\n', event)
+    // console.log('input was submitted: ' + this.state.value)
     event.preventDefault()
   }
 
@@ -169,7 +199,7 @@ class TextInput extends React.Component {
   // boolean shiftKey
 
   handleClick = event => {
-    console.log(':::handleClick:::\n', event)
+    // console.log(':::handleClick:::\n', event)
   }
 
   handleMouseOver = event => {
@@ -230,31 +260,7 @@ class TextInput extends React.Component {
 
   // selection events
   handleSelect = event => {
-    console.log(':::handleSelect:::\n', event)
-  }
-
-  // animation events
-  // string animationName
-  // string pseudoElement
-  // float elapsedTime
-  handleAnimationStart = event => {
-    console.log(':::handleAnimationStart:::\n', event)
-  }
-
-  handleAnimationEnd = event => {
-    console.log(':::handleAnimationEnd:::\n', event)
-  }
-
-  handleAnimationIteration = event => {
-    console.log(':::handleAnimationIteration:::\n', event)
-  }
-
-  // transition events
-  // string propertyName
-  // string pseudoElement
-  // float elapsedTime
-  handleTransitionEnd = event => {
-    console.log(':::handleTransitionEnd:::\n', event)
+    // console.log(':::handleSelect:::\n', event)
   }
 
   render() {
@@ -276,9 +282,6 @@ class TextInput extends React.Component {
       validate,
     } = this.props
 
-    // if we don't provide a validate function, then we should always be valid (don't show error styling)
-    const valid = validate ? validate(this.state.value) : true
-
     const {
       styleContainer,
       styleContainerHover,
@@ -292,7 +295,7 @@ class TextInput extends React.Component {
       styleInputHover,
       styleInputPress,
       styleInputFocus,
-      styleInputError
+      styleInputError,
     } = this.props
 
     const stylesContainerMerged = {
@@ -335,7 +338,9 @@ class TextInput extends React.Component {
       ...(this.state.focusing
         ? { ...styleInputFocusDefault, ...styleInputFocus }
         : {}),
-      ...(!valid ? { ...styleInputErrorDefault, ...styleInputError } : {}),
+      ...(!this.state.valid
+        ? { ...styleInputErrorDefault, ...styleInputError }
+        : {}),
     }
 
     let labelElement = null
@@ -395,12 +400,6 @@ class TextInput extends React.Component {
           onMouseUp={this.handleMouseUp}
           /* selection events */
           onSelect={this.handleSelect} /* selected text */
-          /* animation events */
-          onAnimationStart={this.handleAnimationStart}
-          onAnimationEnd={this.handleAnimationEnd}
-          onAnimationIteration={this.handleAnimationIteration}
-          /* transition events */
-          onTransitionEnd={this.handleTransitionEnd}
         />
       </div>
     )

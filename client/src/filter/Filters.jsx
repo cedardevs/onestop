@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
 import TimeFilter from './TimeFilter'
 import FacetFilterContainer from './FacetFilterContainer'
-import MapFilter from './MapFilter'
+import MapFilterContainer from './MapFilterContainer'
 
 import mapFilterIcon from '../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../img/font-awesome/white/svg/calendar.svg'
@@ -30,7 +30,7 @@ const styleFacetFilterContents = {
   backgroundColor: '#3E97D1',
 }
 
-class Filters extends Component {
+class Filters extends React.Component {
   constructor(props) {
     super(props)
 
@@ -39,7 +39,7 @@ class Filters extends Component {
       {
        name: "map",
       	heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
-      	content: <MapFilter />,
+      	content: <MapFilterContainer />,
       },
       // {
       //  name: "time",

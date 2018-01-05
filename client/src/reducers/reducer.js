@@ -13,6 +13,7 @@ import cardDetails from './ui/cardDetails'
 import granuleDetails from './ui/granuleDetails'
 import loading from './ui/loading'
 import background from './ui/background'
+import mapFilter from './ui/mapFilter'
 
 const domain = combineReducers({
   config,
@@ -24,7 +25,8 @@ const ui = combineReducers({
   cardDetails,
   granuleDetails,
   loading,
-  background
+  background,
+  mapFilter
 })
 
 const behavior = combineReducers({
