@@ -1,6 +1,5 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import TemporalSearchContainer from './temporal/TemporalSearchContainer'
 import MapContainer from './map/MapContainer'
 import ToggleDisplay from 'react-toggle-display'
 import TextSearchField from './TextSearchField'
@@ -9,7 +8,6 @@ import _ from 'lodash'
 import FlexRow from '../common/FlexRow'
 import Button from '../common/input/Button'
 
-import clock from 'fa/clock-o.svg'
 import globe from 'fa/globe.svg'
 import times from 'fa/times.svg'
 import search from 'fa/search.svg'
@@ -38,12 +36,10 @@ class SearchFields extends React.Component {
     this.clearQueryString = this.clearQueryString.bind(this)
     this.clearSearchParams = this.clearSearchParams.bind(this)
     this.toggleMap = this.toggleMap.bind(this)
-    this.toggleCalendar = this.toggleCalendar.bind(this)
     this.warningStyle = this.warningStyle.bind(this)
     this.validateAndSubmit = this.validateAndSubmit.bind(this)
     this.state = {
       showMap: false,
-      showCalendar: false,
       warning: '',
       hoveringWarningClose: false,
     }
@@ -51,7 +47,6 @@ class SearchFields extends React.Component {
 
   handleClick(e) {
     const target = e.target || e.srcElement
-    this.calendarEvents(target, this.state, this.toggleCalendar)
     this.mapEvents(target, this.state, this.toggleMap)
   }
 
@@ -67,18 +62,7 @@ class SearchFields extends React.Component {
     })
   }
 
-  calendarEvents(target, {timeComponent, timeButton, showCalendar}, toggle) {
-    if (
-      showCalendar &&
-      !timeComponent.contains(target) &&
-      !timeButton.contains(target) &&
-      !_.startsWith(target.classList[0], 'rc-calendar')
-    ) {
-      toggle()
-    }
-  }
-
-  mapEvents(target, {mapComponent, mapButton, showMap}, toggle) {
+  mapEvents(target, { mapComponent, mapButton, showMap }, toggle) {
     if (
       showMap &&
       !mapComponent.contains(target) &&
@@ -90,7 +74,7 @@ class SearchFields extends React.Component {
 
   handleKeyup(e) {
     if (e.keyCode === 27) {
-      this.setState({showMap: false, showCalendar: false})
+      this.setState({ showMap: false })
     }
   }
 
@@ -114,8 +98,6 @@ class SearchFields extends React.Component {
     this.setState({
       mapComponent: ReactDOM.findDOMNode(this.mapComponent),
       mapButton: ReactDOM.findDOMNode(this.mapButton),
-      timeComponent: ReactDOM.findDOMNode(this.timeComponent),
-      timeButton: ReactDOM.findDOMNode(this.timeButton),
     })
   }
 
@@ -126,10 +108,6 @@ class SearchFields extends React.Component {
 
   toggleMap() {
     this.setState({showMap: !this.state.showMap})
-  }
-
-  toggleCalendar() {
-    this.setState({showCalendar: !this.state.showCalendar})
   }
 
   warningStyle() {
@@ -167,10 +145,7 @@ class SearchFields extends React.Component {
   }
 
   validateAndSubmit() {
-    let filtersApplied =
-      !_.isEmpty(this.props.startDateTime) ||
-      !_.isEmpty(this.props.endDateTime) ||
-      !_.isEmpty(this.props.geoJSON)
+    let filtersApplied = !_.isEmpty(this.props.geoJSON)
     let trimmedQuery = _.trim(this.props.queryString)
     // Validates query string; assumes temporal & spatial selections (if any) are validated in their respective components
     if (!trimmedQuery && !filtersApplied) {
@@ -191,22 +166,7 @@ class SearchFields extends React.Component {
   }
 
   render() {
-    let styleTimeButton = {marginRight: '0.309em', flexShrink: '0'}
-    if (this.props.startDateTime || this.props.endDateTime) {
-      styleTimeButton['background'] = '#8967d2'
-    }
-    const timeButton = (
-      <Button
-        key="timeButton"
-        ref={timeButton => (this.timeButton = timeButton)}
-        icon={clock}
-        onClick={this.toggleCalendar}
-        title={'Filter by Time'}
-        style={styleTimeButton}
-      />
-    )
-
-    let styleMapButton = {marginRight: '0.309em', flexShrink: '0'}
+    let styleMapButton = { marginRight: '0.309em', flexShrink: '0' }
     if (this.props.geoJSON) {
       styleMapButton['background'] = '#8967d2'
     }
@@ -290,17 +250,9 @@ class SearchFields extends React.Component {
           />
         </div>
         <FlexRow
-          style={{justifyContent: 'center', marginTop: '0.309em'}}
-          items={[ timeButton, mapButton, undoButton, searchButton ]}
+          style={{ justifyContent: 'center', marginTop: '0.309em' }}
+          items={[mapButton, undoButton, searchButton]}
         />
-
-        <ToggleDisplay show={this.state.showCalendar}>
-          <TemporalSearchContainer
-            ref={timeComponent => (this.timeComponent = timeComponent)}
-            toggleSelf={this.toggleCalendar}
-            calendarVisible={this.state.showCalendar}
-          />
-        </ToggleDisplay>
 
         <ToggleDisplay show={this.state.showMap}>
           {/* 'updated' passed to trigger update but is unused*/}

@@ -2,9 +2,9 @@ import React, {Component} from 'react'
 
 import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
-import TimeFilter from './TimeFilter'
+import TimeFilterContainer from './time/TimeFilterContainer'
 import FacetFilterContainer from './facet/FacetFilterContainer'
-import MapFilter from './MapFilter'
+//import MapFilter from './MapFilter'
 
 import mapFilterIcon from '../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../img/font-awesome/white/svg/calendar.svg'
@@ -43,11 +43,11 @@ class Filters extends Component {
       //   heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
       //   content: <MapFilter />,
       // },
-      // {
-      //  name: "time",
-      //   heading: <FilterHeading icon={timeFilterIcon} text="Time Filter" />,
-      //   content: <TimeFilter />,
-      // },
+      {
+       name: "time",
+      	heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
+      	content: <TimeFilterContainer />,
+      },
       {
         name: 'keywords',
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
@@ -95,12 +95,7 @@ class Filters extends Component {
       )
     })
 
-    return (
-      <div>
-        <h1 style={defaultStyles.hideOffscreen}>Filters</h1>
-        {expandableFilters}
-      </div>
-    )
+    return <div>{expandableFilters}</div>
   }
 }
 
