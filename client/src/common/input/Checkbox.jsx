@@ -1,28 +1,22 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 
-const styleCheckbox = {
+const styleContainer = {
+  display: 'flex',
+  alignItems: 'center',
+}
+
+const styleCheckboxContainer = {
   width: '1em',
   height: '1em',
   position: 'relative',
+  minWidth: '1em',
+  cursor: 'pointer',
+  background: '#eee',
+  border: '1px solid #ddd',
 }
 
 const styleInput = {
   visibility: 'hidden',
-}
-
-const styleLabelSpan = {
-  visibility: 'hidden',
-}
-
-const styleLabel = {
-  cursor: 'pointer',
-  position: 'absolute',
-  width: '100%',
-  height: '100%',
-  top: 0,
-  left: 0,
-  background: '#eee',
-  border: '1px solid #ddd',
 }
 
 const styleCheckmark = {
@@ -51,11 +45,6 @@ class Checkbox extends Component {
   constructor(props) {
     super(props)
     this.state = {checked: !!props.checked, hovering: false, pressing: false}
-
-    this.handleChange = this.handleChange.bind(this)
-    this.handleMouseOver = this.handleMouseOver.bind(this)
-    this.handleMouseOut = this.handleMouseOut.bind(this)
-    this.handleMouseDown = this.handleMouseDown.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
@@ -63,12 +52,12 @@ class Checkbox extends Component {
     if (nextProps.checked !== this.props.checked) {
       this.setState(prevState => ({
         ...prevState,
-        checked: nextProps.checked
+        checked: nextProps.checked,
       }))
     }
   }
 
-  handleChange(event) {
+  handleChange = event => {
     const {value, onChange} = this.props
     if (onChange) {
       onChange({checked: !this.state.checked, value: value})
@@ -82,7 +71,7 @@ class Checkbox extends Component {
     }))
   }
 
-  handleMouseOver(event) {
+  handleMouseOver = event => {
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: true,
@@ -90,7 +79,7 @@ class Checkbox extends Component {
     }))
   }
 
-  handleMouseOut(event) {
+  handleMouseOut = event => {
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: false,
@@ -98,7 +87,7 @@ class Checkbox extends Component {
     }))
   }
 
-  handleMouseDown(event) {
+  handleMouseDown = event => {
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: prevState.hovering,
@@ -106,35 +95,68 @@ class Checkbox extends Component {
     }))
   }
 
+  handleFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focused: true,
+      }
+    })
+  }
+
+  handleBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focused: false,
+      }
+    })
+  }
+
   render() {
-    let styleInteract = styleCheckmark
-    if (this.state.checked || (this.state.hovering && this.state.pressing)) {
-      styleInteract = {...styleCheckmark, ...styleCheckmarkChecked}
-    } else if (this.state.hovering) {
-      styleInteract = {...styleCheckmark, ...styleCheckmarkHover}
+    const styleCheckbox = {
+      ...styleCheckboxContainer,
+      ...(this.state.focused && this.props.styleFocus
+        ? this.props.styleFocus
+        : {}),
+    }
+
+    const styleCheck = {
+      ...styleCheckmark,
+      ...(this.state.checked || (this.state.hovering && this.state.pressing)
+        ? styleCheckmarkChecked
+        : {}),
+      ...(this.state.hovering ? styleCheckmarkHover : {}),
     }
 
     return (
+      <div style={styleContainer}>
         <div
-            style={styleCheckbox}
-            onClick={this.handleChange}
-            onMouseOver={this.handleMouseOver}
-            onMouseOut={this.handleMouseOut}
-            onMouseDown={this.handleMouseDown}
+          role="checkbox"
+          aria-checked={this.state.checked}
+          aria-label={this.props.label}
+          tabIndex={this.props.tabIndex || 0}
+          style={styleCheckbox}
+          onClick={this.handleChange}
+          onMouseOver={this.handleMouseOver}
+          onMouseOut={this.handleMouseOut}
+          onMouseDown={this.handleMouseDown}
+          onBlur={this.handleBlur}
+          onFocus={this.handleFocus}
         >
-          <input
-              id={this.props.id}
-              type="checkbox"
-              name={this.props.name}
-              value={this.props.value}
-              checked={this.state.checked}
-              onChange={() => {
-              }}
-              style={styleInput}
-          />
-        <label htmlFor={this.props.id} style={styleLabel}><span style={styleLabelSpan}>{this.props.label}</span></label>
-          <div style={styleInteract}/>
+          <div style={styleCheck} />
         </div>
+        <input
+          id={this.props.id}
+          type="checkbox"
+          name={this.props.name}
+          value={this.props.value}
+          checked={this.state.checked}
+          onChange={() => {}}
+          style={styleInput}
+        />
+        <label htmlFor={this.props.id}>{this.props.label}</label>
+      </div>
     )
   }
 }

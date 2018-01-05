@@ -1,13 +1,13 @@
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import FacetFilter from './FacetFilter'
-import { toggleFacet } from '../actions/SearchParamActions'
-import { buildKeywordHierarchyMap } from '../utils/keywordUtils'
+import {toggleFacet} from '../../actions/SearchParamActions'
+import {buildKeywordHierarchyMap} from '../../utils/keywordUtils'
 
 import {
   clearCollections,
   triggerSearch,
-} from '../actions/SearchRequestActions'
-import { showCollections } from '../actions/FlowActions'
+} from '../../actions/SearchRequestActions'
+import {showCollections} from '../../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {
@@ -30,7 +30,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 const FacetFilterContainer = connect(mapStateToProps, mapDispatchToProps)(
-    FacetFilter
+  FacetFilter
 )
 
 export default FacetFilterContainer

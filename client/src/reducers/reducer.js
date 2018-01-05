@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux-seamless-immutable'
+import {combineReducers} from 'redux-seamless-immutable'
 
 import search from './behavior/search'
 import routing from './behavior/routing'
@@ -33,15 +33,15 @@ const behavior = combineReducers({
   request,
   search,
   routing,
-  errors
+  errors,
 })
 
 // TODO: Pass search state elements to query removing the need for state duplication
 const reducer = (state, action) => {
   return {
-    domain: domain(state && state.domain || undefined, action),
-    behavior: behavior(state && state.behavior || undefined, action),
-    ui: ui(state && state.ui || undefined, action)
+    domain: domain((state && state.domain) || undefined, action),
+    behavior: behavior((state && state.behavior) || undefined, action),
+    ui: ui((state && state.ui) || undefined, action),
   }
 }
 

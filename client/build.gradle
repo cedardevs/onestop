@@ -1,16 +1,14 @@
-import com.moowork.gradle.node.task.NodeTask
-
 apply plugin: "com.moowork.node"
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 node {
-    version = '6.3.1'
+    version = '8.9.1'
     download = true
 }
 
 clean {
     doFirst {
-        file("${projectDir}/dist").deleteDir()
+        file("${buildDir}/dist").deleteDir()
         file("${buildDir}/libs").deleteDir()
     }
 }
@@ -22,7 +20,7 @@ task compile(type: NodeTask) {
     sourceDirs.each {
         inputs.dir(it).skipWhenEmpty()
     }
-    outputs.dir('dist')
+    outputs.dir("${buildDir}/dist")
     script = file('node_modules/.bin/webpack')
     args = ['--bail', '-p']
     execOverrides {
@@ -30,7 +28,7 @@ task compile(type: NodeTask) {
     }
     doFirst {
         // Remove previous outputs. Doesn't run if the task if UP-TO-DATE
-        file("${projectDir}/dist").deleteDir()
+        file("${buildDir}/dist").deleteDir()
     }
 }
 
@@ -42,7 +40,7 @@ task start(type: Exec, dependsOn: [":dockerComposeBackendStart"]) {
 task tarResults(type: Tar) {
     dependsOn 'compile'
 
-    from "${projectDir}/dist"
+    from "${buildDir}/dist"
     baseName = 'onestop-client'
     version = project.version
     compression = 'gzip'
@@ -93,43 +91,14 @@ publishing {
     }
 }
 
-static def getDateTime() {
-  return new Date().format("YYYY-MM-dd'T'HH:mm:ss.SSS'Z'", TimeZone.getTimeZone('UTC'))
-}
-
-task dockerImage(type: Exec, description: 'Creates a docker image with the current build.', group: 'docker') {
+task dockerImage(type: BuildDockerImageTask) {
   dependsOn tarResults
-  commandLine = "bash"
-  args = ["-c", "docker build --no-cache " +
-      "--build-arg VCS_REF=\$(git rev-parse --short HEAD) " +
-      "--build-arg VERSION=${project.version} " +
-      "--build-arg DATE=${getDateTime()} " +
-      "-t cedardevs/${rootProject.name}-${project.name}:${project.version} " +
-      "-t cedardevs/${rootProject.name}-${project.name}:latest " +
-      "-t cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT " +
-      "."
-      ]
 }
 
 assemble.dependsOn dockerImage
 
-task publishImage(type: Exec, description: 'Publishes the docker image', group: 'publish') {
+task publishImage(type: PublishDockerImageTask) {
   dependsOn "dockerImage"
-  executable = "bash"
-  args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
-      "docker push cedardevs/${rootProject.name}-${project.name}:${project.version} && " +
-      "docker push cedardevs/${rootProject.name}-${project.name}:latest-SNAPSHOT && " +
-      "docker logout"]
 }
 
-artifactoryPublish.dependsOn publishImage
-
-task promote(type: Exec, description: 'Publishes the promoted docker image', group: 'publish') {
-  dependsOn dockerImage
-  executable = "bash"
-  args = ["-c", "docker login -u \$DOCKER_USER -p \$DOCKER_PASSWORD && " +
-      "docker tag cedardevs/${rootProject.name}-${project.name}:${project.version} cedardevs/${rootProject.name}-${project.name}:$baseVersion && " +
-      "docker push cedardevs/${rootProject.name}-${project.name}:$baseVersion && " +
-      "docker push cedardevs/${rootProject.name}-${project.name}:latest && " +
-      "docker logout"]
-}
+publish.dependsOn publishImage

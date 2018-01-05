@@ -20,15 +20,14 @@ const styleHoverDefault = {
   background: 'linear-gradient(#277CB2, #28323E)',
 }
 
-const stylePressDefault = {
-}
+const stylePressDefault = {}
 
 const styleFocusDefault = {
-    outline: '2px dashed white',
+  outline: '2px dashed white',
 }
 
 const styleIconPadding = {
-  padding: "0 0.618em",
+  padding: '0 0.618em',
 }
 
 export default class Button extends Component {
@@ -135,7 +134,8 @@ export default class Button extends Component {
       styleHover,
       stylePress,
       styleFocus,
-      title
+      title,
+      ariaExpanded,
     } = this.props
 
     const iconAndText = icon && text
@@ -162,10 +162,16 @@ export default class Button extends Component {
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         title={title}
+        aria-expanded={ariaExpanded}
         aria-label={title || text}
       >
         {icon ? (
-          <img src={icon} style={styleIconResolved} aria-hidden={true} alt={title}/>
+          <img
+            src={icon}
+            style={styleIconResolved}
+            aria-hidden={true}
+            alt={title}
+          />
         ) : null}
         {text ? (
             <span>{text}</span>

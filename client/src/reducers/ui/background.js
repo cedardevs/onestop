@@ -1,8 +1,8 @@
 import Immutable from 'seamless-immutable'
-import { TOGGLE_BACKGROUND_IMAGE } from '../../actions/FlowActions'
+import {TOGGLE_BACKGROUND_IMAGE} from '../../actions/FlowActions'
 
 export const initialState = Immutable({
-  showImage: true
+  showImage: true,
 })
 
 export const background = (state = initialState, action) => {

@@ -1,13 +1,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-// import ShowMore from 'react-show-more'
-// import A from '../common/link/Link'
 import styles from './DetailStyles.css'
 import Tabs from './Tabs'
 import SummaryView from './SummaryView'
 import DescriptionView from './DescriptionView'
 import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
 import AccessView from './AccessView'
+import VideoView from './VideoView'
 
 class Detail extends React.Component {
   constructor(props) {
@@ -20,54 +19,60 @@ class Detail extends React.Component {
 
   render() {
     if (!this.props.id || !this.props.item) {
-      return <div style={{display: 'none'}}/>
+      return <div style={{display: 'none'}} />
     }
     const item = this.props.item
-    const tabData = [
+    let tabData = [
       {
         title: 'Summary',
-        content: <SummaryView id={this.props.id} item={this.props.item}/>,
+        content: <SummaryView id={this.props.id} item={this.props.item} />,
       },
       {
         title: 'Description',
-        content: <DescriptionView id={this.props.id} item={this.props.item}/>,
+        content: <DescriptionView id={this.props.id} item={this.props.item} />,
       },
       {
         title: 'Matching Files',
         content: (
-            <GranuleViewContainer id={this.props.id} item={this.props.item}/>
+          <GranuleViewContainer id={this.props.id} item={this.props.item} />
         ),
         action: this.showGranules,
       },
       {
         title: 'Access',
-        content: (
-            <AccessView id={this.props.id} item={this.props.item}/>
-        )
+        content: <AccessView id={this.props.id} item={this.props.item} />,
       },
     ]
 
+    const videoLinks = item.links.filter(
+      link => link.linkProtocol === 'video:youtube'
+    )
+    if (videoLinks.length > 0) {
+      tabData.push({
+        title: videoLinks.length === 1 ? 'Video' : 'Videos',
+        content: <VideoView id={this.props.id} links={videoLinks} />,
+      })
+    }
+
     return (
-        <div className={styles.modal}>
-          <div className={styles.modalContent}>
-            <div className={`pure-g ${styles.header} ${styles.underscored}`}>
-              <div
-                  className={`pure-u-11-12 ${styles.title}`}
-                  title={`${item.title}`}
-              >
-                {/*<ShowMore lines={1} anchorClass={`${styles.showMore}`}>*/}
-                  {item.title}
-                {/*</ShowMore>*/}
-              </div>
-              <div className={'pure-u-1-12'}>
-							<span className={styles.close} onClick={this.close}>
-								x
-							</span>
-              </div>
+      <div className={styles.modal}>
+        <div className={styles.modalContent}>
+          <div className={`pure-g ${styles.header} ${styles.underscored}`}>
+            <div
+              className={`pure-u-11-12 ${styles.title}`}
+              title={`${item.title}`}
+            >
+              {item.title}
             </div>
-            <Tabs data={tabData} activeIndex={0}/>
+            <div className={'pure-u-1-12'}>
+              <span className={styles.close} onClick={this.close}>
+                x
+              </span>
+            </div>
           </div>
+          <Tabs data={tabData} activeIndex={0} />
         </div>
+      </div>
     )
   }
 
@@ -98,7 +103,8 @@ class Detail extends React.Component {
   componentWillUpdate(nextProps, nextState) {
     if (nextProps.id) {
       document.addEventListener('keydown', this.handleKeyDown, false)
-    } else {
+    }
+    else {
       document.removeEventListener('keydown', this.handleKeyDown, false)
     }
     if (nextProps.id && nextProps.id != this.props.id) {

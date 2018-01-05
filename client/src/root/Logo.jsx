@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import stopCircle from 'fa/stop-circle-o.svg'
 import defaultStyles from '../common/defaultStyles'
@@ -10,8 +10,8 @@ const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 const stylesLogoWrapper = {
   padding: '0 1.618em 0 0',
   display: 'flex',
-  flex: "0 0 max-content",
-  alignItems: "center",
+  flex: '0 0 max-content',
+  alignItems: 'center',
   flexWrap: 'nowrap',
 }
 
@@ -28,8 +28,8 @@ const stylesNoaaLogo = {
 
 const stylesTextWrapper = {
   display: 'inline-flex',
-  whiteSpace: "nowrap",
-  flex: "0 0 max-content"
+  whiteSpace: 'nowrap',
+  flex: '0 0 max-content',
 }
 
 const stylesOneStopLink = {
@@ -98,8 +98,12 @@ export default class Logo extends Component {
             onClick={() => this.props.onClick()}
           >
             <span style={defaultStyles.hideOffscreen}>OneStop</span>
-            <span aria-hidden='true' style={stylesOneStopText}>
-              <img src={stopCircle} style={stylesStopCircle} alt={"OneStop"}/>neStop
+            <span aria-hidden="true" style={stylesOneStopText}>
+              <img
+                src={stopCircle}
+                style={stylesStopCircle}
+                alt={'OneStop'}
+              />neStop
             </span>
             <span style={stylesNceiText}>National Oceanic and</span>
             <span style={stylesNceiText}>Atmospheric Administration</span>

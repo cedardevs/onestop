@@ -45,7 +45,7 @@ class SearchFields extends React.Component {
       showMap: false,
       showCalendar: false,
       warning: '',
-      hoveringWarningClose: false
+      hoveringWarningClose: false,
     }
   }
 
@@ -57,17 +57,17 @@ class SearchFields extends React.Component {
 
   handleMouseOverWarningClose = event => {
     this.setState({
-        hoveringWarningClose: true
+      hoveringWarningClose: true,
     })
   }
 
   handleMouseOutWarningClose = event => {
-      this.setState({
-          hoveringWarningClose: false
-      })
+    this.setState({
+      hoveringWarningClose: false,
+    })
   }
 
-  calendarEvents(target, { timeComponent, timeButton, showCalendar }, toggle) {
+  calendarEvents(target, {timeComponent, timeButton, showCalendar}, toggle) {
     if (
       showCalendar &&
       !timeComponent.contains(target) &&
@@ -78,7 +78,7 @@ class SearchFields extends React.Component {
     }
   }
 
-  mapEvents(target, { mapComponent, mapButton, showMap }, toggle) {
+  mapEvents(target, {mapComponent, mapButton, showMap}, toggle) {
     if (
       showMap &&
       !mapComponent.contains(target) &&
@@ -90,17 +90,17 @@ class SearchFields extends React.Component {
 
   handleKeyup(e) {
     if (e.keyCode === 27) {
-      this.setState({ showMap: false, showCalendar: false })
+      this.setState({showMap: false, showCalendar: false})
     }
   }
 
   clearQueryString() {
-    this.setState({ warning: '' })
+    this.setState({warning: ''})
     this.updateQuery('')
   }
 
   clearSearchParams() {
-    this.setState({ warning: '' })
+    this.setState({warning: ''})
     this.clearSearch()
   }
 
@@ -125,11 +125,11 @@ class SearchFields extends React.Component {
   }
 
   toggleMap() {
-    this.setState({ showMap: !this.state.showMap })
+    this.setState({showMap: !this.state.showMap})
   }
 
   toggleCalendar() {
-    this.setState({ showCalendar: !this.state.showCalendar })
+    this.setState({showCalendar: !this.state.showCalendar})
   }
 
   warningStyle() {
@@ -137,7 +137,8 @@ class SearchFields extends React.Component {
       return {
         display: 'none',
       }
-    } else {
+    }
+    else {
       return {
         position: 'absolute',
         top: 'calc(100% + 0.309em)',
@@ -152,15 +153,15 @@ class SearchFields extends React.Component {
   }
 
   warningCloseStyle() {
-    if(this.state.hoveringWarningClose) {
+    if (this.state.hoveringWarningClose) {
       return {
-        cursor: "pointer",
-        fontWeight: "bold"
+        cursor: 'pointer',
+        fontWeight: 'bold',
       }
     }
     else {
       return {
-          cursor: "pointer",
+        cursor: 'pointer',
       }
     }
   }
@@ -173,22 +174,24 @@ class SearchFields extends React.Component {
     let trimmedQuery = _.trim(this.props.queryString)
     // Validates query string; assumes temporal & spatial selections (if any) are validated in their respective components
     if (!trimmedQuery && !filtersApplied) {
-      this.setState({ warning: 'You must enter search criteria.' })
-    } else if (
+      this.setState({warning: 'You must enter search criteria.'})
+    }
+    else if (
       trimmedQuery &&
       (_.startsWith(trimmedQuery, '*') || _.startsWith(trimmedQuery, '?'))
     ) {
       this.setState({
         warning: 'Search query cannot start with asterisk or question mark.',
       })
-    } else {
-      this.setState({ warning: '' })
+    }
+    else {
+      this.setState({warning: ''})
       this.submit()
     }
   }
 
   render() {
-    let styleTimeButton = { marginRight: '0.309em', flexShrink: '0' }
+    let styleTimeButton = {marginRight: '0.309em', flexShrink: '0'}
     if (this.props.startDateTime || this.props.endDateTime) {
       styleTimeButton['background'] = '#8967d2'
     }
@@ -203,7 +206,7 @@ class SearchFields extends React.Component {
       />
     )
 
-    let styleMapButton = { marginRight: '0.309em', flexShrink: '0' }
+    let styleMapButton = {marginRight: '0.309em', flexShrink: '0'}
     if (this.props.geoJSON) {
       styleMapButton['background'] = '#8967d2'
     }
@@ -224,7 +227,7 @@ class SearchFields extends React.Component {
         icon={times}
         onClick={this.clearSearchParams}
         title={'Reset Search'}
-        style={{ marginRight: '0.309em', flexShrink: '0' }}
+        style={{marginRight: '0.309em', flexShrink: '0'}}
       />
     )
 
@@ -234,7 +237,7 @@ class SearchFields extends React.Component {
         icon={search}
         onClick={this.validateAndSubmit}
         title={'Search'}
-        style={{ flexShrink: '0' }}
+        style={{flexShrink: '0'}}
       />
     )
 
@@ -249,7 +252,8 @@ class SearchFields extends React.Component {
         alignItems: 'center',
         alignSelf: 'flex-end',
       }
-    } else {
+    }
+    else {
       searchFieldStyle = {
         position: 'relative',
         marginRight: '1em',
@@ -286,8 +290,8 @@ class SearchFields extends React.Component {
           />
         </div>
         <FlexRow
-          style={{ justifyContent: 'center', marginTop: '0.309em' }}
-          items={[timeButton, mapButton, undoButton, searchButton]}
+          style={{justifyContent: 'center', marginTop: '0.309em'}}
+          items={[ timeButton, mapButton, undoButton, searchButton ]}
         />
 
         <ToggleDisplay show={this.state.showCalendar}>

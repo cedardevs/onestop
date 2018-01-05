@@ -1,5 +1,4 @@
 const styles = {
-
   // primarily used for accessibility, to provide screen reader text for sections deliberately aria-hidden, eg: the OneStop logo
   hideOffscreen: {
     position: 'absolute',

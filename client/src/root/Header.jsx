@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router'
+import {Link} from 'react-router'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import Logo from './Logo'
 import styles from './HeaderStyles.css'
@@ -66,7 +66,6 @@ class Header extends React.Component {
   }
 
   render() {
-
     const aboutLink =
       window.location.href.indexOf('508') === -1 ? (
         <Link title="About Us" to="/about" className={styles.link}>
@@ -105,11 +104,15 @@ class Header extends React.Component {
     )
 
     const insignia = (
-      <Logo key="insignia" onClick={this.props.goHome} style={{ flex: '0 0 275px' }} />
+      <Logo
+        key="insignia"
+        onClick={this.props.goHome}
+        style={{flex: '0 0 275px'}}
+      />
     )
 
     const search = this.props.showSearch ? (
-      <SearchFieldsContainer key="search"/>
+      <SearchFieldsContainer key="search" />
     ) : null
 
     const menu = (
@@ -122,7 +125,10 @@ class Header extends React.Component {
       <header style={styleHeader}>
         <FlexRow
           style={styleHeaderFlexRow}
-          items={[<FlexRow key="insignia-and-search" items={[insignia, search]}/>, menu]}
+          items={[
+            <FlexRow key="insignia-and-search" items={[ insignia, search ]} />,
+            menu,
+          ]}
         />
       </header>
     )

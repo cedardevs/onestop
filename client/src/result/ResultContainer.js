@@ -17,21 +17,18 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     toggleFacet: (category, facetName, selected) =>
-        dispatch(toggleFacet(category, facetName, selected)),
+      dispatch(toggleFacet(category, facetName, selected)),
     submit: () => {
       dispatch(clearCollections())
       dispatch(triggerSearch())
       dispatch(showCollections())
     },
     updateDateRange: (startDate, endDate) =>
-        dispatch(updateDateRange(startDate, endDate)),
+      dispatch(updateDateRange(startDate, endDate)),
     removeGeometry: () => dispatch(removeGeometry())
   }
 }
 
-const ResultContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Result)
+const ResultContainer = connect(mapStateToProps, mapDispatchToProps)(Result)
 
 export default ResultContainer

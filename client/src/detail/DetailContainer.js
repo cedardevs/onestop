@@ -1,8 +1,8 @@
-import { connect } from 'react-redux'
-import { fetchGranules, clearGranules } from '../actions/SearchRequestActions'
-import { toggleSelection, clearSelections } from '../actions/SearchParamActions'
+import {connect} from 'react-redux'
+import {fetchGranules, clearGranules} from '../actions/SearchRequestActions'
+import {toggleSelection, clearSelections} from '../actions/SearchParamActions'
 // import { triggerSearch } from '../actions/SearchRequestActions'
-import { setFocus } from '../actions/FlowActions'
+import {setFocus} from '../actions/FlowActions'
 import Detail from './Detail'
 
 const mapStateToProps = (state, reactProps) => {
@@ -17,7 +17,7 @@ const mapStateToProps = (state, reactProps) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     dismiss: () => dispatch(setFocus(null)),
     // textSearch: (text) => {
@@ -28,18 +28,15 @@ const mapDispatchToProps = (dispatch) => {
     //   dispatch(triggerSearch())
     //   dispatch(showCollections())
     // },
-    showGranules: (id) => {
+    showGranules: id => {
       dispatch(clearSelections())
       dispatch(toggleSelection(id))
       dispatch(clearGranules())
       dispatch(fetchGranules())
-    }
+    },
   }
 }
 
-const DetailContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Detail)
+const DetailContainer = connect(mapStateToProps, mapDispatchToProps)(Detail)
 
 export default DetailContainer

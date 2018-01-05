@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 
 const styleDefault = {
   display: 'inline-flex',
@@ -77,10 +77,7 @@ export default class AppliedTime extends Component {
       styleHover,
       styleFocus,
     } = this.props
-    const name = term
-        .split('>')
-        .pop()
-        .trim()
+    const name = term.split('>').pop().trim()
 
     const stylesMerged = {
       ...styleDefault,
@@ -90,18 +87,18 @@ export default class AppliedTime extends Component {
     }
 
     return (
-        <span
-            style={stylesMerged}
-            onMouseOver={this.handleMouseOver}
-            onMouseOut={this.handleMouseOut}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-        >
-                {label} {dateTime}
-          <span style={styleClose} onClick={onUnselect}>
-					x
-				</span>
-			</span>
+      <span
+        style={stylesMerged}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+      >
+        {label} {dateTime}
+        <span style={styleClose} onClick={onUnselect}>
+          x
+        </span>
+      </span>
     )
   }
 }

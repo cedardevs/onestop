@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import FlexRow from '../common/FlexRow'
 import TabButton from './TabButton'
 
@@ -8,7 +8,7 @@ const styleTabs = {
   position: 'sticky',
   top: '0',
   width: '100%',
-  justifyContent: 'space-between'
+  justifyContent: 'space-between',
 }
 
 export default class Tabs extends Component {
@@ -36,19 +36,17 @@ export default class Tabs extends Component {
         }
 
         tabButtons.push(
-            <TabButton
-                key={title}
-                title={title}
-                active={active}
-                onChange={this.props.onChange}
-                padding={this.props.padding}
-            />
+          <TabButton
+            key={title}
+            title={title}
+            active={active}
+            onChange={this.props.onChange}
+            padding={this.props.padding}
+          />
         )
       })
     }
 
-    return (
-        <FlexRow items={tabButtons} style={styleTabs}/>
-    )
+    return <FlexRow items={tabButtons} style={styleTabs} />
   }
 }

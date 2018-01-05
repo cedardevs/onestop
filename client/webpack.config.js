@@ -68,7 +68,7 @@ const prodEntryPoints = [
 module.exports = {
   entry: isProd ? prodEntryPoints : devEntryPoints,
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'build/dist'),
     publicPath: './',
     filename: '[name]-[hash].bundle.js'
   },

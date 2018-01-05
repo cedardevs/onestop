@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 
 const styleContainer = {
   display: 'flex',
@@ -20,21 +20,24 @@ const styleIconImage = {
 const styleText = {
   width: '100%',
   alignSelf: 'center',
+  fontSize: '1em',
+  fontWeight: 'normal',
+  margin: '0',
 }
 
 export default class FilterHeading extends Component {
   render() {
     return (
-        <div style={{...styleContainer, ...this.props.style}}>
-          <div style={styleIcon}>
-            <img
-                style={styleIconImage}
-                src={this.props.icon}
-                alt={`${this.props.text} Icon`}
-            />
-          </div>
-          <div style={styleText}>{this.props.text}</div>
+      <div style={{...styleContainer, ...this.props.style}}>
+        <div style={styleIcon} aria-hidden="true">
+          <img
+            style={styleIconImage}
+            src={this.props.icon}
+            alt={`${this.props.text} Icon`}
+          />
         </div>
+        <h2 style={styleText}>{this.props.text}</h2>
+      </div>
     )
   }
 }
