@@ -115,6 +115,11 @@ export default class TimeFilter extends Component {
     }
 
     // Valid date can be year only, year & month only, or full date
+    if(year && !month && day) {
+      // Year + day is not valid
+      return false
+    }
+
     let numeric = this.textToNumeric(year, month, day)
 
     const now = moment()
