@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import Expandable from '../common/Expandable'
 import FilterHeading from './FilterHeading'
 import TimeFilter from './TimeFilter'
-import FacetFilterContainer from './FacetFilterContainer'
+import FacetFilterContainer from './facet/FacetFilterContainer'
 import MapFilterContainer from './MapFilterContainer'
 
 import mapFilterIcon from '../../img/font-awesome/white/svg/globe.svg'

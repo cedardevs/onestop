@@ -89,14 +89,11 @@ export default class MapFilter extends Component {
     )
 
     const excludeGlobalCheckbox = (
-      <div style={{display: 'flex'}}>
-        <Checkbox
-          label='Exclude Global Results'
-          id={'excludeGlobalCheckbox'}
-          onChange={this.toggleExcludeGlobalResults}
-        />
-        <div style={{ariaHidden: true, width: '100%', marginLeft: '0.616em'}}>Exclude Global Results</div>
-      </div>
+      <Checkbox
+        label='Exclude Global Results'
+        id={'excludeGlobalCheckbox'}
+        onChange={this.toggleExcludeGlobalResults}
+      />
     )
 
     return (
