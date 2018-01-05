@@ -7,6 +7,7 @@ import Background from '../landing/background/Background'
 import BannerContainer from './banner/BannerContainer'
 import DetailContainer from '../detail/DetailContainer'
 import HeaderContainer from './HeaderContainer'
+import MapContainer from '../search/map/MapContainer'
 
 import Filters from '../filter/Filters'
 
@@ -125,6 +126,11 @@ export default class Root extends Component {
         <Background
           showImage={this.isNot508()}
           showOverlay={this.isNotLanding() && this.isNot508()}
+        />
+        {/*TODO: replace this with ArcGIS map?*/}
+        <MapContainer
+          selection={true}
+          features={false}
         />
         {this.props.children}
       </div>
