@@ -84,27 +84,25 @@ export default class Left extends Component {
   }
 
   handleOpen = event => {
+    const { visible } = this.state
+    const { toggle } = this.props
     event.stopPropagation()
-    if (!this.state.visible) {
-      this.setState(prevState => {
-        return {
-          ...prevState,
-          visible: true,
-        }
-      })
+    if(!visible) {
+      toggle()
     }
   }
 
   handleClose = event => {
+    const { visible } = this.state
+    const { toggle } = this.props
     event.stopPropagation()
-    if (this.state.visible) {
-      this.setState({
-        visible: false,
-      })
+    if(visible) {
+      toggle()
     }
   }
 
   render() {
+
     const width = this.props.width ? this.props.width : defaultWidth
     const classVisible = styleVisible(width)
     const classHidden = styleHidden(width)
@@ -120,6 +118,7 @@ export default class Left extends Component {
         />
       </div>
     )
+
     const hiddenContent = (
       <button
         onClick={this.handleOpen}

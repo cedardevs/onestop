@@ -103,6 +103,9 @@ export default class Root extends Component {
   }
 
   render() {
+
+    const { showLeft, showRight, toggleLeft, toggleRight } = this.props
+
     const header = (
       <div>
         <BannerContainer />
@@ -141,11 +144,13 @@ export default class Root extends Component {
         header={header}
         left={left}
         leftWidth={256}
-        leftVisible={this.state.leftVisible}
+        leftVisible={showLeft}
+        toggleLeft={toggleLeft}
         middle={middle}
         right={null}
         rightWidth={256}
-        rightVisible={this.state.rightVisible}
+        rightVisible={showRight}
+        toggleRight={toggleRight}
         footer={<FooterContainer />}
       />
     )

@@ -12,7 +12,7 @@ import Section508LandingContainer from './landing/Section508LandingContainer'
 import Help from './common/info/Help'
 import AboutContainer from './common/info/AboutContainer'
 import {Provider} from 'react-redux'
-import RootComponent from './root/Root'
+import RootContainer from './root/RootContainer'
 import {initialize} from './actions/FlowActions'
 import '../style/style'
 import './page.css'
@@ -23,7 +23,7 @@ store.dispatch(initialize())
 
 const routesLayout = (
   <Router history={history}>
-    <Route path="/" name="Home" component={RootComponent}>
+    <Route path="/" name="Home" component={RootContainer}>
       <IndexRoute component={LandingContainer} />
       <Route name="Collections" path="collections" component={ResultContainer}>
         <IndexRoute
@@ -36,7 +36,7 @@ const routesLayout = (
       <Route name="About" path="about" component={AboutContainer} />
     </Route>
 
-    <Route path="508" name="Home" component={RootComponent}>
+    <Route path="508" name="Home" component={RootContainer}>
       <IndexRoute component={Section508LandingContainer} />
       <Route name="Collections" path="collections" component={Section508Result}>
         <IndexRoute
