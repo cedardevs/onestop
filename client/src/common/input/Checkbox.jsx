@@ -20,21 +20,23 @@ const styleInput = {
 }
 
 const styleCheckmark = {
-  opacity: '0.1',
+  opacity: '0.2',
   position: 'absolute',
   width: '0.5em',
   height: '0.25em',
   background: 'transparent',
-  top: '0.25em',
-  left: '0.25em',
+  top: '0.2em',
+  left: '0.2em',
   border: '3px solid #333',
   borderTop: 'none',
   borderRight: 'none',
   transform: 'rotate(-45deg)',
 }
 
-const styleCheckmarkHover = {
-  opacity: '0.2',
+const styleCheckboxHover = {
+  // background: 'yellow',
+  transform: "rotate(-45deg) scale(1.618)",
+  top: 0
 }
 
 const styleCheckmarkChecked = {
@@ -121,12 +123,15 @@ class Checkbox extends Component {
         : {}),
     }
 
+
+
     const styleCheck = {
       ...styleCheckmark,
       ...(this.state.checked || (this.state.hovering && this.state.pressing)
         ? styleCheckmarkChecked
         : {}),
-      ...(this.state.hovering ? styleCheckmarkHover : {}),
+      ...(this.state.hovering ? styleCheckboxHover : {}),
+
     }
 
     return (
