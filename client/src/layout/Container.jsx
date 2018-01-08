@@ -30,10 +30,12 @@ export default class Container extends Component {
               left={this.props.left}
               leftWidth={this.props.leftWidth}
               leftVisible={this.props.leftVisible}
+              toggleLeft={this.props.toggleLeft}
               middle={this.props.middle}
               right={this.props.right}
               rightWidth={this.props.rightWidth}
               rightVisible={this.props.rightVisible}
+              toggleRight={this.props.toggleRight}
               padding={defaultPadding}
               key={'content'}
             />,
