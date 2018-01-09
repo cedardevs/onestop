@@ -98,13 +98,14 @@ export default class TimeFilter extends Component {
     let startDateGiven = startDate.isValid()
     let endDateGiven = endDate.isValid()
 
+    // Set fields as strings to avoid incorrect falsey in isValidDate if any fields are changed (January == 0 for moments)
     this.setState({
-      startDateYear: startDateGiven ? startDate.year() : this.initialState().startDateYear,
-      startDateMonth: startDateGiven ? startDate.month() : this.initialState().startDateMonth,
-      startDateDay: startDateGiven ? startDate.date() : this.initialState().startDateDay,
-      endDateYear: endDateGiven ? endDate.year() : this.initialState().endDateYear,
-      endDateMonth: endDateGiven ? endDate.month() : this.initialState().endDateMonth,
-      endDateDay: endDateGiven ? endDate.date() : this.initialState().endDateDay,
+      startDateYear: startDateGiven ? startDate.year().toString() : this.initialState().startDateYear,
+      startDateMonth: startDateGiven ? startDate.month().toString() : this.initialState().startDateMonth,
+      startDateDay: startDateGiven ? startDate.date().toString() : this.initialState().startDateDay,
+      endDateYear: endDateGiven ? endDate.year().toString() : this.initialState().endDateYear,
+      endDateMonth: endDateGiven ? endDate.month().toString() : this.initialState().endDateMonth,
+      endDateDay: endDateGiven ? endDate.date().toString() : this.initialState().endDateDay,
     })
   }
 
@@ -150,7 +151,7 @@ export default class TimeFilter extends Component {
 
   isValidDate = (year, month, day) => {
     // No date given is technically valid (since a complete range is unnecessary)
-    if(!year && !month && ! day) {
+    if(!year && !month && !day) {
       return true
     }
 
@@ -183,6 +184,8 @@ export default class TimeFilter extends Component {
   clearDates = () => {
     this.props.removeDateRange()
     this.props.submit()
+
+    this.setState(this.initialState())
   }
 
   applyDates = () => {
