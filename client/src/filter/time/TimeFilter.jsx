@@ -83,6 +83,31 @@ export default class TimeFilter extends Component {
     }
   }
 
+  componentWillMount() {
+    this.mapPropsToState(this.props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.mapPropsToState(nextProps)
+  }
+
+  mapPropsToState = (props) => {
+    let startDate = moment(props.startDateTime).utc()
+    let endDate = moment(props.endDateTime).utc()
+
+    let startDateGiven = startDate.isValid()
+    let endDateGiven = endDate.isValid()
+
+    this.setState({
+      startDateYear: startDateGiven ? startDate.year() : this.initialState().startDateYear,
+      startDateMonth: startDateGiven ? startDate.month() : this.initialState().startDateMonth,
+      startDateDay: startDateGiven ? startDate.date() : this.initialState().startDateDay,
+      endDateYear: endDateGiven ? endDate.year() : this.initialState().endDateYear,
+      endDateMonth: endDateGiven ? endDate.month() : this.initialState().endDateMonth,
+      endDateDay: endDateGiven ? endDate.date() : this.initialState().endDateDay,
+    })
+  }
+
   warningStyle() {
     if(_.isEmpty(this.state.warning)) {
       return {
