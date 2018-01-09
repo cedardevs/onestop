@@ -181,8 +181,7 @@ export default class TimeFilter extends Component {
   }
 
   clearDates = () => {
-    this.setState(this.initialState())
-    this.props.updateDateRange(null, null)
+    this.props.removeDateRange()
     this.props.submit()
   }
 
