@@ -18,6 +18,7 @@ const styleTimeFilter = {
 
 const styleFieldset = {
   marginBottom: '1em',
+  width: '15em'
 }
 
 const styleLabels = {
@@ -36,12 +37,26 @@ const styleInputs = {
   color: 'black',
 }
 
-const styleButtons = {
+const styleYear = {
+  width: '3.25em'
+}
+const styleMonth = {
+  width: '7.25em'
+}
+const styleDay = {
+  width: '1.75em'
+}
+
+const styleButtonRow = {
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-around',
   marginBottom: '0.5em'
+}
+
+const styleButton = {
+  width: '35%'
 }
 
 
@@ -66,6 +81,31 @@ export default class TimeFilter extends Component {
       dateRangeValid: true,
       warning: ''
     }
+  }
+
+  componentWillMount() {
+    this.mapPropsToState(this.props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.mapPropsToState(nextProps)
+  }
+
+  mapPropsToState = (props) => {
+    let startDate = moment(props.startDateTime).utc()
+    let endDate = moment(props.endDateTime).utc()
+
+    let startDateGiven = startDate.isValid()
+    let endDateGiven = endDate.isValid()
+
+    this.setState({
+      startDateYear: startDateGiven ? startDate.year() : this.initialState().startDateYear,
+      startDateMonth: startDateGiven ? startDate.month() : this.initialState().startDateMonth,
+      startDateDay: startDateGiven ? startDate.date() : this.initialState().startDateDay,
+      endDateYear: endDateGiven ? endDate.year() : this.initialState().endDateYear,
+      endDateMonth: endDateGiven ? endDate.month() : this.initialState().endDateMonth,
+      endDateDay: endDateGiven ? endDate.date() : this.initialState().endDateDay,
+    })
   }
 
   warningStyle() {
@@ -175,7 +215,7 @@ export default class TimeFilter extends Component {
         key="TimeFilter::apply"
         text="Apply"
         onClick={this.applyDates}
-        style={{ width: '35%' }}
+        style={styleButton}
       />
     )
 
@@ -184,7 +224,7 @@ export default class TimeFilter extends Component {
         key="TimeFilter::clear"
         text="Clear"
         onClick={this.clearDates}
-        style={{ width: '35%' }}
+        style={styleButton}
       />
     )
 
@@ -200,8 +240,8 @@ export default class TimeFilter extends Component {
               <label htmlFor='startDateDay' style={{paddingRight: '0.5em'}}>Day</label>
             </div>
             <div style={styleInputs}>
-              <input type='text' id='startDateYear' name='startDateYear' placeholder='YYYY' value={this.state.startDateYear} size='6'/>
-              <select id='startDateMonth' name='startDateMonth' value={this.state.startDateMonth}>
+              <input type='text' id='startDateYear' name='startDateYear' placeholder='YYYY' value={this.state.startDateYear} style={styleYear} />
+              <select id='startDateMonth' name='startDateMonth' value={this.state.startDateMonth} style={styleMonth} >
                 <option value=''>(none)</option>
                 <option value='0'>January</option>
                 <option value='1'>February</option>
@@ -216,7 +256,7 @@ export default class TimeFilter extends Component {
                 <option value='10'>November</option>
                 <option value='11'>December</option>
               </select>
-              <input type='text' id='startDateDay' name='startDateDay' placeholder='DD' value={this.state.startDateDay} size='3'/>
+              <input type='text' id='startDateDay' name='startDateDay' placeholder='DD' value={this.state.startDateDay} style={styleDay}/>
               <span aria-hidden='true' style={styleInputValidity(this.state.startValueValid)}>{this.state.startValueValid ? '✓' : '✖'}</span>
             </div>
           </fieldset>
@@ -229,8 +269,8 @@ export default class TimeFilter extends Component {
               <label htmlFor='endDateDay' style={{paddingRight: '0.5em'}}>Day</label>
             </div>
             <div style={styleInputs}>
-              <input type='text' id='endDateYear' name='endDateYear' placeholder='YYYY' value={this.state.endDateYear} size='6'/>
-              <select id='endDateMonth' name='endDateMonth' value={this.state.endDateMonth}>
+              <input type='text' id='endDateYear' name='endDateYear' placeholder='YYYY' value={this.state.endDateYear} style={styleYear} />
+              <select id='endDateMonth' name='endDateMonth' value={this.state.endDateMonth} style={styleMonth} >
                 <option value=''>(none)</option>
                 <option value='0'>January</option>
                 <option value='1'>February</option>
@@ -245,14 +285,14 @@ export default class TimeFilter extends Component {
                 <option value='10'>November</option>
                 <option value='11'>December</option>
               </select>
-              <input type='text' id='endDateDay' name='endDateDay' placeholder='DD' value={this.state.endDateDay} size='3'/>
+              <input type='text' id='endDateDay' name='endDateDay' placeholder='DD' value={this.state.endDateDay} style={styleDay} />
               <span aria-hidden='true' style={styleInputValidity(this.state.endValueValid)}>{this.state.endValueValid ? '✓' : '✖'}</span>
             </div>
           </fieldset>
         </form>
-        <div style={styleButtons}>
-          {clearButton}
+        <div style={styleButtonRow}>
           {applyButton}
+          {clearButton}
         </div>
         <div style={this.warningStyle()} role='alert'>
           {this.state.warning}
