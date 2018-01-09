@@ -8,8 +8,8 @@ import _ from 'lodash'
 **/
 
 const styleExpandableCategoryHeading = {
-  backgroundColor: '#17478F',
-  padding: '0.618em',
+  backgroundColor: '#18478F',
+  padding: '0.618em'
 }
 
 const styleExpandableWrapper = {
@@ -18,7 +18,7 @@ const styleExpandableWrapper = {
 
 const styleExpandableCategoryContent = marginNest => {
   return {
-    marginLeft: marginNest ? marginNest : '1em',
+    marginLeft: marginNest ? marginNest : '1em'
   }
 }
 
