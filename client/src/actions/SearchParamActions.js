@@ -26,6 +26,13 @@ export const updateDateRange = (startDate, endDate) => {
   }
 }
 
+export const REMOVE_DATE_RANGE = 'remove_date_range'
+export const removeDateRange = () => {
+  return {
+    type: REMOVE_DATE_RANGE
+  }
+}
+
 export const NEW_GEOMETRY = 'new_geometry'
 export const newGeometry = geoJSON => {
   return {

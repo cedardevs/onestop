@@ -5,13 +5,12 @@ import {
   clearFacets,
   clearCollections,
 } from '../actions/SearchRequestActions'
-import {updateQuery, updateSearch} from '../actions/SearchParamActions'
+import {removeDateRange, removeGeometry, updateQuery, updateSearch} from '../actions/SearchParamActions'
 import {showCollections} from '../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {
-    queryString: state.behavior.search.queryText,
-    geoJSON: state.behavior.search.geoJSON
+    queryString: state.behavior.search.queryText
   }
 }
 
@@ -19,6 +18,8 @@ const mapDispatchToProps = dispatch => {
   return {
     submit: () => {
       dispatch(clearFacets())
+      dispatch(removeGeometry())
+      dispatch(removeDateRange())
       dispatch(clearCollections())
       dispatch(triggerSearch())
       dispatch(showCollections())

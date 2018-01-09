@@ -6,19 +6,6 @@ import FlexRow from '../common/FlexRow'
 import Button from '../common/input/Button'
 import search from 'fa/search.svg'
 
-const styleMap = {
-  position: 'fixed',
-  zIndex: '20',
-  left: '50%',
-  marginTop: '2em',
-  marginLeft: '-30%',
-  boxShadow: '14px 14px 5px rgba(0,0,0,.7)',
-  border: '2px outset $color-primary',
-  height: '30em',
-  width: '80%',
-  maxWidth: '70em',
-}
-
 class SearchFields extends React.Component {
   constructor(props) {
     super(props)

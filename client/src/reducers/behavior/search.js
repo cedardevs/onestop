@@ -5,6 +5,7 @@ import {
   NEW_GEOMETRY,
   REMOVE_GEOMETRY,
   UPDATE_DATE_RANGE,
+  REMOVE_DATE_RANGE,
   TOGGLE_FACET,
   TOGGLE_EXCLUDE_GLOBAL,
   TOGGLE_SELECTION,
@@ -37,6 +38,12 @@ export const search = (state = initialState, action) => {
       return Immutable.merge(state, {
         startDateTime: action.startDate,
         endDateTime: action.endDate,
+      })
+
+    case REMOVE_DATE_RANGE:
+      return Immutable.merge(state, {
+        startDateTime: initialState.startDateTime,
+        endDateTime: initialState.endDateTime
       })
 
     case TOGGLE_FACET:
