@@ -11,7 +11,7 @@ const styleInputValidity = isValid => {
 }
 
 const styleTimeFilter = {
-  backgroundColor: '#5396CC',
+  backgroundColor: '#3D97D2',
   padding: '0.618em',
   color: '#F9F9F9',
 }

@@ -10,7 +10,7 @@ import _ from 'lodash'
 const styleMapContainer = showMap => {
   return {
     boxSizing: 'border-box',
-    backgroundColor: '#6095C8',
+    backgroundColor: '#3D97D2',
     transition: showMap
       ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
       : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
@@ -22,7 +22,7 @@ const styleMapContainer = showMap => {
 
 const styleMap = showMap => {
   return {
-    zIndex: 2,
+    zIndex: 1,
     padding: 0,
     margin: 0,
     display: showMap ? 'flex' : 'none',

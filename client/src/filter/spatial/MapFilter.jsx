@@ -10,7 +10,7 @@ import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from "../../common/input/Checkbox";
 
 const styleMapFilter = {
-  backgroundColor: '#5396CC',
+  backgroundColor: '#3D97D2',
   padding: '0.618em',
   color: '#F9F9F9',
   position: 'relative',

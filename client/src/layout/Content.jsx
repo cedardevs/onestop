@@ -25,7 +25,6 @@ export default class Content extends Component {
               width={this.props.leftWidth}
               padding={this.props.padding}
               visible={this.props.leftVisible}
-              toggle={this.props.toggleLeft}
               key={'left'}
             />
           ) : null,
@@ -43,7 +42,6 @@ export default class Content extends Component {
               width={this.props.rightWidth}
               padding={this.props.padding}
               visible={this.props.rightVisible}
-              toggle={this.props.toggleRight}
               key={'right'}
             />
           ) : null,

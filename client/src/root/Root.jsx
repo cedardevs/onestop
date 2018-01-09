@@ -9,7 +9,8 @@ import DetailContainer from '../detail/DetailContainer'
 import HeaderContainer from './HeaderContainer'
 import MapContainer from '../search/map/MapContainer'
 
-import Filters from '../filter/Filters'
+import FiltersContainer from '../filter/FiltersContainer'
+import FiltersHiddenContainer from '../filter/FiltersHiddenContainer'
 
 import LoadingBarContainer from '../loading/LoadingBarContainer'
 
@@ -104,7 +105,7 @@ export default class Root extends Component {
 
   render() {
 
-    const { showLeft, showRight, toggleLeft, toggleRight } = this.props
+    const { showLeft, toggleLeft, showRight } = this.props
 
     const header = (
       <div>
@@ -118,10 +119,17 @@ export default class Root extends Component {
       </div>
     )
 
-    const left =
-      this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage() ? (
-        <Filters />
-      ) : null
+    const layoutContext = this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
+
+    let left = null
+    if(layoutContext) {
+      if(showLeft) {
+        left = <FiltersContainer/>
+      }
+      else {
+        left = <FiltersHiddenContainer/>
+      }
+    }
 
     const middle = (
       <div>
@@ -145,12 +153,10 @@ export default class Root extends Component {
         left={left}
         leftWidth={256}
         leftVisible={showLeft}
-        toggleLeft={toggleLeft}
         middle={middle}
         right={null}
         rightWidth={256}
         rightVisible={showRight}
-        toggleRight={toggleRight}
         footer={<FooterContainer />}
       />
     )
