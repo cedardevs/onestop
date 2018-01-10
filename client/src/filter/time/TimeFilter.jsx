@@ -232,7 +232,7 @@ export default class TimeFilter extends Component {
 
     return (
       <div style={styleTimeFilter}>
-        <p>Filter your search results by providing a start date, end date, or date range. Use year, year and month, or full dates. Future dates are not accepted.</p>
+        <p>Provide a start date, end date, or date range. Use year, year and month, or full dates. Future dates are not accepted.</p>
         <form>
           <fieldset style={styleFieldset} onChange={(event) => this.onChange(event.target.name, event.target.value)}>
             <legend>Start Date: </legend>
