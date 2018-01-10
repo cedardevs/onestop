@@ -64,12 +64,11 @@ export const convertNegativeLongitudes = coordinates => {
   )
 }
 
-export const convertBboxToGeoJson = coordString => {
-  const coordArray = coordString.split(',').map(x => parseFloat(x))
-  const sw = [ coordArray[0], coordArray[1] ]
-  const nw = [ coordArray[0], coordArray[3] ]
-  const ne = [ coordArray[2], coordArray[3] ]
-  const se = [ coordArray[2], coordArray[1] ]
+export const convertBboxToGeoJson = (west, south, east, north) => {
+  const sw = [ west, south ]
+  const nw = [ west, north ]
+  const ne = [ east, north ]
+  const se = [ east, south ]
   const coordinates = [ sw, nw, ne, se, sw ]
   if (
     !_.every(
@@ -89,6 +88,12 @@ export const convertBboxToGeoJson = coordString => {
       },
     }
   }
+}
+
+// TODO Remove this function when 508 site is phased out:
+export const convertBboxStringToGeoJson = coordString => {
+  const coordArray = coordString.split(',').map(x => parseFloat(x))
+  return convertBboxToGeoJson(coordArray)
 }
 
 export const convertGeoJsonToBbox = geoJson => {
