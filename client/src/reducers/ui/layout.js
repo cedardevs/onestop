@@ -1,9 +1,10 @@
 import Immutable from 'seamless-immutable'
-import { TOGGLE_LEFT, TOGGLE_RIGHT } from '../../actions/LayoutActions'
+import { TOGGLE_LEFT, TOGGLE_RIGHT, TOGGLE_MAP } from '../../actions/LayoutActions'
 
 export const initialState = Immutable({
   showLeft: true,
-  showRight: false
+  showRight: false,
+  showMap: false,
 })
 
 export const layout = (state = initialState, action) => {
@@ -14,6 +15,9 @@ export const layout = (state = initialState, action) => {
     case TOGGLE_RIGHT:
       const previousShowRight = state.showLeft
       return Immutable.set(state, 'showRight', !previousShowRight)
+    case TOGGLE_MAP:
+      const previousShowMap = state.showMap
+      return Immutable.set(state, 'showMap', !previousShowMap)
     default:
       return state
   }

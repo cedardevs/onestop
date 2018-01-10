@@ -6,7 +6,7 @@ const mapStateToProps = state => {
   const {geoJSON} = state.behavior.search
   return {
     geoJsonSelection: geoJSON,
-    showMap: state.ui.mapFilter.showMap,
+    showMap: state.ui.layout.showMap,
   }
 }
 

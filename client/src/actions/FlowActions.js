@@ -88,13 +88,6 @@ const toggleBackgroundImage = boolVisible => {
   }
 }
 
-export const TOGGLE_MAP = 'TOGGLE_MAP'
-export const toggleMap = () => {
-  return {
-    type: TOGGLE_MAP
-  }
-}
-
 export const UPDATE_BOUNDS = 'UPDATE_BOUNDS'
 export const updateBounds = (to, source) => {
   return {

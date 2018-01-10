@@ -11,3 +11,10 @@ export const toggleRight = () => {
     type: TOGGLE_RIGHT
   }
 }
+
+export const TOGGLE_MAP = 'TOGGLE_MAP'
+export const toggleMap = () => {
+  return {
+    type: TOGGLE_MAP
+  }
+}
