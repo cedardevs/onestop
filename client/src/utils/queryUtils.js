@@ -2,7 +2,7 @@ import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {recenterGeometry} from './geoUtils'
 import {initialState} from '../reducers/behavior/search'
-import {convertBboxToGeoJson, convertGeoJsonToBbox} from './geoUtils'
+import {convertBboxStringToGeoJson, convertGeoJsonToBboxString} from './geoUtils'
 
 export const assembleSearchRequestString = (
   state,
@@ -125,8 +125,8 @@ const codecs = [
   {
     longKey: 'geoJSON',
     shortKey: 'g',
-    encode: geojson => convertGeoJsonToBbox(geojson),
-    decode: text => convertBboxToGeoJson(text),
+    encode: geojson => convertGeoJsonToBboxString(geojson),
+    decode: text => convertBboxStringToGeoJson(text),
   },
   {
     longKey: 'startDateTime',

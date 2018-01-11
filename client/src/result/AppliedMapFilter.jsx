@@ -13,20 +13,14 @@ export default class AppliedMapFilter extends Component {
     const { geoJSON, onUnselectMap } = this.props
 
     let appliedMap = null
-    let bbox = null
-    if (geoJSON) {
-      const coordinates = geoJSON.geometry.coordinates[0]
-      const north = Number(coordinates[1][1]).toFixed(2)
-      const west = Number(coordinates[1][0]).toFixed(2)
-      const south = Number(coordinates[3][1]).toFixed(2)
-      const east = Number(coordinates[3][0]).toFixed(2)
-      bbox = geoUtils.convertGeoJsonToBbox(geoJSON)
+    if (geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates) {
+      let bbox = geoUtils.convertGeoJsonToBbox(geoJSON)
       appliedMap = (
           <AppliedMap
-            north={north}
-            west={west}
-            south={south}
-            east={east}
+            north={bbox.north}
+            west={bbox.west}
+            south={bbox.south}
+            east={bbox.east}
             onUnselect={() => onUnselectMap()}
           />
       )
