@@ -1,12 +1,82 @@
 import React, {Component} from 'react'
+import FlexScroll from '../../common/FlexScroll'
+import FlexColumn from '../../common/FlexColumn'
+import Button from '../../common/input/Button'
 import _ from 'lodash'
 import MapContainer from './GranuleMapContainer'
 import A from '../../common/link/Link'
-import styles from './list.css'
 
-const styleMapContainer = {
-  height: '100%',
-  width: '100%',
+const styleLegendHeading = {
+  margin: '0 0 0.618em 0',
+  padding: 0,
+}
+
+const styleLegend = {
+  justifyContent: 'flex-start',
+  display: 'flex',
+  flexFlow: 'row wrap',
+  paddingBottom: '1em',
+}
+
+const styleLegendItem = {
+  display: 'inline-flex',
+  marginLeft: '1em',
+  alignItems: 'center',
+}
+
+const styleTable = {
+  padding: '2px'
+}
+
+const styleTableHeadRow = {
+  backgroundColor: '#E0E0E0',
+  color: 'black',
+  textAlign: 'left',
+}
+
+const styleTableBodyRow = even => {
+  return {
+    backgroundColor: even ? '#222' : '#111',
+    color: 'white',
+  }
+}
+
+const styleTableCell = {
+  padding: '0.618em',
+  borderRight: '1px solid #CBCBCB',
+}
+
+const styleBadgesCell = {
+  width: '25%',
+  minWidth: '4em',
+  padding: '0.309em',
+}
+
+const styleBadge = protocol => {
+  return {
+    borderRadius: '50%',
+    width: '1em',
+    height: '1em',
+    lineHeight: '1em',
+    padding: '0.25em',
+    margin: '0.25em',
+    font: 'Arial, sans-serif',
+    color: 'white',
+    textAlign: 'center',
+    textDecoration: 'none',
+    background: `${protocol.color}`,
+  }
+}
+
+const styleBadgeLayout = {
+  display: 'flex',
+  flexFlow: 'row wrap',
+  justifyContent: 'flex-end',
+}
+
+const styleLegendLabel = {
+  font: '1.2em Arial, sans-serif',
+  margin: '0.6em 0',
 }
 
 export default class GranuleView extends Component {
@@ -47,19 +117,23 @@ export default class GranuleView extends Component {
   }
 
   render() {
+    const {results, toggleFocus} = this.props
     const usedProtocols = new Set()
-    const tableRows = _.map(this.props.results, (value, key) => {
+    let rowNumber = -1
+    const tableRows = _.map(results, (value, key) => {
+      const rowEven = rowNumber++ % 2 === 0
       _.forEach(value.links, link =>
         usedProtocols.add(this.identifyProtocol(link))
       )
       return (
         <tr
           key={key}
-          onMouseEnter={() => this.props.toggleFocus(key, true)}
-          onMouseLeave={() => this.props.toggleFocus(key, false)}
+          style={styleTableBodyRow(rowEven)}
+          onMouseEnter={() => toggleFocus(key, true)}
+          onMouseLeave={() => toggleFocus(key, false)}
         >
-          <td>{value.title}</td>
-          <td className={styles.badgeCell}>{this.renderBadges(value.links)}</td>
+          <td style={styleTableCell}>{value.title}</td>
+          <td style={styleBadgesCell}>{this.renderBadges(value.links)}</td>
         </tr>
       )
     })
@@ -69,61 +143,61 @@ export default class GranuleView extends Component {
       .uniqBy('id')
       .map((protocol, i) => {
         return (
-          <div key={i} className={styles.legendItem}>
-            <div
-              className={`${styles.badge}`}
-              style={{background: protocol.color}}
-            >
-              {protocol.id}
-            </div>
-            <div className={`${styles.label}`}>{protocol.label}</div>
+          <div key={i} style={styleLegendItem}>
+            <div style={styleBadge(protocol)}>{protocol.id}</div>
+            <div style={styleLegendLabel}>{protocol.label}</div>
           </div>
         )
       })
       .value()
 
-    return (
-      <div className={`pure-g ${styles.mainWindow}`}>
-        <div className={`pure-u-1-2 ${styles.map}`}>
-          <MapContainer style={styleMapContainer} />
-        </div>
-        <div className={`pure-u-1-2 ${styles.granule}`}>
-          <div className={`pure-g ${styles.granuleInfo}`}>
-            {this.renderLoadingMessage()}
-            {_.isEmpty(legendItems) ? (
-              <div />
-            ) : (
-              <div className={`pure-u-1 ${styles.legend}`}>
-                <h3 className={styles.legendItem}>Access Protocols:</h3>
-                <div>{legendItems}</div>
-              </div>
-            )}
-            <div className={`pure-u-1`}>
-              <table className={`pure-table ${styles.table}`}>
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Data Access</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tableRows}
-                  {this.renderPaginationButton()}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+    const map = <MapContainer key="granuleMap" forceShow={true} />
+
+    const granuleLoadingMessage = this.renderLoadingMessage()
+
+    const granuleLegend = (
+      <div key="granuleLegend">
+        <h3 style={styleLegendHeading}>Access Protocols:</h3>
+        <div style={styleLegend}>{legendItems}</div>
       </div>
+    )
+
+    const granuleInfo = (
+      <FlexColumn items={[ granuleLoadingMessage, granuleLegend ]} />
+    )
+
+    const granuleTable = (
+      <table style={styleTable}>
+        <thead>
+          <tr style={styleTableHeadRow}>
+            <th style={styleTableCell}>Title</th>
+            <th style={styleTableCell}>Data Access</th>
+          </tr>
+        </thead>
+        <tbody>{tableRows}</tbody>
+      </table>
+    )
+
+    return (
+      <FlexScroll
+        left={map}
+        styleLeft={{marginRight: '1.618em'}}
+        rightTop={granuleInfo}
+        rightScroll={granuleTable}
+        rightBottom={this.renderPaginationButton()}
+      />
     )
   }
 
   renderLoadingMessage() {
     const styleShowMessage = _.isEmpty(this.props.results)
-      ? {}
+      ? {padding: '1em'}
       : {display: 'none'}
     return (
-      <div className={`pure-u-1 ${styles.message}`} style={styleShowMessage}>
+      <div
+        key="granuleLoadingMessage"
+        style={styleShowMessage}
+      >
         Please wait a moment while the results load...
       </div>
     )
@@ -139,7 +213,7 @@ export default class GranuleView extends Component {
     return _.isEmpty(badges) ? (
       <div>N/A</div>
     ) : (
-      <div className={styles.badgeLayout}>{badges}</div>
+      <div style={styleBadgeLayout}>{badges}</div>
     )
   }
 
@@ -150,8 +224,7 @@ export default class GranuleView extends Component {
         key={url}
         title={url}
         target="_blank"
-        className={`${styles.badge}`}
-        style={{background: protocol.color}}
+        style={styleBadge(protocol)}
       >
         {protocol.id}
       </A>
@@ -164,19 +237,16 @@ export default class GranuleView extends Component {
   }
 
   renderPaginationButton() {
-    if (_.size(this.props.results) < this.props.totalHits) {
-      return (
-        <tr className={styles.pageButton}>
-          <td colSpan="2">
-            <button
-              className="pure-button"
-              onClick={() => this.props.fetchMoreResults()}
-            >
-              Show More Results
-            </button>
-          </td>
-        </tr>
+    const {results, totalHits, fetchMoreResults} = this.props
+    if (_.size(results) < totalHits) {
+      const moreResultsButton = (
+        <Button
+          text="Show More Results"
+          onClick={fetchMoreResults}
+          style={{display: 'inherit', width: '100%', borderRadius: 0}}
+        />
       )
+      return <div style={{padding:"2px"}}>{moreResultsButton}</div>
     }
   }
 }

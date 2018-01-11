@@ -7,25 +7,25 @@ import 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
 
-const styleMapContainer = showMap => {
+const styleMapContainer = (showMap, forceShow) => {
   return {
     boxSizing: 'border-box',
     backgroundColor: '#3D97D2',
-    transition: showMap
+    transition: (showMap || forceShow)
       ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
       : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
-    padding: showMap ? '1em' : '0em',
-    height: showMap ? '400px' : '0px',
-    width: showMap ? '100%' : '0%',
+    padding: (showMap && !forceShow) ? '1em' : '0em',
+    height: (showMap || forceShow) ? '400px' : '0px',
+    width: (showMap || forceShow) ? '100%' : '0%',
   }
 }
 
-const styleMap = showMap => {
+const styleMap = (showMap, forceShow) => {
   return {
-    zIndex: 1,
+    zIndex: forceShow ? 2 : 1,
     padding: 0,
     margin: 0,
-    display: showMap ? 'flex' : 'none',
+    display: (showMap || forceShow) ? 'flex' : 'none',
     position: 'relative',
     height: '100%',
     alignItems: 'flex-start',
@@ -242,16 +242,16 @@ class Map extends React.Component {
   }
 
   render() {
-    const { showMap } = this.props
+    const { showMap, forceShow } = this.props
     return (
       <div
-        style={styleMapContainer(showMap)}
+        style={styleMapContainer(showMap, forceShow)}
         ref={mapContainerNode => {
           this.mapContainerNode = mapContainerNode
         }}
       >
         <div
-          style={styleMap(showMap)}
+          style={styleMap(showMap, forceShow)}
           ref={mapNode => {
             this.mapNode = mapNode
           }}
