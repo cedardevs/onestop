@@ -34,15 +34,11 @@ export default class GranuleViewTableRow extends Component {
 
   handleToggleFocus = event => {
     const { id, toggleFocus } = this.props
-    console.log("handleRowToggleFocus:::toggleFocus:", toggleFocus)
-    console.log("handleRowToggleFocus:::id:", id)
     toggleFocus(id, true)
   }
 
   handleToggleUnfocus = event => {
     const { id, toggleFocus } = this.props
-    console.log("handleRowToggleUnfocus:::toggleFocus:", toggleFocus)
-    console.log("handleRowToggleUnfocus:::id:", id)
     toggleFocus(id, false)
   }
 
@@ -55,7 +51,6 @@ export default class GranuleViewTableRow extends Component {
         style={styles}
         onMouseOver={this.handleRowMouseOver}
         onMouseOut={this.handleRowMouseOut}
-        onClick={() => console.log("onClick")}
         onMouseEnter={this.handleToggleFocus}
         onMouseLeave={this.handleToggleUnfocus}
       >
