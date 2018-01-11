@@ -15,6 +15,10 @@ const styleCheckboxContainer = {
   border: '1px solid #ddd',
 }
 
+const styleDisabled = {
+  background: 'gray', // TODO play with styling I have no clue what we want it to look like
+}
+
 const styleInput = {
   visibility: 'hidden',
 }
@@ -58,6 +62,7 @@ class Checkbox extends Component {
   }
 
   handleChange = event => {
+    if(this.props.disabled) {return}
     const {value, onChange} = this.props
     if (onChange) {
       onChange({checked: !this.state.checked, value: value})
@@ -72,6 +77,7 @@ class Checkbox extends Component {
   }
 
   handleMouseOver = event => {
+    if(this.props.disabled) {return}
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: true,
@@ -80,6 +86,7 @@ class Checkbox extends Component {
   }
 
   handleMouseOut = event => {
+    if(this.props.disabled) {return}
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: false,
@@ -88,6 +95,7 @@ class Checkbox extends Component {
   }
 
   handleMouseDown = event => {
+    if(this.props.disabled) {return}
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: prevState.hovering,
@@ -119,6 +127,7 @@ class Checkbox extends Component {
       ...(this.state.focused && this.props.styleFocus
         ? this.props.styleFocus
         : {}),
+      ...(this.props.disabled ? styleDisabled : {})
     }
 
     const styleCheck = {
@@ -129,12 +138,15 @@ class Checkbox extends Component {
       ...(this.state.hovering ? styleCheckmarkHover : {}),
     }
 
+    // TODO merge checkmark style changes with disabled stuff
+
     return (
       <div style={styleContainer}>
         <div
           role="checkbox"
           aria-checked={this.state.checked}
           aria-label={this.props.label}
+          aria-disabled={this.props.disabled}
           tabIndex={this.props.tabIndex || 0}
           style={styleCheckbox}
           onClick={this.handleChange}
@@ -151,6 +163,7 @@ class Checkbox extends Component {
           type="checkbox"
           name={this.props.name}
           value={this.props.value}
+          disabled={this.props.disabled}
           checked={this.state.checked}
           onChange={() => {}}
           style={styleInput}

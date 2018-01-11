@@ -152,6 +152,7 @@ export default class Expandable extends React.Component {
     const stylesMerged = {
       ...styleHeading,
       ...this.props.styleHeading,
+      ...(this.props.disabled?{color:'gray'}:{}), // TODO need a much better color theme going on or something idk
       ...styleHeadingHide,
       ...styleHideFocus, // focus is shown on an interior element instead
     }

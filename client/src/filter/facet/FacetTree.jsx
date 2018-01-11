@@ -380,6 +380,7 @@ export default class FacetTree extends React.Component {
           open={facet.open}
           keyword={facet.keyword}
           selected={facet.selected}
+          disabled={facet.count == 0}
           tabIndex={facet.tabIndex}
           focused={this.state.focus}
           children={children}

@@ -59,6 +59,7 @@ export default class FacetTreeItem extends React.Component {
       tabIndex,
       keyword,
       facetMap,
+      disabled,
     } = this.props
     const {open, selected, focusing} = this.state
 
@@ -75,6 +76,7 @@ export default class FacetTreeItem extends React.Component {
         <Checkbox
           label={label}
           id={`checkbox-${facetId}`}
+          disabled={disabled}
           tabIndex={tabIndex}
           checked={selected}
           value={{term: term, category: category, id: facetId}}
@@ -87,6 +89,7 @@ export default class FacetTreeItem extends React.Component {
     const content = hasChildren ? (
       <Expandable
         open={open}
+        disabled={disabled}
         value={facetMap}
         heading={facet}
         tabbable={false}
