@@ -1,28 +1,5 @@
 import _ from 'lodash'
-
-// const buildHierarchyMap = (category, terms) => {
-//   let lastParent = {
-//     0: {id: null, children:[]} // initial state of what is essentially a custom map-reduce // TODO use actual map reduce?
-//   }
-//
-//   _.each(terms, (data, term)=>{
-//     const idParts = _.concat(_.words(category), _.words(term))
-//     let hierarchy = term.split('>').map(e => e.trim()) // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
-//     let keyword = hierarchy.pop()
-//     const facet = {
-//       ...buildFacet(category, term, data.count),
-//       keyword: titleCaseKeyword(keyword),
-//       children: [],
-//       parentId: lastParent[hierarchy.length].id,
-//     }
-//
-//     lastParent[hierarchy.length+1] = facet
-//     lastParent[hierarchy.length].children.push(facet)
-//
-//   })
-//
-//   return lastParent[0].children
-// }
+import Immutable from 'seamless-immutable'
 
 const hierarchy = (category, facets) => {
   const reducer = (map, facet) => {
@@ -62,13 +39,8 @@ const buildTermHierarchy = (term, isHierarchy) => {
 }
 
 const buildFacet = (category, term, count, selected, isHierarchy) => {
-  // let keyword = term
-  // if (splitTerm) {
-  //   let hierarchy = term.split('>').map(e => e.trim()) // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
-  //   keyword = hierarchy.pop()
-  // }
   const termHierarchy = buildTermHierarchy(term, isHierarchy)
-  return {
+  return Immutable({
     count: count,
     category: category,
     term: term,
@@ -76,7 +48,7 @@ const buildFacet = (category, term, count, selected, isHierarchy) => {
     selected: selected,
     termHierarchy: termHierarchy,
     keyword: keyword(termHierarchy, isHierarchy),
-  }
+  })
 }
 
 const categoryName = category => {
@@ -87,9 +59,6 @@ const categoryName = category => {
 }
 
 const facets = (category, terms, selectedFacets) => {
-  // if (category === 'science') {
-  //   return buildHierarchyMap(category, terms)
-  // }
   const selectedTerms = selectedFacets[category]
 
   return _.map(terms, (data, term)=>{
@@ -99,7 +68,7 @@ const facets = (category, terms, selectedFacets) => {
 }
 
 export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
-  const hierarchyMap = {}
+  // const hierarchyMap = {}
   return _.map(facetMap, (terms, category) => {
     if (!_.isEmpty(terms)) {
       // Don't load categories that have no results
@@ -108,19 +77,12 @@ export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
         name: categoryName(category),
         id: categoryName(category).replace(' ', '-', 'g'),
         keywordFacets: keywordFacets,
-        hierarchy: hierarchy(category, keywordFacets),
+        hierarchy: Immutable(hierarchy(category, keywordFacets)), // TODO make this immutable too
       }
     }
   }).filter((facetCategory)=> {return facetCategory}) // remove undefined?
 
 }
-
-// const isSelected = (selectedFacets) => { // TODO still not working right
-//   return (category, term) => {
-//     const selectedTerms = selectedFacets[category]
-//     return selectedTerms ? selectedTerms.includes(term) : false
-//   }
-// }
 
 // pulls out the last term in a GCMD-style keyword and attempts to maintain intended acronyms
 export const titleCaseKeyword = term => {

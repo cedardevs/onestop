@@ -22,6 +22,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(toggleFacet(category, facetName, selected))
     },
     submit: () => {
+      // dispatch(updateFacets())
       dispatch(clearCollections())
       dispatch(triggerSearch())
       dispatch(showCollections())
