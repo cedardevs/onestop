@@ -73,89 +73,43 @@ export default class FacetTree extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // console.log('will recieve props...', _.isEqual(this.props.facetMap, nextProps.facetMap))
-    if(!_.isEqual(this.props.hierarchy, nextProps.hierarchy)) { //TODO figure this out man...
-    //   this.setState(prevState => {
-    //     // TODO need a way to determine when the hierarchy really should change... (ie reset entirely if map is empty??)
-    //     return {
-    //       ...prevState,
-    //       hierarchy: Immutable.merge(this.props.hierarchy, nextProps.hierarchy),
-    //     }
-    //   })
-
+    if(!_.isEqual(this.props.hierarchy, nextProps.hierarchy)) {
+    // TODO need a way to determine when the hierarchy really should change... (ie reset entirely if map is empty??)
       if(_.isEmpty(nextProps.hierarchy)) {console.log('TODO RESET HIERARCY')} // TODO not triggered when I hoped it would be...
-
-/*
-      let groups = {}
-      _.each(this.props.hierarchy, (h) => {
-        groups[h.id] = h
-      })
-      _.each(nextProps.hierarchy, (h) => {
-        if(groups[h.id]) {
-          groups[h.id] = Immutable.merge(groups[h.id], h)
-        } else {
-          console.log('adding new group to hierarch', h)
-          groups[h.id] = h
-        }
-      })
-      */
-      this.setState(prevState => {
-        // console.log('uhhhh', nextProps.hierarchy, groups, _.map(groups, (g) => { return g}))
-        return {
-          ...prevState,
-          hierarchy: this.mergeChildren(this.state.hierarchy, nextProps.hierarchy)// _.map(groups, (g) => {return g})
-        }
-      }, this.updateAllVisibility)
-
     }
-    if(!_.isEqual(this.props.facetMap, nextProps.facetMap)) { // if prop map has changed only
+
+    if(!_.isEqual(this.props.hierarchy, nextProps.hierarchy) || !_.isEqual(this.props.facetMap, nextProps.facetMap)) {
       this.setState(prevState => {
-        // const facets = this.state.facetList
         const facets = _.map(this.state.facetList, (facet) => {
-          // TODO replace with map merge ??
-          let f = Immutable.merge(facet, {count: 0}) // TODO what about adding facets that are new??? just tack on the end and sort by term?
-          // facet.count = 0
+          let f = Immutable.merge(facet, {count: 0}) // set all facet counts to zero
           const updatedFacet = _.find(nextProps.facetMap, (updatedFacet)=> { return facet.id === updatedFacet.id})
           if(updatedFacet) {
-            console.log('updating facet', updatedFacet)
-            // facet.count = updatedFacet.count
-            // facet.selected = updatedFacet.selected
+            // update facet with refreshed info (ie count) from results
             f = Immutable.merge(f, {count: updatedFacet.count, selected: updatedFacet.selected})
             // TODO can probably just do f = Immutable.merge(f, updatedFacet), since updatedFacet shouldn't have any UI state in it.
-            // TODO I need to recursively merge the array (children, or bad things happen at the nested levels. Note - might want to migrate this logic to a util.)
-          } else {console.log('stuck at count 0')}
+          }// else {console.log('stuck at count 0')}
 
           return f
         })
 
+        // find any new facets which are not already included and add them
         _.each(nextProps.facetMap, (facet) => {
           const oldFacet = _.find(this.state.facetList, (oldFacet)=> { return facet.id === oldFacet.id})
           if(!oldFacet) {
-            console.log('adding facet to list: ', facet)
             facets.push(Immutable.merge({
               open: false,
               visible: false,
-              tabIndex: '-1', // TODO why is this a string and not an int? or why is the zero below an int??
+              tabIndex: '-1', // TODO why is this a string and not an int? or why is the zero below an int?? (parital answer - Facet has a logic check that assumes a string, but ... ummm?)
             },facet))
-            // TODO what about adding facets that are new??? just tack on the end and sort by term? ( TODO do I need to sort??)
           }
         })
 
-        // console.log('sort my facets', facets)
         return {
           ...prevState,
-          facetList: _.sortBy(facets, ['term']),
+          facetList: _.sortBy(facets, ['term']), // make sure facets are sorted
+          hierarchy: this.mergeChildren(this.state.hierarchy, nextProps.hierarchy)
         }
       }, this.updateAllVisibility)
-      // TODO as set state callback?
-      // _.each(this.state.hierarchy, (facetInMap) => {
-      //   this.updateNodeVisibility(facetInMap, false) // init state of open for all is: no
-      // })
-      // TODO wtf? something about this updating the visibility is causing every node to exapand (ie, when I toggle a selection)
-// const hierarchy = this.props.hierarchy
-// _.each(hierarchy, (facetInMap) => {
-//   this.updateNodeVisibility(facetInMap, open) // TODO move out of set state, because it calls set state itself?
-// })
     }
   }
 
