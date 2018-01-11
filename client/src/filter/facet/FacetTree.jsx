@@ -67,7 +67,7 @@ export default class FacetTree extends React.Component {
   updateAllVisibility = () => { // TODO rename to init visibility
     _.each(this.state.hierarchy, (facetInMap) => {
       // this.updateNodeVisibility(facetInMap, true) // init state of open for all is: no
-      let node = this.facetLookup2(facetInMap.id)
+      let node = this.lookupFacet(facetInMap.id)
       this.replaceNode(facetInMap.id, Immutable.merge(node, {visible: true})) // TODO this is a dumb method to update one property on the node. Make it like updateNode(id, propName, value)??
     })
   }
@@ -113,62 +113,20 @@ export default class FacetTree extends React.Component {
     }
   }
 
-  componentDidUpdate() {
-    // console.log('component did update', this.props.facetMap)
-
-    // TODO update only
-    // this.setState(prevState => {
-    //   const facets = this.state.facetList
-    //   _.each(facets, (facet) => {
-    //     // TODO replace with map merge ??
-    //     facet.count = 0
-    //     const updatedFacet = _.find(this.props.facetMap, (updatedFacet)=> { return facet.id === updatedFacet.id})
-    //     if(updatedFacet) {
-    //       console.log('updating facet')
-    //       facet.count = updatedFacet.count
-    //       facet.selected = updatedFacet.selected
-    //     } else {console.log('stuck at count 0')}
-    //   })
-    //
-    //   const hierarchy = this.props.hierarchy
-    //   _.each(hierarchy, (facetInMap) => {
-    //     this.updateNodeVisibility(facetInMap, open)
-    //   })
-    //   return {
-    //     ...prevState,
-    //     facetList: facets,
-    //   }
-    // })
-  }
-
   componentDidMount() {
-
-    this.setState(prevState => { // TODO init only
-      // do with new facet map only (init state)
-      // console.log('component did mount', this.props.facetMap)
-      // const facets = _.clone(this.props.facetMap, true) // TODO rename facetMap to facetList?
-      // _.each(facets, (facet) => {
-      //   // TODO replace with map merge
-      //   facet.open = false
-      //   facet.tabIndex = '-1'
-      // })
-      // TODO Immutable.merge(state, {})
+    // init state
+    this.setState(prevState => {
       const facets = _.map(this.props.facetMap, (facet)=> {
         return Immutable.merge(facet, {
           open: false,
           visible: false,
-          tabIndex: '-1', // TODO why is this a string and not an int? or why is the zero below an int??
+          tabIndex: '-1',
         })
       })
       // The first facet should be the only focusable one, initially.
       facets[0] = Immutable.merge(facets[0], {tabIndex: '0'})
       const firstFocused = facets[0]
-      // firstFocused.tabIndex = 0
 
-      // const hierarchy = _.clone(this.props.hierarchy, true) TODO TODO TODO do some sort of visibility determination...
-      // _.each(hierarchy, (facetInMap) => {
-      //   this.updateNodeVisibility(facetInMap, open) // TODO note that open isnt' even defined???
-      // })
       return {
         ...prevState,
         facetList: facets,
@@ -176,13 +134,9 @@ export default class FacetTree extends React.Component {
         rovingIndex: firstFocused.id,
       }
     }, this.updateAllVisibility)
-    // // TODO set state callback?
-    // _.each(this.state.hierarchy, (facetInMap) => {
-    //   this.updateNodeVisibility(facetInMap, false) // init state of open for all is: no
-    // })
   }
 
-  facetLookup2 = (id) => { // TODO rename
+  lookupFacet = (id) => {
     return _.find(this.state.facetList, (facet) => {
       return facet.id === id
     })
@@ -209,7 +163,7 @@ export default class FacetTree extends React.Component {
   }
 
   updateNodeVisibility = (facetInMap, open) => {
-    let node = this.facetLookup2(facetInMap.id)
+    let node = this.lookupFacet(facetInMap.id)
     if(!node) {return}
     // node.open = open
     this.replaceNode(facetInMap.id, Immutable.merge(node, {open: open}))
@@ -223,89 +177,38 @@ export default class FacetTree extends React.Component {
     updateVisibility(facetInMap.children, node.open)
   }
 
-  handleExpandableToggle = event => { // TODO this needs the facetInMap to work right
-    console.log('toggle', event)
+  handleExpandableToggle = event => {
     this.updateNodeVisibility(event.value, event.open)
-    /*
-    this.setState(prevState => {
-
-      // let node = this.facetLookup2[event.value]
-      // if (node) {
-      //   node.open = event.open
-      //   let updateVisibility = (children, visibility) => {
-      //     _.each(children, (value, key) => {
-      //       value.visible = visibility
-      //       updateVisibility(value.children, visibility && value.open)
-      //     })
-      //   }
-      //   updateVisibility(node.children, node.open)
-      //
-      //   return {
-      //     ...prevState,
-      //     facetMap: this.state.facetMap, // editing to node directly modified this, this is to trigger the rest of the stack
-      //   }
-      // }
-
-      return {
-        ...prevState,
-        hierarchy: prevState.hierarchy, // TODO needed?
-      }
-    })*/
   }
 
-  updateRovingIndex = facetId => { // TODO next up - all the key binding stuff with the new data structure(s)
-    /*
-    // this.setState(prevState => {
-      // const oldIndex = prevState.facetLookup[prevState.rovingIndex]
-      const oldIndex = _.find(this.state.facetList, (facet) => {return facet.id === this.state.rovingIndex})
-      // oldIndex.tabIndex = '-1'
-      this.replaceNode(oldIndex, Immutable.merge(oldIndex, {tabIndex: '-1'}))
+  updateRovingIndex = facetId => {
+    this.setState(prevState => {
+      const oldIndex = this.facetIndex(this.state.rovingIndex)
+      const newIndex = this.facetIndex(facetId)
+      const facets = this.state.facetList
+      facets[oldIndex] = Immutable.merge(facets[oldIndex], {tabIndex: '-1'})
+      facets[newIndex] = Immutable.merge(facets[newIndex], {tabIndex: '0'})
+      return {
+        ...prevState,
+        facetList: facets,
+        rovingIndex: facetId,
+      }
+    })
 
-      const newIndex =  _.find(this.state.facetList, (facet) => {return facet.id === facetId})
-      // newIndex.tabIndex = '0'
-      this.replaceNode(oldIndex, Immutable.merge(oldIndex, {tabIndex: '0'}))
-
-      this.setState(prevState => {
-        return {
-          ...prevState,
-          rovingIndex: facetId,
-        }
-      })
-    //   return {
-    //     ...prevState,
-    //     facetMap: this.state.facetMap, // editing to node directly modified this, this is to trigger the rest of the stack
-    //     rovingIndex: facetId,
-    //   }
-    // })
-    */
-  this.setState(prevState => {
-    const oldIndex = this.facetIndex(this.state.rovingIndex)
-    const newIndex = this.facetIndex(facetId)
-    const facets = this.state.facetList
-    // console.log(oldIndex, newIndex, facets[oldIndex], facets[newIndex])
-    facets[oldIndex] = Immutable.merge(facets[oldIndex], {tabIndex: '-1'})
-    facets[newIndex] = Immutable.merge(facets[newIndex], {tabIndex: '0'})
-    return {
-      ...prevState,
-      facetList: facets,
-      rovingIndex: facetId,
-    }
-  })
-
-    console.log('wtf?', facetId, document.getElementById(facetId))
     document.getElementById(facetId).focus()
   }
 
   triggerRight = () => {
     const id = this.state.rovingIndex
-    const node = this.state.facetLookup[id]
+    const node = this.lookupFacet(id) //this.state.facetLookup[id]
+    console.log('triggerright', node)
     if (!node.open) {
       // open node
-      this.handleExpandableToggle({open: true, value: id})
+      this.handleExpandableToggle({open: true, value: id}) // TODO broken because value is not the map from hierarchy / node?
     }
     else {
       // move focus to first child
-      const facetId = node.relations.children[0]
+      const facetId = node.relations.children[0] // TODO this will fail - need to look this up from hierarchy now... (use term hierarcy property?)
       if (facetId) {
         this.updateRovingIndex(facetId)
       }
@@ -314,7 +217,7 @@ export default class FacetTree extends React.Component {
 
   triggerLeft = () => {
     const id = this.state.rovingIndex
-    const node = this.state.facetLookup[id]
+    const node = this.lookupFacet(id)
     if (node.open) {
       // close node
       this.handleExpandableToggle({open: false, value: id})
@@ -330,13 +233,13 @@ export default class FacetTree extends React.Component {
 
   moveFocusDown = () => {
     const id = this.state.rovingIndex
-    const orderIndex = this.facetIndex(id) //_.findIndex(this.state.facetList, (facet) => {console.log('find index', id, facet); return facet.id === id})
+    const orderIndex = this.facetIndex(id)
 
     if (orderIndex < this.state.facetList.length - 1) {
       const nextVisible = _.find(
         this.state.facetList,
         facet => {
-          return facet.visible //this.state.facetLookup[facetId].visible
+          return facet.visible
         },
         orderIndex + 1
       )
@@ -363,7 +266,8 @@ export default class FacetTree extends React.Component {
 
   moveFocusUp = () => {
     const id = this.state.rovingIndex
-    const orderIndex = this.facetIndex(id) //_.indexOf(this.state.allFacetsInOrder, id)
+    const orderIndex = this.facetIndex(id)
+
     if (orderIndex > 0) {
       const nextVisible = _.findLast(
         this.state.facetList,
@@ -376,11 +280,6 @@ export default class FacetTree extends React.Component {
       this.updateRovingIndex(nextVisible.id)
     }
   }
-  //
-  // isSelected = (category, term) => {
-  //   const selectedTerms = this.props.selectedFacets[category]
-  //   return selectedTerms ? selectedTerms.includes(term) : false
-  // }
 
   handleSelectToggleMouse = e => {
     this.props.handleSelectToggle(e.value, e.checked)
@@ -392,7 +291,7 @@ export default class FacetTree extends React.Component {
     //   return []
     // }
     // handle any nulls that might get into this function
-    const facet = this.facetLookup2(facetInMap.id)
+    const facet = this.lookupFacet(facetInMap.id)
     // console.log(facetInMap, facet)
     let facetComponent = null
     if (!facet) {
