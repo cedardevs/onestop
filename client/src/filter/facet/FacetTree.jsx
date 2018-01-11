@@ -53,6 +53,48 @@ export default class FacetTree extends React.Component {
   //   console.log('blllaahh', nextProps)
   //   return true
   // }
+
+  //
+  // hierarchyUpdater = (oldHierarchy, newHierarchy) => { //(category, facets)
+  //   const reducer = () => { //(map, facet)
+  //     const termHierarchy = facet.termHierarchy
+  //     const facetMap = {
+  //       id: facet.id,
+  //       children: [],
+  //       parent: map[termHierarchy.length].id,
+  //     }
+  //     map[termHierarchy.length+1] = facetMap
+  //     map[termHierarchy.length].children.push(facetMap)
+  //     return map
+  //   }
+  //   let initState = {}
+  //   initState[0] = {id: null, children:oldHierarchy}
+  //   return newHierarchy.reduce(reducer, initState)[0].children
+  // }
+  foothebar = (list1, list2) => { // custom hierarchy list merging...
+    let list = []
+    _.each(list1, (node) => {
+      list.push(node)
+    })
+    _.each(list2, (node) => {
+      const i = _.findIndex(list, (n)=>{return n.id === node.id})
+      if(i>=0) {
+        // TODO merge children in node
+        // console.log('index', i, node, list[i])
+        // if(node.id === 'science-Land-Surface-Topography') {
+        //   console.log('foothebar', node.children, list[i].children, this.foothebar(list[i].children, node.children))
+        // }
+        // list[index] = Immutable.merge(list[index], node) TODO not needed because everything but children should always be the same, right?
+        // Immutable.set(list[i], 'children', this.foothebar(list[i].children, node.children))
+        list[i] = Immutable.merge(list[i], {children: this.foothebar(list[i].children, node.children)})
+        // list[i].children = this.foothebar(list[i].children, node.children)
+      } else {
+        list.push(node)
+      }
+    })
+    return _.sortBy(list, ['id'])
+  }
+
   componentWillReceiveProps(nextProps) {
     // console.log('will recieve props...', _.isEqual(this.props.facetMap, nextProps.facetMap))
     if(!_.isEqual(this.props.hierarchy, nextProps.hierarchy)) { //TODO figure this out man...
@@ -63,6 +105,10 @@ export default class FacetTree extends React.Component {
     //       hierarchy: Immutable.merge(this.props.hierarchy, nextProps.hierarchy),
     //     }
     //   })
+
+      if(_.isEmpty(nextProps.hierarchy)) {console.log('TODO RESET HIERARCY')} // TODO not triggered when I hoped it would be...
+
+/*
       let groups = {}
       _.each(this.props.hierarchy, (h) => {
         groups[h.id] = h
@@ -75,11 +121,12 @@ export default class FacetTree extends React.Component {
           groups[h.id] = h
         }
       })
+      */
       this.setState(prevState => {
-        console.log('uhhhh', nextProps.hierarchy, groups, _.map(groups, (g) => { return g}))
+        // console.log('uhhhh', nextProps.hierarchy, groups, _.map(groups, (g) => { return g}))
         return {
           ...prevState,
-          hierarchy: _.map(groups, (g) => {return g})
+          hierarchy: this.foothebar(this.state.hierarchy, nextProps.hierarchy)// _.map(groups, (g) => {return g})
         }
       })
 
@@ -98,6 +145,7 @@ export default class FacetTree extends React.Component {
             // facet.selected = updatedFacet.selected
             f = Immutable.merge(f, {count: updatedFacet.count, selected: updatedFacet.selected})
             // TODO can probably just do f = Immutable.merge(f, updatedFacet), since updatedFacet shouldn't have any UI state in it.
+            // TODO I need to recursively merge the array (children, or bad things happen at the nested levels. Note - might want to migrate this logic to a util.)
           } else {console.log('stuck at count 0')}
 
           return f
