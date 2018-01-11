@@ -222,11 +222,6 @@ class Map extends React.Component {
     map = null
   }
 
-  updateGeometryAndSubmit = (geoJSON) => {
-    this.props.handleNewGeometry(geoJSON)
-    this.props.submit()
-  }
-
   loadDrawEventHandlers() {
     let { map } = this.state
     map.on('draw:drawstart', e => {
@@ -234,11 +229,11 @@ class Map extends React.Component {
     })
     map.on('draw:created', e => {
       let newLayer = e.layer.toGeoJSON()
-      this.updateGeometryAndSubmit(newLayer)
+      this.props.handleNewGeometry(newLayer)
     })
     map.on('draw:edited', e => {
       let layerModified = e.getLayers()[0].toGeoJSON()
-      this.updateGeometryAndSubmit(layerModified)
+      this.props.handleNewGeometry(layerModified)
     })
     map.on('draw:deleted', e => {
       this.removeGeometry()

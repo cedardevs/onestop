@@ -95,7 +95,7 @@ export default class AppliedMap extends Component {
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
         >
-          North: {north}°, West:{west}°, South:{south}°, East:{east}°
+          West: {west}°, South: {south}°, East: {east}°, North: {north}°
           <span style={styleClose} onClick={onUnselect}>
 					x
 				</span>

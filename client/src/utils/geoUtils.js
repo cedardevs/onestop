@@ -69,8 +69,7 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   const wn = [ west, north ]
   const en = [ east, north ] // max x, max y
   const es = [ east, south ]
-  const coordinates = [ ws, wn, en, es, ws ]
-  // CCW is [ ws, es, en, wn, ws ]
+  const coordinates = [ ws, es, en, wn, ws ] // CCW for exterior polygon
   if (
     !_.every(
       coordinates,
@@ -91,7 +90,6 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   }
 }
 
-// TODO Remove this function when 508 site is phased out:
 export const convertBboxStringToGeoJson = coordString => {
   const coordArray = coordString.split(',').map(x => parseFloat(x))
   return convertBboxToGeoJson(coordArray)
@@ -99,15 +97,14 @@ export const convertBboxStringToGeoJson = coordString => {
 
 export const convertGeoJsonToBbox = geoJson => {
   const coordinates = geoJson && geoJson.geometry && geoJson.geometry.coordinates
-  // const coordinates = [ sw, nw, ne, se, sw ]
   console.log(coordinates)
   let bbox = null
   if(coordinates) {
     bbox = {
-      west: _.round(coordinates[0][0][1], 4),
-      south: _.round(coordinates[0][0][0], 4),
-      east: _.round(coordinates[0][2][1], 4),
-      north: _.round(coordinates[0][2][0], 4)
+      west: _.round(coordinates[0][0][0], 4),
+      south: _.round(coordinates[0][0][1], 4),
+      east: _.round(coordinates[0][2][0], 4),
+      north: _.round(coordinates[0][2][1], 4)
     }
     console.log('bbox is', bbox)
   }
