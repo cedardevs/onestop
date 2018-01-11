@@ -155,7 +155,10 @@ export default class FacetTree extends React.Component {
           const oldFacet = _.find(this.state.facetList, (oldFacet)=> { return facet.id === oldFacet.id})
           if(!oldFacet) {
             console.log('adding facet to list: ', facet)
-            facets.push(facet)
+            facets.push(Immutable.merge({
+              open: false,
+              tabIndex: '-1', // TODO why is this a string and not an int? or why is the zero below an int??
+            },facet))
             // TODO what about adding facets that are new??? just tack on the end and sort by term? ( TODO do I need to sort??)
           }
         })
