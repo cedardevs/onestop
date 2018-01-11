@@ -68,7 +68,6 @@ export default class FacetTreeItem extends React.Component {
 
     const styleFacetContainer =
       tabIndex === '0' && focusing ? this.props.styleFocus : {}
-
     const styleFocus = this.props.styleFocus ? styleHideFocus : {}
 
     const facet = (

@@ -152,7 +152,7 @@ export default class Expandable extends React.Component {
     const stylesMerged = {
       ...styleHeading,
       ...this.props.styleHeading,
-      ...(this.props.disabled?{color:'gray'}:{}), // TODO need a much better color theme going on or something idk TODO also isn't applying to leaf nodes because not part of expandable - just make it part of props.styleHeading...
+      // ...(this.props.disabled?{color:'gray'}:{}), // TODO need a much better color theme going on or something idk TODO also isn't applying to leaf nodes because not part of expandable - just make it part of props.styleHeading...
       ...styleHeadingHide,
       ...styleHideFocus, // focus is shown on an interior element instead
     }

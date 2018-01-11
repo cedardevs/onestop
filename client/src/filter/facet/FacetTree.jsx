@@ -94,6 +94,17 @@ export default class FacetTree extends React.Component {
     })
     return _.sortBy(list, ['id'])
   }
+// setState(
+//   { name: "Michael" },
+//   () => console.log(this.state)
+// );
+  updateAllVisibility = () => { // TODO rename to init visibility
+    _.each(this.state.hierarchy, (facetInMap) => {
+      // this.updateNodeVisibility(facetInMap, true) // init state of open for all is: no
+      let node = this.facetLookup2(facetInMap.id)
+      this.replaceNode(facetInMap.id, Immutable.merge(node, {visible: true})) // TODO this is a dumb method to update one property on the node. Make it like updateNode(id, propName, value)??
+    })
+  }
 
   componentWillReceiveProps(nextProps) {
     // console.log('will recieve props...', _.isEqual(this.props.facetMap, nextProps.facetMap))
@@ -128,7 +139,7 @@ export default class FacetTree extends React.Component {
           ...prevState,
           hierarchy: this.foothebar(this.state.hierarchy, nextProps.hierarchy)// _.map(groups, (g) => {return g})
         }
-      })
+      }, this.updateAllVisibility)
 
     }
     if(!_.isEqual(this.props.facetMap, nextProps.facetMap)) { // if prop map has changed only
@@ -157,18 +168,23 @@ export default class FacetTree extends React.Component {
             console.log('adding facet to list: ', facet)
             facets.push(Immutable.merge({
               open: false,
+              visible: false,
               tabIndex: '-1', // TODO why is this a string and not an int? or why is the zero below an int??
             },facet))
             // TODO what about adding facets that are new??? just tack on the end and sort by term? ( TODO do I need to sort??)
           }
         })
 
-
+        // console.log('sort my facets', facets)
         return {
           ...prevState,
-          facetList: facets,
+          facetList: _.sortBy(facets, ['term']),
         }
-      })
+      }, this.updateAllVisibility)
+      // TODO as set state callback?
+      // _.each(this.state.hierarchy, (facetInMap) => {
+      //   this.updateNodeVisibility(facetInMap, false) // init state of open for all is: no
+      // })
       // TODO wtf? something about this updating the visibility is causing every node to exapand (ie, when I toggle a selection)
 // const hierarchy = this.props.hierarchy
 // _.each(hierarchy, (facetInMap) => {
@@ -220,11 +236,12 @@ export default class FacetTree extends React.Component {
       const facets = _.map(this.props.facetMap, (facet)=> {
         return Immutable.merge(facet, {
           open: false,
+          visible: false,
           tabIndex: '-1', // TODO why is this a string and not an int? or why is the zero below an int??
         })
       })
       // The first facet should be the only focusable one, initially.
-      facets[0] = Immutable.merge(facets[0], {tabIndex: 0})
+      facets[0] = Immutable.merge(facets[0], {tabIndex: '0'})
       const firstFocused = facets[0]
       // firstFocused.tabIndex = 0
 
@@ -238,11 +255,21 @@ export default class FacetTree extends React.Component {
         hierarchy: this.props.hierarchy,
         rovingIndex: firstFocused.id,
       }
-    })
+    }, this.updateAllVisibility)
+    // // TODO set state callback?
+    // _.each(this.state.hierarchy, (facetInMap) => {
+    //   this.updateNodeVisibility(facetInMap, false) // init state of open for all is: no
+    // })
   }
 
   facetLookup2 = (id) => { // TODO rename
     return _.find(this.state.facetList, (facet) => {
+      return facet.id === id
+    })
+  }
+
+  facetIndex = (id) => {
+    return _.findIndex(this.state.facetList, (facet) => {
       return facet.id === id
     })
   }
@@ -269,6 +296,7 @@ export default class FacetTree extends React.Component {
     let updateVisibility = (children, visibility) => { // TODO verify this all updated correctly....
       _.each(children, (value, key) => {
         // TODO value.visible = visibility
+        this.replaceNode(value.id, Immutable.merge(node, {visible: visibility}))
         updateVisibility(value.children, visibility && value.open)
       })
     }
@@ -305,19 +333,45 @@ export default class FacetTree extends React.Component {
   }
 
   updateRovingIndex = facetId => { // TODO next up - all the key binding stuff with the new data structure(s)
-    this.setState(prevState => {
-      const oldIndex = prevState.facetLookup[prevState.rovingIndex]
-      oldIndex.tabIndex = '-1'
+    /*
+    // this.setState(prevState => {
+      // const oldIndex = prevState.facetLookup[prevState.rovingIndex]
+      const oldIndex = _.find(this.state.facetList, (facet) => {return facet.id === this.state.rovingIndex})
+      // oldIndex.tabIndex = '-1'
+      this.replaceNode(oldIndex, Immutable.merge(oldIndex, {tabIndex: '-1'}))
 
-      const newIndex = prevState.facetLookup[facetId]
-      newIndex.tabIndex = '0'
+      const newIndex =  _.find(this.state.facetList, (facet) => {return facet.id === facetId})
+      // newIndex.tabIndex = '0'
+      this.replaceNode(oldIndex, Immutable.merge(oldIndex, {tabIndex: '0'}))
 
-      return {
-        ...prevState,
-        facetMap: this.state.facetMap, // editing to node directly modified this, this is to trigger the rest of the stack
-        rovingIndex: facetId,
-      }
-    })
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          rovingIndex: facetId,
+        }
+      })
+    //   return {
+    //     ...prevState,
+    //     facetMap: this.state.facetMap, // editing to node directly modified this, this is to trigger the rest of the stack
+    //     rovingIndex: facetId,
+    //   }
+    // })
+    */
+  this.setState(prevState => {
+    const oldIndex = this.facetIndex(this.state.rovingIndex)
+    const newIndex = this.facetIndex(facetId)
+    const facets = this.state.facetList
+    // console.log(oldIndex, newIndex, facets[oldIndex], facets[newIndex])
+    facets[oldIndex] = Immutable.merge(facets[oldIndex], {tabIndex: '-1'})
+    facets[newIndex] = Immutable.merge(facets[newIndex], {tabIndex: '0'})
+    return {
+      ...prevState,
+      facetList: facets,
+      rovingIndex: facetId,
+    }
+  })
+
+    console.log('wtf?', facetId, document.getElementById(facetId))
     document.getElementById(facetId).focus()
   }
 
@@ -355,25 +409,28 @@ export default class FacetTree extends React.Component {
 
   moveFocusDown = () => {
     const id = this.state.rovingIndex
-    const orderIndex = _.indexOf(this.state.allFacetsInOrder, id)
+    console.log('focus id', id)
+    const orderIndex = _.findIndex(this.state.facetList, (facet) => {console.log('find index', id, facet); return facet.id === id})
 
-    if (orderIndex < this.state.allFacetsInOrder.length - 1) {
+    if (orderIndex < this.state.facetList.length - 1) {
       const nextVisible = _.find(
-        this.state.allFacetsInOrder,
-        facetId => {
-          return this.state.facetLookup[facetId].visible
+        this.state.facetList,
+        facet => {
+          console.log('search down', facet)
+          return facet.visible //this.state.facetLookup[facetId].visible
         },
         orderIndex + 1
       )
+      console.log('move down', orderIndex, nextVisible)
 
       if (nextVisible) {
-        this.updateRovingIndex(nextVisible)
+        this.updateRovingIndex(nextVisible.id)
       }
     }
   }
 
   moveFocusToEnd = () => {
-    const nextVisible = _.findLast(this.state.allFacetsInOrder, facetId => {
+    const nextVisible = _.findLast(this.state.facetList, facetId => {
       return this.state.facetLookup[facetId].visible
     })
 
