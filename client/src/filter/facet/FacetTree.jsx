@@ -57,7 +57,7 @@ export default class FacetTree extends React.Component {
     // console.log('will recieve props...', _.isEqual(this.props.facetMap, nextProps.facetMap))
     if(!_.isEqual(this.props.hierarchy, nextProps.hierarchy)) { //TODO figure this out man...
     //   this.setState(prevState => {
-    //     // TODO need a way to determine when the hierarchy really should change...
+    //     // TODO need a way to determine when the hierarchy really should change... (ie reset entirely if map is empty??)
     //     return {
     //       ...prevState,
     //       hierarchy: Immutable.merge(this.props.hierarchy, nextProps.hierarchy),
@@ -71,6 +71,7 @@ export default class FacetTree extends React.Component {
         if(groups[h.id]) {
           groups[h.id] = Immutable.merge(groups[h.id], h)
         } else {
+          console.log('adding new group to hierarch', h)
           groups[h.id] = h
         }
       })
@@ -100,6 +101,15 @@ export default class FacetTree extends React.Component {
           } else {console.log('stuck at count 0')}
 
           return f
+        })
+
+        _.each(nextProps.facetMap, (facet) => {
+          const oldFacet = _.find(this.state.facetList, (oldFacet)=> { return facet.id === oldFacet.id})
+          if(!oldFacet) {
+            console.log('adding facet to list: ', facet)
+            facets.push(facet)
+            // TODO what about adding facets that are new??? just tack on the end and sort by term? ( TODO do I need to sort??)
+          }
         })
 
 
