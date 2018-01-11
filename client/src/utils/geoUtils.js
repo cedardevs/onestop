@@ -65,11 +65,12 @@ export const convertNegativeLongitudes = coordinates => {
 }
 
 export const convertBboxToGeoJson = (west, south, east, north) => {
-  const sw = [ west, south ]
-  const nw = [ west, north ]
-  const ne = [ east, north ]
-  const se = [ east, south ]
-  const coordinates = [ sw, nw, ne, se, sw ]
+  const ws = [ west, south ] // min x, min y
+  const wn = [ west, north ]
+  const en = [ east, north ] // max x, max y
+  const es = [ east, south ]
+  const coordinates = [ ws, wn, en, es, ws ]
+  // CCW is [ ws, es, en, wn, ws ]
   if (
     !_.every(
       coordinates,
@@ -97,6 +98,23 @@ export const convertBboxStringToGeoJson = coordString => {
 }
 
 export const convertGeoJsonToBbox = geoJson => {
+  const coordinates = geoJson && geoJson.geometry && geoJson.geometry.coordinates
+  // const coordinates = [ sw, nw, ne, se, sw ]
+  console.log(coordinates)
+  let bbox = null
+  if(coordinates) {
+    bbox = {
+      west: _.round(coordinates[0][0][1], 4),
+      south: _.round(coordinates[0][0][0], 4),
+      east: _.round(coordinates[0][2][1], 4),
+      north: _.round(coordinates[0][2][0], 4)
+    }
+    console.log('bbox is', bbox)
+  }
+  return bbox
+}
+
+export const convertGeoJsonToBboxString = geoJson => {
   const coordinates =
     geoJson && geoJson.geometry && geoJson.geometry.coordinates
   return coordinates

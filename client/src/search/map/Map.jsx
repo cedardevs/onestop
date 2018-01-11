@@ -35,7 +35,6 @@ const styleMap = (showMap, forceShow) => {
 class Map extends React.Component {
   constructor(props) {
     super(props)
-    this.handleNewGeometry = props.handleNewGeometry
     this.removeGeometry = props.removeGeometry
     this.geoJsonSelection = props.geoJsonSelection
     this.geoJsonFeatures = props.geoJsonFeatures
@@ -223,6 +222,11 @@ class Map extends React.Component {
     map = null
   }
 
+  updateGeometryAndSubmit = (geoJSON) => {
+    this.props.handleNewGeometry(geoJSON)
+    this.props.submit()
+  }
+
   loadDrawEventHandlers() {
     let { map } = this.state
     map.on('draw:drawstart', e => {
@@ -230,11 +234,11 @@ class Map extends React.Component {
     })
     map.on('draw:created', e => {
       let newLayer = e.layer.toGeoJSON()
-      this.handleNewGeometry(newLayer)
+      this.updateGeometryAndSubmit(newLayer)
     })
     map.on('draw:edited', e => {
       let layerModified = e.getLayers()[0].toGeoJSON()
-      this.handleNewGeometry(layerModified)
+      this.updateGeometryAndSubmit(layerModified)
     })
     map.on('draw:deleted', e => {
       this.removeGeometry()
