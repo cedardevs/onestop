@@ -48,30 +48,7 @@ export default class FacetTree extends React.Component {
     }
   }
 
-  // shouldComponentUpdate (nextProps, nextState){
-  //   // return _.isEqual(this.props.facetMap, nextProps.facetMap)
-  //   console.log('blllaahh', nextProps)
-  //   return true
-  // }
-
-  //
-  // hierarchyUpdater = (oldHierarchy, newHierarchy) => { //(category, facets)
-  //   const reducer = () => { //(map, facet)
-  //     const termHierarchy = facet.termHierarchy
-  //     const facetMap = {
-  //       id: facet.id,
-  //       children: [],
-  //       parent: map[termHierarchy.length].id,
-  //     }
-  //     map[termHierarchy.length+1] = facetMap
-  //     map[termHierarchy.length].children.push(facetMap)
-  //     return map
-  //   }
-  //   let initState = {}
-  //   initState[0] = {id: null, children:oldHierarchy}
-  //   return newHierarchy.reduce(reducer, initState)[0].children
-  // }
-  foothebar = (list1, list2) => { // custom hierarchy list merging...
+  mergeChildren = (list1, list2) => { // custom hierarchy list merging...
     let list = []
     _.each(list1, (node) => {
       list.push(node)
@@ -79,25 +56,14 @@ export default class FacetTree extends React.Component {
     _.each(list2, (node) => {
       const i = _.findIndex(list, (n)=>{return n.id === node.id})
       if(i>=0) {
-        // TODO merge children in node
-        // console.log('index', i, node, list[i])
-        // if(node.id === 'science-Land-Surface-Topography') {
-        //   console.log('foothebar', node.children, list[i].children, this.foothebar(list[i].children, node.children))
-        // }
-        // list[index] = Immutable.merge(list[index], node) TODO not needed because everything but children should always be the same, right?
-        // Immutable.set(list[i], 'children', this.foothebar(list[i].children, node.children))
-        list[i] = Immutable.merge(list[i], {children: this.foothebar(list[i].children, node.children)})
-        // list[i].children = this.foothebar(list[i].children, node.children)
+        list[i] = Immutable.merge(list[i], {children: this.mergeChildren(list[i].children, node.children)})
       } else {
         list.push(node)
       }
     })
     return _.sortBy(list, ['id'])
   }
-// setState(
-//   { name: "Michael" },
-//   () => console.log(this.state)
-// );
+
   updateAllVisibility = () => { // TODO rename to init visibility
     _.each(this.state.hierarchy, (facetInMap) => {
       // this.updateNodeVisibility(facetInMap, true) // init state of open for all is: no
@@ -137,7 +103,7 @@ export default class FacetTree extends React.Component {
         // console.log('uhhhh', nextProps.hierarchy, groups, _.map(groups, (g) => { return g}))
         return {
           ...prevState,
-          hierarchy: this.foothebar(this.state.hierarchy, nextProps.hierarchy)// _.map(groups, (g) => {return g})
+          hierarchy: this.mergeChildren(this.state.hierarchy, nextProps.hierarchy)// _.map(groups, (g) => {return g})
         }
       }, this.updateAllVisibility)
 
