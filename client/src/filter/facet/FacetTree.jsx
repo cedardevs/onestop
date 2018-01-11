@@ -306,6 +306,7 @@ export default class FacetTree extends React.Component {
   handleExpandableToggle = event => { // TODO this needs the facetInMap to work right
     console.log('toggle', event)
     this.updateNodeVisibility(event.value, event.open)
+    /*
     this.setState(prevState => {
 
       // let node = this.facetLookup2[event.value]
@@ -329,7 +330,7 @@ export default class FacetTree extends React.Component {
         ...prevState,
         hierarchy: prevState.hierarchy, // TODO needed?
       }
-    })
+    })*/
   }
 
   updateRovingIndex = facetId => { // TODO next up - all the key binding stuff with the new data structure(s)
@@ -409,19 +410,16 @@ export default class FacetTree extends React.Component {
 
   moveFocusDown = () => {
     const id = this.state.rovingIndex
-    console.log('focus id', id)
-    const orderIndex = _.findIndex(this.state.facetList, (facet) => {console.log('find index', id, facet); return facet.id === id})
+    const orderIndex = this.facetIndex(id) //_.findIndex(this.state.facetList, (facet) => {console.log('find index', id, facet); return facet.id === id})
 
     if (orderIndex < this.state.facetList.length - 1) {
       const nextVisible = _.find(
         this.state.facetList,
         facet => {
-          console.log('search down', facet)
           return facet.visible //this.state.facetLookup[facetId].visible
         },
         orderIndex + 1
       )
-      console.log('move down', orderIndex, nextVisible)
 
       if (nextVisible) {
         this.updateRovingIndex(nextVisible.id)
@@ -430,32 +428,32 @@ export default class FacetTree extends React.Component {
   }
 
   moveFocusToEnd = () => {
-    const nextVisible = _.findLast(this.state.facetList, facetId => {
-      return this.state.facetLookup[facetId].visible
+    const nextVisible = _.findLast(this.state.facetList, facet => {
+      return facet.visible
     })
 
     if (nextVisible) {
-      this.updateRovingIndex(nextVisible)
+      this.updateRovingIndex(nextVisible.id)
     }
   }
 
   moveFocusToStart = () => {
-    this.updateRovingIndex(this.state.allFacetsInOrder[0])
+    this.updateRovingIndex(this.state.facetList[0].id)
   }
 
   moveFocusUp = () => {
     const id = this.state.rovingIndex
-    const orderIndex = _.indexOf(this.state.allFacetsInOrder, id)
+    const orderIndex = this.facetIndex(id) //_.indexOf(this.state.allFacetsInOrder, id)
     if (orderIndex > 0) {
       const nextVisible = _.findLast(
-        this.state.allFacetsInOrder,
-        facetId => {
-          return this.state.facetLookup[facetId].visible
+        this.state.facetList,
+        facet => {
+          return facet.visible
         },
         orderIndex - 1
       )
 
-      this.updateRovingIndex(nextVisible)
+      this.updateRovingIndex(nextVisible.id)
     }
   }
   //
