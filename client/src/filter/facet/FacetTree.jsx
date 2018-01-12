@@ -69,7 +69,7 @@ export default class FacetTree extends React.Component {
       // this.updateNodeVisibility(facetInMap, true) // init state of open for all is: no
       let node = this.lookupFacet(facetInMap.id)
       this.replaceNode(facetInMap.id, Immutable.merge(node, {visible: true})) // TODO this is a dumb method to update one property on the node. Make it like updateNode(id, propName, value)??
-    })
+    }) // TODO this really should recurse, because new nodes can appear at weird nested places...
   }
 
   componentWillReceiveProps(nextProps) {
@@ -163,21 +163,30 @@ export default class FacetTree extends React.Component {
   }
 
   updateNodeVisibility = (facetInMap, open) => {
-    let node = this.lookupFacet(facetInMap.id)
-    if(!node) {return}
-    // node.open = open
-    this.replaceNode(facetInMap.id, Immutable.merge(node, {open: open}))
-    let updateVisibility = (children, visibility) => { // TODO verify this all updated correctly....
-      _.each(children, (value, key) => {
-        // TODO value.visible = visibility
-        this.replaceNode(value.id, Immutable.merge(node, {visible: visibility}))
-        updateVisibility(value.children, visibility && value.open)
-      })
-    }
-    updateVisibility(facetInMap.children, node.open)
+    this.setState(prevState => {
+      const facets = prevState.facetList
+      const index = this.facetIndex(facetInMap.id)
+      facets[index] = Immutable.merge(facets[index], {open: open})
+
+      let updateVisibility = (children, visibility) => {
+        _.each(children, (value, key) => {
+          const i = this.facetIndex(value.id)
+          facets[i] = Immutable.merge(facets[i], {visible: visibility})
+          console.log('update vis', i, visibility, facets[i])
+          updateVisibility(value.children, visibility && value.open)
+        })
+      }
+      updateVisibility(facetInMap.children, facets[index].open)
+
+      return {
+        ...prevState,
+        facetList: facets,
+      }
+    })
   }
 
   handleExpandableToggle = event => {
+    console.log('expand', event)
     this.updateNodeVisibility(event.value, event.open)
   }
 
