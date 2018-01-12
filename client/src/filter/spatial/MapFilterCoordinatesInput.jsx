@@ -38,29 +38,33 @@ class MapFilterCoordinatesInput extends Component {
   }
 
   componentWillMount() {
-    this.mapPropsToState(this.props)
+    this.mapGeoJSONToState(null, this.props.geoJSON)
   }
 
   componentWillReceiveProps(nextProps) {
-    this.mapPropsToState(nextProps)
+    this.mapGeoJSONToState(this.props.geoJSON, nextProps.geoJSON)
   }
 
-  mapPropsToState = (props) => {
-    let bbox = convertGeoJsonToBbox(props.geoJSON)
-    if(bbox) {
-      this.setState({
-        west: bbox.west,
-        south: bbox.south,
-        east: bbox.east,
-        north: bbox.north
-      })
-    }
-    else {
-      this.setState(this.initialState())
+  mapGeoJSONToState = (currentGeoJSON, incomingGeoJSON) => {
+    if(!_.isEqual(currentGeoJSON, incomingGeoJSON)) {
+      let bbox = convertGeoJsonToBbox(incomingGeoJSON)
+      if(bbox) {
+        this.setState({
+          west: bbox.west,
+          south: bbox.south,
+          east: bbox.east,
+          north: bbox.north
+        })
+      }
+      else {
+        this.setState(this.initialState())
+      }
     }
   }
 
-  onChange(field, value) {
+  onChange(event) {
+    let field = event.target.name
+    let value = event.target.value
     let stateClone = { ...this.state }
     stateClone[field] = value
 
@@ -70,8 +74,7 @@ class MapFilterCoordinatesInput extends Component {
     })
   }
 
-  render() {
-    const inputRow = (direction, placeholderValue) => {
+  renderInputRow = (direction, placeholderValue) => {
       let value = this.state[direction]
       let id = `MapFilterCoordinatesInput::${direction}`
       return (
@@ -82,15 +85,16 @@ class MapFilterCoordinatesInput extends Component {
       )
     }
 
+  render() {
     return (
       <div>
         <form>
-          <fieldset onChange={(event) => this.onChange(event.target.name, event.target.value)}>
+          <fieldset onChange={(event) => this.onChange(event)}>
             <legend>Bounding Box Coordinates: </legend>
-            {inputRow('west', ' -180.00')}
-            {inputRow('south', ' -90.00')}
-            {inputRow('east', ' 180.00')}
-            {inputRow('north', ' 90.00')}
+            {this.renderInputRow('west', ' -180.00')}
+            {this.renderInputRow('south', ' -90.00')}
+            {this.renderInputRow('east', ' 180.00')}
+            {this.renderInputRow('north', ' 90.00')}
           </fieldset>
         </form>
       </div>

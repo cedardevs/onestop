@@ -53,10 +53,6 @@ export default class MapFilter extends Component {
 
   initialState() {
     return {
-      west: '',
-      south: '',
-      east: '',
-      north: '',
       internalGeoJSON: null,
     }
   }
@@ -65,18 +61,19 @@ export default class MapFilter extends Component {
     this.mapPropsToState(this.props)
   }
 
+  componentWillUnmount() {
+    if(this.props.showMap) {
+      this.props.toggleMap()
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
     this.mapPropsToState(nextProps)
   }
 
   mapPropsToState = (props) => {
-    let bbox = convertGeoJsonToBbox(props.geoJSON)
-    if(bbox) {
+    if(props.geoJSON) {
       this.setState({
-        west: bbox.west,
-        south: bbox.south,
-        east: bbox.east,
-        north: bbox.north,
         internalGeoJSON: props.geoJSON
       })
     }
@@ -99,20 +96,16 @@ export default class MapFilter extends Component {
     }
   }
 
+  handleManualEntryCoords = (west, south, east, north) => {
+    let constructedGeoJSON = convertBboxToGeoJson(west, south, east, north)
+    this.setState({
+      internalGeoJSON: constructedGeoJSON
+    })
+  }
+
   toggleExcludeGlobalResults = () => {
     this.props.toggleExcludeGlobal()
     this.props.submit()
-  }
-
-  onChange(field, value) {
-    let stateClone = { ...this.state }
-    stateClone[field] = value
-    stateClone[internalGeoJSON] = convertBboxToGeoJson(stateClone.west, stateClone.south, stateClone.east, stateClone.north)
-
-    this.setState({
-      [field]: value,
-      internalGeoJSON: convertBboxToGeoJson(stateClone.west, stateClone.south, stateClone.east, stateClone.north)
-    })
   }
 
   applyGeometry = () => {
@@ -168,28 +161,8 @@ export default class MapFilter extends Component {
       />
     )
 
-    const coordinateEntryRow = (value, direction, placeholderValue) => {
-      let id = `MapFilter::${direction}ernCoordinate`
-      return (
-        <div style={styleInputRow}>
-          <label htmlFor={id} style={styleLabel}>{_.capitalize(direction)}</label>
-          <input type='text' id={id} name={direction} placeholder={placeholderValue} value={value} style={styleTextBox} />
-        </div>
-      )
-    }
-
     const inputBoundingBox = (
-      <div key='MapFilter::coordinatesFieldset'>
-        <form>
-          <fieldset onChange={(event) => this.onChange(event.target.name, event.target.value)}>
-            <legend>Bounding Box Coordinates: </legend>
-            {coordinateEntryRow(this.state.west, 'west', ' -180.00')}
-            {coordinateEntryRow(this.state.south, 'south', ' -90.00')}
-            {coordinateEntryRow(this.state.east, 'east', ' 180.00')}
-            {coordinateEntryRow(this.state.north, 'north', ' 90.00')}
-          </fieldset>
-        </form>
-      </div>
+      <MapFilterCoordinatesInput key='MapFilter::coordInputBox' updateUpstreamCoords={this.handleManualEntryCoords} geoJSON={this.props.geoJSON}/>
     )
 
     const inputColumn = (
