@@ -37,6 +37,12 @@ const styleExpandableContent = marginNest => {
   }
 }
 
+const initialFacetState = Immutable({
+  open: false,
+  visible: false,
+  tabIndex: -1,
+})
+
 export default class FacetTree extends React.Component {
   constructor(props) {
     super(props)
@@ -110,16 +116,7 @@ export default class FacetTree extends React.Component {
             return facet.id === oldFacet.id
           })
           if (!oldFacet) {
-            facets.push(
-              Immutable.merge(
-                {
-                  open: false,
-                  visible: false,
-                  tabIndex: -1,
-                },
-                facet
-              )
-            )
+            facets.push(Immutable.merge(initialFacetState, facet))
           }
         })
 
@@ -139,11 +136,7 @@ export default class FacetTree extends React.Component {
     // init state
     this.setState(prevState => {
       const facets = _.map(this.props.facetMap, facet => {
-        return Immutable.merge(facet, {
-          open: false,
-          visible: false,
-          tabIndex: -1,
-        })
+        return Immutable.merge(facet, initialFacetState)
       })
       // The first facet should be the only focusable one, initially.
       facets[0] = Immutable.merge(facets[0], {tabIndex: 0})

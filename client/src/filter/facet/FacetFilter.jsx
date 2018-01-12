@@ -59,7 +59,6 @@ export default class FacetFilter extends Component {
       // show hamburger menu for high-level categories
       const category = facetCategory.name
       const expandableKey = category
-      // const headerId = `header-filter-${category.replace(' ', '-', 'g')}`
 
       const highLevelHeading = (
         <h3
