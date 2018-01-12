@@ -87,11 +87,6 @@ export default class FacetTree extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // if(!_.isEqual(this.props.hierarchy, nextProps.hierarchy)) {
-    // // TODO need a way to determine when the hierarchy really should change... (ie reset entirely if map is empty??)
-    //   if(_.isEmpty(nextProps.hierarchy)) {console.log('TODO RESET HIERARCY')} // TODO not triggered when I hoped it would be...
-    // }
-
     if (
       !_.isEqual(this.props.hierarchy, nextProps.hierarchy) ||
       !_.isEqual(this.props.facetMap, nextProps.facetMap)
@@ -104,13 +99,8 @@ export default class FacetTree extends React.Component {
           })
           if (updatedFacet) {
             // update facet with refreshed info (ie count) from results
-            f = Immutable.merge(f, {
-              count: updatedFacet.count,
-              selected: updatedFacet.selected,
-            })
-            // TODO can probably just do f = Immutable.merge(f, updatedFacet), since updatedFacet shouldn't have any UI state in it.
-          } // else {console.log('stuck at count 0')}
-
+            f = Immutable.merge(f, updatedFacet)
+          }
           return f
         })
 
@@ -177,21 +167,6 @@ export default class FacetTree extends React.Component {
   facetIndex = id => {
     return _.findIndex(this.state.facetList, facet => {
       return facet.id === id
-    })
-  }
-
-  replaceNode = (id, newNode) => {
-    // TODO could be changed to update node by id?
-    const index = _.findIndex(this.state.facetList, facet => {
-      return facet.id === id
-    })
-    this.setState(prevState => {
-      const facets = this.state.facetList
-      facets[index] = newNode
-      return {
-        ...prevState,
-        facetList: facets,
-      }
     })
   }
 
