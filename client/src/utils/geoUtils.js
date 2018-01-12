@@ -92,12 +92,11 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
 
 export const convertBboxStringToGeoJson = coordString => {
   const coordArray = coordString.split(',').map(x => parseFloat(x))
-  return convertBboxToGeoJson(coordArray)
+  return convertBboxToGeoJson(...coordArray)
 }
 
-export const convertGeoJsonToBbox = geoJson => {
-  const coordinates = geoJson && geoJson.geometry && geoJson.geometry.coordinates
-  console.log(coordinates)
+export const convertGeoJsonToBbox = geoJSON => {
+  const coordinates = geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates
   let bbox = null
   if(coordinates) {
     bbox = {
@@ -106,15 +105,11 @@ export const convertGeoJsonToBbox = geoJson => {
       east: _.round(coordinates[0][2][0], 4),
       north: _.round(coordinates[0][2][1], 4)
     }
-    console.log('bbox is', bbox)
   }
   return bbox
 }
 
-export const convertGeoJsonToBboxString = geoJson => {
-  const coordinates =
-    geoJson && geoJson.geometry && geoJson.geometry.coordinates
-  return coordinates
-    ? coordinates[0].filter((el, idx) => [ 0, 2 ].includes(idx)).toString()
-    : ''
+export const convertGeoJsonToBboxString = geoJSON => {
+  const bbox = convertGeoJsonToBbox(geoJSON)
+  return bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : ''
 }

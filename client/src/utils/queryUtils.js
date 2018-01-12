@@ -99,6 +99,7 @@ export const encodeQueryString = state => {
   })
   return _.filter(queryParams).join('&')
 }
+
 export const decodeQueryString = queryString => {
   const queryParams = (queryString && queryString.split('&')) || []
   const searchParams = _.reduce(
@@ -125,7 +126,7 @@ const codecs = [
   {
     longKey: 'geoJSON',
     shortKey: 'g',
-    encode: geojson => convertGeoJsonToBboxString(geojson),
+    encode: geoJSON => convertGeoJsonToBboxString(geoJSON),
     decode: text => convertBboxStringToGeoJson(text),
   },
   {

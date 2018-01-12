@@ -5,7 +5,7 @@ import Button from '../../common/input/Button'
 import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from "../../common/input/Checkbox"
 import MapFilterCoordinatesInput from "./MapFilterCoordinatesInput"
-import {convertBboxToGeoJson} from "../../utils/geoUtils";
+import {convertBboxToGeoJson, convertGeoJsonToBbox} from "../../utils/geoUtils";
 
 const styleMapFilter = {
   backgroundColor: '#3D97D2',
@@ -26,21 +26,62 @@ const styleButtons = {
   marginTop: '1em'
 }
 
+const styleInputRow = {
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  margin: '0.616em 0',
+  width: '15em'
+}
+
+const styleLabel = {
+  width: '4em'
+}
+
+const styleTextBox = {
+  width: '10em',
+  color: 'black'
+}
+
 export default class MapFilter extends Component {
 
   constructor(props) {
     super(props)
-
     this.state = this.initialState()
   }
 
   initialState() {
     return {
-      bboxWest: null,
-      bboxSouth: null,
-      bboxEast: null,
-      bboxNorth: null,
+      west: '',
+      south: '',
+      east: '',
+      north: '',
       internalGeoJSON: null,
+    }
+  }
+
+  componentWillMount() {
+    this.mapPropsToState(this.props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.mapPropsToState(nextProps)
+  }
+
+  mapPropsToState = (props) => {
+    let bbox = convertGeoJsonToBbox(props.geoJSON)
+    if(bbox) {
+      this.setState({
+        west: bbox.west,
+        south: bbox.south,
+        east: bbox.east,
+        north: bbox.north,
+        internalGeoJSON: props.geoJSON
+      })
+    }
+    else {
+      this.setState(this.initialState())
     }
   }
 
@@ -63,23 +104,28 @@ export default class MapFilter extends Component {
     this.props.submit()
   }
 
-  updateBboxCoords = (west, south, east, north) => {
-    console.log('update coords called, state was: ',this.state)
+  onChange(field, value) {
+    let stateClone = { ...this.state }
+    stateClone[field] = value
+    stateClone[internalGeoJSON] = convertBboxToGeoJson(stateClone.west, stateClone.south, stateClone.east, stateClone.north)
+
     this.setState({
-      bboxWest: west,
-      bboxSouth: south,
-      bboxEast: east,
-      bboxNorth: north,
-      internalGeoJSON: convertBboxToGeoJson(west, south, east, north)
+      [field]: value,
+      internalGeoJSON: convertBboxToGeoJson(stateClone.west, stateClone.south, stateClone.east, stateClone.north)
     })
   }
 
+  applyGeometry = () => {
+    this.props.handleNewGeometry(this.state.internalGeoJSON) // TODO -- need validation
+    this.props.submit()
+  }
+
+  clearGeometry = () => {
+    this.props.removeGeometry()
+    this.props.submit()
+  }
+
   render() {
-
-    const inputBoundingBox = (
-      <MapFilterCoordinatesInput key='MapFilter::coordsInput' updateUpstreamCoords={this.updateBboxCoords} geoJSON={this.props.geoJSON}/>
-    )
-
     const styleShowOrHideBackground = this.props.geoJSON ? { background: '#8967d2' } : {}
     const styleShowOrHide = { marginBottom: '0.618em', ...styleShowOrHideBackground }
 
@@ -108,7 +154,7 @@ export default class MapFilter extends Component {
       <Button
         key='MapFilter::applyButton'
         text='Apply'
-        onClick={() => console.log('MapFilter::apply clicked')}
+        onClick={this.applyGeometry}
         style={{ width: '35%' }}
       />
     )
@@ -117,9 +163,33 @@ export default class MapFilter extends Component {
       <Button
         key='MapFilter::clearButton'
         text='Clear'
-        onClick={() => console.log('MapFilter::clear clicked')}
+        onClick={this.clearGeometry}
         style={{ width: '35%' }}
       />
+    )
+
+    const coordinateEntryRow = (value, direction, placeholderValue) => {
+      let id = `MapFilter::${direction}ernCoordinate`
+      return (
+        <div style={styleInputRow}>
+          <label htmlFor={id} style={styleLabel}>{_.capitalize(direction)}</label>
+          <input type='text' id={id} name={direction} placeholder={placeholderValue} value={value} style={styleTextBox} />
+        </div>
+      )
+    }
+
+    const inputBoundingBox = (
+      <div key='MapFilter::coordinatesFieldset'>
+        <form>
+          <fieldset onChange={(event) => this.onChange(event.target.name, event.target.value)}>
+            <legend>Bounding Box Coordinates: </legend>
+            {coordinateEntryRow(this.state.west, 'west', ' -180.00')}
+            {coordinateEntryRow(this.state.south, 'south', ' -90.00')}
+            {coordinateEntryRow(this.state.east, 'east', ' 180.00')}
+            {coordinateEntryRow(this.state.north, 'north', ' 90.00')}
+          </fieldset>
+        </form>
+      </div>
     )
 
     const inputColumn = (

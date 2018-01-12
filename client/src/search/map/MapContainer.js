@@ -18,7 +18,12 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     handleNewGeometry: geoJSON => dispatch(newGeometry(geoJSON)),
-    removeGeometry: () => dispatch(removeGeometry())
+    removeGeometry: () => dispatch(removeGeometry()),
+    submit: () => {
+      dispatch(clearCollections())
+      dispatch(triggerSearch())
+      dispatch(showCollections())
+    }
   }
 }
 

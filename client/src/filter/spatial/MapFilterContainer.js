@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import MapFilter from './MapFilter'
-import { toggleExcludeGlobal } from '../../actions/SearchParamActions'
+import { toggleExcludeGlobal, newGeometry, removeGeometry } from '../../actions/SearchParamActions'
 import { toggleMap } from '../../actions/LayoutActions'
 import { clearCollections, triggerSearch } from "../../actions/SearchRequestActions"
 import { showCollections } from "../../actions/FlowActions"
@@ -25,6 +25,8 @@ const mapDispatchToProps = dispatch => {
     toggleMap: () => {
       dispatch(toggleMap())
     },
+    removeGeometry: () => dispatch(removeGeometry()),
+    handleNewGeometry: geoJSON => dispatch(newGeometry(geoJSON))
   }
 }
 
