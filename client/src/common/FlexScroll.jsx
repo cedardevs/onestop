@@ -20,8 +20,7 @@ const styleFixed = {
 
 const styleContentWrapper = {
   position: 'relative',
-  flex: '1 1 auto',
-  width: '400px',
+  flex: '1 1 auto'
 }
 const styleContentScroll = {
   position: 'absolute',

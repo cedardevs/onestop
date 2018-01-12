@@ -178,6 +178,7 @@ export default class GranuleView extends Component {
       <FlexScroll
         left={map}
         styleLeft={{marginRight: '1.618em'}}
+        styleRight={{width: '42%'}}
         rightTop={granuleInfo}
         rightScroll={granuleTable}
         rightBottom={this.renderPaginationButton()}
