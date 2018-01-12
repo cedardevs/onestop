@@ -5,14 +5,12 @@ const hierarchy = (category, facets) => {
   const reducer = (map, facet) => {
     const termHierarchy = facet.termHierarchy
     const facetMap = {
-      // TODO make this immutable?
       id: facet.id,
       children: [],
       parent: map[termHierarchy.length].id,
     }
     map[termHierarchy.length + 1] = facetMap
     map[termHierarchy.length].children.push(facetMap)
-    // Immutable.set(map[termHierarchy.length], 'children', Immutable(Immutable.asMutable(map[termHierarchy.length].children).push(facetMap)))
     return map
   }
   let initState = {}
@@ -84,7 +82,7 @@ export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
         name: categoryName(category),
         id: categoryName(category).replace(' ', '-', 'g'),
         keywordFacets: keywordFacets,
-        hierarchy: Immutable(hierarchy(category, keywordFacets)), // TODO make this immutable too
+        hierarchy: Immutable(hierarchy(category, keywordFacets)),
       }
     }
   }).filter(facetCategory => {
