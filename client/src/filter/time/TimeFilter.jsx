@@ -55,14 +55,10 @@ const styleButtonRow = {
   marginBottom: '0.5em',
 }
 
-<<<<<<< HEAD
 const styleButton = {
   width: '35%'
 }
 
-
-=======
->>>>>>> Prettify changes.
 export default class TimeFilter extends Component {
   constructor(props) {
     super(props)
@@ -264,11 +260,7 @@ export default class TimeFilter extends Component {
         key="TimeFilter::apply"
         text="Apply"
         onClick={this.applyDates}
-<<<<<<< HEAD
         style={styleButton}
-=======
-        style={{width: '35%'}}
->>>>>>> Prettify changes.
       />
     )
 
@@ -277,11 +269,7 @@ export default class TimeFilter extends Component {
         key="TimeFilter::clear"
         text="Clear"
         onClick={this.clearDates}
-<<<<<<< HEAD
         style={styleButton}
-=======
-        style={{width: '35%'}}
->>>>>>> Prettify changes.
       />
     )
 
@@ -307,7 +295,6 @@ export default class TimeFilter extends Component {
               </label>
             </div>
             <div style={styleInputs}>
-<<<<<<< HEAD
               <input type='text' id='startDateYear' name='startDateYear' placeholder='YYYY' value={this.state.startDateYear} style={styleYear} />
               <select id='startDateMonth' name='startDateMonth' value={this.state.startDateMonth} style={styleMonth} >
                 <option value=''>(none)</option>
@@ -326,49 +313,6 @@ export default class TimeFilter extends Component {
               </select>
               <input type='text' id='startDateDay' name='startDateDay' placeholder='DD' value={this.state.startDateDay} style={styleDay}/>
               <span aria-hidden='true' style={styleInputValidity(this.state.startValueValid)}>{this.state.startValueValid ? '✓' : '✖'}</span>
-=======
-              <input
-                type="text"
-                id="startDateYear"
-                name="startDateYear"
-                placeholder="YYYY"
-                value={this.state.startDateYear}
-                size="6"
-              />
-              <select
-                id="startDateMonth"
-                name="startDateMonth"
-                value={this.state.startDateMonth}
-              >
-                <option value="">(none)</option>
-                <option value="0">January</option>
-                <option value="1">February</option>
-                <option value="2">March</option>
-                <option value="3">April</option>
-                <option value="4">May</option>
-                <option value="5">June</option>
-                <option value="6">July</option>
-                <option value="7">August</option>
-                <option value="8">September</option>
-                <option value="9">October</option>
-                <option value="10">November</option>
-                <option value="11">December</option>
-              </select>
-              <input
-                type="text"
-                id="startDateDay"
-                name="startDateDay"
-                placeholder="DD"
-                value={this.state.startDateDay}
-                size="3"
-              />
-              <span
-                aria-hidden="true"
-                style={styleInputValidity(this.state.startValueValid)}
-              >
-                {this.state.startValueValid ? '✓' : '✖'}
-              </span>
->>>>>>> Prettify changes.
             </div>
           </fieldset>
 
@@ -386,7 +330,6 @@ export default class TimeFilter extends Component {
               </label>
             </div>
             <div style={styleInputs}>
-<<<<<<< HEAD
               <input type='text' id='endDateYear' name='endDateYear' placeholder='YYYY' value={this.state.endDateYear} style={styleYear} />
               <select id='endDateMonth' name='endDateMonth' value={this.state.endDateMonth} style={styleMonth} >
                 <option value=''>(none)</option>
@@ -405,49 +348,6 @@ export default class TimeFilter extends Component {
               </select>
               <input type='text' id='endDateDay' name='endDateDay' placeholder='DD' value={this.state.endDateDay} style={styleDay} />
               <span aria-hidden='true' style={styleInputValidity(this.state.endValueValid)}>{this.state.endValueValid ? '✓' : '✖'}</span>
-=======
-              <input
-                type="text"
-                id="endDateYear"
-                name="endDateYear"
-                placeholder="YYYY"
-                value={this.state.endDateYear}
-                size="6"
-              />
-              <select
-                id="endDateMonth"
-                name="endDateMonth"
-                value={this.state.endDateMonth}
-              >
-                <option value="">(none)</option>
-                <option value="0">January</option>
-                <option value="1">February</option>
-                <option value="2">March</option>
-                <option value="3">April</option>
-                <option value="4">May</option>
-                <option value="5">June</option>
-                <option value="6">July</option>
-                <option value="7">August</option>
-                <option value="8">September</option>
-                <option value="9">October</option>
-                <option value="10">November</option>
-                <option value="11">December</option>
-              </select>
-              <input
-                type="text"
-                id="endDateDay"
-                name="endDateDay"
-                placeholder="DD"
-                value={this.state.endDateDay}
-                size="3"
-              />
-              <span
-                aria-hidden="true"
-                style={styleInputValidity(this.state.endValueValid)}
-              >
-                {this.state.endValueValid ? '✓' : '✖'}
-              </span>
->>>>>>> Prettify changes.
             </div>
           </fieldset>
         </form>
