@@ -172,7 +172,6 @@ export default class FacetTree extends React.Component {
         _.each(children, (value, key) => {
           const i = this.facetIndex(value.id)
           facets[i] = Immutable.merge(facets[i], {visible: visibility})
-          console.log('update vis', i, visibility, facets[i])
           updateVisibility(value.children, visibility && value.open)
         })
       }
@@ -186,7 +185,6 @@ export default class FacetTree extends React.Component {
   }
 
   handleExpandableToggle = event => {
-    console.log('expand', event)
     this.updateNodeVisibility(event.value, event.open)
   }
 
@@ -207,19 +205,32 @@ export default class FacetTree extends React.Component {
     document.getElementById(facetId).focus()
   }
 
+  lookupHierarchy = (id, list) => {
+    let result = null
+    _.each(list, (node) => {
+      if(result) return
+      if(node.id === id) {
+        result = node
+        return
+      }
+      result = this.lookupHierarchy(id, node.children)
+    })
+    return result
+  }
+
   triggerRight = () => {
     const id = this.state.rovingIndex
-    const node = this.lookupFacet(id) //this.state.facetLookup[id]
-    console.log('triggerright', node)
+    const node = this.lookupFacet(id)
+    const nodeInMap = this.lookupHierarchy(id, this.state.hierarchy)
     if (!node.open) {
       // open node
-      this.handleExpandableToggle({open: true, value: id}) // TODO broken because value is not the map from hierarchy / node?
+      this.handleExpandableToggle({open: true, value: nodeInMap})
     }
     else {
       // move focus to first child
-      const facetId = node.relations.children[0] // TODO this will fail - need to look this up from hierarchy now... (use term hierarcy property?)
-      if (facetId) {
-        this.updateRovingIndex(facetId)
+      const facet = nodeInMap.children[0]
+      if (facet) {
+        this.updateRovingIndex(facet.id)
       }
     }
   }
@@ -227,13 +238,14 @@ export default class FacetTree extends React.Component {
   triggerLeft = () => {
     const id = this.state.rovingIndex
     const node = this.lookupFacet(id)
+    const nodeInMap = this.lookupHierarchy(id, this.state.hierarchy)
     if (node.open) {
       // close node
-      this.handleExpandableToggle({open: false, value: id})
+      this.handleExpandableToggle({open: false, value: nodeInMap})
     }
     else {
       // move focus to parent
-      const facetId = node.relations.parent
+      const facetId = nodeInMap.parent
       if (facetId) {
         this.updateRovingIndex(facetId)
       }
