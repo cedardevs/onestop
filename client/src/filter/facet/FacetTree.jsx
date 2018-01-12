@@ -10,11 +10,12 @@ import Immutable from 'seamless-immutable'
   speciallized tree menu.
 **/
 
-const styleFacet = backgroundColor => {
+const styleFacet = (backgroundColor, disabled) => {
   return {
     padding: '0.618em',
     backgroundColor: backgroundColor ? backgroundColor : 'initial',
-    color: '#FFF',
+    textDecoration: disabled ? 'line-through' : 'initial',
+    color: disabled ? '#cbcbcb' : '#FFF',
     display: 'flex',
     textAlign: 'left',
     alignItems: 'center',
@@ -372,7 +373,7 @@ export default class FacetTree extends React.Component {
         hasChildren={hasChildren}
         handleSelectToggleMouse={this.handleSelectToggleMouse}
         handleExpandableToggle={this.handleExpandableToggle}
-        styleFacet={styleFacet(this.props.backgroundColor)}
+        styleFacet={styleFacet(this.props.backgroundColor, facet.count == 0)}
         styleFocus={styleRovingFocus}
         styleCheckboxFocus={styleRovingFocusCheckbox}
         styleChildren={styleExpandableContent(this.props.marginNest)}

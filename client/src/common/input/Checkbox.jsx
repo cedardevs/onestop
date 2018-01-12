@@ -16,7 +16,8 @@ const styleCheckboxContainer = {
 }
 
 const styleDisabled = {
-  background: 'gray', // TODO play with styling I have no clue what we want it to look like
+  background: '#cbcbcb',
+  border: '1px solid #cbcbcb',
 }
 
 const styleInput = {
