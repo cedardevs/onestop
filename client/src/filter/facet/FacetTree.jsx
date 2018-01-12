@@ -64,34 +64,16 @@ export default class FacetTree extends React.Component {
     return _.sortBy(list, ['id'])
   }
 
-  updateAllVisibility = () => { // TODO rename to init visibility
-    // _.each(this.state.hierarchy, (facetInMap) => {
-    //   this.updateNodeVisibility(facetInMap, this.lookupFacet(facetInMap.id).open)
-    //   // this.updateNodeVisibility(facetInMap, true) // init state of open for all is: no
-    //   let node = this.lookupFacet(facetInMap.id)
-    //   this.replaceNode(facetInMap.id, Immutable.merge(node, {visible: true})) // TODO this is a dumb method to update one property on the node. Make it like updateNode(id, propName, value)??
-    // }) // TODO this really should recurse, because new nodes can appear at weird nested places...
-
+  updateAllVisibility = () => {
 
     this.setState(prevState => {
       const facets = prevState.facetList
       _.each(this.state.hierarchy, (facetInMap) => {
-        const index = this.facetIndex(facetInMap.id) // TODO this is copy pasted from updateNodeVisibility - make a common function
+        const index = this.facetIndex(facetInMap.id)
         facets[index] = Immutable.merge(facets[index], {visible: true})
-
-        // let updateVisibility = (children, visibility) => {
-        //   _.each(children, (value, key) => {
-        //     const i = this.facetIndex(value.id)
-        //     facets[i] = Immutable.merge(facets[i], {visible: visibility})
-        //     updateVisibility(value.children, visibility && value.open)
-        //   })
-        // }
-        // updateVisibility(facetInMap.children, facets[index].open)
-
         this.mutateFacetVisibility(facetInMap.children, facets, index)
       })
 
-      console.log('update all vis:', facets)
       return {
         ...prevState,
         facetList: facets,
@@ -190,20 +172,13 @@ export default class FacetTree extends React.Component {
   }
 
   mutateFacetVisibility = (hierarchy, list, index) => {
-    console.log('updating visibility for', hierarchy, index, list)
     let updateVisibility = (children, visibility) => {
       _.each(children, (value, key) => {
         const i = this.facetIndex(value.id)
-        console.log('vis vis', visibility, list[i])
         list[i] = Immutable.merge(list[i], {visible: visibility})
-        console.log('vis subvis', visibility, value.open, visibility && value.open)
-        if(value.children.length > 0 && value.open == null) {
-          console.log('what in the good heck?', value.id, value.open, value.children)
-        }
         updateVisibility(value.children, visibility && list[i].open)
       })
     }
-    console.log('wtf', list[index])
     updateVisibility(hierarchy, list[index].open)
   }
 
@@ -213,14 +188,6 @@ export default class FacetTree extends React.Component {
       const index = this.facetIndex(facetInMap.id)
       facets[index] = Immutable.merge(facets[index], {open: open})
 
-      // let updateVisibility = (children, visibility) => {
-      //   _.each(children, (value, key) => {
-      //     const i = this.facetIndex(value.id)
-      //     facets[i] = Immutable.merge(facets[i], {visible: visibility})
-      //     updateVisibility(value.children, visibility && value.open)
-      //   })
-      // }
-      // updateVisibility(facetInMap.children, facets[index].open)
       this.mutateFacetVisibility(facetInMap.children, facets, index)
 
       return {
@@ -402,14 +369,13 @@ export default class FacetTree extends React.Component {
 
     if (e.keyCode === Key.SPACE || e.keyCode === Key.ENTER) {
       e.preventDefault() // prevent scrolling down on space press
-      const {facetId, category, term} = this.state.facetLookup[
-        this.state.rovingIndex
-      ]
-      const selected = this.isSelected(category, term)
+      const {facetId, category, term, selected, count} = this.lookupFacet(this.state.rovingIndex)
+      console.log(this.lookupFacet(this.state.rovingIndex))
+      if(count > 0){ // count zero means facet is disabled TODO put in isDisabled func? add as prop when calculating counts? // TODO or move disabled, do not complete select action check from keyboard and click handlers into the handleSelectToggle method?
       this.props.handleSelectToggle(
         {id: facetId, category: category, term: term},
         !selected
-      )
+      )}
     }
     if (e.keyCode === Key.HOME) {
       this.moveFocusToStart()

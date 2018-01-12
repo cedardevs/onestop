@@ -120,6 +120,7 @@ export default class FacetTreeItem extends React.Component {
         aria-label={ariaLabel}
         aria-expanded={ariaExpanded}
         aria-selected={selected}
+        aria-disabled={disabled}
       >
         {content}
       </div>
