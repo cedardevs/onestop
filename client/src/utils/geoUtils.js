@@ -88,6 +88,11 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
       },
     }
   }
+  // return {
+  //   type: 'Feature',
+  //   properties: {},
+  //   geometry: ensureDatelineFriendlyPolygon({coordinates: [ coordinates ], type: 'Polygon'})
+  // }
 }
 
 export const convertBboxStringToGeoJson = coordString => {

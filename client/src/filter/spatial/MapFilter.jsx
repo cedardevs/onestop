@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import FlexColumn from '../../common/FlexColumn'
 import Button from '../../common/input/Button'
+import _ from 'lodash'
 
 import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from "../../common/input/Checkbox"
 import MapFilterCoordinatesInput from "./MapFilterCoordinatesInput"
-import {convertBboxToGeoJson, convertGeoJsonToBbox} from "../../utils/geoUtils";
+import {convertBboxToGeoJson} from "../../utils/geoUtils";
 
 const styleMapFilter = {
   backgroundColor: '#3D97D2',
@@ -26,24 +27,6 @@ const styleButtons = {
   marginTop: '1em'
 }
 
-const styleInputRow = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  margin: '0.616em 0',
-  width: '15em'
-}
-
-const styleLabel = {
-  width: '4em'
-}
-
-const styleTextBox = {
-  width: '10em',
-  color: 'black'
-}
-
 export default class MapFilter extends Component {
 
   constructor(props) {
@@ -54,11 +37,12 @@ export default class MapFilter extends Component {
   initialState() {
     return {
       internalGeoJSON: null,
+      warning: ''
     }
   }
 
   componentWillMount() {
-    this.mapPropsToState(this.props)
+    this.mapGeoJSONToState(this.props.geoJSON)
   }
 
   componentWillUnmount() {
@@ -68,13 +52,13 @@ export default class MapFilter extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.mapPropsToState(nextProps)
+    this.mapGeoJSONToState(nextProps.geoJSON)
   }
 
-  mapPropsToState = (props) => {
-    if(props.geoJSON) {
+  mapGeoJSONToState = (geoJSON) => {
+    if(geoJSON) {
       this.setState({
-        internalGeoJSON: props.geoJSON
+        internalGeoJSON: geoJSON
       })
     }
     else {
@@ -97,9 +81,10 @@ export default class MapFilter extends Component {
   }
 
   handleManualEntryCoords = (west, south, east, north) => {
-    let constructedGeoJSON = convertBboxToGeoJson(west, south, east, north)
+    let constructedGeoJSON = convertBboxToGeoJson(_.toNumber(west), _.toNumber(south), _.toNumber(east), _.toNumber(north))
     this.setState({
-      internalGeoJSON: constructedGeoJSON
+      internalGeoJSON: constructedGeoJSON,
+      warning: ''
     })
   }
 
@@ -109,13 +94,41 @@ export default class MapFilter extends Component {
   }
 
   applyGeometry = () => {
-    this.props.handleNewGeometry(this.state.internalGeoJSON) // TODO -- need validation
-    this.props.submit()
+    if(this.state.internalGeoJSON) {
+      this.props.handleNewGeometry(this.state.internalGeoJSON) // TODO -- need validation
+      this.props.submit()
+    }
+    else {
+      this.setState({
+        warning: 'Entered coordinates are invalid. Ensure longitude coordinates are between -180 and 180, and latitude coordinates are between -90 and 90.'
+      })
+    }
   }
 
   clearGeometry = () => {
     this.props.removeGeometry()
     this.props.submit()
+
+    this.setState({
+      warning: ''
+    })
+  }
+
+  warningStyle() {
+    if(_.isEmpty(this.state.warning)) {
+      return {
+        display: 'none'
+      }
+    }
+    else {
+      return {
+        color: '#b00101',
+        textAlign: 'center',
+        margin: '0.75em 0 0.5em',
+        fontWeight: 'bold',
+        fontSize: '1.15em'
+      }
+    }
   }
 
   render() {
@@ -188,6 +201,9 @@ export default class MapFilter extends Component {
         <div style={styleButtons}>
           {buttonApply}
           {buttonClear}
+        </div>
+        <div style={this.warningStyle()} role='alert'>
+          {this.state.warning}
         </div>
         <div style={{borderBottom: '1px solid white', margin: '1em 0'}}></div>
         <h4 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h4>
