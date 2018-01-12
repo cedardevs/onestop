@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import GranuleViewTableRow from './GranuleViewTableRow'
 import FlexScroll from '../../common/FlexScroll'
 import FlexColumn from '../../common/FlexColumn'
 import Button from '../../common/input/Button'
@@ -25,20 +26,14 @@ const styleLegendItem = {
 }
 
 const styleTable = {
-  padding: '2px'
+  padding: '2px',
+  borderBottom: '1px solid #CBCBCB'
 }
 
 const styleTableHeadRow = {
   backgroundColor: '#E0E0E0',
   color: 'black',
   textAlign: 'left',
-}
-
-const styleTableBodyRow = even => {
-  return {
-    backgroundColor: even ? '#222' : '#111',
-    color: 'white',
-  }
 }
 
 const styleTableCell = {
@@ -126,15 +121,16 @@ export default class GranuleView extends Component {
         usedProtocols.add(this.identifyProtocol(link))
       )
       return (
-        <tr
-          key={key}
-          style={styleTableBodyRow(rowEven)}
-          onMouseEnter={() => toggleFocus(key, true)}
-          onMouseLeave={() => toggleFocus(key, false)}
-        >
-          <td style={styleTableCell}>{value.title}</td>
-          <td style={styleBadgesCell}>{this.renderBadges(value.links)}</td>
-        </tr>
+          <GranuleViewTableRow
+            key={key}
+            id={key}
+            even={rowEven}
+            title={value.title}
+            badges={this.renderBadges(value.links)}
+            styleTitle={styleTableCell}
+            styleBadges={styleBadgesCell}
+            toggleFocus={toggleFocus}
+          />
       )
     })
     const legendItems = _.chain(_.toArray(usedProtocols))
