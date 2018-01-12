@@ -5,7 +5,6 @@ import {Key} from '../../utils/keyboardUtils'
 
 import Immutable from 'seamless-immutable'
 
-
 /**
   This component contains the content of a facet category. It is essentially a
   speciallized tree menu.
@@ -43,32 +42,37 @@ export default class FacetTree extends React.Component {
 
     this.state = {
       facetList: [],
-      hierarchy:[],
+      hierarchy: [],
       rovingIndex: null,
     }
   }
 
-  mergeChildren = (list1, list2) => { // custom hierarchy list merging...
+  mergeChildren = (list1, list2) => {
+    // custom hierarchy list merging...
     let list = []
-    _.each(list1, (node) => {
+    _.each(list1, node => {
       list.push(node)
     })
-    _.each(list2, (node) => {
-      const i = _.findIndex(list, (n)=>{return n.id === node.id})
-      if(i>=0) {
-        list[i] = Immutable.merge(list[i], {children: this.mergeChildren(list[i].children, node.children)})
-      } else {
+    _.each(list2, node => {
+      const i = _.findIndex(list, n => {
+        return n.id === node.id
+      })
+      if (i >= 0) {
+        list[i] = Immutable.merge(list[i], {
+          children: this.mergeChildren(list[i].children, node.children),
+        })
+      }
+      else {
         list.push(node)
       }
     })
-    return _.sortBy(list, ['id'])
+    return _.sortBy(list, [ 'id' ])
   }
 
   updateAllVisibility = () => {
-
     this.setState(prevState => {
       const facets = prevState.facetList
-      _.each(this.state.hierarchy, (facetInMap) => {
+      _.each(this.state.hierarchy, facetInMap => {
         const index = this.facetIndex(facetInMap.id)
         facets[index] = Immutable.merge(facets[index], {visible: true})
         this.mutateFacetVisibility(facetInMap.children, facets, index)
@@ -87,36 +91,54 @@ export default class FacetTree extends React.Component {
     //   if(_.isEmpty(nextProps.hierarchy)) {console.log('TODO RESET HIERARCY')} // TODO not triggered when I hoped it would be...
     // }
 
-    if(!_.isEqual(this.props.hierarchy, nextProps.hierarchy) || !_.isEqual(this.props.facetMap, nextProps.facetMap)) {
+    if (
+      !_.isEqual(this.props.hierarchy, nextProps.hierarchy) ||
+      !_.isEqual(this.props.facetMap, nextProps.facetMap)
+    ) {
       this.setState(prevState => {
-        const facets = _.map(this.state.facetList, (facet) => {
+        const facets = _.map(this.state.facetList, facet => {
           let f = Immutable.merge(facet, {count: 0}) // set all facet counts to zero
-          const updatedFacet = _.find(nextProps.facetMap, (updatedFacet)=> { return facet.id === updatedFacet.id})
-          if(updatedFacet) {
+          const updatedFacet = _.find(nextProps.facetMap, updatedFacet => {
+            return facet.id === updatedFacet.id
+          })
+          if (updatedFacet) {
             // update facet with refreshed info (ie count) from results
-            f = Immutable.merge(f, {count: updatedFacet.count, selected: updatedFacet.selected})
+            f = Immutable.merge(f, {
+              count: updatedFacet.count,
+              selected: updatedFacet.selected,
+            })
             // TODO can probably just do f = Immutable.merge(f, updatedFacet), since updatedFacet shouldn't have any UI state in it.
-          }// else {console.log('stuck at count 0')}
+          } // else {console.log('stuck at count 0')}
 
           return f
         })
 
         // find any new facets which are not already included and add them
-        _.each(nextProps.facetMap, (facet) => {
-          const oldFacet = _.find(this.state.facetList, (oldFacet)=> { return facet.id === oldFacet.id})
-          if(!oldFacet) {
-            facets.push(Immutable.merge({
-              open: false,
-              visible: false,
-              tabIndex: '-1', // TODO why is this a string and not an int? or why is the zero below an int?? (parital answer - Facet has a logic check that assumes a string, but ... ummm?)
-            },facet))
+        _.each(nextProps.facetMap, facet => {
+          const oldFacet = _.find(this.state.facetList, oldFacet => {
+            return facet.id === oldFacet.id
+          })
+          if (!oldFacet) {
+            facets.push(
+              Immutable.merge(
+                {
+                  open: false,
+                  visible: false,
+                  tabIndex: '-1', // TODO why is this a string and not an int? or why is the zero below an int?? (parital answer - Facet has a logic check that assumes a string, but ... ummm?)
+                },
+                facet
+              )
+            )
           }
         })
 
         return {
           ...prevState,
-          facetList: _.sortBy(facets, ['term']), // make sure facets are sorted
-          hierarchy: this.mergeChildren(this.state.hierarchy, nextProps.hierarchy)
+          facetList: _.sortBy(facets, [ 'term' ]), // make sure facets are sorted
+          hierarchy: this.mergeChildren(
+            this.state.hierarchy,
+            nextProps.hierarchy
+          ),
         }
       }, this.updateAllVisibility)
     }
@@ -125,7 +147,7 @@ export default class FacetTree extends React.Component {
   componentDidMount() {
     // init state
     this.setState(prevState => {
-      const facets = _.map(this.props.facetMap, (facet)=> {
+      const facets = _.map(this.props.facetMap, facet => {
         return Immutable.merge(facet, {
           open: false,
           visible: false,
@@ -145,20 +167,21 @@ export default class FacetTree extends React.Component {
     }, this.updateAllVisibility)
   }
 
-  lookupFacet = (id) => {
-    return _.find(this.state.facetList, (facet) => {
+  lookupFacet = id => {
+    return _.find(this.state.facetList, facet => {
       return facet.id === id
     })
   }
 
-  facetIndex = (id) => {
-    return _.findIndex(this.state.facetList, (facet) => {
+  facetIndex = id => {
+    return _.findIndex(this.state.facetList, facet => {
       return facet.id === id
     })
   }
 
-  replaceNode = (id, newNode) => { // TODO could be changed to update node by id?
-    const index = _.findIndex(this.state.facetList, (facet) => {
+  replaceNode = (id, newNode) => {
+    // TODO could be changed to update node by id?
+    const index = _.findIndex(this.state.facetList, facet => {
       return facet.id === id
     })
     this.setState(prevState => {
@@ -220,9 +243,9 @@ export default class FacetTree extends React.Component {
 
   lookupHierarchy = (id, list) => {
     let result = null
-    _.each(list, (node) => {
-      if(result) return
-      if(node.id === id) {
+    _.each(list, node => {
+      if (result) return
+      if (node.id === id) {
         result = node
         return
       }
@@ -319,17 +342,17 @@ export default class FacetTree extends React.Component {
     this.props.handleSelectToggle(e.value, e.checked)
   }
 
-  createFacetComponent = (facetInMap) => {
+  createFacetComponent = facetInMap => {
     const facet = this.lookupFacet(facetInMap.id)
     let facetComponent = null
     if (!facet) {
       return facetComponent
     }
-    const facetChildren = _.map(facetInMap.children, facet => this.createFacetComponent(facet))
+    const facetChildren = _.map(facetInMap.children, facet =>
+      this.createFacetComponent(facet)
+    )
     const hasChildren = !_.isEmpty(facetInMap.children)
-    const children = hasChildren
-      ? facetChildren
-      : null
+    const children = hasChildren ? facetChildren : null
 
     return (
       <Facet
@@ -368,12 +391,16 @@ export default class FacetTree extends React.Component {
 
     if (e.keyCode === Key.SPACE || e.keyCode === Key.ENTER) {
       e.preventDefault() // prevent scrolling down on space press
-      const {facetId, category, term, selected, count} = this.lookupFacet(this.state.rovingIndex)
-      if(count > 0){ // count zero means facet is disabled TODO put in isDisabled func? add as prop when calculating counts? // TODO or move disabled, do not complete select action check from keyboard and click handlers into the handleSelectToggle method?
-      this.props.handleSelectToggle(
-        {id: facetId, category: category, term: term},
-        !selected
-      )}
+      const {facetId, category, term, selected, count} = this.lookupFacet(
+        this.state.rovingIndex
+      )
+      if (count > 0) {
+        // count zero means facet is disabled TODO put in isDisabled func? add as prop when calculating counts? // TODO or move disabled, do not complete select action check from keyboard and click handlers into the handleSelectToggle method?
+        this.props.handleSelectToggle(
+          {id: facetId, category: category, term: term},
+          !selected
+        )
+      }
     }
     if (e.keyCode === Key.HOME) {
       this.moveFocusToStart()
@@ -422,7 +449,9 @@ export default class FacetTree extends React.Component {
   }
 
   render() {
-    const facetHierarchy = _.map(this.state.hierarchy, (facet) => {return this.createFacetComponent(facet)})
+    const facetHierarchy = _.map(this.state.hierarchy, facet => {
+      return this.createFacetComponent(facet)
+    })
 
     return (
       <div

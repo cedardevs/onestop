@@ -54,7 +54,7 @@ export default class FacetFilter extends Component {
 
   render() {
     let expandableCategories = []
-    _.each(this.props.facets, (facetCategory) => {
+    _.each(this.props.facets, facetCategory => {
       // show hamburger menu for high-level categories
       const category = facetCategory.name
       const expandableKey = category
@@ -75,7 +75,6 @@ export default class FacetFilter extends Component {
           headerId={facetCategory.id}
           facetMap={facetCategory.keywordFacets}
           hierarchy={facetCategory.hierarchy}
-//selectedFacets={this.props.selectedFacets}
           handleSelectToggle={this.updateStoreAndSubmitSearch}
           backgroundColor={this.props.backgroundColor}
           marginNest={this.props.marginNest}

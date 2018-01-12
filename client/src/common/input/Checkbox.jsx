@@ -62,7 +62,9 @@ class Checkbox extends Component {
   }
 
   handleChange = event => {
-    if(this.props.disabled) {return}
+    if (this.props.disabled) {
+      return
+    }
     const {value, onChange} = this.props
     if (onChange) {
       onChange({checked: !this.state.checked, value: value})
@@ -77,7 +79,9 @@ class Checkbox extends Component {
   }
 
   handleMouseOver = event => {
-    if(this.props.disabled) {return}
+    if (this.props.disabled) {
+      return
+    }
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: true,
@@ -86,7 +90,9 @@ class Checkbox extends Component {
   }
 
   handleMouseOut = event => {
-    if(this.props.disabled) {return}
+    if (this.props.disabled) {
+      return
+    }
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: false,
@@ -95,7 +101,9 @@ class Checkbox extends Component {
   }
 
   handleMouseDown = event => {
-    if(this.props.disabled) {return}
+    if (this.props.disabled) {
+      return
+    }
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: prevState.hovering,
@@ -127,7 +135,7 @@ class Checkbox extends Component {
       ...(this.state.focused && this.props.styleFocus
         ? this.props.styleFocus
         : {}),
-      ...(this.props.disabled ? styleDisabled : {})
+      ...(this.props.disabled ? styleDisabled : {}),
     }
 
     const styleCheck = {

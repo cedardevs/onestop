@@ -44,9 +44,9 @@ class Filters extends Component {
       //   content: <MapFilter />,
       // },
       {
-       name: "time",
-      	heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
-      	content: <TimeFilterContainer />,
+        name: 'time',
+        heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
+        content: <TimeFilterContainer />,
       },
       {
         name: 'keywords',

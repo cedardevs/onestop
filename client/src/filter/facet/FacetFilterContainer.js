@@ -11,7 +11,10 @@ import {showCollections} from '../../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {
-    facets: buildKeywordHierarchyMap(state.domain.results.facets, state.behavior.search.selectedFacets),
+    facets: buildKeywordHierarchyMap(
+      state.domain.results.facets,
+      state.behavior.search.selectedFacets
+    ),
   }
 }
 

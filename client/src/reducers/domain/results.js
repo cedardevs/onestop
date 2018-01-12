@@ -9,7 +9,7 @@ import {
   CLEAR_GRANULES,
   COUNT_GRANULES,
   FACETS_RECEIVED,
-  CLEAR_FACETS
+  CLEAR_FACETS,
 } from '../../actions/SearchRequestActions'
 
 export const initialState = Immutable({

@@ -4,18 +4,19 @@ import Immutable from 'seamless-immutable'
 const hierarchy = (category, facets) => {
   const reducer = (map, facet) => {
     const termHierarchy = facet.termHierarchy
-    const facetMap = { // TODO make this immutable?
+    const facetMap = {
+      // TODO make this immutable?
       id: facet.id,
       children: [],
       parent: map[termHierarchy.length].id,
     }
-    map[termHierarchy.length+1] = facetMap
+    map[termHierarchy.length + 1] = facetMap
     map[termHierarchy.length].children.push(facetMap)
     // Immutable.set(map[termHierarchy.length], 'children', Immutable(Immutable.asMutable(map[termHierarchy.length].children).push(facetMap)))
     return map
   }
   let initState = {}
-  initState[0] = {id: null, children:[]}
+  initState[0] = {id: null, children: []}
   return facets.reduce(reducer, initState)[0].children
 }
 
@@ -36,7 +37,7 @@ const buildTermHierarchy = (term, isHierarchy) => {
     // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
     return term.split('>').map(e => e.trim())
   }
-  return [term]
+  return [ term ]
 }
 
 const buildFacet = (category, term, count, selected, isHierarchy) => {
@@ -62,10 +63,16 @@ const categoryName = category => {
 const facets = (category, terms, selectedFacets) => {
   const selectedTerms = selectedFacets[category]
 
-  return _.map(terms, (data, term)=>{
+  return _.map(terms, (data, term) => {
     let selected = selectedTerms ? selectedTerms.includes(term) : false
-    return buildFacet(category, term, data.count, selected, category === 'science')
-   })
+    return buildFacet(
+      category,
+      term,
+      data.count,
+      selected,
+      category === 'science'
+    )
+  })
 }
 
 export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
@@ -80,8 +87,9 @@ export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
         hierarchy: Immutable(hierarchy(category, keywordFacets)), // TODO make this immutable too
       }
     }
-  }).filter((facetCategory)=> {return facetCategory}) // remove undefined?
-
+  }).filter(facetCategory => {
+    return facetCategory
+  }) // remove undefined?
 }
 
 // pulls out the last term in a GCMD-style keyword and attempts to maintain intended acronyms
