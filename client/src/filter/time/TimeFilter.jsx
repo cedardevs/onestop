@@ -18,7 +18,7 @@ const styleTimeFilter = {
 
 const styleFieldset = {
   marginBottom: '1em',
-  width: '15em'
+  width: '15em',
 }
 
 const styleLabels = {
@@ -38,13 +38,13 @@ const styleInputs = {
 }
 
 const styleYear = {
-  width: '3.25em'
+  width: '3.25em',
 }
 const styleMonth = {
-  width: '7.25em'
+  width: '7.25em',
 }
 const styleDay = {
-  width: '1.75em'
+  width: '1.75em',
 }
 
 const styleButtonRow = {
@@ -56,7 +56,7 @@ const styleButtonRow = {
 }
 
 const styleButton = {
-  width: '35%'
+  width: '35%',
 }
 
 export default class TimeFilter extends Component {
@@ -89,7 +89,7 @@ export default class TimeFilter extends Component {
     this.mapPropsToState(nextProps)
   }
 
-  mapPropsToState = (props) => {
+  mapPropsToState = props => {
     let startDate = moment(props.startDateTime).utc()
     let endDate = moment(props.endDateTime).utc()
 
@@ -97,12 +97,24 @@ export default class TimeFilter extends Component {
     let endDateGiven = endDate.isValid()
 
     this.setState({
-      startDateYear: startDateGiven ? startDate.year() : this.initialState().startDateYear,
-      startDateMonth: startDateGiven ? startDate.month() : this.initialState().startDateMonth,
-      startDateDay: startDateGiven ? startDate.date() : this.initialState().startDateDay,
-      endDateYear: endDateGiven ? endDate.year() : this.initialState().endDateYear,
-      endDateMonth: endDateGiven ? endDate.month() : this.initialState().endDateMonth,
-      endDateDay: endDateGiven ? endDate.date() : this.initialState().endDateDay,
+      startDateYear: startDateGiven
+        ? startDate.year()
+        : this.initialState().startDateYear,
+      startDateMonth: startDateGiven
+        ? startDate.month()
+        : this.initialState().startDateMonth,
+      startDateDay: startDateGiven
+        ? startDate.date()
+        : this.initialState().startDateDay,
+      endDateYear: endDateGiven
+        ? endDate.year()
+        : this.initialState().endDateYear,
+      endDateMonth: endDateGiven
+        ? endDate.month()
+        : this.initialState().endDateMonth,
+      endDateDay: endDateGiven
+        ? endDate.date()
+        : this.initialState().endDateDay,
     })
   }
 
@@ -295,24 +307,48 @@ export default class TimeFilter extends Component {
               </label>
             </div>
             <div style={styleInputs}>
-              <input type='text' id='startDateYear' name='startDateYear' placeholder='YYYY' value={this.state.startDateYear} style={styleYear} />
-              <select id='startDateMonth' name='startDateMonth' value={this.state.startDateMonth} style={styleMonth} >
-                <option value=''>(none)</option>
-                <option value='0'>January</option>
-                <option value='1'>February</option>
-                <option value='2'>March</option>
-                <option value='3'>April</option>
-                <option value='4'>May</option>
-                <option value='5'>June</option>
-                <option value='6'>July</option>
-                <option value='7'>August</option>
-                <option value='8'>September</option>
-                <option value='9'>October</option>
-                <option value='10'>November</option>
-                <option value='11'>December</option>
+              <input
+                type="text"
+                id="startDateYear"
+                name="startDateYear"
+                placeholder="YYYY"
+                value={this.state.startDateYear}
+                style={styleYear}
+              />
+              <select
+                id="startDateMonth"
+                name="startDateMonth"
+                value={this.state.startDateMonth}
+                style={styleMonth}
+              >
+                <option value="">(none)</option>
+                <option value="0">January</option>
+                <option value="1">February</option>
+                <option value="2">March</option>
+                <option value="3">April</option>
+                <option value="4">May</option>
+                <option value="5">June</option>
+                <option value="6">July</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
               </select>
-              <input type='text' id='startDateDay' name='startDateDay' placeholder='DD' value={this.state.startDateDay} style={styleDay}/>
-              <span aria-hidden='true' style={styleInputValidity(this.state.startValueValid)}>{this.state.startValueValid ? '✓' : '✖'}</span>
+              <input
+                type="text"
+                id="startDateDay"
+                name="startDateDay"
+                placeholder="DD"
+                value={this.state.startDateDay}
+                style={styleDay}
+              />
+              <span
+                aria-hidden="true"
+                style={styleInputValidity(this.state.startValueValid)}
+              >
+                {this.state.startValueValid ? '✓' : '✖'}
+              </span>
             </div>
           </fieldset>
 
@@ -330,24 +366,48 @@ export default class TimeFilter extends Component {
               </label>
             </div>
             <div style={styleInputs}>
-              <input type='text' id='endDateYear' name='endDateYear' placeholder='YYYY' value={this.state.endDateYear} style={styleYear} />
-              <select id='endDateMonth' name='endDateMonth' value={this.state.endDateMonth} style={styleMonth} >
-                <option value=''>(none)</option>
-                <option value='0'>January</option>
-                <option value='1'>February</option>
-                <option value='2'>March</option>
-                <option value='3'>April</option>
-                <option value='4'>May</option>
-                <option value='5'>June</option>
-                <option value='6'>July</option>
-                <option value='7'>August</option>
-                <option value='8'>September</option>
-                <option value='9'>October</option>
-                <option value='10'>November</option>
-                <option value='11'>December</option>
+              <input
+                type="text"
+                id="endDateYear"
+                name="endDateYear"
+                placeholder="YYYY"
+                value={this.state.endDateYear}
+                style={styleYear}
+              />
+              <select
+                id="endDateMonth"
+                name="endDateMonth"
+                value={this.state.endDateMonth}
+                style={styleMonth}
+              >
+                <option value="">(none)</option>
+                <option value="0">January</option>
+                <option value="1">February</option>
+                <option value="2">March</option>
+                <option value="3">April</option>
+                <option value="4">May</option>
+                <option value="5">June</option>
+                <option value="6">July</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
               </select>
-              <input type='text' id='endDateDay' name='endDateDay' placeholder='DD' value={this.state.endDateDay} style={styleDay} />
-              <span aria-hidden='true' style={styleInputValidity(this.state.endValueValid)}>{this.state.endValueValid ? '✓' : '✖'}</span>
+              <input
+                type="text"
+                id="endDateDay"
+                name="endDateDay"
+                placeholder="DD"
+                value={this.state.endDateDay}
+                style={styleDay}
+              />
+              <span
+                aria-hidden="true"
+                style={styleInputValidity(this.state.endValueValid)}
+              >
+                {this.state.endValueValid ? '✓' : '✖'}
+              </span>
             </div>
           </fieldset>
         </form>
