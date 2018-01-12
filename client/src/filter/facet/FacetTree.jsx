@@ -286,117 +286,43 @@ export default class FacetTree extends React.Component {
   }
 
   createFacetComponent = (facetInMap) => {
-    // if (!facet || _.isEqual({}, facet)) { // TODO why is this reaching this part ???
-    //   // cannot parse empty map
-    //   return []
-    // }
-    // handle any nulls that might get into this function
     const facet = this.lookupFacet(facetInMap.id)
-    // console.log(facetInMap, facet)
     let facetComponent = null
     if (!facet) {
       return facetComponent
     }
     const facetChildren = _.map(facetInMap.children, facet => this.createFacetComponent(facet))
-    // if (!Array.isArray(facet)) {
-      const hasChildren = !_.isEmpty(facetInMap.children)
-      const children = hasChildren
-        ? facetChildren//this.createFacetComponent(facet.children, facet)
-        : null
+    const hasChildren = !_.isEmpty(facetInMap.children)
+    const children = hasChildren
+      ? facetChildren
+      : null
 
-      return (
-        <Facet
-          facetId={facet.id}
-          facetMap={facetInMap}
-          key={facet.id}
-          category={facet.category}
-          term={facet.term}
-          count={facet.count}
-          open={facet.open}
-          keyword={facet.keyword}
-          selected={facet.selected}
-          disabled={facet.count == 0}
-          tabIndex={facet.tabIndex}
-          focused={this.state.focus}
-          children={children}
-          hasChildren={hasChildren}
-          handleSelectToggleMouse={this.handleSelectToggleMouse}
-          handleExpandableToggle={this.handleExpandableToggle}
-          styleFacet={styleFacet(this.props.backgroundColor)}
-          styleFocus={styleRovingFocus}
-          styleCheckboxFocus={styleRovingFocusCheckbox}
-          styleChildren={styleExpandableContent(this.props.marginNest)}
-        />
-      )
-    // }
-    // else {
-    //   // for each key recurse
-    //   // return Object.keys(facet).map(subFacet =>
-    //   //   // TODO console.log when this happens??
-    //   //   this.createFacetComponent(facet[subFacet])
-    //   // )
-    //   // _.each(facet, facet=> {
-    //   //   console.log('each facet is',facet)
-    //   // })
-    //   return _.map(facet, facet => this.createFacetComponent(facet))
-    // }
-    return facetChildren// _.map(facetInMap.children, facet => this.createFacetComponent(facet))
+    return (
+      <Facet
+        facetId={facet.id}
+        facetMap={facetInMap}
+        key={facet.id}
+        category={facet.category}
+        term={facet.term}
+        count={facet.count}
+        open={facet.open}
+        keyword={facet.keyword}
+        selected={facet.selected}
+        disabled={facet.count == 0}
+        tabIndex={facet.tabIndex}
+        focused={this.state.focus}
+        children={children}
+        hasChildren={hasChildren}
+        handleSelectToggleMouse={this.handleSelectToggleMouse}
+        handleExpandableToggle={this.handleExpandableToggle}
+        styleFacet={styleFacet(this.props.backgroundColor)}
+        styleFocus={styleRovingFocus}
+        styleCheckboxFocus={styleRovingFocusCheckbox}
+        styleChildren={styleExpandableContent(this.props.marginNest)}
+      />
+    )
+    return facetChildren
   }
-  //
-  // parseMap = (map, level, parentOpen, parentId) => {
-  //   if (!map || _.isEqual({}, map)) {
-  //     // cannot parse empty map
-  //     return []
-  //   }
-  //
-  //   _.each(map, (facet) => {
-  //     // value.relations = {}
-  //     // console.log('parseMap part the 1', value)
-  //     facet.open = false // always default to everything collapsed
-  //     facet.tabIndex = '-1'
-  //   })
-  //
-  //   if (level === 1) {
-  //     // id first layer to set the initial tab focus
-  //     const value = _.map(map, (value) => value)[0]
-  //     value.tabIndex = '0'
-  //     this.setState(prevState => {
-  //       return {
-  //         ...prevState,
-  //         rovingIndex: value.id,
-  //       }
-  //     })
-  //   }
-  //
-  //   _.each(map, (value) => {
-  //     this.setState(prevState => {
-  //       // update state that lets us quickly traverse the nodes in up/down order
-  //       let allFacetsInOrder = Object.assign([], prevState.allFacetsInOrder)
-  //       allFacetsInOrder.push(value.id)
-  //
-  //       // update state that lets us set focus to another node or update visibility, since it is a property that combines the state of several nodes
-  //       let facetLookup = Object.assign({}, prevState.facetLookup)
-  //       facetLookup[value.id] = value
-  //
-  //       return {
-  //         ...prevState,
-  //         allFacetsInOrder: allFacetsInOrder,
-  //         facetLookup: facetLookup,
-  //       }
-  //     })
-  //
-  //     // value.relations.parent = parentId
-  //     // value.relations.children = this.parseMap(
-  //     //   value.children,
-  //     //   level + 1,
-  //     //   parentOpen && value.open,
-  //     //   value.id
-  //     // )
-  //     value.visible = level === 1 || !!parentOpen
-  //   })
-  //
-  //   return _.map(map, (value, key) => value.id) // return siblings
-  // }
 
   handleKeyPressed = e => {
     // do nothing if modifiers are pressed
@@ -465,7 +391,6 @@ export default class FacetTree extends React.Component {
 
   render() {
     const facetHierarchy = _.map(this.state.hierarchy, (facet) => {return this.createFacetComponent(facet)})
-    // this.createFacetComponent(this.props.hierarchy)
 
     return (
       <div
