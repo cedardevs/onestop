@@ -88,7 +88,6 @@ export default class FacetTreeItem extends React.Component {
     const content = hasChildren ? (
       <Expandable
         open={open}
-        disabled={disabled}
         value={facetMap}
         heading={facet}
         tabbable={false}

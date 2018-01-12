@@ -12,7 +12,6 @@ import {showCollections} from '../../actions/FlowActions'
 const mapStateToProps = state => {
   return {
     facets: buildKeywordHierarchyMap(state.domain.results.facets, state.behavior.search.selectedFacets),
-    // selectedFacets: state.behavior.search.selectedFacets,
   }
 }
 
@@ -22,7 +21,6 @@ const mapDispatchToProps = dispatch => {
       dispatch(toggleFacet(category, facetName, selected))
     },
     submit: () => {
-      // dispatch(updateFacets())
       dispatch(clearCollections())
       dispatch(triggerSearch())
       dispatch(showCollections())

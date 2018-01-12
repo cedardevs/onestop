@@ -82,10 +82,10 @@ export default class FacetTree extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(!_.isEqual(this.props.hierarchy, nextProps.hierarchy)) {
-    // TODO need a way to determine when the hierarchy really should change... (ie reset entirely if map is empty??)
-      if(_.isEmpty(nextProps.hierarchy)) {console.log('TODO RESET HIERARCY')} // TODO not triggered when I hoped it would be...
-    }
+    // if(!_.isEqual(this.props.hierarchy, nextProps.hierarchy)) {
+    // // TODO need a way to determine when the hierarchy really should change... (ie reset entirely if map is empty??)
+    //   if(_.isEmpty(nextProps.hierarchy)) {console.log('TODO RESET HIERARCY')} // TODO not triggered when I hoped it would be...
+    // }
 
     if(!_.isEqual(this.props.hierarchy, nextProps.hierarchy) || !_.isEqual(this.props.facetMap, nextProps.facetMap)) {
       this.setState(prevState => {
@@ -266,7 +266,6 @@ export default class FacetTree extends React.Component {
   }
 
   moveFocusDown = () => {
-    console.log('down down down', this.state.facetList)
     const id = this.state.rovingIndex
     const orderIndex = this.facetIndex(id)
 
@@ -370,7 +369,6 @@ export default class FacetTree extends React.Component {
     if (e.keyCode === Key.SPACE || e.keyCode === Key.ENTER) {
       e.preventDefault() // prevent scrolling down on space press
       const {facetId, category, term, selected, count} = this.lookupFacet(this.state.rovingIndex)
-      console.log(this.lookupFacet(this.state.rovingIndex))
       if(count > 0){ // count zero means facet is disabled TODO put in isDisabled func? add as prop when calculating counts? // TODO or move disabled, do not complete select action check from keyboard and click handlers into the handleSelectToggle method?
       this.props.handleSelectToggle(
         {id: facetId, category: category, term: term},
