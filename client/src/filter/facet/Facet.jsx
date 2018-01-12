@@ -122,6 +122,8 @@ export default class FacetTreeItem extends React.Component {
         aria-expanded={ariaExpanded}
         aria-selected={selected}
         aria-disabled={disabled}
+        aria-setsize={this.props.setSize}
+        aria-posinset={this.props.posInSet}
       >
         {content}
       </div>

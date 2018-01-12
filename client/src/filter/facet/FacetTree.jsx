@@ -73,7 +73,18 @@ export default class FacetTree extends React.Component {
         list.push(node)
       }
     })
-    return _.sortBy(list, [ 'id' ])
+    list = _.sortBy(list, [ 'id' ])
+    list = _.map(list, node => {
+      return Immutable.merge(node, {
+        setSize: list.length,
+        posInSet:
+          1 +
+          _.findIndex(list, n => {
+            return node.id === n.id
+          }),
+      })
+    })
+    return list
   }
 
   updateAllVisibility = () => {
@@ -119,7 +130,6 @@ export default class FacetTree extends React.Component {
             facets.push(Immutable.merge(initialFacetState, facet))
           }
         })
-
         return {
           ...prevState,
           facetList: _.sortBy(facets, [ 'term' ]), // make sure facets are sorted
@@ -352,6 +362,8 @@ export default class FacetTree extends React.Component {
         styleFocus={styleRovingFocus}
         styleCheckboxFocus={styleRovingFocusCheckbox}
         styleChildren={styleExpandableContent(this.props.marginNest)}
+        setSize={facetInMap.setSize}
+        posInSet={facetInMap.posInSet}
       />
     )
     return facetChildren
