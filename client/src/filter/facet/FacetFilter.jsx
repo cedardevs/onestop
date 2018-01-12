@@ -46,6 +46,7 @@ export default class FacetFilter extends Component {
   }
 
   updateStoreAndSubmitSearch = (facet, selected) => {
+    // TODO put is-disabled check here? would need to pass information in to make that determination
     const category = facet.category
     const term = facet.term
     this.props.toggleFacet(category, term, selected)

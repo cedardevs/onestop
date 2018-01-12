@@ -318,6 +318,10 @@ export default class FacetTree extends React.Component {
     this.props.handleSelectToggle(e.value, e.checked)
   }
 
+  isFacetDisabled = facet => {
+    return facet.count === 0
+  }
+
   createFacetComponent = facetInMap => {
     const facet = this.lookupFacet(facetInMap.id)
     let facetComponent = null
@@ -341,14 +345,17 @@ export default class FacetTree extends React.Component {
         open={facet.open}
         keyword={facet.keyword}
         selected={facet.selected}
-        disabled={facet.count == 0}
+        disabled={this.isFacetDisabled(facet)}
         tabIndex={facet.tabIndex}
         focused={this.state.focus}
         children={children}
         hasChildren={hasChildren}
         handleSelectToggleMouse={this.handleSelectToggleMouse}
         handleExpandableToggle={this.handleExpandableToggle}
-        styleFacet={styleFacet(this.props.backgroundColor, facet.count == 0)}
+        styleFacet={styleFacet(
+          this.props.backgroundColor,
+          this.isFacetDisabled(facet)
+        )}
         styleFocus={styleRovingFocus}
         styleCheckboxFocus={styleRovingFocusCheckbox}
         styleChildren={styleExpandableContent(this.props.marginNest)}
@@ -367,11 +374,9 @@ export default class FacetTree extends React.Component {
 
     if (e.keyCode === Key.SPACE || e.keyCode === Key.ENTER) {
       e.preventDefault() // prevent scrolling down on space press
-      const {facetId, category, term, selected, count} = this.lookupFacet(
-        this.state.rovingIndex
-      )
-      if (count > 0) {
-        // count zero means facet is disabled TODO put in isDisabled func? add as prop when calculating counts? // TODO or move disabled, do not complete select action check from keyboard and click handlers into the handleSelectToggle method?
+      const facet = this.lookupFacet(this.state.rovingIndex)
+      const {facetId, category, term, selected, count} = facet
+      if (!this.isFacetDisabled(facet)) {
         this.props.handleSelectToggle(
           {id: facetId, category: category, term: term},
           !selected
