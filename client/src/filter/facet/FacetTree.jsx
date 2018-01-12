@@ -115,7 +115,7 @@ export default class FacetTree extends React.Component {
                 {
                   open: false,
                   visible: false,
-                  tabIndex: '-1', // TODO why is this a string and not an int? or why is the zero below an int?? (parital answer - Facet has a logic check that assumes a string, but ... ummm?)
+                  tabIndex: -1,
                 },
                 facet
               )
@@ -142,11 +142,11 @@ export default class FacetTree extends React.Component {
         return Immutable.merge(facet, {
           open: false,
           visible: false,
-          tabIndex: '-1',
+          tabIndex: -1,
         })
       })
       // The first facet should be the only focusable one, initially.
-      facets[0] = Immutable.merge(facets[0], {tabIndex: '0'})
+      facets[0] = Immutable.merge(facets[0], {tabIndex: 0})
       const firstFocused = facets[0]
 
       return {
@@ -205,8 +205,8 @@ export default class FacetTree extends React.Component {
       const oldIndex = this.facetIndex(this.state.rovingIndex)
       const newIndex = this.facetIndex(facetId)
       const facets = this.state.facetList
-      facets[oldIndex] = Immutable.merge(facets[oldIndex], {tabIndex: '-1'})
-      facets[newIndex] = Immutable.merge(facets[newIndex], {tabIndex: '0'})
+      facets[oldIndex] = Immutable.merge(facets[oldIndex], {tabIndex: -1})
+      facets[newIndex] = Immutable.merge(facets[newIndex], {tabIndex: 0})
       return {
         ...prevState,
         facetList: facets,

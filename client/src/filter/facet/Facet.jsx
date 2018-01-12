@@ -67,7 +67,9 @@ export default class FacetTreeItem extends React.Component {
     const label = `${keyword} (${count})`
 
     const styleFacetContainer =
-      tabIndex === '0' && focusing ? this.props.styleFocus : {}
+      (tabIndex === '0' || tabIndex === 0) && focusing
+        ? this.props.styleFocus
+        : {}
     const styleFocus = this.props.styleFocus ? styleHideFocus : {}
 
     const facet = (
