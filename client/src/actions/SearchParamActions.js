@@ -17,6 +17,13 @@ export const updateSearch = params => {
   }
 }
 
+export const REMOVE_ALL_FILTERS = 'remove_all_filters'
+export const removeAllFilters = () => {
+  return {
+    type: REMOVE_ALL_FILTERS
+  }
+}
+
 export const UPDATE_DATE_RANGE = 'UPDATE_DATE_RANGE'
 export const updateDateRange = (startDate, endDate) => {
   return {
