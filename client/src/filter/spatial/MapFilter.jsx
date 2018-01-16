@@ -5,8 +5,7 @@ import _ from 'lodash'
 
 import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from "../../common/input/Checkbox"
-import MapFilterCoordinatesInput from "./MapFilterCoordinatesInput"
-import {convertBboxToGeoJson} from "../../utils/geoUtils";
+import {convertBboxToGeoJson, convertGeoJsonToBbox} from "../../utils/geoUtils";
 
 const styleMapFilter = {
   backgroundColor: '#3D97D2',
@@ -27,6 +26,24 @@ const styleButtons = {
   marginTop: '1em'
 }
 
+const styleInputRow = {
+  display: 'flex',
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  margin: '0.616em 0',
+  width: '15em'
+}
+
+const styleLabel = {
+  width: '4em'
+}
+
+const styleTextBox = {
+  width: '10em',
+  color: 'black'
+}
+
 export default class MapFilter extends Component {
 
   constructor(props) {
@@ -37,6 +54,10 @@ export default class MapFilter extends Component {
   initialState() {
     return {
       internalGeoJSON: null,
+      west: '',
+      south: '',
+      east: '',
+      north: '',
       warning: ''
     }
   }
@@ -57,8 +78,14 @@ export default class MapFilter extends Component {
 
   mapGeoJSONToState = (geoJSON) => {
     if(geoJSON) {
+      let bbox = convertGeoJsonToBbox(geoJSON)
       this.setState({
-        internalGeoJSON: geoJSON
+        internalGeoJSON: geoJSON,
+        west: bbox.west,
+        south: bbox.south,
+        east: bbox.east,
+        north: bbox.north,
+        warning: ''
       })
     }
     else {
@@ -78,14 +105,6 @@ export default class MapFilter extends Component {
     if(showMap && toggleMap) {
       toggleMap()
     }
-  }
-
-  handleManualEntryCoords = (west, south, east, north) => {
-    let constructedGeoJSON = convertBboxToGeoJson(_.toNumber(west), _.toNumber(south), _.toNumber(east), _.toNumber(north))
-    this.setState({
-      internalGeoJSON: constructedGeoJSON,
-      warning: ''
-    })
   }
 
   toggleExcludeGlobalResults = () => {
@@ -109,9 +128,7 @@ export default class MapFilter extends Component {
     this.props.removeGeometry()
     this.props.submit()
 
-    this.setState({
-      warning: ''
-    })
+    this.setState(this.initialState())
   }
 
   warningStyle() {
@@ -129,6 +146,48 @@ export default class MapFilter extends Component {
         fontSize: '1.15em'
       }
     }
+  }
+
+  onChange(event) {
+    let field = event.target.name
+    let value = event.target.value
+    let stateClone = { ...this.state }
+    stateClone[field] = value
+
+    let {west, south, east, north} = stateClone
+    let constructedGeoJSON = convertBboxToGeoJson(_.toNumber(west), _.toNumber(south), _.toNumber(east), _.toNumber(north))
+    this.setState({
+      [field]: value,
+      internalGeoJSON: constructedGeoJSON,
+      warning: ''
+    })
+  }
+
+  renderInputRow = (direction, placeholderValue) => {
+    let value = this.state[direction]
+    let id = `MapFilterCoordinatesInput::${direction}`
+    return (
+      <div style={styleInputRow}>
+        <label htmlFor={id} style={styleLabel}>{_.capitalize(direction)}</label>
+        <input type='text' id={id} name={direction} placeholder={placeholderValue} value={value} style={styleTextBox} />
+      </div>
+    )
+  }
+
+  renderCoordinateInput = () => {
+    return (
+      <div>
+        <form>
+          <fieldset onChange={(event) => this.onChange(event)}>
+            <legend>Bounding Box Coordinates: </legend>
+            {this.renderInputRow('west', ' -180.00')}
+            {this.renderInputRow('south', ' -90.00')}
+            {this.renderInputRow('east', ' 180.00')}
+            {this.renderInputRow('north', ' 90.00')}
+          </fieldset>
+        </form>
+      </div>
+    )
   }
 
   render() {
@@ -174,9 +233,7 @@ export default class MapFilter extends Component {
       />
     )
 
-    const inputBoundingBox = (
-      <MapFilterCoordinatesInput key='MapFilter::coordInputBox' updateUpstreamCoords={this.handleManualEntryCoords} geoJSON={this.props.geoJSON}/>
-    )
+    const inputBoundingBox = this.renderCoordinateInput()
 
     const inputColumn = (
       <FlexColumn items={[this.props.showMap ? buttonHideMap : buttonShowMap, inputBoundingBox]} />
