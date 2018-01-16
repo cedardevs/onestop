@@ -1,17 +1,17 @@
-import { connect } from 'react-redux'
-import TimeFilter from "./TimeFilter";
+import {connect} from 'react-redux'
+import TimeFilter from './TimeFilter'
 import {removeDateRange, updateDateRange} from "../../actions/SearchParamActions"
 import {
   clearCollections,
   triggerSearch,
 } from '../../actions/SearchRequestActions'
-import { showCollections } from '../../actions/FlowActions'
+import {showCollections} from '../../actions/FlowActions'
 
 const mapStateToProps = state => {
   const {startDateTime, endDateTime} = state.behavior.search
   return {
     startDateTime: startDateTime,
-    endDateTime: endDateTime
+    endDateTime: endDateTime,
   }
 }
 
@@ -27,7 +27,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(clearCollections())
       dispatch(triggerSearch())
       dispatch(showCollections())
-    }
+    },
   }
 }
 

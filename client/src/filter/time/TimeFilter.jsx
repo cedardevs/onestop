@@ -18,7 +18,7 @@ const styleTimeFilter = {
 
 const styleFieldset = {
   marginBottom: '1em',
-  width: '15em'
+  width: '15em',
 }
 
 const styleLabels = {
@@ -38,13 +38,13 @@ const styleInputs = {
 }
 
 const styleYear = {
-  width: '3.25em'
+  width: '3.25em',
 }
 const styleMonth = {
-  width: '7.25em'
+  width: '7.25em',
 }
 const styleDay = {
-  width: '1.75em'
+  width: '1.75em',
 }
 
 const styleButtonRow = {
@@ -52,16 +52,14 @@ const styleButtonRow = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-around',
-  marginBottom: '0.5em'
+  marginBottom: '0.5em',
 }
 
 const styleButton = {
-  width: '35%'
+  width: '35%',
 }
 
-
 export default class TimeFilter extends Component {
-
   constructor(props) {
     super(props)
 
@@ -79,7 +77,7 @@ export default class TimeFilter extends Component {
       startValueValid: true,
       endValueValid: true,
       dateRangeValid: true,
-      warning: ''
+      warning: '',
     }
   }
 
@@ -91,7 +89,7 @@ export default class TimeFilter extends Component {
     this.mapPropsToState(nextProps)
   }
 
-  mapPropsToState = (props) => {
+  mapPropsToState = props => {
     let startDate = moment(props.startDateTime).utc()
     let endDate = moment(props.endDateTime).utc()
 
@@ -110,9 +108,9 @@ export default class TimeFilter extends Component {
   }
 
   warningStyle() {
-    if(_.isEmpty(this.state.warning)) {
+    if (_.isEmpty(this.state.warning)) {
       return {
-        display: 'none'
+        display: 'none',
       }
     }
     else {
@@ -121,23 +119,44 @@ export default class TimeFilter extends Component {
         textAlign: 'center',
         margin: '0.75em 0 0.5em',
         fontWeight: 'bold',
-        fontSize: '1.15em'
+        fontSize: '1.15em',
       }
     }
   }
 
   onChange(field, value) {
-    let stateClone = { ...this.state }
+    let stateClone = {...this.state}
     stateClone[field] = value
 
     this.setState({
       [field]: value,
       warning: '',
-      startValueValid: this.isValidDate(stateClone.startDateYear, stateClone.startDateMonth, stateClone.startDateDay),
-      endValueValid: this.isValidDate(stateClone.endDateYear, stateClone.endDateMonth, stateClone.endDateDay),
+      startValueValid: this.isValidDate(
+        stateClone.startDateYear,
+        stateClone.startDateMonth,
+        stateClone.startDateDay
+      ),
+      endValueValid: this.isValidDate(
+        stateClone.endDateYear,
+        stateClone.endDateMonth,
+        stateClone.endDateDay
+      ),
       dateRangeValid: this.isValidDateRange(
-        moment(this.textToNumeric(stateClone.startDateYear, stateClone.startDateMonth, stateClone.startDateDay)),
-        moment(this.textToNumeric(stateClone.endDateYear, stateClone.endDateMonth, stateClone.endDateDay)))
+        moment(
+          this.textToNumeric(
+            stateClone.startDateYear,
+            stateClone.startDateMonth,
+            stateClone.startDateDay
+          )
+        ),
+        moment(
+          this.textToNumeric(
+            stateClone.endDateYear,
+            stateClone.endDateMonth,
+            stateClone.endDateDay
+          )
+        )
+      ),
     })
   }
 
@@ -145,18 +164,18 @@ export default class TimeFilter extends Component {
     return {
       year: year ? _.toNumber(year) : null,
       month: month ? _.toNumber(month) : null,
-      day: day ? _.toNumber(day) : null
+      day: day ? _.toNumber(day) : null,
     }
   }
 
   isValidDate = (year, month, day) => {
     // No date given is technically valid (since a complete range is unnecessary)
-    if(!year && !month && !day) {
+    if (!year && !month && !day) {
       return true
     }
 
     // Valid date can be year only, year & month only, or full date
-    if(year && !month && day) {
+    if (year && !month && day) {
       // Year + day is not valid
       return false
     }
@@ -166,9 +185,21 @@ export default class TimeFilter extends Component {
     const now = moment()
     const givenDate = moment(numeric)
 
-    let validYear = _.isFinite(numeric.year) && _.isInteger(numeric.year) && numeric.year <= now.year()
-    let validMonth = numeric.month ? numeric.month && numeric.year && moment([numeric.year, numeric.month]).isSameOrBefore(now) : true
-    let validDay = numeric.day ? _.isFinite(numeric.day) && _.isInteger(numeric.day) && givenDate.isValid() && givenDate.isSameOrBefore(now) : true
+    let validYear =
+      _.isFinite(numeric.year) &&
+      _.isInteger(numeric.year) &&
+      numeric.year <= now.year()
+    let validMonth = numeric.month
+      ? numeric.month &&
+        numeric.year &&
+        moment([ numeric.year, numeric.month ]).isSameOrBefore(now)
+      : true
+    let validDay = numeric.day
+      ? _.isFinite(numeric.day) &&
+        _.isInteger(numeric.day) &&
+        givenDate.isValid() &&
+        givenDate.isSameOrBefore(now)
+      : true
 
     return validYear && validMonth && validDay
   }
@@ -178,7 +209,9 @@ export default class TimeFilter extends Component {
     if (start && end) {
       return start.isSameOrBefore(end)
     }
-    else { return true }
+    else {
+      return true
+    }
   }
 
   clearDates = () => {
@@ -189,22 +222,34 @@ export default class TimeFilter extends Component {
   }
 
   applyDates = () => {
-    if(!this.state.startValueValid || !this.state.endValueValid) {
+    if (!this.state.startValueValid || !this.state.endValueValid) {
       this.setState({
-        warning: 'Invalid start and/or end date provided.'
+        warning: 'Invalid start and/or end date provided.',
       })
     }
-    else if(!this.state.dateRangeValid) {
+    else if (!this.state.dateRangeValid) {
       this.setState({
-        warning: 'Invalid date range provided.'
+        warning: 'Invalid date range provided.',
       })
     }
     else {
-      let startDate = this.textToNumeric(this.state.startDateYear, this.state.startDateMonth, this.state.startDateDay)
-      let endDate = this.textToNumeric(this.state.endDateYear, this.state.endDateMonth, this.state.endDateDay)
+      let startDate = this.textToNumeric(
+        this.state.startDateYear,
+        this.state.startDateMonth,
+        this.state.startDateDay
+      )
+      let endDate = this.textToNumeric(
+        this.state.endDateYear,
+        this.state.endDateMonth,
+        this.state.endDateDay
+      )
 
-      let startDateString = !_.every(startDate, _.isNull) ? moment(startDate).utc().startOf('day').format() : null
-      let endDateString = !_.every(endDate, _.isNull) ? moment(endDate).utc().startOf('day').format() : null
+      let startDateString = !_.every(startDate, _.isNull)
+        ? moment(startDate).utc().startOf('day').format()
+        : null
+      let endDateString = !_.every(endDate, _.isNull)
+        ? moment(endDate).utc().startOf('day').format()
+        : null
 
       this.props.updateDateRange(startDateString, endDateString)
       this.props.submit()
@@ -234,61 +279,121 @@ export default class TimeFilter extends Component {
       <div style={styleTimeFilter}>
         <p>Provide a start date, end date, or date range. Use year, year and month, or full dates. Future dates are not accepted.</p>
         <form>
-          <fieldset style={styleFieldset} onChange={(event) => this.onChange(event.target.name, event.target.value)}>
+          <fieldset
+            style={styleFieldset}
+            onChange={event =>
+              this.onChange(event.target.name, event.target.value)}
+          >
             <legend>Start Date: </legend>
             <div style={styleLabels}>
-              <label htmlFor='startDateYear'>Year</label>
-              <label htmlFor='startDateMonth'>Month</label>
-              <label htmlFor='startDateDay' style={{paddingRight: '0.5em'}}>Day</label>
+              <label htmlFor="startDateYear">Year</label>
+              <label htmlFor="startDateMonth">Month</label>
+              <label htmlFor="startDateDay" style={{paddingRight: '0.5em'}}>
+                Day
+              </label>
             </div>
             <div style={styleInputs}>
-              <input type='text' id='startDateYear' name='startDateYear' placeholder='YYYY' value={this.state.startDateYear} style={styleYear} />
-              <select id='startDateMonth' name='startDateMonth' value={this.state.startDateMonth} style={styleMonth} >
-                <option value=''>(none)</option>
-                <option value='0'>January</option>
-                <option value='1'>February</option>
-                <option value='2'>March</option>
-                <option value='3'>April</option>
-                <option value='4'>May</option>
-                <option value='5'>June</option>
-                <option value='6'>July</option>
-                <option value='7'>August</option>
-                <option value='8'>September</option>
-                <option value='9'>October</option>
-                <option value='10'>November</option>
-                <option value='11'>December</option>
+              <input
+                type="text"
+                id="startDateYear"
+                name="startDateYear"
+                placeholder="YYYY"
+                value={this.state.startDateYear}
+                style={styleYear}
+              />
+              <select
+                id="startDateMonth"
+                name="startDateMonth"
+                value={this.state.startDateMonth}
+                style={styleMonth}
+              >
+                <option value="">(none)</option>
+                <option value="0">January</option>
+                <option value="1">February</option>
+                <option value="2">March</option>
+                <option value="3">April</option>
+                <option value="4">May</option>
+                <option value="5">June</option>
+                <option value="6">July</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
               </select>
-              <input type='text' id='startDateDay' name='startDateDay' placeholder='DD' value={this.state.startDateDay} style={styleDay}/>
-              <span aria-hidden='true' style={styleInputValidity(this.state.startValueValid)}>{this.state.startValueValid ? '✓' : '✖'}</span>
+              <input
+                type="text"
+                id="startDateDay"
+                name="startDateDay"
+                placeholder="DD"
+                value={this.state.startDateDay}
+                style={styleDay}
+              />
+              <span
+                aria-hidden="true"
+                style={styleInputValidity(this.state.startValueValid)}
+              >
+                {this.state.startValueValid ? '✓' : '✖'}
+              </span>
             </div>
           </fieldset>
 
-          <fieldset style={styleFieldset} onChange={(event) => this.onChange(event.target.name, event.target.value)}>
+          <fieldset
+            style={styleFieldset}
+            onChange={event =>
+              this.onChange(event.target.name, event.target.value)}
+          >
             <legend>End Date: </legend>
             <div style={styleLabels}>
-              <label htmlFor='endDateYear'>Year</label>
-              <label htmlFor='endDateMonth'>Month</label>
-              <label htmlFor='endDateDay' style={{paddingRight: '0.5em'}}>Day</label>
+              <label htmlFor="endDateYear">Year</label>
+              <label htmlFor="endDateMonth">Month</label>
+              <label htmlFor="endDateDay" style={{paddingRight: '0.5em'}}>
+                Day
+              </label>
             </div>
             <div style={styleInputs}>
-              <input type='text' id='endDateYear' name='endDateYear' placeholder='YYYY' value={this.state.endDateYear} style={styleYear} />
-              <select id='endDateMonth' name='endDateMonth' value={this.state.endDateMonth} style={styleMonth} >
-                <option value=''>(none)</option>
-                <option value='0'>January</option>
-                <option value='1'>February</option>
-                <option value='2'>March</option>
-                <option value='3'>April</option>
-                <option value='4'>May</option>
-                <option value='5'>June</option>
-                <option value='6'>July</option>
-                <option value='7'>August</option>
-                <option value='8'>September</option>
-                <option value='9'>October</option>
-                <option value='10'>November</option>
-                <option value='11'>December</option>
+              <input
+                type="text"
+                id="endDateYear"
+                name="endDateYear"
+                placeholder="YYYY"
+                value={this.state.endDateYear}
+                style={styleYear}
+              />
+              <select
+                id="endDateMonth"
+                name="endDateMonth"
+                value={this.state.endDateMonth}
+                style={styleMonth}
+              >
+                <option value="">(none)</option>
+                <option value="0">January</option>
+                <option value="1">February</option>
+                <option value="2">March</option>
+                <option value="3">April</option>
+                <option value="4">May</option>
+                <option value="5">June</option>
+                <option value="6">July</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
               </select>
-              <input type='text' id='endDateDay' name='endDateDay' placeholder='DD' value={this.state.endDateDay} style={styleDay} />
-              <span aria-hidden='true' style={styleInputValidity(this.state.endValueValid)}>{this.state.endValueValid ? '✓' : '✖'}</span>
+              <input
+                type="text"
+                id="endDateDay"
+                name="endDateDay"
+                placeholder="DD"
+                value={this.state.endDateDay}
+                style={styleDay}
+              />
+              <span
+                aria-hidden="true"
+                style={styleInputValidity(this.state.endValueValid)}
+              >
+                {this.state.endValueValid ? '✓' : '✖'}
+              </span>
             </div>
           </fieldset>
         </form>
@@ -296,7 +401,7 @@ export default class TimeFilter extends Component {
           {applyButton}
           {clearButton}
         </div>
-        <div style={this.warningStyle()} role='alert'>
+        <div style={this.warningStyle()} role="alert">
           {this.state.warning}
         </div>
       </div>

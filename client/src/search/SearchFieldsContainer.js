@@ -12,7 +12,7 @@ import {showCollections} from '../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {
-    queryString: state.behavior.search.queryText
+    queryString: state.behavior.search.queryText,
   }
 }
 
