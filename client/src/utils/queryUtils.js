@@ -2,7 +2,10 @@ import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {recenterGeometry} from './geoUtils'
 import {initialState} from '../reducers/behavior/search'
-import {convertBboxStringToGeoJson, convertGeoJsonToBboxString} from './geoUtils'
+import {
+  convertBboxStringToGeoJson,
+  convertGeoJsonToBboxString,
+} from './geoUtils'
 
 export const assembleSearchRequestString = (
   state,

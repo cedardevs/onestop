@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 
 const styleDefault = {
   display: 'inline-flex',
@@ -88,18 +88,18 @@ export default class AppliedMap extends Component {
     }
 
     return (
-        <span
-            style={stylesMerged}
-            onMouseOver={this.handleMouseOver}
-            onMouseOut={this.handleMouseOut}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-        >
-          West: {west}°, South: {south}°, East: {east}°, North: {north}°
-          <span style={styleClose} onClick={onUnselect}>
-					x
-				</span>
-			</span>
+      <span
+        style={stylesMerged}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+      >
+        West: {west}°, South: {south}°, East: {east}°, North: {north}°
+        <span style={styleClose} onClick={onUnselect}>
+          x
+        </span>
+      </span>
     )
   }
 }

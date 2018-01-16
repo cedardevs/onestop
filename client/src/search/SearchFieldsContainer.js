@@ -1,12 +1,10 @@
 import {connect} from 'react-redux'
 import SearchFields from './SearchFields'
+import {triggerSearch, clearCollections} from '../actions/SearchRequestActions'
 import {
-  triggerSearch,
-  clearCollections,
-} from '../actions/SearchRequestActions'
-import {
-  removeAllFilters, updateQuery,
-  updateSearch
+  removeAllFilters,
+  updateQuery,
+  updateSearch,
 } from '../actions/SearchParamActions'
 import {showCollections} from '../actions/FlowActions'
 

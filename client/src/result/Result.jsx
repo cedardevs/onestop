@@ -1,10 +1,10 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 
 import AppliedFacetFilter from './AppliedFacetFilter'
 import AppliedTimeFilter from './AppliedTimeFilter'
 import AppliedMapFilter from './AppliedMapFilter'
 
-import { styleResult } from './ResultStyles'
+import {styleResult} from './ResultStyles'
 
 export default class Result extends Component {
   constructor(props) {
@@ -17,8 +17,7 @@ export default class Result extends Component {
     this.geoJSON = props.geoJSON
     this.toggleFacet = props.toggleFacet
     this.updateDateRange = props.updateDateRange
-    this.removeGeometry = props.removeGeometry,
-    this.submit = props.submit
+    ;(this.removeGeometry = props.removeGeometry), (this.submit = props.submit)
   }
 
   componentWillUpdate(nextProps) {

@@ -40,8 +40,8 @@ const styleCheckmark = {
 
 const styleCheckboxHover = {
   // background: 'yellow',
-  transform: "rotate(-45deg) scale(1.618)",
-  top: 0
+  transform: 'rotate(-45deg) scale(1.618)',
+  top: 0,
 }
 
 const styleCheckmarkChecked = {
@@ -141,15 +141,12 @@ class Checkbox extends Component {
       ...(this.props.disabled ? styleDisabled : {}),
     }
 
-
-
     const styleCheck = {
       ...styleCheckmark,
       ...(this.state.checked || (this.state.hovering && this.state.pressing)
         ? styleCheckmarkChecked
         : {}),
       ...(this.state.hovering ? styleCheckboxHover : {}),
-
     }
 
     return (

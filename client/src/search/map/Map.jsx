@@ -11,12 +11,13 @@ const styleMapContainer = (showMap, forceShow) => {
   return {
     boxSizing: 'border-box',
     backgroundColor: '#3D97D2',
-    transition: (showMap || forceShow)
-      ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
-      : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
-    padding: (showMap && !forceShow) ? '1em' : '0em',
-    height: (showMap || forceShow) ? '400px' : '0px',
-    width: (showMap || forceShow) ? '100%' : '0%',
+    transition:
+      showMap || forceShow
+        ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
+        : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
+    padding: showMap && !forceShow ? '1em' : '0em',
+    height: showMap || forceShow ? '400px' : '0px',
+    width: showMap || forceShow ? '100%' : '0%',
   }
 }
 
@@ -25,7 +26,7 @@ const styleMap = (showMap, forceShow) => {
     zIndex: forceShow ? 2 : 1,
     padding: 0,
     margin: 0,
-    display: (showMap || forceShow) ? 'flex' : 'none',
+    display: showMap || forceShow ? 'flex' : 'none',
     position: 'relative',
     height: '100%',
     alignItems: 'flex-start',
@@ -62,10 +63,10 @@ class Map extends React.Component {
     // Build the map defaults. When finished, use them to set the state then set up the map
     Promise.resolve(this.mapDefaults()).then(state => {
       this.setState(state, () => {
-        let { geoJsonSelection } = this.props
+        let {geoJsonSelection} = this.props
         if (geoJsonSelection) {
-          let { editableLayers, style } = this.state
-          let layer = L.geoJson(geoJsonSelection, { style: style })
+          let {editableLayers, style} = this.state
+          let layer = L.geoJson(geoJsonSelection, {style: style})
           editableLayers.addLayer(layer)
         }
         if (this.props.features) {
@@ -112,7 +113,7 @@ class Map extends React.Component {
     return new L.Control.Draw({
       edit: {
         featureGroup: layerGroup,
-        edit: false
+        edit: false,
       },
       remove: false,
       position: 'topright',
@@ -129,7 +130,7 @@ class Map extends React.Component {
   }
 
   mapSetup() {
-    let { map, drawControl, editableLayers, resultsLayers } = this.state
+    let {map, drawControl, editableLayers, resultsLayers} = this.state
     this.loadDrawEventHandlers()
     if (this.props.selection) {
       map.addControl(this.drawDefaults(editableLayers))
@@ -142,7 +143,7 @@ class Map extends React.Component {
   }
 
   componentWillReceiveProps() {
-    let { map } = this.state
+    let {map} = this.state
     if (map) {
       map.invalidateSize()
     } // Necessary to redraw map which isn't initially visible
@@ -166,26 +167,26 @@ class Map extends React.Component {
   }
 
   updateSelectionLayer() {
-    let { editableLayers, style } = this.state
+    let {editableLayers, style} = this.state
     let w = watch(store.getState, 'behavior.search.geoJSON')
     store.subscribe(
       w(newGeoJson => {
         editableLayers.clearLayers()
         if (!_.isEmpty(newGeoJson)) {
-          let layer = L.geoJson(newGeoJson, { style: style })
+          let layer = L.geoJson(newGeoJson, {style: style})
           editableLayers.addLayer(layer)
         }
       })
     )
   }
 
-  updateResultsLayers({ geoJsonFeatures, focusedFeatures }) {
+  updateResultsLayers({geoJsonFeatures, focusedFeatures}) {
     if (!geoJsonFeatures) {
       return
     }
     // Apply colors to focused feature
-    let { resultsLayers } = this.state
-    const selectedStyle = { color: '#FFA268' }
+    let {resultsLayers} = this.state
+    const selectedStyle = {color: '#FFA268'}
     const defaultStyle = {
       color: '#00ffc8',
       fillOpacity: 0.002,
@@ -207,24 +208,25 @@ class Map extends React.Component {
   }
 
   fitMapToResults() {
-    const { map, resultsLayers } = this.state
+    const {map, resultsLayers} = this.state
     const hasResults = resultsLayers && !_.isEmpty(resultsLayers.getLayers())
     if (!this.props.selection && this.props.features && hasResults) {
       map.fitBounds(resultsLayers.getBounds())
-    } else {
+    }
+    else {
       map.fitWorld()
     }
   }
 
   componentWillUnmount() {
-    let { map } = this.state
+    let {map} = this.state
     map.off('click', this.onMapClick)
     map = null
   }
 
-  updateGeometryAndSubmit = (geoJSON) => {
-    if(this.props.geoJSON || geoJSON) {
-      if(geoJSON) {
+  updateGeometryAndSubmit = geoJSON => {
+    if (this.props.geoJSON || geoJSON) {
+      if (geoJSON) {
         this.props.handleNewGeometry(geoJSON)
       }
       else {
@@ -235,7 +237,7 @@ class Map extends React.Component {
   }
 
   loadDrawEventHandlers() {
-    let { map } = this.state
+    let {map} = this.state
     map.on('draw:drawstart', e => {
       this.updateGeometryAndSubmit()
     })
@@ -253,7 +255,7 @@ class Map extends React.Component {
   }
 
   render() {
-    const { showMap, forceShow } = this.props
+    const {showMap, forceShow} = this.props
     return (
       <div
         style={styleMapContainer(showMap, forceShow)}

@@ -27,7 +27,7 @@ const styleLegendItem = {
 
 const styleTable = {
   padding: '2px',
-  borderBottom: '1px solid #CBCBCB'
+  borderBottom: '1px solid #CBCBCB',
 }
 
 const styleTableHeadRow = {
@@ -121,16 +121,16 @@ export default class GranuleView extends Component {
         usedProtocols.add(this.identifyProtocol(link))
       )
       return (
-          <GranuleViewTableRow
-            key={key}
-            id={key}
-            even={rowEven}
-            title={value.title}
-            badges={this.renderBadges(value.links)}
-            styleTitle={styleTableCell}
-            styleBadges={styleBadgesCell}
-            toggleFocus={toggleFocus}
-          />
+        <GranuleViewTableRow
+          key={key}
+          id={key}
+          even={rowEven}
+          title={value.title}
+          badges={this.renderBadges(value.links)}
+          styleTitle={styleTableCell}
+          styleBadges={styleBadgesCell}
+          toggleFocus={toggleFocus}
+        />
       )
     })
     const legendItems = _.chain(_.toArray(usedProtocols))
@@ -191,10 +191,7 @@ export default class GranuleView extends Component {
       ? {padding: '1em'}
       : {display: 'none'}
     return (
-      <div
-        key="granuleLoadingMessage"
-        style={styleShowMessage}
-      >
+      <div key="granuleLoadingMessage" style={styleShowMessage}>
         Please wait a moment while the results load...
       </div>
     )
@@ -243,7 +240,7 @@ export default class GranuleView extends Component {
           style={{display: 'inherit', width: '100%', borderRadius: 0}}
         />
       )
-      return <div style={{padding:"2px"}}>{moreResultsButton}</div>
+      return <div style={{padding: '2px'}}>{moreResultsButton}</div>
     }
   }
 }

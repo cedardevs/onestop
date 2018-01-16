@@ -3,7 +3,7 @@ import React, {Component} from 'react'
 const styleContainer = (even, hovering) => {
   return {
     backgroundColor: hovering ? '#18478F' : even ? '#222' : '#111',
-    color: 'white'
+    color: 'white',
   }
 }
 
@@ -33,18 +33,18 @@ export default class GranuleViewTableRow extends Component {
   }
 
   handleToggleFocus = event => {
-    const { id, toggleFocus } = this.props
+    const {id, toggleFocus} = this.props
     toggleFocus(id, true)
   }
 
   handleToggleUnfocus = event => {
-    const { id, toggleFocus } = this.props
+    const {id, toggleFocus} = this.props
     toggleFocus(id, false)
   }
 
   render() {
-    const { style, styleTitle, styleBadges, title, badges, even } = this.props
-    const { hovering } = this.state
+    const {style, styleTitle, styleBadges, title, badges, even} = this.props
+    const {hovering} = this.state
     const styles = Object.assign({}, styleContainer(even, hovering), style)
     return (
       <tr

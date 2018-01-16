@@ -1,6 +1,9 @@
 import {connect} from 'react-redux'
 import TimeFilter from './TimeFilter'
-import {removeDateRange, updateDateRange} from "../../actions/SearchParamActions"
+import {
+  removeDateRange,
+  updateDateRange,
+} from '../../actions/SearchParamActions'
 import {
   clearCollections,
   triggerSearch,

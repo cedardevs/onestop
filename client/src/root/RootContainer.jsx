@@ -1,18 +1,18 @@
 import {connect} from 'react-redux'
 import Root from './Root'
-import { toggleLeft, toggleRight } from '../actions/LayoutActions'
+import {toggleLeft, toggleRight} from '../actions/LayoutActions'
 
 const mapStateToProps = state => {
   return {
     showLeft: state.ui.layout.showLeft,
-    showRight: state.ui.layout.showRight
+    showRight: state.ui.layout.showRight,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
     toggleLeft: () => dispatch(toggleLeft()),
-    toggleRight: () => dispatch(toggleRight())
+    toggleRight: () => dispatch(toggleRight()),
   }
 }
 

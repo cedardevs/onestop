@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 
-
 const defaultWidth = 128
 const defaultBackgroundColor = '#3D97D2'
 const defaultColor = '#111'
@@ -9,8 +8,7 @@ const styleVisible = width => {
   return {
     color: defaultColor,
     backgroundColor: defaultBackgroundColor,
-    transition:
-      'flex 0.2s linear',
+    transition: 'flex 0.2s linear',
     flex: '0 0 ' + width + 'px',
     width: width + 'px',
     minWidth: '3.236em',
@@ -22,12 +20,11 @@ const styleVisible = width => {
 const styleHidden = width => {
   return {
     backgroundColor: defaultBackgroundColor,
-    transition:
-      'flex 0.2s linear',
+    transition: 'flex 0.2s linear',
     flex: '0 1 0',
     width: width + 'px',
     position: 'relative',
-    overflow: 'initial'
+    overflow: 'initial',
   }
 }
 
@@ -50,11 +47,11 @@ export default class Left extends Component {
   }
 
   render() {
-    const { content, visible } = this.props
+    const {content, visible} = this.props
     const width = this.props.width ? this.props.width : defaultWidth
     return (
-      <div style={ visible ? styleVisible(width) : styleHidden(width) }>
-        { content }
+      <div style={visible ? styleVisible(width) : styleHidden(width)}>
+        {content}
       </div>
     )
   }

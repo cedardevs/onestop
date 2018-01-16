@@ -5,7 +5,7 @@ import {
   clearCollections,
   triggerSearch,
 } from '../../actions/SearchRequestActions'
-import { showCollections } from '../../actions/FlowActions'
+import {showCollections} from '../../actions/FlowActions'
 
 const mapStateToProps = state => {
   const {geoJSON} = state.behavior.search
@@ -23,7 +23,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(clearCollections())
       dispatch(triggerSearch())
       dispatch(showCollections())
-    }
+    },
   }
 }
 

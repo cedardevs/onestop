@@ -31,7 +31,7 @@ const styleFilterContents = {
 
 const styleFacetFilterContents = {
   marginNest: '1em',
-  backgroundColor: '#327CAC'
+  backgroundColor: '#327CAC',
 }
 
 class Filters extends Component {
@@ -81,17 +81,22 @@ class Filters extends Component {
 
     const heading = (
       <h1
-        key='filtersH1'
-        style={{fontSize: '1.309em', color: 'white', padding: '0.618em', margin: 0}}
+        key="filtersH1"
+        style={{
+          fontSize: '1.309em',
+          color: 'white',
+          padding: '0.618em',
+          margin: 0,
+        }}
       >
         Filters
       </h1>
     )
     const buttonHide = (
       <Button
-        key='filtersButtonHide'
+        key="filtersButtonHide"
         icon={arrowLeft}
-        style={{borderRadius:0}}
+        style={{borderRadius: 0}}
         styleIcon={{width: '1em', height: 'initial'}}
         onClick={() => {
           if (showLeft) {
@@ -126,7 +131,11 @@ class Filters extends Component {
       <div>
         <FlexRow
           items={[ heading, buttonHide ]}
-          style={{justifyContent: 'space-between', backgroundColor: '#242C36', borderTop: '1px solid #FFF'}}
+          style={{
+            justifyContent: 'space-between',
+            backgroundColor: '#242C36',
+            borderTop: '1px solid #FFF',
+          }}
         />
         {expandableFilters}
       </div>

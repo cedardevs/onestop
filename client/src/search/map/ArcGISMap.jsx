@@ -12,10 +12,12 @@ const styleMapContainer = showMap => {
   return {
     boxSizing: 'border-box',
     backgroundColor: '#6095C8',
-    transition: showMap ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s' : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
+    transition: showMap
+      ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
+      : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
     padding: showMap ? '1em' : '0em',
     height: showMap ? '400px' : '0px',
-    width: showMap ? '100%' : '0%'
+    width: showMap ? '100%' : '0%',
   }
 }
 
@@ -32,15 +34,14 @@ const styleMap = showMap => {
 }
 
 export default class ArcGISMap extends React.Component {
-
   componentWillReceiveProps(nextProps) {
-    const { bounds } = this.props
-    if(nextProps.bounds !== bounds) {
+    const {bounds} = this.props
+    if (nextProps.bounds !== bounds) {
     }
   }
 
   render() {
-    const { showMap, bounds, boundsSource, updateBounds } = this.props
+    const {showMap, bounds, boundsSource, updateBounds} = this.props
 
     const mapView = (
       <EsriLoaderReact
@@ -65,15 +66,16 @@ export default class ArcGISMap extends React.Component {
             Graphic,
             webMercatorUtils,
             Extent,
-            geometryEngine
+            geometryEngine,
           ],
           containerNode,
         }) => {
-
           let map = new Map(ArcGISUtils.map.initialConditions())
           let mapGraphicsLayer = new GraphicsLayer()
           map.add(mapGraphicsLayer)
-          let view = new MapView(ArcGISUtils.mapView.initialConditions(containerNode, map))
+          let view = new MapView(
+            ArcGISUtils.mapView.initialConditions(containerNode, map)
+          )
 
           let extentGraphic = null
           let textGraphic = null
@@ -88,32 +90,39 @@ export default class ArcGISMap extends React.Component {
             if (event.action === 'start') {
               if (mapGraphicsLayer) mapGraphicsLayer.removeAll()
               origin = view.toMap(event)
-            } else if (event.action === 'update') {
+            }
+            else if (event.action === 'update') {
               if (mapGraphicsLayer) mapGraphicsLayer.removeAll()
               let point = view.toMap(event)
-              extent = new Extent(ArcGISUtils.extent.initialConditions(origin,point))
+              extent = new Extent(
+                ArcGISUtils.extent.initialConditions(origin, point)
+              )
               newBounds = ArcGISUtils.extent.toBounds(extent, webMercatorUtils)
 
-              if(updateBounds) {
-                updateBounds(newBounds, "map")
+              if (updateBounds) {
+                updateBounds(newBounds, 'map')
               }
-
             }
           })
 
           // DRAW ON MAP
-          if(extent) {
-            let area = Number(geometryEngine.geodesicArea(extent, 'square-kilometers'))
+          if (extent) {
+            let area = Number(
+              geometryEngine.geodesicArea(extent, 'square-kilometers')
+            )
             extentGraphic = new Graphic({
               geometry: extent,
               symbol: ArcGISUtils.extent.fillSymbol(),
             })
 
             let commaNumberPosition = /\B(?=(\d{3})+(?!\d))/g
-            let areaText = `${area.toFixed(2).toString().replace(commaNumberPosition, ",")} km²`
+            let areaText = `${area
+              .toFixed(2)
+              .toString()
+              .replace(commaNumberPosition, ',')} km²`
             textGraphic = new Graphic({
               geometry: ArcGISUtils.extent.textGeometry(bounds),
-              symbol: ArcGISUtils.extent.textSymbol(areaText)
+              symbol: ArcGISUtils.extent.textSymbol(areaText),
             })
 
             mapGraphicsLayer.add(extentGraphic)

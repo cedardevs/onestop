@@ -18,7 +18,7 @@ import layout from './ui/layout'
 const domain = combineReducers({
   config,
   info,
-  results
+  results,
 })
 
 const ui = combineReducers({
@@ -26,7 +26,7 @@ const ui = combineReducers({
   granuleDetails,
   loading,
   background,
-  layout
+  layout,
 })
 
 const behavior = combineReducers({

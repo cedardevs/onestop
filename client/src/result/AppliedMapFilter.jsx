@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import AppliedMap from './AppliedMap'
 import * as geoUtils from '../../src/utils/geoUtils'
 
@@ -10,19 +10,19 @@ const styleAppliedFacets = {
 
 export default class AppliedMapFilter extends Component {
   render() {
-    const { geoJSON, onUnselectMap } = this.props
+    const {geoJSON, onUnselectMap} = this.props
 
     let appliedMap = null
     if (geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates) {
       let bbox = geoUtils.convertGeoJsonToBbox(geoJSON)
       appliedMap = (
-          <AppliedMap
-            north={bbox.north}
-            west={bbox.west}
-            south={bbox.south}
-            east={bbox.east}
-            onUnselect={() => onUnselectMap()}
-          />
+        <AppliedMap
+          north={bbox.north}
+          west={bbox.west}
+          south={bbox.south}
+          east={bbox.east}
+          onUnselect={() => onUnselectMap()}
+        />
       )
     }
     return <div style={styleAppliedFacets}>{appliedMap}</div>

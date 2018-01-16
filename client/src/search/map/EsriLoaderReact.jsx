@@ -1,21 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { loadModules } from 'esri-loader'
+import {loadModules} from 'esri-loader'
 
 class EsriLoaderReact extends React.PureComponent {
   componentDidCatch(error, info) {
-    const { onError } = this.props
+    const {onError} = this.props
     if (onError) {
       onError(error, info)
     }
   }
 
   componentDidMount() {
-    const { modulesToLoad, options, onReady, onError } = this.props
+    const {modulesToLoad, options, onReady, onError} = this.props
     loadModules(modulesToLoad ? modulesToLoad : [], options)
       .then(loadedModules => {
         if (onReady) {
-          onReady({ loadedModules, containerNode: this.mapContainer })
+          onReady({loadedModules, containerNode: this.mapContainer})
         }
       })
       .catch(error => {
@@ -27,15 +27,12 @@ class EsriLoaderReact extends React.PureComponent {
 
   render() {
     // return <div style={{backgroundColor: "magenta", width: '100%', height: "50px"}} />
-    const { renderMapContainer, mapContainerStyle, children } = this.props
+    const {renderMapContainer, mapContainerStyle, children} = this.props
     if (!renderMapContainer) {
       return children
     }
     return (
-      <div
-        ref={node => (this.mapContainer = node)}
-        style={mapContainerStyle}
-      >
+      <div ref={node => (this.mapContainer = node)} style={mapContainerStyle}>
         {children}
       </div>
     )
@@ -56,7 +53,14 @@ EsriLoaderReact.propTypes = {
 
 EsriLoaderReact.defaultProps = {
   renderMapContainer: true,
-  mapContainerStyle: { position: 'absolute', width: '100%', height: '100%', margin: 0, padding: 0, backgroundColor: "#111" },
+  mapContainerStyle: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    margin: 0,
+    padding: 0,
+    backgroundColor: '#111',
+  },
   onError: (error, info) => console.error(error),
 }
 

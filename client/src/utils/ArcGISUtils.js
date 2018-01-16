@@ -5,17 +5,17 @@ module.exports = {
       return {
         basemap: 'hybrid',
       }
-    }
+    },
   },
   mapView: {
     initialConditions: (container, map) => {
       return {
-        center: [-80, 35],
+        center: [ -80, 35 ],
         container: container,
         map: map,
         zoom: 3,
       }
-    }
+    },
   },
   extent: {
     initialConditions: (origin, point) => {
@@ -24,21 +24,21 @@ module.exports = {
         xmax: Math.max(point.x, origin.x),
         ymin: Math.min(point.y, origin.y),
         ymax: Math.max(point.y, origin.y),
-        spatialReference: { wkid: 102100 },
+        spatialReference: {wkid: 102100},
       }
     },
     fillSymbol: () => {
       return {
         type: 'simple-fill', // autocasts as new SimpleFillSymbol()
-        color: [255, 255, 255, 0.309],
+        color: [ 255, 255, 255, 0.309 ],
         outline: {
           // autocasts as new SimpleLineSymbol()
-          color: [255, 255, 255],
+          color: [ 255, 255, 255 ],
           width: 1,
         },
       }
     },
-    textSymbol: (text) => {
+    textSymbol: text => {
       return {
         type: 'text', // autocasts as new TextSymbol()
         color: 'white',
@@ -55,15 +55,15 @@ module.exports = {
         },
       }
     },
-    textGeometry: (bounds) => {
-      if(!bounds) {
+    textGeometry: bounds => {
+      if (!bounds) {
         return null
       }
 
       let centerLongitude = (bounds.west + bounds.east) / 2.0
       let centerLatitude = (bounds.north + bounds.south) / 2.0
 
-      if(bounds.west > bounds.east) {
+      if (bounds.west > bounds.east) {
         let positiveEast = bounds.east + 360.0
         centerLongitude = (bounds.west + positiveEast) / 2.0
       }
@@ -84,6 +84,6 @@ module.exports = {
         south: southEast[1],
         east: southEast[0],
       }
-    }
-  }
+    },
+  },
 }

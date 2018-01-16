@@ -93,7 +93,7 @@ export const updateBounds = (to, source) => {
   return {
     type: UPDATE_BOUNDS,
     to: to,
-    source: source
+    source: source,
   }
 }
 

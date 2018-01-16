@@ -1,12 +1,12 @@
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import ArcGISMap from './ArcGISMap'
-import { updateBounds } from '../../actions/FlowActions'
+import {updateBounds} from '../../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {
     showMap: state.ui.mapFilter.showMap,
     bounds: state.ui.mapFilter.bounds,
-    boundsSource: state.ui.mapFilter.boundsSource
+    boundsSource: state.ui.mapFilter.boundsSource,
   }
 }
 
@@ -21,6 +21,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const ArcGISMapContainer = connect(mapStateToProps, mapDispatchToProps)(ArcGISMap)
+const ArcGISMapContainer = connect(mapStateToProps, mapDispatchToProps)(
+  ArcGISMap
+)
 
 export default ArcGISMapContainer

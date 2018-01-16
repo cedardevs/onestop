@@ -1,5 +1,9 @@
 import Immutable from 'seamless-immutable'
-import { TOGGLE_LEFT, TOGGLE_RIGHT, TOGGLE_MAP } from '../../actions/LayoutActions'
+import {
+  TOGGLE_LEFT,
+  TOGGLE_RIGHT,
+  TOGGLE_MAP,
+} from '../../actions/LayoutActions'
 
 export const initialState = Immutable({
   showLeft: true,

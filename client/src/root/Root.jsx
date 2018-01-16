@@ -104,8 +104,7 @@ export default class Root extends Component {
   }
 
   render() {
-
-    const { showLeft, toggleLeft, showRight } = this.props
+    const {showLeft, toggleLeft, showRight} = this.props
 
     const header = (
       <div>
@@ -119,15 +118,16 @@ export default class Root extends Component {
       </div>
     )
 
-    const layoutContext = this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
+    const layoutContext =
+      this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
 
     let left = null
-    if(layoutContext) {
-      if(showLeft) {
-        left = <FiltersContainer/>
+    if (layoutContext) {
+      if (showLeft) {
+        left = <FiltersContainer />
       }
       else {
-        left = <FiltersHiddenContainer/>
+        left = <FiltersHiddenContainer />
       }
     }
 
@@ -139,10 +139,7 @@ export default class Root extends Component {
           showOverlay={this.isNotLanding() && this.isNot508()}
         />
         {/*TODO: replace this with ArcGIS map?*/}
-        <MapContainer
-          selection={true}
-          features={false}
-        />
+        <MapContainer selection={true} features={false} />
         {this.props.children}
       </div>
     )

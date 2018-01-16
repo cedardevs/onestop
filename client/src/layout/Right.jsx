@@ -97,19 +97,19 @@ export default class Right extends Component {
   }
 
   handleOpen = event => {
-    const { visible } = this.state
-    const { toggle } = this.props
+    const {visible} = this.state
+    const {toggle} = this.props
     event.stopPropagation()
-    if(!visible) {
+    if (!visible) {
       toggle()
     }
   }
 
   handleClose = event => {
-    const { visible } = this.state
-    const { toggle } = this.props
+    const {visible} = this.state
+    const {toggle} = this.props
     event.stopPropagation()
-    if(visible) {
+    if (visible) {
       toggle()
     }
   }

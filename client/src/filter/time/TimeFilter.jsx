@@ -98,12 +98,24 @@ export default class TimeFilter extends Component {
 
     // Set fields as strings to avoid incorrect falsey in isValidDate if any fields are changed (January == 0 for moments)
     this.setState({
-      startDateYear: startDateGiven ? startDate.year().toString() : this.initialState().startDateYear,
-      startDateMonth: startDateGiven ? startDate.month().toString() : this.initialState().startDateMonth,
-      startDateDay: startDateGiven ? startDate.date().toString() : this.initialState().startDateDay,
-      endDateYear: endDateGiven ? endDate.year().toString() : this.initialState().endDateYear,
-      endDateMonth: endDateGiven ? endDate.month().toString() : this.initialState().endDateMonth,
-      endDateDay: endDateGiven ? endDate.date().toString() : this.initialState().endDateDay,
+      startDateYear: startDateGiven
+        ? startDate.year().toString()
+        : this.initialState().startDateYear,
+      startDateMonth: startDateGiven
+        ? startDate.month().toString()
+        : this.initialState().startDateMonth,
+      startDateDay: startDateGiven
+        ? startDate.date().toString()
+        : this.initialState().startDateDay,
+      endDateYear: endDateGiven
+        ? endDate.year().toString()
+        : this.initialState().endDateYear,
+      endDateMonth: endDateGiven
+        ? endDate.month().toString()
+        : this.initialState().endDateMonth,
+      endDateDay: endDateGiven
+        ? endDate.date().toString()
+        : this.initialState().endDateDay,
     })
   }
 
@@ -277,7 +289,10 @@ export default class TimeFilter extends Component {
 
     return (
       <div style={styleTimeFilter}>
-        <p>Provide a start date, end date, or date range. Use year, year and month, or full dates. Future dates are not accepted.</p>
+        <p>
+          Provide a start date, end date, or date range. Use year, year and
+          month, or full dates. Future dates are not accepted.
+        </p>
         <form>
           <fieldset
             style={styleFieldset}

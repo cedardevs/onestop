@@ -10,7 +10,7 @@ import {
   TOGGLE_EXCLUDE_GLOBAL,
   TOGGLE_SELECTION,
   CLEAR_SELECTIONS,
-  REMOVE_ALL_FILTERS
+  REMOVE_ALL_FILTERS,
 } from '../../actions/SearchParamActions'
 import {CLEAR_FACETS} from '../../actions/SearchRequestActions'
 
@@ -44,7 +44,7 @@ export const search = (state = initialState, action) => {
     case REMOVE_DATE_RANGE:
       return Immutable.merge(state, {
         startDateTime: initialState.startDateTime,
-        endDateTime: initialState.endDateTime
+        endDateTime: initialState.endDateTime,
       })
 
     case TOGGLE_FACET:
@@ -70,7 +70,7 @@ export const search = (state = initialState, action) => {
       return Immutable.merge(initialState, action.params || {})
 
     case REMOVE_ALL_FILTERS:
-      return  Immutable.merge(state, {
+      return Immutable.merge(state, {
         geoJSON: null,
         startDateTime: null,
         endDateTime: null,

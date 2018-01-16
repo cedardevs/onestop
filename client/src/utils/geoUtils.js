@@ -101,14 +101,15 @@ export const convertBboxStringToGeoJson = coordString => {
 }
 
 export const convertGeoJsonToBbox = geoJSON => {
-  const coordinates = geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates
+  const coordinates =
+    geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates
   let bbox = null
-  if(coordinates) {
+  if (coordinates) {
     bbox = {
       west: _.round(coordinates[0][0][0], 4),
       south: _.round(coordinates[0][0][1], 4),
       east: _.round(coordinates[0][2][0], 4),
-      north: _.round(coordinates[0][2][1], 4)
+      north: _.round(coordinates[0][2][1], 4),
     }
   }
   return bbox

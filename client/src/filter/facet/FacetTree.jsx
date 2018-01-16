@@ -18,7 +18,7 @@ const styleFacet = (backgroundColor, disabled) => {
     display: 'flex',
     textAlign: 'left',
     alignItems: 'center',
-    marginBottom: '1px'
+    marginBottom: '1px',
   }
 }
 
@@ -33,7 +33,7 @@ const styleRovingFocusCheckbox = {
 
 const styleExpandableContent = marginNest => {
   return {
-    marginLeft: marginNest ? marginNest : '1em'
+    marginLeft: marginNest ? marginNest : '1em',
   }
 }
 

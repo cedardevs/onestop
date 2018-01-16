@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import FlexColumn from '../../common/FlexColumn'
 import Button from '../../common/input/Button'
 import _ from 'lodash'
 
 import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
-import Checkbox from "../../common/input/Checkbox"
-import {convertBboxToGeoJson, convertGeoJsonToBbox} from "../../utils/geoUtils";
+import Checkbox from '../../common/input/Checkbox'
+import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
 
 const styleMapFilter = {
   backgroundColor: '#3D97D2',
@@ -23,7 +23,7 @@ const styleButtons = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-around',
-  marginTop: '1em'
+  marginTop: '1em',
 }
 
 const styleInputRow = {
@@ -32,20 +32,19 @@ const styleInputRow = {
   alignItems: 'center',
   justifyContent: 'space-between',
   margin: '0.616em 0',
-  width: '15em'
+  width: '15em',
 }
 
 const styleLabel = {
-  width: '4em'
+  width: '4em',
 }
 
 const styleTextBox = {
   width: '10em',
-  color: 'black'
+  color: 'black',
 }
 
 export default class MapFilter extends Component {
-
   constructor(props) {
     super(props)
     this.state = this.initialState()
@@ -58,7 +57,7 @@ export default class MapFilter extends Component {
       south: '',
       east: '',
       north: '',
-      warning: ''
+      warning: '',
     }
   }
 
@@ -67,7 +66,7 @@ export default class MapFilter extends Component {
   }
 
   componentWillUnmount() {
-    if(this.props.showMap) {
+    if (this.props.showMap) {
       this.props.toggleMap()
     }
   }
@@ -76,8 +75,8 @@ export default class MapFilter extends Component {
     this.mapGeoJSONToState(nextProps.geoJSON)
   }
 
-  mapGeoJSONToState = (geoJSON) => {
-    if(geoJSON) {
+  mapGeoJSONToState = geoJSON => {
+    if (geoJSON) {
       let bbox = convertGeoJsonToBbox(geoJSON)
       this.setState({
         internalGeoJSON: geoJSON,
@@ -85,7 +84,7 @@ export default class MapFilter extends Component {
         south: bbox.south,
         east: bbox.east,
         north: bbox.north,
-        warning: ''
+        warning: '',
       })
     }
     else {
@@ -94,15 +93,15 @@ export default class MapFilter extends Component {
   }
 
   handleShowMap = () => {
-    const { showMap, toggleMap } = this.props
-    if(!showMap && toggleMap) {
+    const {showMap, toggleMap} = this.props
+    if (!showMap && toggleMap) {
       toggleMap()
     }
   }
 
   handleHideMap = () => {
-    const { showMap, toggleMap } = this.props
-    if(showMap && toggleMap) {
+    const {showMap, toggleMap} = this.props
+    if (showMap && toggleMap) {
       toggleMap()
     }
   }
@@ -113,18 +112,26 @@ export default class MapFilter extends Component {
   }
 
   applyGeometry = () => {
-    if(this.state.internalGeoJSON) { // Validation of coordinates is performed in bbox to GeoJSON conversion (geoUtils)
+    if (this.state.internalGeoJSON) {
+      // Validation of coordinates is performed in bbox to GeoJSON conversion (geoUtils)
       this.props.handleNewGeometry(this.state.internalGeoJSON)
       this.props.submit()
     }
-    else if(this.state.west && this.state.south && this.state.east && this.state.north) {
+    else if (
+      this.state.west &&
+      this.state.south &&
+      this.state.east &&
+      this.state.north
+    ) {
       this.setState({
-        warning: 'Entered coordinates are invalid. Ensure longitude coordinates are between -180 and 180, and latitude coordinates are between -90 and 90.'
+        warning:
+          'Entered coordinates are invalid. Ensure longitude coordinates are between -180 and 180, and latitude coordinates are between -90 and 90.',
       })
     }
     else {
       this.setState({
-        warning: 'Entered incomplete set of coordinates. Ensure all four fields are populated. '
+        warning:
+          'Entered incomplete set of coordinates. Ensure all four fields are populated. ',
       })
     }
   }
@@ -137,9 +144,9 @@ export default class MapFilter extends Component {
   }
 
   warningStyle() {
-    if(_.isEmpty(this.state.warning)) {
+    if (_.isEmpty(this.state.warning)) {
       return {
-        display: 'none'
+        display: 'none',
       }
     }
     else {
@@ -148,7 +155,7 @@ export default class MapFilter extends Component {
         textAlign: 'center',
         margin: '0.75em 0 0.5em',
         fontWeight: 'bold',
-        fontSize: '1.15em'
+        fontSize: '1.15em',
       }
     }
   }
@@ -156,15 +163,20 @@ export default class MapFilter extends Component {
   onChange(event) {
     let field = event.target.name
     let value = event.target.value
-    let stateClone = { ...this.state }
+    let stateClone = {...this.state}
     stateClone[field] = value
 
     let {west, south, east, north} = stateClone
-    let constructedGeoJSON = convertBboxToGeoJson(_.toNumber(west), _.toNumber(south), _.toNumber(east), _.toNumber(north))
+    let constructedGeoJSON = convertBboxToGeoJson(
+      _.toNumber(west),
+      _.toNumber(south),
+      _.toNumber(east),
+      _.toNumber(north)
+    )
     this.setState({
       [field]: value,
       internalGeoJSON: constructedGeoJSON,
-      warning: ''
+      warning: '',
     })
   }
 
@@ -173,8 +185,17 @@ export default class MapFilter extends Component {
     let id = `MapFilterCoordinatesInput::${direction}`
     return (
       <div style={styleInputRow}>
-        <label htmlFor={id} style={styleLabel}>{_.capitalize(direction)}</label>
-        <input type='text' id={id} name={direction} placeholder={placeholderValue} value={value} style={styleTextBox} />
+        <label htmlFor={id} style={styleLabel}>
+          {_.capitalize(direction)}
+        </label>
+        <input
+          type="text"
+          id={id}
+          name={direction}
+          placeholder={placeholderValue}
+          value={value}
+          style={styleTextBox}
+        />
       </div>
     )
   }
@@ -183,7 +204,7 @@ export default class MapFilter extends Component {
     return (
       <div>
         <form>
-          <fieldset onChange={(event) => this.onChange(event)}>
+          <fieldset onChange={event => this.onChange(event)}>
             <legend>Bounding Box Coordinates: </legend>
             {this.renderInputRow('west', ' -180.00')}
             {this.renderInputRow('south', ' -90.00')}
@@ -196,14 +217,19 @@ export default class MapFilter extends Component {
   }
 
   render() {
-    const styleShowOrHideBackground = this.props.geoJSON ? { background: '#8967d2' } : {}
-    const styleShowOrHide = { marginBottom: '0.618em', ...styleShowOrHideBackground }
+    const styleShowOrHideBackground = this.props.geoJSON
+      ? {background: '#8967d2'}
+      : {}
+    const styleShowOrHide = {
+      marginBottom: '0.618em',
+      ...styleShowOrHideBackground,
+    }
 
     const buttonShowMap = (
       <Button
-        key='MapFilter::showMap'
+        key="MapFilter::showMap"
         icon={mapIcon}
-        text='Show Map'
+        text="Show Map"
         onClick={this.handleShowMap}
         style={styleShowOrHide}
         aria-hidden={true}
@@ -212,9 +238,9 @@ export default class MapFilter extends Component {
 
     const buttonHideMap = (
       <Button
-        key='MapFilter::hideMap'
+        key="MapFilter::hideMap"
         icon={mapIcon}
-        text='Hide Map'
+        text="Hide Map"
         onClick={this.handleHideMap}
         style={styleShowOrHide}
       />
@@ -222,32 +248,37 @@ export default class MapFilter extends Component {
 
     const buttonApply = (
       <Button
-        key='MapFilter::applyButton'
-        text='Apply'
+        key="MapFilter::applyButton"
+        text="Apply"
         onClick={this.applyGeometry}
-        style={{ width: '35%' }}
+        style={{width: '35%'}}
       />
     )
 
     const buttonClear = (
       <Button
-        key='MapFilter::clearButton'
-        text='Clear'
+        key="MapFilter::clearButton"
+        text="Clear"
         onClick={this.clearGeometry}
-        style={{ width: '35%' }}
+        style={{width: '35%'}}
       />
     )
 
     const inputBoundingBox = this.renderCoordinateInput()
 
     const inputColumn = (
-      <FlexColumn items={[this.props.showMap ? buttonHideMap : buttonShowMap, inputBoundingBox]} />
+      <FlexColumn
+        items={[
+          this.props.showMap ? buttonHideMap : buttonShowMap,
+          inputBoundingBox,
+        ]}
+      />
     )
 
     const excludeGlobalCheckbox = (
       <Checkbox
-        label='Exclude Global Results'
-        id='MapFilter::excludeGlobalCheckbox'
+        label="Exclude Global Results"
+        id="MapFilter::excludeGlobalCheckbox"
         checked={this.props.excludeGlobal}
         onChange={this.toggleExcludeGlobalResults}
       />
@@ -256,19 +287,20 @@ export default class MapFilter extends Component {
     return (
       <div style={styleMapFilter}>
         <p style={styleDescription}>
-          Draw a bounding box on the map using the square button on the top right of the map or manually
-          enter coordinates below. Use the Clear button to reset the map and text boxes.
+          Draw a bounding box on the map using the square button on the top
+          right of the map or manually enter coordinates below. Use the Clear
+          button to reset the map and text boxes.
         </p>
-        <div style={{height:'1em'}} />
+        <div style={{height: '1em'}} />
         {inputColumn}
         <div style={styleButtons}>
           {buttonApply}
           {buttonClear}
         </div>
-        <div style={this.warningStyle()} role='alert'>
+        <div style={this.warningStyle()} role="alert">
           {this.state.warning}
         </div>
-        <div style={{borderBottom: '1px solid white', margin: '1em 0'}}></div>
+        <div style={{borderBottom: '1px solid white', margin: '1em 0'}} />
         <h4 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h4>
         {excludeGlobalCheckbox}
       </div>

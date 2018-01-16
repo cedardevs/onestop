@@ -20,7 +20,7 @@ export const updateSearch = params => {
 export const REMOVE_ALL_FILTERS = 'remove_all_filters'
 export const removeAllFilters = () => {
   return {
-    type: REMOVE_ALL_FILTERS
+    type: REMOVE_ALL_FILTERS,
   }
 }
 
@@ -36,7 +36,7 @@ export const updateDateRange = (startDate, endDate) => {
 export const REMOVE_DATE_RANGE = 'remove_date_range'
 export const removeDateRange = () => {
   return {
-    type: REMOVE_DATE_RANGE
+    type: REMOVE_DATE_RANGE,
   }
 }
 

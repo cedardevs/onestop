@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 
 const styleDefault = iconAndText => {
   return {
@@ -143,13 +143,15 @@ export default class Button extends Component {
     const stylesMerged = {
       ...styleDefault(iconAndText),
       ...style,
-      ...(this.state.hovering ? { ...styleHoverDefault, ...styleHover } : {}),
-      ...(this.state.pressing ? { ...stylePressDefault, ...stylePress } : {}),
-      ...(this.state.focusing ? { ...styleFocusDefault, ...styleFocus } : {}),
+      ...(this.state.hovering ? {...styleHoverDefault, ...styleHover} : {}),
+      ...(this.state.pressing ? {...stylePressDefault, ...stylePress} : {}),
+      ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {}),
       ...(icon && !text ? styleIconPadding : {}),
     }
 
-    const styleIconResolved = styleIcon ? styleIcon : { width: '2em', height: '2em', marginRight: iconAndText ? '0.618em' : 0 }
+    const styleIconResolved = styleIcon
+      ? styleIcon
+      : {width: '2em', height: '2em', marginRight: iconAndText ? '0.618em' : 0}
 
     return (
       <button
@@ -173,12 +175,8 @@ export default class Button extends Component {
             alt={title}
           />
         ) : null}
-        {text && !this.props.children ? (
-            <span>{text}</span>
-        ) : null}
-        {this.props.children ? (
-            <div>{this.props.children}</div>
-        ) : null}
+        {text && !this.props.children ? <span>{text}</span> : null}
+        {this.props.children ? <div>{this.props.children}</div> : null}
       </button>
     )
   }
