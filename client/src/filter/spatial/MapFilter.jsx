@@ -113,13 +113,18 @@ export default class MapFilter extends Component {
   }
 
   applyGeometry = () => {
-    if(this.state.internalGeoJSON) {
-      this.props.handleNewGeometry(this.state.internalGeoJSON) // TODO -- need validation
+    if(this.state.internalGeoJSON) { // Validation of coordinates is performed in bbox to GeoJSON conversion (geoUtils)
+      this.props.handleNewGeometry(this.state.internalGeoJSON)
       this.props.submit()
+    }
+    else if(this.state.west && this.state.south && this.state.east && this.state.north) {
+      this.setState({
+        warning: 'Entered coordinates are invalid. Ensure longitude coordinates are between -180 and 180, and latitude coordinates are between -90 and 90.'
+      })
     }
     else {
       this.setState({
-        warning: 'Entered coordinates are invalid. Ensure longitude coordinates are between -180 and 180, and latitude coordinates are between -90 and 90.'
+        warning: 'Entered incomplete set of coordinates. Ensure all four fields are populated. '
       })
     }
   }
