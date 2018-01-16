@@ -248,6 +248,7 @@ export default class MapFilter extends Component {
       <Checkbox
         label='Exclude Global Results'
         id='MapFilter::excludeGlobalCheckbox'
+        checked={this.props.excludeGlobal}
         onChange={this.toggleExcludeGlobalResults}
       />
     )

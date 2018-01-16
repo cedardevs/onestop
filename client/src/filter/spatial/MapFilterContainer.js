@@ -8,7 +8,8 @@ import { showCollections } from "../../actions/FlowActions"
 const mapStateToProps = state => {
   return {
     showMap: state.ui.layout.showMap,
-    geoJSON: state.behavior.search.geoJSON
+    geoJSON: state.behavior.search.geoJSON,
+    excludeGlobal: state.behavior.search.excludeGlobal
   }
 }
 
