@@ -2,8 +2,6 @@ import React from 'react'
 import Expandable from '../../common/Expandable'
 import Checkbox from '../../common/input/Checkbox'
 
-import {titleCaseKeyword} from '../../utils/keywordUtils'
-
 /**
   This component is a node in the facet tree.
 **/
@@ -57,15 +55,18 @@ export default class FacetTreeItem extends React.Component {
       children,
       hasChildren,
       tabIndex,
+      keyword,
+      facetMap,
+      disabled,
     } = this.props
     const {open, selected, focusing} = this.state
 
-    const keyword = titleCaseKeyword(term)
     const label = `${keyword} (${count})`
 
     const styleFacetContainer =
-      tabIndex === '0' && focusing ? this.props.styleFocus : {}
-
+      (tabIndex === '0' || tabIndex === 0) && focusing
+        ? this.props.styleFocus
+        : {}
     const styleFocus = this.props.styleFocus ? styleHideFocus : {}
 
     const facet = (
@@ -73,6 +74,7 @@ export default class FacetTreeItem extends React.Component {
         <Checkbox
           label={label}
           id={`checkbox-${facetId}`}
+          disabled={disabled}
           tabIndex={tabIndex}
           checked={selected}
           value={{term: term, category: category, id: facetId}}
@@ -85,7 +87,7 @@ export default class FacetTreeItem extends React.Component {
     const content = hasChildren ? (
       <Expandable
         open={open}
-        value={facetId}
+        value={facetMap}
         heading={facet}
         tabbable={false}
         styleHeading={this.props.styleFacet}
@@ -116,6 +118,9 @@ export default class FacetTreeItem extends React.Component {
         aria-label={ariaLabel}
         aria-expanded={ariaExpanded}
         aria-selected={selected}
+        aria-disabled={disabled}
+        aria-setsize={this.props.setSize}
+        aria-posinset={this.props.posInSet}
       >
         {content}
       </div>

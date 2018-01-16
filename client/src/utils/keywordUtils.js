@@ -1,72 +1,93 @@
 import _ from 'lodash'
+import Immutable from 'seamless-immutable'
 
-const buildHierarchyMap = (category, terms) => {
-  const createChildrenHierarchy = (map, hierarchy, term, value) => {
-    // This function traverses down the hierarchy specified in the given map, creating empty 'children' objects ONLY if
-    //   they don't already exist (otherwise just changes the reference). Since hierarchical strings are received tokenized
-    //   and in alphabetical order (e.g.: 'Atmosphere', 'Atmosphere > Aerosols', 'Biosphere', etc.) this traversal down
-    //   the nested object won't error out from one level to the next.
-    const lastTerm = hierarchy.pop()
-    if (!_.isEmpty(hierarchy)) {
-      let i
-      for (i = 0; i < hierarchy.length; i++) {
-        map = map[hierarchy[i]].children = map[hierarchy[i]].children || {}
-      }
+const hierarchy = (category, facets) => {
+  const reducer = (map, facet) => {
+    const termHierarchy = facet.termHierarchy
+    const facetMap = {
+      id: facet.id,
+      children: [],
+      parent: map[termHierarchy.length].id,
     }
-
-    map = map[lastTerm] = value
+    map[termHierarchy.length + 1] = facetMap
+    map[termHierarchy.length].children.push(facetMap)
     return map
   }
-
-  let categoryMap = {}
-
-  Object.keys(terms).map(term => {
-    const idParts = _.concat(_.words(category), _.words(term))
-    let hierarchy = term.split('>').map(e => e.trim()) // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
-    const value = {
-      count: terms[term].count,
-      children: {},
-      category: category,
-      term: term,
-      id: idParts.join('-'),
-    }
-    createChildrenHierarchy(categoryMap, hierarchy, term, value)
-  })
-
-  return categoryMap
+  let initState = {}
+  initState[0] = {id: null, children: []}
+  return facets.reduce(reducer, initState)[0].children
 }
 
-export const buildKeywordHierarchyMap = facetMap => {
-  const hierarchyMap = {}
-  _.map(facetMap, (terms, category) => {
+const id = (category, term) => {
+  const idParts = _.concat(_.words(category), _.words(term))
+  return idParts.join('-')
+}
+
+const keyword = (termHierarchy, isHierarchy) => {
+  if (isHierarchy) {
+    return titleCaseKeyword(termHierarchy.pop())
+  }
+  return termHierarchy.pop()
+}
+
+const buildTermHierarchy = (term, isHierarchy) => {
+  if (isHierarchy) {
+    // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
+    return term.split('>').map(e => e.trim())
+  }
+  return [ term ]
+}
+
+const buildFacet = (category, term, count, selected, isHierarchy) => {
+  const termHierarchy = buildTermHierarchy(term, isHierarchy)
+  return Immutable({
+    count: count,
+    category: category,
+    term: term,
+    id: id(category, term),
+    selected: selected,
+    termHierarchy: termHierarchy,
+    keyword: keyword(termHierarchy, isHierarchy),
+  })
+}
+
+const categoryName = category => {
+  if (category === 'science') {
+    return 'Data Theme'
+  }
+  return _.startCase(_.toLower(category.split(/(?=[A-Z])/).join(' ')))
+}
+
+const facets = (category, terms, selectedFacets) => {
+  const selectedTerms = selectedFacets[category]
+
+  return _.map(terms, (data, term) => {
+    let selected = selectedTerms ? selectedTerms.includes(term) : false
+    return buildFacet(
+      category,
+      term,
+      data.count,
+      selected,
+      category === 'science'
+    )
+  })
+}
+
+export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
+  return _.map(facetMap, (terms, category) => {
     if (!_.isEmpty(terms)) {
       // Don't load categories that have no results
-      let heading
-      let categoryMap = {}
-
-      if (category === 'science') {
-        heading = 'Data Theme'
-        categoryMap = buildHierarchyMap(category, terms)
+      const keywordFacets = facets(category, terms, selectedFacets)
+      return {
+        name: categoryName(category),
+        id: categoryName(category).replace(' ', '-', 'g'),
+        keywordFacets: keywordFacets,
+        hierarchy: Immutable(hierarchy(category, keywordFacets)),
       }
-      else {
-        heading = _.startCase(_.toLower(category.split(/(?=[A-Z])/).join(' ')))
-        Object.keys(terms).map(term => {
-          const idParts = _.concat(_.words(category), _.words(term))
-          categoryMap[term] = {
-            count: terms[term].count,
-            children: {},
-            category: category,
-            term: term,
-            id: idParts.join('-'),
-          }
-        })
-      }
-
-      hierarchyMap[heading] = categoryMap
     }
-  })
-
-  return hierarchyMap
+  }).filter(facetCategory => {
+    return facetCategory
+  }) // remove undefined?
 }
 
 // pulls out the last term in a GCMD-style keyword and attempts to maintain intended acronyms

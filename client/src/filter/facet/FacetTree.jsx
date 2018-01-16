@@ -3,16 +3,18 @@ import Facet from './Facet'
 import _ from 'lodash'
 import {Key} from '../../utils/keyboardUtils'
 
+import Immutable from 'seamless-immutable'
+
 /**
   This component contains the content of a facet category. It is essentially a
-  speciallized tree menu.
+  specialized tree menu.
 **/
 
-const styleFacet = backgroundColor => {
+const styleFacet = (backgroundColor, disabled) => {
   return {
     padding: '0.618em',
     backgroundColor: backgroundColor ? backgroundColor : 'initial',
-    color: '#FFF',
+    color: disabled ? '#cbcbcb' : '#FFF',
     display: 'flex',
     textAlign: 'left',
     alignItems: 'center',
@@ -34,106 +36,230 @@ const styleExpandableContent = marginNest => {
   }
 }
 
+const initialFacetState = Immutable({
+  open: false,
+  visible: false,
+  tabIndex: -1,
+})
+
 export default class FacetTree extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      facetMap: {},
-      allFacetsInOrder: [],
-      facetLookup: {},
+      facetList: [],
+      hierarchy: [],
+      rovingIndex: null,
     }
   }
 
-  componentDidMount(nextProps) {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        // reset facet references before reparsing the map, which should populate them again
-        allFacetsInOrder: [],
-        facetLookup: {},
+  mergeChildren = (list1, list2) => {
+    // custom hierarchy list merging...
+    let list = []
+    _.each(list1, node => {
+      list.push(node)
+    })
+    _.each(list2, node => {
+      const i = _.findIndex(list, n => {
+        return n.id === node.id
+      })
+      if (i >= 0) {
+        list[i] = Immutable.merge(list[i], {
+          children: this.mergeChildren(list[i].children, node.children),
+        })
+      }
+      else {
+        list.push(node)
       }
     })
-    if (!_.isEqual({}, this.props.facetMap)) {
-      // parse map with the top layer being marked as visible: true.
-      // note this function uses side effects to alter the facetMap itself,
-      // then we simply store that in state
-      this.parseMap(this.props.facetMap, 1)
+    list = _.sortBy(list, [ 'id' ])
+    list = _.map(list, node => {
+      return Immutable.merge(node, {
+        setSize: list.length,
+        posInSet:
+          1 +
+          _.findIndex(list, n => {
+            return node.id === n.id
+          }),
+      })
+    })
+    return list
+  }
+
+  updateAllVisibility = () => {
+    this.setState(prevState => {
+      const facets = prevState.facetList
+      _.each(this.state.hierarchy, facetInMap => {
+        const index = this.facetIndex(facetInMap.id)
+        facets[index] = Immutable.merge(facets[index], {visible: true})
+        this.mutateFacetVisibility(facetInMap.children, facets, index)
+      })
+
+      return {
+        ...prevState,
+        facetList: facets,
+      }
+    })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (
+      !_.isEqual(this.props.hierarchy, nextProps.hierarchy) ||
+      !_.isEqual(this.props.facetMap, nextProps.facetMap)
+    ) {
       this.setState(prevState => {
-        let facetMap = Object.assign({}, prevState.facetMap)
-        facetMap = this.props.facetMap
+        const facets = _.map(this.state.facetList, facet => {
+          let f = Immutable.merge(facet, {count: 0}) // set all facet counts to zero
+          const updatedFacet = _.find(nextProps.facetMap, updatedFacet => {
+            return facet.id === updatedFacet.id
+          })
+          if (updatedFacet) {
+            // update facet with refreshed info (ie count) from results
+            f = Immutable.merge(f, updatedFacet)
+          }
+          return f
+        })
+
+        // find any new facets which are not already included and add them
+        _.each(nextProps.facetMap, facet => {
+          const oldFacet = _.find(this.state.facetList, oldFacet => {
+            return facet.id === oldFacet.id
+          })
+          if (!oldFacet) {
+            facets.push(Immutable.merge(initialFacetState, facet))
+          }
+        })
         return {
           ...prevState,
-          facetMap: facetMap,
+          facetList: _.sortBy(facets, [ 'term' ]), // make sure facets are sorted
+          hierarchy: this.mergeChildren(
+            this.state.hierarchy,
+            nextProps.hierarchy
+          ),
         }
+      }, this.updateAllVisibility)
+    }
+  }
+
+  componentDidMount() {
+    // init state
+    this.setState(prevState => {
+      const facets = _.map(this.props.facetMap, facet => {
+        return Immutable.merge(facet, initialFacetState)
+      })
+      // The first facet should be the only focusable one, initially.
+      facets[0] = Immutable.merge(facets[0], {tabIndex: 0})
+      const firstFocused = facets[0]
+
+      return {
+        ...prevState,
+        facetList: facets,
+        hierarchy: this.props.hierarchy,
+        rovingIndex: firstFocused.id,
+      }
+    }, this.updateAllVisibility)
+  }
+
+  lookupFacet = id => {
+    return _.find(this.state.facetList, facet => {
+      return facet.id === id
+    })
+  }
+
+  facetIndex = id => {
+    return _.findIndex(this.state.facetList, facet => {
+      return facet.id === id
+    })
+  }
+
+  mutateFacetVisibility = (hierarchy, list, index) => {
+    let updateVisibility = (children, visibility) => {
+      _.each(children, (value, key) => {
+        const i = this.facetIndex(value.id)
+        list[i] = Immutable.merge(list[i], {visible: visibility})
+        updateVisibility(value.children, visibility && list[i].open)
       })
     }
+    updateVisibility(hierarchy, list[index].open)
+  }
+
+  updateNodeVisibility = (facetInMap, open) => {
+    this.setState(prevState => {
+      const facets = prevState.facetList
+      const index = this.facetIndex(facetInMap.id)
+      facets[index] = Immutable.merge(facets[index], {open: open})
+
+      this.mutateFacetVisibility(facetInMap.children, facets, index)
+
+      return {
+        ...prevState,
+        facetList: facets,
+      }
+    })
   }
 
   handleExpandableToggle = event => {
-    this.setState(prevState => {
-      let node = this.state.facetLookup[event.value]
-      if (node) {
-        node.open = event.open
-        let updateVisibility = (children, visibility) => {
-          _.each(children, (value, key) => {
-            value.visible = visibility
-            updateVisibility(value.children, visibility && value.open)
-          })
-        }
-        updateVisibility(node.children, node.open)
-
-        return {
-          ...prevState,
-          facetMap: this.state.facetMap, // editing to node directly modified this, this is to trigger the rest of the stack
-        }
-      }
-    })
+    this.updateNodeVisibility(event.value, event.open)
   }
 
   updateRovingIndex = facetId => {
     this.setState(prevState => {
-      const oldIndex = prevState.facetLookup[prevState.rovingIndex]
-      oldIndex.tabIndex = '-1'
-
-      const newIndex = prevState.facetLookup[facetId]
-      newIndex.tabIndex = '0'
-
+      const oldIndex = this.facetIndex(this.state.rovingIndex)
+      const newIndex = this.facetIndex(facetId)
+      const facets = this.state.facetList
+      facets[oldIndex] = Immutable.merge(facets[oldIndex], {tabIndex: -1})
+      facets[newIndex] = Immutable.merge(facets[newIndex], {tabIndex: 0})
       return {
         ...prevState,
-        facetMap: this.state.facetMap, // editing to node directly modified this, this is to trigger the rest of the stack
+        facetList: facets,
         rovingIndex: facetId,
       }
     })
+
     document.getElementById(facetId).focus()
+  }
+
+  lookupHierarchy = (id, list) => {
+    let result = null
+    _.each(list, node => {
+      if (result) return
+      if (node.id === id) {
+        result = node
+        return
+      }
+      result = this.lookupHierarchy(id, node.children)
+    })
+    return result
   }
 
   triggerRight = () => {
     const id = this.state.rovingIndex
-    const node = this.state.facetLookup[id]
+    const node = this.lookupFacet(id)
+    const nodeInMap = this.lookupHierarchy(id, this.state.hierarchy)
     if (!node.open) {
       // open node
-      this.handleExpandableToggle({open: true, value: id})
+      this.handleExpandableToggle({open: true, value: nodeInMap})
     }
     else {
       // move focus to first child
-      const facetId = node.relations.children[0]
-      if (facetId) {
-        this.updateRovingIndex(facetId)
+      const facet = nodeInMap.children[0]
+      if (facet) {
+        this.updateRovingIndex(facet.id)
       }
     }
   }
 
   triggerLeft = () => {
     const id = this.state.rovingIndex
-    const node = this.state.facetLookup[id]
+    const node = this.lookupFacet(id)
+    const nodeInMap = this.lookupHierarchy(id, this.state.hierarchy)
     if (node.open) {
       // close node
-      this.handleExpandableToggle({open: false, value: id})
+      this.handleExpandableToggle({open: false, value: nodeInMap})
     }
     else {
       // move focus to parent
-      const facetId = node.relations.parent
+      const facetId = nodeInMap.parent
       if (facetId) {
         this.updateRovingIndex(facetId)
       }
@@ -142,157 +268,104 @@ export default class FacetTree extends React.Component {
 
   moveFocusDown = () => {
     const id = this.state.rovingIndex
-    const orderIndex = _.indexOf(this.state.allFacetsInOrder, id)
+    const orderIndex = this.facetIndex(id)
 
-    if (orderIndex < this.state.allFacetsInOrder.length - 1) {
+    if (orderIndex < this.state.facetList.length - 1) {
       const nextVisible = _.find(
-        this.state.allFacetsInOrder,
-        facetId => {
-          return this.state.facetLookup[facetId].visible
+        this.state.facetList,
+        facet => {
+          return facet.visible
         },
         orderIndex + 1
       )
 
       if (nextVisible) {
-        this.updateRovingIndex(nextVisible)
+        this.updateRovingIndex(nextVisible.id)
       }
     }
   }
 
   moveFocusToEnd = () => {
-    const nextVisible = _.findLast(this.state.allFacetsInOrder, facetId => {
-      return this.state.facetLookup[facetId].visible
+    const nextVisible = _.findLast(this.state.facetList, facet => {
+      return facet.visible
     })
 
     if (nextVisible) {
-      this.updateRovingIndex(nextVisible)
+      this.updateRovingIndex(nextVisible.id)
     }
   }
 
   moveFocusToStart = () => {
-    this.updateRovingIndex(this.state.allFacetsInOrder[0])
+    this.updateRovingIndex(this.state.facetList[0].id)
   }
 
   moveFocusUp = () => {
     const id = this.state.rovingIndex
-    const orderIndex = _.indexOf(this.state.allFacetsInOrder, id)
+    const orderIndex = this.facetIndex(id)
+
     if (orderIndex > 0) {
       const nextVisible = _.findLast(
-        this.state.allFacetsInOrder,
-        facetId => {
-          return this.state.facetLookup[facetId].visible
+        this.state.facetList,
+        facet => {
+          return facet.visible
         },
         orderIndex - 1
       )
 
-      this.updateRovingIndex(nextVisible)
+      this.updateRovingIndex(nextVisible.id)
     }
-  }
-
-  isSelected = (category, term) => {
-    const selectedTerms = this.props.selectedFacets[category]
-    return selectedTerms ? selectedTerms.includes(term) : false
   }
 
   handleSelectToggleMouse = e => {
     this.props.handleSelectToggle(e.value, e.checked)
   }
 
-  createFacetComponent = (facet, parent, siblings) => {
-    // handle any nulls that might get into this function
+  isFacetDisabled = facet => {
+    return facet.count === 0
+  }
+
+  createFacetComponent = facetInMap => {
+    const facet = this.lookupFacet(facetInMap.id)
     let facetComponent = null
     if (!facet) {
       return facetComponent
     }
+    const facetChildren = _.map(facetInMap.children, facet =>
+      this.createFacetComponent(facet)
+    )
+    const hasChildren = !_.isEmpty(facetInMap.children)
+    const children = hasChildren ? facetChildren : null
 
-    if ('children' in facet) {
-      const hasChildren = !_.isEmpty(facet.children)
-      const children = hasChildren
-        ? this.createFacetComponent(facet.children, facet)
-        : null
-
-      return (
-        <Facet
-          facetId={facet.id}
-          key={facet.id}
-          category={facet.category}
-          term={facet.term}
-          count={facet.count}
-          open={facet.open}
-          selected={this.isSelected(facet.category, facet.term)}
-          tabIndex={facet.tabIndex}
-          focused={this.state.focus}
-          children={children}
-          hasChildren={hasChildren}
-          handleSelectToggleMouse={this.handleSelectToggleMouse}
-          handleExpandableToggle={this.handleExpandableToggle}
-          styleFacet={styleFacet(this.props.backgroundColor)}
-          styleFocus={styleRovingFocus}
-          styleCheckboxFocus={styleRovingFocusCheckbox}
-          styleChildren={styleExpandableContent(this.props.marginNest)}
-        />
-      )
-    }
-    else {
-      // for each key recurse
-      return Object.keys(facet).map(subFacet =>
-        this.createFacetComponent(facet[subFacet])
-      )
-    }
-  }
-
-  parseMap = (map, level, parentOpen, parentId) => {
-    if (_.isEqual({}, map)) {
-      // cannot parse empty map
-      return []
-    }
-
-    _.each(map, (value, key) => {
-      value.relations = {}
-      value.open = false // always default to everything collapsed
-      value.tabIndex = '-1'
-    })
-
-    if (level === 1) {
-      // id first layer to set the initial tab focus
-      const value = _.map(map, (value, key) => value)[0]
-      value.tabIndex = '0'
-      this.setState(prevState => {
-        return {
-          ...prevState,
-          rovingIndex: value.id,
-        }
-      })
-    }
-
-    _.each(map, (value, key) => {
-      this.setState(prevState => {
-        // update state that lets us quickly traverse the nodes in up/down order
-        let allFacetsInOrder = Object.assign([], prevState.allFacetsInOrder)
-        allFacetsInOrder.push(value.id)
-
-        // update state that lets us set focus to another node or update visibility, since it is a property that combines the state of several nodes
-        let facetLookup = Object.assign({}, prevState.facetLookup)
-        facetLookup[value.id] = value
-
-        return {
-          ...prevState,
-          allFacetsInOrder: allFacetsInOrder,
-          facetLookup: facetLookup,
-        }
-      })
-
-      value.relations.parent = parentId
-      value.relations.children = this.parseMap(
-        value.children,
-        level + 1,
-        parentOpen && value.open,
-        value.id
-      )
-      value.visible = level === 1 || !!parentOpen
-    })
-
-    return _.map(map, (value, key) => value.id) // return siblings
+    return (
+      <Facet
+        facetId={facet.id}
+        facetMap={facetInMap}
+        key={facet.id}
+        category={facet.category}
+        term={facet.term}
+        count={facet.count}
+        open={facet.open}
+        keyword={facet.keyword}
+        selected={facet.selected}
+        disabled={this.isFacetDisabled(facet)}
+        tabIndex={facet.tabIndex}
+        focused={this.state.focus}
+        children={children}
+        hasChildren={hasChildren}
+        handleSelectToggleMouse={this.handleSelectToggleMouse}
+        handleExpandableToggle={this.handleExpandableToggle}
+        styleFacet={styleFacet(
+          this.props.backgroundColor,
+          this.isFacetDisabled(facet)
+        )}
+        styleFocus={styleRovingFocus}
+        styleCheckboxFocus={styleRovingFocusCheckbox}
+        styleChildren={styleExpandableContent(this.props.marginNest)}
+        setSize={facetInMap.setSize}
+        posInSet={facetInMap.posInSet}
+      />
+    )
+    return facetChildren
   }
 
   handleKeyPressed = e => {
@@ -305,14 +378,14 @@ export default class FacetTree extends React.Component {
 
     if (e.keyCode === Key.SPACE || e.keyCode === Key.ENTER) {
       e.preventDefault() // prevent scrolling down on space press
-      const {facetId, category, term} = this.state.facetLookup[
-        this.state.rovingIndex
-      ]
-      const selected = this.isSelected(category, term)
-      this.props.handleSelectToggle(
-        {id: facetId, category: category, term: term},
-        !selected
-      )
+      const facet = this.lookupFacet(this.state.rovingIndex)
+      const {facetId, category, term, selected, count} = facet
+      if (!this.isFacetDisabled(facet)) {
+        this.props.handleSelectToggle(
+          {id: facetId, category: category, term: term},
+          !selected
+        )
+      }
     }
     if (e.keyCode === Key.HOME) {
       this.moveFocusToStart()
@@ -361,7 +434,9 @@ export default class FacetTree extends React.Component {
   }
 
   render() {
-    const facetHierarchy = this.createFacetComponent(this.state.facetMap)
+    const facetHierarchy = _.map(this.state.hierarchy, facet => {
+      return this.createFacetComponent(facet)
+    })
 
     return (
       <div

@@ -9,6 +9,7 @@ import {
   CLEAR_GRANULES,
   COUNT_GRANULES,
   FACETS_RECEIVED,
+  CLEAR_FACETS,
 } from '../../actions/SearchRequestActions'
 
 export const initialState = Immutable({
@@ -75,6 +76,9 @@ export const results = (state = initialState, action) => {
         'granulesPageOffset',
         state.granulesPageOffset + state.pageSize
       )
+
+    case CLEAR_FACETS:
+      return Immutable.set(state, 'facets', initialState.facets)
 
     default:
       return state

@@ -54,14 +54,14 @@ export default class FacetFilter extends Component {
 
   render() {
     let expandableCategories = []
-    _.each(this.props.facetMap, (value, category) => {
+    _.each(this.props.facets, facetCategory => {
       // show hamburger menu for high-level categories
-      const expandableKey = `${category}`
-      const headerId = `header-filter-${category.replace(' ', '-', 'g')}`
+      const category = facetCategory.name
+      const expandableKey = category
 
       const highLevelHeading = (
         <h3
-          id={headerId}
+          id={facetCategory.id}
           style={{fontSize: '1em', fontWeight: 'normal', display: 'inline'}}
         >
           <span aria-hidden="true">&#9776;&nbsp;</span>
@@ -71,9 +71,9 @@ export default class FacetFilter extends Component {
 
       const expandableFacets = (
         <FacetTree
-          headerId={headerId}
-          facetMap={this.props.facetMap[category]}
-          selectedFacets={this.props.selectedFacets}
+          headerId={facetCategory.id}
+          facetMap={facetCategory.keywordFacets}
+          hierarchy={facetCategory.hierarchy}
           handleSelectToggle={this.updateStoreAndSubmitSearch}
           backgroundColor={this.props.backgroundColor}
           marginNest={this.props.marginNest}

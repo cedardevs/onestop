@@ -62,7 +62,7 @@ class SearchFields extends React.Component {
     })
   }
 
-  mapEvents(target, { mapComponent, mapButton, showMap }, toggle) {
+  mapEvents(target, {mapComponent, mapButton, showMap}, toggle) {
     if (
       showMap &&
       !mapComponent.contains(target) &&
@@ -74,7 +74,7 @@ class SearchFields extends React.Component {
 
   handleKeyup(e) {
     if (e.keyCode === 27) {
-      this.setState({ showMap: false })
+      this.setState({showMap: false})
     }
   }
 
@@ -166,7 +166,7 @@ class SearchFields extends React.Component {
   }
 
   render() {
-    let styleMapButton = { marginRight: '0.309em', flexShrink: '0' }
+    let styleMapButton = {marginRight: '0.309em', flexShrink: '0'}
     if (this.props.geoJSON) {
       styleMapButton['background'] = '#8967d2'
     }
@@ -250,8 +250,8 @@ class SearchFields extends React.Component {
           />
         </div>
         <FlexRow
-          style={{ justifyContent: 'center', marginTop: '0.309em' }}
-          items={[mapButton, undoButton, searchButton]}
+          style={{justifyContent: 'center', marginTop: '0.309em'}}
+          items={[ mapButton, undoButton, searchButton ]}
         />
 
         <ToggleDisplay show={this.state.showMap}>

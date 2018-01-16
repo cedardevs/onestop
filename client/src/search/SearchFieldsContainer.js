@@ -11,7 +11,7 @@ import {showCollections} from '../actions/FlowActions'
 const mapStateToProps = state => {
   return {
     queryString: state.behavior.search.queryText,
-    geoJSON: state.behavior.search.geoJSON
+    geoJSON: state.behavior.search.geoJSON,
   }
 }
 
