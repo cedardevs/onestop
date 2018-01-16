@@ -147,8 +147,6 @@ class Checkbox extends Component {
       ...(this.state.hovering ? styleCheckmarkHover : {}),
     }
 
-    // TODO merge checkmark style changes with disabled stuff
-
     return (
       <div style={styleContainer}>
         <div

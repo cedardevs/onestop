@@ -95,7 +95,7 @@ export const titleCaseKeyword = term => {
   if (!term) {
     return null
   }
-  const trimmed = term.split('>').pop().trim() // TODO no more need to split, combine with categoryName?
+  const trimmed = term.split('>').pop().trim()
   return trimmed === trimmed.toUpperCase()
     ? _.startCase(trimmed.toLowerCase())
     : trimmed

@@ -46,7 +46,6 @@ export default class FacetFilter extends Component {
   }
 
   updateStoreAndSubmitSearch = (facet, selected) => {
-    // TODO put is-disabled check here? would need to pass information in to make that determination
     const category = facet.category
     const term = facet.term
     this.props.toggleFacet(category, term, selected)
@@ -82,7 +81,6 @@ export default class FacetFilter extends Component {
       )
 
       // high-level categories (e.g. - "Data Themes" | "Platforms" | "Projects" | "Data Centers" | "Data Resolution")
-      // TODO simplifyu this.state.openExpandables[expandableKey]
       expandableCategories.push(
         <Expandable
           open={!!this.state.openExpandables[expandableKey]}
