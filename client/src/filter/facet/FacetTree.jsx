@@ -7,14 +7,13 @@ import Immutable from 'seamless-immutable'
 
 /**
   This component contains the content of a facet category. It is essentially a
-  speciallized tree menu.
+  specialized tree menu.
 **/
 
 const styleFacet = (backgroundColor, disabled) => {
   return {
     padding: '0.618em',
     backgroundColor: backgroundColor ? backgroundColor : 'initial',
-    textDecoration: disabled ? 'line-through' : 'initial',
     color: disabled ? '#cbcbcb' : '#FFF',
     display: 'flex',
     textAlign: 'left',
