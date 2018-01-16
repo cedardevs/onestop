@@ -11,6 +11,7 @@ import {
   FACETS_RECEIVED,
   CLEAR_FACETS,
 } from '../../actions/SearchRequestActions'
+import {REMOVE_ALL_FILTERS} from '../../actions/SearchParamActions'
 
 export const initialState = Immutable({
   collections: {},
@@ -78,6 +79,9 @@ export const results = (state = initialState, action) => {
       )
 
     case CLEAR_FACETS:
+      return Immutable.set(state, 'facets', initialState.facets)
+
+    case REMOVE_ALL_FILTERS:
       return Immutable.set(state, 'facets', initialState.facets)
 
     default:
