@@ -40,8 +40,8 @@ class Filters extends Component {
 
     this.filters = [
       {
-        name: 'map',
-        heading: <FilterHeading icon={mapFilterIcon} text="Spatial" />,
+        name: 'location',
+        heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
         content: <MapFilterContainer />,
       },
       {
@@ -65,15 +65,6 @@ class Filters extends Component {
     this.state = {
       openIndex: -1,
     }
-  }
-
-  handleFilterToggle = event => {
-    this.setState(prevState => ({
-      ...prevState,
-      openIndex: event.open
-        ? this.filters.findIndex((filter, index) => index === event.value)
-        : -1,
-    }))
   }
 
   render() {
@@ -114,10 +105,7 @@ class Filters extends Component {
           <Expandable
             key={index}
             value={index}
-            open={
-              index === this.state.openIndex || filter.name === 'keywords'
-            } /* force keywords open */
-            onToggle={this.handleFilterToggle}
+            showArrow={true}
             heading={filter.heading}
             styleHeading={styleFilterHeadings}
             content={filter.content}
