@@ -213,14 +213,9 @@ export default class TimeFilter extends Component {
   }
 
   isValidDateRange = (startMap, endMap) => {
-    const now = moment()
-    let startMoment = moment(startMap)
-    let endMoment = moment(endMap)
-
     // No entered date will create a moment for now. Make sure if no data was entered, days are correctly identified as null
-    let start =
-      !startMap.year && startMoment.isSame(now, 'day') ? null : startMoment
-    let end = !endMap.year && endMoment.isSame(now, 'day') ? null : endMoment
+    const start = startMap.year != null ? moment(startMap) : null
+    const end = endMap.year != null ? moment(endMap) : null
 
     // Valid date range can be just start, just end, or a start <= end
     if (start && end) {
