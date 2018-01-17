@@ -203,7 +203,7 @@ export default class MapFilter extends Component {
 
   renderCoordinateInput = () => {
     return (
-      <div key='MapFilterCoordinatesInput::all'>
+      <div key="MapFilterCoordinatesInput::all">
         <form>
           <fieldset onChange={event => this.onChange(event)}>
             <legend>Bounding Box Coordinates: </legend>

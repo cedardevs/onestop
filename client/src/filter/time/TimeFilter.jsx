@@ -154,19 +154,15 @@ export default class TimeFilter extends Component {
         stateClone.endDateDay
       ),
       dateRangeValid: this.isValidDateRange(
-        moment(
-          this.textToNumeric(
-            stateClone.startDateYear,
-            stateClone.startDateMonth,
-            stateClone.startDateDay
-          )
+        this.textToNumeric(
+          stateClone.startDateYear,
+          stateClone.startDateMonth,
+          stateClone.startDateDay
         ),
-        moment(
-          this.textToNumeric(
-            stateClone.endDateYear,
-            stateClone.endDateMonth,
-            stateClone.endDateDay
-          )
+        this.textToNumeric(
+          stateClone.endDateYear,
+          stateClone.endDateMonth,
+          stateClone.endDateDay
         )
       ),
     })
@@ -216,7 +212,16 @@ export default class TimeFilter extends Component {
     return validYear && validMonth && validDay
   }
 
-  isValidDateRange = (start, end) => {
+  isValidDateRange = (startMap, endMap) => {
+    const now = moment()
+    let startMoment = moment(startMap)
+    let endMoment = moment(endMap)
+
+    // No entered date will create a moment for now. Make sure if no data was entered, days are correctly identified as null
+    let start =
+      !startMap.year && startMoment.isSame(now, 'day') ? null : startMoment
+    let end = !endMap.year && endMoment.isSame(now, 'day') ? null : endMoment
+
     // Valid date range can be just start, just end, or a start <= end
     if (start && end) {
       return start.isSameOrBefore(end)
