@@ -1,24 +1,23 @@
 import {connect} from 'react-redux'
 import SearchFields from './SearchFields'
+import {triggerSearch, clearCollections} from '../actions/SearchRequestActions'
 import {
-  triggerSearch,
-  clearFacets,
-  clearCollections,
-} from '../actions/SearchRequestActions'
-import {updateQuery, updateSearch} from '../actions/SearchParamActions'
+  removeAllFilters,
+  updateQuery,
+  updateSearch,
+} from '../actions/SearchParamActions'
 import {showCollections} from '../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {
     queryString: state.behavior.search.queryText,
-    geoJSON: state.behavior.search.geoJSON,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
     submit: () => {
-      dispatch(clearFacets())
+      dispatch(removeAllFilters())
       dispatch(clearCollections())
       dispatch(triggerSearch())
       dispatch(showCollections())

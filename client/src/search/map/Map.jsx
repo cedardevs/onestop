@@ -7,10 +7,35 @@ import 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
 
+const styleMapContainer = (showMap, forceShow) => {
+  return {
+    boxSizing: 'border-box',
+    backgroundColor: '#3D97D2',
+    transition:
+      showMap || forceShow
+        ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
+        : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
+    padding: showMap && !forceShow ? '1em' : '0em',
+    height: showMap || forceShow ? '400px' : '0px',
+    width: showMap || forceShow ? '100%' : '0%',
+  }
+}
+
+const styleMap = (showMap, forceShow) => {
+  return {
+    zIndex: forceShow ? 2 : 1,
+    padding: 0,
+    margin: 0,
+    display: showMap || forceShow ? 'flex' : 'none',
+    position: 'relative',
+    height: '100%',
+    alignItems: 'flex-start',
+  }
+}
+
 class Map extends React.Component {
   constructor(props) {
     super(props)
-    this.handleNewGeometry = props.handleNewGeometry
     this.removeGeometry = props.removeGeometry
     this.geoJsonSelection = props.geoJsonSelection
     this.geoJsonFeatures = props.geoJsonFeatures
@@ -22,7 +47,19 @@ class Map extends React.Component {
     }
   }
 
+  handleTransitionEnd = event => {
+    // this ensures the map tiles get loaded properly around the animation
+    if (event.propertyName === 'height' || event.propertyName === 'width') {
+      this.state.map.invalidateSize()
+    }
+  }
+
   componentDidMount() {
+    this.mapContainerNode.addEventListener(
+      'transitionend',
+      this.handleTransitionEnd
+    )
+
     // Build the map defaults. When finished, use them to set the state then set up the map
     Promise.resolve(this.mapDefaults()).then(state => {
       this.setState(state, () => {
@@ -53,7 +90,7 @@ class Map extends React.Component {
       resultsLayers,
       editableLayers,
       // Define map with defaults
-      map: L.map(ReactDOM.findDOMNode(this), {
+      map: L.map(ReactDOM.findDOMNode(this.mapNode), {
         minZoom: 2,
         maxZoom: 5,
         layers: [
@@ -76,8 +113,9 @@ class Map extends React.Component {
     return new L.Control.Draw({
       edit: {
         featureGroup: layerGroup,
+        edit: false,
       },
-      remove: true,
+      remove: false,
       position: 'topright',
       draw: {
         polyline: false,
@@ -143,6 +181,9 @@ class Map extends React.Component {
   }
 
   updateResultsLayers({geoJsonFeatures, focusedFeatures}) {
+    if (!geoJsonFeatures) {
+      return
+    }
     // Apply colors to focused feature
     let {resultsLayers} = this.state
     const selectedStyle = {color: '#FFA268'}
@@ -183,26 +224,53 @@ class Map extends React.Component {
     map = null
   }
 
+  updateGeometryAndSubmit = geoJSON => {
+    if (this.props.geoJSON || geoJSON) {
+      if (geoJSON) {
+        this.props.handleNewGeometry(geoJSON)
+      }
+      else {
+        this.props.removeGeometry()
+      }
+      this.props.submit()
+    }
+  }
+
   loadDrawEventHandlers() {
     let {map} = this.state
     map.on('draw:drawstart', e => {
-      this.removeGeometry()
+      this.updateGeometryAndSubmit()
     })
     map.on('draw:created', e => {
       let newLayer = e.layer.toGeoJSON()
-      this.handleNewGeometry(newLayer)
+      this.updateGeometryAndSubmit(newLayer)
     })
     map.on('draw:edited', e => {
       let layerModified = e.getLayers()[0].toGeoJSON()
-      this.handleNewGeometry(layerModified)
+      this.updateGeometryAndSubmit(layerModified)
     })
     map.on('draw:deleted', e => {
-      this.removeGeometry()
+      this.updateGeometryAndSubmit()
     })
   }
 
   render() {
-    return <div style={this.props.style} />
+    const {showMap, forceShow} = this.props
+    return (
+      <div
+        style={styleMapContainer(showMap, forceShow)}
+        ref={mapContainerNode => {
+          this.mapContainerNode = mapContainerNode
+        }}
+      >
+        <div
+          style={styleMap(showMap, forceShow)}
+          ref={mapNode => {
+            this.mapNode = mapNode
+          }}
+        />
+      </div>
+    )
   }
 }
 

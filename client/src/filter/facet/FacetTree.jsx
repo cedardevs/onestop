@@ -18,6 +18,7 @@ const styleFacet = (backgroundColor, disabled) => {
     display: 'flex',
     textAlign: 'left',
     alignItems: 'center',
+    marginBottom: '1px',
   }
 }
 

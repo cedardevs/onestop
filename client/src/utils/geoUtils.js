@@ -64,13 +64,12 @@ export const convertNegativeLongitudes = coordinates => {
   )
 }
 
-export const convertBboxToGeoJson = coordString => {
-  const coordArray = coordString.split(',').map(x => parseFloat(x))
-  const sw = [ coordArray[0], coordArray[1] ]
-  const nw = [ coordArray[0], coordArray[3] ]
-  const ne = [ coordArray[2], coordArray[3] ]
-  const se = [ coordArray[2], coordArray[1] ]
-  const coordinates = [ sw, nw, ne, se, sw ]
+export const convertBboxToGeoJson = (west, south, east, north) => {
+  const ws = [ west, south ] // min x, min y
+  const wn = [ west, north ]
+  const en = [ east, north ] // max x, max y
+  const es = [ east, south ]
+  const coordinates = [ ws, es, en, wn, ws ] // CCW for exterior polygon
   if (
     !_.every(
       coordinates,
@@ -89,12 +88,34 @@ export const convertBboxToGeoJson = coordString => {
       },
     }
   }
+  // return {
+  //   type: 'Feature',
+  //   properties: {},
+  //   geometry: ensureDatelineFriendlyPolygon({coordinates: [ coordinates ], type: 'Polygon'})
+  // }
 }
 
-export const convertGeoJsonToBbox = geoJson => {
+export const convertBboxStringToGeoJson = coordString => {
+  const coordArray = coordString.split(',').map(x => parseFloat(x))
+  return convertBboxToGeoJson(...coordArray)
+}
+
+export const convertGeoJsonToBbox = geoJSON => {
   const coordinates =
-    geoJson && geoJson.geometry && geoJson.geometry.coordinates
-  return coordinates
-    ? coordinates[0].filter((el, idx) => [ 0, 2 ].includes(idx)).toString()
-    : ''
+    geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates
+  let bbox = null
+  if (coordinates) {
+    bbox = {
+      west: _.round(coordinates[0][0][0], 4),
+      south: _.round(coordinates[0][0][1], 4),
+      east: _.round(coordinates[0][2][0], 4),
+      north: _.round(coordinates[0][2][1], 4),
+    }
+  }
+  return bbox
+}
+
+export const convertGeoJsonToBboxString = geoJSON => {
+  const bbox = convertGeoJsonToBbox(geoJSON)
+  return bbox ? `${bbox.west},${bbox.south},${bbox.east},${bbox.north}` : ''
 }

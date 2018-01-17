@@ -1,16 +1,18 @@
 import React, {Component} from 'react'
 
 import Expandable from '../common/Expandable'
+import FlexRow from '../common/FlexRow'
+import Button from '../common/input/Button'
 import FilterHeading from './FilterHeading'
 import TimeFilterContainer from './time/TimeFilterContainer'
 import FacetFilterContainer from './facet/FacetFilterContainer'
-//import MapFilter from './MapFilter'
+import MapFilterContainer from './spatial/MapFilterContainer'
 
 import mapFilterIcon from '../../img/font-awesome/white/svg/globe.svg'
 import timeFilterIcon from '../../img/font-awesome/white/svg/calendar.svg'
 import facetFilterIcon from '../../img/font-awesome/white/svg/key.svg'
 
-import defaultStyles from '../common/defaultStyles'
+import arrowLeft from '../../img/font-awesome/white/svg/arrow-left.svg'
 
 const styleFilters = {
   borderTop: '1px solid white',
@@ -18,7 +20,7 @@ const styleFilters = {
 
 const styleFilterHeadings = {
   fontWeight: 'bold',
-  backgroundColor: '#222C37',
+  backgroundColor: '#0E274E',
   padding: '0.618em',
   borderBottom: '1px solid white',
 }
@@ -29,7 +31,7 @@ const styleFilterContents = {
 
 const styleFacetFilterContents = {
   marginNest: '1em',
-  backgroundColor: '#3E97D1',
+  backgroundColor: '#327CAC',
 }
 
 class Filters extends Component {
@@ -37,12 +39,11 @@ class Filters extends Component {
     super(props)
 
     this.filters = [
-      // TODO: reintroduce these filters when we officially move them from the top menu search component
-      // {
-      //  name: "map",
-      //   heading: <FilterHeading icon={mapFilterIcon} text="Map Filter" />,
-      //   content: <MapFilter />,
-      // },
+      {
+        name: 'location',
+        heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
+        content: <MapFilterContainer />,
+      },
       {
         name: 'time',
         heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
@@ -66,26 +67,45 @@ class Filters extends Component {
     }
   }
 
-  handleFilterToggle = event => {
-    this.setState(prevState => ({
-      ...prevState,
-      openIndex: event.open
-        ? this.filters.findIndex((filter, index) => index === event.value)
-        : -1,
-    }))
-  }
-
   render() {
+    const {showLeft, toggleLeft} = this.props
+
+    const heading = (
+      <h1
+        key="filtersH1"
+        style={{
+          fontSize: '1.309em',
+          color: 'white',
+          padding: '0.618em',
+          margin: 0,
+        }}
+      >
+        Filters
+      </h1>
+    )
+    const buttonHide = (
+      <Button
+        key="filtersButtonHide"
+        icon={arrowLeft}
+        style={{borderRadius: 0}}
+        styleIcon={{width: '1em', height: 'initial'}}
+        onClick={() => {
+          if (showLeft) {
+            toggleLeft()
+          }
+        }}
+        title={'Hide Filter Menu'}
+        ariaExpanded={true}
+      />
+    )
+
     const expandableFilters = this.filters.map((filter, index) => {
       return (
         <div key={index} style={styleFilters}>
           <Expandable
             key={index}
             value={index}
-            open={
-              index === this.state.openIndex || filter.name === 'keywords'
-            } /* force keywords open */
-            onToggle={this.handleFilterToggle}
+            showArrow={true}
             heading={filter.heading}
             styleHeading={styleFilterHeadings}
             content={filter.content}
@@ -95,7 +115,19 @@ class Filters extends Component {
       )
     })
 
-    return <div>{expandableFilters}</div>
+    return (
+      <div>
+        <FlexRow
+          items={[ heading, buttonHide ]}
+          style={{
+            justifyContent: 'space-between',
+            backgroundColor: '#242C36',
+            borderTop: '1px solid #FFF',
+          }}
+        />
+        {expandableFilters}
+      </div>
+    )
   }
 }
 

@@ -11,7 +11,7 @@ const styleInputValidity = isValid => {
 }
 
 const styleTimeFilter = {
-  backgroundColor: '#5396CC',
+  backgroundColor: '#3D97D2',
   padding: '0.618em',
   color: '#F9F9F9',
 }
@@ -96,24 +96,25 @@ export default class TimeFilter extends Component {
     let startDateGiven = startDate.isValid()
     let endDateGiven = endDate.isValid()
 
+    // Set fields as strings to avoid incorrect falsey in isValidDate if any fields are changed (January == 0 for moments)
     this.setState({
       startDateYear: startDateGiven
-        ? startDate.year()
+        ? startDate.year().toString()
         : this.initialState().startDateYear,
       startDateMonth: startDateGiven
-        ? startDate.month()
+        ? startDate.month().toString()
         : this.initialState().startDateMonth,
       startDateDay: startDateGiven
-        ? startDate.date()
+        ? startDate.date().toString()
         : this.initialState().startDateDay,
       endDateYear: endDateGiven
-        ? endDate.year()
+        ? endDate.year().toString()
         : this.initialState().endDateYear,
       endDateMonth: endDateGiven
-        ? endDate.month()
+        ? endDate.month().toString()
         : this.initialState().endDateMonth,
       endDateDay: endDateGiven
-        ? endDate.date()
+        ? endDate.date().toString()
         : this.initialState().endDateDay,
     })
   }
@@ -226,9 +227,10 @@ export default class TimeFilter extends Component {
   }
 
   clearDates = () => {
-    this.setState(this.initialState())
-    this.props.updateDateRange(null, null)
+    this.props.removeDateRange()
     this.props.submit()
+
+    this.setState(this.initialState())
   }
 
   applyDates = () => {
@@ -288,9 +290,8 @@ export default class TimeFilter extends Component {
     return (
       <div style={styleTimeFilter}>
         <p>
-          Filter your search results by providing a start date, end date, or
-          date range. Use year, year and month, or full dates. Future dates are
-          not accepted.
+          Provide a start date, end date, or date range. Use year, year and
+          month, or full dates. Future dates are not accepted.
         </p>
         <form>
           <fieldset

@@ -88,6 +88,15 @@ const toggleBackgroundImage = boolVisible => {
   }
 }
 
+export const UPDATE_BOUNDS = 'UPDATE_BOUNDS'
+export const updateBounds = (to, source) => {
+  return {
+    type: UPDATE_BOUNDS,
+    to: to,
+    source: source,
+  }
+}
+
 export const initialize = () => {
   return dispatch => {
     dispatch(fetchConfig())

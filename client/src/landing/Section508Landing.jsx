@@ -4,7 +4,10 @@ import PropTypes from 'prop-types'
 import styles from './section508.css'
 import moment from 'moment'
 import Button from '../common/input/Button'
-import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../utils/geoUtils'
+import {
+  convertBboxStringToGeoJson,
+  convertGeoJsonToBbox,
+} from '../utils/geoUtils'
 
 const styleButton = {
   margin: '1em 0 0 0.618em',
@@ -39,7 +42,7 @@ class Section508Landing extends React.Component {
       geoJSON: {
         label: 'Bounding Box',
         placeholder: 'e.g. -180.00,-90.00,180.00,90.00 (W,S,E,N)',
-        toQueryValue: convertBboxToGeoJson,
+        toQueryValue: convertBboxStringToGeoJson,
         toFieldValue: convertGeoJsonToBbox,
       },
     }

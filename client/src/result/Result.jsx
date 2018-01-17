@@ -14,9 +14,10 @@ export default class Result extends Component {
     this.selectedFacets = props.selectedFacets
     this.startDateTime = props.startDateTime
     this.endDateTime = props.endDateTime
+    this.geoJSON = props.geoJSON
     this.toggleFacet = props.toggleFacet
     this.updateDateRange = props.updateDateRange
-    this.submit = props.submit
+    ;(this.removeGeometry = props.removeGeometry), (this.submit = props.submit)
   }
 
   componentWillUpdate(nextProps) {
@@ -24,6 +25,7 @@ export default class Result extends Component {
     this.selectedFacets = nextProps.selectedFacets
     this.startDateTime = nextProps.startDateTime
     this.endDateTime = nextProps.endDateTime
+    this.geoJSON = nextProps.geoJSON
   }
 
   unselectFacetAndSubmitSearch = (category, term) => {
@@ -36,7 +38,22 @@ export default class Result extends Component {
     this.submit()
   }
 
+  unselectMapAndSubmitSearch = () => {
+    this.removeGeometry()
+    this.submit()
+  }
+
   render() {
+    let appliedMapFilter = null
+    if (this.geoJSON) {
+      appliedMapFilter = (
+        <AppliedMapFilter
+          geoJSON={this.geoJSON}
+          onUnselectMap={this.unselectMapAndSubmitSearch}
+        />
+      )
+    }
+
     return (
       <div style={styleResult}>
         <AppliedFacetFilter
@@ -57,7 +74,7 @@ export default class Result extends Component {
         {/*endDateTime={this.endDateTime}*/}
         {/*onUnselectDateTime={this.unselectDateTimeAndSubmitSearch}*/}
         {/*/>*/}
-        {/*<AppliedMapFilter />*/}
+        {appliedMapFilter}
 
         {this.props.children}
       </div>

@@ -1,14 +1,19 @@
 import React, {Component} from 'react'
 
-const styleDefault = {
-  color: 'white',
-  background: '#277CB2', // $color_primary
-  borderRadius: '0.309em',
-  border: 'transparent',
-  textAlign: 'center',
-  fontSize: '1.25em',
-  margin: 0,
-  padding: '0.618em',
+const styleDefault = iconAndText => {
+  return {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: 'white',
+    background: '#277CB2', // $color_primary
+    borderRadius: '0.309em',
+    border: 'transparent',
+    textAlign: 'center',
+    fontSize: '1.25em',
+    margin: 0,
+    padding: iconAndText ? '0.309em' : '0.618em',
+  }
 }
 
 const styleHoverDefault = {
@@ -133,18 +138,20 @@ export default class Button extends Component {
       ariaExpanded,
     } = this.props
 
+    const iconAndText = icon && text
+
     const stylesMerged = {
-      ...styleDefault,
+      ...styleDefault(iconAndText),
       ...style,
-      ...(this.state.hovering ? {...styleHoverDefault, styleHover} : {}),
-      ...(this.state.pressing ? {...stylePressDefault, stylePress} : {}),
-      ...(this.state.focusing ? {...styleFocusDefault, styleFocus} : {}),
+      ...(this.state.hovering ? {...styleHoverDefault, ...styleHover} : {}),
+      ...(this.state.pressing ? {...stylePressDefault, ...stylePress} : {}),
+      ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {}),
       ...(icon && !text ? styleIconPadding : {}),
     }
 
     const styleIconResolved = styleIcon
       ? styleIcon
-      : {width: '2em', height: '2em'}
+      : {width: '2em', height: '2em', marginRight: iconAndText ? '0.618em' : 0}
 
     return (
       <button
@@ -160,7 +167,7 @@ export default class Button extends Component {
         aria-expanded={ariaExpanded}
         aria-label={title || text}
       >
-        {icon ? (
+        {icon && !this.props.children ? (
           <img
             src={icon}
             style={styleIconResolved}
@@ -168,7 +175,8 @@ export default class Button extends Component {
             alt={title}
           />
         ) : null}
-        {text}
+        {text && !this.props.children ? <span>{text}</span> : null}
+        {this.props.children ? <div>{this.props.children}</div> : null}
       </button>
     )
   }

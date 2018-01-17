@@ -1,6 +1,9 @@
 import {connect} from 'react-redux'
 import TimeFilter from './TimeFilter'
-import {updateDateRange} from '../../actions/SearchParamActions'
+import {
+  removeDateRange,
+  updateDateRange,
+} from '../../actions/SearchParamActions'
 import {
   clearCollections,
   triggerSearch,
@@ -19,6 +22,9 @@ const mapDispatchToProps = dispatch => {
   return {
     updateDateRange: (startDate, endDate) => {
       dispatch(updateDateRange(startDate, endDate))
+    },
+    removeDateRange: () => {
+      dispatch(removeDateRange())
     },
     submit: () => {
       dispatch(clearCollections())

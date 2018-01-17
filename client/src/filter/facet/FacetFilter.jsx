@@ -8,7 +8,7 @@ import _ from 'lodash'
 **/
 
 const styleExpandableCategoryHeading = {
-  backgroundColor: '#17478F',
+  backgroundColor: '#18478F',
   padding: '0.618em',
 }
 

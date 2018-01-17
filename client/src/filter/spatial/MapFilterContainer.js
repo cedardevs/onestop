@@ -1,9 +1,23 @@
 import {connect} from 'react-redux'
-import SpatialFilter from './MapFilter'
-import {toggleExcludeGlobal} from '../actions/SearchParamActions'
+import MapFilter from './MapFilter'
+import {
+  toggleExcludeGlobal,
+  newGeometry,
+  removeGeometry,
+} from '../../actions/SearchParamActions'
+import {toggleMap} from '../../actions/LayoutActions'
+import {
+  clearCollections,
+  triggerSearch,
+} from '../../actions/SearchRequestActions'
+import {showCollections} from '../../actions/FlowActions'
 
 const mapStateToProps = state => {
-  return {}
+  return {
+    showMap: state.ui.layout.showMap,
+    geoJSON: state.behavior.search.geoJSON,
+    excludeGlobal: state.behavior.search.excludeGlobal,
+  }
 }
 
 const mapDispatchToProps = dispatch => {
@@ -11,11 +25,21 @@ const mapDispatchToProps = dispatch => {
     toggleExcludeGlobal: () => {
       dispatch(toggleExcludeGlobal())
     },
+    submit: () => {
+      dispatch(clearCollections())
+      dispatch(triggerSearch())
+      dispatch(showCollections())
+    },
+    toggleMap: () => {
+      dispatch(toggleMap())
+    },
+    removeGeometry: () => dispatch(removeGeometry()),
+    handleNewGeometry: geoJSON => dispatch(newGeometry(geoJSON)),
   }
 }
 
 const MapFilterContainer = connect(mapStateToProps, mapDispatchToProps)(
-  SpatialFilter
+  MapFilter
 )
 
 export default MapFilterContainer
