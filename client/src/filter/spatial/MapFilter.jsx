@@ -42,6 +42,7 @@ const styleLabel = {
 const styleTextBox = {
   width: '10em',
   color: 'black',
+  fontFamily: 'Courier New',
 }
 
 export default class MapFilter extends Component {
@@ -202,14 +203,14 @@ export default class MapFilter extends Component {
 
   renderCoordinateInput = () => {
     return (
-      <div>
+      <div key='MapFilterCoordinatesInput::all'>
         <form>
           <fieldset onChange={event => this.onChange(event)}>
             <legend>Bounding Box Coordinates: </legend>
-            {this.renderInputRow('west', ' -180.00')}
-            {this.renderInputRow('south', ' -90.00')}
-            {this.renderInputRow('east', ' 180.00')}
-            {this.renderInputRow('north', ' 90.00')}
+            {this.renderInputRow('west', '-180.0 to 180.0')}
+            {this.renderInputRow('south', ' -90.0 to  90.0')}
+            {this.renderInputRow('east', '-180.0 to 180.0')}
+            {this.renderInputRow('north', ' -90.0 to  90.0')}
           </fieldset>
         </form>
       </div>
