@@ -51,6 +51,7 @@ export default class FacetTree extends React.Component {
       facetList: [],
       hierarchy: [],
       rovingIndex: null,
+      treeId: null,
     }
   }
 
@@ -156,6 +157,7 @@ export default class FacetTree extends React.Component {
         ...prevState,
         facetList: facets,
         hierarchy: this.props.hierarchy,
+        treeId: `tree-${this.props.headerId}`,
         rovingIndex: firstFocused.id,
       }
     }, this.updateAllVisibility)
@@ -434,6 +436,12 @@ export default class FacetTree extends React.Component {
     }
   }
 
+  handleFocus = e => {
+    if (e.target.id === this.state.treeId) {
+      document.getElementById(this.state.rovingIndex).focus()
+    }
+  }
+
   render() {
     const facetHierarchy = _.map(this.state.hierarchy, facet => {
       return this.createFacetComponent(facet)
@@ -441,7 +449,10 @@ export default class FacetTree extends React.Component {
 
     return (
       <div
+        tabIndex="-1"
+        onFocus={this.handleFocus}
         role="tree"
+        id={this.state.treeId}
         aria-labelledby={this.props.headerId}
         aria-multiselectable="true"
         onKeyUp={this.handleKeyPressed} // onKeyDown isnt an actual keypress
