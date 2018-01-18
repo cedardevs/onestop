@@ -105,6 +105,7 @@ class Filters extends Component {
           <Expandable
             key={index}
             value={index}
+            open={false}
             showArrow={true}
             heading={filter.heading}
             styleHeading={styleFilterHeadings}
