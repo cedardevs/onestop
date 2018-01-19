@@ -5,7 +5,7 @@ import * as geoUtils from '../../src/utils/geoUtils'
 const styleAppliedFacets = {
   display: 'flex',
   flexFlow: 'row wrap',
-  padding: '0 2em 1.618em 2em',
+  padding: '0 2em 1em',
 }
 
 export default class AppliedMapFilter extends Component {

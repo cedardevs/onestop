@@ -1,23 +1,18 @@
 import React, {Component} from 'react'
-import AppliedTime from './AppliedFacet'
+import AppliedTime from './AppliedTime'
 
 const styleAppliedTimes = {
   display: 'flex',
   flexFlow: 'row wrap',
-  padding: '0 2em 0 2em',
+  padding: '0 2em 1em',
 }
 
 export default class AppliedTimeFilter extends Component {
   render() {
-    const {
-      location,
-      startDateTime,
-      endDateTime,
-      onUnselectDateTime,
-    } = this.props
+    const {startDateTime, endDateTime, onUnselectDateTime} = this.props
 
     let appliedTimes = []
-    if (!location.includes('files') && (startDateTime || endDateTime)) {
+    if (startDateTime || endDateTime) {
       if (startDateTime) {
         appliedTimes.push(
           <AppliedTime
@@ -33,7 +28,7 @@ export default class AppliedTimeFilter extends Component {
           <AppliedTime
             key="end"
             label="Before:"
-            dateTime={startDateTime}
+            dateTime={endDateTime}
             onUnselect={() => onUnselectDateTime(startDateTime, null)}
           />
         )
