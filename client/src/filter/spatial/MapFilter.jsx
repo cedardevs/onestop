@@ -73,7 +73,7 @@ export default class MapFilter extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(!nextProps.isOpen && nextProps.showMap) {
+    if (!nextProps.isOpen && nextProps.showMap) {
       this.props.toggleMap()
     }
     this.mapGeoJSONToState(nextProps.geoJSON)

@@ -48,39 +48,37 @@ class Filters extends Component {
     }
   }
 
-  handleFilterToggle = (event) => {
+  handleFilterToggle = event => {
     let toggledFilter = event.value
     this.setState({
-      [toggledFilter]: event.open
+      [toggledFilter]: event.open,
     })
   }
 
   createFilters = () => {
-    return (
-       [
-        {
-          name: 'location',
-          heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
-          content: <MapFilterContainer isOpen={this.state.location} />,
-        },
-        {
-          name: 'time',
-          heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
-          content: <TimeFilterContainer />,
-        },
-        {
-          name: 'keywords',
-          heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
-          content: (
-            <FacetFilterContainer
-              submit={this.props.submit}
-              marginNest={styleFacetFilterContents.marginNest}
-              backgroundColor={styleFacetFilterContents.backgroundColor}
-            />
-          ),
-        },
-      ]
-  )
+    return [
+      {
+        name: 'location',
+        heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
+        content: <MapFilterContainer isOpen={this.state.location} />,
+      },
+      {
+        name: 'time',
+        heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
+        content: <TimeFilterContainer />,
+      },
+      {
+        name: 'keywords',
+        heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
+        content: (
+          <FacetFilterContainer
+            submit={this.props.submit}
+            marginNest={styleFacetFilterContents.marginNest}
+            backgroundColor={styleFacetFilterContents.backgroundColor}
+          />
+        ),
+      },
+    ]
   }
 
   render() {
