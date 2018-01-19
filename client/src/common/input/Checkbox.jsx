@@ -15,26 +15,33 @@ const styleCheckboxContainer = {
   border: '1px solid #ddd',
 }
 
+const styleDisabled = {
+  background: '#cbcbcb',
+  border: '1px solid #cbcbcb',
+}
+
 const styleInput = {
   visibility: 'hidden',
 }
 
 const styleCheckmark = {
-  opacity: '0.1',
+  opacity: '0.2',
   position: 'absolute',
   width: '0.5em',
   height: '0.25em',
   background: 'transparent',
-  top: '0.25em',
-  left: '0.25em',
+  top: '0.2em',
+  left: '0.2em',
   border: '3px solid #333',
   borderTop: 'none',
   borderRight: 'none',
   transform: 'rotate(-45deg)',
 }
 
-const styleCheckmarkHover = {
-  opacity: '0.2',
+const styleCheckboxHover = {
+  // background: 'yellow',
+  transform: 'rotate(-45deg) scale(1.618)',
+  top: 0,
 }
 
 const styleCheckmarkChecked = {
@@ -58,6 +65,9 @@ class Checkbox extends Component {
   }
 
   handleChange = event => {
+    if (this.props.disabled) {
+      return
+    }
     const {value, onChange} = this.props
     if (onChange) {
       onChange({checked: !this.state.checked, value: value})
@@ -72,6 +82,9 @@ class Checkbox extends Component {
   }
 
   handleMouseOver = event => {
+    if (this.props.disabled) {
+      return
+    }
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: true,
@@ -80,6 +93,9 @@ class Checkbox extends Component {
   }
 
   handleMouseOut = event => {
+    if (this.props.disabled) {
+      return
+    }
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: false,
@@ -88,6 +104,9 @@ class Checkbox extends Component {
   }
 
   handleMouseDown = event => {
+    if (this.props.disabled) {
+      return
+    }
     this.setState(prevState => ({
       checked: prevState.checked,
       hovering: prevState.hovering,
@@ -119,6 +138,7 @@ class Checkbox extends Component {
       ...(this.state.focused && this.props.styleFocus
         ? this.props.styleFocus
         : {}),
+      ...(this.props.disabled ? styleDisabled : {}),
     }
 
     const styleCheck = {
@@ -126,7 +146,7 @@ class Checkbox extends Component {
       ...(this.state.checked || (this.state.hovering && this.state.pressing)
         ? styleCheckmarkChecked
         : {}),
-      ...(this.state.hovering ? styleCheckmarkHover : {}),
+      ...(this.state.hovering ? styleCheckboxHover : {}),
     }
 
     return (
@@ -135,6 +155,7 @@ class Checkbox extends Component {
           role="checkbox"
           aria-checked={this.state.checked}
           aria-label={this.props.label}
+          aria-disabled={this.props.disabled}
           tabIndex={this.props.tabIndex || 0}
           style={styleCheckbox}
           onClick={this.handleChange}
@@ -151,6 +172,7 @@ class Checkbox extends Component {
           type="checkbox"
           name={this.props.name}
           value={this.props.value}
+          disabled={this.props.disabled}
           checked={this.state.checked}
           onChange={() => {}}
           style={styleInput}

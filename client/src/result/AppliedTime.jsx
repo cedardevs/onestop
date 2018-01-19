@@ -77,7 +77,6 @@ export default class AppliedTime extends Component {
       styleHover,
       styleFocus,
     } = this.props
-    const name = term.split('>').pop().trim()
 
     const stylesMerged = {
       ...styleDefault,

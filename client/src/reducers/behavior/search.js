@@ -5,10 +5,12 @@ import {
   NEW_GEOMETRY,
   REMOVE_GEOMETRY,
   UPDATE_DATE_RANGE,
+  REMOVE_DATE_RANGE,
   TOGGLE_FACET,
   TOGGLE_EXCLUDE_GLOBAL,
   TOGGLE_SELECTION,
   CLEAR_SELECTIONS,
+  REMOVE_ALL_FILTERS,
 } from '../../actions/SearchParamActions'
 import {CLEAR_FACETS} from '../../actions/SearchRequestActions'
 
@@ -39,6 +41,12 @@ export const search = (state = initialState, action) => {
         endDateTime: action.endDate,
       })
 
+    case REMOVE_DATE_RANGE:
+      return Immutable.merge(state, {
+        startDateTime: initialState.startDateTime,
+        endDateTime: initialState.endDateTime,
+      })
+
     case TOGGLE_FACET:
       return Immutable.set(state, 'selectedFacets', action.selectedFacets)
 
@@ -60,6 +68,16 @@ export const search = (state = initialState, action) => {
 
     case UPDATE_SEARCH:
       return Immutable.merge(initialState, action.params || {})
+
+    case REMOVE_ALL_FILTERS:
+      return Immutable.merge(state, {
+        geoJSON: null,
+        startDateTime: null,
+        endDateTime: null,
+        selectedFacets: {},
+        selectedIds: [],
+        excludeGlobal: null,
+      })
 
     default:
       return state

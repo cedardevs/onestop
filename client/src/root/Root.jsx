@@ -7,8 +7,10 @@ import Background from '../landing/background/Background'
 import BannerContainer from './banner/BannerContainer'
 import DetailContainer from '../detail/DetailContainer'
 import HeaderContainer from './HeaderContainer'
+import MapContainer from '../search/map/MapContainer'
 
-import Filters from '../filter/Filters'
+import FiltersContainer from '../filter/FiltersContainer'
+import FiltersHiddenContainer from '../filter/FiltersHiddenContainer'
 
 import LoadingBarContainer from '../loading/LoadingBarContainer'
 
@@ -102,6 +104,8 @@ export default class Root extends Component {
   }
 
   render() {
+    const {showLeft, toggleLeft, showRight} = this.props
+
     const header = (
       <div>
         <BannerContainer />
@@ -114,10 +118,18 @@ export default class Root extends Component {
       </div>
     )
 
-    const left =
-      this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage() ? (
-        <Filters />
-      ) : null
+    const layoutContext =
+      this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
+
+    let left = null
+    if (layoutContext) {
+      if (showLeft) {
+        left = <FiltersContainer />
+      }
+      else {
+        left = <FiltersHiddenContainer />
+      }
+    }
 
     const middle = (
       <div>
@@ -126,6 +138,8 @@ export default class Root extends Component {
           showImage={this.isNot508()}
           showOverlay={this.isNotLanding() && this.isNot508()}
         />
+        {/*TODO: replace this with ArcGIS map?*/}
+        <MapContainer selection={true} features={false} />
         {this.props.children}
       </div>
     )
@@ -135,11 +149,11 @@ export default class Root extends Component {
         header={header}
         left={left}
         leftWidth={256}
-        leftVisible={this.state.leftVisible}
+        leftVisible={showLeft}
         middle={middle}
         right={null}
         rightWidth={256}
-        rightVisible={this.state.rightVisible}
+        rightVisible={showRight}
         footer={<FooterContainer />}
       />
     )

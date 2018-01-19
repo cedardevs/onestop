@@ -20,6 +20,7 @@ buildscript {
 
 ext {
   esVersion = '5.5.3'
+  isRelease = System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean
 }
 
 subprojects {
@@ -50,7 +51,8 @@ subprojects {
   }
 }
 
-task promote(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
+task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
+  onlyIf { isRelease }
   executable = "bash"
   args = ["-c", "curl -X POST -u \"\$BINTRAY_USER:\$BINTRAY_KEY\" -H \"Content-Length: 0\"" +
     "http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version\""]
