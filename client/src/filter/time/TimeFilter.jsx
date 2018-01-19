@@ -13,7 +13,7 @@ const styleInputValidity = isValid => {
 const styleTimeFilter = {
   backgroundColor: '#3D97D2',
   padding: '0.618em',
-  color: '#F9F9F9',
+  // color: '#F9F9F9',
 }
 
 const styleFieldset = {
@@ -21,20 +21,22 @@ const styleFieldset = {
   width: '15em',
 }
 
-const styleLabels = {
+const styleDate = {
   display: 'flex',
   flexDirection: 'row',
+}
+
+const styleField = {
+  margin: '2px',
+  display: 'flex',
+  flexDirection: 'column',
   alignItems: 'center',
   justifyContent: 'space-around',
   marginBottom: '0.25em',
 }
 
-const styleInputs = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'space-around',
-  color: 'black',
+const styleLabel = {
+  marginBottom: '0.25em',
 }
 
 const styleYear = {
@@ -136,7 +138,8 @@ export default class TimeFilter extends Component {
     }
   }
 
-  onChange(field, value) {
+  onChange = (field, value) => {
+    console.log('wtf', field, value)
     let stateClone = {...this.state}
     stateClone[field] = value
 
@@ -268,8 +271,8 @@ export default class TimeFilter extends Component {
     }
   }
 
-  render() {
-    const applyButton = (
+  createApplyButton = () => {
+    return (
       <Button
         key="TimeFilter::apply"
         text="Apply"
@@ -278,8 +281,10 @@ export default class TimeFilter extends Component {
         style={styleButton}
       />
     )
+  }
 
-    const clearButton = (
+  createClearButton = () => {
+    return (
       <Button
         key="TimeFilter::clear"
         text="Clear"
@@ -288,6 +293,101 @@ export default class TimeFilter extends Component {
         style={styleButton}
       />
     )
+  }
+
+  createYearField = (name, value) => {
+    const id = `${name}DateYear`
+    return (
+      <div style={styleField}>
+        <label style={styleLabel} htmlFor={id}>
+          Year
+        </label>
+        <input
+          type="text"
+          id={id}
+          name={id}
+          placeholder="YYYY"
+          aria-placeholder="Y Y Y Y"
+          value={value}
+          style={styleYear}
+        />
+      </div>
+    )
+  }
+
+  createMonthField = (name, value) => {
+    const id = `${name}DateMonth`
+    return (
+      <div style={styleField}>
+        <label style={styleLabel} htmlFor={id}>
+          Month
+        </label>
+        <select id={id} name={id} value={value} style={styleMonth}>
+          <option value="">(none)</option>
+          <option value="0">January</option>
+          <option value="1">February</option>
+          <option value="2">March</option>
+          <option value="3">April</option>
+          <option value="4">May</option>
+          <option value="5">June</option>
+          <option value="6">July</option>
+          <option value="7">August</option>
+          <option value="8">September</option>
+          <option value="9">October</option>
+          <option value="10">November</option>
+          <option value="11">December</option>
+        </select>
+      </div>
+    )
+  }
+
+  createDayField = (name, value) => {
+    const id = `${name}DateDay`
+    return (
+      <div style={styleField}>
+        <label style={styleLabel} htmlFor={id}>
+          Day
+        </label>
+        <input
+          type="text"
+          id={id}
+          name={id}
+          placeholder="DD"
+          aria-placeholder="D D"
+          value={value}
+          style={styleDay}
+        />
+      </div>
+    )
+  }
+
+  createDateFieldset = (name, year, month, day, valid) => {
+    return (
+      <fieldset
+        style={styleFieldset}
+        onChange={event => this.onChange(event.target.name, event.target.value)}
+      >
+        <legend>{_.capitalize(name)} Date: </legend>
+        <div style={styleDate}>
+          {this.createYearField(name, year)}
+          {this.createMonthField(name, month)}
+          {this.createDayField(name, day)}
+
+          <div style={styleField}>
+            <span />
+            <span aria-hidden="true" style={styleInputValidity(valid)}>
+              {valid ? '✓' : '✖'}
+            </span>
+          </div>
+        </div>
+      </fieldset>
+    )
+  }
+
+  render() {
+    const applyButton = this.createApplyButton()
+
+    const clearButton = this.createClearButton()
 
     return (
       <div style={styleTimeFilter}>
@@ -296,127 +396,20 @@ export default class TimeFilter extends Component {
           month, or full dates. Future dates are not accepted.
         </p>
         <form>
-          <fieldset
-            style={styleFieldset}
-            onChange={event =>
-              this.onChange(event.target.name, event.target.value)}
-          >
-            <legend>Start Date: </legend>
-            <div style={styleLabels}>
-              <label htmlFor="startDateYear">Year</label>
-              <label htmlFor="startDateMonth">Month</label>
-              <label htmlFor="startDateDay" style={{paddingRight: '0.5em'}}>
-                Day
-              </label>
-            </div>
-            <div style={styleInputs}>
-              <input
-                type="text"
-                id="startDateYear"
-                name="startDateYear"
-                placeholder="YYYY"
-                aria-placeholder="Y Y Y Y"
-                value={this.state.startDateYear}
-                style={styleYear}
-              />
-              <select
-                id="startDateMonth"
-                name="startDateMonth"
-                value={this.state.startDateMonth}
-                style={styleMonth}
-              >
-                <option value="">(none)</option>
-                <option value="0">January</option>
-                <option value="1">February</option>
-                <option value="2">March</option>
-                <option value="3">April</option>
-                <option value="4">May</option>
-                <option value="5">June</option>
-                <option value="6">July</option>
-                <option value="7">August</option>
-                <option value="8">September</option>
-                <option value="9">October</option>
-                <option value="10">November</option>
-                <option value="11">December</option>
-              </select>
-              <input
-                type="text"
-                id="startDateDay"
-                name="startDateDay"
-                placeholder="DD"
-                aria-placeholder="D D"
-                value={this.state.startDateDay}
-                style={styleDay}
-              />
-              <span
-                aria-hidden="true"
-                style={styleInputValidity(this.state.startValueValid)}
-              >
-                {this.state.startValueValid ? '✓' : '✖'}
-              </span>
-            </div>
-          </fieldset>
-
-          <fieldset
-            style={styleFieldset}
-            onChange={event =>
-              this.onChange(event.target.name, event.target.value)}
-          >
-            <legend>End Date: </legend>
-            <div style={styleLabels}>
-              <label htmlFor="endDateYear">Year</label>
-              <label htmlFor="endDateMonth">Month</label>
-              <label htmlFor="endDateDay" style={{paddingRight: '0.5em'}}>
-                Day
-              </label>
-            </div>
-            <div style={styleInputs}>
-              <input
-                type="text"
-                id="endDateYear"
-                name="endDateYear"
-                placeholder="YYYY"
-                aria-placeholder="Y Y Y Y"
-                value={this.state.endDateYear}
-                style={styleYear}
-              />
-              <select
-                id="endDateMonth"
-                name="endDateMonth"
-                value={this.state.endDateMonth}
-                style={styleMonth}
-              >
-                <option value="">(none)</option>
-                <option value="0">January</option>
-                <option value="1">February</option>
-                <option value="2">March</option>
-                <option value="3">April</option>
-                <option value="4">May</option>
-                <option value="5">June</option>
-                <option value="6">July</option>
-                <option value="7">August</option>
-                <option value="8">September</option>
-                <option value="9">October</option>
-                <option value="10">November</option>
-                <option value="11">December</option>
-              </select>
-              <input
-                type="text"
-                id="endDateDay"
-                name="endDateDay"
-                placeholder="DD"
-                aria-placeholder="D D"
-                value={this.state.endDateDay}
-                style={styleDay}
-              />
-              <span
-                aria-hidden="true"
-                style={styleInputValidity(this.state.endValueValid)}
-              >
-                {this.state.endValueValid ? '✓' : '✖'}
-              </span>
-            </div>
-          </fieldset>
+          {this.createDateFieldset(
+            'start',
+            this.state.startDateYear,
+            this.state.startDateMonth,
+            this.state.startDateDay,
+            this.state.startValueValid
+          )}
+          {this.createDateFieldset(
+            'end',
+            this.state.endDateYear,
+            this.state.endDateMonth,
+            this.state.endDateDay,
+            this.state.endValueValid
+          )}
         </form>
         <div style={styleButtonRow}>
           {applyButton}
