@@ -305,6 +305,7 @@ export default class TimeFilter extends Component {
 
   createYearField = (name, value) => {
     const id = `${name}DateYear`
+    const label = `year ${name}`
     return (
       <div style={styleField}>
         <label style={styleLabel} htmlFor={id}>
@@ -318,6 +319,7 @@ export default class TimeFilter extends Component {
           aria-placeholder="Y Y Y Y"
           value={value}
           style={styleYear}
+          aria-label={label}
         />
       </div>
     )
@@ -325,12 +327,19 @@ export default class TimeFilter extends Component {
 
   createMonthField = (name, value) => {
     const id = `${name}DateMonth`
+    const label = `month ${name}`
     return (
       <div style={styleField}>
         <label style={styleLabel} htmlFor={id}>
           Month
         </label>
-        <select id={id} name={id} value={value} style={styleMonth}>
+        <select
+          id={id}
+          name={id}
+          value={value}
+          style={styleMonth}
+          aria-label={label}
+        >
           <option value="">(none)</option>
           <option value="0">January</option>
           <option value="1">February</option>
@@ -351,6 +360,7 @@ export default class TimeFilter extends Component {
 
   createDayField = (name, value) => {
     const id = `${name}DateDay`
+    const label = `day ${name}`
     return (
       <div style={styleField}>
         <label style={styleLabel} htmlFor={id}>
@@ -364,6 +374,7 @@ export default class TimeFilter extends Component {
           aria-placeholder="D D"
           value={value}
           style={styleDay}
+          aria-label={label}
         />
       </div>
     )
