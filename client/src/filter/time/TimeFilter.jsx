@@ -315,6 +315,7 @@ export default class TimeFilter extends Component {
                 id="startDateYear"
                 name="startDateYear"
                 placeholder="YYYY"
+                aria-placeholder="Y Y Y Y"
                 value={this.state.startDateYear}
                 style={styleYear}
               />
@@ -343,6 +344,7 @@ export default class TimeFilter extends Component {
                 id="startDateDay"
                 name="startDateDay"
                 placeholder="DD"
+                aria-placeholder="D D"
                 value={this.state.startDateDay}
                 style={styleDay}
               />
@@ -374,6 +376,7 @@ export default class TimeFilter extends Component {
                 id="endDateYear"
                 name="endDateYear"
                 placeholder="YYYY"
+                aria-placeholder="Y Y Y Y"
                 value={this.state.endDateYear}
                 style={styleYear}
               />
@@ -402,6 +405,7 @@ export default class TimeFilter extends Component {
                 id="endDateDay"
                 name="endDateDay"
                 placeholder="DD"
+                aria-placeholder="D D"
                 value={this.state.endDateDay}
                 style={styleDay}
               />
