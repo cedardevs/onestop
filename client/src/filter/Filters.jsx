@@ -37,34 +37,50 @@ const styleFacetFilterContents = {
 class Filters extends Component {
   constructor(props) {
     super(props)
+    this.state = this.initialState()
+  }
 
-    this.filters = [
-      {
-        name: 'location',
-        heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
-        content: <MapFilterContainer />,
-      },
-      {
-        name: 'time',
-        heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
-        content: <TimeFilterContainer />,
-      },
-      {
-        name: 'keywords',
-        heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
-        content: (
-          <FacetFilterContainer
-            submit={props.submit}
-            marginNest={styleFacetFilterContents.marginNest}
-            backgroundColor={styleFacetFilterContents.backgroundColor}
-          />
-        ),
-      },
-    ]
-
-    this.state = {
-      openIndex: -1,
+  initialState() {
+    return {
+      location: false,
+      time: false,
+      keywords: false,
     }
+  }
+
+  handleFilterToggle = (event) => {
+    let toggledFilter = event.value
+    this.setState({
+      [toggledFilter]: event.open
+    })
+  }
+
+  createFilters = () => {
+    return (
+       [
+        {
+          name: 'location',
+          heading: <FilterHeading icon={mapFilterIcon} text="Location" />,
+          content: <MapFilterContainer isOpen={this.state.location} />,
+        },
+        {
+          name: 'time',
+          heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
+          content: <TimeFilterContainer />,
+        },
+        {
+          name: 'keywords',
+          heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
+          content: (
+            <FacetFilterContainer
+              submit={this.props.submit}
+              marginNest={styleFacetFilterContents.marginNest}
+              backgroundColor={styleFacetFilterContents.backgroundColor}
+            />
+          ),
+        },
+      ]
+  )
   }
 
   render() {
@@ -83,6 +99,7 @@ class Filters extends Component {
         Filters
       </h1>
     )
+
     const buttonHide = (
       <Button
         key="filtersButtonHide"
@@ -99,18 +116,21 @@ class Filters extends Component {
       />
     )
 
-    const expandableFilters = this.filters.map((filter, index) => {
+    let filters = this.createFilters()
+
+    const expandableFilters = filters.map((filter, index) => {
       return (
         <div key={index} style={styleFilters}>
           <Expandable
             key={index}
-            value={index}
-            open={false}
+            value={filter.name}
+            open={this.state[filter.name]}
             showArrow={true}
             heading={filter.heading}
             styleHeading={styleFilterHeadings}
             content={filter.content}
             styleContent={styleFilterContents}
+            onToggle={this.handleFilterToggle}
           />
         </div>
       )
