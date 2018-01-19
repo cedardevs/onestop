@@ -7,13 +7,14 @@ import sinon from 'sinon'
 describe('The flow actions', function () {
 
   const mockDefaultState = {
-     domain: {
-        config: {
-           apiHost: ''
-        },
-        results: {
-           granules: {}
-        }
+    domain: {
+      api: {
+        host: '',
+        path: '',
+      },
+      results: {
+        granules: {}
+      }
     },
     behavior: {
       request: {
@@ -37,7 +38,7 @@ describe('The flow actions', function () {
 
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls == 4, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls === 5, `There were ${dispatchCalls} dispatch calls made`)
   })
 
   describe('loadData', function () {
@@ -47,7 +48,7 @@ describe('The flow actions', function () {
 
       fn(dispatch, getState)
       const dispatchCalls = dispatch.callCount
-      assert(dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
+      assert(dispatchCalls === 1, `There were ${dispatchCalls} dispatch calls made`)
     })
 
     it('loads collections and granules if ids are selected', function () {
@@ -57,7 +58,7 @@ describe('The flow actions', function () {
 
       fn(dispatch, getState)
       const dispatchCalls = dispatch.callCount
-      assert(dispatchCalls == 2, `There were ${dispatchCalls} dispatch calls made`)
+      assert(dispatchCalls === 2, `There were ${dispatchCalls} dispatch calls made`)
     })
   })
 
@@ -67,7 +68,7 @@ describe('The flow actions', function () {
 
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls === 1, `There were ${dispatchCalls} dispatch calls made`)
   })
 
   it('dispatch a clearSelections action and transition to the collections view when search params are present', function () {
@@ -77,7 +78,7 @@ describe('The flow actions', function () {
 
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls == 2, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls === 2, `There were ${dispatchCalls} dispatch calls made`)
   })
 
   it('dispatch a transition to the granules view', function () {
@@ -86,7 +87,7 @@ describe('The flow actions', function () {
 
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls == 1, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls === 1, `There were ${dispatchCalls} dispatch calls made`)
   })
 
 })

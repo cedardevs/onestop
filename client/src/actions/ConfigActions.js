@@ -18,8 +18,10 @@ export const clearConfig = () => {
 
 export const fetchConfig = () => {
   return (dispatch, getState) => {
-    const apiHost = getState().domain.config.apiHost || ''
-    const url = apiHost + '/onestop/api/search/uiConfig'
+    const url =
+      getState().domain.api.host +
+      getState().domain.api.path +
+      '/search/uiConfig'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
       .then(response => response.json())

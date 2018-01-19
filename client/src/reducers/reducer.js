@@ -5,6 +5,7 @@ import routing from './behavior/routing'
 import errors from './behavior/error'
 import request from './behavior/request'
 
+import api from './domain/api'
 import config from './domain/config'
 import info from './domain/info'
 import results from './domain/results'
@@ -16,6 +17,7 @@ import background from './ui/background'
 import layout from './ui/layout'
 
 const domain = combineReducers({
+  api,
   config,
   info,
   results,

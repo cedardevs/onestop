@@ -97,8 +97,20 @@ export const updateBounds = (to, source) => {
   }
 }
 
+export const SET_API_BASE = 'SET_API_BASE'
+const initApiPath = () => {
+  const basePath =
+    typeof window !== 'undefined' ? window.location.pathname : '/onestop/'
+  const apiPath = basePath.endsWith('/') ? 'api' : '/api'
+  return {
+    type: SET_API_BASE,
+    path: basePath + apiPath,
+  }
+}
+
 export const initialize = () => {
   return dispatch => {
+    dispatch(initApiPath())
     dispatch(fetchConfig())
     dispatch(fetchInfo())
     dispatch(fetchCounts())
