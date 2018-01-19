@@ -221,12 +221,8 @@ export default class MapFilter extends Component {
   }
 
   render() {
-    const styleShowOrHideBackground = this.props.geoJSON
-      ? {background: '#8967d2'}
-      : {}
     const styleShowOrHide = {
       marginBottom: '0.618em',
-      ...styleShowOrHideBackground,
     }
 
     const buttonShowMap = (
