@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import moment from 'moment'
 import _ from 'lodash'
 import Button from '../../common/input/Button'
+import {Key} from '../../utils/keyboardUtils'
 
 const styleInputValidity = isValid => {
   return {
@@ -139,7 +140,6 @@ export default class TimeFilter extends Component {
   }
 
   onChange = (field, value) => {
-    console.log('wtf', field, value)
     let stateClone = {...this.state}
     stateClone[field] = value
 
@@ -384,6 +384,13 @@ export default class TimeFilter extends Component {
     )
   }
 
+  handleKeyDown = event => {
+    if (event.keyCode === Key.ENTER) {
+      event.preventDefault()
+      this.applyDates()
+    }
+  }
+
   render() {
     const applyButton = this.createApplyButton()
 
@@ -395,7 +402,7 @@ export default class TimeFilter extends Component {
           Provide a start date, end date, or date range. Use year, year and
           month, or full dates. Future dates are not accepted.
         </p>
-        <form>
+        <form onKeyDown={this.handleKeyDown}>
           {this.createDateFieldset(
             'start',
             this.state.startDateYear,
