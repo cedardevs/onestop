@@ -273,6 +273,7 @@ export default class TimeFilter extends Component {
       <Button
         key="TimeFilter::apply"
         text="Apply"
+        title="Apply time filters"
         onClick={this.applyDates}
         style={styleButton}
       />
@@ -282,6 +283,7 @@ export default class TimeFilter extends Component {
       <Button
         key="TimeFilter::clear"
         text="Clear"
+        title="Clear time filters"
         onClick={this.clearDates}
         style={styleButton}
       />
