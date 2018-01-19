@@ -236,15 +236,23 @@ export default class TimeFilter extends Component {
     this.setState(this.initialState())
   }
 
+  createWarning = (startValueValid, endValueValid, dateRangeValid) => {
+    if (!startValueValid && !endValueValid) return 'Invalid start and end date.'
+    if (!startValueValid) return 'Invalid start date.'
+    if (!endValueValid) return 'Invalid end date.'
+    if (!dateRangeValid) return 'Invalid date range.'
+    return 'Unknown error'
+  }
+
   applyDates = () => {
-    if (!this.state.startValueValid || !this.state.endValueValid) {
+    const {startValueValid, endValueValid, dateRangeValid} = this.state
+    if (!startValueValid || !endValueValid || !dateRangeValid) {
       this.setState({
-        warning: 'Invalid start and/or end date provided.',
-      })
-    }
-    else if (!this.state.dateRangeValid) {
-      this.setState({
-        warning: 'Invalid date range provided.',
+        warning: this.createWarning(
+          startValueValid,
+          endValueValid,
+          dateRangeValid
+        ),
       })
     }
     else {
