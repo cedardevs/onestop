@@ -250,6 +250,7 @@ export default class MapFilter extends Component {
       <Button
         key="MapFilter::applyButton"
         text="Apply"
+        title="Apply space filter"
         onClick={this.applyGeometry}
         style={{width: '35%'}}
       />
@@ -259,6 +260,7 @@ export default class MapFilter extends Component {
       <Button
         key="MapFilter::clearButton"
         text="Clear"
+        title="Clear space filter"
         onClick={this.clearGeometry}
         style={{width: '35%'}}
       />
@@ -279,7 +281,7 @@ export default class MapFilter extends Component {
       <Checkbox
         label="Exclude Global Results"
         id="MapFilter::excludeGlobalCheckbox"
-        checked={this.props.excludeGlobal}
+        checked={!!this.props.excludeGlobal}
         onChange={this.toggleExcludeGlobalResults}
       />
     )
