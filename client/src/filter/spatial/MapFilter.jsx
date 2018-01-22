@@ -304,7 +304,7 @@ export default class MapFilter extends Component {
         </p>
         {inputColumn}
         <div style={{borderBottom: '1px solid white', margin: '1em 0'}} />
-        <h4 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h4>
+        <h3 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h3>
         {excludeGlobalCheckbox}
       </div>
     )
