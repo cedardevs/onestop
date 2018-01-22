@@ -197,6 +197,7 @@ export default class MapFilter extends Component {
           id={id}
           name={direction}
           placeholder={placeholderValue}
+          aria-placeholder={placeholderValue}
           value={value}
           style={styleTextBox}
         />
