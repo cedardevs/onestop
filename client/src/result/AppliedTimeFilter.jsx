@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import AppliedTime from './AppliedTime'
+import AppliedFilterBubble from './AppliedFilterBubble'
 
 const styleAppliedTimes = {
   display: 'flex',
@@ -14,26 +14,34 @@ export default class AppliedTimeFilter extends Component {
     let appliedTimes = []
     if (startDateTime || endDateTime) {
       if (startDateTime) {
+        const name = `After: ${startDateTime}`
         appliedTimes.push(
-          <AppliedTime
-            key="start"
-            label="After:"
-            dateTime={startDateTime}
+          <AppliedFilterBubble
+            backgroundColor="#422555"
+            borderColor="#7A2CAB"
+            text={name}
+            key="appliedFilter::start"
             onUnselect={() => onUnselectDateTime(null, endDateTime)}
           />
         )
       }
       if (endDateTime) {
+        const name = `Before: ${endDateTime}`
         appliedTimes.push(
-          <AppliedTime
-            key="end"
-            label="Before:"
-            dateTime={endDateTime}
+          <AppliedFilterBubble
+            backgroundColor="#422555"
+            borderColor="#7A2CAB"
+            text={name}
+            key="appliedFilter::end"
             onUnselect={() => onUnselectDateTime(startDateTime, null)}
           />
         )
       }
     }
-    return <div style={styleAppliedTimes}>{appliedTimes}</div>
+
+    if (appliedTimes.length > 0) {
+      return <div style={styleAppliedTimes}>{appliedTimes}</div>
+    }
+    return null
   }
 }

@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import _ from 'lodash'
-import AppliedFacet from './AppliedFacet'
+import AppliedFilterBubble from './AppliedFilterBubble'
+import {titleCaseKeyword} from '../utils/keywordUtils'
 
 const styleAppliedFacets = {
   display: 'flex',
@@ -15,17 +16,24 @@ export default class AppliedFacetFilter extends Component {
     let appliedFacets = []
     _.forEach(selectedFacets, (terms, category) => {
       _.forEach(terms, term => {
+        const name = titleCaseKeyword(term) || 'DNE'
+        const key = `appliedFilter::${term}`
+
         appliedFacets.push(
-          <AppliedFacet
-            key={term}
-            category={category}
-            term={term}
+          <AppliedFilterBubble
+            backgroundColor="#1F4B4D"
+            borderColor="#237D81"
+            text={name}
+            key={key}
             onUnselect={() => onUnselectFacet(category, term)}
           />
         )
       })
     })
 
-    return <div style={styleAppliedFacets}>{appliedFacets}</div>
+    if (appliedFacets.length > 0) {
+      return <div style={styleAppliedFacets}>{appliedFacets}</div>
+    }
+    return null
   }
 }

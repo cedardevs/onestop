@@ -14,10 +14,7 @@ export default class Result extends Component {
     this.startDateTime = props.startDateTime
     this.endDateTime = props.endDateTime
     this.geoJSON = props.geoJSON
-    this.toggleFacet = props.toggleFacet
-    this.updateDateRange = props.updateDateRange
-    this.removeGeometry = props.removeGeometry
-    this.submit = props.submit
+    this.excludeGlobal = props.excludeGlobal
   }
 
   componentWillUpdate(nextProps) {
@@ -25,34 +22,30 @@ export default class Result extends Component {
     this.startDateTime = nextProps.startDateTime
     this.endDateTime = nextProps.endDateTime
     this.geoJSON = nextProps.geoJSON
+    this.excludeGlobal = nextProps.excludeGlobal
   }
 
   unselectFacetAndSubmitSearch = (category, term) => {
-    this.toggleFacet(category, term, false)
-    this.submit()
+    this.props.toggleFacet(category, term, false)
+    this.props.submit()
   }
 
   unselectDateTimeAndSubmitSearch = (start, end) => {
-    this.updateDateRange(start, end)
-    this.submit()
+    this.props.updateDateRange(start, end)
+    this.props.submit()
   }
 
   unselectMapAndSubmitSearch = () => {
-    this.removeGeometry()
-    this.submit()
+    this.props.removeGeometry()
+    this.props.submit()
+  }
+
+  unselectExcludeGlobal = () => {
+    this.props.toggleExcludeGlobal()
+    this.props.submit()
   }
 
   render() {
-    let appliedMapFilter = null
-    if (this.geoJSON) {
-      appliedMapFilter = (
-        <AppliedMapFilter
-          geoJSON={this.geoJSON}
-          onUnselectMap={this.unselectMapAndSubmitSearch}
-        />
-      )
-    }
-
     return (
       <div style={styleResult}>
         <AppliedFacetFilter
@@ -66,7 +59,12 @@ export default class Result extends Component {
           onUnselectDateTime={this.unselectDateTimeAndSubmitSearch}
         />
 
-        {appliedMapFilter}
+        <AppliedMapFilter
+          geoJSON={this.geoJSON}
+          onUnselectMap={this.unselectMapAndSubmitSearch}
+          excludeGlobal={this.excludeGlobal}
+          onUnselectExcludeGlobal={this.unselectExcludeGlobal}
+        />
 
         {this.props.children}
       </div>

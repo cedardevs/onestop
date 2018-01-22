@@ -1,6 +1,7 @@
 import {connect} from 'react-redux'
 import Result from './Result'
 import {
+  toggleExcludeGlobal,
   toggleFacet,
   updateDateRange,
   removeGeometry,
@@ -14,17 +15,22 @@ const mapStateToProps = state => {
     startDateTime,
     endDateTime,
     geoJSON,
+    excludeGlobal,
   } = state.behavior.search
   return {
     selectedFacets,
     startDateTime,
     endDateTime,
     geoJSON,
+    excludeGlobal,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
+    toggleExcludeGlobal: () => {
+      dispatch(toggleExcludeGlobal())
+    },
     toggleFacet: (category, facetName, selected) =>
       dispatch(toggleFacet(category, facetName, selected)),
     submit: () => {

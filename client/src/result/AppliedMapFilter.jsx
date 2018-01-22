@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import AppliedMap from './AppliedMap'
+import AppliedFilterBubble from './AppliedFilterBubble'
 import * as geoUtils from '../../src/utils/geoUtils'
 
 const styleAppliedFacets = {
@@ -10,21 +10,44 @@ const styleAppliedFacets = {
 
 export default class AppliedMapFilter extends Component {
   render() {
-    const {geoJSON, onUnselectMap} = this.props
+    const {
+      geoJSON,
+      onUnselectMap,
+      excludeGlobal,
+      onUnselectExcludeGlobal,
+    } = this.props
 
-    let appliedMap = null
+    let appliedMap = []
     if (geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates) {
       let bbox = geoUtils.convertGeoJsonToBbox(geoJSON)
-      appliedMap = (
-        <AppliedMap
-          north={bbox.north}
-          west={bbox.west}
-          south={bbox.south}
-          east={bbox.east}
+      const {west, south, east, north} = bbox
+      const name = `West: ${west}°, South: ${south}°, East: ${east}°, North: ${north}°`
+      appliedMap.push(
+        <AppliedFilterBubble
+          backgroundColor="#265F35"
+          borderColor="#2B9F4A"
+          text={name}
+          key="appliedFilter::boundingBox"
           onUnselect={() => onUnselectMap()}
         />
       )
     }
-    return <div style={styleAppliedFacets}>{appliedMap}</div>
+    if (excludeGlobal) {
+      const name = 'Exclude Global'
+      appliedMap.push(
+        <AppliedFilterBubble
+          backgroundColor="#265F35"
+          borderColor="#2B9F4A"
+          text={name}
+          key="appliedFilter::excludeGlobal"
+          onUnselect={() => onUnselectExcludeGlobal()}
+        />
+      )
+    }
+
+    if (appliedMap.length > 0) {
+      return <div style={styleAppliedFacets}>{appliedMap}</div>
+    }
+    return null
   }
 }
