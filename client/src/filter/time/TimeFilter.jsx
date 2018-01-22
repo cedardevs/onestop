@@ -14,7 +14,7 @@ const styleInputValidity = isValid => {
 const styleTimeFilter = {
   backgroundColor: '#3D97D2',
   padding: '0.618em',
-  // color: '#F9F9F9',
+  color: '#F9F9F9',
 }
 
 const styleFieldset = {
@@ -42,12 +42,15 @@ const styleLabel = {
 
 const styleYear = {
   width: '3.25em',
+  color: 'black',
 }
 const styleMonth = {
   width: '7.25em',
+  color: 'black',
 }
 const styleDay = {
   width: '1.75em',
+  color: 'black',
 }
 
 const styleButtonRow = {
