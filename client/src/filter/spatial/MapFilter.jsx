@@ -233,24 +233,19 @@ export default class MapFilter extends Component {
       marginBottom: '0.618em',
     }
 
+    const showMapText = this.props.showMap ? 'Hide Map' : 'Show Map'
+
     const buttonShowMap = (
       <Button
-        key="MapFilter::showMap"
+        key="MapFilter::showMapToggle"
         icon={mapIcon}
-        text="Show Map"
-        onClick={this.handleShowMap}
+        text={showMapText}
+        title={showMapText}
+        onClick={() => {
+          this.props.showMap ? this.handleHideMap() : this.handleShowMap()
+        }}
         style={styleShowOrHide}
-        aria-hidden={true}
-      />
-    )
-
-    const buttonHideMap = (
-      <Button
-        key="MapFilter::hideMap"
-        icon={mapIcon}
-        text="Hide Map"
-        onClick={this.handleHideMap}
-        style={styleShowOrHide}
+        ariaExpanded={this.props.showMap}
       />
     )
 
@@ -258,7 +253,7 @@ export default class MapFilter extends Component {
       <Button
         key="MapFilter::applyButton"
         text="Apply"
-        title="Apply space filter"
+        title="Apply location filter"
         onClick={this.applyGeometry}
         style={{width: '35%'}}
       />
@@ -268,7 +263,7 @@ export default class MapFilter extends Component {
       <Button
         key="MapFilter::clearButton"
         text="Clear"
-        title="Clear space filter"
+        title="Clear location filter"
         onClick={this.clearGeometry}
         style={{width: '35%'}}
       />
@@ -277,12 +272,7 @@ export default class MapFilter extends Component {
     const inputBoundingBox = this.renderCoordinateInput()
 
     const inputColumn = (
-      <FlexColumn
-        items={[
-          this.props.showMap ? buttonHideMap : buttonShowMap,
-          inputBoundingBox,
-        ]}
-      />
+      <FlexColumn items={[ buttonShowMap, inputBoundingBox ]} />
     )
 
     const excludeGlobalCheckbox = (
