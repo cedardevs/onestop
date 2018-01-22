@@ -26,6 +26,10 @@ const styleButtons = {
   marginTop: '1em',
 }
 
+const styleBreathingRoom = {
+  marginTop: '1em',
+}
+
 const styleInputRow = {
   display: 'flex',
   flexDirection: 'row',
@@ -214,7 +218,7 @@ export default class MapFilter extends Component {
 
   renderCoordinateInput = () => {
     return (
-      <div key="MapFilterCoordinatesInput::all">
+      <div key="MapFilterCoordinatesInput::all" style={styleBreathingRoom}>
         <form onKeyDown={this.handleKeyDown}>
           <fieldset onChange={event => this.onChange(event)}>
             <legend>Bounding Box Coordinates: </legend>
@@ -229,10 +233,6 @@ export default class MapFilter extends Component {
   }
 
   render() {
-    const styleShowOrHide = {
-      marginBottom: '0.618em',
-    }
-
     const showMapText = this.props.showMap ? 'Hide Map' : 'Show Map'
 
     const buttonShowMap = (
@@ -244,7 +244,7 @@ export default class MapFilter extends Component {
         onClick={() => {
           this.props.showMap ? this.handleHideMap() : this.handleShowMap()
         }}
-        style={styleShowOrHide}
+        style={styleBreathingRoom}
         ariaExpanded={this.props.showMap}
       />
     )
@@ -272,7 +272,19 @@ export default class MapFilter extends Component {
     const inputBoundingBox = this.renderCoordinateInput()
 
     const inputColumn = (
-      <FlexColumn items={[ buttonShowMap, inputBoundingBox ]} />
+      <FlexColumn
+        items={[
+          inputBoundingBox,
+          <div style={styleButtons}>
+            {buttonApply}
+            {buttonClear}
+          </div>,
+          <div style={this.warningStyle()} role="alert">
+            {this.state.warning}
+          </div>,
+          buttonShowMap,
+        ]}
+      />
     )
 
     const excludeGlobalCheckbox = (
@@ -291,15 +303,7 @@ export default class MapFilter extends Component {
           right of the map or manually enter coordinates below. Use the Clear
           button to reset the map and text boxes.
         </p>
-        <div style={{height: '1em'}} />
         {inputColumn}
-        <div style={styleButtons}>
-          {buttonApply}
-          {buttonClear}
-        </div>
-        <div style={this.warningStyle()} role="alert">
-          {this.state.warning}
-        </div>
         <div style={{borderBottom: '1px solid white', margin: '1em 0'}} />
         <h4 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h4>
         {excludeGlobalCheckbox}
