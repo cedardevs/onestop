@@ -1,11 +1,13 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import watch from 'redux-watch'
 import store from '../../store'
 import L from 'leaflet'
-import 'esri-leaflet'
+import E from 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
+
+const COLOR_ORANGE = '#FFA268'
+const COLOR_GREEN = '#00FFC8'
 
 const styleMapContainer = (showMap, forceShow) => {
   return {
@@ -25,103 +27,104 @@ const styleMap = (showMap, forceShow) => {
   return {
     zIndex: forceShow ? 2 : 1,
     padding: 0,
-    margin: 0,
+    margin: '0 auto',
     display: showMap || forceShow ? 'flex' : 'none',
     position: 'relative',
     height: '100%',
     alignItems: 'flex-start',
+    maxWidth: '1200px',
   }
+}
+
+const SOUTH_WEST = L.latLng(-90, -180)
+const NORTH_EAST = L.latLng(90, 180)
+const BOUNDS = L.latLngBounds(SOUTH_WEST, NORTH_EAST)
+
+const initialMapProperties = {
+  maxBounds: BOUNDS,
+  maxBoundsViscosity: 1.0,
+  minZoom: 2,
+  maxZoom: 5,
+  layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],
+  attributionControl: false,
+}
+
+const geoJsonStyle = {
+  color: COLOR_GREEN,
+  weight: 3,
+  opacity: 0.65,
+}
+
+const drawStyle = {
+  color: COLOR_ORANGE,
+  weight: 3,
+  opacity: 0.65,
 }
 
 class Map extends React.Component {
   constructor(props) {
     super(props)
-    this.removeGeometry = props.removeGeometry
-    this.geoJsonSelection = props.geoJsonSelection
     this.geoJsonFeatures = props.geoJsonFeatures
     this.focusedFeatures = props.focusedFeatures
-    this.style = props.style
-    this.mapDefaults = this.mapDefaults.bind(this)
     this.state = {
-      _initialized: false,
+      initialized: false,
     }
   }
 
   handleTransitionEnd = event => {
     // this ensures the map tiles get loaded properly around the animation
-    if (event.propertyName === 'height' || event.propertyName === 'width') {
-      this.state.map.invalidateSize()
+    const {map} = this.state
+    const property = event.propertyName
+    if (property === 'height' || property === 'width') {
+      map.invalidateSize()
     }
   }
 
-  componentDidMount() {
-    this.mapContainerNode.addEventListener(
-      'transitionend',
-      this.handleTransitionEnd
-    )
+  initialState = () => {
+    const {geoJsonSelection, features} = this.props
 
-    // Build the map defaults. When finished, use them to set the state then set up the map
-    Promise.resolve(this.mapDefaults()).then(state => {
-      this.setState(state, () => {
-        let {geoJsonSelection} = this.props
-        if (geoJsonSelection) {
-          let {editableLayers, style} = this.state
-          let layer = L.geoJson(geoJsonSelection, {style: style})
-          editableLayers.addLayer(layer)
-        }
-        if (this.props.features) {
-          this.updateResultsLayers(this.props)
-        }
-      })
-      this.mapSetup()
-    })
-  }
-
-  mapDefaults() {
     let resultsLayers = new L.FeatureGroup()
     let editableLayers = new L.FeatureGroup()
-    let mapSettings = {
-      _initialized: true,
-      style: {
-        color: '#00ffc8',
-        weight: 3,
-        opacity: 0.65,
-      },
+
+    if (geoJsonSelection) {
+      let geoJSONLayer = L.geoJson(geoJsonSelection, {style: geoJsonStyle})
+      editableLayers.addLayer(geoJSONLayer)
+    }
+
+    if (features) {
+      this.updateResultsLayers(this.props)
+    }
+
+    let state = {
+      initialized: true,
       resultsLayers,
       editableLayers,
       // Define map with defaults
-      map: L.map(ReactDOM.findDOMNode(this.mapNode), {
-        minZoom: 2,
-        maxZoom: 5,
-        layers: [
-          L.esri.basemapLayer('Imagery'),
-          L.esri.basemapLayer('ImageryLabels'),
-        ],
-        attributionControl: false,
-      }),
+      map: L.map(this.mapNode, initialMapProperties),
       previousLayer: {},
     }
-    return mapSettings
+    return state
+  }
+
+  componentDidMount() {
+    this.container.addEventListener('transitionend', this.handleTransitionEnd)
+    this.setState(this.initialState(), this.mapSetup)
   }
 
   drawDefaults(layerGroup) {
-    const drawStyle = {
-      color: '#FFA268',
-      weight: 3,
-      opacity: 0.65,
-    }
     return new L.Control.Draw({
       edit: {
         featureGroup: layerGroup,
-        edit: false,
+        edit: false, // edit button
+        remove: false, // trash can button
       },
-      remove: false,
       position: 'topright',
       draw: {
         polyline: false,
         marker: false,
         polygon: false,
         circle: false,
+        circlemarker: false,
         rectangle: {
           shapeOptions: drawStyle,
         },
@@ -130,13 +133,14 @@ class Map extends React.Component {
   }
 
   mapSetup() {
+    const {selection, features} = this.props
     let {map, drawControl, editableLayers, resultsLayers} = this.state
     this.loadDrawEventHandlers()
-    if (this.props.selection) {
+    if (selection) {
       map.addControl(this.drawDefaults(editableLayers))
       map.addLayer(editableLayers)
     }
-    if (this.props.features) {
+    if (features) {
       map.addLayer(resultsLayers)
     }
     this.fitMapToResults()
@@ -151,11 +155,13 @@ class Map extends React.Component {
 
   componentWillUpdate(nextProps) {
     // Add/remove layers on map to reflect store
-    if (this.state._initialized) {
-      if (this.props.selection) {
+    const {selection, features} = this.props
+    const {initialized} = this.state
+    if (initialized) {
+      if (selection) {
         this.updateSelectionLayer()
       }
-      if (this.props.features) {
+      if (features) {
         this.updateResultsLayers(nextProps)
         this.fitMapToResults()
       }
@@ -163,7 +169,8 @@ class Map extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    this.state.map.invalidateSize()
+    const {map} = this.state
+    map.invalidateSize()
   }
 
   updateSelectionLayer() {
@@ -186,12 +193,16 @@ class Map extends React.Component {
     }
     // Apply colors to focused feature
     let {resultsLayers} = this.state
-    const selectedStyle = {color: '#FFA268'}
+    const selectedStyle = {color: COLOR_ORANGE}
     const defaultStyle = {
-      color: '#00ffc8',
+      color: COLOR_GREEN,
       fillOpacity: 0.002,
       opacity: 0.5,
     }
+    if (!resultsLayers) {
+      return
+    }
+
     resultsLayers.clearLayers()
     geoJsonFeatures.forEach(feature => {
       resultsLayers.addLayer(
@@ -208,9 +219,10 @@ class Map extends React.Component {
   }
 
   fitMapToResults() {
+    const {selection, features} = this.props
     const {map, resultsLayers} = this.state
     const hasResults = resultsLayers && !_.isEmpty(resultsLayers.getLayers())
-    if (!this.props.selection && this.props.features && hasResults) {
+    if (!selection && features && hasResults) {
       map.fitBounds(resultsLayers.getBounds())
     }
     else {
@@ -224,15 +236,16 @@ class Map extends React.Component {
     map = null
   }
 
-  updateGeometryAndSubmit = geoJSON => {
-    if (this.props.geoJSON || geoJSON) {
-      if (geoJSON) {
-        this.props.handleNewGeometry(geoJSON)
+  updateGeometryAndSubmit = newGeoJSON => {
+    const {geoJSON, handleNewGeometry, removeGeometry, submit} = this.props
+    if (geoJSON || newGeoJSON) {
+      if (newGeoJSON) {
+        handleNewGeometry(newGeoJSON)
       }
       else {
-        this.props.removeGeometry()
+        removeGeometry()
       }
-      this.props.submit()
+      submit()
     }
   }
 
@@ -259,8 +272,8 @@ class Map extends React.Component {
     return (
       <div
         style={styleMapContainer(showMap, forceShow)}
-        ref={mapContainerNode => {
-          this.mapContainerNode = mapContainerNode
+        ref={container => {
+          this.container = container
         }}
       >
         <div

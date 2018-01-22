@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import L from 'leaflet'
-import 'esri-leaflet'
+import E from 'esri-leaflet'
 import _ from 'lodash'
 import {ensureDatelineFriendlyPolygon} from '../utils/geoUtils'
 
@@ -33,8 +33,8 @@ class MapThumbnail extends React.Component {
 
     let geoJsonLayer
     let layers = [
-      L.esri.basemapLayer('Imagery'),
-      L.esri.basemapLayer('ImageryLabels'),
+      E.basemapLayer('Imagery'),
+      E.basemapLayer('ImageryLabels'),
     ]
     if (this.props.geometry) {
       geoJsonLayer = L.GeoJSON.geometryToLayer({
