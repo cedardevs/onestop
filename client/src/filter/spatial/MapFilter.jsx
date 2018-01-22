@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import FlexColumn from '../../common/FlexColumn'
 import Button from '../../common/input/Button'
 import _ from 'lodash'
-
+import {Key} from '../../utils/keyboardUtils'
 import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from '../../common/input/Checkbox'
 import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
@@ -93,6 +93,13 @@ export default class MapFilter extends Component {
     }
     else {
       this.setState(this.initialState())
+    }
+  }
+
+  handleKeyDown = event => {
+    if (event.keyCode === Key.ENTER) {
+      event.preventDefault()
+      this.applyGeometry()
     }
   }
 
@@ -208,7 +215,7 @@ export default class MapFilter extends Component {
   renderCoordinateInput = () => {
     return (
       <div key="MapFilterCoordinatesInput::all">
-        <form>
+        <form onKeyDown={this.handleKeyDown}>
           <fieldset onChange={event => this.onChange(event)}>
             <legend>Bounding Box Coordinates: </legend>
             {this.renderInputRow('west', '-180.0 to 180.0')}
