@@ -299,9 +299,8 @@ export default class MapFilter extends Component {
     return (
       <div style={styleMapFilter}>
         <p style={styleDescription}>
-          Draw a bounding box on the map using the square button on the top
-          right of the map or manually enter coordinates below. Use the Clear
-          button to reset the map and text boxes.
+          Enter coordinates below or draw on the map. Use the Clear button to
+          reset the map and text boxes.
         </p>
         {inputColumn}
         <div style={{borderBottom: '1px solid white', margin: '1em 0'}} />
