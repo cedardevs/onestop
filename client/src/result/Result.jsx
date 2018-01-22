@@ -6,6 +6,20 @@ import AppliedMapFilter from './AppliedMapFilter'
 
 import {styleResult} from './ResultStyles'
 
+const Theme = {
+  facet: {
+    backgroundColor: '#1F4B4D',
+    borderColor: '#237D81',
+  },
+  map: {
+    backgroundColor: '#265F35',
+    borderColor: '#2B9F4A',
+  },
+  time: {
+    backgroundColor: '#422555',
+    borderColor: '#7A2CAB',
+  },
+}
 export default class Result extends Component {
   constructor(props) {
     super(props)
@@ -51,12 +65,16 @@ export default class Result extends Component {
         <AppliedFacetFilter
           selectedFacets={this.selectedFacets}
           onUnselectFacet={this.unselectFacetAndSubmitSearch}
+          backgroundColor={Theme.facet.backgroundColor}
+          borderColor={Theme.facet.borderColor}
         />
 
         <AppliedTimeFilter
           startDateTime={this.startDateTime}
           endDateTime={this.endDateTime}
           onUnselectDateTime={this.unselectDateTimeAndSubmitSearch}
+          backgroundColor={Theme.time.backgroundColor}
+          borderColor={Theme.time.borderColor}
         />
 
         <AppliedMapFilter
@@ -64,6 +82,8 @@ export default class Result extends Component {
           onUnselectMap={this.unselectMapAndSubmitSearch}
           excludeGlobal={this.excludeGlobal}
           onUnselectExcludeGlobal={this.unselectExcludeGlobal}
+          backgroundColor={Theme.map.backgroundColor}
+          borderColor={Theme.map.borderColor}
         />
 
         {this.props.children}

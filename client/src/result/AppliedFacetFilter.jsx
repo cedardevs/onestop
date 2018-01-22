@@ -11,7 +11,12 @@ const styleAppliedFacets = {
 
 export default class AppliedFacetFilter extends Component {
   render() {
-    const {selectedFacets, onUnselectFacet} = this.props
+    const {
+      selectedFacets,
+      onUnselectFacet,
+      backgroundColor,
+      borderColor,
+    } = this.props
 
     let appliedFacets = []
     _.forEach(selectedFacets, (terms, category) => {
@@ -21,8 +26,8 @@ export default class AppliedFacetFilter extends Component {
 
         appliedFacets.push(
           <AppliedFilterBubble
-            backgroundColor="#1F4B4D"
-            borderColor="#237D81"
+            backgroundColor={backgroundColor}
+            borderColor={borderColor}
             text={name}
             key={key}
             onUnselect={() => onUnselectFacet(category, term)}

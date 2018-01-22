@@ -15,6 +15,8 @@ export default class AppliedMapFilter extends Component {
       onUnselectMap,
       excludeGlobal,
       onUnselectExcludeGlobal,
+      backgroundColor,
+      borderColor,
     } = this.props
 
     let appliedMap = []
@@ -24,8 +26,8 @@ export default class AppliedMapFilter extends Component {
       const name = `West: ${west}°, South: ${south}°, East: ${east}°, North: ${north}°`
       appliedMap.push(
         <AppliedFilterBubble
-          backgroundColor="#265F35"
-          borderColor="#2B9F4A"
+          backgroundColor={backgroundColor}
+          borderColor={borderColor}
           text={name}
           key="appliedFilter::boundingBox"
           onUnselect={() => onUnselectMap()}
@@ -36,8 +38,8 @@ export default class AppliedMapFilter extends Component {
       const name = 'Exclude Global'
       appliedMap.push(
         <AppliedFilterBubble
-          backgroundColor="#265F35"
-          borderColor="#2B9F4A"
+          backgroundColor={backgroundColor}
+          borderColor={borderColor}
           text={name}
           key="appliedFilter::excludeGlobal"
           onUnselect={() => onUnselectExcludeGlobal()}

@@ -9,7 +9,13 @@ const styleAppliedTimes = {
 
 export default class AppliedTimeFilter extends Component {
   render() {
-    const {startDateTime, endDateTime, onUnselectDateTime} = this.props
+    const {
+      startDateTime,
+      endDateTime,
+      onUnselectDateTime,
+      backgroundColor,
+      borderColor,
+    } = this.props
 
     let appliedTimes = []
     if (startDateTime || endDateTime) {
@@ -17,8 +23,8 @@ export default class AppliedTimeFilter extends Component {
         const name = `After: ${startDateTime}`
         appliedTimes.push(
           <AppliedFilterBubble
-            backgroundColor="#422555"
-            borderColor="#7A2CAB"
+            backgroundColor={backgroundColor}
+            borderColor={borderColor}
             text={name}
             key="appliedFilter::start"
             onUnselect={() => onUnselectDateTime(null, endDateTime)}
@@ -29,8 +35,8 @@ export default class AppliedTimeFilter extends Component {
         const name = `Before: ${endDateTime}`
         appliedTimes.push(
           <AppliedFilterBubble
-            backgroundColor="#422555"
-            borderColor="#7A2CAB"
+            backgroundColor={backgroundColor}
+            borderColor={borderColor}
             text={name}
             key="appliedFilter::end"
             onUnselect={() => onUnselectDateTime(startDateTime, null)}
