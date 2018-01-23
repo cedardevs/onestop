@@ -26,6 +26,7 @@ export const findMaxRotations = coordinates => {
 }
 
 export const recenterGeometry = geometry => {
+  // FIXME Turn any wrap-around-earth geometry into -180 to 180
   if (
     geometry.type.toLowerCase() !== 'polygon' ||
     geometry.coordinates.length !== 1
@@ -97,14 +98,27 @@ export const convertBboxStringToGeoJson = coordString => {
 }
 
 export const convertGeoJsonToBbox = geoJSON => {
+  // FIXME convert wrap-around-earth coordinates into -180 to 180
   const coordinates =
     geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates
   let bbox = null
   if (coordinates) {
+    // If coords cross dateline, they've been shifted and need to be put back to [-180, 180]
+    let west = _.round(coordinates[0][0][0], 4)
+    let east = _.round(coordinates[0][2][0], 4)
+
+    if(west < -180) {
+      west += 360
+    }
+
+    if(east > 180) {
+      east -=360
+    }
+
     bbox = {
-      west: _.round(coordinates[0][0][0], 4),
+      west: west,
       south: _.round(coordinates[0][0][1], 4),
-      east: _.round(coordinates[0][2][0], 4),
+      east: east,
       north: _.round(coordinates[0][2][1], 4),
     }
   }
