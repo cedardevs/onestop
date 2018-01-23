@@ -275,11 +275,11 @@ export default class MapFilter extends Component {
       <FlexColumn
         items={[
           inputBoundingBox,
-          <div style={styleButtons}>
+          <div key="MapFilter::InputColumn::Buttons" style={styleButtons}>
             {buttonApply}
             {buttonClear}
           </div>,
-          <div style={this.warningStyle()} role="alert">
+          <div key="MapFilter::InputColumn::Warning" style={this.warningStyle()} role="alert">
             {this.state.warning}
           </div>,
           buttonShowMap,
