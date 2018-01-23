@@ -73,7 +73,8 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   if (
     !_.every(
       coordinates,
-      p => p[0] >= -180 && p[0] <= 180 && p[1] >= -90 && p[1] <= 90
+      // p => p[0] >= -180 && p[0] <= 180 && p[1] >= -90 && p[1] <= 90
+      p => p[0] >= -360 && p[0] <= 360 && p[1] >= -90 && p[1] <= 90
     )
   ) {
     return undefined

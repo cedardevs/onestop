@@ -5,6 +5,7 @@ import L from 'leaflet'
 import E from 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
+import {ensureDatelineFriendlyPolygon, recenterGeometry, reverseCoordinateVertexOrder} from "../../utils/geoUtils"
 
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
@@ -36,8 +37,8 @@ const styleMap = (showMap, forceShow) => {
   }
 }
 
-const SOUTH_WEST = L.latLng(-90, -180)
-const NORTH_EAST = L.latLng(90, 180)
+const SOUTH_WEST = L.latLng(-90, -270)
+const NORTH_EAST = L.latLng(90, 270)
 const BOUNDS = L.latLngBounds(SOUTH_WEST, NORTH_EAST)
 
 const initialMapProperties = {
@@ -240,7 +241,14 @@ class Map extends React.Component {
     const {geoJSON, handleNewGeometry, removeGeometry, submit} = this.props
     if (geoJSON || newGeoJSON) {
       if (newGeoJSON) {
-        handleNewGeometry(newGeoJSON)
+        newGeoJSON.geometry.coordinates[0].reverse() // Change coords from CW to CCW
+        let adjustedGeoJSON = {
+          type: 'Feature',
+          properties: {},
+          geometry: recenterGeometry(newGeoJSON.geometry),
+        }
+
+        handleNewGeometry(adjustedGeoJSON)
       }
       else {
         removeGeometry()
