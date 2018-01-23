@@ -35,7 +35,7 @@ export default class AppliedMapFilter extends Component {
       )
     }
     if (excludeGlobal) {
-      const name = 'Exclude Global'
+      const name = 'Exclude Global Results'
       appliedMap.push(
         <AppliedFilterBubble
           backgroundColor={backgroundColor}
