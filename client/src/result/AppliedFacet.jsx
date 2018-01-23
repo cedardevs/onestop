@@ -7,7 +7,10 @@ const styleDefault = {
   padding: '.25em .1em .25em .5em',
   marginRight: '0.5em',
   marginBottom: '0.25em',
-  backgroundColor: 'teal',
+  backgroundColor: '#1F4B4D',
+  borderColor: '#237D81',
+  borderStyle: 'solid',
+  borderWidth: '1px',
   fontSize: '1.2em',
 }
 

@@ -73,6 +73,9 @@ export default class MapFilter extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    if (!nextProps.isOpen && nextProps.showMap) {
+      this.props.toggleMap()
+    }
     this.mapGeoJSONToState(nextProps.geoJSON)
   }
 
@@ -203,7 +206,7 @@ export default class MapFilter extends Component {
 
   renderCoordinateInput = () => {
     return (
-      <div key='MapFilterCoordinatesInput::all'>
+      <div key="MapFilterCoordinatesInput::all">
         <form>
           <fieldset onChange={event => this.onChange(event)}>
             <legend>Bounding Box Coordinates: </legend>
@@ -218,12 +221,8 @@ export default class MapFilter extends Component {
   }
 
   render() {
-    const styleShowOrHideBackground = this.props.geoJSON
-      ? {background: '#8967d2'}
-      : {}
     const styleShowOrHide = {
       marginBottom: '0.618em',
-      ...styleShowOrHideBackground,
     }
 
     const buttonShowMap = (

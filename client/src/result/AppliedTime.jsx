@@ -6,7 +6,10 @@ const styleDefault = {
   padding: '.25em .1em .25em .5em',
   marginRight: '0.5em',
   marginBottom: '0.25em',
-  backgroundColor: 'maroon',
+  backgroundColor: '#422555',
+  borderColor: '#7A2CAB',
+  borderStyle: 'solid',
+  borderWidth: '1px',
   fontSize: '1.2em',
 }
 
@@ -77,7 +80,6 @@ export default class AppliedTime extends Component {
       styleHover,
       styleFocus,
     } = this.props
-    const name = term.split('>').pop().trim()
 
     const stylesMerged = {
       ...styleDefault,

@@ -33,8 +33,9 @@ describe('The search action', () => {
         request: {collectionInFlight: false}
       },
       domain: {
-        config: {
-          apiHost: testingRoot
+        api: {
+          host: testingRoot,
+          path: '/onestop/api',
         },
         results: {
           collectionsPageOffset: 0
@@ -74,8 +75,9 @@ describe('The search action', () => {
         request: {collectionInFlight: false}
       },
       domain: {
-        config: {
-          apiHost: testingRoot
+        api: {
+          host: testingRoot,
+          path: '/onestop/api',
         },
         results: {
           collectionsPageOffset: 0
@@ -194,8 +196,9 @@ describe('The granule actions', function () {
         }
       },
       domain: {
-        config: {
-          apiHost: testingRoot
+        api: {
+          host: testingRoot,
+          path: '/onestop/api',
         },
         results: {
           collectionsPageOffset: 0
@@ -233,8 +236,9 @@ describe('The granule actions', function () {
         }
       },
       domain: {
-        config: {
-          apiHost: testingRoot
+        api: {
+          host: testingRoot,
+          path: '/onestop/api',
         },
         results: {
           collectionsPageOffset: 0
