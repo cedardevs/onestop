@@ -182,12 +182,7 @@ export default class MapFilter extends Component {
     stateClone[field] = value
 
     let {west, south, east, north} = stateClone
-    let constructedGeoJSON = convertBboxToGeoJson(
-      _.toNumber(west),
-      _.toNumber(south),
-      _.toNumber(east),
-      _.toNumber(north)
-    )
+    let constructedGeoJSON = convertBboxToGeoJson(west, south, east, north)
     this.setState({
       [field]: value,
       internalGeoJSON: constructedGeoJSON,
