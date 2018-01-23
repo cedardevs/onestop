@@ -73,27 +73,22 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   if (
     !_.every(
       coordinates,
-      // p => p[0] >= -180 && p[0] <= 180 && p[1] >= -90 && p[1] <= 90
-      p => p[0] >= -360 && p[0] <= 360 && p[1] >= -90 && p[1] <= 90
+      p => p[0] >= -180 && p[0] <= 180 && p[1] >= -90 && p[1] <= 90
     )
   ) {
     return undefined
   }
   else {
+    let datelineFriendlyGeometry = ensureDatelineFriendlyPolygon({
+      coordinates: [ coordinates ],
+      type: 'Polygon'
+    })
     return {
       type: 'Feature',
       properties: {},
-      geometry: {
-        coordinates: [ coordinates ],
-        type: 'Polygon',
-      },
+      geometry: datelineFriendlyGeometry,
     }
   }
-  // return {
-  //   type: 'Feature',
-  //   properties: {},
-  //   geometry: ensureDatelineFriendlyPolygon({coordinates: [ coordinates ], type: 'Polygon'})
-  // }
 }
 
 export const convertBboxStringToGeoJson = coordString => {
