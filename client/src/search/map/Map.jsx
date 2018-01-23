@@ -5,7 +5,7 @@ import L from 'leaflet'
 import E from 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
-import {ensureDatelineFriendlyPolygon, recenterGeometry, reverseCoordinateVertexOrder} from "../../utils/geoUtils"
+import {recenterGeometry} from "../../utils/geoUtils"
 
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
