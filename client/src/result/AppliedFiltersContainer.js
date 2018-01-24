@@ -1,5 +1,4 @@
 import {connect} from 'react-redux'
-import Result from './Result'
 import {
   toggleExcludeGlobal,
   toggleFacet,
@@ -8,6 +7,7 @@ import {
 } from '../actions/SearchParamActions'
 import {clearCollections, triggerSearch} from '../actions/SearchRequestActions'
 import {showCollections} from '../actions/FlowActions'
+import AppliedFilters from './AppliedFilters'
 
 const mapStateToProps = state => {
   const {
@@ -44,6 +44,6 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const ResultContainer = connect(mapStateToProps, mapDispatchToProps)(Result)
+const AppliedFiltersContainer = connect(mapStateToProps, mapDispatchToProps)(AppliedFilters)
 
-export default ResultContainer
+export default AppliedFiltersContainer
