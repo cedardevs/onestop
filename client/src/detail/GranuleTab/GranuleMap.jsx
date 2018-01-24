@@ -79,7 +79,7 @@ class GranuleMap extends React.Component {
       this.updateResultsLayers(this.props)
     }
 
-    const initialMapProperties = {
+    let initialMapProperties = {
       maxBounds: BOUNDS,
       maxBoundsViscosity: 1.0,
       minZoom: 2,

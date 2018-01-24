@@ -42,15 +42,6 @@ const SOUTH_WEST = L.latLng(-90, -270)
 const NORTH_EAST = L.latLng(90, 270)
 const BOUNDS = L.latLngBounds(SOUTH_WEST, NORTH_EAST)
 
-const initialMapProperties = {
-  maxBounds: BOUNDS,
-  maxBoundsViscosity: 1.0,
-  minZoom: 2,
-  maxZoom: 5,
-  layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],
-  attributionControl: false,
-}
-
 const geoJsonStyle = {
   color: COLOR_GREEN,
   weight: 3,
@@ -95,6 +86,15 @@ class Map extends React.Component {
 
     if (features) {
       this.updateResultsLayers(this.props)
+    }
+
+    let initialMapProperties = {
+      maxBounds: BOUNDS,
+      maxBoundsViscosity: 1.0,
+      minZoom: 2,
+      maxZoom: 5,
+      layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],
+      attributionControl: false,
     }
 
     let state = {
