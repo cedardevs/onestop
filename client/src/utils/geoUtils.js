@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import {textToNumber} from './inputUtils'
 
 export const shiftCoordinate = (coordinate, rotations) => {
   if (rotations === 0) {
@@ -65,19 +66,19 @@ export const convertNegativeLongitudes = coordinates => {
 }
 
 export const convertBboxToGeoJson = (west, south, east, north) => {
-  if (!west || !south || !east || !north) {
+  const w  = textToNumber(west)
+  const s = textToNumber(south)
+  const e  = textToNumber(east)
+  const n = textToNumber(north)
+
+  if (!w || !s || !e || !n) {
     return null
   }
 
-  west  = west  ? _.toNumber(west)  : null
-  south = south ? _.toNumber(south) : null
-  east  = east  ? _.toNumber(east)  : null
-  north = north ? _.toNumber(north) : null
-
-  const ws = [ west, south ] // min x, min y
-  const wn = [ west, north ]
-  const en = [ east, north ] // max x, max y
-  const es = [ east, south ]
+  const ws = [ w, s ] // min x, min y
+  const wn = [ w, n ]
+  const en = [ e, n ] // max x, max y
+  const es = [ e, s ]
   const coordinates = [ ws, es, en, wn, ws ] // CCW for exterior polygon
   if (
     !_.every(
