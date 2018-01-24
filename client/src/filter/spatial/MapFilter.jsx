@@ -199,6 +199,7 @@ export default class MapFilter extends Component {
           placeholder={placeholderValue}
           value={value}
           style={styleTextBox}
+          onChange={() => {}}
         />
       </div>
     )

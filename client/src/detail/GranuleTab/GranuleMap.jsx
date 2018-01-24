@@ -11,45 +11,27 @@ import {recenterGeometry} from "../../utils/geoUtils"
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
 
-const styleMapContainer = showMap => {
-  return {
-    boxSizing: 'border-box',
-    backgroundColor: '#3D97D2',
-    transition:
-      showMap
-        ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
-        : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
-    padding: showMap ? '1em' : '0em',
-    height: showMap ? '400px' : '0px',
-    width: showMap ? '100%' : '0%',
-  }
+const styleMapContainer = {
+  boxSizing: 'border-box',
+  // transition: 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s',
+  height: '400px',
+  width: '100%',
 }
 
-const styleMap = showMap => {
-  return {
-    zIndex: 1,
-    padding: 0,
-    margin: '0 auto',
-    display: showMap ? 'flex' : 'none',
-    position: 'relative',
-    height: '100%',
-    alignItems: 'flex-start',
-    maxWidth: '1200px',
-  }
+const styleMap = {
+  zIndex: 2,
+  padding: 0,
+  margin: '0 auto',
+  display: 'flex',
+  position: 'relative',
+  height: '100%',
+  alignItems: 'flex-start',
+  maxWidth: '1200px',
 }
 
 const SOUTH_WEST = L.latLng(-90, -270)
 const NORTH_EAST = L.latLng(90, 270)
 const BOUNDS = L.latLngBounds(SOUTH_WEST, NORTH_EAST)
-
-const initialMapProperties = {
-  maxBounds: BOUNDS,
-  maxBoundsViscosity: 1.0,
-  minZoom: 2,
-  maxZoom: 5,
-  layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],
-  attributionControl: false,
-}
 
 const geoJsonStyle = {
   color: COLOR_GREEN,
@@ -63,7 +45,7 @@ const drawStyle = {
   opacity: 0.65,
 }
 
-class Map extends React.Component {
+class GranuleMap extends React.Component {
   constructor(props) {
     super(props)
     this.geoJsonFeatures = props.geoJsonFeatures
@@ -95,6 +77,15 @@ class Map extends React.Component {
 
     if (features) {
       this.updateResultsLayers(this.props)
+    }
+
+    const initialMapProperties = {
+      maxBounds: BOUNDS,
+      maxBoundsViscosity: 1.0,
+      minZoom: 2,
+      maxZoom: 5,
+      layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],
+      attributionControl: false,
     }
 
     let state = {
@@ -135,8 +126,17 @@ class Map extends React.Component {
   }
 
   mapSetup() {
-    const {selection, features} = this.props
-    let {map, drawControl, editableLayers, resultsLayers} = this.state
+    const { geoJsonSelection, selection, features } = this.props
+    let {map, editableLayers, resultsLayers} = this.state
+    if(geoJsonSelection) {
+      let geoJSONLayer = L.geoJson(geoJsonSelection, {style: geoJsonStyle})
+      editableLayers.addLayer(geoJSONLayer)
+    }
+    if (features) {
+      this.updateResultsLayers(this.props)
+    }
+
+
     this.loadDrawEventHandlers()
     if (selection) {
       map.addControl(this.drawDefaults(editableLayers))
@@ -179,13 +179,13 @@ class Map extends React.Component {
     let {editableLayers, style} = this.state
     let w = watch(store.getState, 'behavior.search.geoJSON')
     store.subscribe(
-      w(newGeoJson => {
-        editableLayers.clearLayers()
-        if (!_.isEmpty(newGeoJson)) {
-          let layer = L.geoJson(newGeoJson, {style: style})
-          editableLayers.addLayer(layer)
-        }
-      })
+        w(newGeoJson => {
+          editableLayers.clearLayers()
+          if (!_.isEmpty(newGeoJson)) {
+            let layer = L.geoJson(newGeoJson, {style: style})
+            editableLayers.addLayer(layer)
+          }
+        })
     )
   }
 
@@ -208,12 +208,12 @@ class Map extends React.Component {
     resultsLayers.clearLayers()
     geoJsonFeatures.forEach(feature => {
       resultsLayers.addLayer(
-        L.geoJson(feature, {
-          style: f =>
-            focusedFeatures.indexOf(f.properties.id) >= 0
-              ? selectedStyle
-              : defaultStyle,
-        })
+          L.geoJson(feature, {
+            style: f =>
+                focusedFeatures.indexOf(f.properties.id) >= 0
+                    ? selectedStyle
+                    : defaultStyle,
+          })
       )
     })
     this.geoJsonFeatures = geoJsonFeatures
@@ -277,29 +277,27 @@ class Map extends React.Component {
   }
 
   render() {
-    const { showMap } = this.props
-
     return (
-      <div
-        style={styleMapContainer(showMap)}
-        ref={container => {
-          this.container = container
-        }}
-      >
         <div
-            style={styleMap(showMap)}
-            ref={mapNode => {
-              this.mapNode = mapNode
+            style={styleMapContainer}
+            ref={container => {
+              this.container = container
             }}
-        />
-      </div>
+        >
+          <div
+              style={styleMap}
+              ref={mapNode => {
+                this.mapNode = mapNode
+              }}
+          />
+        </div>
     )
   }
 }
 
-Map.defaultProps = {
+GranuleMap.defaultProps = {
   selection: false,
   features: true,
 }
 
-export default Map
+export default GranuleMap

@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import _ from 'lodash'
-import Map from '../../search/map/Map'
+import GranuleMap from './GranuleMap'
 import {toggleGranuleFocus} from '../../actions/FlowActions'
 
 import {ensureDatelineFriendlyPolygon} from '../../utils/geoUtils'
@@ -25,7 +25,7 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const MapContainer = connect(mapStateToProps, mapDispatchToProps)(Map)
+const GranulesMapContainer = connect(mapStateToProps, mapDispatchToProps)(GranuleMap)
 
 const convertToGeoJson = (recordData, id) => {
   // Currently defaulting to rendering bounding box coordinates
@@ -36,4 +36,4 @@ const convertToGeoJson = (recordData, id) => {
   }
 }
 
-export default MapContainer
+export default GranulesMapContainer
