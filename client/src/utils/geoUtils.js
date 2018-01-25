@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import {textToNumber} from './inputUtils'
 
 export const shiftCoordinate = (coordinate, rotations) => {
   if (rotations === 0) {
@@ -66,10 +67,19 @@ export const convertNegativeLongitudes = coordinates => {
 }
 
 export const convertBboxToGeoJson = (west, south, east, north) => {
-  const ws = [ west, south ] // min x, min y
-  const wn = [ west, north ]
-  const en = [ east, north ] // max x, max y
-  const es = [ east, south ]
+  const w  = textToNumber(west)
+  const s = textToNumber(south)
+  const e  = textToNumber(east)
+  const n = textToNumber(north)
+
+  if (!w || !s || !e || !n) {
+    return null
+  }
+
+  const ws = [ w, s ] // min x, min y
+  const wn = [ w, n ]
+  const en = [ e, n ] // max x, max y
+  const es = [ e, s ]
   const coordinates = [ ws, es, en, wn, ws ] // CCW for exterior polygon
   if (
     !_.every(
@@ -99,13 +109,27 @@ export const convertBboxStringToGeoJson = coordString => {
 
 export const convertGeoJsonToBbox = geoJSON => {
   // FIXME convert wrap-around-earth coordinates into -180 to 180
-  const coordinates =
-    geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates
+  let coordinates = geoJSON.geometry.coordinates
   let bbox = null
   if (coordinates) {
+    console.log('datelineFriendly coords', ensureDatelineFriendlyPolygon(geoJSON.geometry).coordinates)
     // If coords cross dateline, they've been shifted and need to be put back to [-180, 180]
-    let west = _.round(coordinates[0][0][0], 4)
-    let east = _.round(coordinates[0][2][0], 4)
+    console.log('incoming west', coordinates[0][0][0])
+    console.log('incoming east', coordinates[0][2][0])
+    let west = coordinates[0][0][0]//.toFixed(4)
+    let east = coordinates[0][2][0]//.toFixed(4)
+
+    if(west > 180 && east > 180) {
+      console.log('both coords > 180')
+      west -= 360
+      east -= 360
+    }
+
+    if(west < -180 && east < -180) {
+      console.log('both coords < -180')
+      west += 360
+      east += 360
+    }
 
     if(west < -180) {
       west += 360
@@ -116,9 +140,9 @@ export const convertGeoJsonToBbox = geoJSON => {
     }
 
     bbox = {
-      west: west,
+      west: _.round(west, 4),
       south: _.round(coordinates[0][0][1], 4),
-      east: east,
+      east: _.round(east, 4),
       north: _.round(coordinates[0][2][1], 4),
     }
   }

@@ -25,6 +25,20 @@ const styleMapContainer = showMap => {
   }
 }
 
+  const styleMapText = (showMap) => {
+    return {
+      zIndex: 1,
+      padding: 0,
+      margin: 0,
+      display: showMap ? 'flex' : 'none',
+      position: 'relative',
+      alignItems: 'flex-start',
+      width: '100%',
+      marginBottom: '1ex',
+    }
+  }
+
+
 const styleMap = showMap => {
   return {
     zIndex: 1,
@@ -32,7 +46,7 @@ const styleMap = showMap => {
     margin: '0 auto',
     display: showMap ? 'flex' : 'none',
     position: 'relative',
-    height: '100%',
+    height: '90%',
     alignItems: 'flex-start',
     maxWidth: '1200px',
   }
@@ -286,6 +300,10 @@ class Map extends React.Component {
           this.container = container
         }}
       >
+        <div style={styleMapText(showMap)}>
+          Use the square button on the top right of the map to draw a bounding
+          box.
+        </div>
         <div
             style={styleMap(showMap)}
             ref={mapNode => {

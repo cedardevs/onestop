@@ -1,5 +1,12 @@
 import React from 'react'
-import {styleResult, styleResult508} from './ResultStyles'
+
+const styleResult508 = {
+  paddingTop: '1.618em',
+  overflowX: 'hidden',
+  maxWidth: '40em',
+  margin: '1em auto 8em',
+  minHeight: '100vh',
+}
 
 class ResultLayout extends React.Component {
   constructor(props) {
@@ -7,12 +14,7 @@ class ResultLayout extends React.Component {
   }
 
   render() {
-    const styleResult508Merged = {
-      ...styleResult,
-      ...styleResult508,
-    }
-
-    return <div style={styleResult508Merged}>{this.props.children}</div>
+    return <div style={styleResult508}>{this.props.children}</div>
   }
 }
 
