@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import FlexColumn from '../../common/FlexColumn'
 import Button from '../../common/input/Button'
 import _ from 'lodash'
-
+import {Key} from '../../utils/keyboardUtils'
 import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from '../../common/input/Checkbox'
 import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
@@ -23,6 +23,10 @@ const styleButtons = {
   flexDirection: 'row',
   alignItems: 'center',
   justifyContent: 'space-around',
+  marginTop: '1em',
+}
+
+const styleBreathingRoom = {
   marginTop: '1em',
 }
 
@@ -93,6 +97,13 @@ export default class MapFilter extends Component {
     }
     else {
       this.setState(this.initialState())
+    }
+  }
+
+  handleKeyDown = event => {
+    if (event.keyCode === Key.ENTER) {
+      event.preventDefault()
+      this.applyGeometry()
     }
   }
 
@@ -171,12 +182,7 @@ export default class MapFilter extends Component {
     stateClone[field] = value
 
     let {west, south, east, north} = stateClone
-    let constructedGeoJSON = convertBboxToGeoJson(
-      _.toNumber(west),
-      _.toNumber(south),
-      _.toNumber(east),
-      _.toNumber(north)
-    )
+    let constructedGeoJSON = convertBboxToGeoJson(west, south, east, north)
     this.setState({
       [field]: value,
       internalGeoJSON: constructedGeoJSON,
@@ -197,6 +203,7 @@ export default class MapFilter extends Component {
           id={id}
           name={direction}
           placeholder={placeholderValue}
+          aria-placeholder={placeholderValue}
           value={value}
           style={styleTextBox}
         />
@@ -206,8 +213,8 @@ export default class MapFilter extends Component {
 
   renderCoordinateInput = () => {
     return (
-      <div key="MapFilterCoordinatesInput::all">
-        <form>
+      <div key="MapFilterCoordinatesInput::all" style={styleBreathingRoom}>
+        <form onKeyDown={this.handleKeyDown}>
           <fieldset onChange={event => this.onChange(event)}>
             <legend>Bounding Box Coordinates: </legend>
             {this.renderInputRow('west', '-180.0 to 180.0')}
@@ -221,28 +228,19 @@ export default class MapFilter extends Component {
   }
 
   render() {
-    const styleShowOrHide = {
-      marginBottom: '0.618em',
-    }
+    const showMapText = this.props.showMap ? 'Hide Map' : 'Show Map'
 
     const buttonShowMap = (
       <Button
-        key="MapFilter::showMap"
+        key="MapFilter::showMapToggle"
         icon={mapIcon}
-        text="Show Map"
-        onClick={this.handleShowMap}
-        style={styleShowOrHide}
-        aria-hidden={true}
-      />
-    )
-
-    const buttonHideMap = (
-      <Button
-        key="MapFilter::hideMap"
-        icon={mapIcon}
-        text="Hide Map"
-        onClick={this.handleHideMap}
-        style={styleShowOrHide}
+        text={showMapText}
+        title={showMapText}
+        onClick={() => {
+          this.props.showMap ? this.handleHideMap() : this.handleShowMap()
+        }}
+        style={styleBreathingRoom}
+        ariaExpanded={this.props.showMap}
       />
     )
 
@@ -250,6 +248,7 @@ export default class MapFilter extends Component {
       <Button
         key="MapFilter::applyButton"
         text="Apply"
+        title="Apply location filter"
         onClick={this.applyGeometry}
         style={{width: '35%'}}
       />
@@ -259,6 +258,7 @@ export default class MapFilter extends Component {
       <Button
         key="MapFilter::clearButton"
         text="Clear"
+        title="Clear location filter"
         onClick={this.clearGeometry}
         style={{width: '35%'}}
       />
@@ -269,8 +269,15 @@ export default class MapFilter extends Component {
     const inputColumn = (
       <FlexColumn
         items={[
-          this.props.showMap ? buttonHideMap : buttonShowMap,
           inputBoundingBox,
+          <div key="MapFilter::InputColumn::Buttons" style={styleButtons}>
+            {buttonApply}
+            {buttonClear}
+          </div>,
+          <div key="MapFilter::InputColumn::Warning" style={this.warningStyle()} role="alert">
+            {this.state.warning}
+          </div>,
+          buttonShowMap,
         ]}
       />
     )
@@ -279,7 +286,7 @@ export default class MapFilter extends Component {
       <Checkbox
         label="Exclude Global Results"
         id="MapFilter::excludeGlobalCheckbox"
-        checked={this.props.excludeGlobal}
+        checked={!!this.props.excludeGlobal}
         onChange={this.toggleExcludeGlobalResults}
       />
     )
@@ -287,21 +294,12 @@ export default class MapFilter extends Component {
     return (
       <div style={styleMapFilter}>
         <p style={styleDescription}>
-          Draw a bounding box on the map using the square button on the top
-          right of the map or manually enter coordinates below. Use the Clear
-          button to reset the map and text boxes.
+          Enter coordinates below or draw on the map. Use the Clear button to
+          reset the map and text boxes.
         </p>
-        <div style={{height: '1em'}} />
         {inputColumn}
-        <div style={styleButtons}>
-          {buttonApply}
-          {buttonClear}
-        </div>
-        <div style={this.warningStyle()} role="alert">
-          {this.state.warning}
-        </div>
         <div style={{borderBottom: '1px solid white', margin: '1em 0'}} />
-        <h4 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h4>
+        <h3 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h3>
         {excludeGlobalCheckbox}
       </div>
     )

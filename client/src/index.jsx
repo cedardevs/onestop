@@ -1,7 +1,7 @@
 import React from 'react'
 import {render} from 'react-dom'
 import {Router, Route, IndexRoute} from 'react-router'
-import ResultContainer from './result/ResultContainer'
+import Result from './result/Result'
 import Section508Result from './result/Section508Result'
 import CollectionGridContainer from './result/collections/CollectionGridContainer'
 import Section508CollectionGridContainer from './result/collections/Section508CollectionGridContainer'
@@ -25,7 +25,7 @@ const routesLayout = (
   <Router history={history}>
     <Route path="/" name="Home" component={RootContainer}>
       <IndexRoute component={LandingContainer} />
-      <Route name="Collections" path="collections" component={ResultContainer}>
+      <Route name="Collections" path="collections" component={Result}>
         <IndexRoute
           displayName="Collections"
           component={CollectionGridContainer}

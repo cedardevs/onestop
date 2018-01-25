@@ -3,6 +3,7 @@ import moment from 'moment'
 import _ from 'lodash'
 import Button from '../../common/input/Button'
 import {Key} from '../../utils/keyboardUtils'
+import {ymdToDateMap, isValidDate, isValidDateRange} from '../../utils/inputUtils'
 
 const styleInputValidity = isValid => {
   return {
@@ -149,87 +150,29 @@ export default class TimeFilter extends Component {
     this.setState({
       [field]: value,
       warning: '',
-      startValueValid: this.isValidDate(
+      startValueValid: isValidDate(
         stateClone.startDateYear,
         stateClone.startDateMonth,
         stateClone.startDateDay
       ),
-      endValueValid: this.isValidDate(
+      endValueValid: isValidDate(
         stateClone.endDateYear,
         stateClone.endDateMonth,
         stateClone.endDateDay
       ),
-      dateRangeValid: this.isValidDateRange(
-        this.textToNumeric(
+      dateRangeValid: isValidDateRange(
+        ymdToDateMap(
           stateClone.startDateYear,
           stateClone.startDateMonth,
           stateClone.startDateDay
         ),
-        this.textToNumeric(
+        ymdToDateMap(
           stateClone.endDateYear,
           stateClone.endDateMonth,
           stateClone.endDateDay
         )
       ),
     })
-  }
-
-  textToNumeric = (year, month, day) => {
-    return {
-      year: year ? _.toNumber(year) : null,
-      month: month ? _.toNumber(month) : null,
-      day: day ? _.toNumber(day) : null,
-    }
-  }
-
-  isValidDate = (year, month, day) => {
-    // No date given is technically valid (since a complete range is unnecessary)
-    if (!year && !month && !day) {
-      return true
-    }
-
-    // Valid date can be year only, year & month only, or full date
-    if (year && !month && day) {
-      // Year + day is not valid
-      return false
-    }
-
-    let numeric = this.textToNumeric(year, month, day)
-
-    const now = moment()
-    const givenDate = moment(numeric)
-
-    let validYear =
-      _.isFinite(numeric.year) &&
-      _.isInteger(numeric.year) &&
-      numeric.year <= now.year()
-    let validMonth = numeric.month
-      ? numeric.month &&
-        numeric.year &&
-        moment([ numeric.year, numeric.month ]).isSameOrBefore(now)
-      : true
-    let validDay = numeric.day
-      ? _.isFinite(numeric.day) &&
-        _.isInteger(numeric.day) &&
-        givenDate.isValid() &&
-        givenDate.isSameOrBefore(now)
-      : true
-
-    return validYear && validMonth && validDay
-  }
-
-  isValidDateRange = (startMap, endMap) => {
-    // No entered date will create a moment for now. Make sure if no data was entered, days are correctly identified as null
-    const start = startMap.year != null ? moment(startMap) : null
-    const end = endMap.year != null ? moment(endMap) : null
-
-    // Valid date range can be just start, just end, or a start <= end
-    if (start && end) {
-      return start.isSameOrBefore(end)
-    }
-    else {
-      return true
-    }
   }
 
   clearDates = () => {
@@ -259,12 +202,12 @@ export default class TimeFilter extends Component {
       })
     }
     else {
-      let startDate = this.textToNumeric(
+      let startDate = ymdToDateMap(
         this.state.startDateYear,
         this.state.startDateMonth,
         this.state.startDateDay
       )
-      let endDate = this.textToNumeric(
+      let endDate = ymdToDateMap(
         this.state.endDateYear,
         this.state.endDateMonth,
         this.state.endDateDay

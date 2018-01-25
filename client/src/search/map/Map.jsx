@@ -21,6 +21,19 @@ const styleMapContainer = (showMap, forceShow) => {
   }
 }
 
+const styleMapText = (showMap, forceShow) => {
+  return {
+    zIndex: forceShow ? 2 : 1,
+    padding: 0,
+    margin: 0,
+    display: showMap || forceShow ? 'flex' : 'none',
+    position: 'relative',
+    alignItems: 'flex-start',
+    width: '100%',
+    marginBottom: '1ex',
+  }
+}
+
 const styleMap = (showMap, forceShow) => {
   return {
     zIndex: forceShow ? 2 : 1,
@@ -28,7 +41,7 @@ const styleMap = (showMap, forceShow) => {
     margin: 0,
     display: showMap || forceShow ? 'flex' : 'none',
     position: 'relative',
-    height: '100%',
+    height: '90%',
     alignItems: 'flex-start',
   }
 }
@@ -263,6 +276,10 @@ class Map extends React.Component {
           this.mapContainerNode = mapContainerNode
         }}
       >
+        <div style={styleMapText(showMap, forceShow)}>
+          Use the square button on the top right of the map to draw a bounding
+          box.
+        </div>
         <div
           style={styleMap(showMap, forceShow)}
           ref={mapNode => {
