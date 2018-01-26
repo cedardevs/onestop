@@ -52,10 +52,6 @@ const styleMap = showMap => {
   }
 }
 
-const SOUTH_WEST = L.latLng(-90, -270)
-const NORTH_EAST = L.latLng(90, 270)
-const BOUNDS = L.latLngBounds(SOUTH_WEST, NORTH_EAST)
-
 const geoJsonStyle = {
   color: COLOR_GREEN,
   weight: 3,
@@ -103,8 +99,6 @@ class Map extends React.Component {
     }
 
     let initialMapProperties = {
-      maxBounds: BOUNDS,
-      maxBoundsViscosity: 1.0,
       minZoom: 2,
       maxZoom: 5,
       layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],
@@ -198,6 +192,7 @@ class Map extends React.Component {
         if (!_.isEmpty(newGeoJson)) {
           let layer = L.geoJson(newGeoJson, {style: style})
           editableLayers.addLayer(layer)
+          this.state.map.panTo(layer.getBounds().getCenter())
         }
       })
     )
