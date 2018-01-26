@@ -144,7 +144,7 @@ class Map extends React.Component {
 
   mapSetup() {
     const {selection, features} = this.props
-    let {map, drawControl, editableLayers, resultsLayers} = this.state
+    let {map, editableLayers, resultsLayers} = this.state
     this.loadDrawEventHandlers()
     if (selection) {
       map.addControl(this.drawDefaults(editableLayers))
