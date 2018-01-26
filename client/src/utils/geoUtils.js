@@ -27,7 +27,6 @@ export const findMaxRotations = coordinates => {
 }
 
 export const recenterGeometry = geometry => {
-  // FIXME Turn any wrap-around-earth geometry into -180 to 180
   if (
     geometry.type.toLowerCase() !== 'polygon' ||
     geometry.coordinates.length !== 1
@@ -108,29 +107,20 @@ export const convertBboxStringToGeoJson = coordString => {
 }
 
 export const convertGeoJsonToBbox = geoJSON => {
-  // FIXME convert wrap-around-earth coordinates into -180 to 180
+  console.log('gj to bbox', geoJSON)
   let coordinates = geoJSON.geometry.coordinates
   let bbox = null
   if (coordinates) {
-    console.log('datelineFriendly coords', ensureDatelineFriendlyPolygon(geoJSON.geometry).coordinates)
+    let west = coordinates[0][0][0]
+    let east = coordinates[0][2][0]
+
+    // If coords wrap around earth, reset to -180 to 180
+    if(Math.abs(west - east) > 360) {
+      west = -180
+      east = 180
+    }
+
     // If coords cross dateline, they've been shifted and need to be put back to [-180, 180]
-    console.log('incoming west', coordinates[0][0][0])
-    console.log('incoming east', coordinates[0][2][0])
-    let west = coordinates[0][0][0]//.toFixed(4)
-    let east = coordinates[0][2][0]//.toFixed(4)
-
-    if(west > 180 && east > 180) {
-      console.log('both coords > 180')
-      west -= 360
-      east -= 360
-    }
-
-    if(west < -180 && east < -180) {
-      console.log('both coords < -180')
-      west += 360
-      east += 360
-    }
-
     if(west < -180) {
       west += 360
     }
