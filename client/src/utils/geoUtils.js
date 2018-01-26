@@ -71,7 +71,12 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   const e  = textToNumber(east)
   const n = textToNumber(north)
 
+  // Invalid coordinates checks
   if (!w || !s || !e || !n) {
+    return null
+  }
+
+  if(n < s) {
     return null
   }
 
@@ -107,7 +112,6 @@ export const convertBboxStringToGeoJson = coordString => {
 }
 
 export const convertGeoJsonToBbox = geoJSON => {
-  console.log('gj to bbox', geoJSON)
   let coordinates = geoJSON.geometry.coordinates
   let bbox = null
   if (coordinates) {
