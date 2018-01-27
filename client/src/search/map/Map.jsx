@@ -19,24 +19,27 @@ const styleMapContainer = showMap => {
       showMap
         ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
         : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
-    padding: showMap ? '1em' : '0em',
+    padding: showMap ? '0em' : '0em',
     height: showMap ? '400px' : '0px',
     width: showMap ? '100%' : '0%',
   }
 }
 
-  const styleMapText = (showMap) => {
-    return {
-      zIndex: 1,
-      padding: 0,
-      margin: 0,
-      display: showMap ? 'flex' : 'none',
-      position: 'relative',
-      alignItems: 'flex-start',
-      width: '100%',
-      marginBottom: '1ex',
-    }
+const styleMapText = (showMap) => {
+  return {
+    zIndex: 1,
+    padding: '0.309em 0.618em',
+    margin: '0 auto',
+    backgroundColor: '#18478F',
+    height: '1.618em',
+    lineHeight: '1.618em',
+    width: '100%',
+    textAlign: 'center',
+    opacity: showMap ? '1' : '0',
+    transition:
+      showMap ? 'opacity 0.2s 0.5s' : 'opacity 0.2s 0.0s',
   }
+}
 
 
 const styleMap = showMap => {
@@ -46,7 +49,7 @@ const styleMap = showMap => {
     margin: '0 auto',
     display: showMap ? 'flex' : 'none',
     position: 'relative',
-    height: '90%',
+    height: 'calc(400px - 1.618em - 0.618em)',
     alignItems: 'flex-start',
     maxWidth: '1200px',
   }
