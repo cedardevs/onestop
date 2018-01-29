@@ -275,7 +275,11 @@ export default class MapFilter extends Component {
             {buttonApply}
             {buttonClear}
           </div>,
-          <div key="MapFilter::InputColumn::Warning" style={this.warningStyle()} role="alert">
+          <div
+            key="MapFilter::InputColumn::Warning"
+            style={this.warningStyle()}
+            role="alert"
+          >
             {this.state.warning}
           </div>,
           buttonShowMap,

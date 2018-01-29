@@ -57,20 +57,22 @@ export default class AppliedFilters extends Component {
         const name = titleCaseKeyword(term) || 'DNE'
         const key = `appliedFilter::${term}`
 
-        return <AppliedFilterBubble
-          backgroundColor={Theme.facet.backgroundColor}
-          borderColor={Theme.facet.borderColor}
-          text={name}
-          key={key}
-          onUnselect={() => this.unselectFacetAndSubmitSearch(category, term)}
-        />
+        return (
+          <AppliedFilterBubble
+            backgroundColor={Theme.facet.backgroundColor}
+            borderColor={Theme.facet.borderColor}
+            text={name}
+            key={key}
+            onUnselect={() => this.unselectFacetAndSubmitSearch(category, term)}
+          />
+        )
       })
     })
   }
 
   buildTimeBubbles = () => {
     const {startDateTime, endDateTime} = this.props
-    const removeZeroTime = (dateTime) => dateTime.replace('T00:00:00Z', '')
+    const removeZeroTime = dateTime => dateTime.replace('T00:00:00Z', '')
     let timeBubbles = []
     if (startDateTime) {
       timeBubbles.push(
@@ -79,7 +81,8 @@ export default class AppliedFilters extends Component {
           borderColor={Theme.time.borderColor}
           text={`After: ${removeZeroTime(startDateTime)}`}
           key="appliedFilter::start"
-          onUnselect={() => this.unselectDateTimeAndSubmitSearch(null, endDateTime)}
+          onUnselect={() =>
+            this.unselectDateTimeAndSubmitSearch(null, endDateTime)}
         />
       )
     }
@@ -90,7 +93,8 @@ export default class AppliedFilters extends Component {
           borderColor={Theme.time.borderColor}
           text={`Before: ${removeZeroTime(endDateTime)}`}
           key="appliedFilter::end"
-          onUnselect={() => this.unselectDateTimeAndSubmitSearch(startDateTime, null)}
+          onUnselect={() =>
+            this.unselectDateTimeAndSubmitSearch(startDateTime, null)}
         />
       )
     }
@@ -127,12 +131,11 @@ export default class AppliedFilters extends Component {
     return spaceBubbles
   }
 
-
   render() {
     const appliedFilters = [
       ...this.buildSpaceBubbles(),
       ...this.buildTimeBubbles(),
-      ...this.buildFacetBubbles()
+      ...this.buildFacetBubbles(),
     ]
     return <div style={styleWrapper}>{appliedFilters}</div>
   }

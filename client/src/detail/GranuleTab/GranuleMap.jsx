@@ -6,7 +6,7 @@ import L from 'leaflet'
 import E from 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
-import {recenterGeometry} from "../../utils/geoUtils"
+import {recenterGeometry} from '../../utils/geoUtils'
 
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
@@ -126,16 +126,15 @@ class GranuleMap extends React.Component {
   }
 
   mapSetup() {
-    const { geoJsonSelection, selection, features } = this.props
+    const {geoJsonSelection, selection, features} = this.props
     let {map, editableLayers, resultsLayers} = this.state
-    if(geoJsonSelection) {
+    if (geoJsonSelection) {
       let geoJSONLayer = L.geoJson(geoJsonSelection, {style: geoJsonStyle})
       editableLayers.addLayer(geoJSONLayer)
     }
     if (features) {
       this.updateResultsLayers(this.props)
     }
-
 
     this.loadDrawEventHandlers()
     if (selection) {
@@ -179,13 +178,13 @@ class GranuleMap extends React.Component {
     let {editableLayers, style} = this.state
     let w = watch(store.getState, 'behavior.search.geoJSON')
     store.subscribe(
-        w(newGeoJson => {
-          editableLayers.clearLayers()
-          if (!_.isEmpty(newGeoJson)) {
-            let layer = L.geoJson(newGeoJson, {style: style})
-            editableLayers.addLayer(layer)
-          }
-        })
+      w(newGeoJson => {
+        editableLayers.clearLayers()
+        if (!_.isEmpty(newGeoJson)) {
+          let layer = L.geoJson(newGeoJson, {style: style})
+          editableLayers.addLayer(layer)
+        }
+      })
     )
   }
 
@@ -208,12 +207,12 @@ class GranuleMap extends React.Component {
     resultsLayers.clearLayers()
     geoJsonFeatures.forEach(feature => {
       resultsLayers.addLayer(
-          L.geoJson(feature, {
-            style: f =>
-                focusedFeatures.indexOf(f.properties.id) >= 0
-                    ? selectedStyle
-                    : defaultStyle,
-          })
+        L.geoJson(feature, {
+          style: f =>
+            focusedFeatures.indexOf(f.properties.id) >= 0
+              ? selectedStyle
+              : defaultStyle,
+        })
       )
     })
     this.geoJsonFeatures = geoJsonFeatures
@@ -278,19 +277,19 @@ class GranuleMap extends React.Component {
 
   render() {
     return (
+      <div
+        style={styleMapContainer}
+        ref={container => {
+          this.container = container
+        }}
+      >
         <div
-            style={styleMapContainer}
-            ref={container => {
-              this.container = container
-            }}
-        >
-          <div
-              style={styleMap}
-              ref={mapNode => {
-                this.mapNode = mapNode
-              }}
-          />
-        </div>
+          style={styleMap}
+          ref={mapNode => {
+            this.mapNode = mapNode
+          }}
+        />
+      </div>
     )
   }
 }

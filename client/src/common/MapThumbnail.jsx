@@ -32,10 +32,7 @@ class MapThumbnail extends React.Component {
     }
 
     let geoJsonLayer
-    let layers = [
-      E.basemapLayer('Imagery'),
-      E.basemapLayer('ImageryLabels'),
-    ]
+    let layers = [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ]
     if (this.props.geometry) {
       geoJsonLayer = L.GeoJSON.geometryToLayer({
         type: 'Feature',

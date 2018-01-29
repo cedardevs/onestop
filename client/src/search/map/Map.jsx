@@ -6,7 +6,7 @@ import L from 'leaflet'
 import E from 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
-import {recenterGeometry} from "../../utils/geoUtils"
+import {recenterGeometry} from '../../utils/geoUtils'
 
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
@@ -15,17 +15,16 @@ const styleMapContainer = showMap => {
   return {
     boxSizing: 'border-box',
     backgroundColor: '#3D97D2',
-    transition:
-      showMap
-        ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
-        : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
+    transition: showMap
+      ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
+      : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
     padding: showMap ? '0em' : '0em',
     height: showMap ? '400px' : '0px',
     width: showMap ? '100%' : '0%',
   }
 }
 
-const styleMapText = (showMap) => {
+const styleMapText = showMap => {
   return {
     zIndex: 1,
     padding: '0.309em 0.618em',
@@ -36,11 +35,9 @@ const styleMapText = (showMap) => {
     width: '100%',
     textAlign: 'center',
     opacity: showMap ? '1' : '0',
-    transition:
-      showMap ? 'opacity 0.2s 0.5s' : 'opacity 0.2s 0.0s',
+    transition: showMap ? 'opacity 0.2s 0.5s' : 'opacity 0.2s 0.0s',
   }
 }
-
 
 const styleMap = showMap => {
   return {
@@ -289,7 +286,7 @@ class Map extends React.Component {
   }
 
   render() {
-    const { showMap } = this.props
+    const {showMap} = this.props
 
     return (
       <div
@@ -303,10 +300,10 @@ class Map extends React.Component {
           box.
         </div>
         <div
-            style={styleMap(showMap)}
-            ref={mapNode => {
-              this.mapNode = mapNode
-            }}
+          style={styleMap(showMap)}
+          ref={mapNode => {
+            this.mapNode = mapNode
+          }}
         />
       </div>
     )

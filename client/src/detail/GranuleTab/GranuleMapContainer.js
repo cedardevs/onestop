@@ -25,7 +25,9 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const GranulesMapContainer = connect(mapStateToProps, mapDispatchToProps)(GranuleMap)
+const GranulesMapContainer = connect(mapStateToProps, mapDispatchToProps)(
+  GranuleMap
+)
 
 const convertToGeoJson = (recordData, id) => {
   // Currently defaulting to rendering bounding box coordinates

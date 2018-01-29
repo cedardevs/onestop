@@ -66,9 +66,9 @@ export const convertNegativeLongitudes = coordinates => {
 }
 
 export const convertBboxToGeoJson = (west, south, east, north) => {
-  const w  = textToNumber(west)
+  const w = textToNumber(west)
   const s = textToNumber(south)
-  const e  = textToNumber(east)
+  const e = textToNumber(east)
   const n = textToNumber(north)
 
   // Invalid coordinates checks
@@ -76,7 +76,7 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
     return null
   }
 
-  if(n < s) {
+  if (n < s) {
     return null
   }
 
@@ -96,7 +96,7 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
   else {
     let datelineFriendlyGeometry = ensureDatelineFriendlyPolygon({
       coordinates: [ coordinates ],
-      type: 'Polygon'
+      type: 'Polygon',
     })
     return {
       type: 'Feature',
@@ -119,18 +119,18 @@ export const convertGeoJsonToBbox = geoJSON => {
     let east = coordinates[0][2][0]
 
     // If coords wrap around earth, reset to -180 to 180
-    if(Math.abs(west - east) > 360) {
+    if (Math.abs(west - east) > 360) {
       west = -180
       east = 180
     }
 
     // If coords cross dateline, they've been shifted and need to be put back to [-180, 180]
-    if(west < -180) {
+    if (west < -180) {
       west += 360
     }
 
-    if(east > 180) {
-      east -=360
+    if (east > 180) {
+      east -= 360
     }
 
     bbox = {
