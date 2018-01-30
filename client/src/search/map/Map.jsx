@@ -19,7 +19,7 @@ const styleMapContainer = showMap => {
       ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
       : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
     padding: showMap ? '0em' : '0em',
-    height: showMap ? '400px' : '0px',
+    height: showMap ? '400px' : '0em',
     width: showMap ? '100%' : '0%',
   }
 }
@@ -46,7 +46,7 @@ const styleMap = showMap => {
     margin: '0 auto',
     display: showMap ? 'flex' : 'none',
     position: 'relative',
-    height: 'calc(400px - 1.618em - 0.618em)',
+    height: 'calc(400px - 1.618em - 2 * 0.618em)',
     alignItems: 'flex-start',
     maxWidth: '1200px',
   }
