@@ -51,6 +51,9 @@ const styleMap = showMap => {
     maxWidth: '1200px',
   }
 }
+const SOUTH_WEST = L.latLng(-90, 5 * -360)
+const NORTH_EAST = L.latLng(90, 5 * 360)
+const BOUNDS = L.latLngBounds(SOUTH_WEST, NORTH_EAST)
 
 const geoJsonStyle = {
   color: COLOR_GREEN,
@@ -99,6 +102,8 @@ class Map extends React.Component {
     }
 
     let initialMapProperties = {
+      maxBounds: BOUNDS,
+      maxBoundsViscosity: 1.0,
       minZoom: 2,
       maxZoom: 5,
       layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],
