@@ -70,8 +70,6 @@ const drawStyle = {
 class Map extends React.Component {
   constructor(props) {
     super(props)
-    this.geoJsonFeatures = props.geoJsonFeatures
-    this.focusedFeatures = props.focusedFeatures
     this.state = {
       initialized: false,
     }
@@ -230,8 +228,6 @@ class Map extends React.Component {
         })
       )
     })
-    this.geoJsonFeatures = geoJsonFeatures
-    this.focusedFeatures = focusedFeatures
   }
 
   fitMapToResults() {
