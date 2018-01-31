@@ -23,19 +23,11 @@ const id = (category, term) => {
   return idParts.join('-')
 }
 
-const keyword = (termHierarchy, isHierarchy) => {
-  if (isHierarchy) {
-    return titleCaseKeyword(termHierarchy.pop())
-  }
-  return termHierarchy.pop()
-}
-
 const buildTermHierarchy = (term, isHierarchy) => {
   if (isHierarchy) {
-    // Handling unfortunate instances of strings like "Spectral/Engineering >\t\t\t\t\t\t\tmicrowave"
-    return term.split('>').map(e => e.trim())
+    return term.split(' > ')
   }
-  return [ term ]
+  return [ term.split(' > ').pop() ]
 }
 
 const buildFacet = (category, term, count, selected, isHierarchy) => {
@@ -47,7 +39,7 @@ const buildFacet = (category, term, count, selected, isHierarchy) => {
     id: id(category, term),
     selected: selected,
     termHierarchy: termHierarchy,
-    keyword: keyword(termHierarchy, isHierarchy),
+    keyword: termHierarchy.pop()
   })
 }
 
@@ -88,15 +80,4 @@ export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
   }).filter(facetCategory => {
     return facetCategory
   }) // remove undefined?
-}
-
-// pulls out the last term in a GCMD-style keyword and attempts to maintain intended acronyms
-export const titleCaseKeyword = term => {
-  if (!term) {
-    return null
-  }
-  const trimmed = term.split('>').pop().trim()
-  return trimmed === trimmed.toUpperCase()
-    ? _.startCase(trimmed.toLowerCase())
-    : trimmed
 }

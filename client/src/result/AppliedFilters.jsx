@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import _ from 'lodash'
 import AppliedFilterBubble from './AppliedFilterBubble'
-import {titleCaseKeyword} from '../utils/keywordUtils'
 import * as geoUtils from '../utils/geoUtils'
 
 const Theme = {
@@ -54,7 +53,7 @@ export default class AppliedFilters extends Component {
     const {selectedFacets} = this.props
     return _.flatMap(selectedFacets, (terms, category) => {
       return _.map(terms, term => {
-        const name = titleCaseKeyword(term) || 'DNE'
+        const name = term.split('>').pop().trim() || 'DNE'
         const key = `appliedFilter::${term}`
 
         return <AppliedFilterBubble

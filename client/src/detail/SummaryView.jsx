@@ -8,7 +8,6 @@ import starHalfO from 'fa/star-half-o.svg'
 import styles from './DetailStyles.css'
 import A from '../common/link/Link'
 import MapThumbnail from '../common/MapThumbnail'
-import {titleCaseKeyword} from '../utils/keywordUtils'
 
 class SummaryView extends React.Component {
   constructor(props) {
@@ -184,7 +183,7 @@ class SummaryView extends React.Component {
           .filter((k, i, a) => a.indexOf(k) === i) // dedupe
       }
       else {
-        keywords = keywords.map(titleCaseKeyword)
+        keywords = keywords.map(term => term.split('>').pop().trim())
       }
       keywords = keywords.map(
         (k, index) =>
