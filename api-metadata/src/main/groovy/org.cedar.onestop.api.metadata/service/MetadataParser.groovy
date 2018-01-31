@@ -2,8 +2,8 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
-import org.apache.commons.lang3.StringEscapeUtils
-import org.apache.commons.lang3.text.WordUtils
+import org.apache.commons.text.StringEscapeUtils
+import org.apache.commons.text.WordUtils
 
 class MetadataParser {
 
@@ -184,18 +184,23 @@ class MetadataParser {
                 gcmdLocations.addAll(tokenizeHierarchyKeyword(text))
                 break
               case { it.toLowerCase().contains('platform') }:
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdPlatforms.add(text)
                 break
               case { it.toLowerCase().contains('instrument') }:
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdInstruments.add(text)
                 break
               case { it.toLowerCase().contains('data center') }:
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdDataCenters.add(text)
                 break
               case { it.toLowerCase().contains('data resolution') }:
+                text = cleanInternalKeywordWhitespace(text)
                 gcmdDataResolution.add(text)
                 break
               case { it.toLowerCase().contains('project') }:
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdProjects.add(text)
                 break
             }
@@ -218,10 +223,31 @@ class MetadataParser {
     ]
   }
 
+  static String cleanInternalKeywordWhitespace(String text) {
+    def elements = text.split('>')
+    def trimmed = elements.collect { e ->  e.trim() }
+    return String.join(' > ', trimmed)
+  }
+
   static final char[] capitalizingDelimiters = [' ', '/', '.', '(', '-', '_'].collect({ it as char })
 
+  static String normalizeNonHierarchicalKeyword(String text) {
+    // These are in the format 'Short Name > Long Name', where 'Short Name' is likely an acronym. This normalizing allows
+    // for title casing the 'Long Name' if and only if it's given in all caps or all lowercase (so we don't title case an
+    // acronym here)
+    def cleanText = cleanInternalKeywordWhitespace(text)
+    def elements = Arrays.asList(cleanText.split(' > '))
+    String longName = elements.last()
+    if(longName == longName.toUpperCase() || longName == longName.toLowerCase()) {
+      longName = WordUtils.capitalizeFully(longName, capitalizingDelimiters)
+      elements.set(elements.size() - 1, longName)
+    }
+    return String.join(' > ', elements)
+  }
+
   static String normalizeHierarchyKeyword(String text) {
-    return WordUtils.capitalizeFully(text, capitalizingDelimiters)
+    def cleanText = cleanInternalKeywordWhitespace(text)
+    return WordUtils.capitalizeFully(cleanText, capitalizingDelimiters)
         .replace('Earth Science > ', '')
   }
 

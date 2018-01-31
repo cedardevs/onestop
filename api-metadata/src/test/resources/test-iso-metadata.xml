@@ -267,6 +267,12 @@
           <gmd:keyword>
             <gco:CharacterString>SIO &gt; Super Important Organization</gco:CharacterString>
           </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>OSIO &gt; OTHER SUPER IMPORTANT ORGANIZATION</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>SSIO &gt; Super SIO (Super Important Organization)</gco:CharacterString>
+          </gmd:keyword>
           <gmd:type>
             <gmd:MD_KeywordTypeCode codeListValue="dataCenter">dataCenter</gmd:MD_KeywordTypeCode>
           </gmd:type>
@@ -334,6 +340,14 @@
           </gmd:keyword>
           <gmd:keyword>
             <gco:CharacterString>EARTH SCIENCE &gt; VOLCANOES &gt; THIS KEYWORD &gt; IS INVALID</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Earth Science &gt; Spectral/Engineering &gt;
+              microwave &gt; Brightness Temperature</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Earth Science &gt; Spectral/Engineering &gt;
+              microwave &gt; Temperature Anomalies</gco:CharacterString>
           </gmd:keyword>
           <gmd:type>
             <gmd:MD_KeywordTypeCode  codeListValue="theme">theme</gmd:MD_KeywordTypeCode>

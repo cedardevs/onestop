@@ -28,7 +28,11 @@ class MetadataParserTest extends Specification {
         'Geographic Region > Arctic',
         'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
         'Liquid Earth > This Keyword > Is Invalid',
-        'SIO > Super Important Organization'
+        'SIO > Super Important Organization',
+        'Spectral/Engineering > Microwave > Brightness Temperature',
+        'Spectral/Engineering > Microwave > Temperature Anomalies',
+        'OSIO > Other Super Important Organization',
+        'SSIO > Super SIO (Super Important Organization)'
     ] as Set
     parsedXml.topicCategories == ['environment', 'oceans'] as Set
     parsedXml.gcmdScience == [
@@ -39,6 +43,10 @@ class MetadataParserTest extends Specification {
         'Oceans',
         'Oceans > Salinity/Density',
         'Oceans > Salinity/Density > Salinity',
+        'Spectral/Engineering',
+        'Spectral/Engineering > Microwave',
+        'Spectral/Engineering > Microwave > Brightness Temperature',
+        'Spectral/Engineering > Microwave > Temperature Anomalies',
         'Volcanoes',
         'Volcanoes > This Keyword',
         'Volcanoes > This Keyword > Is Invalid'
@@ -57,7 +65,11 @@ class MetadataParserTest extends Specification {
     parsedXml.gcmdInstruments == [] as Set
     parsedXml.gcmdPlatforms == [] as Set
     parsedXml.gcmdProjects == [] as Set
-    parsedXml.gcmdDataCenters == ['SIO > Super Important Organization'] as Set
+    parsedXml.gcmdDataCenters == [
+        'SIO > Super Important Organization',
+        'OSIO > Other Super Important Organization',
+        'SSIO > Super SIO (Super Important Organization)'
+    ] as Set
     parsedXml.gcmdDataResolution == [] as Set
     parsedXml.temporalBounding == [
         beginDate: '2005-05-09',
@@ -201,7 +213,11 @@ class MetadataParserTest extends Specification {
         'Geographic Region > Arctic',
         'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
         'Liquid Earth > This Keyword > Is Invalid',
-        'SIO > Super Important Organization'
+        'SIO > Super Important Organization',
+        'Spectral/Engineering > Microwave > Brightness Temperature',
+        'Spectral/Engineering > Microwave > Temperature Anomalies',
+        'OSIO > Other Super Important Organization',
+        'SSIO > Super SIO (Super Important Organization)'
     ] as Set
     parsedXml.topicCategories == ['environment', 'oceans'] as Set
     parsedXml.gcmdScience == [
@@ -212,6 +228,10 @@ class MetadataParserTest extends Specification {
         'Oceans',
         'Oceans > Salinity/Density',
         'Oceans > Salinity/Density > Salinity',
+        'Spectral/Engineering',
+        'Spectral/Engineering > Microwave',
+        'Spectral/Engineering > Microwave > Brightness Temperature',
+        'Spectral/Engineering > Microwave > Temperature Anomalies',
         'Volcanoes',
         'Volcanoes > This Keyword',
         'Volcanoes > This Keyword > Is Invalid'
@@ -230,7 +250,11 @@ class MetadataParserTest extends Specification {
     parsedXml.gcmdInstruments == [] as Set
     parsedXml.gcmdPlatforms == [] as Set
     parsedXml.gcmdProjects == [] as Set
-    parsedXml.gcmdDataCenters == ['SIO > Super Important Organization'] as Set
+    parsedXml.gcmdDataCenters == [
+        'SIO > Super Important Organization',
+        'OSIO > Other Super Important Organization',
+        'SSIO > Super SIO (Super Important Organization)'
+    ] as Set
     parsedXml.gcmdDataResolution == [] as Set
   }
 
