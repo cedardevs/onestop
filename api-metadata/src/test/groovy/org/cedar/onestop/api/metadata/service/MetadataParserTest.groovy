@@ -32,9 +32,17 @@ class MetadataParserTest extends Specification {
         'Spectral/Engineering > Microwave > Brightness Temperature',
         'Spectral/Engineering > Microwave > Temperature Anomalies',
         'OSIO > Other Super Important Organization',
-        'SSIO > Super SIO (Super Important Organization)'
+        'SSIO > Super SIO (Super Important Organization)',
+        'This Keyword > Is Just > WRONG',
+        'This Keyword Is > Misplaced And Invalid',
+        'Environmental Advisories > Fire Advisories > Wildfires'
     ] as Set
     parsedXml.topicCategories == ['environment', 'oceans'] as Set
+    parsedXml.gcmdScienceServices == [
+        'Environmental Advisories',
+        'Environmental Advisories > Fire Advisories',
+        'Environmental Advisories > Fire Advisories > Wildfires'
+    ] as Set
     parsedXml.gcmdScience == [
         'Atmosphere',
         'Atmosphere > Atmospheric Temperature',
@@ -47,6 +55,8 @@ class MetadataParserTest extends Specification {
         'Spectral/Engineering > Microwave',
         'Spectral/Engineering > Microwave > Brightness Temperature',
         'Spectral/Engineering > Microwave > Temperature Anomalies',
+        'This Keyword Is',
+        'This Keyword Is > Misplaced And Invalid',
         'Volcanoes',
         'Volcanoes > This Keyword',
         'Volcanoes > This Keyword > Is Invalid'
@@ -217,9 +227,17 @@ class MetadataParserTest extends Specification {
         'Spectral/Engineering > Microwave > Brightness Temperature',
         'Spectral/Engineering > Microwave > Temperature Anomalies',
         'OSIO > Other Super Important Organization',
-        'SSIO > Super SIO (Super Important Organization)'
+        'SSIO > Super SIO (Super Important Organization)',
+        'This Keyword > Is Just > WRONG',
+        'This Keyword Is > Misplaced And Invalid',
+        'Environmental Advisories > Fire Advisories > Wildfires'
     ] as Set
     parsedXml.topicCategories == ['environment', 'oceans'] as Set
+    parsedXml.gcmdScienceServices == [
+        'Environmental Advisories',
+        'Environmental Advisories > Fire Advisories',
+        'Environmental Advisories > Fire Advisories > Wildfires'
+    ] as Set
     parsedXml.gcmdScience == [
         'Atmosphere',
         'Atmosphere > Atmospheric Temperature',
@@ -232,6 +250,8 @@ class MetadataParserTest extends Specification {
         'Spectral/Engineering > Microwave',
         'Spectral/Engineering > Microwave > Brightness Temperature',
         'Spectral/Engineering > Microwave > Temperature Anomalies',
+        'This Keyword Is',
+        'This Keyword Is > Misplaced And Invalid',
         'Volcanoes',
         'Volcanoes > This Keyword',
         'Volcanoes > This Keyword > Is Invalid'

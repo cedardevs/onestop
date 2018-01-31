@@ -51,6 +51,7 @@ class MetadataParser {
         description                     : citationInfo.description,
         keywords                        : keywordsMap.keywords,
         topicCategories                 : keywordsMap.topicCategories,
+        gcmdScienceServices             : keywordsMap.gcmdScienceServices,
         gcmdScience                     : keywordsMap.gcmdScience,
         gcmdLocations                   : keywordsMap.gcmdLocations,
         gcmdInstruments                 : keywordsMap.gcmdInstruments,
@@ -155,6 +156,7 @@ class MetadataParser {
     def keywords = [] as Set
     def topicCategories = [] as Set
     def gcmdScience = [] as Set
+    def gcmdScienceServices = [] as Set
     def gcmdLocations = [] as Set
     def gcmdPlatforms = [] as Set
     def gcmdInstruments = [] as Set
@@ -173,33 +175,37 @@ class MetadataParser {
 
         if (text) {
           text = text.trim()
-          if (namespace.toLowerCase().contains('gcmd')) {
-            switch (namespace) {
-              case { it.toLowerCase().contains('science') }:
+          if (namespace.toLowerCase().contains('gcmd') || namespace.toLowerCase().contains('global change master directory')) {
+            switch (namespace.toLowerCase()) {
+              case { it.contains('science') && text.toLowerCase().startsWith('earth science services')}:
+                text = normalizeHierarchyKeyword(text)
+                gcmdScienceServices.addAll(tokenizeHierarchyKeyword(text))
+                break
+              case { it.contains('science') && text.toLowerCase().startsWith('earth science')}:
                 text = normalizeHierarchyKeyword(text)
                 gcmdScience.addAll(tokenizeHierarchyKeyword(text))
                 break
-              case { it.toLowerCase().contains('location') || it.toLowerCase().contains('place') }:
+              case { it.contains('location') || it.contains('place') }:
                 text = normalizeHierarchyKeyword(text)
                 gcmdLocations.addAll(tokenizeHierarchyKeyword(text))
                 break
-              case { it.toLowerCase().contains('platform') }:
+              case { it.contains('platform') }:
                 text = normalizeNonHierarchicalKeyword(text)
                 gcmdPlatforms.add(text)
                 break
-              case { it.toLowerCase().contains('instrument') }:
+              case { it.contains('instrument') }:
                 text = normalizeNonHierarchicalKeyword(text)
                 gcmdInstruments.add(text)
                 break
-              case { it.toLowerCase().contains('data center') }:
+              case { it.contains('data center') }:
                 text = normalizeNonHierarchicalKeyword(text)
                 gcmdDataCenters.add(text)
                 break
-              case { it.toLowerCase().contains('data resolution') }:
+              case { it.contains('data resolution') }:
                 text = cleanInternalKeywordWhitespace(text)
                 gcmdDataResolution.add(text)
                 break
-              case { it.toLowerCase().contains('project') }:
+              case { it.contains('project') }:
                 text = normalizeNonHierarchicalKeyword(text)
                 gcmdProjects.add(text)
                 break
@@ -211,15 +217,16 @@ class MetadataParser {
     }
 
     return [
-        keywords          : keywords,
-        topicCategories   : topicCategories,
-        gcmdScience       : gcmdScience,
-        gcmdLocations     : gcmdLocations,
-        gcmdInstruments   : gcmdInstruments,
-        gcmdPlatforms     : gcmdPlatforms,
-        gcmdProjects      : gcmdProjects,
-        gcmdDataCenters   : gcmdDataCenters,
-        gcmdDataResolution: gcmdDataResolution
+        keywords           : keywords,
+        topicCategories    : topicCategories,
+        gcmdScienceServices: gcmdScienceServices,
+        gcmdScience        : gcmdScience,
+        gcmdLocations      : gcmdLocations,
+        gcmdInstruments    : gcmdInstruments,
+        gcmdPlatforms      : gcmdPlatforms,
+        gcmdProjects       : gcmdProjects,
+        gcmdDataCenters    : gcmdDataCenters,
+        gcmdDataResolution : gcmdDataResolution
     ]
   }
 
@@ -248,7 +255,7 @@ class MetadataParser {
   static String normalizeHierarchyKeyword(String text) {
     def cleanText = cleanInternalKeywordWhitespace(text)
     return WordUtils.capitalizeFully(cleanText, capitalizingDelimiters)
-        .replace('Earth Science > ', '')
+        .replace('Earth Science > ', '').replace('Earth Science Services > ', '')
   }
 
   static List<String> tokenizeHierarchyKeyword(String text) {
