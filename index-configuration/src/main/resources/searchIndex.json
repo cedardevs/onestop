@@ -28,6 +28,9 @@
         "keywords": {
           "type": "text"
         },
+        "accessionValues": {
+          "type": "keyword"
+        },
         "topicCategories": {
           "type": "text"
         },
@@ -275,6 +278,9 @@
         },
         "keywords": {
           "type": "text"
+        },
+        "accessionValues": {
+          "type": "keyword"
         },
         "topicCategories": {
           "type": "text"

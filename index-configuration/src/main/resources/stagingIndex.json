@@ -39,6 +39,11 @@
           "doc_values": false,
           "index": false
         },
+        "accessionValues": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
         "topicCategories": {
           "type": "keyword",
           "doc_values": false,
@@ -366,6 +371,11 @@
           "index": false
         },
         "keywords": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "accessionValues": {
           "type": "keyword",
           "doc_values": false,
           "index": false
