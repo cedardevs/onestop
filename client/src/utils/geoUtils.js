@@ -66,9 +66,9 @@ export const convertNegativeLongitudes = coordinates => {
 }
 
 export const convertBboxToGeoJson = (west, south, east, north) => {
-  const w  = textToNumber(west)
+  const w = textToNumber(west)
   const s = textToNumber(south)
-  const e  = textToNumber(east)
+  const e = textToNumber(east)
   const n = textToNumber(north)
 
   if (!w || !s || !e || !n) {

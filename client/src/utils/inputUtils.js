@@ -2,7 +2,7 @@ import _ from 'lodash'
 import moment from 'moment/moment'
 
 // if the input represents a finite number, coerces and returns it, else null
-export const textToNumber = (text) => {
+export const textToNumber = text => {
   const number = text ? _.toNumber(text) : null
   return _.isFinite(number) ? number : null
 }
@@ -37,10 +37,14 @@ export const isValidDate = (year, month, day) => {
 
   let validYear = year && dateMap.year !== null && dateMap.year <= now.year()
   let validMonth = month
-    ? dateMap.month !== null && dateMap.year !== null && moment([dateMap.year, dateMap.month]).isSameOrBefore(now)
+    ? dateMap.month !== null &&
+      dateMap.year !== null &&
+      moment([ dateMap.year, dateMap.month ]).isSameOrBefore(now)
     : true
   let validDay = day
-    ? dateMap.day !== null && givenDate.isValid() && givenDate.isSameOrBefore(now)
+    ? dateMap.day !== null &&
+      givenDate.isValid() &&
+      givenDate.isSameOrBefore(now)
     : true
 
   return validYear && validMonth && validDay

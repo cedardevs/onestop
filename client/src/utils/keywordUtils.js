@@ -39,7 +39,7 @@ const buildFacet = (category, term, count, selected, isHierarchy) => {
     id: id(category, term),
     selected: selected,
     termHierarchy: termHierarchy,
-    keyword: termHierarchy.pop()
+    keyword: termHierarchy.pop(),
   })
 }
 
