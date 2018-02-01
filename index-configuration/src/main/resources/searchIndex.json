@@ -34,6 +34,9 @@
         "gcmdScience": {
           "type": "keyword"
         },
+        "gcmdScienceServices": {
+          "type": "keyword"
+        },
         "gcmdLocations": {
           "type": "keyword"
         },
@@ -277,6 +280,9 @@
           "type": "text"
         },
         "gcmdScience": {
+          "type": "keyword"
+        },
+        "gcmdScienceServices": {
           "type": "keyword"
         },
         "gcmdLocations": {

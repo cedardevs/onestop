@@ -49,6 +49,11 @@
           "doc_values": false,
           "index": false
         },
+        "gcmdScienceServices": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
         "gcmdLocations": {
           "type": "keyword",
           "doc_values": false,
@@ -371,6 +376,11 @@
           "index": false
         },
         "gcmdScience": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "gcmdScienceServices": {
           "type": "keyword",
           "doc_values": false,
           "index": false
