@@ -37,6 +37,11 @@ class MetadataParserTest extends Specification {
         'This Keyword Is > Misplaced And Invalid',
         'Environmental Advisories > Fire Advisories > Wildfires'
     ] as Set
+    parsedXml.accessionValues == [
+        '0038924',
+        '0038947',
+        '0038970'
+    ] as Set
     parsedXml.topicCategories == ['environment', 'oceans'] as Set
     parsedXml.gcmdScienceServices == [
         'Environmental Advisories',
@@ -231,6 +236,11 @@ class MetadataParserTest extends Specification {
         'This Keyword > Is Just > WRONG',
         'This Keyword Is > Misplaced And Invalid',
         'Environmental Advisories > Fire Advisories > Wildfires'
+    ] as Set
+    parsedXml.accessionValues == [
+        '0038924',
+        '0038947',
+        '0038970'
     ] as Set
     parsedXml.topicCategories == ['environment', 'oceans'] as Set
     parsedXml.gcmdScienceServices == [

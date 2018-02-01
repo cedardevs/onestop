@@ -50,6 +50,7 @@ class MetadataParser {
         alternateTitle                  : citationInfo.alternateTitle,
         description                     : citationInfo.description,
         keywords                        : keywordsMap.keywords,
+        accessionValues                 : keywordsMap.accessionValues,
         topicCategories                 : keywordsMap.topicCategories,
         gcmdScienceServices             : keywordsMap.gcmdScienceServices,
         gcmdScience                     : keywordsMap.gcmdScience,
@@ -154,6 +155,7 @@ class MetadataParser {
     def idInfo = metadata.identificationInfo.MD_DataIdentification
 
     def keywords = [] as Set
+    def accessionValues = [] as Set
     def topicCategories = [] as Set
     def gcmdScience = [] as Set
     def gcmdScienceServices = [] as Set
@@ -175,49 +177,55 @@ class MetadataParser {
 
         if (text) {
           text = text.trim()
-          if (namespace.toLowerCase().contains('gcmd') || namespace.toLowerCase().contains('global change master directory')) {
-            switch (namespace.toLowerCase()) {
-              case { it.contains('science') && text.toLowerCase().startsWith('earth science services')}:
-                text = normalizeHierarchyKeyword(text)
-                gcmdScienceServices.addAll(tokenizeHierarchyKeyword(text))
-                break
-              case { it.contains('science') && text.toLowerCase().startsWith('earth science')}:
-                text = normalizeHierarchyKeyword(text)
-                gcmdScience.addAll(tokenizeHierarchyKeyword(text))
-                break
-              case { it.contains('location') || it.contains('place') }:
-                text = normalizeHierarchyKeyword(text)
-                gcmdLocations.addAll(tokenizeHierarchyKeyword(text))
-                break
-              case { it.contains('platform') }:
-                text = normalizeNonHierarchicalKeyword(text)
-                gcmdPlatforms.add(text)
-                break
-              case { it.contains('instrument') }:
-                text = normalizeNonHierarchicalKeyword(text)
-                gcmdInstruments.add(text)
-                break
-              case { it.contains('data center') }:
-                text = normalizeNonHierarchicalKeyword(text)
-                gcmdDataCenters.add(text)
-                break
-              case { it.contains('data resolution') }:
-                text = cleanInternalKeywordWhitespace(text)
-                gcmdDataResolution.add(text)
-                break
-              case { it.contains('project') }:
-                text = normalizeNonHierarchicalKeyword(text)
-                gcmdProjects.add(text)
-                break
-            }
+          if(namespace.toUpperCase() == 'NCEI ACCESSION NUMBER') {
+            accessionValues.add(text)
           }
-          keywords.add(text)
+          else {
+            if (namespace.toLowerCase().contains('gcmd') || namespace.toLowerCase().contains('global change master directory')) {
+              switch (namespace.toLowerCase()) {
+                case { it.contains('science') && text.toLowerCase().startsWith('earth science services')}:
+                  text = normalizeHierarchyKeyword(text)
+                  gcmdScienceServices.addAll(tokenizeHierarchyKeyword(text))
+                  break
+                case { it.contains('science') && text.toLowerCase().startsWith('earth science')}:
+                  text = normalizeHierarchyKeyword(text)
+                  gcmdScience.addAll(tokenizeHierarchyKeyword(text))
+                  break
+                case { it.contains('location') || it.contains('place') }:
+                  text = normalizeHierarchyKeyword(text)
+                  gcmdLocations.addAll(tokenizeHierarchyKeyword(text))
+                  break
+                case { it.contains('platform') }:
+                  text = normalizeNonHierarchicalKeyword(text)
+                  gcmdPlatforms.add(text)
+                  break
+                case { it.contains('instrument') }:
+                  text = normalizeNonHierarchicalKeyword(text)
+                  gcmdInstruments.add(text)
+                  break
+                case { it.contains('data center') }:
+                  text = normalizeNonHierarchicalKeyword(text)
+                  gcmdDataCenters.add(text)
+                  break
+                case { it.contains('data resolution') }:
+                  text = cleanInternalKeywordWhitespace(text)
+                  gcmdDataResolution.add(text)
+                  break
+                case { it.contains('project') }:
+                  text = normalizeNonHierarchicalKeyword(text)
+                  gcmdProjects.add(text)
+                  break
+              }
+            }
+            keywords.add(text)
+          }
         }
       }
     }
 
     return [
         keywords           : keywords,
+        accessionValues    : accessionValues,
         topicCategories    : topicCategories,
         gcmdScienceServices: gcmdScienceServices,
         gcmdScience        : gcmdScience,
