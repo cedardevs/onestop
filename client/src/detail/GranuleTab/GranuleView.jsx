@@ -6,6 +6,7 @@ import Button from '../../common/input/Button'
 import _ from 'lodash'
 import GranuleMapContainer from './GranuleMapContainer'
 import A from '../../common/link/Link'
+import {identifyProtocol} from '../../utils/ProtocolUtils'
 
 const styleLegendHeading = {
   margin: '0 0 0.618em 0',
@@ -75,51 +76,13 @@ const styleLegendLabel = {
 }
 
 export default class GranuleView extends Component {
-  constructor(props) {
-    super(props)
-
-    this.protocols = [
-      {
-        id: 'C',
-        names: [ 'ogc:wcs' ],
-        color: 'coral',
-        label: 'OGC Web Coverage Service',
-      },
-      {id: 'D', names: [ 'download' ], color: 'blue', label: 'Download'},
-      {id: 'F', names: [ 'ftp' ], color: 'red', label: 'FTP'},
-      {
-        id: 'H',
-        names: [ 'http', 'https' ],
-        color: 'purple',
-        label: 'HTTP/HTTPS',
-      },
-      {
-        id: 'L',
-        names: [ 'noaa:las' ],
-        color: 'aqua',
-        label: 'NOAA Live Access Server',
-      },
-      {
-        id: 'M',
-        names: [ 'ogc:wms' ],
-        color: 'goldenrod',
-        label: 'OGC Web Map Service',
-      },
-      {id: 'O', names: [ 'opendap' ], color: 'green', label: 'OPeNDAP'},
-      {id: 'T', names: [ 'thredds' ], color: 'grey', label: 'THREDDS'},
-      {id: 'W', names: [ '' ], color: '#e69500', label: 'Web'},
-    ]
-  }
-
   render() {
     const {results, toggleFocus} = this.props
     const usedProtocols = new Set()
     let rowNumber = -1
     const tableRows = _.map(results, (value, key) => {
       const rowEven = rowNumber++ % 2 === 0
-      _.forEach(value.links, link =>
-        usedProtocols.add(this.identifyProtocol(link))
-      )
+      _.forEach(value.links, link => usedProtocols.add(identifyProtocol(link)))
       return (
         <GranuleViewTableRow
           key={key}
@@ -199,7 +162,7 @@ export default class GranuleView extends Component {
 
   renderBadges(links) {
     const badges = _.chain(links)
-      .map(link => ({protocol: this.identifyProtocol(link), url: link.linkUrl}))
+      .map(link => ({protocol: identifyProtocol(link), url: link.linkUrl}))
       .filter(info => info.protocol)
       .sortBy(info => info.protocol.id)
       .map(this.renderBadge.bind(this))
@@ -223,11 +186,6 @@ export default class GranuleView extends Component {
         {protocol.id}
       </A>
     )
-  }
-
-  identifyProtocol(link) {
-    const name = _.toLower(link.linkProtocol || '')
-    return _.find(this.protocols, p => p.names.includes(name))
   }
 
   renderPaginationButton() {
