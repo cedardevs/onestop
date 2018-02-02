@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 
-const protocols = Immutable([
+export const protocols = Immutable([
   {
     id: 'C',
     names: [ 'ogc:wcs' ],

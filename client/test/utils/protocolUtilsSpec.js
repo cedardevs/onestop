@@ -1,9 +1,16 @@
 import '../specHelper'
-import { expect } from 'chai'
+import { expect, assert } from 'chai'
 import * as protocolUtils from '../../src/utils/protocolUtils'
 import _ from 'lodash'
 
 describe('The protocolUtils', function () {
+
+  it('has distinct id and color combinations for each protocol', function() {
+    const protocolIdCombos = _.map(protocolUtils.protocols, p => {
+      return `${p.id}-${p.color}`
+    })
+    assert.deepEqual(protocolIdCombos, _.uniq(protocolIdCombos), `${protocolIdCombos} vs ${_.uniq(protocolIdCombos)}`)
+  })
 
   it('can identify ogc:wcs', function () {
     const testCases = [
@@ -17,7 +24,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('C')
       protocol.label.should.equal('OGC Web Coverage Service')
-      // TODO worth confirming color?
+      protocol.color.should.equal('coral')
     })
   })
 
@@ -32,7 +39,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('D')
       protocol.label.should.equal('Download')
-      // TODO worth confirming color?
+      protocol.color.should.equal('blue')
     })
   })
 
@@ -46,7 +53,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('F')
       protocol.label.should.equal('FTP')
-      // TODO worth confirming color?
+      protocol.color.should.equal('red')
     })
   })
 
@@ -62,7 +69,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('H')
       protocol.label.should.equal('HTTP/HTTPS')
-      // TODO worth confirming color?
+      protocol.color.should.equal('purple')
     })
   })
 
@@ -76,7 +83,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('L')
       protocol.label.should.equal('NOAA Live Access Server')
-      // TODO worth confirming color?
+      protocol.color.should.equal('aqua')
     })
   })
 
@@ -90,7 +97,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('M')
       protocol.label.should.equal('OGC Web Map Service')
-      // TODO worth confirming color?
+      protocol.color.should.equal('goldenrod')
     })
   })
 
@@ -105,7 +112,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('O')
       protocol.label.should.equal('OPeNDAP')
-      // TODO worth confirming color?
+      protocol.color.should.equal('green')
     })
   })
 
@@ -119,7 +126,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('T')
       protocol.label.should.equal('THREDDS')
-      // TODO worth confirming color?
+      protocol.color.should.equal('grey')
     })
   })
 
@@ -132,7 +139,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('W')
       protocol.label.should.equal('Web')
-      // TODO worth confirming color?
+      protocol.color.should.equal('#e69500')
     })
   })
 
