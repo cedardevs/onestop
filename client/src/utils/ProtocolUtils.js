@@ -28,8 +28,18 @@ export const protocols = Immutable([
     color: 'goldenrod',
     label: 'OGC Web Map Service',
   },
-  {id: 'O', names: [ 'opendap' ], color: 'green', label: 'OPeNDAP'},
-  {id: 'T', names: [ 'thredds' ], color: 'grey', label: 'THREDDS'},
+  {
+    id: 'O',
+    names: [ 'opendap', 'opendap:opendap', 'opendap:hyrax' ],
+    color: 'green',
+    label: 'OPeNDAP',
+  },
+  {
+    id: 'T',
+    names: [ 'thredds', 'unidata:thredds' ],
+    color: 'grey',
+    label: 'THREDDS',
+  },
   {id: 'W', names: [ '' ], color: '#e69500', label: 'Web'},
 ])
 

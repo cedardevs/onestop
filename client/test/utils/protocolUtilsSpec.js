@@ -106,6 +106,8 @@ describe('The protocolUtils', function () {
       {linkProtocol: 'opendap'},
       {linkProtocol: 'OPENDAP'},
       {linkProtocol: 'OPeNDAP'},
+      {linkProtocol: 'OPeNDAP:OPeNDAP'},
+      {linkProtocol: 'OPeNDAP:Hyrax'},
     ]
 
     _.each(testCases, (p) => {
@@ -120,6 +122,7 @@ describe('The protocolUtils', function () {
     const testCases = [
       {linkProtocol: 'thredds'},
       {linkProtocol: 'THREDDS'},
+      {linkProtocol: 'UNIDATA:THREDDS'},
     ]
 
     _.each(testCases, (p) => {
