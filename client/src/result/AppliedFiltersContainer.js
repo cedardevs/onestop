@@ -44,6 +44,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const AppliedFiltersContainer = connect(mapStateToProps, mapDispatchToProps)(AppliedFilters)
+const AppliedFiltersContainer = connect(mapStateToProps, mapDispatchToProps)(
+  AppliedFilters
+)
 
 export default AppliedFiltersContainer

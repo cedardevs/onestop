@@ -4,7 +4,7 @@ import FlexScroll from '../../common/FlexScroll'
 import FlexColumn from '../../common/FlexColumn'
 import Button from '../../common/input/Button'
 import _ from 'lodash'
-import MapContainer from './GranuleMapContainer'
+import GranuleMapContainer from './GranuleMapContainer'
 import A from '../../common/link/Link'
 
 const styleLegendHeading = {
@@ -147,7 +147,7 @@ export default class GranuleView extends Component {
       })
       .value()
 
-    const map = <MapContainer key="granuleMap" forceShow={true} />
+    const map = <GranuleMapContainer key="granuleMap" />
 
     const granuleLoadingMessage = this.renderLoadingMessage()
 

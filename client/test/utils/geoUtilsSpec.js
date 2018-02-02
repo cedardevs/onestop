@@ -58,7 +58,7 @@ describe('The geoUtils', function () {
       const expected = {
         "type": "Polygon",
         coordinates: [
-          [[-218.358,43.540],[-218.358,55.147],[-154.374,55.147],[-154.374,43.540],[-218.358,43.540]]
+          [[141.642,43.540],[141.642,55.147],[205.626,55.147],[205.626,43.540],[141.642,43.540]]
         ]
       }
       const actual = geoUtils.recenterGeometry(input)

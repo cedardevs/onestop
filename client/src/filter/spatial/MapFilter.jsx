@@ -140,13 +140,13 @@ export default class MapFilter extends Component {
     ) {
       this.setState({
         warning:
-          'Entered coordinates are invalid. Ensure longitude coordinates are between -180 and 180, and latitude coordinates are between -90 and 90.',
+          'Invalid coordinates entered. Valid longitudes are between -180 and 180. Valid latitudes are between -90 and 90, where North is always greater than South.',
       })
     }
     else {
       this.setState({
         warning:
-          'Entered incomplete set of coordinates. Ensure all four fields are populated. ',
+          'Incomplete coordinates entered. Ensure all four fields are populated.',
       })
     }
   }
@@ -206,6 +206,7 @@ export default class MapFilter extends Component {
           aria-placeholder={placeholderValue}
           value={value}
           style={styleTextBox}
+          onChange={() => {}}
         />
       </div>
     )
@@ -274,7 +275,11 @@ export default class MapFilter extends Component {
             {buttonApply}
             {buttonClear}
           </div>,
-          <div key="MapFilter::InputColumn::Warning" style={this.warningStyle()} role="alert">
+          <div
+            key="MapFilter::InputColumn::Warning"
+            style={this.warningStyle()}
+            role="alert"
+          >
             {this.state.warning}
           </div>,
           buttonShowMap,

@@ -3,7 +3,11 @@ import moment from 'moment'
 import _ from 'lodash'
 import Button from '../../common/input/Button'
 import {Key} from '../../utils/keyboardUtils'
-import {ymdToDateMap, isValidDate, isValidDateRange} from '../../utils/inputUtils'
+import {
+  ymdToDateMap,
+  isValidDate,
+  isValidDateRange,
+} from '../../utils/inputUtils'
 
 const styleInputValidity = isValid => {
   return {

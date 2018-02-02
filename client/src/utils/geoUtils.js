@@ -21,7 +21,7 @@ export const shiftCoordinates = (coordinates, rotations) => {
 export const findMaxRotations = coordinates => {
   return _.chain(coordinates)
     .map(coordinate => coordinate[0])
-    .map(x => Math.trunc(x / 360))
+    .map(x => _.round(x / 360))
     .maxBy(rotations => Math.abs(rotations))
     .value()
 }
@@ -66,12 +66,17 @@ export const convertNegativeLongitudes = coordinates => {
 }
 
 export const convertBboxToGeoJson = (west, south, east, north) => {
-  const w  = textToNumber(west)
+  const w = textToNumber(west)
   const s = textToNumber(south)
-  const e  = textToNumber(east)
+  const e = textToNumber(east)
   const n = textToNumber(north)
 
+  // Invalid coordinates checks
   if (!w || !s || !e || !n) {
+    return null
+  }
+
+  if (n < s) {
     return null
   }
 
@@ -89,20 +94,16 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
     return undefined
   }
   else {
+    let datelineFriendlyGeometry = ensureDatelineFriendlyPolygon({
+      coordinates: [ coordinates ],
+      type: 'Polygon',
+    })
     return {
       type: 'Feature',
       properties: {},
-      geometry: {
-        coordinates: [ coordinates ],
-        type: 'Polygon',
-      },
+      geometry: datelineFriendlyGeometry,
     }
   }
-  // return {
-  //   type: 'Feature',
-  //   properties: {},
-  //   geometry: ensureDatelineFriendlyPolygon({coordinates: [ coordinates ], type: 'Polygon'})
-  // }
 }
 
 export const convertBboxStringToGeoJson = coordString => {
@@ -111,14 +112,31 @@ export const convertBboxStringToGeoJson = coordString => {
 }
 
 export const convertGeoJsonToBbox = geoJSON => {
-  const coordinates =
-    geoJSON && geoJSON.geometry && geoJSON.geometry.coordinates
+  let coordinates = geoJSON.geometry.coordinates
   let bbox = null
   if (coordinates) {
+    let west = coordinates[0][0][0]
+    let east = coordinates[0][2][0]
+
+    // If coords wrap around earth, reset to -180 to 180
+    if (Math.abs(west - east) > 360) {
+      west = -180
+      east = 180
+    }
+
+    // If coords cross dateline, they've been shifted and need to be put back to [-180, 180]
+    if (west < -180) {
+      west += 360
+    }
+
+    if (east > 180) {
+      east -= 360
+    }
+
     bbox = {
-      west: _.round(coordinates[0][0][0], 4),
+      west: _.round(west, 4),
       south: _.round(coordinates[0][0][1], 4),
-      east: _.round(coordinates[0][2][0], 4),
+      east: _.round(east, 4),
       north: _.round(coordinates[0][2][1], 4),
     }
   }

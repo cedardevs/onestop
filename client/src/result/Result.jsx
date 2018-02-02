@@ -15,7 +15,7 @@ export default class Result extends Component {
   render() {
     return (
       <div style={styleResult}>
-        <AppliedFiltersContainer/>
+        <AppliedFiltersContainer />
         {this.props.children}
       </div>
     )
