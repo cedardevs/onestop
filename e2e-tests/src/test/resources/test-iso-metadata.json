@@ -21,9 +21,15 @@
         "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
         "Liquid Earth > This Keyword > Is Invalid"
     ],
+    "accessionValues": [
+
+    ],
     "topicCategories": [
         "environment",
         "oceans"
+    ],
+    "gcmdScienceServices": [
+
     ],
     "gcmdScience": [
         "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
