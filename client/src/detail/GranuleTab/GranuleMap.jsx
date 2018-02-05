@@ -11,48 +11,26 @@ import {recenterGeometry} from '../../utils/geoUtils'
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
 
-const styleMapContainer = showMap => {
-  return {
-    boxSizing: 'border-box',
-    backgroundColor: '#3D97D2',
-    transition: showMap
-      ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
-      : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
-    padding: showMap ? '0em' : '0em',
-    height: showMap ? '400px' : '0em',
-    width: showMap ? '100%' : '0%',
-  }
+const styleMapContainer = {
+  boxSizing: 'border-box',
+  // transition: 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s',
+  height: '400px',
+  width: '100%',
 }
 
-const styleMapText = showMap => {
-  return {
-    zIndex: 1,
-    padding: '0.309em 0.618em',
-    margin: '0 auto',
-    backgroundColor: '#18478F',
-    height: '1.618em',
-    lineHeight: '1.618em',
-    width: '100%',
-    textAlign: 'center',
-    opacity: showMap ? '1' : '0',
-    transition: showMap ? 'opacity 0.2s 0.5s' : 'opacity 0.2s 0.0s',
-  }
+const styleMap = {
+  zIndex: 2,
+  padding: 0,
+  margin: '0 auto',
+  display: 'flex',
+  position: 'relative',
+  height: '100%',
+  alignItems: 'flex-start',
+  maxWidth: '1200px',
 }
 
-const styleMap = showMap => {
-  return {
-    zIndex: 1,
-    padding: 0,
-    margin: '0 auto',
-    display: showMap ? 'flex' : 'none',
-    position: 'relative',
-    height: 'calc(400px - 1.618em - 2 * 0.618em)',
-    alignItems: 'flex-start',
-    maxWidth: '1200px',
-  }
-}
-const SOUTH_WEST = L.latLng(-90, 5 * -360)
-const NORTH_EAST = L.latLng(90, 5 * 360)
+const SOUTH_WEST = L.latLng(-90, -270)
+const NORTH_EAST = L.latLng(90, 270)
 const BOUNDS = L.latLngBounds(SOUTH_WEST, NORTH_EAST)
 
 const geoJsonStyle = {
@@ -67,9 +45,11 @@ const drawStyle = {
   opacity: 0.65,
 }
 
-class Map extends React.Component {
+class GranuleMap extends React.Component {
   constructor(props) {
     super(props)
+    this.geoJsonFeatures = props.geoJsonFeatures
+    this.focusedFeatures = props.focusedFeatures
     this.state = {
       initialized: false,
     }
@@ -146,8 +126,16 @@ class Map extends React.Component {
   }
 
   mapSetup() {
-    const {selection, features} = this.props
+    const {geoJsonSelection, selection, features} = this.props
     let {map, editableLayers, resultsLayers} = this.state
+    if (geoJsonSelection) {
+      let geoJSONLayer = L.geoJson(geoJsonSelection, {style: geoJsonStyle})
+      editableLayers.addLayer(geoJSONLayer)
+    }
+    if (features) {
+      this.updateResultsLayers(this.props)
+    }
+
     this.loadDrawEventHandlers()
     if (selection) {
       map.addControl(this.drawDefaults(editableLayers))
@@ -195,7 +183,6 @@ class Map extends React.Component {
         if (!_.isEmpty(newGeoJson)) {
           let layer = L.geoJson(newGeoJson, {style: style})
           editableLayers.addLayer(layer)
-          this.state.map.panTo(layer.getBounds().getCenter())
         }
       })
     )
@@ -228,6 +215,8 @@ class Map extends React.Component {
         })
       )
     })
+    this.geoJsonFeatures = geoJsonFeatures
+    this.focusedFeatures = focusedFeatures
   }
 
   fitMapToResults() {
@@ -287,21 +276,15 @@ class Map extends React.Component {
   }
 
   render() {
-    const {showMap} = this.props
-
     return (
       <div
-        style={styleMapContainer(showMap)}
+        style={styleMapContainer}
         ref={container => {
           this.container = container
         }}
       >
-        <div style={styleMapText(showMap)}>
-          Use the square button on the top right of the map to draw a bounding
-          box.
-        </div>
         <div
-          style={styleMap(showMap)}
+          style={styleMap}
           ref={mapNode => {
             this.mapNode = mapNode
           }}
@@ -311,9 +294,9 @@ class Map extends React.Component {
   }
 }
 
-Map.defaultProps = {
+GranuleMap.defaultProps = {
   selection: false,
   features: true,
 }
 
-export default Map
+export default GranuleMap
