@@ -1,0 +1,32 @@
+apply plugin: 'war'
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
+
+repositories {
+  mavenCentral()
+}
+
+configurations {
+  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+}
+
+dependencies {
+  compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
+  compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
+  compile "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
+  compile 'org.springframework.boot:spring-boot-starter-web'
+  compile 'org.springframework.boot:spring-boot-starter-actuator'
+  compile 'org.springframework.boot:spring-boot-devtools'
+  compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
+
+  runtime 'org.springframework.boot:spring-boot-devtools'
+
+  providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+  testCompile "org.spockframework:spock-spring:${project.spockVersion}"
+  testCompile "org.spockframework:spock-core:${project.spockVersion}"
+  testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+  testCompile 'org.springframework.boot:spring-boot-starter-test'
+  testCompile 'org.testcontainers:testcontainers:1.4.2'
+}
+
