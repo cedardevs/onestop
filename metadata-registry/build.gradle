@@ -18,6 +18,7 @@ dependencies {
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-devtools'
   compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
+  compile 'org.apache.kafka:kafka-streams:1.0.0'
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
@@ -30,3 +31,17 @@ dependencies {
   testCompile 'org.testcontainers:testcontainers:1.4.2'
 }
 
+ext {
+  fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
+}
+
+springBoot {
+  backupSource = false
+}
+
+bootRepackage {
+  outputFile = fatWarPath
+  excludeDevtools = true
+  executable = true
+  onlyIf { !tasks.getByName('war').state.upToDate }
+}
