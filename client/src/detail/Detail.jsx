@@ -9,6 +9,13 @@ import VideoView from './VideoView'
 
 //-- Styles
 
+const styleTitle = {
+  display: 'inline',
+  fontSize: '1.2em',
+  margin: 0,
+  padding: '0.309em',
+}
+
 const styleDetailWrapper = {
   margin: '0 1.618em 0 1.618em',
 }
@@ -24,8 +31,8 @@ class Detail extends Component {
 
     if (loading) {
       return (
-        <div>
-          <h1>Loading...</h1>
+        <div style={styleDetailWrapper}>
+          <h1 style={styleTitle}>Loading...</h1>
         </div>
       )
     }
@@ -66,6 +73,7 @@ class Detail extends Component {
 
     return (
       <div style={styleDetailWrapper}>
+        <h1 style={styleTitle}>{item.title}</h1>
         <Tabs data={tabData} activeIndex={0} />
       </div>
     )
