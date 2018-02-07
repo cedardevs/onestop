@@ -37,6 +37,12 @@ describe('The queryUtils', function () {
     })
   })
 
+  it(`decodes a location accurately`, function () {
+    locationTestCases().forEach((testCase) => {
+      const decodedState = queryUtils.decodeLocation(testCase.string)
+      decodedState.should.deep.equal(testCase.state)
+    })
+  })
 })
 
 function collectionTestCases() {
@@ -443,6 +449,46 @@ function queryTestCases() {
           }
         }
       })
+    },
+  ]
+}
+
+function locationTestCases() {
+  return [
+    {
+      string: '',
+      state: {
+        behavior: {search: initialState},
+        ui: {cardDetails: {focusedId: null}}
+      }
+    },
+    {
+      string: '/collections?q=oceans',
+      state: {
+        behavior: {search: Immutable.merge(initialState, {queryText: 'oceans'})},
+        ui: {cardDetails: {focusedId: null}}
+      }
+    },
+    {
+      string: '/collections/details/abc_xyz-123',
+      state: {
+        behavior: {search: initialState},
+        ui: {cardDetails: {focusedId: 'abc_xyz-123'}}
+      }
+    },
+    {
+      string: '/collections/details/abc_xyz-123/',
+      state: {
+        behavior: {search: initialState},
+        ui: {cardDetails: {focusedId: 'abc_xyz-123'}}
+      }
+    },
+    {
+      string: '/collections/details/abc_xyz-123?q=oceans',
+      state: {
+        behavior: {search: Immutable.merge(initialState, {queryText: 'oceans'})},
+        ui: {cardDetails: {focusedId: 'abc_xyz-123'}}
+      }
     },
   ]
 }

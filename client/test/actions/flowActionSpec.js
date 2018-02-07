@@ -24,6 +24,11 @@ describe('The flow actions', function () {
       search: {
         selectedIds: []
       }
+    },
+    ui: {
+      cardDetails: {
+        focusedId: null
+      }
     }
   }
 
