@@ -140,34 +140,25 @@
     ],
     "contacts": [
         {
-            "individualName": null,
-            "organizationName": "Super Important Organization",
-            "role": "custodian"
-        },
-        {
-            "individualName": null,
-            "organizationName": "Super Important Organization",
-            "role": "publisher"
-        },
-        {
             "individualName": "John Smith",
             "organizationName": "University of Awesome",
-            "role": "pointOfContact"
-        },
-        {
-            "individualName": null,
-            "organizationName": "Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)",
-            "role": "custodian"
-        },
+            "positionName": null,
+            "role": "pointOfContact",
+            "email": null,
+            "phone": null
+        }
+    ],
+    "creators": [
+
+    ],
+    "publishers": [
         {
             "individualName": null,
             "organizationName": "Super Important Organization",
-            "role": "sponsor"
-        },
-        {
-            "individualName": null,
-            "organizationName": "Other (Kind Of) Important Organization",
-            "role": "sponsor"
+            "positionName": null,
+            "role": "publisher",
+            "email": "email@sio.co",
+            "phone": "555-123-4567"
         }
     ],
     "thumbnail": "https://www.example.com/exportImage?soCool=yes&format=png",

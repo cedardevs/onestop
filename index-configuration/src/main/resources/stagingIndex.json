@@ -238,7 +238,92 @@
               "doc_values": false,
               "index": false
             },
+            "positionName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
             "role": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "phone": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
+        },
+        "creators": {
+          "type": "nested",
+          "properties": {
+            "individualName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "organizationName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "positionName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "role": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "phone": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
+        },
+        "publishers": {
+          "type": "nested",
+          "properties": {
+            "individualName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "organizationName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "positionName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "role": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "phone": {
               "type": "keyword",
               "doc_values": false,
               "index": false
@@ -574,7 +659,92 @@
               "doc_values": false,
               "index": false
             },
+            "positionName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
             "role": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "phone": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
+        },
+        "creators": {
+          "type": "nested",
+          "properties": {
+            "individualName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "organizationName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "positionName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "role": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "phone": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
+        },
+        "publishers": {
+          "type": "nested",
+          "properties": {
+            "individualName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "organizationName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "positionName": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "role": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "phone": {
               "type": "keyword",
               "doc_values": false,
               "index": false
