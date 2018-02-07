@@ -88,9 +88,9 @@ class MetadataParser {
         dsmmTransparencyTraceability    : dsmmMap.TransparencyTraceability,
         dsmmUsability                   : dsmmMap.Usability,
         dsmmAverage                     : dsmmMap.average,
-        updateFrequency                 : miscellaneous.updateFrequency,
-        presentationForm                : miscellaneous.presentationForm
         dsmmAverage                     : dsmmMap.average,
+        updateFrequency                 : miscellaneous.updateFrequency,
+        presentationForm                : miscellaneous.presentationForm,
         services                        : services
     ]
 
@@ -533,8 +533,9 @@ class MetadataParser {
       }
       Set services = []
       serviceIds.each { service ->
-        def xmlBlobService = XmlUtil.serialize(service)
-        services.add(xmlBlobService)
+        def xmlBlobService = XmlUtil.serialize(service) ?: null
+        // blob of XML needs to be base64 encoded for elastic search to include is as 'binary' type
+        services.add(xmlBlobService.bytes.encodeBase64().toString())
       }
       return services
   }

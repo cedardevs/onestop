@@ -194,9 +194,10 @@ class MetadataParserTest extends Specification {
     parsedXml.dsmmUsability == 3
     parsedXml.updateFrequency == 'asNeeded'
     parsedXml.presentationForm == 'tableDigital'
-    parsedXml.services == [
-        '<xml and stuff>'
-    ] as Set
+    parsedXml.services in Set
+    parsedXml.services.each { s ->
+      s in String
+    }
 
   }
 
@@ -513,16 +514,26 @@ class MetadataParserTest extends Specification {
   def "Services are correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-    def expectedService1 = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata-service1.xml").text
 
     when:
-    def services = MetadataParser.parseServices(document)
-    def nodeExpectedService1 = new XmlParser().parseText(expectedService1)
-    def serializedExpectedService1 = XmlUtil.serialize(nodeExpectedService1)
+    def serviceTextBlobs = MetadataParser.parseServices(document)
+    serviceTextBlobs.each { String s ->
+      // blob of XML needs to be base64 encoded for elastic search to include is as 'binary' type
+      // decoding here (for testing purposes) to see if the original string is XML or causes a parsing exception
+      byte[] decodedXML = s.decodeBase64()
+      String xmlString = new String(decodedXML)
+      new XmlSlurper().parseText(xmlString)
+    }
 
     then:
-    services in Set
-    services[0] == serializedExpectedService1
+    notThrown(Exception)
+    serviceTextBlobs.each { String s ->
+      assert s in String
+      byte[] decodedXML = s.decodeBase64()
+      String xmlString = new String(decodedXML)
+      def serviceNode = new XmlSlurper().parseText(xmlString)
+      assert serviceNode.name() == 'SV_ServiceIdentification'
+    }
   }
 
   def "Miscellaneous items are correctly parsed"() {
