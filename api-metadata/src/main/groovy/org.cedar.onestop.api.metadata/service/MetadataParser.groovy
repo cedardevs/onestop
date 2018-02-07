@@ -35,7 +35,7 @@ class MetadataParser {
     def metadata = new XmlSlurper().parseText(xml)
 
     // Parse related data maps from the xml:
-    def citationInfo = parseCitationInfo(metadata)
+    def descriptiveInfo = parseDescriptiveInfo(metadata)
     def keywordsMap = parseKeywordsAndTopics(metadata)
     def acquisitionInfo = parseAcquisitionInfo(metadata)
     def dsmmMap = parseDSMM(metadata)
@@ -45,12 +45,12 @@ class MetadataParser {
 
     // Build JSON:
     def json = [
-        fileIdentifier                  : citationInfo.fileIdentifier,
-        parentIdentifier                : citationInfo.parentIdentifier,
-        doi                             : citationInfo.doi,
-        title                           : citationInfo.title,
-        alternateTitle                  : citationInfo.alternateTitle,
-        description                     : citationInfo.description,
+        fileIdentifier                  : descriptiveInfo.fileIdentifier,
+        parentIdentifier                : descriptiveInfo.parentIdentifier,
+        doi                             : descriptiveInfo.doi,
+        title                           : descriptiveInfo.title,
+        alternateTitle                  : descriptiveInfo.alternateTitle,
+        description                     : descriptiveInfo.description,
         keywords                        : keywordsMap.keywords,
         topicCategories                 : keywordsMap.topicCategories,
         gcmdScience                     : keywordsMap.gcmdScience,
@@ -71,10 +71,10 @@ class MetadataParser {
         contacts                        : responsibleParties.contacts,
         creators                        : responsibleParties.creators,
         publishers                      : responsibleParties.publishers,
-        thumbnail                       : citationInfo.thumbnail,
-        creationDate                    : citationInfo.creationDate,
-        revisionDate                    : citationInfo.revisionDate,
-        publicationDate                 : citationInfo.publicationDate,
+        thumbnail                       : descriptiveInfo.thumbnail,
+        creationDate                    : descriptiveInfo.creationDate,
+        revisionDate                    : descriptiveInfo.revisionDate,
+        publicationDate                 : descriptiveInfo.publicationDate,
         dsmmAccessibility               : dsmmMap.Accessibility,
         dsmmDataIntegrity               : dsmmMap.DataIntegrity,
         dsmmDataQualityAssessment       : dsmmMap.DataQualityAssessment,
@@ -92,7 +92,7 @@ class MetadataParser {
     return json
   }
 
-  static Map parseCitationInfo(GPathResult metadata) {
+  static Map parseDescriptiveInfo(GPathResult metadata) {
     def fileIdentifier
     def parentIdentifier
     def doi
@@ -147,8 +147,8 @@ class MetadataParser {
     ]
   }
 
-  static Map parseCitationInfo(String xml) {
-    return parseCitationInfo(new XmlSlurper().parseText(xml))
+  static Map parseDescriptiveInfo(String xml) {
+    return parseDescriptiveInfo(new XmlSlurper().parseText(xml))
   }
 
   static Map parseKeywordsAndTopics(GPathResult metadata) {

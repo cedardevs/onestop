@@ -213,7 +213,7 @@ class MetadataParserTest extends Specification {
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
-    def citationInfo = MetadataParser.parseCitationInfo(document)
+    def citationInfo = MetadataParser.parseDescriptiveInfo(document)
 
     then:
     citationInfo.fileIdentifier == 'gov.super.important:FILE-ID'
