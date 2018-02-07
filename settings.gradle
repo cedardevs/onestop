@@ -10,3 +10,5 @@
 rootProject.name = 'psi'
 
 include 'registry'
+include 'api'
+
