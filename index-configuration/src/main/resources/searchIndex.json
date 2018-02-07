@@ -211,7 +211,93 @@
                 }
               }
             },
+            "positionName": {
+              "type": "keyword",
+              "index": false
+            },
             "role": {
+              "type": "keyword",
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "index": false
+            },
+            "phone": {
+              "type": "keyword",
+              "index": false
+            }
+          }
+        },
+        "creators": {
+          "type": "nested",
+          "properties": {
+            "individualName": {
+              "type": "text",
+              "fields": {
+                "raw": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "organizationName": {
+              "type": "text",
+              "fields": {
+                "raw": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "positionName": {
+              "type": "keyword",
+              "index": false
+            },
+            "role": {
+              "type": "keyword",
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "index": false
+            },
+            "phone": {
+              "type": "keyword",
+              "index": false
+            }
+          }
+        },
+        "publishers": {
+          "type": "nested",
+          "properties": {
+            "individualName": {
+              "type": "text",
+              "fields": {
+                "raw": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "organizationName": {
+              "type": "text",
+              "fields": {
+                "raw": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "positionName": {
+              "type": "keyword",
+              "index": false
+            },
+            "role": {
+              "type": "keyword",
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "index": false
+            },
+            "phone": {
               "type": "keyword",
               "index": false
             }
@@ -266,6 +352,14 @@
         },
         "dsmmAverage": {
           "type": "float"
+        },
+        "updateFrequency": {
+          "type": "keyword",
+          "index": false
+        },
+        "presentationForm": {
+          "type": "keyword",
+          "index": false
         }
       }
     },
@@ -483,7 +577,93 @@
                 }
               }
             },
+            "positionName": {
+              "type": "keyword",
+              "index": false
+            },
             "role": {
+              "type": "keyword",
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "index": false
+            },
+            "phone": {
+              "type": "keyword",
+              "index": false
+            }
+          }
+        },
+        "creators": {
+          "type": "nested",
+          "properties": {
+            "individualName": {
+              "type": "text",
+              "fields": {
+                "raw": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "organizationName": {
+              "type": "text",
+              "fields": {
+                "raw": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "positionName": {
+              "type": "keyword",
+              "index": false
+            },
+            "role": {
+              "type": "keyword",
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "index": false
+            },
+            "phone": {
+              "type": "keyword",
+              "index": false
+            }
+          }
+        },
+        "publishers": {
+          "type": "nested",
+          "properties": {
+            "individualName": {
+              "type": "text",
+              "fields": {
+                "raw": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "organizationName": {
+              "type": "text",
+              "fields": {
+                "raw": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "positionName": {
+              "type": "keyword",
+              "index": false
+            },
+            "role": {
+              "type": "keyword",
+              "index": false
+            },
+            "email": {
+              "type": "keyword",
+              "index": false
+            },
+            "phone": {
               "type": "keyword",
               "index": false
             }
@@ -538,6 +718,14 @@
         },
         "dsmmAverage": {
           "type": "float"
+        },
+        "updateFrequency": {
+          "type": "keyword",
+          "index": false
+        },
+        "presentationForm": {
+          "type": "keyword",
+          "index": false
         }
       }
     }

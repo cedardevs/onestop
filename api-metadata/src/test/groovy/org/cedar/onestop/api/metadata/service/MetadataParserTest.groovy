@@ -164,38 +164,80 @@ class MetadataParserTest extends Specification {
         linkDescription : 'Everything Important, All In One Place',
         linkFunction    : 'search'
     ]] as Set
+
     parsedXml.contacts == [
         [
-            individualName   : null,
-            organizationName : 'Super Important Organization',
-            role             : 'custodian'
+            individualName  : 'John Smith',
+            organizationName: 'University of Awesome',
+            positionName    : 'Chief Awesomeness Officer',
+            role            : 'pointOfContact',
+            email           : 'john.smith@uoa.edu',
+            phone           : '555-555-5555'
         ],
         [
-            individualName   : null,
-            organizationName : 'Super Important Organization',
-            role             : 'publisher'
+            individualName  : 'Jane Doe',
+            organizationName: 'University of Awesome',
+            positionName    : 'VP of Awesome Behavior',
+            role            : 'distributor',
+            email           : 'jane.doe@uoa.edu',
+            phone           : '555-555-5556'
         ],
-        [
-            individualName   : 'John Smith',
-            organizationName : 'University of Awesome',
-            role             : 'pointOfContact'
-        ],
-        [
-            individualName   : null,
-            organizationName : 'Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)',
-            role             : 'custodian'
-        ],
-        [
-            individualName   : null,
-            organizationName : 'Super Important Organization',
-            role             : 'sponsor'
-        ],
-        [
-            individualName   : null,
-            organizationName : 'Other (Kind Of) Important Organization',
-            role             : 'sponsor'
-        ]
     ] as Set
+
+    parsedXml.creators == [
+        [
+            individualName  : 'Jarianna Whackositz',
+            organizationName: 'Secret Underground Society',
+            positionName    : 'Software Developer',
+            role            : 'resourceProvider',
+            email           : 'jw@mock-creator-email.org',
+            phone           : '555-555-5558'
+        ],
+        [
+            individualName  : 'Dr. Quinn McClojure Man',
+            organizationName: 'Soap Boxes Inc.',
+            positionName    : 'Software Developer',
+            role            : 'originator',
+            email           : 'dqmm@mock-creator-email.org',
+            phone           : '555-555-5559'
+        ],
+        [
+            individualName  : 'Zebulon Pike',
+            organizationName: 'Pikes Peak Inc.',
+            positionName    : 'Software Developer',
+            role            : 'principalInvestigator',
+            email           : 'zp@mock-creator-email.org',
+            phone           : '555-555-5560'
+        ],
+        [
+            individualName  : 'Little Rhinoceros',
+            organizationName: 'Alien Infested Spider Monkey Rescue',
+            positionName    : 'Software Developer',
+            role            : 'author',
+            email           : 'lr@mock-creator-email.org',
+            phone           : '555-555-5561'
+        ],
+        [
+            individualName  : 'Skeletor McSkittles',
+            organizationName: 'The Underworld',
+            positionName    : 'Bringer of Skittles',
+            role            : 'collaborator',
+            email           : 'sm@mock-creator-email.org',
+            phone           : '555-555-5562'
+        ],
+    ] as Set
+
+    parsedXml.publishers == [
+        [
+            individualName  : null,
+            organizationName: 'Super Important Organization',
+            positionName    : null,
+            role            : 'publisher',
+            email           : 'email@sio.co',
+            phone           : '555-123-4567'
+        ],
+    ] as Set
+
     parsedXml.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
     parsedXml.modifiedDate == '2016-12-25T11:12:13'
     parsedXml.creationDate == null
@@ -210,6 +252,8 @@ class MetadataParserTest extends Specification {
     parsedXml.dsmmProductionSustainability == 4
     parsedXml.dsmmTransparencyTraceability == 2
     parsedXml.dsmmUsability == 3
+    parsedXml.updateFrequency == 'asNeeded'
+    parsedXml.presentationForm == 'tableDigital'
 
   }
 
@@ -480,45 +524,85 @@ class MetadataParserTest extends Specification {
               ]] as Set
   }
 
-  def "Contacts are correctly parsed"() {
+  def "Responsible parties are correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
-    def contacts = MetadataParser.parseContacts(document)
+    def responsibleParties = MetadataParser.parseDataResponsibleParties(document)
 
     then:
-    contacts == [
+    responsibleParties.contacts == [
         [
-            individualName   : null,
-            organizationName : 'Super Important Organization',
-            role             : 'custodian'
+            individualName  : 'John Smith',
+            organizationName: 'University of Awesome',
+            positionName    : 'Chief Awesomeness Officer',
+            role            : 'pointOfContact',
+            email           : 'john.smith@uoa.edu',
+            phone           : '555-555-5555'
         ],
         [
-            individualName   : null,
-            organizationName : 'Super Important Organization',
-            role             : 'publisher'
+            individualName  : 'Jane Doe',
+            organizationName: 'University of Awesome',
+            positionName    : 'VP of Awesome Behavior',
+            role            : 'distributor',
+            email           : 'jane.doe@uoa.edu',
+            phone           : '555-555-5556'
+        ],
+    ] as Set
+
+    responsibleParties.creators == [
+        [
+            individualName  : 'Jarianna Whackositz',
+            organizationName: 'Secret Underground Society',
+            positionName    : 'Software Developer',
+            role            : 'resourceProvider',
+            email           : 'jw@mock-creator-email.org',
+            phone           : '555-555-5558'
         ],
         [
-            individualName   : 'John Smith',
-            organizationName : 'University of Awesome',
-            role             : 'pointOfContact'
+            individualName  : 'Dr. Quinn McClojure Man',
+            organizationName: 'Soap Boxes Inc.',
+            positionName    : 'Software Developer',
+            role            : 'originator',
+            email           : 'dqmm@mock-creator-email.org',
+            phone           : '555-555-5559'
         ],
         [
-            individualName   : null,
-            organizationName : 'Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)',
-            role             : 'custodian'
+            individualName  : 'Zebulon Pike',
+            organizationName: 'Pikes Peak Inc.',
+            positionName    : 'Software Developer',
+            role            : 'principalInvestigator',
+            email           : 'zp@mock-creator-email.org',
+            phone           : '555-555-5560'
         ],
         [
-            individualName   : null,
-            organizationName : 'Super Important Organization',
-            role             : 'sponsor'
+            individualName  : 'Little Rhinoceros',
+            organizationName: 'Alien Infested Spider Monkey Rescue',
+            positionName    : 'Software Developer',
+            role            : 'author',
+            email           : 'lr@mock-creator-email.org',
+            phone           : '555-555-5561'
         ],
         [
-            individualName   : null,
-            organizationName : 'Other (Kind Of) Important Organization',
-            role             : 'sponsor'
-        ]
+            individualName  : 'Skeletor McSkittles',
+            organizationName: 'The Underworld',
+            positionName    : 'Bringer of Skittles',
+            role            : 'collaborator',
+            email           : 'sm@mock-creator-email.org',
+            phone           : '555-555-5562'
+        ],
+    ] as Set
+
+    responsibleParties.publishers == [
+        [
+            individualName  : null,
+            organizationName: 'Super Important Organization',
+            positionName    : null,
+            role            : 'publisher',
+            email           : 'email@sio.co',
+            phone           : '555-123-4567'
+        ],
     ] as Set
   }
 
@@ -542,5 +626,17 @@ class MetadataParserTest extends Specification {
     dsmm.average == ((dsmm.Accessibility + dsmm.DataIntegrity + dsmm.DataQualityAssessment + dsmm.DataQualityAssurance +
         dsmm.DataQualityControlMonitoring + dsmm.Preservability + dsmm.ProductionSustainability +
         dsmm.TransparencyTraceability + dsmm.Usability) / ( dsmm.size() - 1 ) )
+  }
+
+  def "Miscellaneous items are correctly parsed"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+
+    when:
+    def miscellaneous = MetadataParser.parseMiscellaneous(document)
+
+    then:
+    miscellaneous.updateFrequency == 'asNeeded'
+    miscellaneous.presentationForm == 'tableDigital'
   }
 }

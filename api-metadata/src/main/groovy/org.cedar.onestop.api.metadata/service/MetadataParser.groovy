@@ -40,6 +40,8 @@ class MetadataParser {
     def acquisitionInfo = parseAcquisitionInfo(metadata)
     def dsmmMap = parseDSMM(metadata)
     def spatialMap = parseSpatialInfo(metadata)
+    def responsibleParties = parseDataResponsibleParties(metadata)
+    def miscellaneous = parseMiscellaneous(metadata)
 
     // Build JSON:
     def json = [
@@ -70,7 +72,9 @@ class MetadataParser {
         acquisitionPlatforms            : acquisitionInfo.acquisitionPlatforms,
         dataFormats                     : parseDataFormats(metadata),
         links                           : parseLinks(metadata),
-        contacts                        : parseContacts(metadata),
+        contacts                        : responsibleParties.contacts,
+        creators                        : responsibleParties.creators,
+        publishers                      : responsibleParties.publishers,
         thumbnail                       : citationInfo.thumbnail,
         modifiedDate                    : citationInfo.modifiedDate,
         creationDate                    : citationInfo.creationDate,
@@ -85,7 +89,9 @@ class MetadataParser {
         dsmmProductionSustainability    : dsmmMap.ProductionSustainability,
         dsmmTransparencyTraceability    : dsmmMap.TransparencyTraceability,
         dsmmUsability                   : dsmmMap.Usability,
-        dsmmAverage                     : dsmmMap.average
+        dsmmAverage                     : dsmmMap.average,
+        updateFrequency                 : miscellaneous.updateFrequency,
+        presentationForm                : miscellaneous.presentationForm
     ]
 
     return json
@@ -523,22 +529,57 @@ class MetadataParser {
     return parseLinks(new XmlSlurper().parseText(xml))
   }
 
-  static Set parseContacts(GPathResult metadata) {
-
-    def contacts = [] as Set
-    def contactInfo = metadata.'**'.findAll { it.name() == 'CI_ResponsibleParty' }
-    contactInfo.each { e ->
-      contacts.add([
-          individualName  : e.individualName.CharacterString.text() ?: e.individualName.Anchor.text() ?: null,
-          organizationName: e.organisationName.CharacterString.text() ?: e.organisationName.Anchor.text() ?: null,
-          role            : e.role.CI_RoleCode.@codeListValue.text() ?: null
-      ])
+  static List<GPathResult> parseResponsibleParties(GPathResult metadata) {
+    return metadata.'**'.findAll {
+      it.name() == 'CI_ResponsibleParty'
     }
-    return contacts
   }
 
-  static Set parseContacts(String xml) {
-    return parseContacts(new XmlSlurper().parseText(xml))
+  static Map<String, String> parseParty(GPathResult party) {
+    String individualName = party.individualName.CharacterString.text() ?: party.individualName.Anchor.text() ?: null
+    String organizationName = party.organisationName.CharacterString.text() ?: party.organisationName.Anchor.text() ?: null
+    String positionName = party.positionName.CharacterString.text() ?: party.positionName.Anchor.text() ?: null
+    String role = party.role.CI_RoleCode.@codeListValue.text() ?: null
+    String email = party.contactInfo.CI_Contact.address.CI_Address.electronicMailAddress.CharacterString.text() ?: null
+    String phone = party.contactInfo.CI_Contact.phone.CI_Telephone.voice.CharacterString.text() ?: null
+    return [
+        individualName  : individualName,
+        organizationName: organizationName,
+        positionName    : positionName,
+        role            : role,
+        email           : email,
+        phone           : phone
+    ]
+  }
+
+  static Map<String, Set> parseDataResponsibleParties(GPathResult metadata) {
+
+    Set contacts = []
+    Set contactRoles = ['pointOfContact', 'distributor']
+    Set creators = []
+    Set creatorRoles = ['resourceProvider', 'originator', 'principalInvestigator', 'author', 'collaborator']
+    Set publishers = []
+    Set publisherRoles = ['publisher']
+
+    GPathResult dataPath = metadata.identificationInfo.MD_DataIdentification
+    List<GPathResult> parties = parseResponsibleParties(dataPath)
+    parties.each { party ->
+      Map<String, String> parsedParty = parseParty(party)
+      if (contactRoles.contains(parsedParty.role)) {
+        contacts.add(parsedParty)
+      }
+      else if (creatorRoles.contains(parsedParty.role)) {
+        creators.add(parsedParty)
+      }
+      else if (publisherRoles.contains(parsedParty.role)) {
+        publishers.add(parsedParty)
+      }
+    }
+    return [contacts: contacts, creators: creators, publishers: publishers]
+  }
+
+  static Map<String, Set> parseDataResponsibleParties(String xml) {
+    return parseDataResponsibleParties(new XmlSlurper().parseText(xml))
   }
 
   static Map parseDSMM(GPathResult metadata) {
@@ -585,6 +626,20 @@ class MetadataParser {
 
   static Map parseDSMM(String xml) {
     return parseDSMM(new XmlSlurper().parseText(xml))
+  }
+
+  static Map parseMiscellaneous(GPathResult metadata) {
+    def dataId = metadata.identificationInfo.MD_DataIdentification ?: null
+    def updateFrequency = dataId.resourceMaintenance.MD_MaintenanceInformation.maintenanceAndUpdateFrequency.MD_MaintenanceFrequencyCode.@codeListValue.text() ?: null
+    def presentationForm = dataId.citation.CI_Citation.presentationForm.CI_PresentationFormCode.@codeListValue.text() ?: null
+    return [
+        updateFrequency: updateFrequency,
+        presentationForm: presentationForm
+    ]
+  }
+
+  static Map parseMiscellaneous(String xml) {
+    return parseMiscellaneous(new XmlSlurper().parseText(xml))
   }
 
   static Map mergeCollectionAndGranule(Map collection, Map granule) {
