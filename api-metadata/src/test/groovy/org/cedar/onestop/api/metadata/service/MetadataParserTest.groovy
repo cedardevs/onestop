@@ -1,5 +1,7 @@
 package org.cedar.onestop.api.metadata.service
 
+import groovy.xml.XmlUtil
+import org.apache.commons.lang.StringUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -190,6 +192,9 @@ class MetadataParserTest extends Specification {
     parsedXml.dsmmProductionSustainability == 4
     parsedXml.dsmmTransparencyTraceability == 2
     parsedXml.dsmmUsability == 3
+    parsedXml.services == [
+        '<xml and stuff>'
+    ] as Set
 
   }
 
@@ -501,5 +506,20 @@ class MetadataParserTest extends Specification {
     dsmm.average == ((dsmm.Accessibility + dsmm.DataIntegrity + dsmm.DataQualityAssessment + dsmm.DataQualityAssurance +
         dsmm.DataQualityControlMonitoring + dsmm.Preservability + dsmm.ProductionSustainability +
         dsmm.TransparencyTraceability + dsmm.Usability) / ( dsmm.size() - 1 ) )
+  }
+
+  def "Services are correctly parsed"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+    def expectedService1 = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata-service1.xml").text
+
+    when:
+    def services = MetadataParser.parseServices(document)
+    def nodeExpectedService1 = new XmlParser().parseText(expectedService1)
+    def serializedExpectedService1 = XmlUtil.serialize(nodeExpectedService1)
+
+    then:
+    services in Set
+    services[0] == serializedExpectedService1
   }
 }
