@@ -16,7 +16,6 @@ const mapStateToProps = (state, reactProps) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    // TODO back button in browser - does it set focus to null in redux state???
     showGranules: id => {
       dispatch(clearSelections())
       dispatch(toggleSelection(id))
