@@ -9,4 +9,4 @@
 
 rootProject.name = 'psi'
 
-include 'metadata-registry'
+include 'registry'
