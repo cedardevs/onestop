@@ -1,0 +1,37 @@
+apply plugin: 'war'
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'inventory.manager'
+version = '0.0.1'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+//    maven { url "https://repo.spring.io/snapshot" }
+//    maven { url "https://repo.spring.io/milestone" }
+}
+
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-data-rest')
+    compile('org.springframework.kafka:spring-kafka')
+    compile('org.codehaus.groovy:groovy')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+ext {
+    fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
+}
+
+springBoot {
+    backupSource = false
+}
+
+bootRepackage {
+    outputFile = fatWarPath
+    excludeDevtools = true
+    executable = true
+    onlyIf { !tasks.getByName('war').state.upToDate }
+}
