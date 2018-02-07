@@ -119,6 +119,17 @@ export const decodeQueryString = queryString => {
   return {behavior: {search: searchParams}}
 }
 
+export const decodeLocation = location => {
+  const [ pathName, queryString ] = location.split('?')
+  const detailIdRegex = /\/details\/([-\w]+)/
+  const detailIdMatches = detailIdRegex.exec(pathName)
+  const detailId =
+    detailIdMatches && detailIdMatches[1] ? detailIdMatches[1] : null
+  return Object.assign({}, decodeQueryString(queryString), {
+    ui: {cardDetails: {focusedId: detailId}},
+  })
+}
+
 const codecs = [
   {
     longKey: 'queryText',

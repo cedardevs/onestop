@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import infoCircle from 'fa/info-circle.svg'
@@ -9,8 +9,22 @@ import styles from './DetailStyles.css'
 import A from '../common/link/Link'
 import MapThumbnail from '../common/MapThumbnail'
 import {titleCaseKeyword} from '../utils/keywordUtils'
+import FlexRow from '../common/FlexRow'
 
-class SummaryView extends React.Component {
+const styleTitle = {
+  textAlign: 'justify',
+  fontSize: '1.5em',
+  fontWeight: 'bold',
+  borderBottom: '1px solid #595959',
+  paddingBottom: '0.618em',
+}
+
+const styleEqualFlexItem = {
+  flex: '1 1 auto',
+  width: '50%',
+}
+
+class SummaryView extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -46,51 +60,56 @@ class SummaryView extends React.Component {
       ? this.props.item.temporalBounding.endDate
       : 'Present'
 
+    const timeSpaceSummary = (
+      <div key={'timeSpaceSummary'} style={styleEqualFlexItem}>
+        <div className={styles.sectionHeading}>Time Period:</div>
+        <div>
+          {startDate && endDate ? `${startDate} to ${endDate}` : 'Not Provided'}
+        </div>
+        <div className={styles.sectionHeading}>Spatial Bounding Map:</div>
+        <div className={styles.previewMap}>
+          <MapThumbnail
+            geometry={this.props.item.spatialBounding}
+            interactive={true}
+          />
+        </div>
+        <div className={styles.sectionHeading}>Bounding Coordinates:</div>
+        <div>{this.buildCoordinatesString()}</div>
+        <div className={styles.sectionHeading}>DSMM Rating:</div>
+        {this.renderDSMMRating()}
+      </div>
+    )
+
+    const keywordSummary = (
+      <div key={'keywordSummary'} style={styleEqualFlexItem}>
+        <div className={styles.sectionHeading}>Themes:</div>
+        {this.renderGCMDKeywords(
+          'gcmdScience',
+          '#008445',
+          this.state.showAllThemes
+        )}
+        <div className={styles.sectionHeading}>Instruments:</div>
+        {this.renderGCMDKeywords(
+          'gcmdInstruments',
+          '#0965a1',
+          this.state.showAllInstruments
+        )}
+        <div className={styles.sectionHeading}>Platforms:</div>
+        {this.renderGCMDKeywords(
+          'gcmdPlatforms',
+          '#008445',
+          this.state.showAllPlatforms
+        )}
+      </div>
+    )
+
     return (
       <div>
-        <div className={`pure-g`}>
-          <div className={`pure-u-1-2`}>
-            <div className={styles.sectionHeading}>Time Period:</div>
-            <div>
-              {startDate && endDate ? (
-                `${startDate} to ${endDate}`
-              ) : (
-                'Not Provided'
-              )}
-            </div>
-            <div className={styles.sectionHeading}>Spatial Bounding Map:</div>
-            <div className={styles.previewMap}>
-              <MapThumbnail
-                geometry={this.props.item.spatialBounding}
-                interactive={true}
-              />
-            </div>
-            <div className={styles.sectionHeading}>Bounding Coordinates:</div>
-            <div>{this.buildCoordinatesString()}</div>
-            <div className={styles.sectionHeading}>DSMM Rating:</div>
-            {this.renderDSMMRating()}
-          </div>
-          <div className={`pure-u-1-2`}>
-            <div className={styles.sectionHeading}>Themes:</div>
-            {this.renderGCMDKeywords(
-              'gcmdScience',
-              '#008445',
-              this.state.showAllThemes
-            )}
-            <div className={styles.sectionHeading}>Instruments:</div>
-            {this.renderGCMDKeywords(
-              'gcmdInstruments',
-              '#0965a1',
-              this.state.showAllInstruments
-            )}
-            <div className={styles.sectionHeading}>Platforms:</div>
-            {this.renderGCMDKeywords(
-              'gcmdPlatforms',
-              '#008445',
-              this.state.showAllPlatforms
-            )}
-          </div>
-        </div>
+        <h2 style={styleTitle}>{this.props.item.title}</h2>
+        <FlexRow
+          style={{justifyContent: 'space-between'}}
+          items={[ timeSpaceSummary, keywordSummary ]}
+        />
       </div>
     )
   }

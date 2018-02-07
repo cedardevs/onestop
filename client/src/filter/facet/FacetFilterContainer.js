@@ -7,7 +7,6 @@ import {
   clearCollections,
   triggerSearch,
 } from '../../actions/SearchRequestActions'
-import {showCollections} from '../../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {
@@ -26,7 +25,6 @@ const mapDispatchToProps = dispatch => {
     submit: () => {
       dispatch(clearCollections())
       dispatch(triggerSearch())
-      dispatch(showCollections())
     },
   }
 }
