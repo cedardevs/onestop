@@ -1,6 +1,9 @@
 package org.cedar.psi.registry.api
 
 import groovy.util.logging.Slf4j
+import org.apache.kafka.streams.KafkaStreams
+import org.apache.kafka.streams.state.QueryableStoreTypes
+import org.cedar.psi.registry.stream.RawGranuleStreamConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -15,14 +18,22 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD
 @RestController
 class MetadataRestController {
 
+  private KafkaStreams rawGranuleStream
+
   @Autowired
-  MetadataRestController() {
+  MetadataRestController(KafkaStreams rawGranuleStream) {
+    this.rawGranuleStream = rawGranuleStream
   }
 
 
   @RequestMapping(path = '/metadata/{type}/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveJson(@PathVariable String type, @PathVariable String id, HttpServletResponse response) {
-    return ['message': 'hello world']
+    if (type == 'granule') {
+      def granuleStore = this.rawGranuleStream.store(RawGranuleStreamConfig.storeName, QueryableStoreTypes.keyValueStore())
+      return [id: id, value: granuleStore.get(id)]
+    }
+    response.sendError(404)
+    return null
   }
 
 }
