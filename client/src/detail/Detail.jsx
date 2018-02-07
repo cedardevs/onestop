@@ -38,7 +38,14 @@ class Detail extends Component {
     }
 
     if (!id || !item) {
-      return <div style={{display: 'none'}} />
+      // TODO error style? actually report an error in the flow if the collection is not found when search returns?
+      return (
+        <div style={styleDetailWrapper}>
+          <h1 style={styleTitle}>
+            There was a problem loading your collection.
+          </h1>
+        </div>
+      )
     }
 
     let tabData = [
