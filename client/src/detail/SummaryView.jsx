@@ -9,14 +9,6 @@ import styles from './DetailStyles.css'
 import A from '../common/link/Link'
 import MapThumbnail from '../common/MapThumbnail'
 
-const styleTitle = {
-  textAlign: 'justify',
-  fontSize: '1.5em',
-  fontWeight: 'bold',
-  borderBottom: '1px solid #595959',
-  paddingBottom: '0.618em',
-}
-
 const styleEqualFlexItem = {
   flex: '1 1 auto',
   width: '50%',
@@ -102,13 +94,10 @@ class SummaryView extends Component {
     )
 
     return (
-      <div>
-        <h2 style={styleTitle}>{this.props.item.title}</h2>
-        <FlexRow
-          style={{justifyContent: 'space-between'}}
-          items={[ timeSpaceSummary, keywordSummary ]}
-        />
-      </div>
+      <FlexRow
+        style={{justifyContent: 'space-between'}}
+        items={[ timeSpaceSummary, keywordSummary ]}
+      />
     )
   }
 
