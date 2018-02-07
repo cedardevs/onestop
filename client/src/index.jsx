@@ -9,6 +9,7 @@ import Section508GranuleListContainer from './result/granules/list/Section508Gra
 import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
 import Section508LandingContainer from './landing/Section508LandingContainer'
+import DetailContainer from './detail/DetailContainer'
 import Help from './common/info/Help'
 import AboutContainer from './common/info/AboutContainer'
 import {Provider} from 'react-redux'
@@ -30,6 +31,7 @@ const routesLayout = (
           displayName="Collections"
           component={CollectionGridContainer}
         />
+        <Route name="Details" path="details/:id" component={DetailContainer} />
       </Route>
       <Route name="Error" path="error" component={ErrorContainer} />
       <Route name="Help" path="help" component={Help} />

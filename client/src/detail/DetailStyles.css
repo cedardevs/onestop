@@ -1,55 +1,6 @@
 /* Detail Container */
 @import '../../style/style.css';
 
-.modal {
-  position: fixed;
-  z-index: 2;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0);
-  background-color: rgba(0, 0, 0, 0.6);
-}
-
-.modalContent {
-  background-color: #242c36;
-  margin: 10% auto;
-  padding: 1.5em;
-  border: 1px solid $color-gray;
-  width: 90%;
-  max-width: 80em;
-  overflow: auto;
-
-  & p {
-    margin-top: 0;
-  }
-}
-
-.underscored {
-  border-bottom: 1px solid $color-gray;
-  margin-bottom: 1em;
-  text-align: justify;
-}
-
-.header {
-  font-size: 1.5em;
-  font-weight: bold;
-}
-
-.close {
-  color: $color-gray;
-  display: inline-block;
-  float: right;
-}
-.close:hover,
-.close:focus {
-  color: #fff;
-  text-decoration: none;
-  cursor: pointer;
-}
-
 .title {
   position: relative;
   max-height: 6em;
@@ -98,10 +49,9 @@
   display: block;
   color: white;
   text-align: right;
-  font-style: italic;
-  font-weight: bold;
   text-decoration: underline;
   padding: .5em;
+  font-size: 1.4rem;
 }
 
 /*************************/

@@ -4,13 +4,10 @@ import {hashHistory} from 'react-router'
 import Immutable from 'seamless-immutable'
 import thunk from 'redux-thunk'
 import reducer from './reducers/reducer'
-import {decodeQueryString} from './utils/queryUtils'
+import {decodeLocation} from './utils/queryUtils'
 
-let queryString = ''
-if (typeof document !== 'undefined') {
-  queryString = document.location.hash.split('?')[1]
-}
-const initialState = Immutable(decodeQueryString(queryString))
+const location = typeof document !== 'undefined' ? document.location.hash : ''
+const initialState = Immutable(decodeLocation(location))
 
 const getCompose = () => {
   if (

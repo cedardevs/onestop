@@ -41,6 +41,23 @@ export const showGranules = (prefix = '') => {
   }
 }
 
+export const showDetails = id => {
+  if (!id) {
+    return
+  }
+  return (dispatch, getState) => {
+    const query = encodeQueryString(getState())
+    const locationDescriptor = {
+      pathname: `collections/details/${id}`,
+      search: _.isEmpty(query) ? null : `?${query}`,
+    }
+    dispatch(setFocus(id))
+    dispatch(push(locationDescriptor))
+    dispatch(clearGranules())
+    dispatch(fetchGranules())
+  }
+}
+
 export const showHome = () => {
   return dispatch => {
     dispatch(updateSearch())
@@ -121,7 +138,9 @@ export const initialize = () => {
 export const loadData = () => {
   return (dispatch, getState) => {
     const state = getState()
-    const collectionsSelected = !_.isEmpty(state.behavior.search.selectedIds)
+    const collectionsSelected =
+      !_.isEmpty(state.behavior.search.selectedIds) ||
+      state.ui.cardDetails.focusedId !== null
     const granulesLoaded = !_.isEmpty(state.domain.results.granules)
 
     dispatch(triggerSearch())

@@ -5,7 +5,6 @@ import Container from '../layout/Container'
 import Background from '../landing/background/Background'
 
 import BannerContainer from './banner/BannerContainer'
-import DetailContainer from '../detail/DetailContainer'
 import HeaderContainer from './HeaderContainer'
 import MapContainer from '../search/map/MapContainer'
 
@@ -109,7 +108,6 @@ export default class Root extends Component {
     const header = (
       <div>
         <BannerContainer />
-        <DetailContainer />
         <HeaderContainer
           showSearch={this.isNotLanding() && this.isNot508()}
           homeUrl={this.homeUrl()}
