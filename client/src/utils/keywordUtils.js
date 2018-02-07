@@ -58,6 +58,10 @@ const categoryName = category => {
   return _.startCase(_.toLower(category.split(/(?=[A-Z])/).join(' ')))
 }
 
+const determineIfHierarchy = category => {
+  return category === 'science'
+}
+
 const facets = (category, terms, selectedFacets) => {
   const selectedTerms = selectedFacets[category]
 
@@ -68,7 +72,7 @@ const facets = (category, terms, selectedFacets) => {
       term,
       data.count,
       selected,
-      category === 'science'
+      determineIfHierarchy(category)
     )
   })
 }
