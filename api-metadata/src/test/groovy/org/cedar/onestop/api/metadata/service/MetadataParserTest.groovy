@@ -149,7 +149,7 @@ class MetadataParserTest extends Specification {
     parsedXml.dsmmTransparencyTraceability == 2
     parsedXml.dsmmUsability == 3
     parsedXml.updateFrequency == 'asNeeded'
-    parsedXml.presentationForm == 'documentDigital'
+    parsedXml.presentationForm == 'tableDigital'
 
   }
 
@@ -432,6 +432,6 @@ class MetadataParserTest extends Specification {
 
     then:
     miscellaneous.updateFrequency == 'asNeeded'
-    miscellaneous.presentationForm == 'documentDigital'
+    miscellaneous.presentationForm == 'tableDigital'
   }
 }

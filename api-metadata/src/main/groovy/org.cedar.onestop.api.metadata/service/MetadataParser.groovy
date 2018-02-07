@@ -474,12 +474,7 @@ class MetadataParser {
   static Map parseMiscellaneous(GPathResult metadata) {
     def dataId = metadata.identificationInfo.MD_DataIdentification
     def updateFrequency = dataId.resourceMaintenance.MD_MaintenanceInformation.maintenanceAndUpdateFrequency.MD_MaintenanceFrequencyCode.@codeListValue.text()
-    def presentationForm = dataId.citation.CI_Citation.presentatioNForm.CI_PresentationFormCode.@codeListValue.text()
-//    def presentationForm = dataId.DataQualityInfo.findResult(null, { qualityInfo ->
-//      def title = qualityInfo.@'xlink.title'.text()
-//      if(title == 'Data Stewardship') {
-//        return qualityInfo.DQ_DataQuality.report.DQ_ConceptualConsistency.evaluationProcedure.CI_Citation.presentationForm.CI_PresentationFormCode.@codeListValue.text()
-//    }
+    def presentationForm = dataId.citation.CI_Citation.presentationForm.CI_PresentationFormCode.@codeListValue.text()
     return [
         updateFrequency: updateFrequency,
         presentationForm: presentationForm
