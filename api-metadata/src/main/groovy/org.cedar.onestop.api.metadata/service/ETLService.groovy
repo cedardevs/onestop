@@ -208,7 +208,7 @@ class ETLService {
     def reindexScript = """\
         ctx._source['internalParentIdentifier'] = params.parentId;
         for (String f : params.defaults.keySet()) {
-          if (ctx._source[f] == null) {
+          if (ctx._source[f] == null || ctx._source[f] == []) {
             ctx._source[f] = params.defaults[f];
           }
         }""".replaceAll(/\s+/, ' ')
