@@ -17,17 +17,23 @@ const styleDetailWrapper = {
 class Detail extends Component {
   constructor(props) {
     super(props)
-
-    // this.close = this.close.bind(this)
-    // this.handleKeyDown = this.handleKeyDown.bind(this)
-    // this.showGranules = this.showGranules.bind(this)
   }
 
   render() {
-    const {id, item} = this.props
+    const {id, item, loading} = this.props
+
+    if (loading) {
+      return (
+        <div>
+          <h1>Loading...</h1>
+        </div>
+      )
+    }
+
     if (!id || !item) {
       return <div style={{display: 'none'}} />
     }
+
     let tabData = [
       {
         title: 'Summary',
@@ -64,48 +70,6 @@ class Detail extends Component {
       </div>
     )
   }
-
-  // showGranules() {
-  //   if (!this.state.granulesLoaded) {
-  //     this.props.showGranules(this.props.id)
-  //     // change the state to indicate granules have been loaded so we don't reload if the user flips back and forth between tabs.
-  //     this.setState(prevState => {
-  //       return {
-  //         ...prevState,
-  //         granulesLoaded: true,
-  //       }
-  //     })
-  //   }
-  // }
-
-  // close() {
-  //   this.props.dismiss()
-  // }
-  //
-  // handleKeyDown(event) {
-  //   if (event.keyCode === 27) {
-  //     // esc
-  //     this.close()
-  //   }
-  // }
-
-  // componentWillUpdate(nextProps, nextState) {
-  //   if (nextProps.id) {
-  //     document.addEventListener('keydown', this.handleKeyDown, false)
-  //   }
-  //   else {
-  //     document.removeEventListener('keydown', this.handleKeyDown, false)
-  //   }
-  //   if (nextProps.id && nextProps.id != this.props.id) {
-  //     // reset state of granules loaded each time the collection changes
-  //     this.setState(prevState => {
-  //       return {
-  //         ...prevState,
-  //         granulesLoaded: false,
-  //       }
-  //     })
-  //   }
-  // }
 
   // None of this links stuff is being used in the new version of the collection view.
   // Preserving it for now because it may be needed for one of the tabs that we haven't added yet.
@@ -154,7 +118,7 @@ class Detail extends Component {
 }
 
 Detail.propTypes = {
-  id: PropTypes.string,
+  id: PropTypes.string.isRequired,
   item: PropTypes.object,
 }
 
