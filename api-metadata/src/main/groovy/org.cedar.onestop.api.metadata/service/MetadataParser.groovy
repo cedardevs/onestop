@@ -72,7 +72,6 @@ class MetadataParser {
         creators                        : responsibleParties.creators,
         publishers                      : responsibleParties.publishers,
         thumbnail                       : citationInfo.thumbnail,
-        modifiedDate                    : citationInfo.modifiedDate,
         creationDate                    : citationInfo.creationDate,
         revisionDate                    : citationInfo.revisionDate,
         publicationDate                 : citationInfo.publicationDate,
@@ -101,7 +100,6 @@ class MetadataParser {
     def alternateTitle
     def description
     def thumbnail
-    def modifiedDate
     def creationDate
     def revisionDate
     def publicationDate
@@ -143,7 +141,6 @@ class MetadataParser {
         alternateTitle  : alternateTitle,
         description     : description,
         thumbnail       : thumbnail,
-        modifiedDate    : modifiedDate,
         creationDate    : creationDate,
         revisionDate    : revisionDate,
         publicationDate : publicationDate
