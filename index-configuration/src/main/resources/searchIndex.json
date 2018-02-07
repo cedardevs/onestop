@@ -325,6 +325,14 @@
         },
         "dsmmAverage": {
           "type": "float"
+        },
+        "updateFrequency": {
+          "type": "keyword",
+          "index": false
+        },
+        "presentationForm": {
+          "type": "keyword",
+          "index": false
         }
       }
     },
@@ -656,6 +664,14 @@
         },
         "dsmmAverage": {
           "type": "float"
+        },
+        "updateFrequency": {
+          "type": "keyword",
+          "index": false
+        },
+        "presentationForm": {
+          "type": "keyword",
+          "index": false
         }
       }
     }

@@ -103,6 +103,9 @@
           <gmd:alternateTitle>
             <gco:CharacterString>Still (But Slightly Less) Important Alternate Title</gco:CharacterString>
           </gmd:alternateTitle>
+          <gmd:presentationForm>
+            <gmd:CI_PresentationFormCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode" codeListValue="tableDigital">tableDigital</gmd:CI_PresentationFormCode>
+          </gmd:presentationForm>
           <gmd:date>
             <gmd:CI_Date>
               <gmd:date>

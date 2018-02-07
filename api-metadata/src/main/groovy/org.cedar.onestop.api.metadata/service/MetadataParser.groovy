@@ -43,6 +43,7 @@ class MetadataParser {
     def spatialMap = parseSpatialInfo(metadata)
     def responsibleParties = parseDataResponsibleParties(metadata)
     def services = parseServices(metadata)
+    def miscellaneous = parseMiscellaneous(metadata)
 
     // Build JSON:
     def json = [
@@ -86,6 +87,9 @@ class MetadataParser {
         dsmmProductionSustainability    : dsmmMap.ProductionSustainability,
         dsmmTransparencyTraceability    : dsmmMap.TransparencyTraceability,
         dsmmUsability                   : dsmmMap.Usability,
+        dsmmAverage                     : dsmmMap.average,
+        updateFrequency                 : miscellaneous.updateFrequency,
+        presentationForm                : miscellaneous.presentationForm
         dsmmAverage                     : dsmmMap.average,
         services                        : services
     ]
@@ -507,6 +511,20 @@ class MetadataParser {
 
   static Map parseDSMM(String xml) {
     return parseDSMM(new XmlSlurper().parseText(xml))
+  }
+
+  static Map parseMiscellaneous(GPathResult metadata) {
+    def dataId = metadata.identificationInfo.MD_DataIdentification ?: null
+    def updateFrequency = dataId.resourceMaintenance.MD_MaintenanceInformation.maintenanceAndUpdateFrequency.MD_MaintenanceFrequencyCode.@codeListValue.text() ?: null
+    def presentationForm = dataId.citation.CI_Citation.presentationForm.CI_PresentationFormCode.@codeListValue.text() ?: null
+    return [
+        updateFrequency: updateFrequency,
+        presentationForm: presentationForm
+    ]
+  }
+
+  static Map parseMiscellaneous(String xml) {
+    return parseMiscellaneous(new XmlSlurper().parseText(xml))
   }
 
   static Set parseServices(GPathResult metadata) {

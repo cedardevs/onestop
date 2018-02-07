@@ -176,6 +176,8 @@
     "dsmmTransparencyTraceability": 2,
     "dsmmUsability": 3,
     "dsmmAverage": 2.6666666667,
-    "stagedDate": null
+    "stagedDate": null,
+    "updateFrequency": "asNeeded",
+    "presentationForm": null
   }
 }

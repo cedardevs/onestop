@@ -408,6 +408,16 @@
           "type": "float",
           "doc_values": false,
           "index": false
+        },
+        "updateFrequency": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "presentationForm": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
         }
       }
     },
@@ -817,6 +827,16 @@
         },
         "dsmmAverage": {
           "type": "float",
+          "doc_values": false,
+          "index": false
+        },
+        "updateFrequency": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "presentationForm": {
+          "type": "keyword",
           "doc_values": false,
           "index": false
         }
