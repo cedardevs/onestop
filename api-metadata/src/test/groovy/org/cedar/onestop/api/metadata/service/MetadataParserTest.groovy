@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.metadata.service
 
+import groovy.json.JsonOutput
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -20,23 +21,55 @@ class MetadataParserTest extends Specification {
     parsedXml.title == 'Important Organization\'s Important File\'s Super Important Title'
     parsedXml.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
     parsedXml.description == 'Wall of overly detailed, super informative, extra important text.'
-    parsedXml.keywords == [
-        'Air temperature', 'Water temperature', 'Wind speed', 'Wind direction',
-        'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
-        'Oceans > Salinity/Density > Salinity',
-        'Volcanoes > This Keyword > Is Invalid',
-        'Geographic Region > Arctic',
-        'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
-        'Liquid Earth > This Keyword > Is Invalid',
-        'SIO > Super Important Organization',
-        'Spectral/Engineering > Microwave > Brightness Temperature',
-        'Spectral/Engineering > Microwave > Temperature Anomalies',
-        'OSIO > Other Super Important Organization',
-        'SSIO > Super SIO (Super Important Organization)',
-        'This Keyword > Is Just > WRONG',
-        'This Keyword Is > Misplaced And Invalid',
-        'Environmental Advisories > Fire Advisories > Wildfires'
-    ] as Set
+    // Deep equality check
+    JsonOutput.toJson(parsedXml.keywords) == JsonOutput.toJson([
+        [
+            values: ['SIO > Super Important Organization','OSIO > Other Super Important Organization', 'SSIO > Super SIO (Super Important Organization)'],
+            type: 'dataCenter',
+            namespace: 'GCMD Keywords - Data Centers'
+        ],
+        [
+            values: ['Environmental Advisories > Fire Advisories > Wildfires', 'This Keyword Is > Misplaced And Invalid', 'This Keyword > Is Just > WRONG'],
+            type: 'service',
+            namespace: 'Global Change Master Directory Science and Services Keywords'
+        ],
+        [
+            values: ['Air temperature', 'Water temperature'],
+            type: 'theme',
+            namespace: 'Miscellaneous keyword type'
+        ],
+        [
+            values: ['Wind speed', 'Wind direction'],
+            type: 'theme',
+            namespace: 'Miscellaneous keyword type'
+        ],
+        [
+            values: [
+                'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
+                'Oceans > Salinity/Density > Salinity',
+                'Volcanoes > This Keyword > Is Invalid',
+                'Spectral/Engineering > Microwave > Brightness Temperature',
+                'Spectral/Engineering > Microwave > Temperature Anomalies'
+            ],
+            type: 'theme',
+            namespace: 'GCMD Keywords - Science Keywords'
+        ],
+        [
+            values: ['Geographic Region > Arctic', 'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico', 'Liquid Earth > This Keyword > Is Invalid'],
+            type: 'place',
+            namespace: 'GCMD Keywords - Locations'
+            ],
+        [
+            values: ['Seasonal'],
+            type: 'dataResolution',
+            namespace: 'Global Change Master Directory Keywords - Temporal Data Resolution'
+        ],
+        [
+            values: ['> 1 Km'],
+            type: 'dataResolution',
+            namespace: 'GCMD Keywords - Vertical Data Resolution'
+        ]
+    ] as Set)
     parsedXml.accessionValues == [
         '0038924',
         '0038947',
@@ -85,7 +118,9 @@ class MetadataParserTest extends Specification {
         'OSIO > Other Super Important Organization',
         'SSIO > Super SIO (Super Important Organization)'
     ] as Set
-    parsedXml.gcmdDataResolution == [] as Set
+    parsedXml.gcmdHorizontalResolution == [] as Set
+    parsedXml.gcmdVerticalResolution == ['> 1 Km'] as Set
+    parsedXml.gcmdTemporalResolution == ['Seasonal'] as Set
     parsedXml.temporalBounding == [
         beginDate: '2005-05-09',
         beginIndeterminate: null,
@@ -220,23 +255,55 @@ class MetadataParserTest extends Specification {
     def parsedXml = MetadataParser.parseKeywordsAndTopics(document)
 
     then:
-    parsedXml.keywords == [
-        'Air temperature', 'Water temperature', 'Wind speed', 'Wind direction',
-        'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
-        'Oceans > Salinity/Density > Salinity',
-        'Volcanoes > This Keyword > Is Invalid',
-        'Geographic Region > Arctic',
-        'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
-        'Liquid Earth > This Keyword > Is Invalid',
-        'SIO > Super Important Organization',
-        'Spectral/Engineering > Microwave > Brightness Temperature',
-        'Spectral/Engineering > Microwave > Temperature Anomalies',
-        'OSIO > Other Super Important Organization',
-        'SSIO > Super SIO (Super Important Organization)',
-        'This Keyword > Is Just > WRONG',
-        'This Keyword Is > Misplaced And Invalid',
-        'Environmental Advisories > Fire Advisories > Wildfires'
-    ] as Set
+    // Deep equality check
+    JsonOutput.toJson(parsedXml.keywords) == JsonOutput.toJson([
+        [
+            values: ['SIO > Super Important Organization','OSIO > Other Super Important Organization', 'SSIO > Super SIO (Super Important Organization)'],
+            type: 'dataCenter',
+            namespace: 'GCMD Keywords - Data Centers'
+        ],
+        [
+            values: ['Environmental Advisories > Fire Advisories > Wildfires', 'This Keyword Is > Misplaced And Invalid', 'This Keyword > Is Just > WRONG'],
+            type: 'service',
+            namespace: 'Global Change Master Directory Science and Services Keywords'
+        ],
+        [
+            values: ['Air temperature', 'Water temperature'],
+            type: 'theme',
+            namespace: 'Miscellaneous keyword type'
+        ],
+        [
+            values: ['Wind speed', 'Wind direction'],
+            type: 'theme',
+            namespace: 'Miscellaneous keyword type'
+        ],
+        [
+            values: [
+                'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
+                'Oceans > Salinity/Density > Salinity',
+                'Volcanoes > This Keyword > Is Invalid',
+                'Spectral/Engineering > Microwave > Brightness Temperature',
+                'Spectral/Engineering > Microwave > Temperature Anomalies'
+            ],
+            type: 'theme',
+            namespace: 'GCMD Keywords - Science Keywords'
+        ],
+        [
+            values: ['Geographic Region > Arctic', 'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico', 'Liquid Earth > This Keyword > Is Invalid'],
+            type: 'place',
+            namespace: 'GCMD Keywords - Locations'
+        ],
+        [
+            values: ['Seasonal'],
+            type: 'dataResolution',
+            namespace: 'Global Change Master Directory Keywords - Temporal Data Resolution'
+        ],
+        [
+            values: ['> 1 Km'],
+            type: 'dataResolution',
+            namespace: 'GCMD Keywords - Vertical Data Resolution'
+        ]
+    ] as Set)
     parsedXml.accessionValues == [
         '0038924',
         '0038947',
@@ -285,7 +352,9 @@ class MetadataParserTest extends Specification {
         'OSIO > Other Super Important Organization',
         'SSIO > Super SIO (Super Important Organization)'
     ] as Set
-    parsedXml.gcmdDataResolution == [] as Set
+    parsedXml.gcmdHorizontalResolution == [] as Set
+    parsedXml.gcmdVerticalResolution == ['> 1 Km'] as Set
+    parsedXml.gcmdTemporalResolution == ['Seasonal'] as Set
   }
 
   def "Temporal bounding is correctly parsed"() {
