@@ -9,17 +9,39 @@
     "alternateTitle": "Still (But Slightly Less) Important Alternate Title",
     "description": "Wall of overly detailed, super informative, extra important text.",
     "keywords": [
-        "SIO > Super Important Organization",
-        "Air temperature",
-        "Water temperature",
-        "Wind speed",
-        "Wind direction",
-        "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
-        "Oceans > Salinity/Density > Salinity",
-        "Volcanoes > This Keyword > Is Invalid",
-        "Geographic Region > Arctic",
-        "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
-        "Liquid Earth > This Keyword > Is Invalid"
+      {
+        "values": ["SIO > Super Important Organization"],
+        "type": "dataCenter",
+        "namespace": "GCMD Keywords - Data Centers"
+      },
+      {
+        "values": ["Air temperature", "Water temperature"],
+        "type": "theme",
+        "namespace": "Miscellaneous keyword type"
+      },
+      {
+        "values": ["Wind speed", "Wind direction"],
+        "type": "theme",
+        "namespace": "Miscellaneous keyword type"
+      },
+      {
+        "values": [
+          "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
+          "Oceans > Salinity/Density > Salinity",
+          "Volcanoes > This Keyword > Is Invalid"
+        ],
+        "type": "theme",
+        "namespace": "GCMD Keywords - Science Keywords"
+      },
+      {
+        "values": [
+          "Geographic Region > Arctic",
+          "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
+          "Liquid Earth > This Keyword > Is Invalid"
+        ],
+        "type": "place",
+        "namespace": "GCMD Keywords - Locations"
+      }
     ],
     "accessionValues": [
 
@@ -66,7 +88,13 @@
     "gcmdDataCenters": [
         "SIO > Super Important Organization"
     ],
-    "gcmdDataResolution": [
+    "gcmdHorizontalResolution": [
+
+    ],
+    "gcmdVerticalResolution": [
+
+    ],
+    "gcmdTemporalResolution": [
 
     ],
     "temporalBounding": {
