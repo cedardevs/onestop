@@ -3,27 +3,14 @@ apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
 apply plugin: 'io.spring.dependency-management'
 
-ext {
-  springCloudVersion = 'Finchley.M5'
-}
-
-repositories {
-  mavenCentral()
-}
-
-dependencyManagement {
-  imports {
-    mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-  }
-}
-
 dependencies {
   compile('org.codehaus.groovy:groovy')
   compile('org.springframework.boot:spring-boot-starter-actuator')
   compile('org.springframework.boot:spring-boot-starter-web')
-  runtime('org.springframework.boot:spring-boot-devtools')
   compile('org.springframework.cloud:spring-cloud-starter')
   compile('org.apache.kafka:kafka-streams:1.0.0')
+
+  runtime('org.springframework.boot:spring-boot-devtools')
 
   providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
 
@@ -32,10 +19,6 @@ dependencies {
   testCompile("org.spockframework:spock-core:${project.spockVersion}")
   testCompile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
   testCompile('org.testcontainers:testcontainers:1.4.2')
-}
-
-configurations {
-  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
 }
 
 war {

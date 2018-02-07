@@ -3,29 +3,28 @@ apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-repositories {
-    mavenCentral()
-}
-
-
 dependencies {
-    compile('org.springframework.boot:spring-boot-starter-data-rest')
-    compile('org.springframework.kafka:spring-kafka')
-    compile('org.codehaus.groovy:groovy')
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+  compile('org.springframework.boot:spring-boot-starter-data-rest')
+  compile('org.springframework.cloud:spring-cloud-starter')
+  compile('org.springframework.kafka:spring-kafka')
+  compile('org.codehaus.groovy:groovy')
+
+  runtime('org.springframework.boot:spring-boot-devtools')
+
+  providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+
+  testCompile('org.springframework.boot:spring-boot-starter-test')
+  testCompile("org.spockframework:spock-spring:${project.spockVersion}")
+  testCompile("org.spockframework:spock-core:${project.spockVersion}")
 }
 
-ext {
-    fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
+war {
+  // build a deployable war in addition to the executable one
+  enabled = true
 }
 
-springBoot {
-    backupSource = false
-}
-
-bootRepackage {
-    outputFile = fatWarPath
-    excludeDevtools = true
-    executable = true
-    onlyIf { !tasks.getByName('war').state.upToDate }
+bootWar {
+  // add a classifier to distinguish the executable war
+  classifier = 'all'
+  launchScript()
 }
