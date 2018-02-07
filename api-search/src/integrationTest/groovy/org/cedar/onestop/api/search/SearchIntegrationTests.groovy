@@ -170,15 +170,19 @@ class SearchIntegrationTests extends Specification {
 
     and: 'The correct number of facets is returned'
     def aggs = result.body.meta.facets
-    aggs.size() == 6
+    aggs.size() == 10
 
     and: 'The facets are as expected'
     aggs.science != null
+    aggs.services != null
+    aggs.locations != null
     aggs.instruments != null
     aggs.platforms != null
     aggs.projects != null
     aggs.dataCenters != null
-    aggs.dataResolution != null
+    aggs.horizontalResolution != null
+    aggs.verticalResolution != null
+    aggs.temporalResolution != null
 
     and: 'The cleaned aggregations are actually cleaned'
     def locationTerms = aggs.locations.collect { it }
