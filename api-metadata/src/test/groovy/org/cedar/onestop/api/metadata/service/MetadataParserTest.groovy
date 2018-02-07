@@ -148,6 +148,8 @@ class MetadataParserTest extends Specification {
     parsedXml.dsmmProductionSustainability == 4
     parsedXml.dsmmTransparencyTraceability == 2
     parsedXml.dsmmUsability == 3
+    parsedXml.updateFrequency == 'asNeeded'
+    parsedXml.presentationForm == 'documentDigital'
 
   }
 
@@ -419,5 +421,17 @@ class MetadataParserTest extends Specification {
     dsmm.average == ((dsmm.Accessibility + dsmm.DataIntegrity + dsmm.DataQualityAssessment + dsmm.DataQualityAssurance +
         dsmm.DataQualityControlMonitoring + dsmm.Preservability + dsmm.ProductionSustainability +
         dsmm.TransparencyTraceability + dsmm.Usability) / ( dsmm.size() - 1 ) )
+  }
+
+  def "Miscellaneous items are correctly parsed"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+
+    when:
+    def miscellaneous = MetadataParser.parseMiscellaneous(document)
+
+    then:
+    miscellaneous.updateFrequency == 'asNeeded'
+    miscellaneous.presentationForm == 'documentDigital'
   }
 }
