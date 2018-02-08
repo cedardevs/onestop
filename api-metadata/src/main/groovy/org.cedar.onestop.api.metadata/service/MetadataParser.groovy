@@ -76,6 +76,7 @@ class MetadataParser {
         creators                        : responsibleParties.creators,
         publishers                      : responsibleParties.publishers,
         thumbnail                       : descriptiveInfo.thumbnail,
+        thumbnailDescription            : descriptiveInfo.thumbnailDescription,
         creationDate                    : descriptiveInfo.creationDate,
         revisionDate                    : descriptiveInfo.revisionDate,
         publicationDate                 : descriptiveInfo.publicationDate,
@@ -126,9 +127,9 @@ class MetadataParser {
     def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier' }
     doi = identifiers.findResult(null, { identifier ->
       def anchor = identifier.MD_Identifier.code.Anchor
-      def titleTag = anchor.'@xlink:title'
+      def titleTag = anchor.'@xlink:title'.text()
       if (titleTag == 'DOI') {
-        return anchor
+        return anchor.text()
       }
     })
     title = idInfo.citation.CI_Citation.title.CharacterString.text()

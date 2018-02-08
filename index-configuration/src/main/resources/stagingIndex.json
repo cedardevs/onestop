@@ -19,6 +19,26 @@
         "doi": {
           "type": "keyword"
         },
+        "purpose": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "status": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "credit": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "hierarchyLevelName": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
         "title": {
           "type": "keyword",
           "doc_values": false,
@@ -335,9 +355,8 @@
           "doc_values": false,
           "index": false
         },
-        "modifiedDate": {
-          "type": "date",
-          "format": "date_optional_time",
+        "thumbnailDescription": {
+          "type": "keyword",
           "doc_values": false,
           "index": false
         },
@@ -440,6 +459,26 @@
         "doi": {
           "type": "keyword"
         },
+        "purpose": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "status": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "credit": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "hierarchyLevelName": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
         "title": {
           "type": "keyword",
           "doc_values": false,
@@ -756,9 +795,8 @@
           "doc_values": false,
           "index": false
         },
-        "modifiedDate": {
-          "type": "date",
-          "format": "date_optional_time",
+        "thumbnailDescription": {
+          "type": "keyword",
           "doc_values": false,
           "index": false
         },

@@ -21,7 +21,6 @@ class MetadataParserTest extends Specification {
     parsedXml.purpose == 'Provide quality super important data to the user community.'
     parsedXml.status == 'completed'
     parsedXml.credit == null
-    parsedXml.doi == 'doi:10.5072/FK2TEST'
     parsedXml.title == 'Important Organization\'s Important File\'s Super Important Title'
     parsedXml.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
     parsedXml.description == 'Wall of overly detailed, super informative, extra important text.'
@@ -182,6 +181,7 @@ class MetadataParserTest extends Specification {
     ] as Set
 
     parsedXml.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
+    parsedXml.thumbnailDescription == 'Preview graphic'
     parsedXml.creationDate == null
     parsedXml.revisionDate == '2011-01-02'
     parsedXml.publicationDate == '2010-11-15'
