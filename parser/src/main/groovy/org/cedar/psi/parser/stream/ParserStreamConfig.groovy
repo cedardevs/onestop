@@ -26,7 +26,7 @@ class ParserStreamConfig {
   String bootstrapServers
 
   @Bean
-  StreamsConfig parserStreamConfig() {
+  StreamsConfig streamConfig() {
     return new StreamsConfig([
         (StreamsConfig.APPLICATION_ID_CONFIG)           : id,
         (StreamsConfig.BOOTSTRAP_SERVERS_CONFIG)        : bootstrapServers,
@@ -45,10 +45,9 @@ class ParserStreamConfig {
     return builder.build()
   }
 
-
   @Bean(initMethod = 'start', destroyMethod = 'close')
-  KafkaStreams parserStream(Topology parserTopology, StreamsConfig parserStreamConfig) {
-    return new KafkaStreams(parserTopology, parserStreamConfig)
+  KafkaStreams parserStream(Topology parserTopology, StreamsConfig streamConfig) {
+    return new KafkaStreams(parserTopology, streamConfig)
   }
 
 }
