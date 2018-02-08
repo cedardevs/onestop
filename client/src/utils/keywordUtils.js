@@ -59,7 +59,7 @@ const categoryName = category => {
 }
 
 const determineIfHierarchy = category => {
-  return category === 'science'
+  return category === 'science' || category === 'services'
 }
 
 const facets = (category, terms, selectedFacets) => {
