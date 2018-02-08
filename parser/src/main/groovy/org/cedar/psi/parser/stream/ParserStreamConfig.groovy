@@ -20,10 +20,10 @@ import java.util.regex.Pattern
 @Configuration
 class ParserStreamConfig {
 
-  @Value('${kafka.topic.input}')
+  @Value('${kafka.topics.input}')
   String inputTopic
 
-  @Value('${kafka.topic.output}')
+  @Value('${kafka.topics.output}')
   String outputTopic
 
   static final String id = "parsed-granules"
@@ -47,8 +47,8 @@ class ParserStreamConfig {
   Topology parserTopology() {
     def builder = new StreamsBuilder()
     KStream stream = builder.stream(inputTopic)
-    stream.each { msg ->
-      Pattern filenamePattern = /(oe|ot|ie|it)_([a-zA-Z0-9]+)_([a-zA-Z0-9]+)_s(\d{14})_e(\d{14})_p(\d{14})_(pub|emb)\.nc\.gz/
+    stream.mapValues { msg ->
+      Pattern filenamePattern = ~/(oe|ot|ie|it)_([a-zA-Z0-9]+)_([a-zA-Z0-9]+)_s(\d{14})_e(\d{14})_p(\d{14})_(pub|emb)\.nc\.gz/
       Matcher matcher = filenamePattern.matcher( msg.filepath as String)
       if ( ! matcher.matches() ) {
         log.error "filenamePattern ${filenamePattern} did not match granule file name ${msg.filename}"
@@ -63,8 +63,9 @@ class ParserStreamConfig {
           processDate: matcher[0][6] ,
           publish: matcher[0][7] == 'pub'
       ]
-      msg + parsedAttributes
-    }.to(outputTopic)
+      msg += parsedAttributes
+    }
+    stream.to(outputTopic)
     return builder.build()
   }
 
