@@ -47,6 +47,7 @@ class MetadataParser {
     def json = [
         fileIdentifier                  : descriptiveInfo.fileIdentifier,
         parentIdentifier                : descriptiveInfo.parentIdentifier,
+        hierarchyLevel                  : descriptiveInfo.hierarchyLevel,
         doi                             : descriptiveInfo.doi,
         title                           : descriptiveInfo.title,
         alternateTitle                  : descriptiveInfo.alternateTitle,
@@ -95,6 +96,7 @@ class MetadataParser {
   static Map parseDescriptiveInfo(GPathResult metadata) {
     def fileIdentifier
     def parentIdentifier
+    def hierarchyLevel
     def doi
     def title
     def alternateTitle
@@ -108,6 +110,8 @@ class MetadataParser {
 
     fileIdentifier = metadata.fileIdentifier.CharacterString.text()
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
+    hierarchyLevel = metadata.hierarchyLevelName.CharacterString.text() ?: null
+
     def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier' }
     doi = identifiers.findResult(null, { identifier ->
       def anchor = identifier.MD_Identifier.code.Anchor
@@ -137,6 +141,7 @@ class MetadataParser {
     return [
         fileIdentifier  : fileIdentifier,
         parentIdentifier: parentIdentifier,
+        hierarchyLevel  : hierarchyLevel,
         doi             : doi,
         title           : title,
         alternateTitle  : alternateTitle,
