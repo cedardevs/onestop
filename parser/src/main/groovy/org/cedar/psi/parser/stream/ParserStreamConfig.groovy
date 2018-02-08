@@ -13,12 +13,18 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 @Slf4j
 @Configuration
 class ParserStreamConfig {
 
-  @Value('${kafka.topic}')
-  String topic
+  @Value('${kafka.topic.input}')
+  String inputTopic
+
+  @Value('${kafka.topic.output}')
+  String outputTopic
 
   static final String id = "parsed-granules"
 
@@ -40,8 +46,25 @@ class ParserStreamConfig {
   @Bean
   Topology parserTopology() {
     def builder = new StreamsBuilder()
-    KStream stream = builder.stream(topic)
-    stream.print(Printed.toSysOut().withLabel(topic))
+    KStream stream = builder.stream(inputTopic)
+    stream.each { msg ->
+      Pattern filenamePattern = /(oe|ot|ie|it)_([a-zA-Z0-9]+)_([a-zA-Z0-9]+)_s(\d{14})_e(\d{14})_p(\d{14})_(pub|emb)\.nc\.gz/
+      Matcher matcher = filenamePattern.matcher( msg.filepath as String)
+      if ( ! matcher.matches() ) {
+        log.error "filenamePattern ${filenamePattern} did not match granule file name ${msg.filename}"
+        throw new RuntimeException( "file name does not contain necessary attributes" )
+      }
+      Map parsedAttributes = [
+          processingEnvironment: matcher[0][1],
+          dataType: matcher[0][2],
+          satellite: matcher[0][3],
+          startDate: matcher[0][4],
+          endDate: matcher[0][5] ,
+          processDate: matcher[0][6] ,
+          publish: matcher[0][7] == 'pub'
+      ]
+      msg + parsedAttributes
+    }.to(outputTopic)
     return builder.build()
   }
 
@@ -51,3 +74,5 @@ class ParserStreamConfig {
   }
 
 }
+
+
