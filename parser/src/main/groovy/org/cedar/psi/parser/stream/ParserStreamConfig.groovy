@@ -46,8 +46,8 @@ class ParserStreamConfig {
   @Bean
   Topology parserTopology() {
     def builder = new StreamsBuilder()
-    KStream stream = builder.stream(inputTopic)
-    stream.mapValues { msg ->
+    KStream inputStream = builder.stream(inputTopic)
+    KStream outputStream = inputStream.mapValues { msg ->
       Pattern filenamePattern = ~/(oe|ot|ie|it)_([a-zA-Z0-9]+)_([a-zA-Z0-9]+)_s(\d{14})_e(\d{14})_p(\d{14})_(pub|emb)\.nc\.gz/
       Matcher matcher = filenamePattern.matcher( msg.filepath as String)
       if ( ! matcher.matches() ) {
@@ -65,7 +65,7 @@ class ParserStreamConfig {
       ]
       msg += parsedAttributes
     }
-    stream.to(outputTopic)
+    outputStream.to(outputTopic)
     return builder.build()
   }
 
