@@ -16,6 +16,11 @@ class MetadataParserTest extends Specification {
     then:
     parsedXml.fileIdentifier == 'gov.super.important:FILE-ID'
     parsedXml.parentIdentifier == 'gov.super.important:PARENT-ID'
+    parsedXml.hierarchyLevelName == 'granule'
+    parsedXml.doi == 'doi:10.5072/FK2TEST'
+    parsedXml.purpose == 'Provide quality super important data to the user community.'
+    parsedXml.status == 'completed'
+    parsedXml.credit == null
     parsedXml.doi == 'doi:10.5072/FK2TEST'
     parsedXml.title == 'Important Organization\'s Important File\'s Super Important Title'
     parsedXml.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
@@ -177,7 +182,6 @@ class MetadataParserTest extends Specification {
     ] as Set
 
     parsedXml.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
-    parsedXml.modifiedDate == '2016-12-25T11:12:13'
     parsedXml.creationDate == null
     parsedXml.revisionDate == '2011-01-02'
     parsedXml.publicationDate == '2010-11-15'
@@ -208,25 +212,29 @@ class MetadataParserTest extends Specification {
     idInfo.parentId == 'gov.super.important:PARENT-ID'
   }
 
-  def "Citation info is correctly parsed"() {
+  def "Descriptive info is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
-    def citationInfo = MetadataParser.parseDescriptiveInfo(document)
+    def descriptiveInfo = MetadataParser.parseDescriptiveInfo(document)
 
     then:
-    citationInfo.fileIdentifier == 'gov.super.important:FILE-ID'
-    citationInfo.parentIdentifier == 'gov.super.important:PARENT-ID'
-    citationInfo.doi == 'doi:10.5072/FK2TEST'
-    citationInfo.title == 'Important Organization\'s Important File\'s Super Important Title'
-    citationInfo.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
-    citationInfo.description == 'Wall of overly detailed, super informative, extra important text.'
-    citationInfo.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
-    citationInfo.modifiedDate == '2016-12-25T11:12:13'
-    citationInfo.creationDate == null
-    citationInfo.revisionDate == '2011-01-02'
-    citationInfo.publicationDate == '2010-11-15'
+    descriptiveInfo.fileIdentifier == 'gov.super.important:FILE-ID'
+    descriptiveInfo.parentIdentifier == 'gov.super.important:PARENT-ID'
+    descriptiveInfo.hierarchyLevelName == 'granule'
+    descriptiveInfo.doi == 'doi:10.5072/FK2TEST'
+    descriptiveInfo.purpose == 'Provide quality super important data to the user community.'
+    descriptiveInfo.status == 'completed'
+    descriptiveInfo.credit == null
+    descriptiveInfo.title == 'Important Organization\'s Important File\'s Super Important Title'
+    descriptiveInfo.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
+    descriptiveInfo.description == 'Wall of overly detailed, super informative, extra important text.'
+    descriptiveInfo.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
+    descriptiveInfo.thumbnailDescription == 'Preview graphic'
+    descriptiveInfo.creationDate == null
+    descriptiveInfo.revisionDate == '2011-01-02'
+    descriptiveInfo.publicationDate == '2010-11-15'
   }
 
   def "Keywords and topics are correctly parsed"() {

@@ -47,8 +47,11 @@ class MetadataParser {
     def json = [
         fileIdentifier                  : descriptiveInfo.fileIdentifier,
         parentIdentifier                : descriptiveInfo.parentIdentifier,
-        hierarchyLevel                  : descriptiveInfo.hierarchyLevel,
+        hierarchyLevelName              : descriptiveInfo.hierarchyLevelName,
         doi                             : descriptiveInfo.doi,
+        purpose                         : descriptiveInfo.purpose,
+        status                          : descriptiveInfo.status,
+        credit                          : descriptiveInfo.credit,
         title                           : descriptiveInfo.title,
         alternateTitle                  : descriptiveInfo.alternateTitle,
         description                     : descriptiveInfo.description,
@@ -96,7 +99,7 @@ class MetadataParser {
   static Map parseDescriptiveInfo(GPathResult metadata) {
     def fileIdentifier
     def parentIdentifier
-    def hierarchyLevel
+    def hierarchyLevelName
     def doi
     def purpose
     def status
@@ -114,7 +117,7 @@ class MetadataParser {
 
     fileIdentifier = metadata.fileIdentifier.CharacterString.text()
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
-    hierarchyLevel = metadata.hierarchyLevelName.CharacterString.text() ?: null
+    hierarchyLevelName = metadata.hierarchyLevelName.CharacterString.text().toLowerCase() ?: null
 
     purpose = idInfo.purpose.text() ?: null
     status = idInfo.status.MD_ProgressCode.@codeListValue.text() ?: null
@@ -123,9 +126,9 @@ class MetadataParser {
     def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier' }
     doi = identifiers.findResult(null, { identifier ->
       def anchor = identifier.MD_Identifier.code.Anchor
-      def titleTag = anchor.@title.text()
-      if (titleTag == "DOI") {
-        return anchor.text()
+      def titleTag = anchor.'@xlink:title'
+      if (titleTag == 'DOI') {
+        return anchor
       }
     })
     title = idInfo.citation.CI_Citation.title.CharacterString.text()
@@ -151,7 +154,7 @@ class MetadataParser {
     return [
         fileIdentifier      : fileIdentifier,
         parentIdentifier    : parentIdentifier,
-        hierarchyLevel      : hierarchyLevel,
+        hierarchyLevelName  : hierarchyLevelName,
         doi                 : doi,
         purpose             : purpose,
         status              : status,
