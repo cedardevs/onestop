@@ -2,6 +2,7 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
+import groovy.xml.XmlUtil
 import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.text.WordUtils
 
@@ -41,6 +42,7 @@ class MetadataParser {
     def dsmmMap = parseDSMM(metadata)
     def spatialMap = parseSpatialInfo(metadata)
     def responsibleParties = parseDataResponsibleParties(metadata)
+    def services = parseServices(metadata)
     def miscellaneous = parseMiscellaneous(metadata)
 
     // Build JSON:
@@ -86,8 +88,10 @@ class MetadataParser {
         dsmmTransparencyTraceability    : dsmmMap.TransparencyTraceability,
         dsmmUsability                   : dsmmMap.Usability,
         dsmmAverage                     : dsmmMap.average,
+        dsmmAverage                     : dsmmMap.average,
         updateFrequency                 : miscellaneous.updateFrequency,
-        presentationForm                : miscellaneous.presentationForm
+        presentationForm                : miscellaneous.presentationForm,
+        services                        : services
     ]
 
     return json
@@ -521,6 +525,23 @@ class MetadataParser {
 
   static Map parseMiscellaneous(String xml) {
     return parseMiscellaneous(new XmlSlurper().parseText(xml))
+  }
+
+  static Set parseServices(GPathResult metadata) {
+      def serviceIds = metadata.identificationInfo.'**'.findAll {
+        it.name() == 'SV_ServiceIdentification'
+      }
+      Set services = []
+      serviceIds.each { service ->
+        def xmlBlobService = XmlUtil.serialize(service) ?: null
+        // blob of XML needs to be base64 encoded for elastic search to include is as 'binary' type
+        services.add(xmlBlobService.bytes.encodeBase64().toString())
+      }
+      return services
+  }
+
+  static Set parseServices(String xml) {
+    return parseServices(new XmlSlurper().parseText(xml))
   }
 
   static Map mergeCollectionAndGranule(Map collection, Map granule) {
