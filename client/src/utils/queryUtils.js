@@ -18,6 +18,8 @@ export const assembleSearchRequestString = (
 export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   const behavior = state.behavior || {}
   const search = behavior.search || {}
+  const ui = state.ui || {}
+  const cardDetails = ui.cardDetails || {}
   const domain = state.domain || {}
   const results = domain.results || {}
   const pageOffset =
@@ -32,7 +34,10 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
     assembleAdditionalFilters(search)
   )
   if (granules) {
-    filters = _.concat(filters, assembleSelectedCollectionsFilters(search))
+    filters = _.concat(
+      filters,
+      assembleSelectedCollectionsFilters(search, cardDetails)
+    )
   }
   filters = _.flatten(_.compact(filters))
 
@@ -83,9 +88,13 @@ const assembleAdditionalFilters = ({excludeGlobal}) => {
   }
 }
 
-const assembleSelectedCollectionsFilters = ({selectedIds}) => {
+const assembleSelectedCollectionsFilters = ({selectedIds}, {focusedId}) => {
   if (selectedIds.length > 0) {
+    console.log('building query with collection... ', selectedIds)
     return {type: 'collection', values: selectedIds}
+  }
+  if (focusedId) {
+    return {type: 'collection', values: [ focusedId ]}
   }
 }
 

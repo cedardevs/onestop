@@ -351,7 +351,36 @@ function granuleTestCases() {
           offset: 20
         }
       }
-    }
+    },
+    {
+      name: "one card detail focused",
+      inputState: {
+        behavior: {
+          search: {
+            selectedIds: []
+          }
+        },
+        ui: {
+          cardDetails: {
+            focusedId: 'ABC123'
+          }
+        }
+      },
+      expectedResult: {
+        queries: [],
+        filters: [
+          {
+            "type": "collection",
+            "values": ["ABC123"]
+          }
+        ],
+        facets: false,
+        page: {
+          max: 20,
+          offset: 0
+        }
+      }
+    },
   ]
 }
 
