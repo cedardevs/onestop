@@ -191,9 +191,19 @@
           }
         },
         "dataFormats": {
-          "type": "keyword",
-          "doc_values": false,
-          "index": false
+          "type": "nested",
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "version": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
         },
         "links": {
           "type": "nested",
@@ -612,9 +622,19 @@
           }
         },
         "dataFormats": {
-          "type": "keyword",
-          "doc_values": false,
-          "index": false
+          "type": "nested",
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "version": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
         },
         "links": {
           "type": "nested",

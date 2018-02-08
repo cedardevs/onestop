@@ -803,6 +803,9 @@
               <gmd:name>
                 <gco:CharacterString>NetCDF</gco:CharacterString>
               </gmd:name>
+              <gmd:version>
+                <gco:CharacterString>classic</gco:CharacterString>
+              </gmd:version>
             </gmd:MD_Format>
           </gmd:distributorFormat>
           <gmd:distributorFormat>
@@ -852,6 +855,9 @@
           <gmd:name>
             <gco:CharacterString>NETCDF</gco:CharacterString>
           </gmd:name>
+          <gmd:version>
+            <gco:CharacterString>4</gco:CharacterString>
+          </gmd:version>
         </gmd:MD_Format>
       </gmd:distributionFormat>
     </gmd:MD_Distribution>
