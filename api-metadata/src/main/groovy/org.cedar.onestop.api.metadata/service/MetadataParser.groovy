@@ -110,8 +110,10 @@ class MetadataParser {
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
     def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier' }
     doi = identifiers.findResult(null, { identifier ->
-      if (identifier.MD_Identifier.authority.CI_Citation.title.CharacterString.text() == 'Digital Object Identifier (DOI)') {
-        return identifier.MD_Identifier.code.Anchor.text()
+      def anchor = identifier.MD_Identifier.code.Anchor
+      def titleTag = anchor.@title.text()
+      if (titleTag == "DOI") {
+        return anchor.text()
       }
     })
     title = idInfo.citation.CI_Citation.title.CharacterString.text()
