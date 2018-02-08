@@ -16,9 +16,10 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class PrintStreamConfig {
 
-  static final topic = 'granule'
+  @Value('${kafka.topic}')
+  String topic
 
-  static final String id = "${topic}-printer"
+  static final String id = "raw-granule-printer"
 
   @Value('${kafka.bootstrap.servers}')
   String bootstrapServers

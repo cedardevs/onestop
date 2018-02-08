@@ -17,10 +17,10 @@ class InvPublisher {
     @Value('${kafka.granule.topic}')
     String kafkaTopic
 
-    void publishGranule(String data) {
+    void publishGranule(String key, String data) {
         log.info("sending data ='{}'", data)
 
-        kafkaTemplate.send(kafkaTopic, data)
+        kafkaTemplate.send(kafkaTopic, key, data)
 
     }
 }

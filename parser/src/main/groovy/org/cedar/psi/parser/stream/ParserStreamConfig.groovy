@@ -18,9 +18,9 @@ import org.springframework.context.annotation.Configuration
 class ParserStreamConfig {
 
   @Value('${kafka.topic}')
-  static String topic
+  String topic
 
-  static final String id = "${topic}-parser"
+  static final String id = "parsed-granules"
 
   @Value('${kafka.bootstrap.servers}')
   String bootstrapServers
