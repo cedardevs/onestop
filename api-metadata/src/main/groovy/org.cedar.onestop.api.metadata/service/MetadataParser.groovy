@@ -122,7 +122,6 @@ class MetadataParser {
     thumbnail = StringEscapeUtils.unescapeXml(idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text())
 
     // Miscellaneous dates:
-    modifiedDate = metadata.dateStamp.Date.text() ?: metadata.dateStamp.DateTime.text()
     def dates = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'date' }
     dates.each { date ->
       def dateType = date.CI_Date.dateType.CI_DateTypeCode.@codeListValue.text()
