@@ -98,10 +98,14 @@ class MetadataParser {
     def parentIdentifier
     def hierarchyLevel
     def doi
+    def purpose
+    def status
+    def credit
     def title
     def alternateTitle
     def description
     def thumbnail
+    def thumbnailDescription
     def creationDate
     def revisionDate
     def publicationDate
@@ -111,6 +115,10 @@ class MetadataParser {
     fileIdentifier = metadata.fileIdentifier.CharacterString.text()
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
     hierarchyLevel = metadata.hierarchyLevelName.CharacterString.text() ?: null
+
+    purpose = idInfo.purpose.text() ?: null
+    status = idInfo.status.MD_ProgressCode.@codeListValue.text() ?: null
+    credit = idInfo.credit.text() ?: null
 
     def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier' }
     doi = identifiers.findResult(null, { identifier ->
@@ -123,7 +131,9 @@ class MetadataParser {
     title = idInfo.citation.CI_Citation.title.CharacterString.text()
     alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text() ?: null
     description = idInfo.abstract.CharacterString.text()
-    thumbnail = StringEscapeUtils.unescapeXml(idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text())
+    def thumbnailPath = idInfo.graphicOverview.MD_BrowseGraphic
+    thumbnail = StringEscapeUtils.unescapeXml(thumbnailPath.fileName.CharacterString.text())
+    thumbnailDescription = thumbnailPath.fileDescription.CharacterString.text() ?: null
 
     // Miscellaneous dates:
     def dates = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'date' }
@@ -139,17 +149,21 @@ class MetadataParser {
     }
 
     return [
-        fileIdentifier  : fileIdentifier,
-        parentIdentifier: parentIdentifier,
-        hierarchyLevel  : hierarchyLevel,
-        doi             : doi,
-        title           : title,
-        alternateTitle  : alternateTitle,
-        description     : description,
-        thumbnail       : thumbnail,
-        creationDate    : creationDate,
-        revisionDate    : revisionDate,
-        publicationDate : publicationDate
+        fileIdentifier      : fileIdentifier,
+        parentIdentifier    : parentIdentifier,
+        hierarchyLevel      : hierarchyLevel,
+        doi                 : doi,
+        purpose             : purpose,
+        status              : status,
+        credit              : credit,
+        title               : title,
+        alternateTitle      : alternateTitle,
+        description         : description,
+        thumbnail           : thumbnail,
+        thumbnailDescription: thumbnailDescription,
+        creationDate        : creationDate,
+        revisionDate        : revisionDate,
+        publicationDate     : publicationDate
     ]
   }
 
