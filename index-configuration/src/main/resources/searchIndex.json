@@ -349,6 +349,10 @@
         "presentationForm": {
           "type": "keyword",
           "index": false
+        },
+        "services": {
+          "type": "binary",
+          "index": false
         }
       }
     },
@@ -703,6 +707,10 @@
         },
         "presentationForm": {
           "type": "keyword",
+          "index": false
+        },
+        "services": {
+          "type": "binary",
           "index": false
         }
       }
