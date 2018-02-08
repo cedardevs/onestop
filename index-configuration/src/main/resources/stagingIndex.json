@@ -453,6 +453,11 @@
           "type": "keyword",
           "doc_values": false,
           "index": false
+        },
+        "services": {
+          "type": "binary",
+          "doc_values": false,
+          "index": false
         }
       }
     },
@@ -907,6 +912,11 @@
         },
         "presentationForm": {
           "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "services": {
+          "type": "binary",
           "doc_values": false,
           "index": false
         }
