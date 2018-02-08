@@ -1,5 +1,7 @@
 package org.cedar.onestop.api.metadata.service
 
+import groovy.xml.XmlUtil
+import org.apache.commons.lang.StringUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -201,6 +203,10 @@ class MetadataParserTest extends Specification {
     parsedXml.dsmmUsability == 3
     parsedXml.updateFrequency == 'asNeeded'
     parsedXml.presentationForm == 'tableDigital'
+    parsedXml.services in Set
+    parsedXml.services.each { s ->
+      s in String
+    }
 
   }
 
@@ -519,6 +525,31 @@ class MetadataParserTest extends Specification {
     dsmm.average == ((dsmm.Accessibility + dsmm.DataIntegrity + dsmm.DataQualityAssessment + dsmm.DataQualityAssurance +
         dsmm.DataQualityControlMonitoring + dsmm.Preservability + dsmm.ProductionSustainability +
         dsmm.TransparencyTraceability + dsmm.Usability) / (dsmm.size() - 1))
+  }
+
+  def "Services are correctly parsed"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+
+    when:
+    def serviceTextBlobs = MetadataParser.parseServices(document)
+    serviceTextBlobs.each { String s ->
+      // blob of XML needs to be base64 encoded for elastic search to include is as 'binary' type
+      // decoding here (for testing purposes) to see if the original string is XML or causes a parsing exception
+      byte[] decodedXML = s.decodeBase64()
+      String xmlString = new String(decodedXML)
+      new XmlSlurper().parseText(xmlString)
+    }
+
+    then:
+    notThrown(Exception)
+    serviceTextBlobs.each { String s ->
+      assert s in String
+      byte[] decodedXML = s.decodeBase64()
+      String xmlString = new String(decodedXML)
+      def serviceNode = new XmlSlurper().parseText(xmlString)
+      assert serviceNode.name() == 'SV_ServiceIdentification'
+    }
   }
 
   def "Miscellaneous items are correctly parsed"() {
