@@ -1,6 +1,7 @@
 apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
+apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 sourceCompatibility = 1.8
@@ -107,17 +108,11 @@ processResources {
   }
 }
 
-task dockerImage(type: BuildDockerImageTask) {
-  dependsOn bootRepackage
-  additionalBuildArgs = [
-    JAR_NAME: "${rootProject.name}-${project.name}-all",
-  ]
+docker {
+  additionalBuildArgs = [JAR_NAME: "${rootProject.name}-${project.name}-all"]
 }
 
-assemble.dependsOn dockerImage
-
-task publishImage(type: PublishDockerImageTask) {
-  dependsOn "dockerImage"
-}
-
-publish.dependsOn publishImage
+BuildDockerImage.dependsOn(bootRepackage)
+assemble.dependsOn(BuildDockerImage)
+PublishDockerImage.dependsOn(BuildDockerImage)
+publish.dependsOn PublishDockerImage
