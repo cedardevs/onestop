@@ -558,34 +558,34 @@ class MetadataParser {
     def acquisitionPlatforms = [] as Set
 
     // Acquisition instrument:
-    def instruments = metadata.acquisitionInformation.MI_AcquisitionInformation.instrument
+    def instruments = metadata.acquisitionInformation.MI_AcquisitionInformation
         .'**'.findAll { it.name() == 'MI_Instrument' }
     instruments.each { e ->
       acquisitionInstruments.add([
-          instrumentIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: null,
-          instrumentType       : e.type.CharacterString.text() ?: null,
+          instrumentIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null,
+          instrumentType       : e.type.CharacterString.text() ?: e.type.Anchor.text() ?: null,
           instrumentDescription: e.description.CharacterString.text() ?: null
       ])
     }
 
     // Acquisition operation:
-    def operations = metadata.acquisitionInformation.MI_AcquisitionInformation.operation
+    def operations = metadata.acquisitionInformation.MI_AcquisitionInformation
         .'**'.findAll { it.name() == 'MI_Operation' }
     operations.each { e ->
       acquisitionOperations.add([
           operationDescription: e.description.CharacterString.text() ?: null,
-          operationIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: null,
+          operationIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null,
           operationStatus     : e.status.MD_ProgressCode.@codeListValue.text() ?: null,
           operationType       : e.type.MI_OperationTypeCode.@codeListValue.text() ?: null // FIXME not sure on path
       ])
     }
 
     // Acquisition platform:
-    def platforms = metadata.acquisitionInformation.MI_AcquisitionInformation.platform
+    def platforms = metadata.acquisitionInformation.MI_AcquisitionInformation
         .'**'.findAll { it.name() == 'MI_Platform' }
     platforms.each { e ->
       acquisitionPlatforms.add([
-          platformIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: null,
+          platformIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null,
           platformDescription: e.description.CharacterString.text() ?: null,
           platformSponsor    : e.sponsor.CI_ResponsibleParty.organisationName
               .'**'.findAll { it.name() == 'CharacterString' }*.text()
