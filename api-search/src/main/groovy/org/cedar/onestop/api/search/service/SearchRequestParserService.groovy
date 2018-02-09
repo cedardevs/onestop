@@ -11,12 +11,15 @@ class SearchRequestParserService {
   private SearchConfig config
 
   public static final Map<String, String> facetNameMappings = [
-      'science'       : 'gcmdScience',
-      'instruments'   : 'gcmdInstruments',
-      'platforms'     : 'gcmdPlatforms',
-      'projects'      : 'gcmdProjects',
-      'dataCenters'   : 'gcmdDataCenters',
-      'dataResolution': 'gcmdDataResolution',
+      'science'             : 'gcmdScience',
+      'services'            : 'gcmdScienceServices',
+      'instruments'         : 'gcmdInstruments',
+      'platforms'           : 'gcmdPlatforms',
+      'projects'            : 'gcmdProjects',
+      'dataCenters'         : 'gcmdDataCenters',
+      'horizontalResolution': 'gcmdHorizontalResolution',
+      'verticalResolution'  : 'gcmdVerticalResolution',
+      'temporalResolution'  : 'gcmdTemporalResolution',
   ]
 
   @Autowired

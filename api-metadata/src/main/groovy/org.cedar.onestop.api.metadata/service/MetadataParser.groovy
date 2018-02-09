@@ -2,9 +2,9 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
+import org.apache.commons.text.StringEscapeUtils
+import org.apache.commons.text.WordUtils
 import groovy.xml.XmlUtil
-import org.apache.commons.lang3.StringEscapeUtils
-import org.apache.commons.lang3.text.WordUtils
 
 class MetadataParser {
 
@@ -54,14 +54,18 @@ class MetadataParser {
         alternateTitle                  : citationInfo.alternateTitle,
         description                     : citationInfo.description,
         keywords                        : keywordsMap.keywords,
+        accessionValues                 : keywordsMap.accessionValues,
         topicCategories                 : keywordsMap.topicCategories,
+        gcmdScienceServices             : keywordsMap.gcmdScienceServices,
         gcmdScience                     : keywordsMap.gcmdScience,
         gcmdLocations                   : keywordsMap.gcmdLocations,
         gcmdInstruments                 : keywordsMap.gcmdInstruments,
         gcmdPlatforms                   : keywordsMap.gcmdPlatforms,
         gcmdProjects                    : keywordsMap.gcmdProjects,
         gcmdDataCenters                 : keywordsMap.gcmdDataCenters,
-        gcmdDataResolution              : keywordsMap.gcmdDataResolution,
+        gcmdHorizontalResolution        : keywordsMap.gcmdHorizontalResolution,
+        gcmdVerticalResolution          : keywordsMap.gcmdVerticalResolution,
+        gcmdTemporalResolution          : keywordsMap.gcmdTemporalResolution,
         temporalBounding                : parseTemporalBounding(metadata),
         spatialBounding                 : spatialMap.spatialBounding,
         isGlobal                        : spatialMap.isGlobal,
@@ -160,79 +164,194 @@ class MetadataParser {
 
   static Map parseKeywordsAndTopics(GPathResult metadata) {
 
+    def extractKnownText = { k ->
+      def text = k.CharacterString.text() ?: k.Anchor.text()
+      return text.trim()
+    }
+
     def idInfo = metadata.identificationInfo.MD_DataIdentification
 
     def keywords = [] as Set
+    def accessionValues = [] as Set
     def topicCategories = [] as Set
     def gcmdScience = [] as Set
+    def gcmdScienceServices = [] as Set
     def gcmdLocations = [] as Set
     def gcmdPlatforms = [] as Set
     def gcmdInstruments = [] as Set
     def gcmdProjects = [] as Set
-    def gcmdDataResolution = [] as Set
+    def gcmdHorizontalResolution = [] as Set
+    def gcmdVerticalResolution = [] as Set
+    def gcmdTemporalResolution = [] as Set
     def gcmdDataCenters = [] as Set
 
     topicCategories.addAll(idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text())
 
     def keywordGroups = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
     keywordGroups.each { group ->
+      def namespace = group.thesaurusName.CI_Citation.title.CharacterString.text()
+      def type = group.type.MD_KeywordTypeCode.@codeListValue.text() ?: null
       def keywordsInGroup = group.'**'.findAll { it.name() == 'keyword' }
-      keywordsInGroup.each { k ->
-        def text = k.CharacterString.text() ?: k.Anchor.text()
-        def namespace = group.thesaurusName.CI_Citation.title.CharacterString.text()
+      def values = [] as Set
 
-        if (text) {
-          text = text.trim()
-          if (namespace.toLowerCase().contains('gcmd')) {
-            switch (namespace) {
-              case { it.toLowerCase().contains('science') }:
-                text = normalizeHierarchyKeyword(text)
-                gcmdScience.addAll(tokenizeHierarchyKeyword(text))
-                break
-              case { it.toLowerCase().contains('location') || it.toLowerCase().contains('place') }:
+      if(namespace.toUpperCase() == 'NCEI ACCESSION NUMBER') {
+        // Accession values are NOT keywords
+        keywordsInGroup.each { k ->
+          accessionValues.add(extractKnownText(k))
+        }
+      }
+
+      else {
+        if(namespace.toLowerCase().contains('gcmd') || namespace.toLowerCase().contains('global change master directory')) {
+          switch (namespace.toLowerCase()) {
+            case { it.contains('science') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                if(text.toLowerCase().startsWith('earth science services')) {
+                  text = normalizeHierarchyKeyword(text)
+                  gcmdScienceServices.addAll(tokenizeHierarchyKeyword(text))
+                }
+                else if(text.toLowerCase().startsWith('earth science')) {
+                  text = normalizeHierarchyKeyword(text)
+                  gcmdScience.addAll(tokenizeHierarchyKeyword(text))
+                }
+                values.add(text)
+              }
+              break
+            case { it.contains('location') || it.contains('place') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
                 text = normalizeHierarchyKeyword(text)
                 gcmdLocations.addAll(tokenizeHierarchyKeyword(text))
-                break
-              case { it.toLowerCase().contains('platform') }:
+                values.add(text)
+              }
+              break
+            case { it.contains('platform') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdPlatforms.add(text)
-                break
-              case { it.toLowerCase().contains('instrument') }:
+                values.add(text)
+              }
+              break
+            case { it.contains('instrument') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdInstruments.add(text)
-                break
-              case { it.toLowerCase().contains('data center') }:
+                values.add(text)
+              }
+              break
+            case { it.contains('data center') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdDataCenters.add(text)
-                break
-              case { it.toLowerCase().contains('data resolution') }:
-                gcmdDataResolution.add(text)
-                break
-              case { it.toLowerCase().contains('project') }:
+                values.add(text)
+              }
+              break
+            case { it.contains('horizontal data resolution') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = WordUtils.capitalizeFully(text, capitalizingDelimiters)
+                gcmdHorizontalResolution.add(text)
+                values.add(text)
+              }
+              break
+            case { it.contains('vertical data resolution') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = WordUtils.capitalizeFully(text, capitalizingDelimiters)
+                gcmdVerticalResolution.add(text)
+                values.add(text)
+              }
+              break
+            case { it.contains('temporal data resolution') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = WordUtils.capitalizeFully(text, capitalizingDelimiters)
+                gcmdTemporalResolution.add(text)
+                values.add(text)
+              }
+              break
+            case { it.contains('project') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdProjects.add(text)
-                break
+                values.add(text)
+              }
+              break
+            default:
+              // Namespace didn't meet our checks, save as regular keywords only
+              keywordsInGroup.each { k ->
+                values.add(extractKnownText(k))
+              }
+          }
+        }
+
+        else {
+          // Not a known namespace
+          keywordsInGroup.each { k ->
+            def text = k.CharacterString.text() ?: k.Anchor.text()
+            if(text) { // Just in case, since we don't know this namespace...
+              values.add(text.trim())
             }
           }
-          keywords.add(text)
         }
+
+        // Add whole group of keywords
+        keywords.add([
+            values: values,
+            type: type,
+            namespace: namespace
+        ])
       }
     }
 
     return [
-        keywords          : keywords,
-        topicCategories   : topicCategories,
-        gcmdScience       : gcmdScience,
-        gcmdLocations     : gcmdLocations,
-        gcmdInstruments   : gcmdInstruments,
-        gcmdPlatforms     : gcmdPlatforms,
-        gcmdProjects      : gcmdProjects,
-        gcmdDataCenters   : gcmdDataCenters,
-        gcmdDataResolution: gcmdDataResolution
+        keywords                : keywords,
+        accessionValues         : accessionValues,
+        topicCategories         : topicCategories,
+        gcmdScienceServices     : gcmdScienceServices,
+        gcmdScience             : gcmdScience,
+        gcmdLocations           : gcmdLocations,
+        gcmdInstruments         : gcmdInstruments,
+        gcmdPlatforms           : gcmdPlatforms,
+        gcmdProjects            : gcmdProjects,
+        gcmdDataCenters         : gcmdDataCenters,
+        gcmdHorizontalResolution: gcmdHorizontalResolution,
+        gcmdVerticalResolution  : gcmdVerticalResolution,
+        gcmdTemporalResolution  : gcmdTemporalResolution
     ]
+  }
+
+  static String cleanInternalGCMDKeywordWhitespace(String text) {
+    def elements = text.split('>')
+    def trimmed = elements.collect { e ->  e.trim() }
+    return String.join(' > ', trimmed)
   }
 
   static final char[] capitalizingDelimiters = [' ', '/', '.', '(', '-', '_'].collect({ it as char })
 
+  static String normalizeNonHierarchicalKeyword(String text) {
+    // These are in the format 'Short Name > Long Name', where 'Short Name' is likely an acronym. This normalizing allows
+    // for title casing the 'Long Name' if and only if it's given in all caps or all lowercase (so we don't title case an
+    // acronym here)
+    def cleanText = cleanInternalGCMDKeywordWhitespace(text)
+    def elements = Arrays.asList(cleanText.split(' > '))
+    String longName = elements.last()
+    if(longName == longName.toUpperCase() || longName == longName.toLowerCase()) {
+      longName = WordUtils.capitalizeFully(longName, capitalizingDelimiters)
+      elements.set(elements.size() - 1, longName)
+    }
+    return String.join(' > ', elements)
+  }
+
   static String normalizeHierarchyKeyword(String text) {
-    return WordUtils.capitalizeFully(text, capitalizingDelimiters)
-        .replace('Earth Science > ', '')
+    def cleanText = cleanInternalGCMDKeywordWhitespace(text)
+    return WordUtils.capitalizeFully(cleanText, capitalizingDelimiters)
+        .replace('Earth Science > ', '').replace('Earth Science Services > ', '')
   }
 
   static List<String> tokenizeHierarchyKeyword(String text) {
