@@ -23,7 +23,3 @@ parsedAttributes = {
 msg = dict(data)
 msg.update(parsedAttributes)
 print json.dumps(msg)
-
-
-
-

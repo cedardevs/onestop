@@ -60,7 +60,6 @@ class ScriptWrapperStreamConfig {
       def cmd = cmdArray.execute()
       cmd.waitForOrKill(50000)
       String outputMessage = cmd.text
-
       outputMessage
     }
     outputStream.to(outputTopic)
