@@ -125,9 +125,9 @@ class MetadataParser {
     def creationDate
     def revisionDate
     def publicationDate
-    Set citeAsStatements
-    Set crossReferences
-    Set largerWorks
+    Set citeAsStatements = []
+    Set crossReferences = []
+    Set largerWorks = []
     def useLimitation
     def legalConstraints
     def accessFeeStatement
