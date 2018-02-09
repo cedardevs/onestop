@@ -150,10 +150,23 @@
           }
         },
         "dataFormats": {
-          "type": "keyword",
-          "fields": {
-            "analyzed": {
-              "type": "text"
+          "type": "nested",
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "fields": {
+                "analyzed": {
+                  "type": "text"
+                }
+              }
+            },
+            "version": {
+              "type": "keyword",
+              "fields": {
+                "analyzed": {
+                  "type": "text"
+                }
+              }
             }
           }
         },
@@ -615,10 +628,23 @@
           }
         },
         "dataFormats": {
-          "type": "keyword",
-          "fields": {
-            "analyzed": {
-              "type": "text"
+          "type": "nested",
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "fields": {
+                "analyzed": {
+                  "type": "text"
+                }
+              }
+            },
+            "version": {
+              "type": "keyword",
+              "fields": {
+                "analyzed": {
+                  "type": "text"
+                }
+              }
             }
           }
         },

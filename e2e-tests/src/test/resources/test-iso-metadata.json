@@ -129,9 +129,22 @@
         }
     ],
     "dataFormats": [
-        "NETCDF",
-        "CSV",
-        "ASCII"
+        {
+            "name": "NETCDF",
+            "version": "classic"
+        },
+        {
+            "name": "CSV",
+            "version": null
+        },
+        {
+            "name": "ASCII",
+            "version": null
+        },
+        {
+            "name": "NETCDF",
+            "version": "4"
+        }
     ],
     "links": [
         {
