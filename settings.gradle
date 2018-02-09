@@ -12,4 +12,5 @@ rootProject.name = 'psi'
 include 'registry'
 include 'api'
 include 'parser'
+include 'script-wrapper'
 
