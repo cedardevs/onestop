@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '1.5.8.RELEASE'
+    springBootVersion = '1.5.10.RELEASE'
   }
   repositories {
     maven {
@@ -29,6 +29,7 @@ subprojects {
     esVersion = "${project.esVersion}"
     groovyVersion = '2.4.12'
     spockVersion = '1.1-groovy-2.4'
+    testContainersVersion = '1.6.0'
   }
 
   afterEvaluate {

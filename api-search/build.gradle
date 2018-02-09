@@ -36,7 +36,7 @@ dependencies {
   testCompile "org.spockframework:spock-core:${project.spockVersion}"
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
-  testCompile 'org.testcontainers:testcontainers:1.4.2'
+  testCompile "org.testcontainers:testcontainers:${project.testContainersVersion}"
 }
 
 ext {
