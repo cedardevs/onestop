@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET
+import static org.springframework.web.bind.annotation.RequestMethod.PUT
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD
 
 @Slf4j
@@ -35,5 +36,13 @@ class MetadataRestController {
     response.sendError(404)
     return null
   }
+
+//  @RequestMapping(path='/metadata/rebuild', method = [PUT], produces = 'application/json')
+//  Map rebuild() {
+//    this.rawGranuleStream.close()
+//    this.rawGranuleStream.cleanUp()
+//    this.rawGranuleStream.start()
+//    return ['acknowledged': true]
+//  }
 
 }

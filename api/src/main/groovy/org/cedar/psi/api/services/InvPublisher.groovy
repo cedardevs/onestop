@@ -21,6 +21,5 @@ class InvPublisher {
         log.info("sending data ='{}'", data)
 
         kafkaTemplate.send(kafkaTopic, key, data)
-
     }
 }
