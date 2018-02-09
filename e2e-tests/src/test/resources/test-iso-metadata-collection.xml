@@ -10,6 +10,85 @@
   <gmd:hierarchyLevel>
     <gmd:MD_ScopeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="series">series</gmd:MD_ScopeCode>
   </gmd:hierarchyLevel>
+  <gmd:aggregationInfo>
+    <gmd:MD_AggregateInformation>
+      <gmd:aggregateDataSetName>
+        <gmd:CI_Citation>
+          <gmd:title>
+            <gco:CharacterString>[TITLE OF PUBLICATION]</gco:CharacterString>
+          </gmd:title>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>9999-01-01</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#publication" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:identifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>[ID OF PUBLICATION]</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmd:identifier>
+        </gmd:CI_Citation>
+      </gmd:aggregateDataSetName>
+      <gmd:associationType>
+        <gmd:DS_AssociationTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#DS_AssociationTypeCode" codeListValue="crossReference">crossReference</gmd:DS_AssociationTypeCode>
+      </gmd:associationType>
+      <gmd:initiativeType>
+        <gmd:DS_InitiativeTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#DS_InitiativeTypeCode" codeListValue="sciencePaper">sciencePaper</gmd:DS_InitiativeTypeCode>
+      </gmd:initiativeType>
+    </gmd:MD_AggregateInformation>
+    <gmd:CI_OnlineResource>
+      <gmd:linkage>
+        <gmd:URL>HTTPS://WWW.EXAMPLE.COM</gmd:URL>
+      </gmd:linkage>
+      <gmd:description>
+        <gco:CharacterString>[DESCRIPTION OF URL]</gco:CharacterString>
+      </gmd:description>
+      <gmd:function>
+        <gmd:CI_OnLineFunctionCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+      </gmd:function>
+    </gmd:CI_OnlineResource>
+  </gmd:aggregationInfo>
+  <gmd:aggregationInfo>
+    <gmd:MD_AggregateInformation>
+      <gmd:aggregateDataSetName>
+        <gmd:CI_Citation>
+          <gmd:title>
+            <gco:CharacterString>[TITLE OF PROJECT]</gco:CharacterString>
+          </gmd:title>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>9999-01-01</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#publication" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:identifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>[PROJECT ID]</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmd:identifier>
+        </gmd:CI_Citation>
+      </gmd:aggregateDataSetName>
+      <gmd:associationType>
+        <gmd:DS_AssociationTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#DS_AssociationTypeCode" codeListValue="largerWorkCitation">largerWorkCitation</gmd:DS_AssociationTypeCode>
+      </gmd:associationType>
+      <gmd:initiativeType>
+        <gmd:DS_InitiativeTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#DS_InitiativeTypeCode" codeListValue="project">project</gmd:DS_InitiativeTypeCode>
+      </gmd:initiativeType>
+    </gmd:MD_AggregateInformation>
+  </gmd:aggregationInfo>
   <gmd:contact>
     <gmd:CI_ResponsibleParty>
       <gmd:organisationName>

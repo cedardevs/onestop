@@ -78,6 +78,14 @@ class MetadataParser {
         creationDate                    : citationInfo.creationDate,
         revisionDate                    : citationInfo.revisionDate,
         publicationDate                 : citationInfo.publicationDate,
+        citeAsStatements                : citationInfo.citeAsStatements,
+        crossReferences                 : citationInfo.crossReferences,
+        largerWorks                     : citationInfo.largerWorks,
+        useLimitation                   : citationInfo.useLimitation,
+        legalConstraints                : citationInfo.legalConstraints,
+        accessFeeStatement              : citationInfo.accessFeeStatement,
+        orderingInstructions            : citationInfo.orderingInstructions,
+        edition                         : citationInfo.edition,
         dsmmAccessibility               : dsmmMap.Accessibility,
         dsmmDataIntegrity               : dsmmMap.DataIntegrity,
         dsmmDataQualityAssessment       : dsmmMap.DataQualityAssessment,
@@ -139,18 +147,85 @@ class MetadataParser {
       }
     }
 
+    // Cite-As Statements
+    def otherConstraints = idInfo.resourceConstraints.MD_LegalConstraints.'**'.findAll { it.name() == 'otherConstraints' }
+    def citationConstraints = otherConstraints.findAll { it.CharacterString.text().toLowerCase().contains('cite') }
+    def citeAsStatements = citationConstraints.collect { it.CharacterString.text() }.toSet()
+
+    // Cross References & Larger Works
+    def aggregationInfo = metadata.'**'.findAll { it.name() == 'aggregationInfo' }
+    Set crossReferences = []
+    Set largerWorks = []
+    aggregationInfo.each { aggInfo ->
+      def associationType = aggInfo.MD_AggregateInformation.associationType.DS_AssociationTypeCode.@codeListValue.text() ?: null
+      def initiativeType = aggInfo.MD_AggregateInformation.initiativeType.DS_InitiativeTypeCode.@codeListValue.text() ?: null
+      def citation = aggInfo.MD_AggregateInformation.aggregateDataSetName.CI_Citation
+      def onlineResource = aggInfo.CI_OnlineResource
+
+      def aggPubDate = null
+      def aggDates = citation.'**'.findAll { it.name() == 'date' }
+      aggDates.each { date ->
+        def dateType = date.CI_Date.dateType.CI_DateTypeCode.@codeListValue.text()
+        if(dateType == 'publication') {
+          aggPubDate = date.CI_Date.date.Date.text() ?: null
+        }
+      }
+
+      def aggTitle = citation.title.text() ?: null
+      def code = citation.identifier.MD_Identifier.code.CharacterString.text() ?: null
+      def link = [
+          linkName       : onlineResource.name.CharacterString.text() ?: null,
+          linkProtocol   : onlineResource.protocol.CharacterString.text() ?: null,
+          linkUrl        : onlineResource.linkage.URL.text() ? StringEscapeUtils.unescapeXml(onlineResource.linkage.URL.text()) : null,
+          linkDescription: onlineResource.description.CharacterString.text() ?: null,
+          linkFunction   : onlineResource.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
+      ]
+
+      if(associationType == 'crossReference') {
+        crossReferences.add([
+            title: aggTitle,
+            code: code,
+            publicationDate: aggPubDate,
+            link: link
+        ])
+      }
+      else if(associationType == 'largerWorkCitation') {
+        largerWorks.add([
+            title: title,
+            code: code,
+            publicationDate: aggPubDate,
+            link: link
+        ])
+      }
+    }
+
+    // Use Limitation, Legal Constraints, Access Fee Statements, Ordering Instructions, and Edition
+    def useLimitation = idInfo.resourceConstraints.MD_Constraints.useLimitation.CharacterString.text() ?: null
+    def legalConstraints = otherConstraints.collect { return it.CharacterString.text() ?: null } as Set
+    def accessFeeStatement = metadata.distributionInfo.MD_Distribution.distributionOrderProcess.MD_StandardOrderProcess.fees.CharacterString.text() ?: null
+    def orderingInstructions = metadata.distributionInfo.MD_Distribution.distributionOrderProcess.MD_StandardOrderProcess.orderingInstructions.CharacterString.text() ?: null
+    def edition = idInfo.citation.CI_Citation.edition.CharacterString.text() ?: null
+
     return [
-        fileIdentifier  : fileIdentifier,
-        parentIdentifier: parentIdentifier,
-        doi             : doi,
-        title           : title,
-        alternateTitle  : alternateTitle,
-        description     : description,
-        thumbnail       : thumbnail,
-        modifiedDate    : modifiedDate,
-        creationDate    : creationDate,
-        revisionDate    : revisionDate,
-        publicationDate : publicationDate
+        fileIdentifier      : fileIdentifier,
+        parentIdentifier    : parentIdentifier,
+        doi                 : doi,
+        title               : title,
+        alternateTitle      : alternateTitle,
+        description         : description,
+        thumbnail           : thumbnail,
+        modifiedDate        : modifiedDate,
+        creationDate        : creationDate,
+        revisionDate        : revisionDate,
+        publicationDate     : publicationDate,
+        citeAsStatements    : citeAsStatements,
+        crossReferences     : crossReferences,
+        largerWorks         : largerWorks,
+        useLimitation       : useLimitation,
+        legalConstraints    : legalConstraints,
+        accessFeeStatement  : accessFeeStatement,
+        orderingInstructions: orderingInstructions,
+        edition             : edition
     ]
   }
 
