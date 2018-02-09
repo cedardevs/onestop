@@ -181,6 +181,44 @@ class MetadataParserTest extends Specification {
     parsedXml.creationDate == null
     parsedXml.revisionDate == '2011-01-02'
     parsedXml.publicationDate == '2010-11-15'
+    parsedXml.citeAsStatements == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+
+    parsedXml.crossReferences == [
+        [
+            title: '[TITLE OF PUBLICATION]',
+            code: '[ID OF PUBLICATION]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
+                linkDescription: '[DESCRIPTION OF URL]',
+                linkFunction: 'information'
+            ]
+        ]
+    ] as Set
+
+    parsedXml.largerWorks == [
+        [
+            title: 'Important Organization\'s Important File\'s Super Important Title',
+            code: '[PROJECT ID]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: null,
+                linkDescription: null,
+                linkFunction: null
+            ]
+        ]
+    ] as Set
+
+    parsedXml.useLimitation == '[NOAA LEGAL STATEMENT]'
+    parsedXml.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    parsedXml.accessFeeStatement == 'template fees'
+    parsedXml.orderingInstructions == 'template ordering instructions'
+    parsedXml.edition == '[EDITION]'
+
     parsedXml.dsmmAccessibility == 4
     parsedXml.dsmmDataIntegrity == 0
     parsedXml.dsmmDataQualityAssessment == 2
@@ -227,6 +265,42 @@ class MetadataParserTest extends Specification {
     citationInfo.creationDate == null
     citationInfo.revisionDate == '2011-01-02'
     citationInfo.publicationDate == '2010-11-15'
+    citationInfo.citeAsStatements == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    citationInfo.crossReferences == [
+        [
+            title: '[TITLE OF PUBLICATION]',
+            code: '[ID OF PUBLICATION]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
+                linkDescription: '[DESCRIPTION OF URL]',
+                linkFunction: 'information'
+            ]
+        ]
+    ] as Set
+
+    citationInfo.largerWorks == [
+        [
+            title: 'Important Organization\'s Important File\'s Super Important Title',
+            code: '[PROJECT ID]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: null,
+                linkDescription: null,
+                linkFunction: null
+            ]
+        ]
+    ] as Set
+
+    citationInfo.useLimitation == '[NOAA LEGAL STATEMENT]'
+    citationInfo.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    citationInfo.accessFeeStatement == 'template fees'
+    citationInfo.orderingInstructions == 'template ordering instructions'
+    citationInfo.edition == '[EDITION]'
   }
 
   def "Keywords and topics are correctly parsed"() {
