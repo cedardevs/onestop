@@ -16,6 +16,22 @@
         "doi": {
           "type": "keyword"
         },
+        "purpose": {
+          "type": "keyword",
+          "index": false
+        },
+        "status": {
+          "type": "keyword",
+          "index": false
+        },
+        "credit": {
+          "type": "keyword",
+          "index": false
+        },
+        "hierarchyLevelName": {
+          "type": "keyword",
+          "index": false
+        },
         "title": {
           "type": "text"
         },
@@ -280,9 +296,9 @@
           "type": "keyword",
           "index": false
         },
-        "modifiedDate": {
-          "type": "date",
-          "format": "date_optional_time"
+        "thumbnailDescription": {
+          "type": "keyword",
+          "index": false
         },
         "creationDate": {
           "type": "date",
@@ -464,6 +480,22 @@
         },
         "doi": {
           "type": "keyword"
+        },
+        "purpose": {
+          "type": "keyword",
+          "index": false
+        },
+        "status": {
+          "type": "keyword",
+          "index": false
+        },
+        "credit": {
+          "type": "keyword",
+          "index": false
+        },
+        "hierarchyLevelName": {
+          "type": "keyword",
+          "index": false
         },
         "title": {
           "type": "text"
@@ -729,9 +761,9 @@
           "type": "keyword",
           "index": false
         },
-        "modifiedDate": {
-          "type": "date",
-          "format": "date_optional_time"
+        "thumbnailDescription": {
+          "type": "keyword",
+          "index": false
         },
         "creationDate": {
           "type": "date",

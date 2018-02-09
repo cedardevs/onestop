@@ -4,7 +4,11 @@
 "attributes": {
     "fileIdentifier": "gov.super.important:PARENT-ID",
     "parentIdentifier": null,
+    "hierarchyLevelName": null,
     "doi": "doi:10.5072/FK2TEST",
+    "purpose": "Provide quality super important data to the user community.",
+    "status": "completed",
+    "credit": null,
     "title": "Important Organization's Important File's Super Important Title",
     "alternateTitle": "Still (But Slightly Less) Important Alternate Title",
     "description": "Wall of overly detailed, super informative, extra important text.",
@@ -162,7 +166,7 @@
         }
     ],
     "thumbnail": "https://www.example.com/exportImage?soCool=yes&format=png",
-    "modifiedDate": "2016-12-25T11:12:13",
+    "thumbnailDescription": "Preview graphic",
     "creationDate": null,
     "revisionDate": "2011-01-02",
     "publicationDate": "2010-11-15",

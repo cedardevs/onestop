@@ -49,7 +49,11 @@ class MetadataParser {
     def json = [
         fileIdentifier                  : citationInfo.fileIdentifier,
         parentIdentifier                : citationInfo.parentIdentifier,
+        hierarchyLevelName              : citationInfo.hierarchyLevelName,
         doi                             : citationInfo.doi,
+        purpose                         : citationInfo.purpose,
+        status                          : citationInfo.status,
+        credit                          : citationInfo.credit,
         title                           : citationInfo.title,
         alternateTitle                  : citationInfo.alternateTitle,
         description                     : citationInfo.description,
@@ -74,7 +78,7 @@ class MetadataParser {
         creators                        : responsibleParties.creators,
         publishers                      : responsibleParties.publishers,
         thumbnail                       : citationInfo.thumbnail,
-        modifiedDate                    : citationInfo.modifiedDate,
+        thumbnailDescription            : citationInfo.thumbnailDescription,
         creationDate                    : citationInfo.creationDate,
         revisionDate                    : citationInfo.revisionDate,
         publicationDate                 : citationInfo.publicationDate,
@@ -108,33 +112,54 @@ class MetadataParser {
   static Map parseCitationInfo(GPathResult metadata) {
     def fileIdentifier
     def parentIdentifier
+    def hierarchyLevelName
     def doi
+    def purpose
+    def status
+    def credit
     def title
     def alternateTitle
     def description
     def thumbnail
-    def modifiedDate
+    def thumbnailDescription
     def creationDate
     def revisionDate
     def publicationDate
+    Set citeAsStatements = []
+    Set crossReferences = []
+    Set largerWorks = []
+    def useLimitation
+    def legalConstraints
+    def accessFeeStatement
+    def orderingInstructions
+    def edition
 
     def idInfo = metadata.identificationInfo.MD_DataIdentification
 
     fileIdentifier = metadata.fileIdentifier.CharacterString.text()
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
+    hierarchyLevelName = metadata.hierarchyLevelName.CharacterString.text().toLowerCase() ?: null
+
+    purpose = idInfo.purpose.text() ?: null
+    status = idInfo.status.MD_ProgressCode.@codeListValue.text() ?: null
+    credit = idInfo.credit.text() ?: null
+
     def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier' }
     doi = identifiers.findResult(null, { identifier ->
-      if (identifier.MD_Identifier.authority.CI_Citation.title.CharacterString.text() == 'Digital Object Identifier (DOI)') {
-        return identifier.MD_Identifier.code.Anchor.text()
+      def anchor = identifier.MD_Identifier.code.Anchor
+      def titleTag = anchor.'@xlink:title'.text()
+      if (titleTag == 'DOI') {
+        return anchor.text()
       }
     })
     title = idInfo.citation.CI_Citation.title.CharacterString.text()
     alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text() ?: null
     description = idInfo.abstract.CharacterString.text()
-    thumbnail = StringEscapeUtils.unescapeXml(idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text())
+    def thumbnailPath = idInfo.graphicOverview.MD_BrowseGraphic
+    thumbnail = StringEscapeUtils.unescapeXml(thumbnailPath.fileName.CharacterString.text())
+    thumbnailDescription = thumbnailPath.fileDescription.CharacterString.text() ?: null
 
     // Miscellaneous dates:
-    modifiedDate = metadata.dateStamp.Date.text() ?: metadata.dateStamp.DateTime.text()
     def dates = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'date' }
     dates.each { date ->
       def dateType = date.CI_Date.dateType.CI_DateTypeCode.@codeListValue.text()
@@ -150,12 +175,11 @@ class MetadataParser {
     // Cite-As Statements
     def otherConstraints = idInfo.resourceConstraints.MD_LegalConstraints.'**'.findAll { it.name() == 'otherConstraints' }
     def citationConstraints = otherConstraints.findAll { it.CharacterString.text().toLowerCase().contains('cite') }
-    def citeAsStatements = citationConstraints.collect { it.CharacterString.text() }.toSet()
+    citeAsStatements = citationConstraints.collect { it.CharacterString.text() }.toSet()
 
     // Cross References & Larger Works
     def aggregationInfo = metadata.'**'.findAll { it.name() == 'aggregationInfo' }
-    Set crossReferences = []
-    Set largerWorks = []
+
     aggregationInfo.each { aggInfo ->
       def associationType = aggInfo.MD_AggregateInformation.associationType.DS_AssociationTypeCode.@codeListValue.text() ?: null
       def initiativeType = aggInfo.MD_AggregateInformation.initiativeType.DS_InitiativeTypeCode.@codeListValue.text() ?: null
@@ -200,21 +224,25 @@ class MetadataParser {
     }
 
     // Use Limitation, Legal Constraints, Access Fee Statements, Ordering Instructions, and Edition
-    def useLimitation = idInfo.resourceConstraints.MD_Constraints.useLimitation.CharacterString.text() ?: null
-    def legalConstraints = otherConstraints.collect { return it.CharacterString.text() ?: null } as Set
-    def accessFeeStatement = metadata.distributionInfo.MD_Distribution.distributionOrderProcess.MD_StandardOrderProcess.fees.CharacterString.text() ?: null
-    def orderingInstructions = metadata.distributionInfo.MD_Distribution.distributionOrderProcess.MD_StandardOrderProcess.orderingInstructions.CharacterString.text() ?: null
-    def edition = idInfo.citation.CI_Citation.edition.CharacterString.text() ?: null
+    useLimitation = idInfo.resourceConstraints.MD_Constraints.useLimitation.CharacterString.text() ?: null
+    legalConstraints = otherConstraints.collect { return it.CharacterString.text() ?: null } as Set
+    accessFeeStatement = metadata.distributionInfo.MD_Distribution.distributionOrderProcess.MD_StandardOrderProcess.fees.CharacterString.text() ?: null
+    orderingInstructions = metadata.distributionInfo.MD_Distribution.distributionOrderProcess.MD_StandardOrderProcess.orderingInstructions.CharacterString.text() ?: null
+    edition = idInfo.citation.CI_Citation.edition.CharacterString.text() ?: null
 
     return [
         fileIdentifier      : fileIdentifier,
         parentIdentifier    : parentIdentifier,
+        hierarchyLevelName  : hierarchyLevelName,
         doi                 : doi,
+        purpose             : purpose,
+        status              : status,
+        credit              : credit,
         title               : title,
         alternateTitle      : alternateTitle,
         description         : description,
         thumbnail           : thumbnail,
-        modifiedDate        : modifiedDate,
+        thumbnailDescription: thumbnailDescription,
         creationDate        : creationDate,
         revisionDate        : revisionDate,
         publicationDate     : publicationDate,

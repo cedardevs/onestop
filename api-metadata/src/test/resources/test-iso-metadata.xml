@@ -13,6 +13,9 @@
   <gmd:hierarchyLevel>
     <gmd:MD_ScopeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="series">series</gmd:MD_ScopeCode>
   </gmd:hierarchyLevel>
+  <gmd:hierarchyLevelName>
+    <gco:CharacterString>Granule</gco:CharacterString>
+  </gmd:hierarchyLevelName>
   <gmd:aggregationInfo>
     <gmd:MD_AggregateInformation>
       <gmd:aggregateDataSetName>
