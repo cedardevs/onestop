@@ -384,8 +384,15 @@ class MetadataParser {
   static Set parseDataFormats(GPathResult metadata) {
     def dataFormats = [] as Set
     def formats = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'MD_Format' }
-    formats.each { e ->
-      dataFormats.add(e.name.CharacterString.text() ? (e.name.CharacterString.text() as String).toUpperCase() : null)
+    formats.each { format ->
+
+      def name = format.name.CharacterString.text() ? (format.name.CharacterString.text() as String).toUpperCase() : null
+      def version = format.version.CharacterString.text() ?: null
+
+      dataFormats.add([
+          name: name,
+          version: version
+      ])
     }
     return dataFormats
   }

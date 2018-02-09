@@ -62,48 +62,57 @@ class MetadataParserTest extends Specification {
     parsedXml.gcmdDataCenters == ['SIO > Super Important Organization'] as Set
     parsedXml.gcmdDataResolution == [] as Set
     parsedXml.temporalBounding == [
-        beginDate: '2005-05-09',
-        beginIndeterminate: null,
-        endDate: null,
-        endIndeterminate: 'now',
-        instant: null,
+        beginDate           : '2005-05-09',
+        beginIndeterminate  : null,
+        endDate             : null,
+        endIndeterminate    : 'now',
+        instant             : null,
         instantIndeterminate: null
     ]
     parsedXml.spatialBounding == [
-        type        : 'Polygon',
-        coordinates : [
+        type       : 'Polygon',
+        coordinates: [
             [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]
         ]
     ]
     parsedXml.isGlobal == true
-    parsedXml.acquisitionInstruments == [[
-        instrumentIdentifier  : 'SII > Super Important Instrument',
-        instrumentType        : 'sensor',
-        instrumentDescription : 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
-    ]] as Set
-    parsedXml.acquisitionOperations == [[
-        operationDescription : null,
-        operationIdentifier  : 'Super Important Project',
-        operationStatus      : null,
-        operationType        : null
-    ]] as Set
-    parsedXml.dataFormats == [
-        'NETCDF',
-        'ASCII',
-        'CSV'
+    parsedXml.acquisitionInstruments == [
+        [
+            instrumentIdentifier : 'SII > Super Important Instrument',
+            instrumentType       : 'sensor',
+            instrumentDescription: 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
+        ]
     ] as Set
-    parsedXml.acquisitionPlatforms == [[
-        platformIdentifier  : 'TS-18 > TumbleSat-18',
-        platformDescription : 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
-        platformSponsor     : ['Super Important Organization', 'Other (Kind Of) Important Organization']
-    ]] as Set
-    parsedXml.links == [[
-        linkName        : 'Super Important Access Link',
-        linkProtocol    : 'HTTP',
-        linkUrl         : 'http://www.example.com',
-        linkDescription : 'Everything Important, All In One Place',
-        linkFunction    : 'search'
-    ]] as Set
+    parsedXml.acquisitionOperations == [
+        [
+            operationDescription: null,
+            operationIdentifier : 'Super Important Project',
+            operationStatus     : null,
+            operationType       : null
+        ]
+    ] as Set
+    parsedXml.dataFormats == [
+        [name: 'NETCDF', version: 'classic'],
+        [name: 'NETCDF', version: '4'],
+        [name: 'ASCII', version: null],
+        [name: 'CSV', version: null]
+    ] as Set
+    parsedXml.acquisitionPlatforms == [
+        [
+            platformIdentifier : 'TS-18 > TumbleSat-18',
+            platformDescription: 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
+            platformSponsor    : ['Super Important Organization', 'Other (Kind Of) Important Organization']
+        ]
+    ] as Set
+    parsedXml.links == [
+        [
+            linkName       : 'Super Important Access Link',
+            linkProtocol   : 'HTTP',
+            linkUrl        : 'http://www.example.com',
+            linkDescription: 'Everything Important, All In One Place',
+            linkFunction   : 'search'
+        ]
+    ] as Set
 
     parsedXml.contacts == [
         [
@@ -293,11 +302,11 @@ class MetadataParserTest extends Specification {
 
     then:
     temporalBounding == [
-        beginDate: '2005-05-09',
-        beginIndeterminate: null,
-        endDate: null,
-        endIndeterminate: 'now',
-        instant: null,
+        beginDate           : '2005-05-09',
+        beginIndeterminate  : null,
+        endDate             : null,
+        endIndeterminate    : 'now',
+        instant             : null,
         instantIndeterminate: null
     ]
   }
@@ -312,16 +321,16 @@ class MetadataParserTest extends Specification {
     then:
     result == [
         spatialBounding: [
-            type: 'Polygon',
+            type       : 'Polygon',
             coordinates: [
                 [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]
             ]
         ],
-        isGlobal: true
+        isGlobal       : true
     ]
   }
 
-  def "Point spatial bounding is correctly parsed"(){
+  def "Point spatial bounding is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-point-cords-metadata.xml").text
 
@@ -331,22 +340,22 @@ class MetadataParserTest extends Specification {
     then:
     spatialBounding == [
         spatialBounding: [
-            type: 'Point',
+            type       : 'Point',
             coordinates: [-105, 40]
         ],
-        isGlobal: false
+        isGlobal       : false
     ]
   }
 
-  def "Null Spatial bounding is correctly parsed"(){
-      given:
-      def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-null-cords-metadata.xml").text
+  def "Null Spatial bounding is correctly parsed"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-null-cords-metadata.xml").text
 
-      when:
-      def spatialBounding = MetadataParser.parseSpatialInfo(document)
+    when:
+    def spatialBounding = MetadataParser.parseSpatialInfo(document)
 
-      then:
-      spatialBounding == [spatialBounding: null, isGlobal: false]
+    then:
+    spatialBounding == [spatialBounding: null, isGlobal: false]
   }
 
   def "Acquisition info is correctly parsed"() {
@@ -357,22 +366,28 @@ class MetadataParserTest extends Specification {
     def parsedXml = MetadataParser.parseAcquisitionInfo(document)
 
     then:
-    parsedXml.acquisitionInstruments == [[
-                                             instrumentIdentifier  : 'SII > Super Important Instrument',
-                                             instrumentType        : 'sensor',
-                                             instrumentDescription : 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
-                                         ]] as Set
-    parsedXml.acquisitionOperations == [[
-                                            operationDescription : null,
-                                            operationIdentifier  : 'Super Important Project',
-                                            operationStatus      : null,
-                                            operationType        : null
-                                        ]] as Set
-    parsedXml.acquisitionPlatforms == [[
-                                           platformIdentifier  : 'TS-18 > TumbleSat-18',
-                                           platformDescription : 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
-                                           platformSponsor     : ['Super Important Organization', 'Other (Kind Of) Important Organization']
-                                       ]] as Set
+    parsedXml.acquisitionInstruments == [
+        [
+            instrumentIdentifier : 'SII > Super Important Instrument',
+            instrumentType       : 'sensor',
+            instrumentDescription: 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
+        ]
+    ] as Set
+    parsedXml.acquisitionOperations == [
+        [
+            operationDescription: null,
+            operationIdentifier : 'Super Important Project',
+            operationStatus     : null,
+            operationType       : null
+        ]
+    ] as Set
+    parsedXml.acquisitionPlatforms == [
+        [
+            platformIdentifier : 'TS-18 > TumbleSat-18',
+            platformDescription: 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
+            platformSponsor    : ['Super Important Organization', 'Other (Kind Of) Important Organization']
+        ]
+    ] as Set
   }
 
   def "Data formats are correctly parsed"() {
@@ -384,9 +399,10 @@ class MetadataParserTest extends Specification {
 
     then:
     dataFormats == [
-        'NETCDF',
-        'ASCII',
-        'CSV'
+        [name: 'NETCDF', version: 'classic'],
+        [name: 'NETCDF', version: '4'],
+        [name: 'ASCII', version: null],
+        [name: 'CSV', version: null]
     ] as Set
   }
 
@@ -399,11 +415,11 @@ class MetadataParserTest extends Specification {
 
     then:
     links == [[
-                  linkName        : 'Super Important Access Link',
-                  linkProtocol    : 'HTTP',
-                  linkUrl         : 'http://www.example.com',
-                  linkDescription : 'Everything Important, All In One Place',
-                  linkFunction    : 'search'
+                  linkName       : 'Super Important Access Link',
+                  linkProtocol   : 'HTTP',
+                  linkUrl        : 'http://www.example.com',
+                  linkDescription: 'Everything Important, All In One Place',
+                  linkFunction   : 'search'
               ]] as Set
   }
 
@@ -508,7 +524,7 @@ class MetadataParserTest extends Specification {
     dsmm.Usability == 3
     dsmm.average == ((dsmm.Accessibility + dsmm.DataIntegrity + dsmm.DataQualityAssessment + dsmm.DataQualityAssurance +
         dsmm.DataQualityControlMonitoring + dsmm.Preservability + dsmm.ProductionSustainability +
-        dsmm.TransparencyTraceability + dsmm.Usability) / ( dsmm.size() - 1 ) )
+        dsmm.TransparencyTraceability + dsmm.Usability) / (dsmm.size() - 1))
   }
 
   def "Services are correctly parsed"() {
