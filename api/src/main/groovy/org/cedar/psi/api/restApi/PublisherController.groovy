@@ -21,7 +21,6 @@ class PublisherController {
     @RequestMapping(value="/granule", consumes="application/json")
     void producer(@RequestBody String data)
             throws Exception {
-        String key = "1"
-        !data.contains("trackingId") ? log.info("payload missing tracking id") : producer.publishGranule(key,data)
+        producer.publishGranule(data)
     }
 }
