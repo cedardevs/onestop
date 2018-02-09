@@ -1,5 +1,7 @@
 package org.cedar.psi.parser.stream
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
@@ -49,9 +51,10 @@ class ParserStreamConfig {
     KStream inputStream = builder.stream(inputTopic)
     KStream outputStream = inputStream.mapValues { msg ->
       Pattern filenamePattern = ~/(oe|ot|ie|it)_([a-zA-Z0-9]+)_([a-zA-Z0-9]+)_s(\d{14})_e(\d{14})_p(\d{14})_(pub|emb)\.nc\.gz/
-      Matcher matcher = filenamePattern.matcher( msg.filepath as String)
+      def msgMap = new JsonSlurper().parseText(msg)
+      Matcher matcher = filenamePattern.matcher( msgMap.filepath as String)
       if ( ! matcher.matches() ) {
-        log.error "filenamePattern ${filenamePattern} did not match granule file name ${msg.filename}"
+        log.error "filenamePattern ${filenamePattern} did not match granule file name ${msgMap.filename}"
         throw new RuntimeException( "file name does not contain necessary attributes" )
       }
       Map parsedAttributes = [
@@ -63,7 +66,8 @@ class ParserStreamConfig {
           processDate: matcher[0][6] ,
           publish: matcher[0][7] == 'pub'
       ]
-      msg += parsedAttributes
+      msgMap += parsedAttributes
+      JsonOutput.toJson(msgMap) as String
     }
     outputStream.to(outputTopic)
     return builder.build()
