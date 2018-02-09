@@ -378,6 +378,136 @@
           "doc_values": false,
           "index": false
         },
+        "citeAsStatements": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "crossReferences": {
+          "type": "nested",
+          "properties": {
+            "title": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "code": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "publicationDate": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "link": {
+              "type": "nested",
+              "properties": {
+                "linkName": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkProtocol": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkUrl": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkDescription": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkFunction": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                }
+              }
+            }
+          }
+        },
+        "largerWorks": {
+          "type": "nested",
+          "properties": {
+            "title": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "code": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "publicationDate": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "link": {
+              "type": "nested",
+              "properties": {
+                "linkName": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkProtocol": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkUrl": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkDescription": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkFunction": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                }
+              }
+            }
+          }
+        },
+        "useLimitation": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "legalConstraints": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "accessFeeStatement": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "orderingInstructions": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "edition": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
         "dsmmAccessibility": {
           "type": "byte",
           "doc_values": false,
@@ -820,6 +950,136 @@
         "publicationDate": {
           "type": "date",
           "format": "date_optional_time",
+          "doc_values": false,
+          "index": false
+        },
+        "citeAsStatements": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "crossReferences": {
+          "type": "nested",
+          "properties": {
+            "title": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "code": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "publicationDate": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "link": {
+              "type": "nested",
+              "properties": {
+                "linkName": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkProtocol": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkUrl": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkDescription": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkFunction": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                }
+              }
+            }
+          }
+        },
+        "largerWorks": {
+          "type": "nested",
+          "properties": {
+            "title": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "code": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "publicationDate": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "link": {
+              "type": "nested",
+              "properties": {
+                "linkName": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkProtocol": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkUrl": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkDescription": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                },
+                "linkFunction": {
+                  "type": "keyword",
+                  "doc_values": false,
+                  "index": false
+                }
+              }
+            }
+          }
+        },
+        "useLimitation": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "legalConstraints": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "accessFeeStatement": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "orderingInstructions": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "edition": {
+          "type": "keyword",
           "doc_values": false,
           "index": false
         },

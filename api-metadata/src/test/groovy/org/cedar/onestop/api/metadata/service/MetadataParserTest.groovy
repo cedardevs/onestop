@@ -187,6 +187,44 @@ class MetadataParserTest extends Specification {
     parsedXml.creationDate == null
     parsedXml.revisionDate == '2011-01-02'
     parsedXml.publicationDate == '2010-11-15'
+    parsedXml.citeAsStatements == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+
+    parsedXml.crossReferences == [
+        [
+            title: '[TITLE OF PUBLICATION]',
+            code: '[ID OF PUBLICATION]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
+                linkDescription: '[DESCRIPTION OF URL]',
+                linkFunction: 'information'
+            ]
+        ]
+    ] as Set
+
+    parsedXml.largerWorks == [
+        [
+            title: 'Important Organization\'s Important File\'s Super Important Title',
+            code: '[PROJECT ID]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: null,
+                linkDescription: null,
+                linkFunction: null
+            ]
+        ]
+    ] as Set
+
+    parsedXml.useLimitation == '[NOAA LEGAL STATEMENT]'
+    parsedXml.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    parsedXml.accessFeeStatement == 'template fees'
+    parsedXml.orderingInstructions == 'template ordering instructions'
+    parsedXml.edition == '[EDITION]'
+
     parsedXml.dsmmAccessibility == 4
     parsedXml.dsmmDataIntegrity == 0
     parsedXml.dsmmDataQualityAssessment == 2
@@ -218,29 +256,65 @@ class MetadataParserTest extends Specification {
     idInfo.parentId == 'gov.super.important:PARENT-ID'
   }
 
-  def "Descriptive info is correctly parsed"() {
+  def "Citation info is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
-    def descriptiveInfo = MetadataParser.parseDescriptiveInfo(document)
+    def citationInfo = MetadataParser.parseCitationInfo(document)
 
     then:
-    descriptiveInfo.fileIdentifier == 'gov.super.important:FILE-ID'
-    descriptiveInfo.parentIdentifier == 'gov.super.important:PARENT-ID'
-    descriptiveInfo.hierarchyLevelName == 'granule'
-    descriptiveInfo.doi == 'doi:10.5072/FK2TEST'
-    descriptiveInfo.purpose == 'Provide quality super important data to the user community.'
-    descriptiveInfo.status == 'completed'
-    descriptiveInfo.credit == null
-    descriptiveInfo.title == 'Important Organization\'s Important File\'s Super Important Title'
-    descriptiveInfo.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
-    descriptiveInfo.description == 'Wall of overly detailed, super informative, extra important text.'
-    descriptiveInfo.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
-    descriptiveInfo.thumbnailDescription == 'Preview graphic'
-    descriptiveInfo.creationDate == null
-    descriptiveInfo.revisionDate == '2011-01-02'
-    descriptiveInfo.publicationDate == '2010-11-15'
+    citationInfo.fileIdentifier == 'gov.super.important:FILE-ID'
+    citationInfo.parentIdentifier == 'gov.super.important:PARENT-ID'
+    citationInfo.hierarchyLevelName == 'granule'
+    citationInfo.doi == 'doi:10.5072/FK2TEST'
+    citationInfo.purpose == 'Provide quality super important data to the user community.'
+    citationInfo.status == 'completed'
+    citationInfo.credit == null
+    citationInfo.title == 'Important Organization\'s Important File\'s Super Important Title'
+    citationInfo.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
+    citationInfo.description == 'Wall of overly detailed, super informative, extra important text.'
+    citationInfo.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
+    citationInfo.thumbnailDescription == 'Preview graphic'
+    citationInfo.creationDate == null
+    citationInfo.revisionDate == '2011-01-02'
+    citationInfo.publicationDate == '2010-11-15'
+    citationInfo.citeAsStatements == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    citationInfo.crossReferences == [
+        [
+            title: '[TITLE OF PUBLICATION]',
+            code: '[ID OF PUBLICATION]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
+                linkDescription: '[DESCRIPTION OF URL]',
+                linkFunction: 'information'
+            ]
+        ]
+    ] as Set
+
+    citationInfo.largerWorks == [
+        [
+            title: 'Important Organization\'s Important File\'s Super Important Title',
+            code: '[PROJECT ID]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: null,
+                linkDescription: null,
+                linkFunction: null
+            ]
+        ]
+    ] as Set
+
+    citationInfo.useLimitation == '[NOAA LEGAL STATEMENT]'
+    citationInfo.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    citationInfo.accessFeeStatement == 'template fees'
+    citationInfo.orderingInstructions == 'template ordering instructions'
+    citationInfo.edition == '[EDITION]'
   }
 
   def "Keywords and topics are correctly parsed"() {

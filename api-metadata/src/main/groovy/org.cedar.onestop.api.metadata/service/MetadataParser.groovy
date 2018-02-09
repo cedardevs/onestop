@@ -36,7 +36,7 @@ class MetadataParser {
     def metadata = new XmlSlurper().parseText(xml)
 
     // Parse related data maps from the xml:
-    def descriptiveInfo = parseDescriptiveInfo(metadata)
+    def citationInfo = parseCitationInfo(metadata)
     def keywordsMap = parseKeywordsAndTopics(metadata)
     def acquisitionInfo = parseAcquisitionInfo(metadata)
     def dsmmMap = parseDSMM(metadata)
@@ -47,16 +47,16 @@ class MetadataParser {
 
     // Build JSON:
     def json = [
-        fileIdentifier                  : descriptiveInfo.fileIdentifier,
-        parentIdentifier                : descriptiveInfo.parentIdentifier,
-        hierarchyLevelName              : descriptiveInfo.hierarchyLevelName,
-        doi                             : descriptiveInfo.doi,
-        purpose                         : descriptiveInfo.purpose,
-        status                          : descriptiveInfo.status,
-        credit                          : descriptiveInfo.credit,
-        title                           : descriptiveInfo.title,
-        alternateTitle                  : descriptiveInfo.alternateTitle,
-        description                     : descriptiveInfo.description,
+        fileIdentifier                  : citationInfo.fileIdentifier,
+        parentIdentifier                : citationInfo.parentIdentifier,
+        hierarchyLevelName              : citationInfo.hierarchyLevelName,
+        doi                             : citationInfo.doi,
+        purpose                         : citationInfo.purpose,
+        status                          : citationInfo.status,
+        credit                          : citationInfo.credit,
+        title                           : citationInfo.title,
+        alternateTitle                  : citationInfo.alternateTitle,
+        description                     : citationInfo.description,
         keywords                        : keywordsMap.keywords,
         topicCategories                 : keywordsMap.topicCategories,
         gcmdScience                     : keywordsMap.gcmdScience,
@@ -77,11 +77,19 @@ class MetadataParser {
         contacts                        : responsibleParties.contacts,
         creators                        : responsibleParties.creators,
         publishers                      : responsibleParties.publishers,
-        thumbnail                       : descriptiveInfo.thumbnail,
-        thumbnailDescription            : descriptiveInfo.thumbnailDescription,
-        creationDate                    : descriptiveInfo.creationDate,
-        revisionDate                    : descriptiveInfo.revisionDate,
-        publicationDate                 : descriptiveInfo.publicationDate,
+        thumbnail                       : citationInfo.thumbnail,
+        thumbnailDescription            : citationInfo.thumbnailDescription,
+        creationDate                    : citationInfo.creationDate,
+        revisionDate                    : citationInfo.revisionDate,
+        publicationDate                 : citationInfo.publicationDate,
+        citeAsStatements                : citationInfo.citeAsStatements,
+        crossReferences                 : citationInfo.crossReferences,
+        largerWorks                     : citationInfo.largerWorks,
+        useLimitation                   : citationInfo.useLimitation,
+        legalConstraints                : citationInfo.legalConstraints,
+        accessFeeStatement              : citationInfo.accessFeeStatement,
+        orderingInstructions            : citationInfo.orderingInstructions,
+        edition                         : citationInfo.edition,
         dsmmAccessibility               : dsmmMap.Accessibility,
         dsmmDataIntegrity               : dsmmMap.DataIntegrity,
         dsmmDataQualityAssessment       : dsmmMap.DataQualityAssessment,
@@ -101,7 +109,7 @@ class MetadataParser {
     return json
   }
 
-  static Map parseDescriptiveInfo(GPathResult metadata) {
+  static Map parseCitationInfo(GPathResult metadata) {
     def fileIdentifier
     def parentIdentifier
     def hierarchyLevelName
@@ -117,6 +125,14 @@ class MetadataParser {
     def creationDate
     def revisionDate
     def publicationDate
+    Set citeAsStatements
+    Set crossReferences
+    Set largerWorks
+    def useLimitation
+    def legalConstraints
+    def accessFeeStatement
+    def orderingInstructions
+    def edition
 
     def idInfo = metadata.identificationInfo.MD_DataIdentification
 
@@ -156,6 +172,64 @@ class MetadataParser {
       }
     }
 
+    // Cite-As Statements
+    def otherConstraints = idInfo.resourceConstraints.MD_LegalConstraints.'**'.findAll { it.name() == 'otherConstraints' }
+    def citationConstraints = otherConstraints.findAll { it.CharacterString.text().toLowerCase().contains('cite') }
+    citeAsStatements = citationConstraints.collect { it.CharacterString.text() }.toSet()
+
+    // Cross References & Larger Works
+    def aggregationInfo = metadata.'**'.findAll { it.name() == 'aggregationInfo' }
+
+    aggregationInfo.each { aggInfo ->
+      def associationType = aggInfo.MD_AggregateInformation.associationType.DS_AssociationTypeCode.@codeListValue.text() ?: null
+      def initiativeType = aggInfo.MD_AggregateInformation.initiativeType.DS_InitiativeTypeCode.@codeListValue.text() ?: null
+      def citation = aggInfo.MD_AggregateInformation.aggregateDataSetName.CI_Citation
+      def onlineResource = aggInfo.CI_OnlineResource
+
+      def aggPubDate = null
+      def aggDates = citation.'**'.findAll { it.name() == 'date' }
+      aggDates.each { date ->
+        def dateType = date.CI_Date.dateType.CI_DateTypeCode.@codeListValue.text()
+        if(dateType == 'publication') {
+          aggPubDate = date.CI_Date.date.Date.text() ?: null
+        }
+      }
+
+      def aggTitle = citation.title.text() ?: null
+      def code = citation.identifier.MD_Identifier.code.CharacterString.text() ?: null
+      def link = [
+          linkName       : onlineResource.name.CharacterString.text() ?: null,
+          linkProtocol   : onlineResource.protocol.CharacterString.text() ?: null,
+          linkUrl        : onlineResource.linkage.URL.text() ? StringEscapeUtils.unescapeXml(onlineResource.linkage.URL.text()) : null,
+          linkDescription: onlineResource.description.CharacterString.text() ?: null,
+          linkFunction   : onlineResource.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
+      ]
+
+      if(associationType == 'crossReference') {
+        crossReferences.add([
+            title: aggTitle,
+            code: code,
+            publicationDate: aggPubDate,
+            link: link
+        ])
+      }
+      else if(associationType == 'largerWorkCitation') {
+        largerWorks.add([
+            title: title,
+            code: code,
+            publicationDate: aggPubDate,
+            link: link
+        ])
+      }
+    }
+
+    // Use Limitation, Legal Constraints, Access Fee Statements, Ordering Instructions, and Edition
+    useLimitation = idInfo.resourceConstraints.MD_Constraints.useLimitation.CharacterString.text() ?: null
+    legalConstraints = otherConstraints.collect { return it.CharacterString.text() ?: null } as Set
+    accessFeeStatement = metadata.distributionInfo.MD_Distribution.distributionOrderProcess.MD_StandardOrderProcess.fees.CharacterString.text() ?: null
+    orderingInstructions = metadata.distributionInfo.MD_Distribution.distributionOrderProcess.MD_StandardOrderProcess.orderingInstructions.CharacterString.text() ?: null
+    edition = idInfo.citation.CI_Citation.edition.CharacterString.text() ?: null
+
     return [
         fileIdentifier      : fileIdentifier,
         parentIdentifier    : parentIdentifier,
@@ -171,12 +245,20 @@ class MetadataParser {
         thumbnailDescription: thumbnailDescription,
         creationDate        : creationDate,
         revisionDate        : revisionDate,
-        publicationDate     : publicationDate
+        publicationDate     : publicationDate,
+        citeAsStatements    : citeAsStatements,
+        crossReferences     : crossReferences,
+        largerWorks         : largerWorks,
+        useLimitation       : useLimitation,
+        legalConstraints    : legalConstraints,
+        accessFeeStatement  : accessFeeStatement,
+        orderingInstructions: orderingInstructions,
+        edition             : edition
     ]
   }
 
-  static Map parseDescriptiveInfo(String xml) {
-    return parseDescriptiveInfo(new XmlSlurper().parseText(xml))
+  static Map parseCitationInfo(String xml) {
+    return parseCitationInfo(new XmlSlurper().parseText(xml))
   }
 
   static Map parseKeywordsAndTopics(GPathResult metadata) {
