@@ -1,9 +1,9 @@
-task dockerImage(type: BuildDockerImageTask)
+apply plugin: 'org.cedar.dockerplugin'
 
-task publishImage(type: PublishDockerImageTask) {
-  dependsOn dockerImage
+PublishDockerImage {
+  dependsOn BuildDockerImage
 }
 
-task assemble { dependsOn dockerImage }
+task assemble { dependsOn BuildDockerImage }
 task build { dependsOn assemble }
-task publish { dependsOn publishImage }
+task publish { dependsOn PublishDockerImage }

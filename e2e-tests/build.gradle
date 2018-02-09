@@ -19,7 +19,7 @@ dependencies {
 }
 
 test {
-  dependsOn rootProject.getTasksByName('dockerImage', true)
+  dependsOn rootProject.getTasksByName('BuildDockerImage', true)
   mustRunAfter rootProject.getTasksByName('integrationTest', true)
 }
 

@@ -1,4 +1,5 @@
 apply plugin: "com.moowork.node"
+apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 node {
@@ -91,14 +92,7 @@ publishing {
     }
 }
 
-task dockerImage(type: BuildDockerImageTask) {
-  dependsOn tarResults
-}
-
-assemble.dependsOn dockerImage
-
-task publishImage(type: PublishDockerImageTask) {
-  dependsOn "dockerImage"
-}
-
-publish.dependsOn publishImage
+BuildDockerImage.dependsOn(tarResults)
+assemble.dependsOn(BuildDockerImage)
+PublishDockerImage.dependsOn(BuildDockerImage)
+publish.dependsOn PublishDockerImage
