@@ -15,7 +15,7 @@ buildscript {
     classpath 'com.wiredforcode:gradle-spawn-plugin:0.6.0'
     classpath 'com.moowork.gradle:gradle-node-plugin:0.13'
     classpath 'org.owasp:dependency-check-gradle:2.1.1'
-    classpath "gradle.plugin.org.cedar:dockerplugin:1.0.1"
+    classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
   }
 }
 
