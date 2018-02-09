@@ -42,12 +42,33 @@
           "type": "text"
         },
         "keywords": {
-          "type": "text"
+          "type": "nested",
+          "properties": {
+            "values": {
+              "type": "text"
+            },
+            "type": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "namespace": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
+        },
+        "accessionValues": {
+          "type": "keyword"
         },
         "topicCategories": {
           "type": "text"
         },
         "gcmdScience": {
+          "type": "keyword"
+        },
+        "gcmdScienceServices": {
           "type": "keyword"
         },
         "gcmdLocations": {
@@ -65,7 +86,13 @@
         "gcmdDataCenters": {
           "type": "keyword"
         },
-        "gcmdDataResolution": {
+        "gcmdHorizontalResolution": {
+          "type": "keyword"
+        },
+        "gcmdVerticalResolution": {
+          "type": "keyword"
+        },
+        "gcmdTemporalResolution": {
           "type": "keyword"
         },
         "temporalBounding": {
@@ -520,12 +547,33 @@
           "type": "text"
         },
         "keywords": {
-          "type": "text"
+          "type": "nested",
+          "properties": {
+            "values": {
+              "type": "text"
+            },
+            "type": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "namespace": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
+        },
+        "accessionValues": {
+          "type": "keyword"
         },
         "topicCategories": {
           "type": "text"
         },
         "gcmdScience": {
+          "type": "keyword"
+        },
+        "gcmdScienceServices": {
           "type": "keyword"
         },
         "gcmdLocations": {
@@ -543,7 +591,13 @@
         "gcmdDataCenters": {
           "type": "keyword"
         },
-        "gcmdDataResolution": {
+        "gcmdHorizontalResolution": {
+          "type": "keyword"
+        },
+        "gcmdVerticalResolution": {
+          "type": "keyword"
+        },
+        "gcmdTemporalResolution": {
           "type": "keyword"
         },
         "temporalBounding": {

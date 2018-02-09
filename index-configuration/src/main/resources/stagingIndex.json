@@ -55,6 +55,26 @@
           "index": false
         },
         "keywords": {
+          "type": "nested",
+          "properties": {
+            "values": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "type": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "namespace": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
+        },
+        "accessionValues": {
           "type": "keyword",
           "doc_values": false,
           "index": false
@@ -65,6 +85,11 @@
           "index": false
         },
         "gcmdScience": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "gcmdScienceServices": {
           "type": "keyword",
           "doc_values": false,
           "index": false
@@ -94,7 +119,17 @@
           "doc_values": false,
           "index": false
         },
-        "gcmdDataResolution": {
+        "gcmdHorizontalResolution": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "gcmdVerticalResolution": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "gcmdTemporalResolution": {
           "type": "keyword",
           "doc_values": false,
           "index": false
@@ -640,6 +675,26 @@
           "index": false
         },
         "keywords": {
+          "type": "nested",
+          "properties": {
+            "values": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "type": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "namespace": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
+        },
+        "accessionValues": {
           "type": "keyword",
           "doc_values": false,
           "index": false
@@ -650,6 +705,11 @@
           "index": false
         },
         "gcmdScience": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "gcmdScienceServices": {
           "type": "keyword",
           "doc_values": false,
           "index": false
@@ -679,7 +739,17 @@
           "doc_values": false,
           "index": false
         },
-        "gcmdDataResolution": {
+        "gcmdHorizontalResolution": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "gcmdVerticalResolution": {
+          "type": "keyword",
+          "doc_values": false,
+          "index": false
+        },
+        "gcmdTemporalResolution": {
           "type": "keyword",
           "doc_values": false,
           "index": false

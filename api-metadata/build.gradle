@@ -24,7 +24,7 @@ dependencies {
   compile 'org.springframework.boot:spring-boot-devtools'
   compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
   compile 'com.github.java-json-tools:json-schema-validator:2.2.8'
-  compile 'org.apache.commons:commons-lang3:3.4'
+  compile 'org.apache.commons:commons-text:1.2'
   compile 'org.apache.lucene:lucene-expressions:5.5.0'
 
   runtime 'org.springframework.boot:spring-boot-devtools'

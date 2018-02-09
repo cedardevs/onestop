@@ -1,5 +1,7 @@
 package org.cedar.onestop.api.metadata
 
+import groovy.json.JsonOutput
+import groovy.json.JsonParser
 import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
@@ -214,9 +216,11 @@ class ETLIntegrationTests extends Specification {
 
     and: // the granule is the staged collection with fields overridden by the staged granule
     indexedGranule._id == stagedGranule._id
+    println(JsonOutput.prettyPrint(JsonOutput.toJson(indexedGranule)))
     def expectedGranule = stagedCollection._source +
                           stagedGranule._source.findAll({k, v -> v}) +
                           [internalParentIdentifier: stagedCollection._id]
+    println(JsonOutput.prettyPrint(JsonOutput.toJson(expectedGranule)))
     indexedGranule._source.each { k, v ->
       assert v == expectedGranule[k]
     }
