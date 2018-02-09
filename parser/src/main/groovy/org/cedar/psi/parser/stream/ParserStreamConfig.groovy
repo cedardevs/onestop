@@ -52,7 +52,7 @@ class ParserStreamConfig {
     KStream outputStream = inputStream.mapValues { msg ->
       Pattern filenamePattern = ~/(oe|ot|ie|it)_([a-zA-Z0-9]+)_([a-zA-Z0-9]+)_s(\d{14})_e(\d{14})_p(\d{14})_(pub|emb)\.nc\.gz/
       def msgMap = new JsonSlurper().parseText(msg)
-      Matcher matcher = filenamePattern.matcher( msgMap.filepath as String)
+      Matcher matcher = filenamePattern.matcher( msgMap.relativePath as String)
       if ( ! matcher.matches() ) {
         log.error "filenamePattern ${filenamePattern} did not match granule file name ${msgMap.filename}"
         throw new RuntimeException( "file name does not contain necessary attributes" )
