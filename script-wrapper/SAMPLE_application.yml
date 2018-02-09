@@ -1,0 +1,13 @@
+server.port: 4444
+
+kafka:
+  bootstrap:
+    servers: localhost:9092
+  topics:
+    input: <input_topic>
+    output: <output_topic>
+
+
+alg:
+  absolutePath: ${PWD}/script-wrapper/exampleScript.py
+  lang: python

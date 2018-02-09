@@ -28,6 +28,12 @@ class ScriptWrapperStreamConfig {
   @Value('${kafka.topics.output}')
   String outputTopic
 
+  @Value('${alg.lang}')
+  String lang
+
+  @Value('${alg.absolutePath}')
+  String absolutePath
+
   static final String id = "validated-granules"
 
   @Value('${kafka.bootstrap.servers}')
@@ -50,12 +56,12 @@ class ScriptWrapperStreamConfig {
     def builder = new StreamsBuilder()
     KStream inputStream = builder.stream(inputTopic)
     KStream outputStream = inputStream.mapValues { msg ->
-      def cmdArray = ["python", "/Users/chris/Projects/CEDARDEVS/psi/script-wrapper/exampleScript.py", "$msg"]
+      def cmdArray = [lang, absolutePath, "$msg"]
       def cmd = cmdArray.execute()
-      cmd.waitForOrKill(1000)
-      println "Alg call results: ${cmd.text}"
-      msg
-//      cmd.text
+      cmd.waitForOrKill(50000)
+      String outputMessage = cmd.text
+
+      outputMessage
     }
     outputStream.to(outputTopic)
     return builder.build()

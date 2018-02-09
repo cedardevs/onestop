@@ -1,13 +1,29 @@
 import sys
 import json
+import re
 from pprint import pprint
 
-data = json.load(sys.argv[1])
+pattern = re.compile("(oe|ot|ie|it)_([a-zA-Z0-9]+)_([a-zA-Z0-9]+)_s(\d{14})_e(\d{14})_p(\d{14})_(pub|emb)\.nc\.gz")
 
-pprint(data)
+data = json.loads(sys.argv[1])
+relativePath = data["relativePath"]
 
-print "This is the name of the script: ", sys.argv[0]
-print "Number of arguments: ", len(sys.argv)
-print "The arguments are: " , str(sys.argv)
+match = pattern.match(relativePath)
+
+parsedAttributes = {
+  "processingEnvironment": match.group(1),
+  "dataType": match.group(2),
+  "satellite": match.group(3),
+  "startDate": match.group(4),
+  "endDate": match.group(5) ,
+  "processDate": match.group(6),
+  "publish": match.group(7)== 'pub'
+}
+
+msg = dict(data)
+msg.update(parsedAttributes)
+print json.dumps(msg)
+
+
 
 
