@@ -34,7 +34,11 @@ class ScriptWrapperStreamConfig {
   @Value('${alg.absolutePath}')
   String absolutePath
 
-  static final String id = "validated-granules"
+  @Value('${alg.timeout}')
+  long timeout
+
+  @Value('${kafka.group.id}')
+  String id
 
   @Value('${kafka.bootstrap.servers}')
   String bootstrapServers
@@ -56,10 +60,12 @@ class ScriptWrapperStreamConfig {
     def builder = new StreamsBuilder()
     KStream inputStream = builder.stream(inputTopic)
     KStream outputStream = inputStream.mapValues { msg ->
-      def cmdArray = [lang, absolutePath, "$msg"]
+      println "Calling : '$lang $absolutePath $msg' "
+      def cmdArray = [lang, absolutePath, msg]
       def cmd = cmdArray.execute()
-      cmd.waitForOrKill(50000)
+      cmd.waitForOrKill(timeout)
       String outputMessage = cmd.text
+      println "Output: $outputMessage"
       outputMessage
     }
     outputStream.to(outputTopic)
