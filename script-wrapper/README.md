@@ -44,7 +44,7 @@ alg:
 
 ```
 
-Works with bash script- 
+Works with bash- 
 ```
 alg:
   absolutePath: ${PWD}/script-wrapper/bashExample.sh
@@ -52,7 +52,7 @@ alg:
 
 ```
 
-Works with a python script - 
+Works with python - 
 
 ```
 alg:
