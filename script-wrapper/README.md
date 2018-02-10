@@ -33,7 +33,7 @@ alg:
 ### Usage
 Configure your input, output, the language your script is in, and the absolute path to your script. 
 
-The app simply constructs a command from your configuration. i.e. '$alg.lang $alg.absolutePath $msg'
+The app simply constructs a command from your configuration. i.e. ``` [alg.lang, alg.absolutePath, msg].execute() ```
 
 Works with a groovy script- 
 
