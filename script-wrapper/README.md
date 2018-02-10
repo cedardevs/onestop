@@ -1,13 +1,14 @@
 ### Overview
 
-This is a Kafka Streams app which listens to a configured stream, passes the message as a string to the configured script, and puts the oputput on the configured topic. 
+This is a Kafka Streams app which listens to a configured input topic, passes the message as a string to the configured script, and puts the oputput on the configured output topic. 
 
-This uses standard out, so whatever the script prints will go to the topic. 
+This uses standard out, so whatever the script prints to the console will go to the topic. 
 
-There are several simple example scripts that copy the message from input to output in various languages for proof-of-concept, and there there is a dscovr-parser.py script that parses dscovr's filepath. 
+There are several simple example scripts that copy the message from input to output in various languages for proof-of-concept.
+
+There is a dscovr-parser.py script that parses dscovr's filepath and can be used in place of the parser module as it is written now.  
 
 Building images with necessary dependencies makes this a highly flexible component. 
-
 
 #### Required config:
 
@@ -15,8 +16,6 @@ You must provide Spring configuration values for the app to connect to Kafka. e.
 directory with the following:
 
 ```
-server.port: 4444
-
 kafka:
   group.id: <group-id>
   bootstrap:
@@ -28,7 +27,7 @@ kafka:
 alg:
   absolutePath: <absolute>/<path>/<to>/<script>.py
   lang: <language>
-  timeout: 5000
+  timeout: <timeout_ms>
 ```
 
 ### Usage
@@ -75,8 +74,6 @@ alg:
 
 
 ```
-server.port: 4444
-
 kafka:
   group.id: dscovr-parser
   bootstrap:
