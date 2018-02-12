@@ -5,12 +5,16 @@ buildscript {
   repositories {
     maven { url "https://plugins.gradle.org/m2/" }
     maven { url "https://repo.spring.io/milestone" }
+//    mavenCentral()
   }
   dependencies {
     classpath 'com.gradle:build-scan-plugin:1.11'
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    classpath 'org.owasp:dependency-check-gradle:3.1.1'
   }
 }
+
+apply plugin: 'org.owasp.dependencycheck'
 
 group = 'org.cedar.psi'
 
