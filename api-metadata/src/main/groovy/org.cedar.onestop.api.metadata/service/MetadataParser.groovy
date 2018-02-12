@@ -104,7 +104,6 @@ class MetadataParser {
         dsmmTransparencyTraceability    : dsmmMap.TransparencyTraceability,
         dsmmUsability                   : dsmmMap.Usability,
         dsmmAverage                     : dsmmMap.average,
-        dsmmAverage                     : dsmmMap.average,
         updateFrequency                 : miscellaneous.updateFrequency,
         presentationForm                : miscellaneous.presentationForm,
         services                        : services
