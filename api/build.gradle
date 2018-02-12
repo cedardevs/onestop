@@ -2,6 +2,7 @@ apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.cedar.dockerplugin'
 
 dependencies {
   compile('org.springframework.boot:spring-boot-starter-data-rest')
@@ -29,3 +30,12 @@ bootWar {
   classifier = 'all'
   launchScript()
 }
+
+docker {
+  additionalBuildArgs = [WAR_NAME: bootWar.outputs.files.singleFile.name]
+}
+
+BuildDockerImage.dependsOn(bootWar)
+assemble.dependsOn(BuildDockerImage)
+PublishDockerImage.dependsOn(BuildDockerImage)
+task publish { dependsOn PublishDockerImage }

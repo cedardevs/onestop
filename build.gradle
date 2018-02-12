@@ -5,10 +5,12 @@ buildscript {
   repositories {
     maven { url "https://plugins.gradle.org/m2/" }
     maven { url "https://repo.spring.io/milestone" }
+    maven { url "https://plugins.gradle.org/m2/" }
   }
   dependencies {
     classpath 'com.gradle:build-scan-plugin:1.11'
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
   }
 }
 
@@ -37,6 +39,13 @@ subprojects {
 
     configurations {
       compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+    }
+
+    if (project.plugins.hasPlugin('org.cedar.dockerplugin')) {
+      docker {
+        username = System.getenv('DOCKER_USER')
+        password = System.getenv('DOCKER_PASSWORD')
+      }
     }
   }
 }
