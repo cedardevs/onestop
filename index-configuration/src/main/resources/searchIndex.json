@@ -16,6 +16,22 @@
         "doi": {
           "type": "keyword"
         },
+        "purpose": {
+          "type": "keyword",
+          "index": false
+        },
+        "status": {
+          "type": "keyword",
+          "index": false
+        },
+        "credit": {
+          "type": "keyword",
+          "index": false
+        },
+        "hierarchyLevelName": {
+          "type": "keyword",
+          "index": false
+        },
         "title": {
           "type": "text"
         },
@@ -26,12 +42,33 @@
           "type": "text"
         },
         "keywords": {
-          "type": "text"
+          "type": "nested",
+          "properties": {
+            "values": {
+              "type": "text"
+            },
+            "type": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "namespace": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
+        },
+        "accessionValues": {
+          "type": "keyword"
         },
         "topicCategories": {
           "type": "text"
         },
         "gcmdScience": {
+          "type": "keyword"
+        },
+        "gcmdScienceServices": {
           "type": "keyword"
         },
         "gcmdLocations": {
@@ -49,7 +86,13 @@
         "gcmdDataCenters": {
           "type": "keyword"
         },
-        "gcmdDataResolution": {
+        "gcmdHorizontalResolution": {
+          "type": "keyword"
+        },
+        "gcmdVerticalResolution": {
+          "type": "keyword"
+        },
+        "gcmdTemporalResolution": {
           "type": "keyword"
         },
         "temporalBounding": {
@@ -134,10 +177,23 @@
           }
         },
         "dataFormats": {
-          "type": "keyword",
-          "fields": {
-            "analyzed": {
-              "type": "text"
+          "type": "nested",
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "fields": {
+                "analyzed": {
+                  "type": "text"
+                }
+              }
+            },
+            "version": {
+              "type": "keyword",
+              "fields": {
+                "analyzed": {
+                  "type": "text"
+                }
+              }
             }
           }
         },
@@ -280,9 +336,9 @@
           "type": "keyword",
           "index": false
         },
-        "modifiedDate": {
-          "type": "date",
-          "format": "date_optional_time"
+        "thumbnailDescription": {
+          "type": "keyword",
+          "index": false
         },
         "creationDate": {
           "type": "date",
@@ -295,6 +351,112 @@
         "publicationDate": {
           "type": "date",
           "format": "date_optional_time"
+        },
+        "citeAsStatements": {
+          "type": "keyword",
+          "index": false
+        },
+        "crossReferences": {
+          "type": "nested",
+          "properties": {
+            "title": {
+              "type": "keyword",
+              "index": false
+            },
+            "code": {
+              "type": "keyword",
+              "index": false
+            },
+            "publicationDate": {
+              "type": "keyword",
+              "index": false
+            },
+            "link": {
+              "type": "nested",
+              "properties": {
+                "linkName": {
+                  "type": "text",
+                  "index": false
+                },
+                "linkProtocol": {
+                  "type": "keyword"
+                },
+                "linkUrl": {
+                  "type": "keyword",
+                  "index": false
+                },
+                "linkDescription": {
+                  "type": "text",
+                  "index": false
+                },
+                "linkFunction": {
+                  "type": "text",
+                  "index": false
+                }
+              }
+            }
+          }
+        },
+        "largerWorks": {
+          "type": "nested",
+          "properties": {
+            "title": {
+              "type": "keyword",
+              "index": false
+            },
+            "code": {
+              "type": "keyword",
+              "index": false
+            },
+            "publicationDate": {
+              "type": "keyword",
+              "index": false
+            },
+            "link": {
+              "type": "nested",
+              "properties": {
+                "linkName": {
+                  "type": "text",
+                  "index": false
+                },
+                "linkProtocol": {
+                  "type": "keyword"
+                },
+                "linkUrl": {
+                  "type": "keyword",
+                  "index": false
+                },
+                "linkDescription": {
+                  "type": "text",
+                  "index": false
+                },
+                "linkFunction": {
+                  "type": "text",
+                  "index": false
+                }
+              }
+            }
+          }
+        },
+        "useLimitation": {
+          "type": "keyword",
+          "index": false
+        },
+        "legalConstraints": {
+          "type": "keyword",
+          "index": false
+        },
+        "accessFeeStatement": {
+          "type": "keyword",
+          "index": false
+        },
+        "orderingInstructions": {
+          "type": "keyword",
+          "index": false
+        },
+        "edition": {
+          "type": "keyword",
+          "index": false
         },
         "dsmmAccessibility": {
           "type": "byte"
@@ -359,6 +521,22 @@
         "doi": {
           "type": "keyword"
         },
+        "purpose": {
+          "type": "keyword",
+          "index": false
+        },
+        "status": {
+          "type": "keyword",
+          "index": false
+        },
+        "credit": {
+          "type": "keyword",
+          "index": false
+        },
+        "hierarchyLevelName": {
+          "type": "keyword",
+          "index": false
+        },
         "title": {
           "type": "text"
         },
@@ -369,12 +547,33 @@
           "type": "text"
         },
         "keywords": {
-          "type": "text"
+          "type": "nested",
+          "properties": {
+            "values": {
+              "type": "text"
+            },
+            "type": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "namespace": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            }
+          }
+        },
+        "accessionValues": {
+          "type": "keyword"
         },
         "topicCategories": {
           "type": "text"
         },
         "gcmdScience": {
+          "type": "keyword"
+        },
+        "gcmdScienceServices": {
           "type": "keyword"
         },
         "gcmdLocations": {
@@ -392,7 +591,13 @@
         "gcmdDataCenters": {
           "type": "keyword"
         },
-        "gcmdDataResolution": {
+        "gcmdHorizontalResolution": {
+          "type": "keyword"
+        },
+        "gcmdVerticalResolution": {
+          "type": "keyword"
+        },
+        "gcmdTemporalResolution": {
           "type": "keyword"
         },
         "temporalBounding": {
@@ -477,10 +682,23 @@
           }
         },
         "dataFormats": {
-          "type": "keyword",
-          "fields": {
-            "analyzed": {
-              "type": "text"
+          "type": "nested",
+          "properties": {
+            "name": {
+              "type": "keyword",
+              "fields": {
+                "analyzed": {
+                  "type": "text"
+                }
+              }
+            },
+            "version": {
+              "type": "keyword",
+              "fields": {
+                "analyzed": {
+                  "type": "text"
+                }
+              }
             }
           }
         },
@@ -623,9 +841,9 @@
           "type": "keyword",
           "index": false
         },
-        "modifiedDate": {
-          "type": "date",
-          "format": "date_optional_time"
+        "thumbnailDescription": {
+          "type": "keyword",
+          "index": false
         },
         "creationDate": {
           "type": "date",
@@ -638,6 +856,112 @@
         "publicationDate": {
           "type": "date",
           "format": "date_optional_time"
+        },
+        "citeAsStatements": {
+          "type": "keyword",
+          "index": false
+        },
+        "crossReferences": {
+          "type": "nested",
+          "properties": {
+            "title": {
+              "type": "keyword",
+              "index": false
+            },
+            "code": {
+              "type": "keyword",
+              "index": false
+            },
+            "publicationDate": {
+              "type": "keyword",
+              "index": false
+            },
+            "link": {
+              "type": "nested",
+              "properties": {
+                "linkName": {
+                  "type": "text",
+                  "index": false
+                },
+                "linkProtocol": {
+                  "type": "keyword"
+                },
+                "linkUrl": {
+                  "type": "keyword",
+                  "index": false
+                },
+                "linkDescription": {
+                  "type": "text",
+                  "index": false
+                },
+                "linkFunction": {
+                  "type": "text",
+                  "index": false
+                }
+              }
+            }
+          }
+        },
+        "largerWorks": {
+          "type": "nested",
+          "properties": {
+            "title": {
+              "type": "keyword",
+              "index": false
+            },
+            "code": {
+              "type": "keyword",
+              "index": false
+            },
+            "publicationDate": {
+              "type": "keyword",
+              "index": false
+            },
+            "link": {
+              "type": "nested",
+              "properties": {
+                "linkName": {
+                  "type": "text",
+                  "index": false
+                },
+                "linkProtocol": {
+                  "type": "keyword"
+                },
+                "linkUrl": {
+                  "type": "keyword",
+                  "index": false
+                },
+                "linkDescription": {
+                  "type": "text",
+                  "index": false
+                },
+                "linkFunction": {
+                  "type": "text",
+                  "index": false
+                }
+              }
+            }
+          }
+        },
+        "useLimitation": {
+          "type": "keyword",
+          "index": false
+        },
+        "legalConstraints": {
+          "type": "keyword",
+          "index": false
+        },
+        "accessFeeStatement": {
+          "type": "keyword",
+          "index": false
+        },
+        "orderingInstructions": {
+          "type": "keyword",
+          "index": false
+        },
+        "edition": {
+          "type": "keyword",
+          "index": false
         },
         "dsmmAccessibility": {
           "type": "byte"

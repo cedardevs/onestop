@@ -2,43 +2,90 @@
   "fileIdentifier": "gov.noaa.ngdc.mgg.dem:4970",
   "parentIdentifier": "gov.noaa.ngdc.mgg.dem:4970",
   "internalParentIdentifier": "1415b3db-c602-4dbb-a502-4091fe9df1cf",
+  "hierarchyLevelName": null,
+  "doi": "doi:10.7289\/V5V985ZM",
+  "purpose": "To provide long-term scientific data stewardship for the Nation's geophysical data, ensuring quality, integrity, and accessibility.",
+  "status": "completed",
+  "credit": null,
   "title": "U.S. Coastal Relief Model - Southern California Version 2",
   "alternateTitle": null,
   "description": "NGDC's U.S. Coastal Relief Model (CRM) provides a comprehensive view of the U.S. coastal zone integrating offshore bathymetry with land topography into a seamless representation of the coast. The CRM spans the U.S. East and West Coasts, the northern coast of the Gulf of Mexico, Puerto Rico, and Hawaii, reaching out to, and in places even beyond, the continental slope. Bathymetric and topographic data sources include: NGDC's NOS hydrographic surveys and multibeam bathymetry; the U.S. Geological Survey (USGS); and other federal government agencies and academic institutions. Bathymetric contours from the International Bathymetric Chart of the Caribbean Sea and the Gulf of Mexico project were also used. Digital elevation models (DEMs) of the Great Lakes, Southern Alaska, and high-resolution DEMs of U.S. coastal communities and territories are also available.",
   "keywords": [
-    "INFOTERRA > Marine environments > Coastal Ecosystems > Coastal Areas",
-    "INFOTERRA > Subject disciplines > Geophysics > Geophysics",
-    "INFOTERRA > Subject disciplines > Geomorphology > Geomorphology",
-    "Coastal Bathymetry",
-    "Outer Continental Shelf",
-    "Coastal Topography",
-    "Oceans > Marine Geophysics > Continental Shelves",
-    "Oceans > Bathymetry > Seafloor Topography",
-    "Oceans > Marine Geophysics > Continental Rises/Slopes",
-    "Oceans > Bathymetry > Water Depths",
-    "Oceans > Coastal Processes > Coastal Elevation",
-    "Sea Floor",
-    "Pacific Ocean",
-    "North America",
-    "ICSU-WDS > International Council for Science - World Data System",
-    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+    {
+      "values": [
+        "Oceans > Marine Geophysics > Continental Shelves",
+        "Oceans > Bathymetry > Seafloor Topography",
+        "Oceans > Marine Geophysics > Continental Rises\/Slopes",
+        "Oceans > Bathymetry > Water Depths",
+        "Oceans > Coastal Processes > Coastal Elevation"
+      ],
+      "type": "theme",
+      "namespace": "NASA\/GCMD Earth Science Keywords"
+    },
+    {
+      "values": [
+        "INFOTERRA > Marine environments > Coastal Ecosystems > Coastal Areas",
+        "INFOTERRA > Subject disciplines > Geophysics > Geophysics",
+        "INFOTERRA > Subject disciplines > Geomorphology > Geomorphology"
+      ],
+      "type": "theme",
+      "namespace": "INFOTERRA Keyword Thesaurus"
+    },
+    {
+      "values": [
+        "Coastal Bathymetry",
+        "Outer Continental Shelf",
+        "Coastal Topography"
+      ],
+      "type": "theme",
+      "namespace": "Uncontrolled Keywords"
+    },
+    {
+      "values": [
+        "ICSU-WDS > International Council for Science - World Data System"
+      ],
+      "type": "project",
+      "namespace": "NASA\/GCMD Project Keywords"
+    },
+    {
+      "values": [
+        "Sea Floor",
+        "Pacific Ocean",
+        "North America"
+      ],
+      "type": "place",
+      "namespace": "NASA\/GCMD Location Keywords"
+    },
+    {
+      "values": [
+        "DOC\/NOAA\/NESDIS\/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+        "DOC\/NOAA\/NESDIS\/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+      ],
+      "type": "dataCenter",
+      "namespace": "NASA\/GCMD Data Center Keywords"
+    }
+  ],
+  "accessionValues": [
+
   ],
   "topicCategories": [
     "oceans",
     "geoscientificInformation",
     "elevation"
   ],
+  "gcmdScienceServices": [
+
+  ],
   "gcmdScience": [
-    "Oceans",
-    "Oceans > Marine Geophysics",
     "Oceans > Marine Geophysics > Continental Shelves",
-    "Oceans > Marine Geophysics > Continental Rises/Slopes",
-    "Oceans > Bathymetry",
+    "Oceans > Marine Geophysics",
+    "Oceans",
     "Oceans > Bathymetry > Seafloor Topography",
+    "Oceans > Bathymetry",
+    "Oceans > Marine Geophysics > Continental Rises\/Slopes",
     "Oceans > Bathymetry > Water Depths",
-    "Oceans > Coastal Processes",
-    "Oceans > Coastal Processes > Coastal Elevation"
+    "Oceans > Coastal Processes > Coastal Elevation",
+    "Oceans > Coastal Processes"
   ],
   "gcmdLocations": [
     "Sea Floor",
@@ -46,17 +93,26 @@
     "North America"
   ],
   "gcmdInstruments": [
+
   ],
   "gcmdPlatforms": [
+
   ],
   "gcmdProjects": [
     "ICSU-WDS > International Council for Science - World Data System"
   ],
   "gcmdDataCenters": [
-    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+    "DOC\/NOAA\/NESDIS\/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC\/NOAA\/NESDIS\/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
   ],
-  "gcmdDataResolution": [
+  "gcmdHorizontalResolution": [
+
+  ],
+  "gcmdVerticalResolution": [
+
+  ],
+  "gcmdTemporalResolution": [
+
   ],
   "temporalBounding": {
     "beginDate": "1999-01-01",
@@ -67,54 +123,60 @@
     "instantIndeterminate": null
   },
   "spatialBounding": {
-    "type": "polygon",
+    "type": "Polygon",
     "coordinates": [
       [
         [
-          -128.0,
-          30.0
+          -128,
+          30
         ],
         [
-          -116.0,
-          30.0
+          -116,
+          30
         ],
         [
-          -116.0,
-          37.0
+          -116,
+          37
         ],
         [
-          -128.0,
-          37.0
+          -128,
+          37
         ],
         [
-          -128.0,
-          30.0
+          -128,
+          30
         ]
       ]
     ]
   },
   "isGlobal": false,
   "acquisitionInstruments": [
+
   ],
   "acquisitionOperations": [
+
   ],
   "acquisitionPlatforms": [
+
   ],
   "dataFormats": [
-    "VARIES"
+    {
+      "name": "VARIES",
+      "version": null
+    }
   ],
   "links": [
     {
       "linkName": "DEM Discovery Portal",
       "linkProtocol": null,
-      "linkUrl": "http://www.ngdc.noaa.gov/mgg/dem/demportal.html",
+      "linkUrl": "http:\/\/www.ngdc.noaa.gov\/mgg\/dem\/demportal.html",
       "linkDescription": "DEM search portal",
       "linkFunction": "search"
     },
     {
       "linkName": "Grid Extract Tool",
       "linkProtocol": "http",
-      "linkUrl": "http://maps.ngdc.noaa.gov/viewers/wcs-client/",
+      "linkUrl": "http:\/\/maps.ngdc.noaa.gov\/viewers\/wcs-client\/",
       "linkDescription": "Grid Extract Tool",
       "linkFunction": "download"
     }
@@ -122,95 +184,100 @@
   "contacts": [
     {
       "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
+      "organizationName": "DOC\/NOAA\/NESDIS\/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "positionName": "DEM Information",
+      "role": "pointOfContact",
+      "email": "dem.info@noaa.gov",
+      "phone": null
     },
     {
-      "individualName": null,
-      "organizationName": null,
-      "role": "resourceProvider"
+      "individualName": "Barry W. Eakins",
+      "organizationName": "DOC\/NOAA\/NESDIS\/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "positionName": "Research Scientist",
+      "role": "pointOfContact",
+      "email": "Barry.Eakins@noaa.gov",
+      "phone": "303-497-6505"
     },
     {
-      "individualName": null,
-      "organizationName": "European Petroleum Survey Group",
-      "role": "publisher"
-    },
+      "individualName": "Matthew R. Love",
+      "organizationName": "DOC\/NOAA\/NESDIS\/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "positionName": null,
+      "role": "pointOfContact",
+      "email": "Matthew.Love@noaa.gov",
+      "phone": null
+    }
+  ],
+  "creators": [
     {
       "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "publisher"
-    },
+      "organizationName": "Nicole Calsbeek",
+      "positionName": null,
+      "role": "originator",
+      "email": null,
+      "phone": null
+    }
+  ],
+  "publishers": [
     {
       "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "custodian"
+      "organizationName": "DOC\/NOAA\/NESDIS\/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+      "positionName": null,
+      "role": "publisher",
+      "email": null,
+      "phone": null
     },
     {
       "individualName": null,
       "organizationName": "NASA",
-      "role": "publisher"
-    },
-    {
-      "individualName": null,
-      "organizationName": null,
-      "role": null
-    },
-    {
-      "individualName": null,
-      "organizationName": "Nicole Calsbeek",
-      "role": "originator"
-    },
-    {
-      "individualName": "Barry W. Eakins",
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
-    },
-    {
-      "individualName": "Matthew R. Love",
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
-    },
-    {
-      "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
-    },
-    {
-      "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "NASA > National Aeronautics and Space Administration",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "British Oceanographic Data Centre, General Bathymetric Chart of the Oceans",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "USGS > United States Geological Survey",
-      "role": "originator"
-    },
-    {
-      "individualName": "Kelly Carignan",
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
-    },
-    {
-      "individualName": "Anna Milan",
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
+      "positionName": "GCMD User Support Office",
+      "role": "publisher",
+      "email": "gcmduso@gcmd.gsfc.nasa.gov",
+      "phone": null
     }
   ],
   "thumbnail": "",
-  "modifiedDate": "2015-09-03",
+  "thumbnailDescription": null,
   "creationDate": null,
   "revisionDate": null,
   "publicationDate": "2013-07-08",
+  "citeAsStatements": [
+    "Cite as: National Geophysical Data Center, 2012. U.S. Coastal Relief Model - Southern California vers. 2. National Geophysical Data Center, NOAA. doi:10.7289\/V5V985ZM [access date]."
+  ],
+  "crossReferences": [
+    {
+      "title": "U.S. Coastal Relief Model - Southern California Version 2",
+      "code": null,
+      "publicationDate": "2013-07-08",
+      "link": {
+        "linkName": null,
+        "linkProtocol": null,
+        "linkUrl": null,
+        "linkDescription": null,
+        "linkFunction": null
+      }
+    }
+  ],
+  "largerWorks": [
+    {
+      "title": "U.S. Coastal Relief Model - Southern California Version 2",
+      "code": null,
+      "publicationDate": "1998-11-16",
+      "link": {
+        "linkName": null,
+        "linkProtocol": null,
+        "linkUrl": null,
+        "linkDescription": null,
+        "linkFunction": null
+      }
+    }
+  ],
+  "useLimitation": "Not to be used for navigation. Although these data are of high quality and useful for planning and modeling purposes, they are not suitable for navigation. For navigation, please refer to the NOS nautical chart series.Produced by the NOAA National Geophysical Data Center. Not subject to copyright protection within the United States.While every effort has been made to ensure that these data are accurate and reliable within the limits of the current state of the art, NOAA cannot assume liability for any damages caused by any errors or omissions in the data, nor as a result of the failure of the data to function on a particular system. NOAA makes no warranty, expressed or implied, nor does the fact of distribution constitute such a warranty.",
+  "legalConstraints": [
+    "Cite as: National Geophysical Data Center, 2012. U.S. Coastal Relief Model - Southern California vers. 2. National Geophysical Data Center, NOAA. doi:10.7289\/V5V985ZM [access date]."
+  ],
+  "accessFeeStatement": null,
+  "orderingInstructions": null,
+  "edition": "Second",
   "dsmmAccessibility": 0,
   "dsmmDataIntegrity": 0,
   "dsmmDataQualityAssessment": 0,
@@ -220,5 +287,11 @@
   "dsmmProductionSustainability": 0,
   "dsmmTransparencyTraceability": 0,
   "dsmmUsability": 0,
-  "dsmmAverage": 0
+  "dsmmAverage": 0,
+  "updateFrequency": "asNeeded",
+  "presentationForm": null,
+  "services": [
+
+  ],
+  "stagedDate": 1518210391135
 }

@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.metadata.service
 
+import groovy.json.JsonOutput
 import groovy.xml.XmlUtil
 import org.apache.commons.lang.StringUtils
 import spock.lang.Specification
@@ -18,21 +19,74 @@ class MetadataParserTest extends Specification {
     then:
     parsedXml.fileIdentifier == 'gov.super.important:FILE-ID'
     parsedXml.parentIdentifier == 'gov.super.important:PARENT-ID'
+    parsedXml.hierarchyLevelName == 'granule'
     parsedXml.doi == 'doi:10.5072/FK2TEST'
+    parsedXml.purpose == 'Provide quality super important data to the user community.'
+    parsedXml.status == 'completed'
+    parsedXml.credit == null
     parsedXml.title == 'Important Organization\'s Important File\'s Super Important Title'
     parsedXml.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
     parsedXml.description == 'Wall of overly detailed, super informative, extra important text.'
-    parsedXml.keywords == [
-        'Air temperature', 'Water temperature', 'Wind speed', 'Wind direction',
-        'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
-        'Oceans > Salinity/Density > Salinity',
-        'Volcanoes > This Keyword > Is Invalid',
-        'Geographic Region > Arctic',
-        'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
-        'Liquid Earth > This Keyword > Is Invalid',
-        'SIO > Super Important Organization'
+    // Deep equality check
+    JsonOutput.toJson(parsedXml.keywords) == JsonOutput.toJson([
+        [
+            values: ['SIO > Super Important Organization','OSIO > Other Super Important Organization', 'SSIO > Super SIO (Super Important Organization)'],
+            type: 'dataCenter',
+            namespace: 'GCMD Keywords - Data Centers'
+        ],
+        [
+            values: ['Environmental Advisories > Fire Advisories > Wildfires', 'This Keyword Is > Misplaced And Invalid', 'This Keyword > Is Just > WRONG'],
+            type: 'service',
+            namespace: 'Global Change Master Directory Science and Services Keywords'
+        ],
+        [
+            values: ['Air temperature', 'Water temperature'],
+            type: 'theme',
+            namespace: 'Miscellaneous keyword type'
+        ],
+        [
+            values: ['Wind speed', 'Wind direction'],
+            type: 'theme',
+            namespace: 'Miscellaneous keyword type'
+        ],
+        [
+            values: [
+                'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
+                'Oceans > Salinity/Density > Salinity',
+                'Volcanoes > This Keyword > Is Invalid',
+                'Spectral/Engineering > Microwave > Brightness Temperature',
+                'Spectral/Engineering > Microwave > Temperature Anomalies'
+            ],
+            type: 'theme',
+            namespace: 'GCMD Keywords - Science Keywords'
+        ],
+        [
+            values: ['Geographic Region > Arctic', 'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico', 'Liquid Earth > This Keyword > Is Invalid'],
+            type: 'place',
+            namespace: 'GCMD Keywords - Locations'
+            ],
+        [
+            values: ['Seasonal'],
+            type: 'dataResolution',
+            namespace: 'Global Change Master Directory Keywords - Temporal Data Resolution'
+        ],
+        [
+            values: ['> 1 Km'],
+            type: 'dataResolution',
+            namespace: 'GCMD Keywords - Vertical Data Resolution'
+        ]
+    ] as Set)
+    parsedXml.accessionValues == [
+        '0038924',
+        '0038947',
+        '0038970'
     ] as Set
     parsedXml.topicCategories == ['environment', 'oceans'] as Set
+    parsedXml.gcmdScienceServices == [
+        'Environmental Advisories',
+        'Environmental Advisories > Fire Advisories',
+        'Environmental Advisories > Fire Advisories > Wildfires'
+    ] as Set
     parsedXml.gcmdScience == [
         'Atmosphere',
         'Atmosphere > Atmospheric Temperature',
@@ -41,6 +95,12 @@ class MetadataParserTest extends Specification {
         'Oceans',
         'Oceans > Salinity/Density',
         'Oceans > Salinity/Density > Salinity',
+        'Spectral/Engineering',
+        'Spectral/Engineering > Microwave',
+        'Spectral/Engineering > Microwave > Brightness Temperature',
+        'Spectral/Engineering > Microwave > Temperature Anomalies',
+        'This Keyword Is',
+        'This Keyword Is > Misplaced And Invalid',
         'Volcanoes',
         'Volcanoes > This Keyword',
         'Volcanoes > This Keyword > Is Invalid'
@@ -59,51 +119,66 @@ class MetadataParserTest extends Specification {
     parsedXml.gcmdInstruments == [] as Set
     parsedXml.gcmdPlatforms == [] as Set
     parsedXml.gcmdProjects == [] as Set
-    parsedXml.gcmdDataCenters == ['SIO > Super Important Organization'] as Set
-    parsedXml.gcmdDataResolution == [] as Set
+    parsedXml.gcmdDataCenters == [
+        'SIO > Super Important Organization',
+        'OSIO > Other Super Important Organization',
+        'SSIO > Super SIO (Super Important Organization)'
+    ] as Set
+    parsedXml.gcmdHorizontalResolution == [] as Set
+    parsedXml.gcmdVerticalResolution == ['> 1 Km'] as Set
+    parsedXml.gcmdTemporalResolution == ['Seasonal'] as Set
     parsedXml.temporalBounding == [
-        beginDate: '2005-05-09',
-        beginIndeterminate: null,
-        endDate: null,
-        endIndeterminate: 'now',
-        instant: null,
+        beginDate           : '2005-05-09',
+        beginIndeterminate  : null,
+        endDate             : null,
+        endIndeterminate    : 'now',
+        instant             : null,
         instantIndeterminate: null
     ]
     parsedXml.spatialBounding == [
-        type        : 'Polygon',
-        coordinates : [
+        type       : 'Polygon',
+        coordinates: [
             [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]
         ]
     ]
     parsedXml.isGlobal == true
-    parsedXml.acquisitionInstruments == [[
-        instrumentIdentifier  : 'SII > Super Important Instrument',
-        instrumentType        : 'sensor',
-        instrumentDescription : 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
-    ]] as Set
-    parsedXml.acquisitionOperations == [[
-        operationDescription : null,
-        operationIdentifier  : 'Super Important Project',
-        operationStatus      : null,
-        operationType        : null
-    ]] as Set
-    parsedXml.dataFormats == [
-        'NETCDF',
-        'ASCII',
-        'CSV'
+    parsedXml.acquisitionInstruments == [
+        [
+            instrumentIdentifier : 'SII > Super Important Instrument',
+            instrumentType       : 'sensor',
+            instrumentDescription: 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
+        ]
     ] as Set
-    parsedXml.acquisitionPlatforms == [[
-        platformIdentifier  : 'TS-18 > TumbleSat-18',
-        platformDescription : 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
-        platformSponsor     : ['Super Important Organization', 'Other (Kind Of) Important Organization']
-    ]] as Set
-    parsedXml.links == [[
-        linkName        : 'Super Important Access Link',
-        linkProtocol    : 'HTTP',
-        linkUrl         : 'http://www.example.com',
-        linkDescription : 'Everything Important, All In One Place',
-        linkFunction    : 'search'
-    ]] as Set
+    parsedXml.acquisitionOperations == [
+        [
+            operationDescription: null,
+            operationIdentifier : 'Super Important Project',
+            operationStatus     : null,
+            operationType       : null
+        ]
+    ] as Set
+    parsedXml.dataFormats == [
+        [name: 'NETCDF', version: 'classic'],
+        [name: 'NETCDF', version: '4'],
+        [name: 'ASCII', version: null],
+        [name: 'CSV', version: null]
+    ] as Set
+    parsedXml.acquisitionPlatforms == [
+        [
+            platformIdentifier : 'TS-18 > TumbleSat-18',
+            platformDescription: 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
+            platformSponsor    : ['Super Important Organization', 'Other (Kind Of) Important Organization']
+        ]
+    ] as Set
+    parsedXml.links == [
+        [
+            linkName       : 'Super Important Access Link',
+            linkProtocol   : 'HTTP',
+            linkUrl        : 'http://www.example.com',
+            linkDescription: 'Everything Important, All In One Place',
+            linkFunction   : 'search'
+        ]
+    ] as Set
 
     parsedXml.contacts == [
         [
@@ -179,10 +254,48 @@ class MetadataParserTest extends Specification {
     ] as Set
 
     parsedXml.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
-    parsedXml.modifiedDate == '2016-12-25T11:12:13'
+    parsedXml.thumbnailDescription == 'Preview graphic'
     parsedXml.creationDate == null
     parsedXml.revisionDate == '2011-01-02'
     parsedXml.publicationDate == '2010-11-15'
+    parsedXml.citeAsStatements == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+
+    parsedXml.crossReferences == [
+        [
+            title: '[TITLE OF PUBLICATION]',
+            code: '[ID OF PUBLICATION]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
+                linkDescription: '[DESCRIPTION OF URL]',
+                linkFunction: 'information'
+            ]
+        ]
+    ] as Set
+
+    parsedXml.largerWorks == [
+        [
+            title: 'Important Organization\'s Important File\'s Super Important Title',
+            code: '[PROJECT ID]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: null,
+                linkDescription: null,
+                linkFunction: null
+            ]
+        ]
+    ] as Set
+
+    parsedXml.useLimitation == '[NOAA LEGAL STATEMENT]'
+    parsedXml.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    parsedXml.accessFeeStatement == 'template fees'
+    parsedXml.orderingInstructions == 'template ordering instructions'
+    parsedXml.edition == '[EDITION]'
+
     parsedXml.dsmmAccessibility == 4
     parsedXml.dsmmDataIntegrity == 0
     parsedXml.dsmmDataQualityAssessment == 2
@@ -224,15 +337,55 @@ class MetadataParserTest extends Specification {
     then:
     citationInfo.fileIdentifier == 'gov.super.important:FILE-ID'
     citationInfo.parentIdentifier == 'gov.super.important:PARENT-ID'
+    citationInfo.hierarchyLevelName == 'granule'
     citationInfo.doi == 'doi:10.5072/FK2TEST'
+    citationInfo.purpose == 'Provide quality super important data to the user community.'
+    citationInfo.status == 'completed'
+    citationInfo.credit == null
     citationInfo.title == 'Important Organization\'s Important File\'s Super Important Title'
     citationInfo.alternateTitle == 'Still (But Slightly Less) Important Alternate Title'
     citationInfo.description == 'Wall of overly detailed, super informative, extra important text.'
     citationInfo.thumbnail == 'https://www.example.com/exportImage?soCool=yes&format=png'
-    citationInfo.modifiedDate == '2016-12-25T11:12:13'
+    citationInfo.thumbnailDescription == 'Preview graphic'
     citationInfo.creationDate == null
     citationInfo.revisionDate == '2011-01-02'
     citationInfo.publicationDate == '2010-11-15'
+    citationInfo.citeAsStatements == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    citationInfo.crossReferences == [
+        [
+            title: '[TITLE OF PUBLICATION]',
+            code: '[ID OF PUBLICATION]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
+                linkDescription: '[DESCRIPTION OF URL]',
+                linkFunction: 'information'
+            ]
+        ]
+    ] as Set
+
+    citationInfo.largerWorks == [
+        [
+            title: 'Important Organization\'s Important File\'s Super Important Title',
+            code: '[PROJECT ID]',
+            publicationDate: '9999-01-01',
+            link: [
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: null,
+                linkDescription: null,
+                linkFunction: null
+            ]
+        ]
+    ] as Set
+
+    citationInfo.useLimitation == '[NOAA LEGAL STATEMENT]'
+    citationInfo.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+    citationInfo.accessFeeStatement == 'template fees'
+    citationInfo.orderingInstructions == 'template ordering instructions'
+    citationInfo.edition == '[EDITION]'
   }
 
   def "Keywords and topics are correctly parsed"() {
@@ -243,17 +396,66 @@ class MetadataParserTest extends Specification {
     def parsedXml = MetadataParser.parseKeywordsAndTopics(document)
 
     then:
-    parsedXml.keywords == [
-        'Air temperature', 'Water temperature', 'Wind speed', 'Wind direction',
-        'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
-        'Oceans > Salinity/Density > Salinity',
-        'Volcanoes > This Keyword > Is Invalid',
-        'Geographic Region > Arctic',
-        'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
-        'Liquid Earth > This Keyword > Is Invalid',
-        'SIO > Super Important Organization'
+    // Deep equality check
+    JsonOutput.toJson(parsedXml.keywords) == JsonOutput.toJson([
+        [
+            values: ['SIO > Super Important Organization','OSIO > Other Super Important Organization', 'SSIO > Super SIO (Super Important Organization)'],
+            type: 'dataCenter',
+            namespace: 'GCMD Keywords - Data Centers'
+        ],
+        [
+            values: ['Environmental Advisories > Fire Advisories > Wildfires', 'This Keyword Is > Misplaced And Invalid', 'This Keyword > Is Just > WRONG'],
+            type: 'service',
+            namespace: 'Global Change Master Directory Science and Services Keywords'
+        ],
+        [
+            values: ['Air temperature', 'Water temperature'],
+            type: 'theme',
+            namespace: 'Miscellaneous keyword type'
+        ],
+        [
+            values: ['Wind speed', 'Wind direction'],
+            type: 'theme',
+            namespace: 'Miscellaneous keyword type'
+        ],
+        [
+            values: [
+                'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
+                'Oceans > Salinity/Density > Salinity',
+                'Volcanoes > This Keyword > Is Invalid',
+                'Spectral/Engineering > Microwave > Brightness Temperature',
+                'Spectral/Engineering > Microwave > Temperature Anomalies'
+            ],
+            type: 'theme',
+            namespace: 'GCMD Keywords - Science Keywords'
+        ],
+        [
+            values: ['Geographic Region > Arctic', 'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico', 'Liquid Earth > This Keyword > Is Invalid'],
+            type: 'place',
+            namespace: 'GCMD Keywords - Locations'
+        ],
+        [
+            values: ['Seasonal'],
+            type: 'dataResolution',
+            namespace: 'Global Change Master Directory Keywords - Temporal Data Resolution'
+        ],
+        [
+            values: ['> 1 Km'],
+            type: 'dataResolution',
+            namespace: 'GCMD Keywords - Vertical Data Resolution'
+        ]
+    ] as Set)
+    parsedXml.accessionValues == [
+        '0038924',
+        '0038947',
+        '0038970'
     ] as Set
     parsedXml.topicCategories == ['environment', 'oceans'] as Set
+    parsedXml.gcmdScienceServices == [
+        'Environmental Advisories',
+        'Environmental Advisories > Fire Advisories',
+        'Environmental Advisories > Fire Advisories > Wildfires'
+    ] as Set
     parsedXml.gcmdScience == [
         'Atmosphere',
         'Atmosphere > Atmospheric Temperature',
@@ -262,6 +464,12 @@ class MetadataParserTest extends Specification {
         'Oceans',
         'Oceans > Salinity/Density',
         'Oceans > Salinity/Density > Salinity',
+        'Spectral/Engineering',
+        'Spectral/Engineering > Microwave',
+        'Spectral/Engineering > Microwave > Brightness Temperature',
+        'Spectral/Engineering > Microwave > Temperature Anomalies',
+        'This Keyword Is',
+        'This Keyword Is > Misplaced And Invalid',
         'Volcanoes',
         'Volcanoes > This Keyword',
         'Volcanoes > This Keyword > Is Invalid'
@@ -280,8 +488,14 @@ class MetadataParserTest extends Specification {
     parsedXml.gcmdInstruments == [] as Set
     parsedXml.gcmdPlatforms == [] as Set
     parsedXml.gcmdProjects == [] as Set
-    parsedXml.gcmdDataCenters == ['SIO > Super Important Organization'] as Set
-    parsedXml.gcmdDataResolution == [] as Set
+    parsedXml.gcmdDataCenters == [
+        'SIO > Super Important Organization',
+        'OSIO > Other Super Important Organization',
+        'SSIO > Super SIO (Super Important Organization)'
+    ] as Set
+    parsedXml.gcmdHorizontalResolution == [] as Set
+    parsedXml.gcmdVerticalResolution == ['> 1 Km'] as Set
+    parsedXml.gcmdTemporalResolution == ['Seasonal'] as Set
   }
 
   def "Temporal bounding is correctly parsed"() {
@@ -293,11 +507,11 @@ class MetadataParserTest extends Specification {
 
     then:
     temporalBounding == [
-        beginDate: '2005-05-09',
-        beginIndeterminate: null,
-        endDate: null,
-        endIndeterminate: 'now',
-        instant: null,
+        beginDate           : '2005-05-09',
+        beginIndeterminate  : null,
+        endDate             : null,
+        endIndeterminate    : 'now',
+        instant             : null,
         instantIndeterminate: null
     ]
   }
@@ -312,16 +526,16 @@ class MetadataParserTest extends Specification {
     then:
     result == [
         spatialBounding: [
-            type: 'Polygon',
+            type       : 'Polygon',
             coordinates: [
                 [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]
             ]
         ],
-        isGlobal: true
+        isGlobal       : true
     ]
   }
 
-  def "Point spatial bounding is correctly parsed"(){
+  def "Point spatial bounding is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-point-cords-metadata.xml").text
 
@@ -331,22 +545,22 @@ class MetadataParserTest extends Specification {
     then:
     spatialBounding == [
         spatialBounding: [
-            type: 'Point',
+            type       : 'Point',
             coordinates: [-105, 40]
         ],
-        isGlobal: false
+        isGlobal       : false
     ]
   }
 
-  def "Null Spatial bounding is correctly parsed"(){
-      given:
-      def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-null-cords-metadata.xml").text
+  def "Null Spatial bounding is correctly parsed"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-null-cords-metadata.xml").text
 
-      when:
-      def spatialBounding = MetadataParser.parseSpatialInfo(document)
+    when:
+    def spatialBounding = MetadataParser.parseSpatialInfo(document)
 
-      then:
-      spatialBounding == [spatialBounding: null, isGlobal: false]
+    then:
+    spatialBounding == [spatialBounding: null, isGlobal: false]
   }
 
   def "Acquisition info is correctly parsed"() {
@@ -357,22 +571,28 @@ class MetadataParserTest extends Specification {
     def parsedXml = MetadataParser.parseAcquisitionInfo(document)
 
     then:
-    parsedXml.acquisitionInstruments == [[
-                                             instrumentIdentifier  : 'SII > Super Important Instrument',
-                                             instrumentType        : 'sensor',
-                                             instrumentDescription : 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
-                                         ]] as Set
-    parsedXml.acquisitionOperations == [[
-                                            operationDescription : null,
-                                            operationIdentifier  : 'Super Important Project',
-                                            operationStatus      : null,
-                                            operationType        : null
-                                        ]] as Set
-    parsedXml.acquisitionPlatforms == [[
-                                           platformIdentifier  : 'TS-18 > TumbleSat-18',
-                                           platformDescription : 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
-                                           platformSponsor     : ['Super Important Organization', 'Other (Kind Of) Important Organization']
-                                       ]] as Set
+    parsedXml.acquisitionInstruments == [
+        [
+            instrumentIdentifier : 'SII > Super Important Instrument',
+            instrumentType       : 'sensor',
+            instrumentDescription: 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
+        ]
+    ] as Set
+    parsedXml.acquisitionOperations == [
+        [
+            operationDescription: null,
+            operationIdentifier : 'Super Important Project',
+            operationStatus     : null,
+            operationType       : null
+        ]
+    ] as Set
+    parsedXml.acquisitionPlatforms == [
+        [
+            platformIdentifier : 'TS-18 > TumbleSat-18',
+            platformDescription: 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
+            platformSponsor    : ['Super Important Organization', 'Other (Kind Of) Important Organization']
+        ]
+    ] as Set
   }
 
   def "Data formats are correctly parsed"() {
@@ -384,9 +604,10 @@ class MetadataParserTest extends Specification {
 
     then:
     dataFormats == [
-        'NETCDF',
-        'ASCII',
-        'CSV'
+        [name: 'NETCDF', version: 'classic'],
+        [name: 'NETCDF', version: '4'],
+        [name: 'ASCII', version: null],
+        [name: 'CSV', version: null]
     ] as Set
   }
 
@@ -399,11 +620,11 @@ class MetadataParserTest extends Specification {
 
     then:
     links == [[
-                  linkName        : 'Super Important Access Link',
-                  linkProtocol    : 'HTTP',
-                  linkUrl         : 'http://www.example.com',
-                  linkDescription : 'Everything Important, All In One Place',
-                  linkFunction    : 'search'
+                  linkName       : 'Super Important Access Link',
+                  linkProtocol   : 'HTTP',
+                  linkUrl        : 'http://www.example.com',
+                  linkDescription: 'Everything Important, All In One Place',
+                  linkFunction   : 'search'
               ]] as Set
   }
 
@@ -508,7 +729,7 @@ class MetadataParserTest extends Specification {
     dsmm.Usability == 3
     dsmm.average == ((dsmm.Accessibility + dsmm.DataIntegrity + dsmm.DataQualityAssessment + dsmm.DataQualityAssurance +
         dsmm.DataQualityControlMonitoring + dsmm.Preservability + dsmm.ProductionSustainability +
-        dsmm.TransparencyTraceability + dsmm.Usability) / ( dsmm.size() - 1 ) )
+        dsmm.TransparencyTraceability + dsmm.Usability) / (dsmm.size() - 1))
   }
 
   def "Services are correctly parsed"() {

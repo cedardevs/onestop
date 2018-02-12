@@ -2,9 +2,9 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
+import org.apache.commons.text.StringEscapeUtils
+import org.apache.commons.text.WordUtils
 import groovy.xml.XmlUtil
-import org.apache.commons.lang3.StringEscapeUtils
-import org.apache.commons.lang3.text.WordUtils
 
 class MetadataParser {
 
@@ -49,19 +49,27 @@ class MetadataParser {
     def json = [
         fileIdentifier                  : citationInfo.fileIdentifier,
         parentIdentifier                : citationInfo.parentIdentifier,
+        hierarchyLevelName              : citationInfo.hierarchyLevelName,
         doi                             : citationInfo.doi,
+        purpose                         : citationInfo.purpose,
+        status                          : citationInfo.status,
+        credit                          : citationInfo.credit,
         title                           : citationInfo.title,
         alternateTitle                  : citationInfo.alternateTitle,
         description                     : citationInfo.description,
         keywords                        : keywordsMap.keywords,
+        accessionValues                 : keywordsMap.accessionValues,
         topicCategories                 : keywordsMap.topicCategories,
+        gcmdScienceServices             : keywordsMap.gcmdScienceServices,
         gcmdScience                     : keywordsMap.gcmdScience,
         gcmdLocations                   : keywordsMap.gcmdLocations,
         gcmdInstruments                 : keywordsMap.gcmdInstruments,
         gcmdPlatforms                   : keywordsMap.gcmdPlatforms,
         gcmdProjects                    : keywordsMap.gcmdProjects,
         gcmdDataCenters                 : keywordsMap.gcmdDataCenters,
-        gcmdDataResolution              : keywordsMap.gcmdDataResolution,
+        gcmdHorizontalResolution        : keywordsMap.gcmdHorizontalResolution,
+        gcmdVerticalResolution          : keywordsMap.gcmdVerticalResolution,
+        gcmdTemporalResolution          : keywordsMap.gcmdTemporalResolution,
         temporalBounding                : parseTemporalBounding(metadata),
         spatialBounding                 : spatialMap.spatialBounding,
         isGlobal                        : spatialMap.isGlobal,
@@ -74,10 +82,18 @@ class MetadataParser {
         creators                        : responsibleParties.creators,
         publishers                      : responsibleParties.publishers,
         thumbnail                       : citationInfo.thumbnail,
-        modifiedDate                    : citationInfo.modifiedDate,
+        thumbnailDescription            : citationInfo.thumbnailDescription,
         creationDate                    : citationInfo.creationDate,
         revisionDate                    : citationInfo.revisionDate,
         publicationDate                 : citationInfo.publicationDate,
+        citeAsStatements                : citationInfo.citeAsStatements,
+        crossReferences                 : citationInfo.crossReferences,
+        largerWorks                     : citationInfo.largerWorks,
+        useLimitation                   : citationInfo.useLimitation,
+        legalConstraints                : citationInfo.legalConstraints,
+        accessFeeStatement              : citationInfo.accessFeeStatement,
+        orderingInstructions            : citationInfo.orderingInstructions,
+        edition                         : citationInfo.edition,
         dsmmAccessibility               : dsmmMap.Accessibility,
         dsmmDataIntegrity               : dsmmMap.DataIntegrity,
         dsmmDataQualityAssessment       : dsmmMap.DataQualityAssessment,
@@ -100,33 +116,54 @@ class MetadataParser {
   static Map parseCitationInfo(GPathResult metadata) {
     def fileIdentifier
     def parentIdentifier
+    def hierarchyLevelName
     def doi
+    def purpose
+    def status
+    def credit
     def title
     def alternateTitle
     def description
     def thumbnail
-    def modifiedDate
+    def thumbnailDescription
     def creationDate
     def revisionDate
     def publicationDate
+    Set citeAsStatements = []
+    Set crossReferences = []
+    Set largerWorks = []
+    def useLimitation
+    def legalConstraints
+    def accessFeeStatement
+    def orderingInstructions
+    def edition
 
     def idInfo = metadata.identificationInfo.MD_DataIdentification
 
     fileIdentifier = metadata.fileIdentifier.CharacterString.text()
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
+    hierarchyLevelName = metadata.hierarchyLevelName.CharacterString.text().toLowerCase() ?: null
+
+    purpose = idInfo.purpose.text() ?: null
+    status = idInfo.status.MD_ProgressCode.@codeListValue.text() ?: null
+    credit = idInfo.credit.text() ?: null
+
     def identifiers = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'identifier' }
     doi = identifiers.findResult(null, { identifier ->
-      if (identifier.MD_Identifier.authority.CI_Citation.title.CharacterString.text() == 'Digital Object Identifier (DOI)') {
-        return identifier.MD_Identifier.code.Anchor.text()
+      def anchor = identifier.MD_Identifier.code.Anchor
+      def titleTag = anchor.'@xlink:title'.text()
+      if (titleTag == 'DOI') {
+        return anchor.text()
       }
     })
     title = idInfo.citation.CI_Citation.title.CharacterString.text()
     alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text() ?: null
     description = idInfo.abstract.CharacterString.text()
-    thumbnail = StringEscapeUtils.unescapeXml(idInfo.graphicOverview.MD_BrowseGraphic.fileName.CharacterString.text())
+    def thumbnailPath = idInfo.graphicOverview.MD_BrowseGraphic
+    thumbnail = StringEscapeUtils.unescapeXml(thumbnailPath.fileName.CharacterString.text())
+    thumbnailDescription = thumbnailPath.fileDescription.CharacterString.text() ?: null
 
     // Miscellaneous dates:
-    modifiedDate = metadata.dateStamp.Date.text() ?: metadata.dateStamp.DateTime.text()
     def dates = idInfo.citation.CI_Citation.'**'.findAll { it.name() == 'date' }
     dates.each { date ->
       def dateType = date.CI_Date.dateType.CI_DateTypeCode.@codeListValue.text()
@@ -139,18 +176,88 @@ class MetadataParser {
       }
     }
 
+    // Cite-As Statements
+    def otherConstraints = idInfo.resourceConstraints.MD_LegalConstraints.'**'.findAll { it.name() == 'otherConstraints' }
+    def citationConstraints = otherConstraints.findAll { it.CharacterString.text().toLowerCase().contains('cite') }
+    citeAsStatements = citationConstraints.collect { it.CharacterString.text() }.toSet()
+
+    // Cross References & Larger Works
+    def aggregationInfo = metadata.'**'.findAll { it.name() == 'aggregationInfo' }
+
+    aggregationInfo.each { aggInfo ->
+      def associationType = aggInfo.MD_AggregateInformation.associationType.DS_AssociationTypeCode.@codeListValue.text() ?: null
+      def initiativeType = aggInfo.MD_AggregateInformation.initiativeType.DS_InitiativeTypeCode.@codeListValue.text() ?: null
+      def citation = aggInfo.MD_AggregateInformation.aggregateDataSetName.CI_Citation
+      def onlineResource = aggInfo.CI_OnlineResource
+
+      def aggPubDate = null
+      def aggDates = citation.'**'.findAll { it.name() == 'date' }
+      aggDates.each { date ->
+        def dateType = date.CI_Date.dateType.CI_DateTypeCode.@codeListValue.text()
+        if(dateType == 'publication') {
+          aggPubDate = date.CI_Date.date.Date.text() ?: null
+        }
+      }
+
+      def aggTitle = citation.title.text() ?: null
+      def code = citation.identifier.MD_Identifier.code.CharacterString.text() ?: null
+      def link = [
+          linkName       : onlineResource.name.CharacterString.text() ?: null,
+          linkProtocol   : onlineResource.protocol.CharacterString.text() ?: null,
+          linkUrl        : onlineResource.linkage.URL.text() ? StringEscapeUtils.unescapeXml(onlineResource.linkage.URL.text()) : null,
+          linkDescription: onlineResource.description.CharacterString.text() ?: null,
+          linkFunction   : onlineResource.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
+      ]
+
+      if(associationType == 'crossReference') {
+        crossReferences.add([
+            title: aggTitle,
+            code: code,
+            publicationDate: aggPubDate,
+            link: link
+        ])
+      }
+      else if(associationType == 'largerWorkCitation') {
+        largerWorks.add([
+            title: title,
+            code: code,
+            publicationDate: aggPubDate,
+            link: link
+        ])
+      }
+    }
+
+    // Use Limitation, Legal Constraints, Access Fee Statements, Ordering Instructions, and Edition
+    useLimitation = idInfo.resourceConstraints.MD_Constraints.useLimitation.CharacterString.text() ?: null
+    legalConstraints = otherConstraints.collect { return it.CharacterString.text() ?: null } as Set
+    accessFeeStatement = metadata.distributionInfo.MD_Distribution.distributionOrderProcess.MD_StandardOrderProcess.fees.CharacterString.text() ?: null
+    orderingInstructions = metadata.distributionInfo.MD_Distribution.distributionOrderProcess.MD_StandardOrderProcess.orderingInstructions.CharacterString.text() ?: null
+    edition = idInfo.citation.CI_Citation.edition.CharacterString.text() ?: null
+
     return [
-        fileIdentifier  : fileIdentifier,
-        parentIdentifier: parentIdentifier,
-        doi             : doi,
-        title           : title,
-        alternateTitle  : alternateTitle,
-        description     : description,
-        thumbnail       : thumbnail,
-        modifiedDate    : modifiedDate,
-        creationDate    : creationDate,
-        revisionDate    : revisionDate,
-        publicationDate : publicationDate
+        fileIdentifier      : fileIdentifier,
+        parentIdentifier    : parentIdentifier,
+        hierarchyLevelName  : hierarchyLevelName,
+        doi                 : doi,
+        purpose             : purpose,
+        status              : status,
+        credit              : credit,
+        title               : title,
+        alternateTitle      : alternateTitle,
+        description         : description,
+        thumbnail           : thumbnail,
+        thumbnailDescription: thumbnailDescription,
+        creationDate        : creationDate,
+        revisionDate        : revisionDate,
+        publicationDate     : publicationDate,
+        citeAsStatements    : citeAsStatements,
+        crossReferences     : crossReferences,
+        largerWorks         : largerWorks,
+        useLimitation       : useLimitation,
+        legalConstraints    : legalConstraints,
+        accessFeeStatement  : accessFeeStatement,
+        orderingInstructions: orderingInstructions,
+        edition             : edition
     ]
   }
 
@@ -160,79 +267,194 @@ class MetadataParser {
 
   static Map parseKeywordsAndTopics(GPathResult metadata) {
 
+    def extractKnownText = { k ->
+      def text = k.CharacterString.text() ?: k.Anchor.text()
+      return text.trim()
+    }
+
     def idInfo = metadata.identificationInfo.MD_DataIdentification
 
     def keywords = [] as Set
+    def accessionValues = [] as Set
     def topicCategories = [] as Set
     def gcmdScience = [] as Set
+    def gcmdScienceServices = [] as Set
     def gcmdLocations = [] as Set
     def gcmdPlatforms = [] as Set
     def gcmdInstruments = [] as Set
     def gcmdProjects = [] as Set
-    def gcmdDataResolution = [] as Set
+    def gcmdHorizontalResolution = [] as Set
+    def gcmdVerticalResolution = [] as Set
+    def gcmdTemporalResolution = [] as Set
     def gcmdDataCenters = [] as Set
 
     topicCategories.addAll(idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text())
 
     def keywordGroups = idInfo.descriptiveKeywords.'**'.findAll { it.name() == 'MD_Keywords' }
     keywordGroups.each { group ->
+      def namespace = group.thesaurusName.CI_Citation.title.CharacterString.text()
+      def type = group.type.MD_KeywordTypeCode.@codeListValue.text() ?: null
       def keywordsInGroup = group.'**'.findAll { it.name() == 'keyword' }
-      keywordsInGroup.each { k ->
-        def text = k.CharacterString.text() ?: k.Anchor.text()
-        def namespace = group.thesaurusName.CI_Citation.title.CharacterString.text()
+      def values = [] as Set
 
-        if (text) {
-          text = text.trim()
-          if (namespace.toLowerCase().contains('gcmd')) {
-            switch (namespace) {
-              case { it.toLowerCase().contains('science') }:
-                text = normalizeHierarchyKeyword(text)
-                gcmdScience.addAll(tokenizeHierarchyKeyword(text))
-                break
-              case { it.toLowerCase().contains('location') || it.toLowerCase().contains('place') }:
+      if(namespace.toUpperCase() == 'NCEI ACCESSION NUMBER') {
+        // Accession values are NOT keywords
+        keywordsInGroup.each { k ->
+          accessionValues.add(extractKnownText(k))
+        }
+      }
+
+      else {
+        if(namespace.toLowerCase().contains('gcmd') || namespace.toLowerCase().contains('global change master directory')) {
+          switch (namespace.toLowerCase()) {
+            case { it.contains('science') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                if(text.toLowerCase().startsWith('earth science services')) {
+                  text = normalizeHierarchyKeyword(text)
+                  gcmdScienceServices.addAll(tokenizeHierarchyKeyword(text))
+                }
+                else if(text.toLowerCase().startsWith('earth science')) {
+                  text = normalizeHierarchyKeyword(text)
+                  gcmdScience.addAll(tokenizeHierarchyKeyword(text))
+                }
+                values.add(text)
+              }
+              break
+            case { it.contains('location') || it.contains('place') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
                 text = normalizeHierarchyKeyword(text)
                 gcmdLocations.addAll(tokenizeHierarchyKeyword(text))
-                break
-              case { it.toLowerCase().contains('platform') }:
+                values.add(text)
+              }
+              break
+            case { it.contains('platform') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdPlatforms.add(text)
-                break
-              case { it.toLowerCase().contains('instrument') }:
+                values.add(text)
+              }
+              break
+            case { it.contains('instrument') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdInstruments.add(text)
-                break
-              case { it.toLowerCase().contains('data center') }:
+                values.add(text)
+              }
+              break
+            case { it.contains('data center') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdDataCenters.add(text)
-                break
-              case { it.toLowerCase().contains('data resolution') }:
-                gcmdDataResolution.add(text)
-                break
-              case { it.toLowerCase().contains('project') }:
+                values.add(text)
+              }
+              break
+            case { it.contains('horizontal data resolution') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = WordUtils.capitalizeFully(text, capitalizingDelimiters)
+                gcmdHorizontalResolution.add(text)
+                values.add(text)
+              }
+              break
+            case { it.contains('vertical data resolution') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = WordUtils.capitalizeFully(text, capitalizingDelimiters)
+                gcmdVerticalResolution.add(text)
+                values.add(text)
+              }
+              break
+            case { it.contains('temporal data resolution') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = WordUtils.capitalizeFully(text, capitalizingDelimiters)
+                gcmdTemporalResolution.add(text)
+                values.add(text)
+              }
+              break
+            case { it.contains('project') }:
+              keywordsInGroup.each { k ->
+                def text = extractKnownText(k)
+                text = normalizeNonHierarchicalKeyword(text)
                 gcmdProjects.add(text)
-                break
+                values.add(text)
+              }
+              break
+            default:
+              // Namespace didn't meet our checks, save as regular keywords only
+              keywordsInGroup.each { k ->
+                values.add(extractKnownText(k))
+              }
+          }
+        }
+
+        else {
+          // Not a known namespace
+          keywordsInGroup.each { k ->
+            def text = k.CharacterString.text() ?: k.Anchor.text()
+            if(text) { // Just in case, since we don't know this namespace...
+              values.add(text.trim())
             }
           }
-          keywords.add(text)
         }
+
+        // Add whole group of keywords
+        keywords.add([
+            values: values,
+            type: type,
+            namespace: namespace
+        ])
       }
     }
 
     return [
-        keywords          : keywords,
-        topicCategories   : topicCategories,
-        gcmdScience       : gcmdScience,
-        gcmdLocations     : gcmdLocations,
-        gcmdInstruments   : gcmdInstruments,
-        gcmdPlatforms     : gcmdPlatforms,
-        gcmdProjects      : gcmdProjects,
-        gcmdDataCenters   : gcmdDataCenters,
-        gcmdDataResolution: gcmdDataResolution
+        keywords                : keywords,
+        accessionValues         : accessionValues,
+        topicCategories         : topicCategories,
+        gcmdScienceServices     : gcmdScienceServices,
+        gcmdScience             : gcmdScience,
+        gcmdLocations           : gcmdLocations,
+        gcmdInstruments         : gcmdInstruments,
+        gcmdPlatforms           : gcmdPlatforms,
+        gcmdProjects            : gcmdProjects,
+        gcmdDataCenters         : gcmdDataCenters,
+        gcmdHorizontalResolution: gcmdHorizontalResolution,
+        gcmdVerticalResolution  : gcmdVerticalResolution,
+        gcmdTemporalResolution  : gcmdTemporalResolution
     ]
+  }
+
+  static String cleanInternalGCMDKeywordWhitespace(String text) {
+    def elements = text.split('>')
+    def trimmed = elements.collect { e ->  e.trim() }
+    return String.join(' > ', trimmed)
   }
 
   static final char[] capitalizingDelimiters = [' ', '/', '.', '(', '-', '_'].collect({ it as char })
 
+  static String normalizeNonHierarchicalKeyword(String text) {
+    // These are in the format 'Short Name > Long Name', where 'Short Name' is likely an acronym. This normalizing allows
+    // for title casing the 'Long Name' if and only if it's given in all caps or all lowercase (so we don't title case an
+    // acronym here)
+    def cleanText = cleanInternalGCMDKeywordWhitespace(text)
+    def elements = Arrays.asList(cleanText.split(' > '))
+    String longName = elements.last()
+    if(longName == longName.toUpperCase() || longName == longName.toLowerCase()) {
+      longName = WordUtils.capitalizeFully(longName, capitalizingDelimiters)
+      elements.set(elements.size() - 1, longName)
+    }
+    return String.join(' > ', elements)
+  }
+
   static String normalizeHierarchyKeyword(String text) {
-    return WordUtils.capitalizeFully(text, capitalizingDelimiters)
-        .replace('Earth Science > ', '')
+    def cleanText = cleanInternalGCMDKeywordWhitespace(text)
+    return WordUtils.capitalizeFully(cleanText, capitalizingDelimiters)
+        .replace('Earth Science > ', '').replace('Earth Science Services > ', '')
   }
 
   static List<String> tokenizeHierarchyKeyword(String text) {
@@ -336,34 +558,34 @@ class MetadataParser {
     def acquisitionPlatforms = [] as Set
 
     // Acquisition instrument:
-    def instruments = metadata.acquisitionInformation.MI_AcquisitionInformation.instrument
+    def instruments = metadata.acquisitionInformation.MI_AcquisitionInformation
         .'**'.findAll { it.name() == 'MI_Instrument' }
     instruments.each { e ->
       acquisitionInstruments.add([
-          instrumentIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: null,
-          instrumentType       : e.type.CharacterString.text() ?: null,
+          instrumentIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null,
+          instrumentType       : e.type.CharacterString.text() ?: e.type.Anchor.text() ?: null,
           instrumentDescription: e.description.CharacterString.text() ?: null
       ])
     }
 
     // Acquisition operation:
-    def operations = metadata.acquisitionInformation.MI_AcquisitionInformation.operation
+    def operations = metadata.acquisitionInformation.MI_AcquisitionInformation
         .'**'.findAll { it.name() == 'MI_Operation' }
     operations.each { e ->
       acquisitionOperations.add([
           operationDescription: e.description.CharacterString.text() ?: null,
-          operationIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: null,
+          operationIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null,
           operationStatus     : e.status.MD_ProgressCode.@codeListValue.text() ?: null,
           operationType       : e.type.MI_OperationTypeCode.@codeListValue.text() ?: null // FIXME not sure on path
       ])
     }
 
     // Acquisition platform:
-    def platforms = metadata.acquisitionInformation.MI_AcquisitionInformation.platform
+    def platforms = metadata.acquisitionInformation.MI_AcquisitionInformation
         .'**'.findAll { it.name() == 'MI_Platform' }
     platforms.each { e ->
       acquisitionPlatforms.add([
-          platformIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: null,
+          platformIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null,
           platformDescription: e.description.CharacterString.text() ?: null,
           platformSponsor    : e.sponsor.CI_ResponsibleParty.organisationName
               .'**'.findAll { it.name() == 'CharacterString' }*.text()
@@ -384,8 +606,15 @@ class MetadataParser {
   static Set parseDataFormats(GPathResult metadata) {
     def dataFormats = [] as Set
     def formats = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'MD_Format' }
-    formats.each { e ->
-      dataFormats.add(e.name.CharacterString.text() ? (e.name.CharacterString.text() as String).toUpperCase() : null)
+    formats.each { format ->
+
+      def name = format.name.CharacterString.text() ? (format.name.CharacterString.text() as String).toUpperCase() : null
+      def version = format.version.CharacterString.text() ?: null
+
+      dataFormats.add([
+          name: name,
+          version: version
+      ])
     }
     return dataFormats
   }

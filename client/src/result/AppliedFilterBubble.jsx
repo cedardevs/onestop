@@ -1,5 +1,4 @@
 import React, {Component} from 'react'
-import {titleCaseKeyword} from '../utils/keywordUtils'
 
 const styleDefault = (backgroundColor, borderColor) => {
   return {

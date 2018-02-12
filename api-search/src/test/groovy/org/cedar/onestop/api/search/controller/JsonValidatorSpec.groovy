@@ -83,7 +83,7 @@ class JsonValidatorSpec extends Specification {
         """\
 {
   "filters": [
-    {"type": "facet", "name": "gcmdScience", "values": ["Atmosphere"]}
+    {"type": "facet", "name": "science", "values": ["Atmosphere"]}
   ]
 }""",
         """\
@@ -103,7 +103,7 @@ class JsonValidatorSpec extends Specification {
         """\
 {
   "filters": [
-    {"type": "facet", "name": "gcmdLocations", "values": ["Continent > North America"]},
+    {"type": "facet", "name": "horizontalResolution", "values": ["> 1 Km"]},
     {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
     {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [22.123, -45.245]}},
     {"type": "geometry", "relation": "intersects", "geometry":
@@ -125,7 +125,7 @@ class JsonValidatorSpec extends Specification {
     {"type": "queryText", "value": "temperature"}
   ],
   "filters": [
-    {"type": "facet", "name": "gcmdScience", "values": ["Oceans"]},
+    {"type": "facet", "name": "science", "values": ["Oceans"]},
     {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
     {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [22.123, -45.245]}}
   ],
@@ -221,6 +221,12 @@ class JsonValidatorSpec extends Specification {
 {
   "filters": [
     { "type": "excludeGlobal", "value": "taco tuesday"}
+  ]
+}""",
+        """\
+{
+  "filters": [
+    {"type": "facet", "name": "notScience", "values": ["Atmosphere"]}
   ]
 }"""
     ]

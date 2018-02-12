@@ -4,26 +4,58 @@
 "attributes": {
     "fileIdentifier": "gov.super.important:PARENT-ID",
     "parentIdentifier": null,
+    "hierarchyLevelName": null,
     "doi": "doi:10.5072/FK2TEST",
+    "purpose": "Provide quality super important data to the user community.",
+    "status": "completed",
+    "credit": null,
     "title": "Important Organization's Important File's Super Important Title",
     "alternateTitle": "Still (But Slightly Less) Important Alternate Title",
     "description": "Wall of overly detailed, super informative, extra important text.",
     "keywords": [
-        "SIO > Super Important Organization",
-        "Air temperature",
-        "Water temperature",
-        "Wind speed",
-        "Wind direction",
-        "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
-        "Oceans > Salinity/Density > Salinity",
-        "Volcanoes > This Keyword > Is Invalid",
-        "Geographic Region > Arctic",
-        "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
-        "Liquid Earth > This Keyword > Is Invalid"
+      {
+        "values": ["SIO > Super Important Organization"],
+        "type": "dataCenter",
+        "namespace": "GCMD Keywords - Data Centers"
+      },
+      {
+        "values": ["Air temperature", "Water temperature"],
+        "type": "theme",
+        "namespace": "Miscellaneous keyword type"
+      },
+      {
+        "values": ["Wind speed", "Wind direction"],
+        "type": "theme",
+        "namespace": "Miscellaneous keyword type"
+      },
+      {
+        "values": [
+          "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
+          "Oceans > Salinity/Density > Salinity",
+          "Volcanoes > This Keyword > Is Invalid"
+        ],
+        "type": "theme",
+        "namespace": "GCMD Keywords - Science Keywords"
+      },
+      {
+        "values": [
+          "Geographic Region > Arctic",
+          "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
+          "Liquid Earth > This Keyword > Is Invalid"
+        ],
+        "type": "place",
+        "namespace": "GCMD Keywords - Locations"
+      }
+    ],
+    "accessionValues": [
+
     ],
     "topicCategories": [
         "environment",
         "oceans"
+    ],
+    "gcmdScienceServices": [
+
     ],
     "gcmdScience": [
         "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
@@ -60,7 +92,13 @@
     "gcmdDataCenters": [
         "SIO > Super Important Organization"
     ],
-    "gcmdDataResolution": [
+    "gcmdHorizontalResolution": [
+
+    ],
+    "gcmdVerticalResolution": [
+
+    ],
+    "gcmdTemporalResolution": [
 
     ],
     "temporalBounding": {
@@ -125,9 +163,22 @@
         }
     ],
     "dataFormats": [
-        "NETCDF",
-        "CSV",
-        "ASCII"
+        {
+            "name": "NETCDF",
+            "version": "classic"
+        },
+        {
+            "name": "CSV",
+            "version": null
+        },
+        {
+            "name": "ASCII",
+            "version": null
+        },
+        {
+            "name": "NETCDF",
+            "version": "4"
+        }
     ],
     "links": [
         {
@@ -162,10 +213,44 @@
         }
     ],
     "thumbnail": "https://www.example.com/exportImage?soCool=yes&format=png",
-    "modifiedDate": "2016-12-25T11:12:13",
+    "thumbnailDescription": "Preview graphic",
     "creationDate": null,
     "revisionDate": "2011-01-02",
     "publicationDate": "2010-11-15",
+    "citeAsStatements": [],
+    "crossReferences": [
+        {
+            "title": "[TITLE OF PUBLICATION]",
+            "code": "[ID OF PUBLICATION]",
+            "publicationDate": "9999-01-01",
+            "link": {
+                "linkName": null,
+                "linkProtocol": null,
+                "linkUrl": "HTTPS://WWW.EXAMPLE.COM",
+                "linkDescription": "[DESCRIPTION OF URL]",
+                "linkFunction": "information"
+            }
+        }
+    ],
+    "largerWorks": [
+        {
+            "title": "Important Organization's Important File's Super Important Title",
+            "code": "[PROJECT ID]",
+            "publicationDate": "9999-01-01",
+            "link": {
+                "linkName": null,
+                "linkProtocol": null,
+                "linkUrl": null,
+                "linkDescription": null,
+                "linkFunction": null
+            }
+        }
+    ],
+    "useLimitation": null,
+    "legalConstraints": [],
+    "accessFeeStatement": null,
+    "orderingInstructions": null,
+    "edition": null,
     "dsmmAccessibility": 4,
     "dsmmDataIntegrity": 0,
     "dsmmDataQualityAssessment": 2,
@@ -184,3 +269,9 @@
     ]
   }
 }
+
+parsedXml.useLimitation == '[NOAA LEGAL STATEMENT]'
+parsedXml.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
+parsedXml.accessFeeStatement == 'template fees'
+parsedXml.orderingInstructions == 'template ordering instructions'
+parsedXml.edition == '[EDITION]'

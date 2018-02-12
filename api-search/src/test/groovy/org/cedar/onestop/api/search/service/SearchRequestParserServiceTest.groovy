@@ -315,6 +315,13 @@ class SearchRequestParserServiceTest extends Specification {
                 order: ['_term': 'asc']
             ]
         ],
+        services       : [
+            terms: [
+                field: 'gcmdScienceServices',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
         instruments   : [
             terms: [
                 field: 'gcmdInstruments',
@@ -343,9 +350,23 @@ class SearchRequestParserServiceTest extends Specification {
                 order: ['_term': 'asc']
             ]
         ],
-        dataResolution: [
+        horizontalResolution: [
             terms: [
-                field: 'gcmdDataResolution',
+                field: 'gcmdHorizontalResolution',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        verticalResolution: [
+            terms: [
+                field: 'gcmdVerticalResolution',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        temporalResolution: [
+            terms: [
+                field: 'gcmdTemporalResolution',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
@@ -375,6 +396,21 @@ class SearchRequestParserServiceTest extends Specification {
                 ]
             ]
         ],
+        services       : [
+            terms       : [
+                field: 'gcmdScienceServices',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ],
+            aggregations: [
+                byCollection: [
+                    terms: [
+                        field: 'internalParentIdentifier',
+                        size : Integer.MAX_VALUE
+                    ]
+                ]
+            ]
+        ],
         instruments   : [
             terms       : [
                 field: 'gcmdInstruments',
@@ -435,9 +471,39 @@ class SearchRequestParserServiceTest extends Specification {
                 ]
             ]
         ],
-        dataResolution: [
+        horizontalResolution: [
             terms       : [
-                field: 'gcmdDataResolution',
+                field: 'gcmdHorizontalResolution',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ],
+            aggregations: [
+                byCollection: [
+                    terms: [
+                        field: 'internalParentIdentifier',
+                        size : Integer.MAX_VALUE
+                    ]
+                ]
+            ]
+        ],
+        verticalResolution: [
+            terms       : [
+                field: 'gcmdVerticalResolution',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ],
+            aggregations: [
+                byCollection: [
+                    terms: [
+                        field: 'internalParentIdentifier',
+                        size : Integer.MAX_VALUE
+                    ]
+                ]
+            ]
+        ],
+        temporalResolution: [
+            terms       : [
+                field: 'gcmdTemporalResolution',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ],
