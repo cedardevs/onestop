@@ -104,10 +104,13 @@
     "temporalBounding": {
         "beginDate": "2005-05-09",
         "beginIndeterminate": null,
+        "beginYear": 2005,
         "endDate": null,
         "endIndeterminate": "now",
+        "endYear": null,
         "instant": null,
-        "instantIndeterminate": null
+        "instantIndeterminate": null,
+        "description": null
     },
     "spatialBounding": {
         "type": "Polygon",
