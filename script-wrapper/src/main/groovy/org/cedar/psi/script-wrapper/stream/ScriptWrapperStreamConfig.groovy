@@ -22,19 +22,16 @@ import java.util.regex.Pattern
 @Configuration
 class ScriptWrapperStreamConfig {
 
-  @Value('${kafka.topics.input}')
+  @Value('${stream.topics.input}')
   String inputTopic
 
-  @Value('${kafka.topics.output}')
+  @Value('${stream.topics.output}')
   String outputTopic
 
-  @Value('${alg.lang}')
-  String lang
+  @Value('${stream.command}')
+  String command
 
-  @Value('${alg.absolutePath}')
-  String absolutePath
-
-  @Value('${alg.timeout}')
+  @Value('${stream.command_timeout:5000}')
   long timeout
 
   @Value('${kafka.group.id}')
@@ -60,9 +57,10 @@ class ScriptWrapperStreamConfig {
     def builder = new StreamsBuilder()
     KStream inputStream = builder.stream(inputTopic)
     KStream outputStream = inputStream.mapValues { msg ->
-      println "Calling : '$lang $absolutePath $msg' "
-      def cmdArray = [lang, absolutePath, msg]
-      def cmd = cmdArray.execute()
+      List<String> commandList = command.split(' ')
+      commandList.add("$msg" as String)
+      println "Running : $commandList "
+      def cmd = commandList.execute()
       cmd.waitForOrKill(timeout)
       String outputMessage = cmd.text
       println "Output: $outputMessage"

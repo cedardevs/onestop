@@ -2,11 +2,10 @@ kafka:
   group.id: <group-id>
   bootstrap:
     servers: <kafka_host>:<kafka_port>
-  topics:
-    input: <input_topic>
-    output: <output_topic>
 
-alg:
-  absolutePath: <absolute>/<path>/<to>/<script>.py
-  lang: <language>
-  timeout: 5000
+stream:
+  topics:
+      input: <input_topic>
+      output: <output_topic>
+  command: <run a bash command or execute a script>
+  command_timeout: <timeout_ms>
