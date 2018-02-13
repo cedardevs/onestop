@@ -31,7 +31,7 @@ class ScriptWrapperStreamConfig {
   @Value('${alg.lang}')
   String lang
 
-  @Value('${alg.absolutePath}')
+  @Value('${alg.absolute.path}')
   String absolutePath
 
   @Value('${alg.timeout}')

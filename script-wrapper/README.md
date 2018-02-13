@@ -25,7 +25,7 @@ kafka:
     output: <output_topic>
 
 alg:
-  absolutePath: <absolute>/<path>/<to>/<script>.py
+  absolute.path: <absolute>/<path>/<to>/<script>.py
   lang: <language>
   timeout: <timeout_ms>
 ```
@@ -33,13 +33,13 @@ alg:
 ### Usage
 Configure your input, output, the language your script is in, and the absolute path to your script. 
 
-The app simply constructs a command from your configuration. i.e. ``` [alg.lang, alg.absolutePath, msg].execute() ```
+The app simply constructs a command from your configuration. i.e. ``` [alg.lang, alg.absolute.path, msg].execute() ```
 
 Works with a groovy script- 
 
 ```
 alg:
-  absolutePath: ${PWD}/script-wrapper/groovyExample.groovy
+  absolute.path: ${PWD}/script-wrapper/groovyExample.groovy
   lang: groovy
 
 ```
@@ -47,7 +47,7 @@ alg:
 bash- 
 ```
 alg:
-  absolutePath: ${PWD}/script-wrapper/bashExample.sh
+  absolute.path: ${PWD}/script-wrapper/bashExample.sh
   lang: bash
 
 ```
@@ -56,7 +56,7 @@ python -
 
 ```
 alg:
-  absolutePath: ${PWD}/script-wrapper/pythonExample.py
+  absolute.path: ${PWD}/script-wrapper/pythonExample.py
   lang: bash
 
 ```
@@ -64,7 +64,7 @@ alg:
 javascript- 
 ```
 alg:
-  absolutePath: ${PWD}/script-wrapper/jsExample.js
+  absolute.path: ${PWD}/script-wrapper/jsExample.js
   lang: node
   timeout: 5000
 ```
@@ -84,7 +84,7 @@ kafka:
 
 
 alg:
-  absolutePath: ${PWD}/script-wrapper/dscovr-parser.py
+  absolute.path: ${PWD}/script-wrapper/dscovr-parser.py
   lang: python
 
 ```
