@@ -5,6 +5,7 @@ import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.text.WordUtils
 import groovy.xml.XmlUtil
+import java.time.LocalDate
 
 class MetadataParser {
 
@@ -473,12 +474,16 @@ class MetadataParser {
 
   static Map parseTemporalBounding(GPathResult metadata) {
 
-    def time = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
+    def boundingExtent = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
       e.@id.text() == 'boundingExtent'
-    }?.temporalElement?.EX_TemporalExtent?.extent
+    }
 
-    def beginDate, beginIndeterminate, endDate, endIndeterminate, instant, instantIndeterminate
+    def time = boundingExtent?.temporalElement?.EX_TemporalExtent?.extent
+
+    String beginDate, beginIndeterminate, endDate, endIndeterminate, instant, instantIndeterminate, description
+    def beginYear, endYear
     if(time) {
+      description = boundingExtent.description.CharacterString.text() ?: null
       beginDate = time.TimePeriod.beginPosition.text() ?:
           time.TimePeriod.begin.TimeInstant.timePosition.text() ?: null
       beginIndeterminate = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
@@ -489,16 +494,35 @@ class MetadataParser {
           time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
       instant = time.TimeInstant.timePosition.text() ?: null
       instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
+
+      if(beginDate) {
+        beginYear = beginDate.isLong() ? Long.parseLong(beginDate) : LocalDate.parse(beginDate).getYear()
+        if(beginYear < -292275055L) {
+          // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
+          beginDate = null
+        }
+      }
+
+      if(endDate) {
+        endYear = endDate.isLong() ? Long.parseLong(endDate) : LocalDate.parse(endDate).getYear()
+        if(endYear < -292275055L) {
+          // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
+          endDate = null
+        }
+      }
     }
 
 
     return [
         beginDate           : beginDate,
         beginIndeterminate  : beginIndeterminate,
+        beginYear           : beginYear,
         endDate             : endDate,
         endIndeterminate    : endIndeterminate,
+        endYear             : endYear,
         instant             : instant,
-        instantIndeterminate: instantIndeterminate
+        instantIndeterminate: instantIndeterminate,
+        description         : description
     ]
   }
 

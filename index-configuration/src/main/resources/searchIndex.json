@@ -106,6 +106,9 @@
               "type": "keyword",
               "index": false
             },
+            "beginYear": {
+              "type": "long"
+            },
             "endDate": {
               "type": "date",
               "format": "date_optional_time"
@@ -114,11 +117,18 @@
               "type": "keyword",
               "index": false
             },
+            "endYear": {
+              "type": "long"
+            },
             "instant": {
               "type": "date",
               "format": "date_optional_time"
             },
             "instantIndeterminate": {
+              "type": "keyword",
+              "index": false
+            },
+            "description": {
               "type": "keyword",
               "index": false
             }
@@ -611,6 +621,9 @@
               "type": "keyword",
               "index": false
             },
+            "beginYear": {
+              "type": "long"
+            },
             "endDate": {
               "type": "date",
               "format": "date_optional_time"
@@ -619,13 +632,20 @@
               "type": "keyword",
               "index": false
             },
+            "endYear": {
+              "type": "long"
+            },
             "instant": {
               "type": "date",
               "format": "date_optional_time"
             },
             "instantIndeterminate": {
               "type": "keyword",
-              "index": "false"
+              "index": false
+            },
+            "description": {
+              "type": "keyword",
+              "index": false
             }
           }
         },
