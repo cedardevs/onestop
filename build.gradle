@@ -95,12 +95,12 @@ task dockerComposeStop(type: Exec, description: 'Stops the entire system in dock
 
 task dockerComposeInfraStart(type: Exec, description: 'Runs infrastructure needed under our apps, e.g. elasticsearch', group: 'docker') {
   executable = "bash"
-  args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d elasticsearch"]
+  args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d elasticsearch kibana"]
 }
 
 task dockerComposeInfraStop(type: Exec, description: 'Stops the infrastructure needed under our apps, e.g. elasticsearch', group: 'docker') {
   executable = "bash"
-  args = ["-c", "docker-compose stop elasticsearch"]
+  args = ["-c", "docker-compose stop elasticsearch kibana"]
 }
 
 task dockerComposeBackendStart(type: Exec, description: 'Runs intrastructure and api modules needed to run the client.', group: 'docker') {
