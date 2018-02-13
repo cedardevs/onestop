@@ -51,11 +51,9 @@ services:
     environment:
       KAFKA_GROUP_ID: "dscovr_script_wrapper"
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      KAFKA_TOPICS_INPUT: "raw-granule-aggregator-raw-granules-changelog"
-      KAFKA_TOPICS_OUTPUT: "parsed-granules"
-      ALG_ABSOLUTE_PATH: "/usr/src/app/scripts/dscovr-parser.py"
-      ALG_LANG: "python"
-      ALG_TIMEOUT: "5000"
+      STREAM_TOPICS_INPUT: "raw-granule-aggregator-raw-granules-changelog"
+      STREAM_TOPICS_OUTPUT: "parsed-granules"
+      STREAM_COMMAND: "python /usr/src/app/scripts/dscovr-parser.py"
 
 #---
 #version: '3'
