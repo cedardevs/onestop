@@ -20,55 +20,42 @@ kafka:
   group.id: <group-id>
   bootstrap:
     servers: <kafka_host>:<kafka_port>
-  topics:
-    input: <input_topic>
-    output: <output_topic>
 
-alg:
-  absolute.path: <absolute>/<path>/<to>/<script>.py
-  lang: <language>
-  timeout: <timeout_ms>
+stream:
+  topics:
+      input: <input_topic>
+      output: <output_topic>
+  command: <run a bash command or execute a script>
+  command_timeout: <optional_timeout_ms>
 ```
 
 ### Usage
-Configure your input, output, the language your script is in, and the absolute path to your script. 
+Configure your input topic, output topic, and the command as you would execute it from the command line. The command must accept a string (of json, for now).  
 
-The app simply constructs a command from your configuration. i.e. ``` [alg.lang, alg.absolute.path, msg].execute() ```
 
-Works with a groovy script- 
+#### Call an external script - 
 
-```
-alg:
-  absolute.path: ${PWD}/script-wrapper/groovyExample.groovy
-  lang: groovy
+python example -
 
 ```
-
-bash- 
-```
-alg:
-  absolute.path: ${PWD}/script-wrapper/bashExample.sh
-  lang: bash
-
+stream:
+  command: python ${PWD}/script-wrapper/pythonExample.py
 ```
 
-python - 
-
+javascript example w/ optional timeout- 
 ```
-alg:
-  absolute.path: ${PWD}/script-wrapper/pythonExample.py
-  lang: bash
-
+stream:
+  command: node ${PWD}/script-wrapper/jsExample.js
+  command_timeout: 5000
 ```
 
-javascript- 
-```
-alg:
-  absolute.path: ${PWD}/script-wrapper/jsExample.js
-  lang: node
-  timeout: 5000
-```
+#### Or just run a shell command -
 
+*not quite working yet... maybe someone else can give me a good example*
+```
+stream:
+  command: sed 's/ship/platform/g' $1
+``
 
 ### Real use case:  dscover-parser.py
 
@@ -83,9 +70,12 @@ kafka:
     output: parsed-granules
 
 
-alg:
-  absolute.path: ${PWD}/script-wrapper/dscovr-parser.py
-  lang: python
+stream:
+  topics:
+    input: raw-granule-aggregator-raw-granules-changelog
+    output: parsed-granules
+  command: python ${PWD}/script-wrapper/dscovr-parser.py
+  command_timeout: 5000
 
 ```
 And this message in the input topic- 
