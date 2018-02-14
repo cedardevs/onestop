@@ -25,9 +25,12 @@ elasticsearch:
   port: 9200
   index:
     search:
-      name: search
-      granuleType: granule
-      collectionType: collection
+      collection:
+        name: search_collection
+      granule:
+        name: search_granule
+      flattenedGranule:
+        name: search_flattened_granule
 
 search:
   minimumShouldMatch: 75%

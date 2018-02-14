@@ -36,7 +36,31 @@ class SearchController {
       return [errors: validation.errors]
     }
     log.info("incoming search params: ${params}")
-    return elasticsearchService.search(params)
+    return elasticsearchService.search(params,"search_flattened_granule")
+  }
+
+  @RequestMapping(path = "/collection/search", method = [POST, GET])
+  Map searchCollections(@RequestBody Map params, HttpServletResponse response) {
+    Map validation = JsonValidator.validateSearchRequestSchema(params)
+    if (!validation.success) {
+      log.debug("invalid request: ${validation.errors.detail?.join(', ')}")
+      response.status = HttpStatus.BAD_REQUEST.value()
+      return [errors: validation.errors]
+    }
+    log.info("incoming search params: ${params}")
+    return elasticsearchService.search(params,"search_collection")
+  }
+
+  @RequestMapping(path = "/granule/search", method = [POST, GET])
+  Map searchGranules(@RequestBody Map params, HttpServletResponse response) {
+    Map validation = JsonValidator.validateSearchRequestSchema(params)
+    if (!validation.success) {
+      log.debug("invalid request: ${validation.errors.detail?.join(', ')}")
+      response.status = HttpStatus.BAD_REQUEST.value()
+      return [errors: validation.errors]
+    }
+    log.info("incoming search params: ${params}")
+    return elasticsearchService.search(params,"search_granule")
   }
 
   @RequestMapping(path = '/search/totalCounts', method = GET)
