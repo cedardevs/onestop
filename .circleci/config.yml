@@ -34,7 +34,7 @@ jobs:
           - v1-dependencies-
 
       # build it!
-      - run: ./gradlew build
+      - run: ./gradlew build --parallel
 
       - save_cache:
           paths:
@@ -46,4 +46,9 @@ jobs:
             - script-wrapper/build
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
-      - run: ./gradlew publish
+      - deploy:
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ] || [ "${CIRCLE_BRANCH}" == "release/*" ]; then
+              ./gradlew publish -x BuildDockerImage
+            fi
+
