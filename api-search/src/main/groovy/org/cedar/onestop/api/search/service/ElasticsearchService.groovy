@@ -10,6 +10,7 @@ import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.Response
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Slf4j
@@ -38,6 +39,48 @@ class ElasticsearchService {
   Map search(Map searchParams, String index) {
     def response = queryElasticsearch(searchParams, index)
     return response
+  }
+
+  Map getCollectionById(String id) {
+    String collectionEndpoint = "/$COLLECTION_SEARCH_INDEX/${id}"
+    def response = parseResponse(restClient.performRequest("GET", collectionEndpoint))
+    if (response.found) {
+      return [
+          data: [[
+                     id        : response._id,
+                     type      : response._type,
+                     attributes: response._source
+                 ]]
+      ]
+    }
+    else {
+      return [
+          status: HttpStatus.NOT_FOUND.value(),
+          title : 'No such document',
+          detail: "Collection with Elasticsearch ID [ ${id} ] does not exist."
+      ]
+    }
+  }
+
+  Map getGranuleById(String id) {
+    String granuleEndpoint = "/$GRANULE_SEARCH_INDEX/${id}"
+    def response = parseResponse(restClient.performRequest("GET", granuleEndpoint))
+    if (response.found) {
+      return [
+          data: [[
+                     id        : response._id,
+                     type      : response._type,
+                     attributes: response._source
+                 ]]
+      ]
+    }
+    else {
+      return [
+          status: HttpStatus.NOT_FOUND.value(),
+          title : 'No such document',
+          detail: "Granule with Elasticsearch ID [ ${id} ] does not exist."
+      ]
+    }
   }
 
   Map totalCounts() {
