@@ -12,7 +12,7 @@ class GranuleFunctionsSpec extends Specification {
     def mergedAggregate = '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}'
 
     expect:
-    GranuleFunctions.mergeGranules(currentAggregate, newValue) == "the wrong answer"
+    GranuleFunctions.mergeGranules(currentAggregate, newValue) == mergedAggregate
   }
 
 }
