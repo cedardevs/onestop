@@ -1,0 +1,89 @@
+{
+  "description": "[RELEASE-DATE] Transforms and reduces fields from staging_granule to search_granule",
+  "processors": [
+    {
+      "foreach": {
+        "field": "keywords",
+        "processor": {
+          "append": {
+            "field": "keywordValues",
+            "value": "{{ keywords.values }}"
+          }
+        }
+      }
+      "set": {
+        "field": "beginDate",
+        "value": "{{ temporalBounding.beginDate }}"
+      },
+      "set": {
+        "field": "beginYear",
+        "value": "{{ temporalBounding.beginYear }}"
+      },
+      "set": {
+        "field": "endDate",
+        "value": "{{ temporalBounding.endDate }}"
+      },
+      "set": {
+        "field": "endYear",
+        "value": "{{ temporalBounding.endYear }}"
+      },
+      "remove": {
+        "field": [
+          "purpose",
+          "status",
+          "credit",
+          "hierarchyLevelName",
+          "alternateTitle",
+          "keywords",
+          "gcmdScience",
+          "gcmdScienceServices",
+          "gcmdLocations",
+          "gcmdInstruments",
+          "gcmdPlatforms",
+          "gcmdProjects",
+          "gcmdDataCenters",
+          "gcmdHorizontalResolution",
+          "gcmdVerticalResolution",
+          "gcmdTemporalResolution",
+          "accessionValues",
+          "topicCategories",
+          "temporalBounding",
+          "acquisitionInstruments",
+          "acquisitionOperations",
+          "acquisitionPlatforms",
+          "contacts",
+          "creators",
+          "publishers",
+          "thumbnailDescription",
+          "creationDate",
+          "revisionDate",
+          "publicationDate",
+          "crossReferences",
+          "largerWorks",
+          "useLimitation",
+          "legalConstraints",
+          "accessFeeStatement",
+          "orderingInstructions",
+          "edition",
+          "dsmmAccessibility",
+          "dsmmDataIntegrity",
+          "dsmmDataQualityAssessment",
+          "dsmmDataQualityAssurance",
+          "dsmmDataQualityControlMonitoring",
+          "dsmmPreservability",
+          "dsmmProductionSustainability",
+          "dsmmTransparencyTraceability",
+          "dsmmUsability",
+          "dsmmAverage",
+          "updateFrequency",
+          "presentationForm",
+          "services"
+        ]
+      },
+      "rename": {
+        "field": "keywordValues",
+        "target_field": "keywords"
+      }
+    }
+  ]
+}

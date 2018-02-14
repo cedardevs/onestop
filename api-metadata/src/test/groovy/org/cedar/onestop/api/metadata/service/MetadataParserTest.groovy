@@ -130,10 +130,13 @@ class MetadataParserTest extends Specification {
     parsedXml.temporalBounding == [
         beginDate           : '2005-05-09',
         beginIndeterminate  : null,
+        beginYear           : 2005,
         endDate             : null,
         endIndeterminate    : 'now',
+        endYear             : null,
         instant             : null,
-        instantIndeterminate: null
+        instantIndeterminate: null,
+        description         : null
     ]
     parsedXml.spatialBounding == [
         type       : 'Polygon',
@@ -509,10 +512,34 @@ class MetadataParserTest extends Specification {
     temporalBounding == [
         beginDate           : '2005-05-09',
         beginIndeterminate  : null,
+        beginYear           : 2005,
         endDate             : null,
         endIndeterminate    : 'now',
+        endYear             : null,
         instant             : null,
-        instantIndeterminate: null
+        instantIndeterminate: null,
+        description         : null
+    ]
+  }
+
+  def "Very old temporal bounding is correctly parsed"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-paleo-dates-metadata.xml").text
+
+    when:
+    def temporalBounding = MetadataParser.parseTemporalBounding(document)
+
+    then:
+    temporalBounding == [
+        beginDate           : null,
+        beginIndeterminate  : null,
+        beginYear           : -617905000,
+        endDate             : '-1601050',
+        endIndeterminate    : null,
+        endYear             : -1601050,
+        instant             : null,
+        instantIndeterminate: null,
+        description         : 'Start_Date: 6181000 cal yr BP; Stop_Date: 1603000 cal yr BP; '
     ]
   }
 

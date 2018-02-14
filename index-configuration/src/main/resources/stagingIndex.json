@@ -148,6 +148,11 @@
               "doc_values": false,
               "index": false
             },
+            "beginYear": {
+              "type": "long",
+              "doc_values": false,
+              "index": false
+            },
             "endDate": {
               "type": "date",
               "format": "date_optional_time",
@@ -159,6 +164,11 @@
               "doc_values": false,
               "index": false
             },
+            "endYear": {
+              "type": "long",
+              "doc_values": false,
+              "index": false
+            },
             "instant": {
               "type": "date",
               "format": "date_optional_time",
@@ -166,6 +176,11 @@
               "index": false
             },
             "instantIndeterminate": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "description": {
               "type": "keyword",
               "doc_values": false,
               "index": false
@@ -768,6 +783,11 @@
               "doc_values": false,
               "index": false
             },
+            "beginYear": {
+              "type": "long",
+              "doc_values": false,
+              "index": false
+            },
             "endDate": {
               "type": "date",
               "format": "date_optional_time",
@@ -779,6 +799,11 @@
               "doc_values": false,
               "index": false
             },
+            "endYear": {
+              "type": "long",
+              "doc_values": false,
+              "index": false
+            },
             "instant": {
               "type": "date",
               "format": "date_optional_time",
@@ -786,6 +811,11 @@
               "index": false
             },
             "instantIndeterminate": {
+              "type": "keyword",
+              "doc_values": false,
+              "index": false
+            },
+            "description": {
               "type": "keyword",
               "doc_values": false,
               "index": false
