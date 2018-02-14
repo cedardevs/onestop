@@ -66,7 +66,7 @@ class SearchRequestParserService {
     ]
   }
 
-  Map createGCMDAggregations(boolean forCollections) {
+  Map createGCMDAggregations() {
     def aggregations = [:]
     facetNameMappings.each { name, field ->
       def agg = [
@@ -78,16 +78,6 @@ class SearchRequestParserService {
               ]
           ]
       ]
-      if (forCollections) {
-        agg.aggregations = [
-            byCollection: [
-                terms: [
-                    field: "internalParentIdentifier",
-                    size : Integer.MAX_VALUE
-                ]
-            ]
-        ]
-      }
       aggregations.put(name, agg)
     }
     return aggregations

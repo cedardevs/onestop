@@ -126,7 +126,7 @@ class ElasticsearchService {
     def aggregations = [:]
 
     if (getFacets) {
-      aggregations.putAll(searchRequestParserService.createGCMDAggregations(getCollections))
+      aggregations.putAll(searchRequestParserService.createGCMDAggregations())
     }
 
     def requestBody = [
