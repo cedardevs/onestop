@@ -44,13 +44,30 @@ class ElasticsearchService {
   Map getCollectionById(String id) {
     String collectionEndpoint = "/$COLLECTION_SEARCH_INDEX/${id}"
     def response = parseResponse(restClient.performRequest("GET", collectionEndpoint))
+
+    // get the total number of granules for this collection id
+    String granuleEndpoint = "/$GRANULE_SEARCH_INDEX/_search"
+    HttpEntity granuleRequest = new NStringEntity(JsonOutput.toJson([
+        query: [
+            term: [
+                internalParentIdentifier: "${id}"
+            ]
+        ],
+        size : 0
+    ]), ContentType.APPLICATION_JSON)
+    def granuleResponse = restClient.performRequest("GET", granuleEndpoint, Collections.EMPTY_MAP, granuleRequest)
+    def totalGranulesForCollection = parseResponse(granuleResponse).hits.total
+
     if (response.found) {
       return [
           data: [[
                      id        : response._id,
                      type      : response._type,
                      attributes: response._source
-                 ]]
+                 ]],
+          meta: [
+              totalGranules: totalGranulesForCollection
+          ]
       ]
     }
     else {
