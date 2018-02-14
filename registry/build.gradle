@@ -2,6 +2,7 @@ apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.cedar.dockerplugin'
 
 dependencies {
   compile('org.codehaus.groovy:groovy')
@@ -32,3 +33,12 @@ bootWar {
   classifier = 'all'
   launchScript()
 }
+
+docker {
+  additionalBuildArgs = [WAR_NAME: bootWar.outputs.files.singleFile.name]
+}
+
+BuildDockerImage.dependsOn(bootWar)
+assemble.dependsOn(BuildDockerImage)
+PublishDockerImage.dependsOn(BuildDockerImage)
+task publish { dependsOn PublishDockerImage }
