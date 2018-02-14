@@ -28,7 +28,7 @@ docker containers with zookeeper, kafka, and each component.
 
 This software was developed by Team Foam-Cat,
 under the OneStop project: 1553647,
-NOAA award number NA12OAR4320127 to CIRES.
+NOAA award number NA17OAR4320101 to CIRES.
 This code is licensed under GPL version 2.
 © 2018 The Regents of the University of Colorado.
 
