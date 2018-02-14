@@ -48,18 +48,7 @@ class RawGranuleStreamConfig {
 
     KStream rawStream = builder.stream(topic)
     KGroupedStream groupedStream = rawStream.groupByKey()
-    KTable mergedGranules = groupedStream.reduce(
-        {aggregate, newValue ->
-            log.debug("aggregate (${aggregate?.getClass()}): $aggregate")
-            log.debug("newValue (${newValue?.getClass()}): $newValue")
-            def slurper = new JsonSlurper()
-            def slurpedAggregate = aggregate ? slurper.parseText(aggregate as String) : [:]
-            def slurpedNewValue = slurper.parseText(newValue as String)
-            def result = slurpedAggregate + slurpedNewValue
-            return JsonOutput.toJson(result)
-        },
-        Materialized.as(storeName)
-    )
+    KTable mergedGranules = groupedStream.reduce(GranuleFunctions.mergeGranules, Materialized.as(storeName))
 
     return builder.build()
   }
