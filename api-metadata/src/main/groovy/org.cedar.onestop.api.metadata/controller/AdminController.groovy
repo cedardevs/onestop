@@ -48,8 +48,8 @@ class AdminController {
   @RequestMapping(path = '/admin/index/metadata/recreate', method = [GET, PUT], produces = 'application/json')
   Map recreateMetadataIndex(@RequestParam Boolean sure) {
     if (sure) {
-      elasticsearchService.dropStagingIndex()
-      elasticsearchService.ensureStagingIndex()
+      elasticsearchService.dropStagingIndices()
+      elasticsearchService.ensureStagingIndices()
       return [acknowledged: true]
     }
   }
