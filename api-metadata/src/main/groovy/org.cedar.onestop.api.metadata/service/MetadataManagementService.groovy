@@ -172,7 +172,7 @@ class MetadataManagementService {
   }
 
   public Map findMetadata(String fileId, String doi, boolean idsOnly = false, String index = STAGING_INDEX) {
-    def endpoint = "${index}/_search"
+    String endpoint = "${index}/_search"
     def searchParams = []
     if (fileId) { searchParams.add( [term: [fileIdentifier: fileId]] ) }
     if (doi) { searchParams.add( [term: [doi: doi]] ) }

@@ -221,7 +221,7 @@ class ETLService {
    * Note: This software was written after the epoch, so this should be pretty safe.
    */
   private Long getMaxSearchStagedMillis(String index) {
-    def endpoint = "$index/_search"
+    String endpoint = "$index/_search"
     def body = [
         size: 0,
         aggregations: [
