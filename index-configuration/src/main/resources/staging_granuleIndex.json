@@ -1,6 +1,6 @@
 {
   "mappings": {
-    "staging_granule": {
+    "_doc": {
       "dynamic": "strict",
       "_all": {
         "enabled": false

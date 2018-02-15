@@ -1,6 +1,6 @@
 {
   "mappings": {
-    "search_flattened_granule": {
+    "_doc": {
       "_all": {
         "enabled": false
       },
