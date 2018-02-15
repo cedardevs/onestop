@@ -1,5 +1,6 @@
 {
-  "description": "[RELEASE-DATE] Transforms and reduces fields from staging_collection to search_collection",
+  "description": "[RELEASE-DATE] Transforms and reduces fields from staging_granule to search_granule",
+  "version": 1,
   "processors": [
     {
       "foreach": {
@@ -10,61 +11,7 @@
             "value": "{{ keywords.values }}"
           }
         }
-      },
-      "foreach": {
-        "field": "contacts",
-        "processor": {
-          "append": {
-            "field": "individualNames",
-            "value": "{{ contacts.individualName }}"
-          }
-        }
-      },
-      "foreach": {
-        "field": "contacts",
-        "processor": {
-          "append": {
-            "field": "organizationNames",
-            "value": "{{ contacts.organizationName }}"
-          }
-        }
-      },
-      "foreach": {
-        "field": "creators",
-        "processor": {
-          "append": {
-            "field": "individualNames",
-            "value": "{{ creators.individualName }}"
-          }
-        }
-      },
-      "foreach": {
-        "field": "creators",
-        "processor": {
-          "append": {
-            "field": "organizationNames",
-            "value": "{{ creators.organizationName }}"
-          }
-        }
-      },
-      "foreach": {
-        "field": "publishers",
-        "processor": {
-          "append": {
-            "field": "individualNames",
-            "value": "{{ publishers.individualName }}"
-          }
-        }
-      },
-      "foreach": {
-        "field": "publishers",
-        "processor": {
-          "append": {
-            "field": "organizationNames",
-            "value": "{{ publishers.organizationName }}"
-          }
-        }
-      },
+      }
       "set": {
         "field": "beginDate",
         "value": "{{ temporalBounding.beginDate }}"
@@ -83,13 +30,22 @@
       },
       "remove": {
         "field": [
-          "parentIdentifier",
           "purpose",
           "status",
           "credit",
           "hierarchyLevelName",
           "alternateTitle",
           "keywords",
+          "gcmdScience",
+          "gcmdScienceServices",
+          "gcmdLocations",
+          "gcmdInstruments",
+          "gcmdPlatforms",
+          "gcmdProjects",
+          "gcmdDataCenters",
+          "gcmdHorizontalResolution",
+          "gcmdVerticalResolution",
+          "gcmdTemporalResolution",
           "accessionValues",
           "topicCategories",
           "temporalBounding",
@@ -103,6 +59,13 @@
           "creationDate",
           "revisionDate",
           "publicationDate",
+          "crossReferences",
+          "largerWorks",
+          "useLimitation",
+          "legalConstraints",
+          "accessFeeStatement",
+          "orderingInstructions",
+          "edition",
           "dsmmAccessibility",
           "dsmmDataIntegrity",
           "dsmmDataQualityAssessment",
@@ -112,6 +75,7 @@
           "dsmmProductionSustainability",
           "dsmmTransparencyTraceability",
           "dsmmUsability",
+          "dsmmAverage",
           "updateFrequency",
           "presentationForm",
           "services"

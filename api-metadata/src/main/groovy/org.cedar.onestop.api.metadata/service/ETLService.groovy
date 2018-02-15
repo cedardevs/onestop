@@ -1,6 +1,5 @@
 package org.cedar.onestop.api.metadata.service
 
-import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,35 +12,42 @@ import org.springframework.stereotype.Service
 @Service
 class ETLService {
 
-  private Integer PAGE_SIZE = 10
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
+  private String COLLECTION_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
-  private String SEARCH_INDEX
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.collection.name}')
+  private String COLLECTION_STAGING_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
-  private String STAGING_INDEX
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
+  private String GRANULE_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.staging.collectionType}')
-  private String COLLECTION_TYPE
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
+  private String GRANULE_STAGING_INDEX
 
-  @Value('${elasticsearch.index.staging.granuleType}')
-  private String GRANULE_TYPE
+  @Value('${elasticsearch.index.search.collection.pipeline-name}')
+  private String COLLECTION_PIPELINE
+
+  @Value('${elasticsearch.index.search.granule.pipeline-name}')
+  private String GRANULE_PIPELINE
+
 
   private ElasticsearchService elasticsearchService
+  private MetadataManagementService metadataManagementService
 
   @Autowired
-  ETLService(ElasticsearchService elasticsearchService) {
+  ETLService(ElasticsearchService elasticsearchService, MetadataManagementService metadataManagementService) {
     this.elasticsearchService = elasticsearchService
+    this.metadataManagementService = metadataManagementService
   }
 
   @Async
-  public void rebuildSearchIndexAsync() {
-    rebuildSearchIndex()
+  public void rebuildSearchIndicesAsync() {
+    rebuildSearchIndices()
   }
 
   @Async
-  public void updateSearchIndexAsync() {
-    updateSearchIndex()
+  public void updateSearchIndicesAsync() {
+    updateSearchIndices()
   }
 
   /**
@@ -50,58 +56,65 @@ class ETLService {
    * 3) Move the search alias to point to the new index
    * 4) Drop the old search index
    */
-  public void rebuildSearchIndex() {
-    log.info "starting rebuilding process"
+  public void rebuildSearchIndices() {
+    log.info "Starting search indices rebuilding process"
     def start = System.currentTimeMillis()
     elasticsearchService.ensureIndices()
-    elasticsearchService.refresh(STAGING_INDEX)
-    def newSearchIndex = elasticsearchService.create(SEARCH_INDEX)
+    elasticsearchService.ensurePipelines()
+    elasticsearchService.refresh(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX)
+    def newCollectionSearchIndex = elasticsearchService.create(COLLECTION_SEARCH_INDEX)
+    def newGranuleSearchIndex = elasticsearchService.create(GRANULE_SEARCH_INDEX)
 
     try {
-      def etlResult = etlCollections(STAGING_INDEX, newSearchIndex)
-      elasticsearchService.refresh(newSearchIndex)
-      elasticsearchService.moveAliasToIndex(SEARCH_INDEX, newSearchIndex, true)
+      def etlResult = runETL(COLLECTION_STAGING_INDEX, newCollectionSearchIndex, GRANULE_STAGING_INDEX, newGranuleSearchIndex)
+      elasticsearchService.refresh(newCollectionSearchIndex, newGranuleSearchIndex)
+      elasticsearchService.moveAliasToIndex(COLLECTION_SEARCH_INDEX, newCollectionSearchIndex, true)
+      elasticsearchService.moveAliasToIndex(GRANULE_SEARCH_INDEX, newGranuleSearchIndex, true)
       def end = System.currentTimeMillis()
-      log.info "reindexed ${etlResult.total} records in ${(end - start) / 1000}s"
+      log.info "Reindexed ${etlResult.collections} collection and ${etlResult.granules} granule records in ${(end - start) / 1000}s"
     }
     catch (Exception e) {
       log.error "Search reindexing failed because of: " + ExceptionUtils.getRootCauseMessage(e)
       log.error "Root cause stack trace: \n" + ExceptionUtils.getRootCauseStackTrace(e)
-      elasticsearchService.drop(newSearchIndex)
+      elasticsearchService.drop(newCollectionSearchIndex)
+      elasticsearchService.drop(newGranuleSearchIndex)
     }
   }
 
-  /**
-   * 1) Identify collections with updates in the staging index which aren't yet represented in the search index
-   * 2) Reindex those collections and all of their granules
-   * 3) Identify collections with granules which:
-   *     a) have updates in staging which aren't yet in search
-   *     b) have not already been reindexed in (2)
-   * 4) Reindex those granules
-   */
   @Scheduled(initialDelay = 60000L, fixedDelay = 600000L) // 1 minute after startup then every 10 minutes after previous run ends
-  public void updateSearchIndex() {
-    log.info "Starting search index update process"
-    def start = System.currentTimeMillis()
+  public Map updateSearchIndices() {
+    log.info("Starting search indices update process")
+    def startTime = System.currentTimeMillis()
+    def result =  runETL(COLLECTION_STAGING_INDEX, COLLECTION_SEARCH_INDEX, GRANULE_STAGING_INDEX, GRANULE_SEARCH_INDEX)
+    def endTime = System.currentTimeMillis()
+    log.info "Reindexed ${result.collections} collection and ${result.granules} granule records in ${(endTime - startTime) / 1000}s"
+  }
+
+  /**
+   * 1) Identify collections with updates in the staging_collection index which aren't yet represented in the search_collection index
+   * 2) Reindex those collections
+   * 3) Identify granules with updates in the staging_granule index which aren't yet represented in the search_granule index
+   * 4) Find ES ids of associated collections for those granules
+   * 5) Reindex those granules with internalParentIdentifier
+   */
+  private Map runETL(String sourceCollection, String destCollection, String sourceGranule, String destGranule) {
+    def countCollections = 0
+    def countGranules = 0
     elasticsearchService.ensureIndices()
-    elasticsearchService.refresh(STAGING_INDEX, SEARCH_INDEX)
+    elasticsearchService.refresh(sourceCollection, sourceGranule, destCollection, destGranule)
 
-    // reindex collections (and their granules) which have been updated
-    def maxSearchStagedDate = getMaxSearchStagedMillis()
-    def indexedCollections = etlCollections(STAGING_INDEX, SEARCH_INDEX, maxSearchStagedDate)
-    def count = indexedCollections.total
+    // Identify & reindex new/updated collections from staging -> search
+    def maxCollectionStagedDate = getMaxSearchStagedMillis(destCollection)
+    countCollections = etlCollections(maxCollectionStagedDate)
 
-    // find collections which have granules which have been updated and have not already been reindexed
-    def unindexedCollectionsEndpoint = "$STAGING_INDEX/$GRANULE_TYPE/_search"
-    def unindexedCollectionsQuery = [
+    // Get parent ids for new/updated granules. Append collection id to granules on their way from staging -> search
+    def maxGranuleStagedDate = getMaxSearchStagedMillis(destGranule)
+    def findParentIdsQuery = [
         size: 0,
         query: [
             bool: [
-                must: [
-                    [range: [stagedDate: [gt: maxSearchStagedDate]]]
-                ],
-                must_not: [
-                    [terms: [parentIdentifier: indexedCollections.fileIdentifiers + indexedCollections.dois]],
+                filter: [
+                    [range: [stagedDate: [gt: maxGranuleStagedDate]]]
                 ]
             ]
         ],
@@ -113,151 +126,102 @@ class ETLService {
             ]
         ]
     ]
-    def unindexedCollectionsResponse =
-        elasticsearchService.performRequest('GET', unindexedCollectionsEndpoint, unindexedCollectionsQuery)
-    def unindexedCollectionIds = unindexedCollectionsResponse.aggregations.collections.buckets*.key
-    unindexedCollectionIds.collate(PAGE_SIZE).each { page ->
-      def collectionPageEndpoint = "$STAGING_INDEX/$COLLECTION_TYPE/_search"
-      def collectionPageBody = [
-          query: [
-              bool: [
-                  should: [
-                      [terms: [fileIdentifier: page]],
-                      [terms: [doi: page]],
-                  ]
-              ]
-          ]
-      ]
-      def collectionPageResponse = elasticsearchService.performRequest('GET', collectionPageEndpoint, collectionPageBody)
-      collectionPageResponse.hits.hits.each { Map collection ->
-        count += etlGranulesForCollection(collection, STAGING_INDEX, SEARCH_INDEX, maxSearchStagedDate)
+    def parentIdsResponse = elasticsearchService.performRequest('GET', GRANULE_STAGING_INDEX, findParentIdsQuery)
+    def parentIds = parentIdsResponse.aggregations.collections.buckets*.key
+    parentIds.each { parentId ->
+      def internalIdResponse = metadataManagementService.findMetadata(parentId, parentId, true, COLLECTION_STAGING_INDEX)
+      // Only push to Search granules which can be definitively linked to a single, existing collection
+      if(internalIdResponse.data && internalIdResponse.data.size() == 1) {
+        countGranules += etlGranules(parentId, internalIdResponse.data[0].id, maxGranuleStagedDate)
       }
     }
 
-    elasticsearchService.refresh(STAGING_INDEX, SEARCH_INDEX)
-    def end = System.currentTimeMillis()
-    log.info "Reindexed ${count} records in ${(end - start) / 1000}s"
+    elasticsearchService.refresh(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX, COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX)
+    return [
+        collections: countCollections,
+        granules: countGranules
+    ]
   }
 
   /**
-   * Reindex collections and all the granules that belong to them from one index to another,
-   * optionally excluding those staged before a given date.
-   * @param from        The index to pull the collections' granules from
-   * @param to          The index to send the collections and granules to
+   * @param sourceIndex
+   * @param destIndex
    * @param stagedAfter (optional) Only reindex collections staged after this date, in millis since the epoch
-   * @return            A map shaped like [ids: <list of potential granule parent ids>, total: <total indexed documents>]
+   * @return Number of collections reindexed (updated + created)
    */
-  private Map etlCollections(String from, String to, Long stagedAfter = 0) {
-    def count = 0
-    def offset = 0
-    def collectionEndpoint = "$STAGING_INDEX/$COLLECTION_TYPE/_search"
-    def fileIdentifiers = []
-    def dois = []
-    def collectionsCount = null
-    while (collectionsCount == null || offset < collectionsCount) {
-      def collectionSearchBody = [
-          query: [
-              bool: [
-                  filter: [
-                      [range: [stagedDate: [gt: stagedAfter]]]
-                  ]
-              ]
-          ],
-          sort: "_uid",
-          from: offset,
-          size: PAGE_SIZE
-      ]
-      def collectionsResponse = elasticsearchService.performRequest('GET', collectionEndpoint, collectionSearchBody)
-      if (collectionsCount == null) {
-        collectionsCount = collectionsResponse.hits.total
-      }
-      def bulkRequest = new StringBuffer()
-      collectionsResponse.hits.hits.each { Map collection ->
-        if (collection._source.fileIdentifier) {
-          fileIdentifiers << collection._source.fileIdentifier
-        }
-        if (collection._source.doi) {
-          dois << collection._source.doi
-        }
-        count += etlGranulesForCollection(collection, from, to) // <-- collection changed, so reindex ALL its granules
-        bulkRequest << "{\"index\":{\"_index\":\"${to}\",\"_type\":\"${COLLECTION_TYPE}\",\"_id\":\"${collection._id}\"}}"
-        bulkRequest << "\n"
-        bulkRequest << JsonOutput.toJson(collection._source)
-        bulkRequest << "\n"
-        count++
-      }
+  private Long etlCollections(String sourceIndex, String destIndex, Long stagedAfter = 0) {
+    log.debug("Starting indexing of collections")
 
-      // Don't send empty request -- errors out & not required
-      if(bulkRequest) { elasticsearchService.performRequest('POST', '_bulk', bulkRequest.toString()) }
-      offset += PAGE_SIZE
-    }
-    return [fileIdentifiers: fileIdentifiers, dois: dois, total: count]
-  }
-
-  /**
-   * Reindex the granules belonging to a given collection, inheriting any missing fields from the parent collection
-   * @param collection  The full map of the collection the granules belong to
-   * @param from        The index to pull the granules from
-   * @param to          The index to send the granules to
-   * @param stagedAfter (optional) Only reindex granules which were staged after this date, in millis since the epoch
-   * @return            The number of granules indexed
-   */
-  private Long etlGranulesForCollection(Map collection, String from, String to, Long stagedAfter = 0) {
-    log.debug("Starting indexing of collection ${collection._id}")
-
-    def reindexScript = """\
-        ctx._source['internalParentIdentifier'] = params.parentId;
-        for (String f : params.defaults.keySet()) {
-          if (ctx._source[f] == null || ctx._source[f] == []) {
-            ctx._source[f] = params.defaults[f];
-          }
-        }""".replaceAll(/\s+/, ' ')
-    def parentIds = [collection._source.fileIdentifier, collection._source.doi].findAll()
     def reindexBody = [
         conflicts: "proceed",
         source: [
-            index: from,
-            type: GRANULE_TYPE,
+            index: sourceIndex,
             query: [
                 bool: [
                     filter: [
-                        [terms: [parentIdentifier: parentIds]],
                         [range: [stagedDate: [gt: stagedAfter]]]
                     ]
                 ]
             ]
         ],
         dest: [
-            index: to
-        ],
-        script: [
-            lang: "painless",
-            params: [parentId: collection._id, defaults: collection._source],
-            inline: reindexScript
+            index: destIndex,
+            pipeline: COLLECTION_PIPELINE
         ]
     ]
-    def results = elasticsearchService.performRequest('POST', '_reindex', reindexBody)
-    def reindexed = results.total as Long
-    if (reindexed > 0) {
-      return reindexed
-    }
 
-    def synthesizedGranule = (collection._source as Map) + [
-        fileIdentifier: collection._source.fileIdentifier,
-        parentIdentifier: collection._source.fileIdentifier,
-        internalParentIdentifier: collection._id
-    ]
-    elasticsearchService.performRequest('PUT', "$to/$GRANULE_TYPE/$collection._id", synthesizedGranule)
-    return 1
+    def results = elasticsearchService.performRequest('POST', '_reindex', reindexBody)
+    log.debug("Updated ${results.updated} and created ${results.created} collections in search index. \nFailures: ${results.failures}. \nTook ${results.took} ms.")
   }
 
   /**
-   * Returns the max value of the stagedDate field in the search index
+   * @param sourceIndex
+   * @param destIndex
+   * @param parentIds parentIdentifier identified in granule records
+   * @param internalParentId ES id of associated collection
+   * @param stagedAfter (optional) Only reindex granules staged after this date, in millis since the epoch
+   * @return Number of granules reindexed (updated + created)
+   */
+  private Long etlGranules(String sourceIndex, String destIndex, String parentIdentifier, String internalParentId, Long stagedAfter = 0) {
+    log.debug("Starting granule indexing of collection ${internalParentId}")
+
+    def reindexScript = "ctx._source['internalParentIdentifier'] = params.internalParentId;"
+    def reindexBody = [
+        conflicts: "proceed",
+        source: [
+            index: sourceIndex,
+            query: [
+                bool: [
+                    filter: [
+                        [term: [parentIdentifier: parentIdentifier]],
+                        [range: [stagedDate: [gt: stagedAfter]]]
+                    ]
+                ]
+            ]
+        ],
+        dest: [
+            index: destIndex,
+            pipeline: GRANULE_PIPELINE
+        ],
+        script: [
+            lang: "painless",
+            params: [internalParentId: internalParentId],
+            inline: reindexScript
+        ]
+    ]
+
+    def results = elasticsearchService.performRequest('POST', '_reindex', reindexBody)
+    log.debug("Updated ${results.updated} and created ${results.created} granules in search index. \nFailures: ${results.failures}. \nTook ${results.took} ms.")
+    return results.updated + results.created
+  }
+
+  /**
+   * Returns the max value of the stagedDate field in the specified search index
    * If the search index is empty, returns 0
    * Note: This software was written after the epoch, so this should be pretty safe.
    */
-  private Long getMaxSearchStagedMillis() {
-    def endpoint = "$SEARCH_INDEX/$COLLECTION_TYPE,$GRANULE_TYPE/_search"
+  private Long getMaxSearchStagedMillis(String index) {
+    def endpoint = "$index/_search"
     def body = [
         size: 0,
         aggregations: [
