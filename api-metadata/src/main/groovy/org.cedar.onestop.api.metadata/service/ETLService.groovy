@@ -129,9 +129,9 @@ class ETLService {
     def parentIdsResponse = elasticsearchService.performRequest('GET', GRANULE_STAGING_INDEX, findParentIdsQuery)
     def parentIds = parentIdsResponse.aggregations.collections.buckets*.key
     parentIds.each { parentId ->
-      def internalIdResponse = metadataManagementService.findMetadata(parentId, parentId, true, COLLECTION_STAGING_INDEX)
+      def internalIdResponse = metadataManagementService.findMetadata(parentId, parentId, true)
       // Only push to Search granules which can be definitively linked to a single, existing collection
-      if(internalIdResponse.data && internalIdResponse.data.size() == 1) {
+      if(internalIdResponse.data && internalIdResponse.data.size() == 1 && internalIdResponse.data[0].type == 'collection') {
         countGranules += etlGranules(parentId, internalIdResponse.data[0].id, maxGranuleStagedDate)
       }
     }
