@@ -17,16 +17,16 @@ import org.springframework.stereotype.Service
 class ElasticsearchService {
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-  private String COLLECTION_SEARCH_INDEX
+  String COLLECTION_SEARCH_INDEX
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.collection.name}')
-  private String COLLECTION_STAGING_INDEX
+  String COLLECTION_STAGING_INDEX
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
-  private String GRANULE_SEARCH_INDEX
+  String GRANULE_SEARCH_INDEX
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
-  private String GRANULE_STAGING_INDEX
+  String GRANULE_STAGING_INDEX
 
   @Value('${elasticsearch.index.prefix:}')
   String PREFIX
