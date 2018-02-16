@@ -83,100 +83,40 @@
         "value": "{{ temporalBounding.endYear }}"
       },
       "remove": {
-        "field": "parentIdentifier"
-      },
-      "remove": {
-        "field": "purpose"
-      },
-      "remove": {
-        "field": "status"
-      },
-      "remove": {
-        "field": "credit"
-      },
-      "remove": {
-        "field": "hierarchyLevelName"
-      },
-      "remove": {
-        "field": "alternateTitle"
-      },
-      "remove": {
-        "field": "keywords"
-      },
-      "remove": {
-        "field": "accessionValues"
-      },
-      "remove": {
-        "field": "topicCategories"
-      },
-      "remove": {
-        "field": "temporalBounding"
-      },
-      "remove": {
-        "field": "acquisitionInstruments"
-      },
-      "remove": {
-        "field": "acquisitionOperations"
-      },
-      "remove": {
-        "field": "acquisitionPlatforms"
-      },
-      "remove": {
-        "field": "contacts"
-      },
-      "remove": {
-        "field": "creators"
-      },
-      "remove": {
-        "field": "publishers"
-      },
-      "remove": {
-        "field": "thumbnailDescription"
-      },
-      "remove": {
-        "field": "creationDate"
-      },
-      "remove": {
-        "field": "revisionDate"
-      },
-      "remove": {
-        "field": "publicationDate"
-      },
-      "remove": {
-        "field": "dsmmAccessibility"
-      },
-      "remove": {
-        "field": "dsmmDataIntegrity"
-      },
-      "remove": {
-        "field": "dsmmDataQualityAssessment"
-      },
-      "remove": {
-        "field": "dsmmDataQualityAssurance"
-      },
-      "remove": {
-        "field": "dsmmDataQualityControlMonitoring"
-      },
-      "remove": {
-        "field": "dsmmPreservability"
-      },
-      "remove": {
-        "field": "dsmmProductionSustainability"
-      },
-      "remove": {
-        "field": "dsmmTransparencyTraceability"
-      },
-      "remove": {
-        "field": "dsmmUsability"
-      },
-      "remove": {
-        "field": "updateFrequency"
-      },
-      "remove": {
-        "field": "presentationForm"
-      },
-      "remove": {
-        "field": "services"
+        "field": [
+          "parentIdentifier",
+          "purpose",
+          "status",
+          "credit",
+          "hierarchyLevelName",
+          "alternateTitle",
+          "keywords",
+          "accessionValues",
+          "topicCategories",
+          "temporalBounding",
+          "acquisitionInstruments",
+          "acquisitionOperations",
+          "acquisitionPlatforms",
+          "contacts",
+          "creators",
+          "publishers",
+          "thumbnailDescription",
+          "creationDate",
+          "revisionDate",
+          "publicationDate",
+          "dsmmAccessibility",
+          "dsmmDataIntegrity",
+          "dsmmDataQualityAssessment",
+          "dsmmDataQualityAssurance",
+          "dsmmDataQualityControlMonitoring",
+          "dsmmPreservability",
+          "dsmmProductionSustainability",
+          "dsmmTransparencyTraceability",
+          "dsmmUsability",
+          "updateFrequency",
+          "presentationForm",
+          "services"
+        ]
       },
       "rename": {
         "field": "keywordValues",
