@@ -55,7 +55,7 @@ stream:
 ```
 stream:
   command: sed 's/ship/platform/g' $1
-``
+```
 
 ### Real use case:  dscover-parser.py
 
