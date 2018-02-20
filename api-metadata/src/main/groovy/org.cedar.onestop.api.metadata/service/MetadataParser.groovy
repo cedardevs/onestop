@@ -5,7 +5,9 @@ import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.text.WordUtils
 import groovy.xml.XmlUtil
-import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 
 class MetadataParser {
 
@@ -493,8 +495,12 @@ class MetadataParser {
       instant = time.TimeInstant.timePosition.text() ?: null
       instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
 
+      DateTimeFormatter dtf = new DateTimeFormatterBuilder()
+          .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+          .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)
+          .toFormatter()
       if(beginDate) {
-        beginYear = beginDate.isLong() ? Long.parseLong(beginDate) : LocalDate.parse(beginDate).getYear()
+        beginYear = beginDate.isLong() ? Long.parseLong(beginDate) : dtf.parse(beginDate).get(ChronoField.YEAR)
         if(beginYear < -292275055L) {
           // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
           beginDate = null
@@ -502,7 +508,7 @@ class MetadataParser {
       }
 
       if(endDate) {
-        endYear = endDate.isLong() ? Long.parseLong(endDate) : LocalDate.parse(endDate).getYear()
+        endYear = endDate.isLong() ? Long.parseLong(endDate) : dtf.parse(endDate).get(ChronoField.YEAR)
         if(endYear < -292275055L) {
           // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
           endDate = null

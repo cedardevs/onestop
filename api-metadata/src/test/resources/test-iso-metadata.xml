@@ -1039,8 +1039,8 @@
             <gmd:EX_TemporalExtent id="boundingTemporalExtent">
               <gmd:extent>
                 <gml:TimePeriod gml:id="boundingTemporalExtentPeriod">
-                  <gml:beginPosition>2005-05-09</gml:beginPosition>
-                  <gml:endPosition indeterminatePosition="now"/>
+                  <gml:beginPosition>2005-05-09T00:00:00Z</gml:beginPosition>
+                  <gml:endPosition>2010-10-01</gml:endPosition>
                 </gml:TimePeriod>
               </gmd:extent>
             </gmd:EX_TemporalExtent>

@@ -1,8 +1,6 @@
 package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
-import groovy.xml.XmlUtil
-import org.apache.commons.lang.StringUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -128,12 +126,12 @@ class MetadataParserTest extends Specification {
     parsedXml.gcmdVerticalResolution == ['> 1 Km'] as Set
     parsedXml.gcmdTemporalResolution == ['Seasonal'] as Set
     parsedXml.temporalBounding == [
-        beginDate           : '2005-05-09',
+        beginDate           : '2005-05-09T00:00:00Z',
         beginIndeterminate  : null,
         beginYear           : 2005,
-        endDate             : null,
-        endIndeterminate    : 'now',
-        endYear             : null,
+        endDate             : '2010-10-01',
+        endIndeterminate    : null,
+        endYear             : 2010,
         instant             : null,
         instantIndeterminate: null,
         description         : null
@@ -510,12 +508,12 @@ class MetadataParserTest extends Specification {
 
     then:
     temporalBounding == [
-        beginDate           : '2005-05-09',
+        beginDate           : '2005-05-09T00:00:00Z',
         beginIndeterminate  : null,
         beginYear           : 2005,
-        endDate             : null,
-        endIndeterminate    : 'now',
-        endYear             : null,
+        endDate             : '2010-10-01',
+        endIndeterminate    : null,
+        endYear             : 2010,
         instant             : null,
         instantIndeterminate: null,
         description         : null
