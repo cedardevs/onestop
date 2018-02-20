@@ -474,9 +474,7 @@ class MetadataParser {
 
   static Map parseTemporalBounding(GPathResult metadata) {
 
-    def boundingExtent = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
-      e.@id.text() == 'boundingExtent'
-    }
+    def boundingExtent = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent
 
     def time = boundingExtent?.temporalElement?.EX_TemporalExtent?.extent
 
@@ -531,9 +529,7 @@ class MetadataParser {
   }
 
   static Map parseSpatialInfo(GPathResult metadata) {
-    def space = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
-      e.@id.text() == 'boundingExtent'
-    }?.geographicElement
+    def space = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement
     def bbox = space?.'**'?.find { it -> it.name() == 'EX_GeographicBoundingBox' }
 
     def spatialBounding = parseBounding(bbox)
