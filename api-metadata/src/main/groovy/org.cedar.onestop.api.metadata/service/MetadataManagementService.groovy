@@ -14,20 +14,20 @@ import org.xml.sax.SAXException
 @Service
 class MetadataManagementService {
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-  private String COLLECTION_SEARCH_INDEX
+  @Value('${elasticsearch.index.search.collection.name}')
+  String COLLECTION_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.collection.name}')
-  private String COLLECTION_STAGING_INDEX
+  @Value('${elasticsearch.index.staging.collection.name}')
+  String COLLECTION_STAGING_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
-  private String GRANULE_SEARCH_INDEX
+  @Value('${elasticsearch.index.search.granule.name}')
+  String GRANULE_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
-  private String GRANULE_STAGING_INDEX
+  @Value('${elasticsearch.index.staging.granule.name}')
+  String GRANULE_STAGING_INDEX
 
   @Value('${elasticsearch.index.universal-type}')
-  private String TYPE
+  String TYPE
 
   @Value('${elasticsearch.index.prefix:}')
   String PREFIX
@@ -63,6 +63,7 @@ class MetadataManagementService {
    */
   public Map loadMetadata(Object[] documents) {
     esService.ensureStagingIndices()
+    esService.ensurePipelines()
     def results = []
     def bulkRequest = new StringBuilder()
     def loadedIndices = []
@@ -104,7 +105,7 @@ class MetadataManagementService {
           ]
         }
         else {
-          def index = type == 'collection' ? COLLECTION_STAGING_INDEX : GRANULE_STAGING_INDEX
+          def index = type == 'collection' ? PREFIX+COLLECTION_STAGING_INDEX : PREFIX+GRANULE_STAGING_INDEX
           def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
           bulkRequest << JsonOutput.toJson(bulkCommand)
           bulkRequest << '\n'
@@ -139,6 +140,8 @@ class MetadataManagementService {
       }
     }
 
+    //fixme delete
+    log.info(JsonOutput.prettyPrint(JsonOutput.toJson(results)))
     return [data: results]
   }
 
@@ -156,7 +159,7 @@ class MetadataManagementService {
   public Map getMetadata(String esId, boolean idsOnly = false) {
 
     def resultsData = []
-    [COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX].each { index ->
+    [PREFIX+COLLECTION_STAGING_INDEX, PREFIX+GRANULE_STAGING_INDEX].each { index ->
       String endpoint = "${index}/${TYPE}/${esId}"
       if (idsOnly) {
         endpoint += '?_source=fileIdentifier,doi'
@@ -190,7 +193,7 @@ class MetadataManagementService {
   }
 
   public Map findMetadata(String fileId, String doi, boolean idsOnly = false) {
-    String endpoint = "${COLLECTION_STAGING_INDEX},${GRANULE_STAGING_INDEX}/_search"
+    String endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX}/_search"
     def searchParams = []
     if (fileId) { searchParams.add( [term: [fileIdentifier: fileId]] ) }
     if (doi) { searchParams.add( [term: [doi: doi]] ) }
@@ -270,7 +273,7 @@ class MetadataManagementService {
             ]
         ]
     ]
-    def endpoint = "$COLLECTION_STAGING_INDEX,$GRANULE_STAGING_INDEX,$COLLECTION_SEARCH_INDEX,$GRANULE_SEARCH_INDEX/_delete_by_query?wait_for_completion=true"
+    def endpoint = "$PREFIX$COLLECTION_STAGING_INDEX,$PREFIX$GRANULE_STAGING_INDEX,$PREFIX$COLLECTION_SEARCH_INDEX,$PREFIX$GRANULE_SEARCH_INDEX/_delete_by_query?wait_for_completion=true"
     def deleteResponse = esService.performRequest('POST', endpoint, query)
 
     return [
@@ -282,17 +285,17 @@ class MetadataManagementService {
     ]
   }
 
-  private String determineType(String index) {
-    def parsedIndex = index.replace(PREFIX, '')
-    parsedIndex = parsedIndex.split('-')[0]
+  public String determineType(String index) {
+
+
 
     def indexToTypeMap = [
-        [COLLECTION_SEARCH_INDEX]: 'collection',
-        [COLLECTION_STAGING_INDEX]: 'collection',
-        [GRANULE_SEARCH_INDEX]: 'granule',
-        [GRANULE_STAGING_INDEX]: 'granule'
+        (COLLECTION_SEARCH_INDEX) : 'collection',
+        (COLLECTION_STAGING_INDEX): 'collection',
+        (GRANULE_SEARCH_INDEX)    : 'granule',
+        (GRANULE_STAGING_INDEX)   : 'granule'
     ]
 
-    return indexToTypeMap[parsedIndex]
+    return indexToTypeMap[index]
   }
 }

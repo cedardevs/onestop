@@ -33,12 +33,6 @@ class LoadIntegrationTests extends Specification {
    *  - Verify error responses
    */
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
-  String STAGING_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
-  String SEARCH_INDEX
-
   @Value('${local.server.port}')
   private String port
 
@@ -61,9 +55,10 @@ class LoadIntegrationTests extends Specification {
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
     metadataURI = "http://localhost:${port}/${contextPath}/metadata"
-    elasticsearchService.dropSearchIndex()
-    elasticsearchService.dropStagingIndex()
+    elasticsearchService.dropSearchIndices()
+    elasticsearchService.dropStagingIndices()
     elasticsearchService.ensureIndices()
+    elasticsearchService.ensurePipelines()
   }
 
 

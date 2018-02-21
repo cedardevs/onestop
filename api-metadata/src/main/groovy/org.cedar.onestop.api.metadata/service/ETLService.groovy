@@ -101,11 +101,12 @@ class ETLService {
     def countCollections = 0
     def countGranules = 0
     elasticsearchService.ensureIndices()
+    elasticsearchService.ensurePipelines()
     elasticsearchService.refresh(sourceCollection, sourceGranule, destCollection, destGranule)
 
     // Identify & reindex new/updated collections from staging -> search
     def maxCollectionStagedDate = getMaxSearchStagedMillis(destCollection)
-    countCollections = etlCollections(maxCollectionStagedDate)
+    countCollections = etlCollections(sourceCollection, destCollection, maxCollectionStagedDate)
 
     // Get parent ids for new/updated granules. Append collection id to granules on their way from staging -> search
     def maxGranuleStagedDate = getMaxSearchStagedMillis(destGranule)
@@ -127,12 +128,12 @@ class ETLService {
         ]
     ]
     def parentIdsResponse = elasticsearchService.performRequest('GET', GRANULE_STAGING_INDEX, findParentIdsQuery)
-    def parentIds = parentIdsResponse.aggregations.collections.buckets*.key
+    def parentIds = parentIdsResponse.aggregations?.collections?.buckets*.key
     parentIds.each { parentId ->
       def internalIdResponse = metadataManagementService.findMetadata(parentId, parentId, true)
       // Only push to Search granules which can be definitively linked to a single, existing collection
       if(internalIdResponse.data && internalIdResponse.data.size() == 1 && internalIdResponse.data[0].type == 'collection') {
-        countGranules += etlGranules(parentId, internalIdResponse.data[0].id, maxGranuleStagedDate)
+        countGranules += etlGranules(sourceGranule, destGranule, parentId, internalIdResponse.data[0].id, maxGranuleStagedDate)
       }
     }
 
@@ -172,6 +173,7 @@ class ETLService {
 
     def results = elasticsearchService.performRequest('POST', '_reindex', reindexBody)
     log.debug("Updated ${results.updated} and created ${results.created} collections in search index. \nFailures: ${results.failures}. \nTook ${results.took} ms.")
+    return results.updated + results.created
   }
 
   /**
