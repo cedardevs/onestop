@@ -6,82 +6,183 @@
       "foreach": {
         "field": "keywords",
         "processor": {
-          "append": {
-            "field": "keywordValues",
-            "value": "{{ keywords.values }}"
+          "foreach": {
+            "field": "_ingest._value.values",
+            "processor": {
+              "append": {
+                "field": "keywordValues",
+                "value": [
+                  "{{_ingest._value}}"
+                ]
+              }
+            },
+            "on_failure": [
+              {
+                "append": {
+                  "field": "keywordValues",
+                  "value": [
+                    "{{_ingest._value.values}}"
+                  ]
+                }
+              }
+            ]
           }
-        }
-      },
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "keywordValues",
+              "value": [
+                "{{keywords.values}}"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
       "foreach": {
         "field": "contacts",
         "processor": {
           "append": {
             "field": "individualNames",
-            "value": "{{ contacts.individualName }}"
+            "value": "{{_ingest._value.individualName}}"
           }
-        }
-      },
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "individualNames",
+              "value": "{{contacts.individualName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
       "foreach": {
         "field": "contacts",
         "processor": {
           "append": {
             "field": "organizationNames",
-            "value": "{{ contacts.organizationName }}"
+            "value": "{{_ingest._value.organizationName}}"
           }
-        }
-      },
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "organizationNames",
+              "value": "{{contacts.organizationName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
       "foreach": {
         "field": "creators",
         "processor": {
           "append": {
             "field": "individualNames",
-            "value": "{{ creators.individualName }}"
+            "value": "{{_ingest._value.individualName}}"
           }
-        }
-      },
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "individualNames",
+              "value": "{{creators.individualName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
       "foreach": {
         "field": "creators",
         "processor": {
           "append": {
             "field": "organizationNames",
-            "value": "{{ creators.organizationName }}"
+            "value": "{{_ingest._value.organizationName}}"
           }
-        }
-      },
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "organizationNames",
+              "value": "{{creators.organizationName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
       "foreach": {
         "field": "publishers",
         "processor": {
           "append": {
             "field": "individualNames",
-            "value": "{{ publishers.individualName }}"
+            "value": "{{_ingest._value.individualName}}"
           }
-        }
-      },
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "individualNames",
+              "value": "{{publishers.individualName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
       "foreach": {
         "field": "publishers",
         "processor": {
           "append": {
             "field": "organizationNames",
-            "value": "{{ publishers.organizationName }}"
+            "value": "{{_ingest._value.organizationName}}"
           }
-        }
-      },
-      "set": {
-        "field": "beginDate",
-        "value": "{{ temporalBounding.beginDate }}"
-      },
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "organizationNames",
+              "value": "{{publishers.organizationName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "date": {
+        "field": "temporalBounding.beginDate",
+        "target_field": "beginDate",
+        "formats": ["ISO8601"],
+        "ignore_failure": true
+      }
+    },
+    {
       "set": {
         "field": "beginYear",
-        "value": "{{ temporalBounding.beginYear }}"
-      },
-      "set": {
-        "field": "endDate",
-        "value": "{{ temporalBounding.endDate }}"
-      },
+        "value": "{{temporalBounding.beginYear}}"
+      }
+    },
+    {
+      "date": {
+        "field": "temporalBounding.endDate",
+        "target_field": "endDate",
+        "formats": ["ISO8601"],
+        "ignore_failure": true
+      }
+    },
+    {
       "set": {
         "field": "endYear",
-        "value": "{{ temporalBounding.endYear }}"
-      },
+        "value": "{{temporalBounding.endYear}}"
+      }
+    },
+    {
       "remove": {
         "field": [
           "parentIdentifier",
@@ -117,7 +218,9 @@
           "presentationForm",
           "services"
         ]
-      },
+      }
+    },
+    {
       "rename": {
         "field": "keywordValues",
         "target_field": "keywords"

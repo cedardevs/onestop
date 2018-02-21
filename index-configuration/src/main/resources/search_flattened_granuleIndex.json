@@ -1,6 +1,7 @@
 {
   "mappings": {
     "doc": {
+      "dynamic": "strict",
       "_all": {
         "enabled": false
       },
