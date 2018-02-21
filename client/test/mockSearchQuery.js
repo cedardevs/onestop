@@ -2,7 +2,7 @@ import nock from 'nock'
 
 export const searchQuery = (testingRoot, requestBody) => {
   nock(testingRoot)
-      .post('/onestop/api/search', requestBody)
+      .post('/onestop/api/collection/search', requestBody)
       .reply(200, {
         data: [
           {
@@ -44,7 +44,7 @@ export const errorsArray = [
 
 export const errorQuery = (testingRoot, requestBody) => {
   nock(testingRoot)
-      .post('/onestop/api/search', requestBody)
+      .post('/onestop/api/collection/search', requestBody)
       .reply(500, {
         errors: errorsArray,
         meta: {

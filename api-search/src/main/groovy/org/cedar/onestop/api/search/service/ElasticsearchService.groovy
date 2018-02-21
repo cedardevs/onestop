@@ -54,7 +54,7 @@ class ElasticsearchService {
   }
 
   Map getCollectionById(String id) {
-    String collectionEndpoint = "/$COLLECTION_SEARCH_INDEX/${id}"
+    String collectionEndpoint = "/$COLLECTION_SEARCH_INDEX/_all/${id}"
     def response = parseResponse(restClient.performRequest("GET", collectionEndpoint))
 
     // get the total number of granules for this collection id
@@ -92,7 +92,7 @@ class ElasticsearchService {
   }
 
   Map getGranuleById(String id) {
-    String granuleEndpoint = "/$GRANULE_SEARCH_INDEX/${id}"
+    String granuleEndpoint = "/$GRANULE_SEARCH_INDEX/_all/${id}"
     def response = parseResponse(restClient.performRequest("GET", granuleEndpoint))
     if (response.found) {
       return [
