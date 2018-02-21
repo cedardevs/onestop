@@ -50,8 +50,3 @@ services:
     ports:
       - 9300:9300
       - 9200:9200
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:${ES_VERSION:-5.5.3}
-    ports:
-      - 5601:5601
