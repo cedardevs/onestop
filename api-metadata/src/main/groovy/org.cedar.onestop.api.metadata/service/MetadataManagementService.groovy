@@ -287,7 +287,9 @@ class MetadataManagementService {
 
   public String determineType(String index) {
 
-
+    def parsedIndex = PREFIX ? index.replace(PREFIX, '') : index
+    def endPosition = parsedIndex.lastIndexOf('-')
+    parsedIndex = endPosition > 0 ? parsedIndex.substring(0, endPosition) : parsedIndex
 
     def indexToTypeMap = [
         (COLLECTION_SEARCH_INDEX) : 'collection',
@@ -296,6 +298,6 @@ class MetadataManagementService {
         (GRANULE_STAGING_INDEX)   : 'granule'
     ]
 
-    return indexToTypeMap[index]
+    return indexToTypeMap[parsedIndex]
   }
 }

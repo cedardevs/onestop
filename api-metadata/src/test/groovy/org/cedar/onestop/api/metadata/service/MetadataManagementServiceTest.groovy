@@ -11,10 +11,10 @@ class MetadataManagementServiceTest extends Specification {
 
   def setup() {
     metadataManagementService.PREFIX = 'prefix-'
-    metadataManagementService.COLLECTION_SEARCH_INDEX = 'prefix-search_collection'
-    metadataManagementService.COLLECTION_STAGING_INDEX = 'prefix-staging_collection'
-    metadataManagementService.GRANULE_SEARCH_INDEX = 'prefix-search_granule'
-    metadataManagementService.GRANULE_STAGING_INDEX = 'prefix-staging_granule'
+    metadataManagementService.COLLECTION_SEARCH_INDEX = 'search_collection'
+    metadataManagementService.COLLECTION_STAGING_INDEX = 'staging_collection'
+    metadataManagementService.GRANULE_SEARCH_INDEX = 'search_granule'
+    metadataManagementService.GRANULE_STAGING_INDEX = 'staging_granule'
   }
 
   def "Index #index correctly parsed to type"() {
