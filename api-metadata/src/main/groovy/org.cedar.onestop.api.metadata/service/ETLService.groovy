@@ -127,7 +127,7 @@ class ETLService {
             ]
         ]
     ]
-    def parentIdsResponse = elasticsearchService.performRequest('GET', GRANULE_STAGING_INDEX, findParentIdsQuery)
+    def parentIdsResponse = elasticsearchService.performRequest('GET', "$GRANULE_STAGING_INDEX/_search", findParentIdsQuery)
     def parentIds = parentIdsResponse.aggregations?.collections?.buckets*.key
     parentIds.each { parentId ->
       def internalIdResponse = metadataManagementService.findMetadata(parentId, parentId, true)

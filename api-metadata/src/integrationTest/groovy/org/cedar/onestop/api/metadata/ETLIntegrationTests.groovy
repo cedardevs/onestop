@@ -1,7 +1,5 @@
 package org.cedar.onestop.api.metadata
 
-import groovy.json.JsonOutput
-import groovy.json.JsonParser
 import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
@@ -130,7 +128,7 @@ class ETLIntegrationTests extends Specification {
     indexedGranuleVersions()['CO-OPS.NOS_8638614_201602_D1_v00'] == 2
   }
 
-  def 'touching a collection and updating reindexes that collection and its granules'() {
+  def 'touching a collection and updating reindexes only that granule'() {
     setup:
     insertMetadataFromPath('data/GHRSST/1.xml')
     insertMetadataFromPath('data/COOPS/C1.xml')
@@ -147,9 +145,8 @@ class ETLIntegrationTests extends Specification {
     collections['gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'] == 1
     collections['gov.noaa.nodc:NDBC-COOPS'] == 2
     def granules = indexedGranuleVersions()
-    granules['gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'] == 1
-    granules['CO-OPS.NOS_8638614_201602_D1_v00'] == 2
-    granules['CO-OPS.NOS_9410170_201503_D1_v00'] == 2
+    granules['CO-OPS.NOS_8638614_201602_D1_v00'] == 1
+    granules['CO-OPS.NOS_9410170_201503_D1_v00'] == 1
   }
 
   def 'rebuild does nothing when staging is empty'() {
@@ -161,19 +158,6 @@ class ETLIntegrationTests extends Specification {
 
     and:
     documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX).every({it.size() == 0})
-  }
-
-  def 'rebuilding with a collection indexes a collection and a synthesized granule'() {
-    setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-
-    when:
-    etlService.rebuildSearchIndices()
-
-    then:
-    def indexed = documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX)
-    indexed[COLLECTION_TYPE]*._source*.fileIdentifier == ['gov.noaa.nodc:NDBC-COOPS']
-    indexed[GRANULE_TYPE]*._source*.fileIdentifier == ['gov.noaa.nodc:NDBC-COOPS']
   }
 
   def 'rebuilding with an orphan granule indexes nothing'() {
@@ -208,18 +192,16 @@ class ETLIntegrationTests extends Specification {
 
     and: // the collection is the same as staging
     indexedCollection._id == stagedCollection._id
-    indexedCollection._source == stagedCollection._source
+    indexedCollection._source.fileIdentifier == stagedCollection._source.fileIdentifier
+    indexedCollection._source.doi == stagedCollection._source.doi
 
-    and: // the granule is the staged collection with fields overridden by the staged granule
+    and: // the granule is the same as staging
     indexedGranule._id == stagedGranule._id
-    println(JsonOutput.prettyPrint(JsonOutput.toJson(indexedGranule)))
-    def expectedGranule = stagedCollection._source +
-                          stagedGranule._source.findAll({k, v -> v}) +
-                          [internalParentIdentifier: stagedCollection._id]
-    println(JsonOutput.prettyPrint(JsonOutput.toJson(expectedGranule)))
-    indexedGranule._source.each { k, v ->
-      assert v == expectedGranule[k]
-    }
+    indexedGranule._source.fileIdentifier == stagedGranule._source.fileIdentifier
+    indexedGranule._source.parentIdentifier == stagedGranule._source.parentIdentifier
+
+    and: // the granule is connected to the collection
+    indexedGranule._source.internalParentIdentifier == indexedCollection._id
   }
 
   def 'rebuilding with an updated collection builds a whole new index'() {
@@ -238,7 +220,7 @@ class ETLIntegrationTests extends Specification {
     then: 'everything has a fresh version in a new index'
     indexed[COLLECTION_TYPE].size() == 2
     indexed[COLLECTION_TYPE].every({it._version == 1})
-    indexed[GRANULE_TYPE].size() == 3
+    indexed[GRANULE_TYPE].size() == 2
     indexed[GRANULE_TYPE].every({it._version == 1})
   }
 
@@ -267,7 +249,6 @@ class ETLIntegrationTests extends Specification {
     def endpoint = "$collectionIndex,$granuleIndex/_search"
     def request = [version: true]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
-    println(JsonOutput.prettyPrint(JsonOutput.toJson(response))) //fixme delete
     return response.hits.hits.groupBy({metadataIndexService.determineType(it._index)})
   }
 
