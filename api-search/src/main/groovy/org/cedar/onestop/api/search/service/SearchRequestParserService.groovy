@@ -40,10 +40,6 @@ class SearchRequestParserService {
     return requestQuery
   }
 
-  Boolean shouldReturnCollections(Map params) {
-    !params.filters.any { it.type == 'collection' }
-  }
-
   Map createCollectionsAggregation() {
     return [
         terms       : [

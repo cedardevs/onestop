@@ -147,16 +147,12 @@ class ElasticsearchService {
   private Map queryElasticsearch(Map params, String index) {
     // TODO: does this parse step need to change based on new different endpoints?
     def query = searchRequestParserService.parseSearchQuery(params)
-//    def getCollections = searchRequestParserService.shouldReturnCollections(params)
     def getFacets = params.facets as boolean
     def pageParams = params.page as Map
 
     def requestBody = addAggregations(query, getFacets)
 
-//    return getCollections ? getCollectionResults(requestBody, pageParams) : getGranuleResults(requestBody, pageParams)
-
     String searchEndpoint = "${index}/_search"
-
 
     requestBody.size = pageParams?.max ?: 10
     requestBody.from = pageParams?.offset ?: 0
