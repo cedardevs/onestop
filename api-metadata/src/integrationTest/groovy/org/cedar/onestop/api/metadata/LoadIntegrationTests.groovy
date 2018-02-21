@@ -87,7 +87,7 @@ class LoadIntegrationTests extends Specification {
     def getRequest = RequestEntity.get("$metadataURI/$elasticsearchId".toURI()).build()
     def getResult = restTemplate.exchange(getRequest, Map)
     getResult.statusCode == HttpStatus.OK
-    getResult.body.data.id[0] == elasticsearchId
+    getResult.body.data[0].id == elasticsearchId
 
     when: "Same metadata is loaded again"
     def reloadResult = restTemplate.exchange(loadRequest, Map)

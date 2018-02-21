@@ -140,8 +140,6 @@ class MetadataManagementService {
       }
     }
 
-    //fixme delete
-    log.info(JsonOutput.prettyPrint(JsonOutput.toJson(results)))
     return [data: results]
   }
 
@@ -180,7 +178,7 @@ class MetadataManagementService {
 
     if(resultsData) {
       return [
-          data: [resultsData]
+          data: resultsData
       ]
     }
     else {
