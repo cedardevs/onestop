@@ -15,23 +15,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD
 import static org.springframework.web.bind.annotation.RequestMethod.POST
 
-import org.springframework.beans.factory.annotation.Value
-
 @Slf4j
 @RestController
 class SearchController {
 
   private UiConfig uiConfig
   private ElasticsearchService elasticsearchService
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
-  private String COLLECTION_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
-  private String GRANULE_SEARCH_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattenedGranule.name}')
-  private String FLATTENED_GRANULE_SEARCH_INDEX
 
   @Autowired
   public SearchController(ElasticsearchService elasticsearchService, UiConfig uiConfig) {
@@ -49,7 +38,7 @@ class SearchController {
       return [errors: validation.errors]
     }
     log.info("incoming search params: ${params}")
-    return elasticsearchService.search(params, FLATTENED_GRANULE_SEARCH_INDEX)
+    return elasticsearchService.searchFlattenedGranules(params)
   }
 
   // GET Collection by ID
@@ -75,7 +64,7 @@ class SearchController {
       return [errors: validation.errors]
     }
     log.info("incoming search params: ${params}")
-    return elasticsearchService.search(params, COLLECTION_SEARCH_INDEX)
+    return elasticsearchService.searchCollections(params)
   }
 
   // GET Granule by ID
@@ -101,7 +90,7 @@ class SearchController {
       return [errors: validation.errors]
     }
     log.info("incoming search params: ${params}")
-    return elasticsearchService.search(params, GRANULE_SEARCH_INDEX)
+    return elasticsearchService.searchGranules(params)
   }
 
   @RequestMapping(path = '/search/totalCounts', method = GET)

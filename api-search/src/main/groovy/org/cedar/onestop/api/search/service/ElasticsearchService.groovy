@@ -36,6 +36,18 @@ class ElasticsearchService {
     this.restClient = restClient
   }
 
+  Map searchFlattenedGranules(Map searchParams) {
+    return search(searchParams, FLATTENED_GRANULE_SEARCH_INDEX)
+  }
+
+  Map searchGranules(Map searchParams) {
+    return search(searchParams, GRANULE_SEARCH_INDEX)
+  }
+
+  Map searchCollections(Map searchParams) {
+    return search(searchParams, COLLECTION_SEARCH_INDEX)
+  }
+
   Map search(Map searchParams, String index) {
     def response = queryElasticsearch(searchParams, index)
     return response
