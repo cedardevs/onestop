@@ -118,7 +118,7 @@ export default class AccessView extends React.Component {
 
     const dataFormats = item.dataFormats ? item.dataFormats : []
     const distributionsFormats = dataFormats.map((format, index) => {
-      return <li key={index}>{format}</li>
+      return <li key={index}>{format.name}</li>
     })
 
     let distributionFormatsList = (
