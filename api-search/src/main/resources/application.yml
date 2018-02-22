@@ -24,6 +24,7 @@ elasticsearch:
   host: localhost
   port: 9200
   index:
+    universal-type: doc
     search:
       collection:
         name: search_collection

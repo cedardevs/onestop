@@ -28,19 +28,6 @@ class SearchController {
     this.uiConfig = uiConfig
   }
 
-  // POST in order to support request bodies from clients that won't send bodies with GETs
-  @RequestMapping(path = "/search", method = [POST, GET])
-  Map search(@RequestBody Map params, HttpServletResponse response) {
-    Map validation = JsonValidator.validateSearchRequestSchema(params)
-    if (!validation.success) {
-      log.debug("invalid request: ${validation.errors.detail?.join(', ')}")
-      response.status = HttpStatus.BAD_REQUEST.value()
-      return [errors: validation.errors]
-    }
-    log.info("incoming search params: ${params}")
-    return elasticsearchService.searchFlattenedGranules(params)
-  }
-
   // GET Collection by ID
   @RequestMapping(path = "/collection/{id}", method = [GET, HEAD], produces = 'application/json')
   Map getCollection(@PathVariable String id, HttpServletResponse response) {
@@ -91,6 +78,32 @@ class SearchController {
     }
     log.info("incoming search params: ${params}")
     return elasticsearchService.searchGranules(params)
+  }
+
+  // GET Flattened Granule by ID
+  @RequestMapping(path = "/flattened-granule/{id}", method = [GET, HEAD], produces = 'application/json')
+  Map getFlattenedGranule(@PathVariable String id, HttpServletResponse response) {
+    def result = elasticsearchService.getFlattenedGranuleById(id)
+    if (result.data) {
+      response.status = HttpStatus.OK.value()
+    }
+    else {
+      response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
+    }
+    return result
+  }
+
+  // Search Flattened Granules
+  @RequestMapping(path = "/flattened-granule/search", method = [POST, GET])
+  Map search(@RequestBody Map params, HttpServletResponse response) {
+    Map validation = JsonValidator.validateSearchRequestSchema(params)
+    if (!validation.success) {
+      log.debug("invalid request: ${validation.errors.detail?.join(', ')}")
+      response.status = HttpStatus.BAD_REQUEST.value()
+      return [errors: validation.errors]
+    }
+    log.info("incoming search params: ${params}")
+    return elasticsearchService.searchFlattenedGranules(params)
   }
 
   @RequestMapping(path = '/search/totalCounts', method = GET)

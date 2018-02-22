@@ -17,14 +17,20 @@ import org.springframework.stereotype.Service
 @Service
 class ElasticsearchService {
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
+  @Value('${elasticsearch.index.search.collection.name}')
   private String COLLECTION_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
+  @Value('${elasticsearch.index.search.granule.name}')
   private String GRANULE_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattenedGranule.name}')
+  @Value('${elasticsearch.index.search.flattenedGranule.name}')
   private String FLATTENED_GRANULE_SEARCH_INDEX
+
+  @Value('${elasticsearch.index.universal-type}')
+  private String TYPE
+
+  @Value('${elasticsearch.index.prefix:}')
+  private String PREFIX
 
   private SearchRequestParserService searchRequestParserService
 
@@ -37,83 +43,52 @@ class ElasticsearchService {
   }
 
   Map searchFlattenedGranules(Map searchParams) {
-    return search(searchParams, FLATTENED_GRANULE_SEARCH_INDEX)
+    return queryElasticsearch(searchParams, PREFIX+FLATTENED_GRANULE_SEARCH_INDEX)
   }
 
   Map searchGranules(Map searchParams) {
-    return search(searchParams, GRANULE_SEARCH_INDEX)
+    return queryElasticsearch(searchParams, PREFIX+GRANULE_SEARCH_INDEX)
   }
 
   Map searchCollections(Map searchParams) {
-    return search(searchParams, COLLECTION_SEARCH_INDEX)
-  }
-
-  Map search(Map searchParams, String index) {
-    def response = queryElasticsearch(searchParams, index)
-    return response
+    return queryElasticsearch(searchParams, PREFIX+COLLECTION_SEARCH_INDEX)
   }
 
   Map getCollectionById(String id) {
-    String collectionEndpoint = "/$COLLECTION_SEARCH_INDEX/_all/${id}"
-    def response = parseResponse(restClient.performRequest("GET", collectionEndpoint))
+    def getCollection = getById(COLLECTION_SEARCH_INDEX, id)
 
-    // get the total number of granules for this collection id
-    String granuleEndpoint = "/$GRANULE_SEARCH_INDEX/_search"
-    HttpEntity granuleRequest = new NStringEntity(JsonOutput.toJson([
-        query: [
-            term: [
-                internalParentIdentifier: "${id}"
-            ]
-        ],
-        size : 0
-    ]), ContentType.APPLICATION_JSON)
-    def granuleResponse = restClient.performRequest("GET", granuleEndpoint, Collections.EMPTY_MAP, granuleRequest)
-    def totalGranulesForCollection = parseResponse(granuleResponse).hits.total
+    if(getCollection.data) {
+      // get the total number of granules for this collection id
+      String granuleEndpoint = "/$PREFIX$GRANULE_SEARCH_INDEX/_search"
+      HttpEntity granuleRequest = new NStringEntity(JsonOutput.toJson([
+          query: [
+              term: [
+                  internalParentIdentifier: id
+              ]
+          ],
+          size : 0
+      ]), ContentType.APPLICATION_JSON)
+      def granuleResponse = restClient.performRequest("GET", granuleEndpoint, Collections.EMPTY_MAP, granuleRequest)
+      def totalGranulesForCollection = parseResponse(granuleResponse).hits.total
 
-    if (response.found) {
-      return [
-          data: [[
-                     id        : response._id,
-                     type      : response._type,
-                     attributes: response._source
-                 ]],
-          meta: [
-              totalGranules: totalGranulesForCollection
-          ]
+      getCollection.meta = [
+          totalGranules: totalGranulesForCollection
       ]
     }
-    else {
-      return [
-          status: HttpStatus.NOT_FOUND.value(),
-          title : 'No such document',
-          detail: "Collection with Elasticsearch ID [ ${id} ] does not exist."
-      ]
-    }
+
+    return getCollection
   }
 
   Map getGranuleById(String id) {
-    String granuleEndpoint = "/$GRANULE_SEARCH_INDEX/_all/${id}"
-    def response = parseResponse(restClient.performRequest("GET", granuleEndpoint))
-    if (response.found) {
-      return [
-          data: [[
-                     id        : response._id,
-                     type      : response._type,
-                     attributes: response._source
-                 ]]
-      ]
-    }
-    else {
-      return [
-          status: HttpStatus.NOT_FOUND.value(),
-          title : 'No such document',
-          detail: "Granule with Elasticsearch ID [ ${id} ] does not exist."
-      ]
-    }
+    return getById(GRANULE_SEARCH_INDEX, id)
+  }
+
+  Map getFlattenedGranuleById(String id) {
+    return getById(FLATTENED_GRANULE_SEARCH_INDEX, id)
   }
 
   Map totalCounts() {
-    String collectionEndpoint = "/$COLLECTION_SEARCH_INDEX/_search"
+    String collectionEndpoint = "/$PREFIX$COLLECTION_SEARCH_INDEX/_search"
     HttpEntity collectionRequest = new NStringEntity(JsonOutput.toJson([
         query: [
             match_all: [:]
@@ -122,7 +97,7 @@ class ElasticsearchService {
     ]), ContentType.APPLICATION_JSON)
     def collectionResponse = restClient.performRequest("GET", collectionEndpoint, Collections.EMPTY_MAP, collectionRequest)
 
-    String granuleEndpoint = "/$GRANULE_SEARCH_INDEX/_search"
+    String granuleEndpoint = "/$PREFIX$GRANULE_SEARCH_INDEX/_search"
     HttpEntity granuleRequest = new NStringEntity(JsonOutput.toJson([
         query: [
             bool: [
@@ -154,6 +129,28 @@ class ElasticsearchService {
             ]
         ]
     ]
+  }
+
+  private Map getById(String index, String id) {
+    String endpoint = "/$PREFIX$index/$TYPE/$id"
+    def response = parseResponse(restClient.performRequest('GET', endpoint))
+    def type = determineType(index)
+    if (response.found) {
+      return [
+          data: [[
+                     id        : response._id,
+                     type      : type,
+                     attributes: response._source
+                 ]]
+      ]
+    }
+    else {
+      return [
+          status: HttpStatus.NOT_FOUND.value(),
+          title : 'No such document',
+          detail: "Record type $type with Elasticsearch ID [ ${id} ] does not exist."
+      ]
+    }
   }
 
   private Map queryElasticsearch(Map params, String index) {
@@ -274,5 +271,20 @@ class ElasticsearchService {
   private Map pruneEmptyElements(Map requestBody) {
     def prunedRequest = requestBody.collectEntries { k, v -> [k, v instanceof Map ? pruneEmptyElements(v) : v]}.findAll { k, v -> v }
     return prunedRequest
+  }
+
+  private String determineType(String index) {
+
+    def parsedIndex = PREFIX ? index.replace(PREFIX, '') : index
+    def endPosition = parsedIndex.lastIndexOf('-')
+    parsedIndex = endPosition > 0 ? parsedIndex.substring(0, endPosition) : parsedIndex
+
+    def indexToTypeMap = [
+        (COLLECTION_SEARCH_INDEX)          : 'collection',
+        (GRANULE_SEARCH_INDEX)             : 'granule',
+        (FLATTENED_GRANULE_SEARCH_INDEX)   : 'flattened-granule'
+    ]
+
+    return indexToTypeMap[parsedIndex]
   }
 }
