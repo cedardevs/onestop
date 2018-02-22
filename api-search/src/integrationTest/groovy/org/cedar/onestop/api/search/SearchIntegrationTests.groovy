@@ -42,6 +42,9 @@ class SearchIntegrationTests extends Specification {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattenedGranule.name}')
   private String FLATTENED_GRANULE_SEARCH_INDEX
 
+  @Value('${elasticsearch.index.universal-type}')
+  private String TYPE
+
   private MediaType contentType = MediaType.APPLICATION_JSON_UTF8
 
   private RestTemplate restTemplate
@@ -50,51 +53,59 @@ class SearchIntegrationTests extends Specification {
 
   void setup() {
     def cl = ClassLoader.systemClassLoader
-    def searchCollectionIndexJson = cl.getResourceAsStream('searchCollectionIndex.json').text
-    def searchGranuleIndexJson = cl.getResourceAsStream('searchGranuleIndex.json').text
+    def searchCollectionIndexJson = cl.getResourceAsStream('search_collectionIndex.json').text
+    def searchGranuleIndexJson = cl.getResourceAsStream('search_granuleIndex.json').text
+    def searchFlattenedGranuleIndexJson = cl.getResourceAsStream('search_flattened_granuleIndex.json').text
 
     def collectionIndexSettings = new NStringEntity(searchCollectionIndexJson, ContentType.APPLICATION_JSON)
     def granuleIndexSettings = new NStringEntity(searchGranuleIndexJson, ContentType.APPLICATION_JSON)
-
-    String collectionEndpoint = "/${COLLECTION_SEARCH_INDEX}"
-    String granuleEndpoint = "/${GRANULE_SEARCH_INDEX}"
+    def flattenedGranuleIndexSettings = new NStringEntity(searchFlattenedGranuleIndexJson, ContentType.APPLICATION_JSON)
 
     Response response = restClient.performRequest('DELETE', '_all')
     println("DELETE _all: ${response}")
 
-    def collectionResponse = restClient.performRequest('PUT', collectionEndpoint, Collections.EMPTY_MAP, collectionIndexSettings)
+    def collectionResponse = restClient.performRequest('PUT', COLLECTION_SEARCH_INDEX, Collections.EMPTY_MAP, collectionIndexSettings)
     println("PUT new collection index: ${collectionResponse}")
 
-    def granuleResponse = restClient.performRequest('PUT', granuleEndpoint, Collections.EMPTY_MAP, granuleIndexSettings)
+    def granuleResponse = restClient.performRequest('PUT', GRANULE_SEARCH_INDEX, Collections.EMPTY_MAP, granuleIndexSettings)
     println("PUT new granule index: ${granuleResponse}")
+
+    def flattenedGranuleResponse = restClient.performRequest('PUT', FLATTENED_GRANULE_SEARCH_INDEX, Collections.EMPTY_MAP, flattenedGranuleIndexSettings)
+    println("PUT new flattened-granule index: ${flattenedGranuleResponse}")
 
     Map data = [
       'DEM': [
         'C1': [
           id: 'e7a36e60-1bcb-47b1-ac0d-3c2a2a743f9b',
-          granules: ['G1' : null]
+          granules: [],
+          flattenedGranules: []
         ],
         'C2': [
           id: 'e5820283-3686-44d0-8edd-28a086eb500e',
-          granules: ['G2' : null]
+          granules: [],
+          flattenedGranules: []
         ],
         'C3': [
           id: '1415b3db-c602-4dbb-a502-4091fe9df1cf',
-          granules: ['G3' : null]
+          granules: [],
+          flattenedGranules: []
         ],
       ],
       'GHRSST': [
         'C1': [
           id: '920d8155-f764-4777-b7e5-14442b7275b8',
-          granules: ['G1' : null]
+          granules: [],
+          flattenedGranules: []
         ],
         'C2': [
           id: '882511bc-e99e-4597-b634-47a59ddf9fda',
-          granules: ['G2' : null]
+          granules: [],
+          flattenedGranules: []
         ],
         'C3': [
           id: '42ea683d-e4e7-434c-8823-abff32e00f34',
-          granules: ['G3' : null]
+          granules: [],
+          flattenedGranules: []
         ],
       ],
       'COOPS': [
@@ -103,6 +114,10 @@ class SearchIntegrationTests extends Specification {
           granules: [
             'G1': [id: '783089c4-3484-4f70-ac8d-d4818d0cd0dd'],
             'G2': [id: 'a207b48f-29fc-4d79-a676-1f265cd9971f'],
+          ],
+          flattenedGranules: [
+              'FG1': [id: '783089c4-3484-4f70-ac8d-d4818d0cd0dd'],
+              'FG2': [id: 'a207b48f-29fc-4d79-a676-1f265cd9971f']
           ]
         ]
       ]
@@ -112,27 +127,32 @@ class SearchIntegrationTests extends Specification {
       dataset.each { collection, collectionData ->
         def metadata = cl.getResourceAsStream("data/${name}/${collection}.json").text
         def id = collectionData.id
-
-        def getCollectionEndpoint = "/${COLLECTION_SEARCH_INDEX}/${id}"
+        def collectionEndpoint = "/$COLLECTION_SEARCH_INDEX/$TYPE/$id"
         HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-        response = restClient.performRequest('PUT', getCollectionEndpoint, Collections.EMPTY_MAP, record)
+        response = restClient.performRequest('PUT', collectionEndpoint, Collections.EMPTY_MAP, record)
         println("PUT new collection: ${response}")
 
         collectionData.granules.each { granule, granuleData ->
           metadata = cl.getResourceAsStream("data/${name}/${granule}.json").text
-          //id = granuleData? granuleData.id : collectionData.id
-
-          def getGranuleEndpoint = "/${GRANULE_SEARCH_INDEX}/${id}"
+          def granuleEndpoint = "/$GRANULE_SEARCH_INDEX/$TYPE/$id"
           record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-          response = restClient.performRequest('PUT', getGranuleEndpoint, Collections.EMPTY_MAP, record)
+          response = restClient.performRequest('PUT', granuleEndpoint, Collections.EMPTY_MAP, record)
           println("PUT new granule: ${response}")
         }
+
+//        collectionData.flattenedGranules.each { flattenedGranule, flattenedGranuleData ->
+//          metadata = cl.getResourceAsStream("data/${name}/${flattenedGranule}.json").text
+//          def flattenedGranuleEndpoint = "/$FLATTENED_GRANULE_SEARCH_INDEX/$TYPE/$id"
+//          record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
+//          response = restClient.performRequest('PUT', flattenedGranuleEndpoint, Collections.EMPTY_MAP, record)
+//          println("PUT new flattened granule: ${response}")
+//        }
       }
     }
 
-    def refreshEndpoint = "/${COLLECTION_SEARCH_INDEX},${GRANULE_SEARCH_INDEX}/_refresh"
+    def refreshEndpoint = "/$COLLECTION_SEARCH_INDEX,$GRANULE_SEARCH_INDEX,$FLATTENED_GRANULE_SEARCH_INDEX/_refresh"
     response = restClient.performRequest('POST', refreshEndpoint)
-    println("Refresh collection and granule search indices: ${response}")
+    println("Refresh all search indices: ${response}")
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
