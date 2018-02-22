@@ -47,9 +47,9 @@ class SummaryView extends Component {
   }
 
   render() {
-    const startDate = this.props.item.temporalBounding.beginDate
-    const endDate = this.props.item.temporalBounding.endDate
-      ? this.props.item.temporalBounding.endDate
+    const startDate = this.props.item.beginDate.split('T')[0]
+    const endDate = this.props.item.endDate
+      ? this.props.item.endDate.split('T')[0]
       : 'Present'
 
     const timeSpaceSummary = (
