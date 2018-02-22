@@ -26,21 +26,21 @@ class AdminController {
 
   @RequestMapping(path = '/admin/index/search/rebuild', method = [GET, PUT], produces = 'application/json')
   Map rebuildSearchIndex() {
-    etlService.rebuildSearchIndexAsync()
+    etlService.rebuildSearchIndicesAsync()
     return [acknowledged: true]
   }
 
   @RequestMapping(path = '/admin/index/search/update', method = [GET, PUT], produces = 'application/json')
   Map updateSearchIndex() {
-    etlService.updateSearchIndexAsync()
+    etlService.updateSearchIndicesAsync()
     return [acknowledged: true]
   }
 
   @RequestMapping(path = '/admin/index/search/recreate', method = [GET, PUT], produces = 'application/json')
   Map recreateSearchIndex(@RequestParam Boolean sure) {
     if (sure) {
-      elasticsearchService.dropSearchIndex()
-      elasticsearchService.ensureSearchIndex()
+      elasticsearchService.dropSearchIndices()
+      elasticsearchService.ensureSearchIndices()
       return [acknowledged: true]
     }
   }
@@ -48,8 +48,8 @@ class AdminController {
   @RequestMapping(path = '/admin/index/metadata/recreate', method = [GET, PUT], produces = 'application/json')
   Map recreateMetadataIndex(@RequestParam Boolean sure) {
     if (sure) {
-      elasticsearchService.dropStagingIndex()
-      elasticsearchService.ensureStagingIndex()
+      elasticsearchService.dropStagingIndices()
+      elasticsearchService.ensureStagingIndices()
       return [acknowledged: true]
     }
   }

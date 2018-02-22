@@ -24,13 +24,18 @@ elasticsearch:
   host: localhost
   port: 9200
   index:
+    universal-type: doc
     search:
-      name: search
-      granuleType: granule
-      collectionType: collection
+      collection:
+        name: search_collection
+        pipeline-name: collection_pipeline
+      granule:
+        name: search_granule
+        pipeline-name: granule_pipeline
     staging:
-      name: staging
-      granuleType: granule
-      collectionType: collection
+      collection:
+        name: staging_collection
+      granule:
+        name: staging_granule
 
 info.version: ${version}

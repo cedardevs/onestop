@@ -1,0 +1,323 @@
+{
+  "description": "[RELEASE-DATE] Transforms and reduces fields from staging_granule to search_granule",
+  "version": 1,
+  "processors": [
+    {
+      "foreach": {
+        "field": "keywords",
+        "processor": {
+          "foreach": {
+            "field": "_ingest._value.values",
+            "processor": {
+              "append": {
+                "field": "keywordValues",
+                "value": [
+                  "{{_ingest._value}}"
+                ]
+              }
+            },
+            "on_failure": [
+              {
+                "append": {
+                  "field": "keywordValues",
+                  "value": [
+                    "{{_ingest._value.values}}"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "keywordValues",
+              "value": [
+                "{{keywords.values}}"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "date": {
+        "field": "temporalBounding.beginDate",
+        "target_field": "beginDate",
+        "formats": ["ISO8601"],
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "beginYear",
+        "value": "{{temporalBounding.beginYear}}"
+      }
+    },
+    {
+      "date": {
+        "field": "temporalBounding.endDate",
+        "target_field": "endDate",
+        "formats": ["ISO8601"],
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "endYear",
+        "value": "{{temporalBounding.endYear}}"
+      }
+    },
+    {
+      "remove": {
+        "field": "purpose"
+      }
+    },
+    {
+      "remove": {
+        "field": "status"
+      }
+    },
+    {
+      "remove": {
+        "field": "credit"
+      }
+    },
+    {
+      "remove": {
+        "field": "hierarchyLevelName"
+      }
+    },
+    {
+      "remove": {
+        "field": "alternateTitle"
+      }
+    },
+    {
+      "remove": {
+        "field": "keywords"
+      }
+    },
+    {
+      "remove": {
+        "field": "gcmdScience"
+      }
+    },
+    {
+      "remove": {
+        "field": "gcmdScienceServices"
+      }
+    },
+    {
+      "remove": {
+        "field": "gcmdLocations"
+      }
+    },
+    {
+      "remove": {
+        "field": "gcmdInstruments"
+      }
+    },
+    {
+      "remove": {
+        "field": "gcmdPlatforms"
+      }
+    },
+    {
+      "remove": {
+        "field": "gcmdProjects"
+      }
+    },
+    {
+      "remove": {
+        "field": "gcmdDataCenters"
+      }
+    },
+    {
+      "remove": {
+        "field": "gcmdHorizontalResolution"
+      }
+    },
+    {
+      "remove": {
+        "field": "gcmdVerticalResolution"
+      }
+    },
+    {
+      "remove": {
+        "field": "gcmdTemporalResolution"
+      }
+    },
+    {
+      "remove": {
+        "field": "accessionValues"
+      }
+    },
+    {
+      "remove": {
+        "field": "topicCategories"
+      }
+    },
+    {
+      "remove": {
+        "field": "temporalBounding"
+      }
+    },
+    {
+      "remove": {
+        "field": "acquisitionInstruments"
+      }
+    },
+    {
+      "remove": {
+        "field": "acquisitionOperations"
+      }
+    },
+    {
+      "remove": {
+        "field": "acquisitionPlatforms"
+      }
+    },
+    {
+      "remove": {
+        "field": "contacts"
+      }
+    },
+    {
+      "remove": {
+        "field": "creators"
+      }
+    },
+    {
+      "remove": {
+        "field": "publishers"
+      }
+    },
+    {
+      "remove": {
+        "field": "thumbnailDescription"
+      }
+    },
+    {
+      "remove": {
+        "field": "creationDate"
+      }
+    },
+    {
+      "remove": {
+        "field": "revisionDate"
+      }
+    },
+    {
+      "remove": {
+        "field": "publicationDate"
+      }
+    },
+    {
+      "remove": {
+        "field": "crossReferences"
+      }
+    },
+    {
+      "remove": {
+        "field": "largerWorks"
+      }
+    },
+    {
+      "remove": {
+        "field": "useLimitation"
+      }
+    },
+    {
+      "remove": {
+        "field": "legalConstraints"
+      }
+    },
+    {
+      "remove": {
+        "field": "accessFeeStatement"
+      }
+    },
+    {
+      "remove": {
+        "field": "orderingInstructions"
+      }
+    },
+    {
+      "remove": {
+        "field": "edition"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmAccessibility"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmDataIntegrity"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmDataQualityAssessment"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmDataQualityAssurance"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmDataQualityControlMonitoring"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmPreservability"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmProductionSustainability"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmTransparencyTraceability"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmUsability"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmAverage"
+      }
+    },
+    {
+      "remove": {
+        "field": "updateFrequency"
+      }
+    },
+    {
+      "remove": {
+        "field": "presentationForm"
+      }
+    },
+    {
+      "remove": {
+        "field": "services"
+      }
+    },
+    {
+      "rename": {
+        "field": "keywordValues",
+        "target_field": "keywords"
+      }
+    }
+  ]
+}

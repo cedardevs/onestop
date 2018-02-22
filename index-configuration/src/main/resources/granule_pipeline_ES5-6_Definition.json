@@ -1,32 +1,74 @@
 {
   "description": "[RELEASE-DATE] Transforms and reduces fields from staging_granule to search_granule",
+  "version": 1,
   "processors": [
     {
       "foreach": {
         "field": "keywords",
         "processor": {
-          "append": {
-            "field": "keywordValues",
-            "value": "{{ keywords.values }}"
+          "foreach": {
+            "field": "_ingest._value.values",
+            "processor": {
+              "append": {
+                "field": "keywordValues",
+                "value": [
+                  "{{_ingest._value}}"
+                ]
+              }
+            },
+            "on_failure": [
+              {
+                "append": {
+                  "field": "keywordValues",
+                  "value": [
+                    "{{_ingest._value.values}}"
+                  ]
+                }
+              }
+            ]
           }
-        }
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "keywordValues",
+              "value": [
+                "{{keywords.values}}"
+              ]
+            }
+          }
+        ]
       }
-      "set": {
-        "field": "beginDate",
-        "value": "{{ temporalBounding.beginDate }}"
-      },
+    },
+    {
+      "date": {
+        "field": "temporalBounding.beginDate",
+        "target_field": "beginDate",
+        "formats": ["ISO8601"],
+        "ignore_failure": true
+      }
+    },
+    {
       "set": {
         "field": "beginYear",
-        "value": "{{ temporalBounding.beginYear }}"
-      },
-      "set": {
-        "field": "endDate",
-        "value": "{{ temporalBounding.endDate }}"
-      },
+        "value": "{{temporalBounding.beginYear}}"
+      }
+    },
+    {
+      "date": {
+        "field": "temporalBounding.endDate",
+        "target_field": "endDate",
+        "formats": ["ISO8601"],
+        "ignore_failure": true
+      }
+    },
+    {
       "set": {
         "field": "endYear",
-        "value": "{{ temporalBounding.endYear }}"
-      },
+        "value": "{{temporalBounding.endYear}}"
+      }
+    },
+    {
       "remove": {
         "field": [
           "purpose",
@@ -79,7 +121,9 @@
           "presentationForm",
           "services"
         ]
-      },
+      }
+    },
+    {
       "rename": {
         "field": "keywordValues",
         "target_field": "keywords"

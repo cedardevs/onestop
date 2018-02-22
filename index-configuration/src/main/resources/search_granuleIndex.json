@@ -1,6 +1,7 @@
 {
   "mappings": {
-    "search_granule": {
+    "doc": {
+      "dynamic": "strict",
       "_all": {
         "enabled": false
       },

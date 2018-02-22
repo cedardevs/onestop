@@ -1,6 +1,7 @@
 {
   "mappings": {
-    "search_flattened_granule": {
+    "doc": {
+      "dynamic": "strict",
       "_all": {
         "enabled": false
       },
@@ -10,12 +11,6 @@
           "format": "epoch_millis"
         },
         "fileIdentifier": {
-          "type": "keyword"
-        },
-        "parentIdentifier": {
-          "type": "keyword"
-        },
-        "internalParentIdentifier": {
           "type": "keyword"
         },
         "doi": {
