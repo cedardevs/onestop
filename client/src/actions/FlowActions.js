@@ -1,14 +1,23 @@
 import _ from 'lodash'
 import watch from 'redux-watch'
 import {push} from 'react-router-redux'
-import {encodeQueryString, decodeQueryString} from '../utils/queryUtils'
+import {
+  encodeQueryString,
+  decodeQueryString,
+  decodeLocation,
+} from '../utils/queryUtils'
 import {
   triggerSearch,
   fetchGranules,
   clearCollections,
   clearGranules,
+  getCollection,
 } from './SearchRequestActions'
-import {updateSearch, clearSelections} from './SearchParamActions'
+import {
+  updateSearch,
+  clearSelections,
+  toggleSelection,
+} from './SearchParamActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchInfo, fetchCounts} from './InfoActions'
 import store from '../store'
@@ -51,7 +60,9 @@ export const showDetails = id => {
       pathname: `collections/details/${id}`,
       search: _.isEmpty(query) ? null : `?${query}`,
     }
-    dispatch(setFocus(id))
+    dispatch(getCollection(id))
+    dispatch(clearSelections())
+    dispatch(toggleSelection(id))
     dispatch(push(locationDescriptor))
     dispatch(clearGranules())
     dispatch(fetchGranules())
@@ -63,14 +74,6 @@ export const showHome = () => {
     dispatch(updateSearch())
     dispatch(push(`/`))
     dispatch(clearCollections())
-  }
-}
-
-export const SET_FOCUS = 'SET_FOCUS'
-export const setFocus = id => {
-  return {
-    type: SET_FOCUS,
-    id: id,
   }
 }
 
@@ -114,33 +117,41 @@ export const updateBounds = (to, source) => {
   }
 }
 
-export const SET_API_BASE = 'SET_API_BASE'
-const initApiPath = () => {
-  const basePath =
-    typeof window !== 'undefined' ? window.location.pathname : '/onestop/'
-  const apiPath = basePath.endsWith('/') ? 'api' : '/api'
-  return {
-    type: SET_API_BASE,
-    path: basePath + apiPath,
-  }
-}
-
 export const initialize = () => {
   return dispatch => {
-    dispatch(initApiPath())
     dispatch(fetchConfig())
     dispatch(fetchInfo())
     dispatch(fetchCounts())
-    dispatch(loadData())
+    dispatch(loadFromUrl())
+  }
+}
+
+const loadFromUrl = () => {
+  // Note, collection queries are automatically updated by the URL because the query is parsed into search, which triggers loadData via a watch
+  return (dispatch, getState) => {
+    const state = getState()
+
+    const detailIdRegex = /\/details\/([-\w]+)/
+    const detailIdMatches = detailIdRegex.exec(
+      state.behavior.routing.locationBeforeTransitions.pathname
+    )
+
+    const detailId =
+      detailIdMatches && detailIdMatches[1] ? detailIdMatches[1] : null
+
+    if (detailId) {
+      dispatch(getCollection(detailId))
+      dispatch(triggerSearch())
+      dispatch(fetchGranules())
+    }
   }
 }
 
 export const loadData = () => {
   return (dispatch, getState) => {
     const state = getState()
-    const collectionsSelected =
-      !_.isEmpty(state.behavior.search.selectedIds) ||
-      state.ui.cardDetails.focusedId !== null
+
+    const collectionsSelected = !_.isEmpty(state.behavior.search.selectedIds)
     const granulesLoaded = !_.isEmpty(state.domain.results.granules)
 
     dispatch(triggerSearch())
@@ -156,8 +167,7 @@ const applyNewQueryString = newQueryString => {
   if (newQueryString.indexOf('?') === 0) {
     newQueryString = newQueryString.slice(1)
   }
-  const decodedQuery = decodeQueryString(newQueryString)
-  const searchFromQuery = _.get(decodedQuery, 'behavior.search')
+  const searchFromQuery = decodeQueryString(newQueryString)
   const searchFromState = _.get(store.getState(), 'behavior.search')
   if (!_.isEqual(searchFromQuery, searchFromState)) {
     store.dispatch(clearCollections())

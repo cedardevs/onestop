@@ -33,14 +33,7 @@ describe('The queryUtils', function () {
       const encodedString = queryUtils.encodeQueryString(tempState)
       encodedString.should.equal(testCase.string)
       const decodedString = queryUtils.decodeQueryString(encodedString)
-      decodedString.should.deep.equal(tempState)
-    })
-  })
-
-  it(`decodes a location accurately`, function () {
-    locationTestCases().forEach((testCase) => {
-      const decodedState = queryUtils.decodeLocation(testCase.string)
-      decodedState.should.deep.equal(testCase.state)
+      decodedString.should.deep.equal(testCase.state)
     })
   })
 })
@@ -352,35 +345,6 @@ function granuleTestCases() {
         }
       }
     },
-    {
-      name: "one card detail focused",
-      inputState: {
-        behavior: {
-          search: {
-            selectedIds: []
-          }
-        },
-        ui: {
-          cardDetails: {
-            focusedId: 'ABC123'
-          }
-        }
-      },
-      expectedResult: {
-        queries: [],
-        filters: [
-          {
-            "type": "collection",
-            "values": ["ABC123"]
-          }
-        ],
-        facets: false,
-        page: {
-          max: 20,
-          offset: 0
-        }
-      }
-    },
   ]
 }
 
@@ -478,46 +442,6 @@ function queryTestCases() {
           }
         }
       })
-    },
-  ]
-}
-
-function locationTestCases() {
-  return [
-    {
-      string: '',
-      state: {
-        behavior: {search: initialState},
-        ui: {cardDetails: {focusedId: null}}
-      }
-    },
-    {
-      string: '/collections?q=oceans',
-      state: {
-        behavior: {search: Immutable.merge(initialState, {queryText: 'oceans'})},
-        ui: {cardDetails: {focusedId: null}}
-      }
-    },
-    {
-      string: '/collections/details/abc_xyz-123',
-      state: {
-        behavior: {search: initialState},
-        ui: {cardDetails: {focusedId: 'abc_xyz-123'}}
-      }
-    },
-    {
-      string: '/collections/details/abc_xyz-123/',
-      state: {
-        behavior: {search: initialState},
-        ui: {cardDetails: {focusedId: 'abc_xyz-123'}}
-      }
-    },
-    {
-      string: '/collections/details/abc_xyz-123?q=oceans',
-      state: {
-        behavior: {search: Immutable.merge(initialState, {queryText: 'oceans'})},
-        ui: {cardDetails: {focusedId: 'abc_xyz-123'}}
-      }
     },
   ]
 }

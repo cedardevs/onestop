@@ -1,5 +1,7 @@
 import fetch from 'isomorphic-fetch'
 
+import {getApiPath} from '../reducers/domain/api'
+
 export const SET_INFO = 'set_info'
 export const CLEAR_INFO = 'clear_info'
 export const SET_TOTAL_COUNTS = 'set_total_counts'
@@ -26,8 +28,7 @@ export const setTotalCounts = counts => {
 
 export const fetchInfo = () => {
   return (dispatch, getState) => {
-    const url =
-      getState().domain.api.host + getState().domain.api.path + '/info'
+    const url = getApiPath(getState()) + '/info'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
       .then(response => response.json())
@@ -38,10 +39,7 @@ export const fetchInfo = () => {
 
 export const fetchCounts = () => {
   return (dispatch, getState) => {
-    const url =
-      getState().domain.api.host +
-      getState().domain.api.path +
-      '/search/totalCounts'
+    const url = getApiPath(getState()) + '/search/totalCounts'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
       .then(response => response.json())

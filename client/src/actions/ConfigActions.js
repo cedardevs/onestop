@@ -1,5 +1,7 @@
 import fetch from 'isomorphic-fetch'
 
+import {getApiPath} from '../reducers/domain/api'
+
 export const SET_CONFIG = 'set_config'
 export const CLEAR_CONFIG = 'clear_config'
 
@@ -18,10 +20,7 @@ export const clearConfig = () => {
 
 export const fetchConfig = () => {
   return (dispatch, getState) => {
-    const url =
-      getState().domain.api.host +
-      getState().domain.api.path +
-      '/search/uiConfig'
+    const url = getApiPath(getState()) + '/search/uiConfig'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
       .then(response => response.json())

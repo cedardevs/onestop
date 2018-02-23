@@ -19,7 +19,6 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   const behavior = state.behavior || {}
   const search = behavior.search || {}
   const ui = state.ui || {}
-  const cardDetails = ui.cardDetails || {}
   const domain = state.domain || {}
   const results = domain.results || {}
   const pageOffset =
@@ -34,10 +33,7 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
     assembleAdditionalFilters(search)
   )
   if (granules) {
-    filters = _.concat(
-      filters,
-      assembleSelectedCollectionsFilters(search, cardDetails)
-    )
+    filters = _.concat(filters, assembleSelectedCollectionsFilters(search))
   }
   filters = _.flatten(_.compact(filters))
 
@@ -88,13 +84,9 @@ const assembleAdditionalFilters = ({excludeGlobal}) => {
   }
 }
 
-const assembleSelectedCollectionsFilters = ({selectedIds}, {focusedId}) => {
+const assembleSelectedCollectionsFilters = ({selectedIds}) => {
   if (selectedIds.length > 0) {
-    console.log('building query with collection... ', selectedIds)
     return {type: 'collection', values: selectedIds}
-  }
-  if (focusedId) {
-    return {type: 'collection', values: [ focusedId ]}
   }
 }
 
@@ -125,18 +117,7 @@ export const decodeQueryString = queryString => {
     },
     initialState
   )
-  return {behavior: {search: searchParams}}
-}
-
-export const decodeLocation = location => {
-  const [ pathName, queryString ] = location.split('?')
-  const detailIdRegex = /\/details\/([-\w]+)/
-  const detailIdMatches = detailIdRegex.exec(pathName)
-  const detailId =
-    detailIdMatches && detailIdMatches[1] ? detailIdMatches[1] : null
-  return Object.assign({}, decodeQueryString(queryString), {
-    ui: {cardDetails: {focusedId: detailId}},
-  })
+  return searchParams
 }
 
 const codecs = [

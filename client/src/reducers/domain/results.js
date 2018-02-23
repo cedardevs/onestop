@@ -10,6 +10,7 @@ import {
   COUNT_GRANULES,
   FACETS_RECEIVED,
   CLEAR_FACETS,
+  COLLECTION_DETAIL_LOADED,
 } from '../../actions/SearchRequestActions'
 import {REMOVE_ALL_FILTERS} from '../../actions/SearchParamActions'
 
@@ -22,10 +23,14 @@ export const initialState = Immutable({
   totalGranules: 0,
   granulesPageOffset: 0,
   pageSize: 20,
+  collectionDetail: null,
 })
 
 export const results = (state = initialState, action) => {
   switch (action.type) {
+    case COLLECTION_DETAIL_LOADED:
+      return Immutable.set(state, 'collectionDetail', action.result)
+
     case SEARCH_COMPLETE:
       let newCollections = {}
       action.items.forEach((val, key) => {

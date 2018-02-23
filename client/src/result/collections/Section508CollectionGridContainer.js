@@ -1,15 +1,12 @@
 import {connect} from 'react-redux'
-import {
-  showCollections,
-  showGranules,
-  setFocus,
-} from '../../actions/FlowActions'
+import {showCollections, showGranules} from '../../actions/FlowActions'
 import {
   incrementCollectionsOffset,
   triggerSearch,
   fetchGranules,
   clearCollections,
   clearGranules,
+  getCollection,
 } from '../../actions/SearchRequestActions'
 import {
   toggleSelection,
@@ -32,10 +29,9 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     onCardClick: id => {
-      dispatch(setFocus(id))
+      dispatch(getCollection(id))
     },
     showGranules: id => {
-      dispatch(setFocus(null))
       dispatch(clearSelections())
       dispatch(toggleSelection(id))
       dispatch(clearGranules())

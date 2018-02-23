@@ -103,7 +103,7 @@ export default class CollectionGrid extends Component {
   }
 
   render() {
-    const {loading, results, returnedHits, totalHits, focusedId} = this.props
+    const {loading, results, returnedHits, totalHits} = this.props
 
     const headingText = loading
       ? `Loading...`
@@ -171,5 +171,4 @@ CollectionGrid.propTypes = {
   totalHits: PropTypes.number.isRequired,
   returnedHits: PropTypes.number.isRequired,
   pageSize: PropTypes.number,
-  focusedId: PropTypes.string,
 }

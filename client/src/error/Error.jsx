@@ -29,7 +29,6 @@ class Error extends React.Component {
   }
 
   getErrorsArray(errors) {
-    console.log('errors:', errors)
     if (_.isArray(errors) && errors.length > 0) {
       return errors
     }
