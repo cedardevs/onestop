@@ -138,7 +138,7 @@ class SearchRequestParserService {
       if (it.before) {
         allFilters.add([
             range: [
-                'temporalBounding.beginDate': [
+                'beginDate': [
                     lte: it.before
                 ]
             ]
@@ -147,7 +147,7 @@ class SearchRequestParserService {
       if (it.after) {
         allFilters.add([
             range: [
-                'temporalBounding.endDate': [
+                'endDate': [
                     gte: it.after
                 ]
             ]
