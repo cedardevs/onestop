@@ -20,22 +20,47 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  api:
-    image: cedardevs/psi-api:latest
-    ports:
-      - "8080:8080"
-    environment:
-      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      KAFKA_GRANULE_TOPIC: "granule"
-      SPRING_KAFKA_CONSUMER_GROUP-ID: "granule-group"
 
-  registry:
-    image: cedardevs/psi-registry:latest
+  schema-registry:
+    image: confluentinc/cp-schema-registry:latest
+    hostname: schema-registry
+    restart: unless-stopped
     ports:
-      - "8081:8080"
+      - "8081:8081"
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      KAFKA_TOPIC: "granule"
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:32181
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    depends_on:
+      - zookeeper
+      - kafka
+
+    #  schema-registry-ui:
+    #    image: landoop/schema-registry-ui:0.9.3
+    #    hostname: schema-registry-ui
+    #    ports:
+    #      - "8001:8000"
+    #    environment:
+    #      SCHEMAREGISTRY_URL: http://schema-registry:8081/
+    #      PROXY: "true"
+    #    depends_on:
+    #      - schema-registry
+#  api:
+#    image: cedardevs/psi-api:latest
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+#      KAFKA_GRANULE_TOPIC: "granule"
+#      SPRING_KAFKA_CONSUMER_GROUP-ID: "granule-group"
+#
+#  registry:
+#    image: cedardevs/psi-registry:latest
+#    ports:
+#      - "8081:8080"
+#    environment:
+#      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+#      KAFKA_TOPIC: "granule"
 
 #  parser:
 #    image: cedardevs/psi-parser:latest
@@ -46,14 +71,14 @@ services:
 #      KAFKA_TOPICS_INPUT: "raw-granule-aggregator-raw-granules-changelog"
 #      KAFKA_TOPICS_OUTPUT: "parsed-granules"
 
-  script_wrapper:
-    image: cedardevs/psi-script-wrapper:latest
-    environment:
-      KAFKA_GROUP_ID: "dscovr_script_wrapper"
-      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      STREAM_TOPICS_INPUT: "raw-granule-aggregator-raw-granules-changelog"
-      STREAM_TOPICS_OUTPUT: "parsed-granules"
-      STREAM_COMMAND: "python /usr/src/app/scripts/dscovr-parser.py"
+#  script_wrapper:
+#    image: cedardevs/psi-script-wrapper:latest
+#    environment:
+#      KAFKA_GROUP_ID: "dscovr_script_wrapper"
+#      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+#      STREAM_TOPICS_INPUT: "raw-granule-aggregator-raw-granules-changelog"
+#      STREAM_TOPICS_OUTPUT: "parsed-granules"
+#      STREAM_COMMAND: "python /usr/src/app/scripts/dscovr-parser.py"
 
 #---
 #version: '3'

@@ -4,10 +4,19 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.cedar.dockerplugin'
 
+repositories {
+  maven {
+    url "http://packages.confluent.io/maven/"
+  }
+}
+
+
 dependencies {
   compile('org.springframework.boot:spring-boot-starter-data-rest')
   compile('org.springframework.cloud:spring-cloud-starter')
-  compile('org.springframework.kafka:spring-kafka')
+  compile('org.apache.kafka:kafka-clients:1.0.0')
+  compile "org.apache.avro:avro:1.8.2"
+  compile 'io.confluent:kafka-avro-serializer:3.2.1'
   compile('org.codehaus.groovy:groovy')
   compile('org.codehaus.groovy:groovy-json')
 
@@ -23,6 +32,9 @@ dependencies {
 war {
   // build a deployable war in addition to the executable one
   enabled = true
+}
+configurations.all {
+  exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
 bootWar {
