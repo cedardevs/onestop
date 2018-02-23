@@ -100,56 +100,6 @@
     },
     {
       "remove": {
-        "field": "gcmdScience"
-      }
-    },
-    {
-      "remove": {
-        "field": "gcmdScienceServices"
-      }
-    },
-    {
-      "remove": {
-        "field": "gcmdLocations"
-      }
-    },
-    {
-      "remove": {
-        "field": "gcmdInstruments"
-      }
-    },
-    {
-      "remove": {
-        "field": "gcmdPlatforms"
-      }
-    },
-    {
-      "remove": {
-        "field": "gcmdProjects"
-      }
-    },
-    {
-      "remove": {
-        "field": "gcmdDataCenters"
-      }
-    },
-    {
-      "remove": {
-        "field": "gcmdHorizontalResolution"
-      }
-    },
-    {
-      "remove": {
-        "field": "gcmdVerticalResolution"
-      }
-    },
-    {
-      "remove": {
-        "field": "gcmdTemporalResolution"
-      }
-    },
-    {
-      "remove": {
         "field": "accessionValues"
       }
     },

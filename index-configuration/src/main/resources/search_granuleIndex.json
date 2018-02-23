@@ -31,6 +31,56 @@
         "keywords": {
           "type": "text"
         },
+        "gcmdScience": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": true
+        },
+        "gcmdScienceServices": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": true
+        },
+        "gcmdLocations": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": true
+        },
+        "gcmdInstruments": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": true
+        },
+        "gcmdPlatforms": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": true
+        },
+        "gcmdProjects": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": true
+        },
+        "gcmdDataCenters": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": true
+        },
+        "gcmdHorizontalResolution": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": true
+        },
+        "gcmdVerticalResolution": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": true
+        },
+        "gcmdTemporalResolution": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": true
+        },
         "beginDate": {
           "type": "date",
           "format": "date_optional_time"
