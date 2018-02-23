@@ -60,8 +60,11 @@ class Section508Landing extends React.Component {
   }
 
   getFieldsFromProps(props) {
-    return _.mapValues(this.fields, (fieldDef, name) =>
-      fieldDef.toFieldValue(props[name])
+    console.log(this.fields)
+    return _.mapValues(
+      this.fields,
+      (fieldDef, name) =>
+        props[name] ? fieldDef.toFieldValue(props[name]) : ''
     )
   }
 
