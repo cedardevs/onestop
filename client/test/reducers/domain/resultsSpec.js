@@ -88,6 +88,7 @@ describe('The results reducer', function () {
     }
 
     let expectedState = {
+      collectionDetail: null,
       collections: {},
       granules: {},
       facets: {

@@ -27,7 +27,7 @@ class Detail extends Component {
   }
 
   render() {
-    const {id, item, loading} = this.props
+    const {item, loading} = this.props
 
     if (loading) {
       return (
@@ -37,7 +37,7 @@ class Detail extends Component {
       )
     }
 
-    if (!id || !item) {
+    if (!item) {
       // TODO error style? actually report an error in the flow if the collection is not found when search returns?
       return (
         <div style={styleDetailWrapper}>
@@ -51,20 +51,20 @@ class Detail extends Component {
     let tabData = [
       {
         title: 'Summary',
-        content: <SummaryView id={id} item={item} />,
+        content: <SummaryView item={item} />,
       },
       {
         title: 'Description',
-        content: <DescriptionView id={id} item={item} />,
+        content: <DescriptionView item={item} />,
       },
       {
         title: 'Matching Files',
-        content: <GranuleViewContainer id={id} item={item} />,
+        content: <GranuleViewContainer item={item} />,
         action: this.showGranules,
       },
       {
         title: 'Access',
-        content: <AccessView id={id} item={item} />,
+        content: <AccessView item={item} />,
       },
     ]
 
@@ -74,7 +74,7 @@ class Detail extends Component {
     if (videoLinks.length > 0) {
       tabData.push({
         title: videoLinks.length === 1 ? 'Video' : 'Videos',
-        content: <VideoView id={id} links={videoLinks} />,
+        content: <VideoView links={videoLinks} />,
       })
     }
 
@@ -133,7 +133,6 @@ class Detail extends Component {
 }
 
 Detail.propTypes = {
-  id: PropTypes.string.isRequired,
   item: PropTypes.object,
 }
 

@@ -1,15 +1,13 @@
 import {connect} from 'react-redux'
 import {fetchGranules, clearGranules} from '../actions/SearchRequestActions'
 import {toggleSelection, clearSelections} from '../actions/SearchParamActions'
-import {setFocus} from '../actions/FlowActions'
 import Detail from './Detail'
 
 const mapStateToProps = (state, reactProps) => {
-  const {focusedId} = state.ui.cardDetails
-  const focusedItem = state.domain.results.collections[focusedId]
+  const focusedItem = state.domain.results.collectionDetail
   return {
-    id: focusedId,
-    item: focusedItem,
+    item: focusedItem ? focusedItem.collection.attributes : null,
+    totalGranuleCount: focusedItem ? focusedItem.totalGranuleCount : null,
     loading: state.ui.loading,
   }
 }

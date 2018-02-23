@@ -47,16 +47,20 @@ class SummaryView extends Component {
   }
 
   render() {
-    const startDate = this.props.item.beginDate.split('T')[0]
+    const startDate = this.props.item.beginDate
     const endDate = this.props.item.endDate
-      ? this.props.item.endDate.split('T')[0]
+      ? this.props.item.endDate
       : 'Present'
 
     const timeSpaceSummary = (
       <div key={'timeSpaceSummary'} style={styleEqualFlexItem}>
         <div className={styles.sectionHeading}>Time Period:</div>
         <div>
-          {startDate && endDate ? `${startDate} to ${endDate}` : 'Not Provided'}
+          {startDate && endDate ? (
+            `${startDate.split('T')[0]} to ${endDate.split('T')[0]}`
+          ) : (
+            'Not Provided'
+          )}
         </div>
         <div className={styles.sectionHeading}>Spatial Bounding Map:</div>
         <div className={styles.previewMap}>

@@ -35,7 +35,7 @@ describe('The search action', () => {
       domain: {
         api: {
           host: testingRoot,
-          path: '/onestop/api',
+          path: '/onestop/',
         },
         results: {
           collectionsPageOffset: 0
@@ -77,7 +77,7 @@ describe('The search action', () => {
       domain: {
         api: {
           host: testingRoot,
-          path: '/onestop/api',
+          path: '/onestop/',
         },
         results: {
           collectionsPageOffset: 0
@@ -198,7 +198,7 @@ describe('The granule actions', function () {
       domain: {
         api: {
           host: testingRoot,
-          path: '/onestop/api',
+          path: '/onestop/',
         },
         results: {
           collectionsPageOffset: 0
@@ -238,7 +238,7 @@ describe('The granule actions', function () {
       domain: {
         api: {
           host: testingRoot,
-          path: '/onestop/api',
+          path: '/onestop/',
         },
         results: {
           collectionsPageOffset: 0
