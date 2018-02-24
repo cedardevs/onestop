@@ -95,7 +95,7 @@ class SearchController {
 
   // Search Flattened Granules
   @RequestMapping(path = "/flattened-granule/search", method = [POST, GET])
-  Map search(@RequestBody Map params, HttpServletResponse response) {
+  Map searchFlattenedGranules(@RequestBody Map params, HttpServletResponse response) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
     if (!validation.success) {
       log.debug("invalid request: ${validation.errors.detail?.join(', ')}")

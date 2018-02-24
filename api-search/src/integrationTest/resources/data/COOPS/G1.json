@@ -82,6 +82,7 @@
   ],
   "beginYear": "2016",
   "endYear": "2016",
+  "gcmdHorizontalResolution": [],
   "links": [
     {
       "linkFunction": "download",
@@ -112,10 +113,41 @@
       "linkProtocol": "HTTP"
     }
   ],
-  "stagedDate": 1519338342001,
+  "stagedDate": 1519420360626,
+  "gcmdVerticalResolution": [],
   "thumbnail": "http://maps.googleapis.com/maps/api/staticmap?center=36.977,-76.315&zoom=14&scale=false&size=600x600&maptype=terrain&format=png&visual_refresh=true&markers=color:red%7C36.977,-76.315&stream=true&stream_ID=plot_image",
+  "gcmdProjects": [],
+  "gcmdLocations": [
+    "Continent > North America > Canada > Great Lakes, Canada",
+    "Continent > North America > Canada",
+    "Continent > North America",
+    "Continent",
+    "Continent > North America > United States Of America > Great Lakes",
+    "Continent > North America > United States Of America",
+    "Ocean > Arctic Ocean > Beaufort Sea",
+    "Ocean > Arctic Ocean",
+    "Ocean",
+    "Ocean > Atlantic Ocean > North Atlantic Ocean",
+    "Ocean > Atlantic Ocean",
+    "Ocean > Atlantic Ocean > North Atlantic Ocean > Bay Of Fundy",
+    "Ocean > Atlantic Ocean > North Atlantic Ocean > Caribbean Sea",
+    "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
+    "Ocean > Pacific Ocean > Central Pacific Ocean > Hawaiian Islands",
+    "Ocean > Pacific Ocean > Central Pacific Ocean",
+    "Ocean > Pacific Ocean",
+    "Ocean > Pacific Ocean > North Pacific Ocean",
+    "Ocean > Pacific Ocean > North Pacific Ocean > Bering Sea",
+    "Ocean > Pacific Ocean > North Pacific Ocean > Gulf Of Alaska",
+    "Ocean > Pacific Ocean > South Pacific Ocean"
+  ],
   "doi": null,
   "citeAsStatements": [],
+  "gcmdDataCenters": [
+    "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "GOVERNMENT AGENCIES-U.S. FEDERAL AGENCIES > DOC > NOAA > DOC/NOAA/NOS/CO-OPS > Center for Operational Oceanographic Products and Services, National Ocean Service, NOAA, U.S. Department of Commerce > Http://Tidesandcurrents.Noaa.Gov/",
+    "GOVERNMENT AGENCIES-U.S. FEDERAL AGENCIES > DOC > NOAA > DOC/NOAA/NWS/NDBC > National Data Buoy Center, National Weather Service, NOAA, U.S. Department of Commerce > Http://Www.Ndbc.Noaa.Gov/"
+  ],
   "parentIdentifier": "gov.noaa.nodc:NDBC-COOPS",
   "description": "The National Water Level Observation Network (NWLON) is a network of long-term water level staions operated and maintained by CO-OPS. NWLON stations are located on shore-based platforms, and primarily collect real-time water level measurements.  As of January 2013, approximately 180 of 210 NWLON stations also collect real-time meteorological data. About 20 CO-OPS Physical Oceanographic Real-Time Systems (PORTS) comprise a group of water level stations, and 65 of these stations also collect real-time meteorological data. Data parameters include barometric pressure, wind direction, speed and gust, air temperature, and water temperature.",
   "spatialBounding": {
@@ -125,9 +157,33 @@
     ],
     "type": "Point"
   },
-  "internalParentIdentifier": "AWG_n0O4-lLzhBokgRhX",
+  "internalParentIdentifier": "fcf83ec9-964b-45b9-befe-378ea6ce52cb",
   "title": "NDBC-COOPS_8638614_201602_D1_v00 - CO-OPS buoy 8638614 for 201602, deployment 1",
+  "gcmdScienceServices": [],
+  "gcmdInstruments": [
+    "In Situ/Laboratory Instruments > Current/Wind Meters > Anemometers",
+    "In Situ/Laboratory Instruments > Pressure/Height Meters > Barometers",
+    "In Situ/Laboratory Instruments > Temperature/Humidity Sensors > Thermistors > Thermistors"
+  ],
   "fileIdentifier": "CO-OPS.NOS_8638614_201602_D1_v00",
+  "gcmdTemporalResolution": [],
+  "gcmdPlatforms": [],
   "beginDate": "2016-02-01T00:00:00.000Z",
-  "isGlobal": false
+  "isGlobal": false,
+  "gcmdScience": [
+    "Atmosphere > Atmospheric Pressure",
+    "Atmosphere",
+    "Atmosphere > Atmospheric Temperature",
+    "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
+    "Atmosphere > Atmospheric Temperature > Surface Temperature",
+    "Atmosphere > Atmospheric Water Vapor > Humidity",
+    "Atmosphere > Atmospheric Water Vapor",
+    "Atmosphere > Atmospheric Winds > Surface Winds > Wind Speed/Wind Direction",
+    "Atmosphere > Atmospheric Winds > Surface Winds",
+    "Atmosphere > Atmospheric Winds",
+    "Oceans > Ocean Optics",
+    "Oceans",
+    "Oceans > Ocean Temperature > Sea Surface Temperature",
+    "Oceans > Ocean Temperature"
+  ]
 }

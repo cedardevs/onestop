@@ -49,7 +49,9 @@ class SearchIntegrationTests extends Specification {
 
   private RestTemplate restTemplate
   private String searchBaseUriString
-  private URI searchBaseUri
+  private String collectionBaseUriString
+  private String granuleBaseUriString
+  private String flatGranuleBaseUriString
 
   void setup() {
     def cl = ClassLoader.systemClassLoader
@@ -134,7 +136,7 @@ class SearchIntegrationTests extends Specification {
 
         collectionData.granules.each { granule, granuleData ->
           metadata = cl.getResourceAsStream("data/${name}/${granule}.json").text
-          def granuleEndpoint = "/$GRANULE_SEARCH_INDEX/$TYPE/$id"
+          def granuleEndpoint = "/$GRANULE_SEARCH_INDEX/$TYPE/$granuleData.id"
           record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
           response = restClient.performRequest('PUT', granuleEndpoint, Collections.EMPTY_MAP, record)
           println("PUT new granule: ${response}")
@@ -142,7 +144,7 @@ class SearchIntegrationTests extends Specification {
 
 //        collectionData.flattenedGranules.each { flattenedGranule, flattenedGranuleData ->
 //          metadata = cl.getResourceAsStream("data/${name}/${flattenedGranule}.json").text
-//          def flattenedGranuleEndpoint = "/$FLATTENED_GRANULE_SEARCH_INDEX/$TYPE/$id"
+//          def flattenedGranuleEndpoint = "/$FLATTENED_GRANULE_SEARCH_INDEX/$TYPE/$flattenedGranuleData.id"
 //          record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
 //          response = restClient.performRequest('PUT', flattenedGranuleEndpoint, Collections.EMPTY_MAP, record)
 //          println("PUT new flattened granule: ${response}")
@@ -156,12 +158,15 @@ class SearchIntegrationTests extends Specification {
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    searchBaseUriString = "http://localhost:${port}/${contextPath}/search"
-    searchBaseUri = searchBaseUriString.toURI()
+    searchBaseUriString = "http://localhost:${port}/${contextPath}/search/"
+    collectionBaseUriString = "http://localhost:${port}/${contextPath}/collection/"
+    granuleBaseUriString = "http://localhost:${port}/${contextPath}/granule/"
+    flatGranuleBaseUriString = "http://localhost:${port}/${contextPath}/flattened-granule/"
   }
 
-  def 'Valid query-only search with facets returns OK with expected results'() {
+  def 'Valid query-only collection search with facets returns OK with expected results'() {
     setup:
+    def searchBaseUri = (collectionBaseUriString + "search").toURI()
     def request = """\
         {
           "queries":
@@ -220,8 +225,62 @@ class SearchIntegrationTests extends Specification {
 //    !locationTerms.contains('Alaska > Unalaska')
   }
 
-  def 'Valid filter-only search returns OK with expected results'() {
+  def 'Valid query-only granule search with facets returns OK with expected results'() {
     setup:
+    def searchBaseUri = (granuleBaseUriString + "search").toURI()
+    def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "temperature"}
+            ],
+          "facets" : true
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 2 items"
+    def items = result.body.data
+    items.size() == 2
+
+    and: "Expected results are returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'CO-OPS.NOS_8638614_201602_D1_v00',
+        'CO-OPS.NOS_9410170_201503_D1_v00'
+    ])
+
+    and: 'The correct number of facets is returned'
+    def aggs = result.body.meta.facets
+    aggs.size() == 9
+//    aggs.size() == 10
+
+    and: 'The facets are as expected'
+    aggs.science != null
+    aggs.services != null
+//    aggs.locations != null
+    aggs.instruments != null
+    aggs.platforms != null
+    aggs.projects != null
+    aggs.dataCenters != null
+    aggs.horizontalResolution != null
+    aggs.verticalResolution != null
+    aggs.temporalResolution != null
+  }
+
+  def 'Valid filter-only collection search returns OK with expected results'() {
+    setup:
+    def searchBaseUri = (collectionBaseUriString + "search").toURI()
     def request = """\
         {
           "filters":
@@ -243,21 +302,58 @@ class SearchIntegrationTests extends Specification {
     result.statusCode == HttpStatus.OK
     result.headers.getContentType() == contentType
 
-    and: "Result contains 3 items"
+    and: "Result contains 4 items"
     def items = result.body.data
-    items.size() == 3
+    items.size() == 4
 
     and: "Expected results are returned"
     def actualIds = items.collect { it.attributes.fileIdentifier }
     actualIds.containsAll([
         'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
         'gov.noaa.ngdc.mgg.dem:4870',
-        'gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R'
+        'gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R',
+        'gov.noaa.nodc:NDBC-COOPS'
     ])
   }
 
-  def 'Valid query-and-filter search returns OK with expected result'() {
+  def 'Valid filter-only granule search returns OK with expected results'() {
     setup:
+    def searchBaseUri = (granuleBaseUriString + "search").toURI()
+    def request = """\
+        {
+          "filters":
+            [
+              {"type": "geometry", "relation": "intersects", "geometry": {"type": "Point", "coordinates": [-76.315, 36.977]}}
+            ],
+          "facets": false
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 1 item"
+    def items = result.body.data
+    items.size() == 1
+
+    and: "Expected results are returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'CO-OPS.NOS_8638614_201602_D1_v00'
+    ])
+  }
+
+  def 'Valid query-and-filter collection search returns OK with expected result'() {
+    setup:
+    def searchBaseUri = (collectionBaseUriString + "search").toURI()
     def request = """\
         {
           "queries":
@@ -293,8 +389,47 @@ class SearchIntegrationTests extends Specification {
     ])
   }
 
-  def 'Valid query-and-exclude-global search returns OK with expected results'() {
+  def 'Valid query-and-filter granule search returns OK with expected result'() {
     setup:
+    def searchBaseUri = (granuleBaseUriString + "search").toURI()
+    def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "temperature"}
+            ],
+          "filters":
+            [
+              {"type": "datetime", "after": "2016-01-01T00:00:00Z"}
+            ]
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 1 item"
+    def items = result.body.data
+    items.size() == 1
+
+    and: "Expected result is returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'CO-OPS.NOS_8638614_201602_D1_v00'
+    ])
+  }
+
+  def 'Valid query-and-exclude-global collection search returns OK with expected results'() {
+    setup:
+    def searchBaseUri = (collectionBaseUriString + "search").toURI()
     def request = """\
         {
           "queries":
@@ -333,6 +468,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Time filter with #situation an item\'s time range returns the correct results'() {
     setup:
+    def searchBaseUri = (collectionBaseUriString + "search").toURI()
     def ghrsst1FileId = 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
     def request = [filters: [[type: 'datetime']]]
     if (before) {
@@ -355,7 +491,7 @@ class SearchIntegrationTests extends Specification {
     result.statusCode == HttpStatus.OK
     ids.contains(ghrsst1FileId) == matches
 
-    where: // NOTE: time range for GHRSST/1.xml is: 2005-01-30 <-> 2008-01-14
+    where: // NOTE: time range for GHRSST/1.xml is: 2005-01-30T00:00:00.000Z <-> 2008-01-14T00:00:00.000Z
     after                  | before                 | matches | situation
     '2005-01-01T00:00:00Z' | '2005-01-02T00:00:00Z' | false   | 'range that is fully before'
     '2005-01-01T00:00:00Z' | '2008-01-01T00:00:00Z' | true    | 'range that overlaps the beginning of'
@@ -373,6 +509,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Search with pagination specified returns OK with expected results'() {
     setup:
+    def searchBaseUri = (collectionBaseUriString + "search").toURI()
     def request = """\
         {
           "queries":
@@ -410,6 +547,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {
     setup:
+    def searchBaseUri = (collectionBaseUriString + "search").toURI()
     def invalidSchemaRequest = """\
         {
           "filters": [
@@ -435,6 +573,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Invalid search; returns UNSUPPORTED_MEDIA_TYPE error when request body not specified as json content'() {
     setup:
+    def searchBaseUri = (granuleBaseUriString + "search").toURI()
     def request = """\
         {
           "queries":
@@ -457,6 +596,8 @@ class SearchIntegrationTests extends Specification {
   }
 
   def 'Invalid search; returns BAD_REQUEST error when no request body'() {
+    setup:
+    def searchBaseUri = (flatGranuleBaseUriString + "search").toURI()
     def requestEntity = RequestEntity
         .post(searchBaseUri)
         .contentType(contentType)
@@ -474,6 +615,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Invalid search; returns BAD_REQUEST error when request body is malformed json'() {
     setup:
+    def searchBaseUri = (collectionBaseUriString + "search").toURI()
     def badJsonSearch = """\
         {
           "queries": [
@@ -499,6 +641,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Invalid search; returns BAD_REQUEST error when request body is invalid'() {
     setup:
+    def searchBaseUri = (granuleBaseUriString + "search").toURI()
     def invalidJsonSearch = """\
         {
           "queries": [
@@ -523,7 +666,9 @@ class SearchIntegrationTests extends Specification {
   }
 
   def 'totalCounts reports counts of collections and granules'() {
-    def requestEntity = RequestEntity.get(new URI("$searchBaseUri/totalCounts")).build()
+    setup:
+    def searchBaseUri = (searchBaseUriString + "totalCounts").toURI()
+    def requestEntity = RequestEntity.get(searchBaseUri).build()
 
     when:
     def result = restTemplate.exchange(requestEntity, Map)
@@ -544,4 +689,39 @@ class SearchIntegrationTests extends Specification {
     granuleResult.count == 2
   }
 
+  def 'collection GET request returns expected record and count of granules in collection'() {
+    setup:
+    // Obtain ES ID for COOPS collection
+    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "buoy"}
+            ]
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    def result = restTemplate.exchange(requestEntity, Map)
+    def esId = result.body.data[0].id
+
+    def getBaseUri = (collectionBaseUriString + esId).toURI()
+    requestEntity = RequestEntity.get(getBaseUri).build()
+
+    when:
+    result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Result found"
+    assert result.body.data
+
+    and: "Result is COOPS collection"
+    result.body.data[0].attributes.fileIdentifier == "gov.noaa.nodc:NDBC-COOPS"
+
+    and: "Collection has 2 granules"
+    result.body.meta.totalGranules == 2
+  }
 }

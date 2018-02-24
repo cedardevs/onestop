@@ -134,10 +134,10 @@ class SearchRequestParserServiceTest extends Specification {
             must  : [:],
             filter: [
                 [range: [
-                    'temporalBounding.beginDate': [lte: '2011-11-11']
+                    'beginDate': [lte: '2011-11-11']
                 ]],
                 [range: [
-                    'temporalBounding.endDate': [gte: '2010-10-10']
+                    'endDate': [gte: '2010-10-10']
                 ]]
             ]]
     ]
