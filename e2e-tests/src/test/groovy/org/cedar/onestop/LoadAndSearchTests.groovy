@@ -77,7 +77,7 @@ class LoadAndSearchTests extends Specification {
     sleep(2000) // to ensure the ETL finishes
 
     when:
-    def searchRequst = RequestEntity.post("${searchApiBase}/search".toURI())
+    def searchRequst = RequestEntity.post("${searchApiBase}/collection/search".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body('{"queries":[{ "type": "queryText", "value": "temperature OR elevation"}]}')
     def searchResult = restTemplate.exchange(searchRequst, Map)
@@ -89,7 +89,7 @@ class LoadAndSearchTests extends Specification {
     coopsCollection?.id instanceof String
 
     when:
-    def granuleRequst = RequestEntity.post("${searchApiBase}/search".toURI())
+    def granuleRequst = RequestEntity.post("${searchApiBase}/granule/search".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body('{"filters":[{"type":"collection", "values":["' + coopsCollection.id + '"]}]}')
     def granuleResult = restTemplate.exchange(granuleRequst, Map)
@@ -145,10 +145,10 @@ class LoadAndSearchTests extends Specification {
     sleep(2000) // to ensure the ETL finishes
 
     when:
-    def searchRequst = RequestEntity.post("${searchApiBase}/search".toURI())
+    def searchRequest = RequestEntity.post("${searchApiBase}/collection/search".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body('{"queries":[{ "type": "queryText", "value": "super"}]}')
-    def searchResult = restTemplate.exchange(searchRequst, Map)
+    def searchResult = restTemplate.exchange(searchRequest, Map)
 
     then:
     searchResult.statusCode == HttpStatus.OK
