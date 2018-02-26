@@ -1,5 +1,6 @@
 package org.cedar.onestop
 
+import groovy.json.JsonOutput
 import org.junit.ClassRule
 import org.junit.Test
 import org.springframework.core.io.ClassPathResource
@@ -77,26 +78,28 @@ class LoadAndSearchTests extends Specification {
     sleep(2000) // to ensure the ETL finishes
 
     when:
-    def searchRequst = RequestEntity.post("${searchApiBase}/collection/search".toURI())
+    def searchRequest = RequestEntity.post("${searchApiBase}/collection/search".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body('{"queries":[{ "type": "queryText", "value": "temperature OR elevation"}]}')
-    def searchResult = restTemplate.exchange(searchRequst, Map)
+    def searchResult = restTemplate.exchange(searchRequest, Map)
+    def collectionData = searchResult.body.data
 
     then:
     searchResult.statusCode == HttpStatus.OK
-    searchResult.body.data.size() == 7
-    def coopsCollection = searchResult.body.data.find({ it.attributes.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS' })
+    collectionData.size() == 7
+    def coopsCollection = collectionData.find({ it.attributes.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS' })
     coopsCollection?.id instanceof String
 
     when:
-    def granuleRequst = RequestEntity.post("${searchApiBase}/granule/search".toURI())
+    def granuleRequest = RequestEntity.post("${searchApiBase}/granule/search".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body('{"filters":[{"type":"collection", "values":["' + coopsCollection.id + '"]}]}')
-    def granuleResult = restTemplate.exchange(granuleRequst, Map)
+    def granuleResult = restTemplate.exchange(granuleRequest, Map)
+    def granuleData = granuleResult.body.data
 
     then:
     granuleResult.statusCode == HttpStatus.OK
-    granuleResult.body.data.size() == 2
+    granuleData.size() == 2
 
     when:
     def deleteRequest = RequestEntity.delete("${metadataApiBase}/metadata/${coopsCollection.id}".toURI()).build()
@@ -108,7 +111,7 @@ class LoadAndSearchTests extends Specification {
     sleep(2000) // to ensure the delete finishes
 
     when:
-    def searchResult2 = restTemplate.exchange(searchRequst, Map)
+    def searchResult2 = restTemplate.exchange(searchRequest, Map)
 
     then:
     searchResult2.statusCode == HttpStatus.OK
@@ -116,7 +119,7 @@ class LoadAndSearchTests extends Specification {
     searchResult2.body.data.every({ it.attributes.fileIdentifier != 'gov.noaa.nodc:NDBC-COOPS' })
 
     when:
-    def granuleResult2 = restTemplate.exchange(granuleRequst, Map)
+    def granuleResult2 = restTemplate.exchange(granuleRequest, Map)
 
     then:
     granuleResult2.statusCode == HttpStatus.OK
