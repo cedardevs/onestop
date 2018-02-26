@@ -8,6 +8,7 @@ import starHalfO from 'fa/star-half-o.svg'
 import styles from './DetailStyles.css'
 import A from '../common/link/Link'
 import MapThumbnail from '../common/MapThumbnail'
+import FlexRow from '../common/FlexRow'
 
 const styleEqualFlexItem = {
   flex: '1 1 auto',
