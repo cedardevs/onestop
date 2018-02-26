@@ -172,7 +172,7 @@ class ElasticsearchService {
 
     def result = [
         data: searchResponse.hits.hits.collect {
-          [id: it._id, type: it._type, attributes: it._source]
+          [id: it._id, type: determineType(it._index), attributes: it._source]
         },
         meta: [
             took : searchResponse.took,
