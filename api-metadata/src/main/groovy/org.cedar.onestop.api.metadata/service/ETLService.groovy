@@ -187,7 +187,7 @@ class ETLService {
   private Long etlGranules(String sourceIndex, String destIndex, String parentIdentifier, String internalParentId, Long stagedAfter = 0) {
     log.debug("Starting granule indexing of collection ${internalParentId}")
 
-    def reindexScript = "ctx._source['internalParentIdentifier'] = params.internalParentId;"
+    def reindexScript = "ctx._source.internalParentIdentifier = params.internalParentId"
     def reindexBody = [
         conflicts: "proceed",
         source: [
@@ -207,8 +207,8 @@ class ETLService {
         ],
         script: [
             lang: "painless",
-            params: [internalParentId: internalParentId],
-            inline: reindexScript
+            inline: reindexScript,
+            params: [internalParentId: internalParentId]
         ]
     ]
 
