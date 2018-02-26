@@ -169,6 +169,12 @@
       }
     },
     {
+      "convert": {
+        "field": "beginYear",
+        "type": "auto"
+      }
+    },
+    {
       "date": {
         "field": "temporalBounding.endDate",
         "target_field": "endDate",
@@ -180,6 +186,12 @@
       "set": {
         "field": "endYear",
         "value": "{{temporalBounding.endYear}}"
+      }
+    },
+    {
+      "convert": {
+        "field": "endYear",
+        "type": "auto"
       }
     },
     {
