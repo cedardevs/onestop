@@ -475,15 +475,14 @@ class MetadataParser {
   }
 
   static Map parseTemporalBounding(GPathResult metadata) {
-
     def boundingExtent = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent
 
-    def time = boundingExtent?.temporalElement?.EX_TemporalExtent?.extent
+    def description = boundingExtent[0].description.CharacterString.text() ?: null
+    def time = boundingExtent.temporalElement?.'**'?.find { it -> it.name() == 'EX_TemporalExtent'}?.extent
 
-    String beginDate, beginIndeterminate, endDate, endIndeterminate, instant, instantIndeterminate, description
+    String beginDate, beginIndeterminate, endDate, endIndeterminate, instant, instantIndeterminate
     def beginYear, endYear
     if(time) {
-      description = boundingExtent.description.CharacterString.text() ?: null
       beginDate = time.TimePeriod.beginPosition.text() ?:
           time.TimePeriod.begin.TimeInstant.timePosition.text() ?: null
       beginIndeterminate = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
@@ -499,6 +498,7 @@ class MetadataParser {
           .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)
           .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)
           .toFormatter()
+
       if(beginDate) {
         beginYear = beginDate.isLong() ? Long.parseLong(beginDate) : dtf.parse(beginDate).get(ChronoField.YEAR)
         if(beginYear < -292275055L) {
