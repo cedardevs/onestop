@@ -122,28 +122,22 @@ export const initialize = () => {
     dispatch(fetchConfig())
     dispatch(fetchInfo())
     dispatch(fetchCounts())
-    dispatch(loadFromUrl())
   }
 }
 
-const loadFromUrl = () => {
+const loadFromUrl = pathname => {
   // Note, collection queries are automatically updated by the URL because the query is parsed into search, which triggers loadData via a watch
-  return (dispatch, getState) => {
-    const state = getState()
 
-    const detailIdRegex = /\/details\/([-\w]+)/
-    const detailIdMatches = detailIdRegex.exec(
-      state.behavior.routing.locationBeforeTransitions.pathname
-    )
+  const detailIdRegex = /\/details\/([-\w]+)/
+  const detailIdMatches = detailIdRegex.exec(pathname)
 
-    const detailId =
-      detailIdMatches && detailIdMatches[1] ? detailIdMatches[1] : null
+  const detailId =
+    detailIdMatches && detailIdMatches[1] ? detailIdMatches[1] : null
 
-    if (detailId) {
-      dispatch(getCollection(detailId))
-      dispatch(triggerSearch())
-      dispatch(fetchGranules())
-    }
+  if (detailId) {
+    store.dispatch(getCollection(detailId))
+    store.dispatch(triggerSearch())
+    store.dispatch(fetchGranules())
   }
 }
 
@@ -183,6 +177,12 @@ const queryWatch = watch(
   'behavior.routing.locationBeforeTransitions.search'
 )
 store.subscribe(queryWatch(applyNewQueryString))
+
+const pathnameWatch = watch(
+  store.getState,
+  'behavior.routing.locationBeforeTransitions.pathname'
+)
+store.subscribe(pathnameWatch(loadFromUrl))
 
 // Update background
 const updateBackground = path => {
