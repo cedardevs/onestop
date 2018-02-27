@@ -3,9 +3,7 @@ import FiltersHidden from './FiltersHidden'
 import {openLeft} from '../actions/LayoutActions'
 
 const mapStateToProps = state => {
-  return {
-    //     showLeft: state.ui.layout.showLeft,
-  }
+  return {}
 }
 
 const mapDispatchToProps = dispatch => {

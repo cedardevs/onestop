@@ -10,10 +10,7 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => {
-  return {
-    // toggleLeft: () => dispatch(toggleLeft()),
-    // toggleRight: () => dispatch(toggleRight()),
-  }
+  return {}
 }
 
 const RootContainer = connect(mapStateToProps, mapDispatchToProps)(Root)

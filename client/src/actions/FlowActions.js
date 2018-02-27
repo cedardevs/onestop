@@ -20,7 +20,6 @@ import {
 } from './SearchParamActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchInfo, fetchCounts} from './InfoActions'
-import {hideLeft, showLeft} from './LayoutActions'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
@@ -187,20 +186,6 @@ const updateBackground = path => {
   store.dispatch(toggleBackgroundImage(!is508)) //Cover strange routing case. TODO: Regex test?
 }
 
-const updateLayout = path => {
-  const is508 =
-    (_.startsWith(path, '/508/') && path !== '/508/') ||
-    (_.startsWith(path, '508/') && path !== '508/')
-  const detailIdRegex = /\/details\/([-\w]+)/
-  const detailIdMatches = detailIdRegex.exec(path)
-  if (is508 || detailIdMatches) {
-    store.dispatch(hideLeft())
-  }
-  else {
-    store.dispatch(showLeft())
-  }
-}
-
 const pathWatch = watch(
   store.getState,
   'behavior.routing.locationBeforeTransitions.pathname'
@@ -208,7 +193,6 @@ const pathWatch = watch(
 
 const pathWatchUpdates = path => {
   updateBackground(path)
-  updateLayout(path)
   loadFromUrl(path)
 }
 store.subscribe(pathWatch(pathWatchUpdates))
