@@ -122,7 +122,8 @@ class ETLService {
         aggregations: [
             collections: [
                 terms: [
-                    field: "parentIdentifier"
+                    field: "parentIdentifier",
+                    size : Integer.MAX_VALUE
                 ]
             ]
         ]
