@@ -1,16 +1,16 @@
 import {connect} from 'react-redux'
 import Filters from './Filters'
-import {toggleLeft} from '../actions/LayoutActions'
+import {closeLeft} from '../actions/LayoutActions'
 
 const mapStateToProps = state => {
   return {
-    showLeft: state.ui.layout.showLeft,
+    // leftOpen: state.ui.layout.leftOpen,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    toggleLeft: () => dispatch(toggleLeft()),
+    closeLeft: () => dispatch(closeLeft()),
   }
 }
 

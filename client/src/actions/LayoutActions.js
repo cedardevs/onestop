@@ -1,7 +1,35 @@
-export const TOGGLE_LEFT = 'TOGGLE_LEFT'
-export const toggleLeft = () => {
+// export const TOGGLE_LEFT = 'TOGGLE_LEFT'
+// export const toggleLeft = () => {
+//   return {
+//     type: TOGGLE_LEFT,
+//   }
+// }
+
+export const SET_LEFT_OPEN_CLOSE = 'SET_LEFT_OPEN_CLOSE'
+export const openLeft = () => {
   return {
-    type: TOGGLE_LEFT,
+    type: SET_LEFT_OPEN_CLOSE,
+    value: true,
+  }
+}
+export const closeLeft = () => {
+  return {
+    type: SET_LEFT_OPEN_CLOSE,
+    value: false,
+  }
+}
+
+export const SET_SHOW_LEFT = 'SET_SHOW_LEFT'
+export const showLeft = () => {
+  return {
+    type: SET_SHOW_LEFT,
+    value: true,
+  }
+}
+export const hideLeft = () => {
+  return {
+    type: SET_SHOW_LEFT,
+    value: false,
   }
 }
 
