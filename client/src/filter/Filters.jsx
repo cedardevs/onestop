@@ -82,7 +82,7 @@ class Filters extends Component {
   }
 
   render() {
-    const {showLeft, toggleLeft} = this.props
+    const {closeLeft} = this.props
 
     const heading = (
       <h1
@@ -105,9 +105,7 @@ class Filters extends Component {
         style={{borderRadius: 0}}
         styleIcon={{width: '1em', height: 'initial'}}
         onClick={() => {
-          if (showLeft) {
-            toggleLeft()
-          }
+          closeLeft()
         }}
         title={'Hide Filter Menu'}
         ariaExpanded={true}
