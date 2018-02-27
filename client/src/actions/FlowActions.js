@@ -33,7 +33,6 @@ export const showCollections = (prefix = '') => {
         search: `?${query}`,
       }
       dispatch(push(locationDescriptor))
-      dispatch(showLeft()) // ui layout update
     }
   }
 }
@@ -68,7 +67,6 @@ export const showDetails = id => {
     dispatch(push(locationDescriptor))
     dispatch(clearGranules())
     dispatch(fetchGranules())
-    dispatch(hideLeft()) // ui layout update
   }
 }
 
@@ -181,26 +179,36 @@ const queryWatch = watch(
 )
 store.subscribe(queryWatch(applyNewQueryString))
 
-const pathnameWatch = watch(
-  store.getState,
-  'behavior.routing.locationBeforeTransitions.pathname'
-)
-store.subscribe(pathnameWatch(loadFromUrl))
-
 // Update background
 const updateBackground = path => {
   const is508 =
     (_.startsWith(path, '/508/') && path !== '/508/') ||
     (_.startsWith(path, '508/') && path !== '508/')
   store.dispatch(toggleBackgroundImage(!is508)) //Cover strange routing case. TODO: Regex test?
+}
 
-  if (is508) {
+const updateLayout = path => {
+  const is508 =
+    (_.startsWith(path, '/508/') && path !== '/508/') ||
+    (_.startsWith(path, '508/') && path !== '508/')
+  const detailIdRegex = /\/details\/([-\w]+)/
+  const detailIdMatches = detailIdRegex.exec(path)
+  if (is508 || detailIdMatches) {
     store.dispatch(hideLeft())
-  } // TODO I am concerned going to the 508 page and then back will fail to restore the left part of the layout....
+  }
+  else {
+    store.dispatch(showLeft())
+  }
 }
 
 const pathWatch = watch(
   store.getState,
   'behavior.routing.locationBeforeTransitions.pathname'
 )
-store.subscribe(pathWatch(updateBackground))
+
+const pathWatchUpdates = path => {
+  updateBackground(path)
+  updateLayout(path)
+  loadFromUrl(path)
+}
+store.subscribe(pathWatch(pathWatchUpdates))
