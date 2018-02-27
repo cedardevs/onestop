@@ -1,10 +1,13 @@
 import Immutable from 'seamless-immutable'
+import _ from 'lodash'
+
 import {
   SET_LEFT_OPEN_CLOSE,
-  SET_SHOW_LEFT,
   TOGGLE_RIGHT,
   TOGGLE_MAP,
 } from '../../actions/LayoutActions'
+
+import {LOCATION_CHANGE} from 'react-router-redux'
 
 export const initialState = Immutable({
   showLeft: true,
@@ -15,10 +18,16 @@ export const initialState = Immutable({
 
 export const layout = (state = initialState, action) => {
   switch (action.type) {
+    case LOCATION_CHANGE:
+      const path = action.payload.pathname
+      const is508 =
+        (_.startsWith(path, '/508/') && path !== '/508/') ||
+        (_.startsWith(path, '508/') && path !== '508/')
+      const detailIdRegex = /\/details\/([-\w]+)/
+      const detailIdMatches = detailIdRegex.exec(path)
+      return Immutable.set(state, 'showLeft', !(is508 || detailIdMatches))
     case SET_LEFT_OPEN_CLOSE:
       return Immutable.set(state, 'leftOpen', action.value)
-    case SET_SHOW_LEFT:
-      return Immutable.set(state, 'showLeft', action.value)
     case TOGGLE_RIGHT:
       const previousShowRight = state.showLeft
       return Immutable.set(state, 'showRight', !previousShowRight)
