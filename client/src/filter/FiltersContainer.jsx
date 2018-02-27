@@ -3,9 +3,7 @@ import Filters from './Filters'
 import {closeLeft} from '../actions/LayoutActions'
 
 const mapStateToProps = state => {
-  return {
-    // leftOpen: state.ui.layout.leftOpen,
-  }
+  return {}
 }
 
 const mapDispatchToProps = dispatch => {
