@@ -57,7 +57,6 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       KAFKA_TOPIC: "granule"
       LOGGING_LEVEL_ROOT: INFO
-      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: INFO
 
   schema-registry:
     image: confluentinc/cp-schema-registry:3.2.0
