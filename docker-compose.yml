@@ -1,6 +1,15 @@
 ---
 version: '3'
 services:
+  api:
+    image: cedardevs/psi-api:latest
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      KAFKA_GRANULE_TOPIC: "granule"
+      SPRING_KAFKA_CONSUMER_GROUP-ID: "granule-group"
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     ports:
@@ -16,18 +25,29 @@ services:
     depends_on:
       - zookeeper
     environment:
+      KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  api:
-    image: cedardevs/psi-api:latest
-    ports:
-      - "8080:8080"
+  kafka-rest:
+    image: confluentinc/cp-kafka-rest
+    depends_on:
+      - kafka
     environment:
-      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      KAFKA_GRANULE_TOPIC: "granule"
-      SPRING_KAFKA_CONSUMER_GROUP-ID: "granule-group"
+      KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:32181
+      KAFKA_REST_LISTENERS: http://kafka-rest:8080
+      KAFKA_REST_SCHEMA_REGISTRY_URL: http://schema-registry:8080
+      KAFKA_REST_HOST_NAME: kafka-rest
+    restart: always
+
+  kafka-ui:
+    image: landoop/kafka-topics-ui
+    ports:
+      - "8000:8000"
+    environment:
+      - "KAFKA_REST_PROXY_URL=http://kafka-rest:8080"
+      - "PROXY=true"
 
   registry:
     image: cedardevs/psi-registry:latest
@@ -36,6 +56,18 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       KAFKA_TOPIC: "granule"
+      LOGGING_LEVEL_ROOT: INFO
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: INFO
+
+  schema-registry:
+    image: confluentinc/cp-schema-registry:3.2.0
+    depends_on:
+      - kafka
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:32181
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8080
+    restart: always
 
 #  parser:
 #    image: cedardevs/psi-parser:latest
