@@ -56,17 +56,29 @@ class ScriptWrapperStreamConfig {
   Topology wrapperTopology() {
     def builder = new StreamsBuilder()
     KStream inputStream = builder.stream(inputTopic)
-    KStream outputStream = inputStream.mapValues { msg ->
+    inputStream.mapValues ({ msg ->
       List<String> commandList = command.split(' ')
       commandList.add("$msg" as String)
-      println "Running : $commandList "
-      def cmd = commandList.execute()
-      cmd.waitForOrKill(timeout)
-      String outputMessage = cmd.text
-      println "Output: $outputMessage"
-      outputMessage
-    }
-    outputStream.to(outputTopic)
+      log.info "Running : $commandList "
+      def cmd
+      String outputMessage
+      try{
+        cmd = commandList.execute()
+        cmd.waitForOrKill(timeout)
+        if(cmd.exitValue()){
+          log.error "Processes returned with non-zero exit code"
+          outputMessage = 'ERROR: ' + msg
+        }else{
+          outputMessage = cmd.text
+          log.info "Publishing to $outputTopic: $outputMessage"
+        }
+        outputMessage
+      }catch(Exception e){
+        log.error("Caught exception $e: ${e.message}")
+      }
+    })
+    .filter({key, msg -> !msg.toString().startsWith('ERROR')})
+    .to(outputTopic)
     return builder.build()
   }
 
@@ -76,5 +88,3 @@ class ScriptWrapperStreamConfig {
   }
 
 }
-
-
