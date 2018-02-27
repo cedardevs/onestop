@@ -103,7 +103,7 @@ export default class CollectionGrid extends Component {
   }
 
   render() {
-    const {loading, results, returnedHits, totalHits} = this.props
+    const {loading, results, returnedHits, totalHits, selectCollection} = this.props
 
     const headingText = loading
       ? `Loading...`
@@ -125,7 +125,7 @@ export default class CollectionGrid extends Component {
         thumbnail: result.thumbnail,
         description: result.description,
         geometry: result.spatialBounding,
-        onClick: () => this.props.selectCollection(key),
+        onClick: () => selectCollection(key),
         onFocus: this.handleFocusCard,
       }
 
@@ -152,12 +152,14 @@ export default class CollectionGrid extends Component {
   }
 
   renderShowMoreButton = () => {
-    if (this.props.returnedHits < this.props.totalHits) {
+    const { returnedHits, totalHits, fetchMoreResults } = this.props
+
+    if (returnedHits < totalHits) {
       return (
         <div style={styleShowMore}>
           <Button
             text="Show More Results"
-            onClick={() => this.props.fetchMoreResults()}
+            onClick={() => fetchMoreResults()}
           />
         </div>
       )
