@@ -141,14 +141,17 @@ class MetadataManagementService {
       }
     }
 
-    def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequest.toString())
-    bulkResponse.items.eachWithIndex { result, i ->
-      def resultRecord = results.get(loadedIndices[i])
-      resultRecord.id = result.index._id
-      resultRecord.meta.status = result.index.status
-      resultRecord.meta.created = result.index.created
-      if (result.error) {
-        resultRecord.meta.error = result.error
+    String bulkRequestBody =  bulkRequest.toString()
+    if(bulkRequestBody) { // Don't send a request if there is nothing to send
+      def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
+      bulkResponse.items.eachWithIndex { result, i ->
+        def resultRecord = results.get(loadedIndices[i])
+        resultRecord.id = result.index._id
+        resultRecord.meta.status = result.index.status
+        resultRecord.meta.created = result.index.created
+        if (result.error) {
+          resultRecord.meta.error = result.error
+        }
       }
     }
 
