@@ -4,6 +4,8 @@ import groovy.json.JsonOutput
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.format.DateTimeParseException
+
 @Unroll
 class MetadataParserTest extends Specification {
 
@@ -539,6 +541,38 @@ class MetadataParserTest extends Specification {
         instantIndeterminate: null,
         description         : 'Start_Date: 6181000 cal yr BP; Stop_Date: 1603000 cal yr BP; '
     ]
+  }
+
+  def "Temporal bounding without time zone information is correctly parsed with UTC"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-no-timezone-dates-metadata.xml").text
+
+    when:
+    def temporalBounding = MetadataParser.parseTemporalBounding(document)
+
+    then:
+    temporalBounding == [
+        beginDate           : '2005-05-09T00:00:00Z',
+        beginIndeterminate  : null,
+        beginYear           : 2005,
+        endDate             : '2010-10-01T00:00:00Z',
+        endIndeterminate    : null,
+        endYear             : 2010,
+        instant             : null,
+        instantIndeterminate: null,
+        description         : null
+    ]
+  }
+
+  def "Invalid temporal bounding is prevented"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-invalid-dates-metadata.xml").text
+
+    when:
+    MetadataParser.parseTemporalBounding(document)
+
+    then:
+    thrown(DateTimeParseException)
   }
 
   def "Polygon spatial bounding is correctly parsed"() {
