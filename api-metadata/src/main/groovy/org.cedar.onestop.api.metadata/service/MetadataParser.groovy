@@ -5,9 +5,16 @@ import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.text.WordUtils
 import groovy.xml.XmlUtil
+
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.temporal.ChronoField
+import java.time.temporal.TemporalAccessor
+import java.time.temporal.TemporalQuery
 
 class MetadataParser {
 
@@ -474,58 +481,108 @@ class MetadataParser {
     return parseKeywordsAndTopics(new XmlSlurper().parseText(xml))
   }
 
+  static Map elasticDateInfo(String date) {
+
+    // don't bother parsing if there's nothing here
+    if(!date) {
+      return null
+    }
+
+    // default to null
+    String elasticDate = null
+    TemporalAccessor parsedDate = null
+    Long year
+
+    // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
+    def MIN_DATE_LONG = -292275055L
+    def MAX_DATE_LONG = 292278994L
+
+    // handle 3 optional date formats in priority of full-parse option to minimal-parse options
+    DateTimeFormatter parseFormatter = new DateTimeFormatterBuilder()
+        .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
+        .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
+        .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
+        .toFormatter()
+
+    // use custom formatter for when time zone information is not supplied in a LocalDateTime format for ES's happiness
+    DateTimeFormatter elasticFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+    // paleo dates can be longs
+    if(date.isLong()) {
+      elasticDate = date
+      year = Long.parseLong(date)
+      // we only care about the year if outside of limits
+      if(year < MIN_DATE_LONG || year > MAX_DATE_LONG) {
+        elasticDate = null
+      }
+    }
+    else {
+      // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
+      parsedDate = parseFormatter.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
+      year = parsedDate.get(ChronoField.YEAR)
+
+      // date is in format like: 2010-12-30T00:00:00Z
+      if(parsedDate instanceof ZonedDateTime) {
+        elasticDate = date
+      }
+      // date is in format like: 2010-12-30T00:00:00
+      else if(parsedDate instanceof LocalDateTime) {
+        // assume UTC
+        ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
+        elasticDate = parsedDateUTC.format(elasticFormatter)
+        // re-evaluate year in off-chance year was affected by zone id
+        year = parsedDateUTC.get(ChronoField.YEAR)
+      }
+      // date is in format like: 2010-12-30
+      else if(parsedDate instanceof LocalDate) {
+        elasticDate = date
+      }
+    }
+
+    def dateInfo = [ "date": elasticDate, "year":  year]
+    return dateInfo
+  }
+
   static Map parseTemporalBounding(GPathResult metadata) {
+
     def boundingExtent = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent
 
     def description = boundingExtent[0].description.CharacterString.text() ?: null
     def time = boundingExtent.temporalElement?.'**'?.find { it -> it.name() == 'EX_TemporalExtent'}?.extent
 
-    String beginDate, beginIndeterminate, endDate, endIndeterminate, instant, instantIndeterminate
-    def beginYear, endYear
+    String beginText, beginIndeterminateText, endText, endIndeterminateText, instantText, instantIndeterminateText
+    def begin, beginIndeterminate, end, endIndeterminate, instant, instantIndeterminate
     if(time) {
-      beginDate = time.TimePeriod.beginPosition.text() ?:
+      // parse potential date fields out of XML
+      beginText = time.TimePeriod.beginPosition.text() ?:
           time.TimePeriod.begin.TimeInstant.timePosition.text() ?: null
-      beginIndeterminate = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
+      beginIndeterminateText = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
           time.TimePeriod.begin.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
-      endDate = time.TimePeriod.endPosition.text() ?:
+      endText = time.TimePeriod.endPosition.text() ?:
           time.TimePeriod.end.TimeInstant.timePosition.text() ?: null
-      endIndeterminate = time.TimePeriod.endPosition.@indeterminatePosition.text() ?:
+      endIndeterminateText = time.TimePeriod.endPosition.@indeterminatePosition.text() ?:
           time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
-      instant = time.TimeInstant.timePosition.text() ?: null
-      instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
+      instantText = time.TimeInstant.timePosition.text() ?: null
+      instantIndeterminateText = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
 
-      DateTimeFormatter dtf = new DateTimeFormatterBuilder()
-          .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)
-          .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)
-          .toFormatter()
-
-      if(beginDate) {
-        beginYear = beginDate.isLong() ? Long.parseLong(beginDate) : dtf.parse(beginDate).get(ChronoField.YEAR)
-        if(beginYear < -292275055L) {
-          // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
-          beginDate = null
-        }
-      }
-
-      if(endDate) {
-        endYear = endDate.isLong() ? Long.parseLong(endDate) : dtf.parse(endDate).get(ChronoField.YEAR)
-        if(endYear < -292275055L) {
-          // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
-          endDate = null
-        }
-      }
+      // massage the date fields for elastic search (handles multiple formats and invalid dates)
+      begin = elasticDateInfo(beginText)
+      beginIndeterminate = elasticDateInfo(beginIndeterminateText)
+      end = elasticDateInfo(endText)
+      endIndeterminate = elasticDateInfo(endIndeterminateText)
+      instant = elasticDateInfo(instantText)
+      instantIndeterminate = elasticDateInfo(instantIndeterminateText)
     }
 
-
     return [
-        beginDate           : beginDate,
-        beginIndeterminate  : beginIndeterminate,
-        beginYear           : beginYear,
-        endDate             : endDate,
-        endIndeterminate    : endIndeterminate,
-        endYear             : endYear,
-        instant             : instant,
-        instantIndeterminate: instantIndeterminate,
+        beginDate           : begin?.date,
+        beginIndeterminate  : beginIndeterminate?.date,
+        beginYear           : begin?.year,
+        endDate             : end?.date,
+        endIndeterminate    : endIndeterminate?.date,
+        endYear             : end?.year,
+        instant             : instant?.date,
+        instantIndeterminate: instantIndeterminate?.date,
         description         : description
     ]
   }
