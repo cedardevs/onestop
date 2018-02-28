@@ -127,6 +127,18 @@ class MetadataManagementService {
             ]
         ]
       }
+      catch (Exception e) {
+        results << [
+            meta: [
+                filename: filename,
+                error: [
+                    status: HttpStatus.BAD_REQUEST.value(),
+                    title: 'Load request failed due to malformed data.',
+                    detail: ExceptionUtils.getRootCauseMessage(e)
+                ]
+            ]
+        ]
+      }
     }
 
     def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequest.toString())
