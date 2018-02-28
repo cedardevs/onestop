@@ -622,6 +622,17 @@ class MetadataParserTest extends Specification {
     spatialBounding == [spatialBounding: null, isGlobal: false]
   }
 
+  def "Invalid spatial bounding is prevented"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-invalid-coords-metadata.xml").text
+
+    when:
+    MetadataParser.parseSpatialInfo(document)
+
+    then:
+    thrown(Exception)
+  }
+
   def "Acquisition info is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text

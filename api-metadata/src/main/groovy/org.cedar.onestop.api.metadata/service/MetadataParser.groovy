@@ -598,6 +598,10 @@ class MetadataParser {
     return ["spatialBounding": spatialBounding, "isGlobal": isGlobal]
   }
 
+  static Map parseSpatialInfo(String xml) {
+    return parseSpatialInfo(new XmlSlurper().parseText(xml))
+  }
+
   static def parseBounding(def bbox) {
     if (!bbox) { return null }
 
@@ -610,6 +614,17 @@ class MetadataParser {
 
     def type = (west == east && north == south) ? 'Point' : 'Polygon'
     def coordinates = type == 'Point' ? [west, north] : [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+
+    if(type == 'Polygon') {
+      // Check for valid polygon coordinates (no vertices should be the same)
+      def clone = coordinates[0].collect {it}
+      clone.removeAt(0)
+      def unique = clone.unique(false)
+      if (clone != unique) {
+        throw new Exception("Invalid spatial bounding box provided.")
+      }
+    }
+
 
     return [type: type, coordinates: coordinates]
   }
@@ -624,10 +639,6 @@ class MetadataParser {
     def south = coords[0][1]
 
     return west == -180 && east == 180 && north == 90 && south == -90
-  }
-
-  static Map parseSpatialInfo(String xml) {
-    return parseSpatialInfo(new XmlSlurper().parseText(xml))
   }
 
   static Map parseAcquisitionInfo(GPathResult metadata) {

@@ -166,6 +166,16 @@ class LoadIntegrationTests extends Specification {
     badDateResult.body.errors[0].detail.contains('DateTimeParseException')
   }
 
+  def 'does not allow a record with malformed spatial bounding to be loaded'() {
+    when:
+    def badDateResult = restTemplate.exchange(buildLoadRequest('data/BadFiles/test-iso-invalid-coords-metadata.xml'), Map)
+
+    then:
+    badDateResult.statusCode == HttpStatus.BAD_REQUEST
+    badDateResult.body.errors[0].title.contains('malformed data')
+    badDateResult.body.errors[0].detail.contains('Invalid spatial bounding box provided.')
+  }
+
   def 'retrieve a metadata record by elasticsearch id'() {
     setup:
     def loadResult = restTemplate.exchange(buildLoadRequest(collectionPath), Map)
