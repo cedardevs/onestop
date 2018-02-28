@@ -158,6 +158,7 @@ class ETLService {
             }
             return status.completed
           }
+          sleep(100)
         }
 
         def granuleTask = etlGranules(sourceGranule, destGranule, parentId, internalIdResponse.data[0].id, maxGranuleStagedDate)
@@ -177,6 +178,7 @@ class ETLService {
         }
         return status.completed
       }
+      sleep(100)
     }
 
     def collectionTaskStatus = checkTask(collectionTask)
