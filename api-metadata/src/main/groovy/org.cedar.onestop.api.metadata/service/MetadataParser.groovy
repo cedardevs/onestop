@@ -551,7 +551,7 @@ class MetadataParser {
     def time = boundingExtent.temporalElement?.'**'?.find { it -> it.name() == 'EX_TemporalExtent'}?.extent
 
     String beginText, beginIndeterminateText, endText, endIndeterminateText, instantText, instantIndeterminateText
-    def begin, beginIndeterminate, end, endIndeterminate, instant, instantIndeterminate
+    def begin, end, instant
     if(time) {
       // parse potential date fields out of XML
       beginText = time.TimePeriod.beginPosition.text() ?:
@@ -567,22 +567,19 @@ class MetadataParser {
 
       // massage the date fields for elastic search (handles multiple formats and invalid dates)
       begin = elasticDateInfo(beginText)
-      beginIndeterminate = elasticDateInfo(beginIndeterminateText)
       end = elasticDateInfo(endText)
-      endIndeterminate = elasticDateInfo(endIndeterminateText)
       instant = elasticDateInfo(instantText)
-      instantIndeterminate = elasticDateInfo(instantIndeterminateText)
     }
 
     return [
         beginDate           : begin?.date,
-        beginIndeterminate  : beginIndeterminate?.date,
+        beginIndeterminate  : beginIndeterminateText,
         beginYear           : begin?.year,
         endDate             : end?.date,
-        endIndeterminate    : endIndeterminate?.date,
+        endIndeterminate    : endIndeterminateText,
         endYear             : end?.year,
         instant             : instant?.date,
-        instantIndeterminate: instantIndeterminate?.date,
+        instantIndeterminate: instantIndeterminateText,
         description         : description
     ]
   }

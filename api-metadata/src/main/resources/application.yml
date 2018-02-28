@@ -23,6 +23,7 @@ elasticsearch:
   version: ${esVersion}
   host: localhost
   port: 9200
+  max-tasks: 10
   index:
     universal-type: doc
     search:

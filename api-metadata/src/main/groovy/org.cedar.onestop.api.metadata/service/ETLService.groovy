@@ -30,6 +30,12 @@ class ETLService {
   @Value('${elasticsearch.index.search.granule.pipeline-name}')
   private String GRANULE_PIPELINE
 
+  @Value('${elasticsearch.max-tasks}')
+  private Integer MAX_TASKS
+
+  @Value('${elasticsearch.requests-per-second:}')
+  private Integer REQUESTS_PER_SECOND
+
 
   private ElasticsearchService elasticsearchService
   private MetadataManagementService metadataManagementService
@@ -66,12 +72,13 @@ class ETLService {
     def newGranuleSearchIndex = elasticsearchService.create(GRANULE_SEARCH_INDEX)
 
     try {
-      def etlResult = runETL(COLLECTION_STAGING_INDEX, newCollectionSearchIndex, GRANULE_STAGING_INDEX, newGranuleSearchIndex)
+      def result = runETL(COLLECTION_STAGING_INDEX, newCollectionSearchIndex, GRANULE_STAGING_INDEX, newGranuleSearchIndex)
       elasticsearchService.refresh(newCollectionSearchIndex, newGranuleSearchIndex)
       elasticsearchService.moveAliasToIndex(COLLECTION_SEARCH_INDEX, newCollectionSearchIndex, true)
       elasticsearchService.moveAliasToIndex(GRANULE_SEARCH_INDEX, newGranuleSearchIndex, true)
       def end = System.currentTimeMillis()
-      log.info "Reindexed ${etlResult.collections} collection and ${etlResult.granules} granule records in ${(end - start) / 1000}s"
+      log.info "Reindexed ${result.updatedCollections + result.createdCollections} of ${result.totalCollectionsInRequest} requested collections and " +
+          "${result.updatedGranules + result.createdGranules} of ${result.totalGranulesInRequest} requested granules in ${(end - start) / 1000}s"
     }
     catch (Exception e) {
       log.error "Search reindexing failed because of: " + ExceptionUtils.getRootCauseMessage(e)
@@ -84,10 +91,11 @@ class ETLService {
   @Scheduled(initialDelay = 60000L, fixedDelay = 600000L) // 1 minute after startup then every 10 minutes after previous run ends
   public Map updateSearchIndices() {
     log.info("Starting search indices update process")
-    def startTime = System.currentTimeMillis()
+    def start = System.currentTimeMillis()
     def result =  runETL(COLLECTION_STAGING_INDEX, COLLECTION_SEARCH_INDEX, GRANULE_STAGING_INDEX, GRANULE_SEARCH_INDEX)
-    def endTime = System.currentTimeMillis()
-    log.info "Reindexed ${result.collections} collection and ${result.granules} granule records in ${(endTime - startTime) / 1000}s"
+    def end = System.currentTimeMillis()
+    log.info "Reindexed ${result.updatedCollections + result.createdCollections} of ${result.totalCollectionsInRequest} requested collections and " +
+        "${result.updatedGranules + result.createdGranules} of ${result.totalGranulesInRequest} requested granules in ${(end - start) / 1000}s"
   }
 
   /**
@@ -98,15 +106,13 @@ class ETLService {
    * 5) Reindex those granules with internalParentIdentifier
    */
   private Map runETL(String sourceCollection, String destCollection, String sourceGranule, String destGranule) {
-    def countCollections = 0
-    def countGranules = 0
     elasticsearchService.ensureIndices()
     elasticsearchService.ensurePipelines()
     elasticsearchService.refresh(sourceCollection, sourceGranule, destCollection, destGranule)
 
     // Identify & reindex new/updated collections from staging -> search
     def maxCollectionStagedDate = getMaxSearchStagedMillis(destCollection)
-    countCollections = etlCollections(sourceCollection, destCollection, maxCollectionStagedDate)
+    def collectionTask = etlCollections(sourceCollection, destCollection, maxCollectionStagedDate)
 
     // Get parent ids for new/updated granules. Append collection id to granules on their way from staging -> search
     def maxGranuleStagedDate = getMaxSearchStagedMillis(destGranule)
@@ -122,25 +128,73 @@ class ETLService {
         aggregations: [
             collections: [
                 terms: [
-                    field: "parentIdentifier"
+                    field: "parentIdentifier",
+                    size : Integer.MAX_VALUE
                 ]
             ]
         ]
     ]
     def parentIdsResponse = elasticsearchService.performRequest('GET', "$GRANULE_STAGING_INDEX/_search", findParentIdsQuery)
     def parentIds = parentIdsResponse.aggregations?.collections?.buckets*.key
+
+    def countGranules = [
+        total: 0,
+        updated: 0,
+        created: 0
+    ]
+    def granuleTasksInFlight = []
     parentIds.each { parentId ->
       def internalIdResponse = metadataManagementService.findMetadata(parentId, parentId, true)
       // Only push to Search granules which can be definitively linked to a single, existing collection
       if(internalIdResponse.data && internalIdResponse.data.size() == 1 && internalIdResponse.data[0].type == 'collection') {
-        countGranules += etlGranules(sourceGranule, destGranule, parentId, internalIdResponse.data[0].id, maxGranuleStagedDate)
+        while(granuleTasksInFlight.size() == MAX_TASKS) {
+          granuleTasksInFlight.removeAll { taskId ->
+            def status = checkTask(taskId)
+            if(status.completed) {
+              countGranules.total += status.totalDocs
+              countGranules.updated += status.updated
+              countGranules.created += status.created
+              deleteTask(taskId)
+            }
+            return status.completed
+          }
+        }
+
+        def granuleTask = etlGranules(sourceGranule, destGranule, parentId, internalIdResponse.data[0].id, maxGranuleStagedDate)
+        granuleTasksInFlight << granuleTask
       }
     }
 
+    // Wait for any remaining tasks to complete
+    while(granuleTasksInFlight.size() > 0) {
+      granuleTasksInFlight.removeAll { taskId ->
+        def status = checkTask(taskId)
+        if(status.completed) {
+          countGranules.total += status.totalDocs
+          countGranules.updated += status.updated
+          countGranules.created += status.created
+          deleteTask(taskId)
+        }
+        return status.completed
+      }
+    }
+
+    def collectionTaskStatus = checkTask(collectionTask)
+    while(!collectionTaskStatus.completed) {
+      // Polling until the task completes
+      sleep(1000)
+      collectionTaskStatus = checkTask(collectionTask)
+    }
+    deleteTask(collectionTask)
+
     elasticsearchService.refresh(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX, COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX)
     return [
-        collections: countCollections,
-        granules: countGranules
+        totalCollectionsInRequest: collectionTaskStatus.totalDocs,
+        updatedCollections: collectionTaskStatus.updated,
+        createdCollections: collectionTaskStatus.created,
+        totalGranulesInRequest: countGranules.total,
+        updatedGranules: countGranules.updated,
+        createdGranules: countGranules.created
     ]
   }
 
@@ -148,9 +202,9 @@ class ETLService {
    * @param sourceIndex
    * @param destIndex
    * @param stagedAfter (optional) Only reindex collections staged after this date, in millis since the epoch
-   * @return Number of collections reindexed (updated + created)
+   * @return ES Task API task ID for this reindex task
    */
-  private Long etlCollections(String sourceIndex, String destIndex, Long stagedAfter = 0) {
+  private String etlCollections(String sourceIndex, String destIndex, Long stagedAfter = 0) {
     log.debug("Starting indexing of collections")
 
     def reindexBody = [
@@ -171,9 +225,10 @@ class ETLService {
         ]
     ]
 
-    def results = elasticsearchService.performRequest('POST', '_reindex', reindexBody)
-    log.debug("Updated ${results.updated} and created ${results.created} collections in search index. \nFailures: ${results.failures}. \nTook ${results.took} ms.")
-    return results.updated + results.created
+    def endpoint = "_reindex?wait_for_completion=false${REQUESTS_PER_SECOND ? ";requests_per_second=${REQUESTS_PER_SECOND}" : ""}"
+    def taskId = elasticsearchService.performRequest('POST', endpoint, reindexBody).task
+    log.debug("Task [ ${taskId} ] started for indexing of collections")
+    return taskId
   }
 
   /**
@@ -182,9 +237,9 @@ class ETLService {
    * @param parentIds parentIdentifier identified in granule records
    * @param internalParentId ES id of associated collection
    * @param stagedAfter (optional) Only reindex granules staged after this date, in millis since the epoch
-   * @return Number of granules reindexed (updated + created)
+   * @return ES Task API task ID for this reindex task
    */
-  private Long etlGranules(String sourceIndex, String destIndex, String parentIdentifier, String internalParentId, Long stagedAfter = 0) {
+  private String etlGranules(String sourceIndex, String destIndex, String parentIdentifier, String internalParentId, Long stagedAfter = 0) {
     log.debug("Starting granule indexing of collection ${internalParentId}")
 
     def reindexScript = "ctx._source.internalParentIdentifier = params.internalParentId"
@@ -212,9 +267,10 @@ class ETLService {
         ]
     ]
 
-    def results = elasticsearchService.performRequest('POST', '_reindex', reindexBody)
-    log.debug("Updated ${results.updated} and created ${results.created} granules in search index. \nFailures: ${results.failures}. \nTook ${results.took} ms.")
-    return results.updated + results.created
+    def endpoint = "_reindex?wait_for_completion=false${REQUESTS_PER_SECOND ? ";requests_per_second=${REQUESTS_PER_SECOND}" : ""}"
+    def taskId = elasticsearchService.performRequest('POST', endpoint, reindexBody).task
+    log.debug("Task [ ${taskId} ] started for indexing of granules")
+    return taskId
   }
 
   /**
@@ -236,6 +292,25 @@ class ETLService {
     ]
     def response = elasticsearchService.performRequest('GET', endpoint, body)
     return response.hits.total == 0 ? 0 : response.aggregations.maxStagedDate.value
+  }
+
+  private boolean deleteTask(String taskId) {
+    def result = elasticsearchService.performRequest('DELETE', ".tasks/task/${taskId}")
+    log.debug("Deleted task [ ${taskId} ]: ${result.found}")
+    return result.found
+  }
+
+  private Map checkTask(String taskId) {
+    def result = elasticsearchService.performRequest('GET', "_tasks/${taskId}")
+    def completed = result.completed
+    return [
+        completed: completed,
+        totalDocs: result.task.status.total,
+        updated: result.task.status.updated,
+        created: result.task.status.created,
+        took: completed ? result.response.took : null,
+        failures: completed ? result.response.failures : []
+    ]
   }
 
 }
