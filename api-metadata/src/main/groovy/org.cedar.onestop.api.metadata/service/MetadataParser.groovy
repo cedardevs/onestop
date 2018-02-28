@@ -481,6 +481,20 @@ class MetadataParser {
     return parseKeywordsAndTopics(new XmlSlurper().parseText(xml))
   }
 
+  // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
+  static final MIN_DATE_LONG = -292275055L
+  static final MAX_DATE_LONG = 292278994L
+
+  // handle 3 optional date formats in priority of full-parse option to minimal-parse options
+  static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
+      .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
+      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
+      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
+      .toFormatter()
+
+  // use custom formatter for when time zone information is not supplied in a LocalDateTime format for ES's happiness
+  static final DateTimeFormatter ELASTIC_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
   static Map elasticDateInfo(String date) {
 
     // don't bother parsing if there's nothing here
@@ -493,20 +507,6 @@ class MetadataParser {
     TemporalAccessor parsedDate = null
     Long year
 
-    // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
-    def MIN_DATE_LONG = -292275055L
-    def MAX_DATE_LONG = 292278994L
-
-    // handle 3 optional date formats in priority of full-parse option to minimal-parse options
-    DateTimeFormatter parseFormatter = new DateTimeFormatterBuilder()
-        .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
-        .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
-        .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
-        .toFormatter()
-
-    // use custom formatter for when time zone information is not supplied in a LocalDateTime format for ES's happiness
-    DateTimeFormatter elasticFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-
     // paleo dates can be longs
     if(date.isLong()) {
       elasticDate = date
@@ -518,7 +518,7 @@ class MetadataParser {
     }
     else {
       // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
-      parsedDate = parseFormatter.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
+      parsedDate = PARSE_DATE_FORMATTER.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
       year = parsedDate.get(ChronoField.YEAR)
 
       // date is in format like: 2010-12-30T00:00:00Z
@@ -529,7 +529,7 @@ class MetadataParser {
       else if(parsedDate instanceof LocalDateTime) {
         // assume UTC
         ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
-        elasticDate = parsedDateUTC.format(elasticFormatter)
+        elasticDate = parsedDateUTC.format(ELASTIC_DATE_FORMATTER)
         // re-evaluate year in off-chance year was affected by zone id
         year = parsedDateUTC.get(ChronoField.YEAR)
       }
