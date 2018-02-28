@@ -19,7 +19,7 @@ class LoadAndSearchTests extends Specification {
 
   @Shared
   @ClassRule
-  DockerComposeContainer docker = new DockerComposeContainer(new File("../docker-compose.yml"))
+  DockerComposeContainer docker = new DockerComposeContainer(new File("src/test/resources/docker-compose-e2e.yml"))
       .withLocalCompose(true)
       .withPull(false)
 
@@ -75,9 +75,11 @@ class LoadAndSearchTests extends Specification {
     then:
     updateResult.statusCode == HttpStatus.OK
 
-    sleep(2000) // to ensure the ETL finishes
+    sleep(60000) // to ensure the ETL finishes
 
     when:
+    def refreshRequest = RequestEntity.post("${esApiBase}/_refresh".toURI()).build()
+    restTemplate.exchange(refreshRequest, Map)
     def searchRequest = RequestEntity.post("${searchApiBase}/collection/search".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body('{"queries":[{ "type": "queryText", "value": "temperature OR elevation"}]}')
@@ -108,9 +110,10 @@ class LoadAndSearchTests extends Specification {
     then:
     deleteResult.statusCode == HttpStatus.OK
 
-    sleep(2000) // to ensure the delete finishes
+    sleep(10000) // to ensure the delete finishes
 
     when:
+    restTemplate.exchange(refreshRequest, Map)
     def searchResult2 = restTemplate.exchange(searchRequest, Map)
 
     then:
@@ -145,9 +148,11 @@ class LoadAndSearchTests extends Specification {
     loadResult.statusCode == HttpStatus.MULTI_STATUS
     updateResult.statusCode == HttpStatus.OK
 
-    sleep(2000) // to ensure the ETL finishes
+    sleep(10000) // to ensure the ETL finishes
 
     when:
+    def refreshRequest = RequestEntity.post("${esApiBase}/_refresh".toURI()).build()
+    restTemplate.exchange(refreshRequest, Map)
     def searchRequest = RequestEntity.post("${searchApiBase}/collection/search".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body('{"queries":[{ "type": "queryText", "value": "super"}]}')
