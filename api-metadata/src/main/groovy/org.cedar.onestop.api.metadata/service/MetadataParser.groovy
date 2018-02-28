@@ -12,6 +12,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
+import java.time.format.ResolverStyle
 import java.time.temporal.ChronoField
 import java.time.temporal.TemporalAccessor
 import java.time.temporal.TemporalQuery
@@ -491,6 +492,7 @@ class MetadataParser {
       .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
       .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
       .toFormatter()
+      .withResolverStyle(ResolverStyle.STRICT)
 
   // use custom formatter for when time zone information is not supplied in a LocalDateTime format for ES's happiness
   static final DateTimeFormatter ELASTIC_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
