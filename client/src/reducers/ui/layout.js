@@ -25,7 +25,13 @@ export const layout = (state = initialState, action) => {
         (_.startsWith(path, '508/') && path !== '508/')
       const detailIdRegex = /\/details\/([-\w]+)/
       const detailIdMatches = detailIdRegex.exec(path)
-      return Immutable.set(state, 'showLeft', !(is508 || detailIdMatches))
+      const granuleListRegex = /\/granules\/([-\w]+)/
+      const granuleIdMatches = granuleListRegex.exec(path)
+      return Immutable.set(
+        state,
+        'showLeft',
+        !(is508 || detailIdMatches || granuleIdMatches)
+      )
     case SET_LEFT_OPEN_CLOSE:
       return Immutable.set(state, 'leftOpen', action.value)
     case TOGGLE_RIGHT:

@@ -38,7 +38,7 @@ const routesDefinition = {
           component: CollectionGridContainer,
         },
         {path: 'collections/details/:id', component: DetailContainer},
-        {path: 'collections/granules', component: GranuleViewContainer}, // GranuleListContainer? Section508GranuleListContainer?
+        {path: 'collections/granules/:id', component: GranuleViewContainer}, // GranuleListContainer? Section508GranuleListContainer?
       ],
     },
     {path: 'error', component: ErrorContainer},

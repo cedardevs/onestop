@@ -56,7 +56,7 @@ class Detail extends Component {
             item={item}
             totalGranuleCount={totalGranuleCount}
             granuleSearch={() => {
-              showGranules(item.id)
+              showGranules(id)
             }}
           />
         ),
