@@ -1,9 +1,6 @@
 package org.cedar.psi.api.services
 
 import groovy.json.JsonSlurper
-import org.apache.avro.Schema
-import org.apache.avro.generic.GenericData
-import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.Logger
@@ -19,31 +16,14 @@ class InvPublisher {
     private static final Logger log = LoggerFactory.getLogger(InvPublisher.class)
 
     @Autowired
-    private Producer<String, GenericRecord> createProducer
+    private Producer<String, String> createProducer
 
     @Value('${kafka.granule.topic}')
     String GRANULETOPIC
 
     void publishGranule(String data) {
 
-        String GRANULE_SCHEMA = "{" +
-                "   \"namespace\": \"org.cedar.psi.api\"," +
-                "   \"type\": \"record\", " +
-                "   \"name\": \"Granule\"," +
-                "   \"fields\": [" +
-                "       {\"name\": \"trackingId\", \"type\": \"string\"}," +
-                "       {\"name\": \"dataStream\", \"type\": \"string\"}," +
-                "       {\"name\": \"checksum\", \"type\": \"string\"}," +
-                "       {\"name\": \"relativePath\", \"type\": \"string\"}," +
-                "       {\"name\": \"path\", \"type\": \"string\"}," +
-                "       {\"name\": \"fileSize\", \"type\": [\"null\",\"int\"], \"default\":\"null\"}," +
-                "       {\"name\": \"lastUpdated\", \"type\": [\"null\",\"string\"], \"default\":\"null\" }" +
-                    " ]" +
-                "}"
-
-        Producer<String, GenericRecord> producer = createProducer
-        Schema.Parser parser = new Schema.Parser()
-        Schema schema = parser.parse(GRANULE_SCHEMA)
+        Producer<String, String> producer = createProducer
 
         def slurper = new JsonSlurper()
         def slurpedKey = slurper.parseText(data)
@@ -52,20 +32,10 @@ class InvPublisher {
             log.debug("missing trackingid from ='{}", data)
         } else {
             String key = (slurpedKey.trackingId).toString()
-            GenericRecord granule = new GenericData.Record(schema)
             log.info("sending data ='{}'", data)
-            granule.put("trackingId", slurpedKey.trackingId)
-            granule.put("dataStream", slurpedKey.dataStream)
-            granule.put("checksum", slurpedKey.checksum)
-            granule.put("relativePath", slurpedKey.relativePath)
-            granule.put("path", slurpedKey.path)
-            granule.put("fileSize", slurpedKey.fileSize)
-            granule.put("lastUpdated", slurpedKey.lastUpdated)
 
-            ProducerRecord<String, GenericRecord> record = new ProducerRecord<String, GenericRecord>(GRANULETOPIC, key, granule)
-            log.info("topic = %s, partition = %s, offset = %d, customer = %s, country = %s\n",
-                    record.topic(), record.partition(),
-                    record.key(), record.value())
+            ProducerRecord<String, String> record = new ProducerRecord<String, String>(GRANULETOPIC, key, data)
+            log.info("topic = $record.topic(), partition = $record.partition(), key = $record.key(), value = $record.value()")
             producer.send(record)
 
         }
