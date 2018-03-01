@@ -10,13 +10,12 @@ services:
       KAFKA_GRANULE_TOPIC: "granule"
       SPRING_KAFKA_CONSUMER_GROUP-ID: "granule-group"
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    ports:
-      - "32181:32181"
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3
     environment:
-      ZOOKEEPER_CLIENT_PORT: 32181
-      ZOOKEEPER_TICK_TIME: 2000
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -29,6 +28,33 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:32181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  kafka-connect:
+    image: confluentinc/cp-kafka-connect
+    depends_on:
+      - kafka
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: "kafka:9092"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect"
+      CONNECT_GROUP_ID: "psi-kafka-connect"
+      CONNECT_CONFIG_STORAGE_TOPIC: "psi-kafka-connect-config"
+      CONNECT_OFFSET_STORAGE_TOPIC: "psi-kafka-connect-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "psi-kafka-connect-status"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_KEY_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8080"
+      CONNECT_VALUE_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8080"
+      CONNECT_INTERNAL_KEY_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8080"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "io.confluent.connect.avro.AvroConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: "http://schema-registry:8080"
+      CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/etc/kafka-connect/jars"
 
   kafka-rest:
     image: confluentinc/cp-kafka-rest
@@ -97,6 +123,14 @@ services:
       STREAM_TOPICS_OUTPUT: "parsed-granules"
       STREAM_COMMAND: "groovy /usr/src/app/scripts/IsoParser.groovy"
       STREAM_COMMAND_TIMEOUT: 10000
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    ports:
+      - "32181:32181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 32181
+      ZOOKEEPER_TICK_TIME: 2000
 
 #---
 #version: '3'
