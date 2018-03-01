@@ -1,0 +1,15 @@
+{
+  "name": "psi-granules-to-es",
+  "config": {
+    "tasks.max": "1",
+    "connector.class": "ElasticsearchSink",
+    "connection.url": "http://elasticsearch:9200",
+    "topics": "parsed-granules",
+    "topic.index.map": "parsed-granules:granule",
+    "type.name": "granule",
+    "schema.ignore": true,
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
+  }
+}

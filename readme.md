@@ -24,6 +24,14 @@ cd psi
 This will test and compile each component, build docker images for them, then use docker-compose to spin up
 docker containers with zookeeper, kafka, and each component.
 
+#### Pipe parsed outputs to Elasticsearch with Kafka Connect
+
+To create a connector in Kafka Connect which sends data from `parsed-granules` topic to Elasticsearch, send a REST request to it:
+
+```bash
+curl -X POST -H "Content-Type: application/json" localhost:8083/connectors --data-binary @connect_config.json 
+```
+
 ## Legal
 
 This software was developed by Team Foam-Cat,
