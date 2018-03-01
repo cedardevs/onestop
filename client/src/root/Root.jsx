@@ -27,7 +27,6 @@ export default class Root extends Component {
     this.state = {
       leftVisible: true,
       rightVisible: false,
-      tabCurrent: 'Search Results',
       browserWarning: this.hasUnsupportedFeatures(),
     }
   }

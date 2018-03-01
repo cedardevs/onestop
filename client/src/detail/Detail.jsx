@@ -27,7 +27,7 @@ class Detail extends Component {
   }
 
   render() {
-    const {item, loading} = this.props
+    const {id, item, loading, totalGranuleCount, showGranules} = this.props
 
     if (loading) {
       return (
@@ -51,17 +51,25 @@ class Detail extends Component {
     let tabData = [
       {
         title: 'Summary',
-        content: <SummaryView item={item} />,
+        content: (
+          <SummaryView
+            item={item}
+            totalGranuleCount={totalGranuleCount}
+            granuleSearch={() => {
+              showGranules(item.id)
+            }}
+          />
+        ),
       },
       {
         title: 'Description',
         content: <DescriptionView item={item} />,
       },
-      {
-        title: 'Matching Files',
-        content: <GranuleViewContainer item={item} />,
-        action: this.showGranules,
-      },
+      // {
+      //   title: 'Matching Files',
+      //   content: <GranuleViewContainer item={item} />, TODO delete GranuleViewContainer?
+      //   action: this.showGranules,
+      // },
       {
         title: 'Access',
         content: <AccessView item={item} />,

@@ -49,6 +49,19 @@ export const showGranules = (prefix = '') => {
     }
   }
 }
+export const showGranulesList = (prefix = '') => {
+  // this is only needed for the 508 site now
+  return (dispatch, getState) => {
+    const query = encodeQueryString(getState())
+    if (!_.isEmpty(query)) {
+      const locationDescriptor = {
+        pathname: `${prefix}/collections/granules`,
+        search: `?${query}`,
+      }
+      dispatch(push(locationDescriptor))
+    }
+  }
+}
 
 export const showDetails = id => {
   if (!id) {
