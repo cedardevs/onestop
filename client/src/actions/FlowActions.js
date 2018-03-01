@@ -20,6 +20,7 @@ import {
 } from './SearchParamActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchInfo, fetchCounts} from './InfoActions'
+import {isDetailPage, isGranuleListPage, getCollectionIdFromDetailPath, getCollectionIdFromGranuleListPath} from '../utils/urlUtils'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
@@ -125,16 +126,11 @@ export const initialize = () => {
   }
 }
 
-const loadFromUrl = pathname => {
+const loadFromUrl = path => {
   // Note, collection queries are automatically updated by the URL because the query is parsed into search, which triggers loadData via a watch
 
-  const detailIdRegex = /\/details\/([-\w]+)/
-  const detailIdMatches = detailIdRegex.exec(pathname)
-
-  const detailId =
-    detailIdMatches && detailIdMatches[1] ? detailIdMatches[1] : null
-
-  if (detailId) {
+  if (isDetailPage(path)) {
+    const detailId = getCollectionIdFromDetailPath(path)
     store.dispatch(getCollection(detailId))
     store.dispatch(triggerSearch())
     store.dispatch(fetchGranules())
@@ -180,10 +176,10 @@ store.subscribe(queryWatch(applyNewQueryString))
 
 // Update background
 const updateBackground = path => {
-  const is508 =
+  const is508ButNotLanding =
     (_.startsWith(path, '/508/') && path !== '/508/') ||
     (_.startsWith(path, '508/') && path !== '508/')
-  store.dispatch(toggleBackgroundImage(!is508)) //Cover strange routing case. TODO: Regex test?
+  store.dispatch(toggleBackgroundImage(!is508ButNotLanding)) //Cover strange routing case. TODO: Regex test?
 }
 
 const pathWatch = watch(

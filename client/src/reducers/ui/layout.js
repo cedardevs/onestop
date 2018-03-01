@@ -1,5 +1,5 @@
 import Immutable from 'seamless-immutable'
-import _ from 'lodash'
+import {isDetailPage} from '../../utils/urlUtils'
 
 import {
   SET_LEFT_OPEN_CLOSE,
@@ -20,12 +20,11 @@ export const layout = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_CHANGE:
       const path = action.payload.pathname
-      const is508 =
-        (_.startsWith(path, '/508/') && path !== '/508/') ||
-        (_.startsWith(path, '508/') && path !== '508/')
-      const detailIdRegex = /\/details\/([-\w]+)/
-      const detailIdMatches = detailIdRegex.exec(path)
-      return Immutable.set(state, 'showLeft', !(is508 || detailIdMatches))
+      return Immutable.set(
+        state,
+        'showLeft',
+        !(path.includes('508') || isDetailPage(path))
+      )
     case SET_LEFT_OPEN_CLOSE:
       return Immutable.set(state, 'leftOpen', action.value)
     case TOGGLE_RIGHT:
