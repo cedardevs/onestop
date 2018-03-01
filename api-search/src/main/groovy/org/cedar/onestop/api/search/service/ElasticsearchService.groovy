@@ -161,6 +161,12 @@ class ElasticsearchService {
 
     def requestBody = addAggregations(query, getFacets)
 
+    // default summary to true
+    def summary = params.summary == null ? true : params.summary as boolean
+    if(summary) {
+      requestBody = addSourceFilter(requestBody)
+    }
+
     String searchEndpoint = "${index}/_search"
 
     requestBody.size = pageParams?.max ?: 10
@@ -198,6 +204,22 @@ class ElasticsearchService {
         query       : query,
         aggregations: aggregations
     ]
+    return requestBody
+  }
+
+  private Map addSourceFilter(Map requestBody) {
+    def sourceFilter = [
+        "title",
+        "thumbnail",
+        "spatialBounding",
+        "beginDate",
+        "beginYear",
+        "endDate",
+        "endYear",
+        "links",
+        "citeAsStatements"
+    ]
+    requestBody._source = sourceFilter
     return requestBody
   }
 

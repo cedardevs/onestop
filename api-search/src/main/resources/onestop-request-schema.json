@@ -20,6 +20,10 @@
       "description": "Flag to request counts of results by GCMD keywords in addition to results. Defaults to false if not provided.",
       "type": "boolean"
     },
+    "summary": {
+      "description": "Flag to request summary of search results instead of full set of attributes. Defaults to true if not provided.",
+      "type": "boolean"
+    },
     "page": {
       "description": "Pagination of results",
       "type": "object",

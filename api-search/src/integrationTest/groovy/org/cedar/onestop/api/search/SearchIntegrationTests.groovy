@@ -164,7 +164,7 @@ class SearchIntegrationTests extends Specification {
     flatGranuleBaseUriString = "http://localhost:${port}/${contextPath}/flattened-granule/"
   }
 
-  def 'Valid query-only collection search with facets returns OK with expected results'() {
+  def 'Valid query-only collection search summary with facets returns OK with expected results'() {
     setup:
     def searchBaseUri = (collectionBaseUriString + "search").toURI()
     def request = """\
@@ -174,6 +174,121 @@ class SearchIntegrationTests extends Specification {
               { "type": "queryText", "value": "temperature"}
             ],
           "facets" : true
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 4 items"
+    def items = result.body.data
+    items.size() == 4
+
+    and: "Expected results are returned"
+    def beginDates = items.collect { it.attributes.beginDate }
+    beginDates.sort().equals([
+        '2014-06-02T00:00:00.000Z',
+        '2013-03-01T00:00:00.000Z',
+        '2005-01-30T00:00:00.000Z',
+        '2009-11-22T00:00:00.000Z'
+    ].sort())
+    def citeAsStatements = items.collect { it.attributes.citeAsStatements }
+    citeAsStatements.sort().equals([
+        ['Cite as: US DOC; NOAA; NESDIS; Office of Satellite and Product Operations (OSPO) (2014). GHRSST Level 4 OSPO Global Nighttime Foundation Sea Surface Temperature Analysis (GDS version 2). National Oceanographic Data Center, NOAA. Dataset. [access date]'],
+        ['Cite as: Hervey, R. V. and US DOC; NOAA; NWS; National Data Buoy Center (2013). Coastal meteorological and water temperature data from National Water Level Observation Network (NWLON) and Physical Oceanographic Real-Time System (PORTS) stations of the NOAA Center for Operational Oceanographic Products and Services (CO-OPS). National Oceanographic Data Center, NOAA. Dataset. [access date]'],
+        ['Cite as: Medspiration (2005). GHRSST Level 4 EUR Mediterranean Sea Regional Foundation Sea Surface Temperature Analysis (GDS version 2). National Oceanographic Data Center, NOAA. Dataset. [access date]'],
+        ['Cite as: US DOC; NOAA; NESDIS; Office of Satellite Data Processing and Distribution (OSDPD) (2009). GHRSST Level 2P Western Pacific Regional Skin Sea Surface Temperature from the Multifunctional Transport Satellite 1R (MTSAT-1R) (GDS version 1). National Oceanographic Data Center, NOAA. Dataset. [access date]']
+    ].sort())
+    def thumbnail = items.collect { it.attributes.thumbnail }
+    thumbnail.sort().equals([
+        'http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
+        'http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:NDBC-COOPS',
+        'http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED',
+        'http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R'
+    ].sort())
+    def endDates = items.collect { it.attributes.endDates }
+    endDates.sort().equals([
+        null,
+        null,
+        null,
+        null
+    ].sort())
+    def beginYears = items.collect { it.attributes.beginYears }
+    beginYears.sort().equals([
+        null,
+        null,
+        null,
+        null
+    ].sort())
+    def spatialBoundings = items.collect { it.attributes.spatialBounding }
+    spatialBoundings.collect{ it.toString() }.sort().equals([
+        [coordinates:[[[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]], type: 'Polygon'],
+        [coordinates:[[[144.657, -14.28], [-61.821, -14.28], [-61.821, 70.4], [144.657, 70.4], [144.657, -14.28]]], type: 'Polygon'],
+        [coordinates:[[[-5.99, 30.01], [36.49, 30.01], [36.49, 45.99], [-5.99, 45.99], [-5.99, 30.01]]], type: 'Polygon'],
+        [coordinates:[[[60, -73], [-143, -73], [-143, 73], [60, 73], [60, -73]]], type: 'Polygon']
+    ].collect{ it.toString() }.sort())
+
+    // link data is a bit more gnarly, so we'll just compare the number of links
+    def links = items.collect { it.attributes.links }
+    links.size() == 4
+    def endYears = items.collect { it.attributes.endYears }
+    endYears.sort().equals([
+        null,
+        null,
+        null,
+        null
+    ].sort())
+
+    // if we end up with more keys per result than summary should contain, summary source filter is not working!
+    items.each {
+      assert it.attributes.keySet().size() <= [
+          "title",
+          "thumbnail",
+          "spatialBounding",
+          "beginDate",
+          "beginYear",
+          "endDate",
+          "endYear",
+          "links",
+          "citeAsStatements"
+      ].size()
+    }
+
+    and: 'The correct number of facets is returned'
+    def aggs = result.body.meta.facets
+    aggs.size() == 9
+
+    and: 'The facets are as expected'
+    aggs.science != null
+    aggs.services != null
+    aggs.instruments != null
+    aggs.platforms != null
+    aggs.projects != null
+    aggs.dataCenters != null
+    aggs.horizontalResolution != null
+    aggs.verticalResolution != null
+    aggs.temporalResolution != null
+  }
+
+  def 'Valid query-only collection search with facets returns OK with expected results'() {
+    setup:
+    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "temperature"}
+            ],
+          "facets" : true,
+          "summary" : false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -225,7 +340,7 @@ class SearchIntegrationTests extends Specification {
 //    !locationTerms.contains('Alaska > Unalaska')
   }
 
-  def 'Valid query-only granule search with facets returns OK with expected results'() {
+  def 'Valid query-only granule summary search with facets returns OK with expected results'() {
     setup:
     def searchBaseUri = (granuleBaseUriString + "search").toURI()
     def request = """\
@@ -235,6 +350,107 @@ class SearchIntegrationTests extends Specification {
               { "type": "queryText", "value": "temperature"}
             ],
           "facets" : true
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 2 items"
+    def items = result.body.data
+    items.size() == 2
+
+    and: "Expected results are returned"
+    def beginDates = items.collect { it.attributes.beginDate }
+    beginDates.sort().equals([
+        '2015-03-01T00:00:00.000Z',
+        '2016-02-01T00:00:00.000Z'
+    ].sort())
+    def citeAsStatements = items.collect { it.attributes.citeAsStatements }
+    citeAsStatements.sort().equals([
+        [],
+        []
+    ].sort())
+    def thumbnail = items.collect { it.attributes.thumbnail }
+    thumbnail.sort().equals([
+        'http://maps.googleapis.com/maps/api/staticmap?center=32.714,-117.174&zoom=14&scale=false&size=600x600&maptype=terrain&format=png&visual_refresh=true&markers=color:red%7C32.714,-117.174&stream=true&stream_ID=plot_image',
+        'http://maps.googleapis.com/maps/api/staticmap?center=36.977,-76.315&zoom=14&scale=false&size=600x600&maptype=terrain&format=png&visual_refresh=true&markers=color:red%7C36.977,-76.315&stream=true&stream_ID=plot_image',
+    ].sort())
+    def endDates = items.collect { it.attributes.endDates }
+    endDates.sort().equals([
+        null,
+        null
+    ].sort())
+    def beginYears = items.collect { it.attributes.beginYears }
+    beginYears.sort().equals([
+        null,
+        null
+    ].sort())
+    def spatialBoundings = items.collect { it.attributes.spatialBounding }
+    spatialBoundings.collect{ it.toString() }.sort().equals([
+        [coordinates:[-76.315, 36.977], type: 'Point'],
+        [coordinates:[-117.174, 32.714], type: 'Point']
+    ].collect{ it.toString() }.sort())
+
+    // link data is a bit more gnarly, so we'll just compare the number of links
+    def links = items.collect { it.attributes.links }
+    links.size() == 2
+    def endYears = items.collect { it.attributes.endYears }
+    endYears.sort().equals([
+        null,
+        null
+    ].sort())
+
+    // if we end up with more keys per result than summary should contain, summary source filter is not working!
+    items.each {
+      assert it.attributes.keySet().size() <= [
+          "title",
+          "thumbnail",
+          "spatialBounding",
+          "beginDate",
+          "beginYear",
+          "endDate",
+          "endYear",
+          "links",
+          "citeAsStatements"
+      ].size()
+    }
+
+    and: 'The correct number of facets is returned'
+    def aggs = result.body.meta.facets
+    aggs.size() == 9
+
+    and: 'The facets are as expected'
+    aggs.science != null
+    aggs.services != null
+    aggs.instruments != null
+    aggs.platforms != null
+    aggs.projects != null
+    aggs.dataCenters != null
+    aggs.horizontalResolution != null
+    aggs.verticalResolution != null
+    aggs.temporalResolution != null
+  }
+
+  def 'Valid query-only granule search with facets returns OK with expected results'() {
+    setup:
+    def searchBaseUri = (granuleBaseUriString + "search").toURI()
+    def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "temperature"}
+            ],
+          "facets" : true,
+          "summary" : false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -287,7 +503,8 @@ class SearchIntegrationTests extends Specification {
             [
               {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [145.5, 12.34]}}
             ],
-          "facets": false
+          "facets": false,
+          "summary": false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -325,7 +542,8 @@ class SearchIntegrationTests extends Specification {
             [
               {"type": "geometry", "relation": "intersects", "geometry": {"type": "Point", "coordinates": [-76.315, 36.977]}}
             ],
-          "facets": false
+          "facets": false,
+          "summary": false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -363,7 +581,8 @@ class SearchIntegrationTests extends Specification {
           "filters":
             [
               {"type": "datetime", "before": "2007-12-31T23:59:59.999Z", "after": "2007-01-01T00:00:00Z"}
-            ]
+            ],
+          "summary": false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -401,7 +620,8 @@ class SearchIntegrationTests extends Specification {
           "filters":
             [
               {"type": "datetime", "after": "2016-01-01T00:00:00Z"}
-            ]
+            ],
+          "summary": false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -439,7 +659,8 @@ class SearchIntegrationTests extends Specification {
           "filters":
             [
               {"type": "excludeGlobal", "value": true}
-            ]
+            ],
+          "summary": false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -477,6 +698,8 @@ class SearchIntegrationTests extends Specification {
     if (after) {
       request.filters[0].after = after
     }
+
+    request.summary = false
 
     def requestEntity = RequestEntity
         .post(searchBaseUri)
@@ -516,10 +739,12 @@ class SearchIntegrationTests extends Specification {
             [
               { "type": "queryText", "value": "temperature"}
             ],
-          "page":
+            "page":
             {
-              "max": 1, "offset": 0}
-            }
+              "max": 1,
+              "offset": 0
+            },
+          "summary": false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
@@ -698,7 +923,8 @@ class SearchIntegrationTests extends Specification {
           "queries":
             [
               { "type": "queryText", "value": "buoy"}
-            ]
+            ],
+          "summary": false
         }""".stripIndent()
 
     def requestEntity = RequestEntity
