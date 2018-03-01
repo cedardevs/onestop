@@ -2,6 +2,7 @@ import {connect} from 'react-redux'
 import FacetFilter from './FacetFilter'
 import {toggleFacet} from '../../actions/SearchParamActions'
 import {buildKeywordHierarchyMap} from '../../utils/keywordUtils'
+import {showCollections} from '../../actions/FlowActions'
 
 import {
   clearCollections,
@@ -25,6 +26,7 @@ const mapDispatchToProps = dispatch => {
     submit: () => {
       dispatch(clearCollections())
       dispatch(triggerSearch())
+      dispatch(showCollections())
     },
   }
 }
