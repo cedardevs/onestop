@@ -619,7 +619,7 @@ class SearchIntegrationTests extends Specification {
             ],
           "filters":
             [
-              {"type": "datetime", "after": "2016-01-01T00:00:00Z"}
+              {"type":"facet","name":"science","values":["Oceans > Ocean Optics"]}
             ],
           "summary": false
         }""".stripIndent()
@@ -636,14 +636,15 @@ class SearchIntegrationTests extends Specification {
     result.statusCode == HttpStatus.OK
     result.headers.getContentType() == contentType
 
-    and: "Result contains 1 item"
+    and: "Result contains 2 items"
     def items = result.body.data
-    items.size() == 1
+    items.size() == 2
 
     and: "Expected result is returned"
     def actualIds = items.collect { it.attributes.fileIdentifier }
     actualIds.containsAll([
-        'CO-OPS.NOS_8638614_201602_D1_v00'
+        'CO-OPS.NOS_8638614_201602_D1_v00',
+        'CO-OPS.NOS_9410170_201503_D1_v00'
     ])
   }
 
