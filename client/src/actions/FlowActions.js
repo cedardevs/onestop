@@ -49,13 +49,15 @@ export const showGranules = (prefix = '') => {
     }
   }
 }
-export const showGranulesList = (prefix = '') => {
-  // this is only needed for the 508 site now
+export const showGranulesList = id => {
+  if (!id) {
+    return
+  }
   return (dispatch, getState) => {
     const query = encodeQueryString(getState())
     if (!_.isEmpty(query)) {
       const locationDescriptor = {
-        pathname: `${prefix}/collections/granules`,
+        pathname: `collections/granules/${id}`,
         search: `?${query}`,
       }
       dispatch(push(locationDescriptor))
@@ -73,12 +75,7 @@ export const showDetails = id => {
       pathname: `collections/details/${id}`,
       search: _.isEmpty(query) ? null : `?${query}`,
     }
-    dispatch(getCollection(id))
-    dispatch(clearSelections())
-    dispatch(toggleSelection(id))
     dispatch(push(locationDescriptor))
-    dispatch(clearGranules())
-    dispatch(fetchGranules())
   }
 }
 
@@ -138,11 +135,11 @@ export const initialize = () => {
   }
 }
 
-const loadFromUrl = pathname => {
+const loadFromUrl = path => {
   // Note, collection queries are automatically updated by the URL because the query is parsed into search, which triggers loadData via a watch
 
   const detailIdRegex = /\/details\/([-\w]+)/
-  const detailIdMatches = detailIdRegex.exec(pathname)
+  const detailIdMatches = detailIdRegex.exec(path)
 
   const detailId =
     detailIdMatches && detailIdMatches[1] ? detailIdMatches[1] : null
@@ -150,6 +147,19 @@ const loadFromUrl = pathname => {
   if (detailId) {
     store.dispatch(getCollection(detailId))
     store.dispatch(triggerSearch())
+  }
+
+  const granuleListRegex = /\/granules\/([-\w]+)/
+  const granuleIdMatches = granuleListRegex.exec(path)
+
+  const granuleDetailId =
+    granuleIdMatches && granuleIdMatches[1] ? granuleIdMatches[1] : null
+
+  if (granuleDetailId) {
+    store.dispatch(clearSelections())
+    store.dispatch(toggleSelection(granuleDetailId))
+    store.dispatch(triggerSearch())
+    store.dispatch(clearGranules())
     store.dispatch(fetchGranules())
   }
 }
