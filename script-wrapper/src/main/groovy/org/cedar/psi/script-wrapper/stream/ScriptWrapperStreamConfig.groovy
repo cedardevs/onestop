@@ -58,7 +58,7 @@ class ScriptWrapperStreamConfig {
     KStream inputStream = builder.stream(inputTopic)
     inputStream.mapValues ({ msg ->
       List<String> commandList = command.split(' ')
-      commandList.add("$msg" as String)
+      commandList.add($/$msg/$ as String)
       log.info "Running : $commandList "
       def cmd
       String outputMessage
@@ -66,7 +66,8 @@ class ScriptWrapperStreamConfig {
         cmd = commandList.execute()
         cmd.waitForOrKill(timeout)
         if(cmd.exitValue()){
-          log.error "Processes returned with non-zero exit code"
+          log.error "Processes exited with non-zero exit code"
+          log.error "Processes output: ${cmd?.text}"
           outputMessage = 'ERROR: ' + msg
         }else{
           outputMessage = cmd.text
