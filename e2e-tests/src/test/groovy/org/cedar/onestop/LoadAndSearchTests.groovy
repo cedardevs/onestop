@@ -1,6 +1,5 @@
 package org.cedar.onestop
 
-import groovy.json.JsonOutput
 import org.junit.ClassRule
 import org.junit.Test
 import org.springframework.core.io.ClassPathResource
@@ -82,7 +81,7 @@ class LoadAndSearchTests extends Specification {
     restTemplate.exchange(refreshRequest, Map)
     def searchRequest = RequestEntity.post("${searchApiBase}/collection/search".toURI())
         .contentType(MediaType.APPLICATION_JSON)
-        .body('{"queries":[{ "type": "queryText", "value": "temperature OR elevation"}]}')
+        .body('{"queries":[{ "type": "queryText", "value": "temperature OR elevation"}],"summary": false}')
     def searchResult = restTemplate.exchange(searchRequest, Map)
     def collectionData = searchResult.body.data
 
@@ -95,7 +94,7 @@ class LoadAndSearchTests extends Specification {
     when:
     def granuleRequest = RequestEntity.post("${searchApiBase}/granule/search".toURI())
         .contentType(MediaType.APPLICATION_JSON)
-        .body('{"filters":[{"type":"collection", "values":["' + coopsCollection.id + '"]}]}')
+        .body('{"filters":[{"type":"collection", "values":["' + coopsCollection.id + '"]}],"summary": false}')
     def granuleResult = restTemplate.exchange(granuleRequest, Map)
     def granuleData = granuleResult.body.data
 
@@ -155,7 +154,7 @@ class LoadAndSearchTests extends Specification {
     restTemplate.exchange(refreshRequest, Map)
     def searchRequest = RequestEntity.post("${searchApiBase}/collection/search".toURI())
         .contentType(MediaType.APPLICATION_JSON)
-        .body('{"queries":[{ "type": "queryText", "value": "super"}]}')
+        .body('{"queries":[{ "type": "queryText", "value": "super"}],"summary": false}')
     def searchResult = restTemplate.exchange(searchRequest, Map)
 
     then:
