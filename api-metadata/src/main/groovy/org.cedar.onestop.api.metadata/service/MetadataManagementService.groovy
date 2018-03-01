@@ -286,7 +286,7 @@ class MetadataManagementService {
             ]
         ]
     ]
-    def endpoint = "$PREFIX$COLLECTION_STAGING_INDEX,$PREFIX$GRANULE_STAGING_INDEX,$PREFIX$COLLECTION_SEARCH_INDEX,$PREFIX$GRANULE_SEARCH_INDEX/_delete_by_query?wait_for_completion=true"
+    def endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX},${PREFIX}${COLLECTION_SEARCH_INDEX},${PREFIX}${GRANULE_SEARCH_INDEX}/_delete_by_query?wait_for_completion=true"
     def deleteResponse = esService.performRequest('POST', endpoint, query)
 
     return [
