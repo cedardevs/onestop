@@ -7,10 +7,12 @@ apply plugin: 'org.cedar.dockerplugin'
 dependencies {
   compile('org.codehaus.groovy:groovy')
   compile('org.codehaus.groovy:groovy-json')
+  compile "org.codehaus.groovy:groovy-xml"
   compile('org.springframework.boot:spring-boot-starter-actuator')
   compile('org.springframework.boot:spring-boot-starter-web')
   compile('org.springframework.cloud:spring-cloud-starter')
   compile('org.apache.kafka:kafka-streams:1.0.0')
+  compile('org.apache.commons:commons-text:1.2')
 
   runtime('org.springframework.boot:spring-boot-devtools')
 

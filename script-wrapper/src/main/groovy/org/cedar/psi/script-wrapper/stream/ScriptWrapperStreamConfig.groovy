@@ -11,6 +11,8 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.Printed
+import org.cedar.psi.parser.util.IsoConversionUtil
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -31,6 +33,9 @@ class ScriptWrapperStreamConfig {
   @Value('${stream.command}')
   String command
 
+  @Value('${stream.convert.iso:false}')
+  Boolean doIsoConversion
+
   @Value('${stream.command_timeout:5000}')
   long timeout
 
@@ -39,6 +44,9 @@ class ScriptWrapperStreamConfig {
 
   @Value('${kafka.bootstrap.servers}')
   String bootstrapServers
+
+  @Autowired
+  IsoConversionUtil isoConversionUtil
 
   @Bean
   StreamsConfig streamConfig() {
@@ -78,7 +86,8 @@ class ScriptWrapperStreamConfig {
         log.error("Caught exception $e: ${e.message}")
       }
     })
-    .filter({key, msg -> !msg.toString().startsWith('ERROR')})
+    .filterNot({key, msg -> msg.toString().startsWith('ERROR')})
+    .mapValues({msg -> doIsoConversion ? isoConversionUtil.parseXMLMetadata(msg as String)  : msg})
     .to(outputTopic)
     return builder.build()
   }
