@@ -16,14 +16,27 @@ import org.springframework.stereotype.Service
 @Service
 class ElasticsearchService {
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
-  String STAGING_INDEX
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
+  String COLLECTION_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
-  String SEARCH_INDEX
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.collection.name}')
+  String COLLECTION_STAGING_INDEX
+
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
+  String GRANULE_SEARCH_INDEX
+
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
+  String GRANULE_STAGING_INDEX
 
   @Value('${elasticsearch.index.prefix:}')
   String PREFIX
+
+  @Value('${elasticsearch.index.search.collection.pipeline-name}')
+  private String COLLECTION_PIPELINE
+
+  @Value('${elasticsearch.index.search.granule.pipeline-name}')
+  private String GRANULE_PIPELINE
+
 
   private RestClient restClient
 
@@ -33,16 +46,23 @@ class ElasticsearchService {
   }
 
   public void ensureIndices() {
-    ensureStagingIndex()
-    ensureSearchIndex()
+    ensureStagingIndices()
+    ensureSearchIndices()
   }
 
-  public void ensureStagingIndex() {
-    ensureIndex(STAGING_INDEX)
+  public void ensureStagingIndices() {
+    ensureIndex(COLLECTION_STAGING_INDEX)
+    ensureIndex(GRANULE_STAGING_INDEX)
   }
 
-  public void ensureSearchIndex() {
-    ensureIndex(SEARCH_INDEX)
+  public void ensureSearchIndices() {
+    ensureIndex(COLLECTION_SEARCH_INDEX)
+    ensureIndex(GRANULE_SEARCH_INDEX)
+  }
+
+  public void ensurePipelines() {
+    ensurePipeline(COLLECTION_PIPELINE)
+    ensurePipeline(GRANULE_PIPELINE)
   }
 
   private void ensureIndex(String index) {
@@ -51,6 +71,13 @@ class ElasticsearchService {
       def realName = create(index)
       String endPoint = "/${realName}/_alias/${index}"
       performRequest('PUT', endPoint)
+    }
+  }
+
+  private void ensurePipeline(String pipelineName) {
+    def pipelineCheck = performRequest('GET', "_ingest/pipeline/${pipelineName}?filter_path=*.version")
+    if(!pipelineCheck[pipelineName]) { // Request is empty response if pipeline doesn't exist
+      putPipeline(pipelineName)
     }
   }
 
@@ -70,12 +97,14 @@ class ElasticsearchService {
     performRequest('POST', endpoint)
   }
 
-  public void dropStagingIndex() {
-    drop(STAGING_INDEX)
+  public void dropStagingIndices() {
+    drop(COLLECTION_STAGING_INDEX)
+    drop(GRANULE_STAGING_INDEX)
   }
 
-  public void dropSearchIndex() {
-    drop(SEARCH_INDEX)
+  public void dropSearchIndices() {
+    drop(COLLECTION_SEARCH_INDEX)
+    drop(GRANULE_SEARCH_INDEX)
   }
 
   public void drop(String indexName) {
@@ -87,8 +116,18 @@ class ElasticsearchService {
     }
   }
 
+  public void putPipeline(String pipelineName) {
+    def cl = Thread.currentThread().contextClassLoader
+    def jsonFileName = pipelineName + 'Definition.json'
+    def pipelineJson = cl.getResourceAsStream(jsonFileName).text
+    String pipelineEndpoint = "_ingest/pipeline/${pipelineName}"
+    performRequest('PUT', pipelineEndpoint, pipelineJson)
+
+    log.debug("Put pipeline [${pipelineName}]")
+  }
+
   public void moveAliasToIndex(String alias, String index, Boolean dropOldIndices = false) {
-    def oldIndices = performRequest('GET', "_alias/$alias").keySet()*.toString()
+    def oldIndices = performRequest('GET', "_alias/${alias}").keySet()*.toString()
     oldIndices = oldIndices.findAll({ it.startsWith(alias) })
     def actions = oldIndices.collect { [remove: [index: it, alias: alias]] }
     actions << [add: [index: index, alias: alias]]
@@ -114,12 +153,12 @@ class ElasticsearchService {
       def response = requestBody ?
           restClient.performRequest(method, endpoint, Collections.EMPTY_MAP, new NStringEntity(requestBody, ContentType.APPLICATION_JSON)) :
           restClient.performRequest(method, endpoint)
-      log.debug("Got response: $response")
+      log.debug("Got response: ${response}")
       return parseResponse(response)
     }
     catch (ResponseException e) {
       def response = parseResponse(e.response)
-      log.error("Elasticsearch request failed: $response")
+      log.error("Elasticsearch request failed: ${response}")
       return response
     }
   }

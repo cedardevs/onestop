@@ -15,24 +15,22 @@ class ElasticsearchServiceTests extends Specification {
 
 
   static TEST_PREFIX = 'prefix-'
-  static TEST_STAGING = TEST_PREFIX + 'staging'
-  static TEST_SEARCH = TEST_PREFIX + 'search'
+  static TEST_COLLECTION_SEARCH = TEST_PREFIX + 'search_collection'
 
   def mockRestClient = Mock(RestClient)
   def elasticsearchService = new ElasticsearchService(mockRestClient)
 
   def setup() {
-    elasticsearchService.STAGING_INDEX = TEST_STAGING
-    elasticsearchService.SEARCH_INDEX = TEST_SEARCH
+    elasticsearchService.COLLECTION_SEARCH_INDEX = TEST_COLLECTION_SEARCH
     elasticsearchService.PREFIX = TEST_PREFIX
   }
 
   def 'can create index with prefix'() {
     when:
-    elasticsearchService.create(TEST_SEARCH)
+    elasticsearchService.create(TEST_COLLECTION_SEARCH)
 
     then:
-    1 * mockRestClient.performRequest('PUT', {it.startsWith(TEST_SEARCH)}, *_) >> buildMockResponse([dummy: "response"])
+    1 * mockRestClient.performRequest('PUT', {it.startsWith(TEST_COLLECTION_SEARCH)}, *_) >> buildMockResponse([dummy: "response"])
     noExceptionThrown()
   }
 

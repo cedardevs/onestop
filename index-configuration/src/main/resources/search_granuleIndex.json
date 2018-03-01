@@ -1,0 +1,148 @@
+{
+  "mappings": {
+    "doc": {
+      "dynamic": "strict",
+      "_all": {
+        "enabled": false
+      },
+      "properties": {
+        "stagedDate": {
+          "type": "date",
+          "format": "epoch_millis"
+        },
+        "fileIdentifier": {
+          "type": "keyword"
+        },
+        "parentIdentifier": {
+          "type": "keyword"
+        },
+        "internalParentIdentifier": {
+          "type": "keyword"
+        },
+        "doi": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "text"
+        },
+        "description": {
+          "type": "text"
+        },
+        "keywords": {
+          "type": "text"
+        },
+        "gcmdScience": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "gcmdScienceServices": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "gcmdLocations": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "gcmdInstruments": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "gcmdPlatforms": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "gcmdProjects": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "gcmdDataCenters": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "gcmdHorizontalResolution": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "gcmdVerticalResolution": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "gcmdTemporalResolution": {
+          "type": "keyword",
+          "doc_values": true
+        },
+        "beginDate": {
+          "type": "date",
+          "format": "date_optional_time"
+        },
+        "beginYear": {
+          "type": "long"
+        },
+        "endDate": {
+          "type": "date",
+          "format": "date_optional_time"
+        },
+        "endYear": {
+          "type": "long"
+        },
+        "spatialBounding": {
+          "type": "geo_shape"
+        },
+        "isGlobal": {
+          "type": "boolean"
+        },
+        "dataFormats": {
+          "type": "nested",
+          "properties": {
+            "name": {
+              "type": "keyword"
+            },
+            "version": {
+              "type": "keyword"
+            }
+          }
+        },
+        "links": {
+          "type": "nested",
+          "properties": {
+            "linkName": {
+              "type": "keyword",
+              "index": false,
+              "doc_values": false
+            },
+            "linkProtocol": {
+              "type": "keyword",
+              "index": false,
+              "doc_values": false
+            },
+            "linkUrl": {
+              "type": "keyword",
+              "index": false,
+              "doc_values": false
+            },
+            "linkDescription": {
+              "type": "keyword",
+              "index": false,
+              "doc_values": false
+            },
+            "linkFunction": {
+              "type": "keyword",
+              "index": false,
+              "doc_values": false
+            }
+          }
+        },
+        "thumbnail": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": false
+        },
+        "citeAsStatements": {
+          "type": "keyword",
+          "index": false,
+          "doc_values": false
+        }
+      }
+    }
+  }
+}

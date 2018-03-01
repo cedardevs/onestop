@@ -114,6 +114,16 @@ task dockerComposeBackendStop(type: Exec, description: 'Stops intrastructure and
   args = ["-c", "docker-compose stop api-metadata api-search"]
 }
 
+task dockerComposeKibanaStart(type: Exec, description: 'Runs Kibana.', group: 'docker') {
+  executable = "bash"
+  args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d kibana"]
+}
+
+task dockerComposeKibanaStop(type: Exec, description: 'Stops Kibana.', group: 'docker') {
+  executable = "bash"
+  args = ["-c", "docker-compose stop kibana"]
+}
+
 task dockerComposeClean(type: Exec, description: 'Stops and removes the entire system of docker containers', group: 'docker') {
   executable = "bash"
   args = ["-c", "docker-compose down"]
