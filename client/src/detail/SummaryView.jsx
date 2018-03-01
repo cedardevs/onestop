@@ -15,6 +15,13 @@ const styleEqualFlexItem = {
   width: '50%',
 }
 
+const styleLink = {
+  display: 'inline-block',
+  color: 'rgb(85, 172, 228)',
+  margin: '0 0 0.618em 0',
+  textDecorationLine: 'underline',
+}
+
 class SummaryView extends Component {
   constructor(props) {
     super(props)
@@ -81,6 +88,7 @@ class SummaryView extends Component {
       ) : (
         <div>
           <a
+            style={styleLink}
             onClick={e => {
               this.props.granuleSearch()
             }}
