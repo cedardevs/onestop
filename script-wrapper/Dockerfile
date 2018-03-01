@@ -17,7 +17,10 @@ LABEL org.label-schema.vcs-ref=${VCS_REF}
 # NOTE: Installing groovy this way overrides the default java to be 7,
 #       which then prevents our app from running. Moving on for now.
 RUN apt-get update && \
-    apt-get -y install python nodejs
+    apt-get -y install python nodejs groovy
+
+# NOTE: adding java to the path prevents the container from defaulting to 1.7
+ENV PATH=$JAVA_HOME/bin:$PATH
 
 WORKDIR /usr/src/app
 COPY build/libs/${WAR_NAME} .
