@@ -152,7 +152,7 @@ class SearchIntegrationTests extends Specification {
       }
     }
 
-    def refreshEndpoint = "/$COLLECTION_SEARCH_INDEX,$GRANULE_SEARCH_INDEX,$FLATTENED_GRANULE_SEARCH_INDEX/_refresh"
+    def refreshEndpoint = "/${COLLECTION_SEARCH_INDEX},${GRANULE_SEARCH_INDEX},${FLATTENED_GRANULE_SEARCH_INDEX}/_refresh"
     response = restClient.performRequest('POST', refreshEndpoint)
     println("Refresh all search indices: ${response}")
 

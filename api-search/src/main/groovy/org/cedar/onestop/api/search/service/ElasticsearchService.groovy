@@ -59,7 +59,7 @@ class ElasticsearchService {
 
     if(getCollection.data) {
       // get the total number of granules for this collection id
-      String granuleEndpoint = "/$PREFIX$GRANULE_SEARCH_INDEX/_search"
+      String granuleEndpoint = "/${PREFIX}${GRANULE_SEARCH_INDEX}/_search"
       HttpEntity granuleRequest = new NStringEntity(JsonOutput.toJson([
           query: [
               term: [
@@ -88,7 +88,7 @@ class ElasticsearchService {
   }
 
   Map totalCounts() {
-    String collectionEndpoint = "/$PREFIX$COLLECTION_SEARCH_INDEX/_search"
+    String collectionEndpoint = "/${PREFIX}${COLLECTION_SEARCH_INDEX}/_search"
     HttpEntity collectionRequest = new NStringEntity(JsonOutput.toJson([
         query: [
             match_all: [:]
@@ -97,7 +97,7 @@ class ElasticsearchService {
     ]), ContentType.APPLICATION_JSON)
     def collectionResponse = restClient.performRequest("GET", collectionEndpoint, Collections.EMPTY_MAP, collectionRequest)
 
-    String granuleEndpoint = "/$PREFIX$GRANULE_SEARCH_INDEX/_search"
+    String granuleEndpoint = "/${PREFIX}${GRANULE_SEARCH_INDEX}/_search"
     HttpEntity granuleRequest = new NStringEntity(JsonOutput.toJson([
         query: [
             bool: [
@@ -132,7 +132,7 @@ class ElasticsearchService {
   }
 
   private Map getById(String index, String id) {
-    String endpoint = "/$PREFIX$index/$TYPE/$id"
+    String endpoint = "/${PREFIX}${index}/${TYPE}/${id}"
     def response = parseResponse(restClient.performRequest('GET', endpoint))
     def type = determineType(index)
     if (response.found) {
