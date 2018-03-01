@@ -24,7 +24,7 @@ describe('The flow actions', function () {
       search: {
         selectedIds: []
       }
-    }
+    },
   }
 
   let dispatch
@@ -38,7 +38,7 @@ describe('The flow actions', function () {
 
     fn(dispatch, getState)
     const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls === 5, `There were ${dispatchCalls} dispatch calls made`)
+    assert(dispatchCalls === 3, `There were ${dispatchCalls} dispatch calls made`)
   })
 
   describe('loadData', function () {

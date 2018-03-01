@@ -4,13 +4,6 @@ import {hashHistory} from 'react-router'
 import Immutable from 'seamless-immutable'
 import thunk from 'redux-thunk'
 import reducer from './reducers/reducer'
-import {decodeQueryString} from './utils/queryUtils'
-
-let queryString = ''
-if (typeof document !== 'undefined') {
-  queryString = document.location.hash.split('?')[1]
-}
-const initialState = Immutable(decodeQueryString(queryString))
 
 const getCompose = () => {
   if (
@@ -25,7 +18,7 @@ const getCompose = () => {
 const composeEnhancers = getCompose()
 const store = createStore(
   reducer,
-  initialState,
+  Immutable(),
   composeEnhancers(applyMiddleware(thunk, routerMiddleware(hashHistory)))
 )
 

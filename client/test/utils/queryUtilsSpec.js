@@ -33,10 +33,9 @@ describe('The queryUtils', function () {
       const encodedString = queryUtils.encodeQueryString(tempState)
       encodedString.should.equal(testCase.string)
       const decodedString = queryUtils.decodeQueryString(encodedString)
-      decodedString.should.deep.equal(tempState)
+      decodedString.should.deep.equal(testCase.state)
     })
   })
-
 })
 
 function collectionTestCases() {
@@ -345,7 +344,7 @@ function granuleTestCases() {
           offset: 20
         }
       }
-    }
+    },
   ]
 }
 

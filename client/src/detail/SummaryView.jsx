@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import infoCircle from 'fa/info-circle.svg'
@@ -8,8 +8,14 @@ import starHalfO from 'fa/star-half-o.svg'
 import styles from './DetailStyles.css'
 import A from '../common/link/Link'
 import MapThumbnail from '../common/MapThumbnail'
+import FlexRow from '../common/FlexRow'
 
-class SummaryView extends React.Component {
+const styleEqualFlexItem = {
+  flex: '1 1 auto',
+  width: '50%',
+}
+
+class SummaryView extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -40,57 +46,63 @@ class SummaryView extends React.Component {
   }
 
   render() {
-    const startDate = this.props.item.beginDate.split('T')[0]
+    const startDate = this.props.item.beginDate
     const endDate = this.props.item.endDate
-      ? this.props.item.endDate.split('T')[0]
+      ? this.props.item.endDate
       : 'Present'
 
-    return (
-      <div>
-        <div className={`pure-g`}>
-          <div className={`pure-u-1-2`}>
-            <div className={styles.sectionHeading}>Time Period:</div>
-            <div>
-              {startDate && endDate ? (
-                `${startDate} to ${endDate}`
-              ) : (
-                'Not Provided'
-              )}
-            </div>
-            <div className={styles.sectionHeading}>Spatial Bounding Map:</div>
-            <div className={styles.previewMap}>
-              <MapThumbnail
-                geometry={this.props.item.spatialBounding}
-                interactive={true}
-              />
-            </div>
-            <div className={styles.sectionHeading}>Bounding Coordinates:</div>
-            <div>{this.buildCoordinatesString()}</div>
-            <div className={styles.sectionHeading}>DSMM Rating:</div>
-            {this.renderDSMMRating()}
-          </div>
-          <div className={`pure-u-1-2`}>
-            <div className={styles.sectionHeading}>Themes:</div>
-            {this.renderGCMDKeywords(
-              'gcmdScience',
-              '#008445',
-              this.state.showAllThemes
-            )}
-            <div className={styles.sectionHeading}>Instruments:</div>
-            {this.renderGCMDKeywords(
-              'gcmdInstruments',
-              '#0965a1',
-              this.state.showAllInstruments
-            )}
-            <div className={styles.sectionHeading}>Platforms:</div>
-            {this.renderGCMDKeywords(
-              'gcmdPlatforms',
-              '#008445',
-              this.state.showAllPlatforms
-            )}
-          </div>
+    const timeSpaceSummary = (
+      <div key={'timeSpaceSummary'} style={styleEqualFlexItem}>
+        <div className={styles.sectionHeading}>Time Period:</div>
+        <div>
+          {startDate && endDate ? (
+            `${startDate.split('T')[0]} to ${endDate.split('T')[0]}`
+          ) : (
+            'Not Provided'
+          )}
         </div>
+        <div className={styles.sectionHeading}>Spatial Bounding Map:</div>
+        <div className={styles.previewMap}>
+          <MapThumbnail
+            geometry={this.props.item.spatialBounding}
+            interactive={true}
+          />
+        </div>
+        <div className={styles.sectionHeading}>Bounding Coordinates:</div>
+        <div>{this.buildCoordinatesString()}</div>
+        <div className={styles.sectionHeading}>DSMM Rating:</div>
+        {this.renderDSMMRating()}
       </div>
+    )
+
+    const keywordSummary = (
+      <div key={'keywordSummary'} style={styleEqualFlexItem}>
+        <div className={styles.sectionHeading}>Themes:</div>
+        {this.renderGCMDKeywords(
+          'gcmdScience',
+          '#008445',
+          this.state.showAllThemes
+        )}
+        <div className={styles.sectionHeading}>Instruments:</div>
+        {this.renderGCMDKeywords(
+          'gcmdInstruments',
+          '#0965a1',
+          this.state.showAllInstruments
+        )}
+        <div className={styles.sectionHeading}>Platforms:</div>
+        {this.renderGCMDKeywords(
+          'gcmdPlatforms',
+          '#008445',
+          this.state.showAllPlatforms
+        )}
+      </div>
+    )
+
+    return (
+      <FlexRow
+        style={{justifyContent: 'space-between'}}
+        items={[ timeSpaceSummary, keywordSummary ]}
+      />
     )
   }
 

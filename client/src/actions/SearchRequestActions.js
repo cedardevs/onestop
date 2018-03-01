@@ -3,6 +3,7 @@ import _ from 'lodash'
 import {showLoading, hideLoading} from './FlowActions'
 import {showErrors} from './ErrorActions'
 import {assembleSearchRequest} from '../utils/queryUtils'
+import {getApiPath} from '../reducers/domain/api'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -32,6 +33,15 @@ export const incrementGranulesOffset = () => ({type: INCREMENT_GRANULES_OFFSET})
 export const countGranules = totalGranules => ({
   type: COUNT_GRANULES,
   totalGranules,
+})
+
+export const COLLECTION_DETAIL_LOADED = 'collection_detail_loaded'
+export const collectionDetailLoaded = (data, metadata) => ({
+  type: COLLECTION_DETAIL_LOADED,
+  result: {
+    collection: data,
+    totalGranuleCount: metadata.totalGranules,
+  },
 })
 
 export const FACETS_RECEIVED = 'FACETS_RECEIVED'
@@ -141,7 +151,7 @@ const buildSearchAction = (
 
     prefetchHandler(dispatch)
 
-    const endpoint = state.domain.api.host + state.domain.api.path + '/' + endpointName + '/search'
+    const endpoint = getApiPath(state) + '/' + endpointName + '/search'
     const fetchParams = {
       method: 'POST',
       headers: {
@@ -172,5 +182,61 @@ const checkForErrors = response => {
   }
   else {
     return response
+  }
+}
+
+export const getCollection = collectionId => {
+  const prefetchHandler = dispatch => {
+    dispatch(showLoading())
+  }
+
+  const successHandler = (dispatch, payload) => {
+    dispatch(collectionDetailLoaded(payload.data[0], payload.meta))
+    dispatch(hideLoading())
+  }
+
+  const errorHandler = (dispatch, e) => {
+    dispatch(hideLoading())
+    dispatch(showErrors(e.errors || e))
+  }
+
+  return buildGetAction(
+    'collection',
+    collectionId,
+    prefetchHandler,
+    successHandler,
+    errorHandler
+  )
+}
+
+const buildGetAction = (
+  endpointName,
+  id,
+  prefetchHandler,
+  successHandler,
+  errorHandler
+) => {
+  return (dispatch, getState) => {
+    prefetchHandler(dispatch)
+    const endpoint = getApiPath(getState()) + '/' + endpointName + '/' + id
+    const fetchParams = {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+    }
+
+    return fetch(endpoint, fetchParams)
+      .then(response => checkForErrors(response))
+      .then(response => {
+        return response.json()
+      })
+      .then(json => successHandler(dispatch, json))
+      .catch(ajaxError =>
+        ajaxError.response
+          .json()
+          .then(errorJson => errorHandler(dispatch, errorJson))
+      )
+      .catch(jsError => errorHandler(dispatch, jsError))
   }
 }

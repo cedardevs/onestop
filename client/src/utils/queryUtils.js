@@ -18,6 +18,7 @@ export const assembleSearchRequestString = (
 export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   const behavior = state.behavior || {}
   const search = behavior.search || {}
+  const ui = state.ui || {}
   const domain = state.domain || {}
   const results = domain.results || {}
   const pageOffset =
@@ -116,7 +117,7 @@ export const decodeQueryString = queryString => {
     },
     initialState
   )
-  return {behavior: {search: searchParams}}
+  return searchParams
 }
 
 const codecs = [

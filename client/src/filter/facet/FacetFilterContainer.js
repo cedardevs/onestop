@@ -2,12 +2,12 @@ import {connect} from 'react-redux'
 import FacetFilter from './FacetFilter'
 import {toggleFacet} from '../../actions/SearchParamActions'
 import {buildKeywordHierarchyMap} from '../../utils/keywordUtils'
+import {showCollections} from '../../actions/FlowActions'
 
 import {
   clearCollections,
   triggerSearch,
 } from '../../actions/SearchRequestActions'
-import {showCollections} from '../../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {

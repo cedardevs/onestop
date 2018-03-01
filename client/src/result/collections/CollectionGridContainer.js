@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {setFocus} from '../../actions/FlowActions'
+import {showDetails} from '../../actions/FlowActions'
 import {
   incrementCollectionsOffset,
   triggerSearch,
@@ -20,8 +20,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    onCardClick: id => {
-      dispatch(setFocus(id))
+    selectCollection: id => {
+      dispatch(showDetails(id))
     },
     fetchMoreResults: () => {
       dispatch(incrementCollectionsOffset())

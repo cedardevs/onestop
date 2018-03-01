@@ -1,19 +1,25 @@
 import Immutable from 'seamless-immutable'
-import {SET_API_BASE} from '../../actions/FlowActions'
 
 export const initialState = Immutable({
-  host: '',
-  path: '/onestop/',
+  host: null,
+  path: null,
 })
 
 export const api = (state = initialState, action) => {
-  switch (action.type) {
-    case SET_API_BASE:
-      return Immutable.merge(state, {path: action.path})
+  // This state is not modified by any actions. It exists to facilitate unit testing. TODO - in theory this can be removed by switching to fetch-mock
+  return state
+}
 
-    default:
-      return state
+// SELECTORS
+
+export const getApiPath = state => {
+  const {host, path} = state.domain.api
+  if (!host || !path) {
+    const basePath =
+      typeof window !== 'undefined' ? window.location.pathname : '/onestop/'
+    return basePath + 'api'
   }
+  return host + path + 'api'
 }
 
 export default api

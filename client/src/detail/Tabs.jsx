@@ -62,7 +62,9 @@ class TabButton extends Component {
 
 // <Tabs>
 
-const styleTabs = {}
+const styleTabs = {
+  marginTop: '.5em',
+}
 
 const styleTabButtons = {
   flexWrap: 'nowrap',

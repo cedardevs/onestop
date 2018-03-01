@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import _ from 'lodash'
 import CollectionCard from './CollectionCard'
@@ -44,7 +45,6 @@ const styleShowMore = {
 export default class CollectionGrid extends Component {
   constructor(props) {
     super(props)
-    this.renderShowMoreButton = this.renderShowMoreButton.bind(this)
   }
 
   componentWillMount() {
@@ -54,20 +54,6 @@ export default class CollectionGrid extends Component {
         focusedCardKey: null,
       }
     })
-  }
-
-  renderShowMoreButton() {
-    if (this.props.returnedHits < this.props.totalHits) {
-      return (
-        <div style={styleShowMore}>
-          <Button
-            text="Show More Results"
-            onClick={() => this.props.fetchMoreResults()}
-            style={{marginBottom: '1.618em'}}
-          />
-        </div>
-      )
-    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -117,7 +103,7 @@ export default class CollectionGrid extends Component {
   }
 
   render() {
-    const {loading, results, returnedHits, totalHits, pageSize} = this.props
+    const {loading, results, returnedHits, totalHits, selectCollection} = this.props
 
     const headingText = loading
       ? `Loading...`
@@ -139,12 +125,8 @@ export default class CollectionGrid extends Component {
         thumbnail: result.thumbnail,
         description: result.description,
         geometry: result.spatialBounding,
-        onClick: () => this.props.onCardClick(key),
+        onClick: () => selectCollection(key),
         onFocus: this.handleFocusCard,
-      }
-
-      if (this.state.focusedCardKey === key) {
-        tileProps.ref = focusCard => (this.focusCard = focusCard)
       }
 
       cards.push(<CollectionCard {...tileProps} />)
@@ -168,4 +150,27 @@ export default class CollectionGrid extends Component {
       </div>
     )
   }
+
+  renderShowMoreButton = () => {
+    const { returnedHits, totalHits, fetchMoreResults } = this.props
+
+    if (returnedHits < totalHits) {
+      return (
+        <div style={styleShowMore}>
+          <Button
+            text="Show More Results"
+            onClick={() => fetchMoreResults()}
+          />
+        </div>
+      )
+    }
+  }
+}
+
+CollectionGrid.propTypes = {
+  loading: PropTypes.number.isRequired,
+  results: PropTypes.object.isRequired,
+  totalHits: PropTypes.number.isRequired,
+  returnedHits: PropTypes.number.isRequired,
+  pageSize: PropTypes.number,
 }
