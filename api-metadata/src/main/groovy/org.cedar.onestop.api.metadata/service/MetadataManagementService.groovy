@@ -14,17 +14,23 @@ import org.xml.sax.SAXException
 @Service
 class MetadataManagementService {
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
-  String STAGING_INDEX
+  @Value('${elasticsearch.index.search.collection.name}')
+  String COLLECTION_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
-  String SEARCH_INDEX
+  @Value('${elasticsearch.index.staging.collection.name}')
+  String COLLECTION_STAGING_INDEX
 
-  @Value('${elasticsearch.index.staging.collectionType}')
-  String COLLECTION_TYPE
+  @Value('${elasticsearch.index.search.granule.name}')
+  String GRANULE_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.staging.granuleType}')
-  String GRANULE_TYPE
+  @Value('${elasticsearch.index.staging.granule.name}')
+  String GRANULE_STAGING_INDEX
+
+  @Value('${elasticsearch.index.universal-type}')
+  String TYPE
+
+  @Value('${elasticsearch.index.prefix:}')
+  String PREFIX
 
   private ElasticsearchService esService
 
@@ -56,7 +62,8 @@ class MetadataManagementService {
    * @return
    */
   public Map loadMetadata(Object[] documents) {
-    esService.ensureStagingIndex()
+    esService.ensureStagingIndices()
+    esService.ensurePipelines()
     def results = []
     def bulkRequest = new StringBuilder()
     def loadedIndices = []
@@ -73,7 +80,7 @@ class MetadataManagementService {
       }
       try {
         def source = MetadataParser.parseXMLMetadataToMap(document)
-        def type = source.parentIdentifier ? GRANULE_TYPE : COLLECTION_TYPE
+        def type = source.parentIdentifier ? 'granule' : 'collection'
         def fileId = source.fileIdentifier as String
         def doi = source.doi as String
         source.stagedDate = System.currentTimeMillis()
@@ -98,7 +105,8 @@ class MetadataManagementService {
           ]
         }
         else {
-          def bulkCommand = [index: [_index: STAGING_INDEX, _type: type, _id: esId]]
+          def index = type == 'collection' ? PREFIX+COLLECTION_STAGING_INDEX : PREFIX+GRANULE_STAGING_INDEX
+          def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
           bulkRequest << JsonOutput.toJson(bulkCommand)
           bulkRequest << '\n'
           bulkRequest << JsonOutput.toJson(source)
@@ -119,16 +127,31 @@ class MetadataManagementService {
             ]
         ]
       }
+      catch (Exception e) {
+        results << [
+            meta: [
+                filename: filename,
+                error: [
+                    status: HttpStatus.BAD_REQUEST.value(),
+                    title: 'Load request failed due to malformed data.',
+                    detail: ExceptionUtils.getRootCauseMessage(e)
+                ]
+            ]
+        ]
+      }
     }
 
-    def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequest.toString())
-    bulkResponse.items.eachWithIndex { result, i ->
-      def resultRecord = results.get(loadedIndices[i])
-      resultRecord.id = result.index._id
-      resultRecord.meta.status = result.index.status
-      resultRecord.meta.created = result.index.created
-      if (result.error) {
-        resultRecord.meta.error = result.error
+    String bulkRequestBody =  bulkRequest.toString()
+    if(bulkRequestBody) { // Don't send a request if there is nothing to send
+      def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
+      bulkResponse.items.eachWithIndex { result, i ->
+        def resultRecord = results.get(loadedIndices[i])
+        resultRecord.id = result.index._id
+        resultRecord.meta.status = result.index.status
+        resultRecord.meta.created = result.index.created
+        if (result.error) {
+          resultRecord.meta.error = result.error
+        }
       }
     }
 
@@ -147,19 +170,30 @@ class MetadataManagementService {
   }
 
   public Map getMetadata(String esId, boolean idsOnly = false) {
-    String endpoint = "${STAGING_INDEX}/_all/${esId}"
-    if (idsOnly) {
-      endpoint += '?_source=fileIdentifier,doi'
-    }
-    def response = esService.performRequest("GET", endpoint)
 
-    if (response.found) {
+    def resultsData = []
+    [PREFIX+COLLECTION_STAGING_INDEX, PREFIX+GRANULE_STAGING_INDEX].each { index ->
+      String endpoint = "${index}/${TYPE}/${esId}"
+      if (idsOnly) {
+        endpoint += '?_source=fileIdentifier,doi'
+      }
+      def response = esService.performRequest("GET", endpoint)
+
+      if (response.found) {
+        resultsData.add(
+            [
+                id        : response._id,
+                type      : determineType(response._index),
+                attributes: response._source
+            ]
+        )
+
+      }
+    }
+
+    if(resultsData) {
       return [
-          data: [[
-              id        : response._id,
-              type      : response._type,
-              attributes: response._source
-          ]]
+          data: resultsData
       ]
     }
     else {
@@ -172,7 +206,7 @@ class MetadataManagementService {
   }
 
   public Map findMetadata(String fileId, String doi, boolean idsOnly = false) {
-    def endpoint = "${STAGING_INDEX}/_search"
+    String endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX}/_search"
     def searchParams = []
     if (fileId) { searchParams.add( [term: [fileIdentifier: fileId]] ) }
     if (doi) { searchParams.add( [term: [doi: doi]] ) }
@@ -190,7 +224,7 @@ class MetadataManagementService {
       def resources = response.hits.hits.collect {
         [
             id: it._id,
-            type: it._type,
+            type: determineType(it._index),
             attributes: it._source
         ]
       }
@@ -252,7 +286,7 @@ class MetadataManagementService {
             ]
         ]
     ]
-    def endpoint = "$STAGING_INDEX,$SEARCH_INDEX/$COLLECTION_TYPE,$GRANULE_TYPE/_delete_by_query?wait_for_completion=true"
+    def endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX},${PREFIX}${COLLECTION_SEARCH_INDEX},${PREFIX}${GRANULE_SEARCH_INDEX}/_delete_by_query?wait_for_completion=true"
     def deleteResponse = esService.performRequest('POST', endpoint, query)
 
     return [
@@ -264,4 +298,19 @@ class MetadataManagementService {
     ]
   }
 
+  public String determineType(String index) {
+
+    def parsedIndex = PREFIX ? index.replace(PREFIX, '') : index
+    def endPosition = parsedIndex.lastIndexOf('-')
+    parsedIndex = endPosition > 0 ? parsedIndex.substring(0, endPosition) : parsedIndex
+
+    def indexToTypeMap = [
+        (COLLECTION_SEARCH_INDEX) : 'collection',
+        (COLLECTION_STAGING_INDEX): 'collection',
+        (GRANULE_SEARCH_INDEX)    : 'granule',
+        (GRANULE_STAGING_INDEX)   : 'granule'
+    ]
+
+    return indexToTypeMap[parsedIndex]
+  }
 }

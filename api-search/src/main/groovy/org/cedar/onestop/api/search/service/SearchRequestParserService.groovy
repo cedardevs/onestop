@@ -40,10 +40,6 @@ class SearchRequestParserService {
     return requestQuery
   }
 
-  Boolean shouldReturnCollections(Map params) {
-    !params.filters.any { it.type == 'collection' }
-  }
-
   Map createCollectionsAggregation() {
     return [
         terms       : [
@@ -66,7 +62,7 @@ class SearchRequestParserService {
     ]
   }
 
-  Map createGCMDAggregations(boolean forCollections) {
+  Map createGCMDAggregations() {
     def aggregations = [:]
     facetNameMappings.each { name, field ->
       def agg = [
@@ -78,16 +74,6 @@ class SearchRequestParserService {
               ]
           ]
       ]
-      if (forCollections) {
-        agg.aggregations = [
-            byCollection: [
-                terms: [
-                    field: "internalParentIdentifier",
-                    size : Integer.MAX_VALUE
-                ]
-            ]
-        ]
-      }
       aggregations.put(name, agg)
     }
     return aggregations
@@ -152,7 +138,7 @@ class SearchRequestParserService {
       if (it.before) {
         allFilters.add([
             range: [
-                'temporalBounding.beginDate': [
+                'beginDate': [
                     lte: it.before
                 ]
             ]
@@ -161,7 +147,7 @@ class SearchRequestParserService {
       if (it.after) {
         allFilters.add([
             range: [
-                'temporalBounding.endDate': [
+                'endDate': [
                     gte: it.after
                 ]
             ]

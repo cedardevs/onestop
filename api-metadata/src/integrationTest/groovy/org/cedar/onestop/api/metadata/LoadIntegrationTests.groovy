@@ -33,12 +33,6 @@ class LoadIntegrationTests extends Specification {
    *  - Verify error responses
    */
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
-  String STAGING_INDEX
-
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
-  String SEARCH_INDEX
-
   @Value('${local.server.port}')
   private String port
 
@@ -61,9 +55,10 @@ class LoadIntegrationTests extends Specification {
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
     metadataURI = "http://localhost:${port}/${contextPath}/metadata"
-    elasticsearchService.dropSearchIndex()
-    elasticsearchService.dropStagingIndex()
+    elasticsearchService.dropSearchIndices()
+    elasticsearchService.dropStagingIndices()
     elasticsearchService.ensureIndices()
+    elasticsearchService.ensurePipelines()
   }
 
 
@@ -92,7 +87,7 @@ class LoadIntegrationTests extends Specification {
     def getRequest = RequestEntity.get("$metadataURI/$elasticsearchId".toURI()).build()
     def getResult = restTemplate.exchange(getRequest, Map)
     getResult.statusCode == HttpStatus.OK
-    getResult.body.data.id[0] == elasticsearchId
+    getResult.body.data[0].id == elasticsearchId
 
     when: "Same metadata is loaded again"
     def reloadResult = restTemplate.exchange(loadRequest, Map)
@@ -159,6 +154,26 @@ class LoadIntegrationTests extends Specification {
     step4Result.body.errors[0].title.toLowerCase().contains('ambiguous')
     step4Result.body.errors[0].detail.contains(doc1Id)
     step4Result.body.errors[0].detail.contains(doc2Id)
+  }
+
+  def 'does not allow a record with malformed temporal bounding to be loaded'() {
+    when:
+    def badDateResult = restTemplate.exchange(buildLoadRequest('data/BadFiles/test-iso-invalid-dates-metadata.xml'), Map)
+
+    then:
+    badDateResult.statusCode == HttpStatus.BAD_REQUEST
+    badDateResult.body.errors[0].title.contains('malformed data')
+    badDateResult.body.errors[0].detail.contains('DateTimeParseException')
+  }
+
+  def 'does not allow a record with malformed spatial bounding to be loaded'() {
+    when:
+    def badDateResult = restTemplate.exchange(buildLoadRequest('data/BadFiles/test-iso-invalid-coords-metadata.xml'), Map)
+
+    then:
+    badDateResult.statusCode == HttpStatus.BAD_REQUEST
+    badDateResult.body.errors[0].title.contains('malformed data')
+    badDateResult.body.errors[0].detail.contains('Invalid spatial bounding box provided.')
   }
 
   def 'retrieve a metadata record by elasticsearch id'() {

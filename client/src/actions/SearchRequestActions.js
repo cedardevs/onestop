@@ -26,7 +26,6 @@ export const FETCHED_GRANULES = 'fetched_granules'
 export const CLEAR_GRANULES = 'clear_granules'
 export const INCREMENT_GRANULES_OFFSET = 'increment_granules_offset'
 export const COUNT_GRANULES = 'count_granules'
-
 export const clearGranules = () => ({type: CLEAR_GRANULES})
 export const fetchingGranules = () => ({type: FETCHING_GRANULES})
 export const fetchedGranules = granules => ({type: FETCHED_GRANULES, granules})

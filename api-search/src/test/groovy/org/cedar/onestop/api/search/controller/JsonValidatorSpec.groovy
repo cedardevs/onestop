@@ -67,6 +67,23 @@ class JsonValidatorSpec extends Specification {
   ],
   "facets": false
 }""",
+
+        """\
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ],
+  "summary": false
+}""",
+
+
+        """\
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ],
+  "summary": true
+}""",
         """\
 {
   "queries": [
@@ -182,6 +199,13 @@ class JsonValidatorSpec extends Specification {
   "queries": [
     {"type": "queryText", "value": " *anything"}
   ]
+}""",
+        """\
+{
+  "queries": [
+    {"type": "queryText", "value": "temperature"}
+  ],
+  "summary": "gibberish"
 }""",
         """\
 {

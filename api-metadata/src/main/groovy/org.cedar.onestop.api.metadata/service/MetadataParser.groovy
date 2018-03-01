@@ -6,6 +6,17 @@ import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.text.WordUtils
 import groovy.xml.XmlUtil
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.ResolverStyle
+import java.time.temporal.ChronoField
+import java.time.temporal.TemporalAccessor
+import java.time.temporal.TemporalQuery
+
 class MetadataParser {
 
   static Map parseIdentifierInfo(String xml) {
@@ -471,34 +482,107 @@ class MetadataParser {
     return parseKeywordsAndTopics(new XmlSlurper().parseText(xml))
   }
 
-  static Map parseTemporalBounding(GPathResult metadata) {
+  // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
+  static final MIN_DATE_LONG = -292275055L
+  static final MAX_DATE_LONG = 292278994L
 
-    def time = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
-      e.@id.text() == 'boundingExtent'
-    }?.temporalElement?.EX_TemporalExtent?.extent
+  // handle 3 optional date formats in priority of full-parse option to minimal-parse options
+  static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
+      .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
+      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
+      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
+      .toFormatter()
+      .withResolverStyle(ResolverStyle.STRICT)
 
-    def beginDate, beginIndeterminate, endDate, endIndeterminate, instant, instantIndeterminate
-    if(time) {
-      beginDate = time.TimePeriod.beginPosition.text() ?:
-          time.TimePeriod.begin.TimeInstant.timePosition.text() ?: null
-      beginIndeterminate = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
-          time.TimePeriod.begin.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
-      endDate = time.TimePeriod.endPosition.text() ?:
-          time.TimePeriod.end.TimeInstant.timePosition.text() ?: null
-      endIndeterminate = time.TimePeriod.endPosition.@indeterminatePosition.text() ?:
-          time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
-      instant = time.TimeInstant.timePosition.text() ?: null
-      instantIndeterminate = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
+  // use custom formatter for when time zone information is not supplied in a LocalDateTime format for ES's happiness
+  static final DateTimeFormatter ELASTIC_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
+
+  static Map elasticDateInfo(String date) {
+
+    // don't bother parsing if there's nothing here
+    if(!date) {
+      return null
     }
 
+    // default to null
+    String elasticDate = null
+    TemporalAccessor parsedDate = null
+    Long year
+
+    // paleo dates can be longs
+    if(date.isLong()) {
+      elasticDate = date
+      year = Long.parseLong(date)
+      // we only care about the year if outside of limits
+      if(year < MIN_DATE_LONG || year > MAX_DATE_LONG) {
+        elasticDate = null
+      }
+    }
+    else {
+      // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
+      parsedDate = PARSE_DATE_FORMATTER.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
+      year = parsedDate.get(ChronoField.YEAR)
+
+      // date is in format like: 2010-12-30T00:00:00Z
+      if(parsedDate instanceof ZonedDateTime) {
+        elasticDate = date
+      }
+      // date is in format like: 2010-12-30T00:00:00
+      else if(parsedDate instanceof LocalDateTime) {
+        // assume UTC
+        ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
+        elasticDate = parsedDateUTC.format(ELASTIC_DATE_FORMATTER)
+        // re-evaluate year in off-chance year was affected by zone id
+        year = parsedDateUTC.get(ChronoField.YEAR)
+      }
+      // date is in format like: 2010-12-30
+      else if(parsedDate instanceof LocalDate) {
+        elasticDate = date
+      }
+    }
+
+    def dateInfo = [ "date": elasticDate, "year":  year]
+    return dateInfo
+  }
+
+  static Map parseTemporalBounding(GPathResult metadata) {
+
+    def boundingExtent = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent
+
+    def description = boundingExtent[0].description.CharacterString.text() ?: null
+    def time = boundingExtent.temporalElement?.'**'?.find { it -> it.name() == 'EX_TemporalExtent'}?.extent
+
+    String beginText, beginIndeterminateText, endText, endIndeterminateText, instantText, instantIndeterminateText
+    def begin, end, instant
+    if(time) {
+      // parse potential date fields out of XML
+      beginText = time.TimePeriod.beginPosition.text() ?:
+          time.TimePeriod.begin.TimeInstant.timePosition.text() ?: null
+      beginIndeterminateText = time.TimePeriod.beginPosition.@indeterminatePosition.text() ?:
+          time.TimePeriod.begin.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
+      endText = time.TimePeriod.endPosition.text() ?:
+          time.TimePeriod.end.TimeInstant.timePosition.text() ?: null
+      endIndeterminateText = time.TimePeriod.endPosition.@indeterminatePosition.text() ?:
+          time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
+      instantText = time.TimeInstant.timePosition.text() ?: null
+      instantIndeterminateText = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
+
+      // massage the date fields for elastic search (handles multiple formats and invalid dates)
+      begin = elasticDateInfo(beginText)
+      end = elasticDateInfo(endText)
+      instant = elasticDateInfo(instantText)
+    }
 
     return [
-        beginDate           : beginDate,
-        beginIndeterminate  : beginIndeterminate,
-        endDate             : endDate,
-        endIndeterminate    : endIndeterminate,
-        instant             : instant,
-        instantIndeterminate: instantIndeterminate
+        beginDate           : begin?.date,
+        beginIndeterminate  : beginIndeterminateText,
+        beginYear           : begin?.year,
+        endDate             : end?.date,
+        endIndeterminate    : endIndeterminateText,
+        endYear             : end?.year,
+        instant             : instant?.date,
+        instantIndeterminate: instantIndeterminateText,
+        description         : description
     ]
   }
 
@@ -507,15 +591,17 @@ class MetadataParser {
   }
 
   static Map parseSpatialInfo(GPathResult metadata) {
-    def space = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.'**'.find { e ->
-      e.@id.text() == 'boundingExtent'
-    }?.geographicElement
+    def space = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent.geographicElement
     def bbox = space?.'**'?.find { it -> it.name() == 'EX_GeographicBoundingBox' }
 
     def spatialBounding = parseBounding(bbox)
     def isGlobal = checkIsGlobal(spatialBounding)
 
     return ["spatialBounding": spatialBounding, "isGlobal": isGlobal]
+  }
+
+  static Map parseSpatialInfo(String xml) {
+    return parseSpatialInfo(new XmlSlurper().parseText(xml))
   }
 
   static def parseBounding(def bbox) {
@@ -531,6 +617,17 @@ class MetadataParser {
     def type = (west == east && north == south) ? 'Point' : 'Polygon'
     def coordinates = type == 'Point' ? [west, north] : [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
 
+    if(type == 'Polygon') {
+      // Check for valid polygon coordinates (no vertices should be the same)
+      def clone = coordinates[0].collect {it}
+      clone.removeAt(0)
+      def unique = clone.unique(false)
+      if (clone != unique) {
+        throw new Exception("Invalid spatial bounding box provided.")
+      }
+    }
+
+
     return [type: type, coordinates: coordinates]
   }
 
@@ -544,10 +641,6 @@ class MetadataParser {
     def south = coords[0][1]
 
     return west == -180 && east == 180 && north == 90 && south == -90
-  }
-
-  static Map parseSpatialInfo(String xml) {
-    return parseSpatialInfo(new XmlSlurper().parseText(xml))
   }
 
   static Map parseAcquisitionInfo(GPathResult metadata) {
