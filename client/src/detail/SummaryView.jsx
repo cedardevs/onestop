@@ -75,26 +75,44 @@ class SummaryView extends Component {
       </div>
     )
 
+    const granules =
+      this.props.totalGranuleCount == 0 ? (
+        <div>No granules in this collection</div>
+      ) : (
+        <div>
+          <a
+            onClick={e => {
+              this.props.granuleSearch()
+            }}
+          >
+            show files matching my search
+          </a>
+        </div>
+      )
+
     const keywordSummary = (
-      <div key={'keywordSummary'} style={styleEqualFlexItem}>
-        <div className={styles.sectionHeading}>Themes:</div>
-        {this.renderGCMDKeywords(
-          'gcmdScience',
-          '#008445',
-          this.state.showAllThemes
-        )}
-        <div className={styles.sectionHeading}>Instruments:</div>
-        {this.renderGCMDKeywords(
-          'gcmdInstruments',
-          '#0965a1',
-          this.state.showAllInstruments
-        )}
-        <div className={styles.sectionHeading}>Platforms:</div>
-        {this.renderGCMDKeywords(
-          'gcmdPlatforms',
-          '#008445',
-          this.state.showAllPlatforms
-        )}
+      <div key="granuleAndKeywordSummary" style={styleEqualFlexItem}>
+        <div>{granules}</div>
+        <div>
+          <div className={styles.sectionHeading}>Themes:</div>
+          {this.renderGCMDKeywords(
+            'gcmdScience',
+            '#008445',
+            this.state.showAllThemes
+          )}
+          <div className={styles.sectionHeading}>Instruments:</div>
+          {this.renderGCMDKeywords(
+            'gcmdInstruments',
+            '#0965a1',
+            this.state.showAllInstruments
+          )}
+          <div className={styles.sectionHeading}>Platforms:</div>
+          {this.renderGCMDKeywords(
+            'gcmdPlatforms',
+            '#008445',
+            this.state.showAllPlatforms
+          )}
+        </div>
       </div>
     )
 
