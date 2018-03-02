@@ -136,6 +136,9 @@ export default class AppliedFilters extends Component {
       ...this.buildTimeBubbles(),
       ...this.buildFacetBubbles(),
     ]
-    return <div style={styleWrapper}>{appliedFilters}</div>
+    if (this.props.showAppliedFilters) {
+      return <div style={styleWrapper}>{appliedFilters}</div>
+    }
+    return <div style={styleWrapper} />
   }
 }
