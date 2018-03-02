@@ -13,3 +13,9 @@ directory with the following:
 kafka:
   bootstrap.servers: "localhost:9092"
 ```
+
+#### Simulate a granule POST from CI:
+
+```bash
+curl -X PUT -H "Content-Type: application/json" localhost:8080/metadata/granule --data-binary @test_granule.json
+```
