@@ -117,7 +117,7 @@ export default class CollectionGrid extends Component {
 
     const styleResultCountMerged = {
       ...styleResultCount,
-      ...(this.state.focusingResultsCount
+      ...(this.state.focusingResultsCount // TODO is this from focusing programatically from the landing page??
         ? styleResultCountFocus
         : styleResultCountFocusBlur),
     }

@@ -2,11 +2,9 @@ import React from 'react'
 import {render} from 'react-dom'
 import {Router, Route, IndexRoute} from 'react-router'
 import Result from './result/Result'
-// import GranuleResult from './result/GranuleResult'
 import Section508Result from './result/Section508Result'
 import CollectionGridContainer from './result/collections/CollectionGridContainer'
-// import GranuleListContainer from './result/granules/GranuleListContainer'
-import GranuleViewContainer from './detail/GranuleTab/GranuleViewContainer'
+import GranuleListContainer from './result/granules/GranuleListContainer'
 import Section508CollectionGridContainer from './result/collections/Section508CollectionGridContainer'
 import Section508GranuleListContainer from './result/granules/list/Section508GranuleListContainer'
 import ErrorContainer from './error/ErrorContainer'
@@ -38,7 +36,7 @@ const routesDefinition = {
           component: CollectionGridContainer,
         },
         {path: 'collections/details/:id', component: DetailContainer},
-        {path: 'collections/granules/:id', component: GranuleViewContainer}, // GranuleListContainer? Section508GranuleListContainer?
+        {path: 'collections/granules/:id', component: GranuleListContainer},
       ],
     },
     {path: 'error', component: ErrorContainer},
