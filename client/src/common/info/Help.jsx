@@ -11,27 +11,10 @@ export default class Help extends React.Component {
 
     const mainSiteSnippet = (
       <li>
-        Use the time{' '}
-        <span className={styles.icon} aria-hidden="true">
-          <img alt="temporal icon" src={clock} />
-        </span>{' '}
-        and space{' '}
-        <span className={styles.icon} aria-hidden="true">
-          <img alt="spatial icon" src={globe} />
-        </span>{' '}
-        filters (to the right of the input box) to limit results to only those
+        Use the filters menu (available on the search results page) to limit results to only those
         that <u>intersect</u> the given constraints.
         <br />
-        If a filter has been applied, the button will change from
-        <span className={styles.blue} aria-hidden="true">
-          {' '}
-          blue{' '}
-        </span>{' '}
-        to
-        <span className={styles.purple} aria-hidden="true">
-          {' '}
-          purple
-        </span>.
+        Once a filter has been applied, a tag will be placed above the search results.
       </li>
     )
 
