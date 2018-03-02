@@ -20,7 +20,12 @@ import {
 } from './SearchParamActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchInfo, fetchCounts} from './InfoActions'
-import {isDetailPage, isGranuleListPage, getCollectionIdFromDetailPath, getCollectionIdFromGranuleListPath} from '../utils/urlUtils'
+import {
+  isDetailPage,
+  isGranuleListPage,
+  getCollectionIdFromDetailPath,
+  getCollectionIdFromGranuleListPath,
+} from '../utils/urlUtils'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
@@ -139,10 +144,12 @@ export const initialize = () => {
 const loadFromUrl = path => {
   // Note, collection queries are automatically updated by the URL because the query is parsed into search, which triggers loadData via a watch
 
-  if (isDetailPage(path)) {
+  if (
+    isDetailPage(path) &&
+    !store.getState().behavior.request.getCollectionInFlight
+  ) {
     const detailId = getCollectionIdFromDetailPath(path)
     store.dispatch(getCollection(detailId))
-    store.dispatch(triggerSearch())
   }
 
   if (isGranuleListPage(path)) {
