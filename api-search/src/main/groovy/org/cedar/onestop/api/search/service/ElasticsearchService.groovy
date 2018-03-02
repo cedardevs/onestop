@@ -209,6 +209,7 @@ class ElasticsearchService {
 
   private Map addSourceFilter(Map requestBody) {
     def sourceFilter = [
+        "internalParentIdentifier",
         "title",
         "thumbnail",
         "spatialBounding",

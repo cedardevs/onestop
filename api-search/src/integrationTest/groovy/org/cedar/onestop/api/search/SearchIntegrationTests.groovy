@@ -164,6 +164,7 @@ class SearchIntegrationTests extends Specification {
     flatGranuleBaseUriString = "http://localhost:${port}/${contextPath}/flattened-granule/"
   }
 
+
   def 'Valid query-only collection search summary with facets returns OK with expected results'() {
     setup:
     def searchBaseUri = (collectionBaseUriString + "search").toURI()
@@ -420,7 +421,8 @@ class SearchIntegrationTests extends Specification {
           "endDate",
           "endYear",
           "links",
-          "citeAsStatements"
+          "citeAsStatements",
+          "internalParentIdentifier"
       ].size()
     }
 
