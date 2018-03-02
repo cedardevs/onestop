@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import Tabs from './Tabs'
 import SummaryView from './SummaryView'
 import DescriptionView from './DescriptionView'
-import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
 import AccessView from './AccessView'
 import VideoView from './VideoView'
 
@@ -65,11 +64,6 @@ class Detail extends Component {
         title: 'Description',
         content: <DescriptionView item={item} />,
       },
-      // {
-      //   title: 'Matching Files',
-      //   content: <GranuleViewContainer item={item} />, TODO delete GranuleViewContainer?
-      //   action: this.showGranules,
-      // },
       {
         title: 'Access',
         content: <AccessView item={item} />,
