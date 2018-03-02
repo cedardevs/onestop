@@ -1,6 +1,4 @@
 import React from 'react'
-import clock from 'fa/clock-o.svg'
-import globe from 'fa/globe.svg'
 import search from 'fa/search.svg'
 import A from '../../common/link/Link'
 import styles from './Help.css'
