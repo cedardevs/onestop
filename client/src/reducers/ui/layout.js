@@ -14,17 +14,22 @@ export const initialState = Immutable({
   leftOpen: true,
   showRight: false,
   showMap: false,
+  showAppliedFilterBubbles: false,
 })
 
 export const layout = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_CHANGE:
       const path = action.payload.pathname
-      return Immutable.set(
-        state,
-        'showLeft',
-        !(path.includes('508') || isDetailPage(path) || isGranuleListPage(path))
+      const allowSearching = !(
+        path.includes('508') ||
+        isDetailPage(path) ||
+        isGranuleListPage(path)
       )
+      return Immutable.merge(state, {
+        showLeft: allowSearching,
+        showAppliedFilterBubbles: allowSearching,
+      })
     case SET_LEFT_OPEN_CLOSE:
       return Immutable.set(state, 'leftOpen', action.value)
     case TOGGLE_RIGHT:
