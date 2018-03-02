@@ -114,14 +114,18 @@ services:
       LOGGING_LEVEL_ROOT: INFO
 
   schema-registry:
-    image: confluentinc/cp-schema-registry:3.2.0
-    depends_on:
-      - kafka
+    image: confluentinc/cp-schema-registry:latest
+    hostname: schema-registry
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
     environment:
       SCHEMA_REGISTRY_KAFKASTORE_CONNECTION_URL: zookeeper:32181
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8080
-    restart: always
+      SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
+    depends_on:
+      - zookeeper
+      - kafka
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest

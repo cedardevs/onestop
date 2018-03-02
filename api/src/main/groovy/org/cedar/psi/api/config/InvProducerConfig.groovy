@@ -1,13 +1,13 @@
 package org.cedar.psi.api.config
 
+import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.kafka.core.DefaultKafkaProducerFactory
-import org.springframework.kafka.core.KafkaTemplate
-import org.springframework.kafka.core.ProducerFactory
+
 
 @Configuration
 class InvProducerConfig {
@@ -16,16 +16,13 @@ class InvProducerConfig {
     private String bootstrapServer
 
     @Bean
-    ProducerFactory<String, String> producerFactory() {
+    Producer<String, String> createProducer() {
         Map<String, Object> configProps = new HashMap<>()
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer)
-        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-        return new DefaultKafkaProducerFactory<String, String>(configProps)
-    }
+        configProps.put(ProducerConfig.CLIENT_ID_CONFIG, "granuleProducer")
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
 
-    @Bean
-    KafkaTemplate<String, String> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory())
+        return new KafkaProducer<>(configProps)
     }
 }
