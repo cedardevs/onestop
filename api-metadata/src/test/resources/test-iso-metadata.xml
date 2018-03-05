@@ -599,13 +599,14 @@
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
-            <gco:CharacterString>SIO &gt; Super Important Organization</gco:CharacterString>
+            <gco:CharacterString>SIO &gt;
+              Super Important Organization</gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
-            <gco:CharacterString>OSIO &gt; OTHER SUPER IMPORTANT ORGANIZATION</gco:CharacterString>
+            <gco:CharacterString>OSIO &gt;   OTHER SUPER IMPORTANT ORGANIZATION</gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
-            <gco:CharacterString>SSIO &gt; Super SIO (Super Important Organization)</gco:CharacterString>
+            <gco:CharacterString>SSIO &gt; Super SIO        (Super Important Organization)</gco:CharacterString>
           </gmd:keyword>
           <gmd:type>
             <gmd:MD_KeywordTypeCode codeListValue="dataCenter">dataCenter</gmd:MD_KeywordTypeCode>
