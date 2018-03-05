@@ -130,6 +130,9 @@ const loadFromUrl = (path, newQueryString) => {
   ) {
     const detailId = getCollectionIdFromDetailPath(path)
     store.dispatch(getCollection(detailId))
+    store.dispatch(clearSelections())
+    store.dispatch(toggleSelection(detailId))
+    store.dispatch(clearGranules())
     store.dispatch(fetchGranules())
   }
   else {
