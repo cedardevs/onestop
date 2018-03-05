@@ -10,9 +10,8 @@ import VideoView from './VideoView'
 //-- Styles
 
 const styleTitle = {
-  display: 'inline',
-  fontSize: '1.2em',
-  margin: 0,
+  fontSize: '1.5em',
+  margin: '0.309em 1.236em',
   padding: '0.309em',
 }
 
