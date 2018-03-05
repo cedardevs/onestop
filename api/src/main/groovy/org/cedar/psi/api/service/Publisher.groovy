@@ -1,5 +1,6 @@
 package org.cedar.psi.api.service
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -44,8 +45,10 @@ class Publisher {
 
   void publishCollection(String data, String id = null) {
     def key = id ?: UUID.randomUUID().toString() // TODO - discuss w/ CoMET team and determine what to really do for IDs
-    def record = new ProducerRecord<String, String>(COLLECTION_TOPIC, key, data)
+    def message = [id: id, rawMetadata: data]
+    def record = new ProducerRecord<String, String>(COLLECTION_TOPIC, key, JsonOutput.toJson(message))
     log.debug("Sending: ${record}")
     kafkaProducer.send(record)
   }
+
 }

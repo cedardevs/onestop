@@ -20,9 +20,10 @@ class KafkaConfig {
   Producer<String, String> kafkaProducer() {
     Map<String, Object> configProps = new HashMap<>()
     configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer)
-    configProps.put(ProducerConfig.CLIENT_ID_CONFIG, "api_publisher")
+    configProps.put(ProducerConfig.CLIENT_ID_CONFIG, 'api_publisher')
     configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
     configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
     return new KafkaProducer<>(configProps)
   }
+
 }
