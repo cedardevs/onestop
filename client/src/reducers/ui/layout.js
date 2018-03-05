@@ -1,21 +1,33 @@
 import Immutable from 'seamless-immutable'
+import {isDetailPage} from '../../utils/urlUtils'
+
 import {
-  TOGGLE_LEFT,
+  SET_LEFT_OPEN_CLOSE,
   TOGGLE_RIGHT,
   TOGGLE_MAP,
 } from '../../actions/LayoutActions'
 
+import {LOCATION_CHANGE} from 'react-router-redux'
+
 export const initialState = Immutable({
   showLeft: true,
+  leftOpen: true,
   showRight: false,
   showMap: false,
+  showAppliedFilterBubbles: false,
 })
 
 export const layout = (state = initialState, action) => {
   switch (action.type) {
-    case TOGGLE_LEFT:
-      const previousShowLeft = state.showLeft
-      return Immutable.set(state, 'showLeft', !previousShowLeft)
+    case LOCATION_CHANGE:
+      const path = action.payload.pathname
+      const allowSearching = !(path.includes('508') || isDetailPage(path))
+      return Immutable.merge(state, {
+        showLeft: allowSearching,
+        showAppliedFilterBubbles: allowSearching,
+      })
+    case SET_LEFT_OPEN_CLOSE:
+      return Immutable.set(state, 'leftOpen', action.value)
     case TOGGLE_RIGHT:
       const previousShowRight = state.showLeft
       return Immutable.set(state, 'showRight', !previousShowRight)

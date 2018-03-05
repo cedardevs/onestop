@@ -13,6 +13,9 @@ export const startSearch = () => ({type: SEARCH})
 export const completeSearch = items => ({type: SEARCH_COMPLETE, items})
 export const countHits = totalHits => ({type: COUNT_HITS, totalHits})
 
+export const GET_COLLECTION_START = 'GET_COLLECTION_START'
+export const startGetCollection = id => ({type: GET_COLLECTION_START, id: id})
+
 export const CLEAR_COLLECTIONS = 'clear_collections'
 export const INCREMENT_COLLECTIONS_OFFSET = 'increment_collections_offset'
 
@@ -188,6 +191,7 @@ const checkForErrors = response => {
 export const getCollection = collectionId => {
   const prefetchHandler = dispatch => {
     dispatch(showLoading())
+    dispatch(startGetCollection(collectionId))
   }
 
   const successHandler = (dispatch, payload) => {
@@ -197,6 +201,7 @@ export const getCollection = collectionId => {
 
   const errorHandler = (dispatch, e) => {
     dispatch(hideLoading())
+    dispatch(collectionDetailLoaded(null))
     dispatch(showErrors(e.errors || e))
   }
 

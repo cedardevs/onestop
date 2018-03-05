@@ -103,7 +103,7 @@ export default class Root extends Component {
   }
 
   render() {
-    const {showLeft, toggleLeft, showRight} = this.props
+    const {showLeft, leftOpen, showRight} = this.props
 
     const header = (
       <div>
@@ -122,10 +122,12 @@ export default class Root extends Component {
     let left = null
     if (layoutContext) {
       if (showLeft) {
-        left = <FiltersContainer />
-      }
-      else {
-        left = <FiltersHiddenContainer />
+        if (leftOpen) {
+          left = <FiltersContainer />
+        }
+        else {
+          left = <FiltersHiddenContainer />
+        }
       }
     }
 
@@ -147,7 +149,7 @@ export default class Root extends Component {
         header={header}
         left={left}
         leftWidth={256}
-        leftVisible={showLeft}
+        leftVisible={leftOpen}
         middle={middle}
         right={null}
         rightWidth={256}

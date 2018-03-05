@@ -29,16 +29,14 @@ const styleHiddentContentVerticalText = {
 
 class FiltersHidden extends Component {
   render() {
-    const {showLeft, toggleLeft} = this.props
+    const {openLeft} = this.props
 
     const buttonHide = (
       <Button
         style={styleHiddenContent}
         styleIcon={{width: '1em', height: 'initial'}}
         onClick={() => {
-          if (!showLeft) {
-            toggleLeft()
-          }
+          openLeft()
         }}
         title={'Show Filter Menu'}
         ariaExpanded={false}

@@ -26,7 +26,7 @@ class Detail extends Component {
   }
 
   render() {
-    const {item, loading} = this.props
+    const {item, loading, totalGranuleCount} = this.props
 
     if (loading) {
       return (
@@ -50,22 +50,27 @@ class Detail extends Component {
     let tabData = [
       {
         title: 'Summary',
-        content: <SummaryView item={item} />,
+        content: (
+          <SummaryView item={item} totalGranuleCount={totalGranuleCount} />
+        ),
       },
       {
         title: 'Description',
         content: <DescriptionView item={item} />,
       },
       {
-        title: 'Matching Files',
-        content: <GranuleViewContainer item={item} />,
-        action: this.showGranules,
-      },
-      {
         title: 'Access',
         content: <AccessView item={item} />,
       },
     ]
+
+    if (totalGranuleCount > 0) {
+      tabData.splice(2, 0, {
+        title: 'Matching Files',
+        content: <GranuleViewContainer item={item} />,
+        action: this.showGranules,
+      })
+    }
 
     const videoLinks = item.links.filter(
       link => link.linkProtocol === 'video:youtube'
