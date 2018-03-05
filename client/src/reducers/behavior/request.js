@@ -1,5 +1,10 @@
 import Immutable from 'seamless-immutable'
-import {SEARCH, SEARCH_COMPLETE} from '../../actions/SearchRequestActions'
+import {
+  SEARCH,
+  SEARCH_COMPLETE,
+  GET_COLLECTION_START,
+  COLLECTION_DETAIL_LOADED,
+} from '../../actions/SearchRequestActions'
 import {
   FETCHING_GRANULES,
   FETCHED_GRANULES,
@@ -8,6 +13,7 @@ import {
 export const initialState = Immutable({
   collectionInFlight: false,
   granuleInFlight: false,
+  getCollectionInFlight: false,
 })
 
 export const request = (state = initialState, action) => {
@@ -23,6 +29,12 @@ export const request = (state = initialState, action) => {
 
     case FETCHED_GRANULES:
       return Immutable.set(state, 'granuleInFlight', false)
+
+    case GET_COLLECTION_START:
+      return Immutable.set(state, 'getCollectionInFlight', action.id)
+
+    case COLLECTION_DETAIL_LOADED:
+      return Immutable.set(state, 'getCollectionInFlight', false)
 
     default:
       return state

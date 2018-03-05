@@ -45,8 +45,8 @@ export const buildGovExternalOnClick = (href, target, onClick) => {
 }
 
 const detailIdMatch = path => {
-    const detailIdRegex = /\/details\/([-\w]+)/
-    return detailIdRegex.exec(path)
+  const detailIdRegex = /\/details\/([-\w]+)/
+  return detailIdRegex.exec(path)
 }
 
 export const isDetailPage = path => {
@@ -65,7 +65,9 @@ export const isGranuleListPage = path => {
 */
 
 export const getCollectionIdFromDetailPath = path => {
-  if(!isDetailPage(path)) {return null}
+  if (!isDetailPage(path)) {
+    return null
+  }
   const match = detailIdMatch(path)
   return match && match[1] ? match[1] : null
 }

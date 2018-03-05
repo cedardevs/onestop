@@ -61,12 +61,7 @@ export const showDetails = id => {
       pathname: `collections/details/${id}`,
       search: _.isEmpty(query) ? null : `?${query}`,
     }
-    dispatch(getCollection(id))
-    dispatch(clearSelections())
-    dispatch(toggleSelection(id))
     dispatch(push(locationDescriptor))
-    dispatch(clearGranules())
-    dispatch(fetchGranules())
   }
 }
 
@@ -126,14 +121,33 @@ export const initialize = () => {
   }
 }
 
-const loadFromUrl = path => {
+const loadFromUrl = (path, newQueryString) => {
   // Note, collection queries are automatically updated by the URL because the query is parsed into search, which triggers loadData via a watch
 
-  if (isDetailPage(path)) {
+  if (
+    isDetailPage(path) &&
+    !store.getState().behavior.request.getCollectionInFlight
+  ) {
     const detailId = getCollectionIdFromDetailPath(path)
     store.dispatch(getCollection(detailId))
-    store.dispatch(triggerSearch())
+    store.dispatch(clearSelections())
+    store.dispatch(toggleSelection(detailId))
+    store.dispatch(clearGranules())
     store.dispatch(fetchGranules())
+  }
+  else {
+    if (newQueryString.indexOf('?') === 0) {
+      newQueryString = newQueryString.slice(1)
+    }
+    const searchFromQuery = decodeQueryString(newQueryString)
+    const searchFromState = _.get(store.getState(), 'behavior.search')
+    if (!_.isEqual(searchFromQuery, searchFromState)) {
+      store.dispatch(clearCollections())
+      store.dispatch(clearGranules())
+      store.dispatch(clearSelections())
+      store.dispatch(updateSearch(searchFromQuery))
+      store.dispatch(loadData())
+    }
   }
 }
 
@@ -151,29 +165,6 @@ export const loadData = () => {
   }
 }
 
-// if the location query string changed and is out of sync with the query state,
-// update the query state and load collection/granule data as needed
-const applyNewQueryString = newQueryString => {
-  if (newQueryString.indexOf('?') === 0) {
-    newQueryString = newQueryString.slice(1)
-  }
-  const searchFromQuery = decodeQueryString(newQueryString)
-  const searchFromState = _.get(store.getState(), 'behavior.search')
-  if (!_.isEqual(searchFromQuery, searchFromState)) {
-    store.dispatch(clearCollections())
-    store.dispatch(clearGranules())
-    store.dispatch(clearSelections())
-    store.dispatch(updateSearch(searchFromQuery))
-    store.dispatch(loadData())
-  }
-}
-
-const queryWatch = watch(
-  store.getState,
-  'behavior.routing.locationBeforeTransitions.search'
-)
-store.subscribe(queryWatch(applyNewQueryString))
-
 // Update background
 const updateBackground = path => {
   const is508ButNotLanding =
@@ -182,13 +173,15 @@ const updateBackground = path => {
   store.dispatch(toggleBackgroundImage(!is508ButNotLanding)) //Cover strange routing case. TODO: Regex test?
 }
 
-const pathWatch = watch(
+const routingWatch = watch(
   store.getState,
-  'behavior.routing.locationBeforeTransitions.pathname'
+  'behavior.routing.locationBeforeTransitions'
 )
-
-const pathWatchUpdates = path => {
-  updateBackground(path)
-  loadFromUrl(path)
+const routingUpdates = locationBeforeTransitions => {
+  updateBackground(locationBeforeTransitions.pathname)
+  loadFromUrl(
+    locationBeforeTransitions.pathname,
+    locationBeforeTransitions.search
+  )
 }
-store.subscribe(pathWatch(pathWatchUpdates))
+store.subscribe(routingWatch(routingUpdates))

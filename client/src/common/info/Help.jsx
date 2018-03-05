@@ -9,10 +9,11 @@ export default class Help extends React.Component {
 
     const mainSiteSnippet = (
       <li>
-        Use the filters menu (available on the search results page) to limit results to only those
-        that <u>intersect</u> the given constraints.
+        Use the filters menu (available on the search results page) to limit
+        results to only those that <u>intersect</u> the given constraints.
         <br />
-        Once a filter has been applied, a tag will be placed above the search results.
+        Once a filter has been applied, a tag will be placed above the search
+        results.
       </li>
     )
 
