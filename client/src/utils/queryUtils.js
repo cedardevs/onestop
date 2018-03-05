@@ -44,6 +44,7 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
     filters: filters,
     facets: retrieveFacets,
     page: page,
+    summary: false,
   }
 }
 
