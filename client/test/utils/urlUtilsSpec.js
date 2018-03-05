@@ -38,12 +38,13 @@ describe('The URL Utils', function () {
     })
   })
 
+/* granule url matching is part of #445
   it('can identify the granule list page', function () {
     pathTests.forEach( test => {
       urlUtils.isGranuleListPage(test.path).should.equal(test.isGranuleList, `Failed for test ${test.path} is ${test.isGranuleList}`)
     })
   })
-
+*/
   it('can identify the collection id on the detail page', function () {
     pathTests.forEach( test => {
       const collectionId = urlUtils.getCollectionIdFromDetailPath(test.path)
@@ -56,6 +57,7 @@ describe('The URL Utils', function () {
     })
   })
 
+/* granule url matching is part of #445
   it('can identify the collection id on the granule list page', function () {
     pathTests.forEach( test => {
       const collectionId = urlUtils.getCollectionIdFromGranuleListPath(test.path)
@@ -67,4 +69,5 @@ describe('The URL Utils', function () {
       }
     })
   })
+*/
 })

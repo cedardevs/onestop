@@ -53,6 +53,7 @@ export const isDetailPage = path => {
   return detailIdMatch(path) ? true : false
 }
 
+/* granule url matching is part of #445
 const granuleIdMatch = path => {
   const granuleListRegex = /\/granules\/([-\w]+)/
   return granuleListRegex.exec(path)
@@ -61,6 +62,7 @@ const granuleIdMatch = path => {
 export const isGranuleListPage = path => {
   return granuleIdMatch(path) ? true : false
 }
+*/
 
 export const getCollectionIdFromDetailPath = path => {
   if(!isDetailPage(path)) {return null}
@@ -68,8 +70,10 @@ export const getCollectionIdFromDetailPath = path => {
   return match && match[1] ? match[1] : null
 }
 
+/*
 export const getCollectionIdFromGranuleListPath = path => {
   if(!isGranuleListPage(path)) {return null}
   const match = granuleIdMatch(path)
   return match && match[1] ? match[1] : null
 }
+*/
