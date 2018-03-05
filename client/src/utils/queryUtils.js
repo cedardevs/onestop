@@ -26,7 +26,7 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   const pageSize = results.pageSize || 20
   const page = assemblePagination(pageSize, pageOffset)
 
-  // collection sear h
+  // collection search
   let queries = assembleQueries(search)
   let filters = _.concat(
     assembleFacetFilters(search),
