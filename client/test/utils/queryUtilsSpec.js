@@ -302,12 +302,7 @@ function granuleTestCases() {
         }
       },
       expectedResult: {
-        queries: [
-          {
-            type: 'queryText',
-            value: 'test'
-          }
-        ],
+        queries: [],
         filters: [
           {
             "type": "collection",
