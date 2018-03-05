@@ -440,9 +440,8 @@ class MetadataParser {
   }
 
   static String cleanInternalGCMDKeywordWhitespace(String text) {
-    def elements = text.split('>')
-    def trimmed = elements.collect { e ->  e.trim() }
-    return String.join(' > ', trimmed)
+    String cleanString = text.replaceAll("\\s+", " ")
+    return cleanString
   }
 
   static final char[] capitalizingDelimiters = [' ', '/', '.', '(', '-', '_'].collect({ it as char })
