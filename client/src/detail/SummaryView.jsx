@@ -99,10 +99,16 @@ class SummaryView extends Component {
     )
 
     return (
-      <FlexRow
-        style={{justifyContent: 'space-between'}}
-        items={[ timeSpaceSummary, keywordSummary ]}
-      />
+      <div>
+        <div>
+          <span className={styles.sectionHeading}>Total Files:&nbsp;</span>
+          {this.props.totalGranuleCount}
+        </div>
+        <FlexRow
+          style={{justifyContent: 'space-between'}}
+          items={[ timeSpaceSummary, keywordSummary ]}
+        />
+      </div>
     )
   }
 
