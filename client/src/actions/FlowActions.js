@@ -174,11 +174,14 @@ const updateBackground = path => {
 }
 
 const routingWatch = watch(
-store.getState,
-'behavior.routing.locationBeforeTransitions'
+  store.getState,
+  'behavior.routing.locationBeforeTransitions'
 )
 const routingUpdates = locationBeforeTransitions => {
   updateBackground(locationBeforeTransitions.pathname)
-  loadFromUrl(locationBeforeTransitions.pathname, locationBeforeTransitions.search)
+  loadFromUrl(
+    locationBeforeTransitions.pathname,
+    locationBeforeTransitions.search
+  )
 }
 store.subscribe(routingWatch(routingUpdates))

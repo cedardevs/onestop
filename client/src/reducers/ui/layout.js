@@ -21,10 +21,7 @@ export const layout = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_CHANGE:
       const path = action.payload.pathname
-      const allowSearching = !(
-        path.includes('508') ||
-        isDetailPage(path)
-      )
+      const allowSearching = !(path.includes('508') || isDetailPage(path))
       return Immutable.merge(state, {
         showLeft: allowSearching,
         showAppliedFilterBubbles: allowSearching,
