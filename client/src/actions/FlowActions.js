@@ -20,7 +20,7 @@ import {
 } from './SearchParamActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchInfo, fetchCounts} from './InfoActions'
-import {isDetailPage, isGranuleListPage, getCollectionIdFromDetailPath, getCollectionIdFromGranuleListPath} from '../utils/urlUtils'
+import {isDetailPage, getCollectionIdFromDetailPath} from '../utils/urlUtils'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
