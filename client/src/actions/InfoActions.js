@@ -39,29 +39,21 @@ export const fetchInfo = () => {
 
 export const fetchCounts = () => {
   return (dispatch, getState) => {
-    const url = getApiPath(getState()) + '/search/totalCounts'
+    const urlCollectionCounts = getApiPath(getState()) + '/collection'
+    const urlGranuleCounts = getApiPath(getState()) + '/granule'
     const params = {headers: {Accept: 'application/json'}}
-    return fetch(url, params)
-      .then(response => response.json())
-      .then(json => parseCounts(json, dispatch))
+    const json = {}
+    fetch(urlCollectionCounts, params)
+      .then(responseCollection => responseCollection.json())
+      .then(jsonCollection => {
+        json.collections = jsonCollection.data[0].count
+        return fetch(urlGranuleCounts, params)
+      })
+      .then(responseGranule => responseGranule.json())
+      .then(jsonGranule => {
+        json.granules = jsonGranule.data[0].count
+        dispatch(setTotalCounts(json))
+      })
       .catch(error => console.debug('OneStop total record counts unavailable'))
   }
-}
-
-const parseCounts = (json, dispatch) => {
-  let counts = {
-    collections: 0,
-    granules: 0,
-  }
-
-  json.data.forEach(e => {
-    if (e.id === 'collection') {
-      counts.collections = e.count
-    }
-    else if (e.id === 'granule') {
-      counts.granules = e.count
-    }
-  })
-
-  dispatch(setTotalCounts(counts))
 }

@@ -154,7 +154,7 @@ const buildSearchAction = (
 
     prefetchHandler(dispatch)
 
-    const endpoint = getApiPath(state) + '/' + endpointName + '/search'
+    const endpoint = getApiPath(state) + '/search/' + endpointName
     const fetchParams = {
       method: 'POST',
       headers: {

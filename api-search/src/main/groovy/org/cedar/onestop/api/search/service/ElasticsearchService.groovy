@@ -87,45 +87,34 @@ class ElasticsearchService {
     return getById(FLATTENED_GRANULE_SEARCH_INDEX, id)
   }
 
-  Map totalCounts() {
-    String collectionEndpoint = "/${PREFIX}${COLLECTION_SEARCH_INDEX}/_search"
-    HttpEntity collectionRequest = new NStringEntity(JsonOutput.toJson([
+  Map totalCollections() {
+    return totalCounts(COLLECTION_SEARCH_INDEX)
+  }
+
+  Map totalGranules() {
+    return totalCounts(GRANULE_SEARCH_INDEX)
+  }
+
+  Map totalFlattenedGranules() {
+    return totalCounts(FLATTENED_GRANULE_SEARCH_INDEX)
+  }
+
+  Map totalCounts(String index) {
+    String endpoint = "/${PREFIX}${index}/_search"
+    HttpEntity request = new NStringEntity(JsonOutput.toJson([
         query: [
             match_all: [:]
         ],
         size : 0
     ]), ContentType.APPLICATION_JSON)
-    def collectionResponse = restClient.performRequest("GET", collectionEndpoint, Collections.EMPTY_MAP, collectionRequest)
-
-    String granuleEndpoint = "/${PREFIX}${GRANULE_SEARCH_INDEX}/_search"
-    HttpEntity granuleRequest = new NStringEntity(JsonOutput.toJson([
-        query: [
-            bool: [
-                must: [
-                    script: [
-                        script: [
-                            inline: "String uid = doc['_uid'].value; int hashIndex = uid.indexOf('#'); String id = uid.substring(hashIndex + 1); doc['internalParentIdentifier'].value != id",
-                            lang  : "painless"
-                        ]
-                    ]
-                ]
-            ]
-        ],
-        size : 0
-    ]), ContentType.APPLICATION_JSON)
-    def granuleResponse = restClient.performRequest("GET", granuleEndpoint, Collections.EMPTY_MAP, granuleRequest)
+    def response = restClient.performRequest("GET", endpoint, Collections.EMPTY_MAP, request)
 
     return [
         data: [
             [
                 type : "count",
-                id   : "collection",
-                count: parseResponse(collectionResponse).hits.total
-            ],
-            [
-                type : "count",
-                id   : "granule",
-                count: parseResponse(granuleResponse).hits.total
+                id   : determineType(index),
+                count: parseResponse(response).hits.total
             ]
         ]
     ]

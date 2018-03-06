@@ -49,6 +49,9 @@ class SearchIntegrationTests extends Specification {
 
   private RestTemplate restTemplate
   private String searchBaseUriString
+  private String searchCollectionUriString
+  private String searchGranuleUriString
+  private String searchFlattenedGranuleUriString
   private String collectionBaseUriString
   private String granuleBaseUriString
   private String flatGranuleBaseUriString
@@ -159,6 +162,9 @@ class SearchIntegrationTests extends Specification {
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
     searchBaseUriString = "http://localhost:${port}/${contextPath}/search/"
+    searchCollectionUriString = "http://localhost:${port}/${contextPath}/search/collection"
+    searchGranuleUriString = "http://localhost:${port}/${contextPath}/search/granule"
+    searchFlattenedGranuleUriString = "http://localhost:${port}/${contextPath}/search/flattened-granule"
     collectionBaseUriString = "http://localhost:${port}/${contextPath}/collection/"
     granuleBaseUriString = "http://localhost:${port}/${contextPath}/granule/"
     flatGranuleBaseUriString = "http://localhost:${port}/${contextPath}/flattened-granule/"
@@ -167,7 +173,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Valid query-only collection search summary with facets returns OK with expected results'() {
     setup:
-    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def searchBaseUri = (searchCollectionUriString).toURI()
     def request = """\
         {
           "queries":
@@ -281,7 +287,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Valid query-only collection search with facets returns OK with expected results'() {
     setup:
-    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def searchBaseUri = (searchCollectionUriString).toURI()
     def request = """\
         {
           "queries":
@@ -343,7 +349,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Valid query-only granule summary search with facets returns OK with expected results'() {
     setup:
-    def searchBaseUri = (granuleBaseUriString + "search").toURI()
+    def searchBaseUri = (searchGranuleUriString).toURI()
     def request = """\
         {
           "queries":
@@ -444,7 +450,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Valid query-only granule search with facets returns OK with expected results'() {
     setup:
-    def searchBaseUri = (granuleBaseUriString + "search").toURI()
+    def searchBaseUri = (searchGranuleUriString).toURI()
     def request = """\
         {
           "queries":
@@ -498,7 +504,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Valid filter-only collection search returns OK with expected results'() {
     setup:
-    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def searchBaseUri = (searchCollectionUriString).toURI()
     def request = """\
         {
           "filters":
@@ -537,7 +543,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Valid filter-only granule search returns OK with expected results'() {
     setup:
-    def searchBaseUri = (granuleBaseUriString + "search").toURI()
+    def searchBaseUri = (searchGranuleUriString).toURI()
     def request = """\
         {
           "filters":
@@ -573,7 +579,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Valid query-and-filter collection search returns OK with expected result'() {
     setup:
-    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def searchBaseUri = (searchCollectionUriString).toURI()
     def request = """\
         {
           "queries":
@@ -612,7 +618,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Valid query-and-filter granule search returns OK with expected result'() {
     setup:
-    def searchBaseUri = (granuleBaseUriString + "search").toURI()
+    def searchBaseUri = (searchGranuleUriString).toURI()
     def request = """\
         {
           "queries":
@@ -652,7 +658,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Valid query-and-exclude-global collection search returns OK with expected results'() {
     setup:
-    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def searchBaseUri = (searchCollectionUriString).toURI()
     def request = """\
         {
           "queries":
@@ -692,7 +698,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Time filter with #situation an item\'s time range returns the correct results'() {
     setup:
-    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def searchBaseUri = (searchCollectionUriString).toURI()
     def ghrsst1FileId = 'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'
     def request = [filters: [[type: 'datetime']]]
     if (before) {
@@ -735,7 +741,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Search with pagination specified returns OK with expected results'() {
     setup:
-    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def searchBaseUri = (searchCollectionUriString).toURI()
     def request = """\
         {
           "queries":
@@ -775,7 +781,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Invalid search; returns BAD_REQUEST error when not conforming to schema'() {
     setup:
-    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def searchBaseUri = (searchCollectionUriString).toURI()
     def invalidSchemaRequest = """\
         {
           "filters": [
@@ -801,7 +807,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Invalid search; returns UNSUPPORTED_MEDIA_TYPE error when request body not specified as json content'() {
     setup:
-    def searchBaseUri = (granuleBaseUriString + "search").toURI()
+    def searchBaseUri = (searchGranuleUriString).toURI()
     def request = """\
         {
           "queries":
@@ -825,7 +831,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Invalid search; returns BAD_REQUEST error when no request body'() {
     setup:
-    def searchBaseUri = (flatGranuleBaseUriString + "search").toURI()
+    def searchBaseUri = (searchFlattenedGranuleUriString).toURI()
     def requestEntity = RequestEntity
         .post(searchBaseUri)
         .contentType(contentType)
@@ -843,7 +849,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Invalid search; returns BAD_REQUEST error when request body is malformed json'() {
     setup:
-    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def searchBaseUri = (searchCollectionUriString).toURI()
     def badJsonSearch = """\
         {
           "queries": [
@@ -869,7 +875,7 @@ class SearchIntegrationTests extends Specification {
 
   def 'Invalid search; returns BAD_REQUEST error when request body is invalid'() {
     setup:
-    def searchBaseUri = (granuleBaseUriString + "search").toURI()
+    def searchBaseUri = (searchGranuleUriString).toURI()
     def invalidJsonSearch = """\
         {
           "queries": [
@@ -893,34 +899,35 @@ class SearchIntegrationTests extends Specification {
     errors.any { it.title?.contains("Bad Request") }
   }
 
-  def 'totalCounts reports counts of collections and granules'() {
+  def 'collection and granule endpoints report counts of collections and granules'() {
     setup:
-    def searchBaseUri = (searchBaseUriString + "totalCounts").toURI()
-    def requestEntity = RequestEntity.get(searchBaseUri).build()
+    def searchCollectionBaseUri = (collectionBaseUriString).toURI()
+    def searchGranuleBaseUri = (granuleBaseUriString).toURI()
+    def requestEntityCollection = RequestEntity.get(searchCollectionBaseUri).build()
+    def requestEntityGranule = RequestEntity.get(searchGranuleBaseUri).build()
 
     when:
-    def result = restTemplate.exchange(requestEntity, Map)
+    def resultCollection = restTemplate.exchange(requestEntityCollection, Map)
+    def resultGranule = restTemplate.exchange(requestEntityGranule, Map)
 
     then:
-    result.statusCode == HttpStatus.OK
-    result.headers.getContentType() == contentType
-    result.body.data.size() == 2
-    result.body.data*.id.containsAll(['collection', 'granule'])
-    result.body.data*.count.every({ it instanceof Number })
-    def collectionResult = result.body.data.find { r ->
-      r.id == 'collection'
-      }
-    collectionResult.count == 7
-    def granuleResult = result.body.data.find { r ->
-      r.id == 'granule'
-      }
-    granuleResult.count == 2
+    resultCollection.statusCode == HttpStatus.OK
+    resultCollection.headers.getContentType() == contentType
+    resultCollection.body.data[0].count == 7
+    resultCollection.body.data*.id.containsAll(['collection'])
+    resultCollection.body.data*.count.every({ it instanceof Number })
+
+    resultGranule.statusCode == HttpStatus.OK
+    resultGranule.headers.getContentType() == contentType
+    resultGranule.body.data[0].count == 2
+    resultGranule.body.data*.id.containsAll(['granule'])
+    resultGranule.body.data*.count.every({ it instanceof Number })
   }
 
   def 'collection GET request returns expected record and count of granules in collection'() {
     setup:
     // Obtain ES ID for COOPS collection
-    def searchBaseUri = (collectionBaseUriString + "search").toURI()
+    def searchBaseUri = (searchCollectionUriString).toURI()
     def request = """\
         {
           "queries":
