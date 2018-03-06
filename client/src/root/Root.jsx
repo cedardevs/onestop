@@ -131,9 +131,11 @@ export default class Root extends Component {
       }
     }
 
+    const loadingBarStyle = this.isNotLanding() ? {} : {display: 'none'}
+
     const middle = (
       <div>
-        <LoadingBarContainer />
+        <LoadingBarContainer style={loadingBarStyle} />
         <Background
           showImage={this.isNot508()}
           showOverlay={this.isNotLanding() && this.isNot508()}

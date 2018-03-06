@@ -21,6 +21,7 @@ const styleMapContainer = showMap => {
     padding: showMap ? '0em' : '0em',
     height: showMap ? '400px' : '0em',
     width: showMap ? '100%' : '0%',
+    display: showMap ? 'block' : 'none',
   }
 }
 
