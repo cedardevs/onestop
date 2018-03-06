@@ -13,7 +13,8 @@ const styleHiddenContent = {
   cursor: 'pointer',
   border: 0,
   borderRadius: 0,
-  padding: '10px',
+  padding: '.25em',
+  width: '1.5em',
 }
 
 const styleHiddentContentImage = {

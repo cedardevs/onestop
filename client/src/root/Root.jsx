@@ -120,12 +120,15 @@ export default class Root extends Component {
       this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
 
     let left = null
+    let leftWidth = '256px'
+
     if (layoutContext) {
       if (showLeft) {
         if (leftOpen) {
           left = <FiltersContainer />
         }
         else {
+          leftWidth = '2em' // must match width + 2x padding of container in FilterHidden.jsx
           left = <FiltersHiddenContainer />
         }
       }
@@ -150,7 +153,7 @@ export default class Root extends Component {
       <Container
         header={header}
         left={left}
-        leftWidth={256}
+        leftWidth={leftWidth}
         leftVisible={leftOpen}
         middle={middle}
         right={null}
