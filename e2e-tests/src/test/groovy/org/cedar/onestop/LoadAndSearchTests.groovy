@@ -79,7 +79,7 @@ class LoadAndSearchTests extends Specification {
     when:
     def refreshRequest = RequestEntity.post("${esApiBase}/_refresh".toURI()).build()
     restTemplate.exchange(refreshRequest, Map)
-    def searchRequest = RequestEntity.post("${searchApiBase}/collection/search".toURI())
+    def searchRequest = RequestEntity.post("${searchApiBase}/search/collection".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body('{"queries":[{ "type": "queryText", "value": "temperature OR elevation"}],"summary": false}')
     def searchResult = restTemplate.exchange(searchRequest, Map)
@@ -92,7 +92,7 @@ class LoadAndSearchTests extends Specification {
     coopsCollection?.id instanceof String
 
     when:
-    def granuleRequest = RequestEntity.post("${searchApiBase}/granule/search".toURI())
+    def granuleRequest = RequestEntity.post("${searchApiBase}/search/granule".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body('{"filters":[{"type":"collection", "values":["' + coopsCollection.id + '"]}],"summary": false}')
     def granuleResult = restTemplate.exchange(granuleRequest, Map)
@@ -152,7 +152,7 @@ class LoadAndSearchTests extends Specification {
     when:
     def refreshRequest = RequestEntity.post("${esApiBase}/_refresh".toURI()).build()
     restTemplate.exchange(refreshRequest, Map)
-    def searchRequest = RequestEntity.post("${searchApiBase}/collection/search".toURI())
+    def searchRequest = RequestEntity.post("${searchApiBase}/search/collection".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body('{"queries":[{ "type": "queryText", "value": "super"}],"summary": false}')
     def searchResult = restTemplate.exchange(searchRequest, Map)
