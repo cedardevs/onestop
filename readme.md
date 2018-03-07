@@ -35,7 +35,7 @@ curl -X POST -H "Content-Type: application/json" localhost:8083/connectors --dat
 ## Legal
 
 This software was developed by Team Foam-Cat,
-under the OneStop project: 1553647,
+under the MSN project: 1555839,
 NOAA award number NA17OAR4320101 to CIRES.
 This code is licensed under GPL version 2.
 © 2018 The Regents of the University of Colorado.
