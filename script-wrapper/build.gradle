@@ -7,7 +7,7 @@ apply plugin: 'org.cedar.dockerplugin'
 dependencies {
   compile('org.codehaus.groovy:groovy')
   compile('org.codehaus.groovy:groovy-json')
-  compile "org.codehaus.groovy:groovy-xml"
+  compile("org.codehaus.groovy:groovy-xml")
   compile('org.springframework.boot:spring-boot-starter-actuator')
   compile('org.springframework.boot:spring-boot-starter-web')
   compile('org.springframework.cloud:spring-cloud-starter')
