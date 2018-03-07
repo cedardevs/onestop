@@ -10,12 +10,22 @@ services:
       KAFKA_GRANULE_TOPIC: "granule"
       KAFKA_COLLECTION_TOPIC: "collection"
 
+  collection_parser_script_wrapper:
+    image: cedardevs/psi-script-wrapper:latest
+    environment:
+      KAFKA_GROUP_ID: "collection_iso_parser_script_wrapper"
+      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      STREAM_TOPICS_INPUT: "metadata-aggregator-raw-collections-changelog"
+      STREAM_TOPICS_OUTPUT: "parsed-collections"
+      STREAM_COMMAND: "groovy /usr/src/app/scripts/IsoParser.groovy"
+      STREAM_COMMAND_TIMEOUT: 10000
+
   dscovr_script_wrapper:
-    image: cedardevs/psi-script-wrapper:0.1.0-SNAPSHOT
+    image: cedardevs/psi-script-wrapper:latest
     environment:
       KAFKA_GROUP_ID: "dscovr_iso_generation_script_wrapper"
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      STREAM_TOPICS_INPUT: "raw-granule-aggregator-raw-granules-changelog"
+      STREAM_TOPICS_INPUT: "metadata-aggregator-raw-granules-changelog"
       STREAM_TOPICS_OUTPUT: "parsed-granules"
       STREAM_COMMAND: "python /usr/src/app/scripts/dscovrIsoLite.py"
       STREAM_CONVERT_ISO: "true"
@@ -27,27 +37,6 @@ services:
       - xpack.security.enabled=false
     ports:
       - "9200:9200"
-
-#  iso_generation_script_wrapper:
-#    image: cedardevs/psi-script-wrapper:latest
-#    environment:
-#      KAFKA_GROUP_ID: "dscovr_iso_generation_script_wrapper"
-#      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-#      STREAM_TOPICS_INPUT: "raw-granule-aggregator-raw-granules-changelog"
-#      STREAM_TOPICS_OUTPUT: "iso-granules"
-#      STREAM_COMMAND: "python /usr/src/app/scripts/dscovrIsoLite.py"
-#      STREAM_COMMAND_TIMEOUT: 10000
-#
-#
-#  iso_parser_script_wrapper:
-#    image: cedardevs/psi-script-wrapper:latest
-#    environment:
-#      KAFKA_GROUP_ID: "dscovr_iso_parser_script_wrapper"
-#      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-#      STREAM_TOPICS_INPUT: "iso-granules"
-#      STREAM_TOPICS_OUTPUT: "parsed-granules"
-#      STREAM_COMMAND: "groovy /usr/src/app/scripts/IsoParser.groovy"
-#      STREAM_COMMAND_TIMEOUT: 10000
 
   kafka:
     image: confluentinc/cp-kafka:latest
