@@ -186,6 +186,8 @@ if __name__ == '__main__':
             input_json = example_with_enterprise_link_json
         elif input_json == 'testIncomplete':
             input_json = example_incomplete_json
+        elif input_json == 'stdin':
+            input_json = sys.stdin.read()
 
         if 'logLevelOuter' in locals():
             dscovrIsoLiteHackyWorkaround(input_json, logLevel=logLevelOuter)

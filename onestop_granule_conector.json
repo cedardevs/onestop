@@ -1,12 +1,12 @@
 {
-  "name": "psi-granules-to-es",
+  "name": "parsed-granules-to-es",
   "config": {
     "tasks.max": "1",
     "connector.class": "ElasticsearchSink",
     "connection.url": "http://elasticsearch:9200",
     "topics": "parsed-granules",
-    "topic.index.map": "parsed-granules:granule",
-    "type.name": "granule",
+    "topic.index.map": "parsed-granules:staging_granule",
+    "type.name": "doc",
     "schema.ignore": true,
     "key.converter": "org.apache.kafka.connect.storage.StringConverter",
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",

@@ -1,7 +1,6 @@
-package org.cedar.psi.parser.stream
+package org.cedar.psi.wrapper.stream
 
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
@@ -10,18 +9,16 @@ import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.KStream
-import org.apache.kafka.streams.kstream.Printed
-import org.cedar.psi.parser.util.IsoConversionUtil
+import org.cedar.psi.wrapper.util.IsoConversionUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-import java.util.regex.Matcher
-import java.util.regex.Pattern
 
 @Slf4j
 @Configuration
+@CompileStatic
 class ScriptWrapperStreamConfig {
 
   @Value('${stream.topics.input}')
@@ -65,25 +62,31 @@ class ScriptWrapperStreamConfig {
     def builder = new StreamsBuilder()
     KStream inputStream = builder.stream(inputTopic)
     inputStream.mapValues ({ msg ->
-      List<String> commandList = command.split(' ')
-      commandList.add($/$msg/$ as String)
-      log.info "Running : $commandList "
-      def cmd
-      String outputMessage
-      try{
-        cmd = commandList.execute()
-        cmd.waitForOrKill(timeout)
-        if(cmd.exitValue()){
-          log.error "Processes exited with non-zero exit code"
-          log.error "Processes output: ${cmd?.text}"
-          outputMessage = 'ERROR: ' + msg
-        }else{
-          outputMessage = cmd.text
-          log.info "Publishing to $outputTopic: $outputMessage"
+      List<String> commandList = command.split(' ') .toList()
+      log.info "Running : $commandList"
+      try {
+        def stdout = new StringBuilder()
+        def stderr = new StringBuilder()
+        def cmd = commandList.execute()
+        cmd.consumeProcessOutput(stdout, stderr)
+        cmd.withOutputStream { OutputStream os ->
+          os << msg
         }
-        outputMessage
-      }catch(Exception e){
+        cmd.waitForOrKill(timeout)
+        if (cmd.exitValue()) {
+          log.error "Process exited with non-zero exit code"
+          log.error "Process stdout: ${stdout}"
+          log.error "Process stderr: ${stderr}"
+          return 'ERROR: ' + stderr
+        }
+        else {
+          log.info "Publishing to $outputTopic: $stdout"
+          return stdout.toString()
+        }
+      }
+      catch(Exception e){
         log.error("Caught exception $e: ${e.message}")
+        return 'ERROR: ' + e.message
       }
     })
     .filterNot({key, msg -> msg.toString().startsWith('ERROR')})
