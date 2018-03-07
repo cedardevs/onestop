@@ -1,4 +1,4 @@
-package org.cedar.psi.parser.util
+package org.cedar.psi.wrapper.util
 
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
