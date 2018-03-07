@@ -2,6 +2,7 @@
     @Grab(group='org.apache.commons', module='commons-text', version='1.2')
 )
 
+import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.text.StringEscapeUtils
@@ -20,8 +21,8 @@ import java.time.temporal.TemporalAccessor
 import java.time.temporal.TemporalQuery
 
 
-print MetadataParser.parseXMLMetadata(args[0])
-//print(new XmlSlurper().parseText(args[0]))
+def json = new JsonSlurper().parse(System.in.newReader())
+print(MetadataParser.parseXMLMetadata(json.rawMetadata))
 
 class MetadataParser {
 
