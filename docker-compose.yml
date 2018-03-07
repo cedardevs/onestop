@@ -27,7 +27,7 @@ services:
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       STREAM_TOPICS_INPUT: "metadata-aggregator-raw-granules-changelog"
       STREAM_TOPICS_OUTPUT: "parsed-granules"
-      STREAM_COMMAND: "python /usr/src/app/scripts/dscovrIsoLite.py"
+      STREAM_COMMAND: "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
       STREAM_CONVERT_ISO: "true"
       STREAM_COMMAND_TIMEOUT: 10000
 
