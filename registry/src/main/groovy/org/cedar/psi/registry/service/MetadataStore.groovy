@@ -30,24 +30,25 @@ class MetadataStore {
   }
 
   Map retrieveFromStore(String type, String id) {
-    def storeName =
-        type == 'granule' ? RAW_GRANULE_STORE :
+    def storeName = lookupStoreName(type)
+    if (!storeName) { return null }
+    try {
+      def store = metadataStream.store(storeName, QueryableStoreTypes.keyValueStore())
+      if (!store) { return null }
+      def value = store.get(id)
+      if (!value) { return null }
+      def attributes = slurper.parseText(value as String) as Map
+      return [id: id, type: type, attributes: attributes]
+    }
+    catch (Exception e) {
+      log.error("Failed to retrieve [${type}] with id [${id}] from state store [${storeName}]", e)
+      throw e
+    }
+  }
+
+  private String lookupStoreName(String type) {
+    return type == 'granule' ? RAW_GRANULE_STORE :
         type == 'collection' ? RAW_COLLECTION_STORE : null
-    if (!storeName) {
-      return null
-    }
-
-    def store = metadataStream.store(storeName, QueryableStoreTypes.keyValueStore())
-    if (!store) {
-      return null
-    }
-
-    def value = store.get(id)
-    if (!value) {
-      return null
-    }
-
-    return [id: id, value: slurper.parseText(value as String) as Map]
   }
 
 }
