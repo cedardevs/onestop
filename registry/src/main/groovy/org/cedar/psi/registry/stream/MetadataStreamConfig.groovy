@@ -19,13 +19,21 @@ import org.springframework.context.annotation.Configuration
 class MetadataStreamConfig {
 
   static final String APP_ID = "metadata-aggregator"
-  static final String RAW_GRANULE_TOPIC = 'granule'
-  static final String RAW_GRANULE_STORE = 'raw-granules'
-  static final String RAW_COLLECTION_TOPIC = 'collection'
-  static final String RAW_COLLECTION_STORE = 'raw-collections'
 
   @Value('${kafka.bootstrap.servers}')
   String bootstrapServers
+
+  @Value('${kafka.topics.raw.granule}')
+  String RAW_GRANULE_TOPIC
+
+  @Value('${kafka.stores.raw.granule}')
+  String RAW_GRANULE_STORE
+
+  @Value('${kafka.topics.raw.collection}')
+  String RAW_COLLECTION_TOPIC
+
+  @Value('${kafka.stores.raw.collection}')
+  String RAW_COLLECTION_STORE
 
   @Bean
   StreamsConfig metadataConfig() {

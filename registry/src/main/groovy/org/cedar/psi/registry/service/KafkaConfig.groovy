@@ -1,4 +1,4 @@
-package org.cedar.psi.api.config
+package org.cedar.psi.registry.service
 
 import groovy.transform.CompileStatic
 import org.apache.kafka.clients.producer.KafkaProducer

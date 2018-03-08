@@ -4,8 +4,8 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.state.QueryableStoreTypes
-import org.cedar.psi.registry.stream.MetadataStreamConfig
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -19,22 +19,28 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD
 @RestController
 class MetadataRestController {
 
-  private KafkaStreams rawMetadataStream
+  @Value('${kafka.stores.raw.granule}')
+  String RAW_GRANULE_STORE
+
+  @Value('${kafka.stores.raw.collection}')
+  String RAW_COLLECTION_STORE
+
+  private KafkaStreams metadataStream
 
   @Autowired
-  MetadataRestController(KafkaStreams rawMetadataStream) {
-    this.rawMetadataStream = rawMetadataStream
+  MetadataRestController(KafkaStreams metadataStream) {
+    this.metadataStream = metadataStream
   }
 
 
   @RequestMapping(path = '/metadata/{type}/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveJson(@PathVariable String type, @PathVariable String id, HttpServletResponse response) {
     def storeName =
-        type == 'granule' ? MetadataStreamConfig.RAW_GRANULE_STORE :
-            type == 'collection' ? MetadataStreamConfig.RAW_COLLECTION_STORE : null
+        type == 'granule' ? RAW_GRANULE_STORE :
+            type == 'collection' ? RAW_COLLECTION_STORE : null
 
     if (storeName) {
-      def value = getFromStreamStore(rawMetadataStream, storeName, id)
+      def value = getFromStreamStore(metadataStream, storeName, id)
       if (value) {
         return [id: id, value: value]
       }

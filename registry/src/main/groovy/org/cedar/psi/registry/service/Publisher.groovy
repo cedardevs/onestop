@@ -1,4 +1,4 @@
-package org.cedar.psi.api.service
+package org.cedar.psi.registry.service
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service
 @CompileStatic
 class Publisher {
 
-  @Value('${kafka.granule.topic}')
+  @Value('${kafka.topics.raw.granule}')
   String GRANULE_TOPIC
 
-  @Value('${kafka.collection.topic}')
+  @Value('${kafka.topics.raw.collection}')
   String COLLECTION_TOPIC
 
   private Producer<String, String> kafkaProducer

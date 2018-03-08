@@ -1,7 +1,7 @@
-package org.cedar.psi.api.api
+package org.cedar.psi.registry.api
 
 import groovy.transform.CompileStatic
-import org.cedar.psi.api.service.Publisher
+import org.cedar.psi.registry.service.Publisher
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PathVariable

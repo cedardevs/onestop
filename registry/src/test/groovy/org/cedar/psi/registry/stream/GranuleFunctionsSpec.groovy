@@ -1,6 +1,5 @@
-package org.cedar.psi.registry
+package org.cedar.psi.registry.stream
 
-import org.cedar.psi.registry.stream.GranuleFunctions
 import spock.lang.Specification
 
 
