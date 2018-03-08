@@ -235,7 +235,8 @@
     {
       "rename": {
         "field": "keywordValues",
-        "target_field": "keywords"
+        "target_field": "keywords",
+        "ignore_missing": true
       }
     }
   ]
