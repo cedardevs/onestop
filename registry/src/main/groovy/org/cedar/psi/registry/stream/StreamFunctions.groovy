@@ -8,9 +8,9 @@ import org.apache.kafka.streams.kstream.Reducer
 
 @Slf4j
 @CompileStatic
-class GranuleFunctions {
+class StreamFunctions {
 
-  static Reducer<String> mergeGranules = new Reducer<String>() {
+  static Reducer<String> mergeJsonStrings = new Reducer<String>() {
     @Override
     String apply(String aggregate, String newValue) {
       log.debug("Merging new value $newValue into existing aggregate ${aggregate}")
