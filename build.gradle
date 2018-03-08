@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '1.5.10.RELEASE'
+    springBootVersion = '2.0.0.RELEASE'
   }
   repositories {
     maven {
@@ -8,13 +8,13 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.gradle:build-scan-plugin:1.9'
-    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1'
-    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
+    classpath 'com.gradle:build-scan-plugin:1.11'
+    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.6.2"
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-    classpath 'com.wiredforcode:gradle-spawn-plugin:0.6.0'
-    classpath 'com.moowork.gradle:gradle-node-plugin:0.13'
-    classpath 'org.owasp:dependency-check-gradle:2.1.1'
+    classpath 'com.wiredforcode:gradle-spawn-plugin:0.8.0'
+    classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
+    classpath 'org.owasp:dependency-check-gradle:3.1.1'
     classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
   }
 }
@@ -27,7 +27,7 @@ ext {
 subprojects {
   project.ext {
     esVersion = "${project.esVersion}"
-    groovyVersion = '2.4.12'
+    groovyVersion = '2.4.14'
     spockVersion = '1.1-groovy-2.4'
     testContainersVersion = '1.6.0'
   }
