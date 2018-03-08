@@ -1,5 +1,6 @@
 package org.cedar.psi.registry.stream
 
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Slf4j
+@CompileStatic
 @Configuration
 class MetadataStreamConfig {
 
