@@ -124,16 +124,15 @@ export const initialize = () => {
 const loadFromUrl = (path, newQueryString) => {
   // Note, collection queries are automatically updated by the URL because the query is parsed into search, which triggers loadData via a watch
 
-  if (
-    isDetailPage(path) &&
-    !store.getState().behavior.request.getCollectionInFlight
-  ) {
+  if (isDetailPage(path)) {
     const detailId = getCollectionIdFromDetailPath(path)
-    store.dispatch(getCollection(detailId))
-    store.dispatch(clearSelections())
-    store.dispatch(toggleSelection(detailId))
-    store.dispatch(clearGranules())
-    store.dispatch(fetchGranules())
+    if (detailId != store.getState().behavior.request.getCollectionInFlight) {
+      store.dispatch(getCollection(detailId))
+      store.dispatch(clearSelections())
+      store.dispatch(toggleSelection(detailId))
+      store.dispatch(clearGranules())
+      store.dispatch(fetchGranules())
+    }
   }
   else {
     if (newQueryString.indexOf('?') === 0) {

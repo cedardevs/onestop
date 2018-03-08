@@ -21,7 +21,7 @@ export const shiftCoordinates = (coordinates, rotations) => {
 export const findMaxRotations = coordinates => {
   return _.chain(coordinates)
     .map(coordinate => coordinate[0])
-    .map(x => Math.abs(x) <= 180 ? 0 : x)
+    .map(x => (Math.abs(x) <= 180 ? 0 : x))
     .map(x => _.round(x / 360))
     .maxBy(rotations => Math.abs(rotations))
     .value()
