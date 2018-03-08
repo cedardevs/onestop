@@ -74,6 +74,13 @@ services:
       CONNECT_LOG4J_LOGGERS: "org.reflections=ERROR"
       CONNECT_PLUGIN_PATH: "/usr/share/java,/etc/kafka-connect/jars"
 
+  kafka-manager:
+    image: cedardevs/kafka-manager
+    ports:
+      - "8084:9000"
+    environment:
+      ZK_HOSTS: zookeeper:32181
+
   kafka-rest:
     image: confluentinc/cp-kafka-rest
     depends_on:
@@ -92,13 +99,6 @@ services:
     environment:
       - "KAFKA_REST_PROXY_URL=http://kafka-rest:8080"
       - "PROXY=true"
-
-  kafka-manager:
-    image: cedardevs/kafka-manager
-    ports:
-      - "8084:9000"
-    environment:
-      ZK_HOSTS: zookeeper:32181
 
   registry:
     image: cedardevs/psi-registry:latest
