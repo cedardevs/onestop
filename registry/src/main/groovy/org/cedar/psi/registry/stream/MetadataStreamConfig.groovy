@@ -56,8 +56,8 @@ class MetadataStreamConfig {
     KGroupedStream groupedGranules = rawGranules.groupByKey()
     groupedGranules.reduce(StreamFunctions.mergeJsonStrings, Materialized.as(RAW_GRANULE_STORE))
 
-    KStream rawStream = builder.stream(RAW_COLLECTION_TOPIC)
-    KGroupedStream groupedCollections = rawStream.groupByKey()
+    KStream rawCollections = builder.stream(RAW_COLLECTION_TOPIC)
+    KGroupedStream groupedCollections = rawCollections.groupByKey()
     groupedCollections.reduce(StreamFunctions.mergeJsonStrings, Materialized.as(RAW_COLLECTION_STORE))
 
     return builder.build()
