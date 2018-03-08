@@ -1,11 +1,8 @@
 package org.cedar.psi.registry.api
 
-import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
-import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.state.QueryableStoreTypes
+import org.cedar.psi.registry.service.MetadataStore
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -19,40 +16,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD
 @RestController
 class MetadataRestController {
 
-  @Value('${kafka.stores.raw.granule}')
-  String RAW_GRANULE_STORE
-
-  @Value('${kafka.stores.raw.collection}')
-  String RAW_COLLECTION_STORE
-
-  private KafkaStreams metadataStream
+  private MetadataStore metadataStore
 
   @Autowired
-  MetadataRestController(KafkaStreams metadataStream) {
-    this.metadataStream = metadataStream
+  MetadataRestController(MetadataStore metadataStore) {
+    this.metadataStore = metadataStore
   }
 
 
   @RequestMapping(path = '/metadata/{type}/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveJson(@PathVariable String type, @PathVariable String id, HttpServletResponse response) {
-    def storeName =
-        type == 'granule' ? RAW_GRANULE_STORE :
-            type == 'collection' ? RAW_COLLECTION_STORE : null
-
-    if (storeName) {
-      def value = getFromStreamStore(metadataStream, storeName, id)
-      if (value) {
-        return [id: id, value: value]
-      }
-    }
-
-    response.sendError(404)
-    return null
-  }
-
-  private static Map getFromStreamStore(KafkaStreams streamsApp, String storeName, String id) {
-    def store = streamsApp.store(storeName, QueryableStoreTypes.keyValueStore())
-    return store ? new JsonSlurper().parseText(store.get(id) as String) as Map : null
+    return metadataStore.retrieveFromStore(type, id) ?: response.sendError(404, "No such ${type} with id ${id}")
   }
 
 
