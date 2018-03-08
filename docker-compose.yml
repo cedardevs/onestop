@@ -93,6 +93,13 @@ services:
       - "KAFKA_REST_PROXY_URL=http://kafka-rest:8080"
       - "PROXY=true"
 
+  kafka-manager:
+    image: cedardevs/kafka-manager
+    ports:
+      - "8084:9000"
+    environment:
+      ZK_HOSTS: zookeeper:32181
+
   registry:
     image: cedardevs/psi-registry:latest
     ports:
