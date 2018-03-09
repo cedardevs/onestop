@@ -9,6 +9,7 @@ import org.elasticsearch.client.Response
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
@@ -27,11 +28,8 @@ class SearchIntegrationTests extends Specification {
   @Autowired
   RestClient restClient
 
-  @Value('${local.server.port}')
+  @LocalServerPort
   private String port
-
-  @Value('${server.context-path}')
-  private String contextPath
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
   private String COLLECTION_SEARCH_INDEX
@@ -161,13 +159,13 @@ class SearchIntegrationTests extends Specification {
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    searchBaseUriString = "http://localhost:${port}/${contextPath}/search/"
-    searchCollectionUriString = "http://localhost:${port}/${contextPath}/search/collection"
-    searchGranuleUriString = "http://localhost:${port}/${contextPath}/search/granule"
-    searchFlattenedGranuleUriString = "http://localhost:${port}/${contextPath}/search/flattened-granule"
-    collectionBaseUriString = "http://localhost:${port}/${contextPath}/collection/"
-    granuleBaseUriString = "http://localhost:${port}/${contextPath}/granule/"
-    flatGranuleBaseUriString = "http://localhost:${port}/${contextPath}/flattened-granule/"
+    searchBaseUriString = "http://localhost:${port}/search/"
+    searchCollectionUriString = "http://localhost:${port}/search/collection"
+    searchGranuleUriString = "http://localhost:${port}/search/granule"
+    searchFlattenedGranuleUriString = "http://localhost:${port}/search/flattened-granule"
+    collectionBaseUriString = "http://localhost:${port}/collection/"
+    granuleBaseUriString = "http://localhost:${port}/granule/"
+    flatGranuleBaseUriString = "http://localhost:${port}/flattened-granule/"
   }
 
 

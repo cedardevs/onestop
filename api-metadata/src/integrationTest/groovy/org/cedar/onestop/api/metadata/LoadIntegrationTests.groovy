@@ -3,8 +3,8 @@ package org.cedar.onestop.api.metadata
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -33,11 +33,8 @@ class LoadIntegrationTests extends Specification {
    *  - Verify error responses
    */
 
-  @Value('${local.server.port}')
+  @LocalServerPort
   private String port
-
-  @Value('${server.context-path}')
-  private String contextPath
 
   @Autowired
   RestClient restClient
@@ -54,7 +51,7 @@ class LoadIntegrationTests extends Specification {
   void setup() {
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    metadataURI = "http://localhost:${port}/${contextPath}/metadata"
+    metadataURI = "http://localhost:${port}/metadata"
     elasticsearchService.dropSearchIndices()
     elasticsearchService.dropStagingIndices()
     elasticsearchService.ensureIndices()
