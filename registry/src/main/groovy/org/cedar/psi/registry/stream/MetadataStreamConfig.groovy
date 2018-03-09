@@ -14,6 +14,7 @@ import org.apache.kafka.streams.kstream.Materialized
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 
 @Slf4j
 @CompileStatic
@@ -38,6 +39,7 @@ class MetadataStreamConfig {
   String RAW_COLLECTION_STORE
 
   @Bean
+  @Profile('default') // overridden in the integration profile to support integration testing
   StreamsConfig metadataConfig() {
     return new StreamsConfig([
         (StreamsConfig.APPLICATION_ID_CONFIG)           : APP_ID,
@@ -65,8 +67,8 @@ class MetadataStreamConfig {
 
 
   @Bean(initMethod = 'start', destroyMethod = 'close')
-  KafkaStreams metadataStream(Topology rawGranuleTopology, StreamsConfig rawGranuleConfig) {
-    return new KafkaStreams(rawGranuleTopology, rawGranuleConfig)
+  KafkaStreams metadataStream(Topology metadataTopology, StreamsConfig metadataConfig) {
+    return new KafkaStreams(metadataTopology, metadataConfig)
   }
 
 }
