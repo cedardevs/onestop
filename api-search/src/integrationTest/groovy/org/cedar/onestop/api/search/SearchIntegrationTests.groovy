@@ -31,6 +31,9 @@ class SearchIntegrationTests extends Specification {
   @LocalServerPort
   private String port
 
+  @Value('${server.servlet.context-path}')
+  private String contextPath
+
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
   private String COLLECTION_SEARCH_INDEX
 
@@ -159,13 +162,13 @@ class SearchIntegrationTests extends Specification {
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    searchBaseUriString = "http://localhost:${port}/search/"
-    searchCollectionUriString = "http://localhost:${port}/search/collection"
-    searchGranuleUriString = "http://localhost:${port}/search/granule"
-    searchFlattenedGranuleUriString = "http://localhost:${port}/search/flattened-granule"
-    collectionBaseUriString = "http://localhost:${port}/collection/"
-    granuleBaseUriString = "http://localhost:${port}/granule/"
-    flatGranuleBaseUriString = "http://localhost:${port}/flattened-granule/"
+    searchBaseUriString = "http://localhost:${port}/${contextPath}/search/"
+    searchCollectionUriString = "http://localhost:${port}/${contextPath}/search/collection"
+    searchGranuleUriString = "http://localhost:${port}/${contextPath}/search/granule"
+    searchFlattenedGranuleUriString = "http://localhost:${port}/${contextPath}/search/flattened-granule"
+    collectionBaseUriString = "http://localhost:${port}/${contextPath}/collection/"
+    granuleBaseUriString = "http://localhost:${port}/${contextPath}/granule/"
+    flatGranuleBaseUriString = "http://localhost:${port}/${contextPath}/flattened-granule/"
   }
 
 

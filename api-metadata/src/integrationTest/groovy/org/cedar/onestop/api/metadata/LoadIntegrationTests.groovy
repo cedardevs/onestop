@@ -5,6 +5,7 @@ import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -36,6 +37,9 @@ class LoadIntegrationTests extends Specification {
   @LocalServerPort
   private String port
 
+  @Value('${server.servlet.context-path}')
+  private String contextPath
+
   @Autowired
   RestClient restClient
 
@@ -51,7 +55,7 @@ class LoadIntegrationTests extends Specification {
   void setup() {
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    metadataURI = "http://localhost:${port}/metadata"
+    metadataURI = "http://localhost:${port}/${contextPath}/metadata"
     elasticsearchService.dropSearchIndices()
     elasticsearchService.dropStagingIndices()
     elasticsearchService.ensureIndices()
