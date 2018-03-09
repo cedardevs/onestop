@@ -23,8 +23,8 @@ class LoadAndSearchTests extends Specification {
       .withPull(false)
 
   static esApiBase = "http://localhost:9200"
-  static searchApiBase = "http://localhost:8097/onestop/api"
-  static metadataApiBase = "http://localhost:8098/onestop/api"
+  static searchApiBase = "http://localhost:8097"
+  static metadataApiBase = "http://localhost:8098"
   static restTemplate = new RestTemplate()
 
   def setupSpec() {
