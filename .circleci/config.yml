@@ -43,6 +43,7 @@ jobs:
           command: |
             mkdir -p ~/tests/junit/
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
 
       - store_test_results:
