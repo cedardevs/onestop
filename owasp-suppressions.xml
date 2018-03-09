@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+
+  <suppress>
+    <notes><![CDATA[
+      Refers to a vulnerability in FasterXML jackson-databind which has been solved as of version 2.8.11.1.
+      The latest version used is 2.9.3. The vulnerability is thus a false positive; further, the special conditions
+      under which this vulnerability can be exposed is well-documented.
+      ]]></notes>
+    <filePath regex="true">.*jackson-databind-.*\.jar</filePath>
+    <cve>CVE-2017-17485</cve>
+    <cve>CVE-2018-5968</cve>
+  </suppress>
+
   <suppress>
     <notes><![CDATA[
       Refers to a Groovy LDAP class which is not in use in this application

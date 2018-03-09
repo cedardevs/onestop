@@ -1,4 +1,5 @@
 apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'groovy'
 
 sourceCompatibility = 1.8
@@ -23,6 +24,6 @@ test {
   mustRunAfter rootProject.getTasksByName('integrationTest', true)
 }
 
-bootRepackage {
+bootJar {
   enabled = false
 }

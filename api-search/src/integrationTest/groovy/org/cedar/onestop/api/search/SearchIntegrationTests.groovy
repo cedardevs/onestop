@@ -9,6 +9,7 @@ import org.elasticsearch.client.Response
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
@@ -27,10 +28,10 @@ class SearchIntegrationTests extends Specification {
   @Autowired
   RestClient restClient
 
-  @Value('${local.server.port}')
+  @LocalServerPort
   private String port
 
-  @Value('${server.context-path}')
+  @Value('${server.servlet.context-path}')
   private String contextPath
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')

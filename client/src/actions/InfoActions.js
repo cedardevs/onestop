@@ -28,7 +28,7 @@ export const setTotalCounts = counts => {
 
 export const fetchInfo = () => {
   return (dispatch, getState) => {
-    const url = getApiPath(getState()) + '/info'
+    const url = getApiPath(getState()) + '/actuator/info'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
       .then(response => response.json())

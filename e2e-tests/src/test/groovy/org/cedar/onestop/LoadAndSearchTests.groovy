@@ -31,8 +31,8 @@ class LoadAndSearchTests extends Specification {
     def pollingConditions = new PollingConditions()
     pollingConditions.within(60, {
       restTemplate.exchange(RequestEntity.get(esApiBase.toURI()).build(), Map).statusCode == HttpStatus.OK
-      restTemplate.exchange(RequestEntity.get("${searchApiBase}/info".toURI()).build(), Map).statusCode == HttpStatus.OK
-      restTemplate.exchange(RequestEntity.get("${metadataApiBase}/info".toURI()).build(), Map).statusCode == HttpStatus.OK
+      restTemplate.exchange(RequestEntity.get("${searchApiBase}/actuator/info".toURI()).build(), Map).statusCode == HttpStatus.OK
+      restTemplate.exchange(RequestEntity.get("${metadataApiBase}/actuator/info".toURI()).build(), Map).statusCode == HttpStatus.OK
     })
   }
 

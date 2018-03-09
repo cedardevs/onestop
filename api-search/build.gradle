@@ -1,6 +1,7 @@
 apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
@@ -23,10 +24,10 @@ dependencies {
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-devtools'
-  compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
+  compile 'org.springframework.cloud:spring-cloud-context'
   compile 'com.github.java-json-tools:json-schema-validator:2.2.8'
-  compile 'org.apache.commons:commons-lang3:3.4'
-  compile 'org.apache.lucene:lucene-expressions:5.5.0'
+  compile 'org.apache.commons:commons-lang3:3.7'
+  compile 'org.apache.lucene:lucene-expressions:7.2.1'
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
@@ -44,18 +45,15 @@ ext {
 }
 
 war {
+  enabled = true
   baseName = "${rootProject.name}-${project.name}"
-  finalizedBy bootRepackage
+  finalizedBy bootWar
 }
 
-springBoot {
-  backupSource = false
-}
-
-bootRepackage {
-  outputFile = fatWarPath
+bootWar {
   excludeDevtools = true
-  executable = true
+  classifier = 'all'
+  launchScript()
   onlyIf { !tasks.getByName('war').state.upToDate }
 }
 
@@ -115,10 +113,10 @@ processResources {
 }
 
 docker {
-  additionalBuildArgs = [JAR_NAME: "${rootProject.name}-${project.name}-all"]
+  additionalBuildArgs = [WAR_NAME: bootWar.outputs.files.singleFile.name]
 }
 
-BuildDockerImage.dependsOn(bootRepackage)
+BuildDockerImage.dependsOn(bootWar)
 assemble.dependsOn(BuildDockerImage)
 PublishDockerImage.dependsOn(BuildDockerImage)
 publish.dependsOn PublishDockerImage
