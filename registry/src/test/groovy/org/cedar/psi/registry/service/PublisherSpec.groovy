@@ -1,4 +1,4 @@
-package org.cedar.psi.api.service
+package org.cedar.psi.registry.service
 
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord

@@ -1,10 +1,9 @@
-package org.cedar.psi.registry
+package org.cedar.psi.registry.stream
 
-import org.cedar.psi.registry.stream.GranuleFunctions
 import spock.lang.Specification
 
 
-class GranuleFunctionsSpec extends Specification {
+class StreamFunctionsSpec extends Specification {
 
   def 'merge function merges json strings'() {
     def currentAggregate = '{"trackingId":"ABC","message":"this is a test","answer": 42}'
@@ -12,7 +11,7 @@ class GranuleFunctionsSpec extends Specification {
     def mergedAggregate = '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}'
 
     expect:
-    GranuleFunctions.mergeGranules(currentAggregate, newValue) == mergedAggregate
+    StreamFunctions.mergeJsonStrings.apply(currentAggregate, newValue) == mergedAggregate
   }
 
 }

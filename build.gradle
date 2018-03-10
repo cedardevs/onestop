@@ -54,7 +54,7 @@ subprojects {
 }
 
 task composeStart(type: Exec, description: 'Runs the entire system in docker containers', group: 'docker') {
-  dependsOn ":api:build", ":parser:build", ":registry:build", ":script-wrapper:build"
+  dependsOn ":parser:build", ":registry:build", ":script-wrapper:build"
   executable = "bash"
   args = ["-c", "docker-compose up -d"]
 }

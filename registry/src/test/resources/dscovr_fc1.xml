@@ -1,0 +1,3171 @@
+<gmi:MI_Metadata xmlns:gmi="http://www.isotc211.org/2005/gmi" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:srv="http://www.isotc211.org/2005/srv" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gml="http://www.opengis.net/gml/3.2" xmlns:gsr="http://www.isotc211.org/2005/gsr" xmlns:gss="http://www.isotc211.org/2005/gss" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.spase-group.org/data/schema" xmlns:spase="http://www.spase-group.org/data/schema" xmlns:xs="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation="http://www.isotc211.org/2005/gmd https://www.ngdc.noaa.gov/metadata/published/xsd/schema.xsd">
+  <gmd:fileIdentifier>
+    <gco:CharacterString>gov.noaa.ncei.swx:dscovr_fc1</gco:CharacterString>
+  </gmd:fileIdentifier>
+  <gmd:hierarchyLevel>
+    <gmd:MD_ScopeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_ScopeCode" codeListValue="nonGeographicDataset">nonGeographicDataset</gmd:MD_ScopeCode>
+  </gmd:hierarchyLevel>
+  <gmd:contact xlink:title="WFR">
+    <gmd:CI_ResponsibleParty uuid="a1805125-0604-441f-b5e8-922fcd357cac">
+      <gmd:individualName>
+        <gco:CharacterString>William Rowland</gco:CharacterString>
+      </gmd:individualName>
+      <gmd:organisationName>
+        <gco:CharacterString>DOC/NOAA/NESDIS/NCEI &gt; National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:contactInfo>
+        <gmd:CI_Contact>
+          <gmd:phone>
+            <gmd:CI_Telephone>
+              <gmd:voice>
+                <gco:CharacterString>303-497-3708</gco:CharacterString>
+              </gmd:voice>
+            </gmd:CI_Telephone>
+          </gmd:phone>
+          <gmd:address>
+            <gmd:CI_Address>
+              <gmd:deliveryPoint>
+                <gco:CharacterString>325 Broadway</gco:CharacterString>
+              </gmd:deliveryPoint>
+              <gmd:city>
+                <gco:CharacterString>Boulder</gco:CharacterString>
+              </gmd:city>
+              <gmd:administrativeArea>
+                <gco:CharacterString>CO</gco:CharacterString>
+              </gmd:administrativeArea>
+              <gmd:postalCode>
+                <gco:CharacterString>80305</gco:CharacterString>
+              </gmd:postalCode>
+              <gmd:country>
+                <gco:CharacterString>USA</gco:CharacterString>
+              </gmd:country>
+              <gmd:electronicMailAddress>
+                <gco:CharacterString>William.Rowland@noaa.gov</gco:CharacterString>
+              </gmd:electronicMailAddress>
+              <gmd:electronicMailAddress>
+                <gco:CharacterString />
+              </gmd:electronicMailAddress>
+            </gmd:CI_Address>
+          </gmd:address>
+        </gmd:CI_Contact>
+      </gmd:contactInfo>
+      <gmd:role>
+        <gmd:CI_RoleCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+      </gmd:role>
+    </gmd:CI_ResponsibleParty>
+  </gmd:contact>
+  <gmd:dateStamp>
+    <gco:DateTime>2016-11-29T12:33:10.094-07:00</gco:DateTime>
+  </gmd:dateStamp>
+  <gmd:metadataStandardName>
+    <gco:CharacterString>ISO 19115-2 Geographic Information - Metadata - Part 2: Extensions for Imagery and Gridded Data</gco:CharacterString>
+  </gmd:metadataStandardName>
+  <gmd:metadataStandardVersion>
+    <gco:CharacterString>ISO 19115-2:2009(E)</gco:CharacterString>
+  </gmd:metadataStandardVersion>
+  <gmd:identificationInfo>
+    <gmd:MD_DataIdentification>
+      <gmd:citation>
+        <gmd:CI_Citation>
+          <gmd:title>
+            <gco:CharacterString>DSCOVR Faraday Cup Level 1</gco:CharacterString>
+          </gmd:title>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:DateTime>2016-10-21T14:59:11.339265</gco:DateTime>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:identifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>spase://NOAA/NumericalData/DSCOVR/FC/fc1</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmd:identifier>
+          <gmd:citedResponsibleParty gco:nilReason="missing" />
+        </gmd:CI_Citation>
+      </gmd:citation>
+      <gmd:abstract>
+        <gco:CharacterString>Solar wind observations collected from Faraday Cup on DSCOVR satellite - cycle peak identification</gco:CharacterString>
+      </gmd:abstract>
+      <gmd:purpose>
+        <gco:CharacterString>To monitor solar wind near the L1 point. These data support forecasts and research of phenomena that have the potential to disrupt and damage Earth-based infrastructure.</gco:CharacterString>
+      </gmd:purpose>
+      <gmd:credit>
+        <gco:CharacterString>placeholder</gco:CharacterString>
+      </gmd:credit>
+      <gmd:status>
+        <gmd:MD_ProgressCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_ProgressCode" codeListValue="onGoing">onGoing</gmd:MD_ProgressCode>
+      </gmd:status>
+      <gmd:pointOfContact xlink:title="WFR">
+        <gmd:CI_ResponsibleParty uuid="a1805125-0604-441f-b5e8-922fcd357cac">
+          <gmd:individualName>
+            <gco:CharacterString>William Rowland</gco:CharacterString>
+          </gmd:individualName>
+          <gmd:organisationName>
+            <gco:CharacterString>DOC/NOAA/NESDIS/NCEI &gt; National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce</gco:CharacterString>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:phone>
+                <gmd:CI_Telephone>
+                  <gmd:voice>
+                    <gco:CharacterString>303-497-3708</gco:CharacterString>
+                  </gmd:voice>
+                </gmd:CI_Telephone>
+              </gmd:phone>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <gmd:deliveryPoint>
+                    <gco:CharacterString>325 Broadway</gco:CharacterString>
+                  </gmd:deliveryPoint>
+                  <gmd:city>
+                    <gco:CharacterString>Boulder</gco:CharacterString>
+                  </gmd:city>
+                  <gmd:administrativeArea>
+                    <gco:CharacterString>CO</gco:CharacterString>
+                  </gmd:administrativeArea>
+                  <gmd:postalCode>
+                    <gco:CharacterString>80305</gco:CharacterString>
+                  </gmd:postalCode>
+                  <gmd:country>
+                    <gco:CharacterString>USA</gco:CharacterString>
+                  </gmd:country>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>William.Rowland@noaa.gov</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString />
+                  </gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+          </gmd:role>
+        </gmd:CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:pointOfContact xlink:title="DB">
+        <gmd:CI_ResponsibleParty uuid="54ab7ec0-1461-11e5-b60b-1697f925ec7b">
+          <gmd:individualName>
+            <gco:CharacterString>Douglas.Biesecker</gco:CharacterString>
+          </gmd:individualName>
+          <gmd:organisationName>
+            <gco:CharacterString>Space Weather Prediction Center</gco:CharacterString>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <gmd:deliveryPoint>
+                    <gco:CharacterString>325 Broadway</gco:CharacterString>
+                  </gmd:deliveryPoint>
+                  <gmd:city>
+                    <gco:CharacterString>Boulder</gco:CharacterString>
+                  </gmd:city>
+                  <gmd:administrativeArea>
+                    <gco:CharacterString>CO</gco:CharacterString>
+                  </gmd:administrativeArea>
+                  <gmd:postalCode>
+                    <gco:CharacterString>80305</gco:CharacterString>
+                  </gmd:postalCode>
+                  <gmd:country>
+                    <gco:CharacterString>United States</gco:CharacterString>
+                  </gmd:country>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>doug.biesecker@noaa.gov</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="originator">originator</gmd:CI_RoleCode>
+          </gmd:role>
+        </gmd:CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:resourceMaintenance>
+        <gmd:MD_MaintenanceInformation>
+          <gmd:maintenanceAndUpdateFrequency>
+            <gmd:MD_MaintenanceFrequencyCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="asNeeded">asNeeded</gmd:MD_MaintenanceFrequencyCode>
+          </gmd:maintenanceAndUpdateFrequency>
+        </gmd:MD_MaintenanceInformation>
+      </gmd:resourceMaintenance>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gco:CharacterString>Spase.MeasurementType.ThermalPlasma</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme">theme</gmd:MD_KeywordTypeCode>
+          </gmd:type>
+          <gmd:thesaurusName xlink:title="SPASE Base dictionary">
+            <gmd:CI_Citation xsi:schemaLocation="http://www.isotc211.org/2005/gmi http://www.ngdc.noaa.gov/metadata/published/xsd/schema.xsd" uuid="b540160e-b9ec-40f9-a585-87a26d926011">
+              <gmd:title>
+                <gco:CharacterString>SPASE Base dictionary</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2005-06-23</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2014-05-31</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</gmd:CI_DateTypeCode>
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:citedResponsibleParty>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Space Physics Archive Search and Extract (SPASE) Consortium</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>spase@listserv.gsfc.nasa.gov</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="publisher">publisher</gmd:CI_RoleCode>
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:citedResponsibleParty>
+              <gmd:citedResponsibleParty>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:organisationName gco:nilReason="inapplicable" />
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.spase-group.org/data/search.jsp?context=spase-model</gmd:URL>
+                          </gmd:linkage>
+                          <gmd:name>
+                            <gco:CharacterString>Search the SPASE Base dictionary</gco:CharacterString>
+                          </gmd:name>
+                          <gmd:description>
+                            <gco:CharacterString>Dictionary contains listing of all Spase elements and enumerated terms.</gco:CharacterString>
+                          </gmd:description>
+                          <gmd:function>
+                            <gmd:CI_OnLineFunctionCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                          </gmd:function>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role gco:nilReason="inapplicable" />
+                </gmd:CI_ResponsibleParty>
+              </gmd:citedResponsibleParty>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gco:CharacterString>observedRegion.Heliosphere.NearEarth</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="place">place</gmd:MD_KeywordTypeCode>
+          </gmd:type>
+          <gmd:thesaurusName xlink:title="SPASE Base dictionary">
+            <gmd:CI_Citation xsi:schemaLocation="http://www.isotc211.org/2005/gmi http://www.ngdc.noaa.gov/metadata/published/xsd/schema.xsd" uuid="b540160e-b9ec-40f9-a585-87a26d926011">
+              <gmd:title>
+                <gco:CharacterString>SPASE Base dictionary</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2005-06-23</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2014-05-31</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision">revision</gmd:CI_DateTypeCode>
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:citedResponsibleParty>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Space Physics Archive Search and Extract (SPASE) Consortium</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>spase@listserv.gsfc.nasa.gov</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="publisher">publisher</gmd:CI_RoleCode>
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:citedResponsibleParty>
+              <gmd:citedResponsibleParty>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:organisationName gco:nilReason="inapplicable" />
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.spase-group.org/data/search.jsp?context=spase-model</gmd:URL>
+                          </gmd:linkage>
+                          <gmd:name>
+                            <gco:CharacterString>Search the SPASE Base dictionary</gco:CharacterString>
+                          </gmd:name>
+                          <gmd:description>
+                            <gco:CharacterString>Dictionary contains listing of all Spase elements and enumerated terms.</gco:CharacterString>
+                          </gmd:description>
+                          <gmd:function>
+                            <gmd:CI_OnLineFunctionCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                          </gmd:function>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role gco:nilReason="inapplicable" />
+                </gmd:CI_ResponsibleParty>
+              </gmd:citedResponsibleParty>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword>
+            <gco:CharacterString>L1</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Solar Wind</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Velocity</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Density</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:type>
+            <gmd:MD_KeywordTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme">theme</gmd:MD_KeywordTypeCode>
+          </gmd:type>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:resourceConstraints gco:nilReason="template" />
+      <gmd:aggregationInfo>
+        <gmd:MD_AggregateInformation>
+          <gmd:aggregateDataSetIdentifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>spase://SMWG/Observatory/DSCOVR</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmd:aggregateDataSetIdentifier>
+          <gmd:associationType>
+            <gmd:DS_AssociationTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#DS_AssociationTypeCode" codeListValue="largerWorkCitation">largerWorkCitation</gmd:DS_AssociationTypeCode>
+          </gmd:associationType>
+          <gmd:initiativeType>
+            <gmd:DS_InitiativeTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#DS_InitiativeTypeCode" codeListValue="collection">collection</gmd:DS_InitiativeTypeCode>
+          </gmd:initiativeType>
+        </gmd:MD_AggregateInformation>
+      </gmd:aggregationInfo>
+      <gmd:language>
+        <gco:CharacterString>eng; USA</gco:CharacterString>
+      </gmd:language>
+      <gmd:extent>
+        <gmd:EX_Extent>
+          <gmd:description>
+            <gco:CharacterString>non-geographic dataset</gco:CharacterString>
+          </gmd:description>
+          <gmd:temporalElement>
+            <gmd:EX_TemporalExtent>
+              <gmd:extent>
+                <gml:TimePeriod gml:id="d1e3">
+                  <gml:beginPosition>2016-03-27T00:00:00Z</gml:beginPosition>
+                  <gml:endPosition indeterminatePosition="now" />
+                  <gml:duration>PT0H0M0.04S</gml:duration>
+                </gml:TimePeriod>
+              </gmd:extent>
+            </gmd:EX_TemporalExtent>
+          </gmd:temporalElement>
+        </gmd:EX_Extent>
+      </gmd:extent>
+      <gmd:supplementalInformation>
+        <gco:CharacterString />
+      </gmd:supplementalInformation>
+    </gmd:MD_DataIdentification>
+  </gmd:identificationInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_density</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind alpha density</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>221.19</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0.2178</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e76">
+              <gml:identifier codeSpace="local">cm^-3</gml:identifier>
+              <gml:remarks>1.0E-6&amp;gt;m^-3</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>possible_second_proton_peak_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Possible second proton peak between the proton and alpha particle peaks</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_peak_height_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle peak height exceeds expected threshold</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_velocity_x_gse_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Proton velocity X component in GSE coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_velocity_y_gse_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Proton velocity Y component in GSE coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_out_of_range_unknown_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Out of range: unknown - no measurements in this cycle exceeded the noise threshold.</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_peak_unbounded_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Proton peak identified but not bounded by &lt;10% current values</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_temperature</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind alpha temperature</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>79497000.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>35529.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e294">
+              <gml:identifier codeSpace="local">degrees K</gml:identifier>
+              <gml:remarks />
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_peak_unresolved_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Unresolved proton peak, peak band consists of fewer than 3 voltage windows</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_alpha_confusion_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Likely alpha particle confusion due to non-negligible alpha particle flux which may have contributed to currents measured in the proton peak range. Threshold defined as the two peaks being within two thermal widths of each other.</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_out_of_range_high_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Out of range: high - the proton peak current occurred in the last window of the measurement cycle.</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_out_of_range_low_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Out of range: low - the proton peak current occurred in the first window of the measurement cycle.</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>packet_time_in_future_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>One or more measurements were extracted from a packet whose timestamp was in the future at the point of processing</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>packet_time_older_than_threshold_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>One or more measurements were extracted from a packet whose timestamp was older than the threshold at the point of processing</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>fill_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Fill</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>normal_full_sweep_mode_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Normal operation mode (full sweep)</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_velocity_x_gsm_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle velocity X component in GSM coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_velocity_y_gsm_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle velocity Y component in GSM coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_velocity_z_gsm_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle velocity Z component in GSM coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>AOCS_non_science_mode_maneuver_or_safehold_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>AOCS non-science mode (spacecraft maneuver/safehold)</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_density_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Proton density value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_temperature_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Proton temperature value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>reduced_alpha_particle_data_quality_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Reduced alpha particle data quality; peak identified but resulting science data subject to high uncertainties</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>calibration_mode_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Instrument in calibration mode</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_speed_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Proton speed value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton velocity Y component GSM</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind proton velocity Y component in Geocentric Solar Magnetospheric coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e819">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSM</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton velocity X component GSM</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind proton velocity X component in Geocentric Solar Magnetospheric coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e878">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSM</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_speed</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind proton speed</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e937">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton velocity Z component GSM</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind proton velocity Z component in Geocentric Solar Magnetospheric coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e986">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSM</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton velocity X component GSE</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind proton velocity X component in Geocentric Solar Ecliptic coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1046">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSE</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>time</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>date and time for each observation</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1105">
+              <gml:identifier codeSpace="local">milliseconds since 1970-01-01T00:00:00Z</gml:identifier>
+              <gml:remarks>1.0E-3&amp;gt;s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton velocity Z component GSE</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind proton velocity Z component in Geocentric Solar Ecliptic coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1139">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSE</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton velocity Y component GSE</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind proton velocity Y component in Geocentric Solar Ecliptic coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1198">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSE</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_temperature</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind proton temperature</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>79497000.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>35529.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1257">
+              <gml:identifier codeSpace="local">degrees K</gml:identifier>
+              <gml:remarks />
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_density</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind proton density</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>221.19</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0.2178</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1303">
+              <gml:identifier codeSpace="local">cm^-3</gml:identifier>
+              <gml:remarks>1.0E-6&amp;gt;m^-3</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha velocity Y component GSE</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind alpha velocity Y component in Geocentric Solar Ecliptic coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1353">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSE</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha velocity X component GSE</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind alpha velocity X component in Geocentric Solar Ecliptic coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1412">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSE</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha velocity X component GSM</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind alpha velocity X component in Geocentric Solar Magnetospheric coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1471">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSM</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha velocity Z component GSE</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind alpha velocity Z component in Geocentric Solar Ecliptic coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1530">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSE</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha velocity Z component GSM</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind alpha velocity Z component in Geocentric Solar Magnetospheric coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1589">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSM</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha velocity Y component GSM</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind alpha velocity Y component in Geocentric Solar Magnetospheric coordinates</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1648">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateRepresentation</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The method or form for specifying a given point or vector in a given coordinate system</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>Cartesian</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.CoordinateSystemName</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>The coordinate system in which the position, direction or observation has been expressed.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>GSM</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>loss_of_proton_peak_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Loss of proton peak</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_speed</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>solar wind alpha speed</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1516.0</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>169.0</gco:Real>
+          </gmd:minValue>
+          <gmd:units>
+            <gml:UnitDefinition gml:id="d1e1736">
+              <gml:identifier codeSpace="local">km/s</gml:identifier>
+              <gml:remarks>1.0E3&amp;gt;m/s</gml:remarks>
+            </gml:UnitDefinition>
+          </gmd:units>
+        </gmd:MD_Band>
+      </gmd:dimension>
+      <gmi:rangeElementDescription>
+        <gmi:MI_RangeElementDescription>
+          <gmi:name>
+            <gco:CharacterString>spase.FillValue</gco:CharacterString>
+          </gmi:name>
+          <gmi:definition>
+            <gco:CharacterString>A value that indicates that a quantity is undefined.</gco:CharacterString>
+          </gmi:definition>
+          <gmi:rangeElement>
+            <gco:Record>-99999.0</gco:Record>
+          </gmi:rangeElement>
+        </gmi:MI_RangeElementDescription>
+      </gmi:rangeElementDescription>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>backfilled_data_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>One or more measurements were backfilled from the spacecraft recorder and therefore were not available to forecasters in real-time</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_position_high_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle peak identified above the expected position</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_position_low_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle peak identified below the expected position</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_peak_unbounded_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle peak identified but not bounded by &lt;10% current values</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_out_of_range_unknown_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Out of range: unknown - no measurements in this cycle to the right of the proton peak exceeded the noise threshold.</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_out_of_range_high_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Out of range: high - the alpha particle peak current occurred in the last window of the measurement cycle.</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_proton_confusion_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Likely proton confusion due to non-negligible proton flux which may have contributed to currents measured in the alpha particle peak range. Threshold defined as the two peaks being within two thermal widths of each other.</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_peak_unresolved_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Unresolved alpha particle peak, peak band consists of fewer than 3 voltage windows</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_density_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle density value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_speed_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle speed value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_velocity_x_gse_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle velocity X component in GSE coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_temperature_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle temperature value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_velocity_x_gsm_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Proton velocity X component in GSM coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_velocity_z_gse_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Proton velocity Z component in GSE coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_velocity_z_gsm_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Proton velocity Z component in GSM coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>proton_velocity_y_gsm_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Proton velocity Y component in GSM coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_velocity_z_gse_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle velocity Z component in GSE coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>alpha_velocity_y_gse_out_of_range_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Alpha particle velocity Y component in GSE coordinates value out of expected range</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>loss_of_alpha_particle_peak_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Loss of alpha particle peak</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:contentInfo>
+    <gmi:MI_CoverageDescription>
+      <gmd:attributeDescription>
+        <gco:RecordType>spase parameter</gco:RecordType>
+      </gmd:attributeDescription>
+      <gmd:contentType>
+        <gmd:MD_CoverageContentTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode" codeListValue="physicalMeasurement">physicalMeasurement</gmd:MD_CoverageContentTypeCode>
+      </gmd:contentType>
+      <gmd:dimension>
+        <gmd:MD_Band>
+          <gmd:sequenceIdentifier>
+            <gco:MemberName>
+              <gco:aName>
+                <gco:CharacterString>reduced_proton_data_quality_flag</gco:CharacterString>
+              </gco:aName>
+              <gco:attributeType />
+            </gco:MemberName>
+          </gmd:sequenceIdentifier>
+          <gmd:descriptor>
+            <gco:CharacterString>Reduced proton data quality; peak identified but resulting science data subject to high uncertainties</gco:CharacterString>
+          </gmd:descriptor>
+          <gmd:maxValue>
+            <gco:Real>1</gco:Real>
+          </gmd:maxValue>
+          <gmd:minValue>
+            <gco:Real>0</gco:Real>
+          </gmd:minValue>
+        </gmd:MD_Band>
+      </gmd:dimension>
+    </gmi:MI_CoverageDescription>
+  </gmd:contentInfo>
+  <gmd:distributionInfo>
+    <gmd:MD_Distribution>
+      <gmd:distributionFormat>
+        <gmd:MD_Format>
+          <gmd:name>
+            <gco:CharacterString>NetCDF</gco:CharacterString>
+          </gmd:name>
+          <gmd:version>
+            <gco:CharacterString>Classic</gco:CharacterString>
+          </gmd:version>
+        </gmd:MD_Format>
+      </gmd:distributionFormat>
+      <gmd:distributor>
+        <gmd:MD_Distributor>
+          <gmd:distributorContact xlink:title="WFR">
+            <gmd:CI_ResponsibleParty uuid="a1805125-0604-441f-b5e8-922fcd357cac">
+              <gmd:individualName>
+                <gco:CharacterString>William Rowland</gco:CharacterString>
+              </gmd:individualName>
+              <gmd:organisationName>
+                <gco:CharacterString>DOC/NOAA/NESDIS/NCEI &gt; National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce</gco:CharacterString>
+              </gmd:organisationName>
+              <gmd:contactInfo>
+                <gmd:CI_Contact>
+                  <gmd:phone>
+                    <gmd:CI_Telephone>
+                      <gmd:voice>
+                        <gco:CharacterString>303-497-3708</gco:CharacterString>
+                      </gmd:voice>
+                    </gmd:CI_Telephone>
+                  </gmd:phone>
+                  <gmd:address>
+                    <gmd:CI_Address>
+                      <gmd:deliveryPoint>
+                        <gco:CharacterString>325 Broadway</gco:CharacterString>
+                      </gmd:deliveryPoint>
+                      <gmd:city>
+                        <gco:CharacterString>Boulder</gco:CharacterString>
+                      </gmd:city>
+                      <gmd:administrativeArea>
+                        <gco:CharacterString>CO</gco:CharacterString>
+                      </gmd:administrativeArea>
+                      <gmd:postalCode>
+                        <gco:CharacterString>80305</gco:CharacterString>
+                      </gmd:postalCode>
+                      <gmd:country>
+                        <gco:CharacterString>USA</gco:CharacterString>
+                      </gmd:country>
+                      <gmd:electronicMailAddress>
+                        <gco:CharacterString>William.Rowland@noaa.gov</gco:CharacterString>
+                      </gmd:electronicMailAddress>
+                      <gmd:electronicMailAddress>
+                        <gco:CharacterString />
+                      </gmd:electronicMailAddress>
+                    </gmd:CI_Address>
+                  </gmd:address>
+                </gmd:CI_Contact>
+              </gmd:contactInfo>
+              <gmd:role>
+                <gmd:CI_RoleCode codeList="http://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact">pointOfContact</gmd:CI_RoleCode>
+              </gmd:role>
+            </gmd:CI_ResponsibleParty>
+          </gmd:distributorContact>
+        </gmd:MD_Distributor>
+      </gmd:distributor>
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://www.ngdc.noaa.gov/dscovr/portal/index.html#/download</gmd:URL>
+              </gmd:linkage>
+              <gmd:name>
+                <gco:CharacterString>Download data</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>NCEI DSCOVR data access portal</gco:CharacterString>
+              </gmd:description>
+              <gmd:function>
+                <gmd:CI_OnLineFunctionCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download">download</gmd:CI_OnLineFunctionCode>
+              </gmd:function>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+    </gmd:MD_Distribution>
+  </gmd:distributionInfo>
+  <gmd:metadataMaintenance>
+    <gmd:MD_MaintenanceInformation>
+      <gmd:maintenanceAndUpdateFrequency>
+        <gmd:MD_MaintenanceFrequencyCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="asNeeded">asNeeded</gmd:MD_MaintenanceFrequencyCode>
+      </gmd:maintenanceAndUpdateFrequency>
+      <gmd:maintenanceNote>
+        <gco:CharacterString>This metadata record was transformed 2016-11-29 with model-to-stds.xsl.</gco:CharacterString>
+      </gmd:maintenanceNote>
+    </gmd:MD_MaintenanceInformation>
+  </gmd:metadataMaintenance>
+  <gmi:acquisitionInformation>
+    <gmi:MI_AcquisitionInformation>
+      <gmi:instrument xlink:title="FC">
+        <gmi:MI_Instrument xsi:schemaLocation="http://www.isotc211.org/2005/gmi http://www.ngdc.noaa.gov/metadata/published/xsd/schema.xsd" uuid="60e2a65b-8924-4ed1-bdc8-0d023705b278">
+          <gmi:identifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>DSCOVR Faraday Cup</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmi:identifier>
+          <gmi:type>
+            <gco:CharacterString>faraday cup</gco:CharacterString>
+          </gmi:type>
+          <gmi:description>
+            <gco:CharacterString>Provides real-time measurement of solar wind proton density, speed, velocity, temperature, etc...</gco:CharacterString>
+          </gmi:description>
+        </gmi:MI_Instrument>
+      </gmi:instrument>
+      <gmi:platform xlink:title="DSCOVR">
+        <gmi:MI_Platform xsi:schemaLocation="http://www.isotc211.org/2005/gmi http://www.ngdc.noaa.gov/metadata/published/xsd/schema.xsd" uuid="aaecf884-4a79-4d1a-9824-aa3dd031adaf">
+          <gmi:identifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>DSCOVR &gt; Deep Space Climate Observatory</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmi:identifier>
+          <gmi:description>
+            <gco:CharacterString>Deep Space Climate Observatory is a NOAA Earth observation and space weather satellite stationed at the first Lagrange point (L1).</gco:CharacterString>
+          </gmi:description>
+          <gmi:instrument gco:nilReason="inapplicable" />
+        </gmi:MI_Platform>
+      </gmi:platform>
+    </gmi:MI_AcquisitionInformation>
+  </gmi:acquisitionInformation>
+</gmi:MI_Metadata>
