@@ -28,7 +28,7 @@ class MetadataRestController {
 
   @RequestMapping(path = '/metadata/{type}/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveJson(@PathVariable String type, @PathVariable String id, HttpServletResponse response) {
-    def result = metadataStore.retrieveFromStore(type, id)
+    def result = metadataStore.retrieveEntity(type, id)
     if (!result) {
       response.sendError(404, "No such ${type} with id ${id}")
     }

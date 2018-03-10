@@ -1,6 +1,9 @@
 package org.cedar.psi.registry.service
 
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
+import org.apache.kafka.clients.admin.AdminClient
+import org.apache.kafka.clients.admin.AdminClientConfig
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -10,6 +13,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 
+@Slf4j
 @CompileStatic
 @Configuration
 class KafkaConfig {
@@ -26,6 +30,15 @@ class KafkaConfig {
     configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
     configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
     return new KafkaProducer<>(configProps)
+  }
+
+  @Bean(destroyMethod = 'close')
+  @Profile('default') // overridden in the integration profile to support integration testing
+  AdminClient adminClient() {
+    Map<String, Object> config = new HashMap<>()
+    config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
+    config.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, 1000)
+    return AdminClient.create(config)
   }
 
 }

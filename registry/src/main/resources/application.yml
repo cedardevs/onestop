@@ -5,14 +5,6 @@ management.endpoints.enabled-by-default: false
 kafka:
   bootstrap:
     servers: localhost:9092
-  topics:
-    raw:
-      granule: granule-events
-      collection: collection-events
-  stores:
-    raw:
-      granule: raw-granule
-      collection: raw-collection
 
 logging:
   level:
