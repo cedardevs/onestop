@@ -1,46 +1,73 @@
-apply plugin: 'war'
+buildscript {
+  repositories {
+    maven { url "https://plugins.gradle.org/m2/" }
+    maven { url "https://plugins.gradle.org/m2/" }
+  }
+  dependencies {
+    classpath 'com.gradle:build-scan-plugin:1.11'
+    classpath 'org.owasp:dependency-check-gradle:3.1.1'
+    classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
+
+  }
+}
+
+
+apply plugin: 'org.owasp.dependencycheck'
 apply plugin: 'groovy'
-apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
-apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.cedar.dockerplugin'
+apply plugin: 'application'
+apply plugin: 'io.spring.dependency-management'
+
+mainClassName = 'org.cedar.psi.wrapper.stream.ScriptWrapperStreamConfig'
+
+repositories {
+  mavenCentral()
+}
 
 dependencies {
-  compile('org.codehaus.groovy:groovy')
-  compile('org.codehaus.groovy:groovy-json')
-  compile("org.codehaus.groovy:groovy-xml")
-  compile('org.springframework.boot:spring-boot-starter-actuator')
-  compile('org.springframework.boot:spring-boot-starter-web')
-  compile('org.springframework.cloud:spring-cloud-starter')
-  compile('org.apache.kafka:kafka-streams:1.0.0')
+  compile('org.codehaus.groovy:groovy:2.4.10')
+  compile('org.codehaus.groovy:groovy-json:2.4.10')
+  compile("org.codehaus.groovy:groovy-xml:2.4.10")
+  compile('org.apache.kafka:kafka-streams:1.0.0'){
+    exclude group: 'log4j'
+    exclude group: 'org.slf4j'
+  }
+  compile('org.slf4j:slf4j-api:1.7.25')
   compile('org.apache.commons:commons-text:1.2')
+  compile('ch.qos.logback:logback-core:1.2.3')
+  compile group: 'com.github.danielwegener', name: 'logback-kafka-appender', version: '0.1.0'
 
-  runtime('org.springframework.boot:spring-boot-devtools')
 
-  providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
-
-  testCompile('org.springframework.boot:spring-boot-starter-test')
-  testCompile("org.spockframework:spock-spring:${project.spockVersion}")
-  testCompile("org.spockframework:spock-core:${project.spockVersion}")
-  testCompile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
+  testCompile('junit:junit:4.12')
+  testCompile('org.spockframework:spock-core:1.0-groovy-2.4')
   testCompile('org.testcontainers:testcontainers:1.4.2')
+  testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
 }
 
-war {
-  // build a deployable war in addition to the executable one
-  enabled = true
+//sourceSets {
+//  intTest
+//}
+
+task uberjar(type: Jar, dependsOn: build) {
+  from files(sourceSets.main.output.classesDir)
+  from configurations.runtime.asFileTree.files.collect { zipTree(it) }
+
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+
 }
 
-bootWar {
-  // add a classifier to distinguish the executable war
-  classifier = 'all'
-  launchScript()
-}
+build.finalizedBy uberjar
 
 docker {
-  additionalBuildArgs = [WAR_NAME: bootWar.outputs.files.singleFile.name]
+  username = System.getenv('DOCKER_USER')
+  password = System.getenv('DOCKER_PASSWORD')
+  additionalBuildArgs = [WAR_NAME: uberjar.outputs.files.singleFile.name]
 }
-
-BuildDockerImage.dependsOn(bootWar)
-assemble.dependsOn(BuildDockerImage)
+//
+BuildDockerImage.dependsOn(uberjar)
+//assemble.dependsOn(BuildDockerImage)
 PublishDockerImage.dependsOn(BuildDockerImage)
 task publish { dependsOn PublishDockerImage }

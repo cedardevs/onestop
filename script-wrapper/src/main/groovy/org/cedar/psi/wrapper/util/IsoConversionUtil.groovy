@@ -6,7 +6,6 @@ import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.text.WordUtils
 import groovy.xml.XmlUtil
-import org.springframework.stereotype.Component
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -20,7 +19,7 @@ import java.time.temporal.TemporalAccessor
 import java.time.temporal.TemporalQuery
 
 @Slf4j
-@Component
+//@Component
 class IsoConversionUtil {
   static Map parseIdentifierInfo(String xml) {
     def slurped = new XmlSlurper().parseText(xml)

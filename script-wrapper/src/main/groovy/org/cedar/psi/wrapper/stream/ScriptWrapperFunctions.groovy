@@ -4,7 +4,7 @@ import groovy.util.logging.Slf4j
 
 @Slf4j
 class ScriptWrapperFunctions {
-    static scriptCaller(Object msg, String command, long timeout){
+    static String scriptCaller(Object msg, String command, long timeout){
         List<String> commandList = command.split(' ') .toList()
         log.info "Running : $commandList"
         try {

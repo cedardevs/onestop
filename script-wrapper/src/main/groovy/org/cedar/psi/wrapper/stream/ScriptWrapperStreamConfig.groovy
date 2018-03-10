@@ -1,7 +1,5 @@
 package org.cedar.psi.wrapper.stream
 
-import groovy.transform.CompileStatic
-import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
@@ -10,69 +8,65 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.KStream
 import org.cedar.psi.wrapper.util.IsoConversionUtil
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
-
-@Slf4j
-@Configuration
-@CompileStatic
 class ScriptWrapperStreamConfig {
+    private static final Logger log = LoggerFactory.getLogger(ScriptWrapperStreamConfig.class)
 
-  @Value('${stream.topics.input}')
-  String inputTopic
+    private static String inputTopic = "metadata-aggregator-raw-granules-changelog"
+    private static String outputTopic = "parsed-granules"
+    private static String command = "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
+    private static Boolean doIsoConversion = true
+    private static long timeout = 5000
+    private static String bootstrapServers = "kafka:9092"
+    private static String applicationId = "dscovr-iso"
 
-  @Value('${stream.topics.output}')
-  String outputTopic
+    static void main(final String[] args) throws Exception {
 
-  @Value('${stream.command}')
-  String command
+        log.info("streaming ...")
 
-  @Value('${stream.convert.iso:false}')
-  Boolean doIsoConversion
+        final KafkaStreams streams = scriptWrapperStreamInstance()
 
-  @Value('${stream.command_timeout:5000}')
-  long timeout
+        // Add shutdown hook to respond to SIGTERM and gracefully close Kafka Streams
+        Runtime.getRuntime().addShutdownHook(new Thread({ streams.close() }))
+    }
 
-  @Value('${kafka.group.id}')
-  String id
+    static KafkaStreams scriptWrapperStreamInstance() {
+        Properties streamsConfiguration = streamsConfig()
+        IsoConversionUtil isoConversionUtil = new IsoConversionUtil()
 
-  @Value('${kafka.bootstrap.servers}')
-  String bootstrapServers
+        // stream DSL
+        final StreamsBuilder builder = new StreamsBuilder()
+        Topology topology = builder.build()
+        final KStream<String, String> inputStream = builder.stream(inputTopic)
+        inputStream.mapValues({ msg ->
+            try{
+                return ScriptWrapperFunctions.scriptCaller(msg, command, timeout)
+            }catch(Exception e){
+                log.error("Caught exception $e: ${e.message}")
+            }
+        })
+        .filterNot({ key, msg -> msg.toString().startsWith('ERROR') })
+        .mapValues({ msg -> doIsoConversion ? isoConversionUtil.parseXMLMetadata(msg as String) : msg })
+        .to(outputTopic)
 
-  @Autowired
-  IsoConversionUtil isoConversionUtil
+        final KafkaStreams streams = new KafkaStreams(topology, streamsConfiguration)
 
-  @Bean
-  StreamsConfig streamConfig() {
-    return new StreamsConfig([
-        (StreamsConfig.APPLICATION_ID_CONFIG)           : id,
-        (StreamsConfig.BOOTSTRAP_SERVERS_CONFIG)        : bootstrapServers,
-        (StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
-        (StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG): Serdes.String().class.name,
-        (StreamsConfig.COMMIT_INTERVAL_MS_CONFIG)       : 500,
-        (ConsumerConfig.AUTO_OFFSET_RESET_CONFIG)       : "earliest"
-    ])
-  }
+        streams.start()
 
-  @Bean
-  Topology wrapperTopology() {
-    def builder = new StreamsBuilder()
-    KStream inputStream = builder.stream(inputTopic)
-    inputStream.mapValues ({ msg ->
-      ScriptWrapperFunctions.scriptCaller(msg, command, timeout)
-    })
-    .filterNot({key, msg -> msg.toString().startsWith('ERROR')})
-    .mapValues({msg -> doIsoConversion ? isoConversionUtil.parseXMLMetadata(msg as String)  : msg})
-    .to(outputTopic)
-    return builder.build()
-  }
+        return streams
+    }
 
-  @Bean(initMethod = 'start', destroyMethod = 'close')
-  KafkaStreams parserStream(Topology wrapperTopology, StreamsConfig streamConfig) {
-    return new KafkaStreams(wrapperTopology, streamConfig)
-  }
+    private static Properties streamsConfig() {
+        final Properties streamsConfiguration = new Properties()
+        streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId)
+        streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
+        streamsConfiguration.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().class.name)
+        streamsConfiguration.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().class.name)
+        streamsConfiguration.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 500)
+        streamsConfiguration.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
 
+        return streamsConfiguration
+    }
 }
