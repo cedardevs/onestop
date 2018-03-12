@@ -1,28 +1,41 @@
-// always a good idea to add an on console status listener
-import ch.qos.logback.core.*
-import ch.qos.logback.core.rolling.*
+import ch.qos.logback.classic.filter.ThresholdFilter
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder
+import ch.qos.logback.core.util.FileSize
 
+import static ch.qos.logback.classic.Level.*
 
-def appenderList = ["ROLLING"]
-def consoleAppender = true
-def USER_HOME = System.getProperty("user.home")
-def HOSTNAME=hostname
-def PROJECTNAME= "script-wrapper"
-if (consoleAppender) {
-    appender("CONSOLE", ConsoleAppender) {
-        encoder(PatternLayoutEncoder) {
-            pattern = "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
-        }
+def APP_NAME = 'dscovr-processor'
+def LOG_PATH = '/data/logs/'
+def LOG_LEVEL = DEBUG
+
+appender("STDOUT", ConsoleAppender) {
+    filter(ThresholdFilter) {
+        level = INFO
     }
-}
-
-appender("ROLLING", RollingFileAppender) {
     encoder(PatternLayoutEncoder) {
-        Pattern = "%d %level %thread %mdc %logger - %m%n"
+        pattern =  "%d{yy-MM-dd HH:mm:ss.SSS} %5p - [%t] %-40.40logger{39} : %m%n%ex"
     }
-    rollingPolicy(TimeBasedRollingPolicy) {
-        FileNamePattern = "${USER_HOME}/log/${PROJECTNAME}-%d{yyyy-MM}-${HOSTNAME}.log"
+    // Redirect output to the System.err.
+    target = 'System.err'
+}
+
+appender("FILE", RollingFileAppender) {
+    file = "${LOG_PATH}/${APP_NAME}.log"
+    rollingPolicy(SizeAndTimeBasedRollingPolicy) {
+        fileNamePattern = "${LOG_PATH}/${APP_NAME}.%d{yyyy-MM-dd}.log.%i"
+        maxFileSize = "10MB"
+        maxHistory = 7
+        totalSizeCap = FileSize.valueOf("100MB")
+    }
+    encoder(PatternLayoutEncoder) {
+        pattern = "%d{yy-MM-dd HH:mm:ss.SSS} %5p - [%t] %-40.40logger{39} : %m%n%ex"
     }
 }
 
-root(INFo, appenderList)
+logger('org.gradle', INFO)
+logger('org.cedar.psi.wrapper', DEBUG, ["STDOUT"])
+logger('org.apache.kafka', DEBUG, ["STDOUT"])
+logger('org.codehaus.groovy', DEBUG, ["STDOUT"])
+logger("org.gradle", WARN)
+
+root(LOG_LEVEL, ["FILE"])
