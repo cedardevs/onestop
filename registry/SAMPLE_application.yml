@@ -1,5 +1,0 @@
-server.port: ####
-
-kafka:
-  bootstrap.servers: <host:port of kafka broker>
-  topic: <topic you want to subscribe to>
