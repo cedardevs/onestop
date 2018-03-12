@@ -1,0 +1,15 @@
+{
+  "name": "psi-to-es",
+  "config": {
+    "tasks.max": "1",
+    "connector.class": "ElasticsearchSink",
+    "connection.url": "http://elasticsearch:9200",
+    "topics": "parsed-granules,parsed-collections",
+    "topic.index.map": "parsed-granules:onestop-staging_granule,parsed-collections:onestop-staging_collections",
+    "type.name": "doc",
+    "schema.ignore": true,
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
+  }
+}
