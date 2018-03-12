@@ -1,6 +1,6 @@
 FROM java:8-jre
 
-ARG WAR_NAME
+ARG JAR_NAME
 ARG VCS_REF
 ARG VERSION
 ARG DATE
@@ -23,8 +23,8 @@ RUN apt-get update && \
 ENV PATH=$JAVA_HOME/bin:$PATH
 
 WORKDIR /usr/src/app
-COPY build/libs/${WAR_NAME} .
+COPY build/libs/${JAR_NAME} .
 COPY scripts/ ./scripts
-RUN ln -s ${WAR_NAME} script-wrapper.war
+RUN ln -s ${JAR_NAME} script-wrapper.jar
 EXPOSE 8080
-CMD ["java", "-jar", "/usr/src/app/script-wrapper.war"]
+CMD ["java", "-jar", "/usr/src/app/script-wrapper.jar"]

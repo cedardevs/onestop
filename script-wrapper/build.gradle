@@ -1,12 +1,12 @@
 buildscript {
   repositories {
     maven { url "https://plugins.gradle.org/m2/" }
-    maven { url "https://plugins.gradle.org/m2/" }
   }
   dependencies {
     classpath 'com.gradle:build-scan-plugin:1.11'
     classpath 'org.owasp:dependency-check-gradle:3.1.1'
     classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
+    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
 
   }
 }
@@ -16,7 +16,7 @@ apply plugin: 'org.owasp.dependencycheck'
 apply plugin: 'groovy'
 apply plugin: 'org.cedar.dockerplugin'
 apply plugin: 'application'
-apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = 'org.cedar.psi.wrapper.stream.ScriptWrapperStreamConfig'
 
@@ -28,15 +28,11 @@ dependencies {
   compile('org.codehaus.groovy:groovy:2.4.10')
   compile('org.codehaus.groovy:groovy-json:2.4.10')
   compile("org.codehaus.groovy:groovy-xml:2.4.10")
-  compile('org.apache.kafka:kafka-streams:1.0.0'){
-    exclude group: 'log4j'
-    exclude group: 'org.slf4j'
-  }
+  compile('org.apache.kafka:kafka-streams:1.0.0')
   compile('org.slf4j:slf4j-api:1.7.25')
   compile('org.apache.commons:commons-text:1.2')
   compile('ch.qos.logback:logback-core:1.2.3')
   compile group: 'com.github.danielwegener', name: 'logback-kafka-appender', version: '0.1.0'
-
 
   testCompile('junit:junit:4.12')
   testCompile('org.spockframework:spock-core:1.0-groovy-2.4')
@@ -45,29 +41,25 @@ dependencies {
 
 }
 
-//sourceSets {
-//  intTest
-//}
-
-task uberjar(type: Jar, dependsOn: build) {
-  from files(sourceSets.main.output.classesDir)
-  from configurations.runtime.asFileTree.files.collect { zipTree(it) }
-
+jar{
   manifest {
     attributes 'Main-Class': mainClassName
   }
-
+}
+// check http://imperceptiblethoughts.com/shadow/
+shadowJar{
+  baseName="script-wrapper"
+  classifier = 'all'
+  version = version
+  configurations = [project.configurations.compile]
 }
 
-build.finalizedBy uberjar
 
 docker {
-  username = System.getenv('DOCKER_USER')
-  password = System.getenv('DOCKER_PASSWORD')
-  additionalBuildArgs = [WAR_NAME: uberjar.outputs.files.singleFile.name]
+  additionalBuildArgs = [JAR_NAME: "script-wrapper-0.1.0-SNAPSHOT-all.jar"]
 }
-//
-BuildDockerImage.dependsOn(uberjar)
-//assemble.dependsOn(BuildDockerImage)
+
+BuildDockerImage.dependsOn(shadowJar)
+assemble.dependsOn(BuildDockerImage)
 PublishDockerImage.dependsOn(BuildDockerImage)
 task publish { dependsOn PublishDockerImage }

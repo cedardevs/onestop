@@ -1,15 +1,12 @@
 buildscript {
   ext {
-    springBootVersion = '2.0.0.RELEASE'
+    spockVersion = '1.1-groovy-2.4'
   }
   repositories {
-    maven { url "https://plugins.gradle.org/m2/" }
-    maven { url "https://repo.spring.io/milestone" }
     maven { url "https://plugins.gradle.org/m2/" }
   }
   dependencies {
     classpath 'com.gradle:build-scan-plugin:1.11'
-    classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
     classpath 'org.owasp:dependency-check-gradle:3.1.1'
   }
@@ -23,25 +20,10 @@ subprojects {
   group = rootProject.group
   version = rootProject.version
 
-  ext {
-    spockVersion = '1.1-groovy-2.4'
-    springCloudVersion = 'Finchley.M7'
-  }
-
   afterEvaluate {
     repositories {
       mavenCentral()
       maven { url "https://repo.spring.io/milestone" }
-    }
-
-    dependencyManagement {
-      imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-      }
-    }
-
-    configurations {
-      compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
     }
 
     if (project.plugins.hasPlugin('org.cedar.dockerplugin')) {

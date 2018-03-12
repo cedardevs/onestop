@@ -1,5 +1,6 @@
 package org.cedar.psi.wrapper.stream
 
+import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
@@ -8,13 +9,10 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.KStream
 import org.cedar.psi.wrapper.util.IsoConversionUtil
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
+@Slf4j
 class ScriptWrapperStreamConfig {
-    private static final Logger log = LoggerFactory.getLogger(ScriptWrapperStreamConfig.class)
-
-    private static String inputTopic = "metadata-aggregator-raw-granules-changelog"
+    private static String inputTopic = "metadata-aggregator-raw-granule-changelog"
     private static String outputTopic = "parsed-granules"
     private static String command = "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
     private static Boolean doIsoConversion = true
@@ -52,8 +50,11 @@ class ScriptWrapperStreamConfig {
         .to(outputTopic)
 
         final KafkaStreams streams = new KafkaStreams(topology, streamsConfiguration)
-
-        streams.start()
+        try{
+            streams.start()
+        }catch(Exception e){
+            log.error("connection error $e")
+        }
 
         return streams
     }
