@@ -1,10 +1,12 @@
 import React from 'react'
 
+import iconClear from '../../img/font-awesome/white/svg/times-circle.svg'
+
 const styleSearchField = {
   color: 'black',
   maxWidth: '32em',
   minWidth: '22em',
-  display: 'inline-block',
+  display: 'inline-flex',
   marginRight: '0.309em',
 }
 
@@ -12,23 +14,36 @@ const styleTextField = {
   width: '100%',
   padding: '0.618em',
   border: '1px solid #ccc',
-  boxShadow: 'inset 0 1px 3px #ddd',
-  borderRadius: '2px',
+  boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.5)',
+  borderRadius: '2px 0 0 2px',
   boxSizing: 'border-box',
 }
 
+const styleTextFieldFocus = {
+  boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.5)',
+}
+
 const styleClearButton = {
-  marginLeft: '-1.618em',
-  height: '1em',
-  color: 'grey',
+  width: '2em',
+  backgroundColor: 'gray',
   border: 'none',
-  fontSize: '1.2em',
-  textShadow: 'none',
-  backgroundColor: 'white',
+  borderRadius: '0 2px 2px 0',
+  padding: '0.105em 0.309em',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}
+
+const styleIconClear = {
+  width: '100%',
 }
 
 const styleClearButtonHover = {
   color: '#5a5a5a',
+}
+
+const styleClearButtonFocus = {
+  backgroundColor: 'red',
 }
 
 class TextSearchField extends React.Component {
@@ -40,7 +55,9 @@ class TextSearchField extends React.Component {
   componentWillMount() {
     this.setState({
       value: this.props.value,
+      focusingText: false,
       hoveringClear: false,
+      focusingClear: false,
     })
   }
 
@@ -85,35 +102,90 @@ class TextSearchField extends React.Component {
     })
   }
 
+  handleTextFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingText: true,
+      }
+    })
+  }
+
+  handleTextBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingText: false,
+      }
+    })
+  }
+  handleClearFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingClear: true,
+      }
+    })
+  }
+
+  handleClearBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingClear: false,
+      }
+    })
+  }
+
+  handleClearClick = e => {}
+
   render() {
     const {onClear} = this.props
+
+    const styleTextFieldMerged = {
+      ...styleTextField,
+      ...(this.state.focusingText ? styleTextFieldFocus : {}),
+    }
 
     const styleClearButtonMerged = {
       ...styleClearButton,
       ...(this.state.hoveringClear ? styleClearButtonHover : {}),
+      ...(this.state.focusingClear ? styleClearButtonFocus : {}),
     }
 
     return (
       <div>
         <div style={styleSearchField}>
           <input
-            style={styleTextField}
+            style={styleTextFieldMerged}
             placeholder="Enter any term here to search NCEI data"
             onKeyDown={this.handleKeyDown}
             onChange={this.handleChange}
+            onFocus={this.handleTextFocus}
+            onBlur={this.handleTextBlur}
             value={this.state.value}
             aria-label="Search Text"
+            ref={input => {
+              this.searchInput = input
+            }}
           />
+          <button
+            style={styleClearButtonMerged}
+            onClick={onClear}
+            onMouseOver={this.handleMouseOverClear}
+            onMouseOut={this.handleMouseOutClear}
+            onFocus={this.handleClearFocus}
+            onBlur={this.handleClearBlur}
+            aria-label="Clear Search Text"
+          >
+            <img
+              src={iconClear}
+              style={styleIconClear}
+              aria-hidden={true}
+              alt="clear search icon"
+            />
+          </button>
         </div>
-        <button
-          style={styleClearButtonMerged}
-          onClick={onClear}
-          onMouseOver={this.handleMouseOverClear}
-          onMouseOut={this.handleMouseOutClear}
-          aria-label="Clear Search Text"
-        >
-          x
-        </button>
       </div>
     )
   }
