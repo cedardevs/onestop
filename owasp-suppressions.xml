@@ -3,6 +3,15 @@
 
   <suppress>
     <notes><![CDATA[
+      According to pivotal security reports, one mitigation to this vulnerability is to have upgraded at least
+      Spring Boot 2.0 M6, and we are on the 2.0 M7 release train.
+      ]]></notes>
+    <filePath regex="true">.*spring-boot-.*\.jar</filePath>
+    <cve>CVE-2017-8046</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
       Refers to a vulnerability in FasterXML jackson-databind which has been solved as of version 2.8.11.1.
       The latest version used is 2.9.3. The vulnerability is thus a false positive; further, the special conditions
       under which this vulnerability can be exposed is well-documented.
