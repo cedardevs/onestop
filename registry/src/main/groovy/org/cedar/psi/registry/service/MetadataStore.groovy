@@ -3,52 +3,61 @@ package org.cedar.psi.registry.service
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+
+import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_STORE
+import static org.cedar.psi.registry.service.MetadataStreamService.RAW_COLLECTION_STORE
+import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_GRANULE_STORE
+import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_COLLECTION_STORE
 
 @Slf4j
 @Service
 @CompileStatic
 class MetadataStore {
 
-  @Value('${kafka.stores.raw.granule}')
-  String RAW_GRANULE_STORE
-
-  @Value('${kafka.stores.raw.collection}')
-  String RAW_COLLECTION_STORE
-
-  private KafkaStreams metadataStream
+  private MetadataStreamService metadataStreamService
   private JsonSlurper slurper
 
   @Autowired
-  MetadataStore(KafkaStreams metadataStream) {
-    this.metadataStream = metadataStream
+  MetadataStore(MetadataStreamService metadataStreamService) {
+    this.metadataStreamService = metadataStreamService
     this.slurper = new JsonSlurper()
   }
 
-  Map retrieveFromStore(String type, String id) {
-    def storeName = lookupStoreName(type)
-    if (!storeName) { return null }
+  Map retrieveEntity(String type, String id) {
+    def rawStore = lookupRawStoreName(type)
+    def parsedStore = lookupParsedStoreName(type)
+    if (!rawStore && !parsedStore) { return null }
+    String rawString = rawStore ? getValueFromStore(rawStore, id) : null
+    String parsedString = parsedStore ? getValueFromStore(parsedStore, id) : null
+    if (!rawString && !parsedString) { return null }
+    Map rawMap = rawString ? slurper.parseText(rawString) as Map : null
+    Map parsedMap = parsedString ? slurper.parseText(parsedString) as Map : null
+    return [id: id, type: type, attributes: [raw: rawMap, parsed: parsedMap]]
+  }
+
+  private getValueFromStore(String storeName, String id) {
     try {
-      def store = metadataStream.store(storeName, QueryableStoreTypes.keyValueStore())
+      def store = metadataStreamService.streamsApp.store(storeName, QueryableStoreTypes.keyValueStore())
       if (!store) { return null }
-      def value = store.get(id)
-      if (!value) { return null }
-      def attributes = slurper.parseText(value as String) as Map
-      return [id: id, type: type, attributes: attributes]
+      return store.get(id)
     }
     catch (Exception e) {
-      log.error("Failed to retrieve [${type}] with id [${id}] from state store [${storeName}]", e)
+      log.error("Failed to retrieve value with id [${id}] from state store [${storeName}]", e)
       throw e
     }
   }
 
-  private String lookupStoreName(String type) {
+  private static String lookupRawStoreName(String type) {
     return type == 'granule' ? RAW_GRANULE_STORE :
         type == 'collection' ? RAW_COLLECTION_STORE : null
+  }
+
+  private static String lookupParsedStoreName(String type) {
+    return type == 'granule' ? PARSED_GRANULE_STORE :
+        type == 'collection' ? PARSED_COLLECTION_STORE : null
   }
 
 }

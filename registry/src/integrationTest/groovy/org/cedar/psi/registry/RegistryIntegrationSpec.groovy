@@ -26,12 +26,6 @@ class RegistryIntegrationSpec extends Specification {
   @Value('${server.servlet.context-path:}')
   String contextPath
 
-  @Value('${kafka.topics.raw.granule}')
-  String RAW_GRANULE_TOPIC
-
-  @Value('${kafka.topics.raw.collection}')
-  String RAW_COLLECTION_TOPIC
-
   @Autowired
   AdminClient adminClient
 
@@ -70,7 +64,14 @@ class RegistryIntegrationSpec extends Specification {
 
     then:
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body == [id: granuleMap.trackingId, type: 'granule', attributes: granuleMap]
+    retrieveResponse.body == [
+        id: granuleMap.trackingId,
+        type: 'granule',
+        attributes: [
+            raw: granuleMap,
+            parsed: null
+        ]
+    ]
   }
 
   def 'can post then retrieve collection info'() {
@@ -98,7 +99,14 @@ class RegistryIntegrationSpec extends Specification {
 
     then:
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body == [id: collectionId, type: 'collection', attributes: [id: collectionId, rawMetadata: collectionText]]
+    retrieveResponse.body == [
+        id: collectionId,
+        type: 'collection',
+        attributes: [
+            raw: [id: collectionId, rawMetadata: collectionText],
+            parsed: null
+        ]
+    ]
   }
 
 }

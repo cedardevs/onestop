@@ -8,11 +8,7 @@ import spock.lang.Specification
 class PublisherSpec extends Specification {
 
   def mockProducer = Mock(Producer)
-  def publisher = new Publisher(mockProducer).with {
-    it.GRANULE_TOPIC = 'test_granule'
-    it.COLLECTION_TOPIC = 'test_collection'
-    return it
-  }
+  def publisher = new Publisher(mockProducer)
 
   def 'publishes valid granules'() {
     def data = '{"trackingId": "ABC", "path": "/test/file.txt"}'

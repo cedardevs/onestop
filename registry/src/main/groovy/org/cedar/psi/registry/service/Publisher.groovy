@@ -7,19 +7,15 @@ import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+
+import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_TOPIC
+import static org.cedar.psi.registry.service.MetadataStreamService.RAW_COLLECTION_TOPIC
 
 @Slf4j
 @Service
 @CompileStatic
 class Publisher {
-
-  @Value('${kafka.topics.raw.granule}')
-  String GRANULE_TOPIC
-
-  @Value('${kafka.topics.raw.collection}')
-  String COLLECTION_TOPIC
 
   private Producer<String, String> kafkaProducer
 
@@ -38,7 +34,7 @@ class Publisher {
     }
 
     String key = slurpedKey.trackingId.toString()
-    def record = new ProducerRecord<String, String>(GRANULE_TOPIC, key, data)
+    def record = new ProducerRecord<String, String>(RAW_GRANULE_TOPIC, key, data)
     log.debug("Sending: ${record}")
     kafkaProducer.send(record)
   }
@@ -46,7 +42,7 @@ class Publisher {
   void publishCollection(String data, String id = null) {
     def key = id ?: UUID.randomUUID().toString() // TODO - discuss w/ CoMET team and determine what to really do for IDs
     def message = [id: id, rawMetadata: data]
-    def record = new ProducerRecord<String, String>(COLLECTION_TOPIC, key, JsonOutput.toJson(message))
+    def record = new ProducerRecord<String, String>(RAW_COLLECTION_TOPIC, key, JsonOutput.toJson(message))
     log.debug("Sending: ${record}")
     kafkaProducer.send(record)
   }
