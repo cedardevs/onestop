@@ -27,7 +27,7 @@ import javax.annotation.PreDestroy
 @CompileStatic
 class MetadataStreamService {
 
-  static final String APP_ID = 'metadata_aggregator'
+  static final String APP_ID = 'metadata-aggregator'
 
   static final String RAW_GRANULE_TOPIC = 'raw-granule-events'
   static final String RAW_COLLECTION_TOPIC = 'raw-collection-events'
