@@ -94,7 +94,7 @@
 								<gco:CharacterString>https</gco:CharacterString>
 							</gmd:protocol>
 							<gmd:function>
-								<gmd:CI_OnLineFunctionCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="download">download</gmd:CI_OnLineFunctionCode>
+								<gmd:CI_OnLineFunctionCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="fileAccess">fileAccess</gmd:CI_OnLineFunctionCode>
 							</gmd:function>
 						</gmd:CI_OnlineResource>
 					</gmd:onLine>
