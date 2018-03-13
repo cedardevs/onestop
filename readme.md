@@ -26,10 +26,11 @@ docker containers with zookeeper, kafka, and each component.
 
 #### Pipe parsed outputs to Elasticsearch with Kafka Connect
 
-To create a connector in Kafka Connect which sends data from `parsed-granules` topic to Elasticsearch, send a REST request to it:
+To create the connectors in Kafka Connect to send collections and granules from to Elasticsearch, send these REST requests:
 
 ```bash
-curl -X POST -H "Content-Type: application/json" localhost:8083/connectors --data-binary @connect_config.json 
+curl -X POST -H "Content-Type: application/json" localhost:8083/connectors --data-binary @onestop_collection_connector.json
+curl -X POST -H "Content-Type: application/json" localhost:8083/connectors --data-binary @onestop_granule_connector.json  
 ```
 
 ## Legal
