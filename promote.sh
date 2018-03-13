@@ -24,6 +24,7 @@ fi
 # update the properties
 updateVersions() {
   sed -i -- "s/version=.*/version=$1/g" gradle.properties
+  sed -i -- "s/\"version\":.*/\"version\": \"$1\",/g" client/package.json
 }
 
 # commit and push
