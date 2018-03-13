@@ -8,6 +8,7 @@ export const protocols = Immutable([
     color: 'coral',
     label: 'OGC Web Coverage Service',
   },
+  {id: '☁', names: [ 'cloud' ], color: '#665678', label: 'Cloud File Access'},
   {id: 'D', names: [ 'download' ], color: 'blue', label: 'Download'},
   {id: 'F', names: [ 'ftp' ], color: 'red', label: 'FTP'},
   {
