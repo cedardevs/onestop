@@ -65,7 +65,21 @@ class ScriptWrapperStreamConfig {
       ScriptWrapperFunctions.scriptCaller(msg, command, timeout)
     })
     .filterNot({key, msg -> msg.toString().startsWith('ERROR')})
-    .mapValues({msg -> doIsoConversion ? isoConversionUtil.parseXMLMetadata(msg as String)  : msg})
+    .mapValues({msg ->
+      if (doIsoConversion) {
+        try {
+          isoConversionUtil.parseXMLMetadata(msg as String)
+        }
+        catch(e) {
+          log.error("Error parsing script output", e)
+          return "ERROR: ${e.message}"
+        }
+      }
+      else {
+        return msg
+      }
+    })
+    .filterNot({key, msg -> msg.toString().startsWith('ERROR')})
     .to(outputTopic)
     return builder.build()
   }
