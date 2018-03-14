@@ -81,7 +81,7 @@ task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'p
   onlyIf { isRelease }
   executable = "bash"
   args = ["-c", "curl -X POST -u \"\$BINTRAY_USER:\$BINTRAY_KEY\" -H \"Content-Length: 0\"" +
-    "http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version\""]
+    " http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version"]
 }
 
 group = 'org.cedar.onestop'
