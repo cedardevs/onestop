@@ -5,7 +5,7 @@ import ch.qos.logback.core.util.FileSize
 import static ch.qos.logback.classic.Level.*
 
 def APP_NAME = 'dscovr-processor'
-def LOG_PATH = '/data/logs/'
+def LOG_PATH = 'data/logs/'
 def LOG_LEVEL = DEBUG
 
 appender("STDOUT", ConsoleAppender) {

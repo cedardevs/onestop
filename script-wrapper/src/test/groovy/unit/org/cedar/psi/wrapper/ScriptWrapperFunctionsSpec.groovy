@@ -1,4 +1,4 @@
-package org.cedar.psi.registry
+package unit.org.cedar.psi.wrapper
 
 import org.cedar.psi.wrapper.stream.ScriptWrapperFunctions
 import spock.lang.Specification
