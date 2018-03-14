@@ -141,12 +141,6 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
         IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkPlaceholder', dscovrEnterpriseDownloadLink, IsoLiteXML)
         IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkProtocolPlaceholder', dscovrEnterpriseDownloadLinkProtocol, IsoLiteXML)
 
-        # Output to file
-        outFileName = './'+dscovrFileName+'.iso.xml'
-        with open(outFileName, 'w') as outFile:
-            outFile.write(str(IsoLiteXML))
-            print(str(IsoLiteXML))
-
         # Print detailed info
         if logLevel == 'Info':
             print 'input_json_dict\n', input_json_dict, '\n'
@@ -190,9 +184,9 @@ if __name__ == '__main__':
             input_json = sys.stdin.read()
 
         if 'logLevelOuter' in locals():
-            dscovrIsoLiteHackyWorkaround(input_json, logLevel=logLevelOuter)
+            print(dscovrIsoLiteHackyWorkaround(input_json, logLevel=logLevelOuter))
         else:
-            dscovrIsoLiteHackyWorkaround(input_json)
+            print(dscovrIsoLiteHackyWorkaround(input_json))
     else:
         print 'Requires input_json, json provided by the person/application calling it.'
         print 'Example: "/path/to/code/dscovrIsoLiteConstructor.py  "' + example_json
