@@ -8,8 +8,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.6.2"
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.7.0"
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     classpath 'com.wiredforcode:gradle-spawn-plugin:0.8.0'
     classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
@@ -19,6 +18,8 @@ buildscript {
 }
 
 plugins {
+  id "com.jfrog.bintray" version "1.8.0"
+  id "com.jfrog.artifactory" version "4.7.0"
   id 'com.gradle.build-scan' version '1.12.1'
   id "io.spring.dependency-management" version "1.0.4.RELEASE"
 }
