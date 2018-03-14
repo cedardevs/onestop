@@ -2,7 +2,7 @@ OneStop Search
 ===
 
 [![Build Status](https://travis-ci.org/cedardevs/onestop.svg?branch=master)](https://travis-ci.org/cedardevs/onestop)
-[ ![Download](https://api.bintray.com/packages/cires-ncei/maven/onestop/images/download.svg) ](https://bintray.com/cires-ncei/maven/onestop/_latestVersion)
+[ ![Download](https://api.bintray.com/packages/cedardevs/maven/onestop/images/download.svg) ](https://bintray.com/cedardevs/maven/onestop/_latestVersion)
 
 OneStop search software is used to allow discovery and access to the
 National Oceanic and Atmospheric Administration’s publicly available
