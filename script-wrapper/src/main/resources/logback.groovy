@@ -23,7 +23,7 @@ appender("FILE", RollingFileAppender) {
     file = "${LOG_PATH}/${APP_NAME}.log"
     rollingPolicy(SizeAndTimeBasedRollingPolicy) {
         fileNamePattern = "${LOG_PATH}/${APP_NAME}.%d{yyyy-MM-dd}.log.%i"
-        maxFileSize = "10MB"
+        maxFileSize= FileSize.valueOf("10MB")
         maxHistory = 7
         totalSizeCap = FileSize.valueOf("100MB")
     }

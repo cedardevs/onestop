@@ -9,23 +9,31 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.KStream
 import org.cedar.psi.wrapper.util.IsoConversionUtil
+import org.cedar.psi.wrapper.util.LoadConfigFile
 
 @Slf4j
 class ScriptWrapperStreamConfig {
-    private static String inputTopic = "metadata-aggregator-raw-granule-changelog"
-    private static String outputTopic = "parsed-granules"
-    private static String command = "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
+    private static String inputTopic
+    private static String outputTopic
+    private static String command
     private static Boolean doIsoConversion = true
-    private static long timeout = 5000
-    private static String bootstrapServers = "kafka:9092"
-    private static String applicationId = "dscovr-iso"
+    private static long timeout
+    private static String bootstrapServers
+    private static String applicationId
 
     static void main(final String[] args) throws Exception {
+        // config file can be set on
+        Map configVlaue = LoadConfigFile.getConfig("script-wrapper")
+
+        bootstrapServers = configVlaue.kafka.bootstrap.servers as String
+        applicationId    = configVlaue.kafka.bootstrap as String
+        inputTopic = configVlaue.stream.topics.input as String
+        outputTopic = configVlaue.stream.topics.output as String
+        command = configVlaue.stream.command as String
+        timeout = configVlaue.stream.command_timeout as Long
 
         log.info("streaming ...")
-
         final KafkaStreams streams = scriptWrapperStreamInstance()
-
         // Add shutdown hook to respond to SIGTERM and gracefully close Kafka Streams
         Runtime.getRuntime().addShutdownHook(new Thread({ streams.close() }))
     }
@@ -33,7 +41,6 @@ class ScriptWrapperStreamConfig {
     static KafkaStreams scriptWrapperStreamInstance() {
         Properties streamsConfiguration = streamsConfig()
         IsoConversionUtil isoConversionUtil = new IsoConversionUtil()
-
         // stream DSL
         final StreamsBuilder builder = new StreamsBuilder()
         Topology topology = builder.build()
@@ -46,7 +53,20 @@ class ScriptWrapperStreamConfig {
             }
         })
         .filterNot({ key, msg -> msg.toString().startsWith('ERROR') })
-        .mapValues({ msg -> doIsoConversion ? isoConversionUtil.parseXMLMetadata(msg as String) : msg })
+        .mapValues({ msg ->
+            if (doIsoConversion) {
+                try {
+                    isoConversionUtil.parseXMLMetadata(msg as String)
+                }
+                catch(e) {
+                    log.error("Error parsing script output", e)
+                    return "ERROR: ${e.message}"
+                }
+             } else {
+                return msg
+             }
+        })
+        .filterNot({key, msg -> msg.toString().startsWith('ERROR')})
         .to(outputTopic)
 
         final KafkaStreams streams = new KafkaStreams(topology, streamsConfiguration)
