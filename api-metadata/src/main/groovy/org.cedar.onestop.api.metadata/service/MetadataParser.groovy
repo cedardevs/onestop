@@ -613,19 +613,21 @@ class MetadataParser {
 
     if (!west || !east || !north || !south) { return null }
 
-    def type = (west == east && north == south) ? 'Point' : 'Polygon'
-    def coordinates = type == 'Point' ? [west, north] : [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
-
-    if(type == 'Polygon') {
-      // Check for valid polygon coordinates (no vertices should be the same)
-      def clone = coordinates[0].collect {it}
-      clone.removeAt(0)
-      def unique = clone.unique(false)
-      if (clone != unique) {
-        throw new Exception("Invalid spatial bounding box provided.")
-      }
+    def type, coordinates
+    if (west == east && north == south) {
+      type = 'Point'
+      coordinates = [west, north]
     }
-
+    else if (west == east || north == south) {
+      // Note: Because we are parsing the 'Geographic Bounding Box' element, only horizontal or vertical lines can be
+      //       determined. A diagonal line will be interpreted as a polygon.
+      type = 'LineString'
+      coordinates = [[west, south], [east, north]]
+    }
+    else {
+      type = 'Polygon'
+      coordinates = [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+    }
 
     return [type: type, coordinates: coordinates]
   }
