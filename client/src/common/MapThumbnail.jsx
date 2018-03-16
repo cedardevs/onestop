@@ -4,7 +4,10 @@ import ReactDOM from 'react-dom'
 import L from 'leaflet'
 import E from 'esri-leaflet'
 import _ from 'lodash'
-import {ensureDatelineFriendlyPolygon} from '../utils/geoUtils'
+import {
+  ensureDatelineFriendlyGeometry,
+  renderPointAsPolygon,
+} from '../utils/geoUtils'
 
 class MapThumbnail extends React.Component {
   constructor(props) {
@@ -34,9 +37,18 @@ class MapThumbnail extends React.Component {
     let geoJsonLayer
     let layers = [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ]
     if (this.props.geometry) {
+      console.log(this.props.geometry)
+      let geometry
+      if (this.props.geometry.type.toLowerCase() === 'point') {
+        geometry = renderPointAsPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
+      }
+      else {
+        geometry = ensureDatelineFriendlyGeometry(this.props.geometry)
+      }
+      console.log(geometry)
       geoJsonLayer = L.GeoJSON.geometryToLayer({
         type: 'Feature',
-        geometry: ensureDatelineFriendlyPolygon(this.props.geometry), // allows use of setStyle, which does not exist for GeoJSON points
+        geometry: geometry,
       })
       geoJsonLayer.setStyle({
         color: 'red',

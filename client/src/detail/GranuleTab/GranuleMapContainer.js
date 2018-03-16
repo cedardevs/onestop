@@ -3,7 +3,7 @@ import _ from 'lodash'
 import GranuleMap from './GranuleMap'
 import {toggleGranuleFocus} from '../../actions/FlowActions'
 
-import {ensureDatelineFriendlyPolygon} from '../../utils/geoUtils'
+import {ensureDatelineFriendlyGeometry} from '../../utils/geoUtils'
 
 const mapStateToProps = state => {
   let {granules} = state.domain.results
@@ -32,7 +32,7 @@ const GranulesMapContainer = connect(mapStateToProps, mapDispatchToProps)(
 const convertToGeoJson = (recordData, id) => {
   // Currently defaulting to rendering bounding box coordinates
   return {
-    geometry: ensureDatelineFriendlyPolygon(recordData.spatialBounding),
+    geometry: ensureDatelineFriendlyGeometry(recordData.spatialBounding),
     properties: _.assign({}, recordData, {id: id}),
     type: 'Feature',
   }
