@@ -41,7 +41,12 @@ class IsoConversionUtil {
   }
 
   static String parseXMLMetadata(String xml) {
-    return JsonOutput.toJson(parseXMLMetadataToMap(xml))
+    try{
+      JsonOutput.toJson(parseXMLMetadataToMap(xml))
+    }catch(e){
+      log.error "Unable to parse XML"
+      return "ERROR: $e"
+    }
   }
 
   static Map parseXMLMetadataToMap(String xml) {
