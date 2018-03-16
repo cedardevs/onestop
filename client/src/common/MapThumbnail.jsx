@@ -37,7 +37,6 @@ class MapThumbnail extends React.Component {
     let geoJsonLayer
     let layers = [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ]
     if (this.props.geometry) {
-      console.log(this.props.geometry)
       let geometry
       if (this.props.geometry.type.toLowerCase() === 'point') {
         geometry = renderPointAsPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
@@ -45,7 +44,6 @@ class MapThumbnail extends React.Component {
       else {
         geometry = ensureDatelineFriendlyGeometry(this.props.geometry)
       }
-      console.log(geometry)
       geoJsonLayer = L.GeoJSON.geometryToLayer({
         type: 'Feature',
         geometry: geometry,
