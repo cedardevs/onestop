@@ -150,7 +150,7 @@ export default class Root extends Component {
     )
 
     // constrain middle gives the middle section a max-width
-    const middleMaxWidth = onDetailPage ? '900px' : 'none'
+    const middleMaxWidth = onDetailPage ? '1200px' : 'none'
     const middleBorder = onDetailPage ? '1em solid #333357' : 'none'
     const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
 
