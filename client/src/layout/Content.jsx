@@ -10,7 +10,7 @@ const styleContent = {
   position: 'relative',
   justifyContent: 'space-between',
   alignItems: 'stretch',
-  width: '100%'
+  width: '100%',
 }
 
 export default class Content extends Component {
@@ -32,35 +32,35 @@ export default class Content extends Component {
     const styles = Object.assign({}, styleContent, style)
     return (
       <FlexRow
-      items={[
-        left ? (
-          <Left
-            content={left}
-            width={leftWidth}
+        items={[
+          left ? (
+            <Left
+              content={left}
+              width={leftWidth}
+              padding={padding}
+              visible={leftVisible}
+              key={'left'}
+            />
+          ) : null,
+          <Middle
+            content={middle}
+            maxWidth={middleMaxWidth}
+            border={middleBorder}
+            backgroundColor={middleBackgroundColor}
             padding={padding}
-            visible={leftVisible}
-            key={'left'}
-          />
-        ) : null,
-        <Middle
-          content={middle}
-          maxWidth={middleMaxWidth}
-          border={middleBorder}
-          backgroundColor={middleBackgroundColor}
-          padding={padding}
-          key={'middle'}
-        />,
-        right ? (
-          <Right
-            content={right}
-            width={rightWidth}
-            padding={padding}
-            visible={rightVisible}
-            key={'right'}
-          />
-        ) : null,
-      ]}
-      style={styles}
+            key={'middle'}
+          />,
+          right ? (
+            <Right
+              content={right}
+              width={rightWidth}
+              padding={padding}
+              visible={rightVisible}
+              key={'right'}
+            />
+          ) : null,
+        ]}
+        style={styles}
       />
     )
   }

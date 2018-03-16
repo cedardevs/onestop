@@ -14,7 +14,7 @@ const styleVisible = width => {
     minWidth: '3.236em',
     position: 'relative',
     overflow: 'hidden',
-    boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)'
+    boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)',
   }
 }
 
@@ -26,7 +26,7 @@ const styleHidden = width => {
     width: width,
     position: 'relative',
     overflow: 'initial',
-    boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)'
+    boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)',
   }
 }
 

@@ -6,7 +6,7 @@ import {showCollections} from '../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {
-    featured: state.domain.config.featured
+    featured: state.domain.config.featured,
   }
 }
 
@@ -21,6 +21,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const FeaturedDatasetsContainer = connect(mapStateToProps, mapDispatchToProps)(FeaturedDatasets)
+const FeaturedDatasetsContainer = connect(mapStateToProps, mapDispatchToProps)(
+  FeaturedDatasets
+)
 
 export default FeaturedDatasetsContainer

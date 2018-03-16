@@ -6,7 +6,7 @@ import {showCollections} from '../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {
-    featured: state.domain.config.featured
+    featured: state.domain.config.featured,
   }
 }
 

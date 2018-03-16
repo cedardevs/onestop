@@ -28,7 +28,7 @@ const styleBackground = {
   opacity: '0.5',
   width: '100%',
   minHeight: '100vh',
-  zIndex: -4999
+  zIndex: -4999,
 }
 
 class Background extends React.Component {

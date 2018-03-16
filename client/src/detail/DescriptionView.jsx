@@ -4,8 +4,8 @@ import MapThumbnail from '../common/MapThumbnail'
 
 const styleContainer = {
   padding: '1.618em',
-  color: "#222",
-  backgroundColor: "#F9F9F9"
+  color: '#222',
+  backgroundColor: '#F9F9F9',
 }
 
 const styleImageContainer = {

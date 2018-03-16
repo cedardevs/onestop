@@ -5,11 +5,11 @@ const styleTopicsMenu = {
   flexWrap: 'wrap',
   justifyContent: 'center',
   margin: 0,
-  padding: 0
+  padding: 0,
 }
 
 const styleTopic = {
-  padding: '1em'
+  padding: '1em',
 }
 
 const styleTopicButton = {
@@ -27,19 +27,17 @@ const styleTopicImage = {
   width: '5em',
   height: '5em',
   maxWidth: '100%',
-  transition: 'transform 200ms'
+  transition: 'transform 200ms',
 }
 
 class TopicsMenu extends React.Component {
-
   search = query => {
-    const { submit, updateQuery } = this.props
+    const {submit, updateQuery} = this.props
     updateQuery(query)
     submit(query)
   }
 
   render() {
-
     let topics = [
       {
         title: 'Weather',
@@ -74,16 +72,17 @@ class TopicsMenu extends React.Component {
     ]
     topics = topics.map((topic, i) => {
       return (
-          <div
-              style={styleTopic}
-              key={i}
-              onClick={() => this.search(topic.term)}
-          >
-            <button style={styleTopicButton}>
-              <img style={styleTopicImage} src={topic.icon} alt={topic.title} aria-hidden="true" />
-              <div>{topic.title}</div>
-            </button>
-          </div>
+        <div style={styleTopic} key={i} onClick={() => this.search(topic.term)}>
+          <button style={styleTopicButton}>
+            <img
+              style={styleTopicImage}
+              src={topic.icon}
+              alt={topic.title}
+              aria-hidden="true"
+            />
+            <div>{topic.title}</div>
+          </button>
+        </div>
       )
     })
     return <ul style={styleTopicsMenu}>{topics}</ul>

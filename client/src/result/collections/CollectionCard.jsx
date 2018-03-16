@@ -18,7 +18,7 @@ const styleContent = {
   overflow: 'hidden',
   position: 'relative',
   // border: '1px solid rgba(50, 50, 50, 0.75)',
-  boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)'
+  boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)',
 }
 
 const styleOverlay = {
@@ -75,28 +75,28 @@ const styleArch = {
   transition: 'background-color 0.3s ease, color 0.3s ease, height 0.3s ease',
   borderTop: '1px solid #AAA',
   borderRadius: '12.5em 12.5em 0em 0em / 2.236em',
-  boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)'
+  boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)',
 }
 
 const styleArchHover = {
   fontWeight: 'bold',
   backgroundColor: '#327CAC',
   color: '#FBFBFB',
-  height: '7.708em'
+  height: '7.708em',
 }
 
 const styleArchFocus = {
   fontWeight: 'bold',
   backgroundColor: '#327CAC',
   color: '#FBFBFB',
-  height: '7.708em'
+  height: '7.708em',
 }
 
 const styleArchBlur = {
   fontWeight: 'normal',
   backgroundColor: '#FBFBFB',
   color: '#222',
-  height: '4.472em'
+  height: '4.472em',
 }
 
 const styleMapContainer = {
@@ -210,7 +210,7 @@ export default class CollectionCard extends Component {
       marginBottom: '0.309em',
       fontSize: '1em',
       lineHeight: '1.618em',
-      fontWeight: 'normal'
+      fontWeight: 'normal',
     }
 
     const styleTitle = {
@@ -241,7 +241,9 @@ export default class CollectionCard extends Component {
           >
             {this.renderThumbnailMap()}
             <div style={styleArchMerged}>
-              <div style={styleSuperTitle}>{this.props.doi ? this.props.doi : 'DOI not available'}</div>
+              <div style={styleSuperTitle}>
+                {this.props.doi ? this.props.doi : 'DOI not available'}
+              </div>
               <h2 style={styleTitle}>{this.props.title}</h2>
             </div>
           </button>

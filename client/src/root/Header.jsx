@@ -10,7 +10,7 @@ import FlexRow from '../common/FlexRow'
 const styleHeader = {
   backgroundColor: '#222C37',
   padding: '1em',
-  boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)'
+  boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)',
 }
 
 const styleHeaderFlexRow = {
