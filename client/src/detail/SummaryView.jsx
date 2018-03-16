@@ -10,6 +10,10 @@ import A from '../common/link/Link'
 import MapThumbnail from '../common/MapThumbnail'
 import FlexRow from '../common/FlexRow'
 
+const styleContainer = {
+  padding: '1.618em',
+}
+
 const styleEqualFlexItem = {
   flex: '1 1 auto',
   width: '50%',
@@ -99,7 +103,7 @@ class SummaryView extends Component {
     )
 
     return (
-      <div>
+      <div style={styleContainer}>
         <div>
           <span className={styles.sectionHeading}>Total Files:&nbsp;</span>
           {this.props.totalGranuleCount}

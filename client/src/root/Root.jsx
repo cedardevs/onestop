@@ -103,7 +103,7 @@ export default class Root extends Component {
   }
 
   render() {
-    const {showLeft, leftOpen, showRight} = this.props
+    const {showLeft, leftOpen, showRight, onDetailPage} = this.props
 
     const header = (
       <div>
@@ -149,6 +149,11 @@ export default class Root extends Component {
       </div>
     )
 
+    // constrain middle gives the middle section a max-width
+    const middleMaxWidth = onDetailPage ? '900px' : 'none'
+    const middleBorder = onDetailPage ? '1em solid #333357' : 'none'
+    const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
+
     return (
       <Container
         header={header}
@@ -156,6 +161,9 @@ export default class Root extends Component {
         leftWidth={leftWidth}
         leftVisible={leftOpen}
         middle={middle}
+        middleMaxWidth={middleMaxWidth}
+        middleBorder={middleBorder}
+        middleBackgroundColor={middleBackgroundColor}
         right={null}
         rightWidth={256}
         rightVisible={showRight}

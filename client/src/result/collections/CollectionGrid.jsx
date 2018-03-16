@@ -127,6 +127,7 @@ export default class CollectionGrid extends Component {
       let tileProps = {
         key: key,
         cardKey: key,
+        doi: result.doi,
         title: result.title,
         thumbnail: result.thumbnail,
         description: result.description,

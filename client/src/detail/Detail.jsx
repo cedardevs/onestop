@@ -9,14 +9,16 @@ import VideoView from './VideoView'
 
 //-- Styles
 
-const styleTitle = {
-  fontSize: '1.5em',
-  margin: '0.309em 1.236em',
-  padding: '0.309em',
+const styleDetailWrapper = {
+  color: 'black',
 }
 
-const styleDetailWrapper = {
-  margin: '0 1.618em 0 1.618em',
+const styleTitle = {
+  fontSize: '1.309em',
+  margin: 0,
+  padding: '1em',
+  backgroundColor: '#034694',
+  color: 'white',
 }
 
 //-- Component
@@ -31,7 +33,7 @@ class Detail extends Component {
     if (loading) {
       return (
         <div style={styleDetailWrapper}>
-          <h1 style={styleTitle}>Loading...</h1>
+          <h1>Loading...</h1>
         </div>
       )
     }
@@ -40,9 +42,7 @@ class Detail extends Component {
       // TODO error style? actually report an error in the flow if the collection is not found when search returns?
       return (
         <div style={styleDetailWrapper}>
-          <h1 style={styleTitle}>
-            There was a problem loading your collection.
-          </h1>
+          <h1>There was a problem loading your collection.</h1>
         </div>
       )
     }
@@ -85,7 +85,7 @@ class Detail extends Component {
     return (
       <div style={styleDetailWrapper}>
         <h1 style={styleTitle}>{item.title}</h1>
-        <Tabs data={tabData} activeIndex={0} />
+        <Tabs style={{display: 'flex'}} data={tabData} activeIndex={0} />
       </div>
     )
   }

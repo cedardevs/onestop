@@ -1,8 +1,32 @@
 import React, {Component} from 'react'
-// import ShowMore from 'react-show-more'
 import {processUrl} from '../utils/urlUtils'
 import MapThumbnail from '../common/MapThumbnail'
-import styles from './DetailStyles.css'
+
+const styleContainer = {
+  padding: '1.618em',
+  color: "#222",
+  backgroundColor: "#F9F9F9"
+}
+
+const styleImageContainer = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}
+
+const styleImage = {
+  margin: '0 0 0.618em 0',
+  width: '72%',
+}
+
+const styleMap = {
+  margin: '0 0 0.618em 0',
+  width: '100%',
+}
+
+const styleDescription = {
+  margin: '0 0 0.618em 0',
+}
 
 export default class DescriptionView extends Component {
   render() {
@@ -20,16 +44,12 @@ export default class DescriptionView extends Component {
       ? item.description
       : 'No description available'
 
+    const collectionImage = this.renderCollectionImage(thumbnail, geometry)
+
     return (
-      <div className={`pure-g`}>
-        <div className={`pure-u-1-2`}>
-          {this.renderCollectionImage(thumbnail, geometry)}
-        </div>
-        <div className={`pure-u-1-2 ${styles.descriptionText}`}>
-          {/*<ShowMore lines={10} anchorClass={`${styles.showMore}`}>*/}
-          {description}
-          {/*</ShowMore>*/}
-        </div>
+      <div style={styleContainer}>
+        {collectionImage}
+        <div style={styleDescription}>{description}</div>
       </div>
     )
   }
@@ -38,27 +58,25 @@ export default class DescriptionView extends Component {
     const imgUrl = processUrl(thumbnail)
     if (imgUrl) {
       return (
-        <img
-          className={styles.previewImg}
-          src={imgUrl}
-          alt="collection result image"
-          aria-hidden="true"
-        />
+        <div style={styleImageContainer}>
+          <img
+            style={styleImage}
+            src={imgUrl}
+            alt="collection result image"
+            aria-hidden="true"
+          />
+        </div>
       )
     }
     else if (geometry) {
       return (
-        <div className={styles.previewMap}>
+        <div style={styleMap}>
           <MapThumbnail geometry={geometry} interactive={false} />
         </div>
       )
     }
     else {
-      return (
-        <div className={styles.previewMap}>
-          No preview image or map available.
-        </div>
-      )
+      return <div style={styleMap}>No preview image or map available.</div>
     }
   }
 }
