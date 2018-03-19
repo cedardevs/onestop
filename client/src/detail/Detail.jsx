@@ -6,12 +6,15 @@ import DescriptionView from './DescriptionView'
 import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
 import AccessView from './AccessView'
 import VideoView from './VideoView'
+import {boxShadow} from '../common/defaultStyles'
 
 //-- Styles
 
 const styleDetailWrapper = {
   color: 'black',
   maxWidth: '80em',
+  width: '80em',
+  boxShadow: boxShadow,
 }
 
 const styleTitle = {
@@ -20,6 +23,11 @@ const styleTitle = {
   padding: '1em',
   backgroundColor: '#034694',
   color: 'white',
+}
+
+const styleCenterContent = {
+  display: 'flex',
+  justifyContent: 'center',
 }
 
 //-- Component
@@ -84,9 +92,11 @@ class Detail extends Component {
     }
 
     return (
-      <div style={styleDetailWrapper}>
-        <h1 style={styleTitle}>{item.title}</h1>
-        <Tabs style={{display: 'flex'}} data={tabData} activeIndex={0} />
+      <div style={styleCenterContent}>
+        <div style={styleDetailWrapper}>
+          <h1 style={styleTitle}>{item.title}</h1>
+          <Tabs style={{display: 'flex'}} data={tabData} activeIndex={0} />
+        </div>
       </div>
     )
   }

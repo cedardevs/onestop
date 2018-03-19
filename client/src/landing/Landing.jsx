@@ -42,26 +42,33 @@ class Landing extends React.Component {
       paddingBottom: '0.25em',
     }
 
+    const styleCenterContent = {
+      display: 'flex',
+      justifyContent: 'center',
+    }
+
     return (
-      <div style={styleShowcase}>
-        <div style={styleHeroHeader} aria-hidden="true">
-          <img style={styleOneStopOImage} alt="O" src={stopCircle} />neStop
-        </div>
-        <h1 style={defaultStyles.hideOffscreen}>
-          OneStop: A NOAA Data Search Platform
-        </h1>
-        <div style={styleHeroText}>
-          Geophysical, oceans, coastal, weather and climate data discovery all
-          in one place.<br />
-        </div>
-        <SearchFieldsContainer home={true} />
-        <div>
-          <div aria-labelledby="searchTopics">
-            <h2 id="searchTopics">Search by Topic:</h2>
-            <TopicsMenuContainer />
+      <div style={styleCenterContent}>
+        <div style={styleShowcase}>
+          <div style={styleHeroHeader} aria-hidden="true">
+            <img style={styleOneStopOImage} alt="O" src={stopCircle} />neStop
           </div>
+          <h1 style={defaultStyles.hideOffscreen}>
+            OneStop: A NOAA Data Search Platform
+          </h1>
+          <div style={styleHeroText}>
+            Geophysical, oceans, coastal, weather and climate data discovery all
+            in one place.<br />
+          </div>
+          <SearchFieldsContainer home={true} />
+          <div>
+            <div aria-labelledby="searchTopics">
+              <h2 id="searchTopics">Search by Topic:</h2>
+              <TopicsMenuContainer />
+            </div>
+          </div>
+          <FeaturedDatasetsContainer />
         </div>
-        <FeaturedDatasetsContainer />
       </div>
     )
   }

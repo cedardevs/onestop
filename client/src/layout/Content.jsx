@@ -27,7 +27,6 @@ export default class Content extends Component {
       middle,
       middleMaxWidth,
       middleBackgroundColor,
-      onHomePage,
     } = this.props
     const styles = Object.assign({}, styleContent, style)
     return (
@@ -46,7 +45,6 @@ export default class Content extends Component {
             content={middle}
             maxWidth={middleMaxWidth}
             backgroundColor={middleBackgroundColor}
-            onHomePage={onHomePage}
             padding={padding}
             key={'middle'}
           />,

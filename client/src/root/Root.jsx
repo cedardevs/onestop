@@ -148,7 +148,7 @@ export default class Root extends Component {
     const onHomePage = !this.isNotLanding()
 
     const middle = (
-      <div>
+      <div style={{width: '100%'}}>
         <LoadingBarContainer style={loadingBarStyle} />
         {/*TODO: replace this with ArcGIS map?*/}
         <MapContainer selection={true} features={false} />
@@ -168,7 +168,6 @@ export default class Root extends Component {
           leftVisible={leftOpen}
           middle={middle}
           middleBackgroundColor={middleBackgroundColor}
-          onHomePage={onHomePage}
           right={null}
           rightWidth={256}
           rightVisible={showRight}
