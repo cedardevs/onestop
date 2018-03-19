@@ -3,20 +3,21 @@ import React, {Component} from 'react'
 const styleMiddle = (maxWidth, border) => {
   return {
     display: 'flex',
+    alignItems: 'stretch',
     minWidth: 'min-content',
+    width: maxWidth,
     maxWidth: maxWidth,
     overflowX: 'hidden',
     overflowY: 'auto',
-    border: border,
     boxSizing: 'border-box',
     margin: '0 auto',
+    justifyContent: 'center',
   }
 }
 
 const styleMiddleContent = backgroundColor => {
   return {
     backgroundColor: backgroundColor,
-    margin: '0 auto',
   }
 }
 
@@ -29,7 +30,7 @@ export default class Middle extends Component {
           key={'middle(content)'}
           style={styleMiddleContent(backgroundColor)}
         >
-          {content}
+          <div style={{width: '100%', flex: 'initial'}}>{content}</div>
         </div>
       </div>
     )
