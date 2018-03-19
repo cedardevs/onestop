@@ -6,7 +6,6 @@ import {showCollections} from '../actions/FlowActions'
 
 const mapStateToProps = state => {
   return {
-    queryString: state.behavior.search.queryText.text,
     featured: state.domain.config.featured,
   }
 }
