@@ -13,22 +13,20 @@ const styleMiddle = onHomePage => {
   }
 }
 
-const styleMiddleContent = (maxWidth, backgroundColor) => {
+const styleMiddleContent = backgroundColor => {
   return {
     backgroundColor: backgroundColor,
-    width: maxWidth,
-    maxWidth: maxWidth,
   }
 }
 
 export default class Middle extends Component {
   render() {
-    const {content, maxWidth, backgroundColor, onHomePage} = this.props
+    const {content, backgroundColor, onHomePage} = this.props
     const contentElement = (
       <div style={styleMiddle(onHomePage)}>
         <div
           key={'middle(content)'}
-          style={styleMiddleContent(maxWidth, backgroundColor)}
+          style={styleMiddleContent(backgroundColor)}
         >
           <div>{content}</div>
         </div>

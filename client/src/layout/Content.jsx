@@ -27,7 +27,7 @@ export default class Content extends Component {
       middle,
       middleMaxWidth,
       middleBackgroundColor,
-      onHomePage
+      onHomePage,
     } = this.props
     const styles = Object.assign({}, styleContent, style)
     return (

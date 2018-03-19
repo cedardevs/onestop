@@ -11,6 +11,7 @@ import VideoView from './VideoView'
 
 const styleDetailWrapper = {
   color: 'black',
+  maxWidth: '80em',
 }
 
 const styleTitle = {

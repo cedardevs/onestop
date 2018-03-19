@@ -157,25 +157,23 @@ export default class Root extends Component {
     )
 
     // constrain middle gives the middle section a max-width
-    const middleMaxWidth = onDetailPage ? '1200px' : 'none'
     const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
 
     return (
       <Background onHomePage={onHomePage}>
-          <Container
-            header={header}
-            left={left}
-            leftWidth={leftWidth}
-            leftVisible={leftOpen}
-            middle={middle}
-            middleMaxWidth={middleMaxWidth}
-            middleBackgroundColor={middleBackgroundColor}
-            onHomePage={onHomePage}
-            right={null}
-            rightWidth={256}
-            rightVisible={showRight}
-            footer={<FooterContainer />}
-          />
+        <Container
+          header={header}
+          left={left}
+          leftWidth={leftWidth}
+          leftVisible={leftOpen}
+          middle={middle}
+          middleBackgroundColor={middleBackgroundColor}
+          onHomePage={onHomePage}
+          right={null}
+          rightWidth={256}
+          rightVisible={showRight}
+          footer={<FooterContainer />}
+        />
       </Background>
     )
   }
