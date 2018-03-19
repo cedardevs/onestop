@@ -105,6 +105,7 @@ class SearchFields extends React.Component {
         onClick={this.validateAndSubmit}
         title={'Search'}
         style={{flexShrink: '0'}}
+        styleIcon={{width: '1.618em', height: '1.618em', paddingTop: '0.309em', paddingBottom: '0.309em'}}
       />
     )
 

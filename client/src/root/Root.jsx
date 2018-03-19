@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 
+import Background from '../layout/Background'
 import Container from '../layout/Container'
 
 import BannerContainer from './banner/BannerContainer'
@@ -144,6 +145,7 @@ export default class Root extends Component {
     }
 
     const loadingBarStyle = this.isNotLanding() ? {} : {display: 'none'}
+    const onHomePage = !this.isNotLanding()
 
     const middle = (
       <div>
@@ -156,12 +158,10 @@ export default class Root extends Component {
 
     // constrain middle gives the middle section a max-width
     const middleMaxWidth = onDetailPage ? '1200px' : 'none'
-    const middleBorder = onDetailPage ? '1em solid #333357' : 'none'
     const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
 
     return (
-      <div style={styleBackgroundImage}>
-        <div style={styleBackgroundGradient}>
+      <Background onHomePage={onHomePage}>
           <Container
             header={header}
             left={left}
@@ -169,15 +169,14 @@ export default class Root extends Component {
             leftVisible={leftOpen}
             middle={middle}
             middleMaxWidth={middleMaxWidth}
-            middleBorder={middleBorder}
             middleBackgroundColor={middleBackgroundColor}
+            onHomePage={onHomePage}
             right={null}
             rightWidth={256}
             rightVisible={showRight}
             footer={<FooterContainer />}
           />
-        </div>
-      </div>
+      </Background>
     )
   }
 }

@@ -1,36 +1,36 @@
 import React, {Component} from 'react'
+import {boxShadow} from '../common/defaultStyles'
 
-const styleMiddle = (maxWidth, border) => {
+const styleMiddle = onHomePage => {
   return {
     display: 'flex',
-    alignItems: 'stretch',
-    minWidth: 'min-content',
-    width: maxWidth,
-    maxWidth: maxWidth,
     overflowX: 'hidden',
     overflowY: 'auto',
     boxSizing: 'border-box',
     margin: '0 auto',
+    boxShadow: onHomePage ? 'none' : boxShadow,
     justifyContent: 'center',
   }
 }
 
-const styleMiddleContent = backgroundColor => {
+const styleMiddleContent = (maxWidth, backgroundColor) => {
   return {
     backgroundColor: backgroundColor,
+    width: maxWidth,
+    maxWidth: maxWidth,
   }
 }
 
 export default class Middle extends Component {
   render() {
-    const {content, maxWidth, border, backgroundColor} = this.props
+    const {content, maxWidth, backgroundColor, onHomePage} = this.props
     const contentElement = (
-      <div style={styleMiddle(maxWidth, border)}>
+      <div style={styleMiddle(onHomePage)}>
         <div
           key={'middle(content)'}
-          style={styleMiddleContent(backgroundColor)}
+          style={styleMiddleContent(maxWidth, backgroundColor)}
         >
-          <div style={{width: '100%', flex: 'initial'}}>{content}</div>
+          <div>{content}</div>
         </div>
       </div>
     )

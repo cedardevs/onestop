@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {processUrl} from '../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
+import {boxShadow} from '../../common/defaultStyles'
 
 const styleCard = {
   width: '25em',
@@ -18,7 +19,7 @@ const styleContent = {
   overflow: 'hidden',
   position: 'relative',
   // border: '1px solid rgba(50, 50, 50, 0.75)',
-  boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)',
+  boxShadow: boxShadow,
 }
 
 const styleOverlay = {
@@ -75,7 +76,7 @@ const styleArch = {
   transition: 'background-color 0.3s ease, color 0.3s ease, height 0.3s ease',
   borderTop: '1px solid #AAA',
   borderRadius: '12.5em 12.5em 0em 0em / 2.236em',
-  boxShadow: '3px 3px 3px rgba(50, 50, 50, 0.75)',
+  boxShadow: boxShadow,
 }
 
 const styleArchHover = {
@@ -241,8 +242,8 @@ export default class CollectionCard extends Component {
           >
             {this.renderThumbnailMap()}
             <div style={styleArchMerged}>
-              <div style={styleSuperTitle}>
-                {this.props.doi ? this.props.doi : 'DOI not available'}
+              <div style={styleSuperTitle} aria-hidden={true}>
+                Collection Title:
               </div>
               <h2 style={styleTitle}>{this.props.title}</h2>
             </div>

@@ -23,8 +23,8 @@ export default class Container extends Component {
       leftVisible,
       middle,
       middleMaxWidth,
-      middleBorder,
       middleBackgroundColor,
+      onHomePage,
       right,
       rightWidth,
       rightVisible,
@@ -42,8 +42,8 @@ export default class Container extends Component {
               leftVisible={leftVisible}
               middle={middle}
               middleMaxWidth={middleMaxWidth}
-              middleBorder={middleBorder}
               middleBackgroundColor={middleBackgroundColor}
+              onHomePage={onHomePage}
               right={right}
               rightWidth={rightWidth}
               rightVisible={rightVisible}
