@@ -2,8 +2,6 @@ import React, {Component} from 'react'
 
 import Container from '../layout/Container'
 
-import Background from '../landing/background/Background'
-
 import BannerContainer from './banner/BannerContainer'
 import HeaderContainer from './HeaderContainer'
 import MapContainer from '../search/map/MapContainer'
@@ -14,8 +12,19 @@ import FiltersHiddenContainer from '../filter/FiltersHiddenContainer'
 import LoadingBarContainer from '../loading/LoadingBarContainer'
 
 import FooterContainer from './FooterContainer'
-
 import styles from './root.css'
+
+const pattern = require('../../img/topography.png')
+
+const styleBackgroundImage = {
+  background: `url(${pattern}) repeat`,
+  backgroundSize: '50em',
+}
+
+const styleBackgroundGradient = {
+  background:
+    'linear-gradient(0deg, rgba(130, 186, 255, .5) 0%, rgba(225, 225, 235, .5) 100%)',
+}
 
 // component
 export default class Root extends Component {
@@ -139,10 +148,6 @@ export default class Root extends Component {
     const middle = (
       <div>
         <LoadingBarContainer style={loadingBarStyle} />
-        <Background
-          showImage={this.isNot508()}
-          showOverlay={this.isNotLanding() && this.isNot508()}
-        />
         {/*TODO: replace this with ArcGIS map?*/}
         <MapContainer selection={true} features={false} />
         {this.props.children}
@@ -150,25 +155,29 @@ export default class Root extends Component {
     )
 
     // constrain middle gives the middle section a max-width
-    const middleMaxWidth = onDetailPage ? '900px' : 'none'
+    const middleMaxWidth = onDetailPage ? '1200px' : 'none'
     const middleBorder = onDetailPage ? '1em solid #333357' : 'none'
     const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
 
     return (
-      <Container
-        header={header}
-        left={left}
-        leftWidth={leftWidth}
-        leftVisible={leftOpen}
-        middle={middle}
-        middleMaxWidth={middleMaxWidth}
-        middleBorder={middleBorder}
-        middleBackgroundColor={middleBackgroundColor}
-        right={null}
-        rightWidth={256}
-        rightVisible={showRight}
-        footer={<FooterContainer />}
-      />
+      <div style={styleBackgroundImage}>
+        <div style={styleBackgroundGradient}>
+          <Container
+            header={header}
+            left={left}
+            leftWidth={leftWidth}
+            leftVisible={leftOpen}
+            middle={middle}
+            middleMaxWidth={middleMaxWidth}
+            middleBorder={middleBorder}
+            middleBackgroundColor={middleBackgroundColor}
+            right={null}
+            rightWidth={256}
+            rightVisible={showRight}
+            footer={<FooterContainer />}
+          />
+        </div>
+      </div>
     )
   }
 }
