@@ -762,7 +762,7 @@ class MetadataParser {
     Set contacts = []
     Set contactRoles = ['pointOfContact', 'distributor']
     Set creators = []
-    Set creatorRoles = ['resourceProvider', 'originator', 'principalInvestigator', 'author', 'collaborator']
+    Set creatorRoles = ['resourceProvider', 'originator', 'principalInvestigator', 'author', 'collaborator', 'coAuthor']
     Set publishers = []
     Set publisherRoles = ['publisher']
 
