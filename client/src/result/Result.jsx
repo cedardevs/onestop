@@ -4,6 +4,7 @@ import AppliedFiltersContainer from './AppliedFiltersContainer'
 
 const styleResult = {
   minHeight: '100vh',
+  paddingTop: '1ex',
 }
 
 export default class Result extends Component {

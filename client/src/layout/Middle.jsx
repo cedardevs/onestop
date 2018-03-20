@@ -7,6 +7,7 @@ const styleMiddle = () => {
     overflowY: 'auto',
     boxSizing: 'border-box',
     margin: '0 auto',
+    width: '100%',
   }
 }
 
