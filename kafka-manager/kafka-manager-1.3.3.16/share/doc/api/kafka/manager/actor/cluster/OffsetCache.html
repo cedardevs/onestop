@@ -1,0 +1,1306 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>OffsetCache - kafka.manager.actor.cluster.OffsetCache</title>
+          <meta name="description" content="OffsetCache - kafka.manager.actor.cluster.OffsetCache" />
+          <meta name="keywords" content="OffsetCache kafka.manager.actor.cluster.OffsetCache" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../index.html';
+            var hash = 'kafka.manager.actor.cluster.OffsetCache';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="type">
+      <div id="definition">
+        <img alt="Trait" src="../../../../lib/trait_big.png" />
+        <p id="owner"><a href="../../../package.html" class="extype" name="kafka">kafka</a>.<a href="../../package.html" class="extype" name="kafka.manager">manager</a>.<a href="../package.html" class="extype" name="kafka.manager.actor">actor</a>.<a href="package.html" class="extype" name="kafka.manager.actor.cluster">cluster</a></p>
+        <h1>OffsetCache</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="kafka.manager.actor.cluster">package cluster</a>
+          </div></span></h3><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <span class="name">OffsetCache</span><span class="result"> extends <span class="extype" name="grizzled.slf4j.Logging">Logging</span></span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="grizzled.slf4j.Logging">Logging</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div><div class="toggleContainer block">
+            <span class="toggle">Known Subclasses</span>
+            <div class="subClasses hiddenContent"><a href="OffsetCacheActive.html" class="extype" name="kafka.manager.actor.cluster.OffsetCacheActive">OffsetCacheActive</a>, <a href="OffsetCachePassive.html" class="extype" name="kafka.manager.actor.cluster.OffsetCachePassive">OffsetCachePassive</a></div>
+          </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By Inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="kafka.manager.actor.cluster.OffsetCache"><span>OffsetCache</span></li><li class="in" name="grizzled.slf4j.Logging"><span>Logging</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show All</span></li>
+            </ol>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        
+
+        <div id="values" class="values members">
+              <h3>Abstract Value Members</h3>
+              <ol><li name="kafka.manager.actor.cluster.OffsetCache#cf" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="cf:kafka.manager.features.ClusterFeatures"></a>
+      <a id="cf:ClusterFeatures"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">cf</span><span class="result">: <a href="../../features/ClusterFeatures.html" class="extype" name="kafka.manager.features.ClusterFeatures">ClusterFeatures</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@cf:kafka.manager.features.ClusterFeatures" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[this] </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#clusterContext" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="clusterContext:kafka.manager.model.ClusterContext"></a>
+      <a id="clusterContext:ClusterContext"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clusterContext</span><span class="result">: <a href="../../model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@clusterContext:kafka.manager.model.ClusterContext" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#consumerProperties" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="consumerProperties:Option[java.util.Properties]"></a>
+      <a id="consumerProperties:Option[Properties]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">consumerProperties</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.util.Properties">Properties</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@consumerProperties:Option[java.util.Properties]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#ec" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="ec:scala.concurrent.ExecutionContext"></a>
+      <a id="ec:ExecutionContext"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ec</span><span class="result">: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@ec:scala.concurrent.ExecutionContext" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[this] </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getBrokerList" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="getBrokerList:()=&gt;kafka.manager.model.ActorModel.BrokerList"></a>
+      <a id="getBrokerList:()⇒BrokerList"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getBrokerList</span><span class="result">: () ⇒ <a href="../../model/ActorModel$$BrokerList.html" class="extype" name="kafka.manager.model.ActorModel.BrokerList">BrokerList</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getBrokerList:()=&gt;kafka.manager.model.ActorModel.BrokerList" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getCacheTimeoutSecs" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="getCacheTimeoutSecs:Int"></a>
+      <a id="getCacheTimeoutSecs:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getCacheTimeoutSecs</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getCacheTimeoutSecs:Int" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getConsumerTopicsFromIds" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="getConsumerTopicsFromIds(consumer:String):Set[String]"></a>
+      <a id="getConsumerTopicsFromIds(String):Set[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getConsumerTopicsFromIds</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getConsumerTopicsFromIds(consumer:String):Set[String]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getConsumerTopicsFromOffsets" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="getConsumerTopicsFromOffsets(consumer:String):Set[String]"></a>
+      <a id="getConsumerTopicsFromOffsets(String):Set[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getConsumerTopicsFromOffsets</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getConsumerTopicsFromOffsets(consumer:String):Set[String]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getConsumerTopicsFromOwners" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="getConsumerTopicsFromOwners(consumer:String):Set[String]"></a>
+      <a id="getConsumerTopicsFromOwners(String):Set[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getConsumerTopicsFromOwners</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getConsumerTopicsFromOwners(consumer:String):Set[String]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getKafkaVersion" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="getKafkaVersion:kafka.manager.model.KafkaVersion"></a>
+      <a id="getKafkaVersion:KafkaVersion"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getKafkaVersion</span><span class="result">: <a href="../../model/KafkaVersion.html" class="extype" name="kafka.manager.model.KafkaVersion">KafkaVersion</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getKafkaVersion:kafka.manager.model.KafkaVersion" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getSimpleConsumerSocketTimeoutMillis" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="getSimpleConsumerSocketTimeoutMillis:Int"></a>
+      <a id="getSimpleConsumerSocketTimeoutMillis:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getSimpleConsumerSocketTimeoutMillis</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getSimpleConsumerSocketTimeoutMillis:Int" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getTopicDescription" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="getTopicDescription(topic:String,interactive:Boolean):Option[kafka.manager.model.ActorModel.TopicDescription]"></a>
+      <a id="getTopicDescription(String,Boolean):Option[TopicDescription]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getTopicDescription</span><span class="params">(<span name="topic">topic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="interactive">interactive: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="../../model/ActorModel$$TopicDescription.html" class="extype" name="kafka.manager.model.ActorModel.TopicDescription">TopicDescription</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getTopicDescription(topic:String,interactive:Boolean):Option[kafka.manager.model.ActorModel.TopicDescription]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getTopicPartitionLeaders" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="getTopicPartitionLeaders(topic:String):Option[List[(Int,Option[kafka.manager.model.ActorModel.BrokerIdentity])]]"></a>
+      <a id="getTopicPartitionLeaders(String):Option[List[(Int,Option[BrokerIdentity])]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getTopicPartitionLeaders</span><span class="params">(<span name="topic">topic: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.List">List</span>[(<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Option">Option</span>[<a href="../../model/ActorModel$$BrokerIdentity.html" class="extype" name="kafka.manager.model.ActorModel.BrokerIdentity">BrokerIdentity</a>])]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getTopicPartitionLeaders(topic:String):Option[List[(Int,Option[kafka.manager.model.ActorModel.BrokerIdentity])]]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getZKManagedConsumerList" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="getZKManagedConsumerList:IndexedSeq[kafka.manager.model.ActorModel.ConsumerNameAndType]"></a>
+      <a id="getZKManagedConsumerList:IndexedSeq[ConsumerNameAndType]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getZKManagedConsumerList</span><span class="result">: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<a href="../../model/ActorModel$$ConsumerNameAndType.html" class="extype" name="kafka.manager.model.ActorModel.ConsumerNameAndType">ConsumerNameAndType</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getZKManagedConsumerList:IndexedSeq[kafka.manager.model.ActorModel.ConsumerNameAndType]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#kafkaAdminClient" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="kafkaAdminClient:kafka.manager.actor.cluster.KafkaAdminClient"></a>
+      <a id="kafkaAdminClient:KafkaAdminClient"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">kafkaAdminClient</span><span class="result">: <a href="KafkaAdminClient.html" class="extype" name="kafka.manager.actor.cluster.KafkaAdminClient">KafkaAdminClient</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@kafkaAdminClient:kafka.manager.actor.cluster.KafkaAdminClient" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#lastUpdateMillisZK" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="lastUpdateMillisZK:Long"></a>
+      <a id="lastUpdateMillisZK:Long"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">lastUpdateMillisZK</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@lastUpdateMillisZK:Long" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#loadOffsets" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="loadOffsets:Boolean"></a>
+      <a id="loadOffsets:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">loadOffsets</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@loadOffsets:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[this] </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#readConsumerOffsetByTopicPartition" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="readConsumerOffsetByTopicPartition(consumer:String,topic:String,tpi:Map[Int,kafka.manager.model.ActorModel.TopicPartitionIdentity]):Map[Int,Long]"></a>
+      <a id="readConsumerOffsetByTopicPartition(String,String,Map[Int,TopicPartitionIdentity]):Map[Int,Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readConsumerOffsetByTopicPartition</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="topic">topic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="tpi">tpi: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Int">Int</span>, <a href="../../model/ActorModel$$TopicPartitionIdentity.html" class="extype" name="kafka.manager.model.ActorModel.TopicPartitionIdentity">TopicPartitionIdentity</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@readConsumerOffsetByTopicPartition(consumer:String,topic:String,tpi:Map[Int,kafka.manager.model.ActorModel.TopicPartitionIdentity]):Map[Int,Long]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#readConsumerOwnerByTopicPartition" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
+      <a id="readConsumerOwnerByTopicPartition(consumer:String,topic:String,tpi:Map[Int,kafka.manager.model.ActorModel.TopicPartitionIdentity]):Map[Int,String]"></a>
+      <a id="readConsumerOwnerByTopicPartition(String,String,Map[Int,TopicPartitionIdentity]):Map[Int,String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readConsumerOwnerByTopicPartition</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="topic">topic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="tpi">tpi: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Int">Int</span>, <a href="../../model/ActorModel$$TopicPartitionIdentity.html" class="extype" name="kafka.manager.model.ActorModel.TopicPartitionIdentity">TopicPartitionIdentity</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@readConsumerOwnerByTopicPartition(consumer:String,topic:String,tpi:Map[Int,kafka.manager.model.ActorModel.TopicPartitionIdentity]):Map[Int,String]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li></ol>
+            </div>
+
+        <div id="values" class="values members">
+              <h3>Concrete Value Members</h3>
+              <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="!=(x$1:Any):Boolean"></a>
+      <a id="!=(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="##():Int"></a>
+      <a id="##():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@##():Int" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="==(x$1:Any):Boolean"></a>
+      <a id="==(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <a id="asInstanceOf[T0]:T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="clone():Object"></a>
+      <a id="clone():AnyRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@clone():Object" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#debug" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="debug(msg:=&gt;Any,t:=&gt;Throwable):Unit"></a>
+      <a id="debug(⇒Any,⇒Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">debug</span><span class="params">(<span name="msg">msg: ⇒ <span class="extype" name="scala.Any">Any</span></span>, <span name="t">t: ⇒ <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@debug(msg:=&gt;Any,t:=&gt;Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#debug" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="debug(msg:=&gt;Any):Unit"></a>
+      <a id="debug(⇒Any):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">debug</span><span class="params">(<span name="msg">msg: ⇒ <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@debug(msg:=&gt;Any):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eq(x$1:AnyRef):Boolean"></a>
+      <a id="eq(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(x$1:Any):Boolean"></a>
+      <a id="equals(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#error" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="error(msg:=&gt;Any,t:=&gt;Throwable):Unit"></a>
+      <a id="error(⇒Any,⇒Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">error</span><span class="params">(<span name="msg">msg: ⇒ <span class="extype" name="scala.Any">Any</span></span>, <span name="t">t: ⇒ <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@error(msg:=&gt;Any,t:=&gt;Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#error" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="error(msg:=&gt;Any):Unit"></a>
+      <a id="error(⇒Any):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">error</span><span class="params">(<span name="msg">msg: ⇒ <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@error(msg:=&gt;Any):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="finalize():Unit"></a>
+      <a id="finalize():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@finalize():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClass():Class[_]"></a>
+      <a id="getClass():Class[_]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getConsumedTopicDescription" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getConsumedTopicDescription(consumer:String,topic:String,interactive:Boolean,consumerType:kafka.manager.model.ActorModel.ConsumerType):kafka.manager.model.ActorModel.ConsumedTopicDescription"></a>
+      <a id="getConsumedTopicDescription(String,String,Boolean,ConsumerType):ConsumedTopicDescription"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getConsumedTopicDescription</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="topic">topic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="interactive">interactive: <span class="extype" name="scala.Boolean">Boolean</span></span>, <span name="consumerType">consumerType: <a href="../../model/ActorModel$$ConsumerType.html" class="extype" name="kafka.manager.model.ActorModel.ConsumerType">ConsumerType</a></span>)</span><span class="result">: <a href="../../model/ActorModel$$ConsumedTopicDescription.html" class="extype" name="kafka.manager.model.ActorModel.ConsumedTopicDescription">ConsumedTopicDescription</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getConsumedTopicDescription(consumer:String,topic:String,interactive:Boolean,consumerType:kafka.manager.model.ActorModel.ConsumerType):kafka.manager.model.ActorModel.ConsumedTopicDescription" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getConsumerDescription" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getConsumerDescription(consumer:String,consumerType:kafka.manager.model.ActorModel.ConsumerType):kafka.manager.model.ActorModel.ConsumerDescription"></a>
+      <a id="getConsumerDescription(String,ConsumerType):ConsumerDescription"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getConsumerDescription</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="consumerType">consumerType: <a href="../../model/ActorModel$$ConsumerType.html" class="extype" name="kafka.manager.model.ActorModel.ConsumerType">ConsumerType</a></span>)</span><span class="result">: <a href="../../model/ActorModel$$ConsumerDescription.html" class="extype" name="kafka.manager.model.ActorModel.ConsumerDescription">ConsumerDescription</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getConsumerDescription(consumer:String,consumerType:kafka.manager.model.ActorModel.ConsumerType):kafka.manager.model.ActorModel.ConsumerDescription" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getConsumerList" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getConsumerList:kafka.manager.model.ActorModel.ConsumerList"></a>
+      <a id="getConsumerList:ConsumerList"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getConsumerList</span><span class="result">: <a href="../../model/ActorModel$$ConsumerList.html" class="extype" name="kafka.manager.model.ActorModel.ConsumerList">ConsumerList</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getConsumerList:kafka.manager.model.ActorModel.ConsumerList" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getConsumerTopics" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getConsumerTopics(consumer:String):Set[String]"></a>
+      <a id="getConsumerTopics(String):Set[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getConsumerTopics</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getConsumerTopics(consumer:String):Set[String]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getKafkaManagedConsumerList" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getKafkaManagedConsumerList:IndexedSeq[kafka.manager.model.ActorModel.ConsumerNameAndType]"></a>
+      <a id="getKafkaManagedConsumerList:IndexedSeq[ConsumerNameAndType]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getKafkaManagedConsumerList</span><span class="result">: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<a href="../../model/ActorModel$$ConsumerNameAndType.html" class="extype" name="kafka.manager.model.ActorModel.ConsumerNameAndType">ConsumerNameAndType</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getKafkaManagedConsumerList:IndexedSeq[kafka.manager.model.ActorModel.ConsumerNameAndType]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getKafkaManagedConsumerTopics" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getKafkaManagedConsumerTopics(consumer:String):Set[String]"></a>
+      <a id="getKafkaManagedConsumerTopics(String):Set[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getKafkaManagedConsumerTopics</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getKafkaManagedConsumerTopics(consumer:String):Set[String]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#getTopicPartitionOffsets" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="getTopicPartitionOffsets(topic:String,interactive:Boolean):scala.concurrent.Future[kafka.manager.model.ActorModel.PartitionOffsetsCapture]"></a>
+      <a id="getTopicPartitionOffsets(String,Boolean):Future[PartitionOffsetsCapture]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getTopicPartitionOffsets</span><span class="params">(<span name="topic">topic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="interactive">interactive: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../../model/ActorModel$$PartitionOffsetsCapture.html" class="extype" name="kafka.manager.model.ActorModel.PartitionOffsetsCapture">PartitionOffsetsCapture</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@getTopicPartitionOffsets(topic:String,interactive:Boolean):scala.concurrent.Future[kafka.manager.model.ActorModel.PartitionOffsetsCapture]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hashCode():Int"></a>
+      <a id="hashCode():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@hashCode():Int" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#info" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="info(msg:=&gt;Any,t:=&gt;Throwable):Unit"></a>
+      <a id="info(⇒Any,⇒Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">info</span><span class="params">(<span name="msg">msg: ⇒ <span class="extype" name="scala.Any">Any</span></span>, <span name="t">t: ⇒ <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@info(msg:=&gt;Any,t:=&gt;Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#info" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="info(msg:=&gt;Any):Unit"></a>
+      <a id="info(⇒Any):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">info</span><span class="params">(<span name="msg">msg: ⇒ <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@info(msg:=&gt;Any):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#isDebugEnabled" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isDebugEnabled:Boolean"></a>
+      <a id="isDebugEnabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isDebugEnabled</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@isDebugEnabled:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#isErrorEnabled" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isErrorEnabled:Boolean"></a>
+      <a id="isErrorEnabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isErrorEnabled</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@isErrorEnabled:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#isInfoEnabled" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isInfoEnabled:Boolean"></a>
+      <a id="isInfoEnabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isInfoEnabled</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@isInfoEnabled:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#isTraceEnabled" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isTraceEnabled:Boolean"></a>
+      <a id="isTraceEnabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isTraceEnabled</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@isTraceEnabled:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#isWarnEnabled" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isWarnEnabled:Boolean"></a>
+      <a id="isWarnEnabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isWarnEnabled</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@isWarnEnabled:Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#lastUpdateMillis" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="lastUpdateMillis:Long"></a>
+      <a id="lastUpdateMillis:Long"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">lastUpdateMillis</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@lastUpdateMillis:Long" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="grizzled.slf4j.Logging#logger" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="logger:grizzled.slf4j.Logger"></a>
+      <a id="logger:Logger"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">logger</span><span class="result">: <span class="extype" name="grizzled.slf4j.Logger">Logger</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@logger:grizzled.slf4j.Logger" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#loggerName" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="loggerName:String"></a>
+      <a id="loggerName:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">loggerName</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@loggerName:String" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ne(x$1:AnyRef):Boolean"></a>
+      <a id="ne(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notify():Unit"></a>
+      <a id="notify():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@notify():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notifyAll():Unit"></a>
+      <a id="notifyAll():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#readKafkaManagedConsumerOffsetByTopicPartition" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readKafkaManagedConsumerOffsetByTopicPartition(consumer:String,topic:String,tpi:Map[Int,kafka.manager.model.ActorModel.TopicPartitionIdentity]):Map[Int,Long]"></a>
+      <a id="readKafkaManagedConsumerOffsetByTopicPartition(String,String,Map[Int,TopicPartitionIdentity]):Map[Int,Long]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readKafkaManagedConsumerOffsetByTopicPartition</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="topic">topic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="tpi">tpi: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Int">Int</span>, <a href="../../model/ActorModel$$TopicPartitionIdentity.html" class="extype" name="kafka.manager.model.ActorModel.TopicPartitionIdentity">TopicPartitionIdentity</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Long">Long</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@readKafkaManagedConsumerOffsetByTopicPartition(consumer:String,topic:String,tpi:Map[Int,kafka.manager.model.ActorModel.TopicPartitionIdentity]):Map[Int,Long]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#readKafkaManagedConsumerOwnerByTopicPartition" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="readKafkaManagedConsumerOwnerByTopicPartition(consumer:String,topic:String,tpi:Map[Int,kafka.manager.model.ActorModel.TopicPartitionIdentity]):Map[Int,String]"></a>
+      <a id="readKafkaManagedConsumerOwnerByTopicPartition(String,String,Map[Int,TopicPartitionIdentity]):Map[Int,String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">readKafkaManagedConsumerOwnerByTopicPartition</span><span class="params">(<span name="consumer">consumer: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="topic">topic: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="tpi">tpi: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Int">Int</span>, <a href="../../model/ActorModel$$TopicPartitionIdentity.html" class="extype" name="kafka.manager.model.ActorModel.TopicPartitionIdentity">TopicPartitionIdentity</a>]</span>)</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@readKafkaManagedConsumerOwnerByTopicPartition(consumer:String,topic:String,tpi:Map[Int,kafka.manager.model.ActorModel.TopicPartitionIdentity]):Map[Int,String]" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#start" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="start():Unit"></a>
+      <a id="start():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">start</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@start():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache#stop" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="stop():Unit"></a>
+      <a id="stop():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@stop():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
+      <a id="synchronized[T0](⇒T0):T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toString():String"></a>
+      <a id="toString():String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@toString():String" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#trace" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="trace(msg:=&gt;Any,t:=&gt;Throwable):Unit"></a>
+      <a id="trace(⇒Any,⇒Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">trace</span><span class="params">(<span name="msg">msg: ⇒ <span class="extype" name="scala.Any">Any</span></span>, <span name="t">t: ⇒ <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@trace(msg:=&gt;Any,t:=&gt;Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#trace" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="trace(msg:=&gt;Any):Unit"></a>
+      <a id="trace(⇒Any):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">trace</span><span class="params">(<span name="msg">msg: ⇒ <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@trace(msg:=&gt;Any):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait():Unit"></a>
+      <a id="wait():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@wait():Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long,x$2:Int):Unit"></a>
+      <a id="wait(Long,Int):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long):Unit"></a>
+      <a id="wait(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#warn" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="warn(msg:=&gt;Any,t:=&gt;Throwable):Unit"></a>
+      <a id="warn(⇒Any,⇒Throwable):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">warn</span><span class="params">(<span name="msg">msg: ⇒ <span class="extype" name="scala.Any">Any</span></span>, <span name="t">t: ⇒ <span class="extype" name="scala.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@warn(msg:=&gt;Any,t:=&gt;Throwable):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li><li name="grizzled.slf4j.Logging#warn" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="warn(msg:=&gt;Any):Unit"></a>
+      <a id="warn(⇒Any):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">warn</span><span class="params">(<span name="msg">msg: ⇒ <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.OffsetCache@warn(msg:=&gt;Any):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>Logging</dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="grizzled.slf4j.Logging">
+              <h3>Inherited from <span class="extype" name="grizzled.slf4j.Logging">Logging</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

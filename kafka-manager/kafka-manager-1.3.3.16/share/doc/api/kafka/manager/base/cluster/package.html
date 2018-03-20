@@ -1,0 +1,169 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>cluster - kafka.manager.base.cluster</title>
+          <meta name="description" content="cluster - kafka.manager.base.cluster" />
+          <meta name="keywords" content="cluster kafka.manager.base.cluster" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../index.html';
+            var hash = 'kafka.manager.base.cluster.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../package.html" class="extype" name="kafka">kafka</a>.<a href="../../package.html" class="extype" name="kafka.manager">manager</a>.<a href="../package.html" class="extype" name="kafka.manager.base">base</a></p>
+        <h1>cluster</h1><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.base.cluster.package" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">cluster</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="kafka.manager.base.cluster.BaseClusterActor" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="BaseClusterActorextendsAnyRef"></a>
+      <a id="BaseClusterActor:BaseClusterActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="BaseClusterActor.html"><span class="name">BaseClusterActor</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.base.cluster.package@BaseClusterActorextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Created by hiral on 12/1/15.</p>
+    </li><li name="kafka.manager.base.cluster.BaseClusterCommandActor" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="BaseClusterCommandActorextendsBaseCommandActorwithBaseClusterActor"></a>
+      <a id="BaseClusterCommandActor:BaseClusterCommandActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="BaseClusterCommandActor.html"><span class="name">BaseClusterCommandActor</span></a><span class="result"> extends <a href="../BaseCommandActor.html" class="extype" name="kafka.manager.base.BaseCommandActor">BaseCommandActor</a> with <a href="BaseClusterActor.html" class="extype" name="kafka.manager.base.cluster.BaseClusterActor">BaseClusterActor</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.base.cluster.package@BaseClusterCommandActorextendsBaseCommandActorwithBaseClusterActor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.base.cluster.BaseClusterQueryActor" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="BaseClusterQueryActorextendsBaseQueryActorwithBaseClusterActor"></a>
+      <a id="BaseClusterQueryActor:BaseClusterQueryActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="BaseClusterQueryActor.html"><span class="name">BaseClusterQueryActor</span></a><span class="result"> extends <a href="../BaseQueryActor.html" class="extype" name="kafka.manager.base.BaseQueryActor">BaseQueryActor</a> with <a href="BaseClusterActor.html" class="extype" name="kafka.manager.base.cluster.BaseClusterActor">BaseClusterActor</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.base.cluster.package@BaseClusterQueryActorextendsBaseQueryActorwithBaseClusterActor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.base.cluster.BaseClusterQueryCommandActor" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="BaseClusterQueryCommandActorextendsBaseQueryCommandActorwithBaseClusterActor"></a>
+      <a id="BaseClusterQueryCommandActor:BaseClusterQueryCommandActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="BaseClusterQueryCommandActor.html"><span class="name">BaseClusterQueryCommandActor</span></a><span class="result"> extends <a href="../BaseQueryCommandActor.html" class="extype" name="kafka.manager.base.BaseQueryCommandActor">BaseQueryCommandActor</a> with <a href="BaseClusterActor.html" class="extype" name="kafka.manager.base.cluster.BaseClusterActor">BaseClusterActor</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.base.cluster.package@BaseClusterQueryCommandActorextendsBaseQueryCommandActorwithBaseClusterActor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

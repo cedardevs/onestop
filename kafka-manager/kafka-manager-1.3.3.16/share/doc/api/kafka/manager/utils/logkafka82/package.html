@@ -1,0 +1,178 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>logkafka82 - kafka.manager.utils.logkafka82</title>
+          <meta name="description" content="logkafka82 - kafka.manager.utils.logkafka82" />
+          <meta name="keywords" content="logkafka82 kafka.manager.utils.logkafka82" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../index.html';
+            var hash = 'kafka.manager.utils.logkafka82.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../package.html" class="extype" name="kafka">kafka</a>.<a href="../../package.html" class="extype" name="kafka.manager">manager</a>.<a href="../package.html" class="extype" name="kafka.manager.utils">utils</a></p>
+        <h1>logkafka82</h1><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.utils.logkafka82.package" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">logkafka82</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="kafka.manager.utils.logkafka82.LogConfig" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="LogConfigextendsProductwithSerializable"></a>
+      <a id="LogConfig:LogConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogConfig.html"><span class="name">LogConfig</span></a><span class="params">(<span name="valid">valid: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.Valid</a></span></span></span>, <span name="followLast">followLast: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.FollowLast</a></span></span></span>, <span name="readFromHead">readFromHead: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.ReadFromHead</a></span></span></span>, <span name="batchSize">batchSize: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.BatchSize</a></span></span></span>, <span name="lineDelimiter">lineDelimiter: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.LineDelimiter</a></span></span></span>, <span name="removeDelimiter">removeDelimiter: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.RemoveDelimiter</a></span></span></span>, <span name="topic">topic: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.Topic</a></span></span></span>, <span name="key">key: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.Key</a></span></span></span>, <span name="partition">partition: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.Partition</a></span></span></span>, <span name="compressionCodec">compressionCodec: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.CompressionCodec</a></span></span></span>, <span name="requiredAcks">requiredAcks: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.RequiredAcks</a></span></span></span>, <span name="messageTimeoutMs">messageTimeoutMs: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.MessageTimeoutMs</a></span></span></span>, <span name="regexFilterPattern">regexFilterPattern: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.RegexFilterPattern</a></span></span></span>, <span name="laggingMaxBytes">laggingMaxBytes: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.LaggingMaxBytes</a></span></span></span>, <span name="rotateLaggingMaxSec">rotateLaggingMaxSec: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.RotateLaggingMaxSec</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.utils.logkafka82.package@LogConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Configuration settings for a log</p><div class="fullcomment"><div class="comment cmt"><p>Configuration settings for a log</p></div><dl class="paramcmts block"><dt class="param">valid</dt><dd class="cmt"><p>Enable now or not</p></dd><dt class="param">followLast</dt><dd class="cmt"><p>If set to &quot;false&quot;, when restarting logkafka process, the log_path formatted with current time will be collect;
+                     If set to &quot;true&quot;, when restarting logkafka process, the last collecting file will be collected continually</p></dd><dt class="param">readFromHead</dt><dd class="cmt"><p>If set to &quot;false&quot;, the first file will be collected from tail;
+                     If set to &quot;true&quot;, the first file will be collected from head</p></dd><dt class="param">batchSize</dt><dd class="cmt"><p>The batch size of messages to be sent</p></dd><dt class="param">lineDelimiter</dt><dd class="cmt"><p>Delimiter of log file lines</p></dd><dt class="param">removeDelimiter</dt><dd class="cmt"><p>Remove delimiter or not when collecting log file lines</p></dd><dt class="param">topic</dt><dd class="cmt"><p>The topic of messages to be sent</p></dd><dt class="param">key</dt><dd class="cmt"><p>The key of messages to be sent</p></dd><dt class="param">partition</dt><dd class="cmt"><p>The partition of messages to be sent.
+                    -1 : random
+                    n(&gt;=0): partition n</p></dd><dt class="param">compressionCodec</dt><dd class="cmt"><p>Optional compression method of messages: none, gzip, snappy</p></dd><dt class="param">requiredAcks</dt><dd class="cmt"><p>Number of required acks</p></dd><dt class="param">messageTimeoutMs</dt><dd class="cmt"><p>Local message timeout. This value is only enforced locally
+                           and limits the time a produced message waits for successful delivery.
+                           A time of 0 is infinite.</p></dd><dt class="param">regexFilterPattern</dt><dd class="cmt"><p>The messages matching this pattern will be dropped.</p></dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="kafka.manager.utils.logkafka82.Defaults" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Defaults"></a>
+      <a id="Defaults:Defaults"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Defaults$.html"><span class="name">Defaults</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.utils.logkafka82.package@Defaults" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.utils.logkafka82.LogConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogConfig"></a>
+      <a id="LogConfig:LogConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LogConfig$.html"><span class="name">LogConfig</span></a><span class="result"> extends <a href="../LogkafkaNewConfigs.html" class="extype" name="kafka.manager.utils.LogkafkaNewConfigs">LogkafkaNewConfigs</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.utils.logkafka82.package@LogConfig" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.utils.logkafka82.LogkafkaConfigErrors" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogkafkaConfigErrors"></a>
+      <a id="LogkafkaConfigErrors:LogkafkaConfigErrors"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LogkafkaConfigErrors$.html"><span class="name">LogkafkaConfigErrors</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.utils.logkafka82.package@LogkafkaConfigErrors" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

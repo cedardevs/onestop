@@ -1,0 +1,186 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>logkafka - kafka.manager.logkafka</title>
+          <meta name="description" content="logkafka - kafka.manager.logkafka" />
+          <meta name="keywords" content="logkafka kafka.manager.logkafka" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../index.html';
+            var hash = 'kafka.manager.logkafka.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../lib/package_big.png" />
+        <p id="owner"><a href="../../package.html" class="extype" name="kafka">kafka</a>.<a href="../package.html" class="extype" name="kafka.manager">manager</a></p>
+        <h1>logkafka</h1><span class="permalink">
+      <a href="../../../index.html#kafka.manager.logkafka.package" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">logkafka</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="kafka.manager.logkafka.LogkafkaCommandActor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogkafkaCommandActorextendsBaseCommandActorwithLongRunningPoolActor"></a>
+      <a id="LogkafkaCommandActor:LogkafkaCommandActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogkafkaCommandActor.html"><span class="name">LogkafkaCommandActor</span></a><span class="result"> extends <a href="../base/BaseCommandActor.html" class="extype" name="kafka.manager.base.BaseCommandActor">BaseCommandActor</a> with <a href="../base/LongRunningPoolActor.html" class="extype" name="kafka.manager.base.LongRunningPoolActor">LongRunningPoolActor</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.logkafka.package@LogkafkaCommandActorextendsBaseCommandActorwithLongRunningPoolActor" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.logkafka.LogkafkaCommandActorConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogkafkaCommandActorConfigextendsProductwithSerializable"></a>
+      <a id="LogkafkaCommandActorConfig:LogkafkaCommandActorConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogkafkaCommandActorConfig.html"><span class="name">LogkafkaCommandActorConfig</span></a><span class="params">(<span name="curator">curator: <span class="extype" name="org.apache.curator.framework.CuratorFramework">CuratorFramework</span></span>, <span name="longRunningPoolConfig">longRunningPoolConfig: <a href="../base/LongRunningPoolConfig.html" class="extype" name="kafka.manager.base.LongRunningPoolConfig">LongRunningPoolConfig</a></span>, <span name="askTimeoutMillis">askTimeoutMillis: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">400</span></span>, <span name="clusterContext">clusterContext: <a href="../model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.logkafka.package@LogkafkaCommandActorConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p>
+    </li><li name="kafka.manager.logkafka.LogkafkaStateActor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogkafkaStateActorextendsBaseQueryCommandActor"></a>
+      <a id="LogkafkaStateActor:LogkafkaStateActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogkafkaStateActor.html"><span class="name">LogkafkaStateActor</span></a><span class="result"> extends <a href="../base/BaseQueryCommandActor.html" class="extype" name="kafka.manager.base.BaseQueryCommandActor">BaseQueryCommandActor</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.logkafka.package@LogkafkaStateActorextendsBaseQueryCommandActor" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.logkafka.LogkafkaViewCacheActor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogkafkaViewCacheActorextendsBaseActorwithLongRunningPoolActor"></a>
+      <a id="LogkafkaViewCacheActor:LogkafkaViewCacheActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogkafkaViewCacheActor.html"><span class="name">LogkafkaViewCacheActor</span></a><span class="result"> extends <a href="../base/BaseActor.html" class="extype" name="kafka.manager.base.BaseActor">BaseActor</a> with <a href="../base/LongRunningPoolActor.html" class="extype" name="kafka.manager.base.LongRunningPoolActor">LongRunningPoolActor</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.logkafka.package@LogkafkaViewCacheActorextendsBaseActorwithLongRunningPoolActor" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.logkafka.LogkafkaViewCacheActorConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogkafkaViewCacheActorConfigextendsProductwithSerializable"></a>
+      <a id="LogkafkaViewCacheActorConfig:LogkafkaViewCacheActorConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogkafkaViewCacheActorConfig.html"><span class="name">LogkafkaViewCacheActorConfig</span></a><span class="params">(<span name="logkafkaStateActorPath">logkafkaStateActorPath: <span class="extype" name="akka.actor.ActorPath">ActorPath</span></span>, <span name="clusterContext">clusterContext: <a href="../model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>, <span name="longRunningPoolConfig">longRunningPoolConfig: <a href="../base/LongRunningPoolConfig.html" class="extype" name="kafka.manager.base.LongRunningPoolConfig">LongRunningPoolConfig</a></span>, <span name="updatePeriod">updatePeriod: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span> = <span class="symbol">10 seconds</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.logkafka.package@LogkafkaViewCacheActorConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p>
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

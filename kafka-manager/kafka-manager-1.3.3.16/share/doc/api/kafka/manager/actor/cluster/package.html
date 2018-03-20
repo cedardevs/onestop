@@ -1,0 +1,539 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>cluster - kafka.manager.actor.cluster</title>
+          <meta name="description" content="cluster - kafka.manager.actor.cluster" />
+          <meta name="keywords" content="cluster kafka.manager.actor.cluster" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../index.html';
+            var hash = 'kafka.manager.actor.cluster.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../package.html" class="extype" name="kafka">kafka</a>.<a href="../../package.html" class="extype" name="kafka.manager">manager</a>.<a href="../package.html" class="extype" name="kafka.manager.actor">actor</a></p>
+        <h1>cluster</h1><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">cluster</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Created by hiral on 12/1/15.
+</p></div><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By Inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="kafka.manager.actor.cluster"><span>cluster</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show All</span></li>
+            </ol>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="kafka.manager.actor.cluster.BrokerViewCacheActor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="BrokerViewCacheActorextendsBaseActorwithLongRunningPoolActorwithBaseClusterActor"></a>
+      <a id="BrokerViewCacheActor:BrokerViewCacheActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="BrokerViewCacheActor.html"><span class="name">BrokerViewCacheActor</span></a><span class="result"> extends <a href="../../base/BaseActor.html" class="extype" name="kafka.manager.base.BaseActor">BaseActor</a> with <a href="../../base/LongRunningPoolActor.html" class="extype" name="kafka.manager.base.LongRunningPoolActor">LongRunningPoolActor</a> with <a href="../../base/cluster/BaseClusterActor.html" class="extype" name="kafka.manager.base.cluster.BaseClusterActor">BaseClusterActor</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@BrokerViewCacheActorextendsBaseActorwithLongRunningPoolActorwithBaseClusterActor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.BrokerViewCacheActorConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="BrokerViewCacheActorConfigextendsProductwithSerializable"></a>
+      <a id="BrokerViewCacheActorConfig:BrokerViewCacheActorConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="BrokerViewCacheActorConfig.html"><span class="name">BrokerViewCacheActorConfig</span></a><span class="params">(<span name="kafkaStateActorPath">kafkaStateActorPath: <span class="extype" name="akka.actor.ActorPath">ActorPath</span></span>, <span name="clusterContext">clusterContext: <a href="../../model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>, <span name="longRunningPoolConfig">longRunningPoolConfig: <a href="../../base/LongRunningPoolConfig.html" class="extype" name="kafka.manager.base.LongRunningPoolConfig">LongRunningPoolConfig</a></span>, <span name="updatePeriod">updatePeriod: <span class="extype" name="scala.concurrent.duration.FiniteDuration">FiniteDuration</span> = <span class="symbol">10 seconds</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@BrokerViewCacheActorConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.ClusterManagerActor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ClusterManagerActorextendsBaseClusterQueryCommandActorwithCuratorAwareActorwithBaseZkPath"></a>
+      <a id="ClusterManagerActor:ClusterManagerActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ClusterManagerActor.html"><span class="name">ClusterManagerActor</span></a><span class="result"> extends <a href="../../base/cluster/BaseClusterQueryCommandActor.html" class="extype" name="kafka.manager.base.cluster.BaseClusterQueryCommandActor">BaseClusterQueryCommandActor</a> with <a href="../../base/CuratorAwareActor.html" class="extype" name="kafka.manager.base.CuratorAwareActor">CuratorAwareActor</a> with <a href="../../base/BaseZkPath.html" class="extype" name="kafka.manager.base.BaseZkPath">BaseZkPath</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@ClusterManagerActorextendsBaseClusterQueryCommandActorwithCuratorAwareActorwithBaseZkPath" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.ClusterManagerActorConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ClusterManagerActorConfigextendsProductwithSerializable"></a>
+      <a id="ClusterManagerActorConfig:ClusterManagerActorConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ClusterManagerActorConfig.html"><span class="name">ClusterManagerActorConfig</span></a><span class="params">(<span name="pinnedDispatcherName">pinnedDispatcherName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="baseZkPath">baseZkPath: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="curatorConfig">curatorConfig: <a href="../../model/CuratorConfig.html" class="extype" name="kafka.manager.model.CuratorConfig">CuratorConfig</a></span>, <span name="clusterConfig">clusterConfig: <a href="../../model/ClusterConfig.html" class="extype" name="kafka.manager.model.ClusterConfig">ClusterConfig</a></span>, <span name="consumerProperties">consumerProperties: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.util.Properties">Properties</span>]</span>, <span name="askTimeoutMillis">askTimeoutMillis: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">2000</span></span>, <span name="mutexTimeoutMillis">mutexTimeoutMillis: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">4000</span></span>, <span name="simpleConsumerSocketTimeoutMillis">simpleConsumerSocketTimeoutMillis: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">10000</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@ClusterManagerActorConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.ConsumerInstanceSubscriptions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ConsumerInstanceSubscriptionsextendsProductwithSerializable"></a>
+      <a id="ConsumerInstanceSubscriptions:ConsumerInstanceSubscriptions"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ConsumerInstanceSubscriptions.html"><span class="name">ConsumerInstanceSubscriptions</span></a><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@ConsumerInstanceSubscriptionsextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.KafkaAdminClient" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaAdminClientextendsAnyRef"></a>
+      <a id="KafkaAdminClient:KafkaAdminClient"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaAdminClient.html"><span class="name">KafkaAdminClient</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@KafkaAdminClientextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.KafkaAdminClientActor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaAdminClientActorextendsBaseClusterQueryActorwithLongRunningPoolActorwithProductwithSerializable"></a>
+      <a id="KafkaAdminClientActor:KafkaAdminClientActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaAdminClientActor.html"><span class="name">KafkaAdminClientActor</span></a><span class="params">(<span name="config">config: <a href="KafkaAdminClientActorConfig.html" class="extype" name="kafka.manager.actor.cluster.KafkaAdminClientActorConfig">KafkaAdminClientActorConfig</a></span>)</span><span class="result"> extends <a href="../../base/cluster/BaseClusterQueryActor.html" class="extype" name="kafka.manager.base.cluster.BaseClusterQueryActor">BaseClusterQueryActor</a> with <a href="../../base/LongRunningPoolActor.html" class="extype" name="kafka.manager.base.LongRunningPoolActor">LongRunningPoolActor</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@KafkaAdminClientActorextendsBaseClusterQueryActorwithLongRunningPoolActorwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.KafkaAdminClientActorConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaAdminClientActorConfigextendsProductwithSerializable"></a>
+      <a id="KafkaAdminClientActorConfig:KafkaAdminClientActorConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaAdminClientActorConfig.html"><span class="name">KafkaAdminClientActorConfig</span></a><span class="params">(<span name="clusterContext">clusterContext: <a href="../../model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>, <span name="longRunningPoolConfig">longRunningPoolConfig: <a href="../../base/LongRunningPoolConfig.html" class="extype" name="kafka.manager.base.LongRunningPoolConfig">LongRunningPoolConfig</a></span>, <span name="kafkaStateActorPath">kafkaStateActorPath: <span class="extype" name="akka.actor.ActorPath">ActorPath</span></span>, <span name="consumerProperties">consumerProperties: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.util.Properties">Properties</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@KafkaAdminClientActorConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.KafkaCommandActor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaCommandActorextendsBaseClusterCommandActorwithLongRunningPoolActor"></a>
+      <a id="KafkaCommandActor:KafkaCommandActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaCommandActor.html"><span class="name">KafkaCommandActor</span></a><span class="result"> extends <a href="../../base/cluster/BaseClusterCommandActor.html" class="extype" name="kafka.manager.base.cluster.BaseClusterCommandActor">BaseClusterCommandActor</a> with <a href="../../base/LongRunningPoolActor.html" class="extype" name="kafka.manager.base.LongRunningPoolActor">LongRunningPoolActor</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@KafkaCommandActorextendsBaseClusterCommandActorwithLongRunningPoolActor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.KafkaCommandActorConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaCommandActorConfigextendsProductwithSerializable"></a>
+      <a id="KafkaCommandActorConfig:KafkaCommandActorConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaCommandActorConfig.html"><span class="name">KafkaCommandActorConfig</span></a><span class="params">(<span name="curator">curator: <span class="extype" name="org.apache.curator.framework.CuratorFramework">CuratorFramework</span></span>, <span name="longRunningPoolConfig">longRunningPoolConfig: <a href="../../base/LongRunningPoolConfig.html" class="extype" name="kafka.manager.base.LongRunningPoolConfig">LongRunningPoolConfig</a></span>, <span name="askTimeoutMillis">askTimeoutMillis: <span class="extype" name="scala.Long">Long</span> = <span class="symbol">400</span></span>, <span name="clusterContext">clusterContext: <a href="../../model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>, <span name="adminUtils">adminUtils: <a href="../../utils/AdminUtils.html" class="extype" name="kafka.manager.utils.AdminUtils">AdminUtils</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@KafkaCommandActorConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p>
+    </li><li name="kafka.manager.actor.cluster.KafkaManagedOffsetCache" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaManagedOffsetCacheextendsRunnablewithCloseablewithLoggingwithProductwithSerializable"></a>
+      <a id="KafkaManagedOffsetCache:KafkaManagedOffsetCache"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaManagedOffsetCache.html"><span class="name">KafkaManagedOffsetCache</span></a><span class="params">(<span name="clusterContext">clusterContext: <a href="../../model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>, <span name="adminClient">adminClient: <a href="KafkaAdminClient.html" class="extype" name="kafka.manager.actor.cluster.KafkaAdminClient">KafkaAdminClient</a></span>, <span name="consumerProperties">consumerProperties: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.util.Properties">Properties</span>]</span>, <span name="bootstrapBrokerList">bootstrapBrokerList: <a href="../../model/ActorModel$$BrokerList.html" class="extype" name="kafka.manager.model.ActorModel.BrokerList">BrokerList</a></span>, <span name="groupMemberMetadataCheckMillis">groupMemberMetadataCheckMillis: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">30000</span></span>)</span><span class="result"> extends <span class="extype" name="java.lang.Runnable">Runnable</span> with <span class="extype" name="java.io.Closeable">Closeable</span> with <span class="extype" name="grizzled.slf4j.Logging">Logging</span> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@KafkaManagedOffsetCacheextendsRunnablewithCloseablewithLoggingwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.KafkaStateActor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaStateActorextendsBaseClusterQueryCommandActorwithLongRunningPoolActor"></a>
+      <a id="KafkaStateActor:KafkaStateActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaStateActor.html"><span class="name">KafkaStateActor</span></a><span class="result"> extends <a href="../../base/cluster/BaseClusterQueryCommandActor.html" class="extype" name="kafka.manager.base.cluster.BaseClusterQueryCommandActor">BaseClusterQueryCommandActor</a> with <a href="../../base/LongRunningPoolActor.html" class="extype" name="kafka.manager.base.LongRunningPoolActor">LongRunningPoolActor</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@KafkaStateActorextendsBaseClusterQueryCommandActorwithLongRunningPoolActor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.KafkaStateActorConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaStateActorConfigextendsProductwithSerializable"></a>
+      <a id="KafkaStateActorConfig:KafkaStateActorConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaStateActorConfig.html"><span class="name">KafkaStateActorConfig</span></a><span class="params">(<span name="curator">curator: <span class="extype" name="org.apache.curator.framework.CuratorFramework">CuratorFramework</span></span>, <span name="pinnedDispatcherName">pinnedDispatcherName: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="clusterContext">clusterContext: <a href="../../model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>, <span name="offsetCachePoolConfig">offsetCachePoolConfig: <a href="../../base/LongRunningPoolConfig.html" class="extype" name="kafka.manager.base.LongRunningPoolConfig">LongRunningPoolConfig</a></span>, <span name="kafkaAdminClientPoolConfig">kafkaAdminClientPoolConfig: <a href="../../base/LongRunningPoolConfig.html" class="extype" name="kafka.manager.base.LongRunningPoolConfig">LongRunningPoolConfig</a></span>, <span name="partitionOffsetCacheTimeoutSecs">partitionOffsetCacheTimeoutSecs: <span class="extype" name="scala.Int">Int</span></span>, <span name="simpleConsumerSocketTimeoutMillis">simpleConsumerSocketTimeoutMillis: <span class="extype" name="scala.Int">Int</span></span>, <span name="consumerProperties">consumerProperties: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.util.Properties">Properties</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@KafkaStateActorConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCache" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="OffsetCacheextendsLogging"></a>
+      <a id="OffsetCache:OffsetCache"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="OffsetCache.html"><span class="name">OffsetCache</span></a><span class="result"> extends <span class="extype" name="grizzled.slf4j.Logging">Logging</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@OffsetCacheextendsLogging" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCacheActive" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="OffsetCacheActiveextendsOffsetCachewithProductwithSerializable"></a>
+      <a id="OffsetCacheActive:OffsetCacheActive"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="OffsetCacheActive.html"><span class="name">OffsetCacheActive</span></a><span class="params">(<span name="curator">curator: <span class="extype" name="org.apache.curator.framework.CuratorFramework">CuratorFramework</span></span>, <span name="kafkaAdminClient">kafkaAdminClient: <a href="KafkaAdminClient.html" class="extype" name="kafka.manager.actor.cluster.KafkaAdminClient">KafkaAdminClient</a></span>, <span name="clusterContext">clusterContext: <a href="../../model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>, <span name="partitionLeaders">partitionLeaders: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.List">List</span>[(<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Option">Option</span>[<a href="../../model/ActorModel$$BrokerIdentity.html" class="extype" name="kafka.manager.model.ActorModel.BrokerIdentity">BrokerIdentity</a>])]]</span>, <span name="topicDescriptions">topicDescriptions: (<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Boolean">Boolean</span>) ⇒ <span class="extype" name="scala.Option">Option</span>[<a href="../../model/ActorModel$$TopicDescription.html" class="extype" name="kafka.manager.model.ActorModel.TopicDescription">TopicDescription</a>]</span>, <span name="cacheTimeoutSecs">cacheTimeoutSecs: <span class="extype" name="scala.Int">Int</span></span>, <span name="socketTimeoutMillis">socketTimeoutMillis: <span class="extype" name="scala.Int">Int</span></span>, <span name="kafkaVersion">kafkaVersion: <a href="../../model/KafkaVersion.html" class="extype" name="kafka.manager.model.KafkaVersion">KafkaVersion</a></span>, <span name="consumerProperties">consumerProperties: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.util.Properties">Properties</span>]</span>, <span name="getBrokerList">getBrokerList: () ⇒ <a href="../../model/ActorModel$$BrokerList.html" class="extype" name="kafka.manager.model.ActorModel.BrokerList">BrokerList</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ec">ec: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>, <span name="cf">cf: <a href="../../features/ClusterFeatures.html" class="extype" name="kafka.manager.features.ClusterFeatures">ClusterFeatures</a></span>)</span><span class="result"> extends <a href="OffsetCache.html" class="extype" name="kafka.manager.actor.cluster.OffsetCache">OffsetCache</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@OffsetCacheActiveextendsOffsetCachewithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.OffsetCachePassive" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="OffsetCachePassiveextendsOffsetCachewithProductwithSerializable"></a>
+      <a id="OffsetCachePassive:OffsetCachePassive"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="OffsetCachePassive.html"><span class="name">OffsetCachePassive</span></a><span class="params">(<span name="curator">curator: <span class="extype" name="org.apache.curator.framework.CuratorFramework">CuratorFramework</span></span>, <span name="kafkaAdminClient">kafkaAdminClient: <a href="KafkaAdminClient.html" class="extype" name="kafka.manager.actor.cluster.KafkaAdminClient">KafkaAdminClient</a></span>, <span name="clusterContext">clusterContext: <a href="../../model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>, <span name="partitionLeaders">partitionLeaders: (<span class="extype" name="scala.Predef.String">String</span>) ⇒ <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.List">List</span>[(<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="scala.Option">Option</span>[<a href="../../model/ActorModel$$BrokerIdentity.html" class="extype" name="kafka.manager.model.ActorModel.BrokerIdentity">BrokerIdentity</a>])]]</span>, <span name="topicDescriptions">topicDescriptions: (<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Boolean">Boolean</span>) ⇒ <span class="extype" name="scala.Option">Option</span>[<a href="../../model/ActorModel$$TopicDescription.html" class="extype" name="kafka.manager.model.ActorModel.TopicDescription">TopicDescription</a>]</span>, <span name="cacheTimeoutSecs">cacheTimeoutSecs: <span class="extype" name="scala.Int">Int</span></span>, <span name="socketTimeoutMillis">socketTimeoutMillis: <span class="extype" name="scala.Int">Int</span></span>, <span name="kafkaVersion">kafkaVersion: <a href="../../model/KafkaVersion.html" class="extype" name="kafka.manager.model.KafkaVersion">KafkaVersion</a></span>, <span name="consumerProperties">consumerProperties: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.util.Properties">Properties</span>]</span>, <span name="getBrokerList">getBrokerList: () ⇒ <a href="../../model/ActorModel$$BrokerList.html" class="extype" name="kafka.manager.model.ActorModel.BrokerList">BrokerList</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="ec">ec: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>, <span name="cf">cf: <a href="../../features/ClusterFeatures.html" class="extype" name="kafka.manager.features.ClusterFeatures">ClusterFeatures</a></span>)</span><span class="result"> extends <a href="OffsetCache.html" class="extype" name="kafka.manager.actor.cluster.OffsetCache">OffsetCache</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@OffsetCachePassiveextendsOffsetCachewithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.TryLogErrorHelper" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TryLogErrorHelper[T]extendsLogging"></a>
+      <a id="TryLogErrorHelper[T]:TryLogErrorHelper[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="package$$TryLogErrorHelper.html"><span class="name">TryLogErrorHelper</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="grizzled.slf4j.Logging">Logging</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@TryLogErrorHelper[T]extendsLogging" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="kafka.manager.actor.cluster.ClusterManagerActor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ClusterManagerActor"></a>
+      <a id="ClusterManagerActor:ClusterManagerActor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ClusterManagerActor$.html"><span class="name">ClusterManagerActor</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@ClusterManagerActor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p>
+    </li><li name="kafka.manager.actor.cluster.ConsumerInstanceSubscriptions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ConsumerInstanceSubscriptions"></a>
+      <a id="ConsumerInstanceSubscriptions:ConsumerInstanceSubscriptions"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ConsumerInstanceSubscriptions$.html"><span class="name">ConsumerInstanceSubscriptions</span></a><span class="result"> extends <span class="extype" name="grizzled.slf4j.Logging">Logging</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@ConsumerInstanceSubscriptions" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster.KafkaManagedOffsetCache" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaManagedOffsetCache"></a>
+      <a id="KafkaManagedOffsetCache:KafkaManagedOffsetCache"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaManagedOffsetCache$.html"><span class="name">KafkaManagedOffsetCache</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@KafkaManagedOffsetCache" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster#featureGate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="featureGate[T](af:kafka.manager.features.ClusterFeature,af2:kafka.manager.features.ClusterFeature,af3:kafka.manager.features.ClusterFeature)(fn:=&gt;Unit)(implicitfeatures:kafka.manager.features.ClusterFeatures):Unit"></a>
+      <a id="featureGate[T](ClusterFeature,ClusterFeature,ClusterFeature)(⇒Unit)(ClusterFeatures):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">featureGate</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="af">af: <a href="../../features/ClusterFeature.html" class="extype" name="kafka.manager.features.ClusterFeature">ClusterFeature</a></span>, <span name="af2">af2: <a href="../../features/ClusterFeature.html" class="extype" name="kafka.manager.features.ClusterFeature">ClusterFeature</a></span>, <span name="af3">af3: <a href="../../features/ClusterFeature.html" class="extype" name="kafka.manager.features.ClusterFeature">ClusterFeature</a></span>)</span><span class="params">(<span name="fn">fn: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="features">features: <a href="../../features/ClusterFeatures.html" class="extype" name="kafka.manager.features.ClusterFeatures">ClusterFeatures</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@featureGate[T](af:kafka.manager.features.ClusterFeature,af2:kafka.manager.features.ClusterFeature,af3:kafka.manager.features.ClusterFeature)(fn:=&gt;Unit)(implicitfeatures:kafka.manager.features.ClusterFeatures):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster#featureGate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="featureGate[T](af:kafka.manager.features.ClusterFeature,af2:kafka.manager.features.ClusterFeature)(fn:=&gt;Unit)(implicitfeatures:kafka.manager.features.ClusterFeatures):Unit"></a>
+      <a id="featureGate[T](ClusterFeature,ClusterFeature)(⇒Unit)(ClusterFeatures):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">featureGate</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="af">af: <a href="../../features/ClusterFeature.html" class="extype" name="kafka.manager.features.ClusterFeature">ClusterFeature</a></span>, <span name="af2">af2: <a href="../../features/ClusterFeature.html" class="extype" name="kafka.manager.features.ClusterFeature">ClusterFeature</a></span>)</span><span class="params">(<span name="fn">fn: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="features">features: <a href="../../features/ClusterFeatures.html" class="extype" name="kafka.manager.features.ClusterFeatures">ClusterFeatures</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@featureGate[T](af:kafka.manager.features.ClusterFeature,af2:kafka.manager.features.ClusterFeature)(fn:=&gt;Unit)(implicitfeatures:kafka.manager.features.ClusterFeatures):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster#featureGate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="featureGate[T](af:kafka.manager.features.ClusterFeature)(fn:=&gt;Unit)(implicitfeatures:kafka.manager.features.ClusterFeatures):Unit"></a>
+      <a id="featureGate[T](ClusterFeature)(⇒Unit)(ClusterFeatures):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">featureGate</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="af">af: <a href="../../features/ClusterFeature.html" class="extype" name="kafka.manager.features.ClusterFeature">ClusterFeature</a></span>)</span><span class="params">(<span name="fn">fn: ⇒ <span class="extype" name="scala.Unit">Unit</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="features">features: <a href="../../features/ClusterFeatures.html" class="extype" name="kafka.manager.features.ClusterFeatures">ClusterFeatures</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@featureGate[T](af:kafka.manager.features.ClusterFeature)(fn:=&gt;Unit)(implicitfeatures:kafka.manager.features.ClusterFeatures):Unit" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor.cluster#featureGateFold" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="featureGateFold[T](af:kafka.manager.features.ClusterFeature)(elseFn:=&gt;T,fn:=&gt;T)(implicitfeatures:kafka.manager.features.ClusterFeatures):T"></a>
+      <a id="featureGateFold[T](ClusterFeature)(⇒T,⇒T)(ClusterFeatures):T"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">featureGateFold</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="af">af: <a href="../../features/ClusterFeature.html" class="extype" name="kafka.manager.features.ClusterFeature">ClusterFeature</a></span>)</span><span class="params">(<span name="elseFn">elseFn: ⇒ <span class="extype" name="kafka.manager.actor.cluster.featureGateFold.T">T</span></span>, <span name="fn">fn: ⇒ <span class="extype" name="kafka.manager.actor.cluster.featureGateFold.T">T</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="features">features: <a href="../../features/ClusterFeatures.html" class="extype" name="kafka.manager.features.ClusterFeatures">ClusterFeatures</a></span>)</span><span class="result">: <span class="extype" name="kafka.manager.actor.cluster.featureGateFold.T">T</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.actor.cluster.package@featureGateFold[T](af:kafka.manager.features.ClusterFeature)(elseFn:=&gt;T,fn:=&gt;T)(implicitfeatures:kafka.manager.features.ClusterFeatures):T" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

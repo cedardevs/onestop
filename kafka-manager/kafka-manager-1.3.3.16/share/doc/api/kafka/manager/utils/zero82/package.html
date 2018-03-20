@@ -1,0 +1,158 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>zero82 - kafka.manager.utils.zero82</title>
+          <meta name="description" content="zero82 - kafka.manager.utils.zero82" />
+          <meta name="keywords" content="zero82 kafka.manager.utils.zero82" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../index.html';
+            var hash = 'kafka.manager.utils.zero82.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../../lib/package_big.png" />
+        <p id="owner"><a href="../../../package.html" class="extype" name="kafka">kafka</a>.<a href="../../package.html" class="extype" name="kafka.manager">manager</a>.<a href="../package.html" class="extype" name="kafka.manager.utils">utils</a></p>
+        <h1>zero82</h1><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.utils.zero82.package" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">zero82</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="kafka.manager.utils.zero82.LogConfig" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="LogConfigextendsProductwithSerializable"></a>
+      <a id="LogConfig:LogConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogConfig.html"><span class="name">LogConfig</span></a><span class="params">(<span name="segmentSize">segmentSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.SegmentSize</a></span></span></span>, <span name="segmentMs">segmentMs: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.SegmentMs</a></span></span></span>, <span name="segmentJitterMs">segmentJitterMs: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.SegmentJitterMs</a></span></span></span>, <span name="flushInterval">flushInterval: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.FlushInterval</a></span></span></span>, <span name="flushMs">flushMs: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.FlushMs</a></span></span></span>, <span name="retentionSize">retentionSize: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.RetentionSize</a></span></span></span>, <span name="retentionMs">retentionMs: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.RetentionMs</a></span></span></span>, <span name="maxMessageSize">maxMessageSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.MaxMessageSize</a></span></span></span>, <span name="maxIndexSize">maxIndexSize: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.MaxIndexSize</a></span></span></span>, <span name="indexInterval">indexInterval: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.IndexInterval</a></span></span></span>, <span name="fileDeleteDelayMs">fileDeleteDelayMs: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.FileDeleteDelayMs</a></span></span></span>, <span name="deleteRetentionMs">deleteRetentionMs: <span class="extype" name="scala.Long">Long</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.DeleteRetentionMs</a></span></span></span>, <span name="minCleanableRatio">minCleanableRatio: <span class="extype" name="scala.Double">Double</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.MinCleanableDirtyRatio</a></span></span></span>, <span name="compact">compact: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.Compact</a></span></span></span>, <span name="uncleanLeaderElectionEnable">uncleanLeaderElectionEnable: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="defval" name='<span class="name"><a href="Defaults$.html">Defaults.UncleanLeaderElectionEnable</a></span>'>...</span></span>, <span name="minInSyncReplicas">minInSyncReplicas: <span class="extype" name="scala.Int">Int</span> = <span class="symbol"><span class="name"><a href="Defaults$.html">Defaults.MinInSyncReplicas</a></span></span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.utils.zero82.package@LogConfigextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Configuration settings for a log</p><div class="fullcomment"><div class="comment cmt"><p>Configuration settings for a log</p></div><dl class="paramcmts block"><dt class="param">segmentSize</dt><dd class="cmt"><p>The soft maximum for the size of a segment file in the log</p></dd><dt class="param">segmentMs</dt><dd class="cmt"><p>The soft maximum on the amount of time before a new log segment is rolled</p></dd><dt class="param">segmentJitterMs</dt><dd class="cmt"><p>The maximum random jitter subtracted from segmentMs to avoid thundering herds of segment rolling</p></dd><dt class="param">flushInterval</dt><dd class="cmt"><p>The number of messages that can be written to the log before a flush is forced</p></dd><dt class="param">flushMs</dt><dd class="cmt"><p>The amount of time the log can have dirty data before a flush is forced</p></dd><dt class="param">retentionSize</dt><dd class="cmt"><p>The approximate total number of bytes this log can use</p></dd><dt class="param">retentionMs</dt><dd class="cmt"><p>The age approximate maximum age of the last segment that is retained</p></dd><dt class="param">maxIndexSize</dt><dd class="cmt"><p>The maximum size of an index file</p></dd><dt class="param">indexInterval</dt><dd class="cmt"><p>The approximate number of bytes between index entries</p></dd><dt class="param">fileDeleteDelayMs</dt><dd class="cmt"><p>The time to wait before deleting a file from the filesystem</p></dd><dt class="param">deleteRetentionMs</dt><dd class="cmt"><p>The time to retain delete markers in the log. Only applicable for logs that are being compacted.</p></dd><dt class="param">minCleanableRatio</dt><dd class="cmt"><p>The ratio of bytes that are available for cleaning to the bytes already cleaned</p></dd><dt class="param">compact</dt><dd class="cmt"><p>Should old segments in this log be deleted or deduplicated?</p></dd><dt class="param">uncleanLeaderElectionEnable</dt><dd class="cmt"><p>Indicates whether unclean leader election is enabled; actually a controller-level property
+                                   but included here for topic-specific configuration validation purposes</p></dd><dt class="param">minInSyncReplicas</dt><dd class="cmt"><p>If number of insync replicas drops below this number, we stop accepting writes with -1 (or all) required acks</p></dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="kafka.manager.utils.zero82.Defaults" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Defaults"></a>
+      <a id="Defaults:Defaults"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Defaults$.html"><span class="name">Defaults</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.utils.zero82.package@Defaults" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Copied from kafka 0.8.2.1
+https://git-wip-us.apache.org/repos/asf?p=kafka.git;a=blob;f=core/src/main/scala/kafka/log/LogConfig.scala
+</p>
+    </li><li name="kafka.manager.utils.zero82.LogConfig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogConfig"></a>
+      <a id="LogConfig:LogConfig"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="LogConfig$.html"><span class="name">LogConfig</span></a><span class="result"> extends <a href="../TopicConfigs.html" class="extype" name="kafka.manager.utils.TopicConfigs">TopicConfigs</a> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#kafka.manager.utils.zero82.package@LogConfig" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

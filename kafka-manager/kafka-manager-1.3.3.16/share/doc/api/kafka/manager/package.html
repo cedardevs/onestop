@@ -1,0 +1,436 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>manager - kafka.manager</title>
+          <meta name="description" content="manager - kafka.manager" />
+          <meta name="keywords" content="manager kafka.manager" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../lib/template.js"></script>
+      <script type="text/javascript" src="../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../index.html';
+            var hash = 'kafka.manager.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../lib/package_big.png" />
+        <p id="owner"><a href="../package.html" class="extype" name="kafka">kafka</a></p>
+        <h1>manager</h1><span class="permalink">
+      <a href="../../index.html#kafka.manager.package" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">manager</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="comment cmt"></div><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By Inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="kafka.manager"><span>manager</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show All</span></li>
+            </ol>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="kafka.manager.ApiError" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ApiErrorextendsProductwithSerializable"></a>
+      <a id="ApiError:ApiError"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ApiError.html"><span class="name">ApiError</span></a><span class="params">(<span name="msg">msg: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="recoverByForceOperation">recoverByForceOperation: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@ApiErrorextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.BrokerListExtended" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="BrokerListExtendedextendsProductwithSerializable"></a>
+      <a id="BrokerListExtended:BrokerListExtended"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="BrokerListExtended.html"><span class="name">BrokerListExtended</span></a><span class="params">(<span name="list">list: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<a href="model/ActorModel$$BrokerIdentity.html" class="extype" name="kafka.manager.model.ActorModel.BrokerIdentity">BrokerIdentity</a>]</span>, <span name="metrics">metrics: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Int">Int</span>, <a href="model/ActorModel$$BrokerMetrics.html" class="extype" name="kafka.manager.model.ActorModel.BrokerMetrics">BrokerMetrics</a>]</span>, <span name="combinedMetric">combinedMetric: <span class="extype" name="scala.Option">Option</span>[<a href="model/ActorModel$$BrokerMetrics.html" class="extype" name="kafka.manager.model.ActorModel.BrokerMetrics">BrokerMetrics</a>]</span>, <span name="clusterContext">clusterContext: <a href="model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@BrokerListExtendedextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.ConsumerListExtended" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ConsumerListExtendedextendsProductwithSerializable"></a>
+      <a id="ConsumerListExtended:ConsumerListExtended"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="ConsumerListExtended.html"><span class="name">ConsumerListExtended</span></a><span class="params">(<span name="list">list: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[((<span class="extype" name="scala.Predef.String">String</span>, <a href="model/ActorModel$$ConsumerType.html" class="extype" name="kafka.manager.model.ActorModel.ConsumerType">ConsumerType</a>), <span class="extype" name="scala.Option">Option</span>[<a href="model/ActorModel$$ConsumerIdentity.html" class="extype" name="kafka.manager.model.ActorModel.ConsumerIdentity">ConsumerIdentity</a>])]</span>, <span name="clusterContext">clusterContext: <a href="model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@ConsumerListExtendedextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.KafkaManager" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaManagerextendsLogging"></a>
+      <a id="KafkaManager:KafkaManager"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaManager.html"><span class="name">KafkaManager</span></a><span class="result"> extends <span class="extype" name="grizzled.slf4j.Logging">Logging</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@KafkaManagerextendsLogging" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.LogkafkaListExtended" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogkafkaListExtendedextendsProductwithSerializable"></a>
+      <a id="LogkafkaListExtended:LogkafkaListExtended"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogkafkaListExtended.html"><span class="name">LogkafkaListExtended</span></a><span class="params">(<span name="list">list: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<a href="model/ActorModel$$LogkafkaIdentity.html" class="extype" name="kafka.manager.model.ActorModel.LogkafkaIdentity">LogkafkaIdentity</a>])]</span>, <span name="deleteSet">deleteSet: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@LogkafkaListExtendedextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.TopicListExtended" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TopicListExtendedextendsProductwithSerializable"></a>
+      <a id="TopicListExtended:TopicListExtended"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="TopicListExtended.html"><span class="name">TopicListExtended</span></a><span class="params">(<span name="list">list: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<a href="model/ActorModel$$TopicIdentity.html" class="extype" name="kafka.manager.model.ActorModel.TopicIdentity">TopicIdentity</a>])]</span>, <span name="topicToConsumerMap">topicToConsumerMap: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Iterable">Iterable</span>[(<span class="extype" name="scala.Predef.String">String</span>, <a href="model/ActorModel$$ConsumerType.html" class="extype" name="kafka.manager.model.ActorModel.ConsumerType">ConsumerType</a>)]]</span>, <span name="deleteSet">deleteSet: <span class="extype" name="scala.Predef.Set">Set</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="underReassignments">underReassignments: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="clusterContext">clusterContext: <a href="model/ClusterContext.html" class="extype" name="kafka.manager.model.ClusterContext">ClusterContext</a></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@TopicListExtendedextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p>
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="kafka.manager.ApiError" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ApiError"></a>
+      <a id="ApiError:ApiError"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="ApiError$.html"><span class="name">ApiError</span></a><span class="result"> extends <span class="extype" name="grizzled.slf4j.Logging">Logging</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@ApiError" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.KafkaManager" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaManager"></a>
+      <a id="KafkaManager:KafkaManager"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaManager$.html"><span class="name">KafkaManager</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@KafkaManager" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.actor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="actor"></a>
+      <a id="actor:actor"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="actor/package.html"><span class="name">actor</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@actor" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager#asByteArray" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="asByteArray(str:String):Array[Byte]"></a>
+      <a id="asByteArray(String):Array[Byte]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asByteArray</span><span class="params">(<span name="str">str: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@asByteArray(str:String):Array[Byte]" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager#asString" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="asString(ba:Array[Byte]):String"></a>
+      <a id="asString(Array[Byte]):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asString</span><span class="params">(<span name="ba">ba: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@asString(ba:Array[Byte]):String" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.base" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="base"></a>
+      <a id="base:base"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="base/package.html"><span class="name">base</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@base" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.features" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="features"></a>
+      <a id="features:features"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="features/package.html"><span class="name">features</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@features" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.jmx" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="jmx"></a>
+      <a id="jmx:jmx"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="jmx/package.html"><span class="name">jmx</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@jmx" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.logkafka" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="logkafka"></a>
+      <a id="logkafka:logkafka"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="logkafka/package.html"><span class="name">logkafka</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@logkafka" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.model" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="model"></a>
+      <a id="model:model"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="model/package.html"><span class="name">model</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@model" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager#nodeFromPath" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="nodeFromPath(s:String):String"></a>
+      <a id="nodeFromPath(String):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">nodeFromPath</span><span class="params">(<span name="s">s: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@nodeFromPath(s:String):String" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.utils" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="utils"></a>
+      <a id="utils:utils"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <a href="utils/package.html"><span class="name">utils</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../index.html#kafka.manager.package@utils" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      <p class="shortcomment cmt"></p>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>jmx - kafka.manager.jmx</title>
+          <meta name="description" content="jmx - kafka.manager.jmx" />
+          <meta name="keywords" content="jmx kafka.manager.jmx" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../index.html';
+            var hash = 'kafka.manager.jmx.package';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="value">
+      <div id="definition">
+        <img alt="Package" src="../../../lib/package_big.png" />
+        <p id="owner"><a href="../../package.html" class="extype" name="kafka">kafka</a>.<a href="../package.html" class="extype" name="kafka.manager">manager</a></p>
+        <h1>jmx</h1><span class="permalink">
+      <a href="../../../index.html#kafka.manager.jmx.package" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">package</span>
+      </span>
+      <span class="symbol">
+        <span class="name">jmx</span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        
+        
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        
+
+        <div id="types" class="types members">
+              <h3>Type Members</h3>
+              <ol><li name="kafka.manager.jmx.GaugeMetric" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="GaugeMetricextendsProductwithSerializable"></a>
+      <a id="GaugeMetric:GaugeMetric"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="GaugeMetric.html"><span class="name">GaugeMetric</span></a><span class="params">(<span name="value">value: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.jmx.package@GaugeMetricextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.jmx.LogInfo" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogInfoextendsProductwithSerializable"></a>
+      <a id="LogInfo:LogInfo"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogInfo.html"><span class="name">LogInfo</span></a><span class="params">(<span name="dir">dir: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="logSegments">logSegments: <span class="extype" name="scala.Seq">Seq</span>[<a href="LogSegment.html" class="extype" name="kafka.manager.jmx.LogSegment">LogSegment</a>]</span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.jmx.package@LogInfoextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.jmx.LogSegment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LogSegmentextendsProductwithSerializable"></a>
+      <a id="LogSegment:LogSegment"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="LogSegment.html"><span class="name">LogSegment</span></a><span class="params">(<span name="baseOffset">baseOffset: <span class="extype" name="scala.Long">Long</span></span>, <span name="created">created: <span class="extype" name="scala.Long">Long</span></span>, <span name="logBytes">logBytes: <span class="extype" name="scala.Long">Long</span></span>, <span name="indexBytes">indexBytes: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.jmx.package@LogSegmentextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.jmx.MeterMetric" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="MeterMetricextendsProductwithSerializable"></a>
+      <a id="MeterMetric:MeterMetric"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="MeterMetric.html"><span class="name">MeterMetric</span></a><span class="params">(<span name="count">count: <span class="extype" name="scala.Long">Long</span></span>, <span name="fifteenMinuteRate">fifteenMinuteRate: <span class="extype" name="scala.Double">Double</span></span>, <span name="fiveMinuteRate">fiveMinuteRate: <span class="extype" name="scala.Double">Double</span></span>, <span name="oneMinuteRate">oneMinuteRate: <span class="extype" name="scala.Double">Double</span></span>, <span name="meanRate">meanRate: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.jmx.package@MeterMetricextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.jmx.OSMetric" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="OSMetricextendsProductwithSerializable"></a>
+      <a id="OSMetric:OSMetric"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="OSMetric.html"><span class="name">OSMetric</span></a><span class="params">(<span name="processCpuLoad">processCpuLoad: <span class="extype" name="scala.Double">Double</span></span>, <span name="systemCpuLoad">systemCpuLoad: <span class="extype" name="scala.Double">Double</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.jmx.package@OSMetricextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.jmx.SegmentsMetric" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SegmentsMetricextendsProductwithSerializable"></a>
+      <a id="SegmentsMetric:SegmentsMetric"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="SegmentsMetric.html"><span class="name">SegmentsMetric</span></a><span class="params">(<span name="bytes">bytes: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.jmx.package@SegmentsMetricextendsProductwithSerializable" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="kafka.manager.jmx.FormatMetric" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="FormatMetric"></a>
+      <a id="FormatMetric:FormatMetric"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="FormatMetric$.html"><span class="name">FormatMetric</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.jmx.package@FormatMetric" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.jmx.KafkaJMX" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaJMX"></a>
+      <a id="KafkaJMX:KafkaJMX"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaJMX$.html"><span class="name">KafkaJMX</span></a><span class="result"> extends <span class="extype" name="grizzled.slf4j.Logging">Logging</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.jmx.package@KafkaJMX" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li><li name="kafka.manager.jmx.KafkaMetrics" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="KafkaMetrics"></a>
+      <a id="KafkaMetrics:KafkaMetrics"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="KafkaMetrics$.html"><span class="name">KafkaMetrics</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../index.html#kafka.manager.jmx.package@KafkaMetrics" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" alt="Permalink" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
