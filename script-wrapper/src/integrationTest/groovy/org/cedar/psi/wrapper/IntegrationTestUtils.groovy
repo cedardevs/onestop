@@ -1,4 +1,4 @@
-package org.cedar.psi.registry
+package org.cedar.psi.wrapper
 
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
