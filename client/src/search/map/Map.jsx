@@ -11,6 +11,8 @@ import {recenterGeometry} from '../../utils/geoUtils'
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
 
+const MAP_HEIGHT = '400px'
+
 const styleMapContainer = (open, display, height, width) => {
   return {
     boxSizing: 'border-box',
@@ -50,7 +52,7 @@ const styleMap = () => {
     margin: '0 auto',
     display: 'flex',
     position: 'relative',
-    height: 'calc(400px - 1.618em - 2 * 0.618em)',
+    height: `calc(${MAP_HEIGHT} - 1.618em - 2 * 0.618em)`,
     alignItems: 'flex-start',
     maxWidth: '1200px',
   }
@@ -79,7 +81,7 @@ class Map extends React.Component {
       initialized: false,
       open: showMap,
       display: showMap ? 'block' : 'none',
-      height: showMap ? '400px' : '0em',
+      height: showMap ? MAP_HEIGHT : '0em',
       width: showMap ? '100%' : '0%',
       opacity: showMap ? '1' : '0',
     }
@@ -187,7 +189,7 @@ class Map extends React.Component {
           setTimeout(
             () =>
               this.setState({
-                height: '400px',
+                height: MAP_HEIGHT,
                 width: '100%',
                 opacity: '1',
               }),
