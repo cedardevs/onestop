@@ -19,6 +19,12 @@ const styleEqualFlexItem = {
   width: '50%',
 }
 
+const styleStar = {
+  maxHeight: '1em',
+  maxWidth: '1em',
+  filter: 'invert(.5) sepia(.7) saturate(5)',
+}
+
 class SummaryView extends Component {
   constructor(props) {
     super(props)
@@ -182,15 +188,15 @@ class SummaryView extends Component {
   }
 
   renderFullStar(i) {
-    return <img key={i} className={styles.star} src={star} />
+    return <img key={i} style={styleStar} src={star} />
   }
 
   renderHalfStar(i) {
-    return <img key={i} className={styles.star} src={starHalfO} />
+    return <img key={i} style={styleStar} src={starHalfO} />
   }
 
   renderEmptyStar(i) {
-    return <img key={i} className={styles.star} src={starO} />
+    return <img key={i} style={styleStar} src={starO} />
   }
 
   renderGCMDKeywords(type, bgColor, showAll) {
