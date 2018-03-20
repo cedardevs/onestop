@@ -13,7 +13,7 @@ class ScriptWrapperStreamMain {
     static void main(final String[] args) throws Exception {
         // config file can be set on
         Map config = ConfigUtil.getConfig("script-wrapper")
-        Map kafkaConfig = config?.kafka ? ConfigUtil.validateKafkaConfig(config.kakfa as Map) : null
+        Map kafkaConfig = config?.kafka ? ConfigUtil.validateKafkaConfig(config.kafka as Map) : null
         Map topologyConfig = config?.stream ? ConfigUtil.validateTopologyConfig(config.stream as Map) : null
         if (kafkaConfig && topologyConfig){
             StreamsBuilder builder = new StreamsBuilder()

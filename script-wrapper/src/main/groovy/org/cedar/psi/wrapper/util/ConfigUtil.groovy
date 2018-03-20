@@ -8,56 +8,73 @@ import org.yaml.snakeyaml.Yaml
 
 @Slf4j
 class ConfigUtil {
-    def static replaceEnv = {
-        if (!it) return it
-        it.replaceAll(
+    //resolve ENV vars that might be in YAML
+    def static replaceEnv(String yamlString) {
+        if (!yamlString) return yamlString
+        yamlString.replaceAll(
                 /\$\{([^\s\}]+)\}/) {
             System.getenv(it[1]) ?: it[0]
         }
     }
 
-    static public getConfig = { name ->
+    static getConfig(String name) {
         log.info "Retrieving configuration... "
-        Map<String, Object> conf = [:]
+        Map conf = [:]
         Yaml yaml = new Yaml()
-        def envConf = System.getenv('PSI_CONFIG_LOCATION')
-        Map<String, String> env = System.getenv()
-        env.keySet().stream().filter({k -> k.startsWith('PSI')})
-        envConf = envConf ?: null
-        if (envConf && envConf?.toList()[0] != File.separator){
-            envConf = System.getProperty("user.dir") + File.separator + envConf
+        String configPath = System.getenv('PSI_CONFIG_LOCATION') ?:  System.properties['psi.config.location'] ?: "file://" + System.getProperty("user.dir") + "/${name}.yml"
+        URL url = new URL(configPath)
+
+        try{
+            log.info "Loading config at $url"
+            conf = (Map<String, Object>) yaml.load(replaceEnv(url.openStream().text) as String)
+        }catch(e){
+            log.warn "Failed to find config file: ${e.message}"
         }
-        envConf = envConf ? ("file://${envConf}") : null
+        Map compositeConfig = mergeEnvConfig(conf)
+        log.info "Starting with working configuration: ${compositeConfig} "
+        compositeConfig
+    }
 
-        def propConf = System.properties['psi.config.location']
-        propConf = (propConf)
+    static mergeEnvConfig(Map conf){
+        log.info "Searching environment for configuration settings"
+        Map<String, String> env = System.getenv()
+        Map psiConfig = env.subMap(env.keySet().findAll({k -> k.startsWith('PSI')}) as List)
+        log.info "Found configuration settings: $psiConfig"
+        psiConfig.inject(conf ?: [:]) { Map result, String k, String v ->
+            List keys = k.toLowerCase().replace('psi_', '').replace('_', '.').tokenize('.')
+            result + insertEnvConfig(result, keys, v)
+        }
+    }
 
-        def defaultConf = "file://" + System.getProperty("user.dir") + "/${name}.yml"
-
-        def url = new URL(envConf ?: propConf ?: defaultConf)
-        log.debug "loading config url $url"
-        conf = (Map<String, Object>) yaml.load(this.replaceEnv(url.openStream().text))
-        log.debug "Loaded full conf: " + conf
-        conf
+    static Map insertEnvConfig(def conf, List keys, String value){
+        Map newMap = (conf && conf instanceof Map) ? conf : [:]
+        String k = keys[0] ?: null
+        if(keys.size() == 1){
+            newMap.put(k, value)
+            return newMap
+        }else{
+            keys.remove(0)
+            newMap.put(k, insertEnvConfig(conf?.get(k) ?: [:], keys, value))
+            return newMap
+        }
     }
 
     static Map validateKafkaConfig(Map config){
-        log.debug "Validating kafka config: $config"
-        if (!config?.application?.id){ throw Exception('Cannot resolve ${kafka.application.id}')}
-        if (!config?.bootstrap?.servers){ throw Exception('Cannot resolve ${kafka.bootstrap.servers}')}
-        if (!config?.applicationId){ throw Exception('Cannot resolve ${kafka.applicationId}')}
-        log.debug "Kafka config is valid"
+        log.info  "Validating kafka config: $config"
+        if (!config?.application?.id){ throw new RuntimeException('Cannot resolve ${kafka.application.id}')}
+        if (!config?.bootstrap?.servers){ throw new RuntimeException('Cannot resolve ${kafka.bootstrap.servers}')}
+        log.info "Kafka config is valid"
         return config
     }
 
     static Map validateTopologyConfig(Map config){
-        log.debug "Validating topology config: $config"
-        if (!config?.topics?.input){ throw Exception('Cannot resolve ${stream.topics.input}')}
-        if (!config?.topics?.output){ throw Exception('Cannot resolve ${stream.topics.output}')}
-        if (!config?.command){ throw Exception('Cannot resolve ${stream.topics.output}')}
-        if (!config?.command_timeout){ config.stream.command_timeout = 5000}
-        if (!config?.convert?.iso){ config.stream.convert.iso = false}
-        log.debug "Topology config is valid"
+        log.info "Validating topology config: $config"
+        if (!config?.topics?.output){ throw new RuntimeException('Cannot resolve ${stream.topics.output}')}
+        if (!config?.topics?.input){ throw new RuntimeException('Cannot resolve ${stream.topics.input}')}
+        if (!config?.command){ throw new RuntimeException('Cannot resolve ${stream.command}')}
+        if (!config?.timeout){ config.timeout = 5000}
+//        if (!config?.convert?.iso){ config.convert = config.convert ? config.convert.iso = false :  ['iso' : false]
+        log.info "Topology config is valid"
         return config
     }
 

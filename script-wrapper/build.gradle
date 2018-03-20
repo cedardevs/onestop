@@ -13,7 +13,7 @@ apply plugin: 'org.cedar.dockerplugin'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-mainClassName = 'org.cedar.psi.wrapper.stream.ScriptWrapperStreamConfig'
+mainClassName = 'org.cedar.psi.wrapper.stream.ScriptWrapperStreamMain'
 
 repositories {
   mavenCentral()

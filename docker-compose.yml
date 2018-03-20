@@ -4,13 +4,25 @@ services:
 
   collection_parser_script_wrapper:
     image: cedardevs/psi-script-wrapper:latest
-    volumes:
-      - "<Add config file src>":/usr/src/app/script-wrapper.yml
+    environment:
+       PSI_KAFKA_APPLICATION_ID: "dscovr_iso_generation_script_wrapper"
+       PSI_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+       PSI_STREAM_TOPICS_INPUT: "metadata-aggregator-raw-granules-changelog"
+       PSI_STREAM_TOPICS_OUTPUT: "parsed-granules"
+       PSI_STREAM_COMMAND: "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
+       PSI_STREAM_CONVERT_ISO: "true"
+       PSI_STREAM_TIMEOUT: 10000
 
   dscovr_script_wrapper:
     image: cedardevs/psi-script-wrapper:latest
-    volumes:
-      - "<Add config file src>":/usr/src/app/script-wrapper.yml
+    environment:
+      PSI_KAFKA_APPLICATION_ID: "dscovr_iso_generation_script_wrapper"
+      PSI_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      PSI_STREAM_TOPICS_INPUT: "metadata-aggregator-raw-granules-changelog"
+      PSI_STREAM_TOPICS_OUTPUT: "parsed-granules"
+      PSI_STREAM_COMMAND: "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
+      PSI_STREAM_CONVERT_ISO: "true"
+      PSI_STREAM_TIMEOUT: 10000
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3
