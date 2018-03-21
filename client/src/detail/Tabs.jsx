@@ -73,11 +73,6 @@ const styleTabButtons = {
   borderBottom: '1px solid #F0F0F2',
 }
 
-const styleContent = {
-  color: '#000032',
-  backgroundColor: 'white',
-}
-
 export default class Tabs extends Component {
   constructor(props) {
     super(props)
@@ -118,7 +113,7 @@ export default class Tabs extends Component {
   }
 
   render() {
-    const {data} = this.props
+    const {data, styleContent} = this.props
     let tabButtons = []
     let tabContent = null
     if (data) {

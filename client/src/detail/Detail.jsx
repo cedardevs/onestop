@@ -33,6 +33,12 @@ const styleCenterContent = {
   justifyContent: 'center',
 }
 
+const styleContent = {
+  fill: '#000032',
+  color: '#000032',
+  backgroundColor: 'white',
+}
+
 //-- Component
 class Detail extends Component {
   constructor(props) {
@@ -98,7 +104,12 @@ class Detail extends Component {
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
           <h1 style={styleTitle}>{item.title}</h1>
-          <Tabs style={{display: 'flex'}} data={tabData} activeIndex={0} />
+          <Tabs
+            style={{display: 'flex'}}
+            styleContent={styleContent}
+            data={tabData}
+            activeIndex={0}
+          />
         </div>
       </div>
     )
