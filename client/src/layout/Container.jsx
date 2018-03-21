@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 
 import FlexColumn from '../common/FlexColumn'
 import Header from './Header'
+import Earth from './Earth'
 import Content from './Content'
 import Footer from './Footer'
 
@@ -30,12 +31,14 @@ export default class Container extends Component {
       rightVisible,
       footer,
     } = this.props
+    const earth = onHomePage ? <Earth key={'earth'} /> : null
     const styles = Object.assign({}, styleContainer, style)
     return (
       <div>
         <FlexColumn
           items={[
             <Header content={header} padding={defaultPadding} key={'header'} />,
+            earth,
             <Content
               left={left}
               leftWidth={leftWidth}

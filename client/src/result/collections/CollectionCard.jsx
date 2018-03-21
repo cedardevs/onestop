@@ -109,6 +109,26 @@ const styleMapContainer = {
   height: '100%',
 }
 
+const styleSuperTitle = {
+  marginTop: '0.309em',
+  marginBottom: '0.309em',
+  fontSize: '1em',
+  lineHeight: '1.618em',
+  fontWeight: 'normal',
+}
+
+const styleTitle = {
+  fontSize: '1em',
+  textAlign: 'left',
+  lineHeight: '1.618em', // use this value to count block height
+  maxHeight: '4.854em', // maxHeight = lineHeight (1.618) * max lines (3)
+  marginTop: '0.309em',
+  marginBottom: '0.309em',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'normal',
+  overflow: 'hidden',
+}
+
 export default class CollectionCard extends Component {
   constructor(props) {
     super(props)
@@ -204,26 +224,6 @@ export default class CollectionCard extends Component {
       ...styleArch,
       ...(this.state.focusing ? styleArchFocus : styleArchBlur),
       ...(this.state.hovering ? styleArchHover : {}),
-    }
-
-    const styleSuperTitle = {
-      marginTop: '0.309em',
-      marginBottom: '0.309em',
-      fontSize: '1em',
-      lineHeight: '1.618em',
-      fontWeight: 'normal',
-    }
-
-    const styleTitle = {
-      fontSize: '1em',
-      textAlign: 'left',
-      lineHeight: '1.618em', // use this value to count block height
-      maxHeight: '4.854em', // maxHeight = lineHeight (1.618) * max lines (3)
-      marginTop: '0.309em',
-      marginBottom: '0.309em',
-      textOverflow: 'ellipsis',
-      whiteSpace: 'normal',
-      overflow: 'hidden',
     }
 
     return (

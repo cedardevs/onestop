@@ -15,18 +15,6 @@ import LoadingBarContainer from '../loading/LoadingBarContainer'
 import FooterContainer from './FooterContainer'
 import styles from './root.css'
 
-const pattern = require('../../img/topography.png')
-
-const styleBackgroundImage = {
-  background: `url(${pattern}) repeat`,
-  backgroundSize: '50em',
-}
-
-const styleBackgroundGradient = {
-  background:
-    'linear-gradient(0deg, rgba(130, 186, 255, .5) 0%, rgba(225, 225, 235, .5) 100%)',
-}
-
 // component
 export default class Root extends Component {
   constructor(props) {
@@ -168,6 +156,7 @@ export default class Root extends Component {
           leftVisible={leftOpen}
           middle={middle}
           middleBackgroundColor={middleBackgroundColor}
+          onHomePage={onHomePage}
           right={null}
           rightWidth={256}
           rightVisible={showRight}

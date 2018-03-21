@@ -1,9 +1,44 @@
 import React from 'react'
+import Earth from '../layout/Earth'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import TopicsMenuContainer from './TopicsMenuContainer'
 import FeaturedDatasetsContainer from './FeaturedDatasetsContainer'
 import stopCircle from 'fa/stop-circle-o.svg'
 import defaultStyles from '../common/defaultStyles'
+
+const styleCenterContent = {
+  display: 'flex',
+  justifyContent: 'center',
+  color: '#222',
+}
+
+const styleShowcase = {
+  maxWidth: '80em',
+  padding: '0 1.618em 10em 1.618em',
+  minHeight: '100vh',
+}
+
+const styleHeroHeader = {
+  textAlign: 'center',
+  fontSize: '3.5em',
+  marginTop: '0.5em',
+}
+
+const styleOneStopOImage = {
+  position: 'relative',
+  top: '.15em',
+  left: '.07em',
+  maxWidth: '1.1em',
+  maxHeight: '1.1em',
+}
+
+const styleHeroText = {
+  textAlign: 'center',
+  fontSize: '1.5em',
+  fontStyle: 'italic',
+  lineHeight: '1.5',
+  paddingBottom: '0.25em',
+}
 
 class Landing extends React.Component {
   constructor(props) {
@@ -13,40 +48,6 @@ class Landing extends React.Component {
   }
 
   render() {
-    const styleShowcase = {
-      margin: '0 auto',
-      maxWidth: '80em',
-      padding: '0 1.618em 10em 1.618em',
-      minHeight: '100vh',
-    }
-
-    const styleHeroHeader = {
-      textAlign: 'center',
-      fontSize: '3.5em',
-      marginTop: '0.5em',
-    }
-
-    const styleOneStopOImage = {
-      position: 'relative',
-      top: '.15em',
-      left: '.07em',
-      maxWidth: '1.1em',
-      maxHeight: '1.1em',
-    }
-
-    const styleHeroText = {
-      textAlign: 'center',
-      fontSize: '1.5em',
-      fontStyle: 'italic',
-      lineHeight: '1.5',
-      paddingBottom: '0.25em',
-    }
-
-    const styleCenterContent = {
-      display: 'flex',
-      justifyContent: 'center',
-    }
-
     return (
       <div style={styleCenterContent}>
         <div style={styleShowcase}>
@@ -61,12 +62,7 @@ class Landing extends React.Component {
             in one place.<br />
           </div>
           <SearchFieldsContainer home={true} />
-          <div>
-            <div aria-labelledby="searchTopics">
-              <h2 id="searchTopics">Search by Topic:</h2>
-              <TopicsMenuContainer />
-            </div>
-          </div>
+          <TopicsMenuContainer />
           <FeaturedDatasetsContainer />
         </div>
       </div>

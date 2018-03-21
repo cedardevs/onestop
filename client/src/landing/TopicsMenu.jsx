@@ -1,4 +1,9 @@
 import React from 'react'
+import TopicsMenuButton from './TopicsMenuButton'
+
+const styleTopicsLabel = {
+  textAlign: 'center',
+}
 
 const styleTopicsMenu = {
   display: 'flex',
@@ -6,28 +11,6 @@ const styleTopicsMenu = {
   justifyContent: 'center',
   margin: 0,
   padding: 0,
-}
-
-const styleTopic = {
-  padding: '1em',
-}
-
-const styleTopicButton = {
-  background: 'none',
-  display: 'block',
-  fontWeight: 'bold,',
-  fontSize: '1.17em',
-  border: 'none',
-  textAlign: 'center',
-  verticalAlign: 'middle',
-  textDecoration: 'none',
-}
-
-const styleTopicImage = {
-  width: '5em',
-  height: '5em',
-  maxWidth: '100%',
-  transition: 'transform 200ms',
 }
 
 class TopicsMenu extends React.Component {
@@ -71,21 +54,14 @@ class TopicsMenu extends React.Component {
       },
     ]
     topics = topics.map((topic, i) => {
-      return (
-        <div style={styleTopic} key={i} onClick={() => this.search(topic.term)}>
-          <button style={styleTopicButton}>
-            <img
-              style={styleTopicImage}
-              src={topic.icon}
-              alt={topic.title}
-              aria-hidden="true"
-            />
-            <div>{topic.title}</div>
-          </button>
-        </div>
-      )
+      return <TopicsMenuButton key={i} topic={topic} onClick={this.search} />
     })
-    return <ul style={styleTopicsMenu}>{topics}</ul>
+    return (
+      <div>
+        <h2 style={styleTopicsLabel}>Explore Popular Topics</h2>
+        <ul style={styleTopicsMenu}>{topics}</ul>
+      </div>
+    )
   }
 }
 
