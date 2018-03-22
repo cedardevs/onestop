@@ -1,5 +1,4 @@
 import React from 'react'
-import Earth from '../layout/Earth'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import TopicsMenuContainer from './TopicsMenuContainer'
 import FeaturedDatasetsContainer from './FeaturedDatasetsContainer'

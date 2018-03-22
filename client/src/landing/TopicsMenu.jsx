@@ -1,6 +1,10 @@
 import React from 'react'
 import TopicsMenuButton from './TopicsMenuButton'
 
+const styleTopics = {
+  marginBottom: '2.618em',
+}
+
 const styleTopicsLabel = {
   textAlign: 'center',
 }
@@ -57,7 +61,7 @@ class TopicsMenu extends React.Component {
       return <TopicsMenuButton key={i} topic={topic} onClick={this.search} />
     })
     return (
-      <div>
+      <div style={styleTopics}>
         <h2 style={styleTopicsLabel}>Explore Popular Topics</h2>
         <ul style={styleTopicsMenu}>{topics}</ul>
       </div>

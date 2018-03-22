@@ -13,7 +13,27 @@ import FiltersHiddenContainer from '../filter/FiltersHiddenContainer'
 import LoadingBarContainer from '../loading/LoadingBarContainer'
 
 import FooterContainer from './FooterContainer'
-import styles from './root.css'
+
+import {COLOR_SECONDARY_DARK} from '../common/defaultStyles'
+
+const styleBrowserWarning = {
+  background: COLOR_SECONDARY_DARK,
+  width: '96%',
+  margin: '1em auto',
+  padding: '0.3em 1em',
+  borderRadius: '3px',
+  color: '#fff',
+}
+
+const styleBrowserWarningLink = {
+  color: 'rgb(169, 226, 255)',
+}
+
+const styleBrowserWarningParagraph = {
+  textAlign: 'center',
+}
+
+const styleClose = {}
 
 // component
 export default class Root extends Component {
@@ -50,22 +70,24 @@ export default class Root extends Component {
     const wikiUrl =
       'https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers'
     return (
-      <aside role="alert" className={styles.browserWarning}>
+      <aside role="alert" style={styleBrowserWarning}>
         <span
-          className={styles.close}
+          style={styleClose}
           onClick={() => {
             this.setState({browserWarning: false})
           }}
         >
           x
         </span>
-        <p>
+        <p style={styleBrowserWarningParagraph}>
           The browser that you are using to view this page is not currently
           supported. For a list of currently supported & tested browsers, please
           visit the
           <span>
             {' '}
-            <a href={wikiUrl}>OneStop Documentation</a>
+            <a style={styleBrowserWarningLink} href={wikiUrl}>
+              OneStop Documentation
+            </a>
           </span>
         </p>
       </aside>
