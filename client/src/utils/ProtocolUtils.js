@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
+import {cloud} from '../common/SvgIcon'
 
 export const protocols = Immutable([
   {
@@ -7,6 +8,13 @@ export const protocols = Immutable([
     names: [ 'ogc:wcs' ],
     color: 'coral',
     label: 'OGC Web Coverage Service',
+  },
+  {
+    id: 'cloud',
+    names: [ 'cloud' ],
+    color: '#327cac',
+    label: 'Cloud File Access',
+    svgPath: cloud,
   },
   {id: 'D', names: [ 'download' ], color: 'blue', label: 'Download'},
   {id: 'F', names: [ 'ftp' ], color: 'red', label: 'FTP'},

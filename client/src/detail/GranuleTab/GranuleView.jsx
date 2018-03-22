@@ -7,6 +7,7 @@ import _ from 'lodash'
 import GranuleMapContainer from './GranuleMapContainer'
 import A from '../../common/link/Link'
 import {identifyProtocol} from '../../utils/ProtocolUtils'
+import {SvgIcon} from '../../common/SvgIcon'
 
 const styleLegendHeading = {
   margin: '0 0 0.618em 0',
@@ -58,6 +59,7 @@ const styleBadge = protocol => {
     margin: '0.25em',
     font: 'Arial, sans-serif',
     color: 'white',
+    fill: 'white',
     textAlign: 'center',
     textDecoration: 'none',
     background: `${protocol.color}`,
@@ -101,9 +103,12 @@ export default class GranuleView extends Component {
       .sortBy('id')
       .uniqBy('id')
       .map((protocol, i) => {
+        console.log('inside map func', this)
         return (
           <div key={i} style={styleLegendItem}>
-            <div style={styleBadge(protocol)}>{protocol.id}</div>
+            <div style={styleBadge(protocol)}>
+              {this.renderBadgeIcon(protocol)}
+            </div>
             <div style={styleLegendLabel}>{protocol.label}</div>
           </div>
         )
@@ -174,7 +179,7 @@ export default class GranuleView extends Component {
     )
   }
 
-  renderBadge({protocol, url}) {
+  renderBadge = ({protocol, url}) => {
     return (
       <A
         href={url}
@@ -183,9 +188,16 @@ export default class GranuleView extends Component {
         target="_blank"
         style={styleBadge(protocol)}
       >
-        {protocol.id}
+        {this.renderBadgeIcon(protocol)}
       </A>
     )
+  }
+
+  renderBadgeIcon = protocol => {
+    if (protocol.svgPath) {
+      return <SvgIcon path={protocol.svgPath} />
+    }
+    return <span>{protocol.id}</span>
   }
 
   renderPaginationButton() {

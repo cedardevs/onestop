@@ -1,6 +1,7 @@
 import React from 'react'
 
-import iconClear from '../../img/font-awesome/white/svg/times-circle.svg'
+// import iconClear from '../../img/font-awesome/white/svg/times-circle.svg'
+import {times_circle_o, times_circle, SvgIcon} from '../common/SvgIcon'
 
 const styleSearchField = {
   color: 'black',
@@ -25,7 +26,8 @@ const styleTextFieldFocus = {
 
 const styleClearButton = {
   width: '2em',
-  backgroundColor: 'gray',
+  fill: 'white',
+  backgroundColor: '#327cac',
   border: 'none',
   borderRadius: '0 2px 2px 0',
   padding: '0.105em 0.309em',
@@ -34,16 +36,12 @@ const styleClearButton = {
   justifyContent: 'center',
 }
 
-const styleIconClear = {
-  width: '100%',
-}
-
 const styleClearButtonHover = {
   color: '#5a5a5a',
 }
 
 const styleClearButtonFocus = {
-  backgroundColor: 'red',
+  backgroundColor: '#3d97d2',
 }
 
 class TextSearchField extends React.Component {
@@ -178,16 +176,18 @@ class TextSearchField extends React.Component {
             onBlur={this.handleClearBlur}
             aria-label="Clear Search Text"
           >
-            <img
-              src={iconClear}
-              style={styleIconClear}
-              aria-hidden={true}
-              alt="clear search icon"
-            />
+            <SvgIcon size="1.2em" path={times_circle} />
           </button>
         </div>
       </div>
     )
+
+    // <img
+    //   src={iconClear}
+    //   style={styleIconClear}
+    //   aria-hidden={true}
+    //   alt="clear search icon"
+    // />
   }
 }
 
