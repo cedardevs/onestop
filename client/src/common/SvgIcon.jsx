@@ -20,16 +20,36 @@ export const info_circle = (
 export const stop_circle_o = (
   <path d="M896 128q209 0 385.5 103t279.5 279.5 103 385.5-103 385.5-279.5 279.5-385.5 103-385.5-103-279.5-279.5-103-385.5 103-385.5 279.5-279.5 385.5-103zm0 1312q148 0 273-73t198-198 73-273-73-273-198-198-273-73-273 73-198 198-73 273 73 273 198 198 273 73zm-288-224q-14 0-23-9t-9-23v-576q0-14 9-23t23-9h576q14 0 23 9t9 23v576q0 14-9 23t-23 9h-576z" />
 )
+// from font-awesome times-circle-o.svg
+export const times_circle_o = (
+  <path d="M1225 1079l-146 146q-10 10-23 10t-23-10l-137-137-137 137q-10 10-23 10t-23-10l-146-146q-10-10-10-23t10-23l137-137-137-137q-10-10-10-23t10-23l146-146q10-10 23-10t23 10l137 137 137-137q10-10 23-10t23 10l146 146q10 10 10 23t-10 23l-137 137 137 137q10 10 10 23t-10 23zm215-183q0-148-73-273t-198-198-273-73-273 73-198 198-73 273 73 273 198 198 273 73 273-73 198-198 73-273zm224 0q0 209-103 385.5t-279.5 279.5-385.5 103-385.5-103-279.5-279.5-103-385.5 103-385.5 279.5-279.5 385.5-103 385.5 103 279.5 279.5 103 385.5z"/>
+)
+// from font-awesome cloud.svg
+export const cloud =<path d="M1856 1152q0 159-112.5 271.5t-271.5 112.5h-1088q-185 0-316.5-131.5t-131.5-316.5q0-132 71-241.5t187-163.5q-2-28-2-43 0-212 150-362t362-150q158 0 286.5 88t187.5 230q70-62 166-62 106 0 181 75t75 181q0 75-41 138 129 30 213 134.5t84 239.5z" />
+
+const styleSvg = (size) => {
+  return {maxHeight: size? size :'1em',
+  maxWidth: size? size :'1em',}
+}
+const styleWrapper = (size) => {
+  return {display: 'inline-block', width: size? size :'1em',}
+}
+
 export class SvgIcon extends React.Component {
   constructor(props) {
     super(props)
   }
 
   render() {
+    const {size, style, wrapperStyle} = this.props
+    const appliedStyle = {...styleSvg(size), ...style}
+    const appliedWrapperStyle = {...styleWrapper(size)}
     return (
-      <svg style={this.props.style} viewBox="0 0 1792 1792">
+      <span style={appliedWrapperStyle}>
+      <svg style={appliedStyle} viewBox="0 0 1792 1792">
         {this.props.path}
       </svg>
+      </span>
     )
   }
 }

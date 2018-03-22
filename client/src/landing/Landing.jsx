@@ -30,12 +30,6 @@ const styleOneStopOImageWrapper = {
   position: 'relative',
   top: '.15em',
   left: '.07em',
-  width: '1.1em',
-}
-
-const styleOneStopOImage = {
-  maxWidth: '1.1em',
-  maxHeight: '1.1em',
 }
 
 const styleHeroText = {
@@ -57,13 +51,13 @@ class Landing extends React.Component {
     return (
       <div style={styleCenterContent}>
         <div style={styleShowcase}>
-          <div style={styleHeroHeader} aria-hidden="true">
+          <h1 style={styleHeroHeader} aria-label="One Stop">
             <span style={styleOneStopOImageWrapper}>
-              <SvgIcon style={styleOneStopOImage} path={stop_circle_o} />
+              <SvgIcon size='1.1em' path={stop_circle_o} />
             </span>neStop
-          </div>
-          <h1 style={defaultStyles.hideOffscreen}>
-            OneStop: A NOAA Data Search Platform
+            <div style={defaultStyles.hideOffscreen}>
+              A NOAA Data Search Platform
+            </div>
           </h1>
           <div style={styleHeroText}>
             Geophysical, oceans, coastal, weather and climate data discovery all

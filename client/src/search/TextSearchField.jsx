@@ -1,6 +1,7 @@
 import React from 'react'
 
-import iconClear from '../../img/font-awesome/white/svg/times-circle.svg'
+// import iconClear from '../../img/font-awesome/white/svg/times-circle.svg'
+import {times_circle_o, SvgIcon} from '../common/SvgIcon'
 
 const styleSearchField = {
   color: 'black',
@@ -178,16 +179,18 @@ class TextSearchField extends React.Component {
             onBlur={this.handleClearBlur}
             aria-label="Clear Search Text"
           >
-            <img
-              src={iconClear}
-              style={styleIconClear}
-              aria-hidden={true}
-              alt="clear search icon"
-            />
+            <SvgIcon style={styleIconClear} path={times_circle_o} />
           </button>
         </div>
       </div>
     )
+
+    // <img
+    //   src={iconClear}
+    //   style={styleIconClear}
+    //   aria-hidden={true}
+    //   alt="clear search icon"
+    // />
   }
 }
 

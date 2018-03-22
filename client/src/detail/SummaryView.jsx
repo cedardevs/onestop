@@ -24,14 +24,7 @@ const styleEqualFlexItem = {
 }
 
 const styleStar = {
-  maxHeight: '1em',
-  maxWidth: '1em',
   fill: 'goldenrod',
-}
-
-const styleInfoIcon = {
-  maxHeight: '1em',
-  maxWidth: '1em',
 }
 
 class SummaryView extends Component {
@@ -147,15 +140,17 @@ class SummaryView extends Component {
     }
     else {
       for (let i = 0; i < 5; i++) {
+        let starType
         if (i < fullStars) {
-          stars.push(this.renderStar(i, star))
+          starType = star
         }
         else if (i === fullStars && halfStar) {
-          stars.push(this.renderStar(i, star_half_o))
+          starType = star_half_o
         }
         else {
-          stars.push(this.renderStar(i, star_o))
+          starType = star_o
         }
+        stars.push(<SvgIcon key={`dsmm-star-${i}`} style={styleStar} path={starType} />)
       }
     }
 
@@ -175,8 +170,8 @@ class SummaryView extends Component {
           <Expandable
             key="dsmm-info"
             heading={
-              <div aria-label="DSMM info" style={{width: '1em'}}>
-                <SvgIcon style={styleInfoIcon} path={info_circle} />
+              <div aria-label="DSMM info">
+                <SvgIcon path={info_circle} />
               </div>
             }
             open={false}
@@ -209,14 +204,6 @@ class SummaryView extends Component {
           />,
         ]}
       />
-    )
-  }
-
-  renderStar = (i, path) => {
-    return (
-      <span key={`dsmm-star-${i}`} style={{width: '1em'}}>
-        <SvgIcon style={styleStar} path={path} />
-      </span>
     )
   }
 
