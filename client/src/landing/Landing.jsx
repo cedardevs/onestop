@@ -3,13 +3,15 @@ import Earth from '../layout/Earth'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import TopicsMenuContainer from './TopicsMenuContainer'
 import FeaturedDatasetsContainer from './FeaturedDatasetsContainer'
-import stopCircle from 'fa/stop-circle-o.svg'
 import defaultStyles from '../common/defaultStyles'
+
+import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
 
 const styleCenterContent = {
   display: 'flex',
   justifyContent: 'center',
   color: '#222',
+  fill: '#222',
 }
 
 const styleShowcase = {
@@ -24,10 +26,14 @@ const styleHeroHeader = {
   marginTop: '0.5em',
 }
 
-const styleOneStopOImage = {
+const styleOneStopOImageWrapper = {
   position: 'relative',
   top: '.15em',
   left: '.07em',
+  width: '1.1em',
+}
+
+const styleOneStopOImage = {
   maxWidth: '1.1em',
   maxHeight: '1.1em',
 }
@@ -52,7 +58,9 @@ class Landing extends React.Component {
       <div style={styleCenterContent}>
         <div style={styleShowcase}>
           <div style={styleHeroHeader} aria-hidden="true">
-            <img style={styleOneStopOImage} alt="O" src={stopCircle} />neStop
+            <span style={styleOneStopOImageWrapper}>
+              <SvgIcon style={styleOneStopOImage} path={stop_circle_o} />
+            </span>neStop
           </div>
           <h1 style={defaultStyles.hideOffscreen}>
             OneStop: A NOAA Data Search Platform
