@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import {processUrl} from '../utils/urlUtils'
 import MapThumbnail from '../common/MapThumbnail'
+import FlexRow from '../common/FlexRow'
 
 const styleContainer = {
   padding: '1.618em',
@@ -17,15 +18,18 @@ const styleImageContainer = {
 const styleImage = {
   margin: '0 0 0.618em 0',
   width: '72%',
+  maxWidth: '500px',
 }
 
 const styleMap = {
   margin: '0 0 0.618em 0',
   width: '100%',
+  maxWidth: '500px',
 }
 
 const styleDescription = {
   margin: '0 0 0.618em 0',
+  flex: '2',
 }
 
 export default class DescriptionView extends Component {
@@ -45,12 +49,14 @@ export default class DescriptionView extends Component {
       : 'No description available'
 
     const collectionImage = this.renderCollectionImage(thumbnail, geometry)
-
     return (
-      <div style={styleContainer}>
-        {collectionImage}
-        <div style={styleDescription}>{description}</div>
-      </div>
+      <FlexRow
+        style={styleContainer}
+        items={[
+          <div style={{flex: '1'}}>{collectionImage}</div>,
+          <div style={styleDescription}>{description}</div>,
+        ]}
+      />
     )
   }
 
