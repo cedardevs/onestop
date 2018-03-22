@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import BrowserDetection from 'react-browser-detection'
 
-import earth from '../../img/earth.jpg'
+import earth from '../../img/Earth.jpg'
 
 const EARTH_HEIGHT = '30em'
 const ARC_HEIGHT = '15em'
