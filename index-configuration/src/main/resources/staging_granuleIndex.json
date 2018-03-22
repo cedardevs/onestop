@@ -451,17 +451,12 @@
               "doc_values": false,
               "index": false
             },
-            "code": {
+            "date": {
               "type": "keyword",
               "doc_values": false,
               "index": false
             },
-            "publicationDate": {
-              "type": "keyword",
-              "doc_values": false,
-              "index": false
-            },
-            "link": {
+            "links": {
               "type": "nested",
               "properties": {
                 "linkName": {
@@ -501,17 +496,12 @@
               "doc_values": false,
               "index": false
             },
-            "code": {
+            "date": {
               "type": "keyword",
               "doc_values": false,
               "index": false
             },
-            "publicationDate": {
-              "type": "keyword",
-              "doc_values": false,
-              "index": false
-            },
-            "link": {
+            "links": {
               "type": "nested",
               "properties": {
                 "linkName": {

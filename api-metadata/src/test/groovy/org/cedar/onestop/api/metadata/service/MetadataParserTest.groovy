@@ -266,30 +266,22 @@ class MetadataParserTest extends Specification {
     parsedXml.crossReferences == [
         [
             title: '[TITLE OF PUBLICATION]',
-            code: '[ID OF PUBLICATION]',
-            publicationDate: '9999-01-01',
-            link: [
+            date: '9999-01-01',
+            links: [[
                 linkName: null,
                 linkProtocol: null,
                 linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
                 linkDescription: '[DESCRIPTION OF URL]',
                 linkFunction: 'information'
-            ]
+            ]]
         ]
     ] as Set
 
     parsedXml.largerWorks == [
         [
-            title: 'Important Organization\'s Important File\'s Super Important Title',
-            code: '[PROJECT ID]',
-            publicationDate: '9999-01-01',
-            link: [
-                linkName: null,
-                linkProtocol: null,
-                linkUrl: null,
-                linkDescription: null,
-                linkFunction: null
-            ]
+            title: '[TITLE OF PROJECT]',
+            date: '9999-10-10',
+            links: []
         ]
     ] as Set
 
@@ -357,30 +349,22 @@ class MetadataParserTest extends Specification {
     citationInfo.crossReferences == [
         [
             title: '[TITLE OF PUBLICATION]',
-            code: '[ID OF PUBLICATION]',
-            publicationDate: '9999-01-01',
-            link: [
+            date: '9999-01-01',
+            links: [[
                 linkName: null,
                 linkProtocol: null,
                 linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
                 linkDescription: '[DESCRIPTION OF URL]',
                 linkFunction: 'information'
-            ]
+            ]]
         ]
     ] as Set
 
     citationInfo.largerWorks == [
         [
-            title: 'Important Organization\'s Important File\'s Super Important Title',
-            code: '[PROJECT ID]',
-            publicationDate: '9999-01-01',
-            link: [
-                linkName: null,
-                linkProtocol: null,
-                linkUrl: null,
-                linkDescription: null,
-                linkFunction: null
-            ]
+            title: '[TITLE OF PROJECT]',
+            date: '9999-10-10',
+            links: []
         ]
     ] as Set
 

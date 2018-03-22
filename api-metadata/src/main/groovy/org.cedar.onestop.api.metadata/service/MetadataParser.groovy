@@ -196,44 +196,34 @@ class MetadataParser {
 
     aggregationInfo.each { aggInfo ->
       def associationType = aggInfo.MD_AggregateInformation.associationType.DS_AssociationTypeCode.@codeListValue.text() ?: null
-      def initiativeType = aggInfo.MD_AggregateInformation.initiativeType.DS_InitiativeTypeCode.@codeListValue.text() ?: null
-      def citation = aggInfo.MD_AggregateInformation.aggregateDataSetName.CI_Citation
-      def onlineResource = aggInfo.CI_OnlineResource
-
-      def aggPubDate = null
-      def aggDates = citation.'**'.findAll { it.name() == 'date' }
-      aggDates.each { date ->
-        def dateType = date.CI_Date.dateType.CI_DateTypeCode.@codeListValue.text()
-        if(dateType == 'publication') {
-          aggPubDate = date.CI_Date.date.Date.text() ?: null
+      if (associationType == 'crossReference' || associationType == 'largerWorkCitation') {
+        def citation = aggInfo.MD_AggregateInformation.aggregateDataSetName.CI_Citation
+        def onlineResources = citation.'**'.findAll { it.name() == 'CI_OnlineResource' }
+        def links = []
+        onlineResources.each { resource ->
+          links.add([
+              linkName       : resource.name.CharacterString.text() ?: null,
+              linkProtocol   : resource.protocol.CharacterString.text() ?: null,
+              linkUrl        : resource.linkage.URL.text() ? StringEscapeUtils.unescapeXml(resource.linkage.URL.text()) : null,
+              linkDescription: resource.description.CharacterString.text() ?: null,
+              linkFunction   : resource.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
+          ])
         }
-      }
 
-      def aggTitle = citation.title.text() ?: null
-      def code = citation.identifier.MD_Identifier.code.CharacterString.text() ?: null
-      def link = [
-          linkName       : onlineResource.name.CharacterString.text() ?: null,
-          linkProtocol   : onlineResource.protocol.CharacterString.text() ?: null,
-          linkUrl        : onlineResource.linkage.URL.text() ? StringEscapeUtils.unescapeXml(onlineResource.linkage.URL.text()) : null,
-          linkDescription: onlineResource.description.CharacterString.text() ?: null,
-          linkFunction   : onlineResource.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
-      ]
-
-      if(associationType == 'crossReference') {
-        crossReferences.add([
-            title: aggTitle,
-            code: code,
-            publicationDate: aggPubDate,
-            link: link
-        ])
-      }
-      else if(associationType == 'largerWorkCitation') {
-        largerWorks.add([
-            title: title,
-            code: code,
-            publicationDate: aggPubDate,
-            link: link
-        ])
+        if(associationType == 'crossReference') {
+          crossReferences.add([
+              title: citation.title.CharacterString.text() ?: null,
+              date: citation.date.CI_Date.date.Date.text() ?: null,
+              links: links
+          ])
+        }
+        else if(associationType == 'largerWorkCitation') {
+          largerWorks.add([
+              title: citation.title.CharacterString.text() ?: null,
+              date: citation.date.CI_Date.date.Date.text() ?: null,
+              links: links
+          ])
+        }
       }
     }
 
