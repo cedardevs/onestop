@@ -150,7 +150,9 @@ class SummaryView extends Component {
         else {
           starType = star_o
         }
-        stars.push(<SvgIcon key={`dsmm-star-${i}`} style={styleStar} path={starType} />)
+        stars.push(
+          <SvgIcon key={`dsmm-star-${i}`} style={styleStar} path={starType} />
+        )
       }
     }
 
