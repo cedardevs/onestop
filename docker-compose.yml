@@ -67,7 +67,7 @@ services:
       CONNECT_PLUGIN_PATH: "/usr/share/java,/etc/kafka-connect/jars"
 
   kafka-manager:
-    image: cedardevs/kafka-manager
+    image: hlebalbau/kafka-manager
     ports:
       - "8084:9000"
     environment:

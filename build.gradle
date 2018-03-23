@@ -66,12 +66,12 @@ task composeStop(type: Exec, description: 'Stops the entire system in docker con
 
 task composeInfraStart(type: Exec, description: 'Runs infrastructure needed under our apps, e.g. elasticsearch', group: 'docker') {
   executable = "bash"
-  args = ["-c", "docker-compose up -d elasticsearch kafka kafka-connect kafka-rest kafka-ui schema-registry zookeeper"]
+  args = ["-c", "docker-compose up -d elasticsearch kafka kafka-connect kafka-rest kafka-manager kafka-ui schema-registry zookeeper"]
 }
 
 task composeInfraStop(type: Exec, description: 'Stops the infrastructure needed under our apps, e.g. elasticsearch', group: 'docker') {
   executable = "bash"
-  args = ["-c", "docker-compose stop elasticsearch kafka kafka-connect kafka-rest kafka-ui schema-registry zookeeper"]
+  args = ["-c", "docker-compose stop elasticsearch kafka kafka-connect kafka-rest kafka-manager kafka-ui schema-registry zookeeper"]
 }
 
 task composeClean(type: Exec, description: 'Stops and removes the entire system of docker containers', group: 'docker') {
