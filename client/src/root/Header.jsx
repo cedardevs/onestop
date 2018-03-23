@@ -4,12 +4,14 @@ import {Link} from 'react-router'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import Logo from './Logo'
 import styles from './HeaderStyles.css'
+import {boxShadow} from '../common/defaultStyles'
 
 import FlexRow from '../common/FlexRow'
 
 const styleHeader = {
   backgroundColor: '#222C37',
   padding: '1em',
+  boxShadow: boxShadow,
 }
 
 const styleHeaderFlexRow = {

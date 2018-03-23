@@ -4,7 +4,7 @@ import Left from './Left'
 import Middle from './Middle'
 import Right from './Right'
 
-const style = {
+const styleContent = {
   display: 'flex',
   flex: '1 1 auto',
   position: 'relative',
@@ -15,33 +15,45 @@ const style = {
 
 export default class Content extends Component {
   render() {
-    const styles = Object.assign({}, style, this.props.style)
+    const {
+      style,
+      padding,
+      left,
+      leftWidth,
+      leftVisible,
+      right,
+      rightWidth,
+      rightVisible,
+      middle,
+      middleMaxWidth,
+      middleBackgroundColor,
+    } = this.props
+    const styles = Object.assign({}, styleContent, style)
     return (
       <FlexRow
         items={[
-          this.props.left ? (
+          left ? (
             <Left
-              content={this.props.left}
-              width={this.props.leftWidth}
-              padding={this.props.padding}
-              visible={this.props.leftVisible}
+              content={left}
+              width={leftWidth}
+              padding={padding}
+              visible={leftVisible}
               key={'left'}
             />
           ) : null,
           <Middle
-            content={this.props.middle}
-            tabs={this.props.tabs}
-            currentTab={this.props.tabCurrent}
-            onTabChange={this.props.onTabChange}
-            padding={this.props.padding}
+            content={middle}
+            maxWidth={middleMaxWidth}
+            backgroundColor={middleBackgroundColor}
+            padding={padding}
             key={'middle'}
           />,
-          this.props.right ? (
+          right ? (
             <Right
-              content={this.props.right}
-              width={this.props.rightWidth}
-              padding={this.props.padding}
-              visible={this.props.rightVisible}
+              content={right}
+              width={rightWidth}
+              padding={padding}
+              visible={rightVisible}
               key={'right'}
             />
           ) : null,

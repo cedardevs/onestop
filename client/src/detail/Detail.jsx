@@ -6,17 +6,37 @@ import DescriptionView from './DescriptionView'
 import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
 import AccessView from './AccessView'
 import VideoView from './VideoView'
+import {boxShadow} from '../common/defaultStyles'
 
 //-- Styles
 
-const styleTitle = {
-  fontSize: '1.5em',
-  margin: '0.309em 1.236em',
-  padding: '0.309em',
+const styleDetailWrapper = {
+  color: 'black',
+  maxWidth: '80em',
+  width: '80em',
+  boxShadow: boxShadow,
+  // Note: margins on this element are temporarily needed to show the box shadow correctly. I expect this to change when we restructure the details page to get rid of tabs, as well as possibly when we update the router.
+  marginRight: '3px',
+  marginLeft: '1px',
 }
 
-const styleDetailWrapper = {
-  margin: '0 1.618em 0 1.618em',
+const styleTitle = {
+  fontSize: '1.5em',
+  margin: 0,
+  padding: '1em',
+  backgroundColor: '#8cb9d8',
+  color: '#000032',
+}
+
+const styleCenterContent = {
+  display: 'flex',
+  justifyContent: 'center',
+}
+
+const styleContent = {
+  fill: '#000032',
+  color: '#000032',
+  backgroundColor: 'white',
 }
 
 //-- Component
@@ -31,7 +51,7 @@ class Detail extends Component {
     if (loading) {
       return (
         <div style={styleDetailWrapper}>
-          <h1 style={styleTitle}>Loading...</h1>
+          <h1>Loading...</h1>
         </div>
       )
     }
@@ -40,9 +60,7 @@ class Detail extends Component {
       // TODO error style? actually report an error in the flow if the collection is not found when search returns?
       return (
         <div style={styleDetailWrapper}>
-          <h1 style={styleTitle}>
-            There was a problem loading your collection.
-          </h1>
+          <h1>There was a problem loading your collection.</h1>
         </div>
       )
     }
@@ -83,9 +101,16 @@ class Detail extends Component {
     }
 
     return (
-      <div style={styleDetailWrapper}>
-        <h1 style={styleTitle}>{item.title}</h1>
-        <Tabs data={tabData} activeIndex={0} />
+      <div style={styleCenterContent}>
+        <div style={styleDetailWrapper}>
+          <h1 style={styleTitle}>{item.title}</h1>
+          <Tabs
+            style={{display: 'flex'}}
+            styleContent={styleContent}
+            data={tabData}
+            activeIndex={0}
+          />
+        </div>
       </div>
     )
   }

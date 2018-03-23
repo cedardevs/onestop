@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {boxShadow} from '../common/defaultStyles'
 
 const defaultWidth = '128px'
 const defaultBackgroundColor = '#3D97D2'
@@ -14,6 +15,7 @@ const styleVisible = width => {
     minWidth: '3.236em',
     position: 'relative',
     overflow: 'hidden',
+    boxShadow: boxShadow,
   }
 }
 
@@ -25,6 +27,7 @@ const styleHidden = width => {
     width: width,
     position: 'relative',
     overflow: 'initial',
+    boxShadow: boxShadow,
   }
 }
 

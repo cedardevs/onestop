@@ -95,9 +95,7 @@
 
 .dsmmInfo {
   position: relative;
-  display: inline-block;
   i {
-    color: white;
     margin: 0.5em;
   }
   a {
@@ -111,7 +109,7 @@
     width: 30em;
     position: absolute;
     z-index: 1001;
-    background-color: black;
+    background-color: #ccc;
     border: solid thin white;
     border-radius: 6px;
     padding: 2em;

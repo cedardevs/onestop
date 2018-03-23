@@ -31,8 +31,12 @@ const routesLayout = (
           displayName="Collections"
           component={CollectionGridContainer}
         />
-        <Route name="Details" path="details/:id" component={DetailContainer} />
       </Route>
+      <Route
+        name="Details"
+        path="collections/details/:id"
+        component={DetailContainer}
+      />
       <Route name="Error" path="error" component={ErrorContainer} />
       <Route name="Help" path="help" component={Help} />
       <Route name="About" path="about" component={AboutContainer} />

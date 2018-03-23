@@ -3,8 +3,8 @@ import React, {Component} from 'react'
 import AppliedFiltersContainer from './AppliedFiltersContainer'
 
 const styleResult = {
-  paddingTop: '1.618em',
   minHeight: '100vh',
+  paddingTop: '1ex',
 }
 
 export default class Result extends Component {

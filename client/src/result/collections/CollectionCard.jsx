@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {processUrl} from '../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
+import {boxShadow} from '../../common/defaultStyles'
 
 const styleCard = {
   width: '25em',
@@ -14,14 +15,11 @@ const styleContent = {
   boxSizing: 'border-box',
   width: '100%',
   height: '100%',
-  borderLeft: '2px inset rgba(0,0,0,.9)',
-  borderTop: '3px inset rgba(0,0,0,.9)',
-  borderBottom: '2px inset rgba(0,0,0,.9)',
-  borderRight: '2px inset rgba(0,0,0,.9)',
   color: 'white',
   overflow: 'hidden',
-  boxShadow: '6px 8px 5px rgba(0, 0, 0, .7)',
   position: 'relative',
+  // border: '1px solid rgba(50, 50, 50, 0.75)',
+  boxShadow: boxShadow,
 }
 
 const styleOverlay = {
@@ -45,50 +43,61 @@ const styleOverlay = {
   borderRadius: 0,
   padding: 0,
   margin: 0,
-  boxShadow: 'inset 1ex 4ex 1.5ex 1ex rgba(0,0,0,.8)',
 }
 
 const styleOverlayHover = {
   color: 'white',
-  boxShadow: 'inset 1ex 4ex 1.5ex 1ex #22488A',
 }
 
 const styleOverlayFocus = {
   color: 'white',
-  boxShadow: 'inset 1ex 4ex 1.5ex 1ex #3E97D1',
 }
 
 const styleOverlayBlur = {
   color: 'inherit',
-  boxShadow: 'inset 1ex 4ex 1.5ex 1ex rgba(0,0,0,.8)',
 }
 
-const styleTitle = {
+const styleArch = {
   position: 'absolute',
   boxSizing: 'border-box',
   width: '100%',
-  top: 0,
+  bottom: 0,
   left: 0,
   right: 0,
+  height: '4.472em',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
   fontWeight: 'normal',
-  fontSize: '1em',
   padding: '0.618em 1em 0.618em 1em',
   margin: 0,
+  color: '#222',
+  backgroundColor: '#FBFBFB',
+  transition: 'background-color 0.3s ease, color 0.3s ease, height 0.3s ease',
+  borderTop: '1px solid #AAA',
+  borderRadius: '12.5em 12.5em 0em 0em / 2.236em',
+  boxShadow: boxShadow,
 }
 
-const styleTitleHover = {
+const styleArchHover = {
   fontWeight: 'bold',
+  backgroundColor: '#327CAC',
+  color: '#FBFBFB',
+  height: '7.708em',
 }
 
-const styleTitleFocus = {
+const styleArchFocus = {
   fontWeight: 'bold',
+  backgroundColor: '#327CAC',
+  color: '#FBFBFB',
+  height: '7.708em',
 }
 
-const styleTitleBlur = {
+const styleArchBlur = {
   fontWeight: 'normal',
+  backgroundColor: '#FBFBFB',
+  color: '#222',
+  height: '4.472em',
 }
 
 const styleMapContainer = {
@@ -98,6 +107,26 @@ const styleMapContainer = {
   width: '100%',
   maxWidth: '100%',
   height: '100%',
+}
+
+const styleSuperTitle = {
+  marginTop: '0.309em',
+  marginBottom: '0.309em',
+  fontSize: '1em',
+  lineHeight: '1.618em',
+  fontWeight: 'normal',
+}
+
+const styleTitle = {
+  fontSize: '1em',
+  textAlign: 'left',
+  lineHeight: '1.618em', // use this value to count block height
+  maxHeight: '4.854em', // maxHeight = lineHeight (1.618) * max lines (3)
+  marginTop: '0.309em',
+  marginBottom: '0.309em',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'normal',
+  overflow: 'hidden',
 }
 
 export default class CollectionCard extends Component {
@@ -191,10 +220,10 @@ export default class CollectionCard extends Component {
       ...(this.state.hovering ? styleOverlayHover : {}),
     }
 
-    const styleTitleMerged = {
-      ...styleTitle,
-      ...(this.state.focusing ? styleTitleFocus : styleTitleBlur),
-      ...(this.state.hovering ? styleTitleHover : {}),
+    const styleArchMerged = {
+      ...styleArch,
+      ...(this.state.focusing ? styleArchFocus : styleArchBlur),
+      ...(this.state.hovering ? styleArchHover : {}),
     }
 
     return (
@@ -211,8 +240,13 @@ export default class CollectionCard extends Component {
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
           >
-            <h2 style={styleTitleMerged}>{this.props.title}</h2>
             {this.renderThumbnailMap()}
+            <div style={styleArchMerged}>
+              <div style={styleSuperTitle} aria-hidden={true}>
+                Collection Title:
+              </div>
+              <h2 style={styleTitle}>{this.props.title}</h2>
+            </div>
           </button>
         </div>
       </div>

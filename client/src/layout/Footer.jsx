@@ -8,6 +8,7 @@ const style = {
 
 export default class Footer extends Component {
   render() {
-    return <div style={style}>{this.props.content}</div>
+    const {content} = this.props
+    return <div style={style}>{content}</div>
   }
 }
