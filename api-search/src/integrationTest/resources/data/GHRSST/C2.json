@@ -113,40 +113,19 @@
   ],
   "crossReferences": [
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "Portal to the GHRSST Global Data Assembly Center and data access",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "GHRSST Project Home Page",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "Web Service (PO.DAAC Labs) (Search Granule)",
-      "publicationDate": null
+      "date": null
     }
   ],
   "doi": null,
