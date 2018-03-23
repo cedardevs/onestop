@@ -1,17 +1,19 @@
 package org.cedar.psi.wrapper
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.KafkaConsumer
+import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
-import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.clients.producer.ProducerRecord
+import org.apache.kafka.common.serialization.StringDeserializer
 import org.apache.kafka.common.serialization.StringSerializer
 import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.StreamsConfig
-import org.apache.kafka.streams.state.QueryableStoreTypes
+import org.cedar.psi.wrapper.stream.ScriptWrapperStreamMain
 import org.junit.AfterClass
 import org.junit.BeforeClass
-import org.junit.Test
 import org.testcontainers.containers.KafkaContainer
 import spock.lang.Specification
 
@@ -20,80 +22,89 @@ import java.nio.file.Paths
 @Slf4j
 class WrapperIntegrationSpec extends Specification{
 
-    private static KafkaContainer kafkaContainer = new KafkaContainer()
-    private static Properties producerConfig
-    private static Properties streamsConfiguration
-    @BeforeClass
-    static void startContainer() throws Exception {
-        kafkaContainer.start()
-    }
+  static KafkaContainer kafkaContainer = new KafkaContainer()
 
-    @AfterClass
-    static void stopContainer() throws Exception {
-        kafkaContainer.stop()
-    }
+  @BeforeClass
+  static void startContainer() throws Exception {
+    kafkaContainer.start()
+  }
 
-    def setup() {
-        producerConfig = new Properties()
-        producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.bootstrapServers)
-        producerConfig.put(ProducerConfig.ACKS_CONFIG, "all")
-        producerConfig.put(ProducerConfig.RETRIES_CONFIG, 0)
-        producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
-        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class)
+  @AfterClass
+  static void stopContainer() throws Exception {
+    kafkaContainer.stop()
+  }
 
-        streamsConfiguration = new Properties()
-        streamsConfiguration.put(StreamsConfig.APPLICATION_ID_CONFIG, "wrapper-test")
-        streamsConfiguration.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaContainer.bootstrapServers)
-        streamsConfiguration.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().class.name)
-        streamsConfiguration.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().class.name)
-        streamsConfiguration.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 500)
-        streamsConfiguration.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
-        streamsConfiguration.put(StreamsConfig.STATE_DIR_CONFIG, "/tmp/kafka-streams")
-    }
+  def currentDir = Paths.get(".").toAbsolutePath().normalize().toString()
+  def command = "python ${currentDir}/scripts/dscovrIsoLite.py stdin"
+  def topologyConfig = [
+      topics: [
+          input: 'test-input',
+          output: 'test-output',
+      ],
+      command: command,
+      timeout: 5000,
+      doIsoConversion: true
+  ]
+  def kafkaConfig = [
+      application: [id: 'test-app'],
+      bootstrap: [servers: kafkaContainer.bootstrapServers]
+  ]
 
-    @Test
-    def 'retrieve raw data from output topic '() {
-        def granuleText = '{' +
-                    '"dataStream": "dscover", ' +
-                    '"trackingId": "3", ' +
-                    '"checksum": "fd297fcceb94fdbec5297938c99cc7b5", ' +
-                    '"relativePath": "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_pub.nc.gz", ' +
-                    '"path": "/src/test/resources/oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_pub.nc.gz", ' +
-                    '"fileSize": 6526, ' +
-                    '"lastUpdated":"2017124"' +
-                '}'
+  KafkaProducer<String, String> testProducer
+  KafkaConsumer<String, String> testConsumer
+  KafkaStreams testStream
 
-        def inputTopic = "wrapper-inputTopic"
-        def outputTopic = "wrapper-outputTopic"
-        String currentDir = Paths.get(".").toAbsolutePath().normalize().toString()
-        String command = "python ${currentDir}/scripts/dscovrIsoLite.py stdin"
+  def setup() {
+    testProducer = new KafkaProducer<>([
+        (ProducerConfig.BOOTSTRAP_SERVERS_CONFIG): kafkaContainer.bootstrapServers,
+        (ProducerConfig.ACKS_CONFIG): "all",
+        (ProducerConfig.RETRIES_CONFIG): 0,
+        (ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG): StringSerializer,
+        (ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG): StringSerializer,
+    ])
+    testConsumer = new KafkaConsumer<>([
+        (ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG): kafkaContainer.bootstrapServers,
+        (ConsumerConfig.GROUP_ID_CONFIG): 'integration-test-group',
+        (ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG): StringDeserializer,
+        (ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG): StringDeserializer,
+    ])
 
-        when:
-        // Step 1: Produce some input data to the input topic.
-        IntegrationTestUtils.produceKeyValuesSynchronously(producerConfig, inputTopic , granuleText.toString())
+    testStream = ScriptWrapperStreamMain.buildStreamsApp(kafkaConfig, topologyConfig)
+    testStream.cleanUp()
+    testStream.start()
+  }
 
-        // Step 2: Verify the application's output data.
-        def stream = IntegrationTestUtils.streamKeyValuesSynchronously(streamsConfiguration, inputTopic, outputTopic, command)
+  def cleanup() {
+    testProducer.close()
+    testConsumer.close()
+    testStream.close()
+  }
 
-        stream.setStateListener({newValue,oldValue ->
-            if (newValue == KafkaStreams.State.RUNNING && oldValue.REBALANCING){
-                println(stream.allMetadataForStore("wrapper-outputTopic").size())
-            }
-        })
 
-        stream.cleanUp()
-        stream.start()
+  def 'parse a granule'() {
+    def message = [
+        dataStream  : "dscovr",
+        trackingId  : "3",
+        checksum    : "fd297fcceb94fdbec5297938c99cc7b5",
+        relativePath: "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_pub.nc.gz",
+        path        : "/src/test/resources/oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_pub.nc.gz",
+        fileSize    : 6526,
+        lastUpdated : "2017124",
+    ]
 
-        Thread.sleep((10000))
-        // the store added for test purposes
-        def store = stream.store("wrapper-outputTopic", QueryableStoreTypes.keyValueStore())
-        def value =  store.get("3")
-        def slurper = new JsonSlurper()
-        def attributes = slurper.parseText(value as String) as Map
+    when:
+    def input = new ProducerRecord(topologyConfig.topics.input, message.trackingId, JsonOutput.toJson(message))
+    testProducer.send(input)
+    testConsumer.subscribe([topologyConfig.topics.output])
+    def output = testConsumer.poll(10000).first()
 
-        then:
-        attributes.fileIdentifier == "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_pub.nc"
-        attributes.parentIdentifier == "gov.noaa.ncei.swx:dscovr_f1m"
+    then:
+    output.key() == message.trackingId
 
-    }
+    and:
+    def attributes = new JsonSlurper().parseText(output.value()) as Map
+    attributes.fileIdentifier == "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_pub.nc"
+    attributes.parentIdentifier == "gov.noaa.ncei.swx:dscovr_f1m"
+  }
+
 }
