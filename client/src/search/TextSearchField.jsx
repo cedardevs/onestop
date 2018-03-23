@@ -1,7 +1,6 @@
 import React from 'react'
 
-// import iconClear from '../../img/font-awesome/white/svg/times-circle.svg'
-import {times_circle_o, times_circle, SvgIcon} from '../common/SvgIcon'
+import {times_circle, SvgIcon} from '../common/SvgIcon'
 
 const styleSearchField = {
   color: 'black',
@@ -135,8 +134,6 @@ class TextSearchField extends React.Component {
     })
   }
 
-  handleClearClick = e => {}
-
   render() {
     const {onClear} = this.props
 
@@ -181,13 +178,6 @@ class TextSearchField extends React.Component {
         </div>
       </div>
     )
-
-    // <img
-    //   src={iconClear}
-    //   style={styleIconClear}
-    //   aria-hidden={true}
-    //   alt="clear search icon"
-    // />
   }
 }
 
