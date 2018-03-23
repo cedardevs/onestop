@@ -103,7 +103,7 @@ const styleArchBlur = {
 const styleMapContainer = {
   position: 'absolute',
   top: 0,
-  zIndex: -1,
+  zIndex: 0,
   width: '100%',
   maxWidth: '100%',
   height: '100%',
