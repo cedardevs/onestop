@@ -8,8 +8,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.6.2"
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.7.0"
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     classpath 'com.wiredforcode:gradle-spawn-plugin:0.8.0'
     classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
@@ -19,12 +18,15 @@ buildscript {
 }
 
 plugins {
+  id "com.jfrog.bintray" version "1.8.0"
+  id "com.jfrog.artifactory" version "4.7.0"
   id 'com.gradle.build-scan' version '1.12.1'
   id "io.spring.dependency-management" version "1.0.4.RELEASE"
 }
 
 ext {
   esVersion = '5.5.3'
+  // isRelease used by docker plugin as well
   isRelease = System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean
   springCloudVersion = 'Finchley.M7'
 }
@@ -80,7 +82,7 @@ task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'p
   onlyIf { isRelease }
   executable = "bash"
   args = ["-c", "curl -X POST -u \"\$BINTRAY_USER:\$BINTRAY_KEY\" -H \"Content-Length: 0\"" +
-    "http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version\""]
+    " http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version"]
 }
 
 group = 'org.cedar.onestop'

@@ -156,17 +156,12 @@
               "index": false,
               "doc_values": false
             },
-            "code": {
+            "date": {
               "type": "keyword",
               "index": false,
               "doc_values": false
             },
-            "publicationDate": {
-              "type": "keyword",
-              "index": false,
-              "doc_values": false
-            },
-            "link": {
+            "links": {
               "type": "nested",
               "properties": {
                 "linkName": {
@@ -206,17 +201,12 @@
               "index": false,
               "doc_values": false
             },
-            "code": {
+            "date": {
               "type": "keyword",
               "index": false,
               "doc_values": false
             },
-            "publicationDate": {
-              "type": "keyword",
-              "index": false,
-              "doc_values": false
-            },
-            "link": {
+            "links": {
               "type": "nested",
               "properties": {
                 "linkName": {

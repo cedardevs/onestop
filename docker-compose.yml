@@ -1,4 +1,4 @@
-version: '3'
+version: '3.3'
 
 services:
   client:
@@ -22,6 +22,9 @@ services:
       - elasticsearch_host=elasticsearch
       - elasticsearch_port=9200
       - logging_level_org.cedar.onestop.api=DEBUG
+      - spring.config.additional-location=/opt/onestop-api/onestop-ui-local.yml
+    volumes:
+     - ./client/docker_config_local:/opt/onestop-api/
 
   api-metadata:
     image: cedardevs/onestop-api-metadata:latest
