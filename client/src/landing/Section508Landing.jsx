@@ -3,6 +3,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import styles from './section508.css'
 import moment from 'moment'
+import FlexColumn from '../common/FlexColumn'
 import Button from '../common/input/Button'
 import {
   convertBboxStringToGeoJson,
@@ -141,9 +142,11 @@ class Section508Landing extends React.Component {
     return (
       <div className={styles.showcase}>
         <div className={`${styles.formDiv} pure-form`}>
-          <h2>Enter Search Criteria</h2>
+          <h2 style={{textAlign: 'center'}}>Enter Search Criteria</h2>
           {this.renderErrors()}
-          <form id="508-form">{formInputs}</form>
+          <form id="508-form">
+            <FlexColumn items={formInputs} style={{textAlign:'center'}}/>
+          </form>
 
           <Button
             text="Search"

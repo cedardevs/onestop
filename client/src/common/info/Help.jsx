@@ -177,7 +177,7 @@ export default class Help extends React.Component {
               find more information about it{' '}
               <A
                 target="_blank"
-                href="https://github.com/cedardevs/onestop/wiki/OneStop-Search-API"
+                href="https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests"
                 style={{color: '#277cb2'}}
               >
                 here
