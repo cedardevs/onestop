@@ -106,8 +106,8 @@ class SearchFields extends React.Component {
         title={'Search'}
         style={{flexShrink: '0'}}
         styleIcon={{
-          width: '1.618em',
-          height: '1.618em',
+          width: '1.3em',
+          height: '1.3em',
           paddingTop: '0.309em',
           paddingBottom: '0.309em',
         }}

@@ -21,11 +21,11 @@ const styleDetailWrapper = {
 }
 
 const styleTitle = {
-  fontSize: '1.309em',
+  fontSize: '1.5em',
   margin: 0,
   padding: '1em',
-  backgroundColor: '#034694',
-  color: 'white',
+  backgroundColor: '#8cb9d8',
+  color: '#000032',
 }
 
 const styleCenterContent = {
