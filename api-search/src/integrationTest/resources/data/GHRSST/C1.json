@@ -148,64 +148,29 @@
   ],
   "crossReferences": [
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "Portal to the GHRSST Global Data Assembly Center and data access",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "GHRSST Project homepage",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "Description of the Medspiration projec",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "JPL Physical Oceanography Data Active Archive Centre (PO.DAAC)",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "Web Service (PO.DAAC Labs) (Search Granule)",
-      "publicationDate": null
+      "date": null
     }
   ],
   "doi": null,

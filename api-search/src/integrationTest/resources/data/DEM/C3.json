@@ -37,16 +37,15 @@
   "gcmdHorizontalResolution": [],
   "largerWorks": [
     {
-      "code": null,
-      "link": {
+      "links": [{
         "linkFunction": null,
         "linkDescription": null,
         "linkUrl": null,
         "linkName": null,
         "linkProtocol": null
-      },
+      }],
       "title": "U.S. Coastal Relief Model - Southern California Version 2",
-      "publicationDate": "1998-11-16"
+      "date": "1998-11-16"
     }
   ],
   "useLimitation": "Not to be used for navigation. Although these data are of high quality and useful for planning and modeling purposes, they are not suitable for navigation. For navigation, please refer to the NOS nautical chart series.Produced by the NOAA National Geophysical Data Center. Not subject to copyright protection within the United States.While every effort has been made to ensure that these data are accurate and reliable within the limits of the current state of the art, NOAA cannot assume liability for any damages caused by any errors or omissions in the data, nor as a result of the failure of the data to function on a particular system. NOAA makes no warranty, expressed or implied, nor does the fact of distribution constitute such a warranty.",
@@ -90,16 +89,15 @@
   ],
   "crossReferences": [
     {
-      "code": null,
-      "link": {
+      "links": [{
         "linkFunction": null,
         "linkDescription": null,
         "linkUrl": null,
         "linkName": null,
         "linkProtocol": null
-      },
+      }],
       "title": "U.S. Coastal Relief Model - Southern California Version 2",
-      "publicationDate": "2013-07-08"
+      "date": "2013-07-08"
     }
   ],
   "doi": "doi:10.7289/V5V985ZM",
