@@ -103,7 +103,6 @@ export default class GranuleView extends Component {
       .sortBy('id')
       .uniqBy('id')
       .map((protocol, i) => {
-        console.log('inside map func', this)
         return (
           <div key={i} style={styleLegendItem}>
             <div style={styleBadge(protocol)}>
