@@ -36,6 +36,6 @@ if __name__ == '__main__':
 
     dscovr_data_file_name_outer = sys.argv[1]
 
-    print dscovr_file_name_parser(dscovr_data_file_name_outer)
+    print(dscovr_file_name_parser(dscovr_data_file_name_outer))
 
 

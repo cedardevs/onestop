@@ -120,7 +120,7 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
             IsoLiteXML = re.sub(r'			<!-- commonAccessPlaceholderStart\n', '', IsoLiteXML)
             IsoLiteXML = re.sub(r'			commonAccessPlaceholderEnd -->\n', '', IsoLiteXML)
         else:
-            if logLevel == 'Info': print 'enterpriseDownloadLink and/or enterpriseDownloadLinkProtocol were missing from input_json_dict\n'
+            if logLevel == 'Info': print('enterpriseDownloadLink and/or enterpriseDownloadLinkProtocol were missing from input_json_dict\n')
             #Add log message to this effect at some point after location/format agreed to.
             dscovrEnterpriseDownloadLink = 'NotAvailable'
             dscovrEnterpriseDownloadLinkProtocol = 'NotAvailable'
@@ -143,19 +143,19 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
 
         # Print detailed info
         if logLevel == 'Info':
-            print 'input_json_dict\n', input_json_dict, '\n'
-            print json.dumps(input_json_dict)
-            print 'common_ingest_time\n' + common_ingest_time + '\n'
-            print 'parsed_file_name_dict\n', parsed_file_name_dict, '\n'
-            print 'todaysDate\n', todaysDate, '\n'
-            print 'dscovrIngestDate\n', dscovrIngestDate, '\n'
-            print 'dscovrGranuleStartTime\n', dscovrGranuleStartDateTime, '\n'
-            print 'syncYYYY\n', syncYYYY, '\n'
-            print 'syncMM\n', syncMM, '\n'
-            print 'dscovrGranuleEndDateTime\n', dscovrGranuleEndDateTime, '\n'
-            print 'IsoLiteTemplateLocation\n', IsoLiteTemplateLocation, '\n'
-            print 'IsoLiteXML\n', IsoLiteXML, '\n'
-            print 'outFileName\n', outFileName, '\n'
+            print('input_json_dict\n', input_json_dict, '\n')
+            print(json.dumps(input_json_dict))
+            print('common_ingest_time\n' + common_ingest_time + '\n')
+            print('parsed_file_name_dict\n', parsed_file_name_dict, '\n')
+            print('todaysDate\n', todaysDate, '\n')
+            print('dscovrIngestDate\n', dscovrIngestDate, '\n')
+            print('dscovrGranuleStartTime\n', dscovrGranuleStartDateTime, '\n')
+            print('syncYYYY\n', syncYYYY, '\n')
+            print('syncMM\n', syncMM, '\n')
+            print('dscovrGranuleEndDateTime\n', dscovrGranuleEndDateTime, '\n')
+            print('IsoLiteTemplateLocation\n', IsoLiteTemplateLocation, '\n')
+            print('IsoLiteXML\n', IsoLiteXML, '\n')
+            print('outFileName\n', outFileName, '\n')
 
     return IsoLiteXML
 
@@ -188,7 +188,7 @@ if __name__ == '__main__':
         else:
             print(dscovrIsoLiteHackyWorkaround(input_json))
     else:
-        print 'Requires input_json, json provided by the person/application calling it.'
-        print 'Example: "/path/to/code/dscovrIsoLiteConstructor.py  "' + example_json
-        print "Running the code with 'test' or 'testWithEnterpriseLink' as arguments will test code with known json"
+        print('Requires input_json, json provided by the person/application calling it.')
+        print('Example: "/path/to/code/dscovrIsoLiteConstructor.py  "' + example_json)
+        print("Running the code with 'test' or 'testWithEnterpriseLink' as arguments will test code with known json")
 
