@@ -264,6 +264,7 @@ class SummaryView extends Component {
 
   buildCoordinatesString() {
     // For point, want: "Point at [0], [1] (longitude, latitude)"
+    // For line, want: "Line from [0][0] (WS), [0][1] to [1][0], [1][1] (EN).
     // For polygon want: "Bounding box covering [0][0], [0][1], [2][0], [2][1] (N, W, S, E)"
     const geometry = this.props.item.spatialBounding
     if (geometry) {
@@ -271,6 +272,11 @@ class SummaryView extends Component {
       if (geometry.type.toLowerCase() === 'point') {
         return `Point at ${geometry.coordinates[0]}${deg}, ${geometry
           .coordinates[1]}${deg} (longitude, latitude).`
+      }
+      else if (geometry.type.toLowerCase() === 'linestring') {
+        return `Line from ${geometry.coordinates[0][0]}${deg}, ${geometry
+          .coordinates[0][1]}${deg} (WS) to ${geometry
+          .coordinates[1][0]}${deg}, ${geometry.coordinates[1][1]}${deg} (EN).`
       }
       else {
         return `Bounding box covering ${geometry

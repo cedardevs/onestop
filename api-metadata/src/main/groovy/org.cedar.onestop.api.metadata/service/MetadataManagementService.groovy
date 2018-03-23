@@ -64,6 +64,7 @@ class MetadataManagementService {
   public Map loadMetadata(Object[] documents) {
     esService.ensureStagingIndices()
     esService.ensurePipelines()
+    esService.performRequest('POST', '_refresh')
     def results = []
     def bulkRequest = new StringBuilder()
     def loadedIndices = []
