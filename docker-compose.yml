@@ -5,23 +5,24 @@ services:
   collection_parser_script_wrapper:
     image: cedardevs/psi-script-wrapper:latest
     environment:
-      KAFKA_GROUP_ID: "collection_iso_parser_script_wrapper"
-      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      STREAM_TOPICS_INPUT: "metadata-aggregator-raw-collections-changelog"
-      STREAM_TOPICS_OUTPUT: "parsed-collections"
-      STREAM_COMMAND: "groovy /usr/src/app/scripts/IsoParser.groovy"
-      STREAM_COMMAND_TIMEOUT: 10000
+       PSI_KAFKA_APPLICATION_ID: "dscovr_iso_generation_script_wrapper"
+       PSI_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+       PSI_STREAM_TOPICS_INPUT: "metadata-aggregator-raw-granules-changelog"
+       PSI_STREAM_TOPICS_OUTPUT: "parsed-granules"
+       PSI_STREAM_COMMAND: "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
+       PSI_STREAM_CONVERT_ISO: "true"
+       PSI_STREAM_TIMEOUT: 10000
 
   dscovr_script_wrapper:
     image: cedardevs/psi-script-wrapper:latest
     environment:
-      KAFKA_GROUP_ID: "dscovr_iso_generation_script_wrapper"
-      KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      STREAM_TOPICS_INPUT: "metadata-aggregator-raw-granules-changelog"
-      STREAM_TOPICS_OUTPUT: "parsed-granules"
-      STREAM_COMMAND: "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
-      STREAM_CONVERT_ISO: "true"
-      STREAM_COMMAND_TIMEOUT: 10000
+      PSI_KAFKA_APPLICATION_ID: "dscovr_iso_generation_script_wrapper"
+      PSI_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      PSI_STREAM_TOPICS_INPUT: "metadata-aggregator-raw-granules-changelog"
+      PSI_STREAM_TOPICS_OUTPUT: "parsed-granules"
+      PSI_STREAM_COMMAND: "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
+      PSI_STREAM_CONVERT_ISO: "true"
+      PSI_STREAM_TIMEOUT: 10000
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3

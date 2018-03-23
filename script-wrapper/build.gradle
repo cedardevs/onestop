@@ -1,46 +1,91 @@
-apply plugin: 'war'
+buildscript {
+  repositories {
+    maven { url "https://plugins.gradle.org/m2/" }
+  }
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+  }
+}
+
+apply plugin: 'org.owasp.dependencycheck'
 apply plugin: 'groovy'
-apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
-apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.cedar.dockerplugin'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = 'org.cedar.psi.wrapper.stream.ScriptWrapperStreamMain'
+
+repositories {
+  mavenCentral()
+}
 
 dependencies {
-  compile('org.codehaus.groovy:groovy')
-  compile('org.codehaus.groovy:groovy-json')
-  compile("org.codehaus.groovy:groovy-xml")
-  compile('org.springframework.boot:spring-boot-starter-actuator')
-  compile('org.springframework.boot:spring-boot-starter-web')
-  compile('org.springframework.cloud:spring-cloud-starter')
+  compile('org.codehaus.groovy:groovy:2.4.10')
+  compile('org.codehaus.groovy:groovy-json:2.4.10')
+  compile("org.codehaus.groovy:groovy-xml:2.4.10")
   compile('org.apache.kafka:kafka-streams:1.0.0')
+  compile('org.slf4j:slf4j-api:1.7.25')
   compile('org.apache.commons:commons-text:1.2')
+  compile('com.github.danielwegener:logback-kafka-appender:0.1.0')
+  compile('ch.qos.logback:logback-core:1.2.3')
+  compile ('ch.qos.logback:logback-examples:1.2.3')
+  compile group: 'org.yaml', name: 'snakeyaml', version: '1.18'
 
-  runtime('org.springframework.boot:spring-boot-devtools')
+  testCompile('junit:junit:4.12')
+  testCompile('org.spockframework:spock-core:1.0-groovy-2.4')
+  testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+  testCompile("org.testcontainers:testcontainers:1.6.0")
+  testCompile("org.testcontainers:kafka:1.6.0")
 
-  providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
-
-  testCompile('org.springframework.boot:spring-boot-starter-test')
-  testCompile("org.spockframework:spock-spring:${project.spockVersion}")
-  testCompile("org.spockframework:spock-core:${project.spockVersion}")
-  testCompile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
-  testCompile('org.testcontainers:testcontainers:1.4.2')
 }
 
-war {
-  // build a deployable war in addition to the executable one
-  enabled = true
+def setupConfigLocation = {
+  def defaultLocation = "file:${System.properties['user.home']}/cedardevs/psi/config-value/${project.name}.yml"
+  def sysPropLocation = System.properties['psi.config.location']
+
+  systemProperty 'psi.config.location', sysPropLocation ?: defaultLocation
+  systemProperty 'project.name', project.name
 }
 
-bootWar {
-  // add a classifier to distinguish the executable war
+tasks.withType(JavaExec, setupConfigLocation)
+
+sourceSets {
+  integrationTest {
+    groovy.srcDir file('src/integrationTest/groovy')
+    compileClasspath += main.output + test.output + configurations.testRuntime
+    runtimeClasspath += output + compileClasspath
+  }
+}
+
+task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
+  mustRunAfter 'test'
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  reports.junitXml.destination = file("${buildDir}/integration-test-results")
+  reports.html.destination =  file("${buildDir}/reports/integrationTests")
+}
+
+check.dependsOn integrationTest
+
+jar{
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+}
+// check http://imperceptiblethoughts.com/shadow/
+shadowJar{
+  baseName="script-wrapper"
   classifier = 'all'
-  launchScript()
+  version = version
+  configurations = [project.configurations.compile]
 }
+
 
 docker {
-  additionalBuildArgs = [WAR_NAME: bootWar.outputs.files.singleFile.name]
+  additionalBuildArgs = [JAR_NAME: "script-wrapper-0.1.0-SNAPSHOT-all.jar"]
 }
 
-BuildDockerImage.dependsOn(bootWar)
+BuildDockerImage.dependsOn(shadowJar)
 assemble.dependsOn(BuildDockerImage)
 PublishDockerImage.dependsOn(BuildDockerImage)
 task publish { dependsOn PublishDockerImage }

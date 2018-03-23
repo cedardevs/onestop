@@ -8,6 +8,6 @@ stream:
       input: <input_topic>
       output: <output_topic>
   command: <run a bash command or execute a script>
-  command_timeout: <timeout_ms>
+  timeout: <timeout_ms>
   convert:
     iso: <optional boolean to convert- default is false>

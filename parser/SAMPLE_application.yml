@@ -1,9 +1,0 @@
-server:
-  port: 3001
-
-kafka:
-  bootstrap:
-    servers: localhost:9092
-  topics:
-    input: raw-granule-aggregator-raw-granules-changelog
-    output: parsed-granules

@@ -39,3 +39,4 @@ curl -X PUT -H "Content-Type: application/xml" localhost:8080/metadata/collectio
 ```bash
 curl localhost:8080/metadata/collection/123
 ```
+curl -X PUT -H "Content-Type: application/json" http://localhost:8080/metadata/granule -d '{ "dataStream": "dscover", "trackingId": "3", "checksum": "fd297fcceb94fdbec5297938c99cc7b5", "relativePath": "oe_f1m_dscovr_s20180201000000_e20180201235959_p20180202024241_pub.nc.gz", "path": "/dscovr/valid/oe_f1m_dscovr_s20180201000000_e20180201235959_p20180202024241_pub.nc.gz", "fileSize": 6526, "lastUpdated":"2017124" }'
