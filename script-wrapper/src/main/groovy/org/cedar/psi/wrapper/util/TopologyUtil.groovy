@@ -10,9 +10,11 @@ class TopologyUtil {
 
   static Topology scriptWrapperStreamInstance(StreamsBuilder builder, Map topologyConfig) {
     log.info "Building script wrapper topology with config $topologyConfig"
+    def timeout = topologyConfig.timeout.toString().toLong()
+    def command = topologyConfig.command as String
     Topology topology = builder.build()
     builder.stream(topologyConfig.topics.input as String)
-        .mapValues({ msg -> ScriptWrapperFunctions.scriptCaller(msg, topologyConfig.command, topologyConfig.timeout) })
+        .mapValues({ msg -> ScriptWrapperFunctions.scriptCaller(msg, command, timeout) })
         .filterNot({ key, msg -> msg.toString().startsWith('ERROR') })
         .mapValues({ msg ->
           topologyConfig.doIsoConversion ? IsoConversionUtil.parseXMLMetadata(msg as String) : msg
