@@ -27,6 +27,13 @@ const styleStar = {
   fill: 'goldenrod',
 }
 
+const styleLink = {
+  display: 'inline-block',
+  color: 'rgb(85, 172, 228)',
+  margin: '0 0 0.618em 0',
+  textDecorationLine: 'underline',
+}
+
 class SummaryView extends Component {
   constructor(props) {
     super(props)
@@ -58,9 +65,11 @@ class SummaryView extends Component {
   }
 
   render() {
-    const startDate = this.props.item.beginDate
-    const endDate = this.props.item.endDate
-      ? this.props.item.endDate
+
+    const { granuleSearch, totalGranuleCount, item } = this.props
+    const startDate = item.beginDate
+    const endDate = item.endDate
+      ? item.endDate
       : 'Present'
 
     const timeSpaceSummary = (
@@ -76,7 +85,7 @@ class SummaryView extends Component {
         <div className={styles.sectionHeading}>Spatial Bounding Map:</div>
         <div className={styles.previewMap}>
           <MapThumbnail
-            geometry={this.props.item.spatialBounding}
+            geometry={item.spatialBounding}
             interactive={true}
           />
         </div>
@@ -88,15 +97,13 @@ class SummaryView extends Component {
     )
 
     const granules =
-      this.props.totalGranuleCount == 0 ? (
+      totalGranuleCount == 0 ? (
         <div>No granules in this collection</div>
       ) : (
         <div>
           <a
             style={styleLink}
-            onClick={e => {
-              this.props.granuleSearch()
-            }}
+            onClick={granuleSearch}
           >
             Show Files Matching My Search
           </a>
@@ -133,7 +140,7 @@ class SummaryView extends Component {
       <div style={styleContainer}>
         <div>
           <span className={styles.sectionHeading}>Total Files:&nbsp;</span>
-          {this.props.totalGranuleCount}
+          {totalGranuleCount}
         </div>
         <FlexRow
           style={{justifyContent: 'space-between'}}
@@ -144,7 +151,8 @@ class SummaryView extends Component {
   }
 
   renderDSMMRating() {
-    const dsmmScore = this.props.item.dsmmAverage
+    const { item } = this.props
+    const dsmmScore = item.dsmmAverage
     const fullStars = Math.floor(dsmmScore)
     const halfStar = dsmmScore % 1 >= 0.5
     const dsmmDesc = _.round(dsmmScore, 2).toFixed(2)
@@ -229,7 +237,8 @@ class SummaryView extends Component {
   }
 
   renderGCMDKeywords(type, bgColor, showAll) {
-    let keywords = (this.props.item && this.props.item[type]) || []
+    const { item } = this.props
+    let keywords = (item && item[type]) || []
 
     if (!_.isEmpty(keywords)) {
       if (type === 'gcmdScience') {
@@ -282,10 +291,11 @@ class SummaryView extends Component {
   }
 
   buildCoordinatesString() {
+    const { item } = this.props
     // For point, want: "Point at [0], [1] (longitude, latitude)"
     // For line, want: "Line from [0][0] (WS), [0][1] to [1][0], [1][1] (EN).
     // For polygon want: "Bounding box covering [0][0], [0][1], [2][0], [2][1] (N, W, S, E)"
-    const geometry = this.props.item.spatialBounding
+    const geometry = item.spatialBounding
     if (geometry) {
       const deg = '\u00B0'
       if (geometry.type.toLowerCase() === 'point') {
