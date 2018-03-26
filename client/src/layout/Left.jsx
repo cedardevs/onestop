@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
+import {boxShadow} from '../common/defaultStyles'
 
-const defaultWidth = 128
+const defaultWidth = '128px'
 const defaultBackgroundColor = '#3D97D2'
 const defaultColor = '#111'
 
@@ -9,11 +10,12 @@ const styleVisible = width => {
     color: defaultColor,
     backgroundColor: defaultBackgroundColor,
     transition: 'flex 0.2s linear',
-    flex: '0 0 ' + width + 'px',
-    width: width + 'px',
+    flex: '0 0 ' + width,
+    width: width,
     minWidth: '3.236em',
     position: 'relative',
     overflow: 'hidden',
+    boxShadow: boxShadow,
   }
 }
 
@@ -21,10 +23,11 @@ const styleHidden = width => {
   return {
     backgroundColor: defaultBackgroundColor,
     transition: 'flex 0.2s linear',
-    flex: '0 1 0',
-    width: width + 'px',
+    flex: '0 0 ' + width,
+    width: width,
     position: 'relative',
     overflow: 'initial',
+    boxShadow: boxShadow,
   }
 }
 

@@ -2,6 +2,7 @@
 
 .showcase {
   min-height: 100vh;
+  color: #222;
 }
 
 .formDiv {
@@ -11,12 +12,12 @@
 }
 
 .formRow {
-  margin: 1em;
+  margin-bottom: 1em;
   border: none !important;
 }
 
 .formLabel {
-  margin: 1em 2em 1em 0 !important;
+  margin: 0.618em !important;
   width: 8em;
   display: inline-block;
 }
@@ -39,4 +40,5 @@
   width: 80%;
   border: gray solid;
   padding: 1em;
+  background: #F9F9F9;
 }

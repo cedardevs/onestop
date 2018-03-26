@@ -1,6 +1,7 @@
 server:
   port: 8097
-  context-path: /onestop/api
+  servlet:
+    context-path: /onestop/api
 
 spring:
   application:

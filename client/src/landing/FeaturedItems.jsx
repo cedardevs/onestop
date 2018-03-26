@@ -20,7 +20,7 @@ class FeaturedItems extends React.Component {
     }
 
     return (
-      <div className={`pure-g ${styles.featured}`}>
+      <div className={`${styles.featured}`}>
         <div className={`pure-u-1 pure-u-md-1-4 ${styles.titles}`}>
           <ul className={`${styles.titles}`}>
             {this.props.items.map((f, i) => (

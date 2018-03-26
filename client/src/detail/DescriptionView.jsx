@@ -1,8 +1,36 @@
 import React, {Component} from 'react'
-// import ShowMore from 'react-show-more'
 import {processUrl} from '../utils/urlUtils'
 import MapThumbnail from '../common/MapThumbnail'
-import styles from './DetailStyles.css'
+import FlexRow from '../common/FlexRow'
+
+const styleContainer = {
+  padding: '1.618em',
+  color: '#222',
+  backgroundColor: '#F9F9F9',
+}
+
+const styleImageContainer = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}
+
+const styleImage = {
+  margin: '0 0 0.618em 0',
+  width: '72%',
+  maxWidth: '500px',
+}
+
+const styleMap = {
+  margin: '0 0 0.618em 0',
+  width: '100%',
+  maxWidth: '500px',
+}
+
+const styleDescription = {
+  margin: '0 0 0.618em 0',
+  flex: '2',
+}
 
 export default class DescriptionView extends Component {
   render() {
@@ -20,17 +48,15 @@ export default class DescriptionView extends Component {
       ? item.description
       : 'No description available'
 
+    const collectionImage = this.renderCollectionImage(thumbnail, geometry)
     return (
-      <div className={`pure-g`}>
-        <div className={`pure-u-1-2`}>
-          {this.renderCollectionImage(thumbnail, geometry)}
-        </div>
-        <div className={`pure-u-1-2 ${styles.descriptionText}`}>
-          {/*<ShowMore lines={10} anchorClass={`${styles.showMore}`}>*/}
-          {description}
-          {/*</ShowMore>*/}
-        </div>
-      </div>
+      <FlexRow
+        style={styleContainer}
+        items={[
+          <div style={{flex: '1'}} key={'description-image'}>{collectionImage}</div>,
+          <div style={styleDescription} key={'description'}>{description}</div>,
+        ]}
+      />
     )
   }
 
@@ -38,27 +64,25 @@ export default class DescriptionView extends Component {
     const imgUrl = processUrl(thumbnail)
     if (imgUrl) {
       return (
-        <img
-          className={styles.previewImg}
-          src={imgUrl}
-          alt="collection result image"
-          aria-hidden="true"
-        />
+        <div style={styleImageContainer}>
+          <img
+            style={styleImage}
+            src={imgUrl}
+            alt="collection result image"
+            aria-hidden="true"
+          />
+        </div>
       )
     }
     else if (geometry) {
       return (
-        <div className={styles.previewMap}>
+        <div style={styleMap}>
           <MapThumbnail geometry={geometry} interactive={false} />
         </div>
       )
     }
     else {
-      return (
-        <div className={styles.previewMap}>
-          No preview image or map available.
-        </div>
-      )
+      return <div style={styleMap}>No preview image or map available.</div>
     }
   }
 }

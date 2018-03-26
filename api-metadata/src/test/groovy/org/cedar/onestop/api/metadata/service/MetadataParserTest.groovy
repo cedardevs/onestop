@@ -266,30 +266,22 @@ class MetadataParserTest extends Specification {
     parsedXml.crossReferences == [
         [
             title: '[TITLE OF PUBLICATION]',
-            code: '[ID OF PUBLICATION]',
-            publicationDate: '9999-01-01',
-            link: [
+            date: '9999-01-01',
+            links: [[
                 linkName: null,
                 linkProtocol: null,
                 linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
                 linkDescription: '[DESCRIPTION OF URL]',
                 linkFunction: 'information'
-            ]
+            ]]
         ]
     ] as Set
 
     parsedXml.largerWorks == [
         [
-            title: 'Important Organization\'s Important File\'s Super Important Title',
-            code: '[PROJECT ID]',
-            publicationDate: '9999-01-01',
-            link: [
-                linkName: null,
-                linkProtocol: null,
-                linkUrl: null,
-                linkDescription: null,
-                linkFunction: null
-            ]
+            title: '[TITLE OF PROJECT]',
+            date: '9999-10-10',
+            links: []
         ]
     ] as Set
 
@@ -357,30 +349,22 @@ class MetadataParserTest extends Specification {
     citationInfo.crossReferences == [
         [
             title: '[TITLE OF PUBLICATION]',
-            code: '[ID OF PUBLICATION]',
-            publicationDate: '9999-01-01',
-            link: [
+            date: '9999-01-01',
+            links: [[
                 linkName: null,
                 linkProtocol: null,
                 linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
                 linkDescription: '[DESCRIPTION OF URL]',
                 linkFunction: 'information'
-            ]
+            ]]
         ]
     ] as Set
 
     citationInfo.largerWorks == [
         [
-            title: 'Important Organization\'s Important File\'s Super Important Title',
-            code: '[PROJECT ID]',
-            publicationDate: '9999-01-01',
-            link: [
-                linkName: null,
-                linkProtocol: null,
-                linkUrl: null,
-                linkDescription: null,
-                linkFunction: null
-            ]
+            title: '[TITLE OF PROJECT]',
+            date: '9999-10-10',
+            links: []
         ]
     ] as Set
 
@@ -622,15 +606,21 @@ class MetadataParserTest extends Specification {
     spatialBounding == [spatialBounding: null, isGlobal: false]
   }
 
-  def "Invalid spatial bounding is prevented"() {
+  def "LineString spatial bounding is prevented"() {
     given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-invalid-coords-metadata.xml").text
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-linestring-coords-metadata.xml").text
 
     when:
-    MetadataParser.parseSpatialInfo(document)
+    def spatialBounding = MetadataParser.parseSpatialInfo(document)
 
     then:
-    thrown(Exception)
+    spatialBounding == [
+        spatialBounding: [
+            type       : 'LineString',
+            coordinates: [[-80, -10],[80, -10]]
+        ],
+        isGlobal       : false
+    ]
   }
 
   def "Acquisition info is correctly parsed"() {

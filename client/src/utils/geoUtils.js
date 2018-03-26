@@ -21,6 +21,7 @@ export const shiftCoordinates = (coordinates, rotations) => {
 export const findMaxRotations = coordinates => {
   return _.chain(coordinates)
     .map(coordinate => coordinate[0])
+    .map(x => (Math.abs(x) <= 180 ? 0 : x))
     .map(x => _.round(x / 360))
     .maxBy(rotations => Math.abs(rotations))
     .value()
@@ -41,17 +42,22 @@ export const recenterGeometry = geometry => {
   return _.assign({}, geometry, {coordinates: newCoordinates})
 }
 
-export const ensureDatelineFriendlyPolygon = geometry => {
-  let coords
-  if (geometry.type.toLowerCase() === 'point') {
-    coords = Array(5).fill(geometry.coordinates)
-  }
-  else {
-    coords = geometry.coordinates[0]
-  }
+export const renderPointAsPolygon = geometry => {
+  let coords = Array(5).fill(geometry.coordinates)
   return {
     type: 'Polygon',
-    coordinates: [ convertNegativeLongitudes(coords) ],
+    coordinates: [ coords ],
+  }
+}
+
+export const ensureDatelineFriendlyGeometry = geometry => {
+  let coords =
+    geometry.type.toLowerCase() === 'polygon'
+      ? [ convertNegativeLongitudes(geometry.coordinates[0]) ]
+      : convertNegativeLongitudes(geometry.coordinates)
+  return {
+    type: geometry.type,
+    coordinates: coords,
   }
 }
 
@@ -94,7 +100,7 @@ export const convertBboxToGeoJson = (west, south, east, north) => {
     return undefined
   }
   else {
-    let datelineFriendlyGeometry = ensureDatelineFriendlyPolygon({
+    let datelineFriendlyGeometry = ensureDatelineFriendlyGeometry({
       coordinates: [ coordinates ],
       type: 'Polygon',
     })

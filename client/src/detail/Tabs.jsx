@@ -3,15 +3,14 @@ import FlexRow from '../common/FlexRow'
 
 // <TabButton>
 
-const styleTabButton = (active, first = false) => {
+const styleTabButton = (active, first = false, last = false) => {
   return {
     display: 'flex',
     flexGrow: 1,
-    border: active ? '1px solid #3E7BAD' : '1px solid #444',
-    borderBottom: active ? '0' : '1px solid #3E7BAD',
-    color: '#F9F9F9',
-    backgroundColor: active ? '#111' : '#222',
-    borderRadius: '0.618em 0.618em 0 0',
+    marginRight: last ? 0 : '1px',
+    fontSize: '0.8em',
+    color: active ? '#000131' : 'white',
+    backgroundColor: active ? 'white' : '#000131',
     textAlign: 'center',
   }
 }
@@ -26,21 +25,19 @@ const styleTabButtonLabel = active => {
   return {
     width: '100%',
     height: '100%',
-    fontWeight: active ? 'bold' : 'normal',
     fontSize: '1.3em',
     padding: '0.618em',
-    textDecoration: active ? 'underline' : 'none',
     cursor: 'pointer',
   }
 }
 
 class TabButton extends Component {
   render() {
-    const {first, title, value, active, onChange} = this.props
+    const {first, last, title, value, active, onChange} = this.props
     const tabID = `${title} - ${value}`
 
     return (
-      <div style={styleTabButton(active, first)}>
+      <div style={styleTabButton(active, first, last)}>
         <input
           style={styleTabButtonInput()}
           id={tabID}
@@ -51,7 +48,7 @@ class TabButton extends Component {
           onChange={onChange}
         />
         <label style={styleTabButtonLabel(active)} htmlFor={tabID}>
-          {this.props.title}
+          {title ? title.toUpperCase() : null}
         </label>
       </div>
     )
@@ -63,7 +60,7 @@ class TabButton extends Component {
 // <Tabs>
 
 const styleTabs = {
-  marginTop: '.5em',
+  paddingTop: '1px',
 }
 
 const styleTabButtons = {
@@ -73,13 +70,7 @@ const styleTabButtons = {
   top: '0',
   width: '100%',
   justifyContent: 'space-between',
-}
-
-const styleContent = {
-  border: '1px solid #3E7BAD',
-  borderTopWidth: '0',
-  backgroundColor: '#111',
-  padding: '1.618em',
+  borderBottom: '1px solid #F0F0F2',
 }
 
 export default class Tabs extends Component {
@@ -122,7 +113,7 @@ export default class Tabs extends Component {
   }
 
   render() {
-    const {data} = this.props
+    const {data, styleContent} = this.props
     let tabButtons = []
     let tabContent = null
     if (data) {
@@ -136,6 +127,7 @@ export default class Tabs extends Component {
           <TabButton
             key={index}
             first={index === 0}
+            last={index + 1 === data.length}
             title={tab.title}
             value={index}
             active={active}

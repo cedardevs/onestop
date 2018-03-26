@@ -15,20 +15,20 @@ export const initialState = Immutable({
   showRight: false,
   showMap: false,
   showAppliedFilterBubbles: false,
+  onDetailPage: false,
 })
 
 export const layout = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_CHANGE:
       const path = action.payload.pathname
-      const allowSearching = !(
-        path.includes('508') ||
-        isDetailPage(path) ||
-        isGranuleListPage(path)
-      )
+      const onDetailPage = isDetailPage(path)
+      const onGranuleListPage = isGranuleListPage(path)
+      const allowSearching = !(path.includes('508') || onDetailPage || onGranuleListPage)
       return Immutable.merge(state, {
         showLeft: allowSearching,
         showAppliedFilterBubbles: allowSearching,
+        onDetailPage: onDetailPage,
       })
     case SET_LEFT_OPEN_CLOSE:
       return Immutable.set(state, 'leftOpen', action.value)

@@ -40,6 +40,33 @@
               </gmd:code>
             </gmd:MD_Identifier>
           </gmd:identifier>
+          <gmd:citedResponsibleParty>
+            <gmd:CI_ResponsibleParty>
+              <gmd:organisationName>
+                <gco:CharacterString>Group Org Name</gco:CharacterString>
+              </gmd:organisationName>
+              <gmd:contactInfo>
+                <gmd:CI_Contact>
+                  <gmd:onlineResource>
+                    <gmd:CI_OnlineResource>
+                      <gmd:linkage>
+                        <gmd:URL>HTTPS://WWW.EXAMPLE.COM</gmd:URL>
+                      </gmd:linkage>
+                      <gmd:description>
+                        <gco:CharacterString>[DESCRIPTION OF URL]</gco:CharacterString>
+                      </gmd:description>
+                      <gmd:function>
+                        <gmd:CI_OnLineFunctionCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
+                      </gmd:function>
+                    </gmd:CI_OnlineResource>
+                  </gmd:onlineResource>
+                </gmd:CI_Contact>
+              </gmd:contactInfo>
+              <gmd:role>
+                <gmd:CI_RoleCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode" codeListValue="custodian">custodian</gmd:CI_RoleCode>
+              </gmd:role>
+            </gmd:CI_ResponsibleParty>
+          </gmd:citedResponsibleParty>
         </gmd:CI_Citation>
       </gmd:aggregateDataSetName>
       <gmd:associationType>
@@ -49,17 +76,6 @@
         <gmd:DS_InitiativeTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#DS_InitiativeTypeCode" codeListValue="sciencePaper">sciencePaper</gmd:DS_InitiativeTypeCode>
       </gmd:initiativeType>
     </gmd:MD_AggregateInformation>
-    <gmd:CI_OnlineResource>
-      <gmd:linkage>
-        <gmd:URL>HTTPS://WWW.EXAMPLE.COM</gmd:URL>
-      </gmd:linkage>
-      <gmd:description>
-        <gco:CharacterString>[DESCRIPTION OF URL]</gco:CharacterString>
-      </gmd:description>
-      <gmd:function>
-        <gmd:CI_OnLineFunctionCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#CI_OnLineFunctionCode" codeListValue="information">information</gmd:CI_OnLineFunctionCode>
-      </gmd:function>
-    </gmd:CI_OnlineResource>
   </gmd:aggregationInfo>
   <gmd:aggregationInfo>
     <gmd:MD_AggregateInformation>
@@ -71,7 +87,7 @@
           <gmd:date>
             <gmd:CI_Date>
               <gmd:date>
-                <gco:Date>9999-01-01</gco:Date>
+                <gco:Date>9999-10-10</gco:Date>
               </gmd:date>
               <gmd:dateType>
                 <gmd:CI_DateTypeCode codeList="https://www.ngdc.noaa.gov/metadata/published/xsd/schema/resources/Codelist/gmxCodelists.xml#publication" codeListValue="publication">publication</gmd:CI_DateTypeCode>
@@ -599,13 +615,14 @@
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
-            <gco:CharacterString>SIO &gt; Super Important Organization</gco:CharacterString>
+            <gco:CharacterString>SIO &gt;
+              Super Important Organization</gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
-            <gco:CharacterString>OSIO &gt; OTHER SUPER IMPORTANT ORGANIZATION</gco:CharacterString>
+            <gco:CharacterString>OSIO &gt;   OTHER SUPER IMPORTANT ORGANIZATION</gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
-            <gco:CharacterString>SSIO &gt; Super SIO (Super Important Organization)</gco:CharacterString>
+            <gco:CharacterString>SSIO &gt; Super SIO        (Super Important Organization)</gco:CharacterString>
           </gmd:keyword>
           <gmd:type>
             <gmd:MD_KeywordTypeCode codeListValue="dataCenter">dataCenter</gmd:MD_KeywordTypeCode>

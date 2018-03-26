@@ -157,7 +157,7 @@ class Section508CollectionGrid extends React.Component {
           tabIndex={0}
           ref={resultCount => (this.resultCount = resultCount)}
         >
-          <h2>
+          <h2 style={{color: '#222'}}>
             Search Results (showing {this.props.returnedHits} of{' '}
             {this.props.totalHits})
           </h2>

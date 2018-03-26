@@ -24,52 +24,98 @@ import history from './history'
 
 store.dispatch(initialize())
 
-const routesDefinition = {
-  path: '/',
-  component: RootContainer,
-  indexRoute: {component: LandingContainer},
-  childRoutes: [
-    {
-      component: Result,
-      childRoutes: [
-        {
-          path: 'collections',
-          component: CollectionGridContainer,
-        },
-        {path: 'collections/details/:id', component: DetailContainer},
-        {path: 'collections/granules/:id', component: GranuleListContainer},
-      ],
-    },
-    {path: 'error', component: ErrorContainer},
-    {path: 'help', component: Help},
-    {path: 'about', component: AboutContainer},
-    {
-      path: '508',
-      component: Section508LandingContainer,
-    },
-    {
-      component: Section508Result,
-      childRoutes: [
-        {
-          path: '508/collections',
-          component: Section508CollectionGridContainer,
-        },
-        {
-          path: '508/collections/files',
-          component: Section508GranuleListContainer,
-        },
-      ],
-    },
+// const routesDefinition = {
+//   path: '/',
+//   component: RootContainer,
+//   indexRoute: {component: LandingContainer},
+//   childRoutes: [
+//     {
+//       component: Result,
+//       childRoutes: [
+//         {
+//           path: 'collections',
+//           component: CollectionGridContainer,
+//         },
+//         {path: 'collections/details/:id', component: DetailContainer},
+//         {path: 'collections/granules/:id', component: GranuleListContainer},
+//       ],
+//     },
+//     {path: 'error', component: ErrorContainer},
+//     {path: 'help', component: Help},
+//     {path: 'about', component: AboutContainer},
+//     {
+//       path: '508',
+//       component: Section508LandingContainer,
+//     },
+//     {
+//       component: Section508Result,
+//       childRoutes: [
+//         {
+//           path: '508/collections',
+//           component: Section508CollectionGridContainer,
+//         },
+//         {
+//           path: '508/collections/files',
+//           component: Section508GranuleListContainer,
+//         },
+//       ],
+//     },
+//
+//     {path: '508/error', component: ErrorContainer},
+//     {path: '508/help', component: Help},
+//     {path: '508/about', component: AboutContainer},
+//   ],
+// }
+//
+// const body = (
+//     <Provider store={store}>
+//       <Router history={history} routes={routesDefinition} />
+//     </Provider>
+// )
 
-    {path: '508/error', component: ErrorContainer},
-    {path: '508/help', component: Help},
-    {path: '508/about', component: AboutContainer},
-  ],
-}
+const routesLayout = (
+  <Router history={history}>
+    <Route path="/" name="Home" component={RootContainer}>
+      <IndexRoute component={LandingContainer} />
+      <Route name="Collections" path="collections" component={Result}>
+        <IndexRoute
+          displayName="Collections"
+          component={CollectionGridContainer}
+        />
+      </Route>
+      <Route
+        name="Details"
+        path="collections/details/:id"
+        component={DetailContainer}
+      />
+      <Route name="Error" path="error" component={ErrorContainer} />
+      <Route name="Help" path="help" component={Help} />
+      <Route name="About" path="about" component={AboutContainer} />
+    </Route>
+
+    <Route path="508" name="Home" component={RootContainer}>
+      <IndexRoute component={Section508LandingContainer} />
+      <Route name="Collections" path="collections" component={Section508Result}>
+        <IndexRoute
+          displayName="Collections"
+          component={Section508CollectionGridContainer}
+        />
+        <Route
+          name="Files"
+          path="files"
+          component={Section508GranuleListContainer}
+        />
+      </Route>
+      <Route name="Error" path="error" component={ErrorContainer} />
+      <Route name="Help" path="help" component={Help} />
+      <Route name="About" path="about" component={AboutContainer} />
+    </Route>
+  </Router>
+)
 
 const body = (
   <Provider store={store}>
-    <Router history={history} routes={routesDefinition} />
+    <div>{routesLayout}</div>
   </Provider>
 )
 

@@ -52,16 +52,17 @@ export default class AccessView extends React.Component {
       .filter(link => link.linkFunction === 'information')
       .map((link, index, arr) => {
         const lastIndex = arr.length - 1
-        const {linkUrl, linkName, linkFunction, linkDescription} = link
+        const {linkUrl, linkName, linkProtocol, linkDescription} = link
+        const linkTitle = linkName ? linkName : linkProtocol
         return (
           <div key={index}>
             <A
               href={linkUrl}
               target="_blank"
-              title={linkName}
+              title={linkTitle}
               style={styleTableCellLink}
             >
-              {linkName}
+              {linkTitle}
             </A>
             <p
               style={
@@ -86,16 +87,17 @@ export default class AccessView extends React.Component {
       .filter(link => link.linkFunction === 'download')
       .map((link, index, arr) => {
         const lastIndex = arr.length - 1
-        const {linkUrl, linkName, linkFunction, linkDescription} = link
+        const {linkUrl, linkName, linkProtocol, linkDescription} = link
+        const linkTitle = linkName ? linkName : linkProtocol
         return (
           <div key={index}>
             <A
               href={linkUrl}
               target="_blank"
-              title={linkName}
+              title={linkTitle}
               style={styleTableCellLink}
             >
-              {linkName}
+              {linkTitle}
             </A>
             <p
               style={

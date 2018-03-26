@@ -1,8 +1,7 @@
 import React, {Component} from 'react'
 
+import Background from '../layout/Background'
 import Container from '../layout/Container'
-
-import Background from '../landing/background/Background'
 
 import BannerContainer from './banner/BannerContainer'
 import HeaderContainer from './HeaderContainer'
@@ -15,7 +14,26 @@ import LoadingBarContainer from '../loading/LoadingBarContainer'
 
 import FooterContainer from './FooterContainer'
 
-import styles from './root.css'
+import {COLOR_SECONDARY_DARK} from '../common/defaultStyles'
+
+const styleBrowserWarning = {
+  background: COLOR_SECONDARY_DARK,
+  width: '96%',
+  margin: '1em auto',
+  padding: '0.3em 1em',
+  borderRadius: '3px',
+  color: '#fff',
+}
+
+const styleBrowserWarningLink = {
+  color: 'rgb(169, 226, 255)',
+}
+
+const styleBrowserWarningParagraph = {
+  textAlign: 'center',
+}
+
+const styleClose = {}
 
 // component
 export default class Root extends Component {
@@ -51,22 +69,24 @@ export default class Root extends Component {
     const wikiUrl =
       'https://github.com/cedardevs/onestop/wiki/OneStop-Client-Supported-Browsers'
     return (
-      <aside role="alert" className={styles.browserWarning}>
+      <aside role="alert" style={styleBrowserWarning}>
         <span
-          className={styles.close}
+          style={styleClose}
           onClick={() => {
             this.setState({browserWarning: false})
           }}
         >
           x
         </span>
-        <p>
+        <p style={styleBrowserWarningParagraph}>
           The browser that you are using to view this page is not currently
           supported. For a list of currently supported & tested browsers, please
           visit the
           <span>
             {' '}
-            <a href={wikiUrl}>OneStop Documentation</a>
+            <a style={styleBrowserWarningLink} href={wikiUrl}>
+              OneStop Documentation
+            </a>
           </span>
         </p>
       </aside>
@@ -102,7 +122,7 @@ export default class Root extends Component {
   }
 
   render() {
-    const {showLeft, leftOpen, showRight} = this.props
+    const {showLeft, leftOpen, showRight, onDetailPage} = this.props
 
     const header = (
       <div>
@@ -119,42 +139,51 @@ export default class Root extends Component {
       this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
 
     let left = null
+    let leftWidth = '256px'
+
     if (layoutContext) {
       if (showLeft) {
         if (leftOpen) {
           left = <FiltersContainer />
         }
         else {
+          leftWidth = '2em' // must match width + 2x padding of container in FilterHidden.jsx
           left = <FiltersHiddenContainer />
         }
       }
     }
 
+    const loadingBarStyle = this.isNotLanding() ? {} : {display: 'none'}
+    const onHomePage = !this.isNotLanding()
+
     const middle = (
-      <div>
-        <LoadingBarContainer />
-        <Background
-          showImage={this.isNot508()}
-          showOverlay={this.isNotLanding() && this.isNot508()}
-        />
+      <div style={{width: '100%'}}>
+        <LoadingBarContainer style={loadingBarStyle} />
         {/*TODO: replace this with ArcGIS map?*/}
         <MapContainer selection={true} features={false} />
         {this.props.children}
       </div>
     )
 
+    // constrain middle gives the middle section a max-width
+    const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
+
     return (
-      <Container
-        header={header}
-        left={left}
-        leftWidth={256}
-        leftVisible={leftOpen}
-        middle={middle}
-        right={null}
-        rightWidth={256}
-        rightVisible={showRight}
-        footer={<FooterContainer />}
-      />
+      <Background onHomePage={onHomePage}>
+        <Container
+          header={header}
+          left={left}
+          leftWidth={leftWidth}
+          leftVisible={leftOpen}
+          middle={middle}
+          middleBackgroundColor={middleBackgroundColor}
+          onHomePage={onHomePage}
+          right={null}
+          rightWidth={256}
+          rightVisible={showRight}
+          footer={<FooterContainer />}
+        />
+      </Background>
     )
   }
 }

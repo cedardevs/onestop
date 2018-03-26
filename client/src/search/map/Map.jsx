@@ -11,22 +11,25 @@ import {recenterGeometry} from '../../utils/geoUtils'
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
 
-const styleMapContainer = showMap => {
+const MAP_HEIGHT = '400px'
+
+const styleMapContainer = (open, display, height, width) => {
   return {
     boxSizing: 'border-box',
     backgroundColor: '#3D97D2',
-    transition: showMap
-      ? 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s'
-      : 'width 0.2s 0.0s, padding 0.1s 0.2s, height 0.2s 0.3s',
-    padding: showMap ? '0em' : '0em',
-    height: showMap ? '400px' : '0em',
-    width: showMap ? '100%' : '0%',
+    transition: open // immediate transition
+      ? 'height 0.2s 0.0s, width 0.2s 0.3s'
+      : 'width 0.2s 0.0s, height 0.2s 0.3s',
+    padding: '0em',
+    // properties set on a separate timer using state:
+    height: height,
+    width: width,
+    display: display,
   }
 }
 
-const styleMapText = showMap => {
+const styleMapText = (open, opacity) => {
   return {
-    zIndex: 1,
     padding: '0.309em 0.618em',
     margin: '0 auto',
     backgroundColor: '#18478F',
@@ -34,19 +37,22 @@ const styleMapText = showMap => {
     lineHeight: '1.618em',
     width: '100%',
     textAlign: 'center',
-    opacity: showMap ? '1' : '0',
-    transition: showMap ? 'opacity 0.2s 0.5s' : 'opacity 0.2s 0.0s',
+    transition: open //immediate transition
+      ? 'opacity 0.2s 0.5s'
+      : 'opacity 0.2s 0.0s',
+    // properties set on a separate timer using state:
+    opacity: opacity,
   }
 }
 
-const styleMap = showMap => {
+const styleMap = () => {
   return {
     zIndex: 1,
     padding: 0,
     margin: '0 auto',
-    display: showMap ? 'flex' : 'none',
+    display: 'flex',
     position: 'relative',
-    height: 'calc(400px - 1.618em - 2 * 0.618em)',
+    height: `calc(${MAP_HEIGHT} - 1.618em - 2 * 0.618em)`,
     alignItems: 'flex-start',
     maxWidth: '1200px',
   }
@@ -70,8 +76,14 @@ const drawStyle = {
 class Map extends React.Component {
   constructor(props) {
     super(props)
+    const {showMap} = this.props
     this.state = {
       initialized: false,
+      open: showMap,
+      display: showMap ? 'block' : 'none',
+      height: showMap ? MAP_HEIGHT : '0em',
+      width: showMap ? '100%' : '0%',
+      opacity: showMap ? '1' : '0',
     }
   }
 
@@ -159,11 +171,47 @@ class Map extends React.Component {
     this.fitMapToResults()
   }
 
-  componentWillReceiveProps() {
+  componentWillReceiveProps(nextProps) {
     let {map} = this.state
     if (map) {
       map.invalidateSize()
     } // Necessary to redraw map which isn't initially visible
+
+    if (this.props.showMap != nextProps.showMap) {
+      this.setState(prevState => {
+        const isOpen = prevState.open
+        const isDisplayed = prevState.display === 'block'
+        const shouldClose = isOpen && isDisplayed
+        const shouldOpen = !isOpen && !isDisplayed
+
+        // these transitions do occasionally have timing issues, but I've only seen them when rapidly toggling a single element on and off..
+        if (shouldOpen) {
+          setTimeout(
+            () =>
+              this.setState({
+                height: MAP_HEIGHT,
+                width: '100%',
+                opacity: '1',
+              }),
+            15
+          )
+        }
+        if (shouldClose) {
+          setTimeout(() => this.setState({display: 'none', opacity: '0'}), 500)
+        }
+
+        const immediateTransition = shouldOpen
+          ? {display: 'block', opacity: '0'}
+          : shouldClose
+            ? {
+                height: '0em',
+                width: '0%',
+                opacity: '0',
+              }
+            : {}
+        return {open: !isOpen, ...immediateTransition}
+      })
+    }
   }
 
   componentWillUpdate(nextProps) {
@@ -287,21 +335,21 @@ class Map extends React.Component {
   }
 
   render() {
-    const {showMap} = this.props
+    const {open, display, height, width, opacity} = this.state
 
     return (
       <div
-        style={styleMapContainer(showMap)}
+        style={styleMapContainer(open, display, height, width)}
         ref={container => {
           this.container = container
         }}
       >
-        <div style={styleMapText(showMap)}>
+        <div style={styleMapText(open, opacity)}>
           Use the square button on the top right of the map to draw a bounding
           box.
         </div>
         <div
-          style={styleMap(showMap)}
+          style={styleMap()}
           ref={mapNode => {
             this.mapNode = mapNode
           }}

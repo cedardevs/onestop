@@ -1,5 +1,5 @@
 FROM openjdk:8
-ARG JAR_NAME
+ARG WAR_NAME
 ARG VCS_REF
 ARG VERSION
 ARG DATE
@@ -13,7 +13,7 @@ LABEL org.label-schema.vcs-url=https://github.com/cedardevs/onestop
 LABEL org.label-schema.vcs-ref=${VCS_REF}
 
 WORKDIR /usr/src/app
-COPY build/libs/${JAR_NAME}-${VERSION}.war /usr/src/app
-RUN ln -s ./${JAR_NAME}-${VERSION}.war api.war
+COPY build/libs/${WAR_NAME} /usr/src/app
+RUN ln -s ./${WAR_NAME} api.war
 EXPOSE 8098
 CMD ["java", "-jar", "/usr/src/app/api.war"]

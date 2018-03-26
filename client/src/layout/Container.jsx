@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 
 import FlexColumn from '../common/FlexColumn'
 import Header from './Header'
+import Earth from './Earth'
 import Content from './Content'
 import Footer from './Footer'
 
@@ -11,37 +12,48 @@ const styleContainer = {
   minHeight: '100vh',
   width: '100%',
   overflow: 'hidden',
-  // userSelect: 'none',
 }
 
 export default class Container extends Component {
   render() {
-    const styles = Object.assign({}, styleContainer, this.props.style)
+    const {
+      style,
+      header,
+      left,
+      leftWidth,
+      leftVisible,
+      middle,
+      middleMaxWidth,
+      middleBackgroundColor,
+      onHomePage,
+      right,
+      rightWidth,
+      rightVisible,
+      footer,
+    } = this.props
+    const earth = onHomePage ? <Earth key={'earth'} /> : null
+    const styles = Object.assign({}, styleContainer, style)
     return (
       <div>
         <FlexColumn
           items={[
-            <Header
-              content={this.props.header}
-              padding={defaultPadding}
-              key={'header'}
-            />,
+            <Header content={header} padding={defaultPadding} key={'header'} />,
+            earth,
             <Content
-              left={this.props.left}
-              leftWidth={this.props.leftWidth}
-              leftVisible={this.props.leftVisible}
-              middle={this.props.middle}
-              right={this.props.right}
-              rightWidth={this.props.rightWidth}
-              rightVisible={this.props.rightVisible}
+              left={left}
+              leftWidth={leftWidth}
+              leftVisible={leftVisible}
+              middle={middle}
+              middleMaxWidth={middleMaxWidth}
+              middleBackgroundColor={middleBackgroundColor}
+              onHomePage={onHomePage}
+              right={right}
+              rightWidth={rightWidth}
+              rightVisible={rightVisible}
               padding={defaultPadding}
               key={'content'}
             />,
-            <Footer
-              content={this.props.footer}
-              padding={defaultPadding}
-              key={'footer'}
-            />,
+            <Footer content={footer} padding={defaultPadding} key={'footer'} />,
           ]}
           style={styles}
         />

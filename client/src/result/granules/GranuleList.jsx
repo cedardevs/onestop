@@ -1,9 +1,11 @@
 import React, {Component} from 'react'
+import FlexScroll from '../../common/FlexScroll'
 import FlexColumn from '../../common/FlexColumn'
 import Button from '../../common/input/Button'
 import _ from 'lodash'
 import A from '../../common/link/Link'
 import {identifyProtocol} from '../../utils/ProtocolUtils'
+import {SvgIcon} from '../../common/SvgIcon'
 
 const styleLegendHeading = {
   margin: '0 0 0.618em 0',
@@ -55,6 +57,7 @@ const styleBadge = protocol => {
     margin: '0.25em',
     font: 'Arial, sans-serif',
     color: 'white',
+    fill: 'white',
     textAlign: 'center',
     textDecoration: 'none',
     background: `${protocol.color}`,
@@ -132,18 +135,27 @@ export default class GranuleList extends Component {
       .map((protocol, i) => {
         return (
           <div key={i} style={styleLegendItem}>
-            <div style={styleBadge(protocol)}>{protocol.id}</div>
+            <div style={styleBadge(protocol)}>
+              {this.renderBadgeIcon(protocol)}
+            </div>
             <div style={styleLegendLabel}>{protocol.label}</div>
           </div>
         )
       })
       .value()
 
+
+    const granuleLoadingMessage = this.renderLoadingMessage()
+
     const granuleLegend = (
       <div key="granuleLegend">
         <h3 style={styleLegendHeading}>Access Protocols:</h3>
         <div style={styleLegend}>{legendItems}</div>
       </div>
+    )
+
+    const granuleInfo = (
+        <FlexColumn items={[ granuleLoadingMessage, granuleLegend ]} />
     )
 
     const granuleTable = (
@@ -169,21 +181,37 @@ export default class GranuleList extends Component {
       //   : styleResultCountFocusBlur),
     }
     return (
-      <div>
-        <div style={styleResultCountContainer}>
+        <div>
           <h1
-            style={styleResultCountMerged}
-            tabIndex={-1}
-            ref={totalHits => (this.totalHits = totalHits)}
-            onFocus={this.handleFocusResultsCount}
-            onBlur={this.handleBlurResultsCount}
-          >
+              style={styleResultCountMerged}
+              tabIndex={-1}
+              ref={totalHits => (this.totalHits = totalHits)}
+              onFocus={this.handleFocusResultsCount}
+              onBlur={this.handleBlurResultsCount}>
             {headingText}
           </h1>
-        </div>
-        <FlexColumn style={styleGrid} items={[ granuleLegend, granuleTable ]} />
+      {/*<FlexScroll*/}
+        {/*left={map}*/}
+        {/*styleLeft={{marginRight: '1.618em'}}*/}
+        {/*styleRight={{width: '42%'}}*/}
+        {/*rightTop={granuleInfo}*/}
+        {/*rightScroll={granuleTable}*/}
+        {/*rightBottom={this.renderPaginationButton()}*/}
+      {/*/>*/}
+          <FlexColumn style={styleGrid} items={[ granuleLegend, granuleTable ]} />
 
-        {this.renderShowMoreButton()}
+          {this.renderPaginationButton()}
+        </div>
+    )
+  }
+
+  renderLoadingMessage() {
+    const styleShowMessage = _.isEmpty(this.props.results)
+      ? {padding: '1em'}
+      : {display: 'none'}
+    return (
+      <div key="granuleLoadingMessage" style={styleShowMessage}>
+        Please wait a moment while the results load...
       </div>
     )
   }
@@ -202,7 +230,7 @@ export default class GranuleList extends Component {
     )
   }
 
-  renderBadge({protocol, url}) {
+  renderBadge = ({protocol, url}) => {
     return (
       <A
         href={url}
@@ -211,20 +239,29 @@ export default class GranuleList extends Component {
         target="_blank"
         style={styleBadge(protocol)}
       >
-        {protocol.id}
+        {this.renderBadgeIcon(protocol)}
       </A>
     )
   }
 
-  renderShowMoreButton = () => {
-    const {returnedHits, totalHits, fetchMoreResults} = this.props
+  renderBadgeIcon = protocol => {
+    if (protocol.svgPath) {
+      return <SvgIcon path={protocol.svgPath} />
+    }
+    return <span>{protocol.id}</span>
+  }
 
-    if (returnedHits < totalHits) {
-      return (
-        <div style={styleShowMore}>
-          <Button text="Show More Results" onClick={() => fetchMoreResults()} />
-        </div>
+  renderPaginationButton() {
+    const {results, totalHits, fetchMoreResults} = this.props
+    if (_.size(results) < totalHits) {
+      const moreResultsButton = (
+        <Button
+          text="Show More Results"
+          onClick={fetchMoreResults}
+          style={{display: 'inherit', width: '100%', borderRadius: 0}}
+        />
       )
+      return <div style={{padding: '2px'}}>{moreResultsButton}</div>
     }
   }
 }

@@ -105,6 +105,12 @@ class SearchFields extends React.Component {
         onClick={this.validateAndSubmit}
         title={'Search'}
         style={{flexShrink: '0'}}
+        styleIcon={{
+          width: '1.3em',
+          height: '1.3em',
+          paddingTop: '0.309em',
+          paddingBottom: '0.309em',
+        }}
       />
     )
 
@@ -157,7 +163,11 @@ class SearchFields extends React.Component {
           />
         </div>
         <FlexRow
-          style={{justifyContent: 'center', marginTop: '0.309em'}}
+          style={{
+            justifyContent: 'center',
+            marginTop: '0.309em',
+            marginBottom: '0.309em',
+          }}
           items={[ searchButton ]}
         />
       </section>

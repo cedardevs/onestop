@@ -50,7 +50,8 @@ function collectionTestCases() {
         page: {
           max: 20,
           offset: 0
-        }
+        },
+        summary: false
       }
     },
     {
@@ -73,7 +74,8 @@ function collectionTestCases() {
         page: {
           max: 20,
           offset: 0
-        }
+        },
+        summary: false
       }
     },
     {
@@ -99,7 +101,8 @@ function collectionTestCases() {
         page: {
           max: 20,
           offset: 0
-        }
+        },
+        summary: false
       }
     },
     {
@@ -134,7 +137,8 @@ function collectionTestCases() {
         page: {
           max: 20,
           offset: 0
-        }
+        },
+        summary: false
       }
     },
     {
@@ -161,7 +165,8 @@ function collectionTestCases() {
         page: {
           max: 20,
           offset: 0
-        }
+        },
+        summary: false
       }
     },
     {
@@ -216,7 +221,8 @@ function collectionTestCases() {
         page: {
           max: 20,
           offset: 0
-        }
+        },
+        summary: false
       }
     },
     {
@@ -235,7 +241,8 @@ function collectionTestCases() {
         page: {
           max: 20,
           offset: 20
-        }
+        },
+        summary: false
       }
     }
   ]
@@ -264,7 +271,8 @@ function granuleTestCases() {
         page: {
           max: 20,
           offset: 0
-        }
+        },
+        summary: false
       }
     },
     {
@@ -288,7 +296,8 @@ function granuleTestCases() {
         page: {
           max: 20,
           offset: 0
-        }
+        },
+        summary: false
       }
     },
     {
@@ -302,12 +311,7 @@ function granuleTestCases() {
         }
       },
       expectedResult: {
-        queries: [
-          {
-            type: 'queryText',
-            value: 'test'
-          }
-        ],
+        queries: [],
         filters: [
           {
             "type": "collection",
@@ -318,7 +322,8 @@ function granuleTestCases() {
         page: {
           max: 20,
           offset: 0
-        }
+        },
+        summary: false
       }
     },
     {
@@ -342,7 +347,8 @@ function granuleTestCases() {
         page: {
           max: 20,
           offset: 20
-        }
+        },
+        summary: false
       }
     },
   ]

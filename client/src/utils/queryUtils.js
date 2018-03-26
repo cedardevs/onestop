@@ -24,26 +24,30 @@ export const assembleSearchRequest = (state, granules, retrieveFacets) => {
   const pageOffset =
     (granules ? results.granulesPageOffset : results.collectionsPageOffset) || 0
   const pageSize = results.pageSize || 20
+  const page = assemblePagination(pageSize, pageOffset)
 
-  const queries = assembleQueries(search)
+  // collection search
+  let queries = assembleQueries(search)
   let filters = _.concat(
     assembleFacetFilters(search),
     assembleGeometryFilters(search),
     assembleTemporalFilters(search),
     assembleAdditionalFilters(search)
   )
+
+  // change which filters are applied and drop query text for granules (until #445 allows changing filters applied to granules directly)
   if (granules) {
-    filters = _.concat(filters, assembleSelectedCollectionsFilters(search))
+    filters = _.concat(assembleSelectedCollectionsFilters(search))
+    queries = []
   }
   filters = _.flatten(_.compact(filters))
-
-  const page = assemblePagination(pageSize, pageOffset)
 
   return {
     queries: queries,
     filters: filters,
     facets: retrieveFacets,
     page: page,
+    summary: false,
   }
 }
 

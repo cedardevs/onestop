@@ -10,7 +10,7 @@ const mapStateToProps = (state, reactProps) => {
     id: focusedItem ? focusedItem.collection.id : null,
     item: focusedItem ? focusedItem.collection.attributes : null,
     totalGranuleCount: focusedItem ? focusedItem.totalGranuleCount : null,
-    loading: state.ui.loading,
+    loading: state.behavior.request.getCollectionInFlight,
   }
 }
 

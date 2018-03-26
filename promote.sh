@@ -16,20 +16,22 @@ if ! git diff --cached --quiet; then
 fi
 
 # do not continue if there are unmodified changes to the file we need to update that might accidentally be included
-if [[ $(git diff-index --name-only HEAD | grep gradle.properties | wc -l) > 0 ]]; then
-  echo "You cannot trigger this action with uncommitted changes to gradle.properties"
+if [[ $(git diff-index --name-only HEAD | wc -l) > 0 ]]; then
+  echo "You cannot trigger this action with uncommitted changes."
   exit 1
 fi
 
 # update the properties
 updateVersions() {
   sed -i -- "s/version=.*/version=$1/g" gradle.properties
+  sed -i -- "s/\"version\":.*/\"version\": \"$1\",/g" client/package.json
 }
 
 # commit and push
 updateAndCommit() {
   updateVersions $1
   git add gradle.properties
+  git add client/package.json
   git commit -m "Updating version to $1"
   git push
 }
