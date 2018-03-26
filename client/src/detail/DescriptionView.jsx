@@ -53,8 +53,12 @@ export default class DescriptionView extends Component {
       <FlexRow
         style={styleContainer}
         items={[
-          <div style={{flex: '1'}} key={'description-image'}>{collectionImage}</div>,
-          <div style={styleDescription} key={'description'}>{description}</div>,
+          <div style={{flex: '1'}} key={'description-image'}>
+            {collectionImage}
+          </div>,
+          <div style={styleDescription} key={'description'}>
+            {description}
+          </div>,
         ]}
       />
     )

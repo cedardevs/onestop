@@ -24,7 +24,11 @@ export const layout = (state = initialState, action) => {
       const path = action.payload.pathname
       const onDetailPage = isDetailPage(path)
       const onGranuleListPage = isGranuleListPage(path)
-      const allowSearching = !(path.includes('508') || onDetailPage || onGranuleListPage)
+      const allowSearching = !(
+        path.includes('508') ||
+        onDetailPage ||
+        onGranuleListPage
+      )
       return Immutable.merge(state, {
         showLeft: allowSearching,
         showAppliedFilterBubbles: allowSearching,

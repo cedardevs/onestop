@@ -61,7 +61,6 @@ export const isGranuleListPage = path => {
   return granuleIdMatch(path) ? true : false
 }
 
-
 export const getCollectionIdFromDetailPath = path => {
   if (!isDetailPage(path)) {
     return null
@@ -71,8 +70,9 @@ export const getCollectionIdFromDetailPath = path => {
 }
 
 export const getCollectionIdFromGranuleListPath = path => {
-  if(!isGranuleListPage(path)) {return null}
+  if (!isGranuleListPage(path)) {
+    return null
+  }
   const match = granuleIdMatch(path)
   return match && match[1] ? match[1] : null
 }
-

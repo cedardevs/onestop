@@ -65,12 +65,9 @@ class SummaryView extends Component {
   }
 
   render() {
-
-    const { granuleSearch, totalGranuleCount, item } = this.props
+    const {granuleSearch, totalGranuleCount, item} = this.props
     const startDate = item.beginDate
-    const endDate = item.endDate
-      ? item.endDate
-      : 'Present'
+    const endDate = item.endDate ? item.endDate : 'Present'
 
     const timeSpaceSummary = (
       <div key={'timeSpaceSummary'} style={styleEqualFlexItem}>
@@ -84,10 +81,7 @@ class SummaryView extends Component {
         </div>
         <div className={styles.sectionHeading}>Spatial Bounding Map:</div>
         <div className={styles.previewMap}>
-          <MapThumbnail
-            geometry={item.spatialBounding}
-            interactive={true}
-          />
+          <MapThumbnail geometry={item.spatialBounding} interactive={true} />
         </div>
         <div className={styles.sectionHeading}>Bounding Coordinates:</div>
         <div>{this.buildCoordinatesString()}</div>
@@ -101,10 +95,7 @@ class SummaryView extends Component {
         <div>No granules in this collection</div>
       ) : (
         <div>
-          <a
-            style={styleLink}
-            onClick={granuleSearch}
-          >
+          <a style={styleLink} onClick={granuleSearch}>
             Show Files Matching My Search
           </a>
         </div>
@@ -151,7 +142,7 @@ class SummaryView extends Component {
   }
 
   renderDSMMRating() {
-    const { item } = this.props
+    const {item} = this.props
     const dsmmScore = item.dsmmAverage
     const fullStars = Math.floor(dsmmScore)
     const halfStar = dsmmScore % 1 >= 0.5
@@ -237,7 +228,7 @@ class SummaryView extends Component {
   }
 
   renderGCMDKeywords(type, bgColor, showAll) {
-    const { item } = this.props
+    const {item} = this.props
     let keywords = (item && item[type]) || []
 
     if (!_.isEmpty(keywords)) {
@@ -291,7 +282,7 @@ class SummaryView extends Component {
   }
 
   buildCoordinatesString() {
-    const { item } = this.props
+    const {item} = this.props
     // For point, want: "Point at [0], [1] (longitude, latitude)"
     // For line, want: "Line from [0][0] (WS), [0][1] to [1][0], [1][1] (EN).
     // For polygon want: "Bounding box covering [0][0], [0][1], [2][0], [2][1] (N, W, S, E)"

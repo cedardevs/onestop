@@ -144,7 +144,6 @@ export default class GranuleList extends Component {
       })
       .value()
 
-
     const granuleLoadingMessage = this.renderLoadingMessage()
 
     const granuleLegend = (
@@ -155,7 +154,7 @@ export default class GranuleList extends Component {
     )
 
     const granuleInfo = (
-        <FlexColumn items={[ granuleLoadingMessage, granuleLegend ]} />
+      <FlexColumn items={[ granuleLoadingMessage, granuleLegend ]} />
     )
 
     const granuleTable = (
@@ -181,27 +180,28 @@ export default class GranuleList extends Component {
       //   : styleResultCountFocusBlur),
     }
     return (
-        <div>
-          <h1
-              style={styleResultCountMerged}
-              tabIndex={-1}
-              ref={totalHits => (this.totalHits = totalHits)}
-              onFocus={this.handleFocusResultsCount}
-              onBlur={this.handleBlurResultsCount}>
-            {headingText}
-          </h1>
-      {/*<FlexScroll*/}
+      <div>
+        <h1
+          style={styleResultCountMerged}
+          tabIndex={-1}
+          ref={totalHits => (this.totalHits = totalHits)}
+          onFocus={this.handleFocusResultsCount}
+          onBlur={this.handleBlurResultsCount}
+        >
+          {headingText}
+        </h1>
+        {/*<FlexScroll*/}
         {/*left={map}*/}
         {/*styleLeft={{marginRight: '1.618em'}}*/}
         {/*styleRight={{width: '42%'}}*/}
         {/*rightTop={granuleInfo}*/}
         {/*rightScroll={granuleTable}*/}
         {/*rightBottom={this.renderPaginationButton()}*/}
-      {/*/>*/}
-          <FlexColumn style={styleGrid} items={[ granuleLegend, granuleTable ]} />
+        {/*/>*/}
+        <FlexColumn style={styleGrid} items={[ granuleLegend, granuleTable ]} />
 
-          {this.renderPaginationButton()}
-        </div>
+        {this.renderPaginationButton()}
+      </div>
     )
   }
 

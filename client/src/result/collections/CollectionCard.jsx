@@ -18,7 +18,6 @@ const styleContent = {
   color: 'white',
   overflow: 'hidden',
   position: 'relative',
-  // border: '1px solid rgba(50, 50, 50, 0.75)',
   boxShadow: boxShadow,
 }
 
@@ -132,7 +131,8 @@ const styleTitle = {
 export default class CollectionCard extends Component {
   constructor(props) {
     super(props)
-    this.thumbnailUrl = processUrl(this.props.thumbnail)
+    const {item} = this.props
+    this.thumbnailUrl = processUrl(item.thumbnail)
   }
 
   componentWillMount() {
@@ -163,10 +163,12 @@ export default class CollectionCard extends Component {
   }
 
   renderThumbnailMap() {
+    const {item} = this.props
+    const geometry = item.spatialBounding
     if (!this.thumbnailUrl) {
       return (
         <div style={styleMapContainer}>
-          <MapThumbnail geometry={this.props.geometry} interactive={false} />
+          <MapThumbnail geometry={geometry} interactive={false} />
         </div>
       )
     }
@@ -209,6 +211,10 @@ export default class CollectionCard extends Component {
   }
 
   render() {
+    const {item, onClick} = this.props
+
+    const title = item.title
+
     const styleContentMerged = {
       ...styleContent,
       ...this.thumbnailStyle(),
@@ -227,14 +233,11 @@ export default class CollectionCard extends Component {
     }
 
     return (
-      <div
-        style={styleCard}
-        onKeyPress={e => this.handleKeyPress(e, this.props.onClick)}
-      >
+      <div style={styleCard} onKeyPress={e => this.handleKeyPress(e, onClick)}>
         <div style={styleContentMerged}>
           <button
             style={styleOverlayMerged}
-            onClick={() => this.props.onClick()}
+            onClick={onClick}
             onMouseOver={this.handleMouseOver}
             onMouseOut={this.handleMouseOut}
             onFocus={this.handleFocus}
@@ -245,7 +248,7 @@ export default class CollectionCard extends Component {
               <div style={styleSuperTitle} aria-hidden={true}>
                 Collection Title:
               </div>
-              <h2 style={styleTitle}>{this.props.title}</h2>
+              <h2 style={styleTitle}>{title}</h2>
             </div>
           </button>
         </div>
@@ -255,8 +258,6 @@ export default class CollectionCard extends Component {
 }
 
 CollectionCard.propTypes = {
+  item: PropTypes.object.isRequired,
   onClick: PropTypes.func.isRequired,
-  title: PropTypes.string.isRequired,
-  thumbnail: PropTypes.string,
-  geometry: PropTypes.object,
 }

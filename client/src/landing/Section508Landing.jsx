@@ -145,7 +145,7 @@ class Section508Landing extends React.Component {
           <h2 style={{textAlign: 'center'}}>Enter Search Criteria</h2>
           {this.renderErrors()}
           <form id="508-form">
-            <FlexColumn items={formInputs} style={{textAlign:'center'}}/>
+            <FlexColumn items={formInputs} style={{textAlign: 'center'}} />
           </form>
 
           <Button
