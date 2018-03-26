@@ -43,7 +43,7 @@ class WrapperIntegrationSpec extends Specification{
       ],
       command: command,
       timeout: 5000,
-      doIsoConversion: true
+      convert:[iso: true]
   ]
   def kafkaConfig = [
       application: [id: 'test-app'],
