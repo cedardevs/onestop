@@ -2,9 +2,9 @@ import React from 'react'
 import {render} from 'react-dom'
 import {Router, Route, IndexRoute} from 'react-router'
 import Result from './result/Result'
-// import GranuleResult from './result/GranuleResult'
 import Section508Result from './result/Section508Result'
 import CollectionGridContainer from './result/collections/CollectionGridContainer'
+import CollectionsContainer from './result/collections/CollectionsContainer'
 import GranuleListContainer from './result/granules/GranuleListContainer'
 import Section508CollectionGridContainer from './result/collections/Section508CollectionGridContainer'
 import Section508GranuleListContainer from './result/granules/list/Section508GranuleListContainer'
@@ -80,13 +80,18 @@ const routesLayout = (
       <Route name="Collections" path="collections" component={Result}>
         <IndexRoute
           displayName="Collections"
-          component={CollectionGridContainer}
+          component={CollectionsContainer}
         />
       </Route>
       <Route
         name="Details"
         path="collections/details/:id"
         component={DetailContainer}
+      />
+      <Route
+        name="GranuleDetail"
+        path="collections/granules/:id"
+        component={GranuleListContainer}
       />
       <Route name="Error" path="error" component={ErrorContainer} />
       <Route name="Help" path="help" component={Help} />
