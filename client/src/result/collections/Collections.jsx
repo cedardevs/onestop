@@ -41,8 +41,9 @@ export default class Collections extends Component {
           total={totalHits}
           enableGridToggle={true}
           onItemSelect={selectCollection}
-          ListComponent={null}
-          GridComponent={CollectionCard}
+          ListItemComponent={null}
+          GridItemComponent={CollectionCard}
+          propsForItem={item => { return null }}
         />
         {showMoreButton}
       </div>

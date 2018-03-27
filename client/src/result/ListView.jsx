@@ -60,8 +60,9 @@ export default class ListView extends Component {
       total,
       enableGridToggle,
       onItemSelect,
-      ListComponent,
-      GridComponent,
+      ListItemComponent,
+      GridItemComponent,
+      propsForItem
     } = this.props
 
     const listInfo = (
@@ -95,21 +96,25 @@ export default class ListView extends Component {
         </div>
       )
 
-      if (this.state.showAsGrid && GridComponent) {
+      const itemProps = propsForItem ? propsForItem(item) : null
+
+      if (this.state.showAsGrid && GridItemComponent) {
         itemElement = (
-          <GridComponent
+          <GridItemComponent
             item={item}
             key={key}
             onClick={() => onItemSelect(key)}
+            {...itemProps}
           />
         )
       }
-      else if (!this.state.showAsGrid && ListComponent) {
+      else if (!this.state.showAsGrid && ListItemComponent) {
         itemElement = (
-          <ListComponent
+          <ListItemComponent
             item={item}
             key={key}
             onClick={() => onItemSelect(key)}
+            {...itemProps}
           />
         )
       }
@@ -139,4 +144,5 @@ ListView.propTypes = {
   onItemsSelect: PropTypes.func,
   ListComponent: PropTypes.func,
   GridComponent: PropTypes.func,
+  propsForItem: PropTypes.func
 }
