@@ -1,7 +1,9 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import Checkbox from '../common/input/Checkbox'
+import Button from '../common/input/Button'
+import gridIcon from 'fa/th.svg'
+import listIcon from 'fa/th-list.svg'
 
 const styleListView = {}
 
@@ -12,8 +14,11 @@ const styleListInfo = {
 }
 
 const styleListControl = {
-  margin: 0,
-  padding: '0em 2em 1.618em 2em',
+  display: 'flex',
+  margin: '0em 2em 1.618em 2em',
+  padding: '0.618em',
+  backgroundColor: 'rgba(0,0,0, 0.2)',
+  borderRadius: '0.309em'
 }
 
 const styleGrid = {
@@ -40,14 +45,14 @@ const styleFallbackItem = {
 export default class ListView extends Component {
   constructor(props) {
     super(props)
-    this.state = {showAsGrid: true}
+    this.state = {showAsGrid: false}
   }
 
   toggleShowAsGrid = event => {
     this.setState(prevState => {
       return {
         ...prevState,
-        showAsGrid: event.checked,
+        showAsGrid: !prevState.showAsGrid,
       }
     })
   }
@@ -75,14 +80,15 @@ export default class ListView extends Component {
       </h1>
     )
 
-    let toggleElement = null
+    let controlElement = null
     if (enableGridToggle) {
-      toggleElement = (
+      controlElement = (
         <div style={styleListControl}>
-          <Checkbox
-            label="Show as grid."
-            checked={this.state.showAsGrid}
-            onChange={this.toggleShowAsGrid}
+          <Button
+              text={this.state.showAsGrid ? 'Show List' : 'Show Grid'}
+              icon={this.state.showAsGrid ? listIcon : gridIcon}
+              styleIcon={{width: '1em', height: '1em', marginRight: '0.309em'}}
+              onClick={this.toggleShowAsGrid}
           />
         </div>
       )
@@ -124,7 +130,7 @@ export default class ListView extends Component {
     return (
       <div style={styleListView}>
         {listInfo}
-        {toggleElement}
+        {controlElement}
         <div style={this.state.showAsGrid ? styleGrid : styleList}>
           {itemElements}
         </div>
