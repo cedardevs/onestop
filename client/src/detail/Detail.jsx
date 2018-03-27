@@ -88,14 +88,6 @@ class Detail extends Component {
       },
     ]
 
-    // if (totalGranuleCount > 0) {
-    //   tabData.splice(2, 0, {
-    //     title: 'Matching Files',
-    //     content: <GranuleViewContainer item={item} />,
-    //     action: this.showGranules,
-    //   })
-    // }
-
     const videoLinks = item.links.filter(
       link => link.linkProtocol === 'video:youtube'
     )

@@ -6,6 +6,7 @@ import A from '../common/link/Link'
 import MapThumbnail from '../common/MapThumbnail'
 import FlexRow from '../common/FlexRow'
 import Expandable from '../common/Expandable'
+import {buildCoordinatesString, buildTimePeriodString} from "../utils/resultUtils";
 import {
   star,
   star_o,
@@ -65,26 +66,24 @@ class SummaryView extends Component {
   }
 
   render() {
-    const {granuleSearch, totalGranuleCount, item} = this.props
-    const startDate = item.beginDate
-    const endDate = item.endDate ? item.endDate : 'Present'
+
+    const { granuleSearch, totalGranuleCount, item } = this.props
 
     const timeSpaceSummary = (
       <div key={'timeSpaceSummary'} style={styleEqualFlexItem}>
         <div className={styles.sectionHeading}>Time Period:</div>
         <div>
-          {startDate && endDate ? (
-            `${startDate.split('T')[0]} to ${endDate.split('T')[0]}`
-          ) : (
-            'Not Provided'
-          )}
+          {buildTimePeriodString(item.beginDate, item.beginYear, item.endDate, item.endYear)}
         </div>
         <div className={styles.sectionHeading}>Spatial Bounding Map:</div>
         <div className={styles.previewMap}>
-          <MapThumbnail geometry={item.spatialBounding} interactive={true} />
+          <MapThumbnail
+            geometry={item.spatialBounding}
+            interactive={true}
+          />
         </div>
         <div className={styles.sectionHeading}>Bounding Coordinates:</div>
-        <div>{this.buildCoordinatesString()}</div>
+        <div>{buildCoordinatesString(item.spatialBounding)}</div>
         <div className={styles.sectionHeading}>DSMM Rating:</div>
         {this.renderDSMMRating()}
       </div>
@@ -278,36 +277,6 @@ class SummaryView extends Component {
       return (
         <div style={{fontStyle: 'italic', color: bgColor}}>None Provided</div>
       )
-    }
-  }
-
-  buildCoordinatesString() {
-    const {item} = this.props
-    // For point, want: "Point at [0], [1] (longitude, latitude)"
-    // For line, want: "Line from [0][0] (WS), [0][1] to [1][0], [1][1] (EN).
-    // For polygon want: "Bounding box covering [0][0], [0][1], [2][0], [2][1] (N, W, S, E)"
-    const geometry = item.spatialBounding
-    if (geometry) {
-      const deg = '\u00B0'
-      if (geometry.type.toLowerCase() === 'point') {
-        return `Point at ${geometry.coordinates[0]}${deg}, ${geometry
-          .coordinates[1]}${deg} (longitude, latitude).`
-      }
-      else if (geometry.type.toLowerCase() === 'linestring') {
-        return `Line from ${geometry.coordinates[0][0]}${deg}, ${geometry
-          .coordinates[0][1]}${deg} (WS) to ${geometry
-          .coordinates[1][0]}${deg}, ${geometry.coordinates[1][1]}${deg} (EN).`
-      }
-      else {
-        return `Bounding box covering ${geometry
-          .coordinates[0][0][0]}${deg}, ${geometry
-          .coordinates[0][0][1]}${deg}, ${geometry
-          .coordinates[0][2][0]}${deg}, ${geometry
-          .coordinates[0][2][1]}${deg} (W, N, E, S).`
-      }
-    }
-    else {
-      return 'No spatial bounding provided.'
     }
   }
 }

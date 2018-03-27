@@ -1,6 +1,6 @@
 import '../specHelper'
 import { expect, assert } from 'chai'
-import * as protocolUtils from '../../src/utils/ProtocolUtils'
+import * as protocolUtils from '../../src/utils/resultUtils'
 import _ from 'lodash'
 
 describe('The protocolUtils', function () {

@@ -4,7 +4,7 @@ import FlexColumn from '../../common/FlexColumn'
 import Button from '../../common/input/Button'
 import _ from 'lodash'
 import A from '../../common/link/Link'
-import {identifyProtocol} from '../../utils/ProtocolUtils'
+import {identifyProtocol} from '../../utils/resultUtils'
 import {SvgIcon} from '../../common/SvgIcon'
 
 const styleLegendHeading = {
