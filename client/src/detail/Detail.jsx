@@ -3,12 +3,16 @@ import PropTypes from 'prop-types'
 import Tabs from './Tabs'
 import SummaryView from './SummaryView'
 import DescriptionView from './DescriptionView'
-// import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
 import AccessView from './AccessView'
 import VideoView from './VideoView'
 import {boxShadow} from '../common/defaultStyles'
 
 //-- Styles
+
+const styleCenterContent = {
+  display: 'flex',
+  justifyContent: 'center',
+}
 
 const styleDetailWrapper = {
   color: 'black',
@@ -26,11 +30,6 @@ const styleTitle = {
   padding: '1em',
   backgroundColor: '#8cb9d8',
   color: '#000032',
-}
-
-const styleCenterContent = {
-  display: 'flex',
-  justifyContent: 'center',
 }
 
 const styleContent = {

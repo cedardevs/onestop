@@ -5,12 +5,14 @@ import Button from '../common/input/Button'
 import gridIcon from 'fa/th.svg'
 import listIcon from 'fa/th-list.svg'
 
-const styleListView = {}
+const styleListView = {
+  marginLeft: '1.618em'
+}
 
 const styleListInfo = {
   fontSize: '1.2em',
-  margin: 0,
-  padding: '0em 2em 1.618em 2em',
+  margin: '0 1.618em 0.618em 0',
+  padding: 0
 }
 
 const styleListControl = {
@@ -18,7 +20,8 @@ const styleListControl = {
   margin: '0em 2em 1.618em 2em',
   padding: '0.618em',
   backgroundColor: 'rgba(0,0,0, 0.2)',
-  borderRadius: '0.309em'
+  borderRadius: '0.309em',
+  margin: '0 1.618em 1.618em 0',
 }
 
 const styleGrid = {
@@ -28,18 +31,17 @@ const styleGrid = {
   justifyContent: 'center',
   alignItems: 'flex-start',
   alignContent: 'flex-start',
-  margin: '0 0 0 2em',
 }
 
 const styleList = {
   display: 'flex',
   flexDirection: 'column',
   flexWrap: 'nowrap',
-  margin: '0 0 0 2em',
 }
 
 const styleFallbackItem = {
   display: 'block',
+  margin: '0 1.618em 0 0'
 }
 
 export default class ListView extends Component {
