@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import GranuleListLegend from './GranuleListLegend'
 import Button from '../../common/input/Button'
 import ListView from '../ListView'
+import ListResult from './ListResult'
 import { SvgIcon } from '../../common/SvgIcon'
 import { identifyProtocol } from '../../utils/resultUtils'
 import { boxShadow } from '../../common/defaultStyles'
@@ -36,6 +37,13 @@ export default class GranuleList extends Component {
       return <SvgIcon path={protocol.svgPath} />
     }
     return <span>{protocol.id}</span>
+  }
+
+  propsForResult = item => {
+    return {
+      showLinks: true,
+      showTimeAndSpace: true
+    }
   }
 
   render() {
@@ -74,9 +82,9 @@ export default class GranuleList extends Component {
               total={totalHits}
               enableGridToggle={false}
               onItemSelect={selectCollection}
-              ListItemComponent={null}
+              ListItemComponent={ListResult}
               GridItemComponent={null}
-              propsForItem={item => { return null }}
+              propsForItem={this.propsForResult}
           />
           {showMoreButton}
           </div>

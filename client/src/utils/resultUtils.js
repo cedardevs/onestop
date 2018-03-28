@@ -1,6 +1,24 @@
+import React from 'react'
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
-import {cloud} from '../common/SvgIcon'
+import {SvgIcon, cloud} from '../common/SvgIcon'
+
+export const styleBadge = protocol => {
+  return {
+    borderRadius: '50%',
+    width: '1em',
+    height: '1em',
+    lineHeight: '1em',
+    padding: '0.25em',
+    margin: '0.25em',
+    font: 'Arial, sans-serif',
+    color: 'white',
+    fill: 'white',
+    textAlign: 'center',
+    textDecoration: 'none',
+    background: `${protocol.color}`,
+  }
+}
 
 export const protocols = Immutable([
   {
@@ -54,6 +72,13 @@ export const protocols = Immutable([
 export const identifyProtocol = link => {
   const name = _.toLower(link.linkProtocol || '')
   return _.find(protocols, p => p.names.includes(name))
+}
+
+export const renderBadgeIcon = protocol => {
+  if (protocol.svgPath) {
+    return <SvgIcon path={protocol.svgPath} />
+  }
+  return <span>{protocol.id}</span>
 }
 
 export const buildCoordinatesString = geometry => {

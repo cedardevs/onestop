@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
-import { SvgIcon } from '../../common/SvgIcon'
 import PropTypes from 'prop-types'
+import {styleBadge, renderBadgeIcon} from "../../utils/resultUtils"
 
 const styleLegend = {
   margin: '1.618em'
@@ -27,36 +27,12 @@ const styleLegendItem = {
   alignItems: 'center',
 }
 
-const styleBadge = protocol => {
-  return {
-    borderRadius: '50%',
-    width: '1em',
-    height: '1em',
-    lineHeight: '1em',
-    padding: '0.25em',
-    margin: '0.25em',
-    font: 'Arial, sans-serif',
-    color: 'white',
-    fill: 'white',
-    textAlign: 'center',
-    textDecoration: 'none',
-    background: `${protocol.color}`,
-  }
-}
-
 const styleLegendLabel = {
   font: '1.2em Arial, sans-serif',
   margin: '0.6em 0',
 }
 
 export default class GranuleListLegend extends Component {
-
-  renderBadgeIcon = protocol => {
-    if (protocol.svgPath) {
-      return <SvgIcon path={protocol.svgPath} />
-    }
-    return <span>{protocol.id}</span>
-  }
 
   render() {
 
@@ -70,7 +46,7 @@ export default class GranuleListLegend extends Component {
           return (
               <li key={i} style={styleLegendItem}>
                 <div style={styleBadge(protocol)}>
-                  {this.renderBadgeIcon(protocol)}
+                  {renderBadgeIcon(protocol)}
                 </div>
                 <div style={styleLegendLabel}>{protocol.label}</div>
               </li>
