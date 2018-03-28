@@ -5,5 +5,13 @@
   "fileSize": 6526,
   "path": "/dscovr/valid/oe_fc1_dscovr_s20131218000000_e20131218235951_p20161215145159_pub.nc.gz",
   "relativePath": "oe_fc1_dscovr_s20131218000000_e20131218235951_p20161215145159_pub.nc.gz",
+  "links": [
+    {
+      "linkName": "oe_fc1_dscovr_s20131218000000_e20131218235951_p20161215145159_pub.nc.gz",
+      "linkUrl": "http://www.google.com",
+      "linkProtocol": "S3",
+      "linkFunction": "fileAccess"
+    }
+  ],
   "lastUpdated": "2018-03-01-00:00:00Z"
 }

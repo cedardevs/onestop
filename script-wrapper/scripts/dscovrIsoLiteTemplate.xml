@@ -105,9 +105,12 @@
 			<gmd:transferOptions>
 				<gmd:MD_DigitalTransferOptions>
 					<gmd:onLine>
-						<gmd:CI_OnlineResource>				
+						<gmd:CI_OnlineResource>
+						  <gmd:name>
+								<gco:CharacterString>dscovrEnterpriseDownloadLinkNamePlaceholder</gco:CharacterString>
+						  </gmd:name>
 							<gmd:linkage>
-								<gmd:URL>dscovrEnterpriseDownloadLinkPlaceholder</gmd:URL>
+								<gmd:URL>dscovrEnterpriseDownloadLinkUrlPlaceholder</gmd:URL>
 							</gmd:linkage>					
 							<gmd:protocol>
 								<gco:CharacterString>dscovrEnterpriseDownloadLinkProtocolPlaceholder</gco:CharacterString>
