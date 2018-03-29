@@ -13,14 +13,11 @@ class TopologyUtil {
     def timeout = topologyConfig.timeout.toString().toLong()
     def command = topologyConfig.command as String
     def outputTopic = topologyConfig.topics.output as String
-    def convert_iso = topologyConfig.convert.iso as Boolean
     Topology topology = builder.build()
     builder.stream(topologyConfig.topics.input as String)
         .mapValues({ msg -> ScriptWrapperFunctions.scriptCaller(msg, command, timeout) })
         .filterNot({ key, msg -> msg.toString().startsWith('ERROR') })
-        .mapValues({ msg ->
-          convert_iso ? IsoConversionUtil.parseXMLMetadata(msg as String) : msg
-        })
+        .mapValues({ msg -> ScriptWrapperFunctions.parseOutput(msg as String) })
         .filterNot({key, msg -> msg.toString().startsWith('ERROR')})
         .to(outputTopic)
 

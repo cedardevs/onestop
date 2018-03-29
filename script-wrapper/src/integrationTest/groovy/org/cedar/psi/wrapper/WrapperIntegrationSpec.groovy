@@ -86,8 +86,8 @@ class WrapperIntegrationSpec extends Specification{
         dataStream  : "dscovr",
         trackingId  : "3",
         checksum    : "fd297fcceb94fdbec5297938c99cc7b5",
-        relativePath: "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_pub.nc.gz",
-        path        : "/src/test/resources/oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_pub.nc.gz",
+        relativePath: "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_emb.nc.gz",
+        path        : "/src/test/resources/oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_emb.nc.gz",
         fileSize    : 6526,
         lastUpdated : "2017124",
     ]
@@ -103,7 +103,8 @@ class WrapperIntegrationSpec extends Specification{
 
     and:
     def attributes = new JsonSlurper().parseText(output.value()) as Map
-    attributes.fileIdentifier == "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_pub.nc"
+    attributes.publish == false
+    attributes.fileIdentifier == "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_emb.nc"
     attributes.parentIdentifier == "gov.noaa.ncei.swx:dscovr_f1m"
   }
 

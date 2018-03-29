@@ -131,37 +131,39 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
         # Something was missing, not currently tracking what.
         raise Exception('Unable to extract one or more of the of data with the input_json provided.')
         sys.exit()
-    else:
-        # Substitute the correct values into the template
-        IsoLiteXML = re.sub(r'dscovrFileNamePlaceholder', dscovrFileName, IsoLiteXML)
-        IsoLiteXML = re.sub(r'dscovrDataTypePlaceholder', dscovrDataType, IsoLiteXML)
-        IsoLiteXML = re.sub(r'todaysDatePlaceholder', todaysDate, IsoLiteXML)
-        IsoLiteXML = re.sub(r'dscovrIngestDatePlaceholder', dscovrIngestDate, IsoLiteXML)
-        IsoLiteXML = re.sub(r'dscovrGranuleStartDateTimePlaceholder', dscovrGranuleStartDateTime, IsoLiteXML)
-        IsoLiteXML = re.sub(r'syncYYYY', syncYYYY, IsoLiteXML)
-        IsoLiteXML = re.sub(r'syncMM', syncMM, IsoLiteXML)
-        IsoLiteXML = re.sub(r'dscovrGranuleEndDateTimePlaceholder', dscovrGranuleEndDateTime, IsoLiteXML)
-        IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkUrlPlaceholder', dscovrEnterpriseDownloadLinkUrl, IsoLiteXML)
-        IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkNamePlaceholder', dscovrEnterpriseDownloadLinkName, IsoLiteXML)
-        IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkProtocolPlaceholder', dscovrEnterpriseDownloadLinkProtocol, IsoLiteXML)
 
-        # Print detailed info
-        if logLevel == 'Info':
-            print('input_json_dict\n', input_json_dict, '\n')
-            print(json.dumps(input_json_dict))
-            print('common_ingest_time\n' + common_ingest_time + '\n')
-            print('parsed_file_name_dict\n', parsed_file_name_dict, '\n')
-            print('todaysDate\n', todaysDate, '\n')
-            print('dscovrIngestDate\n', dscovrIngestDate, '\n')
-            print('dscovrGranuleStartTime\n', dscovrGranuleStartDateTime, '\n')
-            print('syncYYYY\n', syncYYYY, '\n')
-            print('syncMM\n', syncMM, '\n')
-            print('dscovrGranuleEndDateTime\n', dscovrGranuleEndDateTime, '\n')
-            print('IsoLiteTemplateLocation\n', IsoLiteTemplateLocation, '\n')
-            print('IsoLiteXML\n', IsoLiteXML, '\n')
-            print('outFileName\n', outFileName, '\n')
+    # Substitute the correct values into the template
+    IsoLiteXML = re.sub(r'dscovrFileNamePlaceholder', dscovrFileName, IsoLiteXML)
+    IsoLiteXML = re.sub(r'dscovrDataTypePlaceholder', dscovrDataType, IsoLiteXML)
+    IsoLiteXML = re.sub(r'todaysDatePlaceholder', todaysDate, IsoLiteXML)
+    IsoLiteXML = re.sub(r'dscovrIngestDatePlaceholder', dscovrIngestDate, IsoLiteXML)
+    IsoLiteXML = re.sub(r'dscovrGranuleStartDateTimePlaceholder', dscovrGranuleStartDateTime, IsoLiteXML)
+    IsoLiteXML = re.sub(r'syncYYYY', syncYYYY, IsoLiteXML)
+    IsoLiteXML = re.sub(r'syncMM', syncMM, IsoLiteXML)
+    IsoLiteXML = re.sub(r'dscovrGranuleEndDateTimePlaceholder', dscovrGranuleEndDateTime, IsoLiteXML)
+    IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkUrlPlaceholder', dscovrEnterpriseDownloadLinkUrl, IsoLiteXML)
+    IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkNamePlaceholder', dscovrEnterpriseDownloadLinkName, IsoLiteXML)
+    IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkProtocolPlaceholder', dscovrEnterpriseDownloadLinkProtocol, IsoLiteXML)
 
-    return IsoLiteXML
+    # Print detailed info
+    if logLevel == 'Info':
+        print('input_json_dict\n', input_json_dict, '\n')
+        print(json.dumps(input_json_dict))
+        print('common_ingest_time\n' + common_ingest_time + '\n')
+        print('parsed_file_name_dict\n', parsed_file_name_dict, '\n')
+        print('todaysDate\n', todaysDate, '\n')
+        print('dscovrIngestDate\n', dscovrIngestDate, '\n')
+        print('dscovrGranuleStartTime\n', dscovrGranuleStartDateTime, '\n')
+        print('syncYYYY\n', syncYYYY, '\n')
+        print('syncMM\n', syncMM, '\n')
+        print('dscovrGranuleEndDateTime\n', dscovrGranuleEndDateTime, '\n')
+        print('IsoLiteTemplateLocation\n', IsoLiteTemplateLocation, '\n')
+        print('IsoLiteXML\n', IsoLiteXML, '\n')
+        print('outFileName\n', outFileName, '\n')
+
+    publish = not parsed_file_name_dict['embargo_flag']
+    result = {'publish': publish, 'isoXml': IsoLiteXML}
+    return json.dumps(result)
 
 
 if __name__ == '__main__':

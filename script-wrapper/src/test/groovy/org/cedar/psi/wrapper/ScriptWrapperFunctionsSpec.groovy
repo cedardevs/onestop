@@ -1,38 +1,84 @@
 package org.cedar.psi.wrapper
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.cedar.psi.wrapper.stream.ScriptWrapperFunctions
 import spock.lang.Specification
 
 class ScriptWrapperFunctionsSpec extends Specification {
-    def 'Script Publishs stdout'() {
-        def msg = '{"trackingId":"ABC","message":"this is a test","answer": 42}'
-        def command_timeout =  10
-        String command = "echo stdout"
-        def expected = 'stdout\n'
 
-        expect:
-        ScriptWrapperFunctions.scriptCaller(msg, command, command_timeout) == expected
-    }
+  def testIso = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-metadata.xml').text
 
-    void "Script wrapper exit with value 0: command not provided"() {
-        def msg = '{"trackingId":"ABC","message":"this is a test","answer": 42}'
-        def command_timeout = 10
-        String command = " "
-        def expected = 'ERROR: ' + 0
+  def 'Script Publishs stdout'() {
+    def msg = '{"trackingId":"ABC","message":"this is a test","answer": 42}'
+    def command_timeout = 10
+    String command = "echo stdout"
+    def expected = 'stdout\n'
 
-        expect:
-        ScriptWrapperFunctions.scriptCaller(msg, command, command_timeout) == expected
-    }
+    expect:
+    ScriptWrapperFunctions.scriptCaller(msg, command, command_timeout) == expected
+  }
 
-    void "Script wrapper exit with value non-zero value: command Cannot run program"() {
-        def msg = '{"trackingId":"ABC","message":"this is a test","answer": 42}'
-        def command_timeout = 33
-        String command = "py wrong command"
+  void "Script wrapper exit with value 0: command not provided"() {
+    def msg = '{"trackingId":"ABC","message":"this is a test","answer": 42}'
+    def command_timeout = 10
+    String command = " "
+    def expected = 'ERROR: ' + 0
 
-        def expected ='ERROR: Cannot run program "py": error=2, No such file or directory'
+    expect:
+    ScriptWrapperFunctions.scriptCaller(msg, command, command_timeout) == expected
+  }
 
-        expect:
-        ScriptWrapperFunctions.scriptCaller(msg, command, command_timeout) == expected
-    }
+  void "Script wrapper exit with value non-zero value: command Cannot run program"() {
+    def msg = '{"trackingId":"ABC","message":"this is a test","answer": 42}'
+    def command_timeout = 33
+    String command = "py wrong command"
+
+    def expected = 'ERROR: Cannot run program "py": error=2, No such file or directory'
+
+    expect:
+    ScriptWrapperFunctions.scriptCaller(msg, command, command_timeout) == expected
+  }
+
+  def 'parses xml output'() {
+    when:
+    def result = ScriptWrapperFunctions.parseOutput(testIso)
+    def parsedResult = new JsonSlurper().parseText(result)
+
+    then:
+    result instanceof String
+    parsedResult instanceof Map
+    parsedResult.fileIdentifier == 'gov.super.important:FILE-ID'
+  }
+
+  def 'does nothing to json with no xml'() {
+    def input = '{"hello":"world"}'
+
+    expect:
+    ScriptWrapperFunctions.parseOutput(input) == input
+  }
+
+  def 'parses xml returned within json, removing the xml'() {
+    def input = JsonOutput.toJson([
+        publish: false,
+        isoXml: testIso
+    ])
+
+    when:
+    def result = ScriptWrapperFunctions.parseOutput(input)
+    def parsedResult = new JsonSlurper().parseText(result)
+
+    then:
+    result instanceof String
+    parsedResult instanceof Map
+    parsedResult.isoXml == null
+    parsedResult.publish == false
+    parsedResult.fileIdentifier == 'gov.super.important:FILE-ID'
+  }
+
+  def 'returns an error if neither xml nor json output is provided'() {
+    expect:
+    ScriptWrapperFunctions.parseOutput('not a good response').startsWith('ERROR')
+  }
 
 }
