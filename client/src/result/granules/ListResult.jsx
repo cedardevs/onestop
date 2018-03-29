@@ -128,7 +128,7 @@ class ListResult extends React.Component {
     return (
       <div>
         <div style={styleSectionHeader}>Data Access Links:</div>
-        <div>{badgesElement}</div>
+        <div style={{paddingBottom: '1em'}}>{badgesElement}</div>
       </div>
     )
   }
@@ -146,15 +146,14 @@ class ListResult extends React.Component {
   }
 
   render() {
-    const {item, showLinks, showCitations, showTimeAndSpace} = this.props
-    const rightItems = [<h1 style={styleTitle}>{item.title}</h1>]
-
-    if (showTimeAndSpace) {
-      rightItems.push(this.renderTimeAndSpaceString(item.beginDate, item.beginYear, item.endDate, item.endYear, item.spatialBounding))
-    }
+    const {item, showLinks, showTimeAndSpace} = this.props
+    const rightItems = [<h2 style={styleTitle}>{item.title}</h2>]
 
     if (showLinks) {
       rightItems.push(this.renderLinks(item.links))
+    }
+    if (showTimeAndSpace) {
+      rightItems.push(this.renderTimeAndSpaceString(item.beginDate, item.beginYear, item.endDate, item.endYear, item.spatialBounding))
     }
 
     const left = <FlexColumn style={{width: '32%'}} items={[this.renderDisplayImage(item.thumbnail, item.spatialBounding)]} />
@@ -168,7 +167,6 @@ class ListResult extends React.Component {
     return (
       <div style={styleResultMerged} onFocus={this.handleFocus} onBlur={this.handleBlur}>
         <FlexRow style={{padding: '2em'}} items={[left, right]}/>
-
       </div>
     )
   }
