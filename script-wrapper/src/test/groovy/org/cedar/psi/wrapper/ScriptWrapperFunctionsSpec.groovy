@@ -40,7 +40,7 @@ class ScriptWrapperFunctionsSpec extends Specification {
     ScriptWrapperFunctions.scriptCaller(msg, command, command_timeout) == expected
   }
 
-  def 'parses xml output'() {
+  def 'xml output is parsed into discovery info'() {
     when:
     def result = ScriptWrapperFunctions.parseOutput(testIso)
     def parsedResult = new JsonSlurper().parseText(result)
@@ -48,17 +48,18 @@ class ScriptWrapperFunctionsSpec extends Specification {
     then:
     result instanceof String
     parsedResult instanceof Map
-    parsedResult.fileIdentifier == 'gov.super.important:FILE-ID'
+    parsedResult.discovery instanceof Map
+    parsedResult.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
   }
 
-  def 'does nothing to json with no xml'() {
+  def 'json output with no xml is returns as discovery info'() {
     def input = '{"hello":"world"}'
 
     expect:
-    ScriptWrapperFunctions.parseOutput(input) == input
+    ScriptWrapperFunctions.parseOutput(input) == "{\"discovery\":$input}"
   }
 
-  def 'parses xml returned within json, removing the xml'() {
+  def 'json output with xml within it results in returned json plus parsed discovery info'() {
     def input = JsonOutput.toJson([
         publish: false,
         isoXml: testIso
@@ -73,7 +74,8 @@ class ScriptWrapperFunctionsSpec extends Specification {
     parsedResult instanceof Map
     parsedResult.isoXml == null
     parsedResult.publish == false
-    parsedResult.fileIdentifier == 'gov.super.important:FILE-ID'
+    parsedResult.discovery instanceof Map
+    parsedResult.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
   }
 
   def 'returns an error if neither xml nor json output is provided'() {

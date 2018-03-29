@@ -45,22 +45,21 @@ class ScriptWrapperFunctions {
     if (isJson) {
       log.debug("message is json")
       def messageMap = new JsonSlurper().parseText(message) as Map
-      def iso = messageMap.isoXml as String
-      if (iso) { // contains iso --> parse it, drop xml, merge parsed attrs back in
+      def iso = messageMap.remove('isoXml') as String
+      if (iso) { // contains iso --> parse it, drop xml, add parsed attrs back in
         log.debug("message contains isoXml, parsing")
-        def parsedIso = IsoConversionUtil.parseXMLMetadataToMap(iso)
-        messageMap.remove('isoXml')
-        return JsonOutput.toJson(messageMap + parsedIso)
+        messageMap.discovery = IsoConversionUtil.parseXMLMetadataToMap(iso)
+        return JsonOutput.toJson(messageMap)
       }
       else { // does not contain iso --> do nothing
-        return message
+        return JsonOutput.toJson([discovery: messageMap])
       }
     }
 
     def isXml = message.startsWith('<')
     if (isXml) {
       log.debug("message is xml, parsing")
-      return IsoConversionUtil.parseXMLMetadata(message)
+      return JsonOutput.toJson([discovery: IsoConversionUtil.parseXMLMetadataToMap(message)])
     }
 
     // is neither xml nor json --> is error
