@@ -29,6 +29,7 @@ const styleHeadingWrapper = {
 const styleHeading = {
   margin: 0,
   padding: '0.618em',
+  width: '100%'
 }
 
 export default class KeywordsView extends React.Component {
@@ -89,6 +90,6 @@ export default class KeywordsView extends React.Component {
       [ projectHeading, projectList ],
     ]
 
-    return <DetailGrid grid={accessGrid} colWidths={[ {sm: 4}, {sm: 8} ]} />
+    return <DetailGrid grid={accessGrid} colWidths={[ {sm: 3}, {sm: 9} ]} />
   }
 }

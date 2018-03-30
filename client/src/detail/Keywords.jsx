@@ -13,11 +13,14 @@ const styleKeyword = backgroundColor => {
   }
 }
 
-const styleKeywords = {
+const styleKeywordsList = {
   display: 'flex',
   flexFlow: 'row wrap',
   justifyContent: 'left',
   alignContent: 'center',
+  listStyleType: 'none',
+  margin: 0,
+  padding: 0
 }
 
 const styleShowMoreButton = {
@@ -96,9 +99,9 @@ class Keywords extends Component {
       keywords = keywords.map(
         (k, index) =>
           index > 2 && !showAll ? null : (
-            <div style={styleKeyword(bgColor)} key={k}>
+            <li style={styleKeyword(bgColor)} key={k}>
               {k}
-            </div>
+            </li>
           )
       )
 
@@ -108,9 +111,12 @@ class Keywords extends Component {
           ...(this.state.hoveringShowMore ? styleShoweMoreButtonHover : {}),
         }
 
+        const showCollapseLabel = !showAll ? `Show All` : `Collapse`
+        const showCollapseAriaLabel = !showAll ? `Show All ${type} keywords` : `Collapse ${type} keywords`
+
         return (
           <div>
-            <div style={styleKeywords}>{keywords}</div>
+            <div style={styleKeywordsList}>{keywords}</div>
             <button
               type="button"
               style={styleShowMoreButtonMerged}
@@ -119,14 +125,15 @@ class Keywords extends Component {
               onClick={() => {
                 this.handleShowGCMD(type)
               }}
+              aria-label={showCollapseAriaLabel}
             >
-              {!showAll ? 'Show All' : 'Collapse'}
+              {showCollapseLabel}
             </button>
           </div>
         )
       }
       else {
-        return <div style={styleKeywords}>{keywords}</div>
+        return <ul style={styleKeywordsList}>{keywords}</ul>
       }
     }
     else {

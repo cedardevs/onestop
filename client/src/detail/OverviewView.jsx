@@ -59,9 +59,11 @@ class StatisticsView extends Component {
         <h3 style={styleSectionHeading}>Time Period:</h3>
         <TimeSummary item={item} />
 
-        <h3 style={styleSectionHeading}>Spatial Bounding Map:</h3>
-        <div style={stylePreviewMap}>
-          <MapThumbnail geometry={item.spatialBounding} interactive={true} />
+        <div aria-hidden={true}>
+          <h3 style={styleSectionHeading}>Spatial Bounding Map:</h3>
+          <div style={stylePreviewMap}>
+            <MapThumbnail geometry={item.spatialBounding} interactive={true} />
+          </div>
         </div>
 
         <h3 style={styleSectionHeading}>Bounding Coordinates:</h3>

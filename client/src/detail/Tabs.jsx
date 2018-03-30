@@ -10,7 +10,7 @@ const styleTabButton = (active, first = false, last = false) => {
     marginRight: last ? 0 : '1px',
     fontSize: '0.8em',
     color: active ? '#000131' : 'white',
-    backgroundColor: active ? 'white' : '#000131',
+    backgroundColor: active ? 'white' : '#6e91b2',
     textAlign: 'center',
     border: `1px solid ${active ? 'gray' : '#F0F0F2'}`,
     borderRadius: '0.618em 0.618em 0 0',

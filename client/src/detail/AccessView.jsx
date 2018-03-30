@@ -40,6 +40,7 @@ const styleHeadingWrapper = {
 const styleHeading = {
   margin: 0,
   padding: '0.618em',
+  width: '100%'
 }
 
 export default class AccessView extends React.Component {
@@ -144,6 +145,6 @@ export default class AccessView extends React.Component {
       [ distributionFormatsHeader, distributionFormatsList ],
     ]
 
-    return <DetailGrid grid={accessGrid} colWidths={[ {sm: 4}, {sm: 8} ]} />
+    return <DetailGrid grid={accessGrid} colWidths={[ {sm: 3}, {sm: 9} ]} />
   }
 }
