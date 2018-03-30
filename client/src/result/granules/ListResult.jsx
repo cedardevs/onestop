@@ -2,10 +2,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import MapThumbnail from '../../common/MapThumbnail'
 import {processUrl} from '../../utils/urlUtils'
-import {buildCoordinatesString, buildTimePeriodString, styleBadge, renderBadgeIcon, identifyProtocol} from "../../utils/resultUtils"
-import FlexColumn from "../../common/FlexColumn"
-import FlexRow from "../../common/FlexRow"
-import { boxShadow } from '../../common/defaultStyles'
+import {
+  buildCoordinatesString,
+  buildTimePeriodString,
+  styleBadge,
+  renderBadgeIcon,
+  identifyProtocol,
+} from '../../utils/resultUtils'
+import FlexColumn from '../../common/FlexColumn'
+import FlexRow from '../../common/FlexRow'
+import {boxShadow} from '../../common/defaultStyles'
 import A from '../../common/link/Link'
 
 const styleResult = {
@@ -14,11 +20,11 @@ const styleResult = {
   marginBottom: '2em',
   boxShadow: boxShadow,
   backgroundColor: 'white',
-  transition: '0.3s background-color ease'
+  transition: '0.3s background-color ease',
 }
 
 const styleResultFocus = {
-  backgroundColor: 'rgb(140, 185, 216)'
+  backgroundColor: 'rgb(140, 185, 216)',
 }
 
 const styleImageContainer = {
@@ -41,7 +47,7 @@ const styleTitle = {
   fontSize: '1.5em',
   color: 'rgb(0, 0, 50)',
   margin: '0',
-  textAlign: 'center'
+  textAlign: 'center',
 }
 
 const styleSectionHeader = {
@@ -67,7 +73,8 @@ class ListResult extends React.Component {
 
   renderDisplayImage(thumbnail, geometry) {
     const imgUrl = processUrl(thumbnail)
-    if (imgUrl && !imgUrl.includes('maps.googleapis.com')) { // Stick to leaflet maps
+    if (imgUrl && !imgUrl.includes('maps.googleapis.com')) {
+      // Stick to leaflet maps
       return (
         <div style={styleImageContainer}>
           <img
@@ -89,11 +96,19 @@ class ListResult extends React.Component {
     }
   }
 
-  renderTimeAndSpaceString(beginDate, beginYear, endDate, endYear, spatialBounding) {
+  renderTimeAndSpaceString(
+    beginDate,
+    beginYear,
+    endDate,
+    endYear,
+    spatialBounding
+  ) {
     return (
       <div>
         <div style={styleSectionHeader}>Time Period:</div>
-        <div>{buildTimePeriodString(beginDate, beginYear, endDate, endYear)}</div>
+        <div>
+          {buildTimePeriodString(beginDate, beginYear, endDate, endYear)}
+        </div>
         <div style={styleSectionHeader}>Bounding Coordinates:</div>
         <div>{buildCoordinatesString(spatialBounding)}</div>
       </div>
@@ -115,7 +130,6 @@ class ListResult extends React.Component {
   }
 
   renderLinks(links) {
-
     const badges = _.chain(links)
       .map(link => ({protocol: identifyProtocol(link), url: link.linkUrl}))
       .filter(info => info.protocol)
@@ -123,7 +137,11 @@ class ListResult extends React.Component {
       .map(this.renderBadge.bind(this))
       .value()
 
-    const badgesElement = _.isEmpty(badges) ? <div>N/A</div> : <div style={styleBadgeLayout}>{badges}</div>
+    const badgesElement = _.isEmpty(badges) ? (
+      <div>N/A</div>
+    ) : (
+      <div style={styleBadgeLayout}>{badges}</div>
+    )
 
     return (
       <div>
@@ -147,38 +165,59 @@ class ListResult extends React.Component {
 
   render() {
     const {item, showLinks, showTimeAndSpace} = this.props
-    const rightItems = [<h2 style={styleTitle}>{item.title}</h2>]
+    const rightItems = [ <h2 style={styleTitle}>{item.title}</h2> ]
 
     if (showLinks) {
       rightItems.push(this.renderLinks(item.links))
     }
     if (showTimeAndSpace) {
-      rightItems.push(this.renderTimeAndSpaceString(item.beginDate, item.beginYear, item.endDate, item.endYear, item.spatialBounding))
+      rightItems.push(
+        this.renderTimeAndSpaceString(
+          item.beginDate,
+          item.beginYear,
+          item.endDate,
+          item.endYear,
+          item.spatialBounding
+        )
+      )
     }
 
-    const left = <FlexColumn style={{width: '32%'}} items={[this.renderDisplayImage(item.thumbnail, item.spatialBounding)]} />
-    const right = <FlexColumn style={{marginLeft: '2em', width: '68%'}} items={rightItems}/>
+    const left = (
+      <FlexColumn
+        style={{width: '32%'}}
+        items={[
+          this.renderDisplayImage(item.thumbnail, item.spatialBounding),
+        ]}
+      />
+    )
+    const right = (
+      <FlexColumn
+        style={{marginLeft: '2em', width: '68%'}}
+        items={rightItems}
+      />
+    )
 
     const styleResultMerged = {
       ...styleResult,
-      ...(this.state.focusing ? styleResultFocus : {})
+      ...(this.state.focusing ? styleResultFocus : {}),
     }
 
     return (
-      <div style={styleResultMerged} onFocus={this.handleFocus} onBlur={this.handleBlur}>
-        <FlexRow style={{padding: '2em'}} items={[left, right]}/>
+      <div
+        style={styleResultMerged}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+      >
+        <FlexRow style={{padding: '2em'}} items={[ left, right ]} />
       </div>
     )
   }
-
-
 }
-
 
 ListResult.propTypes = {
   item: PropTypes.object.isRequired,
   showLinks: PropTypes.bool.isRequired,
-  showTimeAndSpace: PropTypes.bool.isRequired
+  showTimeAndSpace: PropTypes.bool.isRequired,
 }
 
 export default ListResult

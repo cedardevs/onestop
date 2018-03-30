@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import {styleBadge, renderBadgeIcon} from "../../utils/resultUtils"
+import {styleBadge, renderBadgeIcon} from '../../utils/resultUtils'
 
 const styleLegend = {
-  margin: '1.618em'
+  margin: '1.618em',
 }
 
 const styleHeading = {
@@ -18,7 +18,7 @@ const styleLegendList = {
   paddingBottom: '1em',
   listStyle: 'none',
   margin: 0,
-  padding: 0
+  padding: 0,
 }
 
 const styleLegendItem = {
@@ -33,32 +33,28 @@ const styleLegendLabel = {
 }
 
 export default class GranuleListLegend extends Component {
-
   render() {
-
-    const { usedProtocols } = this.props
+    const {usedProtocols} = this.props
 
     const legendItems = _.chain(_.toArray(usedProtocols))
-        .filter()
-        .sortBy('id')
-        .uniqBy('id')
-        .map((protocol, i) => {
-          return (
-              <li key={i} style={styleLegendItem}>
-                <div style={styleBadge(protocol)}>
-                  {renderBadgeIcon(protocol)}
-                </div>
-                <div style={styleLegendLabel}>{protocol.label}</div>
-              </li>
-          )
-        })
-        .value()
+      .filter()
+      .sortBy('id')
+      .uniqBy('id')
+      .map((protocol, i) => {
+        return (
+          <li key={i} style={styleLegendItem}>
+            <div style={styleBadge(protocol)}>{renderBadgeIcon(protocol)}</div>
+            <div style={styleLegendLabel}>{protocol.label}</div>
+          </li>
+        )
+      })
+      .value()
 
     return (
-        <div style={styleLegend}>
-          <h3 style={styleHeading}>Access Protocols:</h3>
-          <ul style={styleLegendList}>{legendItems}</ul>
-        </div>
+      <div style={styleLegend}>
+        <h3 style={styleHeading}>Access Protocols:</h3>
+        <ul style={styleLegendList}>{legendItems}</ul>
+      </div>
     )
   }
 }

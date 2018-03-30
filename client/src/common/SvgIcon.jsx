@@ -36,7 +36,11 @@ const styleSvg = size => {
   }
 }
 const styleWrapper = size => {
-  return {display: 'inline-block', width: size ? size : '1em', height: size ? size : '1em'}
+  return {
+    display: 'inline-block',
+    width: size ? size : '1em',
+    height: size ? size : '1em',
+  }
 }
 
 export class SvgIcon extends React.Component {

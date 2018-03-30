@@ -43,7 +43,9 @@ export default class Collections extends Component {
           onItemSelect={selectCollection}
           ListItemComponent={null}
           GridItemComponent={CollectionCard}
-          propsForItem={item => { return null }}
+          propsForItem={item => {
+            return null
+          }}
         />
         {showMoreButton}
       </div>

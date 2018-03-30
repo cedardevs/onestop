@@ -1,24 +1,14 @@
 import React, {Component} from 'react'
 import {processUrl} from '../utils/urlUtils'
 import MapThumbnail from '../common/MapThumbnail'
-import FlexRow from '../common/FlexRow'
-
-const styleContainer = {
-  padding: '1.618em',
-  color: '#222',
-  backgroundColor: '#F9F9F9',
-}
-
-const styleImageContainer = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}
+import Expandable from '../common/Expandable'
+import DetailGrid from './DetailGrid'
 
 const styleImage = {
-  margin: '0 0 0.618em 0',
-  width: '72%',
-  maxWidth: '500px',
+  float: 'left',
+  alignSelf: 'flex-start',
+  margin: '0 1.618em 1.618em 0',
+  width: '32%',
 }
 
 const styleMap = {
@@ -27,9 +17,19 @@ const styleMap = {
   maxWidth: '500px',
 }
 
+const styleDescriptionWrapper = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  alignSelf: 'stretch',
+  height: '100%',
+  margin: 0,
+}
+
 const styleDescription = {
-  margin: '0 0 0.618em 0',
-  flex: '2',
+  width: '100%',
+  padding: '1.618em',
+  margin: 0,
 }
 
 export default class DescriptionView extends Component {
@@ -48,34 +48,97 @@ export default class DescriptionView extends Component {
       ? item.description
       : 'No description available'
 
-    const collectionImage = this.renderCollectionImage(thumbnail, geometry)
-    return (
-      <FlexRow
-        style={styleContainer}
-        items={[
-          <div style={{flex: '1'}} key={'description-image'}>
-            {collectionImage}
-          </div>,
-          <div style={styleDescription} key={'description'}>
-            {description}
-          </div>,
-        ]}
+    const styleExpandableHeading = {
+      // padding: '0.618em',
+      backgroundColor: '#8cb9d8',
+    }
+
+    const styleExpandableContent = {
+      // padding: '0.618em',
+    }
+
+    console.log('item:', item)
+
+    const citeAsStatements =
+      item.citeAsStatements.length > 0
+        ? item.citeAsStatements.map((statement, key) => {
+            return <div key={key}>{statement}</div>
+          })
+        : 'No citations available.'
+    const citationExpandable = (
+      <Expandable
+        showArrow={true}
+        heading={<div style={{padding: '0.618em'}}>Citation</div>}
+        styleHeading={styleExpandableHeading}
+        content={<div style={{padding: '0.618em'}}>{citeAsStatements}</div>}
+        styleContent={styleExpandableContent}
       />
     )
+
+    const identifier = item.fileIdentifier
+      ? item.fileIdentifier
+      : 'No file identifier available.'
+    const identifiersExpandable = (
+      <Expandable
+        showArrow={true}
+        heading={<div style={{padding: '0.618em'}}>Identifier</div>}
+        styleHeading={styleExpandableHeading}
+        content={<div style={{padding: '0.618em'}}>{identifier}</div>}
+        styleContent={styleExpandableContent}
+      />
+    )
+
+    const collectionImage = this.renderCollectionImage(thumbnail, geometry)
+    const imageAndDescription = (
+      <div style={styleDescriptionWrapper}>
+        <p style={styleDescription}>
+          {collectionImage}
+          {description}
+        </p>
+      </div>
+    )
+    // const gridImageAndDescription = [
+    //     [collectionImage, description]
+    // ]
+    // const imageAndDescription = (
+    //     <DetailGrid grid={gridImageAndDescription} colWidths={[{sm:4},{sm:8}]}/>
+    // )
+
+    const expandableInformation = (
+      <div>
+        {citationExpandable}
+        {identifiersExpandable}
+      </div>
+    )
+
+    return (
+      <DetailGrid
+        grid={[ [ imageAndDescription, expandableInformation ] ]}
+        colWidths={[ {sm: 8}, {sm: 4} ]}
+      />
+    )
+
+    // return (
+    //   <div style={{display: 'flex'}}>
+    //     <p style={styleDescription}>
+    //       {collectionImage}
+    //       {description}
+    //     </p>
+    //     {expandableInformation}
+    //   </div>
+    // )
   }
 
   renderCollectionImage(thumbnail, geometry) {
     const imgUrl = processUrl(thumbnail)
     if (imgUrl) {
       return (
-        <div style={styleImageContainer}>
-          <img
-            style={styleImage}
-            src={imgUrl}
-            alt="collection result image"
-            aria-hidden="true"
-          />
-        </div>
+        <img
+          style={styleImage}
+          src={imgUrl}
+          alt="collection result image"
+          aria-hidden="true"
+        />
       )
     }
     else if (geometry) {

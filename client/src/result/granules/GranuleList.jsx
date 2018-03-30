@@ -4,10 +4,9 @@ import GranuleListLegend from './GranuleListLegend'
 import Button from '../../common/input/Button'
 import ListView from '../ListView'
 import ListResult from './ListResult'
-import { SvgIcon } from '../../common/SvgIcon'
-import { identifyProtocol } from '../../utils/resultUtils'
-import { boxShadow } from '../../common/defaultStyles'
-
+import {SvgIcon} from '../../common/SvgIcon'
+import {identifyProtocol} from '../../utils/resultUtils'
+import {boxShadow} from '../../common/defaultStyles'
 
 const styleCenterContent = {
   display: 'flex',
@@ -31,7 +30,6 @@ const styleShowMore = {
 }
 
 export default class GranuleList extends Component {
-
   renderBadgeIcon = protocol => {
     if (protocol.svgPath) {
       return <SvgIcon path={protocol.svgPath} />
@@ -42,7 +40,7 @@ export default class GranuleList extends Component {
   propsForResult = item => {
     return {
       showLinks: true,
-      showTimeAndSpace: true
+      showTimeAndSpace: true,
     }
   }
 
@@ -63,32 +61,32 @@ export default class GranuleList extends Component {
     })
 
     const showMoreButton =
-        returnedHits < totalHits ? (
-            <Button
-                text="Show More Results"
-                onClick={() => fetchMoreResults()}
-                style={styleShowMore}
-            />
-        ) : null
+      returnedHits < totalHits ? (
+        <Button
+          text="Show More Results"
+          onClick={() => fetchMoreResults()}
+          style={styleShowMore}
+        />
+      ) : null
 
     return (
-        <div style={styleCenterContent}>
-          <div style={styleGranuleListWrapper}>
-          <GranuleListLegend usedProtocols={usedProtocols}/>
+      <div style={styleCenterContent}>
+        <div style={styleGranuleListWrapper}>
+          <GranuleListLegend usedProtocols={usedProtocols} />
           <ListView
-              items={results}
-              loading={!!loading}
-              shown={returnedHits}
-              total={totalHits}
-              enableGridToggle={false}
-              onItemSelect={selectCollection}
-              ListItemComponent={ListResult}
-              GridItemComponent={null}
-              propsForItem={this.propsForResult}
+            items={results}
+            loading={!!loading}
+            shown={returnedHits}
+            total={totalHits}
+            enableGridToggle={false}
+            onItemSelect={selectCollection}
+            ListItemComponent={ListResult}
+            GridItemComponent={null}
+            propsForItem={this.propsForResult}
           />
           {showMoreButton}
-          </div>
         </div>
+      </div>
     )
   }
 }

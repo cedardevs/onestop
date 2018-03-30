@@ -109,8 +109,15 @@ export const buildCoordinatesString = geometry => {
   }
 }
 
-export const buildTimePeriodString = (beginDate, beginYear, endDate, endYear) => {
-  const start = beginDate ? beginDate.split('T')[0] : beginYear ? beginYear : undefined
+export const buildTimePeriodString = (
+  beginDate,
+  beginYear,
+  endDate,
+  endYear
+) => {
+  const start = beginDate
+    ? beginDate.split('T')[0]
+    : beginYear ? beginYear : undefined
   const end = endDate ? endDate.split('T')[0] : endYear ? endYear : 'Present'
 
   return start && end ? `${start} to ${end}` : 'Not Provided'

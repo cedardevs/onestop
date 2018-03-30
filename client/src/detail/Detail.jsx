@@ -1,11 +1,12 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Tabs from './Tabs'
-import SummaryView from './SummaryView'
+import OverviewView from './OverviewView'
 import DescriptionView from './DescriptionView'
 import AccessView from './AccessView'
 import VideoView from './VideoView'
+import Tabs from './Tabs'
 import {boxShadow} from '../common/defaultStyles'
+import Keywords from './Keywords'
 
 //-- Styles
 
@@ -22,6 +23,7 @@ const styleDetailWrapper = {
   // Note: margins on this element are temporarily needed to show the box shadow correctly. I expect this to change when we restructure the details page to get rid of tabs, as well as possibly when we update the router.
   marginRight: '3px',
   marginLeft: '1px',
+  backgroundColor: 'white',
 }
 
 const styleTitle = {
@@ -66,9 +68,9 @@ class Detail extends Component {
 
     let tabData = [
       {
-        title: 'Summary',
+        title: 'Overview',
         content: (
-          <SummaryView
+          <OverviewView
             item={item}
             totalGranuleCount={totalGranuleCount}
             granuleSearch={() => {
@@ -78,19 +80,20 @@ class Detail extends Component {
         ),
       },
       {
-        title: 'Description',
-        content: <DescriptionView item={item} />,
-      },
-      {
         title: 'Access',
         content: <AccessView item={item} />,
+      },
+      {
+        title: 'Keywords',
+        content: <Keywords item={item} />,
       },
     ]
 
     const videoLinks = item.links.filter(
       link => link.linkProtocol === 'video:youtube'
     )
-    if (videoLinks.length > 0) {
+    const showVideoTab = videoLinks.length > 0
+    if (showVideoTab) {
       tabData.push({
         title: videoLinks.length === 1 ? 'Video' : 'Videos',
         content: <VideoView links={videoLinks} />,
@@ -101,6 +104,7 @@ class Detail extends Component {
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
           <h1 style={styleTitle}>{item.title}</h1>
+          <DescriptionView item={item} />
           <Tabs
             style={{display: 'flex'}}
             styleContent={styleContent}

@@ -6,13 +6,13 @@ import gridIcon from 'fa/th.svg'
 import listIcon from 'fa/th-list.svg'
 
 const styleListView = {
-  marginLeft: '1.618em'
+  marginLeft: '1.618em',
 }
 
 const styleListInfo = {
   fontSize: '1.2em',
   margin: '0 1.618em 0.618em 0',
-  padding: 0
+  padding: 0,
 }
 
 const styleListControl = {
@@ -41,7 +41,7 @@ const styleList = {
 
 const styleFallbackItem = {
   display: 'block',
-  margin: '0 1.618em 0 0'
+  margin: '0 1.618em 0 0',
 }
 
 export default class ListView extends Component {
@@ -69,7 +69,7 @@ export default class ListView extends Component {
       onItemSelect,
       ListItemComponent,
       GridItemComponent,
-      propsForItem
+      propsForItem,
     } = this.props
 
     const listInfo = (
@@ -87,10 +87,10 @@ export default class ListView extends Component {
       controlElement = (
         <div style={styleListControl}>
           <Button
-              text={this.state.showAsGrid ? 'Show List' : 'Show Grid'}
-              icon={this.state.showAsGrid ? listIcon : gridIcon}
-              styleIcon={{width: '1em', height: '1em', marginRight: '0.309em'}}
-              onClick={this.toggleShowAsGrid}
+            text={this.state.showAsGrid ? 'Show List' : 'Show Grid'}
+            icon={this.state.showAsGrid ? listIcon : gridIcon}
+            styleIcon={{width: '1em', height: '1em', marginRight: '0.309em'}}
+            onClick={this.toggleShowAsGrid}
           />
         </div>
       )
@@ -152,5 +152,5 @@ ListView.propTypes = {
   onItemsSelect: PropTypes.func,
   ListComponent: PropTypes.func,
   GridComponent: PropTypes.func,
-  propsForItem: PropTypes.func
+  propsForItem: PropTypes.func,
 }

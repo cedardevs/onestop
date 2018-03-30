@@ -42,7 +42,7 @@ const styleHeading = {
   padding: '0.618em',
 }
 
-export default class AccessView extends React.Component {
+export default class KeywordsView extends React.Component {
   render() {
     const {item} = this.props
 
@@ -53,7 +53,7 @@ export default class AccessView extends React.Component {
         const {linkUrl, linkName, linkProtocol, linkDescription} = link
         const linkTitle = linkName ? linkName : linkProtocol
         return (
-          <div key={index}>
+          <div key={index} style={styleContent}>
             <A
               href={linkUrl}
               target="_blank"
@@ -71,11 +71,8 @@ export default class AccessView extends React.Component {
         )
       })
 
-    let informationList = (
-      <div style={styleContent}>No information links in metadata.</div>
-    )
-    if (information.length > 0) {
-      informationList = <div style={styleContent}>{information}</div>
+    if (information.length === 0) {
+      information = 'No information links in metadata.'
     }
 
     let downloadData = item.links
@@ -85,7 +82,7 @@ export default class AccessView extends React.Component {
         const {linkUrl, linkName, linkProtocol, linkDescription} = link
         const linkTitle = linkName ? linkName : linkProtocol
         return (
-          <div key={index}>
+          <div key={index} style={styleContent}>
             <A
               href={linkUrl}
               target="_blank"
@@ -103,11 +100,8 @@ export default class AccessView extends React.Component {
         )
       })
 
-    let downloadDataList = (
-      <div style={styleContent}>No download data links in metadata.</div>
-    )
-    if (downloadData.length > 0) {
-      downloadDataList = <div style={styleContent}>{downloadData}</div>
+    if (downloadData.length === 0) {
+      downloadData = 'No download data links in metadata.'
     }
 
     const dataFormats = item.dataFormats ? item.dataFormats : []
@@ -122,28 +116,43 @@ export default class AccessView extends React.Component {
       distributionFormatsList = 'No formats in metadata.'
     }
 
-    const informationHeader = (
+    const themeKeywordsHeader = (
       <div style={styleHeadingWrapper}>
         <h3 style={styleHeading}>Information</h3>
       </div>
     )
-    const downloadDataHeader = (
+    const dataCenterKeywordsHeader = (
       <div style={styleHeadingWrapper}>
         <h3 style={styleHeading}>Download Data</h3>
       </div>
     )
-    const distributionFormatsHeader = (
+    const platformKeywordsHeader = (
+      <div style={styleHeadingWrapper}>
+        <h3 style={styleHeading}>Distribution Formats</h3>
+      </div>
+    )
+    const instrumentKeywordsHeader = (
+      <div style={styleHeadingWrapper}>
+        <h3 style={styleHeading}>Distribution Formats</h3>
+      </div>
+    )
+    const placeKeywordsHeader = (
+      <div style={styleHeadingWrapper}>
+        <h3 style={styleHeading}>Distribution Formats</h3>
+      </div>
+    )
+    const projectKeywordsHeader = (
       <div style={styleHeadingWrapper}>
         <h3 style={styleHeading}>Distribution Formats</h3>
       </div>
     )
 
-    const accessGrid = [
-      [ informationHeader, informationList ],
-      [ downloadDataHeader, downloadDataList ],
+    const keywordsGrid = [
+      [ informationHeader, information ],
+      [ downloadDataHeader, downloadData ],
       [ distributionFormatsHeader, distributionFormatsList ],
     ]
 
-    return <DetailGrid grid={accessGrid} colWidths={[ {sm: 4}, {sm: 8} ]} />
+    return <DetailGrid grid={accessGrid} />
   }
 }
