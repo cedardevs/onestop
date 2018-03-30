@@ -14,7 +14,7 @@ const styleTabButton = (active, first = false, last = false) => {
     textAlign: 'center',
     border: `1px solid ${active ? 'gray' : '#F0F0F2'}`,
     borderRadius: '0.618em 0.618em 0 0',
-    borderBottom: active ? 'none' : 'initial'
+    borderBottom: active ? 'none' : 'initial',
   }
 }
 
@@ -63,7 +63,7 @@ class TabButton extends Component {
 // <Tabs>
 
 const styleTabs = {
-  marginTop: '1.618em'
+  marginTop: '1.618em',
 }
 
 const styleTabButtons = {
@@ -122,8 +122,8 @@ export default class Tabs extends Component {
     const {data, styleContent} = this.props
 
     const styleContentMerged = {
-        ...styleContentDefault,
-        ...styleContent
+      ...styleContentDefault,
+      ...styleContent,
     }
     let tabButtons = []
     let tabContent = null

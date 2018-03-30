@@ -20,7 +20,7 @@ const styleKeywordsList = {
   alignContent: 'center',
   listStyleType: 'none',
   margin: 0,
-  padding: 0
+  padding: 0,
 }
 
 const styleShowMoreButton = {
@@ -112,7 +112,9 @@ class Keywords extends Component {
         }
 
         const showCollapseLabel = !showAll ? `Show All` : `Collapse`
-        const showCollapseAriaLabel = !showAll ? `Show All ${type} keywords` : `Collapse ${type} keywords`
+        const showCollapseAriaLabel = !showAll
+          ? `Show All ${type} keywords`
+          : `Collapse ${type} keywords`
 
         return (
           <div>
