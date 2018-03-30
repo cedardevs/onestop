@@ -37,7 +37,6 @@ export default class GranuleListLegend extends Component {
     const {usedProtocols} = this.props
 
     const legendItems = _.chain(_.toArray(usedProtocols))
-      .filter()
       .sortBy('id')
       .uniqBy('id')
       .map((protocol, i) => {

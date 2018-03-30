@@ -2,13 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import MapThumbnail from '../../common/MapThumbnail'
 import {processUrl} from '../../utils/urlUtils'
-import {
-  buildCoordinatesString,
-  buildTimePeriodString,
-  styleBadge,
-  renderBadgeIcon,
-  identifyProtocol,
-} from '../../utils/resultUtils'
+import * as util from '../../utils/resultUtils'
 import FlexColumn from '../../common/FlexColumn'
 import FlexRow from '../../common/FlexRow'
 import {boxShadow} from '../../common/defaultStyles'
@@ -16,7 +10,7 @@ import A from '../../common/link/Link'
 
 const styleResult = {
   width: '75em',
-  height: '20em',
+  minHeight: '15.5em',
   marginBottom: '2em',
   boxShadow: boxShadow,
   backgroundColor: 'white',
@@ -76,7 +70,7 @@ class ListResult extends React.Component {
     if (imgUrl && !imgUrl.includes('maps.googleapis.com')) {
       // Stick to leaflet maps
       return (
-        <div style={styleImageContainer}>
+        <div key={'ListResult::image'} style={styleImageContainer}>
           <img
             style={styleImage}
             src={imgUrl}
@@ -89,7 +83,7 @@ class ListResult extends React.Component {
     else {
       // Return map image of spatial bounding or, if none, world map
       return (
-        <div style={styleMap}>
+        <div key={'ListResult::map'} style={styleMap}>
           <MapThumbnail geometry={geometry} interactive={true} />
         </div>
       )
@@ -104,35 +98,54 @@ class ListResult extends React.Component {
     spatialBounding
   ) {
     return (
-      <div>
-        <div style={styleSectionHeader}>Time Period:</div>
+      <div key={'ListResult::timeAndSpace'}>
+        <h3 style={styleSectionHeader}>Time Period:</h3>
         <div>
-          {buildTimePeriodString(beginDate, beginYear, endDate, endYear)}
+          {util.buildTimePeriodString(beginDate, beginYear, endDate, endYear)}
         </div>
-        <div style={styleSectionHeader}>Bounding Coordinates:</div>
-        <div>{buildCoordinatesString(spatialBounding)}</div>
+        <h3 style={styleSectionHeader}>Bounding Coordinates:</h3>
+        <div>{util.buildCoordinatesString(spatialBounding)}</div>
       </div>
     )
   }
 
-  renderBadge = ({protocol, url}) => {
+  renderBadge = ({protocol, url, displayName}) => {
+    const linkText = displayName ? displayName : protocol.label
     return (
-      <A
-        href={url}
-        key={url}
-        title={url}
-        target="_blank"
-        style={styleBadge(protocol)}
-      >
-        {renderBadgeIcon(protocol)}
-      </A>
+      <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
+        <A
+          href={url}
+          key={url}
+          title={url}
+          target="_blank"
+          style={{textDecoration: 'none', display: 'inline-flex'}}
+        >
+          <div style={util.styleBadge(protocol)}>
+            {util.renderBadgeIcon(protocol)}
+          </div>
+          <div
+            style={{
+              ...util.styleProtocolListLabel,
+              ...{textDecoration: 'underline'},
+            }}
+          >
+            {linkText}
+          </div>
+        </A>
+      </li>
     )
   }
 
   renderLinks(links) {
     const badges = _.chain(links)
-      .map(link => ({protocol: identifyProtocol(link), url: link.linkUrl}))
-      .filter(info => info.protocol)
+      // .filter(link => link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess')
+      .map(link => ({
+        protocol: util.identifyProtocol(link),
+        url: link.linkUrl,
+        displayName: link.linkName
+          ? link.linkName
+          : link.linkDescription ? link.linkDescription : null,
+      }))
       .sortBy(info => info.protocol.id)
       .map(this.renderBadge.bind(this))
       .value()
@@ -144,9 +157,9 @@ class ListResult extends React.Component {
     )
 
     return (
-      <div>
-        <div style={styleSectionHeader}>Data Access Links:</div>
-        <div style={{paddingBottom: '1em'}}>{badgesElement}</div>
+      <div key={'ListResult::accessLinks'}>
+        <h3 style={styleSectionHeader}>Data Access Links:</h3>
+        <ul style={util.styleProtocolList}>{badgesElement}</ul>
       </div>
     )
   }
@@ -165,7 +178,11 @@ class ListResult extends React.Component {
 
   render() {
     const {item, showLinks, showTimeAndSpace} = this.props
-    const rightItems = [ <h2 style={styleTitle}>{item.title}</h2> ]
+    const rightItems = [
+      <h2 key={'ListResult::title'} style={styleTitle}>
+        {item.title}
+      </h2>,
+    ]
 
     if (showLinks) {
       rightItems.push(this.renderLinks(item.links))
@@ -184,6 +201,7 @@ class ListResult extends React.Component {
 
     const left = (
       <FlexColumn
+        key={'ListResult::leftColumn'}
         style={{width: '32%'}}
         items={[
           this.renderDisplayImage(item.thumbnail, item.spatialBounding),
@@ -192,6 +210,7 @@ class ListResult extends React.Component {
     )
     const right = (
       <FlexColumn
+        key={'ListResult::rightColumn'}
         style={{marginLeft: '2em', width: '68%'}}
         items={rightItems}
       />

@@ -4,7 +4,6 @@ import GranuleListLegend from './GranuleListLegend'
 import Button from '../../common/input/Button'
 import ListView from '../ListView'
 import ListResult from './ListResult'
-import {SvgIcon} from '../../common/SvgIcon'
 import {identifyProtocol} from '../../utils/resultUtils'
 import {boxShadow} from '../../common/defaultStyles'
 
@@ -18,7 +17,6 @@ const styleGranuleListWrapper = {
   maxWidth: '80em',
   width: '80em',
   boxShadow: boxShadow,
-  // Note: margins on this element are temporarily needed to show the box shadow correctly. I expect this to change when we restructure the details page to get rid of tabs, as well as possibly when we update the router.
   marginRight: '3px',
   marginLeft: '1px',
   backgroundColor: 'white',
@@ -30,13 +28,6 @@ const styleShowMore = {
 }
 
 export default class GranuleList extends Component {
-  renderBadgeIcon = protocol => {
-    if (protocol.svgPath) {
-      return <SvgIcon path={protocol.svgPath} />
-    }
-    return <span>{protocol.id}</span>
-  }
-
   propsForResult = item => {
     return {
       showLinks: true,
@@ -57,7 +48,11 @@ export default class GranuleList extends Component {
     // keep track of used protocols in results to avoid unnecessary legend keys
     const usedProtocols = new Set()
     _.forEach(results, value => {
-      _.forEach(value.links, link => usedProtocols.add(identifyProtocol(link)))
+      _.forEach(value.links, link => {
+        // if(link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess') {
+        return usedProtocols.add(identifyProtocol(link))
+        // }
+      })
     })
 
     const showMoreButton =
