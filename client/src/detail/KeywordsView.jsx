@@ -4,7 +4,7 @@ import DetailGrid from './DetailGrid'
 const styleKeywordTitle = {
   padding: 0,
   margin: '0 0 1.618em 0',
-  fontStyle: 'italic'
+  fontStyle: 'italic',
 }
 
 const styleContent = {
@@ -29,36 +29,29 @@ const styleHeadingWrapper = {
 const styleHeading = {
   margin: 0,
   padding: '0.618em',
-  width: '100%'
+  width: '100%',
 }
 
 export default class KeywordsView extends React.Component {
-
   renderKeywordHeading = heading => {
     return (
-        <div style={styleHeadingWrapper}>
-          <h3 style={styleHeading}>{heading}</h3>
-        </div>
+      <div style={styleHeadingWrapper}>
+        <h3 style={styleHeading}>{heading}</h3>
+      </div>
     )
   }
 
   renderKeywordList = (title, keywords) => {
     let listItems = keywords.map((item, index) => {
-      return (
-          <li key={index}>
-            {item}
-          </li>
-      )
+      return <li key={index}>{item}</li>
     })
-    let keywordList = (
-        <div style={styleContent}>Not available in metadata.</div>
-    )
+    let keywordList = <div style={styleContent}>Not available in metadata.</div>
     if (listItems.length > 0) {
       keywordList = (
-          <div style={styleContent}>
-            <p style={styleKeywordTitle}>{title}</p>
-            <ul style={styleContentList}>{listItems}</ul>
-          </div>
+        <div style={styleContent}>
+          <p style={styleKeywordTitle}>{title}</p>
+          <ul style={styleContentList}>{listItems}</ul>
+        </div>
       )
     }
     return keywordList
@@ -67,20 +60,35 @@ export default class KeywordsView extends React.Component {
   render() {
     const {item} = this.props
 
-    const dataCenterHeading = this.renderKeywordHeading("Data Center keywords")
-    const dataCenterList = this.renderKeywordList("Global Change Master Directory (GCMD) Data Center Keywords", item.gcmdDataCenters)
+    const dataCenterHeading = this.renderKeywordHeading('Data Center keywords')
+    const dataCenterList = this.renderKeywordList(
+      'Global Change Master Directory (GCMD) Data Center Keywords',
+      item.gcmdDataCenters
+    )
 
-    const platformHeading = this.renderKeywordHeading("Platform keywords")
-    const platformList = this.renderKeywordList("Global Change Master Directory (GCMD) Platform Keywords", item.gcmdPlatforms)
+    const platformHeading = this.renderKeywordHeading('Platform keywords')
+    const platformList = this.renderKeywordList(
+      'Global Change Master Directory (GCMD) Platform Keywords',
+      item.gcmdPlatforms
+    )
 
-    const instrumentHeading = this.renderKeywordHeading("Instrument keywords")
-    const instrumentList = this.renderKeywordList("Global Change Master Directory (GCMD) Instrument Keywords", item.gcmdInstruments)
+    const instrumentHeading = this.renderKeywordHeading('Instrument keywords')
+    const instrumentList = this.renderKeywordList(
+      'Global Change Master Directory (GCMD) Instrument Keywords',
+      item.gcmdInstruments
+    )
 
-    const locationHeading = this.renderKeywordHeading("Place keywords")
-    const locationList = this.renderKeywordList("Global Change Master Directory (GCMD) Location Keywords", item.gcmdLocations)
+    const locationHeading = this.renderKeywordHeading('Place keywords')
+    const locationList = this.renderKeywordList(
+      'Global Change Master Directory (GCMD) Location Keywords',
+      item.gcmdLocations
+    )
 
-    const projectHeading = this.renderKeywordHeading("Project keywords")
-    const projectList = this.renderKeywordList("Global Change Master Directory (GCMD) Project Keywords", item.gcmdProjects)
+    const projectHeading = this.renderKeywordHeading('Project keywords')
+    const projectList = this.renderKeywordList(
+      'Global Change Master Directory (GCMD) Project Keywords',
+      item.gcmdProjects
+    )
 
     const accessGrid = [
       [ dataCenterHeading, dataCenterList ],

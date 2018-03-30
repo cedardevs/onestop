@@ -35,16 +35,15 @@ const styleHeadingWrapper = {
 const styleHeading = {
   margin: 0,
   padding: '0.618em',
-  width: '100%'
+  width: '100%',
 }
 
 export default class AccessView extends React.Component {
-
   renderAccessHeading = heading => {
     return (
-        <div style={styleHeadingWrapper}>
-          <h3 style={styleHeading}>{heading}</h3>
-        </div>
+      <div style={styleHeadingWrapper}>
+        <h3 style={styleHeading}>{heading}</h3>
+      </div>
     )
   }
 
@@ -53,31 +52,20 @@ export default class AccessView extends React.Component {
       const {linkUrl, linkName, linkProtocol, linkDescription} = link
       const linkTitle = linkName ? linkName : linkProtocol
       return (
-          <li key={index}>
-            <A
-                href={linkUrl}
-                target="_blank"
-                title={linkTitle}
-                style={styleLink}
-            >
-              {linkTitle}
-            </A>
-            <p
-                style={styleParagraph}
-            >
-              {linkDescription}
-            </p>
-          </li>
+        <li key={index}>
+          <A href={linkUrl} target="_blank" title={linkTitle} style={styleLink}>
+            {linkTitle}
+          </A>
+          <p style={styleParagraph}>{linkDescription}</p>
+        </li>
       )
     })
-    let list = (
-        <div style={styleContent}>{notAvailable}</div>
-    )
+    let list = <div style={styleContent}>{notAvailable}</div>
     if (listItems.length > 0) {
       list = (
-          <div style={styleContent}>
-            <ul style={styleContentList}>{listItems}</ul>
-          </div>
+        <div style={styleContent}>
+          <ul style={styleContentList}>{listItems}</ul>
+        </div>
       )
     }
     return list
@@ -91,22 +79,41 @@ export default class AccessView extends React.Component {
     const distributionsFormats = list.map((format, index) => {
       return <li key={index}>{format.name}</li>
     })
-    return <div style={styleContent}><ul style={styleContentList}>{distributionsFormats}</ul></div>
+    return (
+      <div style={styleContent}>
+        <ul style={styleContentList}>{distributionsFormats}</ul>
+      </div>
+    )
   }
 
   render() {
     const {item} = this.props
 
-    const informationHeading = this.renderAccessHeading("Information")
-    const informationLinks = item.links.filter(link => link.linkFunction === 'information')
-    const informationList = this.renderAccessLinkList(informationLinks, "No information links in metadata.")
+    const informationHeading = this.renderAccessHeading('Information')
+    const informationLinks = item.links.filter(
+      link => link.linkFunction === 'information'
+    )
+    const informationList = this.renderAccessLinkList(
+      informationLinks,
+      'No information links in metadata.'
+    )
 
-    const downloadDataHeading = this.renderAccessHeading("Download Data")
-    const downloadDataLinks = item.links.filter(link => link.linkFunction === 'download')
-    const downloadDataList = this.renderAccessLinkList(downloadDataLinks, "No download links in metadata.")
+    const downloadDataHeading = this.renderAccessHeading('Download Data')
+    const downloadDataLinks = item.links.filter(
+      link => link.linkFunction === 'download'
+    )
+    const downloadDataList = this.renderAccessLinkList(
+      downloadDataLinks,
+      'No download links in metadata.'
+    )
 
-    const distributionFormatsHeading = this.renderAccessHeading("Distribution Formats")
-    const distributionFormatsList = this.renderAccessList(item.dataFormats, "No formats in metadata.")
+    const distributionFormatsHeading = this.renderAccessHeading(
+      'Distribution Formats'
+    )
+    const distributionFormatsList = this.renderAccessList(
+      item.dataFormats,
+      'No formats in metadata.'
+    )
 
     const accessGrid = [
       [ informationHeading, informationList ],
