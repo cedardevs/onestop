@@ -7,6 +7,7 @@ import VideoView from './VideoView'
 import Tabs from './Tabs'
 import {boxShadow} from '../common/defaultStyles'
 import Keywords from './Keywords'
+import KeywordsView from './KeywordsView'
 
 //-- Styles
 
@@ -85,7 +86,7 @@ class Detail extends Component {
       },
       {
         title: 'Keywords',
-        content: <Keywords item={item} />,
+        content: <KeywordsView item={item} />,
       },
     ]
 

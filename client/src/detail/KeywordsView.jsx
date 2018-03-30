@@ -1,15 +1,10 @@
 import React from 'react'
 import DetailGrid from './DetailGrid'
-import A from '../common/link/Link'
 
-const styleParagraph = {
+const styleKeywordTitle = {
   padding: 0,
   margin: '0 0 1.618em 0',
-}
-
-const styleParagraphLast = {
-  padding: 0,
-  margin: 0,
+  fontStyle: 'italic'
 }
 
 const styleContent = {
@@ -17,14 +12,8 @@ const styleContent = {
 }
 
 const styleContentList = {
-  padding: '1.618em',
-  marginLeft: '1.618em',
-}
-
-const styleLink = {
-  display: 'inline-block',
-  color: 'rgb(85, 172, 228)',
-  margin: '0 0 0.618em 0',
+  padding: '0 1.618em 1.618em 1.618em',
+  margin: '0 0 0 1.618em',
 }
 
 const styleHeadingWrapper = {
@@ -43,116 +32,63 @@ const styleHeading = {
 }
 
 export default class KeywordsView extends React.Component {
+
+  renderKeywordHeading = heading => {
+    return (
+        <div style={styleHeadingWrapper}>
+          <h3 style={styleHeading}>{heading}</h3>
+        </div>
+    )
+  }
+
+  renderKeywordList = (title, keywords) => {
+    let listItems = keywords.map((item, index) => {
+      return (
+          <li key={index}>
+            {item}
+          </li>
+      )
+    })
+    let keywordList = (
+        <div style={styleContent}>Not available in metadata.</div>
+    )
+    if (listItems.length > 0) {
+      keywordList = (
+          <div style={styleContent}>
+            <p style={styleKeywordTitle}>{title}</p>
+            <ul style={styleContentList}>{listItems}</ul>
+          </div>
+      )
+    }
+    return keywordList
+  }
+
   render() {
     const {item} = this.props
 
-    let information = item.links
-      .filter(link => link.linkFunction === 'information')
-      .map((link, index, arr) => {
-        const lastIndex = arr.length - 1
-        const {linkUrl, linkName, linkProtocol, linkDescription} = link
-        const linkTitle = linkName ? linkName : linkProtocol
-        return (
-          <div key={index} style={styleContent}>
-            <A
-              href={linkUrl}
-              target="_blank"
-              title={linkTitle}
-              style={styleLink}
-            >
-              {linkTitle}
-            </A>
-            <p
-              style={index === lastIndex ? styleParagraphLast : styleParagraph}
-            >
-              {linkDescription}
-            </p>
-          </div>
-        )
-      })
+    const dataCenterHeading = this.renderKeywordHeading("Data Center keywords")
+    const dataCenterList = this.renderKeywordList("Global Change Master Directory (GCMD) Data Center Keywords", item.gcmdDataCenters)
 
-    if (information.length === 0) {
-      information = 'No information links in metadata.'
-    }
+    const platformHeading = this.renderKeywordHeading("Platform keywords")
+    const platformList = this.renderKeywordList("Global Change Master Directory (GCMD) Platform Keywords", item.gcmdPlatforms)
 
-    let downloadData = item.links
-      .filter(link => link.linkFunction === 'download')
-      .map((link, index, arr) => {
-        const lastIndex = arr.length - 1
-        const {linkUrl, linkName, linkProtocol, linkDescription} = link
-        const linkTitle = linkName ? linkName : linkProtocol
-        return (
-          <div key={index} style={styleContent}>
-            <A
-              href={linkUrl}
-              target="_blank"
-              title={linkTitle}
-              style={styleLink}
-            >
-              {linkTitle}
-            </A>
-            <p
-              style={index === lastIndex ? styleParagraphLast : styleParagraph}
-            >
-              {linkDescription}
-            </p>
-          </div>
-        )
-      })
+    const instrumentHeading = this.renderKeywordHeading("Instrument keywords")
+    const instrumentList = this.renderKeywordList("Global Change Master Directory (GCMD) Instrument Keywords", item.gcmdInstruments)
 
-    if (downloadData.length === 0) {
-      downloadData = 'No download data links in metadata.'
-    }
+    const locationHeading = this.renderKeywordHeading("Place keywords")
+    const locationList = this.renderKeywordList("Global Change Master Directory (GCMD) Location Keywords", item.gcmdLocations)
 
-    const dataFormats = item.dataFormats ? item.dataFormats : []
-    const distributionsFormats = dataFormats.map((format, index) => {
-      return <li key={index}>{format.name}</li>
-    })
+    const projectHeading = this.renderKeywordHeading("Project keywords")
+    const projectList = this.renderKeywordList("Global Change Master Directory (GCMD) Project Keywords", item.gcmdProjects)
 
-    let distributionFormatsList = (
-      <ul style={styleContentList}>{distributionsFormats}</ul>
-    )
-    if (dataFormats.length === 0) {
-      distributionFormatsList = 'No formats in metadata.'
-    }
-
-    const themeKeywordsHeader = (
-      <div style={styleHeadingWrapper}>
-        <h3 style={styleHeading}>Information</h3>
-      </div>
-    )
-    const dataCenterKeywordsHeader = (
-      <div style={styleHeadingWrapper}>
-        <h3 style={styleHeading}>Download Data</h3>
-      </div>
-    )
-    const platformKeywordsHeader = (
-      <div style={styleHeadingWrapper}>
-        <h3 style={styleHeading}>Distribution Formats</h3>
-      </div>
-    )
-    const instrumentKeywordsHeader = (
-      <div style={styleHeadingWrapper}>
-        <h3 style={styleHeading}>Distribution Formats</h3>
-      </div>
-    )
-    const placeKeywordsHeader = (
-      <div style={styleHeadingWrapper}>
-        <h3 style={styleHeading}>Distribution Formats</h3>
-      </div>
-    )
-    const projectKeywordsHeader = (
-      <div style={styleHeadingWrapper}>
-        <h3 style={styleHeading}>Distribution Formats</h3>
-      </div>
-    )
-
-    const keywordsGrid = [
-      [ informationHeader, information ],
-      [ downloadDataHeader, downloadData ],
-      [ distributionFormatsHeader, distributionFormatsList ],
+    const accessGrid = [
+      [ dataCenterHeading, dataCenterList ],
+      [ platformHeading, platformList ],
+      [ instrumentHeading, instrumentList ],
+      [ locationHeading, locationList ],
+      [ projectHeading, projectList ],
     ]
 
-    return <DetailGrid grid={accessGrid} />
+    return <DetailGrid grid={accessGrid} colWidths={[ {sm: 4}, {sm: 8} ]} />
   }
 }

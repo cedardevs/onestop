@@ -50,7 +50,7 @@ export default class DescriptionView extends Component {
 
     const styleExpandableHeading = {
       // padding: '0.618em',
-      backgroundColor: '#8cb9d8',
+      backgroundColor: '#6792B5',
     }
 
     const styleExpandableContent = {
@@ -68,9 +68,9 @@ export default class DescriptionView extends Component {
     const citationExpandable = (
       <Expandable
         showArrow={true}
-        heading={<div style={{padding: '0.618em'}}>Citation</div>}
+        heading={<div style={{padding: '0.618em', color: 'white', fontWeight: 'bold'}}>Citation</div>}
         styleHeading={styleExpandableHeading}
-        content={<div style={{padding: '0.618em'}}>{citeAsStatements}</div>}
+        content={<div style={{padding: '1.618em', color: '#000032', backgroundColor: '#eef5fb'}}>{citeAsStatements}</div>}
         styleContent={styleExpandableContent}
       />
     )
@@ -81,9 +81,9 @@ export default class DescriptionView extends Component {
     const identifiersExpandable = (
       <Expandable
         showArrow={true}
-        heading={<div style={{padding: '0.618em'}}>Identifier</div>}
+        heading={<div style={{padding: '0.618em', color: 'white', fontWeight: 'bold'}}>Identifier</div>}
         styleHeading={styleExpandableHeading}
-        content={<div style={{padding: '0.618em'}}>{identifier}</div>}
+        content={<div style={{padding: '1.618em', color: '#000032', backgroundColor: '#eef5fb'}}>{identifier}</div>}
         styleContent={styleExpandableContent}
       />
     )
