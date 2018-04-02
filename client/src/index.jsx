@@ -2,14 +2,10 @@ import React from 'react'
 import {render} from 'react-dom'
 import {Router, Route, IndexRoute} from 'react-router'
 import Result from './result/Result'
-import Section508Result from './result/Section508Result'
 import CollectionsContainer from './result/collections/CollectionsContainer'
 import GranuleListContainer from './result/granules/GranuleListContainer'
-import Section508CollectionGridContainer from './result/collections/Section508CollectionGridContainer'
-import Section508GranuleListContainer from './result/granules/list/Section508GranuleListContainer'
 import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
-import Section508LandingContainer from './landing/Section508LandingContainer'
 import DetailContainer from './detail/DetailContainer'
 import Help from './common/info/Help'
 import AboutContainer from './common/info/AboutContainer'
@@ -41,28 +37,7 @@ store.dispatch(initialize())
 //     },
 //     {path: 'error', component: ErrorContainer},
 //     {path: 'help', component: Help},
-//     {path: 'about', component: AboutContainer},
-//     {
-//       path: '508',
-//       component: Section508LandingContainer,
-//     },
-//     {
-//       component: Section508Result,
-//       childRoutes: [
-//         {
-//           path: '508/collections',
-//           component: Section508CollectionGridContainer,
-//         },
-//         {
-//           path: '508/collections/files',
-//           component: Section508GranuleListContainer,
-//         },
-//       ],
-//     },
-//
-//     {path: '508/error', component: ErrorContainer},
-//     {path: '508/help', component: Help},
-//     {path: '508/about', component: AboutContainer},
+//     {path: 'about', component: AboutContainer}
 //   ],
 // }
 //
@@ -92,24 +67,6 @@ const routesLayout = (
         path="collections/granules/:id"
         component={GranuleListContainer}
       />
-      <Route name="Error" path="error" component={ErrorContainer} />
-      <Route name="Help" path="help" component={Help} />
-      <Route name="About" path="about" component={AboutContainer} />
-    </Route>
-
-    <Route path="508" name="Home" component={RootContainer}>
-      <IndexRoute component={Section508LandingContainer} />
-      <Route name="Collections" path="collections" component={Section508Result}>
-        <IndexRoute
-          displayName="Collections"
-          component={Section508CollectionGridContainer}
-        />
-        <Route
-          name="Files"
-          path="files"
-          component={Section508GranuleListContainer}
-        />
-      </Route>
       <Route name="Error" path="error" component={ErrorContainer} />
       <Route name="Help" path="help" component={Help} />
       <Route name="About" path="about" component={AboutContainer} />

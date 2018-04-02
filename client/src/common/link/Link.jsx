@@ -1,6 +1,9 @@
 import React, {Component} from 'react'
 import {buildGovExternalOnClick} from '../../utils/urlUtils'
-import './link.css'
+
+const stylePointer = {
+  cursor: 'pointer'
+}
 
 class Link extends Component {
   constructor(props) {
@@ -14,6 +17,7 @@ class Link extends Component {
         href={href}
         target={target}
         onClick={buildGovExternalOnClick(href, target, onClick)}
+        style={stylePointer}
         {...others}
       >
         {this.props.children}
