@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import GranuleListLegend from './GranuleListLegend'
 import Button from '../../common/input/Button'
 import ListView from '../ListView'
-import ListResult from './ListResult'
+import GranuleListResult from './GranuleListResult'
 import {identifyProtocol} from '../../utils/resultUtils'
 import {boxShadow} from '../../common/defaultStyles'
 
@@ -74,7 +74,7 @@ export default class GranuleList extends Component {
             shown={returnedHits}
             total={totalHits}
             onItemSelect={selectCollection}
-            ListItemComponent={ListResult}
+            ListItemComponent={GranuleListResult}
             GridItemComponent={null}
             propsForItem={this.propsForResult}
           />
