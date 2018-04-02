@@ -107,7 +107,7 @@ export default class DescriptionView extends Component {
             style={{
               padding: '1.618em',
               color: '#000032',
-              backgroundColor: '#eef5fb'
+              backgroundColor: '#eef5fb',
             }}
           >
             {identifier}
@@ -130,8 +130,8 @@ export default class DescriptionView extends Component {
     const expandableInformation = (
       <div>
         <GranulesSummary
-            totalGranuleCount={totalGranuleCount}
-            granuleSearch={granuleSearch}
+          totalGranuleCount={totalGranuleCount}
+          granuleSearch={granuleSearch}
         />
         {citationExpandable}
         {identifiersExpandable}

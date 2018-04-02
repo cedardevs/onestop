@@ -52,7 +52,6 @@ class Header extends React.Component {
   }
 
   render() {
-
     const menuContent = (
       <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>

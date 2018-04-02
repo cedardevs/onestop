@@ -13,32 +13,32 @@ const styleError = {
   backgroundColor: '#E74C3C',
   margin: '1.618em',
   padding: '2em',
-  boxShadow: boxShadow
+  boxShadow: boxShadow,
 }
 
 const styleErrorHeading = {
   margin: '0 0 0.618em 0',
-  padding: 0
+  padding: 0,
 }
 
 const styleErrorDescription = {
   margin: '0 0 1.618em 0',
-  padding: 0
+  padding: 0,
 }
 
 const styleActions = {
   display: 'flex',
-  justifyContent: 'flex-end'
+  justifyContent: 'flex-end',
 }
 
 const styleHomeButton = {
   color: '#000',
-  background: '#e6e6e6'
+  background: '#e6e6e6',
 }
 
 const styleHomeButtonHover = {
   color: '#000',
-  background: 'linear-gradient(#e6e6e6, #b6b6b6)'
+  background: 'linear-gradient(#e6e6e6, #b6b6b6)',
 }
 
 class Error extends React.Component {
@@ -91,23 +91,23 @@ class Error extends React.Component {
 
   render() {
     return (
-        <div style={styleError}>
-          {this.errors.map((error, i) => {
-            return (
-              <div key={i}>
-                <h2 style={styleErrorHeading}>{error.title}</h2>
-                <p style={styleErrorDescription}>{error.detail}</p>
-              </div>
-            )
-          })}
-          <div style={styleActions}>
-            <Button
-                text="Start a New Search"
-                onClick={this.goHome}
-                style={styleHomeButton}
-                styleHover={styleHomeButtonHover}
-            />
-          </div>
+      <div style={styleError}>
+        {this.errors.map((error, i) => {
+          return (
+            <div key={i}>
+              <h2 style={styleErrorHeading}>{error.title}</h2>
+              <p style={styleErrorDescription}>{error.detail}</p>
+            </div>
+          )
+        })}
+        <div style={styleActions}>
+          <Button
+            text="Start a New Search"
+            onClick={this.goHome}
+            style={styleHomeButton}
+            styleHover={styleHomeButtonHover}
+          />
+        </div>
       </div>
     )
   }

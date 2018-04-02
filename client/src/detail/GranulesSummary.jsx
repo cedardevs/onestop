@@ -8,7 +8,7 @@ const styleGranuleSummary = {
   fontWeight: 'bold',
   backgroundColor: '#222',
   color: 'white',
-  justifyContent: 'center'
+  justifyContent: 'center',
 }
 
 const styleLink = {
@@ -21,9 +21,7 @@ export default class GranulesSummary extends React.Component {
     const {totalGranuleCount, granuleSearch} = this.props
 
     const noGranulesSummary = (
-        <div style={styleGranuleSummary}>
-          No files in this collection
-        </div>
+      <div style={styleGranuleSummary}>No files in this collection</div>
     )
     const granulesSummary = (
       <div style={styleGranuleSummary}>

@@ -19,7 +19,9 @@ const styleTitle = (active, first, last, collapseImage) => {
     fontWeight: 'bold',
     fontSize: '1.25em',
     padding: '1em',
-    borderRadius: first ? `1em ${topRightRadius} 0 0` : last ? `0 0 ${bottomRightRadius} 1em` : 'none',
+    borderRadius: first
+      ? `1em ${topRightRadius} 0 0`
+      : last ? `0 0 ${bottomRightRadius} 1em` : 'none',
   }
 }
 

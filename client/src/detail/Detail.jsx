@@ -33,7 +33,7 @@ const styleTitle = {
   padding: '1em',
   backgroundColor: '#8cb9d8',
   color: '#000032',
-  borderRadius: '0 0 0 1.618em'
+  borderRadius: '0 0 0 1.618em',
 }
 
 const styleContent = {
@@ -72,10 +72,7 @@ class Detail extends Component {
       {
         title: 'Overview',
         content: (
-          <OverviewView
-            item={item}
-            totalGranuleCount={totalGranuleCount}
-          />
+          <OverviewView item={item} totalGranuleCount={totalGranuleCount} />
         ),
       },
       {
@@ -103,9 +100,13 @@ class Detail extends Component {
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
           <h1 style={styleTitle}>{item.title}</h1>
-          <DescriptionView item={item} totalGranuleCount={totalGranuleCount} granuleSearch={() => {
-            showGranules(id)
-          }}/>
+          <DescriptionView
+            item={item}
+            totalGranuleCount={totalGranuleCount}
+            granuleSearch={() => {
+              showGranules(id)
+            }}
+          />
           <Tabs
             style={{display: 'flex'}}
             styleContent={styleContent}

@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {buildGovExternalOnClick} from '../../utils/urlUtils'
 
 const stylePointer = {
-  cursor: 'pointer'
+  cursor: 'pointer',
 }
 
 class Link extends Component {

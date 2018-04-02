@@ -57,18 +57,17 @@ const styleNote = {
 
 export default class Help extends React.Component {
   render() {
-
     return (
       <div style={styleWrapper}>
         <section style={styleHelp}>
           <h1 style={styleHelpH1}>How to use this interface:</h1>
           <p>
             <b>
-              To get started, just type a term into the Search Box on the home page and click
-              the Search Button
+              To get started, just type a term into the Search Box on the home
+              page and click the Search Button
             </b>
             <i style={styleIcon} aria-hidden="true">
-                <img alt="search icon" src={search} style={styleIconImg} />
+              <img alt="search icon" src={search} style={styleIconImg} />
             </i>
           </p>
 
@@ -81,11 +80,12 @@ export default class Help extends React.Component {
 
           <ul>
             <li>
-              Use the filters menu (available on the search results page) to limit
-              results to only those that <u>intersect</u> the given constraints.
+              Use the filters menu (available on the search results page) to
+              limit results to only those that <u>intersect</u> the given
+              constraints.
               <br />
-              Once a filter has been applied, a tag will be placed above the search
-              results.
+              Once a filter has been applied, a tag will be placed above the
+              search results.
             </li>
 
             <li style={styleTipsListItem}>

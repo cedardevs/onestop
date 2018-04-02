@@ -98,15 +98,11 @@ export default class Root extends Component {
   }
 
   isAboutPage() {
-    return (
-      this.location.startsWith('/about')
-    )
+    return this.location.startsWith('/about')
   }
 
   isHelpPage() {
-    return (
-      this.location.startsWith('/help')
-    )
+    return this.location.startsWith('/help')
   }
 
   homeUrl() {

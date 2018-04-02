@@ -4,7 +4,7 @@ const styleBanner = {
   background: 'red',
   textAlign: 'center',
   padding: '0.618em',
-  fontSize: '1.2em'
+  fontSize: '1.2em',
 }
 
 class Banner extends React.Component {

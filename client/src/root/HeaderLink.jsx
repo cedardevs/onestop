@@ -5,15 +5,14 @@ const styleLink = {
   textDecoration: 'none',
   color: '#d7d7d7',
   fontWeight: 300,
-  transition: 'color 0.3s ease'
+  transition: 'color 0.3s ease',
 }
 
 const styleLinkHover = {
-  color: '#277cb2'
+  color: '#277cb2',
 }
 
-export default class HeaderLink extends React.Component
-{
+export default class HeaderLink extends React.Component {
   componentWillMount() {
     this.setState({
       hovering: false,
@@ -38,19 +37,24 @@ export default class HeaderLink extends React.Component
     })
   }
 
-  render()
-  {
-    const { title, to } = this.props
+  render() {
+    const {title, to} = this.props
 
     const styleLinkMerged = {
-        ...styleLink,
-        ...(this.state.hovering ? styleLinkHover : {})
+      ...styleLink,
+      ...(this.state.hovering ? styleLinkHover : {}),
     }
 
     return (
-        <Link title={title} to={to} style={styleLinkMerged} onMouseOver={this.handleMouseOver} onMouseOut={this.handleMouseOut}>
-          {this.props.children}
-        </Link>
+      <Link
+        title={title}
+        to={to}
+        style={styleLinkMerged}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+      >
+        {this.props.children}
+      </Link>
     )
   }
 }
