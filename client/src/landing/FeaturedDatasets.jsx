@@ -176,7 +176,7 @@ class FeaturedDatasets extends React.Component {
     const {featured} = this.props
     const {current, collapseImage} = this.state
 
-    if (featured) {
+    if (featured !== null && featured.length > 0) {
       const titleList = (
         <ul key="title-list" style={styleTitleList(collapseImage)}>
           {featured.map((f, i, arr) => {
