@@ -9,9 +9,8 @@ import {boxShadow} from '../../common/defaultStyles'
 import A from '../../common/link/Link'
 
 const styleResult = {
-  width: '75em',
   minHeight: '15.5em',
-  marginBottom: '2em',
+  margin: '0 1.618em 1.618em 0',
   boxShadow: boxShadow,
   backgroundColor: 'white',
   transition: '0.3s background-color ease',
@@ -40,8 +39,7 @@ const styleMap = {
 const styleTitle = {
   fontSize: '1.5em',
   color: 'rgb(0, 0, 50)',
-  margin: '0',
-  textAlign: 'center',
+  margin: '0 0 0.618em 0',
 }
 
 const styleSectionHeader = {
@@ -211,7 +209,7 @@ class ListResult extends React.Component {
     const right = (
       <FlexColumn
         key={'ListResult::rightColumn'}
-        style={{marginLeft: '2em', width: '68%'}}
+        style={{marginLeft: '1.618em', width: '68%'}}
         items={rightItems}
       />
     )
@@ -227,7 +225,7 @@ class ListResult extends React.Component {
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
       >
-        <FlexRow style={{padding: '2em'}} items={[ left, right ]} />
+        <FlexRow style={{padding: '1.618em'}} items={[ left, right ]} />
       </div>
     )
   }
