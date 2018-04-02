@@ -47,7 +47,7 @@ const styleFallbackItem = {
 export default class ListView extends Component {
   constructor(props) {
     super(props)
-    this.state = {showAsGrid: false}
+    this.state = {showAsGrid: !!props.GridItemComponent}
   }
 
   toggleShowAsGrid = event => {
@@ -65,7 +65,6 @@ export default class ListView extends Component {
       loading,
       shown,
       total,
-      enableGridToggle,
       onItemSelect,
       ListItemComponent,
       GridItemComponent,
@@ -82,8 +81,10 @@ export default class ListView extends Component {
       </h1>
     )
 
+    const toggleAvailable = ListItemComponent && GridItemComponent
+
     let controlElement = null
-    if (enableGridToggle) {
+    if (toggleAvailable) {
       controlElement = (
         <div style={styleListControl}>
           <Button

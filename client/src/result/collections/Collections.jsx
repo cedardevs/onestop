@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import CollectionCard from './CollectionCard'
+import CollectionListResult from './CollectionListResult'
 import Button from '../../common/input/Button'
 import ListView from '../ListView'
 
@@ -39,7 +40,6 @@ export default class Collections extends Component {
           loading={!!loading}
           shown={returnedHits}
           total={totalHits}
-          enableGridToggle={true}
           onItemSelect={selectCollection}
           ListItemComponent={null}
           GridItemComponent={CollectionCard}

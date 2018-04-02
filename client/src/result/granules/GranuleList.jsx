@@ -73,7 +73,6 @@ export default class GranuleList extends Component {
             loading={!!loading}
             shown={returnedHits}
             total={totalHits}
-            enableGridToggle={false}
             onItemSelect={selectCollection}
             ListItemComponent={ListResult}
             GridItemComponent={null}
