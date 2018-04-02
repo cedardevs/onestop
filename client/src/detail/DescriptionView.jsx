@@ -126,12 +126,6 @@ export default class DescriptionView extends Component {
         </p>
       </div>
     )
-    // const gridImageAndDescription = [
-    //     [collectionImage, description]
-    // ]
-    // const imageAndDescription = (
-    //     <DetailGrid grid={gridImageAndDescription} colWidths={[{sm:4},{sm:8}]}/>
-    // )
 
     const expandableInformation = (
       <div>
@@ -144,24 +138,12 @@ export default class DescriptionView extends Component {
       </div>
     )
 
-
-
     return (
       <DetailGrid
         grid={[ [ imageAndDescription, expandableInformation ] ]}
         colWidths={[ {sm: 8}, {sm: 4} ]}
       />
     )
-
-    // return (
-    //   <div style={{display: 'flex'}}>
-    //     <p style={styleDescription}>
-    //       {collectionImage}
-    //       {description}
-    //     </p>
-    //     {expandableInformation}
-    //   </div>
-    // )
   }
 
   renderCollectionImage(thumbnail, geometry) {

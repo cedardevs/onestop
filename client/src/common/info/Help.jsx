@@ -57,24 +57,6 @@ const styleNote = {
 
 export default class Help extends React.Component {
   render() {
-    const accessibleVersion = window.location.hash.includes('508')
-
-    const mainSiteSnippet = (
-      <li>
-        Use the filters menu (available on the search results page) to limit
-        results to only those that <u>intersect</u> the given constraints.
-        <br />
-        Once a filter has been applied, a tag will be placed above the search
-        results.
-      </li>
-    )
-
-    const accessibleSiteSnippet = (
-      <li>
-        Use the Start Date, End Date, and Bounding Box text boxes to limit
-        results to only those that <u>intersect</u> the given constraints.
-      </li>
-    )
 
     return (
       <div style={styleWrapper}>
@@ -82,17 +64,12 @@ export default class Help extends React.Component {
           <h1 style={styleHelpH1}>How to use this interface:</h1>
           <p>
             <b>
-              To get started, just type a term into the Search{' '}
-              {accessibleVersion ? 'Text ' : ''}Box on the home page and click
+              To get started, just type a term into the Search Box on the home page and click
               the Search Button
             </b>
-            {accessibleVersion ? (
-              ''
-            ) : (
-              <i style={styleIcon} aria-hidden="true">
+            <i style={styleIcon} aria-hidden="true">
                 <img alt="search icon" src={search} style={styleIconImg} />
-              </i>
-            )}
+            </i>
           </p>
 
           <p>
@@ -103,7 +80,13 @@ export default class Help extends React.Component {
           </p>
 
           <ul>
-            {accessibleVersion ? accessibleSiteSnippet : mainSiteSnippet}
+            <li>
+              Use the filters menu (available on the search results page) to limit
+              results to only those that <u>intersect</u> the given constraints.
+              <br />
+              Once a filter has been applied, a tag will be placed above the search
+              results.
+            </li>
 
             <li style={styleTipsListItem}>
               Wrap a search phrase in double quotes for an exact match:

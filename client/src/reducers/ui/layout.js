@@ -25,7 +25,6 @@ export const layout = (state = initialState, action) => {
       const onDetailPage = isDetailPage(path)
       const onGranuleListPage = isGranuleListPage(path)
       const allowSearching = !(
-        path.includes('508') ||
         onDetailPage ||
         onGranuleListPage
       )
