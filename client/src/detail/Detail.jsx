@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import OverviewView from './OverviewView'
 import DescriptionView from './DescriptionView'
+import OverviewView from './OverviewView'
 import AccessView from './AccessView'
 import VideoView from './VideoView'
 import Tabs from './Tabs'
@@ -33,6 +33,7 @@ const styleTitle = {
   padding: '1em',
   backgroundColor: '#8cb9d8',
   color: '#000032',
+  borderRadius: '0 0 0 1.618em'
 }
 
 const styleContent = {
@@ -74,9 +75,6 @@ class Detail extends Component {
           <OverviewView
             item={item}
             totalGranuleCount={totalGranuleCount}
-            granuleSearch={() => {
-              showGranules(id)
-            }}
           />
         ),
       },
@@ -105,7 +103,9 @@ class Detail extends Component {
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
           <h1 style={styleTitle}>{item.title}</h1>
-          <DescriptionView item={item} />
+          <DescriptionView item={item} totalGranuleCount={totalGranuleCount} granuleSearch={() => {
+            showGranules(id)
+          }}/>
           <Tabs
             style={{display: 'flex'}}
             styleContent={styleContent}

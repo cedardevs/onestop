@@ -5,7 +5,6 @@ import FlexRow from '../common/FlexRow'
 import DSMMRating from './DSMMRating'
 import Keywords from './Keywords'
 import TimeSummary from './TimeSummary'
-import GranulesSummary from './GranulesSummary'
 import SpatialSummary from './SpatialSummary'
 
 const styleContainer = {
@@ -36,7 +35,7 @@ const stylePreviewMap = {
   paddingTop: '0.25em',
 }
 
-class StatisticsView extends Component {
+class OverviewView extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -47,7 +46,7 @@ class StatisticsView extends Component {
   }
 
   render() {
-    const {granuleSearch, totalGranuleCount, item} = this.props
+    const {totalGranuleCount, item} = this.props
 
     const left = (
       <div key="overview-left" style={styleLeft}>
@@ -76,10 +75,6 @@ class StatisticsView extends Component {
 
     const right = (
       <div key="overview-right" style={styleRight}>
-        <GranulesSummary
-          totalGranuleCount={totalGranuleCount}
-          granuleSearch={granuleSearch}
-        />
         <Keywords item={item} styleHeading={styleSectionHeading} />
       </div>
     )
@@ -95,9 +90,9 @@ class StatisticsView extends Component {
   }
 }
 
-StatisticsView.propTypes = {
+OverviewView.propTypes = {
   id: PropTypes.string,
   item: PropTypes.object,
 }
 
-export default StatisticsView
+export default OverviewView
