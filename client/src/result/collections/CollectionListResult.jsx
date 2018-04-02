@@ -23,7 +23,7 @@ const styleResult = {
 // }
 
 const styleContent = {
-  padding: '1.618em'
+  padding: '1.618em',
 }
 
 const styleOverlay = {
@@ -172,9 +172,9 @@ export default class CollectionListResult extends Component {
     const geometry = item.spatialBounding
     if (!this.thumbnailUrl) {
       return (
-          <div style={styleMapContainer}>
-            <MapThumbnail geometry={geometry} interactive={false} />
-          </div>
+        <div style={styleMapContainer}>
+          <MapThumbnail geometry={geometry} interactive={false} />
+        </div>
       )
     }
   }
@@ -238,22 +238,24 @@ export default class CollectionListResult extends Component {
     // }
 
     return (
-        <div style={styleResult} onKeyPress={e => this.handleKeyPress(e, onClick)}>
-          <div style={styleContent}>
-            <button
-                style={{display:'flex'}}
-                onClick={onClick}
-                onMouseOver={this.handleMouseOver}
-                onMouseOut={this.handleMouseOut}
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
-            >
-              <div>IMAGE</div>
-              <div>{title}</div>
-
-            </button>
-          </div>
+      <div
+        style={styleResult}
+        onKeyPress={e => this.handleKeyPress(e, onClick)}
+      >
+        <div style={styleContent}>
+          <button
+            style={{display: 'flex'}}
+            onClick={onClick}
+            onMouseOver={this.handleMouseOver}
+            onMouseOut={this.handleMouseOut}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+          >
+            <div>IMAGE</div>
+            <div>{title}</div>
+          </button>
         </div>
+      </div>
     )
   }
 }
@@ -262,7 +264,6 @@ CollectionListResult.propTypes = {
   item: PropTypes.object.isRequired,
   onClick: PropTypes.func.isRequired,
 }
-
 
 // {this.renderThumbnailMap()}
 // <div style={styleArchMerged}>
