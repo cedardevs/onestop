@@ -8,7 +8,7 @@ const styleGranuleSummary = {
   padding: 0,
   fontSize: '1.3em',
   fontWeight: 'bold',
-  color: 'white',
+  color: 'black',
 }
 
 const styleGranulesButton = {
