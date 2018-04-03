@@ -63,12 +63,12 @@ const styleArch = {
   bottom: 0,
   left: 0,
   right: 0,
-  height: '4.472em',
+  height: '1.618em',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
   fontWeight: 'normal',
-  padding: '0.618em 1em 0.618em 1em',
+  padding: '1.618em',
   margin: 0,
   color: '#222',
   backgroundColor: '#FBFBFB',
@@ -96,7 +96,7 @@ const styleArchBlur = {
   fontWeight: 'normal',
   backgroundColor: '#FBFBFB',
   color: '#222',
-  height: '4.472em',
+  height: '1.618em',
 }
 
 const styleMapContainer = {
@@ -108,21 +108,13 @@ const styleMapContainer = {
   height: '100%',
 }
 
-const styleSuperTitle = {
-  marginTop: '0.309em',
-  marginBottom: '0.309em',
-  fontSize: '1em',
-  lineHeight: '1.618em',
-  fontWeight: 'normal',
-}
-
 const styleTitle = {
   fontSize: '1em',
-  textAlign: 'left',
+  textAlign: 'center',
   lineHeight: '1.618em', // use this value to count block height
   maxHeight: '4.854em', // maxHeight = lineHeight (1.618) * max lines (3)
-  marginTop: '0.309em',
-  marginBottom: '0.309em',
+  margin: 0,
+  padding: 0,
   textOverflow: 'ellipsis',
   whiteSpace: 'normal',
   overflow: 'hidden',
@@ -245,9 +237,6 @@ export default class CollectionCard extends Component {
           >
             {this.renderThumbnailMap()}
             <div style={styleArchMerged}>
-              <div style={styleSuperTitle} aria-hidden={true}>
-                Collection Title:
-              </div>
               <h2 style={styleTitle}>{title}</h2>
             </div>
           </button>
