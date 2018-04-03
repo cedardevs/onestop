@@ -3,7 +3,6 @@ import {processUrl} from '../utils/urlUtils'
 import MapThumbnail from '../common/MapThumbnail'
 import Expandable from '../common/Expandable'
 import DetailGrid from './DetailGrid'
-import GranulesSummary from './GranulesSummary'
 
 const styleImage = {
   float: 'left',
@@ -35,7 +34,7 @@ const styleDescription = {
 
 export default class DescriptionView extends Component {
   render() {
-    const {item, totalGranuleCount, granuleSearch} = this.props
+    const {item} = this.props
 
     // thumbnail might be undefined or an empty string, so check for both
     const thumbnail =
@@ -129,10 +128,6 @@ export default class DescriptionView extends Component {
 
     const expandableInformation = (
       <div>
-        <GranulesSummary
-          totalGranuleCount={totalGranuleCount}
-          granuleSearch={granuleSearch}
-        />
         {citationExpandable}
         {identifiersExpandable}
       </div>

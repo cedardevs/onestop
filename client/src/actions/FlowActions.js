@@ -48,13 +48,11 @@ export const showGranulesList = id => {
   }
   return (dispatch, getState) => {
     const query = encodeQueryString(getState())
-    if (!_.isEmpty(query)) {
-      const locationDescriptor = {
-        pathname: `collections/granules/${id}`,
-        search: `?${query}`,
-      }
-      dispatch(push(locationDescriptor))
+    const locationDescriptor = {
+      pathname: `collections/granules/${id}`,
+      search: `?${query}`,
     }
+    dispatch(push(locationDescriptor))
   }
 }
 

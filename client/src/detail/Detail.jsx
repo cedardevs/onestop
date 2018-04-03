@@ -49,7 +49,13 @@ class Detail extends Component {
   }
 
   render() {
-    const {id, item, loading, totalGranuleCount, showGranules} = this.props
+    const {
+      id,
+      item,
+      loading,
+      totalGranuleCount,
+      navigateToGranules,
+    } = this.props
 
     if (loading) {
       return (
@@ -72,7 +78,11 @@ class Detail extends Component {
       {
         title: 'Overview',
         content: (
-          <OverviewView item={item} totalGranuleCount={totalGranuleCount} />
+          <OverviewView
+            item={item}
+            totalGranuleCount={totalGranuleCount}
+            navigateToGranules={() => navigateToGranules(id)}
+          />
         ),
       },
       {
@@ -100,13 +110,7 @@ class Detail extends Component {
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
           <h1 style={styleTitle}>{item.title}</h1>
-          <DescriptionView
-            item={item}
-            totalGranuleCount={totalGranuleCount}
-            granuleSearch={() => {
-              showGranules(id)
-            }}
-          />
+          <DescriptionView item={item} />
           <Tabs
             style={{display: 'flex'}}
             styleContent={styleContent}

@@ -6,6 +6,7 @@ import DSMMRating from './DSMMRating'
 import Keywords from './Keywords'
 import TimeSummary from './TimeSummary'
 import SpatialSummary from './SpatialSummary'
+import GranulesSummary from './GranulesSummary'
 
 const styleContainer = {
   padding: '1.618em',
@@ -46,7 +47,7 @@ class OverviewView extends Component {
   }
 
   render() {
-    const {totalGranuleCount, item} = this.props
+    const {item, totalGranuleCount, navigateToGranules} = this.props
 
     const left = (
       <div key="overview-left" style={styleLeft}>
@@ -75,6 +76,10 @@ class OverviewView extends Component {
 
     const right = (
       <div key="overview-right" style={styleRight}>
+        <GranulesSummary
+          totalGranuleCount={totalGranuleCount}
+          navigateToGranules={navigateToGranules}
+        />
         <Keywords item={item} styleHeading={styleSectionHeading} />
       </div>
     )
