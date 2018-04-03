@@ -103,7 +103,7 @@ class WrapperIntegrationSpec extends Specification{
 
     and:
     def attributes = new JsonSlurper().parseText(output.value()) as Map
-    attributes.publish == false
+    attributes.publishing.private == true
     attributes.discovery.fileIdentifier == "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_emb.nc"
     attributes.discovery.parentIdentifier == "gov.noaa.ncei.swx:dscovr_f1m"
   }

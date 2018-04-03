@@ -161,8 +161,8 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
         print('IsoLiteXML\n', IsoLiteXML, '\n')
         print('outFileName\n', outFileName, '\n')
 
-    publish = not parsed_file_name_dict['embargo_flag']
-    result = {'publish': publish, 'isoXml': IsoLiteXML}
+    private = parsed_file_name_dict['embargo_flag']
+    result = {'publishing': {'private': private}, 'isoXml': IsoLiteXML}
     return json.dumps(result)
 
 

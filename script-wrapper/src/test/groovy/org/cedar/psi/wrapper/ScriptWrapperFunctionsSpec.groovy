@@ -61,7 +61,7 @@ class ScriptWrapperFunctionsSpec extends Specification {
 
   def 'json output with xml within it results in returned json plus parsed discovery info'() {
     def input = JsonOutput.toJson([
-        publish: false,
+        publishing: [private: true],
         isoXml: testIso
     ])
 
@@ -73,7 +73,8 @@ class ScriptWrapperFunctionsSpec extends Specification {
     result instanceof String
     parsedResult instanceof Map
     parsedResult.isoXml == null
-    parsedResult.publish == false
+    parsedResult.publishing instanceof Map
+    parsedResult.publishing.private == true
     parsedResult.discovery instanceof Map
     parsedResult.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
   }
