@@ -49,15 +49,8 @@ export default class DescriptionView extends Component {
       : 'No description available'
 
     const styleExpandableHeading = {
-      // padding: '0.618em',
       backgroundColor: '#6792B5',
     }
-
-    const styleExpandableContent = {
-      // padding: '0.618em',
-    }
-
-    console.log('item:', item)
 
     const citeAsStatements =
       item.citeAsStatements.length > 0
@@ -85,7 +78,6 @@ export default class DescriptionView extends Component {
             {citeAsStatements}
           </div>
         }
-        styleContent={styleExpandableContent}
       />
     )
 
@@ -112,7 +104,6 @@ export default class DescriptionView extends Component {
             {identifier}
           </div>
         }
-        styleContent={styleExpandableContent}
       />
     )
 

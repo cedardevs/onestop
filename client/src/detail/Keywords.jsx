@@ -2,13 +2,12 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 
-const styleKeyword = backgroundColor => {
+const styleKeyword = color => {
   return {
-    backgroundColor: backgroundColor ? backgroundColor : 'initial',
-    color: 'white',
-    padding: '0.35em',
+    color: color,
+    fontStyle: 'italic',
+    paddingRight: '0.618em',
     borderRadius: '0.1em 0.4em',
-    margin: '0.25em 0.2em',
     flex: '0 1 auto',
   }
 }
@@ -19,6 +18,7 @@ const styleKeywordsList = {
   justifyContent: 'left',
   alignContent: 'center',
   listStyleType: 'none',
+  lineHeight: '1.618em',
   margin: 0,
   padding: 0,
 }
@@ -81,7 +81,7 @@ class Keywords extends Component {
     })
   }
 
-  renderGCMDKeywords(type, bgColor, showAll) {
+  renderGCMDKeywords(type, color, showAll) {
     const {item} = this.props
     let keywords = (item && item[type]) || []
 
@@ -97,10 +97,10 @@ class Keywords extends Component {
         keywords = keywords.map(term => term.split('>').pop().trim())
       }
       keywords = keywords.map(
-        (k, index) =>
+        (k, index, arr) =>
           index > 2 && !showAll ? null : (
-            <li style={styleKeyword(bgColor)} key={k}>
-              {k}
+            <li style={styleKeyword(color)} key={k}>
+              {k}{index < (arr.length-1) ? ',' : ''}
             </li>
           )
       )

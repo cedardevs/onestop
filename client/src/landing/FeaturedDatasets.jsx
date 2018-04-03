@@ -163,7 +163,6 @@ class FeaturedDatasets extends React.Component {
       // get new width dynamically
       const featuredRect = this.featuredRef.getBoundingClientRect()
       const newWidth = parseFloat(featuredRect.width)
-      console.log('newWidth:', newWidth)
       // if the image's new width goes below our threshold, collapse
       this.setState(prevState => {
         return {
