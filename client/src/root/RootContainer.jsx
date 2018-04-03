@@ -6,6 +6,7 @@ const mapStateToProps = state => {
     showLeft: state.ui.layout.showLeft,
     leftOpen: state.ui.layout.leftOpen,
     showRight: state.ui.layout.showRight,
+    onDetailPage: state.ui.layout.onDetailPage,
   }
 }
 

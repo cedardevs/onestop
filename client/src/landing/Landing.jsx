@@ -1,9 +1,43 @@
 import React from 'react'
-import styles from './landing.css'
-import FeaturedItems from './FeaturedItems'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
-import stopCircle from 'fa/stop-circle-o.svg'
+import TopicsMenuContainer from './TopicsMenuContainer'
+import FeaturedDatasetsContainer from './FeaturedDatasetsContainer'
 import defaultStyles from '../common/defaultStyles'
+
+import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
+
+const styleCenterContent = {
+  display: 'flex',
+  justifyContent: 'center',
+  color: '#222',
+  fill: '#222',
+}
+
+const styleShowcase = {
+  maxWidth: '80em',
+  padding: '0 1.618em 10em 1.618em',
+  minHeight: '100vh',
+}
+
+const styleHeroHeader = {
+  textAlign: 'center',
+  fontSize: '3.5em',
+  marginTop: '0.5em',
+}
+
+const styleOneStopOImageWrapper = {
+  position: 'relative',
+  top: '.15em',
+  left: '.07em',
+}
+
+const styleHeroText = {
+  textAlign: 'center',
+  fontSize: '1.5em',
+  fontStyle: 'italic',
+  lineHeight: '1.5',
+  paddingBottom: '0.25em',
+}
 
 class Landing extends React.Component {
   constructor(props) {
@@ -12,102 +46,28 @@ class Landing extends React.Component {
     this.updateQuery = props.updateQuery
   }
 
-  search(query) {
-    this.updateQuery(query)
-    this.submit(query)
-  }
-
   render() {
-    let topics = [
-      {
-        title: 'Weather',
-        term: 'weather',
-        icon: require('../../img/topics/weather.png'),
-      },
-      {
-        title: 'Climate',
-        term: 'climate',
-        icon: require('../../img/topics/climate.png'),
-      },
-      {
-        title: 'Satellites',
-        term: 'satellite',
-        icon: require('../../img/topics/satellites.png'),
-      },
-      {
-        title: 'Fisheries',
-        term: 'fisheries',
-        icon: require('../../img/topics/fisheries.png'),
-      },
-      {
-        title: 'Coasts',
-        term: 'coasts',
-        icon: require('../../img/topics/coasts.png'),
-      },
-      {
-        title: 'Oceans',
-        term: 'oceans',
-        icon: require('../../img/topics/oceans.png'),
-      },
-    ]
-    topics = topics.map((topic, i) => {
-      return (
-        <div
-          key={i}
-          className={`${styles.topicItem}`}
-          onClick={() => this.search(topic.term)}
-        >
-          <button>
-            <img src={topic.icon} alt={topic.title} aria-hidden="true" />
-            <div>{topic.title}</div>
-          </button>
-        </div>
-      )
-    })
-
     return (
-      <div className={`${styles.showcase}`}>
-        <div className={`${styles.heroHeader}`} aria-hidden="true">
-          <img alt="O" src={stopCircle} />neStop
-        </div>
-        <h1 style={defaultStyles.hideOffscreen}>
-          OneStop: A NOAA Data Search Platform
-        </h1>
-        <div className={`${styles.heroText}`}>
-          Geophysical, oceans, coastal, weather and climate data discovery all
-          in one place.<br />
-        </div>
-        <div className={`${styles.searchComponent}`}>
-          <SearchFieldsContainer home={true} />
-        </div>
-        <div>
-          <div
-            className={`${styles.topicContainer}`}
-            aria-labelledby="searchTopics"
-          >
-            <h2 id="searchTopics">Search by Topic:</h2>
-            <ul>{topics}</ul>
+      <div style={styleCenterContent}>
+        <div style={styleShowcase}>
+          <h1 style={styleHeroHeader} aria-label="One Stop">
+            <span style={styleOneStopOImageWrapper}>
+              <SvgIcon size="1.1em" path={stop_circle_o} />
+            </span>neStop
+            <div style={defaultStyles.hideOffscreen}>
+              A NOAA Data Search Platform
+            </div>
+          </h1>
+          <div style={styleHeroText}>
+            Geophysical, oceans, coastal, weather and climate data discovery all
+            in one place.<br />
           </div>
+          <SearchFieldsContainer home={true} />
+          <TopicsMenuContainer />
+          <FeaturedDatasetsContainer />
         </div>
-        {this.renderFeatured()}
       </div>
     )
-  }
-
-  renderFeatured() {
-    if (this.props.featured) {
-      return (
-        <div className={`pure-u-1`} aria-labelledby="featuredDatasets">
-          <h2 id="featuredDatasets">Featured Data Sets:</h2>
-          <div className={`${styles.featuredContainer}`}>
-            <FeaturedItems
-              doSearch={this.search.bind(this)}
-              items={this.props.featured}
-            />
-          </div>
-        </div>
-      )
-    }
   }
 
   componentDidMount() {

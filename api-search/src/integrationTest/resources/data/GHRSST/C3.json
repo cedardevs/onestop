@@ -113,100 +113,44 @@
   ],
   "crossReferences": [
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "LAS Live Access Server",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "Portal to the GHRSST Global Data Assembly Center and data access",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "Web Service (PO.DAAC Labs) (Search Granule)",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "GHRSST Project homepage",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "Fieguth,P.W. et al. Mapping Mediterranean altimeter data with a multiresolution optimal interpolation algorithm, J. Atmos. Ocean Tech, 15 (2): 535-546, 1998",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "Khellah, F., P.W. Fieguth, M.J. Murray and M.R. Allen, Statistical Processing of Large Image Sequences, IEEE Transactions on Geoscience and Remote Sensing, 12 (1), 80-93, 2005",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "Fieguth, P. Multiply-Rooted Multiscale Models for Large-Scale Estimation, IEEE Image Processing, 10(11), 1676-1686, 2001",
-      "publicationDate": null
+      "date": null
     },
     {
-      "code": null,
-      "link": {
-        "linkFunction": null,
-        "linkDescription": null,
-        "linkUrl": null,
-        "linkName": null,
-        "linkProtocol": null
-      },
+      "links": [],
       "title": "GDS2 User Manuel Documentation on the GDS version 2 format specification",
-      "publicationDate": null
+      "date": null
     }
   ],
   "doi": null,

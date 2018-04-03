@@ -25,6 +25,7 @@ describe('The geoUtils', function () {
     geoUtils.findMaxRotations([[1070, 30], [1100, 45]]).should.equal(3)
     geoUtils.findMaxRotations([[350, 30], [380, 45]]).should.equal(1)
     geoUtils.findMaxRotations([[-10, 30], [20, 45]]).should.equal(0)
+    geoUtils.findMaxRotations([[-180, -90], [180, 90]]).should.equal(0)
     geoUtils.findMaxRotations([[-370, 30], [-340, 45]]).should.equal(-1)
     geoUtils.findMaxRotations([[-1090, 30], [-1060, 45]]).should.equal(-3)
   })

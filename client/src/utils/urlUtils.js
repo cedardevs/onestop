@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 // makes urls protocol-relative and url-encodes quotes
 export const processUrl = url => {
   if (typeof url === 'string') {
@@ -53,6 +51,7 @@ export const isDetailPage = path => {
   return detailIdMatch(path) ? true : false
 }
 
+// granule url matching is part of #445
 const granuleIdMatch = path => {
   const granuleListRegex = /\/granules\/([-\w]+)/
   return granuleListRegex.exec(path)

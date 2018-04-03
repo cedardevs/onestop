@@ -1,6 +1,7 @@
 apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
@@ -20,13 +21,13 @@ dependencies {
   compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
   compile "org.elasticsearch.client:rest:${project.esVersion}"
-  compile 'org.springframework.boot:spring-boot-starter-web'
-  compile 'org.springframework.boot:spring-boot-starter-actuator'
-  compile 'org.springframework.boot:spring-boot-devtools'
-  compile 'org.springframework.cloud:spring-cloud-context:1.1.7.RELEASE'
+  compile "org.springframework.boot:spring-boot-starter-web"
+  compile "org.springframework.boot:spring-boot-starter-actuator"
+  compile "org.springframework.boot:spring-boot-devtools"
+  compile 'org.springframework.cloud:spring-cloud-context'
   compile 'com.github.java-json-tools:json-schema-validator:2.2.8'
   compile 'org.apache.commons:commons-text:1.2'
-  compile 'org.apache.lucene:lucene-expressions:5.5.0'
+  compile 'org.apache.lucene:lucene-expressions:7.2.1'
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
@@ -37,21 +38,21 @@ dependencies {
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile "org.testcontainers:testcontainers:${project.testContainersVersion}"
-  testCompile 'net.bytebuddy:byte-buddy:1.7.8'
+  testCompile 'net.bytebuddy:byte-buddy:1.7.11'
 }
 
 ext {
   fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
 }
 
-springBoot {
-  backupSource = false
+war {
+  enabled = true
 }
 
-bootRepackage {
-  outputFile = fatWarPath
+bootWar {
   excludeDevtools = true
-  executable = true
+  classifier = 'all'
+  launchScript()
   onlyIf { !tasks.getByName('war').state.upToDate }
 }
 
@@ -109,10 +110,10 @@ processResources {
 }
 
 docker {
-  additionalBuildArgs = [JAR_NAME: "${rootProject.name}-${project.name}-all"]
+  additionalBuildArgs = [WAR_NAME: bootWar.outputs.files.singleFile.name]
 }
 
-BuildDockerImage.dependsOn(bootRepackage)
+BuildDockerImage.dependsOn(bootWar)
 assemble.dependsOn(BuildDockerImage)
 PublishDockerImage.dependsOn(BuildDockerImage)
 publish.dependsOn PublishDockerImage

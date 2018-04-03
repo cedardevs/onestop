@@ -1,64 +1,74 @@
 import React from 'react'
-import clock from 'fa/clock-o.svg'
-import globe from 'fa/globe.svg'
 import search from 'fa/search.svg'
 import A from '../../common/link/Link'
-import styles from './Help.css'
+
+const styleWrapper = {
+  width: '100%',
+  color: '#111',
+}
+
+const styleHelp = {
+  fontSize: '1.318em',
+  padding: '1.618em',
+  minHeight: '100vh',
+  margin: '0 auto',
+  maxWidth: '45em',
+}
+
+const styleHelpH1 = {
+  margin: '0 0 0.618em 0',
+}
+
+const styleIcon = {
+  margin: 0,
+  padding: '0 0.309em',
+}
+
+const styleIconImg = {
+  backgroundColor: '#3e7bad',
+  borderRadius: '0.105em',
+
+  padding: '0 0.309em',
+  position: 'relative',
+  top: '0.15em',
+  maxWidth: '1.1em',
+  maxHeight: '1.1em',
+}
+
+const styleTipsListItem = {
+  marginBottom: '1.618em',
+}
+
+const styleExamples = {
+  marginTop: '1em',
+}
+
+const styleExamplesListItem = {
+  margin: '0 0 0.618em 0',
+  padding: 0,
+  color: '#555',
+  fontStyle: 'italic',
+}
+
+const styleNote = {
+  color: 'mediumseagreen',
+  fontWeight: 'bold',
+}
 
 export default class Help extends React.Component {
   render() {
-    const accessibleVersion = window.location.hash.includes('508')
-
-    const mainSiteSnippet = (
-      <li>
-        Use the time{' '}
-        <span className={styles.icon} aria-hidden="true">
-          <img alt="temporal icon" src={clock} />
-        </span>{' '}
-        and space{' '}
-        <span className={styles.icon} aria-hidden="true">
-          <img alt="spatial icon" src={globe} />
-        </span>{' '}
-        filters (to the right of the input box) to limit results to only those
-        that <u>intersect</u> the given constraints.
-        <br />
-        If a filter has been applied, the button will change from
-        <span className={styles.blue} aria-hidden="true">
-          {' '}
-          blue{' '}
-        </span>{' '}
-        to
-        <span className={styles.purple} aria-hidden="true">
-          {' '}
-          purple
-        </span>.
-      </li>
-    )
-
-    const accessibleSiteSnippet = (
-      <li>
-        Use the Start Date, End Date, and Bounding Box text boxes to limit
-        results to only those that <u>intersect</u> the given constraints.
-      </li>
-    )
-
     return (
-      <div className={styles.wrapper}>
-        <section className={styles.help}>
-          <h1>How to use this interface:</h1>
+      <div style={styleWrapper}>
+        <section style={styleHelp}>
+          <h1 style={styleHelpH1}>How to use this interface:</h1>
           <p>
             <b>
-              To get started, just type a term into the Search{' '}
-              {accessibleVersion ? 'Text ' : ''}Box on the home page and click
-              the Search Button
+              To get started, just type a term into the Search Box on the home
+              page and click the Search Button
             </b>
-            {accessibleVersion ? (
-              ''
-            ) : (
-              <i className={styles.icon} aria-hidden="true">
-                <img alt="search icon" src={search} />
-              </i>
-            )}
+            <i style={styleIcon} aria-hidden="true">
+              <img alt="search icon" src={search} style={styleIconImg} />
+            </i>
           </p>
 
           <p>
@@ -68,16 +78,23 @@ export default class Help extends React.Component {
             </b>
           </p>
 
-          <ul className={styles.tips}>
-            {accessibleVersion ? accessibleSiteSnippet : mainSiteSnippet}
-
+          <ul>
             <li>
+              Use the filters menu (available on the search results page) to
+              limit results to only those that <u>intersect</u> the given
+              constraints.
+              <br />
+              Once a filter has been applied, a tag will be placed above the
+              search results.
+            </li>
+
+            <li style={styleTipsListItem}>
               Wrap a search phrase in double quotes for an exact match:
-              <ul className={styles.examples}>
-                <li>"sea surface temperature"</li>
+              <ul style={styleExamples}>
+                <li style={styleExamplesListItem}>"sea surface temperature"</li>
               </ul>
               <p>
-                <span className={styles.note}>Note:</span> Capitalization is
+                <span className={styleNote}>Note:</span> Capitalization is
                 ignored.
               </p>
             </li>
@@ -87,11 +104,11 @@ export default class Help extends React.Component {
               in the results and <em>-</em> to indicate that it{' '}
               <em>must not</em>. Terms without a <em>+</em> or <em>-</em> are
               considered optional.
-              <ul className={styles.examples}>
+              <ul className={styleExamples}>
                 <li>temperature pressure +air -sea</li>
               </ul>
               <p>
-                <span className={styles.note}>Note:</span> This means hyphens
+                <span className={styleNote}>Note:</span> This means hyphens
                 within terms will be treated as spaces; use double quotes to
                 search for a term with a hyphen in it.
               </p>
@@ -103,8 +120,8 @@ export default class Help extends React.Component {
               operator precedence which makes for a more complicated query
               structure. The following example gives the same results as the
               previous one:
-              <ul className={styles.examples}>
-                <li>
+              <ul style={styleExamples}>
+                <li style={styleExamplesListItem}>
                   ((temperature AND air) OR (pressure AND air) OR air) AND NOT
                   sea
                 </li>
@@ -114,8 +131,8 @@ export default class Help extends React.Component {
             <li>
               Not sure if you misspelled something? Not to worry, simply place a
               tilde after the word you're unsure on:
-              <ul className={styles.examples}>
-                <li>ghrst~</li>
+              <ul style={styleExamples}>
+                <li style={styleExamplesListItem}>ghrst~</li>
               </ul>
             </li>
 
@@ -125,10 +142,14 @@ export default class Help extends React.Component {
               the beginning of your search term (remember -- no spaces before or
               after the colon and wrap multi-word terms in parentheses). Exact
               matches can be requested here as well:
-              <ul className={styles.examples}>
-                <li>description:lakes</li>
-                <li>title:"Tsunami Inundation"</li>
-                <li>keywords:(ice deformation)</li>
+              <ul style={styleExamples}>
+                <li style={styleExamplesListItem}>description:lakes</li>
+                <li style={styleExamplesListItem}>
+                  title:"Tsunami Inundation"
+                </li>
+                <li style={styleExamplesListItem}>
+                  keywords:(ice deformation)
+                </li>
               </ul>
             </li>
           </ul>
@@ -139,7 +160,7 @@ export default class Help extends React.Component {
               find more information about it{' '}
               <A
                 target="_blank"
-                href="https://github.com/cedardevs/onestop/wiki/OneStop-Search-API"
+                href="https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests"
                 style={{color: '#277cb2'}}
               >
                 here

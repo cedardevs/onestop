@@ -25,7 +25,7 @@ const styleInput = {
 }
 
 const styleCheckmark = {
-  opacity: '0.2',
+  opacity: '0',
   position: 'absolute',
   width: '0.5em',
   height: '0.25em',

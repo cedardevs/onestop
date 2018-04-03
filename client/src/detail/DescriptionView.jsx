@@ -1,8 +1,36 @@
 import React, {Component} from 'react'
-// import ShowMore from 'react-show-more'
 import {processUrl} from '../utils/urlUtils'
 import MapThumbnail from '../common/MapThumbnail'
-import styles from './DetailStyles.css'
+import Expandable from '../common/Expandable'
+import DetailGrid from './DetailGrid'
+
+const styleImage = {
+  float: 'left',
+  alignSelf: 'flex-start',
+  margin: '0 1.618em 1.618em 0',
+  width: '32%',
+}
+
+const styleMap = {
+  margin: '0 0 0.618em 0',
+  width: '100%',
+  maxWidth: '500px',
+}
+
+const styleDescriptionWrapper = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  alignSelf: 'stretch',
+  height: '100%',
+  margin: 0,
+}
+
+const styleDescription = {
+  width: '100%',
+  padding: '1.618em',
+  margin: 0,
+}
 
 export default class DescriptionView extends Component {
   render() {
@@ -20,17 +48,87 @@ export default class DescriptionView extends Component {
       ? item.description
       : 'No description available'
 
-    return (
-      <div className={`pure-g`}>
-        <div className={`pure-u-1-2`}>
-          {this.renderCollectionImage(thumbnail, geometry)}
-        </div>
-        <div className={`pure-u-1-2 ${styles.descriptionText}`}>
-          {/*<ShowMore lines={10} anchorClass={`${styles.showMore}`}>*/}
+    const styleExpandableHeading = {
+      backgroundColor: '#6792B5',
+    }
+
+    const citeAsStatements =
+      item.citeAsStatements.length > 0
+        ? item.citeAsStatements.map((statement, key) => {
+            return <div key={key}>{statement}</div>
+          })
+        : 'No citations available.'
+    const citationExpandable = (
+      <Expandable
+        showArrow={true}
+        heading={
+          <div style={{padding: '0.618em', color: 'white', fontWeight: 'bold'}}>
+            Citation
+          </div>
+        }
+        styleHeading={styleExpandableHeading}
+        content={
+          <div
+            style={{
+              padding: '1.618em',
+              color: '#000032',
+              backgroundColor: '#eef5fb',
+            }}
+          >
+            {citeAsStatements}
+          </div>
+        }
+      />
+    )
+
+    const identifier = item.fileIdentifier
+      ? item.fileIdentifier
+      : 'No file identifier available.'
+    const identifiersExpandable = (
+      <Expandable
+        showArrow={true}
+        heading={
+          <div style={{padding: '0.618em', color: 'white', fontWeight: 'bold'}}>
+            Identifier
+          </div>
+        }
+        styleHeading={styleExpandableHeading}
+        content={
+          <div
+            style={{
+              padding: '1.618em',
+              color: '#000032',
+              backgroundColor: '#eef5fb',
+            }}
+          >
+            {identifier}
+          </div>
+        }
+      />
+    )
+
+    const collectionImage = this.renderCollectionImage(thumbnail, geometry)
+    const imageAndDescription = (
+      <div style={styleDescriptionWrapper}>
+        <p style={styleDescription}>
+          {collectionImage}
           {description}
-          {/*</ShowMore>*/}
-        </div>
+        </p>
       </div>
+    )
+
+    const expandableInformation = (
+      <div>
+        {citationExpandable}
+        {identifiersExpandable}
+      </div>
+    )
+
+    return (
+      <DetailGrid
+        grid={[ [ imageAndDescription, expandableInformation ] ]}
+        colWidths={[ {sm: 8}, {sm: 4} ]}
+      />
     )
   }
 
@@ -39,7 +137,7 @@ export default class DescriptionView extends Component {
     if (imgUrl) {
       return (
         <img
-          className={styles.previewImg}
+          style={styleImage}
           src={imgUrl}
           alt="collection result image"
           aria-hidden="true"
@@ -48,17 +146,13 @@ export default class DescriptionView extends Component {
     }
     else if (geometry) {
       return (
-        <div className={styles.previewMap}>
+        <div style={styleMap}>
           <MapThumbnail geometry={geometry} interactive={false} />
         </div>
       )
     }
     else {
-      return (
-        <div className={styles.previewMap}>
-          No preview image or map available.
-        </div>
-      )
+      return <div style={styleMap}>No preview image or map available.</div>
     }
   }
 }

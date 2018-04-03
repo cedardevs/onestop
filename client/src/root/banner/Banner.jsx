@@ -1,5 +1,11 @@
 import React from 'react'
-import styles from './banner.css'
+
+const styleBanner = {
+  background: 'red',
+  textAlign: 'center',
+  padding: '0.618em',
+  fontSize: '1.2em',
+}
 
 class Banner extends React.Component {
   constructor(props) {
@@ -17,7 +23,7 @@ class Banner extends React.Component {
     }
 
     return (
-      <div style={configStyle} className={styles.banner}>
+      <div style={configStyle} style={styleBanner}>
         {this.props.message}
       </div>
     )

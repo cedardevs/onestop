@@ -1,156 +1,126 @@
 import React from 'react'
+import DetailGrid from './DetailGrid'
 import A from '../common/link/Link'
 
-const styleTable = {
-  border: '1px solid #E0E0E0',
-  width: '100%',
-}
-
-const styleTableRow = {
-  borderBottom: '1px solid gray',
-}
-
-const styleTableHeading = {
-  color: 'white',
-  backgroundColor: '#222',
-  borderRight: '1px solid gray',
-  whiteSpace: 'nowrap',
-  width: '1%',
-  padding: '1.618em',
-}
-
-const styleTableCell = {
-  padding: '1.618em',
-}
-
-const styleTableCellParagraph = {
+const styleParagraph = {
   padding: 0,
   margin: '0 0 1.618em 0',
 }
 
-const styleTableCellParagraphLast = {
-  padding: 0,
-  margin: 0,
+const styleContent = {
+  padding: '1.618em',
 }
 
-const styleTableCellList = {
-  padding: 0,
-  margin: '0 0 0 1.618em ',
+const styleContentList = {
+  padding: '0 1.618em 1.618em 1.618em',
+  margin: '0 0 0 1.618em',
 }
 
-const styleTableCellLink = {
+const styleLink = {
   display: 'inline-block',
   color: 'rgb(85, 172, 228)',
   margin: '0 0 0.618em 0',
 }
 
+const styleHeadingWrapper = {
+  display: 'flex',
+  backgroundColor: '#b0d1ea',
+  justifyContent: 'center',
+  alignItems: 'center',
+  alignSelf: 'stretch',
+  height: '100%',
+  margin: 0,
+}
+
+const styleHeading = {
+  margin: 0,
+  padding: '0.618em',
+  width: '100%',
+}
+
 export default class AccessView extends React.Component {
+  renderAccessHeading = heading => {
+    return (
+      <div style={styleHeadingWrapper}>
+        <h3 style={styleHeading}>{heading}</h3>
+      </div>
+    )
+  }
+
+  renderAccessLinkList = (links, notAvailable) => {
+    let listItems = links.map((link, index) => {
+      const {linkUrl, linkName, linkProtocol, linkDescription} = link
+      const linkTitle = linkName ? linkName : linkProtocol
+      return (
+        <li key={index}>
+          <A href={linkUrl} target="_blank" title={linkTitle} style={styleLink}>
+            {linkTitle}
+          </A>
+          <p style={styleParagraph}>{linkDescription}</p>
+        </li>
+      )
+    })
+    let list = <div style={styleContent}>{notAvailable}</div>
+    if (listItems.length > 0) {
+      list = (
+        <div style={styleContent}>
+          <ul style={styleContentList}>{listItems}</ul>
+        </div>
+      )
+    }
+    return list
+  }
+
+  renderAccessList = (items, notAvailable) => {
+    const list = items ? items : []
+    if (list.length === 0) {
+      return <div style={styleContent}>{notAvailable}</div>
+    }
+    const distributionsFormats = list.map((format, index) => {
+      return <li key={index}>{format.name}</li>
+    })
+    return (
+      <div style={styleContent}>
+        <ul style={styleContentList}>{distributionsFormats}</ul>
+      </div>
+    )
+  }
+
   render() {
     const {item} = this.props
 
-    let information = item.links
-      .filter(link => link.linkFunction === 'information')
-      .map((link, index, arr) => {
-        const lastIndex = arr.length - 1
-        const {linkUrl, linkName, linkFunction, linkDescription} = link
-        return (
-          <div key={index}>
-            <A
-              href={linkUrl}
-              target="_blank"
-              title={linkName}
-              style={styleTableCellLink}
-            >
-              {linkName}
-            </A>
-            <p
-              style={
-                index === lastIndex ? (
-                  styleTableCellParagraphLast
-                ) : (
-                  styleTableCellParagraph
-                )
-              }
-            >
-              {linkDescription}
-            </p>
-          </div>
-        )
-      })
-
-    if (information.length === 0) {
-      information = 'No information links in metadata.'
-    }
-
-    let downloadData = item.links
-      .filter(link => link.linkFunction === 'download')
-      .map((link, index, arr) => {
-        const lastIndex = arr.length - 1
-        const {linkUrl, linkName, linkFunction, linkDescription} = link
-        return (
-          <div key={index}>
-            <A
-              href={linkUrl}
-              target="_blank"
-              title={linkName}
-              style={styleTableCellLink}
-            >
-              {linkName}
-            </A>
-            <p
-              style={
-                index === lastIndex ? (
-                  styleTableCellParagraphLast
-                ) : (
-                  styleTableCellParagraph
-                )
-              }
-            >
-              {linkDescription}
-            </p>
-          </div>
-        )
-      })
-
-    if (downloadData.length === 0) {
-      downloadData = 'No download data links in metadata.'
-    }
-
-    const dataFormats = item.dataFormats ? item.dataFormats : []
-    const distributionsFormats = dataFormats.map((format, index) => {
-      return <li key={index}>{format.name}</li>
-    })
-
-    let distributionFormatsList = (
-      <ul style={styleTableCellList}>{distributionsFormats}</ul>
+    const informationHeading = this.renderAccessHeading('Information')
+    const informationLinks = item.links.filter(
+      link => link.linkFunction === 'information'
     )
-    if (dataFormats.length === 0) {
-      distributionFormatsList = 'No formats in metadata.'
-    }
-
-    return (
-      <div>
-        <table style={styleTable}>
-          <tbody>
-            <tr style={styleTableRow}>
-              <th style={styleTableHeading}>Information</th>
-              <td style={styleTableCell}>{information}</td>
-            </tr>
-            <tr style={styleTableRow}>
-              <th style={styleTableHeading}>Download Data</th>
-              <td style={styleTableCell}>{downloadData}</td>
-            </tr>
-            <tr style={styleTableRow}>
-              <th style={styleTableHeading}>Distribution Formats</th>
-              <td style={styleTableCell}>{distributionFormatsList}</td>
-            </tr>
-            {/*<tr style={styleTableRow}>*/}
-            {/*<th style={styleTableHeading}>Citations</th>*/}
-            {/*<td style={styleTableCell}></td>*/}
-            {/*</tr>*/}
-          </tbody>
-        </table>
-      </div>
+    const informationList = this.renderAccessLinkList(
+      informationLinks,
+      'No information links in metadata.'
     )
+
+    const downloadDataHeading = this.renderAccessHeading('Download Data')
+    const downloadDataLinks = item.links.filter(
+      link => link.linkFunction === 'download'
+    )
+    const downloadDataList = this.renderAccessLinkList(
+      downloadDataLinks,
+      'No download links in metadata.'
+    )
+
+    const distributionFormatsHeading = this.renderAccessHeading(
+      'Distribution Formats'
+    )
+    const distributionFormatsList = this.renderAccessList(
+      item.dataFormats,
+      'No formats in metadata.'
+    )
+
+    const accessGrid = [
+      [ informationHeading, informationList ],
+      [ downloadDataHeading, downloadDataList ],
+      [ distributionFormatsHeading, distributionFormatsList ],
+    ]
+
+    return <DetailGrid grid={accessGrid} colWidths={[ {sm: 3}, {sm: 9} ]} />
   }
 }

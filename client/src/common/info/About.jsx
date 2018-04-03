@@ -1,12 +1,32 @@
 import React from 'react'
-import styles from './About.css'
+
+const styleWrapper = {
+  width: '100%',
+  color: '#111',
+}
+
+const styleAbout = {
+  fontSize: '1.318em',
+  padding: '1.618em',
+  minHeight: '100vh',
+  margin: '0 auto',
+  maxWidth: '45em',
+}
+
+const styleH1 = {
+  margin: '0 0 0.618em 0',
+}
+
+const styleH2 = {
+  margin: '0 0 0.618em 0',
+}
 
 export default class Help extends React.Component {
   render() {
     return (
-      <div className={styles.wrapper}>
-        <section className={styles.about}>
-          <h1>OneStop Overview</h1>
+      <div style={styleWrapper}>
+        <section style={styleAbout}>
+          <h1 style={styleH1}>OneStop Overview</h1>
           <p>
             The OneStop Project is designed to improve NOAA's data discovery and
             access framework. Focusing on all layers of the framework and not
@@ -17,7 +37,7 @@ export default class Help extends React.Component {
             and granule-level metadata systems to accommodate the wide variety
             and vast scale of NOAA's data.
           </p>
-          <h2>{this.buildCountString()}</h2>
+          <h2 style={styleH2}>{this.buildCountString()}</h2>
         </section>
       </div>
     )

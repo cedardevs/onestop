@@ -9,10 +9,11 @@ ext {
   bintrayUser = System.getenv('BINTRAY_USER')
   bintrayKey = System.getenv('BINTRAY_KEY')
   travisBuildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
+  isNotSnapshot = !System.getenv('TRAVIS_BUILD_NUMBER') || System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean
 }
 
 // if not a release, publish snapshot versions
-if (!isRelease) {
+if (!isNotSnapshot) {
   version = version += '-SNAPSHOT'
 }
 

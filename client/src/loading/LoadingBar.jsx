@@ -24,10 +24,10 @@ export class LoadingBar extends React.Component {
   }
 
   render() {
-    const {loading, loadingText} = this.props
+    const {loading, loadingText, style} = this.props
 
     return (
-      <div>
+      <div style={style}>
         <div
           aria-live="polite"
           aria-atomic="false"

@@ -1,15 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Link} from 'react-router'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import Logo from './Logo'
-import styles from './HeaderStyles.css'
+import HeaderLink from './HeaderLink'
+import {boxShadow} from '../common/defaultStyles'
 
 import FlexRow from '../common/FlexRow'
 
 const styleHeader = {
   backgroundColor: '#222C37',
   padding: '1em',
+  boxShadow: boxShadow,
 }
 
 const styleHeaderFlexRow = {
@@ -50,55 +51,23 @@ class Header extends React.Component {
     super(props)
   }
 
-  getMainOr508Link() {
-    const lHref = `${new RegExp(/^.*\//).exec(window.location.href)}`
-    let linkTitle = 'Main Site'
-    let siteLink = `${lHref.slice(0, lHref.indexOf('#') + 2)}`
-    if (window.location.href.indexOf('508') === -1) {
-      siteLink = `${siteLink}508/`
-      linkTitle = 'Accessible Site'
-    }
-    return (
-      <a title={linkTitle} href={siteLink} className={styles.link}>
-        <span>{linkTitle}</span>
-      </a>
-    )
-  }
-
   render() {
-    const aboutLink =
-      window.location.href.indexOf('508') === -1 ? (
-        <Link title="About Us" to="/about" className={styles.link}>
-          About Us
-        </Link>
-      ) : (
-        <Link title="About Us" to="/508/about" className={styles.link}>
-          About Us
-        </Link>
-      )
-
-    const helpLink =
-      window.location.href.indexOf('508') === -1 ? (
-        <Link title="Help" to="/help" className={styles.link}>
-          Help
-        </Link>
-      ) : (
-        <Link title="Help" to="/508/help" className={styles.link}>
-          Help
-        </Link>
-      )
-
     const menuContent = (
       <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>
-          <a href={this.props.homeUrl} title="Home" className={styles.link}>
+          <HeaderLink title="Home" to="/">
             Home
-          </a>
+          </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, false)}>{aboutLink}</li>
-        <li style={styleLinkListItem(false, false)}>{helpLink}</li>
+        <li style={styleLinkListItem(false, false)}>
+          <HeaderLink title="About Us" to="/about">
+            About Us
+          </HeaderLink>
+        </li>
         <li style={styleLinkListItem(false, true)}>
-          {this.getMainOr508Link()}
+          <HeaderLink title="Help" to="/help">
+            Help
+          </HeaderLink>
         </li>
       </ul>
     )

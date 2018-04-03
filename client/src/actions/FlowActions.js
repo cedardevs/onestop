@@ -42,32 +42,17 @@ export const showCollections = (prefix = '') => {
   }
 }
 
-export const showGranules = (prefix = '') => {
-  // this is only needed for the 508 site now
-  return (dispatch, getState) => {
-    const query = encodeQueryString(getState())
-    if (!_.isEmpty(query)) {
-      const locationDescriptor = {
-        pathname: `${prefix}/collections/files`,
-        search: `?${query}`,
-      }
-      dispatch(push(locationDescriptor))
-    }
-  }
-}
 export const showGranulesList = id => {
   if (!id) {
     return
   }
   return (dispatch, getState) => {
     const query = encodeQueryString(getState())
-    if (!_.isEmpty(query)) {
-      const locationDescriptor = {
-        pathname: `collections/granules/${id}`,
-        search: `?${query}`,
-      }
-      dispatch(push(locationDescriptor))
+    const locationDescriptor = {
+      pathname: `collections/granules/${id}`,
+      search: `?${query}`,
     }
+    dispatch(push(locationDescriptor))
   }
 }
 
@@ -187,20 +172,11 @@ export const loadData = () => {
   }
 }
 
-// Update background
-const updateBackground = path => {
-  const is508ButNotLanding =
-    (_.startsWith(path, '/508/') && path !== '/508/') ||
-    (_.startsWith(path, '508/') && path !== '508/')
-  store.dispatch(toggleBackgroundImage(!is508ButNotLanding)) //Cover strange routing case. TODO: Regex test?
-}
-
 const routingWatch = watch(
   store.getState,
   'behavior.routing.locationBeforeTransitions'
 )
 const routingUpdates = locationBeforeTransitions => {
-  updateBackground(locationBeforeTransitions.pathname)
   loadFromUrl(
     locationBeforeTransitions.pathname,
     locationBeforeTransitions.search

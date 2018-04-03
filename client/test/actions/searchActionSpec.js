@@ -167,7 +167,7 @@ describe('The granule actions', function () {
   afterEach(nock.cleanAll)
 
   const testingRoot = 'http://localhost:9090'
-  const searchEndpoint = '/onestop/api/granule/search'
+  const searchEndpoint = '/onestop/api/search/granule'
   const successResponse = {
     data: [{
       type: 'granule',

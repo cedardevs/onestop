@@ -5,6 +5,10 @@ import _ from 'lodash'
 import CollectionCard from './CollectionCard'
 import Button from '../../common/input/Button'
 
+const styleCollectionGridContainer = {
+  color: '#222',
+}
+
 const styleResultCountContainer = {
   display: 'block',
   padding: '0em 2em 1.618em 2em',
@@ -127,6 +131,7 @@ export default class CollectionGrid extends Component {
       let tileProps = {
         key: key,
         cardKey: key,
+        doi: result.doi,
         title: result.title,
         thumbnail: result.thumbnail,
         description: result.description,
@@ -139,7 +144,7 @@ export default class CollectionGrid extends Component {
     })
 
     return (
-      <div>
+      <div style={styleCollectionGridContainer}>
         <div style={styleResultCountContainer}>
           <h1
             style={styleResultCountMerged}

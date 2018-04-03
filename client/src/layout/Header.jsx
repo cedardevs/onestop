@@ -7,6 +7,7 @@ const styleHeader = {
 
 export default class Header extends Component {
   render() {
-    return <div style={styleHeader}>{this.props.content}</div>
+    const {content} = this.props
+    return <div style={styleHeader}>{content}</div>
   }
 }

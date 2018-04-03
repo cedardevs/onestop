@@ -28,6 +28,12 @@ class SearchController {
     this.uiConfig = uiConfig
   }
 
+  // Get Collection Info
+  @RequestMapping(path = "/collection", method = [GET, HEAD], produces = 'application/json')
+  Map getCollectionInfo(HttpServletResponse response) {
+    return elasticsearchService.totalCollections()
+  }
+
   // GET Collection by ID
   @RequestMapping(path = "/collection/{id}", method = [GET, HEAD], produces = 'application/json')
   Map getCollection(@PathVariable String id, HttpServletResponse response) {
@@ -42,7 +48,7 @@ class SearchController {
   }
 
   // Search Collections
-  @RequestMapping(path = "/collection/search", method = [POST, GET])
+  @RequestMapping(path = "/search/collection", method = [POST, GET])
   Map searchCollections(@RequestBody Map params, HttpServletResponse response) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
     if (!validation.success) {
@@ -52,6 +58,12 @@ class SearchController {
     }
     log.info("incoming search params: ${params}")
     return elasticsearchService.searchCollections(params)
+  }
+
+  // Get Granule Info
+  @RequestMapping(path = "/granule", method = [GET, HEAD], produces = 'application/json')
+  Map getGranuleInfo(HttpServletResponse response) {
+      return elasticsearchService.totalGranules()
   }
 
   // GET Granule by ID
@@ -68,7 +80,7 @@ class SearchController {
   }
 
   // Search Granules
-  @RequestMapping(path = "/granule/search", method = [POST, GET])
+  @RequestMapping(path = "/search/granule", method = [POST, GET])
   Map searchGranules(@RequestBody Map params, HttpServletResponse response) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
     if (!validation.success) {
@@ -78,6 +90,12 @@ class SearchController {
     }
     log.info("incoming search params: ${params}")
     return elasticsearchService.searchGranules(params)
+  }
+
+  // Get Flattened Granule Info
+  @RequestMapping(path = "/flattened-granule", method = [GET, HEAD], produces = 'application/json')
+  Map getFlattenedGranuleInfo(HttpServletResponse response) {
+    return elasticsearchService.totalFlattenedGranules()
   }
 
   // GET Flattened Granule by ID
@@ -94,7 +112,7 @@ class SearchController {
   }
 
   // Search Flattened Granules
-  @RequestMapping(path = "/flattened-granule/search", method = [POST, GET])
+  @RequestMapping(path = "/search/flattened-granule", method = [POST, GET])
   Map searchFlattenedGranules(@RequestBody Map params, HttpServletResponse response) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
     if (!validation.success) {
@@ -106,12 +124,7 @@ class SearchController {
     return elasticsearchService.searchFlattenedGranules(params)
   }
 
-  @RequestMapping(path = '/search/totalCounts', method = GET)
-  Map totalCounts() {
-    return elasticsearchService.totalCounts()
-  }
-
-  @RequestMapping(path = '/search/uiConfig', method = GET)
+  @RequestMapping(path = '/uiConfig', method = GET)
   UiConfig uiConfig() {
     return uiConfig
   }

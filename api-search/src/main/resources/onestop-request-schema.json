@@ -197,7 +197,7 @@
           "$ref": "#/definitions/Geometry"
         },
         "relation": {
-          "description": "How the dataset geometry relates to the given geometry, e.g., return all datasets whose geometry contains the given point.",
+          "description": "How the dataset geometry relates to the given geometry, e.g., return all datasets whose geometry contains the given point. Defaults to 'intersects'.",
           "enum": [
             "contains",
             "disjoint",
