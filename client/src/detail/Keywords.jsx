@@ -140,7 +140,7 @@ class Keywords extends Component {
     }
     else {
       return (
-        <div style={{fontStyle: 'italic', color: bgColor}}>None Provided</div>
+        <div style={{fontStyle: 'italic', color: color}}>None Provided</div>
       )
     }
   }
