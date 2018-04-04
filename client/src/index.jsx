@@ -19,34 +19,6 @@ import history from './history'
 
 store.dispatch(initialize())
 
-// const routesDefinition = {
-//   path: '/',
-//   component: RootContainer,
-//   indexRoute: {component: LandingContainer},
-//   childRoutes: [
-//     {
-//       component: Result,
-//       childRoutes: [
-//         {
-//           path: 'collections',
-//           component: CollectionGridContainer,
-//         },
-//         {path: 'collections/details/:id', component: DetailContainer},
-//         {path: 'collections/granules/:id', component: GranuleListContainer},
-//       ],
-//     },
-//     {path: 'error', component: ErrorContainer},
-//     {path: 'help', component: Help},
-//     {path: 'about', component: AboutContainer}
-//   ],
-// }
-//
-// const body = (
-//     <Provider store={store}>
-//       <Router history={history} routes={routesDefinition} />
-//     </Provider>
-// )
-
 const routesLayout = (
   <Router history={history}>
     <Route path="/" name="Home" component={RootContainer}>
