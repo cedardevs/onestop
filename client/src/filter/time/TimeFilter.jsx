@@ -22,9 +22,20 @@ const styleTimeFilter = {
   color: '#F9F9F9',
 }
 
+const styleForm = {
+  display: 'flex',
+  flexDirection: 'column'
+}
+
 const styleFieldset = {
+  alignSelf: 'center',
   marginBottom: '1em',
-  width: '15em',
+  border: '1px solid white',
+  padding: '0.309em'
+}
+
+const styleLegend = {
+  color: 'inherit'
 }
 
 const styleDate = {
@@ -45,17 +56,46 @@ const styleLabel = {
   marginBottom: '0.25em',
 }
 
+const styleYearWrapper = {
+  height: '2em'
+
+}
+
+const styleMonthWrapper = {
+  height: '2em'
+
+}
+
+const styleDayWrapper = {
+  height: '2em'
+}
+
 const styleYear = {
   width: '3.25em',
   color: 'black',
+  height: '100%',
+  margin: 0,
+  padding: '0 0.309em',
+  border: 'none',
+  borderRadius: '0.309em'
 }
+
 const styleMonth = {
   width: '7.25em',
   color: 'black',
+  height: '100%',
+  margin: 0,
+  padding: 0,
+  border: 'none'
 }
 const styleDay = {
   width: '1.75em',
   color: 'black',
+  height: '100%',
+  margin: 0,
+  padding: '0 0.309em',
+  border: 'none',
+  borderRadius: '0.309em'
 }
 
 const styleButtonRow = {
@@ -261,6 +301,7 @@ export default class TimeFilter extends Component {
         <label style={styleLabel} htmlFor={id}>
           Year
         </label>
+        <div style={styleYearWrapper}>
         <input
           type="text"
           id={id}
@@ -268,9 +309,11 @@ export default class TimeFilter extends Component {
           placeholder="YYYY"
           aria-placeholder="Y Y Y Y"
           value={value}
+          maxLength="4"
           style={styleYear}
           aria-label={label}
         />
+        </div>
       </div>
     )
   }
@@ -283,6 +326,7 @@ export default class TimeFilter extends Component {
         <label style={styleLabel} htmlFor={id}>
           Month
         </label>
+        <div style={styleMonthWrapper}>
         <select
           id={id}
           name={id}
@@ -304,6 +348,7 @@ export default class TimeFilter extends Component {
           <option value="10">November</option>
           <option value="11">December</option>
         </select>
+        </div>
       </div>
     )
   }
@@ -316,6 +361,7 @@ export default class TimeFilter extends Component {
         <label style={styleLabel} htmlFor={id}>
           Day
         </label>
+        <div style={styleDayWrapper}>
         <input
           type="text"
           id={id}
@@ -323,9 +369,11 @@ export default class TimeFilter extends Component {
           placeholder="DD"
           aria-placeholder="D D"
           value={value}
+          maxLength="2"
           style={styleDay}
           aria-label={label}
         />
+        </div>
       </div>
     )
   }
@@ -336,7 +384,7 @@ export default class TimeFilter extends Component {
         style={styleFieldset}
         onChange={event => this.onChange(event.target.name, event.target.value)}
       >
-        <legend>{_.capitalize(name)} Date: </legend>
+        <legend style={styleLegend}>{_.capitalize(name)} Date: </legend>
         <div style={styleDate}>
           {this.createYearField(name, year)}
           {this.createMonthField(name, month)}
@@ -371,7 +419,7 @@ export default class TimeFilter extends Component {
           Provide a start date, end date, or date range. Use year, year and
           month, or full dates. Future dates are not accepted.
         </p>
-        <form onKeyDown={this.handleKeyDown}>
+        <form style={styleForm} onKeyDown={this.handleKeyDown}>
           {this.createDateFieldset(
             'start',
             this.state.startDateYear,

@@ -15,7 +15,7 @@ img {
   color: #7f8c8d;
 }
 
-input {
+input, select {
   font-family: inherit;
   font-size: inherit;
 }
