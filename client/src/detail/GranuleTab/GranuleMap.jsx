@@ -11,54 +11,26 @@ import {recenterGeometry} from '../../utils/geoUtils'
 const COLOR_ORANGE = '#FFA268'
 const COLOR_GREEN = '#00FFC8'
 
-const MAP_HEIGHT = '400px'
-
-const styleMapContainer = (open, display, height, width) => {
-  return {
-    boxSizing: 'border-box',
-    backgroundColor: '#3D97D2',
-    transition: open // immediate transition
-      ? 'height 0.2s 0.0s, width 0.2s 0.3s'
-      : 'width 0.2s 0.0s, height 0.2s 0.3s',
-    padding: '0em',
-    // properties set on a separate timer using state:
-    height: height,
-    width: width,
-    display: display,
-  }
+const styleMapContainer = {
+  boxSizing: 'border-box',
+  // transition: 'height 0.2s 0.0s, padding 0.1s 0.2s, width 0.2s 0.3s',
+  height: '400px',
+  width: '100%',
 }
 
-const styleMapText = (open, opacity) => {
-  return {
-    padding: '0.309em 0.618em',
-    margin: '0 auto',
-    backgroundColor: '#18478F',
-    height: '1.618em',
-    lineHeight: '1.618em',
-    width: '100%',
-    textAlign: 'center',
-    transition: open //immediate transition
-      ? 'opacity 0.2s 0.5s'
-      : 'opacity 0.2s 0.0s',
-    // properties set on a separate timer using state:
-    opacity: opacity,
-  }
+const styleMap = {
+  zIndex: 2,
+  padding: 0,
+  margin: '0 auto',
+  display: 'flex',
+  position: 'relative',
+  height: '100%',
+  alignItems: 'flex-start',
+  maxWidth: '1200px',
 }
 
-const styleMap = () => {
-  return {
-    zIndex: 1,
-    padding: 0,
-    margin: '0 auto',
-    display: 'flex',
-    position: 'relative',
-    height: `calc(${MAP_HEIGHT} - 1.618em - 2 * 0.618em)`,
-    alignItems: 'flex-start',
-    maxWidth: '1200px',
-  }
-}
-const SOUTH_WEST = L.latLng(-90, 5 * -360)
-const NORTH_EAST = L.latLng(90, 5 * 360)
+const SOUTH_WEST = L.latLng(-90, -270)
+const NORTH_EAST = L.latLng(90, 270)
 const BOUNDS = L.latLngBounds(SOUTH_WEST, NORTH_EAST)
 
 const geoJsonStyle = {
@@ -73,17 +45,13 @@ const drawStyle = {
   opacity: 0.65,
 }
 
-class Map extends React.Component {
+class GranuleMap extends React.Component {
   constructor(props) {
     super(props)
-    const {showMap} = this.props
+    this.geoJsonFeatures = props.geoJsonFeatures
+    this.focusedFeatures = props.focusedFeatures
     this.state = {
       initialized: false,
-      open: showMap,
-      display: showMap ? 'block' : 'none',
-      height: showMap ? MAP_HEIGHT : '0em',
-      width: showMap ? '100%' : '0%',
-      opacity: showMap ? '1' : '0',
     }
   }
 
@@ -158,8 +126,16 @@ class Map extends React.Component {
   }
 
   mapSetup() {
-    const {selection, features} = this.props
+    const {geoJsonSelection, selection, features} = this.props
     let {map, editableLayers, resultsLayers} = this.state
+    if (geoJsonSelection) {
+      let geoJSONLayer = L.geoJson(geoJsonSelection, {style: geoJsonStyle})
+      editableLayers.addLayer(geoJSONLayer)
+    }
+    if (features) {
+      this.updateResultsLayers(this.props)
+    }
+
     this.loadDrawEventHandlers()
     if (selection) {
       map.addControl(this.drawDefaults(editableLayers))
@@ -171,47 +147,11 @@ class Map extends React.Component {
     this.fitMapToResults()
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps() {
     let {map} = this.state
     if (map) {
       map.invalidateSize()
     } // Necessary to redraw map which isn't initially visible
-
-    if (this.props.showMap != nextProps.showMap) {
-      this.setState(prevState => {
-        const isOpen = prevState.open
-        const isDisplayed = prevState.display === 'block'
-        const shouldClose = isOpen && isDisplayed
-        const shouldOpen = !isOpen && !isDisplayed
-
-        // these transitions do occasionally have timing issues, but I've only seen them when rapidly toggling a single element on and off..
-        if (shouldOpen) {
-          setTimeout(
-            () =>
-              this.setState({
-                height: MAP_HEIGHT,
-                width: '100%',
-                opacity: '1',
-              }),
-            15
-          )
-        }
-        if (shouldClose) {
-          setTimeout(() => this.setState({display: 'none', opacity: '0'}), 500)
-        }
-
-        const immediateTransition = shouldOpen
-          ? {display: 'block', opacity: '0'}
-          : shouldClose
-            ? {
-                height: '0em',
-                width: '0%',
-                opacity: '0',
-              }
-            : {}
-        return {open: !isOpen, ...immediateTransition}
-      })
-    }
   }
 
   componentWillUpdate(nextProps) {
@@ -243,7 +183,6 @@ class Map extends React.Component {
         if (!_.isEmpty(newGeoJson)) {
           let layer = L.geoJson(newGeoJson, {style: style})
           editableLayers.addLayer(layer)
-          this.state.map.panTo(layer.getBounds().getCenter())
         }
       })
     )
@@ -276,6 +215,8 @@ class Map extends React.Component {
         })
       )
     })
+    this.geoJsonFeatures = geoJsonFeatures
+    this.focusedFeatures = focusedFeatures
   }
 
   fitMapToResults() {
@@ -340,21 +281,15 @@ class Map extends React.Component {
   }
 
   render() {
-    const {open, display, height, width, opacity} = this.state
-
     return (
       <div
-        style={styleMapContainer(open, display, height, width)}
+        style={styleMapContainer}
         ref={container => {
           this.container = container
         }}
       >
-        <div style={styleMapText(open, opacity)}>
-          Use the square button on the top right of the map to draw a bounding
-          box.
-        </div>
         <div
-          style={styleMap()}
+          style={styleMap}
           ref={mapNode => {
             this.mapNode = mapNode
           }}
@@ -364,9 +299,9 @@ class Map extends React.Component {
   }
 }
 
-Map.defaultProps = {
+GranuleMap.defaultProps = {
   selection: false,
   features: true,
 }
 
-export default Map
+export default GranuleMap

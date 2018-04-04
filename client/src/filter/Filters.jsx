@@ -22,11 +22,6 @@ const styleFilterHeadings = {
   fontWeight: 'bold',
   backgroundColor: '#0E274E',
   padding: '0.618em',
-  borderBottom: '1px solid white',
-}
-
-const styleFilterContents = {
-  borderBottom: '1px solid white',
 }
 
 const styleFacetFilterContents = {
@@ -125,7 +120,6 @@ class Filters extends Component {
             heading={filter.heading}
             styleHeading={styleFilterHeadings}
             content={filter.content}
-            styleContent={styleFilterContents}
             onToggle={this.handleFilterToggle}
           />
         </div>

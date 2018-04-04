@@ -78,6 +78,7 @@ class OverviewView extends Component {
 
     const granuleSection = (
       <GranulesSummary
+        key="granule-summary-section"
         totalGranuleCount={totalGranuleCount}
         navigateToGranules={navigateToGranules}
       />
@@ -85,6 +86,7 @@ class OverviewView extends Component {
 
     const mainSection = (
       <FlexRow
+        key="main-section"
         style={{justifyContent: 'space-between'}}
         items={[ left, right ]}
       />

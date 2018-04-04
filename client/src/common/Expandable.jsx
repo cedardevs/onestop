@@ -1,11 +1,10 @@
 import React from 'react'
+import AnimateHeight from 'react-animate-height'
 import {Key} from '../utils/keyboardUtils'
 
-const styleHideFocus = {
-  outline: 'none',
-}
+const ANIMATION_DURATION = 200
 
-const styleHeading = (open, borderRadius) => {
+const styleHeadingDefault = (open, borderRadius) => {
   const borderRadiusEffective = open
     ? `${borderRadius} ${borderRadius} 0 0`
     : `${borderRadius}`
@@ -17,34 +16,23 @@ const styleHeading = (open, borderRadius) => {
     color: '#FFFFFF',
     cursor: 'pointer',
     borderRadius: borderRadius ? borderRadiusEffective : 'none',
+    borderBottom: 0,
+    outline: 'none', // focus is shown on an interior element instead
+    transition: `border-radius ${ANIMATION_DURATION}ms ease`,
   }
-}
-
-const styleHeadingShown = {}
-
-const styleHeadingHidden = {
-  borderBottom: 0,
 }
 
 const styleArrow = {
   userSelect: 'none',
 }
 
-const styleContent = borderRadius => {
+const styleContentDefault = (open, display, borderRadius) => {
+  const borderRadiusContentOpen = `0 0 ${borderRadius} ${borderRadius}`
+
   return {
     textAlign: 'left',
-    overflow: 'hidden',
-    borderRadius: borderRadius ? `0 0 ${borderRadius} ${borderRadius}` : 'none',
+    borderRadius: borderRadius ? borderRadiusContentOpen : 'none',
   }
-}
-
-const styleContentShown = {
-  transition: 'max-height 1.25s ease-in',
-}
-
-const styleContentHidden = {
-  transition: 'max-height 1.25s ease-out',
-  transitionDelay: '-1s',
 }
 
 const styleFocusDefault = {
@@ -57,46 +45,37 @@ export default class Expandable extends React.Component {
     this.state = {
       open: props.open,
       showArrow: props.showArrow,
-      maxHeight: props.open ? '10000px' : 0,
-      display: props.open ? 'block' : 'none',
       focusing: false,
+      display: props.open ? 'block' : 'none',
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.open !== this.state.open) {
-      this.setState({
-        ...this.state,
-        open: nextProps.open,
-        maxHeight: nextProps.open ? '10000px' : 0,
-        display: nextProps.open ? 'block' : 'none',
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          open: !!nextProps.open,
+        }
       })
     }
   }
 
   toggle = () => {
+    const {onToggle, value} = this.props
+
     this.setState(prevState => {
-      const isOpen = prevState.open
-      const isDisplayed = prevState.display === 'block'
-      const shouldClose = isOpen && isDisplayed
-      const shouldOpen = !isOpen && !isDisplayed
+      const newOpen = !prevState.open
 
-      if (this.props.onToggle) {
-        this.props.onToggle({open: !isOpen, value: this.props.value})
+      // if provided, tell the caller of expandable we're updating the open state
+      if (onToggle) {
+        onToggle({open: newOpen, value: value})
       }
 
-      // these transitions do occasionally have timing issues, but I've only seen them when rapidly toggling a single element on and off..
-      if (shouldOpen) {
-        setTimeout(() => this.setState({maxHeight: '10000px'}), 15)
+      return {
+        ...prevState,
+        open: newOpen,
       }
-      if (shouldClose) {
-        setTimeout(() => this.setState({display: 'none'}), 500)
-      }
-
-      const immediateTransition = shouldOpen
-        ? {display: 'block'}
-        : shouldClose ? {maxHeight: 0} : {}
-      return {open: !isOpen, ...immediateTransition}
     })
   }
 
@@ -133,54 +112,69 @@ export default class Expandable extends React.Component {
     })
   }
 
+  handleAnimationStart = open => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        display: 'block',
+      }
+    })
+  }
+
+  handleAnimationEnd = open => {
+    if (!open) {
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          display: 'none',
+        }
+      })
+    }
+  }
+
   render() {
-    const arrow = this.props.showArrow ? this.state.open ? (
+    const {
+      showArrow,
+      styleFocus,
+      styleWrapper,
+      styleHeading,
+      heading,
+      styleContent,
+      content,
+      borderRadius,
+    } = this.props
+    const {open, display, focusing} = this.state
+
+    const arrow = showArrow ? open ? (
       <span>&nbsp;&#9660;</span>
     ) : (
       <span>&nbsp;&#9654;</span>
     ) : null
 
-    const styleHeadingHide = this.state.open
-      ? styleHeadingShown
-      : styleHeadingHidden
-    const styleContentVisibilityTransition = this.state.open
-      ? styleContentShown
-      : styleContentHidden
-    const styleContentVisibility = {
-      maxHeight: this.state.maxHeight,
-      display: this.state.display,
-    }
-
-    const ariaHidden = this.state.display === 'none'
+    const ariaHidden = display === 'none'
     const tabbable = !(this.props.tabbable === false)
     const tabIndex = tabbable ? '0' : '-1'
     const role = tabbable ? 'button' : undefined
-    const ariaExpanded = tabbable ? this.state.open : undefined
+    const ariaExpanded = tabbable ? open : undefined
 
-    const {styleFocus, styleWrapper} = this.props
-
-    const stylesMerged = {
-      ...styleHeading(this.state.open, this.props.borderRadius),
-      ...this.props.styleHeading,
-      ...styleHeadingHide,
-      ...styleHideFocus, // focus is shown on an interior element instead
+    const stylesHeadingMerged = {
+      ...styleHeadingDefault(open, borderRadius),
+      ...styleHeading,
     }
 
     const styleFocused = {
-      ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {}),
+      ...(focusing ? {...styleFocusDefault, ...styleFocus} : {}),
     }
 
     const styleContentMerged = {
-      ...styleContent(this.props.borderRadius),
-      ...this.props.styleContent,
-      ...styleContentVisibilityTransition,
-      ...styleContentVisibility,
+      ...styleContentDefault(open, display, borderRadius),
+      ...styleContent,
     }
 
     return (
       <div style={styleWrapper}>
         <div
-          style={stylesMerged}
+          style={stylesHeadingMerged}
           onClick={this.handleClick}
           onKeyDown={this.handleKeyPressed}
           onFocus={this.handleFocus}
@@ -189,14 +183,21 @@ export default class Expandable extends React.Component {
           role={role}
           aria-expanded={ariaExpanded}
         >
-          <div style={styleFocused}>{this.props.heading}</div>
+          <div style={styleFocused}>{heading}</div>
           <div aria-hidden="true" style={styleArrow}>
             {arrow}
           </div>
         </div>
 
         <div style={styleContentMerged} aria-hidden={ariaHidden}>
-          {this.props.content}
+          <AnimateHeight
+            duration={ANIMATION_DURATION}
+            height={open ? 'auto' : 0}
+            onAnimationStart={() => this.handleAnimationStart(open)}
+            onAnimationEnd={() => this.handleAnimationEnd(open)}
+          >
+            {content}
+          </AnimateHeight>
         </div>
       </div>
     )
