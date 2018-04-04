@@ -1,14 +1,20 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import Tabs from './Tabs'
-import SummaryView from './SummaryView'
 import DescriptionView from './DescriptionView'
-import GranuleViewContainer from './GranuleTab/GranuleViewContainer'
+import OverviewView from './OverviewView'
 import AccessView from './AccessView'
 import VideoView from './VideoView'
+import Tabs from './Tabs'
 import {boxShadow} from '../common/defaultStyles'
+import Keywords from './Keywords'
+import KeywordsView from './KeywordsView'
 
 //-- Styles
+
+const styleCenterContent = {
+  display: 'flex',
+  justifyContent: 'center',
+}
 
 const styleDetailWrapper = {
   color: 'black',
@@ -18,6 +24,7 @@ const styleDetailWrapper = {
   // Note: margins on this element are temporarily needed to show the box shadow correctly. I expect this to change when we restructure the details page to get rid of tabs, as well as possibly when we update the router.
   marginRight: '3px',
   marginLeft: '1px',
+  backgroundColor: 'white',
 }
 
 const styleTitle = {
@@ -26,11 +33,7 @@ const styleTitle = {
   padding: '1em',
   backgroundColor: '#8cb9d8',
   color: '#000032',
-}
-
-const styleCenterContent = {
-  display: 'flex',
-  justifyContent: 'center',
+  borderRadius: '0 0 0 1.618em',
 }
 
 const styleContent = {
@@ -46,7 +49,13 @@ class Detail extends Component {
   }
 
   render() {
-    const {item, loading, totalGranuleCount} = this.props
+    const {
+      id,
+      item,
+      loading,
+      totalGranuleCount,
+      navigateToGranules,
+    } = this.props
 
     if (loading) {
       return (
@@ -67,33 +76,30 @@ class Detail extends Component {
 
     let tabData = [
       {
-        title: 'Summary',
+        title: 'Overview',
         content: (
-          <SummaryView item={item} totalGranuleCount={totalGranuleCount} />
+          <OverviewView
+            item={item}
+            totalGranuleCount={totalGranuleCount}
+            navigateToGranules={() => navigateToGranules(id)}
+          />
         ),
-      },
-      {
-        title: 'Description',
-        content: <DescriptionView item={item} />,
       },
       {
         title: 'Access',
         content: <AccessView item={item} />,
       },
+      {
+        title: 'Keywords',
+        content: <KeywordsView item={item} />,
+      },
     ]
-
-    if (totalGranuleCount > 0) {
-      tabData.splice(2, 0, {
-        title: 'Matching Files',
-        content: <GranuleViewContainer item={item} />,
-        action: this.showGranules,
-      })
-    }
 
     const videoLinks = item.links.filter(
       link => link.linkProtocol === 'video:youtube'
     )
-    if (videoLinks.length > 0) {
+    const showVideoTab = videoLinks.length > 0
+    if (showVideoTab) {
       tabData.push({
         title: videoLinks.length === 1 ? 'Video' : 'Videos',
         content: <VideoView links={videoLinks} />,
@@ -104,6 +110,7 @@ class Detail extends Component {
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
           <h1 style={styleTitle}>{item.title}</h1>
+          <DescriptionView item={item} />
           <Tabs
             style={{display: 'flex'}}
             styleContent={styleContent}
@@ -114,51 +121,6 @@ class Detail extends Component {
       </div>
     )
   }
-
-  // None of this links stuff is being used in the new version of the collection view.
-  // Preserving it for now because it may be needed for one of the tabs that we haven't added yet.
-
-  // getLinks() {
-  //   return (this.props && this.props.item && this.props.item.links) || [];
-  // }
-
-  // {/*{this.renderLinks('More Info', this.getLinksByType('information'), this.renderLink)}*/}
-  // {/*{this.renderLinks('Data Access', this.getLinksByType('download'), this.renderLink)}*/}
-
-  // getLinksByType(type) {
-  //   return this.getLinks().filter(link => link.linkFunction === type);
-  // }
-
-  // renderLinks(label, links, linkRenderer) {
-  //   if (!links || links.length === 0) {
-  //     return <div />;
-  //   }
-  //
-  //   return (
-  //     <div className={'pure-g'}>
-  //       <div className={`pure-u-1-6 ${styles.linkRow}`}>
-  //         <span>{label}</span>
-  //       </div>
-  //       <div className={`pure-u-5-6 ${styles.linkRow}`}>
-  //         <ul className={'pure-g'}>{links.map(linkRenderer)}</ul>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-  //
-  // renderLink(link, index) {
-  //   return (
-  //     <li className={'pure-u'} key={index}>
-  //       <A
-  //         href={link.linkUrl}
-  //         target="_blank"
-  //         className={`pure-button pure-button-primary`}
-  //       >
-  //         {link.linkProtocol || 'Link'}
-  //       </A>
-  //     </li>
-  //   );
-  // }
 }
 
 Detail.propTypes = {

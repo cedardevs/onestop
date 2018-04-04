@@ -5,12 +5,19 @@ const styleHideFocus = {
   outline: 'none',
 }
 
-const styleHeading = {
-  display: 'flex',
-  textAlign: 'left',
-  alignItems: 'center',
-  color: '#FFFFFF',
-  cursor: 'pointer',
+const styleHeading = (open, borderRadius) => {
+  const borderRadiusEffective = open
+    ? `${borderRadius} ${borderRadius} 0 0`
+    : `${borderRadius}`
+
+  return {
+    display: 'flex',
+    textAlign: 'left',
+    alignItems: 'center',
+    color: '#FFFFFF',
+    cursor: 'pointer',
+    borderRadius: borderRadius ? borderRadiusEffective : 'none',
+  }
 }
 
 const styleHeadingShown = {}
@@ -23,9 +30,12 @@ const styleArrow = {
   userSelect: 'none',
 }
 
-const styleContent = {
-  textAlign: 'left',
-  overflow: 'hidden',
+const styleContent = borderRadius => {
+  return {
+    textAlign: 'left',
+    overflow: 'hidden',
+    borderRadius: borderRadius ? `0 0 ${borderRadius} ${borderRadius}` : 'none',
+  }
 }
 
 const styleContentShown = {
@@ -45,7 +55,7 @@ export default class Expandable extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      open: props.open,
+      open: props.open || false,
       showArrow: props.showArrow,
       maxHeight: props.open ? '10000px' : 0,
       display: props.open ? 'block' : 'none',
@@ -150,7 +160,7 @@ export default class Expandable extends React.Component {
     const {styleFocus, styleWrapper} = this.props
 
     const stylesMerged = {
-      ...styleHeading,
+      ...styleHeading(this.state.open, this.props.borderRadius),
       ...this.props.styleHeading,
       ...styleHeadingHide,
       ...styleHideFocus, // focus is shown on an interior element instead
@@ -161,7 +171,7 @@ export default class Expandable extends React.Component {
     }
 
     const styleContentMerged = {
-      ...styleContent,
+      ...styleContent(this.props.borderRadius),
       ...this.props.styleContent,
       ...styleContentVisibilityTransition,
       ...styleContentVisibility,

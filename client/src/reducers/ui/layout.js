@@ -1,5 +1,5 @@
 import Immutable from 'seamless-immutable'
-import {isDetailPage} from '../../utils/urlUtils'
+import {isDetailPage, isGranuleListPage} from '../../utils/urlUtils'
 
 import {
   SET_LEFT_OPEN_CLOSE,
@@ -23,7 +23,8 @@ export const layout = (state = initialState, action) => {
     case LOCATION_CHANGE:
       const path = action.payload.pathname
       const onDetailPage = isDetailPage(path)
-      const allowSearching = !(path.includes('508') || onDetailPage)
+      const onGranuleListPage = isGranuleListPage(path)
+      const allowSearching = !(onDetailPage || onGranuleListPage)
       return Immutable.merge(state, {
         showLeft: allowSearching,
         showAppliedFilterBubbles: allowSearching,

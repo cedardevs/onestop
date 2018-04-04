@@ -1,23 +1,23 @@
 import {connect} from 'react-redux'
-import {toggleGranuleFocus} from '../../actions/FlowActions'
+import {showCollections, toggleGranuleFocus} from '../../actions/FlowActions'
 import {
   incrementGranulesOffset,
   fetchGranules,
 } from '../../actions/SearchRequestActions'
-import GranuleView from './GranuleView'
+import GranuleList from './GranuleList'
 
-const mapStateToProps = (state, reactProps) => {
-  const id = state.behavior.search.selectedIds[0]
+const mapStateToProps = state => {
   const {granules, totalGranules} = state.domain.results
   return {
     results: granules,
     totalHits: totalGranules,
+    returnedHits: (granules && Object.keys(granules).length) || 0,
+    loading: state.ui.loading ? 1 : 0,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    toggleFocus: (id, bool) => dispatch(toggleGranuleFocus(id, bool)),
     fetchMoreResults: () => {
       dispatch(incrementGranulesOffset())
       dispatch(fetchGranules(false))
@@ -25,8 +25,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const GranuleViewContainer = connect(mapStateToProps, mapDispatchToProps)(
-  GranuleView
+const GranuleListContainer = connect(mapStateToProps, mapDispatchToProps)(
+  GranuleList
 )
 
-export default GranuleViewContainer
+export default GranuleListContainer

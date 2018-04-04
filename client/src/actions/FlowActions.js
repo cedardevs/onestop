@@ -20,7 +20,12 @@ import {
 } from './SearchParamActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchInfo, fetchCounts} from './InfoActions'
-import {isDetailPage, getCollectionIdFromDetailPath} from '../utils/urlUtils'
+import {
+  isDetailPage,
+  isGranuleListPage,
+  getCollectionIdFromDetailPath,
+  getCollectionIdFromGranuleListPath,
+} from '../utils/urlUtils'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
@@ -37,17 +42,17 @@ export const showCollections = (prefix = '') => {
   }
 }
 
-export const showGranules = (prefix = '') => {
-  // this is only needed for the 508 site now
+export const showGranulesList = id => {
+  if (!id) {
+    return
+  }
   return (dispatch, getState) => {
     const query = encodeQueryString(getState())
-    if (!_.isEmpty(query)) {
-      const locationDescriptor = {
-        pathname: `${prefix}/collections/files`,
-        search: `?${query}`,
-      }
-      dispatch(push(locationDescriptor))
+    const locationDescriptor = {
+      pathname: `collections/granules/${id}`,
+      search: `?${query}`,
     }
+    dispatch(push(locationDescriptor))
   }
 }
 
@@ -123,16 +128,19 @@ export const initialize = () => {
 
 const loadFromUrl = (path, newQueryString) => {
   // Note, collection queries are automatically updated by the URL because the query is parsed into search, which triggers loadData via a watch
-
-  if (isDetailPage(path)) {
+  if (
+    isDetailPage(path) &&
+    !store.getState().behavior.request.getCollectionInFlight
+  ) {
     const detailId = getCollectionIdFromDetailPath(path)
-    if (detailId != store.getState().behavior.request.getCollectionInFlight) {
-      store.dispatch(getCollection(detailId))
-      store.dispatch(clearSelections())
-      store.dispatch(toggleSelection(detailId))
-      store.dispatch(clearGranules())
-      store.dispatch(fetchGranules())
-    }
+    store.dispatch(getCollection(detailId))
+  }
+  else if (isGranuleListPage(path)) {
+    const detailId = getCollectionIdFromGranuleListPath(path)
+    store.dispatch(clearSelections())
+    store.dispatch(toggleSelection(detailId))
+    store.dispatch(clearGranules())
+    store.dispatch(fetchGranules())
   }
   else {
     if (newQueryString.indexOf('?') === 0) {
@@ -164,20 +172,11 @@ export const loadData = () => {
   }
 }
 
-// Update background
-const updateBackground = path => {
-  const is508ButNotLanding =
-    (_.startsWith(path, '/508/') && path !== '/508/') ||
-    (_.startsWith(path, '508/') && path !== '508/')
-  store.dispatch(toggleBackgroundImage(!is508ButNotLanding)) //Cover strange routing case. TODO: Regex test?
-}
-
 const routingWatch = watch(
   store.getState,
   'behavior.routing.locationBeforeTransitions'
 )
 const routingUpdates = locationBeforeTransitions => {
-  updateBackground(locationBeforeTransitions.pathname)
   loadFromUrl(
     locationBeforeTransitions.pathname,
     locationBeforeTransitions.search

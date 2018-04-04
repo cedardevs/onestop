@@ -2,13 +2,10 @@ import React from 'react'
 import {render} from 'react-dom'
 import {Router, Route, IndexRoute} from 'react-router'
 import Result from './result/Result'
-import Section508Result from './result/Section508Result'
-import CollectionGridContainer from './result/collections/CollectionGridContainer'
-import Section508CollectionGridContainer from './result/collections/Section508CollectionGridContainer'
-import Section508GranuleListContainer from './result/granules/list/Section508GranuleListContainer'
+import CollectionsContainer from './result/collections/CollectionsContainer'
+import GranuleListContainer from './result/granules/GranuleListContainer'
 import ErrorContainer from './error/ErrorContainer'
 import LandingContainer from './landing/LandingContainer'
-import Section508LandingContainer from './landing/Section508LandingContainer'
 import DetailContainer from './detail/DetailContainer'
 import Help from './common/info/Help'
 import AboutContainer from './common/info/AboutContainer'
@@ -29,7 +26,7 @@ const routesLayout = (
       <Route name="Collections" path="collections" component={Result}>
         <IndexRoute
           displayName="Collections"
-          component={CollectionGridContainer}
+          component={CollectionsContainer}
         />
       </Route>
       <Route
@@ -37,24 +34,11 @@ const routesLayout = (
         path="collections/details/:id"
         component={DetailContainer}
       />
-      <Route name="Error" path="error" component={ErrorContainer} />
-      <Route name="Help" path="help" component={Help} />
-      <Route name="About" path="about" component={AboutContainer} />
-    </Route>
-
-    <Route path="508" name="Home" component={RootContainer}>
-      <IndexRoute component={Section508LandingContainer} />
-      <Route name="Collections" path="collections" component={Section508Result}>
-        <IndexRoute
-          displayName="Collections"
-          component={Section508CollectionGridContainer}
-        />
-        <Route
-          name="Files"
-          path="files"
-          component={Section508GranuleListContainer}
-        />
-      </Route>
+      <Route
+        name="GranuleDetail"
+        path="collections/granules/:id"
+        component={GranuleListContainer}
+      />
       <Route name="Error" path="error" component={ErrorContainer} />
       <Route name="Help" path="help" component={Help} />
       <Route name="About" path="about" component={AboutContainer} />

@@ -32,14 +32,4 @@ describe('The layout reducer', function() {
     result.showLeft.should.equal(false)
   })
 
-  it('sets showLeft to false for 508', function () {
-    const locationDescriptor = {
-      pathname: '/508/asdf',
-      search: '',
-    }
-    const action = pushMock(locationDescriptor)
-    const result = layout(initialState, action)
-    result.showLeft.should.equal(false)
-  })
-
 })

@@ -45,7 +45,6 @@ export default class Root extends Component {
     this.state = {
       leftVisible: true,
       rightVisible: false,
-      tabCurrent: 'Search Results',
       browserWarning: this.hasUnsupportedFeatures(),
     }
   }
@@ -95,31 +94,20 @@ export default class Root extends Component {
   }
 
   isNotLanding() {
-    return this.location !== '/' && this.location !== '/508/'
-  }
-
-  isNot508() {
-    return this.location.indexOf('508') === -1 // TODO move this to redux state
+    return this.location !== '/'
   }
 
   isAboutPage() {
-    return (
-      this.location.startsWith('/about') ||
-      this.location.startsWith('/508/about')
-    )
+    return this.location.startsWith('/about')
   }
 
   isHelpPage() {
-    return (
-      this.location.startsWith('/help') || this.location.startsWith('/508/help')
-    )
+    return this.location.startsWith('/help')
   }
 
   homeUrl() {
     const {host, pathname} = location
-    return `//${host}${pathname ? pathname : '/'}#/${this.isNot508()
-      ? ''
-      : '508/'}`
+    return `//${host}${pathname ? pathname : '/'}#/`
   }
 
   render() {
@@ -129,7 +117,7 @@ export default class Root extends Component {
       <div>
         <BannerContainer />
         <HeaderContainer
-          showSearch={this.isNotLanding() && this.isNot508()}
+          showSearch={this.isNotLanding()}
           homeUrl={this.homeUrl()}
         />
         {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}

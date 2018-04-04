@@ -4,21 +4,26 @@ import {processUrl} from '../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
 import {boxShadow} from '../../common/defaultStyles'
 
-const styleCard = {
-  width: '25em',
-  height: '15.5em',
-  margin: '0 2em 2em 0',
-  textAlign: 'center',
+// TODO: finish styling this component if we want an alternate list view for collection results
+// when done, add ListItemComponent={CollectionListResult} as a prop to ListView in Collections.jsx
+
+const styleResult = {
+  // margin: '0 2em 2em 0',
+  // textAlign: 'center',
 }
 
+// const styleContent = {
+//   boxSizing: 'border-box',
+//   width: '100%',
+//   height: '100%',
+//   color: 'white',
+//   overflow: 'hidden',
+//   position: 'relative',
+//   boxShadow: boxShadow,
+// }
+
 const styleContent = {
-  boxSizing: 'border-box',
-  width: '100%',
-  height: '100%',
-  color: 'white',
-  overflow: 'hidden',
-  position: 'relative',
-  boxShadow: boxShadow,
+  padding: '1.618em',
 }
 
 const styleOverlay = {
@@ -63,12 +68,12 @@ const styleArch = {
   bottom: 0,
   left: 0,
   right: 0,
-  height: '1.618em',
+  height: '4.472em',
   overflow: 'hidden',
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
   fontWeight: 'normal',
-  padding: '1.618em',
+  padding: '0.618em 1em 0.618em 1em',
   margin: 0,
   color: '#222',
   backgroundColor: '#FBFBFB',
@@ -96,31 +101,39 @@ const styleArchBlur = {
   fontWeight: 'normal',
   backgroundColor: '#FBFBFB',
   color: '#222',
-  height: '1.618em',
+  height: '4.472em',
 }
 
 const styleMapContainer = {
   position: 'absolute',
   top: 0,
   zIndex: 0,
-  width: '100%',
-  maxWidth: '100%',
-  height: '100%',
+  // width: '100%',
+  // maxWidth: '100%',
+  height: '10em',
+}
+
+const styleSuperTitle = {
+  marginTop: '0.309em',
+  marginBottom: '0.309em',
+  fontSize: '1em',
+  lineHeight: '1.618em',
+  fontWeight: 'normal',
 }
 
 const styleTitle = {
   fontSize: '1em',
-  textAlign: 'center',
+  textAlign: 'left',
   lineHeight: '1.618em', // use this value to count block height
   maxHeight: '4.854em', // maxHeight = lineHeight (1.618) * max lines (3)
-  margin: 0,
-  padding: 0,
+  marginTop: '0.309em',
+  marginBottom: '0.309em',
   textOverflow: 'ellipsis',
   whiteSpace: 'normal',
   overflow: 'hidden',
 }
 
-export default class CollectionCard extends Component {
+export default class CollectionListResult extends Component {
   constructor(props) {
     super(props)
     const {item} = this.props
@@ -212,33 +225,34 @@ export default class CollectionCard extends Component {
       ...this.thumbnailStyle(),
     }
 
-    const styleOverlayMerged = {
-      ...styleOverlay,
-      ...(this.state.focusing ? styleOverlayFocus : styleOverlayBlur),
-      ...(this.state.hovering ? styleOverlayHover : {}),
-    }
+    // const styleOverlayMerged = {
+    //   ...styleOverlay,
+    //   ...(this.state.focusing ? styleOverlayFocus : styleOverlayBlur),
+    //   ...(this.state.hovering ? styleOverlayHover : {}),
+    // }
 
-    const styleArchMerged = {
-      ...styleArch,
-      ...(this.state.focusing ? styleArchFocus : styleArchBlur),
-      ...(this.state.hovering ? styleArchHover : {}),
-    }
+    // const styleArchMerged = {
+    //   ...styleArch,
+    //   ...(this.state.focusing ? styleArchFocus : styleArchBlur),
+    //   ...(this.state.hovering ? styleArchHover : {}),
+    // }
 
     return (
-      <div style={styleCard} onKeyPress={e => this.handleKeyPress(e, onClick)}>
-        <div style={styleContentMerged}>
+      <div
+        style={styleResult}
+        onKeyPress={e => this.handleKeyPress(e, onClick)}
+      >
+        <div style={styleContent}>
           <button
-            style={styleOverlayMerged}
+            style={{display: 'flex'}}
             onClick={onClick}
             onMouseOver={this.handleMouseOver}
             onMouseOut={this.handleMouseOut}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
           >
-            {this.renderThumbnailMap()}
-            <div style={styleArchMerged}>
-              <h2 style={styleTitle}>{title}</h2>
-            </div>
+            <div>IMAGE</div>
+            <div>{title}</div>
           </button>
         </div>
       </div>
@@ -246,7 +260,15 @@ export default class CollectionCard extends Component {
   }
 }
 
-CollectionCard.propTypes = {
+CollectionListResult.propTypes = {
   item: PropTypes.object.isRequired,
   onClick: PropTypes.func.isRequired,
 }
+
+// {this.renderThumbnailMap()}
+// <div style={styleArchMerged}>
+//   <div style={styleSuperTitle} aria-hidden={true}>
+//     Collection Title:
+//   </div>
+//   <h2 style={styleTitle}>{title}</h2>
+// </div>
