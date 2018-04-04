@@ -81,7 +81,7 @@ class ListResult extends React.Component {
     else {
       // Return map image of spatial bounding or, if none, world map
       return (
-        <div key={'ListResult::map'} style={styleMap} aria-hidden="true">
+        <div key={'ListResult::map'} style={styleMap}>
           <MapThumbnail geometry={geometry} interactive={true} />
         </div>
       )
@@ -225,7 +225,10 @@ class ListResult extends React.Component {
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
       >
-        <FlexRow style={{padding: '1.618em'}} items={[ left, right ]} />
+        <FlexRow
+          style={{padding: '1.618em', flexDirection: 'row-reverse'}}
+          items={[ right, left ]}
+        />
       </div>
     )
   }
