@@ -32,6 +32,31 @@ const styleDescription = {
   margin: 0,
 }
 
+const styleExpandableWrapper = {
+  margin: '0.618em',
+}
+
+const styleExpandableHeading = {
+  backgroundColor: '#6792B5',
+}
+
+const styleExpandableH2 = {
+  fontSize: '1em',
+  margin: 0,
+  padding: '0.618em',
+  color: 'white',
+  fontWeight: 'bold',
+}
+
+const styleExpandableContent = {
+  color: '#000032',
+  backgroundColor: '#eef5fb',
+}
+
+const styleContentPadding = {
+  padding: '1.618em',
+}
+
 export default class DescriptionView extends Component {
   render() {
     const {item} = this.props
@@ -48,62 +73,44 @@ export default class DescriptionView extends Component {
       ? item.description
       : 'No description available'
 
-    const styleExpandableHeading = {
-      backgroundColor: '#6792B5',
-    }
-
     const citeAsStatements =
-      item.citeAsStatements.length > 0
-        ? item.citeAsStatements.map((statement, key) => {
-            return <div key={key}>{statement}</div>
-          })
-        : 'No citations available.'
+      item.citeAsStatements.length > 0 ? (
+        item.citeAsStatements.map((statement, key) => {
+          return (
+            <div key={key} style={styleContentPadding}>
+              {statement}
+            </div>
+          )
+        })
+      ) : (
+        <div style={styleContentPadding}>'No citations available.'</div>
+      )
     const citationExpandable = (
       <Expandable
+        styleWrapper={styleExpandableWrapper}
         showArrow={true}
-        heading={
-          <div style={{padding: '0.618em', color: 'white', fontWeight: 'bold'}}>
-            Citation
-          </div>
-        }
+        heading={<h2 style={styleExpandableH2}>Citation</h2>}
         styleHeading={styleExpandableHeading}
-        content={
-          <div
-            style={{
-              padding: '1.618em',
-              color: '#000032',
-              backgroundColor: '#eef5fb',
-            }}
-          >
-            {citeAsStatements}
-          </div>
-        }
+        content={citeAsStatements}
+        styleContent={styleExpandableContent}
+        borderRadius={'1em'}
       />
     )
 
-    const identifier = item.fileIdentifier
-      ? item.fileIdentifier
-      : 'No file identifier available.'
+    const identifier = item.fileIdentifier ? (
+      <div style={styleContentPadding}>{item.fileIdentifier}</div>
+    ) : (
+      <div style={styleContentPadding}>No file identifier available.</div>
+    )
     const identifiersExpandable = (
       <Expandable
+        styleWrapper={styleExpandableWrapper}
         showArrow={true}
-        heading={
-          <div style={{padding: '0.618em', color: 'white', fontWeight: 'bold'}}>
-            Identifier
-          </div>
-        }
+        heading={<h2 style={styleExpandableH2}>Identifier</h2>}
         styleHeading={styleExpandableHeading}
-        content={
-          <div
-            style={{
-              padding: '1.618em',
-              color: '#000032',
-              backgroundColor: '#eef5fb',
-            }}
-          >
-            {identifier}
-          </div>
-        }
+        content={identifier}
+        styleContent={styleExpandableContent}
+        borderRadius={'1em'}
       />
     )
 

@@ -35,7 +35,7 @@ export default class GranulesSummary extends React.Component {
     const granulesSummary = (
       <div style={styleGranuleSummary}>
         <Button
-          text="Show matching files"
+          text={`Show ${totalGranuleCount} matching files`}
           icon={filesIcon}
           onClick={navigateToGranules}
           style={styleGranulesButton}

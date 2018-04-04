@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import MapThumbnail from '../common/MapThumbnail'
+import FlexColumn from '../common/FlexColumn'
 import FlexRow from '../common/FlexRow'
 import DSMMRating from './DSMMRating'
 import Keywords from './Keywords'
@@ -51,11 +52,6 @@ class OverviewView extends Component {
 
     const left = (
       <div key="overview-left" style={styleLeft}>
-        <div>
-          <h3 style={styleSectionHeading}>Total Files:&nbsp;</h3>
-          {totalGranuleCount}
-        </div>
-
         <h3 style={styleSectionHeading}>Time Period:</h3>
         <TimeSummary item={item} />
 
@@ -76,20 +72,27 @@ class OverviewView extends Component {
 
     const right = (
       <div key="overview-right" style={styleRight}>
-        <GranulesSummary
-          totalGranuleCount={totalGranuleCount}
-          navigateToGranules={navigateToGranules}
-        />
         <Keywords item={item} styleHeading={styleSectionHeading} />
       </div>
     )
 
+    const granuleSection = (
+      <GranulesSummary
+        totalGranuleCount={totalGranuleCount}
+        navigateToGranules={navigateToGranules}
+      />
+    )
+
+    const mainSection = (
+      <FlexRow
+        style={{justifyContent: 'space-between'}}
+        items={[ left, right ]}
+      />
+    )
+
     return (
       <div style={styleContainer}>
-        <FlexRow
-          style={{justifyContent: 'space-between'}}
-          items={[ left, right ]}
-        />
+        <FlexColumn items={[ granuleSection, mainSection ]} />
       </div>
     )
   }
