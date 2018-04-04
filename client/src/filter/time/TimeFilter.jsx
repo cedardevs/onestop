@@ -24,18 +24,18 @@ const styleTimeFilter = {
 
 const styleForm = {
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
 }
 
 const styleFieldset = {
   alignSelf: 'center',
   marginBottom: '1em',
   border: '1px solid white',
-  padding: '0.309em'
+  padding: '0.309em',
 }
 
 const styleLegend = {
-  color: 'inherit'
+  color: 'inherit',
 }
 
 const styleDate = {
@@ -57,17 +57,15 @@ const styleLabel = {
 }
 
 const styleYearWrapper = {
-  height: '2em'
-
+  height: '2em',
 }
 
 const styleMonthWrapper = {
-  height: '2em'
-
+  height: '2em',
 }
 
 const styleDayWrapper = {
-  height: '2em'
+  height: '2em',
 }
 
 const styleYear = {
@@ -77,7 +75,7 @@ const styleYear = {
   margin: 0,
   padding: '0 0.309em',
   border: 'none',
-  borderRadius: '0.309em'
+  borderRadius: '0.309em',
 }
 
 const styleMonth = {
@@ -86,7 +84,7 @@ const styleMonth = {
   height: '100%',
   margin: 0,
   padding: 0,
-  border: 'none'
+  border: 'none',
 }
 const styleDay = {
   width: '1.75em',
@@ -95,7 +93,7 @@ const styleDay = {
   margin: 0,
   padding: '0 0.309em',
   border: 'none',
-  borderRadius: '0.309em'
+  borderRadius: '0.309em',
 }
 
 const styleButtonRow = {
@@ -302,17 +300,17 @@ export default class TimeFilter extends Component {
           Year
         </label>
         <div style={styleYearWrapper}>
-        <input
-          type="text"
-          id={id}
-          name={id}
-          placeholder="YYYY"
-          aria-placeholder="Y Y Y Y"
-          value={value}
-          maxLength="4"
-          style={styleYear}
-          aria-label={label}
-        />
+          <input
+            type="text"
+            id={id}
+            name={id}
+            placeholder="YYYY"
+            aria-placeholder="Y Y Y Y"
+            value={value}
+            maxLength="4"
+            style={styleYear}
+            aria-label={label}
+          />
         </div>
       </div>
     )
@@ -327,27 +325,27 @@ export default class TimeFilter extends Component {
           Month
         </label>
         <div style={styleMonthWrapper}>
-        <select
-          id={id}
-          name={id}
-          value={value}
-          style={styleMonth}
-          aria-label={label}
-        >
-          <option value="">(none)</option>
-          <option value="0">January</option>
-          <option value="1">February</option>
-          <option value="2">March</option>
-          <option value="3">April</option>
-          <option value="4">May</option>
-          <option value="5">June</option>
-          <option value="6">July</option>
-          <option value="7">August</option>
-          <option value="8">September</option>
-          <option value="9">October</option>
-          <option value="10">November</option>
-          <option value="11">December</option>
-        </select>
+          <select
+            id={id}
+            name={id}
+            value={value}
+            style={styleMonth}
+            aria-label={label}
+          >
+            <option value="">(none)</option>
+            <option value="0">January</option>
+            <option value="1">February</option>
+            <option value="2">March</option>
+            <option value="3">April</option>
+            <option value="4">May</option>
+            <option value="5">June</option>
+            <option value="6">July</option>
+            <option value="7">August</option>
+            <option value="8">September</option>
+            <option value="9">October</option>
+            <option value="10">November</option>
+            <option value="11">December</option>
+          </select>
         </div>
       </div>
     )
@@ -362,17 +360,17 @@ export default class TimeFilter extends Component {
           Day
         </label>
         <div style={styleDayWrapper}>
-        <input
-          type="text"
-          id={id}
-          name={id}
-          placeholder="DD"
-          aria-placeholder="D D"
-          value={value}
-          maxLength="2"
-          style={styleDay}
-          aria-label={label}
-        />
+          <input
+            type="text"
+            id={id}
+            name={id}
+            placeholder="DD"
+            aria-placeholder="D D"
+            value={value}
+            maxLength="2"
+            style={styleDay}
+            aria-label={label}
+          />
         </div>
       </div>
     )

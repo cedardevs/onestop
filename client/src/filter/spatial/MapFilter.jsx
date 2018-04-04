@@ -20,19 +20,17 @@ const styleDescription = {
 
 const styleForm = {
   display: 'flex',
-  flexDirection: 'column'
+  flexDirection: 'column',
 }
 
 const styleFieldset = {
   alignSelf: 'center',
   border: '1px solid white',
-  padding: '0.309em'
 }
 
 const styleLegend = {
-  color: 'inherit'
+  color: 'inherit',
 }
-
 
 const styleButtons = {
   display: 'flex',
@@ -232,7 +230,10 @@ export default class MapFilter extends Component {
     return (
       <div key="MapFilterCoordinatesInput::all" style={styleBreathingRoom}>
         <form style={styleForm} onKeyDown={this.handleKeyDown}>
-          <fieldset style={styleFieldset} onChange={event => this.onChange(event)}>
+          <fieldset
+            style={styleFieldset}
+            onChange={event => this.onChange(event)}
+          >
             <legend style={styleLegend}>Bounding Box Coordinates: </legend>
             {this.renderInputRow('west', '-180.0 to 180.0')}
             {this.renderInputRow('south', ' -90.0 to  90.0')}
