@@ -81,7 +81,7 @@ class ListResult extends React.Component {
     else {
       // Return map image of spatial bounding or, if none, world map
       return (
-        <div key={'ListResult::map'} style={styleMap}>
+        <div key={'ListResult::map'} style={styleMap} aria-hidden="true">
           <MapThumbnail geometry={geometry} interactive={true} />
         </div>
       )
@@ -118,7 +118,7 @@ class ListResult extends React.Component {
           target="_blank"
           style={{textDecoration: 'none', display: 'inline-flex'}}
         >
-          <div style={util.styleBadge(protocol)}>
+          <div style={util.styleBadge(protocol)} aria-hidden="true">
             {util.renderBadgeIcon(protocol)}
           </div>
           <div

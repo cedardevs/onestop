@@ -9,6 +9,7 @@ const styleLegend = {
 const styleHeading = {
   margin: '0 0 0.618em 0',
   padding: 0,
+  fontSize: '1.2em',
 }
 
 const styleLegendList = {
@@ -42,7 +43,9 @@ export default class GranuleListLegend extends Component {
       .map((protocol, i) => {
         return (
           <li key={i} style={styleLegendItem}>
-            <div style={styleBadge(protocol)}>{renderBadgeIcon(protocol)}</div>
+            <div style={styleBadge(protocol)} aria-hidden="true">
+              {renderBadgeIcon(protocol)}
+            </div>
             <div style={styleLegendLabel}>{protocol.label}</div>
           </li>
         )
@@ -51,7 +54,9 @@ export default class GranuleListLegend extends Component {
 
     return (
       <div style={styleLegend}>
-        <h3 style={styleHeading}>Access Protocols:</h3>
+        <h1 style={styleHeading} aria-label="Access Protocols Legend">
+          Access Protocols:
+        </h1>
         <ul style={styleLegendList}>{legendItems}</ul>
       </div>
     )
