@@ -30,10 +30,10 @@ export default class GranulesSummary extends React.Component {
     const {totalGranuleCount, navigateToGranules} = this.props
 
     const noGranulesSummary = (
-      <div style={styleGranuleSummary}>No files in this collection</div>
+      <h3 style={styleGranuleSummary}>No files in this collection</h3>
     )
     const granulesSummary = (
-      <div style={styleGranuleSummary}>
+      <h3 style={styleGranuleSummary}>
         <Button
           text={`Show ${totalGranuleCount} matching files`}
           icon={filesIcon}
@@ -42,7 +42,7 @@ export default class GranulesSummary extends React.Component {
           styleHover={styleGranulesButtonHover}
           styleIcon={styleIcon}
         />
-      </div>
+      </h3>
     )
 
     return totalGranuleCount == 0 ? noGranulesSummary : granulesSummary
