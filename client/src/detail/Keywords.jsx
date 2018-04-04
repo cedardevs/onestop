@@ -100,7 +100,8 @@ class Keywords extends Component {
         (k, index, arr) =>
           index > 2 && !showAll ? null : (
             <li style={styleKeyword(color)} key={k}>
-              {k}{index < (arr.length-1) ? ',' : ''}
+              {k}
+              {index < arr.length - 1 ? ',' : ''}
             </li>
           )
       )

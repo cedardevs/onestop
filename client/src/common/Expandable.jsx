@@ -45,7 +45,7 @@ export default class Expandable extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      open: props.open,
+      open: props.open || false,
       showArrow: props.showArrow,
       maxHeight: props.open ? '10000px' : 0,
       display: props.open ? 'block' : 'none',
