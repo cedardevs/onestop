@@ -7,7 +7,6 @@ buildscript {
   }
 }
 
-apply plugin: 'org.owasp.dependencycheck'
 apply plugin: 'groovy'
 apply plugin: 'org.cedar.dockerplugin'
 apply plugin: 'application'
@@ -26,14 +25,12 @@ dependencies {
   compile('org.apache.kafka:kafka-streams:1.0.0')
   compile('org.slf4j:slf4j-api:1.7.25')
   compile('org.apache.commons:commons-text:1.2')
-  compile('com.github.danielwegener:logback-kafka-appender:0.1.0')
-  compile('ch.qos.logback:logback-core:1.2.3')
-  compile ('ch.qos.logback:logback-examples:1.2.3')
-  compile group: 'org.yaml', name: 'snakeyaml', version: '1.18'
+  compile('ch.qos.logback:logback-classic:1.2.3')
+  compile('org.yaml:snakeyaml:1.18')
 
   testCompile('junit:junit:4.12')
   testCompile('org.spockframework:spock-core:1.0-groovy-2.4')
-  testCompile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+  testCompile('ch.qos.logback:logback-classic:1.2.3')
   testCompile("org.testcontainers:testcontainers:1.6.0")
   testCompile("org.testcontainers:kafka:1.6.0")
 
