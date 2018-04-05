@@ -6,6 +6,7 @@ import {Key} from '../../utils/keyboardUtils'
 import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from '../../common/input/Checkbox'
 import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
+import {fontFamilyMonospace} from '../../utils/styleUtils'
 
 const styleMapFilter = {
   backgroundColor: '#3D97D2',
@@ -60,7 +61,7 @@ const styleLabel = {
 const styleTextBox = {
   width: '10em',
   color: 'black',
-  fontFamily: 'Courier New',
+  fontFamily: fontFamilyMonospace(),
 }
 
 export default class MapFilter extends Component {

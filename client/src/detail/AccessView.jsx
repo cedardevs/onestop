@@ -1,6 +1,7 @@
 import React from 'react'
 import DetailGrid from './DetailGrid'
 import A from '../common/link/Link'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleParagraph = {
   padding: 0,
@@ -36,6 +37,7 @@ const styleHeading = {
   margin: 0,
   padding: '0.618em',
   width: '100%',
+  fontFamily: fontFamilySerif()
 }
 
 export default class AccessView extends React.Component {

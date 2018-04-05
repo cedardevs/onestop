@@ -1,12 +1,15 @@
 import React from 'react'
 import TopicsMenuButton from './TopicsMenuButton'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleTopics = {
-  marginBottom: '2.618em',
+  marginTop: '2.618em',
 }
 
 const styleTopicsLabel = {
   textAlign: 'center',
+  fontFamily: fontFamilySerif(),
+  margin: '0 0 0.618em 0'
 }
 
 const styleTopicsMenu = {

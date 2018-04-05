@@ -6,8 +6,7 @@ import AccessView from './AccessView'
 import VideoView from './VideoView'
 import Tabs from './Tabs'
 import {boxShadow} from '../common/defaultStyles'
-import Keywords from './Keywords'
-import KeywordsView from './KeywordsView'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 //-- Styles
 
@@ -28,12 +27,14 @@ const styleDetailWrapper = {
 }
 
 const styleTitle = {
-  fontSize: '1.5em',
   margin: 0,
-  padding: '1em',
+  padding: '1em 1em 2em 1em',
   backgroundColor: '#8cb9d8',
   color: '#000032',
-  borderRadius: '0 0 0 1.618em',
+  background: 'linear-gradient(#8cb9d8 0%, white 100%)',
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.4em',
+  fontWeight: 'bold',
 }
 
 const styleContent = {
@@ -80,8 +81,6 @@ class Detail extends Component {
         content: (
           <OverviewView
             item={item}
-            totalGranuleCount={totalGranuleCount}
-            navigateToGranules={() => navigateToGranules(id)}
           />
         ),
       },
@@ -89,10 +88,10 @@ class Detail extends Component {
         title: 'Access',
         content: <AccessView item={item} />,
       },
-      {
-        title: 'Keywords',
-        content: <KeywordsView item={item} />,
-      },
+      // {
+      //   title: 'Keywords',
+      //   content: <KeywordsView item={item} />,
+      // },
     ]
 
     const videoLinks = item.links.filter(
@@ -110,7 +109,8 @@ class Detail extends Component {
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
           <h1 style={styleTitle}>{item.title}</h1>
-          <DescriptionView item={item} />
+          <DescriptionView item={item} totalGranuleCount={totalGranuleCount}
+                           navigateToGranules={() => navigateToGranules(id)} />
           <Tabs
             style={{display: 'flex'}}
             styleContent={styleContent}

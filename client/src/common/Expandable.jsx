@@ -62,7 +62,11 @@ export default class Expandable extends React.Component {
   }
 
   toggle = () => {
-    const {onToggle, value} = this.props
+    const {onToggle, value, disabled} = this.props
+
+    if(disabled) {
+      return
+    }
 
     this.setState(prevState => {
       const newOpen = !prevState.open

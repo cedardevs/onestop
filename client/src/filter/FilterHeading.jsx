@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleContainer = {
   display: 'flex',
@@ -20,9 +21,10 @@ const styleIconImage = {
 const styleText = {
   width: '100%',
   alignSelf: 'center',
+  margin: '0',
+  fontFamily: fontFamilySerif(),
   fontSize: '1em',
   fontWeight: 'normal',
-  margin: '0',
 }
 
 export default class FilterHeading extends Component {

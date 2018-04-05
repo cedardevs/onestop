@@ -1,10 +1,12 @@
 import React from 'react'
 import DetailGrid from './DetailGrid'
+import { fontFamilySerif } from '../utils/styleUtils'
 
 const styleKeywordTitle = {
   padding: 0,
   margin: '0 0 1.618em 0',
-  fontStyle: 'italic',
+  fontFamily: fontFamilySerif(),
+  fontWeight: 'bold'
 }
 
 const styleContent = {
@@ -30,6 +32,7 @@ const styleHeading = {
   margin: 0,
   padding: '0.618em',
   width: '100%',
+  fontFamily: fontFamilySerif(),
 }
 
 export default class KeywordsView extends React.Component {

@@ -4,8 +4,10 @@ html {
 }
 
 body {
-  font-size: 1.4rem;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  transition: all 0.2s ease-out;
+
+  font-size: 10px;
+  font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
   color: white;
   min-height: 100%;
 }
@@ -21,6 +23,6 @@ select {
   font-size: inherit;
 }
 
-a:hover {
+a:hover, button:hover {
   cursor: pointer;
 }

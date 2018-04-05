@@ -1,13 +1,12 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import MapThumbnail from '../common/MapThumbnail'
-import FlexColumn from '../common/FlexColumn'
 import FlexRow from '../common/FlexRow'
 import DSMMRating from './DSMMRating'
 import Keywords from './Keywords'
 import TimeSummary from './TimeSummary'
 import SpatialSummary from './SpatialSummary'
-import GranulesSummary from './GranulesSummary'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleContainer = {
   padding: '1.618em',
@@ -25,10 +24,11 @@ const styleRight = {
 }
 
 const styleSectionHeading = {
+  fontFamily: fontFamilySerif(),
   fontSize: '1.25em',
   marginTop: '1em',
   marginBottom: '0.25em',
-  fontWeight: 'normal',
+  fontWeight: 'bold',
 }
 
 const stylePreviewMap = {
@@ -48,7 +48,7 @@ class OverviewView extends Component {
   }
 
   render() {
-    const {item, totalGranuleCount, navigateToGranules} = this.props
+    const {item} = this.props
 
     const left = (
       <div key="overview-left" style={styleLeft}>
@@ -56,7 +56,7 @@ class OverviewView extends Component {
         <TimeSummary item={item} />
 
         <div aria-hidden={true}>
-          <h3 style={styleSectionHeading}>Spatial Bounding Map:</h3>
+          <h3 style={styleSectionHeading}>Map:</h3>
           <div style={stylePreviewMap}>
             <MapThumbnail geometry={item.spatialBounding} interactive={true} />
           </div>
@@ -76,25 +76,13 @@ class OverviewView extends Component {
       </div>
     )
 
-    const granuleSection = (
-      <GranulesSummary
-        key="granule-summary-section"
-        totalGranuleCount={totalGranuleCount}
-        navigateToGranules={navigateToGranules}
-      />
-    )
-
-    const mainSection = (
-      <FlexRow
-        key="main-section"
-        style={{justifyContent: 'space-between'}}
-        items={[ left, right ]}
-      />
-    )
-
     return (
       <div style={styleContainer}>
-        <FlexColumn items={[ granuleSection, mainSection ]} />
+        <FlexRow
+            key="main-section"
+            style={{justifyContent: 'space-between'}}
+            items={[ left, right ]}
+        />
       </div>
     )
   }

@@ -1,12 +1,15 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {styleBadge, renderBadgeIcon} from '../../utils/resultUtils'
+import {fontFamilySerif} from '../../utils/styleUtils'
 
 const styleLegend = {
   margin: '1.618em',
 }
 
 const styleHeading = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.2em',
   margin: '0 0 0.618em 0',
   padding: 0,
 }

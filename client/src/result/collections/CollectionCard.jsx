@@ -109,7 +109,9 @@ const styleMapContainer = {
 }
 
 const styleTitle = {
+  letterSpacing: '0.05em',
   fontSize: '1em',
+  fontWeight: 600, // semi-bold
   textAlign: 'center',
   lineHeight: '1.618em', // use this value to count block height
   maxHeight: '4.854em', // maxHeight = lineHeight (1.618) * max lines (3)

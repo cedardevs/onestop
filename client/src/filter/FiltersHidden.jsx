@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import Button from '../common/input/Button'
 import arrowRight from '../../img/font-awesome/white/svg/arrow-right.svg'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleHiddenContent = {
   background: '#277CB2', // $color_primary
@@ -22,6 +23,7 @@ const styleHiddentContentImage = {
 }
 
 const styleHiddentContentVerticalText = {
+  fontFamily: fontFamilySerif(),
   fontSize: '1em',
   transform: 'rotate(-90deg)',
   lineHeight: '1em',

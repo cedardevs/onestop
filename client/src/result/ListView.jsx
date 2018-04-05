@@ -4,12 +4,14 @@ import _ from 'lodash'
 import Button from '../common/input/Button'
 import gridIcon from 'fa/th.svg'
 import listIcon from 'fa/th-list.svg'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleListView = {
   marginLeft: '1.618em',
 }
 
 const styleListInfo = {
+  fontFamily: fontFamilySerif(),
   fontSize: '1.2em',
   margin: '0 1.618em 0.618em 0',
   padding: 0,
