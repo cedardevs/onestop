@@ -3,100 +3,104 @@
 
 /* Serif Font */
 @font-face {
-    font-family: 'Merriweather';
-    src: url('fonts/Merriweather/Merriweather-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'Merriweather';
+  src: url('fonts/Merriweather/Merriweather-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Merriweather';
-    src: url('fonts/Merriweather/Merriweather-Italic.ttf') format('truetype');
-    font-weight: normal;
-    font-style: italic;
+  font-family: 'Merriweather';
+  src: url('fonts/Merriweather/Merriweather-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: 'Merriweather';
-    src: url('fonts/Merriweather/Merriweather-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
+  font-family: 'Merriweather';
+  src: url('fonts/Merriweather/Merriweather-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Merriweather';
-    src: url('fonts/Merriweather/Merriweather-BoldIt.ttf') format('truetype');
-    font-weight: bold;
-    font-style: italic;
+  font-family: 'Merriweather';
+  src: url('fonts/Merriweather/Merriweather-BoldIt.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: 'Merriweather';
-    src: url('fonts/Merriweather/Merriweather-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
+  font-family: 'Merriweather';
+  src: url('fonts/Merriweather/Merriweather-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Merriweather';
-    src: url('fonts/Merriweather/Merriweather-LightIt.ttf') format('truetype');
-    font-weight: 300;
-    font-style: italic;
+  font-family: 'Merriweather';
+  src: url('fonts/Merriweather/Merriweather-LightIt.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
 }
 
 /* Sans Serif Font */
 @font-face {
-    font-family: 'Source Sans Pro';
-    src: url('fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  font-family: 'Source Sans Pro';
+  src: url('fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Source Sans Pro';
-    src: url('fonts/Source_Sans_Pro/SourceSansPro-Italic.ttf') format('truetype');
-    font-weight: normal;
-    font-style: italic;
+  font-family: 'Source Sans Pro';
+  src: url('fonts/Source_Sans_Pro/SourceSansPro-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: 'Source Sans Pro';
-    src: url('fonts/Source_Sans_Pro/SourceSansPro-Bold.ttf') format('truetype');
-    font-weight: bold;
-    font-style: normal;
+  font-family: 'Source Sans Pro';
+  src: url('fonts/Source_Sans_Pro/SourceSansPro-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Source Sans Pro';
-    src: url('fonts/Source_Sans_Pro/SourceSansPro-BoldItalic.ttf') format('truetype');
-    font-weight: bold;
-    font-style: italic;
+  font-family: 'Source Sans Pro';
+  src: url('fonts/Source_Sans_Pro/SourceSansPro-BoldItalic.ttf')
+    format('truetype');
+  font-weight: bold;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: 'Source Sans Pro';
-    src: url('fonts/Source_Sans_Pro/SourceSansPro-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
+  font-family: 'Source Sans Pro';
+  src: url('fonts/Source_Sans_Pro/SourceSansPro-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Source Sans Pro';
-    src: url('fonts/Source_Sans_Pro/SourceSansPro-LightItalic.ttf') format('truetype');
-    font-weight: 300;
-    font-style: italic;
+  font-family: 'Source Sans Pro';
+  src: url('fonts/Source_Sans_Pro/SourceSansPro-LightItalic.ttf')
+    format('truetype');
+  font-weight: 300;
+  font-style: italic;
 }
 
 @font-face {
-    font-family: 'Source Sans Pro';
-    src: url('fonts/Source_Sans_Pro/SourceSansPro-SemiBold.ttf') format('truetype');
-    font-weight: 600;
-    font-style: normal;
+  font-family: 'Source Sans Pro';
+  src: url('fonts/Source_Sans_Pro/SourceSansPro-SemiBold.ttf')
+    format('truetype');
+  font-weight: 600;
+  font-style: normal;
 }
 
 @font-face {
-    font-family: 'Source Sans Pro';
-    src: url('fonts/Source_Sans_Pro/SourceSansPro-SemiBoldItalic.ttf') format('truetype');
-    font-weight: 600;
-    font-style: italic;
+  font-family: 'Source Sans Pro';
+  src: url('fonts/Source_Sans_Pro/SourceSansPro-SemiBoldItalic.ttf')
+    format('truetype');
+  font-weight: 600;
+  font-style: italic;
 }

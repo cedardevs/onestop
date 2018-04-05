@@ -79,9 +79,9 @@ class OverviewView extends Component {
     return (
       <div style={styleContainer}>
         <FlexRow
-            key="main-section"
-            style={{justifyContent: 'space-between'}}
-            items={[ left, right ]}
+          key="main-section"
+          style={{justifyContent: 'space-between'}}
+          items={[ left, right ]}
         />
       </div>
     )

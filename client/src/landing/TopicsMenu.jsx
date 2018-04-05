@@ -9,7 +9,7 @@ const styleTopics = {
 const styleTopicsLabel = {
   textAlign: 'center',
   fontFamily: fontFamilySerif(),
-  margin: '0 0 0.618em 0'
+  margin: '0 0 0.618em 0',
 }
 
 const styleTopicsMenu = {

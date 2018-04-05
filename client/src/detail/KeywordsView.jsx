@@ -1,12 +1,12 @@
 import React from 'react'
 import DetailGrid from './DetailGrid'
-import { fontFamilySerif } from '../utils/styleUtils'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleKeywordTitle = {
   padding: 0,
   margin: '0 0 1.618em 0',
   fontFamily: fontFamilySerif(),
-  fontWeight: 'bold'
+  fontWeight: 'bold',
 }
 
 const styleContent = {

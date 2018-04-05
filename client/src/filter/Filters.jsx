@@ -13,7 +13,7 @@ import timeFilterIcon from '../../img/font-awesome/white/svg/calendar.svg'
 import facetFilterIcon from '../../img/font-awesome/white/svg/key.svg'
 
 import arrowLeft from '../../img/font-awesome/white/svg/arrow-left.svg'
-import { fontFamilySerif } from '../utils/styleUtils'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleFilters = {
   borderTop: '1px solid white',

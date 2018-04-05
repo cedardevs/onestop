@@ -1,41 +1,41 @@
 @media (min-width: 160px) {
-    body {
-        font-size: 11px;
-        transition: all 0.2s ease-out
-    }
+  body {
+    font-size: 11px;
+    transition: all 0.2s ease-out;
+  }
 }
 
 @media (min-width: 320px) {
-    body {
-        font-size: 12px;
-        transition: all 0.2s ease-out
-    }
+  body {
+    font-size: 12px;
+    transition: all 0.2s ease-out;
+  }
 }
 
 @media (min-width: 480px) {
-    body {
-        font-size: 13px;
-        transition: all 0.2s ease-out
-    }
+  body {
+    font-size: 13px;
+    transition: all 0.2s ease-out;
+  }
 }
 
 @media (min-width: 640px) {
-    body {
-        font-size: 14px;
-        transition: all 0.2s ease-out
-    }
+  body {
+    font-size: 14px;
+    transition: all 0.2s ease-out;
+  }
 }
 
 @media (min-width: 800px) {
-    body {
-        font-size: 15px;
-        transition: all 0.2s ease-out
-    }
+  body {
+    font-size: 15px;
+    transition: all 0.2s ease-out;
+  }
 }
 
 @media (min-width: 960px) {
-    body {
-        font-size: 16px;
-        transition: all 0.2s ease-out
-    }
+  body {
+    font-size: 16px;
+    transition: all 0.2s ease-out;
+  }
 }

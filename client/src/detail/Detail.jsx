@@ -78,11 +78,7 @@ class Detail extends Component {
     let tabData = [
       {
         title: 'Overview',
-        content: (
-          <OverviewView
-            item={item}
-          />
-        ),
+        content: <OverviewView item={item} />,
       },
       {
         title: 'Access',
@@ -109,8 +105,11 @@ class Detail extends Component {
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
           <h1 style={styleTitle}>{item.title}</h1>
-          <DescriptionView item={item} totalGranuleCount={totalGranuleCount}
-                           navigateToGranules={() => navigateToGranules(id)} />
+          <DescriptionView
+            item={item}
+            totalGranuleCount={totalGranuleCount}
+            navigateToGranules={() => navigateToGranules(id)}
+          />
           <Tabs
             style={{display: 'flex'}}
             styleContent={styleContent}

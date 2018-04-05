@@ -2,7 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {SvgIcon, cloud} from '../common/SvgIcon'
-import { fontFamilySansSerif } from './styleUtils'
+import {fontFamilySansSerif} from './styleUtils'
 
 export const styleProtocolListItem = {
   display: 'inline-flex',

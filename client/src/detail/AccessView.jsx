@@ -37,7 +37,7 @@ const styleHeading = {
   margin: 0,
   padding: '0.618em',
   width: '100%',
-  fontFamily: fontFamilySerif()
+  fontFamily: fontFamilySerif(),
 }
 
 export default class AccessView extends React.Component {

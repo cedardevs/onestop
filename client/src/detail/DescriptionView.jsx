@@ -32,7 +32,7 @@ const styleDescription = {
   width: '100%',
   padding: '1.618em',
   margin: 0,
-  fontSize: '1.1em'
+  fontSize: '1.1em',
 }
 
 const styleExpandableWrapper = {
@@ -78,28 +78,27 @@ export default class DescriptionView extends Component {
       ? item.description
       : 'No description available'
 
-
     const filesContent = (
-        <div style={styleContentPadding}>
-          <GranulesSummary
-              key="granule-summary-section"
-              totalGranuleCount={totalGranuleCount}
-              navigateToGranules={navigateToGranules}
-          />
-        </div>
+      <div style={styleContentPadding}>
+        <GranulesSummary
+          key="granule-summary-section"
+          totalGranuleCount={totalGranuleCount}
+          navigateToGranules={navigateToGranules}
+        />
+      </div>
     )
 
     const filesExpandable = (
-        <Expandable
-            styleWrapper={styleExpandableWrapper}
-            showArrow={true}
-            open={true}
-            heading={<h2 style={styleExpandableH2}>Files</h2>}
-            styleHeading={styleExpandableHeading}
-            content={filesContent}
-            styleContent={styleExpandableContent}
-            borderRadius={'1em'}
-        />
+      <Expandable
+        styleWrapper={styleExpandableWrapper}
+        showArrow={true}
+        open={true}
+        heading={<h2 style={styleExpandableH2}>Files</h2>}
+        styleHeading={styleExpandableHeading}
+        content={filesContent}
+        styleContent={styleExpandableContent}
+        borderRadius={'1em'}
+      />
     )
 
     const citeAsStatements =

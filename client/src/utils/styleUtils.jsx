@@ -1,9 +1,9 @@
 export const fontFamilySerif = () => {
-  return  "'Merriweather', 'Georgia', 'Cambria', 'Times New Roman', 'Times', serif"
+  return "'Merriweather', 'Georgia', 'Cambria', 'Times New Roman', 'Times', serif"
 }
 
 export const fontFamilySansSerif = () => {
-  return  "'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Roboto', 'Arial', sans-serif"
+  return "'Source Sans Pro', 'Helvetica Neue', 'Helvetica', 'Roboto', 'Arial', sans-serif"
 }
 
 export const fontFamilyMonospace = () => {

@@ -32,7 +32,7 @@ const styleTabButtonLabel = active => {
     fontSize: '1.4em',
     padding: '0.618em',
     cursor: 'pointer',
-    fontFamily: fontFamilySerif()
+    fontFamily: fontFamilySerif(),
   }
 }
 

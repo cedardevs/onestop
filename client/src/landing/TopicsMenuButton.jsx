@@ -31,7 +31,7 @@ const styleTopicImageHover = {
 
 const styleTopicButtonTitle = {
   fontFamily: fontFamilySerif(),
-  marginTop: '0.309em'
+  marginTop: '0.309em',
 }
 
 class TopicsMenuButton extends React.Component {

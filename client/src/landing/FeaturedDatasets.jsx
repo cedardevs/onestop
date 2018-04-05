@@ -10,7 +10,7 @@ const styleFeaturedDatasetsWrapper = {
 const styleFeaturedDatasetsLabel = {
   textAlign: 'center',
   fontFamily: fontFamilySerif(),
-  margin: '0 0 0.618em 0'
+  margin: '0 0 0.618em 0',
 }
 
 const styleFeaturedDatasets = {
@@ -234,7 +234,10 @@ class FeaturedDatasets extends React.Component {
         : [ titleList, imageContainer ]
 
       return (
-        <div aria-labelledby="featuredDatasets" style={styleFeaturedDatasetsWrapper}>
+        <div
+          aria-labelledby="featuredDatasets"
+          style={styleFeaturedDatasetsWrapper}
+        >
           <h2 style={styleFeaturedDatasetsLabel} id="featuredDatasets">
             Featured Data Sets
           </h2>

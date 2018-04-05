@@ -25,7 +25,7 @@ const styleHeroHeader = {
   fontSize: '3.5em',
   marginTop: '0.5em',
   marginBottom: '0.25em',
-  fontFamily: fontFamilySerif()
+  fontFamily: fontFamilySerif(),
 }
 
 const styleOneStopOImageWrapper = {
@@ -40,7 +40,7 @@ const styleHeroText = {
   fontStyle: 'italic',
   lineHeight: '1.5',
   marginBottom: '0.5em',
-  fontFamily: fontFamilySerif()
+  fontFamily: fontFamilySerif(),
 }
 
 class Landing extends React.Component {

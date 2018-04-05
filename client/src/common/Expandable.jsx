@@ -64,7 +64,7 @@ export default class Expandable extends React.Component {
   toggle = () => {
     const {onToggle, value, disabled} = this.props
 
-    if(disabled) {
+    if (disabled) {
       return
     }
 

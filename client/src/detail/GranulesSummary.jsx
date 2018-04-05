@@ -8,12 +8,12 @@ const styleGranuleSummary = {
   // fontSize: '1.3em',
   // fontWeight: 'bold',
   // color: 'black',
-  justifyContent: 'center'
+  justifyContent: 'center',
 }
 
 const styleLink = {
   textDecoration: 'underline',
-  color: '#7777EE'
+  color: '#7777EE',
 }
 
 const styleGranulesButton = {
@@ -42,19 +42,16 @@ export default class GranulesSummary extends React.Component {
 
     const granulesSummary = (
       <div style={styleGranuleSummary}>
-        <a
-            style={styleLink}
-            onClick={navigateToGranules}
-        >
+        <a style={styleLink} onClick={navigateToGranules}>
           {linkText}
         </a>
         {/*<Button*/}
-          {/*text={`Show ${totalGranuleCount} matching files`}*/}
-          {/*icon={filesIcon}*/}
-          {/*onClick={navigateToGranules}*/}
-          {/*style={styleGranulesButton}*/}
-          {/*styleHover={styleGranulesButtonHover}*/}
-          {/*styleIcon={styleIcon}*/}
+        {/*text={`Show ${totalGranuleCount} matching files`}*/}
+        {/*icon={filesIcon}*/}
+        {/*onClick={navigateToGranules}*/}
+        {/*style={styleGranulesButton}*/}
+        {/*styleHover={styleGranulesButtonHover}*/}
+        {/*styleIcon={styleIcon}*/}
         {/*/>*/}
       </div>
     )
