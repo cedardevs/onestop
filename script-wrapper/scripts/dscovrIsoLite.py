@@ -114,15 +114,18 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
     try:
         #8 IF dscovrEnterpriseDownloadLinkPlaceholder and dscovrEnterpriseDownloadLinkProtocolPlaceholder are present
         #   THEN replace dscovrEnterpriseDownloadLinkPlaceholder and dscovrEnterpriseDownloadLinkProtocolPlaceholder
-        if ('enterpriseDownloadLink' in input_json_dict) and ('enterpriseDownloadLinkProtocol' in input_json_dict):
-            dscovrEnterpriseDownloadLink = input_json_dict['enterpriseDownloadLink']
-            dscovrEnterpriseDownloadLinkProtocol = input_json_dict['enterpriseDownloadLinkProtocol']
+        if 'links' in input_json_dict:
+            link = input_json_dict['links'][0]
+            dscovrEnterpriseDownloadLinkUrl = link['linkUrl']
+            dscovrEnterpriseDownloadLinkName = link['linkName']
+            dscovrEnterpriseDownloadLinkProtocol = link['linkProtocol']
             IsoLiteXML = re.sub(r'			<!-- commonAccessPlaceholderStart\n', '', IsoLiteXML)
             IsoLiteXML = re.sub(r'			commonAccessPlaceholderEnd -->\n', '', IsoLiteXML)
         else:
             if logLevel == 'Info': print('enterpriseDownloadLink and/or enterpriseDownloadLinkProtocol were missing from input_json_dict\n')
             #Add log message to this effect at some point after location/format agreed to.
-            dscovrEnterpriseDownloadLink = 'NotAvailable'
+            dscovrEnterpriseDownloadLinkUrl = 'NotAvailable'
+            dscovrEnterpriseDownloadLinkName = 'NotAvailable'
             dscovrEnterpriseDownloadLinkProtocol = 'NotAvailable'
     except:
         # Something was missing, not currently tracking what.
@@ -138,7 +141,8 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
         IsoLiteXML = re.sub(r'syncYYYY', syncYYYY, IsoLiteXML)
         IsoLiteXML = re.sub(r'syncMM', syncMM, IsoLiteXML)
         IsoLiteXML = re.sub(r'dscovrGranuleEndDateTimePlaceholder', dscovrGranuleEndDateTime, IsoLiteXML)
-        IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkPlaceholder', dscovrEnterpriseDownloadLink, IsoLiteXML)
+        IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkUrlPlaceholder', dscovrEnterpriseDownloadLinkUrl, IsoLiteXML)
+        IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkNamePlaceholder', dscovrEnterpriseDownloadLinkName, IsoLiteXML)
         IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkProtocolPlaceholder', dscovrEnterpriseDownloadLinkProtocol, IsoLiteXML)
 
         # Print detailed info
