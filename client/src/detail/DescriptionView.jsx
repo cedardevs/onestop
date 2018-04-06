@@ -22,7 +22,6 @@ const styleMap = {
 const styleDescriptionWrapper = {
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center',
   alignSelf: 'stretch',
   height: '100%',
   margin: 0,
@@ -30,7 +29,7 @@ const styleDescriptionWrapper = {
 
 const styleDescription = {
   width: '100%',
-  padding: '1.618em',
+  padding: '0.618em 1.618em 1.618em 1.618em',
   margin: 0,
   fontSize: '1.1em',
 }
