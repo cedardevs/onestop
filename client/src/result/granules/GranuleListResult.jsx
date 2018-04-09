@@ -122,7 +122,7 @@ class ListResult extends React.Component {
           target="_blank"
           style={{textDecoration: 'none', display: 'inline-flex'}}
         >
-          <div style={util.styleBadge(protocol)}>
+          <div style={util.styleBadge(protocol)} aria-hidden="true">
             {util.renderBadgeIcon(protocol)}
           </div>
           <div
@@ -227,7 +227,10 @@ class ListResult extends React.Component {
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
       >
-        <FlexRow style={{padding: '1.618em'}} items={[ left, right ]} />
+        <FlexRow
+          style={{padding: '1.618em', flexDirection: 'row-reverse'}}
+          items={[ right, left ]}
+        />
       </div>
     )
   }

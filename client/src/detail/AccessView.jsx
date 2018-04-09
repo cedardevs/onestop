@@ -12,9 +12,14 @@ const styleContent = {
   padding: '1.618em',
 }
 
-const styleContentList = {
-  padding: '0 1.618em 1.618em 1.618em',
-  margin: '0 0 0 1.618em',
+const styleContentList = showBulletPoints => {
+  return {
+    ...{
+      padding: '0 1.618em 1.618em 1.618em',
+      margin: '0 0 0 1.618em',
+    },
+    ...(showBulletPoints ? {} : {listStyleType: 'none'}),
+  }
 }
 
 const styleLink = {
@@ -54,11 +59,18 @@ export default class AccessView extends React.Component {
       const {linkUrl, linkName, linkProtocol, linkDescription} = link
       const linkTitle = linkName ? linkName : linkProtocol
       return (
-        <li key={index}>
-          <A href={linkUrl} target="_blank" title={linkTitle} style={styleLink}>
-            {linkTitle}
-          </A>
-          <p style={styleParagraph}>{linkDescription}</p>
+        <li key={index} aria-label={linkTitle}>
+          <div>
+            <A
+              href={linkUrl}
+              target="_blank"
+              title={linkTitle}
+              style={styleLink}
+            >
+              {linkTitle}
+            </A>
+            <div style={styleParagraph}>{linkDescription}</div>
+          </div>
         </li>
       )
     })
@@ -66,7 +78,7 @@ export default class AccessView extends React.Component {
     if (listItems.length > 0) {
       list = (
         <div style={styleContent}>
-          <ul style={styleContentList}>{listItems}</ul>
+          <ul style={styleContentList(false)}>{listItems}</ul>
         </div>
       )
     }
@@ -83,7 +95,7 @@ export default class AccessView extends React.Component {
     })
     return (
       <div style={styleContent}>
-        <ul style={styleContentList}>{distributionsFormats}</ul>
+        <ul style={styleContentList(true)}>{distributionsFormats}</ul>
       </div>
     )
   }

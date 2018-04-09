@@ -55,10 +55,9 @@ export default class Help extends React.Component {
             </p>
             <p>
               We recognize not all pages on our site are fully accessible at
-              this time, however our accessible site aims to meet Level AA
-              accessibility and provides users with access to all of the same
-              datasets. We will continue to make improvements across our entire
-              site until all pages are fully compliant.
+              this time, however, we aim to meet Level AA accessibility for all
+              of our features. We will continue to make improvements across our
+              entire site until all pages are fully compliant.
             </p>
             <p>
               If you experience any challenges while accessing parts of our

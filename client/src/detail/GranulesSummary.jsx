@@ -30,7 +30,7 @@ export default class GranulesSummary extends React.Component {
     const {totalGranuleCount, navigateToGranules} = this.props
 
     const noGranulesSummary = (
-      <div style={styleGranuleSummary}>No files in this collection</div>
+      <h3 style={styleGranuleSummary}>No files in this collection</h3>
     )
 
     const linkText = `Show ${totalGranuleCount} matching files`

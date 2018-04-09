@@ -64,7 +64,7 @@ export default class Help extends React.Component {
           <p>
             <b>
               To get started, just type a term into the Search Box on the home
-              page and click the Search Button
+              page and submit or click the Search Button
             </b>
             <i style={styleIcon} aria-hidden="true">
               <img alt="search icon" src={search} style={styleIconImg} />
@@ -105,7 +105,9 @@ export default class Help extends React.Component {
               <em>must not</em>. Terms without a <em>+</em> or <em>-</em> are
               considered optional.
               <ul className={styleExamples}>
-                <li>temperature pressure +air -sea</li>
+                <li style={styleExamplesListItem}>
+                  temperature pressure +air -sea
+                </li>
               </ul>
               <p>
                 <span className={styleNote}>Note:</span> This means hyphens
@@ -156,15 +158,14 @@ export default class Help extends React.Component {
 
           <p>
             <b>
-              If you'd prefer to interact directly with the OneStop API, you can
-              find more information about it{' '}
+              Find more information about interacting directly with the{' '}
               <A
                 target="_blank"
                 href="https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests"
                 style={{color: '#277cb2'}}
               >
-                here
-              </A>
+                OneStop API
+              </A>.
             </b>
           </p>
         </section>
