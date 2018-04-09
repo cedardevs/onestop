@@ -3,11 +3,6 @@ import Button from '../common/input/Button'
 
 const styleGranuleSummary = {
   display: 'flex',
-  // margin: 0,
-  // padding: 0,
-  // fontSize: '1.3em',
-  // fontWeight: 'bold',
-  // color: 'black',
   justifyContent: 'center',
 }
 
@@ -45,14 +40,6 @@ export default class GranulesSummary extends React.Component {
         <a style={styleLink} onClick={navigateToGranules}>
           {linkText}
         </a>
-        {/*<Button*/}
-        {/*text={`Show ${totalGranuleCount} matching files`}*/}
-        {/*icon={filesIcon}*/}
-        {/*onClick={navigateToGranules}*/}
-        {/*style={styleGranulesButton}*/}
-        {/*styleHover={styleGranulesButtonHover}*/}
-        {/*styleIcon={styleIcon}*/}
-        {/*/>*/}
       </div>
     )
 
