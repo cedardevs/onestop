@@ -35,8 +35,15 @@ const styleContentDefault = (open, display, borderRadius) => {
   }
 }
 
-const styleFocusDefault = {
-  outline: '2px dashed white',
+const styleFocusDefault = (open, borderRadius) => {
+  const borderRadiusEffective = open
+    ? `${borderRadius} 0 0 0`
+    : `${borderRadius} 0 0 ${borderRadius}`
+
+  return {
+    outline: '2px dashed white',
+    borderRadius: borderRadius ? borderRadiusEffective : 'none',
+  }
 }
 
 export default class Expandable extends React.Component {
@@ -167,7 +174,9 @@ export default class Expandable extends React.Component {
     }
 
     const styleFocused = {
-      ...(focusing ? {...styleFocusDefault, ...styleFocus} : {}),
+      ...(focusing
+        ? {...styleFocusDefault(open, borderRadius), ...styleFocus}
+        : {}),
     }
 
     const styleContentMerged = {

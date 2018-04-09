@@ -11,26 +11,12 @@ const styleLink = {
   color: '#7777EE',
 }
 
-const styleGranulesButton = {
-  fontSize: '1em',
-}
-
-const styleGranulesButtonHover = {
-  cursor: 'pointer',
-}
-
-const styleIcon = {
-  width: '1.2em',
-  height: '1.2em',
-  padding: '0 0.309em 0 0',
-}
-
 export default class GranulesSummary extends React.Component {
   render() {
     const {totalGranuleCount, navigateToGranules} = this.props
 
     const noGranulesSummary = (
-      <h3 style={styleGranuleSummary}>No files in this collection</h3>
+      <div style={styleGranuleSummary}>No files in this collection</div>
     )
 
     const linkText = `Show ${totalGranuleCount} matching files`

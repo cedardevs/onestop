@@ -40,8 +40,8 @@ const styleLinkList = {
 const styleLinkListItem = (firstItem, lastItem) => {
   return {
     padding: lastItem
-      ? '0 0 0 0.618em'
-      : firstItem ? '0 0.618em 0 0' : '0 0.618em 0 0.618em',
+      ? '0 0 0 0.309em'
+      : firstItem ? '0 0.309em 0 0' : '0 0.309em 0 0.309em',
     borderRight: !lastItem ? '1px solid white' : 0,
   }
 }

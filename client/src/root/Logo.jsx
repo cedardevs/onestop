@@ -6,7 +6,7 @@ import {fontFamilySerif} from '../utils/styleUtils'
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 
 //-- Styles
-const stylesLogoWrapper = {
+const styleLogoWrapper = {
   padding: '0 1.618em 0 0',
   display: 'flex',
   flex: '0 0 max-content',
@@ -16,21 +16,32 @@ const stylesLogoWrapper = {
   letterSpacing: '0.105em',
 }
 
-const stylesNoaaLogoWrapper = {
-  padding: '0 0.618em 0 0',
+const styleNoaaLogoWrapper = {
+  padding: 0,
 }
 
-const stylesNoaaLogo = {
+const styleNoaaLogo = {
   height: '4.5em',
   width: '4.5em',
   minHeight: '4.5em',
   minWidth: '4.5em',
+  boxSizing: 'border-box',
 }
 
-const stylesTextWrapper = {
+const stylesNoaaLogoFocused = {
+  border: '2px dashed white',
+  borderRadius: '50%',
+}
+
+const styleTextWrapper = {
   display: 'inline-flex',
   whiteSpace: 'nowrap',
   flex: '0 0 max-content',
+  padding: '0 0.309em',
+}
+
+const styleTextWrapperFocused = {
+  outline: '2px dashed white',
 }
 
 const stylesOneStopLink = {
@@ -38,6 +49,7 @@ const stylesOneStopLink = {
   textDecoration: 'none',
   display: 'inline',
   fontSize: '2em',
+  outline: 'none',
 }
 
 const stylesStopCircle = {
@@ -60,43 +72,98 @@ const stylesNceiText = {
   padding: '0 0 0 0.5em',
 }
 
+const stylesNceiTextBottom = {
+  fontSize: '0.4em',
+  display: 'block',
+  textTransform: 'uppercase',
+  padding: '0 0 0.309em 0.5em',
+}
+
 //-- Component
 
 export default class Logo extends Component {
-  constructor(props) {
-    super(props)
+  componentWillMount() {
+    this.setState({
+      focusingImage: false,
+      focusingText: false,
+    })
   }
 
-  handleClick = () => {
-    if (typeof this.props.onClick === 'function') {
-      this.props.onClick()
-    }
+  handleImageFocus = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingImage: true,
+      }
+    })
+  }
+
+  handleImageBlur = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingImage: false,
+      }
+    })
+  }
+
+  handleTextFocus = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingText: true,
+      }
+    })
+  }
+
+  handleTextBlur = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingText: false,
+      }
+    })
   }
 
   render() {
+    const styleNoaaLogoMerged = {
+      ...styleNoaaLogo,
+      ...(this.state.focusingImage ? stylesNoaaLogoFocused : {}),
+    }
+
+    const styleTextWrapperMerged = {
+      ...styleTextWrapper,
+      ...(this.state.focusingText ? styleTextWrapperFocused : {}),
+    }
+
     return (
-      <div style={stylesLogoWrapper}>
-        <div style={stylesNoaaLogoWrapper}>
+      <div style={styleLogoWrapper}>
+        <div style={styleNoaaLogoWrapper}>
           <a
             href="#"
             title="One Stop Home"
             aria-hidden={true}
             onClick={() => this.props.onClick()}
+            onFocus={this.handleImageFocus}
+            onBlur={this.handleImageBlur}
+            style={{outline: 'none'}}
           >
             <img
-              style={stylesNoaaLogo}
+              style={styleNoaaLogoMerged}
               id="logo"
               alt="NOAA Logo"
               src={noaaLogo}
             />
           </a>
         </div>
-        <div style={stylesTextWrapper}>
+        <div style={styleTextWrapperMerged}>
           <a
             href="#"
             title="One Stop Home"
             style={stylesOneStopLink}
             onClick={() => this.props.onClick()}
+            onFocus={this.handleTextFocus}
+            onBlur={this.handleTextBlur}
           >
             <span style={defaultStyles.hideOffscreen}>OneStop</span>
             <span aria-hidden="true" style={stylesOneStopText}>
@@ -107,7 +174,7 @@ export default class Logo extends Component {
               />neStop
             </span>
             <span style={stylesNceiText}>National Oceanic and</span>
-            <span style={stylesNceiText}>Atmospheric Administration</span>
+            <span style={stylesNceiTextBottom}>Atmospheric Administration</span>
           </a>
         </div>
       </div>

@@ -29,13 +29,14 @@ const styleDetailWrapper = {
 
 const styleTitle = {
   margin: 0,
-  padding: '1em 1em 2em 1em',
+  padding: '0.691em 0.691em 1.691em 0.691em',
   backgroundColor: '#8cb9d8',
   color: '#000032',
   background: 'linear-gradient(#8cb9d8 0%, white 100%)',
   fontFamily: fontFamilySerif(),
   fontSize: '1.4em',
   fontWeight: 'bold',
+  outline: 'none',
 }
 
 const styleContent = {
@@ -44,11 +45,12 @@ const styleContent = {
   backgroundColor: 'white',
 }
 
+const styleHeadingSpan = {
+  padding: '0.309em',
+}
+
 const styleFocusDefault = {
-  outline: 'none',
-  border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
-  padding: '.9em',
-  // margin: '.259em',
+  outline: '2px dashed #5C87AC',
 }
 
 //-- Component
@@ -151,10 +153,11 @@ class Detail extends Component {
       ...(this.state.focusing ? styleFocusDefault : {}),
     }
 
-    const styleOverallHeadingApplied = {
-      ...styleTitle,
+    const styleHeadingSpanApplied = {
+      ...styleHeadingSpan,
       ...styleFocused,
     }
+
     return (
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
@@ -166,9 +169,9 @@ class Detail extends Component {
             }}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
-            style={styleOverallHeadingApplied}
+            style={styleTitle}
           >
-            {item.title}
+            <div style={styleHeadingSpanApplied}>{item.title}</div>
           </h1>
           <DescriptionView
             item={item}

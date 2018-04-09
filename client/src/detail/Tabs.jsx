@@ -26,20 +26,20 @@ const styleTabButtonInput = () => {
 }
 
 const styleTabButtonLabel = {
-    width: '100%',
-    height: '100%',
-    fontSize: '1.4em',
-    padding: '0.618em',
-    cursor: 'pointer',
-    fontFamily: fontFamilySerif(),
+  width: '100%',
+  height: '100%',
+  fontSize: '1.4em',
+  padding: '0.618em',
+  cursor: 'pointer',
+  fontFamily: fontFamilySerif(),
 }
 
 const styleFocusDefault = (focused, active) => {
   return {
     padding: '0.105em 0.309em',
     outline: focused
-        ? active ? '2px dashed #6e91b2' : '2px dashed white'
-        : 'none',
+      ? active ? '2px dashed #6e91b2' : '2px dashed white'
+      : 'none',
   }
 }
 
@@ -145,7 +145,7 @@ class TabButton extends Component {
 }
 
 const styleTabs = {
-  marginTop: '1.618em',
+  margin: '1.618em 0 0 0',
   fontWeight: 'normal',
   fontSize: '1em',
 }
