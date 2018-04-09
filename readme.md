@@ -57,6 +57,13 @@ e.g. an inverted index for searching, a key-value store for random access, etc.
 - [Introduction to Kafka](https://kafka.apache.org/intro)
 - [Event sourcing, CQRS, stream processing and Apache Kafka: What’s the connection?](https://www.confluent.io/blog/event-sourcing-cqrs-stream-processing-apache-kafka-whats-connection/)
 - [Introducing Kafka Streams](https://www.confluent.io/blog/introducing-kafka-streams-stream-processing-made-simple/)
+- This entire [series](https://www.confluent.io/blog/data-dichotomy-rethinking-the-way-we-treat-data-and-services/) 
+from [confluent](https://www.confluent.io/blog/build-services-backbone-events/) 
+which [culminates](https://www.confluent.io/blog/apache-kafka-for-service-architectures/) 
+in a [walkthrough](https://www.confluent.io/blog/chain-services-exactly-guarantees/) 
+of [building](https://www.confluent.io/blog/messaging-single-source-truth/) 
+a streaming [system](https://www.confluent.io/blog/leveraging-power-database-unbundled/) 
+is [great](https://www.confluent.io/blog/building-a-microservices-ecosystem-with-kafka-streams-and-ksql/).
 
 ## Legal
 
