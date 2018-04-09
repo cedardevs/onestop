@@ -110,7 +110,7 @@ export default class DescriptionView extends Component {
         content={citeAsStatements}
         styleContent={styleExpandableContent}
         borderRadius={'1em'}
-        value='citationExpandable'
+        value="citationExpandable"
         open={this.state.citationExpandable}
         onToggle={this.handleExpandableToggle}
       />
@@ -130,7 +130,7 @@ export default class DescriptionView extends Component {
         content={identifier}
         styleContent={styleExpandableContent}
         borderRadius={'1em'}
-        value='identifiersExpandable'
+        value="identifiersExpandable"
         open={this.state.identifiersExpandable}
         onToggle={this.handleExpandableToggle}
       />
