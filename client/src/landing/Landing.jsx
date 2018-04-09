@@ -3,6 +3,7 @@ import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import TopicsMenuContainer from './TopicsMenuContainer'
 import FeaturedDatasetsContainer from './FeaturedDatasetsContainer'
 import defaultStyles from '../common/defaultStyles'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
 
@@ -23,6 +24,8 @@ const styleHeroHeader = {
   textAlign: 'center',
   fontSize: '3.5em',
   marginTop: '0.5em',
+  marginBottom: '0.25em',
+  fontFamily: fontFamilySerif(),
 }
 
 const styleOneStopOImageWrapper = {
@@ -36,7 +39,8 @@ const styleHeroText = {
   fontSize: '1.5em',
   fontStyle: 'italic',
   lineHeight: '1.5',
-  paddingBottom: '0.25em',
+  marginBottom: '0.5em',
+  fontFamily: fontFamilySerif(),
 }
 
 class Landing extends React.Component {

@@ -128,7 +128,7 @@ export default class Root extends Component {
       this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
 
     let left = null
-    let leftWidth = '256px'
+    let leftWidth = '20em'
 
     if (layoutContext) {
       if (showLeft) {

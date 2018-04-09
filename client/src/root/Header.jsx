@@ -21,7 +21,7 @@ const styleHeaderFlexRow = {
 
 const styleNav = {
   flex: '1',
-  minWidth: '30em',
+  minWidth: '17em',
   display: 'flex',
   justifyContent: 'flex-end',
   marginTop: '1em',

@@ -7,6 +7,7 @@ import FlexColumn from '../../common/FlexColumn'
 import FlexRow from '../../common/FlexRow'
 import {boxShadow} from '../../common/defaultStyles'
 import A from '../../common/link/Link'
+import {fontFamilySerif} from '../../utils/styleUtils'
 
 const styleResult = {
   minHeight: '15.5em',
@@ -37,19 +38,20 @@ const styleMap = {
 }
 
 const styleTitle = {
-  fontSize: '1.5em',
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.3em',
   color: 'rgb(0, 0, 50)',
-  margin: '0 0 0.618em 0',
+  margin: 0,
 }
 
 const styleSectionHeader = {
-  fontSize: '1.25em',
-  margin: '0.25em 0',
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.1em',
+  margin: '0.618em 0 0 0',
 }
 
-const styleBadgeLayout = {
-  display: 'flex',
-  flexFlow: 'row wrap',
+const styleSectionContent = {
+  margin: '0.309em 0 0 0',
 }
 
 class ListResult extends React.Component {
@@ -98,11 +100,13 @@ class ListResult extends React.Component {
     return (
       <div key={'ListResult::timeAndSpace'}>
         <h3 style={styleSectionHeader}>Time Period:</h3>
-        <div>
+        <div style={styleSectionContent}>
           {util.buildTimePeriodString(beginDate, beginYear, endDate, endYear)}
         </div>
         <h3 style={styleSectionHeader}>Bounding Coordinates:</h3>
-        <div>{util.buildCoordinatesString(spatialBounding)}</div>
+        <div style={styleSectionContent}>
+          {util.buildCoordinatesString(spatialBounding)}
+        </div>
       </div>
     )
   }
@@ -123,8 +127,10 @@ class ListResult extends React.Component {
           </div>
           <div
             style={{
-              ...util.styleProtocolListLabel,
-              ...{textDecoration: 'underline'},
+              ...{
+                textDecoration: 'underline',
+                margin: '0.6em 0',
+              },
             }}
           >
             {linkText}
@@ -148,11 +154,7 @@ class ListResult extends React.Component {
       .map(this.renderBadge.bind(this))
       .value()
 
-    const badgesElement = _.isEmpty(badges) ? (
-      <div>N/A</div>
-    ) : (
-      <div style={styleBadgeLayout}>{badges}</div>
-    )
+    const badgesElement = _.isEmpty(badges) ? 'N/A' : badges
 
     return (
       <div key={'ListResult::accessLinks'}>

@@ -294,6 +294,11 @@ class Map extends React.Component {
     let {map} = this.state
     map.off('click', this.onMapClick)
     map = null
+
+    this.container.removeEventListener(
+      'transitionend',
+      this.handleTransitionEnd
+    )
   }
 
   updateGeometryAndSubmit = newGeoJSON => {

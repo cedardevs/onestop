@@ -5,7 +5,6 @@ import _ from 'lodash'
 const styleKeyword = color => {
   return {
     color: color,
-    fontStyle: 'italic',
     paddingRight: '0.618em',
     borderRadius: '0.1em 0.4em',
     flex: '0 1 auto',

@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import {processUrl} from '../utils/urlUtils'
 import MapThumbnail from '../common/MapThumbnail'
+import GranulesSummary from './GranulesSummary'
 import Expandable from '../common/Expandable'
 import DetailGrid from './DetailGrid'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleImage = {
   float: 'left',
@@ -20,7 +22,6 @@ const styleMap = {
 const styleDescriptionWrapper = {
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center',
   alignSelf: 'stretch',
   height: '100%',
   margin: 0,
@@ -28,8 +29,9 @@ const styleDescriptionWrapper = {
 
 const styleDescription = {
   width: '100%',
-  padding: '1.618em',
+  padding: '0.618em 1.618em 1.618em 1.618em',
   margin: 0,
+  fontSize: '1.1em',
 }
 
 const styleExpandableWrapper = {
@@ -41,11 +43,13 @@ const styleExpandableHeading = {
 }
 
 const styleExpandableH2 = {
+  fontFamily: fontFamilySerif(),
   fontSize: '1em',
+  fontWeight: 'normal',
+  letterSpacing: '0.05em',
   margin: 0,
   padding: '0.618em',
   color: 'white',
-  fontWeight: 'bold',
 }
 
 const styleExpandableContent = {
@@ -59,7 +63,7 @@ const styleContentPadding = {
 
 export default class DescriptionView extends Component {
   render() {
-    const {item} = this.props
+    const {item, totalGranuleCount, navigateToGranules} = this.props
 
     // thumbnail might be undefined or an empty string, so check for both
     const thumbnail =
@@ -73,6 +77,29 @@ export default class DescriptionView extends Component {
       ? item.description
       : 'No description available'
 
+    const filesContent = (
+      <div style={styleContentPadding}>
+        <GranulesSummary
+          key="granule-summary-section"
+          totalGranuleCount={totalGranuleCount}
+          navigateToGranules={navigateToGranules}
+        />
+      </div>
+    )
+
+    const filesExpandable = (
+      <Expandable
+        styleWrapper={styleExpandableWrapper}
+        showArrow={true}
+        open={true}
+        heading={<h2 style={styleExpandableH2}>Files</h2>}
+        styleHeading={styleExpandableHeading}
+        content={filesContent}
+        styleContent={styleExpandableContent}
+        borderRadius={'1em'}
+      />
+    )
+
     const citeAsStatements =
       item.citeAsStatements.length > 0 ? (
         item.citeAsStatements.map((statement, key) => {
@@ -83,7 +110,7 @@ export default class DescriptionView extends Component {
           )
         })
       ) : (
-        <div style={styleContentPadding}>'No citations available.'</div>
+        <div style={styleContentPadding}>No citations available.</div>
       )
     const citationExpandable = (
       <Expandable
@@ -126,6 +153,7 @@ export default class DescriptionView extends Component {
 
     const expandableInformation = (
       <div>
+        {filesExpandable}
         {citationExpandable}
         {identifiersExpandable}
       </div>

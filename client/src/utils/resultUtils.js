@@ -2,23 +2,18 @@ import React from 'react'
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
 import {SvgIcon, cloud} from '../common/SvgIcon'
+import {fontFamilySansSerif} from './styleUtils'
 
 export const styleProtocolListItem = {
   display: 'inline-flex',
   marginLeft: '1em',
-  alignItems: 'center',
-}
-
-export const styleProtocolListLabel = {
-  font: '1em Arial, sans-serif',
-  margin: '0.6em 0',
+  alignSelf: 'center',
 }
 
 export const styleProtocolList = {
   justifyContent: 'flex-start',
   display: 'flex',
   flexFlow: 'row wrap',
-  paddingBottom: '1em',
   listStyle: 'none',
   margin: 0,
   padding: 0,
@@ -32,10 +27,11 @@ export const styleBadge = protocol => {
     lineHeight: '1em',
     padding: '0.25em',
     margin: '0.25em',
-    font: 'Arial, sans-serif',
+    fontFamily: fontFamilySansSerif(),
     color: 'white',
     fill: 'white',
     textAlign: 'center',
+    alignSelf: 'center',
     textDecoration: 'none',
     background: `${protocol.color}`,
   }

@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import FlexRow from '../common/FlexRow'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 // <TabButton>
 
@@ -28,9 +29,10 @@ const styleTabButtonLabel = active => {
   return {
     width: '100%',
     height: '100%',
-    fontSize: '1.3em',
+    fontSize: '1.4em',
     padding: '0.618em',
     cursor: 'pointer',
+    fontFamily: fontFamilySerif(),
   }
 }
 

@@ -13,6 +13,7 @@ import timeFilterIcon from '../../img/font-awesome/white/svg/calendar.svg'
 import facetFilterIcon from '../../img/font-awesome/white/svg/key.svg'
 
 import arrowLeft from '../../img/font-awesome/white/svg/arrow-left.svg'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleFilters = {
   borderTop: '1px solid white',
@@ -22,11 +23,6 @@ const styleFilterHeadings = {
   fontWeight: 'bold',
   backgroundColor: '#0E274E',
   padding: '0.618em',
-  borderBottom: '1px solid white',
-}
-
-const styleFilterContents = {
-  borderBottom: '1px solid white',
 }
 
 const styleFacetFilterContents = {
@@ -88,7 +84,10 @@ class Filters extends Component {
       <h1
         key="filtersH1"
         style={{
-          fontSize: '1.309em',
+          fontFamily: fontFamilySerif(),
+          fontSize: '1.2em',
+          fontWeight: 'normal',
+          letterSpacing: '0.05em',
           color: 'white',
           padding: '0.618em',
           margin: 0,
@@ -125,7 +124,6 @@ class Filters extends Component {
             heading={filter.heading}
             styleHeading={styleFilterHeadings}
             content={filter.content}
-            styleContent={styleFilterContents}
             onToggle={this.handleFilterToggle}
           />
         </div>

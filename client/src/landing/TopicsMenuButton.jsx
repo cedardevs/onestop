@@ -1,4 +1,5 @@
 import React from 'react'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleTopicButton = {
   margin: '1em',
@@ -11,8 +12,6 @@ const styleTopicButton = {
   verticalAlign: 'middle',
   textDecoration: 'none',
 }
-
-const styleTopicButtonHover = {}
 
 const styleTopicButtonFocus = {
   outline: '2px dashed white',
@@ -30,7 +29,10 @@ const styleTopicImageHover = {
   transformOrigin: 'center bottom',
 }
 
-const styleTopicImageFocus = {}
+const styleTopicButtonTitle = {
+  fontFamily: fontFamilySerif(),
+  marginTop: '0.309em',
+}
 
 class TopicsMenuButton extends React.Component {
   componentWillMount() {
@@ -81,14 +83,12 @@ class TopicsMenuButton extends React.Component {
 
     const styleTopicButtonMerged = {
       ...styleTopicButton,
-      ...(this.state.hovering ? styleTopicButtonHover : {}),
       ...(this.state.focusing ? styleTopicButtonFocus : {}),
     }
 
     const styleTopicImageMerged = {
       ...styleTopicImage,
       ...(this.state.hovering ? styleTopicImageHover : {}),
-      ...(this.state.focusing ? styleTopicImageFocus : {}),
     }
 
     return (
@@ -108,7 +108,7 @@ class TopicsMenuButton extends React.Component {
           alt={topic.title}
           aria-hidden="true"
         />
-        <div>{topic.title}</div>
+        <div style={styleTopicButtonTitle}>{topic.title}</div>
       </button>
     )
   }
