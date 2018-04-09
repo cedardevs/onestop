@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import DescriptionView from './DescriptionView'
 import OverviewView from './OverviewView'
@@ -42,10 +43,55 @@ const styleContent = {
   backgroundColor: 'white',
 }
 
+const styleFocusDefault = {
+  outline: 'none',
+  border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
+  padding: '.9em',
+  // margin: '.259em',
+}
+
 //-- Component
 class Detail extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      focusing: false,
+      shouldFocusHeader: true,
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        shouldFocusHeader: true,
+      }
+    })
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.headerRef && this.state.shouldFocusHeader) {
+      ReactDOM.findDOMNode(this.headerRef).focus()
+    }
+  }
+
+  handleFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
+  }
+
+  handleBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+        shouldFocusHeader: false,
+      }
+    })
   }
 
   render() {
@@ -74,6 +120,7 @@ class Detail extends Component {
       )
     }
 
+    // TODO need to pass a callback to overview and track expandable state so state changes here don't trigger rerenders.
     let tabData = [
       {
         title: 'Overview',
@@ -106,10 +153,29 @@ class Detail extends Component {
       })
     }
 
+    const styleFocused = {
+      ...(this.state.focusing ? styleFocusDefault : {}),
+    }
+
+    const styleOverallHeadingApplied = {
+      ...styleTitle,
+      ...styleFocused,
+    }
     return (
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
-          <h1 style={styleTitle}>{item.title}</h1>
+          <h1
+            key="filtersH1"
+            tabIndex={-1}
+            ref={header => {
+              this.headerRef = header
+            }}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+            style={styleOverallHeadingApplied}
+          >
+            {item.title}
+          </h1>
           <DescriptionView item={item} />
           <Tabs
             style={{display: 'flex'}}

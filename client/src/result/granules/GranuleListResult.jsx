@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import MapThumbnail from '../../common/MapThumbnail'
 import {processUrl} from '../../utils/urlUtils'
@@ -52,6 +53,13 @@ const styleBadgeLayout = {
   flexFlow: 'row wrap',
 }
 
+const styleFocusDefault = {
+  outline: 'none',
+  border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
+  padding: '.259em',
+  margin: '.259em',
+}
+
 class ListResult extends React.Component {
   constructor(props) {
     super(props)
@@ -61,6 +69,12 @@ class ListResult extends React.Component {
     this.setState({
       focusing: false,
     })
+  }
+
+  componentDidMount() {
+    if (this.props.shouldFocus) {
+      ReactDOM.findDOMNode(this.focusItem).focus()
+    }
   }
 
   renderDisplayImage(thumbnail, geometry) {
@@ -174,10 +188,47 @@ class ListResult extends React.Component {
     })
   }
 
+  handleFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
+  }
+
+  handleBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+      }
+    })
+  }
+
   render() {
     const {item, showLinks, showTimeAndSpace} = this.props
+
+    const styleFocused = {
+      ...(this.state.focusing ? styleFocusDefault : {}),
+    }
+
+    const styleOverallHeadingApplied = {
+      ...styleTitle,
+      ...styleFocused,
+    }
+
     const rightItems = [
-      <h2 key={'ListResult::title'} style={styleTitle}>
+      <h2
+        key={'ListResult::title'}
+        tabIndex={-1}
+        ref={header => {
+          this.focusItem = header
+        }}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        style={styleOverallHeadingApplied}
+      >
         {item.title}
       </h2>,
     ]

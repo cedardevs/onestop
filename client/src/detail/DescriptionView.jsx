@@ -58,6 +58,22 @@ const styleContentPadding = {
 }
 
 export default class DescriptionView extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      citationExpandable: false,
+      identifiersExpandable: false,
+    }
+  }
+
+  handleExpandableToggle = event => {
+    // prevent focus-change state from disrupting if each expandable is open
+    let toggledElement = event.value
+    this.setState({
+      [toggledElement]: event.open,
+    })
+  }
+
   render() {
     const {item} = this.props
 
@@ -94,6 +110,9 @@ export default class DescriptionView extends Component {
         content={citeAsStatements}
         styleContent={styleExpandableContent}
         borderRadius={'1em'}
+        value='citationExpandable'
+        open={this.state.citationExpandable}
+        onToggle={this.handleExpandableToggle}
       />
     )
 
@@ -111,6 +130,9 @@ export default class DescriptionView extends Component {
         content={identifier}
         styleContent={styleExpandableContent}
         borderRadius={'1em'}
+        value='identifiersExpandable'
+        open={this.state.identifiersExpandable}
+        onToggle={this.handleExpandableToggle}
       />
     )
 

@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
 
 import Expandable from '../common/Expandable'
 import FlexRow from '../common/FlexRow'
@@ -25,6 +26,13 @@ const styleFilterHeadings = {
   borderBottom: '1px solid white',
 }
 
+const styleOverallHeading = {
+  fontSize: '1.309em',
+  color: 'white',
+  padding: '0.618em',
+  margin: 0,
+}
+
 const styleFilterContents = {
   borderBottom: '1px solid white',
 }
@@ -32,6 +40,13 @@ const styleFilterContents = {
 const styleFacetFilterContents = {
   marginNest: '1em',
   backgroundColor: '#327CAC',
+}
+
+const styleFocusDefault = {
+  outline: 'none',
+  border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
+  padding: '.259em',
+  margin: '.259em',
 }
 
 class Filters extends Component {
@@ -53,6 +68,10 @@ class Filters extends Component {
     this.setState({
       [toggledFilter]: event.open,
     })
+  }
+
+  componentDidMount() {
+    ReactDOM.findDOMNode(this.headerRef).focus()
   }
 
   createFilters = () => {
@@ -81,18 +100,44 @@ class Filters extends Component {
     ]
   }
 
+  handleFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
+  }
+
+  handleBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+      }
+    })
+  }
+
   render() {
     const {closeLeft} = this.props
+
+    const styleFocused = {
+      ...(this.state.focusing ? styleFocusDefault : {}),
+    }
+
+    const styleOverallHeadingApplied = {
+      ...styleOverallHeading,
+      ...styleFocused,
+    }
 
     const heading = (
       <h1
         key="filtersH1"
-        style={{
-          fontSize: '1.309em',
-          color: 'white',
-          padding: '0.618em',
-          margin: 0,
-        }}
+        tabIndex={-1}
+        ref={header => (this.headerRef = header)}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        style={styleOverallHeadingApplied}
       >
         Filters
       </h1>
