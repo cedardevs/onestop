@@ -6,6 +6,7 @@ import {Key} from '../../utils/keyboardUtils'
 import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from '../../common/input/Checkbox'
 import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
+import {fontFamilyMonospace} from '../../utils/styleUtils'
 
 const styleMapFilter = {
   backgroundColor: '#3D97D2',
@@ -16,6 +17,20 @@ const styleMapFilter = {
 
 const styleDescription = {
   margin: 0,
+}
+
+const styleForm = {
+  display: 'flex',
+  flexDirection: 'column',
+}
+
+const styleFieldset = {
+  alignSelf: 'center',
+  border: '1px solid white',
+}
+
+const styleLegend = {
+  color: 'inherit',
 }
 
 const styleButtons = {
@@ -46,7 +61,7 @@ const styleLabel = {
 const styleTextBox = {
   width: '10em',
   color: 'black',
-  fontFamily: 'Courier New',
+  fontFamily: fontFamilyMonospace(),
 }
 
 export default class MapFilter extends Component {
@@ -215,9 +230,12 @@ export default class MapFilter extends Component {
   renderCoordinateInput = () => {
     return (
       <div key="MapFilterCoordinatesInput::all" style={styleBreathingRoom}>
-        <form onKeyDown={this.handleKeyDown}>
-          <fieldset onChange={event => this.onChange(event)}>
-            <legend>Bounding Box Coordinates: </legend>
+        <form style={styleForm} onKeyDown={this.handleKeyDown}>
+          <fieldset
+            style={styleFieldset}
+            onChange={event => this.onChange(event)}
+          >
+            <legend style={styleLegend}>Bounding Box Coordinates: </legend>
             {this.renderInputRow('west', '-180.0 to 180.0')}
             {this.renderInputRow('south', ' -90.0 to  90.0')}
             {this.renderInputRow('east', '-180.0 to 180.0')}

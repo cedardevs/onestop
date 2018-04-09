@@ -1,9 +1,16 @@
 import React from 'react'
 import FlexRow from '../common/FlexRow'
 import {processUrl} from '../utils/urlUtils'
+import {fontFamilySerif} from '../utils/styleUtils'
+
+const styleFeaturedDatasetsWrapper = {
+  marginTop: '2.618em',
+}
 
 const styleFeaturedDatasetsLabel = {
   textAlign: 'center',
+  fontFamily: fontFamilySerif(),
+  margin: '0 0 0.618em 0',
 }
 
 const styleFeaturedDatasets = {
@@ -16,7 +23,7 @@ const styleTitle = (active, first, last, collapseImage) => {
   return {
     background: active ? '#263f78' : '#007ec6',
     textAlign: collapseImage ? 'center' : 'right',
-    fontWeight: 'bold',
+    fontFamily: fontFamilySerif(),
     fontSize: '1.25em',
     padding: '1em',
     borderRadius: first
@@ -227,7 +234,10 @@ class FeaturedDatasets extends React.Component {
         : [ titleList, imageContainer ]
 
       return (
-        <div aria-labelledby="featuredDatasets">
+        <div
+          aria-labelledby="featuredDatasets"
+          style={styleFeaturedDatasetsWrapper}
+        >
           <h2 style={styleFeaturedDatasetsLabel} id="featuredDatasets">
             Featured Data Sets
           </h2>

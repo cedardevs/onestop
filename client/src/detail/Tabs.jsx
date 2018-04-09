@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import FlexRow from '../common/FlexRow'
 import {Key} from '../utils/keyboardUtils'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleTabButton = (active, first = false, last = false) => {
   return {
@@ -25,19 +26,20 @@ const styleTabButtonInput = () => {
 }
 
 const styleTabButtonLabel = {
-  width: '100%',
-  height: '100%',
-  fontSize: '1.3em',
-  padding: '0.618em',
-  cursor: 'pointer',
+    width: '100%',
+    height: '100%',
+    fontSize: '1.4em',
+    padding: '0.618em',
+    cursor: 'pointer',
+    fontFamily: fontFamilySerif(),
 }
 
 const styleFocusDefault = (focused, active) => {
   return {
     padding: '0.105em 0.309em',
     outline: focused
-      ? active ? '2px dashed #6e91b2' : '2px dashed white'
-      : 'none',
+        ? active ? '2px dashed #6e91b2' : '2px dashed white'
+        : 'none',
   }
 }
 

@@ -2,17 +2,18 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import stopCircle from 'fa/stop-circle-o.svg'
 import defaultStyles from '../common/defaultStyles'
-
+import {fontFamilySerif} from '../utils/styleUtils'
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 
 //-- Styles
-
 const stylesLogoWrapper = {
   padding: '0 1.618em 0 0',
   display: 'flex',
   flex: '0 0 max-content',
   alignItems: 'center',
   flexWrap: 'nowrap',
+  fontFamily: fontFamilySerif(),
+  letterSpacing: '0.105em',
 }
 
 const stylesNoaaLogoWrapper = {
