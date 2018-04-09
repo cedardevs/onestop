@@ -34,9 +34,9 @@ const styleTabButtonLabel = {
 
 const styleFocusDefault = (focused, active) => {
   return {
-    padding: focused ? '.1em' : '.2em',
-    border: focused
-      ? active ? '.1em dashed #6e91b2' : '.1em dashed white'
+    padding: '0.105em 0.309em',
+    outline: focused
+      ? active ? '2px dashed #6e91b2' : '2px dashed white'
       : 'none',
   }
 }
