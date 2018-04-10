@@ -28,3 +28,13 @@ a:hover,
 button:hover {
   cursor: pointer;
 }
+
+/* remove IE default input clear button since we handle this ourselves  */
+input::-ms-clear {
+  display: none;
+}
+
+/* try to remove firefox default dotted line on focus since we handle this ourselves */
+::-moz-focus-inner {
+  border: 0;
+}

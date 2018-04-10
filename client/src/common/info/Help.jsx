@@ -78,14 +78,14 @@ export default class Help extends React.Component {
         <section style={styleHelp}>
           <h1 style={styleHelpH1}>How to use this interface:</h1>
           <p>
-            To get started, type a term into the Search Box on the home
-            page and submit or click the Search Button
+            To get started, type a term into the Search Box on the home page and
+            submit or click the Search Button
             <i style={styleIcon} aria-hidden="true">
               <img alt="search icon" src={search} style={styleIconImg} />
             </i>
           </p>
 
-          <hr style={styleHR}/>
+          <hr style={styleHR} />
 
           <h2 style={styleHelpH2}>
             Here are a few querying tips to help narrow your results down
@@ -170,7 +170,7 @@ export default class Help extends React.Component {
             </li>
           </ul>
 
-          <hr style={styleHR}/>
+          <hr style={styleHR} />
 
           <h2 style={styleHelpH2}>
             Find more information about interacting directly with the{' '}

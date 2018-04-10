@@ -1,5 +1,5 @@
 import React from 'react'
-import { fontFamilySerif } from '../../utils/styleUtils'
+import {fontFamilySerif} from '../../utils/styleUtils'
 
 const styleWrapper = {
   width: '100%',

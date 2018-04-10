@@ -38,12 +38,13 @@ const styleTitleList = collapseImage => {
     cursor: 'pointer',
     margin: 0,
     padding: 0,
-    width: collapseImage ? '100%' : 'initial',
+    width: collapseImage ? '100%' : '33%',
   }
 }
 
 const styleImageContainer = {
   display: 'flex',
+  justifyContent: 'center',
   alignItems: 'center',
   flex: 1,
   padding: '1em',
