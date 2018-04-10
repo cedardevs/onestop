@@ -162,14 +162,7 @@ class SearchFields extends React.Component {
             value={this.props.queryString}
           />
         </div>
-        <FlexRow
-          style={{
-            justifyContent: 'center',
-            marginTop: '0.309em',
-            marginBottom: '0.309em',
-          }}
-          items={[ searchButton ]}
-        />
+        {searchButton}
       </section>
     )
   }

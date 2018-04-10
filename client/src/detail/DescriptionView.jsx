@@ -38,6 +38,11 @@ const styleExpandableWrapper = {
   margin: '0.618em',
 }
 
+const styleExpandableFocused = {
+  background: 'linear-gradient(to right, rgba(0,0,0,0.4) 0%, transparent 100%)',
+  outline: 'none',
+}
+
 const styleExpandableHeading = {
   backgroundColor: '#6792B5',
 }
@@ -62,6 +67,23 @@ const styleContentPadding = {
 }
 
 export default class DescriptionView extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      filesExpandable: true,
+      citationExpandable: false,
+      identifiersExpandable: false,
+    }
+  }
+
+  handleExpandableToggle = event => {
+    // prevent focus-change state from disrupting if each expandable is open
+    let toggledElement = event.value
+    this.setState({
+      [toggledElement]: event.open,
+    })
+  }
+
   render() {
     const {item, totalGranuleCount, navigateToGranules} = this.props
 
@@ -89,14 +111,17 @@ export default class DescriptionView extends Component {
 
     const filesExpandable = (
       <Expandable
+        styleFocus={styleExpandableFocused}
         styleWrapper={styleExpandableWrapper}
         showArrow={true}
-        open={true}
         heading={<h2 style={styleExpandableH2}>Files</h2>}
         styleHeading={styleExpandableHeading}
         content={filesContent}
         styleContent={styleExpandableContent}
         borderRadius={'1em'}
+        value="filesExpandable"
+        open={this.state.filesExpandable}
+        onToggle={this.handleExpandableToggle}
       />
     )
 
@@ -114,6 +139,7 @@ export default class DescriptionView extends Component {
       )
     const citationExpandable = (
       <Expandable
+        styleFocus={styleExpandableFocused}
         styleWrapper={styleExpandableWrapper}
         showArrow={true}
         heading={<h2 style={styleExpandableH2}>Citation</h2>}
@@ -121,6 +147,9 @@ export default class DescriptionView extends Component {
         content={citeAsStatements}
         styleContent={styleExpandableContent}
         borderRadius={'1em'}
+        value="citationExpandable"
+        open={this.state.citationExpandable}
+        onToggle={this.handleExpandableToggle}
       />
     )
 
@@ -131,6 +160,7 @@ export default class DescriptionView extends Component {
     )
     const identifiersExpandable = (
       <Expandable
+        styleFocus={styleExpandableFocused}
         styleWrapper={styleExpandableWrapper}
         showArrow={true}
         heading={<h2 style={styleExpandableH2}>Identifier</h2>}
@@ -138,6 +168,9 @@ export default class DescriptionView extends Component {
         content={identifier}
         styleContent={styleExpandableContent}
         borderRadius={'1em'}
+        value="identifiersExpandable"
+        open={this.state.identifiersExpandable}
+        onToggle={this.handleExpandableToggle}
       />
     )
 

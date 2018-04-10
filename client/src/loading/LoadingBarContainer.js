@@ -2,13 +2,10 @@ import {connect} from 'react-redux'
 import LoadingBar from './LoadingBar'
 
 const mapStateToProps = state => {
-  const {totalCollections} = state.domain.results
   const {loading} = state.ui
 
-  const text = loading
-    ? 'loading'
-    : totalCollections ? `${totalCollections} results found` : '0 results found'
-  const loadingId = `loading-id::${loading}::${totalCollections}`
+  const text = loading ? 'loading' : 'load complete'
+  const loadingId = `loading-id::${loading}`
 
   return {
     loading: loading ? 1 : 0,

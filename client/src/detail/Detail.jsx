@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import DescriptionView from './DescriptionView'
 import OverviewView from './OverviewView'
@@ -28,13 +29,14 @@ const styleDetailWrapper = {
 
 const styleTitle = {
   margin: 0,
-  padding: '1em 1em 2em 1em',
+  padding: '0.691em 0.691em 1.691em 0.691em',
   backgroundColor: '#8cb9d8',
   color: '#000032',
   background: 'linear-gradient(#8cb9d8 0%, white 100%)',
   fontFamily: fontFamilySerif(),
   fontSize: '1.4em',
   fontWeight: 'bold',
+  outline: 'none',
 }
 
 const styleContent = {
@@ -43,10 +45,56 @@ const styleContent = {
   backgroundColor: 'white',
 }
 
+const styleHeadingSpan = {
+  padding: '0.309em',
+}
+
+const styleFocusDefault = {
+  outline: '2px dashed #5C87AC',
+}
+
 //-- Component
 class Detail extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      focusing: false,
+      shouldFocusHeader: true,
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        shouldFocusHeader: true,
+      }
+    })
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.headerRef && this.state.shouldFocusHeader) {
+      ReactDOM.findDOMNode(this.headerRef).focus()
+    }
+  }
+
+  handleFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
+  }
+
+  handleBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+        shouldFocusHeader: false,
+      }
+    })
   }
 
   render() {
@@ -101,10 +149,30 @@ class Detail extends Component {
       })
     }
 
+    const styleFocused = {
+      ...(this.state.focusing ? styleFocusDefault : {}),
+    }
+
+    const styleHeadingSpanApplied = {
+      ...styleHeadingSpan,
+      ...styleFocused,
+    }
+
     return (
       <div style={styleCenterContent}>
         <div style={styleDetailWrapper}>
-          <h1 style={styleTitle}>{item.title}</h1>
+          <h1
+            key="filtersH1"
+            tabIndex={-1}
+            ref={header => {
+              this.headerRef = header
+            }}
+            onFocus={this.handleFocus}
+            onBlur={this.handleBlur}
+            style={styleTitle}
+          >
+            <div style={styleHeadingSpanApplied}>{item.title}</div>
+          </h1>
           <DescriptionView
             item={item}
             totalGranuleCount={totalGranuleCount}

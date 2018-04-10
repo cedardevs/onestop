@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import {processUrl} from '../../utils/urlUtils'
 import MapThumbnail from '../../common/MapThumbnail'
@@ -204,8 +205,14 @@ export default class CollectionCard extends Component {
     })
   }
 
+  componentDidMount() {
+    if (this.props.shouldFocus) {
+      ReactDOM.findDOMNode(this.focusItem).focus()
+    }
+  }
+
   render() {
-    const {item, onClick} = this.props
+    const {item, onClick, shouldFocus} = this.props
 
     const title = item.title
 
@@ -236,6 +243,7 @@ export default class CollectionCard extends Component {
             onMouseOut={this.handleMouseOut}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
+            ref={item => (this.focusItem = item)}
           >
             {this.renderThumbnailMap()}
             <div style={styleArchMerged}>

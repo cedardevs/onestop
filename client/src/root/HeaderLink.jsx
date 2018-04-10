@@ -6,16 +6,23 @@ const styleLink = {
   color: '#d7d7d7',
   fontWeight: 300,
   transition: 'color 0.3s ease',
+  paddingRight: '0.309em',
+  paddingLeft: '0.309em',
 }
 
 const styleLinkHover = {
   color: '#277cb2',
 }
 
+const styleLinkFocusing = {
+  outline: '2px dashed #d7d7d7',
+}
+
 export default class HeaderLink extends React.Component {
   componentWillMount() {
     this.setState({
       hovering: false,
+      focusing: false,
     })
   }
 
@@ -37,12 +44,31 @@ export default class HeaderLink extends React.Component {
     })
   }
 
+  handleFocus = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
+  }
+
+  handleBlur = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+      }
+    })
+  }
+
   render() {
     const {title, to} = this.props
 
     const styleLinkMerged = {
       ...styleLink,
       ...(this.state.hovering ? styleLinkHover : {}),
+      ...(this.state.focusing ? styleLinkFocusing : {}),
     }
 
     return (
@@ -52,6 +78,8 @@ export default class HeaderLink extends React.Component {
         style={styleLinkMerged}
         onMouseOver={this.handleMouseOver}
         onMouseOut={this.handleMouseOut}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
       >
         {this.props.children}
       </Link>

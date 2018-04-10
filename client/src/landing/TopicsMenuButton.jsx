@@ -14,7 +14,7 @@ const styleTopicButton = {
 }
 
 const styleTopicButtonFocus = {
-  outline: '2px dashed white',
+  outline: '2px dashed #5C87AC',
 }
 
 const styleTopicImage = {

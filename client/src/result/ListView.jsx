@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
 import Button from '../common/input/Button'
@@ -46,10 +47,20 @@ const styleFallbackItem = {
   margin: '0 1.618em 0 0',
 }
 
+const styleFocusDefault = {
+  outline: 'none',
+  border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
+  padding: '.259em',
+  margin: '.259em',
+}
+
 export default class ListView extends Component {
   constructor(props) {
     super(props)
-    this.state = {showAsGrid: !!props.GridItemComponent}
+    this.state = {
+      showAsGrid: !!props.GridItemComponent,
+      previousResultsLength: null,
+    }
   }
 
   toggleShowAsGrid = event => {
@@ -57,6 +68,38 @@ export default class ListView extends Component {
       return {
         ...prevState,
         showAsGrid: !prevState.showAsGrid,
+      }
+    })
+  }
+
+  componentDidMount() {
+    if (this.focusItem) {
+      ReactDOM.findDOMNode(this.focusItem).focus()
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const currResultsLength = Object.keys(this.props.items).length
+    const nextResultsLength = Object.keys(nextProps.items).length
+    this.setState({
+      previousResultsLength: currResultsLength,
+    })
+  }
+
+  handleFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
+  }
+
+  handleBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
       }
     })
   }
@@ -100,9 +143,33 @@ export default class ListView extends Component {
     }
 
     let itemElements = []
+    this.focusItem = null
     _.forOwn(items, (item, key) => {
+      const isNextFocus =
+        this.state.previousResultsLength > 0 &&
+        this.state.previousResultsLength == itemElements.length
+
+      const styleFocused = {
+        ...(this.state.focusing ? styleFocusDefault : {}),
+      }
+
+      const styleOverallItemApplied = {
+        ...styleFallbackItem,
+        ...styleFocused,
+      }
       let itemElement = (
-        <div key={key} style={styleFallbackItem}>
+        <div
+          key={key}
+          tabIndex={-1}
+          ref={item => {
+            if (isNextFocus) {
+              this.focusItem = item
+            }
+          }}
+          style={styleOverallItemApplied}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+        >
           {key}
         </div>
       )
@@ -115,6 +182,7 @@ export default class ListView extends Component {
             item={item}
             key={key}
             onClick={() => onItemSelect(key)}
+            shouldFocus={isNextFocus}
             {...itemProps}
           />
         )
@@ -125,6 +193,7 @@ export default class ListView extends Component {
             item={item}
             key={key}
             onClick={() => onItemSelect(key)}
+            shouldFocus={isNextFocus}
             {...itemProps}
           />
         )

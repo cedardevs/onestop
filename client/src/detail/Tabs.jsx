@@ -1,8 +1,7 @@
 import React, {Component} from 'react'
 import FlexRow from '../common/FlexRow'
+import {Key} from '../utils/keyboardUtils'
 import {fontFamilySerif} from '../utils/styleUtils'
-
-// <TabButton>
 
 const styleTabButton = (active, first = false, last = false) => {
   return {
@@ -16,6 +15,7 @@ const styleTabButton = (active, first = false, last = false) => {
     border: `1px solid ${active ? 'gray' : '#F0F0F2'}`,
     borderRadius: '0.618em 0.618em 0 0',
     borderBottom: active ? 'none' : 'initial',
+    outline: 'none',
   }
 }
 
@@ -25,47 +25,129 @@ const styleTabButtonInput = () => {
   }
 }
 
-const styleTabButtonLabel = active => {
+const styleTabButtonLabel = {
+  width: '100%',
+  height: '100%',
+  fontSize: '1.4em',
+  padding: '0.618em',
+  cursor: 'pointer',
+  fontFamily: fontFamilySerif(),
+}
+
+const styleFocusDefault = (focused, active) => {
   return {
-    width: '100%',
-    height: '100%',
-    fontSize: '1.4em',
-    padding: '0.618em',
-    cursor: 'pointer',
-    fontFamily: fontFamilySerif(),
+    padding: '0.105em 0.309em',
+    outline: focused
+      ? active ? '2px dashed #6e91b2' : '2px dashed white'
+      : 'none',
   }
 }
 
 class TabButton extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      focusing: false,
+    }
+  }
+
+  handleClick = event => {
+    event.preventDefault()
+    this.handleChange()
+  }
+
+  handleChange = event => {
+    this.props.onChange({currentTarget: {value: this.props.value}})
+  }
+
+  handleKeyPressed = e => {
+    if (e.keyCode === Key.SPACE) {
+      e.preventDefault() // prevent scrolling down on space press
+      this.handleChange()
+    }
+    if (e.keyCode === Key.ENTER) {
+      this.handleChange()
+    }
+  }
+  handleKeyDown = e => {
+    const tabControlKeys = [ Key.SPACE, Key.ENTER ]
+    if (
+      !e.metaKey &&
+      !e.shiftKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      tabControlKeys.includes(e.keyCode)
+    ) {
+      e.preventDefault()
+    }
+  }
+
+  handleFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
+  }
+
+  handleBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+      }
+    })
+  }
+
   render() {
-    const {first, last, title, value, active, onChange} = this.props
-    const tabID = `${title} - ${value}`
+    const {
+      first,
+      last,
+      title,
+      value,
+      active,
+      onChange,
+      tabContentId,
+      tabId,
+    } = this.props
+    const tabIndex = 0
+    const styleFocused = styleFocusDefault(this.state.focusing, active)
 
     return (
-      <div style={styleTabButton(active, first, last)}>
+      <div
+        role="tab"
+        style={styleTabButton(active, first, last)}
+        aria-selected={active}
+        aria-controls={tabContentId}
+        tabIndex={tabIndex}
+        onKeyUp={this.handleKeyPressed}
+        onKeyDown={this.handleKeyDown}
+        onClick={this.handleClick}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+      >
         <input
           style={styleTabButtonInput()}
-          id={tabID}
+          id={tabId}
           type="radio"
           name={title}
           value={value}
           checked={active}
           onChange={onChange}
         />
-        <label style={styleTabButtonLabel(active)} htmlFor={tabID}>
-          {title}
+        <label style={styleTabButtonLabel} htmlFor={tabId}>
+          <span style={styleFocused}>{title}</span>
         </label>
       </div>
     )
   }
 }
 
-// <TabButton/>
-
-// <Tabs>
-
 const styleTabs = {
-  marginTop: '1.618em',
+  margin: '1.618em 0 0 0',
+  fontWeight: 'normal',
+  fontSize: '1em',
 }
 
 const styleTabButtons = {
@@ -84,7 +166,6 @@ const styleContentDefault = {
 export default class Tabs extends Component {
   constructor(props) {
     super(props)
-    this.handleChange = this.handleChange.bind(this)
   }
 
   componentWillMount() {
@@ -107,8 +188,7 @@ export default class Tabs extends Component {
     }
   }
 
-  handleChange(event) {
-    const index = Number(event.currentTarget.value)
+  updateCurrentTab = index => {
     if (this.props.data[index].action) {
       this.props.data[index].action()
     }
@@ -120,6 +200,11 @@ export default class Tabs extends Component {
     })
   }
 
+  handleChange = event => {
+    const index = Number(event.currentTarget.value)
+    this.updateCurrentTab(index)
+  }
+
   render() {
     const {data, styleContent} = this.props
 
@@ -129,12 +214,16 @@ export default class Tabs extends Component {
     }
     let tabButtons = []
     let tabContent = null
+    let tabContentLabelledBy = null
+    let tabContentId = 'no-tab-content'
     if (data) {
       data.forEach((tab, index) => {
         let active = false
         if (index === this.state.activeIndex) {
           active = true
           tabContent = tab.content
+          tabContentLabelledBy = `${tab.title}-${index}`
+          tabContentId = `${tab.title}-${index}-content`
         }
         tabButtons.push(
           <TabButton
@@ -142,6 +231,8 @@ export default class Tabs extends Component {
             first={index === 0}
             last={index + 1 === data.length}
             title={tab.title}
+            tabId={tabContentLabelledBy}
+            tabContentId={tabContentId}
             value={index}
             active={active}
             onChange={this.handleChange}
@@ -150,12 +241,23 @@ export default class Tabs extends Component {
       })
     }
     return (
-      <div style={styleTabs}>
-        <FlexRow items={tabButtons} style={styleTabButtons} />
-        <div style={styleContentMerged}>{tabContent}</div>
-      </div>
+      <h2 style={styleTabs}>
+        <FlexRow
+          rowId="details-tablist"
+          tabIndex="-1"
+          role="tablist"
+          items={tabButtons}
+          style={styleTabButtons}
+        />
+        <div
+          role="tabpanel"
+          id={tabContentId}
+          aria-labelledby={tabContentLabelledBy}
+          style={styleContentMerged}
+        >
+          {tabContent}
+        </div>
+      </h2>
     )
   }
 }
-
-// <Tabs/>
