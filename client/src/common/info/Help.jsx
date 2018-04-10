@@ -1,6 +1,7 @@
 import React from 'react'
 import search from 'fa/search.svg'
 import A from '../../common/link/Link'
+import {fontFamilySerif, fontFamilyMonospace} from '../../utils/styleUtils'
 
 const styleWrapper = {
   width: '100%',
@@ -16,6 +17,14 @@ const styleHelp = {
 }
 
 const styleHelpH1 = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.5em',
+  margin: '0 0 0.618em 0',
+}
+
+const styleHelpH2 = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.1em',
   margin: '0 0 0.618em 0',
 }
 
@@ -40,6 +49,7 @@ const styleTipsListItem = {
 }
 
 const styleExamples = {
+  fontFamily: fontFamilyMonospace(),
   marginTop: '1em',
 }
 
@@ -47,12 +57,18 @@ const styleExamplesListItem = {
   margin: '0 0 0.618em 0',
   padding: 0,
   color: '#555',
-  fontStyle: 'italic',
 }
 
 const styleNote = {
   color: 'mediumseagreen',
   fontWeight: 'bold',
+}
+
+const styleHR = {
+  border: 0,
+  borderBottom: '1px dashed #ccc',
+  background: '#999',
+  margin: '1.618em 0',
 }
 
 export default class Help extends React.Component {
@@ -62,21 +78,19 @@ export default class Help extends React.Component {
         <section style={styleHelp}>
           <h1 style={styleHelpH1}>How to use this interface:</h1>
           <p>
-            <b>
-              To get started, just type a term into the Search Box on the home
-              page and submit or click the Search Button
-            </b>
+            To get started, type a term into the Search Box on the home
+            page and submit or click the Search Button
             <i style={styleIcon} aria-hidden="true">
               <img alt="search icon" src={search} style={styleIconImg} />
             </i>
           </p>
 
-          <p>
-            <b>
-              Here are a few querying tips to help narrow your results down
-              further:
-            </b>
-          </p>
+          <hr style={styleHR}/>
+
+          <h2 style={styleHelpH2}>
+            Here are a few querying tips to help narrow your results down
+            further:
+          </h2>
 
           <ul>
             <li>
@@ -104,7 +118,7 @@ export default class Help extends React.Component {
               in the results and <em>-</em> to indicate that it{' '}
               <em>must not</em>. Terms without a <em>+</em> or <em>-</em> are
               considered optional.
-              <ul className={styleExamples}>
+              <ul style={styleExamples}>
                 <li style={styleExamplesListItem}>
                   temperature pressure +air -sea
                 </li>
@@ -156,18 +170,18 @@ export default class Help extends React.Component {
             </li>
           </ul>
 
-          <p>
-            <b>
-              Find more information about interacting directly with the{' '}
-              <A
-                target="_blank"
-                href="https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests"
-                style={{color: '#277cb2'}}
-              >
-                OneStop API
-              </A>.
-            </b>
-          </p>
+          <hr style={styleHR}/>
+
+          <h2 style={styleHelpH2}>
+            Find more information about interacting directly with the{' '}
+            <A
+              target="_blank"
+              href="https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests"
+              style={{color: '#277cb2'}}
+            >
+              OneStop API
+            </A>.
+          </h2>
         </section>
       </div>
     )
