@@ -114,8 +114,6 @@ class Map extends React.Component {
     let initialMapProperties = {
       maxBounds: BOUNDS,
       maxBoundsViscosity: 1.0,
-      minZoom: 2,
-      maxZoom: 5,
       layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],
       attributionControl: false,
     }
