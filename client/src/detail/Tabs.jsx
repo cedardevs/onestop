@@ -108,6 +108,7 @@ class TabButton extends Component {
       value,
       active,
       onChange,
+      tabWrapperId,
       tabContentId,
       tabId,
     } = this.props
@@ -126,6 +127,7 @@ class TabButton extends Component {
         onClick={this.handleClick}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
+        id={tabWrapperId}
       >
         <input
           style={styleTabButtonInput()}
@@ -215,15 +217,18 @@ export default class Tabs extends Component {
     let tabButtons = []
     let tabContent = null
     let tabContentLabelledBy = null
+    // let tabId = null
     let tabContentId = 'no-tab-content'
     if (data) {
       data.forEach((tab, index) => {
         let active = false
+        let tabId = `${tab.title}-${index}`
+        let tabPanelId
         if (index === this.state.activeIndex) {
           active = true
           tabContent = tab.content
-          tabContentLabelledBy = `${tab.title}-${index}`
-          tabContentId = `${tab.title}-${index}-content`
+          tabContentLabelledBy = `${tabId}-wrapper`
+          tabPanelId = `${tabId}-content`
         }
         tabButtons.push(
           <TabButton
@@ -231,8 +236,9 @@ export default class Tabs extends Component {
             first={index === 0}
             last={index + 1 === data.length}
             title={tab.title}
-            tabId={tabContentLabelledBy}
-            tabContentId={tabContentId}
+            tabId={tabId}
+            tabWrapperId={tabContentLabelledBy}
+            tabContentId={tabPanelId}
             value={index}
             active={active}
             onChange={this.handleChange}
@@ -241,14 +247,17 @@ export default class Tabs extends Component {
       })
     }
     return (
-      <h2 style={styleTabs}>
-        <FlexRow
-          rowId="details-tablist"
-          tabIndex="-1"
-          role="tablist"
-          items={tabButtons}
-          style={styleTabButtons}
-        />
+      <div>
+        <h2 style={styleTabs}>
+          <FlexRow
+            rowId="details-tablist"
+            tabIndex="-1"
+            role="tablist"
+            items={tabButtons}
+            style={styleTabButtons}
+          />
+        </h2>
+
         <div
           role="tabpanel"
           id={tabContentId}
@@ -257,7 +266,7 @@ export default class Tabs extends Component {
         >
           {tabContent}
         </div>
-      </h2>
+      </div>
     )
   }
 }
