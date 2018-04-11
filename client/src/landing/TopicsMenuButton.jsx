@@ -2,7 +2,7 @@ import React from 'react'
 import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleTopicButton = {
-  margin: '1em',
+  padding: '1em',
   background: 'none',
   display: 'block',
   fontWeight: 'bold',
@@ -26,12 +26,16 @@ const styleTopicImage = {
 
 const styleTopicImageHover = {
   transform: 'scale(1.25)',
-  transformOrigin: 'center bottom',
 }
 
 const styleTopicButtonTitle = {
   fontFamily: fontFamilySerif(),
   marginTop: '0.309em',
+  transition: 'transform 200ms',
+}
+
+const styleTopicButtonTitleHover = {
+  transform: 'translate(0, 0.618em)',
 }
 
 class TopicsMenuButton extends React.Component {
@@ -91,6 +95,11 @@ class TopicsMenuButton extends React.Component {
       ...(this.state.hovering ? styleTopicImageHover : {}),
     }
 
+    const styleTopicButtonTitleMerged = {
+      ...styleTopicButtonTitle,
+      ...(this.state.hovering ? styleTopicButtonTitleHover : {}),
+    }
+
     return (
       <button
         style={styleTopicButtonMerged}
@@ -108,7 +117,7 @@ class TopicsMenuButton extends React.Component {
           alt={topic.title}
           aria-hidden="true"
         />
-        <div style={styleTopicButtonTitle}>{topic.title}</div>
+        <div style={styleTopicButtonTitleMerged}>{topic.title}</div>
       </button>
     )
   }
