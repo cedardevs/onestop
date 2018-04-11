@@ -47,16 +47,30 @@ const styleImageContainer = {
   justifyContent: 'center',
   alignItems: 'center',
   flex: 1,
-  padding: '1em',
   borderRadius: '0 1em 1em 1em',
   background: '#263f78',
   cursor: 'pointer',
-  width: 'min-content',
+  width: '66%',
   height: '35em',
+  padding: '1em',
 }
 
 const styleImage = {
-  maxWidth: '100%',
+  display: 'flex',
+  width: '100%',
+  height: '100%',
+  justifyContent: 'center',
+}
+
+const styleFeaturedImage = backgroundURL => {
+  return {
+    flex: 1,
+    alignSelf: 'stretch',
+    background: `url(${backgroundURL})`,
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'contain',
+    backgroundPosition: 'center',
+  }
 }
 
 class FeaturedDatasets extends React.Component {
@@ -215,10 +229,9 @@ class FeaturedDatasets extends React.Component {
               const backgroundURL = processUrl(f.imageUrl)
               return (
                 <div key={i} style={styleImage}>
-                  <img
+                  <div
                     title={f.title}
-                    style={{width: '100%', height: '100%'}}
-                    src={backgroundURL}
+                    style={styleFeaturedImage(backgroundURL)}
                     onClick={() => this.onClick(i)}
                     onMouseEnter={() => this.onEnter(i)}
                     onMouseLeave={() => this.onLeave()}

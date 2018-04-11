@@ -2,6 +2,9 @@
 
 ui:
   featured:
+    - title: GOES Data
+      searchTerm: GOES
+      imageUrl: "https://www.ncdc.noaa.gov/gridsat/images/sample.png"
     - title: GHRSST
       searchTerm: ghrsst
       imageUrl: "https://zen-marketing-documentation.s3.amazonaws.com/docs/en/logo-small.png"
