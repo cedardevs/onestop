@@ -30,6 +30,7 @@ const styleTopicImageHover = {
 
 const styleTopicButtonTitle = {
   fontFamily: fontFamilySerif(),
+  color: 'black',
   marginTop: '0.309em',
   transition: 'transform 200ms',
 }
