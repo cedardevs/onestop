@@ -5,6 +5,7 @@ import GranulesSummary from './GranulesSummary'
 import Expandable from '../common/Expandable'
 import DetailGrid from './DetailGrid'
 import {fontFamilySerif} from '../utils/styleUtils'
+import A from '../common/link/Link'
 
 const styleImage = {
   float: 'left',
@@ -167,7 +168,17 @@ export default class DescriptionView extends Component {
       />
     )
 
-    const doi = item.doi ? item.doi : 'Not available.'
+    const doi = item.doi ? (
+      <A
+        target="_blank"
+        href={`https://doi.org/${item.doi}`}
+        style={{color: '#277cb2'}}
+      >
+        {item.doi}
+      </A>
+    ) : (
+      'Not available.'
+    )
     const fileIdentifier = item.fileIdentifier
       ? item.fileIdentifier
       : 'Not available.'
