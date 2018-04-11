@@ -5,6 +5,7 @@ import GranulesSummary from './GranulesSummary'
 import Expandable from '../common/Expandable'
 import DetailGrid from './DetailGrid'
 import {fontFamilySerif} from '../utils/styleUtils'
+import A from '../common/link/Link'
 
 const styleImage = {
   float: 'left',
@@ -64,6 +65,20 @@ const styleExpandableContent = {
 
 const styleContentPadding = {
   padding: '1.618em',
+}
+
+const styleIdentifierHeading = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1em',
+  margin: '0 0 0.618em 0',
+}
+
+const styleIdentifier = {
+  margin: '0 0 0.618em 0',
+}
+
+const styleIdentifierLast = {
+  margin: 0,
 }
 
 export default class DescriptionView extends Component {
@@ -153,19 +168,38 @@ export default class DescriptionView extends Component {
       />
     )
 
-    const identifier = item.fileIdentifier ? (
-      <div style={styleContentPadding}>{item.fileIdentifier}</div>
+    const doi = item.doi ? (
+      <A
+        target="_blank"
+        href={`https://doi.org/${item.doi}`}
+        style={{color: '#277cb2'}}
+      >
+        {item.doi}
+      </A>
     ) : (
-      <div style={styleContentPadding}>No file identifier available.</div>
+      'Not available.'
     )
+    const fileIdentifier = item.fileIdentifier
+      ? item.fileIdentifier
+      : 'Not available.'
+
+    const identifiers = (
+      <div style={styleContentPadding}>
+        <h3 style={styleIdentifierHeading}>File Identifier</h3>
+        <p style={styleIdentifier}>{fileIdentifier}</p>
+        <h3 style={styleIdentifierHeading}>DOI</h3>
+        <p style={styleIdentifierLast}>{doi}</p>
+      </div>
+    )
+
     const identifiersExpandable = (
       <Expandable
         styleFocus={styleExpandableFocused}
         styleWrapper={styleExpandableWrapper}
         showArrow={true}
-        heading={<h2 style={styleExpandableH2}>Identifier</h2>}
+        heading={<h2 style={styleExpandableH2}>Identifier(s)</h2>}
         styleHeading={styleExpandableHeading}
-        content={identifier}
+        content={identifiers}
         styleContent={styleExpandableContent}
         borderRadius={'1em'}
         value="identifiersExpandable"

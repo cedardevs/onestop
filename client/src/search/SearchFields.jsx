@@ -104,7 +104,7 @@ class SearchFields extends React.Component {
         icon={search}
         onClick={this.validateAndSubmit}
         title={'Search'}
-        style={{flexShrink: '0'}}
+        style={{fontSize: '1em', display: 'inline'}}
         styleIcon={{
           width: '1.3em',
           height: '1.3em',
@@ -119,26 +119,16 @@ class SearchFields extends React.Component {
       searchFieldStyle = {
         position: 'relative',
         marginRight: '1em',
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        alignItems: 'center',
-        alignSelf: 'flex-end',
+        alignSelf: 'center',
       }
     }
     else {
       searchFieldStyle = {
         position: 'relative',
         marginRight: '1em',
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        alignSelf: 'flex-end',
+        alignSelf: 'center',
       }
     }
-
-    const textBoxMargin = this.props.home ? {marginRight: '0.309em'} : null
 
     return (
       <section style={searchFieldStyle}>
@@ -154,15 +144,17 @@ class SearchFields extends React.Component {
           </span>
         </div>
 
-        <div style={textBoxMargin}>
+        <div
+          style={{display: 'flex', height: '2.618em', justifyContent: 'center'}}
+        >
           <TextSearchField
             onEnterKeyDown={this.validateAndSubmit}
             onChange={this.updateQuery}
             onClear={this.clearQueryString}
             value={this.props.queryString}
           />
+          {searchButton}
         </div>
-        {searchButton}
       </section>
     )
   }

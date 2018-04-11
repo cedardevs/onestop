@@ -1,47 +1,48 @@
 import React from 'react'
-
 import {times_circle, SvgIcon} from '../common/SvgIcon'
 
 const styleSearchField = {
+  background: 'white',
   color: 'black',
-  maxWidth: '32em',
-  minWidth: '22em',
-  display: 'inline-flex',
+  height: '100%',
   marginRight: '0.309em',
+  boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.5)',
+  borderRadius: '0.309em',
+  display: 'flex',
+}
+
+const styleSearchFieldFocused = {
+  boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.5)',
 }
 
 const styleTextField = {
-  width: '100%',
-  padding: '0.618em',
-  border: '1px solid #ccc',
-  boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.5)',
-  borderRadius: '2px 0 0 2px',
+  margin: '0.618em',
+  border: 'none',
+  borderBottom: '2px solid transparent',
+  background: 'none',
   boxSizing: 'border-box',
+  minWidth: '17em',
+  maxWidth: '30em',
+  outline: 'none',
 }
 
 const styleTextFieldFocus = {
-  boxShadow: 'inset 0 1px 2px rgba(0, 0, 0, 0.5)',
+  borderBottom: '2px dotted #777',
 }
 
 const styleClearButton = {
-  width: '2em',
-  fill: 'white',
-  backgroundColor: '#327cac',
+  alignSelf: 'center',
+  background: 'none',
   border: 'none',
-  borderRadius: '0 2px 2px 0',
-  padding: '0.105em 0.309em',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  outline: 'none',
+  padding: '0.618em',
 }
 
 const styleClearButtonHover = {
   color: '#5a5a5a',
 }
 
-const styleClearButtonFocus = {
-  backgroundColor: '#3d97d2',
-}
+const styleClearButtonFocus = {}
 
 class TextSearchField extends React.Component {
   constructor(props) {
@@ -137,6 +138,11 @@ class TextSearchField extends React.Component {
   render() {
     const {onClear} = this.props
 
+    const styleSearchFieldMerged = {
+      ...styleSearchField,
+      ...(this.state.focusingText ? styleSearchFieldFocused : {}),
+    }
+
     const styleTextFieldMerged = {
       ...styleTextField,
       ...(this.state.focusingText ? styleTextFieldFocus : {}),
@@ -148,34 +154,41 @@ class TextSearchField extends React.Component {
       ...(this.state.focusingClear ? styleClearButtonFocus : {}),
     }
 
+    const styleSvgIcon = {
+      outline: this.state.focusingClear ? '2px dashed #777' : 'none',
+    }
+    const svgFillColor = this.state.focusingClear ? '#2c71a2' : '#777'
+
     return (
-      <div>
-        <div style={styleSearchField}>
-          <input
-            style={styleTextFieldMerged}
-            placeholder="Enter any term here to search NCEI data"
-            onKeyDown={this.handleKeyDown}
-            onChange={this.handleChange}
-            onFocus={this.handleTextFocus}
-            onBlur={this.handleTextBlur}
-            value={this.state.value}
-            aria-label="Search Text"
-            ref={input => {
-              this.searchInput = input
-            }}
+      <div style={styleSearchFieldMerged}>
+        <input
+          style={styleTextFieldMerged}
+          placeholder="Enter any term here to search NCEI data"
+          onKeyDown={this.handleKeyDown}
+          onChange={this.handleChange}
+          onFocus={this.handleTextFocus}
+          onBlur={this.handleTextBlur}
+          value={this.state.value}
+          aria-label="Search Text"
+          ref={input => {
+            this.searchInput = input
+          }}
+        />
+        <button
+          style={styleClearButtonMerged}
+          onClick={onClear}
+          onMouseOver={this.handleMouseOverClear}
+          onMouseOut={this.handleMouseOutClear}
+          onFocus={this.handleClearFocus}
+          onBlur={this.handleClearBlur}
+          aria-label="Clear Search Text"
+        >
+          <SvgIcon
+            size="2em"
+            style={styleSvgIcon}
+            path={times_circle(svgFillColor)}
           />
-          <button
-            style={styleClearButtonMerged}
-            onClick={onClear}
-            onMouseOver={this.handleMouseOverClear}
-            onMouseOut={this.handleMouseOutClear}
-            onFocus={this.handleClearFocus}
-            onBlur={this.handleClearBlur}
-            aria-label="Clear Search Text"
-          >
-            <SvgIcon size="1.2em" path={times_circle} />
-          </button>
-        </div>
+        </button>
       </div>
     )
   }

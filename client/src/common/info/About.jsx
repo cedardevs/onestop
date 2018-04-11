@@ -1,4 +1,5 @@
 import React from 'react'
+import {fontFamilySerif} from '../../utils/styleUtils'
 
 const styleWrapper = {
   width: '100%',
@@ -14,10 +15,14 @@ const styleAbout = {
 }
 
 const styleH1 = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.5em',
   margin: '0 0 0.618em 0',
 }
 
 const styleH2 = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.1em',
   margin: '0 0 0.618em 0',
 }
 

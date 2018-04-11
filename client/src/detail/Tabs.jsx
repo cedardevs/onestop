@@ -157,7 +157,7 @@ const styleTabButtons = {
   flexShrink: 0,
   position: 'sticky',
   top: '0',
-  width: 'fit-content',
+  // width: 'fit-content',  // if enabled: tabs only take up the space they need (instead of full page width)
   justifyContent: 'space-between',
 }
 

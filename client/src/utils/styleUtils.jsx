@@ -1,5 +1,5 @@
 export const fontFamilySerif = () => {
-  return "'Merriweather', 'Georgia', 'Cambria', 'Times New Roman', 'Times', serif"
+  return "'Merriweather', 'Cambria', 'Times New Roman', 'Times', serif"
 }
 
 export const fontFamilySansSerif = () => {
