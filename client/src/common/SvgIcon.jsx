@@ -46,6 +46,7 @@ const styleWrapper = size => {
     display: 'inline-block',
     width: size ? size : '1em',
     height: size ? size : '1em',
+    verticalAlign: 'middle',
   }
 }
 
