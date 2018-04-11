@@ -45,6 +45,18 @@ subprojects {
       maven { url "https://repo.spring.io/milestone" }
     }
 
+      // override versions of dependencies with vulnerabilities
+    configurations.all {
+      resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
+          if (details.requested.version.startsWith('2.9') && details.requested.version < '2.9.5') {
+            details.useVersion '2.9.5'
+            details.because 'fixes vulnerability in 2.9.x before 2.9.5'
+          }
+        }
+      }
+    }
+
     dependencyManagement {
       imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
@@ -74,8 +86,11 @@ subprojects {
         // report, so I think it's safe(ish) to ignore the error.
         failOnError = false
       }
+
     }
+
   }
+
 }
 
 task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
