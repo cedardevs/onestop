@@ -78,8 +78,8 @@ class MetadataStreamService {
   static Map<String, Map> topicConfigs = [
       (RAW_GRANULE_TOPIC): null,
       (RAW_COLLECTION_TOPIC): null,
-      (PARSED_GRANULE_TOPIC): createChangelogTopicConfig(),
-      (PARSED_COLLECTION_TOPIC): createChangelogTopicConfig(),
+      (PARSED_GRANULE_TOPIC): null,
+      (PARSED_COLLECTION_TOPIC): null,
       (COMBINED_GRANULE_TOPIC): null,
       (COMBINED_COLLECTION_TOPIC): null,
   ] as Map<String, Map>
@@ -128,8 +128,8 @@ class MetadataStreamService {
     KGroupedStream groupedCollections = rawCollections.groupByKey()
     KTable rawCollectionTable = groupedCollections.reduce(StreamFunctions.reduceJsonStrings, Materialized.as(RAW_COLLECTION_STORE))
 
-    KTable parsedGranuleTable = builder.table(PARSED_GRANULE_TOPIC, Materialized.as(PARSED_GRANULE_STORE))
-    KTable parsedCollectionTable = builder.table(PARSED_COLLECTION_TOPIC, Materialized.as(PARSED_COLLECTION_STORE))
+    KTable parsedGranuleTable = builder.table(PARSED_GRANULE_TOPIC, Materialized.as(PARSED_GRANULE_STORE).withLoggingEnabled([:]))
+    KTable parsedCollectionTable = builder.table(PARSED_COLLECTION_TOPIC, Materialized.as(PARSED_COLLECTION_STORE).withLoggingEnabled([:]))
 
     rawGranuleTable
         .outerJoin(parsedGranuleTable, StreamFunctions.buildKeyedJsonJoiner('raw', 'parsed'))

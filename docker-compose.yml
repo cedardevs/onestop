@@ -3,7 +3,7 @@ version: '3'
 services:
 
   collection_parser_script_wrapper:
-    image: cedardevs/psi-script-wrapper:latest
+    image: cedardevs/psi-script-wrapper:0.1.0-SNAPSHOT
     environment:
        PSI_KAFKA_APPLICATION_ID: "dscovr_iso_generation_script_wrapper"
        PSI_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
@@ -14,7 +14,7 @@ services:
        PSI_STREAM_TIMEOUT: 10000
 
   dscovr_script_wrapper:
-    image: cedardevs/psi-script-wrapper:latest
+    image: cedardevs/psi-script-wrapper:0.1.0-SNAPSHOT
     environment:
       PSI_KAFKA_APPLICATION_ID: "dscovr_iso_generation_script_wrapper"
       PSI_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
