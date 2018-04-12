@@ -38,7 +38,7 @@ jobs:
       # build it!
       - run:
           name: Build
-          command: ./gradlew build --parallel
+          command: ./gradlew build
 
       - run:
           name: Save test results
