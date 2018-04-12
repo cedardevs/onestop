@@ -12,9 +12,9 @@ import Immutable from 'seamless-immutable'
 
 const styleFacet = (backgroundColor, disabled) => {
   return {
-    padding: '0.618em',
-    backgroundColor: backgroundColor ? backgroundColor : 'initial',
-    color: disabled ? '#cbcbcb' : '#FFF',
+    padding: '0.309em',
+    backgroundColor: backgroundColor ? backgroundColor : '60bdfb',
+    color: disabled ? '#636363' : 'initial',
     display: 'flex',
     textAlign: 'left',
     alignItems: 'center',
@@ -23,12 +23,12 @@ const styleFacet = (backgroundColor, disabled) => {
 }
 
 const styleRovingFocus = {
-  boxShadow: '0 0 0 1px #FFF',
+  boxShadow: '0 0 0 1px black',
 }
 
 const styleRovingFocusCheckbox = {
   outline: 'none',
-  boxShadow: '0 0 2px 2px #12347C',
+  boxShadow: '0 0 1px 1px #12347C',
 }
 
 const styleExpandableContent = marginNest => {

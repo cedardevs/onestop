@@ -67,7 +67,7 @@ export default class Help extends React.Component {
             <p>
               If you experience any challenges while accessing parts of our
               site, please contact{' '}
-              <a href={'mailto:ncei.info@noaa.gov'} style={{color: '#55ace4'}}>
+              <a href={'mailto:ncei.info@noaa.gov'} style={{color: '#2f668a'}}>
                 ncei.info@noaa.gov
               </a>
             </p>

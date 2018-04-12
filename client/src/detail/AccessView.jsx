@@ -24,7 +24,7 @@ const styleContentList = showBulletPoints => {
 
 const styleLink = {
   display: 'inline-block',
-  color: 'rgb(85, 172, 228)',
+  color: '#2f668a',
   margin: '0 0 0.618em 0',
 }
 

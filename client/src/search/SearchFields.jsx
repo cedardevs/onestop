@@ -57,7 +57,7 @@ class SearchFields extends React.Component {
         lineHeight: '1.618em',
         fontSize: '1em',
         color: 'white',
-        backgroundColor: 'red',
+        backgroundColor: '#900303',
         borderRadius: '1em',
         padding: '0.618em',
       }

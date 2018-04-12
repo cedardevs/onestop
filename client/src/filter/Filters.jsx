@@ -17,7 +17,7 @@ import arrowLeft from '../../img/font-awesome/white/svg/arrow-left.svg'
 import {fontFamilySerif} from '../utils/styleUtils'
 
 const styleFilters = {
-  borderTop: '1px solid white',
+  borderTop: '1px solid #60bdfb',
 }
 
 const styleFilterHeadings = {
@@ -38,7 +38,8 @@ const styleOverallHeading = {
 
 const styleFacetFilterContents = {
   marginNest: '1em',
-  backgroundColor: '#327CAC',
+  backgroundColor: '#9fc4ee',//'#bbd2ec',
+  fontSize: '1.1em',
 }
 
 const styleFocusDefault = {

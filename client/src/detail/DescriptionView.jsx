@@ -45,7 +45,7 @@ const styleExpandableFocused = {
 }
 
 const styleExpandableHeading = {
-  backgroundColor: '#6792B5',
+  backgroundColor: '#3c6280',
 }
 
 const styleExpandableH2 = {
@@ -172,7 +172,7 @@ export default class DescriptionView extends Component {
       <A
         target="_blank"
         href={`https://doi.org/${item.doi}`}
-        style={{color: '#277cb2'}}
+        style={{color: '#2f668a'}}
       >
         {item.doi}
       </A>

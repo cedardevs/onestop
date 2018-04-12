@@ -12,14 +12,14 @@ import {
 const styleInputValidity = isValid => {
   return {
     paddingLeft: '5px',
-    color: isValid ? 'lime' : '#b00101',
+    color: isValid ? '#004d00' : '#900303',
   }
 }
 
 const styleTimeFilter = {
-  backgroundColor: '#3D97D2',
+  backgroundColor: '#60bdfb',
+  fontSize: '1.1em',
   padding: '0.618em',
-  color: '#F9F9F9',
 }
 
 const styleForm = {
@@ -30,7 +30,7 @@ const styleForm = {
 const styleFieldset = {
   alignSelf: 'center',
   marginBottom: '1em',
-  border: '1px solid white',
+  border: '1px solid black',
   padding: '0.309em',
 }
 
@@ -176,7 +176,7 @@ export default class TimeFilter extends Component {
     }
     else {
       return {
-        color: '#b00101',
+        color: '#900303',
         textAlign: 'center',
         margin: '0.75em 0 0.5em',
         fontWeight: 'bold',

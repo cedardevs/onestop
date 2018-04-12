@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {boxShadow} from '../common/defaultStyles'
 
 const defaultWidth = '128px'
-const defaultBackgroundColor = '#3D97D2'
+const defaultBackgroundColor = '#60bdfb'
 const defaultColor = '#111'
 
 const styleVisible = width => {

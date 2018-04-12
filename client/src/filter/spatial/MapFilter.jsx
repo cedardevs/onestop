@@ -9,9 +9,9 @@ import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
 import {fontFamilyMonospace} from '../../utils/styleUtils'
 
 const styleMapFilter = {
-  backgroundColor: '#3D97D2',
+  backgroundColor: '#60bdfb',
   padding: '0.618em',
-  color: '#F9F9F9',
+  fontSize: '1.1em',
   position: 'relative',
 }
 
@@ -26,7 +26,7 @@ const styleForm = {
 
 const styleFieldset = {
   alignSelf: 'center',
-  border: '1px solid white',
+  border: '1px solid black',
 }
 
 const styleLegend = {
@@ -321,7 +321,7 @@ export default class MapFilter extends Component {
           reset the map and text boxes.
         </p>
         {inputColumn}
-        <div style={{borderBottom: '1px solid white', margin: '1em 0'}} />
+        <div style={{borderBottom: '1px solid black', margin: '1em 0'}} />
         <h3 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h3>
         {excludeGlobalCheckbox}
       </div>

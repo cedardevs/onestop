@@ -41,7 +41,7 @@ export const protocols = Immutable([
   {
     id: 'C',
     names: [ 'ogc:wcs' ],
-    color: 'coral',
+    color: '#ab4e2c',
     label: 'OGC Web Coverage Service',
   },
   {
@@ -52,7 +52,7 @@ export const protocols = Immutable([
     svgPath: cloud,
   },
   {id: 'D', names: [ 'download' ], color: 'blue', label: 'Download'},
-  {id: 'F', names: [ 'ftp' ], color: 'red', label: 'FTP'},
+  {id: 'F', names: [ 'ftp' ], color: '#c50000', label: 'FTP'},
   {
     id: 'H',
     names: [ 'http', 'https' ],
@@ -62,13 +62,13 @@ export const protocols = Immutable([
   {
     id: 'L',
     names: [ 'noaa:las' ],
-    color: 'aqua',
+    color: '#008484',
     label: 'NOAA Live Access Server',
   },
   {
     id: 'M',
     names: [ 'ogc:wms' ],
-    color: 'goldenrod',
+    color: '#92631c',
     label: 'OGC Web Map Service',
   },
   {
@@ -80,10 +80,10 @@ export const protocols = Immutable([
   {
     id: 'T',
     names: [ 'thredds', 'unidata:thredds' ],
-    color: 'grey',
+    color: '#616161',
     label: 'THREDDS',
   },
-  {id: 'W', names: [ '' ], color: '#e69500', label: 'Web'},
+  {id: 'W', names: [ '' ], color: '#a26a03', label: 'Web'},
 ])
 
 export const identifyProtocol = link => {

@@ -8,7 +8,7 @@ const styleGranuleSummary = {
 
 const styleLink = {
   textDecoration: 'underline',
-  color: '#7777EE',
+  color: '#2f668a',
 }
 
 export default class GranulesSummary extends React.Component {

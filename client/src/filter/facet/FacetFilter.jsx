@@ -7,6 +7,11 @@ import _ from 'lodash'
   This component contains everything described by the facet map built from the facet results.
 **/
 
+const styleFacetFilter = {
+  backgroundColor: '#277CB2',
+  fontSize: '1.1em',
+}
+
 const styleExpandableCategoryHeading = {
   backgroundColor: '#18478F',
   padding: '0.618em',
@@ -95,6 +100,6 @@ export default class FacetFilter extends Component {
         />
       )
     })
-    return <div>{expandableCategories}</div>
+    return <div style={styleFacetFilter}>{expandableCategories}</div>
   }
 }
