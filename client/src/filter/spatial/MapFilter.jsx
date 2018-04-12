@@ -7,6 +7,7 @@ import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from '../../common/input/Checkbox'
 import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
 import {fontFamilyMonospace} from '../../utils/styleUtils'
+import {boxShadow} from '../../common/defaultStyles'
 
 const styleMapFilter = {
   backgroundColor: '#60bdfb',
@@ -26,11 +27,90 @@ const styleForm = {
 
 const styleFieldset = {
   alignSelf: 'center',
-  border: '1px solid black',
+  // border: '1px solid black',
+  backgroundColor: '#9fc4ee',
+  border: 'none',
+  boxShadow: boxShadow,
+}
+
+const magic = {
+// border: '1px hidden black',
+// margin: '1px',
+// padding: '1px',
+
+        position: 'absolute',
+        // top:'-1px',
+        // left:'-1px',
+        // height: '.905em',
+        // width: '100%',
+    //     // backgroundColor:'red'
+    //     // background-color:#fff;
+    //
+    //
+    // /* bottom: 0.5em; */
+    // // bottom: -1px;
+    // // /* left: 1px; */
+    // // left: -1px;
+    // // width: 100%;
+    // // height: .6em;
+    // /* background-color: red; */
+    // // border-left: 1px solid rgb(159,196,238);
+    // // border-bottom: 1px solid rgb(159,196,238);
+    // // border-right: 1px solid rgb(159,196,238);
+    // borderBottom: '1px solid #9fc4ee',
+    // // borderBottom: '1px solid #759dc9',
+    // borderLeft: '1px solid #9fc4ee',
+    // borderRight: '1px solid #9fc4ee',
+//     zIndex: '-1',
+// boxShadow: 'rgba(50, 50, 50, 0.75) 0px 1px 3px'
+
+    bottom: '-5px',
+    left: '-6px',
+    height: '0.2em',
+    width: '105%',
+    backgroundColor: 'rgb(159, 196, 238)',
+    borderBottom: '6px solid rgb(159, 196, 238)',
+    borderLeft: '6px solid rgb(159, 196, 238)',
+    borderRight: '6px solid rgb(159, 196, 238)',
+}
+const magic2 = {
+
+    position: 'absolute',
+
+    bottom: '1px',
+    left: '-6px',
+    height: '0.903em',
+    width: '100%',
+    // backgroundColor: 'rgb(159, 196, 238)',
+    // borderBottom: '6px solid rgb(159, 196, 238)',
+    borderLeft: '6px solid rgb(159, 196, 238)',
+    borderRight: '6px solid rgb(159, 196, 238)',
 }
 
 const styleLegend = {
+backgroundColor: '#9fc4ee',
+margin: '0 auto',
+width: 'auto',
+background: 'linear-gradient(#759dc9 0%, #9fc4ee 50%)',
+padding: '.309em',
+  // background: 'linear-gradient(#90b4dd, #9fc4ee)',
+        // border: '1px solid #000',
+        // height: '1em',
+        // width: '12em',
+        // height: 200px;
+        // width: 200px;
+        position:'relative',
+        // margin:'10px',
+
+border: 'none',
+boxShadow: 'rgba(50, 50, 50, 0.75) 0px 1px 3px',
+
   color: 'inherit',
+  // background: 'linear-gradient(black, #9fc4ee)',
+  // backgroundColor: '#9fc4ee',
+  // borderTop: '1px solid black',
+  // borderLeft: '1px solid black',
+  // borderRight: '1px solid black',
 }
 
 const styleButtons = {
@@ -235,7 +315,7 @@ export default class MapFilter extends Component {
             style={styleFieldset}
             onChange={event => this.onChange(event)}
           >
-            <legend style={styleLegend}>Bounding Box Coordinates: </legend>
+            <legend style={styleLegend}><div style={magic} ></div> <div style={magic2}></div>Bounding Box Coordinates:</legend>
             {this.renderInputRow('west', '-180.0 to 180.0')}
             {this.renderInputRow('south', ' -90.0 to  90.0')}
             {this.renderInputRow('east', '-180.0 to 180.0')}
