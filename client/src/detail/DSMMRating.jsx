@@ -134,6 +134,7 @@ class DSMMRating extends Component {
       <button
         aria-label="DSMM info"
         style={styleInfoButtonMerged}
+        aria-expanded={this.state.showInfo}
         onClick={
           this.state.showInfo ? this.handleHideInfo : this.handleShowInfo
         }
@@ -153,27 +154,30 @@ class DSMMRating extends Component {
         open={this.state.showInfo}
         content={
           <div style={styleExpandableInfoContent}>
-            This is the average DSMM rating of this collection. The{' '}
-            <A
-              href="http://doi.org/10.2481/dsj.14-049"
-              target="_blank"
-              title="Data Stewardship Maturity Matrix Information"
-            >
-              Data Stewardship Maturity Matrix (DSMM)
-            </A>{' '}
-            is a unified framework that defines criteria for the following nine
-            components based on measurable practices:
-            <ul>
-              <li>Accessibility</li>
-              <li>Data Integrity</li>
-              <li>Data Quality Assessment</li>
-              <li>Data Quality Assurance</li>
-              <li>Data Quality Control Monitoring</li>
-              <li>Preservability</li>
-              <li>Production Sustainability</li>
-              <li>Transparency Traceability</li>
-              <li>Usability</li>
-            </ul>
+            <p>The average DSMM rating of this collection is {dsmmDesc}.</p>
+            <p>
+              The{' '}
+              <A
+                href="http://doi.org/10.2481/dsj.14-049"
+                target="_blank"
+                title="Data Stewardship Maturity Matrix Information"
+              >
+                Data Stewardship Maturity Matrix (DSMM)
+              </A>{' '}
+              is a unified framework that defines criteria for the following
+              nine components based on measurable practices:
+              <ul>
+                <li>Accessibility</li>
+                <li>Data Integrity</li>
+                <li>Data Quality Assessment</li>
+                <li>Data Quality Assurance</li>
+                <li>Data Quality Control Monitoring</li>
+                <li>Preservability</li>
+                <li>Production Sustainability</li>
+                <li>Transparency Traceability</li>
+                <li>Usability</li>
+              </ul>
+            </p>
           </div>
         }
       />
@@ -186,10 +190,6 @@ class DSMMRating extends Component {
           style={{marginBottom: '0.618em'}}
           items={[
             <div title={`${dsmmDesc} DSMM rating`}>{stars}</div>,
-            <span
-              key="dsmm-text-value"
-              style={{fontSize: '0px'}}
-            >{`${dsmmDesc} DSMM rating`}</span>,
             infoButton,
           ]}
         />
