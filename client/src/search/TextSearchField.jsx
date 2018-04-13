@@ -9,6 +9,7 @@ const styleSearchField = {
   boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.5)',
   borderRadius: '0.309em',
   display: 'flex',
+  position: 'relative'
 }
 
 const styleSearchFieldFocused = {
@@ -136,7 +137,7 @@ class TextSearchField extends React.Component {
   }
 
   render() {
-    const {onClear} = this.props
+    const {onClear, warning} = this.props
 
     const styleSearchFieldMerged = {
       ...styleSearchField,
@@ -161,6 +162,9 @@ class TextSearchField extends React.Component {
 
     return (
       <div style={styleSearchFieldMerged}>
+
+        {warning}
+
         <input
           style={styleTextFieldMerged}
           placeholder="Enter any term here to search NCEI data"
