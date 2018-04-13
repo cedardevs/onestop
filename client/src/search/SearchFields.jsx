@@ -87,7 +87,7 @@ class SearchFields extends React.Component {
         padding: '0.618em 0 0.618em 0.618em',
         boxShadow: boxShadow2,
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
       }
     }
   }
@@ -144,9 +144,7 @@ class SearchFields extends React.Component {
       }
     }
 
-    const warningText = (
-        <div key="warning-text">{this.state.warning}</div>
-    )
+    const warningText = <div key="warning-text">{this.state.warning}</div>
 
     const styleSvgIcon = {
       outline: this.state.focusingWarningClose ? '2px dashed white' : 'none',
@@ -154,26 +152,30 @@ class SearchFields extends React.Component {
     const svgFillColor = 'white'
 
     const warningClose = (
-        <button
-            key="warning-close-button"
-            style={styleWarningClose}
-            onClick={this.clearQueryString}
-            onMouseOver={this.handleMouseOverWarningClose}
-            onMouseOut={this.handleMouseOutWarningClose}
-            onFocus={this.handleFocusWarningClose}
-            onBlur={this.handleBlurWarningClose}
-            aria-label="close warning message"
-        >
-          <SvgIcon
-              size="2em"
-              style={styleSvgIcon}
-              path={times_circle(svgFillColor)}
-          />
-        </button>
+      <button
+        key="warning-close-button"
+        style={styleWarningClose}
+        onClick={this.clearQueryString}
+        onMouseOver={this.handleMouseOverWarningClose}
+        onMouseOut={this.handleMouseOutWarningClose}
+        onFocus={this.handleFocusWarningClose}
+        onBlur={this.handleBlurWarningClose}
+        aria-label="close warning message"
+      >
+        <SvgIcon
+          size="2em"
+          style={styleSvgIcon}
+          path={times_circle(svgFillColor)}
+        />
+      </button>
     )
 
     const warning = (
-        <FlexRow style={this.warningStyle()} items={[warningText, warningClose]} role="alert" />
+      <FlexRow
+        style={this.warningStyle()}
+        items={[ warningText, warningClose ]}
+        role="alert"
+      />
     )
 
     return (

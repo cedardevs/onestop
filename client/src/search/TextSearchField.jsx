@@ -9,7 +9,7 @@ const styleSearchField = {
   boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.5)',
   borderRadius: '0.309em',
   display: 'flex',
-  position: 'relative'
+  position: 'relative',
 }
 
 const styleSearchFieldFocused = {
@@ -162,7 +162,6 @@ class TextSearchField extends React.Component {
 
     return (
       <div style={styleSearchFieldMerged}>
-
         {warning}
 
         <input
