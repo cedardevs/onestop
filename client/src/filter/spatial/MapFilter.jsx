@@ -10,9 +10,9 @@ import {fontFamilyMonospace} from '../../utils/styleUtils'
 import {boxShadow} from '../../common/defaultStyles'
 
 const styleMapFilter = {
-  backgroundColor: '#60bdfb',
+  // backgroundColor: '#88aad6',
   padding: '0.618em',
-  fontSize: '1.1em',
+  // fontSize: '1.1em',
   position: 'relative',
 }
 
@@ -28,9 +28,10 @@ const styleForm = {
 const styleFieldset = {
   alignSelf: 'center',
   // border: '1px solid black',
-  backgroundColor: '#9fc4ee',
+  backgroundColor: '#cfebfd',
   border: 'none',
   boxShadow: boxShadow,
+  borderRadius: '0.309em',
 }
 
 const magic = {
@@ -57,43 +58,45 @@ const magic = {
     // // border-left: 1px solid rgb(159,196,238);
     // // border-bottom: 1px solid rgb(159,196,238);
     // // border-right: 1px solid rgb(159,196,238);
-    // borderBottom: '1px solid #9fc4ee',
+    // borderBottom: '1px solid #cfebfd',
     // // borderBottom: '1px solid #759dc9',
-    // borderLeft: '1px solid #9fc4ee',
-    // borderRight: '1px solid #9fc4ee',
+    // borderLeft: '1px solid #cfebfd',
+    // borderRight: '1px solid #cfebfd',
 //     zIndex: '-1',
 // boxShadow: 'rgba(50, 50, 50, 0.75) 0px 1px 3px'
 
     bottom: '-5px',
     left: '-6px',
-    height: '0.2em',
+    height: '0.1em',
     width: '105%',
-    backgroundColor: 'rgb(159, 196, 238)',
-    borderBottom: '6px solid rgb(159, 196, 238)',
-    borderLeft: '6px solid rgb(159, 196, 238)',
-    borderRight: '6px solid rgb(159, 196, 238)',
+    backgroundColor: '#cfebfd',
+    // borderBottom: '6px solid #cfebfd',
+    borderLeft: '6px solid #cfebfd',
+    borderRight: '6px solid #cfebfd',
 }
 const magic2 = {
 
     position: 'absolute',
 
-    bottom: '1px',
+    // bottom: '1px',
+    bottom: '0',
     left: '-6px',
-    height: '0.903em',
+    height: '.9em',
     width: '100%',
     // backgroundColor: 'rgb(159, 196, 238)',
     // borderBottom: '6px solid rgb(159, 196, 238)',
-    borderLeft: '6px solid rgb(159, 196, 238)',
-    borderRight: '6px solid rgb(159, 196, 238)',
+    borderLeft: '6px solid #cfebfd',
+    borderRight: '6px solid #cfebfd',
 }
 
 const styleLegend = {
-backgroundColor: '#9fc4ee',
+backgroundColor: '#cfebfd',
 margin: '0 auto',
 width: 'auto',
-background: 'linear-gradient(#759dc9 0%, #9fc4ee 50%)',
-padding: '.309em',
-  // background: 'linear-gradient(#90b4dd, #9fc4ee)',
+background: 'linear-gradient(#bfe4fd 0%, #cfebfd 50%)',
+
+padding: '.309em .619em',
+  // background: 'linear-gradient(#90b4dd, #cfebfd)',
         // border: '1px solid #000',
         // height: '1em',
         // width: '12em',
@@ -106,11 +109,12 @@ border: 'none',
 boxShadow: 'rgba(50, 50, 50, 0.75) 0px 1px 3px',
 
   color: 'inherit',
-  // background: 'linear-gradient(black, #9fc4ee)',
-  // backgroundColor: '#9fc4ee',
+  // background: 'linear-gradient(black, #cfebfd)',
+  // backgroundColor: '#cfebfd',
   // borderTop: '1px solid black',
   // borderLeft: '1px solid black',
   // borderRight: '1px solid black',
+  borderRadius: '0.309em',
 }
 
 const styleButtons = {
@@ -138,10 +142,21 @@ const styleLabel = {
   width: '4em',
 }
 
+const styleCoordWrapper = {
+    height: '2em',
+}
+
 const styleTextBox = {
   width: '10em',
   color: 'black',
   fontFamily: fontFamilyMonospace(),
+
+
+    height: '100%',
+    margin: 0,
+    padding: '0 0.309em',
+    border: '1px solid #afdefd',
+    borderRadius: '0.309em',
 }
 
 export default class MapFilter extends Component {
@@ -293,7 +308,8 @@ export default class MapFilter extends Component {
         <label htmlFor={id} style={styleLabel}>
           {_.capitalize(direction)}
         </label>
-        <input
+        <div style={styleCoordWrapper}>
+          <input
           type="text"
           id={id}
           name={direction}
@@ -303,6 +319,7 @@ export default class MapFilter extends Component {
           style={styleTextBox}
           onChange={() => {}}
         />
+    </div>
       </div>
     )
   }

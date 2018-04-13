@@ -4,6 +4,7 @@ import _ from 'lodash'
 import {Key} from '../../utils/keyboardUtils'
 
 import Immutable from 'seamless-immutable'
+import {boxShadow} from '../../common/defaultStyles'
 
 /**
   This component contains the content of a facet category. It is essentially a
@@ -13,12 +14,14 @@ import Immutable from 'seamless-immutable'
 const styleFacet = (backgroundColor, disabled) => {
   return {
     padding: '0.309em',
-    backgroundColor: backgroundColor ? backgroundColor : '60bdfb',
+    backgroundColor: backgroundColor ? backgroundColor : 'aed5f2',
     color: disabled ? '#636363' : 'initial',
     display: 'flex',
     textAlign: 'left',
     alignItems: 'center',
     marginBottom: '1px',
+    boxShadow: boxShadow,
+    borderTop: '1px solid #afdefd',
   }
 }
 
