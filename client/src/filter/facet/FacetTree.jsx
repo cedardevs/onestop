@@ -4,34 +4,36 @@ import _ from 'lodash'
 import {Key} from '../../utils/keyboardUtils'
 
 import Immutable from 'seamless-immutable'
-import {boxShadow, FilterTheme} from '../../common/defaultStyles'
+import {boxShadow, FilterColors, FilterStyles} from '../../common/defaultStyles'
 
 /**
   This component contains the content of a facet category. It is essentially a
   specialized tree menu.
 **/
 
-const styleFacet = (backgroundColor, disabled) => {
+const styleFacet = disabled => {
   return {
-    padding: '0.309em',
-    backgroundColor: backgroundColor ? backgroundColor : FilterTheme.LIGHT,
-    color: disabled ? FilterTheme.DISABLED_TEXT : 'initial',
-    display: 'flex',
-    textAlign: 'left',
-    alignItems: 'center',
-    marginBottom: '1px',
-    boxShadow: boxShadow,
-    borderTop: `1px solid ${FilterTheme.MEDIUM}`,
+    ...FilterStyles.LIGHT,
+    ...(disabled ? {color: FilterColors.DISABLED_TEXT} : {}),
+    ...{
+      padding: '0.309em',
+      display: 'flex',
+      textAlign: 'left',
+      alignItems: 'center',
+      marginBottom: '1px',
+      boxShadow: boxShadow,
+      borderTop: `1px solid ${FilterColors.MEDIUM}`,
+    },
   }
 }
 
 const styleRovingFocus = {
-  boxShadow: `0 0 0 1px ${FilterTheme.TEXT}`,
+  boxShadow: `0 0 0 1px ${FilterColors.TEXT}`,
 }
 
 const styleRovingFocusCheckbox = {
   outline: 'none',
-  boxShadow: `0 0 1px 1px ${FilterTheme.DARK_EMPHASIS}`,
+  boxShadow: `0 0 1px 1px ${FilterColors.DARK_EMPHASIS}`,
 }
 
 const styleExpandableContent = marginNest => {
@@ -360,10 +362,7 @@ export default class FacetTree extends React.Component {
         hasChildren={hasChildren}
         handleSelectToggleMouse={this.handleSelectToggleMouse}
         handleExpandableToggle={this.handleExpandableToggle}
-        styleFacet={styleFacet(
-          this.props.backgroundColor,
-          this.isFacetDisabled(facet)
-        )}
+        styleFacet={styleFacet(this.isFacetDisabled(facet))}
         styleFocus={styleRovingFocus}
         styleCheckboxFocus={styleRovingFocusCheckbox}
         styleChildren={styleExpandableContent(this.props.marginNest)}

@@ -2,20 +2,17 @@ import React, {Component} from 'react'
 import Expandable from '../../common/Expandable'
 import FacetTree from './FacetTreeContainer'
 import _ from 'lodash'
-import {FilterTheme} from '../../common/defaultStyles'
+import {FilterStyles} from '../../common/defaultStyles'
 
 /**
   This component contains everything described by the facet map built from the facet results.
 **/
 
-const styleFacetFilter = {
-  backgroundColor: FilterTheme.MEDIUM,
-}
+const styleFacetFilter = FilterStyles.MEDIUM
 
 const styleExpandableCategoryHeading = {
-  backgroundColor: FilterTheme.DARK,
-  color: FilterTheme.DARK_TEXT,
-  padding: '0.618em',
+  ...FilterStyles.DARK,
+  ...{padding: '0.618em'},
 }
 
 const styleExpandableWrapper = {
@@ -81,7 +78,6 @@ export default class FacetFilter extends Component {
           facetMap={facetCategory.keywordFacets}
           hierarchy={facetCategory.hierarchy}
           handleSelectToggle={this.updateStoreAndSubmitSearch}
-          backgroundColor={this.props.backgroundColor}
           marginNest={this.props.marginNest}
         />
       )

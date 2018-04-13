@@ -3,7 +3,7 @@ import { expect, assert } from 'chai'
 import * as protocolUtils from '../../src/utils/resultUtils'
 import _ from 'lodash'
 
-describe('The protocolUtils', function () {
+describe('The resultUtils', function () {
 
   it('has distinct id and color combinations for each protocol', function() {
     const protocolIdCombos = _.map(protocolUtils.protocols, p => {
@@ -24,7 +24,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('C')
       protocol.label.should.equal('OGC Web Coverage Service')
-      protocol.color.should.equal('coral')
+      protocol.color.should.equal('#ab4e2c')
     })
   })
 
@@ -53,7 +53,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('F')
       protocol.label.should.equal('FTP')
-      protocol.color.should.equal('red')
+      protocol.color.should.equal('#c50000')
     })
   })
 
@@ -83,7 +83,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('L')
       protocol.label.should.equal('NOAA Live Access Server')
-      protocol.color.should.equal('aqua')
+      protocol.color.should.equal('#008484')
     })
   })
 
@@ -97,7 +97,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('M')
       protocol.label.should.equal('OGC Web Map Service')
-      protocol.color.should.equal('goldenrod')
+      protocol.color.should.equal('#92631c')
     })
   })
 
@@ -129,7 +129,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('T')
       protocol.label.should.equal('THREDDS')
-      protocol.color.should.equal('grey')
+      protocol.color.should.equal('#616161')
     })
   })
 
@@ -142,7 +142,7 @@ describe('The protocolUtils', function () {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('W')
       protocol.label.should.equal('Web')
-      protocol.color.should.equal('#e69500')
+      protocol.color.should.equal('#a26a03')
     })
   })
 

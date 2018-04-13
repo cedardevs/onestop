@@ -9,7 +9,7 @@ import {
   isValidDateRange,
 } from '../../utils/inputUtils'
 import Fieldset from '../Fieldset'
-import {FilterTheme, SiteTheme} from '../../common/defaultStyles'
+import {FilterColors, FilterStyles, SiteTheme} from '../../common/defaultStyles'
 
 const styleInputValidity = isValid => {
   return {
@@ -19,8 +19,8 @@ const styleInputValidity = isValid => {
 }
 
 const styleTimeFilter = {
-  backgroundColor: FilterTheme.MEDIUM,
-  padding: '0.618em',
+  ...FilterStyles.MEDIUM,
+  ...{padding: '0.618em'},
 }
 
 const styleForm = {
@@ -60,29 +60,29 @@ const styleDayWrapper = {
 
 const styleYear = {
   width: '3.25em',
-  color: FilterTheme.TEXT,
+  color: FilterColors.TEXT,
   height: '100%',
   margin: 0,
   padding: '0 0.309em',
-  border: `1px solid ${FilterTheme.LIGHT_SHADOW}`,
+  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
 }
 
 const styleMonth = {
   width: '7.25em',
-  color: FilterTheme.TEXT,
+  color: FilterColors.TEXT,
   height: '100%',
   margin: 0,
   padding: 0,
-  border: `1px solid ${FilterTheme.LIGHT_SHADOW}`,
+  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
 }
 const styleDay = {
   width: '1.75em',
-  color: FilterTheme.TEXT,
+  color: FilterColors.TEXT,
   height: '100%',
   margin: 0,
   padding: '0 0.309em',
-  border: `1px solid ${FilterTheme.LIGHT_SHADOW}`,
+  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
 }
 

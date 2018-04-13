@@ -92,20 +92,41 @@ export const SECTION_PADDING = '0.9em'
 
 export const SiteTheme = {
   WARNING: '#900303',
-  VALID: '#004d00', //TODO too dark green..
-  HEADER: '#242C36', // dark bg color, needs better name
-  HEADER_TEXT: '#FFF',
+  VALID: '#327032',
+  HEADER: {
+    backgroundColor: '#242C36',
+    color: '#FFF',
+  },
 }
-export const FilterTheme = {
-  TEXT: 'black',
+
+export const FilterColors = {
+  //backgrounds
+  MEDIUM: '#9fd7fc',
+  DARK: '#18478F',
+  DARKEST: '#0E274E',
   LIGHT: '#cfebfd',
-  // MEDIUM: '#afdefd', // TODO just make this the same as medium?
   LIGHT_EMPHASIS: '#bfe4fd', // one shade darker than light
   LIGHT_SHADOW: '#8fc1e2',
-  MEDIUM: '#9fd7fc',
-  DISABLED_TEXT: '#636363',
   DARK_EMPHASIS: '#12347C',
-  DARK: '#18478F',
-  DARK_TEXT: '#FFF', // poorly named - text for dark backgrounds
-  DARKEST: '#0E274E',
+  // text
+  DISABLED_TEXT: '#636363',
+  INVERSE_TEXT: '#FFF',
+  TEXT: 'black',
+}
+export const FilterStyles = {
+  MEDIUM: {
+    backgroundColor: FilterColors.MEDIUM,
+  },
+  DARK: {
+    backgroundColor: FilterColors.DARK,
+    color: FilterColors.INVERSE_TEXT,
+  },
+  LIGHT: {
+    backgroundColor: FilterColors.LIGHT,
+    color: FilterColors.TEXT,
+  },
+  DARKEST: {
+    backgroundColor: FilterColors.DARKEST,
+    color: FilterColors.INVERSE_TEXT,
+  },
 }

@@ -8,12 +8,14 @@ import Checkbox from '../../common/input/Checkbox'
 import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
 import {fontFamilyMonospace} from '../../utils/styleUtils'
 import Fieldset from '../Fieldset'
-import {FilterTheme, SiteTheme} from '../../common/defaultStyles'
+import {FilterColors, FilterStyles, SiteTheme} from '../../common/defaultStyles'
 
 const styleMapFilter = {
-  backgroundColor: FilterTheme.MEDIUM,
-  padding: '0.618em',
-  position: 'relative',
+  ...FilterStyles.MEDIUM,
+  ...{
+    padding: '0.618em',
+    position: 'relative',
+  },
 }
 
 const styleDescription = {
@@ -56,18 +58,18 @@ const styleCoordWrapper = {
 
 const styleTextBox = {
   width: '10em',
-  color: FilterTheme.TEXT,
+  color: FilterColors.TEXT,
   fontFamily: fontFamilyMonospace(),
 
   height: '100%',
   margin: 0,
   padding: '0 0.309em',
-  border: `1px solid ${FilterTheme.LIGHT_SHADOW}`,
+  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
 }
 
 const styleSeparator = {
-  borderBottom: `1px solid ${FilterTheme.TEXT}`,
+  borderBottom: `1px solid ${FilterColors.TEXT}`,
   margin: '1em 0',
 }
 
@@ -241,7 +243,7 @@ export default class MapFilter extends Component {
       <div key="MapFilterCoordinatesInput::all" style={styleBreathingRoom}>
         <form style={styleForm} onKeyDown={this.handleKeyDown}>
           <Fieldset
-            onFieldsetChange={event => event => this.onChange(event)}
+            onFieldsetChange={event => this.onChange(event)}
             legendText="Bounding Box Coordinates:"
           >
             {this.renderInputRow('west', '-180.0 to 180.0')}
