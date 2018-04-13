@@ -5,6 +5,7 @@ import _ from 'lodash'
 import FlexRow from '../common/FlexRow'
 import Button from '../common/input/Button'
 import search from 'fa/search.svg'
+import {SiteColors} from '../common/defaultStyles'
 
 class SearchFields extends React.Component {
   constructor(props) {
@@ -57,7 +58,7 @@ class SearchFields extends React.Component {
         lineHeight: '1.618em',
         fontSize: '1em',
         color: 'white',
-        backgroundColor: '#900303',
+        backgroundColor: SiteColors.WARNING,
         borderRadius: '1em',
         padding: '0.618em',
       }
