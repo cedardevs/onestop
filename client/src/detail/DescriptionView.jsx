@@ -6,6 +6,7 @@ import Expandable from '../common/Expandable'
 import DetailGrid from './DetailGrid'
 import {fontFamilySerif} from '../utils/styleUtils'
 import A from '../common/link/Link'
+import {SiteColors} from '../common/defaultStyles'
 
 const styleImage = {
   float: 'left',
@@ -172,7 +173,7 @@ export default class DescriptionView extends Component {
       <A
         target="_blank"
         href={`https://doi.org/${item.doi}`}
-        style={{color: '#2f668a'}}
+        style={{color: SiteColors.LINK}}
       >
         {item.doi}
       </A>

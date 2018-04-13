@@ -90,12 +90,17 @@ export const FOOTER_HEIGHT = '5em'
 export const SECTION_PADDING = '0.9em'
 // $section-padding: .9em;
 
-export const SiteTheme = {
+export const SiteColors = {
   WARNING: '#900303',
   VALID: '#327032',
+  HEADER: '#242C36',
+  HEADER_TEXT: '#FFF',
+  LINK: '#2f668a',
+}
+export const SiteStyles = {
   HEADER: {
-    backgroundColor: '#242C36',
-    color: '#FFF',
+    backgroundColor: SiteColors.HEADER,
+    color: SiteColors.HEADER_TEXT,
   },
 }
 

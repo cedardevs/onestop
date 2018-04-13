@@ -9,12 +9,16 @@ import {
   isValidDateRange,
 } from '../../utils/inputUtils'
 import Fieldset from '../Fieldset'
-import {FilterColors, FilterStyles, SiteTheme} from '../../common/defaultStyles'
+import {
+  FilterColors,
+  FilterStyles,
+  SiteColors,
+} from '../../common/defaultStyles'
 
 const styleInputValidity = isValid => {
   return {
     paddingLeft: '5px',
-    color: isValid ? SiteTheme.VALID : SiteTheme.WARNING,
+    color: isValid ? SiteColors.VALID : SiteColors.WARNING,
   }
 }
 
@@ -166,7 +170,7 @@ export default class TimeFilter extends Component {
     }
     else {
       return {
-        color: SiteTheme.WARNING,
+        color: SiteColors.WARNING,
         textAlign: 'center',
         margin: '0.75em 0 0.5em',
         fontWeight: 'bold',

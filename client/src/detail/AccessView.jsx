@@ -2,6 +2,7 @@ import React from 'react'
 import DetailGrid from './DetailGrid'
 import A from '../common/link/Link'
 import {fontFamilySerif} from '../utils/styleUtils'
+import {SiteColors} from '../common/defaultStyles'
 
 const styleParagraph = {
   padding: 0,
@@ -24,7 +25,7 @@ const styleContentList = showBulletPoints => {
 
 const styleLink = {
   display: 'inline-block',
-  color: '#2f668a',
+  color: SiteColors.LINK,
   margin: '0 0 0.618em 0',
 }
 

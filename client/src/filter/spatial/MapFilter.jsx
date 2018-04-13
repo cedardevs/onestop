@@ -8,7 +8,11 @@ import Checkbox from '../../common/input/Checkbox'
 import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
 import {fontFamilyMonospace} from '../../utils/styleUtils'
 import Fieldset from '../Fieldset'
-import {FilterColors, FilterStyles, SiteTheme} from '../../common/defaultStyles'
+import {
+  FilterColors,
+  FilterStyles,
+  SiteColors,
+} from '../../common/defaultStyles'
 
 const styleMapFilter = {
   ...FilterStyles.MEDIUM,
@@ -190,7 +194,7 @@ export default class MapFilter extends Component {
     }
     else {
       return {
-        color: SiteTheme.WARNING,
+        color: SiteColors.WARNING,
         textAlign: 'center',
         margin: '0.75em 0 0.5em',
         fontWeight: 'bold',

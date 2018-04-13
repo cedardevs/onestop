@@ -16,7 +16,12 @@ import facetFilterIcon from '../../img/font-awesome/white/svg/key.svg'
 import arrowLeft from '../../img/font-awesome/white/svg/arrow-left.svg'
 import {fontFamilySerif} from '../utils/styleUtils'
 
-import {FilterColors, FilterStyles, SiteTheme} from '../common/defaultStyles'
+import {
+  FilterColors,
+  FilterStyles,
+  SiteStyles,
+  SiteColors,
+} from '../common/defaultStyles'
 
 const styleFilters = {
   borderTop: `1px solid ${FilterColors.MEDIUM}`,
@@ -31,7 +36,7 @@ const styleFilterHeadings = {
 }
 
 const styleOverallHeading = {
-  ...SiteTheme.HEADER,
+  ...SiteStyles.HEADER,
   ...{
     fontFamily: fontFamilySerif(),
     fontSize: '1.2em',
@@ -44,7 +49,7 @@ const styleOverallHeading = {
 
 const styleFocusDefault = {
   outline: 'none',
-  border: `.1em dashed ${SiteTheme.HEADER.color}`, // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
+  border: `.1em dashed ${SiteColors.HEADER}`, // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
   padding: '.259em',
   margin: '.259em',
 }
@@ -177,10 +182,10 @@ class Filters extends Component {
         <FlexRow
           items={[ heading, buttonHide ]}
           style={{
-            ...SiteTheme.HEADER,
+            ...SiteStyles.HEADER,
             ...{
               justifyContent: 'space-between',
-              borderTop: `1px solid ${SiteTheme.HEADER.color}`,
+              borderTop: `1px solid ${SiteColors.HEADER_TEXT}`,
             },
           }}
         />

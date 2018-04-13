@@ -1,5 +1,6 @@
 import React from 'react'
 import {fontFamilySerif} from '../../utils/styleUtils'
+import {SiteColors} from '../../common/defaultStyles'
 
 const styleWrapper = {
   width: '100%',
@@ -67,7 +68,10 @@ export default class Help extends React.Component {
             <p>
               If you experience any challenges while accessing parts of our
               site, please contact{' '}
-              <a href={'mailto:ncei.info@noaa.gov'} style={{color: '#2f668a'}}>
+              <a
+                href={'mailto:ncei.info@noaa.gov'}
+                style={{color: SiteColors.LINK}}
+              >
                 ncei.info@noaa.gov
               </a>
             </p>
