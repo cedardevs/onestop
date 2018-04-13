@@ -116,10 +116,7 @@ export default class Root extends Component {
     const header = (
       <div>
         <BannerContainer />
-        <HeaderContainer
-          showSearch={this.isNotLanding()}
-          homeUrl={this.homeUrl()}
-        />
+        <HeaderContainer homeUrl={this.homeUrl()} />
         {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
       </div>
     )

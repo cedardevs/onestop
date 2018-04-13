@@ -55,17 +55,17 @@ class Header extends React.Component {
     const menuContent = (
       <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>
-          <HeaderLink title="Home" to="/">
+          <HeaderLink title="Home" href={`${this.props.homeUrl}`}>
             Home
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, false)}>
-          <HeaderLink title="About Us" to="/about">
+          <HeaderLink title="About Us" href={`${this.props.homeUrl}about`}>
             About Us
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, true)}>
-          <HeaderLink title="Help" to="/help">
+          <HeaderLink title="Help" href={`${this.props.homeUrl}help`}>
             Help
           </HeaderLink>
         </li>

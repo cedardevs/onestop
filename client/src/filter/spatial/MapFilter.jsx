@@ -268,7 +268,6 @@ export default class MapFilter extends Component {
         key="MapFilter::showMapToggle"
         icon={mapIcon}
         text={showMapText}
-        title={showMapText}
         onClick={() => {
           this.props.showMap ? this.handleHideMap() : this.handleShowMap()
         }}

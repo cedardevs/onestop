@@ -168,12 +168,7 @@ export default class Button extends Component {
         aria-label={title || text}
       >
         {icon && !this.props.children ? (
-          <img
-            src={icon}
-            style={styleIconResolved}
-            aria-hidden={true}
-            alt={title}
-          />
+          <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
         ) : null}
         {text && !this.props.children ? <span>{text}</span> : null}
         {this.props.children ? <div>{this.props.children}</div> : null}
