@@ -2,10 +2,19 @@ import React from 'react'
 import TextSearchField from './TextSearchField'
 import _ from 'lodash'
 
-import FlexRow from '../common/FlexRow'
 import Button from '../common/input/Button'
+import FlexRow from '../common/FlexRow'
 import search from 'fa/search.svg'
-import {SiteColors} from '../common/defaultStyles'
+import {SiteColors, boxShadow2} from '../common/defaultStyles'
+import {times_circle, SvgIcon} from '../common/SvgIcon'
+
+const styleWarningClose = {
+  alignSelf: 'center',
+  background: 'none',
+  border: 'none',
+  outline: 'none',
+  padding: '0.618em',
+}
 
 class SearchFields extends React.Component {
   constructor(props) {
@@ -20,6 +29,7 @@ class SearchFields extends React.Component {
     this.state = {
       warning: '',
       hoveringWarningClose: false,
+      focusingWarningClose: false,
     }
   }
 
@@ -32,6 +42,18 @@ class SearchFields extends React.Component {
   handleMouseOutWarningClose = event => {
     this.setState({
       hoveringWarningClose: false,
+    })
+  }
+
+  handleFocusWarningClose = event => {
+    this.setState({
+      focusingWarningClose: true,
+    })
+  }
+
+  handleBlurWarningClose = event => {
+    this.setState({
+      focusingWarningClose: false,
     })
   }
 
@@ -55,26 +77,17 @@ class SearchFields extends React.Component {
       return {
         position: 'absolute',
         top: 'calc(100% + 0.309em)',
+        left: 0,
+        right: 0,
         lineHeight: '1.618em',
         fontSize: '1em',
         color: 'white',
         backgroundColor: SiteColors.WARNING,
-        borderRadius: '1em',
-        padding: '0.618em',
-      }
-    }
-  }
-
-  warningCloseStyle() {
-    if (this.state.hoveringWarningClose) {
-      return {
-        cursor: 'pointer',
-        fontWeight: 'bold',
-      }
-    }
-    else {
-      return {
-        cursor: 'pointer',
+        borderRadius: '0.309em',
+        padding: '0.618em 0 0.618em 0.618em',
+        boxShadow: boxShadow2,
+        alignItems: 'center',
+        justifyContent: 'space-between',
       }
     }
   }
@@ -131,20 +144,42 @@ class SearchFields extends React.Component {
       }
     }
 
+    const warningText = <div key="warning-text">{this.state.warning}</div>
+
+    const styleSvgIcon = {
+      outline: this.state.focusingWarningClose ? '2px dashed white' : 'none',
+    }
+    const svgFillColor = 'white'
+
+    const warningClose = (
+      <button
+        key="warning-close-button"
+        style={styleWarningClose}
+        onClick={this.clearQueryString}
+        onMouseOver={this.handleMouseOverWarningClose}
+        onMouseOut={this.handleMouseOutWarningClose}
+        onFocus={this.handleFocusWarningClose}
+        onBlur={this.handleBlurWarningClose}
+        aria-label="close warning message"
+      >
+        <SvgIcon
+          size="2em"
+          style={styleSvgIcon}
+          path={times_circle(svgFillColor)}
+        />
+      </button>
+    )
+
+    const warning = (
+      <FlexRow
+        style={this.warningStyle()}
+        items={[ warningText, warningClose ]}
+        role="alert"
+      />
+    )
+
     return (
       <section style={searchFieldStyle}>
-        <div style={this.warningStyle()} role="alert">
-          {this.state.warning}{' '}
-          <span
-            style={this.warningCloseStyle()}
-            onClick={this.clearQueryString}
-            onMouseOver={this.handleMouseOverWarningClose}
-            onMouseOut={this.handleMouseOutWarningClose}
-          >
-            x
-          </span>
-        </div>
-
         <div
           style={{display: 'flex', height: '2.618em', justifyContent: 'center'}}
         >
@@ -153,6 +188,7 @@ class SearchFields extends React.Component {
             onChange={this.updateQuery}
             onClear={this.clearQueryString}
             value={this.props.queryString}
+            warning={warning}
           />
           {searchButton}
         </div>
