@@ -7,12 +7,12 @@ import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from '../../common/input/Checkbox'
 import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
 import {fontFamilyMonospace} from '../../utils/styleUtils'
-import {boxShadow} from '../../common/defaultStyles'
+import Fieldset from '../Fieldset'
+import {FilterTheme, SiteTheme} from '../../common/defaultStyles'
 
 const styleMapFilter = {
-  // backgroundColor: '#88aad6',
+  backgroundColor: FilterTheme.MEDIUM,
   padding: '0.618em',
-  // fontSize: '1.1em',
   position: 'relative',
 }
 
@@ -23,98 +23,6 @@ const styleDescription = {
 const styleForm = {
   display: 'flex',
   flexDirection: 'column',
-}
-
-const styleFieldset = {
-  alignSelf: 'center',
-  // border: '1px solid black',
-  backgroundColor: '#cfebfd',
-  border: 'none',
-  boxShadow: boxShadow,
-  borderRadius: '0.309em',
-}
-
-const magic = {
-// border: '1px hidden black',
-// margin: '1px',
-// padding: '1px',
-
-        position: 'absolute',
-        // top:'-1px',
-        // left:'-1px',
-        // height: '.905em',
-        // width: '100%',
-    //     // backgroundColor:'red'
-    //     // background-color:#fff;
-    //
-    //
-    // /* bottom: 0.5em; */
-    // // bottom: -1px;
-    // // /* left: 1px; */
-    // // left: -1px;
-    // // width: 100%;
-    // // height: .6em;
-    // /* background-color: red; */
-    // // border-left: 1px solid rgb(159,196,238);
-    // // border-bottom: 1px solid rgb(159,196,238);
-    // // border-right: 1px solid rgb(159,196,238);
-    // borderBottom: '1px solid #cfebfd',
-    // // borderBottom: '1px solid #759dc9',
-    // borderLeft: '1px solid #cfebfd',
-    // borderRight: '1px solid #cfebfd',
-//     zIndex: '-1',
-// boxShadow: 'rgba(50, 50, 50, 0.75) 0px 1px 3px'
-
-    bottom: '-5px',
-    left: '-6px',
-    height: '0.1em',
-    width: '105%',
-    backgroundColor: '#cfebfd',
-    // borderBottom: '6px solid #cfebfd',
-    borderLeft: '6px solid #cfebfd',
-    borderRight: '6px solid #cfebfd',
-}
-const magic2 = {
-
-    position: 'absolute',
-
-    // bottom: '1px',
-    bottom: '0',
-    left: '-6px',
-    height: '.9em',
-    width: '100%',
-    // backgroundColor: 'rgb(159, 196, 238)',
-    // borderBottom: '6px solid rgb(159, 196, 238)',
-    borderLeft: '6px solid #cfebfd',
-    borderRight: '6px solid #cfebfd',
-}
-
-const styleLegend = {
-backgroundColor: '#cfebfd',
-margin: '0 auto',
-width: 'auto',
-background: 'linear-gradient(#bfe4fd 0%, #cfebfd 50%)',
-
-padding: '.309em .619em',
-  // background: 'linear-gradient(#90b4dd, #cfebfd)',
-        // border: '1px solid #000',
-        // height: '1em',
-        // width: '12em',
-        // height: 200px;
-        // width: 200px;
-        position:'relative',
-        // margin:'10px',
-
-border: 'none',
-boxShadow: 'rgba(50, 50, 50, 0.75) 0px 1px 3px',
-
-  color: 'inherit',
-  // background: 'linear-gradient(black, #cfebfd)',
-  // backgroundColor: '#cfebfd',
-  // borderTop: '1px solid black',
-  // borderLeft: '1px solid black',
-  // borderRight: '1px solid black',
-  borderRadius: '0.309em',
 }
 
 const styleButtons = {
@@ -143,20 +51,24 @@ const styleLabel = {
 }
 
 const styleCoordWrapper = {
-    height: '2em',
+  height: '2em',
 }
 
 const styleTextBox = {
   width: '10em',
-  color: 'black',
+  color: FilterTheme.TEXT,
   fontFamily: fontFamilyMonospace(),
 
+  height: '100%',
+  margin: 0,
+  padding: '0 0.309em',
+  border: `1px solid ${FilterTheme.LIGHT_SHADOW}`,
+  borderRadius: '0.309em',
+}
 
-    height: '100%',
-    margin: 0,
-    padding: '0 0.309em',
-    border: '1px solid #afdefd',
-    borderRadius: '0.309em',
+const styleSeparator = {
+  borderBottom: `1px solid ${FilterTheme.TEXT}`,
+  margin: '1em 0',
 }
 
 export default class MapFilter extends Component {
@@ -276,7 +188,7 @@ export default class MapFilter extends Component {
     }
     else {
       return {
-        color: '#b00101',
+        color: SiteTheme.WARNING,
         textAlign: 'center',
         margin: '0.75em 0 0.5em',
         fontWeight: 'bold',
@@ -310,16 +222,16 @@ export default class MapFilter extends Component {
         </label>
         <div style={styleCoordWrapper}>
           <input
-          type="text"
-          id={id}
-          name={direction}
-          placeholder={placeholderValue}
-          aria-placeholder={placeholderValue}
-          value={value}
-          style={styleTextBox}
-          onChange={() => {}}
-        />
-    </div>
+            type="text"
+            id={id}
+            name={direction}
+            placeholder={placeholderValue}
+            aria-placeholder={placeholderValue}
+            value={value}
+            style={styleTextBox}
+            onChange={() => {}}
+          />
+        </div>
       </div>
     )
   }
@@ -328,16 +240,15 @@ export default class MapFilter extends Component {
     return (
       <div key="MapFilterCoordinatesInput::all" style={styleBreathingRoom}>
         <form style={styleForm} onKeyDown={this.handleKeyDown}>
-          <fieldset
-            style={styleFieldset}
-            onChange={event => this.onChange(event)}
+          <Fieldset
+            onFieldsetChange={event => event => this.onChange(event)}
+            legendText="Bounding Box Coordinates:"
           >
-            <legend style={styleLegend}><div style={magic} ></div> <div style={magic2}></div>Bounding Box Coordinates:</legend>
             {this.renderInputRow('west', '-180.0 to 180.0')}
             {this.renderInputRow('south', ' -90.0 to  90.0')}
             {this.renderInputRow('east', '-180.0 to 180.0')}
             {this.renderInputRow('north', ' -90.0 to  90.0')}
-          </fieldset>
+          </Fieldset>
         </form>
       </div>
     )
@@ -418,7 +329,7 @@ export default class MapFilter extends Component {
           reset the map and text boxes.
         </p>
         {inputColumn}
-        <div style={{borderBottom: '1px solid black', margin: '1em 0'}} />
+        <div style={styleSeparator} />
         <h3 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h3>
         {excludeGlobalCheckbox}
       </div>

@@ -7,7 +7,8 @@ const styles = {
     width: '1px',
     height: '1px',
     overflow: 'hidden',
-    color: 'black', background: 'white',
+    color: 'black',
+    background: 'white',
   },
 }
 
@@ -88,3 +89,23 @@ export const FOOTER_HEIGHT = '5em'
 // $footer-height: 5em;
 export const SECTION_PADDING = '0.9em'
 // $section-padding: .9em;
+
+export const SiteTheme = {
+  WARNING: '#900303',
+  VALID: '#004d00', //TODO too dark green..
+  HEADER: '#242C36', // dark bg color, needs better name
+  HEADER_TEXT: '#FFF',
+}
+export const FilterTheme = {
+  TEXT: 'black',
+  LIGHT: '#cfebfd',
+  // MEDIUM: '#afdefd', // TODO just make this the same as medium?
+  LIGHT_EMPHASIS: '#bfe4fd', // one shade darker than light
+  LIGHT_SHADOW: '#8fc1e2',
+  MEDIUM: '#9fd7fc',
+  DISABLED_TEXT: '#636363',
+  DARK_EMPHASIS: '#12347C',
+  DARK: '#18478F',
+  DARK_TEXT: '#FFF', // poorly named - text for dark backgrounds
+  DARKEST: '#0E274E',
+}

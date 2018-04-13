@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import {boxShadow} from '../common/defaultStyles'
 
+import {FilterTheme} from '../common/defaultStyles'
+
 const defaultWidth = '128px'
-const defaultBackgroundColor = '#afdefd'
+const defaultBackgroundColor = FilterTheme.MEDIUM
 const defaultColor = '#111'
 
 const styleVisible = width => {

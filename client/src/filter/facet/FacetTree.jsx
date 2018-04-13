@@ -4,7 +4,7 @@ import _ from 'lodash'
 import {Key} from '../../utils/keyboardUtils'
 
 import Immutable from 'seamless-immutable'
-import {boxShadow} from '../../common/defaultStyles'
+import {boxShadow, FilterTheme} from '../../common/defaultStyles'
 
 /**
   This component contains the content of a facet category. It is essentially a
@@ -14,24 +14,24 @@ import {boxShadow} from '../../common/defaultStyles'
 const styleFacet = (backgroundColor, disabled) => {
   return {
     padding: '0.309em',
-    backgroundColor: backgroundColor ? backgroundColor : 'aed5f2',
-    color: disabled ? '#636363' : 'initial',
+    backgroundColor: backgroundColor ? backgroundColor : FilterTheme.LIGHT,
+    color: disabled ? FilterTheme.DISABLED_TEXT : 'initial',
     display: 'flex',
     textAlign: 'left',
     alignItems: 'center',
     marginBottom: '1px',
     boxShadow: boxShadow,
-    borderTop: '1px solid #afdefd',
+    borderTop: `1px solid ${FilterTheme.MEDIUM}`,
   }
 }
 
 const styleRovingFocus = {
-  boxShadow: '0 0 0 1px black',
+  boxShadow: `0 0 0 1px ${FilterTheme.TEXT}`,
 }
 
 const styleRovingFocusCheckbox = {
   outline: 'none',
-  boxShadow: '0 0 1px 1px #12347C',
+  boxShadow: `0 0 1px 1px ${FilterTheme.DARK_EMPHASIS}`,
 }
 
 const styleExpandableContent = marginNest => {

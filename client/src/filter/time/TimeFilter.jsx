@@ -8,116 +8,24 @@ import {
   isValidDate,
   isValidDateRange,
 } from '../../utils/inputUtils'
-import {boxShadow} from '../../common/defaultStyles'
+import Fieldset from '../Fieldset'
+import {FilterTheme, SiteTheme} from '../../common/defaultStyles'
 
 const styleInputValidity = isValid => {
   return {
     paddingLeft: '5px',
-    color: isValid ? '#004d00' : '#900303',
+    color: isValid ? SiteTheme.VALID : SiteTheme.WARNING,
   }
 }
 
 const styleTimeFilter = {
-  // backgroundColor: '#9fd7fc',
-  // fontSize: '1.1em',
+  backgroundColor: FilterTheme.MEDIUM,
   padding: '0.618em',
 }
 
 const styleForm = {
   display: 'flex',
   flexDirection: 'column',
-}
-const styleFieldset = {
-  alignSelf: 'center',
-  // border: '1px solid black',
-  backgroundColor: '#cfebfd',
-  border: 'none',
-  boxShadow: boxShadow,
-  marginBottom: '1em',
-  borderRadius: '0.309em',
-}
-
-const magic = {
-// border: '1px hidden black',
-// margin: '1px',
-// padding: '1px',
-
-        position: 'absolute',
-        // top:'-1px',
-        // left:'-1px',
-        // height: '.905em',
-        // width: '100%',
-    //     // backgroundColor:'red'
-    //     // background-color:#fff;
-    //
-    //
-    // /* bottom: 0.5em; */
-    // // bottom: -1px;
-    // // /* left: 1px; */
-    // // left: -1px;
-    // // width: 100%;
-    // // height: .6em;
-    // /* background-color: red; */
-    // // border-left: 1px solid rgb(159,196,238);
-    // // border-bottom: 1px solid rgb(159,196,238);
-    // // border-right: 1px solid rgb(159,196,238);
-    // borderBottom: '1px solid #cfebfd',
-    // // borderBottom: '1px solid #759dc9',
-    // borderLeft: '1px solid #cfebfd',
-    // borderRight: '1px solid #cfebfd',
-//     zIndex: '-1',
-// boxShadow: 'rgba(50, 50, 50, 0.75) 0px 1px 3px'
-
-    bottom: '-5px',
-    left: '-6px',
-    height: '0.1em',
-    width: '105%',
-    backgroundColor: '#cfebfd',
-    // borderBottom: '6px solid #cfebfd',
-    borderLeft: '6px solid #cfebfd',
-    borderRight: '6px solid #cfebfd',
-}
-const magic2 = {
-
-    position: 'absolute',
-
-    // bottom: '1px',
-    bottom: '0',
-    left: '-6px',
-    // height: '.7em',
-    height: '.9em',
-    width: '100%',
-    // backgroundColor: 'rgb(159, 196, 238)',
-    // borderBottom: '6px solid rgb(159, 196, 238)',
-    borderLeft: '6px solid #cfebfd',
-    borderRight: '6px solid #cfebfd',
-}
-
-const styleLegend = {
-backgroundColor: '#cfebfd',
-margin: '0 auto',
-width: 'auto',
-background: 'linear-gradient(#bfe4fd 0%, #cfebfd 50%)',
-padding: '.309em .619em',
-  // background: 'linear-gradient(#90b4dd, #cfebfd)',
-        // border: '1px solid #000',
-        // height: '1em',
-        // width: '12em',
-        // height: 200px;
-        // width: 200px;
-        position:'relative',
-        // margin:'10px',
-
-border: 'none',
-boxShadow: 'rgba(50, 50, 50, 0.75) 0px 1px 3px',
-
-  color: 'inherit',
-  borderRadius: '0.309em',
-  // background: 'linear-gradient(black, #cfebfd)',
-  // backgroundColor: '#cfebfd',
-  // borderTop: '1px solid black',
-  // borderLeft: '1px solid black',
-  // borderRight: '1px solid black',
 }
 
 const styleDate = {
@@ -152,29 +60,29 @@ const styleDayWrapper = {
 
 const styleYear = {
   width: '3.25em',
-  color: 'black',
+  color: FilterTheme.TEXT,
   height: '100%',
   margin: 0,
   padding: '0 0.309em',
-  border: '1px solid #afdefd',
+  border: `1px solid ${FilterTheme.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
 }
 
 const styleMonth = {
   width: '7.25em',
-  color: 'black',
+  color: FilterTheme.TEXT,
   height: '100%',
   margin: 0,
   padding: 0,
-  border: '1px solid #afdefd',
+  border: `1px solid ${FilterTheme.LIGHT_SHADOW}`,
 }
 const styleDay = {
   width: '1.75em',
-  color: 'black',
+  color: FilterTheme.TEXT,
   height: '100%',
   margin: 0,
   padding: '0 0.309em',
-  border: '1px solid #afdefd',
+  border: `1px solid ${FilterTheme.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
 }
 
@@ -258,7 +166,7 @@ export default class TimeFilter extends Component {
     }
     else {
       return {
-        color: '#900303',
+        color: SiteTheme.WARNING,
         textAlign: 'center',
         margin: '0.75em 0 0.5em',
         fontWeight: 'bold',
@@ -459,12 +367,13 @@ export default class TimeFilter extends Component {
   }
 
   createDateFieldset = (name, year, month, day, valid) => {
+    const legendText = `${_.capitalize(name)} Date:`
     return (
-      <fieldset
-        style={styleFieldset}
-        onChange={event => this.onChange(event.target.name, event.target.value)}
+      <Fieldset
+        onFieldsetChange={event =>
+          this.onChange(event.target.name, event.target.value)}
+        legendText={legendText}
       >
-      <legend style={styleLegend}><div style={magic} ></div> <div style={magic2}></div>{_.capitalize(name)} Date: </legend>
         <div style={styleDate}>
           {this.createYearField(name, year)}
           {this.createMonthField(name, month)}
@@ -477,7 +386,7 @@ export default class TimeFilter extends Component {
             </span>
           </div>
         </div>
-      </fieldset>
+      </Fieldset>
     )
   }
 

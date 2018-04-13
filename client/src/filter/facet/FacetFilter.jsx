@@ -2,21 +2,19 @@ import React, {Component} from 'react'
 import Expandable from '../../common/Expandable'
 import FacetTree from './FacetTreeContainer'
 import _ from 'lodash'
-// import {boxShadow} from '../../common/defaultStyles'
+import {FilterTheme} from '../../common/defaultStyles'
 
 /**
   This component contains everything described by the facet map built from the facet results.
 **/
 
 const styleFacetFilter = {
-  // backgroundColor: '#9fd7fc',
-  // fontSize: '1.1em',
-  // boxShadow: boxShadow,
-
+  backgroundColor: FilterTheme.MEDIUM,
 }
 
 const styleExpandableCategoryHeading = {
-  backgroundColor: '#18478F',
+  backgroundColor: FilterTheme.DARK,
+  color: FilterTheme.DARK_TEXT,
   padding: '0.618em',
 }
 
