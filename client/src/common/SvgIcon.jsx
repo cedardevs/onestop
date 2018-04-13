@@ -41,12 +41,12 @@ const styleSvg = size => {
     maxWidth: size ? size : '1em',
   }
 }
-const styleWrapper = size => {
+const styleWrapper = (size, verticalAlign) => {
   return {
     display: 'inline-block',
     width: size ? size : '1em',
     height: size ? size : '1em',
-    verticalAlign: 'middle',
+    verticalAlign: verticalAlign ? verticalAlign : 'middle',
   }
 }
 
@@ -56,9 +56,9 @@ export class SvgIcon extends React.Component {
   }
 
   render() {
-    const {size, style} = this.props
+    const {size, verticalAlign, style} = this.props
     const appliedStyle = {...styleSvg(size), ...style}
-    const appliedWrapperStyle = {...styleWrapper(size)}
+    const appliedWrapperStyle = {...styleWrapper(size, verticalAlign)}
     return (
       <span style={appliedWrapperStyle}>
         <svg style={appliedStyle} viewBox="0 0 1792 1792">
