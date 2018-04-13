@@ -184,23 +184,27 @@ export default class Expandable extends React.Component {
       ...styleContent,
     }
 
+    const headingEffective = heading ? (
+      <div
+        style={stylesHeadingMerged}
+        onClick={this.handleClick}
+        onKeyDown={this.handleKeyPressed}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        tabIndex={tabIndex}
+        role={role}
+        aria-expanded={ariaExpanded}
+      >
+        <div style={styleFocused}>{heading}</div>
+        <div aria-hidden="true" style={styleArrow}>
+          {arrow}
+        </div>
+      </div>
+    ) : null
+
     return (
       <div style={styleWrapper}>
-        <div
-          style={stylesHeadingMerged}
-          onClick={this.handleClick}
-          onKeyDown={this.handleKeyPressed}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
-          tabIndex={tabIndex}
-          role={role}
-          aria-expanded={ariaExpanded}
-        >
-          <div style={styleFocused}>{heading}</div>
-          <div aria-hidden="true" style={styleArrow}>
-            {arrow}
-          </div>
-        </div>
+        {headingEffective}
 
         <div style={styleContentMerged} aria-hidden={ariaHidden}>
           <AnimateHeight

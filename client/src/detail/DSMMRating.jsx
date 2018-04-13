@@ -20,7 +20,78 @@ const styleMissingDSMM = {
   color: 'grey',
 }
 
+const styleInfoButton = {
+  marginLeft: '0.309em',
+  padding: '0 0.309em',
+  border: 0,
+  boxSizing: 'content-box',
+  background: 'none',
+  color: 'inherit',
+  font: 'inherit',
+  lineHeight: 'normal',
+  overflow: 'visible',
+  userSelect: 'none',
+}
+
+const styleInfoButtonFocused = {
+  outline: '2px dashed #00002c',
+}
+
+const styleShowHideText = {
+  marginLeft: '0.309em',
+  textDecoration: 'underline',
+}
+
+const styleExpandableInfoContent = {
+  background: '#efefef',
+  borderRadius: '0.309em',
+  padding: '0.618em',
+}
+
 class DSMMRating extends Component {
+  componentWillMount() {
+    this.setState({
+      showInfo: false,
+      focusingShowInfo: false,
+    })
+  }
+
+  handleShowInfo = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        showInfo: true,
+      }
+    })
+  }
+
+  handleHideInfo = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        showInfo: false,
+      }
+    })
+  }
+
+  handleShowInfoFocus = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingShowInfo: true,
+      }
+    })
+  }
+
+  handleShowInfoBlur = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingShowInfo: false,
+      }
+    })
+  }
+
   render() {
     const {item} = this.props
     const dsmmScore = item.dsmmAverage
@@ -31,9 +102,9 @@ class DSMMRating extends Component {
     const stars = []
     if (dsmmScore === 0) {
       stars.push(
-        <span key={42} className={styleMissingDSMM}>
+        <div key={42} className={styleMissingDSMM}>
           DSMM Rating Unavailable
-        </span>
+        </div>
       )
     }
     else {
@@ -54,56 +125,76 @@ class DSMMRating extends Component {
       }
     }
 
-    return (
-      <FlexRow
-        items={[
-          <FlexRow
-            key="dsmm-stars"
-            items={[
-              stars,
-              <span
-                key="dsmm-text-value"
-                style={{fontSize: '0px'}}
-              >{`${dsmmDesc} DSMM rating`}</span>,
-            ]}
-          />,
-          <Expandable
-            key="dsmm-info"
-            heading={
-              <div aria-label="DSMM info">
-                <SvgIcon path={info_circle} />
-              </div>
-            }
-            open={false}
-            content={
-              <div>
-                {' '}
-                This is the average DSMM rating of this collection. The{' '}
-                <A
-                  href="http://doi.org/10.2481/dsj.14-049"
-                  target="_blank"
-                  title="Data Stewardship Maturity Matrix Information"
-                >
-                  Data Stewardship Maturity Matrix (DSMM)
-                </A>{' '}
-                is a unified framework that defines criteria for the following
-                nine components based on measurable practices:
-                <ul>
-                  <li>Accessibility</li>
-                  <li>Data Integrity</li>
-                  <li>Data Quality Assessment</li>
-                  <li>Data Quality Assurance</li>
-                  <li>Data Quality Control Monitoring</li>
-                  <li>Preservability</li>
-                  <li>Production Sustainability</li>
-                  <li>Transparency Traceability</li>
-                  <li>Usability</li>
-                </ul>
-              </div>
-            }
-          />,
-        ]}
+    const styleInfoButtonMerged = {
+      ...styleInfoButton,
+      ...(this.state.focusingShowInfo ? styleInfoButtonFocused : {}),
+    }
+
+    const infoButton = (
+      <button
+        aria-label="DSMM info"
+        style={styleInfoButtonMerged}
+        aria-expanded={this.state.showInfo}
+        onClick={
+          this.state.showInfo ? this.handleHideInfo : this.handleShowInfo
+        }
+        onFocus={this.handleShowInfoFocus}
+        onBlur={this.handleShowInfoBlur}
+      >
+        <SvgIcon path={info_circle} size="1em" />
+        <span style={styleShowHideText}>
+          {this.state.showInfo ? 'hide ' : 'show '}info
+        </span>
+      </button>
+    )
+
+    const expandableInfo = (
+      <Expandable
+        key="dsmm-info"
+        open={this.state.showInfo}
+        content={
+          <div style={styleExpandableInfoContent}>
+            <p>The average DSMM rating of this collection is {dsmmDesc}.</p>
+            <p>
+              The{' '}
+              <A
+                href="http://doi.org/10.2481/dsj.14-049"
+                target="_blank"
+                title="Data Stewardship Maturity Matrix Information"
+              >
+                Data Stewardship Maturity Matrix (DSMM)
+              </A>{' '}
+              is a unified framework that defines criteria for the following
+              nine components based on measurable practices:
+              <ul>
+                <li>Accessibility</li>
+                <li>Data Integrity</li>
+                <li>Data Quality Assessment</li>
+                <li>Data Quality Assurance</li>
+                <li>Data Quality Control Monitoring</li>
+                <li>Preservability</li>
+                <li>Production Sustainability</li>
+                <li>Transparency Traceability</li>
+                <li>Usability</li>
+              </ul>
+            </p>
+          </div>
+        }
       />
+    )
+
+    return (
+      <div>
+        <FlexRow
+          key="dsmm-stars"
+          style={{marginBottom: '0.618em'}}
+          items={[
+            <div title={`${dsmmDesc} DSMM rating`}>{stars}</div>,
+            infoButton,
+          ]}
+        />
+        {expandableInfo}
+      </div>
     )
   }
 }
