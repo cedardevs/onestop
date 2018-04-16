@@ -24,53 +24,49 @@ class ETLIntegrationTests extends Specification {
   @Autowired
   private ETLService etlService
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.name}')
-  String STAGING_INDEX
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
+  String COLLECTION_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
-  private String SEARCH_INDEX
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.collection.name}')
+  String COLLECTION_STAGING_INDEX
 
-  @Value('${elasticsearch.index.search.collectionType}')
-  private String COLLECTION_TYPE
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.granule.name}')
+  String GRANULE_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.search.granuleType}')
-  private String GRANULE_TYPE
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
+  String GRANULE_STAGING_INDEX
+
+  private final String COLLECTION_TYPE = 'collection'
+  private final String GRANULE_TYPE = 'granule'
 
   void setup() {
-    elasticsearchService.dropStagingIndex()
-    elasticsearchService.dropSearchIndex()
+    elasticsearchService.dropStagingIndices()
+    elasticsearchService.dropSearchIndices()
     elasticsearchService.ensureIndices()
   }
 
   def 'update does nothing when staging is empty'() {
     when:
-    etlService.updateSearchIndex()
+    etlService.updateSearchIndices()
 
     then:
     noExceptionThrown()
 
     and:
-    documentsByType(SEARCH_INDEX).every({it.size() == 0})
+    documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX).every({it.size() == 0})
   }
 
-  def 'updating a new collection indexes a collection and a synthesized granule'() {
+  def 'updating a new collection indexes a collection'() {
     setup:
     insertMetadataFromPath('data/COOPS/C1.xml')
 
     when:
-    etlService.updateSearchIndex()
+    etlService.updateSearchIndices()
 
     then:
-    def indexed = documentsByType(SEARCH_INDEX)
+    def indexed = documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX)
     def collection = indexed[COLLECTION_TYPE][0]
     collection._source.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS'
-
-    and:
-    def granule = indexed[GRANULE_TYPE][0]
-    granule._id == collection._id
-    granule._source.fileIdentifier == collection._source.fileIdentifier
-    granule._source.parentIdentifier == collection._source.fileIdentifier
-    granule._source.internalParentIdentifier == collection._id
   }
 
   def 'updating an orphan granule indexes nothing'() {
@@ -78,7 +74,7 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    etlService.updateSearchIndex()
+    etlService.updateSearchIndices()
 
     then:
     indexedCollectionVersions().size() == 0
@@ -91,7 +87,7 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    etlService.updateSearchIndex()
+    etlService.updateSearchIndices()
 
     then:
     indexedCollectionVersions().keySet() == ['gov.noaa.nodc:NDBC-COOPS'] as Set
@@ -103,13 +99,13 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/C1.xml')
 
     when:
-    etlService.updateSearchIndex()
+    etlService.updateSearchIndices()
 
     then:
     indexedCollectionVersions()['gov.noaa.nodc:NDBC-COOPS'] == 1
 
     when: 'again!'
-    etlService.updateSearchIndex()
+    etlService.updateSearchIndices()
 
     then: 'no change'
     indexedCollectionVersions()['gov.noaa.nodc:NDBC-COOPS'] == 1
@@ -120,11 +116,11 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/C1.xml')
     insertMetadataFromPath('data/COOPS/G1.xml')
     insertMetadataFromPath('data/COOPS/G2.xml')
-    etlService.updateSearchIndex()
+    etlService.updateSearchIndices()
 
     when: 'touch one of the granules'
     insertMetadataFromPath('data/COOPS/G1.xml')
-    etlService.updateSearchIndex()
+    etlService.updateSearchIndices()
 
     then: 'only that granule is reindexed'
     indexedCollectionVersions()['gov.noaa.nodc:NDBC-COOPS'] == 1
@@ -132,50 +128,36 @@ class ETLIntegrationTests extends Specification {
     indexedGranuleVersions()['CO-OPS.NOS_8638614_201602_D1_v00'] == 2
   }
 
-  def 'touching a collection and updating reindexes that collection and its granules'() {
+  def 'touching a collection and updating reindexes only that granule'() {
     setup:
     insertMetadataFromPath('data/GHRSST/1.xml')
     insertMetadataFromPath('data/COOPS/C1.xml')
     insertMetadataFromPath('data/COOPS/G1.xml')
     insertMetadataFromPath('data/COOPS/G2.xml')
-    etlService.updateSearchIndex()
+    etlService.updateSearchIndices()
 
     when: 'touch the collection'
     insertMetadataFromPath('data/COOPS/C1.xml')
-    etlService.updateSearchIndex()
+    etlService.updateSearchIndices()
 
     then: 'the collection and both its granules are reindexed'
     def collections = indexedCollectionVersions()
     collections['gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'] == 1
     collections['gov.noaa.nodc:NDBC-COOPS'] == 2
     def granules = indexedGranuleVersions()
-    granules['gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'] == 1
-    granules['CO-OPS.NOS_8638614_201602_D1_v00'] == 2
-    granules['CO-OPS.NOS_9410170_201503_D1_v00'] == 2
+    granules['CO-OPS.NOS_8638614_201602_D1_v00'] == 1
+    granules['CO-OPS.NOS_9410170_201503_D1_v00'] == 1
   }
 
   def 'rebuild does nothing when staging is empty'() {
     when:
-    etlService.rebuildSearchIndex()
+    etlService.rebuildSearchIndices()
 
     then:
     noExceptionThrown()
 
     and:
-    documentsByType(SEARCH_INDEX).every({it.size() == 0})
-  }
-
-  def 'rebuilding with a collection indexes a collection and a synthesized granule'() {
-    setup:
-    insertMetadataFromPath('data/COOPS/C1.xml')
-
-    when:
-    etlService.rebuildSearchIndex()
-
-    then:
-    def indexed = documentsByType(SEARCH_INDEX)
-    indexed[COLLECTION_TYPE]*._source*.fileIdentifier == ['gov.noaa.nodc:NDBC-COOPS']
-    indexed[GRANULE_TYPE]*._source*.fileIdentifier == ['gov.noaa.nodc:NDBC-COOPS']
+    documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX).every({it.size() == 0})
   }
 
   def 'rebuilding with an orphan granule indexes nothing'() {
@@ -183,10 +165,10 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    etlService.rebuildSearchIndex()
+    etlService.rebuildSearchIndices()
 
     then:
-    documentsByType(SEARCH_INDEX).every({it.size() == 0})
+    documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX).every({it.size() == 0})
   }
 
   def 'rebuilding with a collection and granule indexes a collection and a granule'() {
@@ -195,9 +177,9 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    etlService.rebuildSearchIndex()
-    def staged = documentsByType(STAGING_INDEX)
-    def indexed = documentsByType(SEARCH_INDEX)
+    etlService.rebuildSearchIndices()
+    def staged = documentsByType(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX)
+    def indexed = documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX)
 
     then: // one collection and one granule are indexed
     indexed[COLLECTION_TYPE].size() == 1
@@ -210,16 +192,16 @@ class ETLIntegrationTests extends Specification {
 
     and: // the collection is the same as staging
     indexedCollection._id == stagedCollection._id
-    indexedCollection._source == stagedCollection._source
+    indexedCollection._source.fileIdentifier == stagedCollection._source.fileIdentifier
+    indexedCollection._source.doi == stagedCollection._source.doi
 
-    and: // the granule is the staged collection with fields overridden by the staged granule
+    and: // the granule is the same as staging
     indexedGranule._id == stagedGranule._id
-    def expectedGranule = stagedCollection._source +
-                          stagedGranule._source.findAll({k, v -> v}) +
-                          [internalParentIdentifier: stagedCollection._id]
-    indexedGranule._source.each { k, v ->
-      assert v == expectedGranule[k]
-    }
+    indexedGranule._source.fileIdentifier == stagedGranule._source.fileIdentifier
+    indexedGranule._source.parentIdentifier == stagedGranule._source.parentIdentifier
+
+    and: // the granule is connected to the collection
+    indexedGranule._source.internalParentIdentifier == indexedCollection._id
   }
 
   def 'rebuilding with an updated collection builds a whole new index'() {
@@ -228,17 +210,17 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/C1.xml')
     insertMetadataFromPath('data/COOPS/G1.xml')
     insertMetadataFromPath('data/COOPS/G2.xml')
-    etlService.rebuildSearchIndex()
+    etlService.rebuildSearchIndices()
 
     when: 'touch the collection'
     insertMetadataFromPath('data/COOPS/C1.xml')
-    etlService.rebuildSearchIndex()
-    def indexed = documentsByType(SEARCH_INDEX)
+    etlService.rebuildSearchIndices()
+    def indexed = documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX)
 
     then: 'everything has a fresh version in a new index'
     indexed[COLLECTION_TYPE].size() == 2
     indexed[COLLECTION_TYPE].every({it._version == 1})
-    indexed[GRANULE_TYPE].size() == 3
+    indexed[GRANULE_TYPE].size() == 2
     indexed[GRANULE_TYPE].every({it._version == 1})
   }
 
@@ -251,28 +233,28 @@ class ETLIntegrationTests extends Specification {
 
   private void insertMetadata(String document) {
     metadataIndexService.loadMetadata(document)
-    elasticsearchService.refresh(STAGING_INDEX)
+    elasticsearchService.refresh(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX)
   }
 
   private Map indexedCollectionVersions() {
-    indexedItemVersions(COLLECTION_TYPE)
+    indexedItemVersions(COLLECTION_SEARCH_INDEX)
   }
 
   private Map indexedGranuleVersions() {
-    indexedItemVersions(GRANULE_TYPE)
+    indexedItemVersions(GRANULE_SEARCH_INDEX)
   }
 
-  private Map documentsByType(String index) {
-    elasticsearchService.refresh(index)
-    def endpoint = "$index/_search"
+  private Map documentsByType(String collectionIndex, String granuleIndex) {
+    elasticsearchService.refresh(collectionIndex, granuleIndex)
+    def endpoint = "$collectionIndex,$granuleIndex/_search"
     def request = [version: true]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
-    return response.hits.hits.groupBy({it._type})
+    return response.hits.hits.groupBy({metadataIndexService.determineType(it._index)})
   }
 
-  private Map indexedItemVersions(String type) {
-    elasticsearchService.refresh(SEARCH_INDEX)
-    def endpoint = "$SEARCH_INDEX/$type/_search"
+  private Map indexedItemVersions(String index) {
+    elasticsearchService.refresh(index)
+    def endpoint = "$index/_search"
     def request = [
         version: true,
         _source: 'fileIdentifier'

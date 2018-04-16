@@ -10,25 +10,31 @@ import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.Response
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
 class ElasticsearchService {
 
-  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.name}')
-  private String SEARCH_INDEX
+  @Value('${elasticsearch.index.search.collection.name}')
+  private String COLLECTION_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.search.collectionType}')
-  private String COLLECTION_TYPE
+  @Value('${elasticsearch.index.search.granule.name}')
+  private String GRANULE_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.search.granuleType}')
-  private String GRANULE_TYPE
+  @Value('${elasticsearch.index.search.flattenedGranule.name}')
+  private String FLATTENED_GRANULE_SEARCH_INDEX
+
+  @Value('${elasticsearch.index.universal-type}')
+  private String TYPE
+
+  @Value('${elasticsearch.index.prefix:}')
+  private String PREFIX
 
   private SearchRequestParserService searchRequestParserService
 
   private RestClient restClient
-
 
   @Autowired
   ElasticsearchService(SearchRequestParserService searchRequestParserService, RestClient restClient) {
@@ -36,74 +42,151 @@ class ElasticsearchService {
     this.restClient = restClient
   }
 
-  Map search(Map searchParams) {
-    def response = queryElasticsearch(searchParams)
-    return response
+  Map searchFlattenedGranules(Map searchParams) {
+    return queryElasticsearch(searchParams, PREFIX+FLATTENED_GRANULE_SEARCH_INDEX)
   }
 
-  Map totalCounts() {
-    String collectionEndpoint = "/$SEARCH_INDEX/$COLLECTION_TYPE/_search"
-    HttpEntity collectionRequest = new NStringEntity(JsonOutput.toJson([
+  Map searchGranules(Map searchParams) {
+    return queryElasticsearch(searchParams, PREFIX+GRANULE_SEARCH_INDEX)
+  }
+
+  Map searchCollections(Map searchParams) {
+    return queryElasticsearch(searchParams, PREFIX+COLLECTION_SEARCH_INDEX)
+  }
+
+  Map getCollectionById(String id) {
+    def getCollection = getById(COLLECTION_SEARCH_INDEX, id)
+
+    if(getCollection.data) {
+      // get the total number of granules for this collection id
+      String granuleEndpoint = "/${PREFIX}${GRANULE_SEARCH_INDEX}/_search"
+      HttpEntity granuleRequest = new NStringEntity(JsonOutput.toJson([
+          query: [
+              term: [
+                  internalParentIdentifier: id
+              ]
+          ],
+          size : 0
+      ]), ContentType.APPLICATION_JSON)
+      def granuleResponse = restClient.performRequest("GET", granuleEndpoint, Collections.EMPTY_MAP, granuleRequest)
+      def totalGranulesForCollection = parseResponse(granuleResponse).hits.total
+
+      getCollection.meta = [
+          totalGranules: totalGranulesForCollection
+      ]
+    }
+
+    return getCollection
+  }
+
+  Map getGranuleById(String id) {
+    return getById(GRANULE_SEARCH_INDEX, id)
+  }
+
+  Map getFlattenedGranuleById(String id) {
+    return getById(FLATTENED_GRANULE_SEARCH_INDEX, id)
+  }
+
+  Map totalCollections() {
+    return totalCounts(COLLECTION_SEARCH_INDEX)
+  }
+
+  Map totalGranules() {
+    return totalCounts(GRANULE_SEARCH_INDEX)
+  }
+
+  Map totalFlattenedGranules() {
+    return totalCounts(FLATTENED_GRANULE_SEARCH_INDEX)
+  }
+
+  Map totalCounts(String index) {
+    String endpoint = "/${PREFIX}${index}/_search"
+    HttpEntity request = new NStringEntity(JsonOutput.toJson([
         query: [
             match_all: [:]
         ],
         size : 0
     ]), ContentType.APPLICATION_JSON)
-    def collectionResponse = restClient.performRequest("GET", collectionEndpoint, Collections.EMPTY_MAP, collectionRequest)
-
-    String granuleEndpoint = "/$SEARCH_INDEX/$GRANULE_TYPE/_search"
-    HttpEntity granuleRequest = new NStringEntity(JsonOutput.toJson([
-        query: [
-            bool: [
-                must: [
-                    script: [
-                        script: [
-                            inline: "String uid = doc['_uid'].value; int hashIndex = uid.indexOf('#'); String id = uid.substring(hashIndex + 1); doc['internalParentIdentifier'].value != id",
-                            lang  : "painless"
-                        ]
-                    ]
-                ]
-            ]
-        ],
-        size : 0
-    ]), ContentType.APPLICATION_JSON)
-    def granuleResponse = restClient.performRequest("GET", granuleEndpoint, Collections.EMPTY_MAP, granuleRequest)
+    def response = restClient.performRequest("GET", endpoint, Collections.EMPTY_MAP, request)
 
     return [
         data: [
             [
                 type : "count",
-                id   : "collection",
-                count: parseResponse(collectionResponse).hits.total
-            ],
-            [
-                type : "count",
-                id   : "granule",
-                count: parseResponse(granuleResponse).hits.total
+                id   : determineType(index),
+                count: parseResponse(response).hits.total
             ]
         ]
     ]
   }
 
-  private Map queryElasticsearch(Map params) {
+  private Map getById(String index, String id) {
+    String endpoint = "/${PREFIX}${index}/${TYPE}/${id}"
+    def response = parseResponse(restClient.performRequest('GET', endpoint))
+    def type = determineType(index)
+    if (response.found) {
+      return [
+          data: [[
+                     id        : response._id,
+                     type      : type,
+                     attributes: response._source
+                 ]]
+      ]
+    }
+    else {
+      return [
+          status: HttpStatus.NOT_FOUND.value(),
+          title : 'No such document',
+          detail: "Record type $type with Elasticsearch ID [ ${id} ] does not exist."
+      ]
+    }
+  }
+
+  private Map queryElasticsearch(Map params, String index) {
+    // TODO: does this parse step need to change based on new different endpoints?
     def query = searchRequestParserService.parseSearchQuery(params)
-    def getCollections = searchRequestParserService.shouldReturnCollections(params)
     def getFacets = params.facets as boolean
     def pageParams = params.page as Map
 
-    def requestBody = addAggregations(query, getFacets, getCollections)
-    return getCollections ? getCollectionResults(requestBody, pageParams) : getGranuleResults(requestBody, pageParams)
+    def requestBody = addAggregations(query, getFacets)
+
+    // default summary to true
+    def summary = params.summary == null ? true : params.summary as boolean
+    if(summary) {
+      requestBody = addSourceFilter(requestBody)
+    }
+
+    String searchEndpoint = "${index}/_search"
+
+    requestBody.size = pageParams?.max ?: 10
+    requestBody.from = pageParams?.offset ?: 0
+    requestBody = pruneEmptyElements(requestBody)
+
+    def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
+
+    def result = [
+        data: searchResponse.hits.hits.collect {
+          [id: it._id, type: determineType(it._index), attributes: it._source]
+        },
+        meta: [
+            took : searchResponse.took,
+            total: searchResponse.hits.total
+        ]
+    ]
+
+    def facets = prepareFacets(searchResponse)
+    if (facets) {
+      result.meta.facets = facets
+    }
+    return result
   }
 
-  private Map addAggregations(Map query, boolean getFacets, boolean getCollections) {
+  private Map addAggregations(Map query, boolean getFacets) {
     def aggregations = [:]
 
     if (getFacets) {
-      aggregations.putAll(searchRequestParserService.createGCMDAggregations(getCollections))
-    }
-
-    if (getCollections) {
-      aggregations.put("collections", searchRequestParserService.createCollectionsAggregation())
+      aggregations.putAll(searchRequestParserService.createGCMDAggregations())
     }
 
     def requestBody = [
@@ -113,79 +196,21 @@ class ElasticsearchService {
     return requestBody
   }
 
-  private Map getCollectionResults(Map requestBody, Map pageParams) {
-    requestBody.size = 0
-    requestBody = pruneEmptyElements(requestBody)
-
-    String searchEndpoint = "/$SEARCH_INDEX/$GRANULE_TYPE/_search"
-    def granuleRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
-    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, granuleRequest))
-
-    def totalCount = searchResponse.aggregations.collections.buckets.size()
-    if (!totalCount) {
-      return [
-          data: [],
-          meta: [
-              total: 0,
-              took : searchResponse.took
-          ]
-      ]
-    }
-
-    def offset = pageParams?.offset ?: 0
-    def max = pageParams?.max ?: 10
-
-    def collectionsToRetrieve = searchResponse.aggregations.collections.buckets
-        .stream()
-        .skip(offset)
-        .limit(max)
-        .map({ i -> i.key })
-        .collect()
-
-    def multiGetEndpoint = "/$SEARCH_INDEX/$COLLECTION_TYPE/_mget"
-    def multiGetRequest = new NStringEntity(JsonOutput.toJson([ids: collectionsToRetrieve]), ContentType.APPLICATION_JSON)
-    def multiGetResponse = parseResponse(restClient.performRequest("GET", multiGetEndpoint, Collections.EMPTY_MAP, multiGetRequest))
-    def result = [
-        data: multiGetResponse.docs.collect {
-          [id: it._id, type: it._type, attributes: it._source]
-        },
-        meta: [
-            total: totalCount,
-            took : searchResponse.took
-        ]
+  private Map addSourceFilter(Map requestBody) {
+    def sourceFilter = [
+        "internalParentIdentifier",
+        "title",
+        "thumbnail",
+        "spatialBounding",
+        "beginDate",
+        "beginYear",
+        "endDate",
+        "endYear",
+        "links",
+        "citeAsStatements"
     ]
-
-    def facets = prepareFacets(searchResponse, true)
-    if (facets) {
-      result.meta.facets = facets
-    }
-    return result
-  }
-
-  private Map getGranuleResults(Map requestBody, Map pageParams) {
-    requestBody.size = pageParams?.max ?: 10
-    requestBody.from = pageParams?.offset ?: 0
-    requestBody = pruneEmptyElements(requestBody)
-
-    String searchEndpoint = "/$SEARCH_INDEX/$GRANULE_TYPE/_search"
-    def granuleRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
-    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, granuleRequest))
-    def result = [
-        data: searchResponse.hits.hits.collect {
-          [id: it._id, type: it._type, attributes: it._source]
-        },
-        meta: [
-            took : searchResponse.took,
-            total: searchResponse.hits.total
-        ]
-    ]
-
-    def facets = prepareFacets(searchResponse, false)
-    if (facets) {
-      result.meta.facets = facets
-    }
-
-    return result
+    requestBody._source = sourceFilter
+    return requestBody
   }
 
   // TODO This really needs to be part of config that can change -- properly setup @RefreshScope beans & a Config Manager microservice...?
@@ -200,7 +225,7 @@ class ElasticsearchService {
       ]
   ]
 
-  private Map prepareFacets(Map searchResponse, boolean collections) {
+  private Map prepareFacets(Map searchResponse) {
     def aggregations = searchResponse.aggregations
     if (!aggregations) {
       return null
@@ -214,16 +239,16 @@ class ElasticsearchService {
       if (buckets) {
         hasFacets = true
       }
-      result[name] = cleanAggregation(topLevelKeywords, buckets, collections)
+      result[name] = cleanAggregation(topLevelKeywords, buckets)
     }
     return hasFacets ? result : null
   }
 
-  private Map cleanAggregation(List<String> topLevelKeywords, List<Map> originalAgg, boolean collections) {
+  private Map cleanAggregation(List<String> topLevelKeywords, List<Map> originalAgg) {
     def cleanAgg = [:]
     originalAgg.each { e ->
       def term = e.key
-      def count = collections ? e.byCollection.buckets.size() : e.doc_count
+      def count = e.doc_count
       if (!topLevelKeywords) {
         cleanAgg.put(term, [count: count])
       } else {
@@ -258,5 +283,20 @@ class ElasticsearchService {
   private Map pruneEmptyElements(Map requestBody) {
     def prunedRequest = requestBody.collectEntries { k, v -> [k, v instanceof Map ? pruneEmptyElements(v) : v]}.findAll { k, v -> v }
     return prunedRequest
+  }
+
+  private String determineType(String index) {
+
+    def parsedIndex = PREFIX ? index.replace(PREFIX, '') : index
+    def endPosition = parsedIndex.lastIndexOf('-')
+    parsedIndex = endPosition > 0 ? parsedIndex.substring(0, endPosition) : parsedIndex
+
+    def indexToTypeMap = [
+        (COLLECTION_SEARCH_INDEX)          : 'collection',
+        (GRANULE_SEARCH_INDEX)             : 'granule',
+        (FLATTENED_GRANULE_SEARCH_INDEX)   : 'flattened-granule'
+    ]
+
+    return indexToTypeMap[parsedIndex]
   }
 }

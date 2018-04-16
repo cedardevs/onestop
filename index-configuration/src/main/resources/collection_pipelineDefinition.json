@@ -1,0 +1,365 @@
+{
+  "description": "[RELEASE-DATE] Transforms and reduces fields from staging_collection to search_collection",
+  "version": 1,
+  "processors": [
+    {
+      "foreach": {
+        "field": "keywords",
+        "processor": {
+          "foreach": {
+            "field": "_ingest._value.values",
+            "processor": {
+              "append": {
+                "field": "keywordValues",
+                "value": [
+                  "{{_ingest._value}}"
+                ]
+              }
+            },
+            "on_failure": [
+              {
+                "append": {
+                  "field": "keywordValues",
+                  "value": [
+                    "{{_ingest._value.values}}"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "keywordValues",
+              "value": [
+                "{{keywords.values}}"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "foreach": {
+        "field": "contacts",
+        "processor": {
+          "append": {
+            "field": "individualNames",
+            "value": "{{_ingest._value.individualName}}"
+          }
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "individualNames",
+              "value": "{{contacts.individualName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "foreach": {
+        "field": "contacts",
+        "processor": {
+          "append": {
+            "field": "organizationNames",
+            "value": "{{_ingest._value.organizationName}}"
+          }
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "organizationNames",
+              "value": "{{contacts.organizationName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "foreach": {
+        "field": "creators",
+        "processor": {
+          "append": {
+            "field": "individualNames",
+            "value": "{{_ingest._value.individualName}}"
+          }
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "individualNames",
+              "value": "{{creators.individualName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "foreach": {
+        "field": "creators",
+        "processor": {
+          "append": {
+            "field": "organizationNames",
+            "value": "{{_ingest._value.organizationName}}"
+          }
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "organizationNames",
+              "value": "{{creators.organizationName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "foreach": {
+        "field": "publishers",
+        "processor": {
+          "append": {
+            "field": "individualNames",
+            "value": "{{_ingest._value.individualName}}"
+          }
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "individualNames",
+              "value": "{{publishers.individualName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "foreach": {
+        "field": "publishers",
+        "processor": {
+          "append": {
+            "field": "organizationNames",
+            "value": "{{_ingest._value.organizationName}}"
+          }
+        },
+        "on_failure": [
+          {
+            "append": {
+              "field": "organizationNames",
+              "value": "{{publishers.organizationName}}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "date": {
+        "field": "temporalBounding.beginDate",
+        "target_field": "beginDate",
+        "formats": ["ISO8601"],
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "beginYear",
+        "value": "{{temporalBounding.beginYear}}"
+      }
+    },
+    {
+      "convert": {
+        "field": "beginYear",
+        "type": "auto"
+      }
+    },
+    {
+      "date": {
+        "field": "temporalBounding.endDate",
+        "target_field": "endDate",
+        "formats": ["ISO8601"],
+        "ignore_failure": true
+      }
+    },
+    {
+      "set": {
+        "field": "endYear",
+        "value": "{{temporalBounding.endYear}}"
+      }
+    },
+    {
+      "convert": {
+        "field": "endYear",
+        "type": "auto"
+      }
+    },
+    {
+      "remove": {
+        "field": "parentIdentifier"
+      }
+    },
+    {
+      "remove": {
+        "field": "purpose"
+      }
+    },
+    {
+      "remove": {
+        "field": "status"
+      }
+    },
+    {
+      "remove": {
+        "field": "credit"
+      }
+    },
+    {
+      "remove": {
+        "field": "hierarchyLevelName"
+      }
+    },
+    {
+      "remove": {
+        "field": "alternateTitle"
+      }
+    },
+    {
+      "remove": {
+        "field": "keywords"
+      }
+    },
+    {
+      "remove": {
+        "field": "accessionValues"
+      }
+    },
+    {
+      "remove": {
+        "field": "topicCategories"
+      }
+    },
+    {
+      "remove": {
+        "field": "temporalBounding"
+      }
+    },
+    {
+      "remove": {
+        "field": "acquisitionInstruments"
+      }
+    },
+    {
+      "remove": {
+        "field": "acquisitionOperations"
+      }
+    },
+    {
+      "remove": {
+        "field": "acquisitionPlatforms"
+      }
+    },
+    {
+      "remove": {
+        "field": "contacts"
+      }
+    },
+    {
+      "remove": {
+        "field": "creators"
+      }
+    },
+    {
+      "remove": {
+        "field": "publishers"
+      }
+    },
+    {
+      "remove": {
+        "field": "thumbnailDescription"
+      }
+    },
+    {
+      "remove": {
+        "field": "creationDate"
+      }
+    },
+    {
+      "remove": {
+        "field": "revisionDate"
+      }
+    },
+    {
+      "remove": {
+        "field": "publicationDate"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmAccessibility"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmDataIntegrity"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmDataQualityAssessment"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmDataQualityAssurance"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmDataQualityControlMonitoring"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmPreservability"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmProductionSustainability"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmTransparencyTraceability"
+      }
+    },
+    {
+      "remove": {
+        "field": "dsmmUsability"
+      }
+    },
+    {
+      "remove": {
+        "field": "updateFrequency"
+      }
+    },
+    {
+      "remove": {
+        "field": "presentationForm"
+      }
+    },
+    {
+      "remove": {
+        "field": "services"
+      }
+    },
+    {
+      "rename": {
+        "field": "keywordValues",
+        "target_field": "keywords",
+        "ignore_missing": true
+      }
+    }
+  ]
+}

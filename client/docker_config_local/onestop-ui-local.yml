@@ -1,0 +1,16 @@
+---
+
+ui:
+  featured:
+    - title: GOES Data
+      searchTerm: GOES
+      imageUrl: "https://www.ncdc.noaa.gov/gridsat/images/sample.png"
+    - title: GHRSST
+      searchTerm: ghrsst
+      imageUrl: "https://zen-marketing-documentation.s3.amazonaws.com/docs/en/logo-small.png"
+    - title: Digital Elevation Models
+      searchTerm: '"digital elevation"'
+      imageUrl: "http://avatar.amuniversal.com/feature_avatars/recommendation_images/features/ga/large_rec-201701251556.jpg"
+    - title: NWLON and PORTS
+      searchTerm: +nwlon +ports
+      imageUrl: "https://www.garagetheatre.com/wp-content/uploads/2016/08/samsung-camera-phone-test-photos-768x564.jpg"

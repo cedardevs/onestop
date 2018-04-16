@@ -25,6 +25,7 @@ describe('The geoUtils', function () {
     geoUtils.findMaxRotations([[1070, 30], [1100, 45]]).should.equal(3)
     geoUtils.findMaxRotations([[350, 30], [380, 45]]).should.equal(1)
     geoUtils.findMaxRotations([[-10, 30], [20, 45]]).should.equal(0)
+    geoUtils.findMaxRotations([[-180, -90], [180, 90]]).should.equal(0)
     geoUtils.findMaxRotations([[-370, 30], [-340, 45]]).should.equal(-1)
     geoUtils.findMaxRotations([[-1090, 30], [-1060, 45]]).should.equal(-3)
   })
@@ -58,7 +59,7 @@ describe('The geoUtils', function () {
       const expected = {
         "type": "Polygon",
         coordinates: [
-          [[-218.358,43.540],[-218.358,55.147],[-154.374,55.147],[-154.374,43.540],[-218.358,43.540]]
+          [[141.642,43.540],[141.642,55.147],[205.626,55.147],[205.626,43.540],[141.642,43.540]]
         ]
       }
       const actual = geoUtils.recenterGeometry(input)

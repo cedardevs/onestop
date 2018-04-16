@@ -134,10 +134,10 @@ class SearchRequestParserServiceTest extends Specification {
             must  : [:],
             filter: [
                 [range: [
-                    'temporalBounding.beginDate': [lte: '2011-11-11']
+                    'beginDate': [lte: '2011-11-11']
                 ]],
                 [range: [
-                    'temporalBounding.endDate': [gte: '2010-10-10']
+                    'endDate': [gte: '2010-10-10']
                 ]]
             ]]
     ]
@@ -306,11 +306,18 @@ class SearchRequestParserServiceTest extends Specification {
 
   def 'Default GCMD aggregations are built for granules'() {
     when:
-    def aggsResult = requestParser.createGCMDAggregations(false)
+    def aggsResult = requestParser.createGCMDAggregations()
     def expectedAggs = [
         science       : [
             terms: [
                 field: 'gcmdScience',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        services       : [
+            terms: [
+                field: 'gcmdScienceServices',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
@@ -343,9 +350,23 @@ class SearchRequestParserServiceTest extends Specification {
                 order: ['_term': 'asc']
             ]
         ],
-        dataResolution: [
+        horizontalResolution: [
             terms: [
-                field: 'gcmdDataResolution',
+                field: 'gcmdHorizontalResolution',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        verticalResolution: [
+            terms: [
+                field: 'gcmdVerticalResolution',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        temporalResolution: [
+            terms: [
+                field: 'gcmdTemporalResolution',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]
@@ -358,21 +379,20 @@ class SearchRequestParserServiceTest extends Specification {
 
   def 'Default GCMD aggregations are built for collections'() {
     when:
-    def aggsResult = requestParser.createGCMDAggregations(true)
+    def aggsResult = requestParser.createGCMDAggregations()
     def expectedAggs = [
         science       : [
             terms       : [
                 field: 'gcmdScience',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
-            ],
-            aggregations: [
-                byCollection: [
-                    terms: [
-                        field: 'internalParentIdentifier',
-                        size : Integer.MAX_VALUE
-                    ]
-                ]
+            ]
+        ],
+        services       : [
+            terms       : [
+                field: 'gcmdScienceServices',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
             ]
         ],
         instruments   : [
@@ -380,14 +400,6 @@ class SearchRequestParserServiceTest extends Specification {
                 field: 'gcmdInstruments',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
-            ],
-            aggregations: [
-                byCollection: [
-                    terms: [
-                        field: 'internalParentIdentifier',
-                        size : Integer.MAX_VALUE
-                    ]
-                ]
             ]
         ],
         platforms     : [
@@ -395,14 +407,6 @@ class SearchRequestParserServiceTest extends Specification {
                 field: 'gcmdPlatforms',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
-            ],
-            aggregations: [
-                byCollection: [
-                    terms: [
-                        field: 'internalParentIdentifier',
-                        size : Integer.MAX_VALUE
-                    ]
-                ]
             ]
         ],
         projects      : [
@@ -410,14 +414,6 @@ class SearchRequestParserServiceTest extends Specification {
                 field: 'gcmdProjects',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
-            ],
-            aggregations: [
-                byCollection: [
-                    terms: [
-                        field: 'internalParentIdentifier',
-                        size : Integer.MAX_VALUE
-                    ]
-                ]
             ]
         ],
         dataCenters   : [
@@ -425,29 +421,27 @@ class SearchRequestParserServiceTest extends Specification {
                 field: 'gcmdDataCenters',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
-            ],
-            aggregations: [
-                byCollection: [
-                    terms: [
-                        field: 'internalParentIdentifier',
-                        size : Integer.MAX_VALUE
-                    ]
-                ]
             ]
         ],
-        dataResolution: [
+        horizontalResolution: [
             terms       : [
-                field: 'gcmdDataResolution',
+                field: 'gcmdHorizontalResolution',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
-            ],
-            aggregations: [
-                byCollection: [
-                    terms: [
-                        field: 'internalParentIdentifier',
-                        size : Integer.MAX_VALUE
-                    ]
-                ]
+            ]
+        ],
+        verticalResolution: [
+            terms       : [
+                field: 'gcmdVerticalResolution',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        temporalResolution: [
+            terms       : [
+                field: 'gcmdTemporalResolution',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
             ]
         ]
     ]

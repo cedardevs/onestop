@@ -1,301 +1,184 @@
 {
-  "fileIdentifier": "gov.noaa.ngdc.mgg.dem:4870",
-  "parentIdentifier": null,
-  "doi": null,
-  "title": "Mariana Trench Bathymetric Digital Elevation Model",
-  "alternateTitle": null,
-  "description": "NOAA's National Geophysical Data Center (NGDC) created a bathymetric digital elevation model (DEM) for the Mariana Trench and adjacent seafloor in the Western Pacific Ocean.\n                    Bathymetric data used in DEM compilation were obtained from various sources, including internation, federal and academic partners. The DEM is referenced to the horizontal datum of\n                    World Geodetic System 1984 (WGS 84) and the vertical datum of sea level. Grid spacings for the Mariana Trench DEM is 6 arc-seconds (~180 meters). Please note that while positive\n                    elevations (elevations greater than 0 meters) are present in the DEM over 'dry' land (i.e. islands such as Guam and the Northern Mariana Islands), they should be ignored as the\n                    focus of DEM development was solely in the bathymetric realm.",
   "keywords": [
-    "Bathymetric Digital Elevation Model",
-    "Gridded elevations",
-    "Mariana Trench",
-    "Pacific Ocean",
     "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
     "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
     "Oceans > Bathymetry/Seafloor Topography > Water Depth",
+    "DEM > Digital Elevation Model",
+    "ICSU-WDS > International Council for Science - World Data System",
+    "H: 100 meters - < 250 meters",
+    "V: 1 meter - < 10 meters",
+    "Bathymetric Digital Elevation Model",
+    "Gridded elevations",
     "Ocean > Pacific Ocean > Western Pacific Ocean",
     "Ocean > Pacific Ocean > Western Pacific Ocean > Guam",
     "Ocean > Pacific Ocean > Western Pacific Ocean > Micronesia > Northern Mariana Islands",
     "Vertical Location > Sea Floor",
-    "DEM > Digital Elevation Model",
-    "ICSU-WDS > International Council for Science - World Data System",
+    "Mariana Trench",
+    "Pacific Ocean",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+  ],
+  "endDate": "2011-12-31T00:00:00.000Z",
+  "dataFormats": [
+    {
+      "name": "ESRI ARC ASCII",
+      "version": "1"
+    }
+  ],
+  "beginYear": "1985",
+  "endYear": "2011",
+  "organizationNames": [
     "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
     "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
-    "H: 100 meters - < 250 meters",
-    "V: 1 meter - < 10 meters"
+    "Elliot Lim",
+    "Michael G. Sutherland",
+    "Dorothy Z. Friday",
+    "Barry W. Eakins",
+    "Susan J. McLean",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "NASA"
   ],
-  "topicCategories": [
-    "elevation"
+  "gcmdHorizontalResolution": [],
+  "largerWorks": [
+    {
+      "links": [{
+        "linkFunction": null,
+        "linkDescription": null,
+        "linkUrl": null,
+        "linkName": null,
+        "linkProtocol": null
+      }],
+      "title": "Mariana Trench Bathymetric Digital Elevation Model",
+      "date": "2008-10-31"
+    }
   ],
-  "gcmdScience": [
-    "Oceans",
-    "Oceans > Bathymetry/Seafloor Topography",
-    "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
-    "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
-    "Oceans > Bathymetry/Seafloor Topography > Water Depth"
+  "useLimitation": "Not to be used for navigation. Although these data are of high quality and useful for planning and modeling purposes, they are not suitable for navigation. For navigation, please refer to the NOS nautical chart series.Produced by the NOAA National Geophysical Data Center. Not subject to copyright protection within the United States.While every effort has been made to ensure that these data are accurate and reliable within the limits of the current state of the art, NOAA cannot assume liability for any damages caused by any errors or omissions in the data, nor as a result of the failure of the data to function on a particular system. NOAA makes no warranty, expressed or implied, nor does the fact of distribution constitute such a warranty.",
+  "links": [
+    {
+      "linkFunction": "download",
+      "linkDescription": "Download DEM, metadata and readme file.",
+      "linkUrl": "http://www.ngdc.noaa.gov/dem/squareCellGrid/getArchive/4870?gridFormat=ESRI+Arc+ASCII",
+      "linkName": "Mariana Trench Bathymetric Digital Elevation Model ASCII DEM",
+      "linkProtocol": null
+    },
+    {
+      "linkFunction": "information",
+      "linkDescription": "Information, preview and access DEM, metadata record and development report.",
+      "linkUrl": "http://www.ngdc.noaa.gov/dem/squareCellGrid/download/4870",
+      "linkName": "Mariana Trench Bathymetric Digital Elevation Model Homepage",
+      "linkProtocol": null
+    },
+    {
+      "linkFunction": "search",
+      "linkDescription": "Text search tool for locating completed and planned DEMs.",
+      "linkUrl": "http://www.ngdc.noaa.gov/dem/squareCellGrid/search",
+      "linkName": "DEM text search tool",
+      "linkProtocol": null
+    },
+    {
+      "linkFunction": "search",
+      "linkDescription": "Graphic geo-spatial search tool for locating completed and planned DEMs.",
+      "linkUrl": "http://www.ngdc.noaa.gov/dem/squareCellGrid/map",
+      "linkName": "Map Interface",
+      "linkProtocol": null
+    }
   ],
-  "gcmdLocations": [
-    "Ocean",
-    "Ocean > Pacific Ocean",
-    "Ocean > Pacific Ocean > Western Pacific Ocean",
-    "Ocean > Pacific Ocean > Western Pacific Ocean > Guam",
-    "Ocean > Pacific Ocean > Western Pacific Ocean > Micronesia",
-    "Ocean > Pacific Ocean > Western Pacific Ocean > Micronesia > Northern Mariana Islands",
-    "Vertical Location",
-    "Vertical Location > Sea Floor"
+  "stagedDate": 1519338342491,
+  "gcmdVerticalResolution": [],
+  "thumbnail": "http://www.ngdc.noaa.gov/dem/squareCellGrid/getGraphic/4870",
+  "individualNames": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
   ],
-  "gcmdInstruments": [
-  ],
-  "gcmdPlatforms": [
-    "DEM > Digital Elevation Model"
-  ],
+  "legalConstraints": [],
   "gcmdProjects": [
     "ICSU-WDS > International Council for Science - World Data System"
   ],
+  "gcmdLocations": [
+    "Ocean > Pacific Ocean > Western Pacific Ocean",
+    "Ocean > Pacific Ocean",
+    "Ocean",
+    "Ocean > Pacific Ocean > Western Pacific Ocean > Guam",
+    "Ocean > Pacific Ocean > Western Pacific Ocean > Micronesia > Northern Mariana Islands",
+    "Ocean > Pacific Ocean > Western Pacific Ocean > Micronesia",
+    "Vertical Location > Sea Floor",
+    "Vertical Location"
+  ],
+  "crossReferences": [
+    {
+      "links": [{
+        "linkFunction": null,
+        "linkDescription": null,
+        "linkUrl": null,
+        "linkName": null,
+        "linkProtocol": null
+      }],
+      "title": "Bathymetric Digital Elevation Model of the Mariana Trench",
+      "date": "2013-02-14"
+    }
+  ],
+  "doi": null,
+  "citeAsStatements": [],
+  "dsmmAverage": 0,
   "gcmdDataCenters": [
     "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
     "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
   ],
-  "gcmdDataResolution": [
-    "H: 100 meters - < 250 meters",
-    "V: 1 meter - < 10 meters"
-  ],
-  "temporalBounding": {
-    "beginDate": "1985-01-01",
-    "beginIndeterminate": null,
-    "endDate": "2011-12-31",
-    "endIndeterminate": null,
-    "instant": null,
-    "instantIndeterminate": null
-  },
+  "description": "NOAA's National Geophysical Data Center (NGDC) created a bathymetric digital elevation model (DEM) for the Mariana Trench and adjacent seafloor in the Western Pacific Ocean.                    Bathymetric data used in DEM compilation were obtained from various sources, including internation, federal and academic partners. The DEM is referenced to the horizontal datum of                    World Geodetic System 1984 (WGS 84) and the vertical datum of sea level. Grid spacings for the Mariana Trench DEM is 6 arc-seconds (~180 meters). Please note that while positive                    elevations (elevations greater than 0 meters) are present in the DEM over 'dry' land (i.e. islands such as Guam and the Northern Mariana Islands), they should be ignored as the                    focus of DEM development was solely in the bathymetric realm.",
+  "edition": "First",
   "spatialBounding": {
-    "type": "polygon",
     "coordinates": [
       [
         [
-          139.0,
-          10.0
+          139,
+          10
         ],
         [
-          150.0,
-          10.0
+          150,
+          10
         ],
         [
-          150.0,
-          22.0
+          150,
+          22
         ],
         [
-          139.0,
-          22.0
+          139,
+          22
         ],
         [
-          139.0,
-          10.0
+          139,
+          10
         ]
       ]
-    ]
+    ],
+    "type": "Polygon"
   },
+  "title": "Mariana Trench Bathymetric Digital Elevation Model",
+  "gcmdScienceServices": [],
+  "accessFeeStatement": null,
+  "gcmdInstruments": [],
+  "fileIdentifier": "gov.noaa.ngdc.mgg.dem:4870",
+  "gcmdTemporalResolution": [],
+  "orderingInstructions": null,
+  "gcmdPlatforms": [
+    "DEM > Digital Elevation Model"
+  ],
+  "beginDate": "1985-01-01T00:00:00.000Z",
   "isGlobal": false,
-  "acquisitionInstruments": [
-    {
-      "instrumentIdentifier": null,
-      "instrumentType": "Multibeam Swath Bathymetry System",
-      "instrumentDescription": null
-    },
-    {
-      "instrumentIdentifier": null,
-      "instrumentType": "Sound Navigation and Ranging",
-      "instrumentDescription": null
-    }
-  ],
-  "acquisitionOperations": [
-  ],
-  "acquisitionPlatforms": [
-    {
-      "platformIdentifier": "Digital Elevation Model",
-      "platformDescription": null,
-      "platformSponsor": [
-      ]
-    }
-  ],
-  "dataFormats": [
-    "ESRI ARC ASCII"
-  ],
-  "links": [
-    {
-      "linkName": "Mariana Trench Bathymetric Digital Elevation Model ASCII DEM",
-      "linkProtocol": null,
-      "linkUrl": "http://www.ngdc.noaa.gov/dem/squareCellGrid/getArchive/4870?gridFormat=ESRI+Arc+ASCII",
-      "linkDescription": "Download DEM, metadata and readme file.",
-      "linkFunction": "download"
-    },
-    {
-      "linkName": "Mariana Trench Bathymetric Digital Elevation Model Homepage",
-      "linkProtocol": null,
-      "linkUrl": "http://www.ngdc.noaa.gov/dem/squareCellGrid/download/4870",
-      "linkDescription": "Information, preview and access DEM, metadata record and development report.",
-      "linkFunction": "information"
-    },
-    {
-      "linkName": "DEM text search tool",
-      "linkProtocol": null,
-      "linkUrl": "http://www.ngdc.noaa.gov/dem/squareCellGrid/search",
-      "linkDescription": "Text search tool for locating completed and planned DEMs.",
-      "linkFunction": "search"
-    },
-    {
-      "linkName": "Map Interface",
-      "linkProtocol": null,
-      "linkUrl": "http://www.ngdc.noaa.gov/dem/squareCellGrid/map",
-      "linkDescription": "Graphic geo-spatial search tool for locating completed and planned DEMs.",
-      "linkFunction": "search"
-    }
-  ],
-  "contacts": [
-    {
-      "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
-    },
-    {
-      "individualName": null,
-      "organizationName": null,
-      "role": "resourceProvider"
-    },
-    {
-      "individualName": null,
-      "organizationName": "European Petroleum Survey Group",
-      "role": "publisher"
-    },
-    {
-      "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "publisher"
-    },
-    {
-      "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "publisher"
-    },
-    {
-      "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": null,
-      "role": null
-    },
-    {
-      "individualName": null,
-      "organizationName": "NASA",
-      "role": "publisher"
-    },
-    {
-      "individualName": null,
-      "organizationName": "Elliot Lim",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "Michael G. Sutherland",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "Dorothy Z. Friday",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "Barry W. Eakins",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "Susan J. McLean",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, Department of Commerce",
-      "role": "publisher"
-    },
-    {
-      "individualName": "Jesse Varner",
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
-    },
-    {
-      "individualName": "Barry W. Eakins",
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
-    },
-    {
-      "individualName": null,
-      "organizationName": "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "distributor"
-    },
-    {
-      "individualName": null,
-      "organizationName": "UNH/CCOM-JHC > Center for Ocean and Coastal Mapping/Joint Hydrographic Center, University of New Hampshire",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "UNH/CCOM-JHC > Center for Ocean and Coastal Mapping/Joint Hydrographic Center, University of New Hampshire",
-      "role": "distributor"
-    },
-    {
-      "individualName": null,
-      "organizationName": "DOD/USNAVY/USFLTFORCOM/NMOC/NAVOCEANO > Naval Oceanographic Office, Naval Meteorology and Oceanography Command, U.S. Fleet Forces Command, U.S. Navy, U.S. Department of Defense",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "Japanese Agency for Marine-Earth Science and Technology",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "Japanese Agency for Marine-Earth Science and Technology",
-      "role": "distributor"
-    },
-    {
-      "individualName": null,
-      "organizationName": "Japanese Coast Guard Hydrographic and Oceanographic Department",
-      "role": "originator"
-    },
-    {
-      "individualName": null,
-      "organizationName": "Japanese Coast Guard Hydrographic and Oceanographic Department",
-      "role": "distributor"
-    },
-    {
-      "individualName": "Kelly Carignan",
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
-    },
-    {
-      "individualName": "Anna Milan",
-      "organizationName": "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-      "role": "pointOfContact"
-    }
-  ],
-  "thumbnail": "http://www.ngdc.noaa.gov/dem/squareCellGrid/getGraphic/4870",
-  "modifiedDate": "2015-09-03",
-  "creationDate": null,
-  "revisionDate": null,
-  "publicationDate": "2013-02-14",
-  "dsmmAccessibility": 0,
-  "dsmmDataIntegrity": 0,
-  "dsmmDataQualityAssessment": 0,
-  "dsmmDataQualityAssurance": 0,
-  "dsmmDataQualityControlMonitoring": 0,
-  "dsmmPreservability": 0,
-  "dsmmProductionSustainability": 0,
-  "dsmmTransparencyTraceability": 0,
-  "dsmmUsability": 0,
-  "dsmmAverage": 0
+  "gcmdScience": [
+    "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
+    "Oceans > Bathymetry/Seafloor Topography",
+    "Oceans",
+    "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
+    "Oceans > Bathymetry/Seafloor Topography > Water Depth"
+  ]
 }

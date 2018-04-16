@@ -1,11 +1,31 @@
 import _ from 'lodash'
 import watch from 'redux-watch'
-import { push } from 'react-router-redux'
-import { encodeQueryString, decodeQueryString } from '../utils/queryUtils'
-import { triggerSearch, fetchGranules, clearCollections, clearGranules } from './SearchRequestActions'
-import { updateSearch, clearSelections } from './SearchParamActions'
-import { fetchConfig } from './ConfigActions'
-import { fetchInfo, fetchCounts } from './InfoActions'
+import {push} from 'react-router-redux'
+import {
+  encodeQueryString,
+  decodeQueryString,
+  decodeLocation,
+} from '../utils/queryUtils'
+import {
+  triggerSearch,
+  fetchGranules,
+  clearCollections,
+  clearGranules,
+  getCollection,
+} from './SearchRequestActions'
+import {
+  updateSearch,
+  clearSelections,
+  toggleSelection,
+} from './SearchParamActions'
+import {fetchConfig} from './ConfigActions'
+import {fetchInfo, fetchCounts} from './InfoActions'
+import {
+  isDetailPage,
+  isGranuleListPage,
+  getCollectionIdFromDetailPath,
+  getCollectionIdFromGranuleListPath,
+} from '../utils/urlUtils'
 import store from '../store'
 
 export const showCollections = (prefix = '') => {
@@ -15,54 +35,46 @@ export const showCollections = (prefix = '') => {
     if (!_.isEmpty(query)) {
       const locationDescriptor = {
         pathname: `${prefix}/collections`,
-        search: `?${query}`
+        search: `?${query}`,
       }
       dispatch(push(locationDescriptor))
     }
   }
 }
 
-export const showGranules = (prefix = '') => {
-  // this is only needed for the 508 site now
+export const showGranulesList = id => {
+  if (!id) {
+    return
+  }
   return (dispatch, getState) => {
     const query = encodeQueryString(getState())
-    if (!_.isEmpty(query)) {
-      const locationDescriptor = {
-        pathname: `${prefix}/collections/files`,
-        search: `?${query}`
-      }
-      dispatch(push(locationDescriptor))
+    const locationDescriptor = {
+      pathname: `collections/granules/${id}`,
+      search: `?${query}`,
     }
+    dispatch(push(locationDescriptor))
+  }
+}
+
+export const showDetails = id => {
+  if (!id) {
+    return
+  }
+  return (dispatch, getState) => {
+    const query = encodeQueryString(getState())
+    const locationDescriptor = {
+      pathname: `collections/details/${id}`,
+      search: _.isEmpty(query) ? null : `?${query}`,
+    }
+    dispatch(push(locationDescriptor))
   }
 }
 
 export const showHome = () => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(updateSearch())
     dispatch(push(`/`))
     dispatch(clearCollections())
-  }
-}
-
-export const TOGGLE_HELP = 'TOGGLE_HELP'
-export const toggleHelp = () => {
-  return {
-    type: TOGGLE_HELP
-  }
-}
-
-export const TOGGLE_ABOUT = 'TOGGLE_ABOUT'
-export const toggleAbout = () => {
-  return {
-    type: TOGGLE_ABOUT
-  }
-}
-
-export const SET_FOCUS = 'SET_FOCUS'
-export const setFocus = (id) => {
-  return {
-    type: SET_FOCUS,
-    id: id
   }
 }
 
@@ -71,44 +83,85 @@ export const toggleGranuleFocus = (id, bool) => {
   return {
     type: TOGGLE_GRANULE_FOCUS,
     id,
-    focused: bool
+    focused: bool,
   }
 }
 
 export const LOADING_SHOW = 'LOADING_SHOW'
 export const showLoading = () => {
   return {
-    type: LOADING_SHOW
+    type: LOADING_SHOW,
   }
 }
 
 export const LOADING_HIDE = 'LOADING_HIDE'
 export const hideLoading = () => {
   return {
-    type: LOADING_HIDE
+    type: LOADING_HIDE,
   }
 }
 
 export const TOGGLE_BACKGROUND_IMAGE = 'TOGGLE_BACKGROUND_IMAGE'
-const toggleBackgroundImage = (boolVisible) => {
+const toggleBackgroundImage = boolVisible => {
   return {
     type: TOGGLE_BACKGROUND_IMAGE,
-    visible: boolVisible
+    visible: boolVisible,
+  }
+}
+
+export const UPDATE_BOUNDS = 'UPDATE_BOUNDS'
+export const updateBounds = (to, source) => {
+  return {
+    type: UPDATE_BOUNDS,
+    to: to,
+    source: source,
   }
 }
 
 export const initialize = () => {
-  return (dispatch) => {
+  return dispatch => {
     dispatch(fetchConfig())
     dispatch(fetchInfo())
     dispatch(fetchCounts())
-    dispatch(loadData())
+  }
+}
+
+const loadFromUrl = (path, newQueryString) => {
+  // Note, collection queries are automatically updated by the URL because the query is parsed into search, which triggers loadData via a watch
+  if (
+    isDetailPage(path) &&
+    !store.getState().behavior.request.getCollectionInFlight
+  ) {
+    const detailId = getCollectionIdFromDetailPath(path)
+    store.dispatch(getCollection(detailId))
+  }
+  else if (isGranuleListPage(path)) {
+    const detailId = getCollectionIdFromGranuleListPath(path)
+    store.dispatch(clearSelections())
+    store.dispatch(toggleSelection(detailId))
+    store.dispatch(clearGranules())
+    store.dispatch(fetchGranules())
+  }
+  else {
+    if (newQueryString.indexOf('?') === 0) {
+      newQueryString = newQueryString.slice(1)
+    }
+    const searchFromQuery = decodeQueryString(newQueryString)
+    const searchFromState = _.get(store.getState(), 'behavior.search')
+    if (!_.isEqual(searchFromQuery, searchFromState)) {
+      store.dispatch(clearCollections())
+      store.dispatch(clearGranules())
+      store.dispatch(clearSelections())
+      store.dispatch(updateSearch(searchFromQuery))
+      store.dispatch(loadData())
+    }
   }
 }
 
 export const loadData = () => {
   return (dispatch, getState) => {
     const state = getState()
+
     const collectionsSelected = !_.isEmpty(state.behavior.search.selectedIds)
     const granulesLoaded = !_.isEmpty(state.domain.results.granules)
 
@@ -119,33 +172,14 @@ export const loadData = () => {
   }
 }
 
-// if the location query string changed and is out of sync with the query state,
-// update the query state and load collection/granule data as needed
-const applyNewQueryString = (newQueryString) => {
-  if (newQueryString.indexOf('?') === 0) {
-    newQueryString = newQueryString.slice(1)
-  }
-  const decodedQuery = decodeQueryString(newQueryString)
-  const searchFromQuery = _.get(decodedQuery, 'behavior.search')
-  const searchFromState = _.get(store.getState(), 'behavior.search')
-  if (!_.isEqual(searchFromQuery, searchFromState)) {
-    store.dispatch(clearCollections())
-    store.dispatch(clearGranules())
-    store.dispatch(clearSelections())
-    store.dispatch(updateSearch(searchFromQuery))
-    store.dispatch(loadData())
-  }
+const routingWatch = watch(
+  store.getState,
+  'behavior.routing.locationBeforeTransitions'
+)
+const routingUpdates = locationBeforeTransitions => {
+  loadFromUrl(
+    locationBeforeTransitions.pathname,
+    locationBeforeTransitions.search
+  )
 }
-
-const queryWatch = watch(store.getState, 'behavior.routing.locationBeforeTransitions.search')
-store.subscribe(queryWatch(applyNewQueryString))
-
-// Update background
-const updateBackground = (path) => {
-  store.dispatch(toggleBackgroundImage(
-      !(_.startsWith(path, '/508/') && path !== '/508/'
-          || _.startsWith(path, '508/') && path !== '508/'))) //Cover strange routing case. TODO: Regex test?
-}
-
-const pathWatch = watch(store.getState, 'behavior.routing.locationBeforeTransitions.pathname')
-store.subscribe(pathWatch(updateBackground))
+store.subscribe(routingWatch(routingUpdates))

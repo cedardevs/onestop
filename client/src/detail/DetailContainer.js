@@ -1,45 +1,25 @@
-import { connect } from 'react-redux'
-import { fetchGranules, clearGranules } from '../actions/SearchRequestActions'
-import { toggleSelection, clearSelections } from '../actions/SearchParamActions'
-// import { triggerSearch } from '../actions/SearchRequestActions'
-import { setFocus } from '../actions/FlowActions'
+import {connect} from 'react-redux'
+import {showGranulesList} from '../actions/FlowActions'
 import Detail from './Detail'
 
 const mapStateToProps = (state, reactProps) => {
-  const {focusedId} = state.ui.cardDetails
-  const focusedItem = state.domain.results.collections[focusedId]
-  // const { collections } = state.domain.results
-  // const geometry = focusedId && collections[focusedId] && collections[focusedId].spatialBounding || ''
+  const focusedItem = state.domain.results.collectionDetail
   return {
-    // geometry: geometry,
-    id: focusedId,
-    item: focusedItem,
+    id: focusedItem ? focusedItem.collection.id : null,
+    item: focusedItem ? focusedItem.collection.attributes : null,
+    totalGranuleCount: focusedItem ? focusedItem.totalGranuleCount : null,
+    loading: state.behavior.request.getCollectionInFlight,
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    dismiss: () => dispatch(setFocus(null)),
-    // textSearch: (text) => {
-    //   dispatch(setFocus(null))
-    //   dispatch(clearFacets())
-    //   dispatch(updateSearch())
-    //   dispatch(updateQuery(text))
-    //   dispatch(triggerSearch())
-    //   dispatch(showCollections())
-    // },
-    showGranules: (id) => {
-      dispatch(clearSelections())
-      dispatch(toggleSelection(id))
-      dispatch(clearGranules())
-      dispatch(fetchGranules())
-    }
+    navigateToGranules: id => {
+      dispatch(showGranulesList(id))
+    },
   }
 }
 
-const DetailContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Detail)
+const DetailContainer = connect(mapStateToProps, mapDispatchToProps)(Detail)
 
 export default DetailContainer

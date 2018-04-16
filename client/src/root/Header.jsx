@@ -1,103 +1,116 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
-import stopCircle from 'fa/stop-circle-o.svg'
-import A from '../common/link/Link'
-import styles from './header.css'
+import Logo from './Logo'
+import HeaderLink from './HeaderLink'
+import {boxShadow} from '../common/defaultStyles'
 
-const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
-const nceiLogo = require('../../img/ncei_dark_test_75.png')
+import FlexRow from '../common/FlexRow'
+
+const styleHeader = {
+  backgroundColor: '#222C37',
+  padding: '1em',
+  boxShadow: boxShadow,
+}
+
+const styleHeaderFlexRow = {
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+  alignItems: 'flex-end',
+}
+
+const styleNav = {
+  flex: '1',
+  minWidth: '17em',
+  display: 'flex',
+  justifyContent: 'flex-end',
+  marginTop: '1em',
+}
+
+const styleLinkList = {
+  padding: 0,
+  margin: 0,
+  listStyleType: 'none',
+  fontSize: '1.5em',
+  display: 'inline-flex',
+  justifyContent: 'center',
+  flexWrap: 'wrap',
+}
+
+const styleLinkListItem = (firstItem, lastItem) => {
+  return {
+    padding: lastItem
+      ? '0 0 0 0.309em'
+      : firstItem ? '0 0.309em 0 0' : '0 0.309em 0 0.309em',
+    borderRight: !lastItem ? '1px solid white' : 0,
+  }
+}
 
 class Header extends React.Component {
   constructor(props) {
     super(props)
-    this.toggleBurgerMenu = this.toggleBurgerMenu.bind(this)
-    this.state = {menuOpen: false}
-  }
-
-  toggleBurgerMenu() {
-    this.setState({menuOpen: !this.state.menuOpen})
   }
 
   render() {
-    const burgerToggle = <div className={styles.burgerToggle}>
-      <input type="checkbox" checked={this.state.menuOpen} onChange={this.toggleBurgerMenu} aria-hidden="true"/>
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-    const menuContent = <ul role="menubar">
-      <button title="Home" onClick={() => location.href = this.props.homeUrl}>Home</button>
-      <button title="About" onClick={() => this.props.toggleAbout()}>About</button>
-      <button title="Help" onClick={() => this.props.toggleHelp()}>Help</button>
-      {this.getMainOr508Link()}
-      <button title='Previous Data Catalog' onClick={() => location.href = '//data.noaa.gov/dataset'}>Previous Catalog
-      </button>
-    </ul>
-    const menu = <nav className={styles.headerLinks} aria-label="Main Navigation">{menuContent}</nav>
+    const menuContent = (
+      <ul style={styleLinkList}>
+        <li style={styleLinkListItem(true, false)}>
+          <HeaderLink title="Home" to="/">
+            Home
+          </HeaderLink>
+        </li>
+        <li style={styleLinkListItem(false, false)}>
+          <HeaderLink title="About Us" to="/about">
+            About Us
+          </HeaderLink>
+        </li>
+        <li style={styleLinkListItem(false, true)}>
+          <HeaderLink title="Help" to="/help">
+            Help
+          </HeaderLink>
+        </li>
+      </ul>
+    )
 
-    return <header className={`${styles.headerArea}`}>
-      <div className={styles.headerRow}>
-        <div className={styles.orgBox}>
-          {this.renderLogo()}
-        </div>
-        <div className={styles.searchBox}>
-          {this.props.showSearch ? <SearchFieldsContainer header={true}/> : <div></div>}
-        </div>
-        <div className={styles.standardMenu} role="navigation">
-          {menu}
-        </div>
-      </div>
-      <div className={styles.burgerMenu} role="navigation">
-        {burgerToggle}
-        <div className={`${styles.menuContainer} ${this.state.menuOpen ? styles.menuOpen : ''}`}>
-          <div className={`${styles.section} ${this.state.menuOpen ? '' : styles.collapsed}`}>
-            {menu}
-          </div>
-        </div>
-      </div>
-    </header>
-  }
+    const insignia = (
+      <Logo
+        key="insignia"
+        onClick={this.props.goHome}
+        style={{flex: '0 0 275px'}}
+      />
+    )
 
-  getMainOr508Link() {
-    const lHref = `${new RegExp(/^.*\//).exec(window.location.href)}`
-    let linkTitle = 'Main Site'
-    let siteLink = `${lHref.slice(0, lHref.indexOf('#') + 2)}`
-    if (window.location.href.indexOf('508') === -1) {
-      siteLink = `${siteLink}508/`
-      linkTitle = 'Accessible Site'
-    }
-    return <button title={linkTitle} onClick={() => location.href = siteLink}> {linkTitle}</button>
-  }
+    const search = this.props.showSearch ? (
+      <SearchFieldsContainer key="search" />
+    ) : null
 
-  renderLogo() {
-    if (this.props.showSearch) {
-      return <div>
-        <A href="http://www.noaa.gov" title="NOAA Home">
-          <img className={styles.noaaLogo} id='logo' alt="NOAA Logo" src={noaaLogo}/>
-        </A>
-        <a href="#" title="One Stop Home" className={styles.oneStopLink} onClick={() => this.props.goHome()}>
-          <img src={stopCircle} className={styles.stopCircle}></img>neStop
-        </a>
-      </div>
-    }
-    else {
-      return <a href="//www.ncei.noaa.gov/" title="NCEI Home">
-        <img className={styles.nceiLogo} alt="NCEI Logo" src={nceiLogo}/>
-      </a>
-    }
+    const menu = (
+      <nav key="menu" aria-label="Main" style={styleNav}>
+        {menuContent}
+      </nav>
+    )
+
+    return (
+      <header style={styleHeader}>
+        <FlexRow
+          style={styleHeaderFlexRow}
+          items={[
+            <FlexRow key="insignia-and-search" items={[ insignia, search ]} />,
+            menu,
+          ]}
+        />
+      </header>
+    )
   }
 }
 
 Header.propTypes = {
   showSearch: PropTypes.bool.isRequired,
   goHome: PropTypes.func.isRequired,
-  toggleHelp: PropTypes.func.isRequired,
-  toggleAbout: PropTypes.func.isRequired
 }
 
 Header.defaultProps = {
-  showSearch: true
+  showSearch: true,
 }
 
 export default Header

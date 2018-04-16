@@ -1,10 +1,44 @@
 import React from 'react'
-import style from './error.css'
+import Button from '../common/input/Button'
+import {boxShadow} from '../common/defaultStyles'
 import _ from 'lodash'
 
 const defaultError = {
   title: 'Sorry, something has gone wrong',
-  detail: 'Looks like something has gone wrong on our end. Please try again later.'
+  detail:
+    'Looks like something has gone wrong on our end. Please try again later.',
+}
+
+const styleError = {
+  backgroundColor: '#E74C3C',
+  margin: '1.618em',
+  padding: '2em',
+  boxShadow: boxShadow,
+}
+
+const styleErrorHeading = {
+  margin: '0 0 0.618em 0',
+  padding: 0,
+}
+
+const styleErrorDescription = {
+  margin: '0 0 1.618em 0',
+  padding: 0,
+}
+
+const styleActions = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+}
+
+const styleHomeButton = {
+  color: '#000',
+  background: '#e6e6e6',
+}
+
+const styleHomeButtonHover = {
+  color: '#000',
+  background: 'linear-gradient(#e6e6e6, #b6b6b6)',
 }
 
 class Error extends React.Component {
@@ -22,21 +56,20 @@ class Error extends React.Component {
 
   extractErrors(props) {
     return _.chain(this.getErrorsArray(props.errors))
-        .map(this.normalizeError)
-        .uniqWith((a, b) => a.title === b.title && a.detail === b.detail)
-        .value()
+      .map(this.normalizeError)
+      .uniqWith((a, b) => a.title === b.title && a.detail === b.detail)
+      .value()
   }
 
   getErrorsArray(errors) {
-    console.log("errors:", errors)
     if (_.isArray(errors) && errors.length > 0) {
       return errors
     }
     else if (_.isObject(errors)) {
-      return [errors]
+      return [ errors ]
     }
     else {
-      return [defaultError]
+      return [ defaultError ]
     }
   }
 
@@ -57,23 +90,26 @@ class Error extends React.Component {
   }
 
   render() {
-    return <div className="pure-g">
-      <div className="pure-u-md-1-4"></div>
-      <div className={`pure-u-md-1-2 pure-u-1 ${style.messageContainer}`}>
+    return (
+      <div style={styleError}>
         {this.errors.map((error, i) => {
-          return <div key={i}>
-            <h2>{error.title}</h2>
-            <p>{error.detail}</p>
-          </div>
+          return (
+            <div key={i}>
+              <h2 style={styleErrorHeading}>{error.title}</h2>
+              <p style={styleErrorDescription}>{error.detail}</p>
+            </div>
+          )
         })}
-        <div>
-          <button className={`pure-button ${style.homeButton}`} onClick={this.goHome}>Start a New Search</button>
-          {/* back behavior doesn't execute search again, ends up showing empty results page */}
-          {/*<button className={`pure-button ${style.backButton}`} onClick={this.goBack}>Go Back</button>*/}
+        <div style={styleActions}>
+          <Button
+            text="Start a New Search"
+            onClick={this.goHome}
+            style={styleHomeButton}
+            styleHover={styleHomeButtonHover}
+          />
         </div>
       </div>
-      <div className="pure-u-md-1-4"></div>
-    </div>
+    )
   }
 }
 

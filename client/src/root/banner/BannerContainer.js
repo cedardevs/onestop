@@ -1,7 +1,7 @@
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import Banner from './Banner'
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return state.domain.config.banner ? state.domain.config.banner : {}
 }
 

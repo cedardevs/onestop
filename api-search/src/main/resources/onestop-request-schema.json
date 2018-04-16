@@ -20,6 +20,10 @@
       "description": "Flag to request counts of results by GCMD keywords in addition to results. Defaults to false if not provided.",
       "type": "boolean"
     },
+    "summary": {
+      "description": "Flag to request summary of search results instead of full set of attributes. Defaults to true if not provided.",
+      "type": "boolean"
+    },
     "page": {
       "description": "Pagination of results",
       "type": "object",
@@ -139,8 +143,9 @@
           ]
         },
         "name": {
-          "description": "One of the GCMD keyword categories: science, instruments, platforms, projects, dataCenters, dataResolution.",
-          "type": "string"
+          "description": "One of the GCMD keyword categories: science, services, instruments, platforms, projects, dataCenters, horizontalResolution, verticalResolution, temporalResolution.",
+          "type": "string",
+          "enum": ["science", "services", "instruments", "platforms", "projects", "dataCenters", "horizontalResolution", "verticalResolution", "temporalResolution"]
         },
         "values": {
           "description": "Exact match GCMD keyword(s), e.g., \"Atmosphere > Atmospheric Temperature > Surface Temperature\"",
@@ -192,7 +197,7 @@
           "$ref": "#/definitions/Geometry"
         },
         "relation": {
-          "description": "How the dataset geometry relates to the given geometry, e.g., return all datasets whose geometry contains the given point.",
+          "description": "How the dataset geometry relates to the given geometry, e.g., return all datasets whose geometry contains the given point. Defaults to 'intersects'.",
           "enum": [
             "contains",
             "disjoint",

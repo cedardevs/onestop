@@ -3,10 +3,8 @@
 "type": "collection",
 "attributes": {
     "fileIdentifier": "gov.super.important:PARENT-ID",
-    "parentIdentifier": null,
     "doi": "doi:10.5072/FK2TEST",
     "title": "Important Organization's Important File's Super Important Title",
-    "alternateTitle": "Still (But Slightly Less) Important Alternate Title",
     "description": "Wall of overly detailed, super informative, extra important text.",
     "keywords": [
         "SIO > Super Important Organization",
@@ -21,9 +19,8 @@
         "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
         "Liquid Earth > This Keyword > Is Invalid"
     ],
-    "topicCategories": [
-        "environment",
-        "oceans"
+    "gcmdScienceServices": [
+
     ],
     "gcmdScience": [
         "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
@@ -60,17 +57,18 @@
     "gcmdDataCenters": [
         "SIO > Super Important Organization"
     ],
-    "gcmdDataResolution": [
+    "gcmdHorizontalResolution": [
 
     ],
-    "temporalBounding": {
-        "beginDate": "2005-05-09",
-        "beginIndeterminate": null,
-        "endDate": null,
-        "endIndeterminate": "now",
-        "instant": null,
-        "instantIndeterminate": null
-    },
+    "gcmdVerticalResolution": [
+
+    ],
+    "gcmdTemporalResolution": [
+
+    ],
+    "beginDate": "2005-05-09T00:00:00.000Z",
+    "beginYear": 2005,
+    "endYear": "",
     "spatialBounding": {
         "type": "Polygon",
         "coordinates": [
@@ -99,35 +97,23 @@
         ]
     },
     "isGlobal": true,
-    "acquisitionInstruments": [
-        {
-            "instrumentIdentifier": "SII > Super Important Instrument",
-            "instrumentType": "sensor",
-            "instrumentDescription": "The Super Important Organization's (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system."
-        }
-    ],
-    "acquisitionOperations": [
-        {
-            "operationDescription": null,
-            "operationIdentifier": "Super Important Project",
-            "operationStatus": null,
-            "operationType": null
-        }
-    ],
-    "acquisitionPlatforms": [
-        {
-            "platformIdentifier": "TS-18 > TumbleSat-18",
-            "platformDescription": "The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.",
-            "platformSponsor": [
-                "Super Important Organization",
-                "Other (Kind Of) Important Organization"
-            ]
-        }
-    ],
     "dataFormats": [
-        "NETCDF",
-        "CSV",
-        "ASCII"
+        {
+            "name": "NETCDF",
+            "version": "classic"
+        },
+        {
+            "name": "CSV",
+            "version": null
+        },
+        {
+            "name": "ASCII",
+            "version": null
+        },
+        {
+            "name": "NETCDF",
+            "version": "4"
+        }
     ],
     "links": [
         {
@@ -138,52 +124,47 @@
             "linkFunction": "search"
         }
     ],
-    "contacts": [
-        {
-            "individualName": null,
-            "organizationName": "Super Important Organization",
-            "role": "custodian"
-        },
-        {
-            "individualName": null,
-            "organizationName": "Super Important Organization",
-            "role": "publisher"
-        },
-        {
-            "individualName": "John Smith",
-            "organizationName": "University of Awesome",
-            "role": "pointOfContact"
-        },
-        {
-            "individualName": null,
-            "organizationName": "Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)",
-            "role": "custodian"
-        },
-        {
-            "individualName": null,
-            "organizationName": "Super Important Organization",
-            "role": "sponsor"
-        },
-        {
-            "individualName": null,
-            "organizationName": "Other (Kind Of) Important Organization",
-            "role": "sponsor"
-        }
+    "individualNames": [
+        "John Smith",
+        ""
+    ],
+    "organizationNames": [
+        "University of Awesome",
+        "Super Important Organization"
     ],
     "thumbnail": "https://www.example.com/exportImage?soCool=yes&format=png",
-    "modifiedDate": "2016-12-25T11:12:13",
-    "creationDate": null,
-    "revisionDate": "2011-01-02",
-    "publicationDate": "2010-11-15",
-    "dsmmAccessibility": 4,
-    "dsmmDataIntegrity": 0,
-    "dsmmDataQualityAssessment": 2,
-    "dsmmDataQualityAssurance": 3,
-    "dsmmDataQualityControlMonitoring": 1,
-    "dsmmPreservability": 5,
-    "dsmmProductionSustainability": 4,
-    "dsmmTransparencyTraceability": 2,
-    "dsmmUsability": 3,
+    "citeAsStatements": [
+
+    ],
+    "crossReferences": [
+        {
+            "title": "[TITLE OF PUBLICATION]",
+            "date": "9999-01-01",
+            "links": [
+                {
+                "linkName": null,
+                "linkProtocol": null,
+                "linkUrl": "HTTPS://WWW.EXAMPLE.COM",
+                "linkDescription": "[DESCRIPTION OF URL]",
+                "linkFunction": "information"
+                }
+            ]
+        }
+    ],
+    "largerWorks": [
+        {
+            "title": "[TITLE OF PROJECT]",
+            "date": "9999-10-10",
+            "links": []
+        }
+    ],
+    "useLimitation": null,
+    "legalConstraints": [
+
+    ],
+    "accessFeeStatement": null,
+    "orderingInstructions": null,
+    "edition": null,
     "dsmmAverage": 2.6666666667,
     "stagedDate": null
   }

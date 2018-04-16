@@ -33,8 +33,9 @@ describe('The search action', () => {
         request: {collectionInFlight: false}
       },
       domain: {
-        config: {
-          apiHost: testingRoot
+        api: {
+          host: testingRoot,
+          path: '/onestop/',
         },
         results: {
           collectionsPageOffset: 0
@@ -74,8 +75,9 @@ describe('The search action', () => {
         request: {collectionInFlight: false}
       },
       domain: {
-        config: {
-          apiHost: testingRoot
+        api: {
+          host: testingRoot,
+          path: '/onestop/',
         },
         results: {
           collectionsPageOffset: 0
@@ -165,7 +167,7 @@ describe('The granule actions', function () {
   afterEach(nock.cleanAll)
 
   const testingRoot = 'http://localhost:9090'
-  const searchEndpoint = '/onestop/api/search'
+  const searchEndpoint = '/onestop/api/search/granule'
   const successResponse = {
     data: [{
       type: 'granule',
@@ -194,8 +196,9 @@ describe('The granule actions', function () {
         }
       },
       domain: {
-        config: {
-          apiHost: testingRoot
+        api: {
+          host: testingRoot,
+          path: '/onestop/',
         },
         results: {
           collectionsPageOffset: 0
@@ -233,8 +236,9 @@ describe('The granule actions', function () {
         }
       },
       domain: {
-        config: {
-          apiHost: testingRoot
+        api: {
+          host: testingRoot,
+          path: '/onestop/',
         },
         results: {
           collectionsPageOffset: 0

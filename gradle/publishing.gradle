@@ -9,12 +9,13 @@ ext {
   bintrayUser = System.getenv('BINTRAY_USER')
   bintrayKey = System.getenv('BINTRAY_KEY')
   travisBuildNumber = System.getenv('TRAVIS_BUILD_NUMBER')
-  baseVersion = version
+  isNotSnapshot = !System.getenv('TRAVIS_BUILD_NUMBER') || System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean
 }
 
-// only publish snapshot versions
-version = version += '-SNAPSHOT'
-
+// if not a release, publish snapshot versions
+if (!isNotSnapshot) {
+  version = version += '-SNAPSHOT'
+}
 
 artifactory {
   contextUrl = 'https://oss.jfrog.org'
@@ -37,7 +38,10 @@ artifactoryPublish {
   dependsOn 'generatePomFileForMainPublication'
 }
 
-publish.dependsOn artifactoryPublish
+publish {
+  dependsOn 'artifactoryPublish'
+  finalizedBy ':publish'
+}
 
 //bintray {
 //  user = System.getenv('BINTRAY_USER')

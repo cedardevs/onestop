@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '1.5.8.RELEASE'
+    springBootVersion = '2.0.0.RELEASE'
   }
   repositories {
     maven {
@@ -8,28 +8,68 @@ buildscript {
     }
   }
   dependencies {
-    classpath 'com.gradle:build-scan-plugin:1.9'
-    classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1'
-    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.7.0"
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-    classpath 'com.wiredforcode:gradle-spawn-plugin:0.6.0'
-    classpath 'com.moowork.gradle:gradle-node-plugin:0.13'
-    classpath 'org.owasp:dependency-check-gradle:2.1.1'
+    classpath 'com.wiredforcode:gradle-spawn-plugin:0.8.0'
+    classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
+    classpath 'org.owasp:dependency-check-gradle:3.1.1'
+    classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
   }
+}
+
+plugins {
+  id "com.jfrog.bintray" version "1.8.0"
+  id "com.jfrog.artifactory" version "4.7.0"
+  id 'com.gradle.build-scan' version '1.12.1'
+  id "io.spring.dependency-management" version "1.0.4.RELEASE"
 }
 
 ext {
   esVersion = '5.5.3'
+  // isRelease used by docker plugin as well
+  isRelease = System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean
+  springCloudVersion = 'Finchley.M7'
 }
 
 subprojects {
   project.ext {
     esVersion = "${project.esVersion}"
-    groovyVersion = '2.4.12'
+    groovyVersion = '2.4.14'
     spockVersion = '1.1-groovy-2.4'
+    testContainersVersion = '1.5.1'
   }
 
   afterEvaluate {
+    repositories {
+      mavenCentral()
+      maven { url "https://repo.spring.io/milestone" }
+    }
+
+      // override versions of dependencies with vulnerabilities
+    configurations.all {
+      resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
+          if (details.requested.version.startsWith('2.9') && details.requested.version < '2.9.5') {
+            details.useVersion '2.9.5'
+            details.because 'fixes vulnerability in 2.9.x before 2.9.5'
+          }
+        }
+      }
+    }
+
+    dependencyManagement {
+      imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+      }
+    }
+
+    if (project.plugins.hasPlugin('org.cedar.dockerplugin')) {
+      docker {
+        username = System.getenv('DOCKER_USER')
+        password = System.getenv('DOCKER_PASSWORD')
+      }
+    }
+
     if (project.plugins.hasPlugin('java')) {
       project.apply plugin: 'org.owasp.dependencycheck'
 
@@ -46,17 +86,19 @@ subprojects {
         // report, so I think it's safe(ish) to ignore the error.
         failOnError = false
       }
+
     }
+
   }
+
 }
 
-task promote(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
+task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
+  onlyIf { isRelease }
   executable = "bash"
   args = ["-c", "curl -X POST -u \"\$BINTRAY_USER:\$BINTRAY_KEY\" -H \"Content-Length: 0\"" +
-    "http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version\""]
+    " http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version"]
 }
-
-apply plugin: 'com.gradle.build-scan'
 
 group = 'org.cedar.onestop'
 
@@ -101,6 +143,16 @@ task dockerComposeBackendStart(type: Exec, description: 'Runs intrastructure and
 task dockerComposeBackendStop(type: Exec, description: 'Stops intrastructure and api modules needed to run the client.', group: 'docker', dependsOn: [":dockerComposeInfraStop"]) {
   executable = "bash"
   args = ["-c", "docker-compose stop api-metadata api-search"]
+}
+
+task dockerComposeKibanaStart(type: Exec, description: 'Runs Kibana.', group: 'docker') {
+  executable = "bash"
+  args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d kibana"]
+}
+
+task dockerComposeKibanaStop(type: Exec, description: 'Stops Kibana.', group: 'docker') {
+  executable = "bash"
+  args = ["-c", "docker-compose stop kibana"]
 }
 
 task dockerComposeClean(type: Exec, description: 'Stops and removes the entire system of docker containers', group: 'docker') {

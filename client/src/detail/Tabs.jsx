@@ -1,18 +1,21 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import FlexRow from '../common/FlexRow'
+import {Key} from '../utils/keyboardUtils'
+import {fontFamilySerif} from '../utils/styleUtils'
 
-// <TabButton>
-
-const styleTabButton = (active, first = false) => {
+const styleTabButton = (active, first = false, last = false) => {
   return {
     display: 'flex',
     flexGrow: 1,
-    border: active ? '1px solid #3E7BAD' : '1px solid #444',
-    borderBottom: active ? '0' : '1px solid #3E7BAD',
-    color: '#F9F9F9',
-    backgroundColor: active ? '#111' : '#222',
+    marginRight: last ? 0 : '1px',
+    fontSize: '0.8em',
+    color: active ? '#000131' : 'white',
+    backgroundColor: active ? 'white' : '#6e91b2',
+    textAlign: 'center',
+    border: `1px solid ${active ? 'gray' : '#F0F0F2'}`,
     borderRadius: '0.618em 0.618em 0 0',
-    textAlign: 'center'
+    borderBottom: active ? 'none' : 'initial',
+    outline: 'none',
   }
 }
 
@@ -22,68 +25,149 @@ const styleTabButtonInput = () => {
   }
 }
 
-const styleTabButtonLabel = active => {
+const styleTabButtonLabel = {
+  width: '100%',
+  height: '100%',
+  fontSize: '1.4em',
+  padding: '0.618em',
+  cursor: 'pointer',
+  fontFamily: fontFamilySerif(),
+}
+
+const styleFocusDefault = (focused, active) => {
   return {
-    width: '100%',
-    height: '100%',
-    fontWeight: active ? 'bold' : 'normal',
-    fontSize: '1.3em',
-    padding: '0.618em',
-    textDecoration: active ? 'underline' : 'none',
-    cursor: 'pointer'
+    padding: '0.105em 0.309em',
+    outline: focused
+      ? active ? '2px dashed #6e91b2' : '2px dashed white'
+      : 'none',
   }
 }
 
 class TabButton extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      focusing: false,
+    }
+  }
+
+  handleClick = event => {
+    event.preventDefault()
+    this.handleChange()
+  }
+
+  handleChange = event => {
+    this.props.onChange({currentTarget: {value: this.props.value}})
+  }
+
+  handleKeyPressed = e => {
+    if (e.keyCode === Key.SPACE) {
+      e.preventDefault() // prevent scrolling down on space press
+      this.handleChange()
+    }
+    if (e.keyCode === Key.ENTER) {
+      this.handleChange()
+    }
+  }
+  handleKeyDown = e => {
+    const tabControlKeys = [ Key.SPACE, Key.ENTER ]
+    if (
+      !e.metaKey &&
+      !e.shiftKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      tabControlKeys.includes(e.keyCode)
+    ) {
+      e.preventDefault()
+    }
+  }
+
+  handleFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
+  }
+
+  handleBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+      }
+    })
+  }
+
   render() {
-    const {first, title, value, active, onChange} = this.props
-    const tabID = `${title} - ${value}`
+    const {
+      first,
+      last,
+      title,
+      value,
+      active,
+      onChange,
+      tabWrapperId,
+      tabContentId,
+      tabId,
+    } = this.props
+    const tabIndex = 0
+    const styleFocused = styleFocusDefault(this.state.focusing, active)
 
     return (
-        <div style={styleTabButton(active, first)}>
-          <input
-              style={styleTabButtonInput()}
-              id={tabID}
-              type="radio"
-              name={title}
-              value={value}
-              checked={active}
-              onChange={onChange}
-          />
-          <label style={styleTabButtonLabel(active)} htmlFor={tabID}>
-            {this.props.title}
-          </label>
-        </div>
+      <div
+        role="tab"
+        style={styleTabButton(active, first, last)}
+        aria-selected={active}
+        aria-controls={tabContentId}
+        tabIndex={tabIndex}
+        onKeyUp={this.handleKeyPressed}
+        onKeyDown={this.handleKeyDown}
+        onClick={this.handleClick}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        id={tabWrapperId}
+      >
+        <input
+          style={styleTabButtonInput()}
+          id={tabId}
+          type="radio"
+          name={title}
+          value={value}
+          checked={active}
+          onChange={onChange}
+        />
+        <label style={styleTabButtonLabel} htmlFor={tabId}>
+          <span style={styleFocused}>{title}</span>
+        </label>
+      </div>
     )
   }
 }
 
-// <TabButton/>
-
-// <Tabs>
-
-const styleTabs = {}
+const styleTabs = {
+  margin: '1.618em 0 0 0',
+  fontWeight: 'normal',
+  fontSize: '1em',
+}
 
 const styleTabButtons = {
   flexWrap: 'nowrap',
   flexShrink: 0,
   position: 'sticky',
   top: '0',
-  width: '100%',
+  // width: 'fit-content',  // if enabled: tabs only take up the space they need (instead of full page width)
   justifyContent: 'space-between',
 }
 
-const styleContent = {
-  border: '1px solid #3E7BAD',
-  borderTopWidth: '0',
-  backgroundColor: "#111",
-  padding: "1.618em"
+const styleContentDefault = {
+  borderTop: '1px solid gray',
 }
 
 export default class Tabs extends Component {
   constructor(props) {
     super(props)
-    this.handleChange = this.handleChange.bind(this)
   }
 
   componentWillMount() {
@@ -106,8 +190,7 @@ export default class Tabs extends Component {
     }
   }
 
-  handleChange(event) {
-    const index = Number(event.currentTarget.value)
+  updateCurrentTab = index => {
     if (this.props.data[index].action) {
       this.props.data[index].action()
     }
@@ -119,38 +202,71 @@ export default class Tabs extends Component {
     })
   }
 
+  handleChange = event => {
+    const index = Number(event.currentTarget.value)
+    this.updateCurrentTab(index)
+  }
+
   render() {
-    const {data} = this.props
+    const {data, styleContent} = this.props
+
+    const styleContentMerged = {
+      ...styleContentDefault,
+      ...styleContent,
+    }
     let tabButtons = []
     let tabContent = null
+    let tabContentLabelledBy = null
+    // let tabId = null
+    let tabContentId = 'no-tab-content'
     if (data) {
       data.forEach((tab, index) => {
         let active = false
+        let tabId = `${tab.title}-${index}`
+        let tabPanelId
         if (index === this.state.activeIndex) {
           active = true
           tabContent = tab.content
+          tabContentLabelledBy = `${tabId}-wrapper`
+          tabPanelId = `${tabId}-content`
         }
         tabButtons.push(
-            <TabButton
-                key={index}
-                first={index === 0}
-                title={tab.title}
-                value={index}
-                active={active}
-                onChange={this.handleChange}
-            />,
+          <TabButton
+            key={index}
+            first={index === 0}
+            last={index + 1 === data.length}
+            title={tab.title}
+            tabId={tabId}
+            tabWrapperId={tabContentLabelledBy}
+            tabContentId={tabPanelId}
+            value={index}
+            active={active}
+            onChange={this.handleChange}
+          />
         )
       })
     }
     return (
-        <div style={styleTabs}>
-          <FlexRow items={tabButtons} style={styleTabButtons}/>
-          <div style={styleContent}>
-            {tabContent}
-          </div>
+      <div>
+        <h2 style={styleTabs}>
+          <FlexRow
+            rowId="details-tablist"
+            tabIndex="-1"
+            role="tablist"
+            items={tabButtons}
+            style={styleTabButtons}
+          />
+        </h2>
+
+        <div
+          role="tabpanel"
+          id={tabContentId}
+          aria-labelledby={tabContentLabelledBy}
+          style={styleContentMerged}
+        >
+          {tabContent}
         </div>
+      </div>
     )
   }
 }
-
-// <Tabs/>

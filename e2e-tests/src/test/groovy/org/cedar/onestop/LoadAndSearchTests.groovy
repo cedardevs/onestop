@@ -18,7 +18,7 @@ class LoadAndSearchTests extends Specification {
 
   @Shared
   @ClassRule
-  DockerComposeContainer docker = new DockerComposeContainer(new File("../docker-compose.yml"))
+  DockerComposeContainer docker = new DockerComposeContainer(new File("src/test/resources/docker-compose-e2e.yml"))
       .withLocalCompose(true)
       .withPull(false)
 
@@ -31,8 +31,8 @@ class LoadAndSearchTests extends Specification {
     def pollingConditions = new PollingConditions()
     pollingConditions.within(60, {
       restTemplate.exchange(RequestEntity.get(esApiBase.toURI()).build(), Map).statusCode == HttpStatus.OK
-      restTemplate.exchange(RequestEntity.get("${searchApiBase}/info".toURI()).build(), Map).statusCode == HttpStatus.OK
-      restTemplate.exchange(RequestEntity.get("${metadataApiBase}/info".toURI()).build(), Map).statusCode == HttpStatus.OK
+      restTemplate.exchange(RequestEntity.get("${searchApiBase}/actuator/info".toURI()).build(), Map).statusCode == HttpStatus.OK
+      restTemplate.exchange(RequestEntity.get("${metadataApiBase}/actuator/info".toURI()).build(), Map).statusCode == HttpStatus.OK
     })
   }
 
@@ -74,29 +74,33 @@ class LoadAndSearchTests extends Specification {
     then:
     updateResult.statusCode == HttpStatus.OK
 
-    sleep(2000) // to ensure the ETL finishes
+    sleep(60000) // to ensure the ETL finishes
 
     when:
-    def searchRequst = RequestEntity.post("${searchApiBase}/search".toURI())
+    def refreshRequest = RequestEntity.post("${esApiBase}/_refresh".toURI()).build()
+    restTemplate.exchange(refreshRequest, Map)
+    def searchRequest = RequestEntity.post("${searchApiBase}/search/collection".toURI())
         .contentType(MediaType.APPLICATION_JSON)
-        .body('{"queries":[{ "type": "queryText", "value": "temperature OR elevation"}]}')
-    def searchResult = restTemplate.exchange(searchRequst, Map)
+        .body('{"queries":[{ "type": "queryText", "value": "temperature OR elevation"}],"summary": false}')
+    def searchResult = restTemplate.exchange(searchRequest, Map)
+    def collectionData = searchResult.body.data
 
     then:
     searchResult.statusCode == HttpStatus.OK
-    searchResult.body.data.size() == 7
-    def coopsCollection = searchResult.body.data.find({ it.attributes.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS' })
+    collectionData.size() == 7
+    def coopsCollection = collectionData.find({ it.attributes.fileIdentifier == 'gov.noaa.nodc:NDBC-COOPS' })
     coopsCollection?.id instanceof String
 
     when:
-    def granuleRequst = RequestEntity.post("${searchApiBase}/search".toURI())
+    def granuleRequest = RequestEntity.post("${searchApiBase}/search/granule".toURI())
         .contentType(MediaType.APPLICATION_JSON)
-        .body('{"filters":[{"type":"collection", "values":["' + coopsCollection.id + '"]}]}')
-    def granuleResult = restTemplate.exchange(granuleRequst, Map)
+        .body('{"filters":[{"type":"collection", "values":["' + coopsCollection.id + '"]}],"summary": false}')
+    def granuleResult = restTemplate.exchange(granuleRequest, Map)
+    def granuleData = granuleResult.body.data
 
     then:
     granuleResult.statusCode == HttpStatus.OK
-    granuleResult.body.data.size() == 2
+    granuleData.size() == 2
 
     when:
     def deleteRequest = RequestEntity.delete("${metadataApiBase}/metadata/${coopsCollection.id}".toURI()).build()
@@ -105,10 +109,11 @@ class LoadAndSearchTests extends Specification {
     then:
     deleteResult.statusCode == HttpStatus.OK
 
-    sleep(2000) // to ensure the delete finishes
+    sleep(10000) // to ensure the delete finishes
 
     when:
-    def searchResult2 = restTemplate.exchange(searchRequst, Map)
+    restTemplate.exchange(refreshRequest, Map)
+    def searchResult2 = restTemplate.exchange(searchRequest, Map)
 
     then:
     searchResult2.statusCode == HttpStatus.OK
@@ -116,7 +121,7 @@ class LoadAndSearchTests extends Specification {
     searchResult2.body.data.every({ it.attributes.fileIdentifier != 'gov.noaa.nodc:NDBC-COOPS' })
 
     when:
-    def granuleResult2 = restTemplate.exchange(granuleRequst, Map)
+    def granuleResult2 = restTemplate.exchange(granuleRequest, Map)
 
     then:
     granuleResult2.statusCode == HttpStatus.OK
@@ -142,13 +147,15 @@ class LoadAndSearchTests extends Specification {
     loadResult.statusCode == HttpStatus.MULTI_STATUS
     updateResult.statusCode == HttpStatus.OK
 
-    sleep(2000) // to ensure the ETL finishes
+    sleep(10000) // to ensure the ETL finishes
 
     when:
-    def searchRequst = RequestEntity.post("${searchApiBase}/search".toURI())
+    def refreshRequest = RequestEntity.post("${esApiBase}/_refresh".toURI()).build()
+    restTemplate.exchange(refreshRequest, Map)
+    def searchRequest = RequestEntity.post("${searchApiBase}/search/collection".toURI())
         .contentType(MediaType.APPLICATION_JSON)
-        .body('{"queries":[{ "type": "queryText", "value": "super"}]}')
-    def searchResult = restTemplate.exchange(searchRequst, Map)
+        .body('{"queries":[{ "type": "queryText", "value": "super"}],"summary": false}')
+    def searchResult = restTemplate.exchange(searchRequest, Map)
 
     then:
     searchResult.statusCode == HttpStatus.OK

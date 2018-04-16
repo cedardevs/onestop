@@ -1,73 +1,87 @@
 import _ from 'lodash'
+import Immutable from 'seamless-immutable'
 
-const buildHierarchyMap = (category, terms) => {
-  const createChildrenHierarchy = (map, hierarchy, term, value) => {
-    const lastTerm = hierarchy.pop()
-    if (!_.isEmpty(hierarchy)) {
-      let i
-      for (i = 0; i < hierarchy.length; i++) {
-        // Since hierarchical strings are received in alphabetical order, this traversal
-        // down the nested object won't error out
-        //_.defaults(map, map[hierarchy[i]].children)
-        map = map[hierarchy[i]].children = map[hierarchy[i]].children || {}
-      }
+const hierarchy = (category, facets) => {
+  const reducer = (map, facet) => {
+    const termHierarchy = facet.termHierarchy
+    const facetMap = {
+      id: facet.id,
+      children: [],
+      parent: map[termHierarchy.length].id,
     }
-
-    map = map[lastTerm] = value
+    map[termHierarchy.length + 1] = facetMap
+    map[termHierarchy.length].children.push(facetMap)
     return map
   }
-
-  let categoryMap = {}
-
-  Object.keys(terms).map(term => {
-    let hierarchy = term.split(' > ')
-    const value = {
-      count: terms[term].count,
-      children: {},
-      category: category,
-      term: term
-    }
-
-    createChildrenHierarchy(categoryMap, hierarchy, term, value)
-  })
-
-  return categoryMap
+  let initState = {}
+  initState[0] = {id: null, children: []}
+  return facets.reduce(reducer, initState)[0].children
 }
 
-export const buildKeywordHierarchyMap = facetMap => {
-  const hierarchyMap = {}
-  _.map(facetMap, (terms, category) => {
-    if (!_.isEmpty(terms)) { // Don't load categories that have no results
-      let heading
-      let categoryMap = {}
-
-      if (category === 'science') {
-        heading = 'Data Theme'
-        categoryMap = buildHierarchyMap(category, terms)
-      }
-      else {
-        heading = _.startCase(_.toLower((category.split(/(?=[A-Z])/).join(" "))))
-        Object.keys(terms).map(term => {
-          const name = term.split(' > ')
-          categoryMap[name[0]] = {
-            count: terms[term].count,
-            children: {},
-            category: category,
-            term: term
-          }
-        })
-      }
-
-      hierarchyMap[heading] = categoryMap
-    }
-  })
-
-  return hierarchyMap
+const id = (category, term) => {
+  const idParts = _.concat(_.words(category), _.words(term))
+  return idParts.join('-')
 }
 
-// pulls out the last term in a GCMD-style keyword and attempts to
-export const titleCaseKeyword = term => {
-  if (!term) { return null }
-  const trimmed = term.split('>').pop().trim()
-  return (trimmed === trimmed.toUpperCase()) ? _.startCase(trimmed.toLowerCase()) : trimmed
+const buildTermHierarchy = (term, isHierarchy) => {
+  if (isHierarchy) {
+    return term.split(' > ')
+  }
+  return [ term.split(' > ').pop() ]
+}
+
+const buildFacet = (category, term, count, selected, isHierarchy) => {
+  const termHierarchy = buildTermHierarchy(term, isHierarchy)
+  return Immutable({
+    count: count,
+    category: category,
+    term: term,
+    id: id(category, term),
+    selected: selected,
+    termHierarchy: termHierarchy,
+    keyword: termHierarchy.pop(),
+  })
+}
+
+const categoryName = category => {
+  if (category === 'science') {
+    return 'Data Theme'
+  }
+  return _.startCase(_.toLower(category.split(/(?=[A-Z])/).join(' ')))
+}
+
+const determineIfHierarchy = category => {
+  return category === 'science' || category === 'services'
+}
+
+const facets = (category, terms, selectedFacets) => {
+  const selectedTerms = selectedFacets[category]
+
+  return _.map(terms, (data, term) => {
+    let selected = selectedTerms ? selectedTerms.includes(term) : false
+    return buildFacet(
+      category,
+      term,
+      data.count,
+      selected,
+      determineIfHierarchy(category)
+    )
+  })
+}
+
+export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
+  return _.map(facetMap, (terms, category) => {
+    if (!_.isEmpty(terms)) {
+      // Don't load categories that have no results
+      const keywordFacets = facets(category, terms, selectedFacets)
+      return {
+        name: categoryName(category),
+        id: categoryName(category).replace(' ', '-', 'g'),
+        keywordFacets: keywordFacets,
+        hierarchy: Immutable(hierarchy(category, keywordFacets)),
+      }
+    }
+  }).filter(facetCategory => {
+    return facetCategory
+  }) // remove undefined?
 }

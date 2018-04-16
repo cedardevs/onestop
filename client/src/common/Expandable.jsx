@@ -1,69 +1,88 @@
-import React, { Component } from 'react'
+import React from 'react'
+import AnimateHeight from 'react-animate-height'
+import {Key} from '../utils/keyboardUtils'
 
-const style = {}
+const ANIMATION_DURATION = 200
 
-const styleHeading = {
-  display: 'flex',
-  textAlign: 'left',
-  alignItems: 'center',
-  color: '#FFFFFF',
-  cursor: 'pointer',
+const styleHeadingDefault = (open, borderRadius) => {
+  const borderRadiusEffective = open
+    ? `${borderRadius} ${borderRadius} 0 0`
+    : `${borderRadius}`
+
+  return {
+    display: 'flex',
+    textAlign: 'left',
+    alignItems: 'center',
+    color: '#FFFFFF',
+    cursor: 'pointer',
+    borderRadius: borderRadius ? borderRadiusEffective : 'none',
+    borderBottom: 0,
+    outline: 'none', // focus is shown on an interior element instead
+    transition: `border-radius ${ANIMATION_DURATION}ms ease`,
+  }
 }
-
-const styleHeadingShown = {}
-
-const styleHeadingHidden = {
-  borderBottom: 0,
-}
-
-const styleHeadingContent = {}
 
 const styleArrow = {
-  userSelect: 'none'
+  userSelect: 'none',
 }
 
-const styleContent = {
-  textAlign: 'left',
-  overflow: 'hidden',
+const styleContentDefault = (open, display, borderRadius) => {
+  const borderRadiusContentOpen = `0 0 ${borderRadius} ${borderRadius}`
+
+  return {
+    textAlign: 'left',
+    borderRadius: borderRadius ? borderRadiusContentOpen : 'none',
+  }
 }
 
-const styleContentShown = {
-  maxHeight: '10000px',
-  transition: 'max-height 1.25s ease-in',
+const styleFocusDefault = (open, borderRadius) => {
+  const borderRadiusEffective = open
+    ? `${borderRadius} 0 0 0`
+    : `${borderRadius} 0 0 ${borderRadius}`
+
+  return {
+    outline: '2px dashed white',
+    borderRadius: borderRadius ? borderRadiusEffective : 'none',
+  }
 }
 
-const styleContentHidden = {
-  maxHeight: 0,
-  transition: 'max-height 1.25s ease-out',
-  transitionDelay: '-1s',
-}
-
-export default class Expandable extends Component {
+export default class Expandable extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      open: props.open,
+      open: props.open || false,
       showArrow: props.showArrow,
+      focusing: false,
+      display: props.open ? 'block' : 'none',
     }
-
-    this.handleClick = this.handleClick.bind(this)
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.open !== this.state.open) {
-      this.setState({
-        ...this.state,
-        open: nextProps.open,
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          open: !!nextProps.open,
+        }
       })
     }
   }
 
-  handleClick() {
+  toggle = () => {
+    const {onToggle, value, disabled} = this.props
+
+    if (disabled) {
+      return
+    }
+
     this.setState(prevState => {
       const newOpen = !prevState.open
-      if (this.props.onToggle) {
-        this.props.onToggle({open: newOpen, value: this.props.value})
+
+      // if provided, tell the caller of expandable we're updating the open state
+      if (onToggle) {
+        onToggle({open: newOpen, value: value})
       }
+
       return {
         ...prevState,
         open: newOpen,
@@ -71,46 +90,129 @@ export default class Expandable extends Component {
     })
   }
 
+  handleClick = event => {
+    event.preventDefault()
+    this.toggle()
+  }
+
+  handleKeyPressed = e => {
+    if (e.keyCode === Key.SPACE) {
+      e.preventDefault() // prevent scrolling down on space press
+      this.toggle()
+    }
+    if (e.keyCode === Key.ENTER) {
+      this.toggle()
+    }
+  }
+
+  handleFocus = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
+    })
+  }
+
+  handleBlur = e => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+      }
+    })
+  }
+
+  handleAnimationStart = open => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        display: 'block',
+      }
+    })
+  }
+
+  handleAnimationEnd = open => {
+    if (!open) {
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          display: 'none',
+        }
+      })
+    }
+  }
+
   render() {
-    const arrow = this.props.showArrow ? (
-        this.state.open ? (
-            <span>&nbsp;&#9660;</span>
-        ) : (
-            <span>&nbsp;&#9654;</span>
-        )
+    const {
+      showArrow,
+      styleFocus,
+      styleWrapper,
+      styleHeading,
+      heading,
+      styleContent,
+      content,
+      borderRadius,
+    } = this.props
+    const {open, display, focusing} = this.state
+
+    const arrow = showArrow ? open ? (
+      <span>&nbsp;&#9660;</span>
+    ) : (
+      <span>&nbsp;&#9654;</span>
     ) : null
 
-    const styleHeadingHide = this.state.open
-        ? styleHeadingShown
-        : styleHeadingHidden
-    const styleContentVisibility = this.state.open
-        ? styleContentShown
-        : styleContentHidden
+    const ariaHidden = display === 'none'
+    const tabbable = !(this.props.tabbable === false)
+    const tabIndex = tabbable ? '0' : '-1'
+    const role = tabbable ? 'button' : undefined
+    const ariaExpanded = tabbable ? open : undefined
+
+    const stylesHeadingMerged = {
+      ...styleHeadingDefault(open, borderRadius),
+      ...styleHeading,
+    }
+
+    const styleFocused = {
+      ...(focusing
+        ? {...styleFocusDefault(open, borderRadius), ...styleFocus}
+        : {}),
+    }
+
+    const styleContentMerged = {
+      ...styleContentDefault(open, display, borderRadius),
+      ...styleContent,
+    }
 
     return (
-        <div style={style}>
-          <div
-              style={{
-                ...styleHeading,
-                ...this.props.styleHeading,
-                ...styleHeadingHide,
-              }}
-              onClick={this.handleClick}
-          >
-            <div style={styleHeadingContent}>{this.props.heading}</div>
-            <div style={styleArrow}>{arrow}</div>
-          </div>
-
-          <div
-              style={{
-                ...styleContent,
-                ...this.props.styleContent,
-                ...styleContentVisibility,
-              }}
-          >
-            {this.props.content}
+      <div style={styleWrapper}>
+        <div
+          style={stylesHeadingMerged}
+          onClick={this.handleClick}
+          onKeyDown={this.handleKeyPressed}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          tabIndex={tabIndex}
+          role={role}
+          aria-expanded={ariaExpanded}
+        >
+          <div style={styleFocused}>{heading}</div>
+          <div aria-hidden="true" style={styleArrow}>
+            {arrow}
           </div>
         </div>
+
+        <div style={styleContentMerged} aria-hidden={ariaHidden}>
+          <AnimateHeight
+            duration={ANIMATION_DURATION}
+            height={open ? 'auto' : 0}
+            onAnimationStart={() => this.handleAnimationStart(open)}
+            onAnimationEnd={() => this.handleAnimationEnd(open)}
+          >
+            {content}
+          </AnimateHeight>
+        </div>
+      </div>
     )
   }
 }

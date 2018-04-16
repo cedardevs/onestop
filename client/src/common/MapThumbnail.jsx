@@ -2,9 +2,12 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import L from 'leaflet'
-import 'esri-leaflet'
+import E from 'esri-leaflet'
 import _ from 'lodash'
-import { ensureDatelineFriendlyPolygon } from '../utils/geoUtils'
+import {
+  ensureDatelineFriendlyGeometry,
+  renderPointAsPolygon,
+} from '../utils/geoUtils'
 
 class MapThumbnail extends React.Component {
   constructor(props) {
@@ -18,7 +21,12 @@ class MapThumbnail extends React.Component {
   }
 
   render() {
-    return <div style={{width: '100%', height: '100%'}} ref={() => this.renderMap()}></div>
+    return (
+      <div
+        style={{width: '100%', height: '100%'}}
+        ref={() => this.renderMap()}
+      />
+    )
   }
 
   renderMap() {
@@ -27,19 +35,23 @@ class MapThumbnail extends React.Component {
     }
 
     let geoJsonLayer
-    let layers = [
-      L.esri.basemapLayer("Imagery"),
-      L.esri.basemapLayer("ImageryLabels")
-    ]
+    let layers = [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ]
     if (this.props.geometry) {
+      let geometry
+      if (this.props.geometry.type.toLowerCase() === 'point') {
+        geometry = renderPointAsPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
+      }
+      else {
+        geometry = ensureDatelineFriendlyGeometry(this.props.geometry)
+      }
       geoJsonLayer = L.GeoJSON.geometryToLayer({
-        type: "Feature",
-        geometry: ensureDatelineFriendlyPolygon(this.props.geometry) // allows use of setStyle, which does not exist for GeoJSON points
+        type: 'Feature',
+        geometry: geometry,
       })
       geoJsonLayer.setStyle({
-        color: "red",
+        color: 'red',
         weight: 5,
-        opacity: 1
+        opacity: 1,
       })
       layers.push(geoJsonLayer)
     }
@@ -54,7 +66,7 @@ class MapThumbnail extends React.Component {
       scrollWheelZoom: this.props.interactive,
       doubleClickZoom: this.props.interactive,
       boxZoom: this.props.interactive,
-      tap: this.props.interactive
+      tap: this.props.interactive,
     })
     this.fitMapToResults(geoJsonLayer)
   }
@@ -69,10 +81,9 @@ class MapThumbnail extends React.Component {
   }
 }
 
-
 MapThumbnail.propTypes = {
   geometry: PropTypes.object,
-  interactive: PropTypes.bool.isRequired
+  interactive: PropTypes.bool.isRequired,
 }
 
 export default MapThumbnail
