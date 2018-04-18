@@ -6,6 +6,7 @@ import Expandable from '../common/Expandable'
 import DetailGrid from './DetailGrid'
 import {fontFamilySerif} from '../utils/styleUtils'
 import A from '../common/link/Link'
+import {SiteColors} from '../common/defaultStyles'
 
 const styleImage = {
   float: 'left',
@@ -45,7 +46,7 @@ const styleExpandableFocused = {
 }
 
 const styleExpandableHeading = {
-  backgroundColor: '#6792B5',
+  backgroundColor: '#3c6280',
 }
 
 const styleExpandableH2 = {
@@ -172,7 +173,7 @@ export default class DescriptionView extends Component {
       <A
         target="_blank"
         href={`https://doi.org/${item.doi}`}
-        style={{color: '#277cb2'}}
+        style={{color: SiteColors.LINK}}
       >
         {item.doi}
       </A>
@@ -237,14 +238,7 @@ export default class DescriptionView extends Component {
   renderCollectionImage(thumbnail, geometry) {
     const imgUrl = processUrl(thumbnail)
     if (imgUrl) {
-      return (
-        <img
-          style={styleImage}
-          src={imgUrl}
-          alt="collection result image"
-          aria-hidden="true"
-        />
-      )
+      return <img style={styleImage} src={imgUrl} alt="" aria-hidden="true" />
     }
     else if (geometry) {
       return (

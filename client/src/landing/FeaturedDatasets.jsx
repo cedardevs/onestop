@@ -21,7 +21,7 @@ const styleTitle = (active, first, last, collapseImage) => {
   const topRightRadius = collapseImage ? '1em' : '0'
   const bottomRightRadius = collapseImage ? '1em' : '0'
   return {
-    background: active ? '#263f78' : '#007ec6',
+    background: active ? '#263f78' : '#026dab',
     textAlign: collapseImage ? 'center' : 'right',
     fontFamily: fontFamilySerif(),
     fontSize: '1.25em',

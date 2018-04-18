@@ -1,5 +1,6 @@
 import React from 'react'
 import Button from '../common/input/Button'
+import {SiteColors} from '../common/defaultStyles'
 
 const styleGranuleSummary = {
   display: 'flex',
@@ -8,7 +9,7 @@ const styleGranuleSummary = {
 
 const styleLink = {
   textDecoration: 'underline',
-  color: '#7777EE',
+  color: SiteColors.LINK,
 }
 
 export default class GranulesSummary extends React.Component {

@@ -1,7 +1,8 @@
 import React from 'react'
+import {SiteColors} from '../../common/defaultStyles'
 
 const styleBanner = {
-  background: 'red',
+  background: SiteColors.WARNING,
   textAlign: 'center',
   padding: '0.618em',
   fontSize: '1.2em',

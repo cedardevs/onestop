@@ -63,7 +63,7 @@ export default class HeaderLink extends React.Component {
   }
 
   render() {
-    const {title, to} = this.props
+    const {title, href} = this.props
 
     const styleLinkMerged = {
       ...styleLink,
@@ -73,8 +73,7 @@ export default class HeaderLink extends React.Component {
 
     return (
       <Link
-        title={title}
-        to={to}
+        href={href}
         style={styleLinkMerged}
         onMouseOver={this.handleMouseOver}
         onMouseOut={this.handleMouseOut}

@@ -16,34 +16,40 @@ import facetFilterIcon from '../../img/font-awesome/white/svg/key.svg'
 import arrowLeft from '../../img/font-awesome/white/svg/arrow-left.svg'
 import {fontFamilySerif} from '../utils/styleUtils'
 
+import {
+  FilterColors,
+  FilterStyles,
+  SiteStyles,
+  SiteColors,
+} from '../common/defaultStyles'
+
 const styleFilters = {
-  borderTop: '1px solid white',
+  borderTop: `1px solid ${FilterColors.MEDIUM}`,
 }
 
 const styleFilterHeadings = {
-  fontWeight: 'bold',
-  backgroundColor: '#0E274E',
-  padding: '0.618em',
+  ...FilterStyles.DARKEST,
+  ...{
+    fontWeight: 'bold',
+    padding: '0.618em',
+  },
 }
 
 const styleOverallHeading = {
-  fontFamily: fontFamilySerif(),
-  fontSize: '1.2em',
-  fontWeight: 'normal',
-  letterSpacing: '0.05em',
-  color: 'white',
-  padding: '0.618em',
-  margin: 0,
-}
-
-const styleFacetFilterContents = {
-  marginNest: '1em',
-  backgroundColor: '#327CAC',
+  ...SiteStyles.HEADER,
+  ...{
+    fontFamily: fontFamilySerif(),
+    fontSize: '1.2em',
+    fontWeight: 'normal',
+    letterSpacing: '0.05em',
+    padding: '0.618em',
+    margin: 0,
+  },
 }
 
 const styleFocusDefault = {
   outline: 'none',
-  border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
+  border: `.1em dashed ${SiteColors.HEADER}`, // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
   padding: '.259em',
   margin: '.259em',
 }
@@ -89,11 +95,7 @@ class Filters extends Component {
         name: 'keywords',
         heading: <FilterHeading icon={facetFilterIcon} text="Keywords" />,
         content: (
-          <FacetFilterContainer
-            submit={this.props.submit}
-            marginNest={styleFacetFilterContents.marginNest}
-            backgroundColor={styleFacetFilterContents.backgroundColor}
-          />
+          <FacetFilterContainer submit={this.props.submit} marginNest={'1em'} />
         ),
       },
     ]
@@ -180,9 +182,11 @@ class Filters extends Component {
         <FlexRow
           items={[ heading, buttonHide ]}
           style={{
-            justifyContent: 'space-between',
-            backgroundColor: '#242C36',
-            borderTop: '1px solid #FFF',
+            ...SiteStyles.HEADER,
+            ...{
+              justifyContent: 'space-between',
+              borderTop: `1px solid ${SiteColors.HEADER_TEXT}`,
+            },
           }}
         />
         {expandableFilters}

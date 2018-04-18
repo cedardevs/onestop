@@ -12,12 +12,12 @@ const styleCheckboxContainer = {
   minWidth: '1em',
   cursor: 'pointer',
   background: '#eee',
-  border: '1px solid #ddd',
+  border: '1px solid #333',
 }
 
 const styleDisabled = {
-  background: '#cbcbcb',
-  border: '1px solid #cbcbcb',
+  background: '#b2b2b2',
+  border: '1px solid #636363',
 }
 
 const styleInput = {

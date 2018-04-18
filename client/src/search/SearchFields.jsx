@@ -5,7 +5,7 @@ import _ from 'lodash'
 import Button from '../common/input/Button'
 import FlexRow from '../common/FlexRow'
 import search from 'fa/search.svg'
-import {boxShadow2} from '../common/defaultStyles'
+import {SiteColors, boxShadow2} from '../common/defaultStyles'
 import {times_circle, SvgIcon} from '../common/SvgIcon'
 
 const styleWarningClose = {
@@ -82,7 +82,7 @@ class SearchFields extends React.Component {
         lineHeight: '1.618em',
         fontSize: '1em',
         color: 'white',
-        backgroundColor: 'red',
+        backgroundColor: SiteColors.WARNING,
         borderRadius: '0.309em',
         padding: '0.618em 0 0.618em 0.618em',
         boxShadow: boxShadow2,

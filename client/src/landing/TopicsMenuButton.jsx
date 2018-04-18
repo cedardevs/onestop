@@ -115,7 +115,7 @@ class TopicsMenuButton extends React.Component {
         <img
           style={styleTopicImageMerged}
           src={topic.icon}
-          alt={topic.title}
+          alt=""
           aria-hidden="true"
         />
         <div style={styleTopicButtonTitleMerged}>{topic.title}</div>
