@@ -9,10 +9,10 @@ const styleTabButton = (active, first = false, last = false) => {
     flexGrow: 1,
     marginRight: last ? 0 : '1px',
     fontSize: '0.8em',
-    color: active ? '#000131' : 'white',
-    backgroundColor: active ? 'white' : '#3c6280',
+    color: active ? 'white' : '#000131',
+    backgroundColor: active ? '#3c6280' : 'white',
     textAlign: 'center',
-    border: `1px solid ${active ? 'gray' : '#F0F0F2'}`,
+    border: `1px solid ${active ? '#F0F0F2' : 'gray'}`,
     borderRadius: '0.618em 0.618em 0 0',
     borderBottom: active ? 'none' : 'initial',
     outline: 'none',
@@ -38,7 +38,7 @@ const styleFocusDefault = (focused, active) => {
   return {
     padding: '0.105em 0.309em',
     outline: focused
-      ? active ? '2px dashed #6e91b2' : '2px dashed white'
+      ? active ? '2px dashed white' : '2px dashed #6e91b2'
       : 'none',
   }
 }
