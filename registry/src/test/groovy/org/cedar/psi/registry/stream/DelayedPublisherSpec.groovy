@@ -1,11 +1,12 @@
 package org.cedar.psi.registry.stream
 
+import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.streams.kstream.Transformer
-import org.apache.kafka.streams.processor.ProcessorContext
-import org.apache.kafka.streams.processor.PunctuationType
-import org.apache.kafka.streams.state.KeyValueStore
-import org.apache.kafka.streams.state.internals.InMemoryKeyValueStore
+import org.apache.kafka.streams.StreamsBuilder
+import org.apache.kafka.streams.StreamsConfig
+import org.apache.kafka.streams.TopologyTestDriver
+import org.apache.kafka.streams.state.Stores
+import org.apache.kafka.streams.test.ConsumerRecordFactory
 import spock.lang.Specification
 
 import java.time.Instant
@@ -14,42 +15,47 @@ import java.time.ZonedDateTime
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 
-
 class DelayedPublisherSpec extends Specification {
 
-  static final ZoneId UTC_ID = ZoneId.of('UTC')
+  static final UTC_ID = ZoneId.of('UTC')
+  static final INPUT_TOPIC = 'input'
+  static final OUTPUT_TOPIC = 'output'
   static final TIMESTAMP_STORE_NAME = 'timestamp'
   static final LOOKUP_STORE_NAME = 'lookup'
+  static final long TEST_INTERVAL = 500
 
-  ProcessorContext mockContext = Mock(ProcessorContext)
-  KeyValueStore<Long, String> timestampStore = new InMemoryKeyValueStore<Long, String>(TIMESTAMP_STORE_NAME, Serdes.Long(), Serdes.String())
-  KeyValueStore<String, String> lookupStore = new InMemoryKeyValueStore<String, String>(LOOKUP_STORE_NAME, Serdes.String(), Serdes.String())
-  long testInterval = 500
-
-  DelayedPublisherTransformer transformer = new DelayedPublisherTransformer(TIMESTAMP_STORE_NAME, LOOKUP_STORE_NAME, testInterval)
+  DelayedPublisherTransformer transformer
+  ConsumerRecordFactory consumerFactory
+  TopologyTestDriver driver
 
   def setup() {
-    mockContext.applicationId() >> 'DelayedPublisherSpec'
-    mockContext.getStateStore(TIMESTAMP_STORE_NAME) >> timestampStore
-    mockContext.getStateStore(LOOKUP_STORE_NAME) >> lookupStore
+    consumerFactory = new ConsumerRecordFactory(INPUT_TOPIC, Serdes.String().serializer(), Serdes.String().serializer())
+    transformer = new DelayedPublisherTransformer(TIMESTAMP_STORE_NAME, LOOKUP_STORE_NAME, TEST_INTERVAL)
 
-    timestampStore.init(mockContext, null)
-    lookupStore.init(mockContext, null)
-    transformer.init(mockContext)
+    def config = [
+        (StreamsConfig.APPLICATION_ID_CONFIG)           : 'delayed_publisher_spec',
+        (StreamsConfig.BOOTSTRAP_SERVERS_CONFIG)        : 'localhost:9092',
+        (StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
+        (StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG): Serdes.String().class.name,
+        (ConsumerConfig.AUTO_OFFSET_RESET_CONFIG)       : 'earliest'
+    ]
+    def builder = new StreamsBuilder()
+    builder.addStateStore(Stores.keyValueStoreBuilder(
+        Stores.inMemoryKeyValueStore(TIMESTAMP_STORE_NAME), Serdes.Long(), Serdes.String()))
+    builder.addStateStore(Stores.keyValueStoreBuilder(
+        Stores.inMemoryKeyValueStore(LOOKUP_STORE_NAME), Serdes.String(), Serdes.String()))
+
+    builder
+        .stream(INPUT_TOPIC)
+        .transform({-> transformer}, TIMESTAMP_STORE_NAME, LOOKUP_STORE_NAME)
+        .to(OUTPUT_TOPIC)
+
+    def topology = builder.build()
+    driver = new TopologyTestDriver(topology, new Properties(config))
   }
 
-  def 'publisher is initialized'() {
-    when:
-    transformer.init(mockContext)
-
-    then:
-    transformer instanceof Transformer
-    transformer instanceof DelayedPublisherTransformer
-
-    and:
-    1 * mockContext.getStateStore(timestampStore.name())
-    1 * mockContext.getStateStore(lookupStore.name())
-    1 * mockContext.schedule(testInterval, PunctuationType.WALL_CLOCK_TIME, _)
+  def cleanup() {
+    driver.close()
   }
 
   def 'value with private false passes through'() {
@@ -57,14 +63,15 @@ class DelayedPublisherSpec extends Specification {
     def value = '{"discovery":{"metadata":"yes"},"publishing":{"private":false}}'
 
     when:
-    def output = transformer.transform(key, value)
+    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, value))
 
     then:
-    !timestampStore.all().hasNext()
+    !driver.getKeyValueStore(TIMESTAMP_STORE_NAME).all().hasNext()
 
     and:
-    output.key == key
-    output.value == value
+    def output = driver.readOutput(OUTPUT_TOPIC, Serdes.String().deserializer(), Serdes.String().deserializer())
+    output.key() == key
+    output.value() == value
   }
 
   def 'value with no publishing info gets private false added'() {
@@ -72,14 +79,15 @@ class DelayedPublisherSpec extends Specification {
     def value = '{"discovery":{"metadata":"yes"}}'
 
     when:
-    def output = transformer.transform(key, value)
+    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, value))
 
     then:
-    !timestampStore.all().hasNext()
+    !driver.getKeyValueStore(TIMESTAMP_STORE_NAME).all().hasNext()
 
     and:
-    output.key == key
-    output.value == '{"discovery":{"metadata":"yes"},"publishing":{"private":false}}'
+    def output = driver.readOutput(OUTPUT_TOPIC, Serdes.String().deserializer(), Serdes.String().deserializer())
+    output.key() == key
+    output.value() == '{"discovery":{"metadata":"yes"},"publishing":{"private":false}}'
   }
 
   def 'value with future publishing date gets stored'() {
@@ -90,31 +98,46 @@ class DelayedPublisherSpec extends Specification {
     def value = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + futureString +'"}}'
 
     when:
-    def output = transformer.transform(key, value)
+    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, value))
 
     then:
-    timestampStore.get(futureMillis) == key
+    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(futureMillis) == key
 
     and:
-    output.key == key
-    output.value == value
+    def output = driver.readOutput(OUTPUT_TOPIC, Serdes.String().deserializer(), Serdes.String().deserializer())
+    output.key() == key
+    output.value() == value
   }
 
-  def 'publishes documents up to a given timestamp'() {
-    setup:
-    def futureDate = ZonedDateTime.now(UTC_ID).plusYears(1)
+  def 'value with future publishing date gets republished with private false'() {
+    def futureDate = ZonedDateTime.now(UTC_ID).plusSeconds(1)
     def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
     def futureMillis = Instant.from(futureDate).toEpochMilli()
     def key = 'A'
     def value = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + futureString +'"}}'
-    timestampStore.put(futureMillis, key)
-    lookupStore.put(key, value)
 
     when:
-    transformer.publishUpTo(futureMillis + 100L)
+    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, value))
 
     then:
-    1 * mockContext.forward(key, value.replaceFirst('true', 'false'))
+    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(futureMillis) == key
+
+    and:
+    def output1 = driver.readOutput(OUTPUT_TOPIC, Serdes.String().deserializer(), Serdes.String().deserializer())
+    output1.key() == key
+    output1.value() == value
+
+    when:
+    driver.getKeyValueStore(LOOKUP_STORE_NAME).put(key, value)
+    driver.advanceWallClockTime(10000) // + 10 sec
+
+    then:
+    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(futureMillis) == null
+
+    and:
+    def output2 = driver.readOutput(OUTPUT_TOPIC, Serdes.String().deserializer(), Serdes.String().deserializer())
+    output2.key() == key
+    output2.value() == value.replaceFirst('true', 'false')
   }
 
   // TODO - publish: current lookup value has past date
