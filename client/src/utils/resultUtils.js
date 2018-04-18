@@ -46,7 +46,7 @@ export const protocols = Immutable([
   },
   {
     id: 'cloud',
-    names: [ 'cloud' ],
+    names: [ 'cloud', 'aws:s3', 'google:gcs' ],
     color: '#327cac',
     label: 'Cloud File Access',
     svgPath: cloud,
@@ -88,7 +88,11 @@ export const protocols = Immutable([
 
 export const identifyProtocol = link => {
   const name = _.toLower(link.linkProtocol || '')
-  return _.find(protocols, p => p.names.includes(name))
+  const protocol = _.find(protocols, p => p.names.includes(name))
+  if (protocol) {
+    return protocol
+  }
+  return {id: '?', names: [], color: 'black', label: 'Unknown'}
 }
 
 export const renderBadgeIcon = protocol => {

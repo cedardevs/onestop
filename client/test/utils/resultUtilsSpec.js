@@ -156,8 +156,12 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol).to.be.undefined
+      protocol.id.should.equal('?')
+      protocol.label.should.equal('Unknown')
+      protocol.color.should.equal('black')
     })
   })
+
+
 
 })
