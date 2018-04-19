@@ -1,8 +1,13 @@
 package org.cedar.psi.wrapper.stream
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.cedar.psi.wrapper.util.IsoConversionUtil
 
 @Slf4j
+@CompileStatic
 class ScriptWrapperFunctions {
   static String scriptCaller(Object msg, String command, long timeout) {
     List<String> commandList = command.split(' ').toList()
@@ -33,5 +38,33 @@ class ScriptWrapperFunctions {
       log.error("Caught exception $e: ${e.message}")
       return 'ERROR: ' + e.message
     }
+  }
+
+  static String parseOutput(String message) {
+    message = message.trim()
+    log.debug("parsing message: ${message.take(100)}")
+    def isJson = message.startsWith('{')
+    if (isJson) {
+      log.debug("message is json")
+      def messageMap = new JsonSlurper().parseText(message) as Map
+      def iso = messageMap.remove('isoXml') as String
+      if (iso) { // contains iso --> parse it, drop xml, add parsed attrs back in
+        log.debug("message contains isoXml, parsing")
+        messageMap.discovery = IsoConversionUtil.parseXMLMetadataToMap(iso)
+        return JsonOutput.toJson(messageMap)
+      }
+      else { // does not contain iso --> do nothing
+        return JsonOutput.toJson([discovery: messageMap])
+      }
+    }
+
+    def isXml = message.startsWith('<')
+    if (isXml) {
+      log.debug("message is xml, parsing")
+      return JsonOutput.toJson([discovery: IsoConversionUtil.parseXMLMetadataToMap(message)])
+    }
+
+    // is neither xml nor json --> is error
+    return 'ERROR: Output is neither xml nor json: ' + message
   }
 }

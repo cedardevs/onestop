@@ -71,8 +71,8 @@ jobs:
               ./gradlew publish -x BuildDockerImage
             fi
 
-    ## Custom notifications
-  notify:
-    webhooks:
-      # A list of hashes representing hooks. Only the url field is supported.
-      - url: https://hooks.slack.com/services/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
+### configure via the ui
+#notify:
+#  webhooks:
+#    # A list of hashes representing hooks. Only the url field is supported.
+#    - url: https://hooks.slack.com/services/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
