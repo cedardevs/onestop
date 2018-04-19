@@ -8,6 +8,7 @@ import spock.lang.Specification
 class ScriptWrapperFunctionsSpec extends Specification {
   def command_timeout = 10
   def msg = '{"trackingId":"ABC","message":"this is a test","answer": 42}'
+  def testIso = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-metadata.xml').text
 
   def 'Script Publishs stdout'() {
     String command = "echo stdout"

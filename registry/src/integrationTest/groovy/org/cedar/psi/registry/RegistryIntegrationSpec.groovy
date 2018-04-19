@@ -3,7 +3,6 @@ package org.cedar.psi.registry
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.admin.AdminClient
-import org.cedar.psi.registry.service.MetadataStreamService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
