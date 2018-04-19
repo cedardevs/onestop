@@ -41,7 +41,7 @@ class Publisher {
 
   void publishCollection(String data, String id = null) {
     def key = id ?: UUID.randomUUID().toString() // TODO - discuss w/ CoMET team and determine what to really do for IDs
-    def message = [id: id, rawMetadata: data]
+    def message = [id: id, isoXml: data]
     def record = new ProducerRecord<String, String>(RAW_COLLECTION_TOPIC, key, JsonOutput.toJson(message))
     log.debug("Sending: ${record}")
     kafkaProducer.send(record)
