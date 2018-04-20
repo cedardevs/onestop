@@ -317,8 +317,79 @@ components:
         # attributes:
         #   $ref: '#/components/schemas/collectionDocument'
     searchResponse:
+      description: 'Search Results'
       type: object
-      description: TODO
+      properties:
+        meta:
+          $ref: '#/components/schemas/searchMetadataObject'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/searchDataObject'
+    searchMetadataObject:
+      type: object
+      properties:
+        took:
+          type: integer
+        total:
+          description: total number of results matching the search
+          type: integer
+        facets:
+          description: included if search request specified facets:true
+          type: object
+          # TODO how to describe this response?
+    searchDataObject:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - collection
+            - granule
+            - flattened-granule
+        id:
+          description: internal uuid
+          type: string
+        attributes:
+          description: Summary of the result. If search specified summary:false, this could be the entire result instead.
+          type: object
+          properties:
+            title:
+              type: string
+            # citeAsStatements:
+            #   type: array
+            thumbnail:
+              type: string
+              format: uri
+            beginYear:
+              type: string
+              format: date
+            endYear:
+              type: string
+              format: date
+            spatialBounding:
+              type: object
+              properties:
+                $ref: '#/components/schemas/Geometry'
+            links:
+              type: array
+              items:
+                $ref: '#/components/schemas/link'
+    link:
+      type: object
+      properties:
+        linkProtocol:
+          type: string
+        linkFunction:
+          type: string
+          # TODO enum or description reference to metadata requirements?
+        linkDescription:
+          type: string
+        linkUrl:
+          type: string
+          format: uri
+        linkName:
+          type: string
     requestBody:
       description: >-
         The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata.
