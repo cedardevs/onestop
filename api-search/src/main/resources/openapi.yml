@@ -1,6 +1,6 @@
 openapi: '3.0.0'
 servers:
-  - url: https://sciapps.colorado.edu/onestop/api/search
+  - url: https://sciapps.colorado.edu/onestop/api
     description: Development test server (uses test data)
 info:
   title: OneStop Search API
@@ -14,6 +14,62 @@ tags:
     description: Discover available files of data.
 paths:
   /collection:
+    head:
+      tags:
+        - collection
+      summary: Get Collection Info
+      responses:
+        '200':
+          description: Successful operation
+    get:
+      tags:
+        - collection
+      summary: Get Collection Info
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/infoResponse'
+  /collection/{id}:
+    head:
+      tags:
+        - collection
+      summary: Collection by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: UUID of the collection
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Request Parsing Error
+    get:
+      tags:
+        - collection
+      summary: Collection by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: UUID of the collection
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fullCollectionResponse'
+        '404':
+          description: Request Parsing Error
+  /search/collection:
     post:
       tags:
         - collection
@@ -44,8 +100,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/response'
+        '400':
+          description: Bad Request
 components:
   schemas:
+    infoResponse:
+      description: 'High-level information on a resource.'
+      type: object
+      additionalProperties: false
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              type:
+                type: string
+                enum:
+                  - count
+              id:
+                type: string
+                enum:
+                  - collection
+                  - granule
+              count:
+                type: integer
+    fullCollectionResponse:
+      description: 'Collection'
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/collectionMetadataObject'
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/collectionDataObject'
+    collectionMetadataObject:
+      type: object
+      properties:
+        totalGranules:
+          type: integer
+    collectionDataObject:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - collection
+        id:
+          type: string
+        # attributes:
+        #   $ref: '#/components/schemas/collectionDocument'
     response:
       type: object
       description: TODO
@@ -318,6 +424,9 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/linearRing'
+    # collectionDocument:
+    #   description: TODO
+    #   type: object
   examples:
     scienceFacet:
       value: {"type":"facet","name":"science","values":["Agriculture","Atmosphere > Atmospheric Radiation > Incoming Solar Radiation"]}
