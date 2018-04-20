@@ -43,9 +43,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/response'
 components:
   schemas:
+    response:
+      type: object
+      description: TODO
     requestBody:
       description: >-
         The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata.
@@ -65,18 +68,20 @@ components:
               - $ref: '#/components/schemas/dateTimeFilter'
               - $ref: '#/components/schemas/facetFilter'
               - $ref: '#/components/schemas/geometryFilter'
-              - $ref: '#/components/schemas/collectionFilter'
               - $ref: '#/components/schemas/excludeGlobalFilter'
         facets:
-          description: 'Flag to request counts of results by GCMD keywords in addition to results. Defaults to false if not provided.'
+          description: 'Flag to request counts of results by GCMD keywords in addition to results.'
           type: boolean
+          default: false
         summary:
-          description: 'Flag to request summary of search results instead of full set of attributes. Defaults to true if not provided.'
+          description: 'Flag to request summary of search results instead of full set of attributes.'
           type: boolean
+          default: true
         page:
           $ref: '#/components/schemas/page'
     page:
       description: Pagination of results
+      example: {"max":20,"offset":0}
       type: object
       properties:
         max:
@@ -89,13 +94,6 @@ components:
         - max
         - offset
       additionalProperties: false
-    User:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
     textQuery:
       type: object
       description: Text query to search with that is valid so long as it does not have a leading wildcard ('*' or '?')
@@ -123,22 +121,27 @@ components:
             - excludeGlobal
         value:
           type: boolean
+          default: false
       required:
         - type
         - value
       additionalProperties: false
     dateTimeFilter:
+      description: Open-ended time ranges are allowed. Include either before, after, or both.
       type: object
       properties:
         type:
+          type: string
           enum:
             - datetime
         before:
           type: string
           format: date-time
+          example: '2017-01-01T00:00:00Z'
         after:
           type: string
           format: date-time
+          example: '2010-01-01T00:00:00Z'
       required:
         - type
       additionalProperties: false
@@ -164,28 +167,14 @@ components:
             - verticalResolution
             - temporalResolution
         values:
-          description: 'Exact match GCMD keyword(s), e.g., "Atmosphere > Atmospheric Temperature > Surface Temperature"'
+          description: 'Exact match GCMD keyword(s)'
           type: array
           items:
             type: string
+            example: 'Atmosphere > Atmospheric Temperature > Surface Temperature'
       required:
         - type
         - name
-        - values
-      additionalProperties: false
-    collectionFilter:
-      description: 'Collections to filter results by (logical OR if multiple filters or multiple values in one filter). If any collection filters are provided, granules are returned.'
-      type: object
-      properties:
-        type:
-          enum:
-            - collection
-        values:
-          type: array
-          items:
-            type: string
-      required:
-        - type
         - values
       additionalProperties: false
     geometryFilter:
@@ -193,12 +182,15 @@ components:
       type: object
       properties:
         type:
+          type: string
           enum:
             - geometry
         geometry:
           $ref: '#/components/schemas/Geometry'
         relation:
-          description: 'How the dataset geometry relates to the given geometry, e.g., return all datasets whose geometry contains the given point. Defaults to ''intersects''.'
+          description: 'How the dataset geometry relates to the given geometry, e.g., return all datasets whose geometry contains the given point.'
+          type: string
+          default: intersects
           enum:
             - contains
             - disjoint
@@ -210,17 +202,19 @@ components:
       additionalProperties: false
     Geometry:
       description: One geometry as defined by GeoJSON
+      example: {"type":"Polygon","coordinates":[[[-128.144531,19.273176],[-58.471856,19.273176],[-58.471856,47.584291],[-128.144531,47.584291],[-128.144531,19.273176]]]}
       oneOf:
+        - $ref: '#/components/schemas/Polygon'
         - $ref: '#/components/schemas/Point'
         - $ref: '#/components/schemas/MultiPoint'
         - $ref: '#/components/schemas/LineString'
         - $ref: '#/components/schemas/MultiLineString'
-        - $ref: '#/components/schemas/Polygon'
         - $ref: '#/components/schemas/MultiPolygon'
     Point:
       type: object
       properties:
         type:
+          type: string
           enum:
             - Point
         coordinates:
@@ -231,6 +225,7 @@ components:
     MultiPoint:
       properties:
         type:
+          type: string
           enum:
             - MultiPoint
         coordinates:
@@ -261,8 +256,10 @@ components:
         - type
         - coordinates
     Polygon:
+      type: object
       properties:
         type:
+          type: string
           enum:
             - Polygon
         coordinates:
@@ -273,6 +270,7 @@ components:
     MultiPolygon:
       properties:
         type:
+          type: string
           enum:
             - MultiPolygon
         coordinates:
@@ -293,7 +291,7 @@ components:
       minimum: -90
       maximum: 90
     position:
-      description: A single position
+      description: A single position. The first element must be latitude, then longitude.
       type: array
       minItems: 2
       maxItems: 2
