@@ -368,13 +368,12 @@ components:
               type: string
               format: date
             spatialBounding:
-              type: object
-              properties:
-                $ref: '#/components/schemas/Geometry'
+              $ref: '#/components/schemas/Geometry'
             links:
               type: array
               items:
-                $ref: '#/components/schemas/link'
+                oneOf:
+                 - $ref: '#/components/schemas/link'
     link:
       type: object
       properties:
