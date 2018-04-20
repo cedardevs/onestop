@@ -8,6 +8,7 @@
       ]]></notes>
     <filePath regex="true">.*spring-boot-.*\.jar</filePath>
     <cve>CVE-2017-8046</cve>
+    <cve>CVE-2018-1196</cve>
   </suppress>
 
   <suppress>
