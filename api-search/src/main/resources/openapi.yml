@@ -12,6 +12,8 @@ tags:
     description: Discover available collections of data.
   - name: granule
     description: Discover available files of data.
+  - name: flattened-granule
+    description: Discover available files of data, flattened with collection data.
 paths:
   /collection:
     head:
@@ -99,9 +101,171 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/response'
+                $ref: '#/components/schemas/searchResponse'
         '400':
           description: Bad Request
+  /granule:
+    head:
+      tags:
+        - granule
+      summary: Get Granule Info
+      responses:
+        '200':
+          description: Successful operation
+    get:
+      tags:
+        - granule
+      summary: Get Granule Info
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/infoResponse'
+  /granule/{id}:
+    head:
+      tags:
+        - granule
+      summary: Granule by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: UUID of the granule
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Request Parsing Error
+    get:
+      tags:
+        - granule
+      summary: Granule by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: UUID of the granule
+      responses:
+        '200':
+          description: Successful operation
+          # TODO
+          # content:
+          #   application/json:
+          #     schema:
+          #       $ref: '#/components/schemas/fullGranuleResponse'
+        '404':
+          description: Request Parsing Error
+  /search/granule:
+    post:
+      tags:
+        - granule
+      summary: Retrieve granule metadata
+      description: >-
+        Retrietve granule metadata records matching the text query string,
+        spatial, and/or temporal filter.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/requestBody"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/searchResponse'
+        '400':
+          description: Bad Request
+  '/flattened-granule':
+    head:
+      tags:
+        - flattened-granule
+      summary: Get Flattened Granule Info
+      responses:
+        '200':
+          description: Successful operation
+    get:
+      tags:
+        - flattened-granule
+      summary: Get Flattened Granule Info
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/infoResponse'
+  '/flattened-granule/{id}':
+    head:
+      tags:
+        - flattened-granule
+      summary: Flattened Granule by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: UUID of the flattened granule
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Request Parsing Error
+    get:
+      tags:
+        - flattened-granule
+      summary: Flattened Granule by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: UUID of the flattened granule
+      responses:
+        '200':
+          description: Successful operation
+          # TODO
+          # content:
+          #   application/json:
+          #     schema:
+          #       $ref: '#/components/schemas/fullflattened-granuleResponse'
+        '404':
+          description: Request Parsing Error
+  '/search/flattened-granule':
+    post:
+      tags:
+        - flattened-granule
+      summary: Retrieve flattened granule metadata
+      description: >-
+        Retrietve flattened granule metadata records matching the text query string,
+        spatial, and/or temporal filter.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/requestBody"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/searchResponse'
+        '400':
+          description: Bad Request
+
+
 components:
   schemas:
     infoResponse:
@@ -152,7 +316,7 @@ components:
           type: string
         # attributes:
         #   $ref: '#/components/schemas/collectionDocument'
-    response:
+    searchResponse:
       type: object
       description: TODO
     requestBody:
