@@ -4,10 +4,9 @@
   <suppress>
     <notes><![CDATA[
       According to pivotal security reports, one mitigation to this vulnerability is to have upgraded at least
-      Spring Boot 2.0 M6, and we are on the 2.0 M7 release train.
+      Spring Boot 2.0.x RC1, and we are on the 2.0.1 RC1 release train.
       ]]></notes>
     <filePath regex="true">.*spring-boot-.*\.jar</filePath>
-    <cve>CVE-2017-8046</cve>
     <cve>CVE-2018-1196</cve>
   </suppress>
 
