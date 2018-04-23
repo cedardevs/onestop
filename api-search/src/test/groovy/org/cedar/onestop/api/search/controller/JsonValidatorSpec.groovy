@@ -16,7 +16,7 @@ class JsonValidatorSpec extends Specification {
     when: "The OneStop schemas are validated"
     ObjectMapper mapper = new ObjectMapper()
     JsonNode jsonSchema = mapper.readTree(this.getClass().classLoader.getResource('json-schema-draft4.json').text)
-    JsonNode requestSchema = mapper.readTree(this.getClass().classLoader.getResource('onestop-request-schema.json').text)
+    JsonNode requestSchema = mapper.readTree(this.getClass().classLoader.getResource('openapi.json').text)
 
     final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
     final JsonSchema schema = factory.getJsonSchema(jsonSchema)
@@ -28,12 +28,18 @@ class JsonValidatorSpec extends Specification {
     globalReport.success
   }
 
-
   def 'valid requests return success true and no errors'() {
     when: 'valid json is validated'
     def jsonSlurper = new JsonSlurper()
     def params = jsonSlurper.parseText(request)
-    def validation = JsonValidator.validateSearchRequestSchema(params)
+    def validation
+    try {
+      validation = JsonValidator.validateSearchRequestSchema(params)
+    } catch (e) {
+      println("failed with: ${request}")
+      println(e)
+      throw(e)
+    }
 
     then: 'success is true'
     println("validation:${validation}")

@@ -275,7 +275,7 @@ components:
       properties:
         data:
           type: array
-          items:
+          items: # TODO is this a valid items?
             type: object
             additionalProperties: false
             properties:
@@ -299,7 +299,8 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/collectionDataObject'
+            oneOf:
+              - $ref: '#/components/schemas/collectionDataObject'
     collectionMetadataObject:
       type: object
       properties:
@@ -325,7 +326,8 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/searchDataObject'
+            oneOf:
+              - $ref: '#/components/schemas/searchDataObject'
     searchMetadataObject:
       type: object
       properties:
@@ -399,7 +401,8 @@ components:
           description: List of queries to search against.
           type: array
           items:
-            $ref: '#/components/schemas/textQuery'
+            oneOf:
+              - $ref: '#/components/schemas/textQuery'
         filters:
           description: filters applied to the search
           type: array
@@ -509,7 +512,7 @@ components:
         values:
           description: 'Exact match GCMD keyword(s)'
           type: array
-          items:
+          items: # TODO is this a valid items?
             type: string
             example: 'Atmosphere > Atmospheric Temperature > Surface Temperature'
       required:
@@ -591,7 +594,8 @@ components:
         coordinates:
           type: array
           items:
-            $ref: '#/components/schemas/lineString'
+            oneOf:
+              - $ref: '#/components/schemas/lineString'
       required:
         - type
         - coordinates
@@ -616,7 +620,8 @@ components:
         coordinates:
           type: array
           items:
-            $ref: '#/components/schemas/polygon'
+            oneOf:
+              - $ref: '#/components/schemas/polygon'
       required:
         - type
         - coordinates
@@ -630,19 +635,25 @@ components:
       type: number
       minimum: -90
       maximum: 90
+    latOrLong:
+      description: a coordinate value
+      type: number
+      minimum: -360
+      maximum: 360
     position:
       description: A single position. The first element must be latitude, then longitude.
       type: array
       minItems: 2
       maxItems: 2
-      oneOf:
-        - $ref: "#/components/schemas/lat"
-        - $ref: "#/components/schemas/long"
+      items:
+        oneOf:
+          - $ref: "#/components/schemas/latOrLong"
     positionArray:
       description: An array of positions
       type: array
       items:
-        $ref: '#/components/schemas/position'
+        oneOf:
+          - $ref: '#/components/schemas/position'
     lineString:
       description: An array of two or more positions
       allOf:
@@ -657,7 +668,8 @@ components:
       description: An array of linear rings
       type: array
       items:
-        $ref: '#/components/schemas/linearRing'
+        oneOf:
+          - $ref: '#/components/schemas/linearRing'
     # collectionDocument:
     #   description: TODO
     #   type: object
