@@ -7,7 +7,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 class JsonValidator {
 
   public static Map validateSearchRequestSchema(Map request) {
-    validateSchema(request, 'openapi.json')
+    validateSchema(request, 'generated_openapi.json')
   }
 
   public static Map validateSchema(Map params, String schemaName) {
