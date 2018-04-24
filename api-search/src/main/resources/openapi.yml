@@ -1,11 +1,10 @@
-openapi: '3.0.0'
+openapi: 3.0.0
 servers:
-  - url: https://sciapps.colorado.edu/onestop/api
+  - url: 'https://sciapps.colorado.edu/onestop/api'
     description: Development test server (uses test data)
 info:
   title: OneStop Search API
-  description: >-
-    Search Collections and Granules!
+  description: Search Collections and Granules!
   version: 2.0.0
 tags:
   - name: collection
@@ -13,7 +12,7 @@ tags:
   - name: granule
     description: Discover available files of data.
   - name: flattened-granule
-    description: Discover available files of data, flattened with collection data.
+    description: 'Discover available files of data, flattened with collection data.'
 paths:
   /collection:
     head:
@@ -34,7 +33,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/infoResponse'
-  /collection/{id}:
+  '/collection/{id}':
     head:
       tags:
         - collection
@@ -76,25 +75,22 @@ paths:
       tags:
         - collection
       summary: Retrieve collection metadata
-      description: >-
-        Retrietve collection metadata records matching the text query string,
-        spatial, and/or temporal filter.
+      description: 'Retrietve collection metadata records matching the text query string, spatial, and/or temporal filter.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/requestBody"
+              $ref: '#/components/schemas/requestBody'
             examples:
               payload0:
-                $ref: "#/components/examples/payload0"
+                $ref: '#/components/examples/payload0'
               payload1:
-                $ref: "#/components/examples/payload1"
+                $ref: '#/components/examples/payload1'
               payload2:
-                $ref: "#/components/examples/payload2"
+                $ref: '#/components/examples/payload2'
               payload3:
-                $ref: "#/components/examples/payload3"
-
+                $ref: '#/components/examples/payload3'
       responses:
         '200':
           description: Successful operation
@@ -123,7 +119,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/infoResponse'
-  /granule/{id}:
+  '/granule/{id}':
     head:
       tags:
         - granule
@@ -154,11 +150,6 @@ paths:
       responses:
         '200':
           description: Successful operation
-          # TODO
-          # content:
-          #   application/json:
-          #     schema:
-          #       $ref: '#/components/schemas/fullGranuleResponse'
         '404':
           description: Request Parsing Error
   /search/granule:
@@ -166,15 +157,13 @@ paths:
       tags:
         - granule
       summary: Retrieve granule metadata
-      description: >-
-        Retrietve granule metadata records matching the text query string,
-        spatial, and/or temporal filter.
+      description: 'Retrietve granule metadata records matching the text query string, spatial, and/or temporal filter.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/requestBody"
+              $ref: '#/components/schemas/requestBody'
       responses:
         '200':
           description: Successful operation
@@ -184,7 +173,7 @@ paths:
                 $ref: '#/components/schemas/searchResponse'
         '400':
           description: Bad Request
-  '/flattened-granule':
+  /flattened-granule:
     head:
       tags:
         - flattened-granule
@@ -234,27 +223,20 @@ paths:
       responses:
         '200':
           description: Successful operation
-          # TODO
-          # content:
-          #   application/json:
-          #     schema:
-          #       $ref: '#/components/schemas/fullflattened-granuleResponse'
         '404':
           description: Request Parsing Error
-  '/search/flattened-granule':
+  /search/flattened-granule:
     post:
       tags:
         - flattened-granule
       summary: Retrieve flattened granule metadata
-      description: >-
-        Retrietve flattened granule metadata records matching the text query string,
-        spatial, and/or temporal filter.
+      description: 'Retrietve flattened granule metadata records matching the text query string, spatial, and/or temporal filter.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/requestBody"
+              $ref: '#/components/schemas/requestBody'
       responses:
         '200':
           description: Successful operation
@@ -264,18 +246,16 @@ paths:
                 $ref: '#/components/schemas/searchResponse'
         '400':
           description: Bad Request
-
-
 components:
   schemas:
     infoResponse:
-      description: 'High-level information on a resource.'
+      description: High-level information on a resource.
       type: object
       additionalProperties: false
       properties:
         data:
           type: array
-          items: # TODO is this a valid items?
+          items:
             type: object
             additionalProperties: false
             properties:
@@ -291,7 +271,7 @@ components:
               count:
                 type: integer
     fullCollectionResponse:
-      description: 'Collection'
+      description: Collection
       type: object
       properties:
         meta:
@@ -315,10 +295,8 @@ components:
             - collection
         id:
           type: string
-        # attributes:
-        #   $ref: '#/components/schemas/collectionDocument'
     searchResponse:
-      description: 'Search Results'
+      description: Search Results
       type: object
       properties:
         meta:
@@ -337,9 +315,8 @@ components:
           description: total number of results matching the search
           type: integer
         facets:
-          description: included if search request specified facets:true
+          description: 'included if search request specified facets:true'
           type: object
-          # TODO how to describe this response?
     searchDataObject:
       type: object
       properties:
@@ -353,13 +330,11 @@ components:
           description: internal uuid
           type: string
         attributes:
-          description: Summary of the result. If search specified summary:false, this could be the entire result instead.
+          description: 'Summary of the result. If search specified summary:false, this could be the entire result instead.'
           type: object
           properties:
             title:
               type: string
-            # citeAsStatements:
-            #   type: array
             thumbnail:
               type: string
               format: uri
@@ -375,7 +350,7 @@ components:
               type: array
               items:
                 oneOf:
-                 - $ref: '#/components/schemas/link'
+                  - $ref: '#/components/schemas/link'
     link:
       type: object
       properties:
@@ -383,7 +358,6 @@ components:
           type: string
         linkFunction:
           type: string
-          # TODO enum or description reference to metadata requirements?
         linkDescription:
           type: string
         linkUrl:
@@ -392,8 +366,7 @@ components:
         linkName:
           type: string
     requestBody:
-      description: >-
-        The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata.
+      description: The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata.
       type: object
       additionalProperties: false
       properties:
@@ -412,12 +385,13 @@ components:
               - $ref: '#/components/schemas/facetFilter'
               - $ref: '#/components/schemas/geometryFilter'
               - $ref: '#/components/schemas/excludeGlobalFilter'
+              - $ref: '#/components/schemas/collectionFilter'
         facets:
-          description: 'Flag to request counts of results by GCMD keywords in addition to results.'
+          description: Flag to request counts of results by GCMD keywords in addition to results.
           type: boolean
           default: false
         summary:
-          description: 'Flag to request summary of search results instead of full set of attributes.'
+          description: Flag to request summary of search results instead of full set of attributes.
           type: boolean
           default: true
         page:
@@ -470,7 +444,7 @@ components:
         - value
       additionalProperties: false
     dateTimeFilter:
-      description: Open-ended time ranges are allowed. Include either before, after, or both.
+      description: 'Open-ended time ranges are allowed. Include either before, after, or both.'
       type: object
       properties:
         type:
@@ -510,11 +484,11 @@ components:
             - verticalResolution
             - temporalResolution
         values:
-          description: 'Exact match GCMD keyword(s)'
+          description: Exact match GCMD keyword(s)
           type: array
-          items: # TODO is this a valid items?
+          items:
             type: string
-            example: 'Atmosphere > Atmospheric Temperature > Surface Temperature'
+            example: Atmosphere > Atmospheric Temperature > Surface Temperature
       required:
         - type
         - name
@@ -542,6 +516,23 @@ components:
       required:
         - type
         - geometry
+      additionalProperties: false
+    collectionFilter:
+      description: 'Collections to filter results by (logical OR if multiple filters or multiple values in one filter). Only impacts granule searches.'
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - collection
+        values:
+          description: List of collection internal ids
+          type: array
+          items:
+            type: string
+      required:
+        - type
+        - values
       additionalProperties: false
     Geometry:
       description: One geometry as defined by GeoJSON
@@ -641,13 +632,13 @@ components:
       minimum: -360
       maximum: 360
     position:
-      description: A single position. The first element must be latitude, then longitude.
+      description: 'A single position. The first element must be latitude, then longitude.'
       type: array
       minItems: 2
       maxItems: 2
       items:
         oneOf:
-          - $ref: "#/components/schemas/latOrLong"
+          - $ref: '#/components/schemas/latOrLong'
     positionArray:
       description: An array of positions
       type: array
@@ -670,31 +661,28 @@ components:
       items:
         oneOf:
           - $ref: '#/components/schemas/linearRing'
-    # collectionDocument:
-    #   description: TODO
-    #   type: object
   examples:
     scienceFacet:
       value: {"type":"facet","name":"science","values":["Agriculture","Atmosphere > Atmospheric Radiation > Incoming Solar Radiation"]}
-      summary: "'Incoming Solar Radiation' science theme"
+      summary: '''Incoming Solar Radiation'' science theme'
     instrumentFacet:
       value: {"type":"facet","name":"instruments","values":["ADCP > Acoustic Doppler Current Profiler"]}
-      summary: "'Acoustic Doppler Current Profiler' instrument"
+      summary: '''Acoustic Doppler Current Profiler'' instrument'
     platformFacet:
       value: {"type":"facet","name":"platforms","values":["Ships"]}
-      summary: "'Ships' platform"
+      summary: '''Ships'' platform'
     projectFacet:
       value: {"type":"facet","name":"projects","values":["U.S.GLOBEC-SO > U.S. Global Ocean Ecosystem Dynamics, Southern Ocean"]}
-      summary: "'U.S. Global Ocean Ecosystem Dynamics, Southern Ocean' project"
+      summary: '''U.S. Global Ocean Ecosystem Dynamics, Southern Ocean'' project'
     dataCenterFacet:
       value: {"type":"facet","name":"dataCenters","values":["DOC/NOAA/NMFS/AFSC > Alaska Fisheries Science Center, National Marine Fisheries Service, NOAA, U.S. Department of Commerce"]}
       summary: Alaska Fisheries Science Center
     scienceOrFacet:
       value: {"type":"facet","name":"science","values":["Agriculture","Atmosphere > Atmospheric Radiation > Incoming Solar Radiation"]}
-      summary: "'Agriculture' OR 'Incoming Solar Radiation'"
+      summary: '''Agriculture'' OR ''Incoming Solar Radiation'''
     categoriesAndFacet:
       value: [{"type":"facet","name":"science","values":["Agriculture"]},{"type":"facet","name":"instruments","values":["ADCP > Acoustic Doppler Current Profiler"]}]
-      summary: "array of multiple facets: 'Agriculture' AND 'Acoustic Doppler Current Profiler'"
+      summary: 'array of multiple facets: ''Agriculture'' AND ''Acoustic Doppler Current Profiler'''
     payload0:
       value: {"queries":[{"type":"queryText","value":"climate"}],"filters":[],"facets":true,"page":{"max":20,"offset":0}}
       summary: basic text query
@@ -705,6 +693,5 @@ components:
       value: {"queries":[{"type":"queryText","value":"weather"}],"filters":[{"type":"facet","name":"science","values":["Agriculture"]},{"type":"facet","name":"instruments","values":["ADCP > Acoustic Doppler Current Profiler"]}],"facets":true,"page":{"max":20,"offset":0}}
       summary: multiple facets selected
     payload3:
-      value:
-        {"queries":[{"type":"queryText","value":"weather"}],"filters":[],"facets":false,"page":{"max":20,"offset":20}}
+      value: {"queries":[{"type":"queryText","value":"weather"}],"filters":[],"facets":false,"page":{"max":20,"offset":20}}
       summary: Next Page request

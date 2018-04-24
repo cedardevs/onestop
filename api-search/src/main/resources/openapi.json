@@ -613,6 +613,9 @@
                 },
                 {
                   "$ref": "#/components/schemas/excludeGlobalFilter"
+                },
+                {
+                  "$ref": "#/components/schemas/collectionFilter"
                 }
               ]
             }
@@ -800,6 +803,30 @@
         "required": [
           "type",
           "geometry"
+        ],
+        "additionalProperties": false
+      },
+      "collectionFilter": {
+        "description": "Collections to filter results by (logical OR if multiple filters or multiple values in one filter). Only impacts granule searches.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "collection"
+            ]
+          },
+          "values": {
+            "description": "List of collection internal ids",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "values"
         ],
         "additionalProperties": false
       },

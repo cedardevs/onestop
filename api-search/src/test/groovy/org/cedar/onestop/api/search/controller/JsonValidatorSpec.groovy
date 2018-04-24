@@ -159,6 +159,13 @@ class JsonValidatorSpec extends Specification {
   "filters": [
     { "type": "excludeGlobal", "value": true}
   ]
+}""",
+        """\
+{
+  "filters": [
+    {"type":"collection", "values":["fakeUUID"]}
+  ],
+  "summary": false
 }"""
     ]
   }
