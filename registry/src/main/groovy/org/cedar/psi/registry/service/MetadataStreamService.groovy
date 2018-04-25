@@ -41,6 +41,9 @@ class MetadataStreamService {
   static final String PARSED_GRANULE_STORE = 'parsed-granules'
   static final String PARSED_COLLECTION_STORE = 'parsed-collections'
 
+  static final String SME_ERROR_HANDLER_TOPIC = 'sme-error-events'
+  static final String SME_ERROR_HANDLER_STORE = 'sme-errors'
+
   private final AdminClient adminClient
   private KafkaStreams streamsApp
 
@@ -82,6 +85,7 @@ class MetadataStreamService {
       (PARSED_COLLECTION_TOPIC): null,
       (COMBINED_GRANULE_TOPIC): null,
       (COMBINED_COLLECTION_TOPIC): null,
+      (SME_ERROR_HANDLER_TOPIC): null,
   ] as Map<String, Map>
 
   private static void declareTopics(AdminClient adminClient) {
@@ -130,6 +134,8 @@ class MetadataStreamService {
 
     KTable parsedGranuleTable = builder.table(PARSED_GRANULE_TOPIC, Materialized.as(PARSED_GRANULE_STORE).withLoggingEnabled([:]))
     KTable parsedCollectionTable = builder.table(PARSED_COLLECTION_TOPIC, Materialized.as(PARSED_COLLECTION_STORE).withLoggingEnabled([:]))
+
+    KTable smeErrorhandlerTable = builder.table(SME_ERROR_HANDLER_TOPIC, Materialized.as(SME_ERROR_HANDLER_STORE).withLoggingEnabled([:]))
 
     rawGranuleTable
         .outerJoin(parsedGranuleTable, StreamFunctions.buildKeyedJsonJoiner('raw', 'parsed'))

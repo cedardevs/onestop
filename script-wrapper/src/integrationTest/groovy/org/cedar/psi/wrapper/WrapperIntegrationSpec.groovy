@@ -40,10 +40,10 @@ class WrapperIntegrationSpec extends Specification{
       topics: [
           input: 'test-input',
           output: 'test-output',
+          errorout: 'sme-error',
       ],
       command: command,
       timeout: 5000,
-      convert:[iso: true]
   ]
   def kafkaConfig = [
       application: [id: 'test-app'],
@@ -81,7 +81,7 @@ class WrapperIntegrationSpec extends Specification{
   }
 
 
-  def 'parse a granule'() {
+  def 'parse good granule'() {
     def message = [
         dataStream  : "dscovr",
         trackingId  : "3",
@@ -97,7 +97,6 @@ class WrapperIntegrationSpec extends Specification{
     testProducer.send(input)
     testConsumer.subscribe([topologyConfig.topics.output])
     def output = testConsumer.poll(10000).first()
-
     then:
     output.key() == message.trackingId
 
@@ -106,6 +105,30 @@ class WrapperIntegrationSpec extends Specification{
     attributes.publishing.private == true
     attributes.discovery.fileIdentifier == "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_emb.nc"
     attributes.discovery.parentIdentifier == "gov.noaa.ncei.swx:dscovr_f1m"
+  }
+
+  def 'parse bad granule'() { // error test
+    def message = [
+        dataStream  : "dscovr",
+        trackingId  : "3",
+        checksum    : "fd297fcceb94fdbec5297938c99cc7b5",
+        relativePath: "oe_f1m_dscovr_s20180129000000", // bad file name
+        path        : "/src/test/resources/oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_emb.nc.gz",
+        fileSize    : 6526,
+        lastUpdated : "2017124",
+    ]
+
+    when:
+    def input = new ProducerRecord(topologyConfig.topics.input, message.trackingId, JsonOutput.toJson(message))
+    testProducer.send(input)
+    testConsumer.subscribe([topologyConfig.topics.output])
+    def output = testConsumer.poll(10000).first()
+    then:
+    output.key() == message.trackingId
+
+    and:
+    def attributes = new JsonSlurper().parseText(output.value()) as Map
+    attributes.publishing.private == null
   }
 
 }

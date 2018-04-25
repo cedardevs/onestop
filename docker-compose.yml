@@ -9,6 +9,7 @@ services:
       PSI_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       PSI_STREAM_TOPICS_INPUT: "metadata-aggregator-raw-collections-changelog"
       PSI_STREAM_TOPICS_OUTPUT: "parsed-collections"
+      PSI_STREAM_TOPICS_ERROROUT: "sme-error-events"
       PSI_STREAM_COMMAND: "echo"
       PSI_STREAM_CONVERT_ISO: "true"
       PSI_STREAM_TIMEOUT: 10000
