@@ -121,14 +121,15 @@ class WrapperIntegrationSpec extends Specification{
     when:
     def input = new ProducerRecord(topologyConfig.topics.input, message.trackingId, JsonOutput.toJson(message))
     testProducer.send(input)
-    testConsumer.subscribe([topologyConfig.topics.output])
+    testConsumer.subscribe([topologyConfig.topics.errorout])
     def output = testConsumer.poll(10000).first()
     then:
     output.key() == message.trackingId
 
     and:
-    def attributes = new JsonSlurper().parseText(output.value()) as Map
-    attributes.publishing.private == null
+    output.value().startsWith('ERROR')
+//    def attributes = new JsonSlurper().parseText(output.value()) as Map
+//    attributes.publishing.private == null
   }
 
 }
