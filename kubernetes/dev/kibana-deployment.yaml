@@ -27,6 +27,7 @@ spec:
       labels:
         app: kibana
     spec:
+      restartPolicy: Always
       containers:
       - name: kibana
         image: docker.elastic.co/kibana/kibana:5.5.3

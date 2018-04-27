@@ -53,6 +53,14 @@ spec:
         env:
         - name: xpack.security.enabled
           value: "false"
+        - name: xpack.watcher.enabled
+          value: "false"
+        - name: xpack.monitoring.enabled
+          value: "false"
+        - name: xpack.ml.enabled
+          value: "false"
+        - name: xpack.graph.enabled
+          value: "false"
         - name: ES_JAVA_OPTS
           value: -Xms256m -Xmx256m # may need more memory
         - name: CLUSTER_NAME
