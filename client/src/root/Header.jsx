@@ -6,6 +6,7 @@ import HeaderLink from './HeaderLink'
 import {boxShadow} from '../common/defaultStyles'
 
 import FlexRow from '../common/FlexRow'
+import SSOButton from '../sso/SSOButton'
 
 const styleHeader = {
   backgroundColor: '#222C37',
@@ -21,7 +22,7 @@ const styleHeaderFlexRow = {
 
 const styleNav = {
   flex: '1',
-  minWidth: '17em',
+  minWidth: '23em',
   display: 'flex',
   justifyContent: 'flex-end',
   marginTop: '1em',
@@ -64,7 +65,7 @@ class Header extends React.Component {
             About Us
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, true)}>
+        <li style={styleLinkListItem(false, false)}>
           <HeaderLink title="Help" href={`${this.props.homeUrl}help`}>
             Help
           </HeaderLink>
@@ -87,6 +88,7 @@ class Header extends React.Component {
     const menu = (
       <nav key="menu" aria-label="Main" style={styleNav}>
         {menuContent}
+        <SSOButton/>
       </nav>
     )
 
