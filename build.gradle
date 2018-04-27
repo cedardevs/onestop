@@ -160,6 +160,52 @@ task dockerComposeClean(type: Exec, description: 'Stops and removes the entire s
   args = ["-c", "docker-compose down"]
 }
 
+task uploadTestData(description: 'Uploads test data to elasticsearch.', group: 'upload') {
+  doLast {
+    // delete previously expanded testData directory, if it exists
+    delete 'upload/testData'
+
+    // expand the test data tar.gz into testData directory
+    def testDataTGZ = 'testData_20180404.tar.gz'
+    def stdoutExpand = new ByteArrayOutputStream()
+    def stderrExpand = new ByteArrayOutputStream()
+    def resultExpand = exec {
+      ignoreExitValue = true
+      workingDir 'upload'
+      executable = 'bash'
+      args = ['-c', "tar -xvzf ${testDataTGZ}"]
+      standardOutput = stdoutExpand
+      errorOutput = stderrExpand
+    }
+    if(resultExpand.getExitValue() == 0) {
+      print stdoutExpand
+    }
+    else {
+      print stderrExpand
+      throw new GradleException("failed to extract ${testDataTGZ}")
+    }
+
+    // run the upload script against the testData directory and api-metadata running locally
+    def stdoutUpload = new ByteArrayOutputStream()
+    def stderrUpload = new ByteArrayOutputStream()
+    def resultUpload = exec {
+      ignoreExitValue = true
+      workingDir 'upload'
+      executable = 'bash'
+      args = ['-c', './uploadToOnestopApi.sh ./testData http://localhost:8098/onestop/api']
+      standardOutput = stdoutUpload
+      errorOutput = stderrUpload
+    }
+    if(resultUpload.getExitValue() == 0) {
+      print stdoutUpload
+    }
+    else {
+      print stderrUpload
+      throw new GradleException("failed to upload test data")
+    }
+  }
+}
+
 task clean {
   dependsOn dockerComposeClean
 }
