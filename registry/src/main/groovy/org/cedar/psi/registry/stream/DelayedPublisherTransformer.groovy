@@ -68,11 +68,6 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
     if (publishDate) {
       log.debug("transforming value with publish date ${publishDate}")
       if (incomingPublishTime > now) {
-        if (storedPublishTime && storedPublishTime <= now) {
-          log.debug("current stored value for ${key} may have already been published => emit a tombstone")
-          context.forward(key, null)
-        }
-
         log.debug("incoming publish time is in the future => set private to true and store the publish time")
         valueMap.publishing = publishingInfo + [private: true]
         publishTimestampStore.put(incomingPublishTime, key)
