@@ -8,6 +8,7 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
+import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
@@ -33,13 +34,14 @@ class DelayedPublisherTransformerSpec extends Specification {
   static final TIMESTAMP_STORE_NAME = 'timestamp'
   static final LOOKUP_STORE_NAME = 'lookup'
   static final long TEST_INTERVAL = 500
+  static final consumerFactory = new ConsumerRecordFactory(INPUT_TOPIC, STRING_SERIALIZER, STRING_SERIALIZER)
 
   DelayedPublisherTransformer transformer
-  ConsumerRecordFactory consumerFactory
   TopologyTestDriver driver
+  KeyValueStore timestampStore
+  KeyValueStore lookupStore
 
   def setup() {
-    consumerFactory = new ConsumerRecordFactory(INPUT_TOPIC, STRING_SERIALIZER, STRING_SERIALIZER)
     transformer = new DelayedPublisherTransformer(TIMESTAMP_STORE_NAME, LOOKUP_STORE_NAME, TEST_INTERVAL)
 
     def config = [
@@ -62,6 +64,9 @@ class DelayedPublisherTransformerSpec extends Specification {
 
     def topology = builder.build()
     driver = new TopologyTestDriver(topology, new Properties(config))
+
+    timestampStore = driver.getKeyValueStore(TIMESTAMP_STORE_NAME)
+    lookupStore = driver.getKeyValueStore(LOOKUP_STORE_NAME)
   }
 
   def cleanup() {
@@ -73,11 +78,11 @@ class DelayedPublisherTransformerSpec extends Specification {
     def value = '{"discovery":{"metadata":"yes"},"publishing":{"private":' + isPrivate + '}}'
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, value))
+    sendInput(driver, INPUT_TOPIC, key, value)
 
     then:
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == value
-    !driver.getKeyValueStore(TIMESTAMP_STORE_NAME).all().hasNext()
+    lookupStore.get(key) == null
+    !timestampStore.all().hasNext()
 
     and:
     def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
@@ -94,11 +99,11 @@ class DelayedPublisherTransformerSpec extends Specification {
     def expected = '{"discovery":{"metadata":"yes"},"publishing":{"private":false}}'
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, value))
+    sendInput(driver, INPUT_TOPIC, key, value)
 
     then:
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == expected
-    !driver.getKeyValueStore(TIMESTAMP_STORE_NAME).all().hasNext()
+    lookupStore.get(key) == null
+    !timestampStore.all().hasNext()
 
     and:
     def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
@@ -114,11 +119,11 @@ class DelayedPublisherTransformerSpec extends Specification {
     def value = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + futureString +'"}}'
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, value))
+    sendInput(driver, INPUT_TOPIC, key, value)
 
     then:
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(futureMillis) == key
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == value
+    timestampStore.get(futureMillis) == key
+    lookupStore.get(key) == value
 
     and:
     def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
@@ -148,13 +153,10 @@ class DelayedPublisherTransformerSpec extends Specification {
     def plusFivePublished = plusFiveMessage.replaceFirst('true', 'false')
     def plusSixPublished = plusSixMessage.replaceFirst('true', 'false')
 
-    def timestampStore = driver.getKeyValueStore(TIMESTAMP_STORE_NAME)
-    def lookupStore = driver.getKeyValueStore(LOOKUP_STORE_NAME)
-
     when: // publish messages, and do it out of order
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, plusSixKey, plusSixMessage))
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, plusTenKey, plusTenMessage))
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, plusFiveKey, plusFiveMessage))
+    sendInput(driver, INPUT_TOPIC, plusSixKey, plusSixMessage)
+    sendInput(driver, INPUT_TOPIC, plusTenKey, plusTenMessage)
+    sendInput(driver, INPUT_TOPIC, plusFiveKey, plusFiveMessage)
 
     then: // values and future publish dates are stored
     timestampStore.get(plusFiveMillis) == plusFiveKey
@@ -171,8 +173,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     timestampStore.get(plusFiveMillis) == null
     timestampStore.get(plusSixMillis) == null
     timestampStore.get(plusTenMillis) == plusTenKey // <-- not removed
-    lookupStore.get(plusFiveKey) == plusFivePublished
-    lookupStore.get(plusSixKey) == plusSixPublished
+    lookupStore.get(plusFiveKey) == null
+    lookupStore.get(plusSixKey) == null
     lookupStore.get(plusTenKey) == plusTenMessage // <-- original value remains
 
     and: // 3 original messages plus 2 republished messages have come out
@@ -202,13 +204,13 @@ class DelayedPublisherTransformerSpec extends Specification {
     def finalValue = secondValue.replaceFirst('true', 'false')
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, firstValue))
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, secondValue))
+    sendInput(driver, INPUT_TOPIC, key, firstValue)
+    sendInput(driver, INPUT_TOPIC, key, secondValue)
 
     then:
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(futureMillis) == null
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(pastMillis) == null
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == finalValue
+    timestampStore.get(futureMillis) == null
+    timestampStore.get(pastMillis) == null
+    lookupStore.get(key) == null
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
@@ -229,12 +231,12 @@ class DelayedPublisherTransformerSpec extends Specification {
     def secondValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":false}}'
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, firstValue))
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, secondValue))
+    sendInput(driver, INPUT_TOPIC, key, firstValue)
+    sendInput(driver, INPUT_TOPIC, key, secondValue)
 
     then:
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(futureMillis) == null
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == secondValue
+    timestampStore.get(futureMillis) == null
+    lookupStore.get(key) == null
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
@@ -258,23 +260,22 @@ class DelayedPublisherTransformerSpec extends Specification {
     def secondValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + secondString +'"}}'
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, firstValue))
+    sendInput(driver, INPUT_TOPIC, key, firstValue)
     sleep(500)
     driver.advanceWallClockTime(500)
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, secondValue))
+    sendInput(driver, INPUT_TOPIC, key, secondValue)
 
     then:
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(firstMillis) == null
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(secondMillis) == key
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == secondValue
+    timestampStore.get(firstMillis) == null
+    timestampStore.get(secondMillis) == key
+    lookupStore.get(key) == secondValue
 
     and:
     def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
-    output.size() == 4
+    output.size() == 3
     OutputVerifier.compareKeyValue(output[0], key, firstValue)
     OutputVerifier.compareKeyValue(output[1], key, firstValue.replaceFirst('true', 'false'))
-    OutputVerifier.compareKeyValue(output[2], key, null) // <- tombstone is sent downstream
-    OutputVerifier.compareKeyValue(output[3], key, secondValue)
+    OutputVerifier.compareKeyValue(output[2], key, secondValue)
   }
 
   def 'second value with future publishing date arrives before initial delay has elapsed'() {
@@ -292,14 +293,14 @@ class DelayedPublisherTransformerSpec extends Specification {
     def secondValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + secondString +'"}}'
 
     when: // both messages arrive, then the initial delay elapses
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, firstValue))
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, secondValue))
+    sendInput(driver, INPUT_TOPIC, key, firstValue)
+    sendInput(driver, INPUT_TOPIC, key, secondValue)
     driver.advanceWallClockTime(5000)
 
     then: // initial publish time is removed, second is still there, state is updated
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(firstMillis) == null
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(secondMillis) == key
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == secondValue
+    timestampStore.get(firstMillis) == null
+    timestampStore.get(secondMillis) == key
+    lookupStore.get(key) == secondValue
 
     and: // only the two input values come out; the first republishing event doesn't go off
     def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
@@ -311,6 +312,10 @@ class DelayedPublisherTransformerSpec extends Specification {
   // TODO - publish: current lookup value has past date
   // TODO - publish: current lookup value has future date
   // TODO - look for more edge cases
+
+  static sendInput(TopologyTestDriver driver, String topic, String key, String value) {
+    driver.pipeInput(consumerFactory.create(topic, key, value))
+  }
 
   static List<ProducerRecord> readAllOutput(TopologyTestDriver driver, String topic, Deserializer keyDeserializer, Deserializer valueDeserializer) {
     def curr

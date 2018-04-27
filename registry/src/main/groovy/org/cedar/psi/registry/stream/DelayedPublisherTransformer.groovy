@@ -68,29 +68,32 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
     if (publishDate) {
       log.debug("transforming value with publish date ${publishDate}")
       if (incomingPublishTime > now) {
-        log.debug("incoming publish time is in the future => set private to true and store the publish time")
-        valueMap.publishing = publishingInfo + [private: true]
-        publishTimestampStore.put(incomingPublishTime, key)
-
         if (storedPublishTime && storedPublishTime <= now) {
           log.debug("current stored value for ${key} may have already been published => emit a tombstone")
           context.forward(key, null)
         }
+
+        log.debug("incoming publish time is in the future => set private to true and store the publish time")
+        valueMap.publishing = publishingInfo + [private: true]
+        publishTimestampStore.put(incomingPublishTime, key)
+        lookupStore.put(key, JsonOutput.toJson(valueMap))
       }
       else {
         log.debug("incoming publish time is in the past => set private false")
         valueMap.publishing = publishingInfo + [private: false]
         if (storedPublishTime) {
-          log.debug("removing existing publish time for ${key}")
+          log.debug("removing existing publish time and lookup value for ${key}")
           publishTimestampStore.delete(storedPublishTime)
+          lookupStore.delete(key)
         }
       }
     }
     else {
       if (publishingInfo?.containsKey('private')) {
         if (publishingInfo.private == false && storedPublishTime) {
-          log.debug("incoming value is not private => removing existing publish time for ${key}")
+          log.debug("incoming value is not private => removing existing publish time and lookup value for ${key}")
           publishTimestampStore.delete(storedPublishTime)
+          lookupStore.delete(key)
         }
       }
       else {
@@ -100,7 +103,6 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
     }
 
     def finalValue = JsonOutput.toJson(valueMap)
-    lookupStore.put(key, finalValue)
     return KeyValue.pair(key, finalValue)
   }
 
@@ -137,7 +139,7 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
           log.debug("current publish date for ${lookupId} has passed => update store and publish")
           valueMap.publishing = publishingInfo + [private: false]
           def newValue = JsonOutput.toJson(valueMap)
-          lookupStore.put(lookupId, newValue)
+          lookupStore.delete(lookupId)
           context.forward(lookupId, newValue)
         }
       }
