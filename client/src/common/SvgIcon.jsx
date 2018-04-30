@@ -61,7 +61,7 @@ export class SvgIcon extends React.Component {
     const appliedWrapperStyle = {...styleWrapper(size, verticalAlign)}
     return (
       <span style={appliedWrapperStyle}>
-        <svg style={appliedStyle} viewBox="0 0 1792 1792">
+        <svg focusable="false" style={appliedStyle} viewBox="0 0 1792 1792">
           {this.props.path}
         </svg>
       </span>

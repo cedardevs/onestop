@@ -40,6 +40,7 @@ export default class Earth extends Component {
     const renderSVG = (
       <div style={styleEarth}>
         <svg
+          focusable="false"
           width="100%"
           height={EARTH_HEIGHT}
           xmlns="http://www.w3.org/2000/svg"
