@@ -88,7 +88,7 @@ class Filters extends Component {
       },
       {
         name: 'time',
-        heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
+        heading: <FilterHeading icon={timeFilterIcon} text="Date" />,
         content: <TimeFilterContainer />,
       },
       {
