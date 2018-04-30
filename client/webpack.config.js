@@ -7,13 +7,49 @@ require(modernizrrc)
 const nodeEnv = process.env.NODE_ENV || "development"
 const isProd = nodeEnv === "production"
 
+const shareImage = require('./img/Earth.jpg')
+
 const basePlugins = [
   new HtmlWebpackPlugin({
     inject: false,
     template: require('html-webpack-template'),
     title: 'NOAA OneStop',
     favicon: '../img/noaa-favicon.ico',
-    lang: 'en-US'
+    lang: 'en-US',
+    meta: [
+      {
+        property: 'og:site_name',
+        content: 'NOAA OneStop',
+      },
+      {
+        property: 'og:url',
+        content: shareImage,
+      },
+      {
+        property: 'og:type',
+        content: 'website',
+      },
+      {
+        property: 'og:title',
+        content: 'Animated GIF of OneStop Web Site',
+      },
+      {
+        property: 'og:description',
+        content: 'Geophysical, oceans, coastal, weather and climate data discovery all in one place.\n',
+      },
+      {
+        property: 'og:image',
+        content: shareImage,
+      },
+      {
+        property: 'og:image:width',
+        content: '800',
+      },
+      {
+        property: 'og:image:height',
+        content: '400',
+      }
+    ]
   }),
   new webpack.optimize.CommonsChunkPlugin({
     name: 'vendor',
