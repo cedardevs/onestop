@@ -40,7 +40,7 @@ class WrapperIntegrationSpec extends Specification{
       topics: [
           input: 'test-input',
           output: 'test-output',
-          errorout: 'sme-error',
+          errorout: 'test-sme-error',
       ],
       command: command,
       timeout: 5000,
@@ -81,11 +81,11 @@ class WrapperIntegrationSpec extends Specification{
   }
 
 
-  def 'parse good granule'() {
+  def 'parse good granule and put it to an output topic'() {
     def message = [
         dataStream  : "dscovr",
         trackingId  : "3",
-        checksum    : "fd297fcceb94fdbec5297938c99cc7b5",
+        checksum    : "456",
         relativePath: "oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_emb.nc.gz",
         path        : "/src/test/resources/oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_emb.nc.gz",
         fileSize    : 6526,
@@ -97,6 +97,7 @@ class WrapperIntegrationSpec extends Specification{
     testProducer.send(input)
     testConsumer.subscribe([topologyConfig.topics.output])
     def output = testConsumer.poll(10000).first()
+
     then:
     output.key() == message.trackingId
 
@@ -107,14 +108,14 @@ class WrapperIntegrationSpec extends Specification{
     attributes.discovery.parentIdentifier == "gov.noaa.ncei.swx:dscovr_f1m"
   }
 
-  def 'parse bad granule'() { // error test
+  def 'parse bad granule and put it to an errorOut topic'() {
     def message = [
         dataStream  : "dscovr",
         trackingId  : "3",
-        checksum    : "fd297fcceb94fdbec5297938c99cc7b5",
+        checksum    : "123",
         relativePath: "oe_f1m_dscovr_s20180129000000", // bad file name
         path        : "/src/test/resources/oe_f1m_dscovr_s20180129000000_e20180129235959_p20180130024119_emb.nc.gz",
-        fileSize    : 6526,
+        fileSize    : 26,
         lastUpdated : "2017124",
     ]
 
@@ -123,13 +124,12 @@ class WrapperIntegrationSpec extends Specification{
     testProducer.send(input)
     testConsumer.subscribe([topologyConfig.topics.errorout])
     def output = testConsumer.poll(10000).first()
+
     then:
     output.key() == message.trackingId
 
     and:
     output.value().startsWith('ERROR')
-//    def attributes = new JsonSlurper().parseText(output.value()) as Map
-//    attributes.publishing.private == null
   }
 
 }
