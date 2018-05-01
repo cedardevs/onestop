@@ -71,9 +71,9 @@ class ConfigUtil {
         log.info "Validating topology config: $config"
         if (!config?.topics?.output){ throw new RuntimeException('Cannot resolve ${stream.topics.output}')}
         if (!config?.topics?.input){ throw new RuntimeException('Cannot resolve ${stream.topics.input}')}
+        if (!config?.topics?.errorout){ throw new RuntimeException('Cannot resolve ${stream.topics.errorout}')}
         if (!config?.command){ throw new RuntimeException('Cannot resolve ${stream.command}')}
         if (!config?.timeout){ config.timeout = 5000}
-//        if (!config?.convert?.iso){ config.convert = config.convert ? config.convert.iso = false :  ['iso' : false]
         log.info "Topology config is valid"
         return config
     }

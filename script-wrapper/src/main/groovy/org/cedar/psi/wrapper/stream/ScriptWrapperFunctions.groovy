@@ -43,27 +43,30 @@ class ScriptWrapperFunctions {
   static String parseOutput(String message) {
     message = message.trim()
     log.debug("parsing message: ${message.take(100)}")
-    def isJson = message.startsWith('{')
-    if (isJson) {
-      log.debug("message is json")
-      def messageMap = new JsonSlurper().parseText(message) as Map
-      def iso = messageMap.remove('isoXml') as String
-      if (iso) { // contains iso --> parse it, drop xml, add parsed attrs back in
-        log.debug("message contains isoXml, parsing")
-        messageMap.discovery = IsoConversionUtil.parseXMLMetadataToMap(iso)
-        return JsonOutput.toJson(messageMap)
+    try {
+      def isJson = message.startsWith('{')
+      if (isJson) {
+        log.debug("message is json")
+        def messageMap = new JsonSlurper().parseText(message) as Map
+        def iso = messageMap.remove('isoXml') as String
+        if (iso) { // contains iso --> parse it, drop xml, add parsed attrs back in
+          log.debug("message contains isoXml, parsing")
+          messageMap.discovery = IsoConversionUtil.parseXMLMetadataToMap(iso)
+          return JsonOutput.toJson(messageMap)
+        } else { // does not contain iso --> do nothing
+          return JsonOutput.toJson([discovery: messageMap])
+        }
       }
-      else { // does not contain iso --> do nothing
-        return JsonOutput.toJson([discovery: messageMap])
+
+      def isXml = message.startsWith('<')
+      if (isXml) {
+        log.debug("message is xml, parsing")
+        return JsonOutput.toJson([discovery: IsoConversionUtil.parseXMLMetadataToMap(message)])
       }
-    }
 
-    def isXml = message.startsWith('<')
-    if (isXml) {
-      log.debug("message is xml, parsing")
-      return JsonOutput.toJson([discovery: IsoConversionUtil.parseXMLMetadataToMap(message)])
+    } catch (Exception e) {
+      return 'ERROR: ' + e.message
     }
-
     // is neither xml nor json --> is error
     return 'ERROR: Output is neither xml nor json: ' + message
   }
