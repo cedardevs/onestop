@@ -2,8 +2,6 @@ package org.cedar.psi.registry.stream
 
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.serialization.Deserializer
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
@@ -12,6 +10,7 @@ import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
+import org.cedar.psi.registry.utils.StreamSpecUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -21,14 +20,14 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
+import static org.cedar.psi.registry.utils.StreamSpecUtils.STRING_SERIALIZER
+import static org.cedar.psi.registry.utils.StreamSpecUtils.STRING_DESERIALIZER
 
 @Slf4j
 @Unroll
 class DelayedPublisherTransformerSpec extends Specification {
 
   static final UTC_ID = ZoneId.of('UTC')
-  static final STRING_SERIALIZER = Serdes.String().serializer()
-  static final STRING_DESERIALIZER = Serdes.String().deserializer()
   static final INPUT_TOPIC = 'input'
   static final OUTPUT_TOPIC = 'output'
   static final TIMESTAMP_STORE_NAME = 'timestamp'
@@ -178,7 +177,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(plusTenKey) == plusTenMessage // <-- original value remains
 
     and: // 3 original messages plus 2 republished messages have come out
-    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = StreamSpecUtils.readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 5
     OutputVerifier.compareKeyValue(output[0], plusSixKey, plusSixMessage)
     OutputVerifier.compareKeyValue(output[1], plusTenKey, plusTenMessage)
@@ -213,7 +212,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == null
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = StreamSpecUtils.readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
     OutputVerifier.compareKeyValue(output[0], key, firstValue)
     OutputVerifier.compareKeyValue(output[1], key, finalValue)
@@ -239,7 +238,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == null
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = StreamSpecUtils.readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
     OutputVerifier.compareKeyValue(output[0], key, firstValue)
     OutputVerifier.compareKeyValue(output[1], key, secondValue)
@@ -271,7 +270,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == secondValue
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = StreamSpecUtils.readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 3
     OutputVerifier.compareKeyValue(output[0], key, firstValue)
     OutputVerifier.compareKeyValue(output[1], key, firstValue.replaceFirst('true', 'false'))
@@ -303,7 +302,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == secondValue
 
     and: // only the two input values come out; the first republishing event doesn't go off
-    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = StreamSpecUtils.readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
     OutputVerifier.compareKeyValue(output[0], key, firstValue)
     OutputVerifier.compareKeyValue(output[1], key, secondValue)
@@ -315,15 +314,6 @@ class DelayedPublisherTransformerSpec extends Specification {
 
   static sendInput(TopologyTestDriver driver, String topic, String key, String value) {
     driver.pipeInput(consumerFactory.create(topic, key, value))
-  }
-
-  static List<ProducerRecord> readAllOutput(TopologyTestDriver driver, String topic, Deserializer keyDeserializer, Deserializer valueDeserializer) {
-    def curr
-    def output = []
-    while (curr = driver.readOutput(topic, keyDeserializer, valueDeserializer)) {
-      output << curr
-    }
-    return output
   }
 
 }

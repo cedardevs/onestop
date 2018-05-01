@@ -39,11 +39,37 @@ class StreamFunctions {
     return new ValueJoiner<String, String, String>() {
       @Override
       String apply(String leftValue, String rightValue) {
-        log.debug("Joining left value $leftValue with right value ${rightValue}")
+        log.debug("Joining left value ${leftValue} with right value ${rightValue}")
         def slurper = new JsonSlurper()
         def leftSlurped = leftValue ? slurper.parseText(leftValue) as Map : null
         def rightSlurped = rightValue ? slurper.parseText(rightValue) as Map : null
         def result = [(leftKey): leftSlurped, (rightKey): rightSlurped]
+        return JsonOutput.toJson(result)
+      }
+    }
+  }
+
+  /**
+   * Returns a ValueJoiner which returns json with the left value under the given left key
+   * and merged into the right value.
+   *
+   * def joiner = buildKeyedJsonJoiner('left')
+   * joiner.apply('{"hello": "world"}', '{"answer": 42}')
+   * >> '{"left": {"hello": "world"}, "answer": 42}'
+   *
+   * @param leftKey  The key to put the left value under
+   * @param rightKey The key to put the right value under
+   * @return         The combined result
+   */
+  static ValueJoiner<String, String, String> buildKeyedJsonJoiner(String leftKey) {
+    return new ValueJoiner<String, String, String>() {
+      @Override
+      String apply(String leftValue, String rightValue) {
+        log.debug("Joining left value ${leftValue} with right value ${rightValue}")
+        def slurper = new JsonSlurper()
+        Map leftSlurped = leftValue ? slurper.parseText(leftValue) as Map : null
+        Map rightSlurped = rightValue ? slurper.parseText(rightValue) as Map : [:]
+        Map result = [(leftKey): leftSlurped] + rightSlurped
         return JsonOutput.toJson(result)
       }
     }

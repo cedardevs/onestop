@@ -15,8 +15,13 @@ import org.apache.kafka.streams.kstream.KGroupedStream
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KTable
 import org.apache.kafka.streams.kstream.Materialized
+import org.apache.kafka.streams.kstream.ValueTransformerSupplier
+import org.apache.kafka.streams.state.Stores
+import org.cedar.psi.registry.stream.DelayedPublisherTransformer
+import org.cedar.psi.registry.stream.PublishingAwareTransformer
 import org.cedar.psi.registry.stream.StreamFunctions
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 import javax.annotation.PostConstruct
@@ -41,13 +46,21 @@ class MetadataStreamService {
   static final String PARSED_GRANULE_STORE = 'parsed-granules'
   static final String PARSED_COLLECTION_STORE = 'parsed-collections'
 
+  static final String GRANULE_PUBLISH_TIMES = 'granule-publish-times'
+  static final String GRANULE_LOOKUP_VALUES = 'granule-lookup-values'
+  static final String COLLECTION_PUBLISH_TIMES = 'collection-publish-times'
+  static final String COLLECTION_LOOKUP_VALUES = 'collection-lookup-values'
+
   private final AdminClient adminClient
+  private final long publishInterval
   private KafkaStreams streamsApp
 
-  MetadataStreamService(@Autowired AdminClient adminClient) {
+
+  MetadataStreamService(@Autowired AdminClient adminClient, @Value('${publishing.interval.ms:300000}') long publishInterval) {
     this.adminClient = adminClient
+    this.publishInterval = publishInterval
     declareTopics(adminClient)
-    this.streamsApp = buildStreamsApp(adminClient)
+    this.streamsApp = buildStreamsApp(adminClient, publishInterval)
   }
 
   @PostConstruct
@@ -68,7 +81,7 @@ class MetadataStreamService {
     if (this.streamsApp) {
       this.streamsApp.close()
       this.streamsApp.cleanUp()
-      this.streamsApp = buildStreamsApp(this.adminClient)
+      this.streamsApp = buildStreamsApp(this.adminClient, this.publishInterval)
       this.streamsApp.start()
     }
   }
@@ -102,7 +115,7 @@ class MetadataStreamService {
     return config + additionalConfig
   }
 
-  private static KafkaStreams buildStreamsApp(AdminClient adminClient) {
+  static KafkaStreams buildStreamsApp(AdminClient adminClient, long publishInterval) {
     def kafkaNodes = adminClient.describeCluster().nodes().get()
     def bootstrapServers = kafkaNodes.take(3).collect({ it.host() + ':' + it.port() })
 
@@ -113,11 +126,11 @@ class MetadataStreamService {
         (StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG): Serdes.String().class.name,
         (ConsumerConfig.AUTO_OFFSET_RESET_CONFIG)       : 'earliest'
     ])
-    def streamsTopology = buildTopology()
+    def streamsTopology = buildTopology(publishInterval)
     return new KafkaStreams(streamsTopology, streamsConfig)
   }
 
-  private static Topology buildTopology() {
+  static Topology buildTopology(long publishInterval) {
     def builder = new StreamsBuilder()
 
     KStream rawGranules = builder.stream(RAW_GRANULE_TOPIC)
@@ -128,17 +141,40 @@ class MetadataStreamService {
     KGroupedStream groupedCollections = rawCollections.groupByKey()
     KTable rawCollectionTable = groupedCollections.reduce(StreamFunctions.reduceJsonStrings, Materialized.as(RAW_COLLECTION_STORE))
 
-    KTable parsedGranuleTable = builder.table(PARSED_GRANULE_TOPIC, Materialized.as(PARSED_GRANULE_STORE).withLoggingEnabled([:]))
-    KTable parsedCollectionTable = builder.table(PARSED_COLLECTION_TOPIC, Materialized.as(PARSED_COLLECTION_STORE).withLoggingEnabled([:]))
+    builder.addStateStore(Stores.keyValueStoreBuilder(
+        Stores.persistentKeyValueStore(GRANULE_PUBLISH_TIMES), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
+    builder.addStateStore(Stores.keyValueStoreBuilder(
+        Stores.persistentKeyValueStore(COLLECTION_PUBLISH_TIMES), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
+    builder.addStateStore(Stores.keyValueStoreBuilder(
+        Stores.persistentKeyValueStore(GRANULE_LOOKUP_VALUES), Serdes.String(), Serdes.String()).withLoggingEnabled([:]))
+    builder.addStateStore(Stores.keyValueStoreBuilder(
+        Stores.persistentKeyValueStore(COLLECTION_LOOKUP_VALUES), Serdes.String(), Serdes.String()).withLoggingEnabled([:]))
+
+    KTable parsedGranuleTable = builder
+        .stream(PARSED_GRANULE_TOPIC)
+        .transform(
+        {-> new DelayedPublisherTransformer(GRANULE_PUBLISH_TIMES, GRANULE_LOOKUP_VALUES, publishInterval)},
+          GRANULE_PUBLISH_TIMES, GRANULE_LOOKUP_VALUES)
+        .groupByKey()
+        .reduce({agg, next -> next}, Materialized.as(PARSED_GRANULE_STORE))
+    KTable parsedCollectionTable = builder
+        .stream(PARSED_COLLECTION_TOPIC)
+        .transform(
+        {-> new DelayedPublisherTransformer(COLLECTION_PUBLISH_TIMES, COLLECTION_LOOKUP_VALUES, publishInterval)},
+          COLLECTION_PUBLISH_TIMES, COLLECTION_LOOKUP_VALUES)
+        .groupByKey()
+        .reduce({agg, next -> next}, Materialized.as(PARSED_COLLECTION_STORE))
 
     rawGranuleTable
-        .outerJoin(parsedGranuleTable, StreamFunctions.buildKeyedJsonJoiner('raw', 'parsed'))
+        .outerJoin(parsedGranuleTable, StreamFunctions.buildKeyedJsonJoiner('raw'))
         .toStream()
+        .transformValues({-> new PublishingAwareTransformer()} as ValueTransformerSupplier)
         .to(COMBINED_GRANULE_TOPIC)
 
     rawCollectionTable
-        .outerJoin(parsedCollectionTable, StreamFunctions.buildKeyedJsonJoiner('raw', 'parsed'))
+        .outerJoin(parsedCollectionTable, StreamFunctions.buildKeyedJsonJoiner('raw'))
         .toStream()
+        .transformValues({-> new PublishingAwareTransformer()} as ValueTransformerSupplier)
         .to(COMBINED_COLLECTION_TOPIC)
 
     return builder.build()
