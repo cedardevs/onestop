@@ -33,7 +33,7 @@ task compile(type: NodeTask) {
     }
 }
 
-task start(type: Exec, dependsOn: [":dockerComposeBackendStart"]) {
+task start(type: Exec) {
   executable = "bash"
   args = ["-c", "npm run dev"]
 }
