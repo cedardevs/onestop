@@ -116,6 +116,7 @@ buildScan {
 }
 
 task installLocalKubernetes(type: Exec, description: 'Downloads, installs, and configures kubectl and minikube locally') {
+  workingDir 'kubernetes'
   executable = 'bash'
   args = ['-c', './installLocalKubernetes.sh $project.kubectlVersion $project.minikubeVersion']
 }
