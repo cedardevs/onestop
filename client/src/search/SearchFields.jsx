@@ -112,12 +112,16 @@ class SearchFields extends React.Component {
   }
 
   render() {
+    const instructionalCopy = this.props.home
+      ? 'Search NCEI Data'
+      : 'New NCEI Data Search'
+
     const searchButton = (
       <Button
         key="searchButton"
         icon={search}
         onClick={this.validateAndSubmit}
-        title={'Search'}
+        title={`Submit: ${instructionalCopy}`}
         style={{fontSize: '1em', display: 'inline'}}
         styleIcon={{
           width: '1.3em',
@@ -128,20 +132,10 @@ class SearchFields extends React.Component {
       />
     )
 
-    let searchFieldStyle = null
-    if (this.props.home) {
-      searchFieldStyle = {
-        position: 'relative',
-        marginRight: '1em',
-        alignSelf: 'center',
-      }
-    }
-    else {
-      searchFieldStyle = {
-        position: 'relative',
-        marginRight: '1em',
-        alignSelf: 'center',
-      }
+    const searchFieldStyle = {
+      position: 'relative',
+      marginRight: '1em',
+      alignSelf: 'center',
     }
 
     const warningText = <div key="warning-text">{this.state.warning}</div>
@@ -190,6 +184,7 @@ class SearchFields extends React.Component {
             onClear={this.clearQueryString}
             value={this.props.queryString}
             warning={warning}
+            instructionalCopy={instructionalCopy}
           />
           {searchButton}
         </div>
