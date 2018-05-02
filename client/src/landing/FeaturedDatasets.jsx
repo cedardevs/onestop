@@ -248,7 +248,7 @@ class FeaturedDatasets extends React.Component {
         : [ titleList, imageContainer ]
 
       return (
-        <div
+        <nav
           aria-labelledby="featuredDatasets"
           style={styleFeaturedDatasetsWrapper}
         >
@@ -265,7 +265,7 @@ class FeaturedDatasets extends React.Component {
           </div>
           <br />
           <br />
-        </div>
+        </nav>
       )
     }
     else {

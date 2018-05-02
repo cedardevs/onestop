@@ -181,6 +181,8 @@ class SearchFields extends React.Component {
     return (
       <section style={searchFieldStyle}>
         <div
+          role="search"
+          aria-label="New OneStop Search"
           style={{display: 'flex', height: '2.618em', justifyContent: 'center'}}
         >
           <TextSearchField

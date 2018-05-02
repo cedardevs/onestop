@@ -107,6 +107,10 @@ export default class Button extends Component {
   }
 
   handleFocus = event => {
+    const {onFocus} = this.props
+    if (onFocus) {
+      onFocus(event)
+    }
     this.setState(prevState => {
       return {
         ...prevState,
@@ -116,6 +120,10 @@ export default class Button extends Component {
   }
 
   handleBlur = event => {
+    const {onBlur} = this.props
+    if (onBlur) {
+      onBlur(event)
+    }
     this.setState(prevState => {
       return {
         ...prevState,

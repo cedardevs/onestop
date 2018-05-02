@@ -8,6 +8,10 @@ const styleHeader = {
 export default class Header extends Component {
   render() {
     const {content} = this.props
-    return <div style={styleHeader}>{content}</div>
+    return (
+      <header aria-label="Header" style={styleHeader}>
+        {content}
+      </header>
+    )
   }
 }
