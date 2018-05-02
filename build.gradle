@@ -26,8 +26,6 @@ plugins {
 
 ext {
   esVersion = '5.5.3'
-  kubectlVersion = 'v1.10.1'
-  minikubeVersion = 'v0.26.1'
   // isRelease used by docker plugin as well
   isRelease = System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean
   springCloudVersion = 'Finchley.M7'
@@ -115,14 +113,7 @@ buildScan {
   licenseAgree = 'yes'
 }
 
-task installLocalKubernetes(type: Exec, description: 'Downloads, installs, and configures kubectl and minikube locally') {
-  workingDir 'kubernetes'
-  executable = 'bash'
-  args = ['-c', './installLocalKubernetes.sh $project.kubectlVersion $project.minikubeVersion']
-}
-
 task startBackend(type: Exec, description: 'Starts minikube if not already running and sets docker env') {
-  dependsOn "installLocalKubernetes"
   executable = 'bash'
   workingDir 'kubernetes'
   args = ['-c', './startMinikube.sh']
