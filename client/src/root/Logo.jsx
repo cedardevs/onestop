@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import stopCircle from 'fa/stop-circle-o.svg'
 import defaultStyles from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
+import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
 
 //-- Styles
 const styleLogoWrapper = {
@@ -33,19 +33,32 @@ const stylesNoaaLogoFocused = {
   borderRadius: '50%',
 }
 
+const stylesNoaaLogoHovered = {
+  border: '2px dashed white',
+  borderRadius: '50%',
+}
+
 const styleTextWrapper = {
   display: 'inline-flex',
   whiteSpace: 'nowrap',
   flex: '0 0 max-content',
   padding: '0 0.309em',
+  transition: 'color 0.3s ease',
+  color: 'white',
+  fill: 'white',
 }
 
 const styleTextWrapperFocused = {
   outline: '2px dashed white',
 }
 
+const styleTextWrapperHovered = {
+  color: '#277cb2',
+  fill: '#277cb2',
+}
+
 const stylesOneStopLink = {
-  color: 'white',
+  color: 'inherit',
   textDecoration: 'none',
   display: 'inline',
   fontSize: '2em',
@@ -79,6 +92,13 @@ const stylesNceiTextBottom = {
   padding: '0 0 0.309em 0.5em',
 }
 
+const styleOneStopOImageWrapper = {
+  position: 'relative',
+  top: '.15em',
+  left: '.07em',
+  fill: 'inherit',
+  transition: 'fill 0.3s ease',
+}
 //-- Component
 
 export default class Logo extends Component {
@@ -86,6 +106,8 @@ export default class Logo extends Component {
     this.setState({
       focusingImage: false,
       focusingText: false,
+      hoveringImage: false,
+      hoveringText: false,
     })
   }
 
@@ -125,14 +147,52 @@ export default class Logo extends Component {
     })
   }
 
+  handleImageMouseOver = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        hoveringImage: true,
+      }
+    })
+  }
+
+  handleImageMouseOut = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        hoveringImage: false,
+      }
+    })
+  }
+
+  handleTextMouseOver = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        hoveringText: true,
+      }
+    })
+  }
+
+  handleTextMouseOut = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        hoveringText: false,
+      }
+    })
+  }
+
   render() {
     const styleNoaaLogoMerged = {
       ...styleNoaaLogo,
+      ...(this.state.hoveringImage ? stylesNoaaLogoHovered : {}),
       ...(this.state.focusingImage ? stylesNoaaLogoFocused : {}),
     }
 
     const styleTextWrapperMerged = {
       ...styleTextWrapper,
+      ...(this.state.hoveringText ? styleTextWrapperHovered : {}),
       ...(this.state.focusingText ? styleTextWrapperFocused : {}),
     }
 
@@ -140,12 +200,14 @@ export default class Logo extends Component {
       <div style={styleLogoWrapper}>
         <div style={styleNoaaLogoWrapper}>
           <a
-            href="#"
-            title="One Stop Home"
+            href="http://www.noaa.gov"
+            title="NOAA"
             aria-hidden={true}
             onClick={() => this.props.onClick()}
             onFocus={this.handleImageFocus}
             onBlur={this.handleImageBlur}
+            onMouseOver={this.handleImageMouseOver}
+            onMouseOut={this.handleImageMouseOut}
             style={{outline: 'none'}}
           >
             <img
@@ -164,14 +226,18 @@ export default class Logo extends Component {
             onClick={() => this.props.onClick()}
             onFocus={this.handleTextFocus}
             onBlur={this.handleTextBlur}
+            onMouseOver={this.handleTextMouseOver}
+            onMouseOut={this.handleTextMouseOut}
           >
-            <span style={defaultStyles.hideOffscreen}>OneStop</span>
-            <span aria-hidden="true" style={stylesOneStopText}>
-              <img
-                src={stopCircle}
-                style={stylesStopCircle}
-                alt={'OneStop'}
-              />neStop
+            <span style={stylesOneStopText}>
+              <span style={styleOneStopOImageWrapper}>
+                <SvgIcon
+                  size="1.1em"
+                  verticalAlign="initial"
+                  path={stop_circle_o}
+                />
+              </span>
+              <span style={{display: 'none'}}>O</span>neStop
             </span>
             <span style={stylesNceiText}>National Oceanic and</span>
             <span style={stylesNceiTextBottom}>Atmospheric Administration</span>
