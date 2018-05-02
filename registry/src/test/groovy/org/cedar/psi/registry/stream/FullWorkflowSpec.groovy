@@ -18,8 +18,8 @@ import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_GRANUL
 import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_GRANULE_TOPIC
 import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_STORE
 import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_TOPIC
-import static org.cedar.psi.registry.utils.StreamSpecUtils.STRING_SERIALIZER
-import static org.cedar.psi.registry.utils.StreamSpecUtils.readAllOutput
+import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_SERIALIZER
+import static org.cedar.psi.registry.util.StreamSpecUtils.readAllOutput
 
 
 class FullWorkflowSpec extends Specification {
@@ -93,8 +93,7 @@ class FullWorkflowSpec extends Specification {
     def key = 'A'
     def plusFiveTime = ZonedDateTime.now(UTC_ID).plusSeconds(5)
     def plusFiveString = ISO_OFFSET_DATE_TIME.format(plusFiveTime)
-    def plusFiveMessage = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + plusFiveString +'"}}'
-    def plusFivePublished = '{"discovery":{"metadata":"yes"},"publishing":{"private":false,"date":"' + plusFiveString +'"}}'
+    def plusFiveMessage = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"until":"' + plusFiveString +'"}}'
 
     when:
     driver.pipeInput(consumerFactory.create(PARSED_GRANULE_TOPIC, key, plusFiveMessage))
@@ -109,11 +108,10 @@ class FullWorkflowSpec extends Specification {
     driver.advanceWallClockTime(6000)
 
     then:
-    parsedGranuleStore.get(key) == plusFivePublished
+    parsedGranuleStore.get(key) == plusFiveMessage
     def output2 = readAllOutput(driver, COMBINED_GRANULE_TOPIC)
-    OutputVerifier.compareKeyValue(output2[0], key, '{"raw":null,"discovery":{"metadata":"yes"},"publishing":{"private":false,"date":"' + plusFiveString +'"}}')
+    OutputVerifier.compareKeyValue(output2[0], key, '{"raw":null,"discovery":{"metadata":"yes"},"publishing":{"private":true,"until":"' + plusFiveString +'"}}')
     output2.size() == 1
   }
-
 
 }

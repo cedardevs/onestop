@@ -135,42 +135,47 @@ class MetadataStreamService {
 
     KStream rawGranules = builder.stream(RAW_GRANULE_TOPIC)
     KGroupedStream groupedGranules = rawGranules.groupByKey()
-    KTable rawGranuleTable = groupedGranules.reduce(StreamFunctions.reduceJsonStrings, Materialized.as(RAW_GRANULE_STORE))
+    KTable rawGranuleTable = groupedGranules.reduce(StreamFunctions.mergeJsonStrings, Materialized.as(RAW_GRANULE_STORE))
 
     KStream rawCollections = builder.stream(RAW_COLLECTION_TOPIC)
     KGroupedStream groupedCollections = rawCollections.groupByKey()
-    KTable rawCollectionTable = groupedCollections.reduce(StreamFunctions.reduceJsonStrings, Materialized.as(RAW_COLLECTION_STORE))
+    KTable rawCollectionTable = groupedCollections.reduce(StreamFunctions.mergeJsonStrings, Materialized.as(RAW_COLLECTION_STORE))
+
+    KTable parsedGranuleTable = builder
+        .stream(PARSED_GRANULE_TOPIC)
+        .mapValues(StreamFunctions.parsedInfoNormalizer)
+        .groupByKey()
+        .reduce(StreamFunctions.identityReducer, Materialized.as(PARSED_GRANULE_STORE))
+    KTable parsedCollectionTable = builder
+        .stream(PARSED_COLLECTION_TOPIC)
+        .mapValues(StreamFunctions.parsedInfoNormalizer)
+        .groupByKey()
+        .reduce(StreamFunctions.identityReducer, Materialized.as(PARSED_COLLECTION_STORE))
 
     builder.addStateStore(Stores.keyValueStoreBuilder(
         Stores.persistentKeyValueStore(GRANULE_PUBLISH_TIMES), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
     builder.addStateStore(Stores.keyValueStoreBuilder(
         Stores.persistentKeyValueStore(COLLECTION_PUBLISH_TIMES), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
-    builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(GRANULE_LOOKUP_VALUES), Serdes.String(), Serdes.String()).withLoggingEnabled([:]))
-    builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(COLLECTION_LOOKUP_VALUES), Serdes.String(), Serdes.String()).withLoggingEnabled([:]))
 
-    KTable parsedGranuleTable = builder
-        .stream(PARSED_GRANULE_TOPIC)
-        .transform(
-        {-> new DelayedPublisherTransformer(GRANULE_PUBLISH_TIMES, GRANULE_LOOKUP_VALUES, publishInterval)},
-          GRANULE_PUBLISH_TIMES, GRANULE_LOOKUP_VALUES)
-        .groupByKey()
-        .reduce({agg, next -> next}, Materialized.as(PARSED_GRANULE_STORE))
-    KTable parsedCollectionTable = builder
-        .stream(PARSED_COLLECTION_TOPIC)
-        .transform(
-        {-> new DelayedPublisherTransformer(COLLECTION_PUBLISH_TIMES, COLLECTION_LOOKUP_VALUES, publishInterval)},
-          COLLECTION_PUBLISH_TIMES, COLLECTION_LOOKUP_VALUES)
-        .groupByKey()
-        .reduce({agg, next -> next}, Materialized.as(PARSED_COLLECTION_STORE))
+    parsedGranuleTable
+        .toStream()
+        .transform({->
+      new DelayedPublisherTransformer(GRANULE_PUBLISH_TIMES, PARSED_GRANULE_STORE, publishInterval)
+    }, GRANULE_PUBLISH_TIMES, PARSED_GRANULE_STORE)
+        .to(PARSED_GRANULE_TOPIC)
+    parsedCollectionTable
+        .toStream()
+        .mapValues(StreamFunctions.parsedInfoNormalizer)
+        .transform({->
+      new DelayedPublisherTransformer(COLLECTION_PUBLISH_TIMES, PARSED_COLLECTION_STORE, publishInterval)
+    }, COLLECTION_PUBLISH_TIMES, PARSED_COLLECTION_STORE)
+        .to(PARSED_COLLECTION_TOPIC)
 
     rawGranuleTable
         .outerJoin(parsedGranuleTable, StreamFunctions.buildKeyedJsonJoiner('raw'))
         .toStream()
         .transformValues({-> new PublishingAwareTransformer()} as ValueTransformerSupplier)
         .to(COMBINED_GRANULE_TOPIC)
-
     rawCollectionTable
         .outerJoin(parsedCollectionTable, StreamFunctions.buildKeyedJsonJoiner('raw'))
         .toStream()

@@ -1,4 +1,4 @@
-package org.cedar.psi.registry.utils
+package org.cedar.psi.registry.util
 
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.Deserializer

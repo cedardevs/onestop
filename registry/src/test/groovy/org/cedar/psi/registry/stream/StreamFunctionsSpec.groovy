@@ -11,7 +11,7 @@ class StreamFunctionsSpec extends Specification {
     def mergedAggregate = '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}'
 
     expect:
-    StreamFunctions.reduceJsonStrings.apply(currentAggregate, newValue) == mergedAggregate
+    StreamFunctions.mergeJsonStrings.apply(currentAggregate, newValue) == mergedAggregate
   }
 
 }

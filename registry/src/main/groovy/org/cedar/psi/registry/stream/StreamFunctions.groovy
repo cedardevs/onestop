@@ -6,18 +6,26 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.kstream.Reducer
 import org.apache.kafka.streams.kstream.ValueJoiner
+import org.apache.kafka.streams.kstream.ValueMapperWithKey
 
 @Slf4j
 @CompileStatic
 class StreamFunctions {
 
-  static Reducer<String> reduceJsonStrings = new Reducer<String>() {
+  static Reducer identityReducer = new Reducer() {
     @Override
-    String apply(String aggregate, String newValue) {
-      log.debug("Merging new value $newValue into existing aggregate ${aggregate}")
+    Object apply(Object aggregate, Object nextValue) {
+      nextValue
+    }
+  }
+
+  static Reducer<String> mergeJsonStrings = new Reducer<String>() {
+    @Override
+    String apply(String aggregate, String nextValue) {
+      log.debug("Merging new value $nextValue into existing aggregate ${aggregate}")
       def slurper = new JsonSlurper()
       def slurpedAggregate = aggregate ? slurper.parseText(aggregate as String) as Map : [:]
-      def slurpedNewValue = slurper.parseText(newValue as String) as Map
+      def slurpedNewValue = slurper.parseText(nextValue as String) as Map
       def result = slurpedAggregate + slurpedNewValue
       return JsonOutput.toJson(result)
     }
@@ -72,6 +80,18 @@ class StreamFunctions {
         Map result = [(leftKey): leftSlurped] + rightSlurped
         return JsonOutput.toJson(result)
       }
+    }
+  }
+
+  static ValueMapperWithKey<String, String, String> parsedInfoNormalizer = new ValueMapperWithKey<String, String, String>() {
+    @Override
+    String apply(String readOnlyKey, String value) {
+      def slurper = new JsonSlurper()
+      def valueMap = value ? slurper.parseText(value) as Map : [:]
+      if (!valueMap.containsKey('publishing')) {
+        valueMap.put('publishing', [private: false])
+      }
+      return JsonOutput.toJson(valueMap)
     }
   }
 
