@@ -229,15 +229,21 @@ export default class Logo extends Component {
             onMouseOver={this.handleTextMouseOver}
             onMouseOut={this.handleTextMouseOut}
           >
-            <span style={stylesOneStopText}>
-              <span style={styleOneStopOImageWrapper}>
+            <span style={stylesOneStopText} aria-label="One Stop">
+              <span style={styleOneStopOImageWrapper} aria-hidden="true">
                 <SvgIcon
                   size="1.1em"
                   verticalAlign="initial"
                   path={stop_circle_o}
                 />
               </span>
-              <span style={{display: 'none'}}>O</span>neStop
+              <span
+                aria-hidden="true"
+                style={{display: 'inline-block', width: 0, overflowX: 'hidden'}}
+              >
+                O
+              </span>
+              <span aria-hidden="true">neStop</span>
             </span>
             <span style={stylesNceiText}>National Oceanic and</span>
             <span style={stylesNceiTextBottom}>Atmospheric Administration</span>
