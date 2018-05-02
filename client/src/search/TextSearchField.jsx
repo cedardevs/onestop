@@ -137,7 +137,7 @@ class TextSearchField extends React.Component {
   }
 
   render() {
-    const {onClear, warning, instructionalCopy} = this.props
+    const {onClear, warningPopup, instructionalCopy} = this.props
 
     const styleSearchFieldMerged = {
       ...styleSearchField,
@@ -162,7 +162,7 @@ class TextSearchField extends React.Component {
 
     return (
       <div style={styleSearchFieldMerged}>
-        {warning}
+        {warningPopup}
 
         <input
           style={styleTextFieldMerged}
