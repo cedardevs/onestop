@@ -32,18 +32,20 @@ class DelayedPublisherTransformerSpec extends Specification {
   static final UTC_ID = ZoneId.of('UTC')
   static final INPUT_TOPIC = 'input'
   static final OUTPUT_TOPIC = 'output'
-  static final TIMESTAMP_STORE_NAME = 'timestamp'
+  static final TIME_STORE_NAME = 'timestamp'
+  static final KEY_STORE_NAME = 'key'
   static final LOOKUP_STORE_NAME = 'lookup'
   static final long TEST_INTERVAL = 500
   static final consumerFactory = new ConsumerRecordFactory(INPUT_TOPIC, STRING_SERIALIZER, STRING_SERIALIZER)
 
   DelayedPublisherTransformer transformer
   TopologyTestDriver driver
-  KeyValueStore timestampStore
+  KeyValueStore keyStore
+  KeyValueStore timeStore
   KeyValueStore lookupStore
 
   def setup() {
-    transformer = new DelayedPublisherTransformer(TIMESTAMP_STORE_NAME, LOOKUP_STORE_NAME, TEST_INTERVAL)
+    transformer = new DelayedPublisherTransformer(TIME_STORE_NAME, KEY_STORE_NAME, LOOKUP_STORE_NAME, TEST_INTERVAL)
 
     def config = [
         (StreamsConfig.APPLICATION_ID_CONFIG)           : 'delayed_publisher_spec',
@@ -54,7 +56,9 @@ class DelayedPublisherTransformerSpec extends Specification {
     ]
     def builder = new StreamsBuilder()
     builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.inMemoryKeyValueStore(TIMESTAMP_STORE_NAME), Serdes.Long(), Serdes.String()))
+        Stores.inMemoryKeyValueStore(TIME_STORE_NAME), Serdes.Long(), Serdes.String()))
+    builder.addStateStore(Stores.keyValueStoreBuilder(
+        Stores.inMemoryKeyValueStore(KEY_STORE_NAME), Serdes.String(), Serdes.Long()))
 
     // build a normalized table
     def lookupTable = builder
@@ -64,8 +68,9 @@ class DelayedPublisherTransformerSpec extends Specification {
         .reduce(StreamFunctions.identityReducer, Materialized.as(LOOKUP_STORE_NAME))
 
     // capture publishing events in the table and publishing them back to input when they fire
-    lookupTable.toStream()
-        .transform({-> transformer}, TIMESTAMP_STORE_NAME, LOOKUP_STORE_NAME)
+    lookupTable
+        .toStream()
+        .transform({-> transformer}, TIME_STORE_NAME, KEY_STORE_NAME, LOOKUP_STORE_NAME)
         .to(INPUT_TOPIC)
 
     // pass all table events to output, sending tombstones if private
@@ -77,7 +82,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     def topology = builder.build()
     driver = new TopologyTestDriver(topology, new Properties(config))
 
-    timestampStore = driver.getKeyValueStore(TIMESTAMP_STORE_NAME)
+    keyStore = driver.getKeyValueStore(KEY_STORE_NAME)
+    timeStore = driver.getKeyValueStore(TIME_STORE_NAME)
     lookupStore = driver.getKeyValueStore(LOOKUP_STORE_NAME)
   }
 
@@ -94,7 +100,8 @@ class DelayedPublisherTransformerSpec extends Specification {
 
     then:
     lookupStore.get(key) == value
-    !timestampStore.all().hasNext()
+    !keyStore.all().hasNext()
+    !timeStore.all().hasNext()
 
     and:
     def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
@@ -115,7 +122,8 @@ class DelayedPublisherTransformerSpec extends Specification {
 
     then:
     lookupStore.get(key) == expected
-    !timestampStore.all().hasNext()
+    !keyStore.all().hasNext()
+    !timeStore.all().hasNext()
 
     and:
     def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
@@ -134,7 +142,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     sendInput(driver, INPUT_TOPIC, key, value)
 
     then:
-    timestampStore.get(futureMillis) == key
+    keyStore.get(key) == futureMillis
+    timeStore.get(futureMillis) == key
     lookupStore.get(key) == value
 
     and:
@@ -168,9 +177,12 @@ class DelayedPublisherTransformerSpec extends Specification {
     sendInput(driver, INPUT_TOPIC, plusFiveKey, plusFiveMessage)
 
     then: // values and future publish dates are stored
-    timestampStore.get(plusFiveMillis) == plusFiveKey
-    timestampStore.get(plusSixMillis) == plusSixKey
-    timestampStore.get(plusTenMillis) == plusTenKey
+    keyStore.get(plusFiveKey) == plusFiveMillis
+    keyStore.get(plusSixKey) == plusSixMillis
+    keyStore.get(plusTenKey) == plusTenMillis
+    timeStore.get(plusFiveMillis) == plusFiveKey
+    timeStore.get(plusSixMillis) == plusSixKey
+    timeStore.get(plusTenMillis) == plusTenKey
     lookupStore.get(plusFiveKey) == plusFiveMessage
     lookupStore.get(plusSixKey) == plusSixMessage
     lookupStore.get(plusTenKey) == plusTenMessage
@@ -179,9 +191,12 @@ class DelayedPublisherTransformerSpec extends Specification {
     driver.advanceWallClockTime(8000)
 
     then: // 5- and 6-second messages have triggers removed and state is updated
-    timestampStore.get(plusFiveMillis) == null
-    timestampStore.get(plusSixMillis) == null
-    timestampStore.get(plusTenMillis) == plusTenKey // <-- not removed
+    keyStore.get(plusFiveKey) == null
+    keyStore.get(plusSixKey) == null
+    keyStore.get(plusTenKey) == plusTenMillis // <-- not removed
+    timeStore.get(plusFiveMillis) == null
+    timeStore.get(plusSixMillis) == null
+    timeStore.get(plusTenMillis) == plusTenKey // <-- not removed
     lookupStore.get(plusFiveKey) == plusFiveMessage
     lookupStore.get(plusSixKey) == plusSixMessage
     lookupStore.get(plusTenKey) == plusTenMessage // <-- original value remains
@@ -216,8 +231,9 @@ class DelayedPublisherTransformerSpec extends Specification {
     sendInput(driver, INPUT_TOPIC, key, secondValue)
 
     then:
-//    timestampStore.get(futureMillis) == null // TODO - fix this
-    timestampStore.get(pastMillis) == null
+    keyStore.get(key) == null
+    timeStore.get(futureMillis) == null
+    timeStore.get(pastMillis) == null
     lookupStore.get(key) == secondValue
 
     and:
@@ -243,7 +259,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     sendInput(driver, INPUT_TOPIC, key, secondValue)
 
     then:
-//    timestampStore.get(futureMillis) == null // TODO - fix this
+    keyStore.get(key) == null
+    timeStore.get(futureMillis) == null
     lookupStore.get(key) == secondValue
 
     and:
@@ -273,8 +290,9 @@ class DelayedPublisherTransformerSpec extends Specification {
     sendInput(driver, INPUT_TOPIC, key, secondValue)
 
     then:
-    timestampStore.get(firstMillis) == null
-    timestampStore.get(secondMillis) == key
+    keyStore.get(key) == secondMillis
+    timeStore.get(firstMillis) == null
+    timeStore.get(secondMillis) == key
     lookupStore.get(key) == secondValue
 
     and:
@@ -305,8 +323,9 @@ class DelayedPublisherTransformerSpec extends Specification {
     driver.advanceWallClockTime(5000)
 
     then: // initial publish time is removed, second is still there, state is updated
-    timestampStore.get(firstMillis) == null
-    timestampStore.get(secondMillis) == key
+    keyStore.get(key) == secondMillis
+    timeStore.get(firstMillis) == null
+    timeStore.get(secondMillis) == key
     lookupStore.get(key) == secondValue
 
     and: // only the two input values come out; the first republishing event doesn't go off

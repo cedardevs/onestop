@@ -47,9 +47,9 @@ class MetadataStreamService {
   static final String PARSED_COLLECTION_STORE = 'parsed-collections'
 
   static final String GRANULE_PUBLISH_TIMES = 'granule-publish-times'
-  static final String GRANULE_LOOKUP_VALUES = 'granule-lookup-values'
+  static final String GRANULE_PUBLISH_KEYS = 'granule-publish-keys'
   static final String COLLECTION_PUBLISH_TIMES = 'collection-publish-times'
-  static final String COLLECTION_LOOKUP_VALUES = 'collection-lookup-values'
+  static final String COLLECTION_PUBLISH_KEYS = 'collection-publish-keys'
 
   private final AdminClient adminClient
   private final long publishInterval
@@ -155,20 +155,23 @@ class MetadataStreamService {
     builder.addStateStore(Stores.keyValueStoreBuilder(
         Stores.persistentKeyValueStore(GRANULE_PUBLISH_TIMES), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
     builder.addStateStore(Stores.keyValueStoreBuilder(
+        Stores.persistentKeyValueStore(GRANULE_PUBLISH_KEYS), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
+    builder.addStateStore(Stores.keyValueStoreBuilder(
         Stores.persistentKeyValueStore(COLLECTION_PUBLISH_TIMES), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
+    builder.addStateStore(Stores.keyValueStoreBuilder(
+        Stores.persistentKeyValueStore(COLLECTION_PUBLISH_KEYS), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
+
+    def granulePublisher = new DelayedPublisherTransformer(GRANULE_PUBLISH_TIMES, GRANULE_PUBLISH_KEYS, PARSED_GRANULE_STORE, publishInterval)
+    def collectionPublisher = new DelayedPublisherTransformer(COLLECTION_PUBLISH_TIMES, COLLECTION_PUBLISH_KEYS, PARSED_COLLECTION_STORE, publishInterval)
 
     parsedGranuleTable
         .toStream()
-        .transform({->
-      new DelayedPublisherTransformer(GRANULE_PUBLISH_TIMES, PARSED_GRANULE_STORE, publishInterval)
-    }, GRANULE_PUBLISH_TIMES, PARSED_GRANULE_STORE)
+        .transform({-> granulePublisher}, GRANULE_PUBLISH_TIMES, GRANULE_PUBLISH_KEYS, PARSED_GRANULE_STORE)
         .to(PARSED_GRANULE_TOPIC)
     parsedCollectionTable
         .toStream()
         .mapValues(StreamFunctions.parsedInfoNormalizer)
-        .transform({->
-      new DelayedPublisherTransformer(COLLECTION_PUBLISH_TIMES, PARSED_COLLECTION_STORE, publishInterval)
-    }, COLLECTION_PUBLISH_TIMES, PARSED_COLLECTION_STORE)
+        .transform({-> collectionPublisher}, COLLECTION_PUBLISH_TIMES, COLLECTION_PUBLISH_KEYS, PARSED_COLLECTION_STORE)
         .to(PARSED_COLLECTION_TOPIC)
 
     rawGranuleTable
