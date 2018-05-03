@@ -144,6 +144,7 @@ export default class Button extends Component {
       styleFocus,
       title,
       ariaExpanded,
+      ariaSelected,
     } = this.props
 
     const iconAndText = icon && text
@@ -173,6 +174,7 @@ export default class Button extends Component {
         onBlur={this.handleBlur}
         title={title}
         aria-expanded={ariaExpanded}
+        aria-selected={ariaSelected}
         aria-label={title || text}
       >
         {icon && !this.props.children ? (
