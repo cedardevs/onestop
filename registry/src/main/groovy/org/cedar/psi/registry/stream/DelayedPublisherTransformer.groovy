@@ -1,5 +1,6 @@
 package org.cedar.psi.registry.stream
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.KeyValue
@@ -55,18 +56,18 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
     if (publishingInfo?.private == true) {
       if (incomingPublishTime && incomingPublishTime > now) {
         log.debug("incoming publish time is in the future => store the publish time")
-        triggerTimesStore.put(incomingPublishTime, key)
+        addTrigger(incomingPublishTime, key)
         triggerKeysStore.put(key, incomingPublishTime)
       }
       else if (storedPublishTime) {
         log.debug("removing existing publish time for ${key}")
-        triggerTimesStore.delete(storedPublishTime)
+        removeTrigger(storedPublishTime, key)
         triggerKeysStore.delete(key)
       }
     }
     else if (storedPublishTime) {
       log.debug("incoming value is not private => removing existing publish time and lookup value for ${key}")
-      triggerTimesStore.delete(storedPublishTime)
+      removeTrigger(storedPublishTime, key)
       triggerKeysStore.delete(key)
     }
     return null
@@ -95,25 +96,57 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
     while (iterator.hasNext() && iterator.peekNextKey() <= timestamp) {
       def keyValue = iterator.next()
       def triggerTime = keyValue.key as Long
-      def triggerKey = keyValue.value as String
-      log.debug("found publish event for ${keyValue}")
-      def lookupValue = lookupStore.get(triggerKey)
-      if (lookupValue) {
-        log.debug("looked up existing state for ${triggerKey}: ${lookupValue}")
-        def valueMap = slurper.parseText(lookupValue) as Map
-        def publishingInfo = valueMap.publishing as Map ?: [:]
-        def publishDate = publishingInfo?.until ?: null
-        def publishTimestamp = TimeFormatUtils.parseTimestamp(publishDate as String)
-        if (publishTimestamp && publishTimestamp <= timestamp) {
-          log.debug("current publish date for ${triggerKey} has passed => publish")
-          context.forward(triggerKey, lookupValue)
+      def triggerKeys = deserializeList(keyValue.value as String)
+      triggerKeys?.each { String triggerKey ->
+        log.debug("found publish event for ${keyValue}")
+        def lookupValue = lookupStore.get(triggerKey)
+        if (lookupValue) {
+          log.debug("looked up existing state for ${triggerKey}: ${lookupValue}")
+          def valueMap = slurper.parseText(lookupValue) as Map
+          def publishingInfo = valueMap.publishing as Map ?: [:]
+          def publishDate = publishingInfo?.until ?: null
+          def publishTimestamp = TimeFormatUtils.parseTimestamp(publishDate as String)
+          if (publishTimestamp && publishTimestamp <= timestamp) {
+            log.debug("current publish date for ${triggerKey} has passed => publish")
+            context.forward(triggerKey, lookupValue)
+          }
+        }
+        log.debug("removing publishing event")
+        removeTrigger(triggerTime, triggerKey)
+        if (triggerKeysStore.get(triggerKey) == triggerTime) {
+          triggerKeysStore.delete(triggerKey)
         }
       }
-      log.debug("removing publishing event")
-      triggerTimesStore.delete(triggerTime)
-      if (triggerKeysStore.get(triggerKey) == triggerTime) {
-        triggerKeysStore.delete(triggerKey)
-      }
+    }
+  }
+
+  static List<String> deserializeList(String value) {
+    return value ? new JsonSlurper().parseText(value) as List : null
+  }
+
+  List<String> getTrigger(Long key) {
+    deserializeList(triggerTimesStore.get(key))
+   }
+
+  void addTrigger(Long key, String value) {
+    def currentList = getTrigger(key) ?: []
+    currentList.add(value)
+    currentList.sort()
+    def newString = JsonOutput.toJson(currentList)
+    triggerTimesStore.put(key, newString)
+  }
+
+  void removeTrigger(Long key, String value) {
+    def currentList = getTrigger(key)
+    if (currentList == null) { return }
+    currentList.remove(value)
+    currentList.sort()
+    if (currentList.isEmpty()) {
+      triggerTimesStore.delete(key)
+    }
+    else {
+      def newString = JsonOutput.toJson(currentList)
+      triggerTimesStore.put(key, newString)
     }
   }
 

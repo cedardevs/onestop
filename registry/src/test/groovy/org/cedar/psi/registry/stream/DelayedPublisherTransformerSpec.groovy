@@ -12,7 +12,6 @@ import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
-import org.cedar.psi.registry.util.StreamSpecUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -24,6 +23,7 @@ import java.time.temporal.ChronoUnit
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_SERIALIZER
 import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_DESERIALIZER
+import static org.cedar.psi.registry.util.StreamSpecUtils.readAllOutput
 
 @Slf4j
 @Unroll
@@ -143,13 +143,40 @@ class DelayedPublisherTransformerSpec extends Specification {
 
     then:
     keyStore.get(key) == futureMillis
-    timeStore.get(futureMillis) == key
+    timeStore.get(futureMillis) == '["' + key + '"]'
     lookupStore.get(key) == value
 
     and:
     def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
     output.key() == key
     output.value() == null
+  }
+
+  def 'two values with same future publishing date have triggers save correctly'() {
+    def futureDate = ZonedDateTime.now(UTC_ID).plusYears(1)
+    def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
+    def futureMillis = Instant.from(futureDate).toEpochMilli()
+    def key1 = 'A'
+    def key2 = 'B'
+    def value1 = '{"metadata":"first!","publishing":{"private":true,"until":"' + futureString +'"}}'
+    def value2 = '{"metadata":"second!","publishing":{"private":true,"until":"' + futureString +'"}}'
+
+    when:
+    sendInput(driver, INPUT_TOPIC, key1, value1)
+    sendInput(driver, INPUT_TOPIC, key2, value2)
+
+    then:
+    keyStore.get(key1) == futureMillis
+    keyStore.get(key2) == futureMillis
+    timeStore.get(futureMillis) == "[\"$key1\",\"$key2\"]"
+    lookupStore.get(key1) == value1
+    lookupStore.get(key2) == value2
+
+    and:
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    OutputVerifier.compareKeyValue(output[0], key1, null)
+    OutputVerifier.compareKeyValue(output[1], key2, null)
+    output.size() == 2
   }
 
   def 'values with future publishing dates are republished when time elapses'() {
@@ -180,9 +207,9 @@ class DelayedPublisherTransformerSpec extends Specification {
     keyStore.get(plusFiveKey) == plusFiveMillis
     keyStore.get(plusSixKey) == plusSixMillis
     keyStore.get(plusTenKey) == plusTenMillis
-    timeStore.get(plusFiveMillis) == plusFiveKey
-    timeStore.get(plusSixMillis) == plusSixKey
-    timeStore.get(plusTenMillis) == plusTenKey
+    timeStore.get(plusFiveMillis) == "[\"$plusFiveKey\"]"
+    timeStore.get(plusSixMillis) == "[\"$plusSixKey\"]"
+    timeStore.get(plusTenMillis) == "[\"$plusTenKey\"]"
     lookupStore.get(plusFiveKey) == plusFiveMessage
     lookupStore.get(plusSixKey) == plusSixMessage
     lookupStore.get(plusTenKey) == plusTenMessage
@@ -196,19 +223,49 @@ class DelayedPublisherTransformerSpec extends Specification {
     keyStore.get(plusTenKey) == plusTenMillis // <-- not removed
     timeStore.get(plusFiveMillis) == null
     timeStore.get(plusSixMillis) == null
-    timeStore.get(plusTenMillis) == plusTenKey // <-- not removed
+    timeStore.get(plusTenMillis) == '["' + plusTenKey + '"]' // <-- not removed
     lookupStore.get(plusFiveKey) == plusFiveMessage
     lookupStore.get(plusSixKey) == plusSixMessage
     lookupStore.get(plusTenKey) == plusTenMessage // <-- original value remains
 
     and: // 3 original messages plus 2 republished messages have come out
-    def output = StreamSpecUtils.readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 5
     OutputVerifier.compareKeyValue(output[0], plusSixKey, null)
     OutputVerifier.compareKeyValue(output[1], plusTenKey, null)
     OutputVerifier.compareKeyValue(output[2], plusFiveKey, null)
     OutputVerifier.compareKeyValue(output[3], plusFiveKey, plusFiveMessage)
     OutputVerifier.compareKeyValue(output[4], plusSixKey, plusSixMessage)
+  }
+
+  def 'two values with same future publishing date are republished when time elapses'() {
+    def futureDate = ZonedDateTime.now(UTC_ID).plusSeconds(5)
+    def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
+    def futureMillis = Instant.from(futureDate).toEpochMilli()
+    def key1 = 'A'
+    def key2 = 'B'
+    def value1 = '{"metadata":"first!","publishing":{"private":true,"until":"' + futureString +'"}}'
+    def value2 = '{"metadata":"second!","publishing":{"private":true,"until":"' + futureString +'"}}'
+
+    when:
+    sendInput(driver, INPUT_TOPIC, key1, value1)
+    sendInput(driver, INPUT_TOPIC, key2, value2)
+    driver.advanceWallClockTime(10000)
+
+    then:
+    keyStore.get(key1) == null
+    keyStore.get(key2) == null
+    timeStore.get(futureMillis) == null
+    lookupStore.get(key1) == value1
+    lookupStore.get(key2) == value2
+
+    and:
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    OutputVerifier.compareKeyValue(output[0], key1, null)
+    OutputVerifier.compareKeyValue(output[1], key2, null)
+    OutputVerifier.compareKeyValue(output[2], key1, value1)
+    OutputVerifier.compareKeyValue(output[3], key2, value2)
+    output.size() == 4
   }
 
   def 'second value with past publishing date removes an already stored publish trigger'() {
@@ -237,7 +294,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == secondValue
 
     and:
-    def output = StreamSpecUtils.readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
     OutputVerifier.compareKeyValue(output[0], key, null)
     OutputVerifier.compareKeyValue(output[1], key, secondValue)
@@ -264,10 +321,42 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == secondValue
 
     and:
-    def output = StreamSpecUtils.readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
     OutputVerifier.compareKeyValue(output[0], key, null)
     OutputVerifier.compareKeyValue(output[1], key, secondValue)
+  }
+
+  def 'second value with private false removes an already stored trigger when another trigger at that time exists'() {
+    def key1 = 'A'
+    def key2 = 'B'
+    // first message has future date
+    def futureDate = ZonedDateTime.now(UTC_ID).plusYears(1)
+    def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
+    def futureMillis = Instant.from(futureDate).toEpochMilli()
+    def firstValue = '{"publishing":{"private":true,"until":"' + futureString +'"}}'
+
+    // second message is no longer private
+    def secondValue = '{"publishing":{"private":false}}'
+
+    when:
+    sendInput(driver, INPUT_TOPIC, key1, firstValue)
+    sendInput(driver, INPUT_TOPIC, key2, firstValue)
+    sendInput(driver, INPUT_TOPIC, key1, secondValue)
+
+    then:
+    keyStore.get(key1) == null
+    keyStore.get(key2) == futureMillis
+    timeStore.get(futureMillis) == "[\"$key2\"]"
+    lookupStore.get(key1) == secondValue
+    lookupStore.get(key2) == firstValue
+
+    and:
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    output.size() == 3
+    OutputVerifier.compareKeyValue(output[0], key1, null)
+    OutputVerifier.compareKeyValue(output[1], key2, null)
+    OutputVerifier.compareKeyValue(output[2], key1, secondValue)
   }
 
   def 'second value with future publishing date arrives after initial delay has elapsed'() {
@@ -292,11 +381,11 @@ class DelayedPublisherTransformerSpec extends Specification {
     then:
     keyStore.get(key) == secondMillis
     timeStore.get(firstMillis) == null
-    timeStore.get(secondMillis) == key
+    timeStore.get(secondMillis) == "[\"$key\"]"
     lookupStore.get(key) == secondValue
 
     and:
-    def output = StreamSpecUtils.readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 3
     OutputVerifier.compareKeyValue(output[0], key, null)
     OutputVerifier.compareKeyValue(output[1], key, firstValue)
@@ -325,19 +414,15 @@ class DelayedPublisherTransformerSpec extends Specification {
     then: // initial publish time is removed, second is still there, state is updated
     keyStore.get(key) == secondMillis
     timeStore.get(firstMillis) == null
-    timeStore.get(secondMillis) == key
+    timeStore.get(secondMillis) == "[\"$key\"]"
     lookupStore.get(key) == secondValue
 
     and: // only the two input values come out; the first republishing event doesn't go off
-    def output = StreamSpecUtils.readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
     OutputVerifier.compareKeyValue(output[0], key, null)
     OutputVerifier.compareKeyValue(output[1], key, null)
   }
-
-  // TODO - publish: current lookup value has past date
-  // TODO - publish: current lookup value has future date
-  // TODO - look for more edge cases
 
   static sendInput(TopologyTestDriver driver, String topic, String key, String value) {
     driver.pipeInput(consumerFactory.create(topic, key, value))
