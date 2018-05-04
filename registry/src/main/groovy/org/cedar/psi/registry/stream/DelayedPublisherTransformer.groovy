@@ -2,6 +2,7 @@ package org.cedar.psi.registry.stream
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.kstream.Transformer
@@ -11,6 +12,7 @@ import org.apache.kafka.streams.state.KeyValueStore
 import org.cedar.psi.registry.util.TimeFormatUtils
 
 @Slf4j
+@CompileStatic
 class DelayedPublisherTransformer implements Transformer<String, String, KeyValue<String, String>> {
   private ProcessorContext context
   private KeyValueStore<Long, String> triggerTimesStore
