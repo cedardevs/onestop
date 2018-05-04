@@ -51,6 +51,9 @@ class MetadataStreamService {
   static final String COLLECTION_PUBLISH_TIMES = 'collection-publish-times'
   static final String COLLECTION_PUBLISH_KEYS = 'collection-publish-keys'
 
+  static final String SME_ERROR_HANDLER_TOPIC = 'sme-error-events'
+  static final String SME_ERROR_HANDLER_STORE = 'sme-errors'
+
   private final AdminClient adminClient
   private final long publishInterval
   private KafkaStreams streamsApp
@@ -95,6 +98,7 @@ class MetadataStreamService {
       (PARSED_COLLECTION_TOPIC): null,
       (COMBINED_GRANULE_TOPIC): null,
       (COMBINED_COLLECTION_TOPIC): null,
+      (SME_ERROR_HANDLER_TOPIC): null,
   ] as Map<String, Map>
 
   private static void declareTopics(AdminClient adminClient) {
@@ -173,6 +177,8 @@ class MetadataStreamService {
         .mapValues(StreamFunctions.parsedInfoNormalizer)
         .transform({-> collectionPublisher}, COLLECTION_PUBLISH_TIMES, COLLECTION_PUBLISH_KEYS, PARSED_COLLECTION_STORE)
         .to(PARSED_COLLECTION_TOPIC)
+
+    KTable smeErrorhandlerTable = builder.table(SME_ERROR_HANDLER_TOPIC, Materialized.as(SME_ERROR_HANDLER_STORE).withLoggingEnabled([:]))
 
     rawGranuleTable
         .outerJoin(parsedGranuleTable, StreamFunctions.buildKeyedJsonJoiner('raw'))
