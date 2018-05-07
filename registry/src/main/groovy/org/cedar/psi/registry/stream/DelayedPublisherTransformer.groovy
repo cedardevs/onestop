@@ -2,46 +2,32 @@ package org.cedar.psi.registry.stream
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.kstream.Transformer
 import org.apache.kafka.streams.processor.ProcessorContext
 import org.apache.kafka.streams.processor.PunctuationType
 import org.apache.kafka.streams.state.KeyValueStore
-
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatterBuilder
-import java.time.format.ResolverStyle
-import java.time.temporal.TemporalQuery
-
+import org.cedar.psi.registry.util.TimeFormatUtils
 
 @Slf4j
+@CompileStatic
 class DelayedPublisherTransformer implements Transformer<String, String, KeyValue<String, String>> {
-  // handle 3 optional date formats in priority of full-parse option to minimal-parse options
-  private static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
-      .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
-      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
-      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
-      .toFormatter()
-      .withResolverStyle(ResolverStyle.STRICT)
-
-  private static final ZoneId UTC_ID = ZoneId.of('UTC')
-
   private ProcessorContext context
-  private KeyValueStore<Long, String> publishTimestampStore
+  private KeyValueStore<Long, String> triggerTimesStore
+  private KeyValueStore<String, Long> triggerKeysStore
   private KeyValueStore<String, String> lookupStore
 
-  private String publishTimestampStoreName
+  private String triggerTimesStoreName
+  private String triggerKeysStoreName
   private String lookupStoreName
   private long interval
 
-  DelayedPublisherTransformer(String publishTimestampStoreName, String lookupStoreName, long interval) {
-    this.publishTimestampStoreName = publishTimestampStoreName
+
+  DelayedPublisherTransformer(String triggerTimesStoreName, String triggerKeysStoreName, String lookupStoreName, long interval) {
+    this.triggerTimesStoreName = triggerTimesStoreName
+    this.triggerKeysStoreName = triggerKeysStoreName
     this.lookupStoreName = lookupStoreName
     this.interval = interval
   }
@@ -49,59 +35,44 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
   @Override
   void init(ProcessorContext context) {
     this.context = context
-    publishTimestampStore = (KeyValueStore<Long, String>) this.context.getStateStore(publishTimestampStoreName)
+
+    triggerTimesStore = (KeyValueStore<Long, String>) this.context.getStateStore(triggerTimesStoreName)
+    triggerKeysStore = (KeyValueStore<String, Long>) this.context.getStateStore(triggerKeysStoreName)
     lookupStore = (KeyValueStore<String, String>) this.context.getStateStore(lookupStoreName)
+
     this.context.schedule(interval, PunctuationType.WALL_CLOCK_TIME, this.&publishUpTo)
   }
 
   @Override
   KeyValue<String, String> transform(String key, String value) {
     log.debug("transforming value for key ${key}")
-    def now = System.currentTimeMillis()
+    def now = context.timestamp()
     def slurper = new JsonSlurper()
     def valueMap = slurper.parseText(value) as Map
     def publishingInfo = valueMap.publishing as Map ?: [:]
-    def publishDate = publishingInfo.date ?: null
-    def incomingPublishTime = parseTimestamp(publishDate as String)
-    def storedPublishTime = lookupCurrentPublishTimestamp(key)
+    def publishDate = publishingInfo.until ?: null
+    def incomingPublishTime = TimeFormatUtils.parseTimestamp(publishDate as String)
+    def storedPublishTime = triggerKeysStore.get(key)
 
-    if (publishDate) {
-      log.debug("transforming value with publish date ${publishDate}")
-      if (incomingPublishTime > now) {
-        log.debug("incoming publish time is in the future => set private to true and store the publish time")
-        valueMap.publishing = publishingInfo + [private: true]
-        publishTimestampStore.put(incomingPublishTime, key)
-
-        if (storedPublishTime && storedPublishTime <= now) {
-          log.debug("current stored value for ${key} may have already been published => emit a tombstone")
-          context.forward(key, null)
-        }
+    log.debug("transforming value with private ${publishingInfo?.private} and publish date ${publishDate}")
+    if (publishingInfo?.private == true) {
+      if (incomingPublishTime && incomingPublishTime > now) {
+        log.debug("incoming publish time is in the future => store the publish time")
+        addTrigger(incomingPublishTime, key)
+        triggerKeysStore.put(key, incomingPublishTime)
       }
-      else {
-        log.debug("incoming publish time is in the past => set private false")
-        valueMap.publishing = publishingInfo + [private: false]
-        if (storedPublishTime) {
-          log.debug("removing existing publish time for ${key}")
-          publishTimestampStore.delete(storedPublishTime)
-        }
+      else if (storedPublishTime) {
+        log.debug("removing existing publish time for ${key}")
+        removeTrigger(storedPublishTime, key)
+        triggerKeysStore.delete(key)
       }
     }
-    else {
-      if (publishingInfo?.containsKey('private')) {
-        if (publishingInfo.private == false && storedPublishTime) {
-          log.debug("incoming value is not private => removing existing publish time for ${key}")
-          publishTimestampStore.delete(storedPublishTime)
-        }
-      }
-      else {
-        log.debug("incoming value has no publishing info => default to private: false")
-        valueMap.publishing = publishingInfo + [private: false]
-      }
+    else if (storedPublishTime) {
+      log.debug("incoming value is not private => removing existing publish time and lookup value for ${key}")
+      removeTrigger(storedPublishTime, key)
+      triggerKeysStore.delete(key)
     }
-
-    def finalValue = JsonOutput.toJson(valueMap)
-    lookupStore.put(key, finalValue)
-    return KeyValue.pair(key, finalValue)
+    return null
   }
 
   @Override
@@ -112,8 +83,10 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
 
   @Override
   void close() {
-    publishTimestampStore.flush()
-    publishTimestampStore.close()
+    triggerKeysStore.flush()
+    triggerKeysStore.close()
+    triggerTimesStore.flush()
+    triggerTimesStore.close()
     lookupStore.flush()
     lookupStore.close()
   }
@@ -121,69 +94,62 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
   void publishUpTo(long timestamp) {
     log.debug("publishing up to ${timestamp}")
     def slurper = new JsonSlurper()
-    def iterator = this.publishTimestampStore.all()
+    def iterator = this.triggerTimesStore.all()
     while (iterator.hasNext() && iterator.peekNextKey() <= timestamp) {
       def keyValue = iterator.next()
-      def lookupId = keyValue.value as String
-      log.debug("found publish event for ${keyValue}")
-      def lookupValue = lookupStore.get(lookupId)
-      if (lookupValue) {
-        log.debug("looked up existing state for ${lookupId}: ${lookupValue}")
-        def valueMap = slurper.parseText(lookupValue) as Map
-        def publishingInfo = valueMap.publishing as Map ?: [:]
-        def publishDate = publishingInfo?.date ?: null
-        def publishTimestamp = parseTimestamp(publishDate as String)
-        if (publishTimestamp <= timestamp) {
-          log.debug("current publish date for ${lookupId} has passed => update store and publish")
-          valueMap.publishing = publishingInfo + [private: false]
-          def newValue = JsonOutput.toJson(valueMap)
-          lookupStore.put(lookupId, newValue)
-          context.forward(lookupId, newValue)
+      def triggerTime = keyValue.key as Long
+      def triggerKeys = deserializeList(keyValue.value as String)
+      triggerKeys?.each { String triggerKey ->
+        log.debug("found publish event for ${keyValue}")
+        def lookupValue = lookupStore.get(triggerKey)
+        if (lookupValue) {
+          log.debug("looked up existing state for ${triggerKey}: ${lookupValue}")
+          def valueMap = slurper.parseText(lookupValue) as Map
+          def publishingInfo = valueMap.publishing as Map ?: [:]
+          def publishDate = publishingInfo?.until ?: null
+          def publishTimestamp = TimeFormatUtils.parseTimestamp(publishDate as String)
+          if (publishTimestamp && publishTimestamp <= timestamp) {
+            log.debug("current publish date for ${triggerKey} has passed => publish")
+            context.forward(triggerKey, lookupValue)
+          }
+        }
+        log.debug("removing publishing event")
+        removeTrigger(triggerTime, triggerKey)
+        if (triggerKeysStore.get(triggerKey) == triggerTime) {
+          triggerKeysStore.delete(triggerKey)
         }
       }
-      log.debug("removing publishing event")
-      publishTimestampStore.delete(keyValue.key as Long)
     }
   }
 
-  Long lookupCurrentPublishTimestamp(String key) {
-    return extractTimestamp(lookupStore.get(key))
+  static List<String> deserializeList(String value) {
+    return value ? new JsonSlurper().parseText(value) as List : null
   }
 
-  static Long extractTimestamp(String json) {
-    if (json) {
-      def slurper = new JsonSlurper()
-      def valueMap = slurper.parseText(json) as Map
-      def publishingInfo = valueMap.publishing as Map ?: [:]
-      def publishDate = publishingInfo?.date ?: null
-      if (publishDate) {
-        return parseTimestamp(publishDate as String)
-      }
-    }
-    return null
+  List<String> getTrigger(Long key) {
+    deserializeList(triggerTimesStore.get(key))
+   }
+
+  void addTrigger(Long key, String value) {
+    def currentList = getTrigger(key) ?: []
+    currentList.add(value)
+    currentList.sort()
+    def newString = JsonOutput.toJson(currentList)
+    triggerTimesStore.put(key, newString)
   }
 
-  static Long parseTimestamp(String timeString) {
-    log.debug("parsing time string: $timeString")
-    if (!timeString) {
-      return 0
+  void removeTrigger(Long key, String value) {
+    def currentList = getTrigger(key)
+    if (currentList == null) { return }
+    currentList.remove(value)
+    currentList.sort()
+    if (currentList.isEmpty()) {
+      triggerTimesStore.delete(key)
     }
-
-    // the "::" operator in Java 8 is ".&" in groovy 2
-    def parsedDate = PARSE_DATE_FORMATTER.parseBest(timeString,
-        ZonedDateTime.&from as TemporalQuery,
-        LocalDateTime.&from as TemporalQuery,
-        LocalDate.&from as TemporalQuery)
-
-    if (parsedDate instanceof LocalDate) {
-      parsedDate = parsedDate.atStartOfDay(UTC_ID)
+    else {
+      def newString = JsonOutput.toJson(currentList)
+      triggerTimesStore.put(key, newString)
     }
-    if (parsedDate instanceof LocalDateTime) {
-      parsedDate = parsedDate.atZone(UTC_ID)
-    }
-
-    def result = Instant.from(parsedDate).toEpochMilli()
-    log.debug("parsed epoch millis: ${result}")
-    return result
   }
+
 }

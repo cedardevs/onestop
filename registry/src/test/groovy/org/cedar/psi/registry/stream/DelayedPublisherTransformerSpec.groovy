@@ -2,12 +2,13 @@ package org.cedar.psi.registry.stream
 
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.clients.producer.ProducerRecord
-import org.apache.kafka.common.serialization.Deserializer
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
+import org.apache.kafka.streams.kstream.Materialized
+import org.apache.kafka.streams.kstream.ValueTransformerSupplier
+import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
@@ -20,27 +21,31 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
+import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_SERIALIZER
+import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_DESERIALIZER
+import static org.cedar.psi.registry.util.StreamSpecUtils.readAllOutput
 
 @Slf4j
 @Unroll
 class DelayedPublisherTransformerSpec extends Specification {
 
   static final UTC_ID = ZoneId.of('UTC')
-  static final STRING_SERIALIZER = Serdes.String().serializer()
-  static final STRING_DESERIALIZER = Serdes.String().deserializer()
   static final INPUT_TOPIC = 'input'
   static final OUTPUT_TOPIC = 'output'
-  static final TIMESTAMP_STORE_NAME = 'timestamp'
+  static final TIME_STORE_NAME = 'timestamp'
+  static final KEY_STORE_NAME = 'key'
   static final LOOKUP_STORE_NAME = 'lookup'
   static final long TEST_INTERVAL = 500
+  static final consumerFactory = new ConsumerRecordFactory(INPUT_TOPIC, STRING_SERIALIZER, STRING_SERIALIZER)
 
   DelayedPublisherTransformer transformer
-  ConsumerRecordFactory consumerFactory
   TopologyTestDriver driver
+  KeyValueStore keyStore
+  KeyValueStore timeStore
+  KeyValueStore lookupStore
 
   def setup() {
-    consumerFactory = new ConsumerRecordFactory(INPUT_TOPIC, STRING_SERIALIZER, STRING_SERIALIZER)
-    transformer = new DelayedPublisherTransformer(TIMESTAMP_STORE_NAME, LOOKUP_STORE_NAME, TEST_INTERVAL)
+    transformer = new DelayedPublisherTransformer(TIME_STORE_NAME, KEY_STORE_NAME, LOOKUP_STORE_NAME, TEST_INTERVAL)
 
     def config = [
         (StreamsConfig.APPLICATION_ID_CONFIG)           : 'delayed_publisher_spec',
@@ -51,17 +56,35 @@ class DelayedPublisherTransformerSpec extends Specification {
     ]
     def builder = new StreamsBuilder()
     builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.inMemoryKeyValueStore(TIMESTAMP_STORE_NAME), Serdes.Long(), Serdes.String()))
+        Stores.inMemoryKeyValueStore(TIME_STORE_NAME), Serdes.Long(), Serdes.String()))
     builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.inMemoryKeyValueStore(LOOKUP_STORE_NAME), Serdes.String(), Serdes.String()))
+        Stores.inMemoryKeyValueStore(KEY_STORE_NAME), Serdes.String(), Serdes.Long()))
 
-    builder
+    // build a normalized table
+    def lookupTable = builder
         .stream(INPUT_TOPIC)
-        .transform({-> transformer}, TIMESTAMP_STORE_NAME, LOOKUP_STORE_NAME)
+        .mapValues(StreamFunctions.parsedInfoNormalizer)
+        .groupByKey()
+        .reduce(StreamFunctions.identityReducer, Materialized.as(LOOKUP_STORE_NAME))
+
+    // capture publishing events in the table and publishing them back to input when they fire
+    lookupTable
+        .toStream()
+        .transform({-> transformer}, TIME_STORE_NAME, KEY_STORE_NAME, LOOKUP_STORE_NAME)
+        .to(INPUT_TOPIC)
+
+    // pass all table events to output, sending tombstones if private
+    lookupTable
+        .toStream()
+        .transformValues({-> new PublishingAwareTransformer()} as ValueTransformerSupplier)
         .to(OUTPUT_TOPIC)
 
     def topology = builder.build()
     driver = new TopologyTestDriver(topology, new Properties(config))
+
+    keyStore = driver.getKeyValueStore(KEY_STORE_NAME)
+    timeStore = driver.getKeyValueStore(TIME_STORE_NAME)
+    lookupStore = driver.getKeyValueStore(LOOKUP_STORE_NAME)
   }
 
   def cleanup() {
@@ -70,19 +93,20 @@ class DelayedPublisherTransformerSpec extends Specification {
 
   def 'value with private #isPrivate is saved and passes through'() {
     def key = 'A'
-    def value = '{"discovery":{"metadata":"yes"},"publishing":{"private":' + isPrivate + '}}'
+    def value = '{"publishing":{"private":' + isPrivate + '}}'
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, value))
+    sendInput(driver, INPUT_TOPIC, key, value)
 
     then:
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == value
-    !driver.getKeyValueStore(TIMESTAMP_STORE_NAME).all().hasNext()
+    lookupStore.get(key) == value
+    !keyStore.all().hasNext()
+    !timeStore.all().hasNext()
 
     and:
     def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
     output.key() == key
-    output.value() == value
+    output.value() == (isPrivate ? null : value)
 
     where:
     isPrivate << [true, false]
@@ -94,11 +118,12 @@ class DelayedPublisherTransformerSpec extends Specification {
     def expected = '{"discovery":{"metadata":"yes"},"publishing":{"private":false}}'
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, value))
+    sendInput(driver, INPUT_TOPIC, key, value)
 
     then:
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == expected
-    !driver.getKeyValueStore(TIMESTAMP_STORE_NAME).all().hasNext()
+    lookupStore.get(key) == expected
+    !keyStore.all().hasNext()
+    !timeStore.all().hasNext()
 
     and:
     def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
@@ -111,19 +136,47 @@ class DelayedPublisherTransformerSpec extends Specification {
     def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
     def futureMillis = Instant.from(futureDate).toEpochMilli()
     def key = 'A'
-    def value = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + futureString +'"}}'
+    def value = '{"publishing":{"private":true,"until":"' + futureString +'"}}'
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, value))
+    sendInput(driver, INPUT_TOPIC, key, value)
 
     then:
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(futureMillis) == key
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == value
+    keyStore.get(key) == futureMillis
+    timeStore.get(futureMillis) == '["' + key + '"]'
+    lookupStore.get(key) == value
 
     and:
     def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
     output.key() == key
-    output.value() == value
+    output.value() == null
+  }
+
+  def 'two values with same future publishing date have triggers save correctly'() {
+    def futureDate = ZonedDateTime.now(UTC_ID).plusYears(1)
+    def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
+    def futureMillis = Instant.from(futureDate).toEpochMilli()
+    def key1 = 'A'
+    def key2 = 'B'
+    def value1 = '{"metadata":"first!","publishing":{"private":true,"until":"' + futureString +'"}}'
+    def value2 = '{"metadata":"second!","publishing":{"private":true,"until":"' + futureString +'"}}'
+
+    when:
+    sendInput(driver, INPUT_TOPIC, key1, value1)
+    sendInput(driver, INPUT_TOPIC, key2, value2)
+
+    then:
+    keyStore.get(key1) == futureMillis
+    keyStore.get(key2) == futureMillis
+    timeStore.get(futureMillis) == "[\"$key1\",\"$key2\"]"
+    lookupStore.get(key1) == value1
+    lookupStore.get(key2) == value2
+
+    and:
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    OutputVerifier.compareKeyValue(output[0], key1, null)
+    OutputVerifier.compareKeyValue(output[1], key2, null)
+    output.size() == 2
   }
 
   def 'values with future publishing dates are republished when time elapses'() {
@@ -131,35 +184,32 @@ class DelayedPublisherTransformerSpec extends Specification {
     def plusFiveTime = ZonedDateTime.now(UTC_ID).plusSeconds(5)
     def plusFiveString = ISO_OFFSET_DATE_TIME.format(plusFiveTime)
     def plusFiveMillis = Instant.from(plusFiveTime).toEpochMilli()
-    def plusFiveMessage = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + plusFiveString +'"}}'
+    def plusFiveMessage = '{"publishing":{"private":true,"until":"' + plusFiveString +'"}}'
 
     def plusSixKey = '6'
     def plusSixTime = ZonedDateTime.now(UTC_ID).plusSeconds(6)
     def plusSixString = ISO_OFFSET_DATE_TIME.format(plusSixTime)
     def plusSixMillis = Instant.from(plusSixTime).toEpochMilli()
-    def plusSixMessage = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + plusSixString +'"}}'
+    def plusSixMessage = '{"publishing":{"private":true,"until":"' + plusSixString +'"}}'
 
     def plusTenKey = '10'
     def plusTenTime = ZonedDateTime.now(UTC_ID).plusSeconds(10)
     def plusTenString = ISO_OFFSET_DATE_TIME.format(plusTenTime)
     def plusTenMillis = Instant.from(plusTenTime).toEpochMilli()
-    def plusTenMessage = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + plusTenString +'"}}'
-
-    def plusFivePublished = plusFiveMessage.replaceFirst('true', 'false')
-    def plusSixPublished = plusSixMessage.replaceFirst('true', 'false')
-
-    def timestampStore = driver.getKeyValueStore(TIMESTAMP_STORE_NAME)
-    def lookupStore = driver.getKeyValueStore(LOOKUP_STORE_NAME)
+    def plusTenMessage = '{"publishing":{"private":true,"until":"' + plusTenString +'"}}'
 
     when: // publish messages, and do it out of order
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, plusSixKey, plusSixMessage))
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, plusTenKey, plusTenMessage))
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, plusFiveKey, plusFiveMessage))
+    sendInput(driver, INPUT_TOPIC, plusSixKey, plusSixMessage)
+    sendInput(driver, INPUT_TOPIC, plusTenKey, plusTenMessage)
+    sendInput(driver, INPUT_TOPIC, plusFiveKey, plusFiveMessage)
 
     then: // values and future publish dates are stored
-    timestampStore.get(plusFiveMillis) == plusFiveKey
-    timestampStore.get(plusSixMillis) == plusSixKey
-    timestampStore.get(plusTenMillis) == plusTenKey
+    keyStore.get(plusFiveKey) == plusFiveMillis
+    keyStore.get(plusSixKey) == plusSixMillis
+    keyStore.get(plusTenKey) == plusTenMillis
+    timeStore.get(plusFiveMillis) == "[\"$plusFiveKey\"]"
+    timeStore.get(plusSixMillis) == "[\"$plusSixKey\"]"
+    timeStore.get(plusTenMillis) == "[\"$plusTenKey\"]"
     lookupStore.get(plusFiveKey) == plusFiveMessage
     lookupStore.get(plusSixKey) == plusSixMessage
     lookupStore.get(plusTenKey) == plusTenMessage
@@ -168,21 +218,54 @@ class DelayedPublisherTransformerSpec extends Specification {
     driver.advanceWallClockTime(8000)
 
     then: // 5- and 6-second messages have triggers removed and state is updated
-    timestampStore.get(plusFiveMillis) == null
-    timestampStore.get(plusSixMillis) == null
-    timestampStore.get(plusTenMillis) == plusTenKey // <-- not removed
-    lookupStore.get(plusFiveKey) == plusFivePublished
-    lookupStore.get(plusSixKey) == plusSixPublished
+    keyStore.get(plusFiveKey) == null
+    keyStore.get(plusSixKey) == null
+    keyStore.get(plusTenKey) == plusTenMillis // <-- not removed
+    timeStore.get(plusFiveMillis) == null
+    timeStore.get(plusSixMillis) == null
+    timeStore.get(plusTenMillis) == '["' + plusTenKey + '"]' // <-- not removed
+    lookupStore.get(plusFiveKey) == plusFiveMessage
+    lookupStore.get(plusSixKey) == plusSixMessage
     lookupStore.get(plusTenKey) == plusTenMessage // <-- original value remains
 
     and: // 3 original messages plus 2 republished messages have come out
-    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 5
-    OutputVerifier.compareKeyValue(output[0], plusSixKey, plusSixMessage)
-    OutputVerifier.compareKeyValue(output[1], plusTenKey, plusTenMessage)
-    OutputVerifier.compareKeyValue(output[2], plusFiveKey, plusFiveMessage)
-    OutputVerifier.compareKeyValue(output[3], plusFiveKey, plusFivePublished)
-    OutputVerifier.compareKeyValue(output[4], plusSixKey, plusSixPublished)
+    OutputVerifier.compareKeyValue(output[0], plusSixKey, null)
+    OutputVerifier.compareKeyValue(output[1], plusTenKey, null)
+    OutputVerifier.compareKeyValue(output[2], plusFiveKey, null)
+    OutputVerifier.compareKeyValue(output[3], plusFiveKey, plusFiveMessage)
+    OutputVerifier.compareKeyValue(output[4], plusSixKey, plusSixMessage)
+  }
+
+  def 'two values with same future publishing date are republished when time elapses'() {
+    def futureDate = ZonedDateTime.now(UTC_ID).plusSeconds(5)
+    def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
+    def futureMillis = Instant.from(futureDate).toEpochMilli()
+    def key1 = 'A'
+    def key2 = 'B'
+    def value1 = '{"metadata":"first!","publishing":{"private":true,"until":"' + futureString +'"}}'
+    def value2 = '{"metadata":"second!","publishing":{"private":true,"until":"' + futureString +'"}}'
+
+    when:
+    sendInput(driver, INPUT_TOPIC, key1, value1)
+    sendInput(driver, INPUT_TOPIC, key2, value2)
+    driver.advanceWallClockTime(10000)
+
+    then:
+    keyStore.get(key1) == null
+    keyStore.get(key2) == null
+    timeStore.get(futureMillis) == null
+    lookupStore.get(key1) == value1
+    lookupStore.get(key2) == value2
+
+    and:
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    OutputVerifier.compareKeyValue(output[0], key1, null)
+    OutputVerifier.compareKeyValue(output[1], key2, null)
+    OutputVerifier.compareKeyValue(output[2], key1, value1)
+    OutputVerifier.compareKeyValue(output[3], key2, value2)
+    output.size() == 4
   }
 
   def 'second value with past publishing date removes an already stored publish trigger'() {
@@ -191,30 +274,30 @@ class DelayedPublisherTransformerSpec extends Specification {
     def futureDate = ZonedDateTime.now(UTC_ID).plusYears(1)
     def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
     def futureMillis = Instant.from(futureDate).toEpochMilli()
-    def firstValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + futureString +'"}}'
+    def firstValue = '{"publishing":{"private":true,"until":"' + futureString +'"}}'
 
     // second message has past date
     def pastDate = ZonedDateTime.now(UTC_ID).minusDays(1)
     def pastString = ISO_OFFSET_DATE_TIME.format(pastDate)
     def pastMillis = Instant.from(pastDate).toEpochMilli()
-    def secondValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + pastString +'"}}'
+    def secondValue = '{"publishing":{"private":true,"until":"' + pastString +'"}}'
 
-    def finalValue = secondValue.replaceFirst('true', 'false')
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, firstValue))
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, secondValue))
+    sendInput(driver, INPUT_TOPIC, key, firstValue)
+    sendInput(driver, INPUT_TOPIC, key, secondValue)
 
     then:
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(futureMillis) == null
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(pastMillis) == null
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == finalValue
+    keyStore.get(key) == null
+    timeStore.get(futureMillis) == null
+    timeStore.get(pastMillis) == null
+    lookupStore.get(key) == secondValue
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
-    OutputVerifier.compareKeyValue(output[0], key, firstValue)
-    OutputVerifier.compareKeyValue(output[1], key, finalValue)
+    OutputVerifier.compareKeyValue(output[0], key, null)
+    OutputVerifier.compareKeyValue(output[1], key, secondValue)
   }
 
   def 'second value with private false removes an already stored publish trigger'() {
@@ -223,24 +306,57 @@ class DelayedPublisherTransformerSpec extends Specification {
     def futureDate = ZonedDateTime.now(UTC_ID).plusYears(1)
     def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
     def futureMillis = Instant.from(futureDate).toEpochMilli()
-    def firstValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + futureString +'"}}'
+    def firstValue = '{"publishing":{"private":true,"until":"' + futureString +'"}}'
 
     // second message is no longer private
-    def secondValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":false}}'
+    def secondValue = '{"publishing":{"private":false}}'
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, firstValue))
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, secondValue))
+    sendInput(driver, INPUT_TOPIC, key, firstValue)
+    sendInput(driver, INPUT_TOPIC, key, secondValue)
 
     then:
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(futureMillis) == null
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == secondValue
+    keyStore.get(key) == null
+    timeStore.get(futureMillis) == null
+    lookupStore.get(key) == secondValue
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
-    OutputVerifier.compareKeyValue(output[0], key, firstValue)
+    OutputVerifier.compareKeyValue(output[0], key, null)
     OutputVerifier.compareKeyValue(output[1], key, secondValue)
+  }
+
+  def 'second value with private false removes an already stored trigger when another trigger at that time exists'() {
+    def key1 = 'A'
+    def key2 = 'B'
+    // first message has future date
+    def futureDate = ZonedDateTime.now(UTC_ID).plusYears(1)
+    def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
+    def futureMillis = Instant.from(futureDate).toEpochMilli()
+    def firstValue = '{"publishing":{"private":true,"until":"' + futureString +'"}}'
+
+    // second message is no longer private
+    def secondValue = '{"publishing":{"private":false}}'
+
+    when:
+    sendInput(driver, INPUT_TOPIC, key1, firstValue)
+    sendInput(driver, INPUT_TOPIC, key2, firstValue)
+    sendInput(driver, INPUT_TOPIC, key1, secondValue)
+
+    then:
+    keyStore.get(key1) == null
+    keyStore.get(key2) == futureMillis
+    timeStore.get(futureMillis) == "[\"$key2\"]"
+    lookupStore.get(key1) == secondValue
+    lookupStore.get(key2) == firstValue
+
+    and:
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    output.size() == 3
+    OutputVerifier.compareKeyValue(output[0], key1, null)
+    OutputVerifier.compareKeyValue(output[1], key2, null)
+    OutputVerifier.compareKeyValue(output[2], key1, secondValue)
   }
 
   def 'second value with future publishing date arrives after initial delay has elapsed'() {
@@ -249,32 +365,31 @@ class DelayedPublisherTransformerSpec extends Specification {
     def firstDate = ZonedDateTime.now(UTC_ID).plus(200, ChronoUnit.MILLIS)
     def firstString = ISO_OFFSET_DATE_TIME.format(firstDate)
     def firstMillis = Instant.from(firstDate).toEpochMilli()
-    def firstValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + firstString +'"}}'
+    def firstValue = '{"publishing":{"private":true,"until":"' + firstString +'"}}'
 
     // second message has far future date
     def secondDate = ZonedDateTime.now(UTC_ID).plusYears(1)
     def secondString = ISO_OFFSET_DATE_TIME.format(secondDate)
     def secondMillis = Instant.from(secondDate).toEpochMilli()
-    def secondValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + secondString +'"}}'
+    def secondValue = '{"publishing":{"private":true,"until":"' + secondString +'"}}'
 
     when:
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, firstValue))
-    sleep(500)
+    sendInput(driver, INPUT_TOPIC, key, firstValue)
     driver.advanceWallClockTime(500)
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, secondValue))
+    sendInput(driver, INPUT_TOPIC, key, secondValue)
 
     then:
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(firstMillis) == null
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(secondMillis) == key
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == secondValue
+    keyStore.get(key) == secondMillis
+    timeStore.get(firstMillis) == null
+    timeStore.get(secondMillis) == "[\"$key\"]"
+    lookupStore.get(key) == secondValue
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
-    output.size() == 4
-    OutputVerifier.compareKeyValue(output[0], key, firstValue)
-    OutputVerifier.compareKeyValue(output[1], key, firstValue.replaceFirst('true', 'false'))
-    OutputVerifier.compareKeyValue(output[2], key, null) // <- tombstone is sent downstream
-    OutputVerifier.compareKeyValue(output[3], key, secondValue)
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    output.size() == 3
+    OutputVerifier.compareKeyValue(output[0], key, null)
+    OutputVerifier.compareKeyValue(output[1], key, firstValue)
+    OutputVerifier.compareKeyValue(output[2], key, null)
   }
 
   def 'second value with future publishing date arrives before initial delay has elapsed'() {
@@ -283,42 +398,34 @@ class DelayedPublisherTransformerSpec extends Specification {
     def firstDate = ZonedDateTime.now(UTC_ID).plusSeconds(1)
     def firstString = ISO_OFFSET_DATE_TIME.format(firstDate)
     def firstMillis = Instant.from(firstDate).toEpochMilli()
-    def firstValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + firstString +'"}}'
+    def firstValue = '{"publishing":{"private":true,"until":"' + firstString +'"}}'
 
     // second message has far future date
     def secondDate = ZonedDateTime.now(UTC_ID).plusYears(1)
     def secondString = ISO_OFFSET_DATE_TIME.format(secondDate)
     def secondMillis = Instant.from(secondDate).toEpochMilli()
-    def secondValue = '{"discovery":{"metadata":"yes"},"publishing":{"private":true,"date":"' + secondString +'"}}'
+    def secondValue = '{"publishing":{"private":true,"until":"' + secondString +'"}}'
 
     when: // both messages arrive, then the initial delay elapses
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, firstValue))
-    driver.pipeInput(consumerFactory.create(INPUT_TOPIC, key, secondValue))
+    sendInput(driver, INPUT_TOPIC, key, firstValue)
+    sendInput(driver, INPUT_TOPIC, key, secondValue)
     driver.advanceWallClockTime(5000)
 
     then: // initial publish time is removed, second is still there, state is updated
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(firstMillis) == null
-    driver.getKeyValueStore(TIMESTAMP_STORE_NAME).get(secondMillis) == key
-    driver.getKeyValueStore(LOOKUP_STORE_NAME).get(key) == secondValue
+    keyStore.get(key) == secondMillis
+    timeStore.get(firstMillis) == null
+    timeStore.get(secondMillis) == "[\"$key\"]"
+    lookupStore.get(key) == secondValue
 
     and: // only the two input values come out; the first republishing event doesn't go off
-    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = readAllOutput(driver, OUTPUT_TOPIC)
     output.size() == 2
-    OutputVerifier.compareKeyValue(output[0], key, firstValue)
-    OutputVerifier.compareKeyValue(output[1], key, secondValue)
+    OutputVerifier.compareKeyValue(output[0], key, null)
+    OutputVerifier.compareKeyValue(output[1], key, null)
   }
 
-  // TODO - publish: current lookup value has past date
-  // TODO - publish: current lookup value has future date
-  // TODO - look for more edge cases
-
-  static List<ProducerRecord> readAllOutput(TopologyTestDriver driver, String topic, Deserializer keyDeserializer, Deserializer valueDeserializer) {
-    def curr
-    def output = []
-    while (curr = driver.readOutput(topic, keyDeserializer, valueDeserializer)) {
-      output << curr
-    }
-    return output
+  static sendInput(TopologyTestDriver driver, String topic, String key, String value) {
+    driver.pipeInput(consumerFactory.create(topic, key, value))
   }
 
 }
