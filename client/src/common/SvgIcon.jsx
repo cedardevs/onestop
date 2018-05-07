@@ -70,8 +70,8 @@ export class SvgIcon extends React.Component {
         <svg
           focusable="false"
           style={appliedStyle}
-          width={actualSize}
-          height={actualSize}
+          width={actualSize} // required for 508 check that removes css
+          height={actualSize} // required for 508 check that removes css
           viewBox="0 0 1792 1792"
         >
           {this.props.path}
