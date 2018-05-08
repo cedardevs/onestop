@@ -5,6 +5,9 @@
 ### Build outputs
 dist/
 
+### Extracted testData directory
+upload/testData
+
 ### IntelliJ
 .idea/
 .idea_modules/
