@@ -43,6 +43,8 @@ const styleTitle = {
   fontSize: '1.3em',
   color: 'rgb(0, 0, 50)',
   margin: 0,
+  overflowWrap: 'break-word',
+  wordWrap: 'break-word',
 }
 
 const styleSectionHeader = {
