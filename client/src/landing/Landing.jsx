@@ -2,7 +2,6 @@ import React from 'react'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import TopicsMenuContainer from './TopicsMenuContainer'
 import FeaturedDatasetsContainer from './FeaturedDatasetsContainer'
-import defaultStyles from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
 
 import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
@@ -65,15 +64,15 @@ class Landing extends React.Component {
               </span>
               <span style={{display: 'none'}}>O</span>neStop
             </span>
-            <div style={defaultStyles.hideOffscreen}>
-              A NOAA Data Search Platform
-            </div>
           </h1>
           <div style={styleHeroText}>
-            Geophysical, oceans, coastal, weather and climate data discovery all
-            in one place.<br />
+            A NOAA Data Search Platform<br />
           </div>
+          <br />
+          <br />
           <SearchFieldsContainer home={true} />
+          <br />
+          <br />
           <TopicsMenuContainer />
           <FeaturedDatasetsContainer />
         </div>

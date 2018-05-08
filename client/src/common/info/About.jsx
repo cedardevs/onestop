@@ -41,6 +41,10 @@ export default class Help extends React.Component {
         <section style={styleAbout}>
           <h1 style={styleH1}>OneStop Overview</h1>
           <p>
+            Geophysical, oceans, coastal, weather and climate data discovery all
+            in one place.
+          </p>
+          <p>
             The OneStop Project is designed to improve NOAA's data discovery and
             access framework. Focusing on all layers of the framework and not
             just the user interface, OneStop is addressing data format and
