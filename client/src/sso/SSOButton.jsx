@@ -52,8 +52,8 @@ export default class SSOButton extends React.Component {
             <input type="hidden" name="RelayState" value={relayState} />
             <input type="submit" value="SSO 8443: Username/Password" />
           </form>
-          <form method="get" action={idpInitiated}>
-            <input type="submit" value="SSO: IdP Initiated" />
+          <form>
+            <button formaction={idpInitiated}>SSO: IdP Initiated</button>
           </form>
         </div>
     )
