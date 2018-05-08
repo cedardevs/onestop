@@ -110,8 +110,8 @@ class Footer extends React.Component {
     })
 
     return (
-      <nav aria-label="Footer">
-        <div style={styleFooter}>
+      <div>
+        <nav aria-label="Footer" style={styleFooter}>
           <div>
             <ul style={styleFooterList}>{linkElements}</ul>
           </div>
@@ -145,8 +145,8 @@ class Footer extends React.Component {
               </FooterLink>
             </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
     )
   }
 }

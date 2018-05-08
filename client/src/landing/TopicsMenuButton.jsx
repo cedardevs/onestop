@@ -85,7 +85,7 @@ class TopicsMenuButton extends React.Component {
 
   render() {
     const {topic, onClick} = this.props
-
+    const ariaLabel = `${topic.title} Data Search`
     const styleTopicButtonMerged = {
       ...styleTopicButton,
       ...(this.state.focusing ? styleTopicButtonFocus : {}),
@@ -111,6 +111,7 @@ class TopicsMenuButton extends React.Component {
         onMouseUp={this.handleMouseUp}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
+        aria-label={ariaLabel}
       >
         <img
           style={styleTopicImageMerged}

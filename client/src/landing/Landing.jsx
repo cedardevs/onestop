@@ -55,13 +55,16 @@ class Landing extends React.Component {
       <div style={styleCenterContent}>
         <div style={styleShowcase}>
           <h1 style={styleHeroHeader} aria-label="One Stop">
-            <span style={styleOneStopOImageWrapper}>
-              <SvgIcon
-                size="1.1em"
-                verticalAlign="initial"
-                path={stop_circle_o}
-              />
-            </span>neStop
+            <span>
+              <span style={styleOneStopOImageWrapper}>
+                <SvgIcon
+                  size="1.1em"
+                  verticalAlign="initial"
+                  path={stop_circle_o}
+                />
+              </span>
+              <span style={{display: 'none'}}>O</span>neStop
+            </span>
             <div style={defaultStyles.hideOffscreen}>
               A NOAA Data Search Platform
             </div>

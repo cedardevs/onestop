@@ -64,10 +64,12 @@ class TopicsMenu extends React.Component {
       return <TopicsMenuButton key={i} topic={topic} onClick={this.search} />
     })
     return (
-      <div style={styleTopics}>
-        <h2 style={styleTopicsLabel}>Explore Popular Topics</h2>
+      <nav style={styleTopics} aria-labelledby="popularTopics">
+        <h2 style={styleTopicsLabel} id="popularTopics">
+          Explore Popular Topics
+        </h2>
         <ul style={styleTopicsMenu}>{topics}</ul>
-      </div>
+      </nav>
     )
   }
 }
