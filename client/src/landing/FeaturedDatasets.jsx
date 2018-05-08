@@ -30,10 +30,12 @@ const styleTitle = (active, first, last, collapseImage) => {
     textAlign: collapseImage ? 'center' : 'right',
     fontFamily: fontFamilySerif(),
     fontSize: '1.25em',
-    padding: '.609em',
+    padding: '.609em 1.018em',
     borderRadius: first
       ? `1em ${topRightRadius} 0 0`
       : last ? `0 0 ${bottomRightRadius} 1em` : 'none',
+    display: 'flex',
+    justifyContent: collapseImage ? 'center' : 'flex-end',
   }
 }
 
@@ -78,51 +80,21 @@ const styleFeaturedImage = backgroundURL => {
   }
 }
 
-const styleFeaturedButton = (active, first, last, collapseImage) => {
+const styleFeaturedButton = collapseImage => {
   return {
     fontFamily: fontFamilySerif(),
     fontSize: '1em',
     width: '100%',
     background: 'transparent',
     color: 'inherit',
-    outline: 'none',
     textAlign: collapseImage ? 'center' : 'right',
     justifyContent: collapseImage ? 'center' : 'flex-end',
     padding: '.309em',
-    margin: first
-      ? `0 .309em .309em .309em`
-      : last ? `.309em .309em 0 .309em` : '.309em',
+    margin: '.309em 0',
   }
-}
-
-const stylePlayPauseButton = {
-  fontSize: '1em',
-}
-
-const stylePlayPauseButtonWrapper = collapseImage => {
-  return {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    paddingTop: '.309em',
-    paddingRight: !collapseImage ? '.309em' : '0',
-  }
-}
-
-const stylePlayPauseButtonFocus = {
-  outline: '2px dashed #5C87AC',
-  outlineOffset: '.309em',
-  zIndex: '1',
-}
-
-const stylePlayPauseButtonIcon = {
-  width: '1.3em',
-  height: '1.3em',
-  paddingTop: '0.309em',
-  paddingBottom: '0.309em',
 }
 
 const styleFeaturedButtonFocus = {
-  outline: '2px dashed white',
   textDecoration: 'underline',
   background: 'transparent',
 }
@@ -130,6 +102,37 @@ const styleFeaturedButtonFocus = {
 const styleFeaturedButtonHover = {
   textDecoration: 'underline',
   background: 'transparent',
+}
+
+const stylePlayPauseButton = collapseImage => {
+  return {
+    fontFamily: fontFamilySerif(),
+    fontSize: '1em',
+    background: 'transparent',
+    color: 'inherit',
+    textAlign: collapseImage ? 'center' : 'right',
+    justifyContent: collapseImage ? 'center' : 'flex-end',
+    padding: '.309em',
+    margin: '.309em 0',
+  }
+}
+
+const stylePlayPauseFocus = {
+  outline: '2px dashed white',
+  background: 'transparent',
+}
+
+const stylePlayPauseHover = {
+  outline: '2px dashed white',
+  background: 'transparent',
+}
+
+const stylePlayPauseButtonIcon = {
+  width: '1.3em',
+  height: '1.3em',
+  paddingTop: '0.309em',
+  paddingBottom: '0.309em',
+  paddingRight: '0.309em',
 }
 
 const Timer = function(callback, delay){
@@ -323,10 +326,12 @@ class FeaturedDatasets extends React.Component {
     const manualPauseButton = (
       <Button
         title={manualPauseLabel}
+        text="Automatic Rotation"
         icon={this.isPaused() ? pause : play}
         onClick={this.toggleManualPause}
-        style={stylePlayPauseButton}
-        styleFocus={stylePlayPauseButtonFocus}
+        style={stylePlayPauseButton(collapseImage)}
+        styleFocus={stylePlayPauseFocus}
+        styleHover={stylePlayPauseHover}
         styleIcon={stylePlayPauseButtonIcon}
         ariaSelected={!this.isPaused()}
       />
@@ -338,7 +343,8 @@ class FeaturedDatasets extends React.Component {
           {featured.map((f, i, arr) => {
             const active = current === i
             const first = i === 0
-            const last = i === arr.length - 1
+            // const last = i === arr.length - 1
+            const last = false
             return (
               <li
                 style={styleTitle(active, first, last, collapseImage)}
@@ -352,19 +358,14 @@ class FeaturedDatasets extends React.Component {
                   onClick={() => this.search(f.searchTerm)}
                   onFocus={() => this.handleFocus(i)}
                   onBlur={this.handleBlur}
-                  style={styleFeaturedButton(
-                    active,
-                    first,
-                    last,
-                    collapseImage
-                  )}
+                  style={styleFeaturedButton(collapseImage)}
                   styleHover={styleFeaturedButtonHover}
                   styleFocus={styleFeaturedButtonFocus}
                 />
               </li>
             )
           })}
-          <li style={stylePlayPauseButtonWrapper(collapseImage)}>
+          <li style={styleTitle(false, false, true, collapseImage)}>
             {manualPauseButton}
           </li>
         </ul>
