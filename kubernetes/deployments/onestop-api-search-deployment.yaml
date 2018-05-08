@@ -36,8 +36,19 @@ spec:
             value: "9200"
           - name: LOGGING_LEVEL_ORG.CEDAR.ONESTOP.API
             value: DEBUG
-#          - name: SPRING.CONFIG.ADDITIONAL-LOCATION
-#            value: /opt/onestop-api/onestop-ui-local.yml
+          - name: SPRING.CONFIG.ADDITIONAL-LOCATION
+            value: /deployments/config/application.yaml
+          volumeMounts:
+          - name: application-config 
+            mountPath: "/deployments/config" 
+            readOnly: true
+        volumes:
+        - name: application-config
+          configMap:
+            name: onestop-search-api-config 
+            items:
+            - key: application.yaml 
+              path: application.yaml
           ports:
           - containerPort: 8097
         restartPolicy: Always
