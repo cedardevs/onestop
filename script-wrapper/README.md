@@ -17,16 +17,17 @@ directory with the following:
 
 ```
 kafka:
-  group.id: <group-id>
+  application.id: <group-id>
   bootstrap:
     servers: <kafka_host>:<kafka_port>
 
 stream:
   topics:
-      input: <input_topic>
-      output: <output_topic>
+    input: <input_topic>
+    output: <output_topic>
+    errorout: <error_topic>
   command: <run a bash command or execute a script>
-  command_timeout: <optional_timeout_ms>
+  timeout: <optional_timeout_ms>
 ```
 
 ### Usage
@@ -59,40 +60,36 @@ stream:
 
 ### Real use case:  dscover-parser.py
 
-
-```
+With the following config:
+```yaml
 kafka:
-  group.id: dscovr-parser
+  application.id: dscovr-parser
   bootstrap:
     servers: localhost:9092
-  topics:
-    input: raw-granule-aggregator-raw-granules-changelog
-    output: parsed-granules
-
-
 stream:
   topics:
     input: raw-granule-aggregator-raw-granules-changelog
     output: parsed-granules
+    errorout: sme-error-events
   command: python ${PWD}/script-wrapper/dscovr-parser.py
-  command_timeout: 5000
-
+  timeout: 5000
 ```
-And this message in the input topic- 
-```
+And this message in the input topic: 
+```json
 {
-    "dataStream": "dscovr",
-    "trackingId": "4d989197-d4a9-4a2b-a579-5eb67b44c3c5",
-    "checksum": "fd297fcceb94fdbec5297938c99cc7b5",
-    "relativePath": "it_fc1_dscovr_s20131218000000_e20131218235951_p20161215345159_pub.nc.gz",
-    "path": "/dscovr/valid/it_fc1_dscovr_s20131218000000_e20131218235951_p20161215345159_pub.nc.gz",
-    "fileSize": 6526
+  "dataStream": "dscovr",
+  "trackingId": "4d989197-d4a9-4a2b-a579-5eb67b44c3c5",
+  "checksum": "fd297fcceb94fdbec5297938c99cc7b5",
+  "relativePath": "it_fc1_dscovr_s20131218000000_e20131218235951_p20161215345159_pub.nc.gz",
+  "path": "/dscovr/valid/it_fc1_dscovr_s20131218000000_e20131218235951_p20161215345159_pub.nc.gz",
+  "fileSize": 6526
 }
 ```
 
-You will get this on the output topic- 
-```
+You will get this on the output topic: 
+```json
 {
+  "discovery": {
     "dataStream": "dscovr",
     "trackingId": "4d989197-d4a9-4a2b-a579-5eb67b44c3c5",
     "checksum": "fd297fcceb94fdbec5297938c99cc7b5",
@@ -104,8 +101,11 @@ You will get this on the output topic-
     "satellite": "dscovr",
     "startDate": "20131218000000",
     "endDate": "20131218235951",
-    "processDate": "20161215345159",
-    "publish": true
+    "processDate": "20161215345159"
+  },
+  "publishing": {
+    "private": false
+  }
 }
 ```
 
