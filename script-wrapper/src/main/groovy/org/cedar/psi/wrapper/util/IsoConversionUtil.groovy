@@ -124,7 +124,8 @@ class IsoConversionUtil {
         dsmmAverage                     : dsmmMap.average,
         updateFrequency                 : miscellaneous.updateFrequency,
         presentationForm                : miscellaneous.presentationForm,
-        services                        : services
+        services                        : services,
+        stagedDate                      : System.currentTimeMillis()
     ]
 
     return json
