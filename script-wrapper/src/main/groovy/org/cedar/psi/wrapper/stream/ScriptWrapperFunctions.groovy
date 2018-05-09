@@ -28,7 +28,7 @@ class ScriptWrapperFunctions {
         log.error "Process exited with non-zero exit code"
         log.error "Process stdout: ${stdout}"
         log.error "Process stderr: ${stderr}"
-        return JsonOutput.toJson([error: stderr])
+        return JsonOutput.toJson([error: "$stderr"])
       } else {
         log.info "Publishing : $stdout"
         return stdout.toString()
@@ -36,7 +36,7 @@ class ScriptWrapperFunctions {
     }
     catch (Exception e) {
       log.error("Caught exception $e: ${e.message}")
-      return JsonOutput.toJson([error: e.message])
+      return JsonOutput.toJson([error: "${e.message}"])
     }
   }
 
@@ -65,7 +65,7 @@ class ScriptWrapperFunctions {
       }
 
     } catch (Exception e) {
-      return JsonOutput.toJson([error:e.message])
+      return JsonOutput.toJson([error:"${e.message}"])
     }
     // is neither xml nor json --> is error
     return JsonOutput.toJson([error: 'Output is neither xml nor json: ' + message])

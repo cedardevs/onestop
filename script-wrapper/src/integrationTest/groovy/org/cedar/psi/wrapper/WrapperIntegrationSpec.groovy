@@ -129,7 +129,7 @@ class WrapperIntegrationSpec extends Specification{
     output.key() == message.trackingId
 
     and:
-    output.value().startsWith('ERROR')
+    new JsonSlurper().parseText(output.value()).containsKey('error')
   }
 
 }
