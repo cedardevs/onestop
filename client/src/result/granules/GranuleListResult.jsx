@@ -42,7 +42,9 @@ const styleTitle = {
   fontFamily: fontFamilySerif(),
   fontSize: '1.3em',
   color: 'rgb(0, 0, 50)',
-  margin: 0,
+  border: '.1em dashed transparent', // prevents resize when focus border is set
+  margin: '.259em',
+  padding: '.259em',
 }
 
 const styleSectionHeader = {
@@ -57,9 +59,7 @@ const styleSectionContent = {
 
 const styleFocusDefault = {
   outline: 'none',
-  border: '.1em dashed white', // ems so it can be calculated into the total size easily - border + padding + margin of this style must total the same as padding in styleOverallHeading, or it will resize the element when focus changes
-  padding: '.259em',
-  margin: '.259em',
+  border: '.1em dashed white',
 }
 
 class ListResult extends React.Component {
