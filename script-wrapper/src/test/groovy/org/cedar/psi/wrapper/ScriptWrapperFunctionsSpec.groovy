@@ -20,7 +20,7 @@ class ScriptWrapperFunctionsSpec extends Specification {
 
   void "Script wrapper exit with value 0: command not provided"() {
     String command = " "
-    def expected = 'ERROR: ' + 0
+    def expected = JsonOutput.toJson([ error : '0' ])
 
     expect:
     ScriptWrapperFunctions.scriptCaller(msg, command, command_timeout) == expected
@@ -28,7 +28,7 @@ class ScriptWrapperFunctionsSpec extends Specification {
 
   void "Script wrapper exit with value non-zero value: command Cannot run program"() {
     String command = "py wrong command"
-    def expected = 'ERROR: Cannot run program "py": error=2, No such file or directory'
+    def expected = JsonOutput.toJson([error: 'Cannot run program "py": error=2, No such file or directory'])
 
     expect:
     ScriptWrapperFunctions.scriptCaller(msg, command, command_timeout) == expected
@@ -82,7 +82,7 @@ class ScriptWrapperFunctionsSpec extends Specification {
 
   def 'returns an error if neither xml nor json output is provided'() {
     expect:
-    ScriptWrapperFunctions.parseOutput('not a good response').startsWith('ERROR')
+    new JsonSlurper().parseText(ScriptWrapperFunctions.parseOutput('not a good response')).containsKey('error')
   }
 
 }
