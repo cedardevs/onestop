@@ -18,6 +18,7 @@ spec:
   metadata:
     name: onestop-api-search
   spec:
+    replicas: 1
     selector:
       matchLabels:
         app: onestop-api-search
