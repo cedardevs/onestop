@@ -1,6 +1,7 @@
 import React from 'react'
 import {fontFamilySerif} from '../../utils/styleUtils'
-import {SiteColors} from '../../common/defaultStyles'
+import {SiteColors} from '../defaultStyles'
+import {stop_circle_o, SvgIcon} from '../SvgIcon'
 
 const styleWrapper = {
   width: '100%',
@@ -34,15 +35,32 @@ const styleAccessibilityStatement = {
   background: '#F9F9F9',
 }
 
+const styleOneStopOImageWrapper = {
+  position: 'relative',
+  top: '.15em',
+  left: '.07em',
+}
+
 export default class Help extends React.Component {
   render() {
     return (
       <div style={styleWrapper}>
         <section style={styleAbout}>
-          <h1 style={styleH1}>OneStop Overview</h1>
+          <h1 style={styleH1} aria-label="One Stop Overview">
+            <span>
+              <span style={styleOneStopOImageWrapper}>
+                <SvgIcon
+                  size="1.1em"
+                  verticalAlign="initial"
+                  path={stop_circle_o}
+                />
+              </span>
+              <span style={{display: 'none'}}>O</span>neStop Overview
+            </span>
+          </h1>
           <p>
-            Geophysical, oceans, coastal, weather and climate data discovery all
-            in one place.
+            A NOAA Data Search Platform. Geophysical, oceans, coastal, weather
+            and climate data discovery all in one place.
           </p>
           <p>
             The OneStop Project is designed to improve NOAA's data discovery and

@@ -38,7 +38,7 @@ const styleHeroText = {
   fontSize: '1.5em',
   fontStyle: 'italic',
   lineHeight: '1.5',
-  marginBottom: '0.5em',
+  marginBottom: '1.3em',
   fontFamily: fontFamilySerif(),
 }
 
@@ -68,11 +68,7 @@ class Landing extends React.Component {
           <div style={styleHeroText}>
             A NOAA Data Search Platform<br />
           </div>
-          <br />
-          <br />
           <SearchFieldsContainer home={true} />
-          <br />
-          <br />
           <TopicsMenuContainer />
           <FeaturedDatasetsContainer />
         </div>
