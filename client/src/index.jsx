@@ -78,4 +78,23 @@ googleAnalytics.setAttribute('type', 'text/javascript')
 googleAnalytics.setAttribute('async', 'true')
 document.body.appendChild(googleAnalytics)
 
+const jsonLdScript = document.createElement('script')
+jsonLdScript.setAttribute('type', 'application/ld+json')
+jsonLdScript.insertAdjacentHTML(
+  'afterbegin',
+  `{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "@id": "${window.location.origin + window.location.pathname}",
+    "url": "${window.location.origin + window.location.pathname}",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "${window.location.origin +
+        window.location.pathname}/#/collections?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }`
+)
+document.body.appendChild(jsonLdScript)
+
 render(body, appDiv)

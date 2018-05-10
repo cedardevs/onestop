@@ -17,11 +17,11 @@ const basePlugins = [
     meta: [
       {
         property: 'description',
-        content: 'Search NOAA OneStop data catalog for geophysical, oceans, coastal, weather and climate data discovery all in one place.',
+        content: 'A NOAA Data Search Platform.',
       },
       {
         property: 'robots',
-        content: 'index, follow',
+        content: 'index, nofollow',
       },
       {
         property: 'dcterms.format', content:'text/html'
@@ -29,9 +29,6 @@ const basePlugins = [
       {
         property: 'dcterms.title', content:'NOAA OneStop'
       },
-      // {
-      //   property: 'dcterms.type', content:'service' //interactive?
-      // }
       {
         property: 'og:site_name',
         content: 'NOAA OneStop',
