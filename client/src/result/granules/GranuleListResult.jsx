@@ -45,6 +45,8 @@ const styleTitle = {
   border: '.1em dashed transparent', // prevents resize when focus border is set
   margin: '.259em',
   padding: '.259em',
+  overflowWrap: 'break-word',
+  wordWrap: 'break-word',
 }
 
 const styleSectionHeader = {
