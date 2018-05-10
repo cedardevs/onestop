@@ -78,6 +78,8 @@ googleAnalytics.setAttribute('type', 'text/javascript')
 googleAnalytics.setAttribute('async', 'true')
 document.body.appendChild(googleAnalytics)
 
+const rootUrl = `${window.location.origin + window.location.pathname}`
+
 const jsonLdScript = document.createElement('script')
 jsonLdScript.setAttribute('type', 'application/ld+json')
 jsonLdScript.insertAdjacentHTML(
@@ -85,16 +87,19 @@ jsonLdScript.insertAdjacentHTML(
   `{
     "@context": "http://schema.org",
     "@type": "WebSite",
-    "@id": "${window.location.origin + window.location.pathname}",
-    "url": "${window.location.origin + window.location.pathname}",
+    "@id": "${rootUrl}",
+    "url": "${rootUrl}",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "${window.location.origin +
-        window.location.pathname}/#/collections?q={search_term_string}",
+      "target": "${rootUrl}#/collections?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   }`
 )
 document.body.appendChild(jsonLdScript)
 
+const ogUrlMetaTag = document.createElement('meta')
+ogUrlMetaTag.setAttribute('property', 'og:url')
+ogUrlMetaTag.setAttribute('content', `${rootUrl}`)
+document.head.appendChild(ogUrlMetaTag)
 render(body, appDiv)

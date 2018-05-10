@@ -31,36 +31,32 @@ const basePlugins = [
       },
       {
         property: 'og:site_name',
-        content: 'NOAA OneStop',
+        content: 'National Oceanic and Atmospheric Administration',
       },
-      // {
-      //   property: 'og:url',
-      //   content: shareImage,
-      // },
       {
         property: 'og:type',
         content: 'website',
       },
-      // {
-      //   property: 'og:title',
-      //   content: 'Animated GIF of OneStop Web Site',
-      // },
+      {
+        property: 'og:title',
+        content: 'OneStop',
+      },
       {
         property: 'og:description',
-        content: 'Geophysical, oceans, coastal, weather and climate data discovery all in one place.',
+        content: 'A NOAA Data Search Platform.',
       },
-      // {
-      //   property: 'og:image',
-      //   content: shareImage,
-      // },
-      // {
-      //   property: 'og:image:width',
-      //   content: '800',
-      // },
-      // {
-      //   property: 'og:image:height',
-      //   content: '400',
-      // }
+      {
+        property: 'og:image',
+        content: 'https://data.noaa.gov/datasetsearch/img/oneStop.jpg',
+      },
+      {
+        property: 'og:image:width',
+        content: '800',
+      },
+      {
+        property: 'og:image:height',
+        content: '400',
+      }
     ]
   }),
   new webpack.optimize.CommonsChunkPlugin({
