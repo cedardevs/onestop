@@ -21,7 +21,10 @@ __author__ = 'wrowland'
 #  7) Replace dscovrGranuleEndDateTimePlaceholder with ISO8601 datetime string for end of file window.
 #  8) Replace dscovrEnterpriseDownloadLinkPlaceholder with an enterprise link if that's provided.
 #  9) Replace dscovrEnterpriseDownloadLinkProtocolPlaceholder with the protocol for the enterprise link if provided.
-# 10) Save modified xml as a dscovrIsoLite.xml record for the granule.
+# 10) TODONE - Replace dscovrThumbnailURLPlaceholder with link to Stefan's daily plot.
+# example: https://www.ngdc.noaa.gov/dscovr/plots/dscovr_1day_plots/2018/05/20180501-day.png
+# 10.5) TODONE - Replace dscovrThumbnailCaptionPlaceholder with caption
+# 11) Save modified xml as a dscovrIsoLite.xml record for the granule.
 def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
                                   IsoLiteTemplateLocation = './scripts/dscovrIsoLiteTemplate.xml'):
     import json
@@ -33,7 +36,6 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
 
     # NCEI-CO Enterprise Agile team has currently agreed to pass one argument to this function.
     # If a second argument was agreed to, it would make sense for it to be a full path to this template.
-
 
     # Read in the input_json provided
     try:
@@ -91,6 +93,7 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
 
         #  6.6) replace syncMM with MM from file name
         syncMM = str(dscovrGranuleStartDateTimeObject.month + 100)[1:3]
+        syncDD = str(dscovrGranuleStartDateTimeObject.day + 100)[1:3]
 
     except:
         # Something was missing, not currently tracking what.
@@ -104,11 +107,17 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
         #7 Replace dscovrGranuleEndDateTimePlaceholder
         dscovrGranuleEndDateTime = parsed_file_name_dict['end_datetime'].isoformat()
 
-        with open(IsoLiteTemplateLocation, 'r') as fileDataObject:
-            IsoLiteXML = fileDataObject.read()
     except:
         # Something was missing, not currently tracking what.
         raise Exception('Unable to extract end_datetime.')
+        sys.exit()
+
+    try:
+        # Try opening template location
+        with open(IsoLiteTemplateLocation, 'r') as fileDataObject:
+            IsoLiteXML = fileDataObject.read()
+    except:
+        raise Exception('Could not open file at IsoLiteTemplateLocation: ' + IsoLiteTemplateLocation)
         sys.exit()
 
     try:
@@ -132,6 +141,19 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
         raise Exception('Unable to extract one or more of the of data with the input_json provided.')
         sys.exit()
 
+# 10) TODONE - Replace dscovrThumbnailURLPlaceholder with link to Stefan's daily plot.
+# example: https://www.ngdc.noaa.gov/dscovr/plots/dscovr_1day_plots/2018/05/20180501-day.png
+# 10.5) TODONE - Replace dscoverthumbnailCaptionPlaceholder with caption
+
+    try:
+        #Create dscovrThumbnailURLPlaceholder
+        dscovrThumbnailURLPlaceholder = 'https://www.ngdc.noaa.gov/dscovr/plots/dscovr_1day_plots/'+syncYYYY+'/'+syncMM+'/'+syncYYYY+syncMM+syncDD+'-day.png'
+        #create dscovrThumbnailCaptionPlaceholder
+        dscovrThumbnailCaptionPlaceholder = 'NCEI DSCOVR summary: '+syncYYYY+'-'+syncMM+'-'+syncDD+'.'
+    except:
+        raise Exception ('Error when constructing browse graphic URL or caption.')
+        sys.exit
+
     # Substitute the correct values into the template
     IsoLiteXML = re.sub(r'dscovrFileNamePlaceholder', dscovrFileName, IsoLiteXML)
     IsoLiteXML = re.sub(r'dscovrDataTypePlaceholder', dscovrDataType, IsoLiteXML)
@@ -144,6 +166,8 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
     IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkUrlPlaceholder', dscovrEnterpriseDownloadLinkUrl, IsoLiteXML)
     IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkNamePlaceholder', dscovrEnterpriseDownloadLinkName, IsoLiteXML)
     IsoLiteXML = re.sub(r'dscovrEnterpriseDownloadLinkProtocolPlaceholder', dscovrEnterpriseDownloadLinkProtocol, IsoLiteXML)
+    IsoLiteXML = re.sub(r'dscovrThumbnailURLPlaceholder', dscovrThumbnailURLPlaceholder, IsoLiteXML)
+    IsoLiteXML = re.sub(r'dscovrThumbnailCaptionPlaceholder', dscovrThumbnailCaptionPlaceholder, IsoLiteXML)
 
     # Print detailed info
     if logLevel == 'Info':
