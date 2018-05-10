@@ -2,6 +2,7 @@ import React from 'react'
 import {fontFamilySerif} from '../../utils/styleUtils'
 import {SiteColors} from '../defaultStyles'
 import {stop_circle_o, SvgIcon} from '../SvgIcon'
+import A from '../link/Link'
 
 const styleWrapper = {
   width: '100%',
@@ -29,7 +30,7 @@ const styleH2 = {
 }
 
 const styleAccessibilityStatement = {
-  marginTop: '1.618em',
+  margin: '1.618em 0',
   border: 'gray solid',
   padding: '1em',
   background: '#F9F9F9',
@@ -98,6 +99,27 @@ export default class Help extends React.Component {
               </a>
             </p>
           </div>
+          <h2 style={styleH2} id="attribution">
+            Image Attribution
+          </h2>
+          <p>
+            Background image,{' '}
+            <A
+              href={
+                'https://www.toptal.com/designers/subtlepatterns/topography/'
+              }
+              style={{color: SiteColors.LINK}}
+            >
+              'Topography', made by Shankar Ganesh
+            </A>,{' '}
+            <A
+              href={'https://creativecommons.org/licenses/by-sa/3.0/'}
+              style={{color: SiteColors.LINK}}
+            >
+              CC BY-SA 3.0
+            </A>{' '}
+            - Subtle Patterns © Toptal Designers
+          </p>
         </section>
       </div>
     )

@@ -1,7 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import FooterLink from './FooterLink'
-import github from 'fa/github.svg'
+
+import {creative_commons, github, SvgIcon} from '../common/SvgIcon'
 
 const styleFooter = {
   width: '100%',
@@ -45,10 +46,9 @@ const styleImageAttribution = {
 }
 
 const styleIcon = {
+  fill: 'white',
   position: 'relative',
-  top: '0.1em',
-  maxHeight: '1em',
-  maxWidth: '1em',
+  top: '.15em',
 }
 
 const links = [
@@ -122,26 +122,26 @@ class Footer extends React.Component {
                 target={'_blank'}
               >
                 Version: {this.props.version}{' '}
-                <img
-                  src={github}
-                  alt="github releases"
+                <SvgIcon
+                  size="1em"
                   style={styleIcon}
-                  aria-hidden="true"
+                  verticalAlign="initial"
+                  path={github}
                 />
               </FooterLink>
             </div>
             {' | '}
             <div style={styleImageAttribution}>
               <FooterLink
-                href={
-                  'https://www.toptal.com/designers/subtlepatterns/topography/'
-                }
-                target={'_blank'}
-                title={
-                  "Background image, 'Topography', made by Shankar Ganesh, CC BY-SA 3.0 - Subtle Patterns © Toptal Designers"
-                }
+                href={`${this.props.homeUrl}about#attribution`}
+                title={'Background Image Attribution'}
               >
-                Image Attribution
+                <SvgIcon
+                  size="1em"
+                  style={styleIcon}
+                  path={creative_commons}
+                  verticalAlign="initial"
+                />
               </FooterLink>
             </div>
           </div>
