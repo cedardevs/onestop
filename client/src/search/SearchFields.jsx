@@ -41,6 +41,7 @@ const warningStyle = warning => {
       lineHeight: '1.618em',
       fontSize: '1em',
       color: 'white',
+      fill: 'white',
       backgroundColor: SiteColors.WARNING,
       borderRadius: '0.309em',
       padding: '0.618em 0 0.618em 0.618em',
@@ -173,7 +174,7 @@ class SearchFields extends React.Component {
         <SvgIcon
           size="2em"
           style={styleWarningCloseIcon(focusingWarningClose)}
-          path={times_circle('white')}
+          path={times_circle}
         />
       </button>
     )
