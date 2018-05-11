@@ -626,19 +626,15 @@ components:
       type: number
       minimum: -90
       maximum: 90
-    latOrLong:
-      description: a coordinate value
-      type: number
-      minimum: -360
-      maximum: 360
     position:
-      description: 'A single position. The first element must be latitude, then longitude.'
+      description: 'A single position. The first two elements are longitude and latitude.'
       type: array
       minItems: 2
       maxItems: 2
       items:
         oneOf:
-          - $ref: '#/components/schemas/latOrLong'
+          - $ref: '#/components/schemas/lat'
+          - $ref: '#/components/schemas/long'
     positionArray:
       description: An array of positions
       type: array
