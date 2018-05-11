@@ -535,7 +535,7 @@ components:
         - values
       additionalProperties: false
     Geometry:
-      description: One geometry as defined by GeoJSON
+      description: 'One geometry as defined by GeoJSON.  CAUTION: this model was converted from GeoJSON. If in doubt, refer to the GeoJSON spec.'
       example: {"type":"Polygon","coordinates":[[[-128.144531,19.273176],[-58.471856,19.273176],[-58.471856,47.584291],[-128.144531,47.584291],[-128.144531,19.273176]]]}
       oneOf:
         - $ref: '#/components/schemas/Polygon'

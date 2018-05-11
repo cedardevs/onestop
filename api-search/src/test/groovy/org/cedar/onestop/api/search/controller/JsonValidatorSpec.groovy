@@ -16,7 +16,7 @@ class JsonValidatorSpec extends Specification {
     when: "The OneStop schemas are validated"
     ObjectMapper mapper = new ObjectMapper()
     JsonNode jsonSchema = mapper.readTree(this.getClass().classLoader.getResource('json-schema-draft4.json').text)
-    JsonNode requestSchema = mapper.readTree(this.getClass().classLoader.getResource('generated_openapi.json').text)
+    JsonNode requestSchema = mapper.readTree(this.getClass().classLoader.getResource('onestop-request-schema.json').text)
 
     final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
     final JsonSchema schema = factory.getJsonSchema(jsonSchema)
