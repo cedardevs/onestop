@@ -28,12 +28,18 @@ class JsonValidatorSpec extends Specification {
     globalReport.success
   }
 
-
   def 'valid requests return success true and no errors'() {
     when: 'valid json is validated'
     def jsonSlurper = new JsonSlurper()
     def params = jsonSlurper.parseText(request)
-    def validation = JsonValidator.validateSearchRequestSchema(params)
+    def validation
+    try {
+      validation = JsonValidator.validateSearchRequestSchema(params)
+    } catch (e) {
+      println("failed with: ${request}")
+      println(e)
+      throw(e)
+    }
 
     then: 'success is true'
     println("validation:${validation}")
@@ -153,6 +159,13 @@ class JsonValidatorSpec extends Specification {
   "filters": [
     { "type": "excludeGlobal", "value": true}
   ]
+}""",
+        """\
+{
+  "filters": [
+    {"type":"collection", "values":["fakeUUID"]}
+  ],
+  "summary": false
 }"""
     ]
   }
