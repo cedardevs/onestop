@@ -170,7 +170,7 @@ export default class Root extends Component {
           right={null}
           rightWidth={256}
           rightVisible={showRight}
-          footer={<FooterContainer />}
+          footer={<FooterContainer homeUrl={this.homeUrl()} />}
         />
       </Background>
     )

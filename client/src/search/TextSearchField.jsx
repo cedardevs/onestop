@@ -157,8 +157,8 @@ class TextSearchField extends React.Component {
 
     const styleSvgIcon = {
       outline: this.state.focusingClear ? '2px dashed #777' : 'none',
+      fill: this.state.focusingClear ? '#2c71a2' : '#777',
     }
-    const svgFillColor = this.state.focusingClear ? '#2c71a2' : '#777'
 
     return (
       <div style={styleSearchFieldMerged}>
@@ -186,11 +186,7 @@ class TextSearchField extends React.Component {
           onBlur={this.handleClearBlur}
           aria-label="Clear Search Text"
         >
-          <SvgIcon
-            size="2em"
-            style={styleSvgIcon}
-            path={times_circle(svgFillColor)}
-          />
+          <SvgIcon size="2em" style={styleSvgIcon} path={times_circle} />
         </button>
       </div>
     )

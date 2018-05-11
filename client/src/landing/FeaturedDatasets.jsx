@@ -318,16 +318,19 @@ class FeaturedDatasets extends React.Component {
 
   render() {
     const {featured} = this.props
-    const {current, collapseImage} = this.state
+    const {current, collapseImage, manualPause} = this.state
 
-    const manualPauseLabel = this.isPaused()
+    const manualPauseLabel = !manualPause
+      ? 'Pause Animation'
+      : 'Start Animation'
+    const manualPauseAriaLabel = !manualPause
       ? 'Pause Featured Datasets Animation'
       : 'Start Featured Datasets Animation'
     const manualPauseButton = (
       <Button
-        title={manualPauseLabel}
-        text="Automatic Rotation"
-        icon={this.isPaused() ? pause : play}
+        title={manualPauseAriaLabel}
+        text={manualPauseLabel}
+        icon={!manualPause ? pause : play}
         onClick={this.toggleManualPause}
         style={stylePlayPauseButton(collapseImage)}
         styleFocus={stylePlayPauseFocus}

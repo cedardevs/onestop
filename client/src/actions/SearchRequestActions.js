@@ -201,8 +201,8 @@ export const getCollection = collectionId => {
 
   const errorHandler = (dispatch, e) => {
     dispatch(hideLoading())
-    dispatch(collectionDetailLoaded(null))
     dispatch(showErrors(e.errors || e))
+    dispatch(collectionDetailLoaded(null))
   }
 
   return buildGetAction(
