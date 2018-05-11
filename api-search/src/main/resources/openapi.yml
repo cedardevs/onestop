@@ -2,9 +2,11 @@ openapi: 3.0.0
 servers:
   - url: 'https://sciapps.colorado.edu/onestop/api'
     description: Development test server (uses test data)
+  - url: 'https://data.noaa.gov/onestop/api/search'
+    description: NOAA OneStop
 info:
   title: OneStop Search API
-  description: Search Collections and Granules!
+  description: Search Collections and Granules! More information on search request and responses available at [Search API Requests](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Requests) and [Search API Responses](https://github.com/cedardevs/onestop/wiki/OneStop-Search-API-Responses).
   version: 2.0.0
 tags:
   - name: collection
