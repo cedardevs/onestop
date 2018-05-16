@@ -51,6 +51,12 @@ const styleIcon = {
   top: '.15em',
 }
 
+const styleAttributionLinkText = {
+  display: 'inline-block',
+  width: 0,
+  overflowX: 'hidden',
+}
+
 const links = [
   {
     href: '//www.ncdc.noaa.gov/about-ncdc/privacy',
@@ -132,16 +138,16 @@ class Footer extends React.Component {
             </div>
             {' | '}
             <div style={styleImageAttribution}>
-              <FooterLink
-                href={`${this.props.homeUrl}about#attribution`}
-                title={'Background Image Attribution'}
-              >
+              <FooterLink href={`${this.props.homeUrl}about#attribution`}>
                 <SvgIcon
                   size="1em"
                   style={styleIcon}
                   path={creative_commons}
                   verticalAlign="initial"
                 />
+                <span style={styleAttributionLinkText}>
+                  Background Image Attribution
+                </span>
               </FooterLink>
             </div>
           </div>
