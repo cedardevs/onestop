@@ -144,7 +144,7 @@ class SearchFields extends React.Component {
     const {home, updateQuery, queryString} = this.props
     const {warning, focusingWarningClose} = this.state
 
-    const instructionalCopy = home ? 'Search NCEI Data' : 'New NCEI Data Search'
+    const instructionalCopy = home ? 'Search NOAA Data' : 'New NOAA Data Search'
 
     const searchButton = (
       <Button
