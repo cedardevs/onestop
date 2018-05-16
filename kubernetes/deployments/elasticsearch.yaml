@@ -4,7 +4,8 @@ kind: Service
 metadata:
   name: elasticsearch
   labels:
-    tier: backend
+    tier: "backend"
+    devmode: "true"
 spec:
   selector:
     app: elasticsearch
@@ -19,7 +20,8 @@ kind: Service
 metadata:
   name: elasticsearch-discovery
   labels:
-    tier: backend
+    tier: "backend"
+    devmode: "true"
 spec:
   selector:
     app: elasticsearch
@@ -34,7 +36,8 @@ kind: StatefulSet
 metadata:
   name: elasticsearch
   labels:
-    tier: backend
+    tier: "backend"
+    devmode: "true"
 spec:
   serviceName: elasticsearch
   replicas: 1

@@ -1,10 +1,12 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: onestop-api-search
   labels:
     environment: dev
-    tier: frontend # ?
+    tier: "backend"
+    devmode: "true"
 spec:
   selector:
     app: onestop-api-search
@@ -17,6 +19,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: onestop-api-search
+  labels:
+    tier: "backend"
+    devmode: "true"
 spec:
   replicas: 1
   selector:
@@ -58,6 +63,9 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: onestop-search-api-config
+  labels:
+    tier: "backend"
+    devmode: "true"
 data:
   application.yaml: |
     ui:

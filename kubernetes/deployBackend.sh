@@ -1,12 +1,6 @@
 #!/bin/bash
 
-# Create kubernetes deployments for elasticsearch, kibana, and both OneStop APIs
-#while read file; do
-#  kubectl replace --force -f $file
-#done < <(find deployments/ -type f -name "*.yaml" -print)
-
-# I'm pretty sure we want to use this declarative approach
-kubectl apply -f deployments/
+kubectl apply -l devmode=true -f deployments/
 
 echo "Waiting 15s for services to start up..."
 sleep 15s
