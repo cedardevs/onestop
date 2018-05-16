@@ -1,9 +1,9 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: elasticsearch
   labels:
-    environment: dev
     tier: backend
 spec:
   selector:
@@ -12,28 +12,32 @@ spec:
     - name: http
       port: 9200
       targetPort: 9200
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch-discovery
+  labels:
+    tier: backend
+spec:
+  selector:
+    app: elasticsearch
+  ports:
     - name: transport
       port: 9300
       targetPort: 9300
-  type: ClusterIP
+  clusterIP: None
 ---
-#apiVersion: v1
-#kind: PersistentVolumeClaim
-#metadata:
-#  name: elasticsearch-pv-claim
-#spec:
-#  storageClassName: manual
-#  accessModes:
-#    - ReadWriteOnce # R/W by one node (aka minikube)
-#  resources:
-#    requests:
-#      storage: 100Mi # plenty for local env
-#---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: elasticsearch
+  labels:
+    tier: backend
 spec:
+  serviceName: elasticsearch
+  replicas: 1
   selector:
     matchLabels:
       app: elasticsearch
@@ -42,15 +46,35 @@ spec:
       labels:
         app: elasticsearch
     spec:
+      restartPolicy: Always
+      initContainers:
+      - name: init-sysctl
+        image: busybox:1
+        command:
+        - sysctl
+        - -w
+        - vm.max_map_count=262144
+        securityContext:
+          privileged: true
       containers:
       - name: elasticsearch
         image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3 # use gradle ${ES_VERSION:-5.5.3} in future
         resources:
           limits:
-            memory: 1Gi # match ES_JAVA_OPTS
+            memory: 1Gi
           requests:
-            memory: 256Mi # match ES_JAVA_OPTS
+            memory: 512Mi
         env:
+        - name: cluster.name
+          value: elasticsearch # default name; should be variable in prod
+        - name: discovery.zen.ping.unicast.hosts
+          value: elasticsearch-discovery
+        - name: discovery.zen.minimum_master_nodes
+          value: "1" # should be set to (replicas / 2) + 1
+        - name: ES_JAVA_OPTS
+          value: -Xms512m -Xmx512m # may need more memory
+#        - name: bootstrap.memory_lock
+#          value: "true"
         - name: xpack.security.enabled
           value: "false"
         - name: xpack.watcher.enabled
@@ -61,20 +85,20 @@ spec:
           value: "false"
         - name: xpack.graph.enabled
           value: "false"
-        - name: ES_JAVA_OPTS
-          value: -Xms256m -Xmx256m # may need more memory
-        - name: CLUSTER_NAME
-          value: elasticsearch # default name; should be variable in prod
         ports:
         - containerPort: 9200
           name: http
         - containerPort: 9300
           name: transport
-#        volumeMounts:
-#        - name: storage
-#          mountPath: "/data"
-#      volumes:
-#      - name: storage
-#        persistentVolumeClaim:
-#          claimName: elasticsearch-pv-claim
-#      restartPolicy: Always
+        volumeMounts:
+        - name: storage
+          mountPath: "/usr/share/elasticsearch/data"
+  volumeClaimTemplates:
+  - metadata:
+      name: storage
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
