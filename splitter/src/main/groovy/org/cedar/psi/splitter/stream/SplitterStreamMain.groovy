@@ -26,7 +26,6 @@ class SplitterStreamMain {
     else {
       log.error "Config not found"
     }
-    log.info "DONE"
   }
 
   static KafkaStreams buildStreamsApp(Map kafkaConfig, Map topologyConfig) {
