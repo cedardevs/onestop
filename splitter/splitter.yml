@@ -1,0 +1,20 @@
+kafka:
+  application:
+    id: splitter
+  bootstrap:
+    servers: kafka:9092
+
+stream:
+  input:
+    topic: test-input-3
+  split:
+    - datastreamOne:
+        key: dataStream
+        value: dscovr
+        output:
+          topic: test-output
+    - datastreamTwo:
+        key: datastream
+        value: oer
+        output:
+          topic: oer-raw-granules
