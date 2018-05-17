@@ -9,7 +9,6 @@ class SplitterUtil {
 
   static Map<String, Predicate> predicateByOutput(List<Map> datastreams){
     Map<String, Predicate> predicatesByOutput = [:]
-    List<Predicate> predicates = []
     datastreams.each{ stream ->
       stream.each{ streamName, streamConfig ->
         predicatesByOutput.put(streamConfig.output.topic,
