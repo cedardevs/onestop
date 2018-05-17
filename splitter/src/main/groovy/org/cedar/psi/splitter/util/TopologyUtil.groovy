@@ -15,8 +15,12 @@ class TopologyUtil {
     List<Map> datastreams = topologyConfig.split
     Topology topology = builder.build()
 
-    Predicate[] predicates = SplitterUtil.buildPredicateList(datastreams)
-    List<String> outputTopics = SplitterUtil.getOutputTopicList(datastreams)
+//    Predicate[] predicates = SplitterUtil.buildPredicateList(datastreams)
+//    List<String> outputTopics = SplitterUtil.getOutputTopicList(datastreams)
+
+    Map<String, Predicate> predicatesByOutput = SplitterUtil.predicateByOutput(datastreams)
+    Predicate[] predicates = predicatesByOutput.values() as Predicate[]
+    List<String> outputTopics = predicatesByOutput.keySet() as List
 
     KStream inputStream = builder.stream(inputTopic)
 

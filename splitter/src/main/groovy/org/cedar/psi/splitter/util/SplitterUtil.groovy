@@ -6,11 +6,13 @@ import org.apache.kafka.streams.kstream.Predicate
 
 @Slf4j
 class SplitterUtil {
-  static Predicate[] buildPredicateList(List<Map> datastreams){
+
+  static Map<String, Predicate> predicateByOutput(List<Map> datastreams){
+    Map<String, Predicate> predicatesByOutput = [:]
     List<Predicate> predicates = []
     datastreams.each{ stream ->
       stream.each{ streamName, streamConfig ->
-        predicates.add(
+        predicatesByOutput.put(streamConfig.output.topic,
             {k, m ->
               log.info "Running predicate against $m"
               Map msg = new JsonSlurper().parseText(m)
@@ -20,17 +22,6 @@ class SplitterUtil {
         )
       }
     }
-    predicates
-  }
-
-  static List<String> getOutputTopicList(List<Map> datastreams){
-    List<String> outputTopics = []
-    datastreams.each{ stream ->
-      stream.each{ name, config ->
-        log.info "name: $name , config: $config"
-        outputTopics.add(config.output.topic as String)
-      }
-    }
-    outputTopics
+    predicatesByOutput
   }
 }
