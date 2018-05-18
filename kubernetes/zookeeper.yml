@@ -54,6 +54,18 @@ spec:
       labels:
         app: zookeeper
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: "kubernetes.io/hostname"
+                labelSelector:
+                  matchExpressions:
+                    - key: "app"
+                      operator: In
+                      values:
+                      - zookeeper
       containers:
         - name: zookeeper
           image: confluentinc/cp-zookeeper:4.1.1
