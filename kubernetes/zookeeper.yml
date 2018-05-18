@@ -1,0 +1,107 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper-headless
+  labels:
+    app: zookeeper
+    tier: backend
+    devmode: "true"
+spec:
+  selector:
+    app: zookeeper
+  clusterIP: None
+  ports:
+    - port: 2888
+      name: server
+    - port: 3888
+      name: leader-election
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  labels:
+    app: zookeeper
+    tier: backend
+    devmode: "true"
+spec:
+  selector:
+    app: zookeeper
+  ports:
+    - port: 2181
+      name: client
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper-sts
+  labels:
+    app: zookeeper
+    tier: backend
+    devmode: "true"
+spec:
+  selector:
+    matchLabels:
+      app: zookeeper
+  serviceName: zookeeper
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      containers:
+        - name: zookeeper
+          image: confluentinc/cp-zookeeper:4.1.1
+          imagePullPolicy: Always
+          ports:
+            - name: server
+              containerPort: 2888
+            - name: leader-election
+              containerPort: 3888
+            - name: client
+              containerPort: 2181
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/zookeeper/data
+          resources:
+            requests:
+              cpu: 10m
+              memory: 100Mi
+          env:
+            - name: ZOOKEEPER_SERVER_PORT
+              value: "2888"
+            - name: ZOOKEEPER_ELECTION_PORT
+              value: "3888"
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+            - name: ZOOKEEPER_TICK_TIME
+              value: "2000"
+            - name: ZOOKEEPER_DATA_DIR
+              value: /var/lib/zookeeper/data
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - '[ "imok" = "$(echo ruok | nc -w 1 -q 1 127.0.0.1 2181)" ]'
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - '[ "imok" = "$(echo ruok | nc -w 1 -q 1 127.0.0.1 2181)" ]'
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+
