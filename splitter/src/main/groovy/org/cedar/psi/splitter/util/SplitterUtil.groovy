@@ -13,7 +13,7 @@ class SplitterUtil {
       stream.each{ streamName, streamConfig ->
         predicatesByOutput.put(streamConfig.output.topic,
             {k, m ->
-              log.info "Running predicate against $m"
+              log.info "Running message $m against predicate ${streamConfig}"
               Map msg = new JsonSlurper().parseText(m)
               log.info "Predicate: ${msg?.get(streamConfig.get('key')) == streamConfig.get('value')}"
               msg?.get(streamConfig.get('key')) == streamConfig.get('value')

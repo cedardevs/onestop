@@ -9,10 +9,11 @@ import org.apache.kafka.streams.kstream.Predicate
 @Slf4j
 class TopologyUtil {
 
-  static Topology splitterStreamInstance(StreamsBuilder builder, Map topologyConfig) {
+  static Topology splitterStreamInstance(Map topologyConfig) {
     log.info "Building splitter topology with config $topologyConfig"
     String inputTopic = topologyConfig.input.topic
     List<Map> datastreams = topologyConfig.split
+    StreamsBuilder builder = new StreamsBuilder()
     Topology topology = builder.build()
 
     Map<String, Predicate> predicatesByOutput = SplitterUtil.predicateByOutput(datastreams)

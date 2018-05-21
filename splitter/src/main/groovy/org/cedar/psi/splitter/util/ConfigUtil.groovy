@@ -22,7 +22,7 @@ class ConfigUtil {
     log.info "Retrieving configuration... "
     Map conf = [:]
     Yaml yaml = new Yaml()
-    String configPath = System.getenv('PSI_CONFIG_LOCATION') ?:  System.properties['psi.config.location'] ?: "file://" + System.getProperty("user.dir") + "/${name}.yml"
+    String configPath = System.getenv('PSI_CONFIG_LOCATION') ? "file://${System.getenv('PSI_CONFIG_LOCATION')}" :  System.properties['psi.config.location'] ?: "file://" + System.getProperty("user.dir") + "/${name}.yml"
     URL url = new URL(configPath)
 
     try{

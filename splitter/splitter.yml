@@ -6,13 +6,13 @@ kafka:
 
 stream:
   input:
-    topic: test-input-3
+    topic: test-input
   split:
     - datastreamOne:
         key: dataStream
         value: dscovr
         output:
-          topic: test-output
+          topic: dscovr-raw-granules
     - datastreamTwo:
         key: datastream
         value: oer

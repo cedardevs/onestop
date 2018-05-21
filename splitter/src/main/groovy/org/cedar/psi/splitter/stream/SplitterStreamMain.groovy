@@ -2,7 +2,6 @@ package org.cedar.psi.splitter.stream
 
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.KafkaStreams
-import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.Topology
 import org.cedar.psi.splitter.util.ConfigUtil
 import org.cedar.psi.splitter.util.TopologyUtil
@@ -29,8 +28,7 @@ class SplitterStreamMain {
   }
 
   static KafkaStreams buildStreamsApp(Map kafkaConfig, Map topologyConfig) {
-    StreamsBuilder builder = new StreamsBuilder()
-    Topology topology = TopologyUtil.splitterStreamInstance(builder, topologyConfig)
+    Topology topology = TopologyUtil.splitterStreamInstance(topologyConfig)
     Properties streamConfig = ConfigUtil.streamsConfig(kafkaConfig)
     return new KafkaStreams(topology, streamConfig)
   }

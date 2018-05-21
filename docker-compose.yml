@@ -19,11 +19,37 @@ services:
     environment:
       PSI_KAFKA_APPLICATION_ID: "dscovr_iso_generation_script_wrapper"
       PSI_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
-      PSI_STREAM_TOPICS_INPUT: "metadata-aggregator-raw-granules-changelog"
+      PSI_STREAM_TOPICS_INPUT: "dscovr-raw-granules"
       PSI_STREAM_TOPICS_OUTPUT: "parsed-granules"
       PSI_STREAM_COMMAND: "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
       PSI_STREAM_CONVERT_ISO: "true"
       PSI_STREAM_TIMEOUT: 10000
+
+  oer_iso_wrapper:
+    image: cedardevs/psi-script-wrapper:0.1.0-SNAPSHOT
+    environment:
+      PSI_KAFKA_APPLICATION_ID: "oer_iso_parser"
+      PSI_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+      PSI_STREAM_TOPICS_INPUT: "oer-raw-granules"
+      PSI_STREAM_TOPICS_OUTPUT: "parsed-granules"
+      PSI_STREAM_COMMAND: "echo"
+      PSI_STREAM_CONVERT_ISO: "true"
+      PSI_STREAM_TIMEOUT: 10000
+
+  splitter:
+    image: cedardevs/psi-splitter:latest
+#    environment:
+#      PSI_KAFKA_APPLICATION_ID: "splitter"
+#      PSI_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+#      PSI_STREAM_INPUT_TOPIC: "metadata-aggregator-raw-granules-changelog"
+#      PSI_STREAM_SPLIT_DATASTREAM_DSCOVR_KEY: "dataStream"
+#      PSI_STREAM_SPLIT_DATASTREAM_DSCOVR_VALUE: "dscovr"
+#      PSI_STREAM_SPLIT_DATASTREAM_DSCOVR_OUTPUT_TOPIC: "dscovr-raw-granules"
+#      PSI_STREAM_SPLIT_DATASTREAM_OER_KEY: "dataStream"
+#      PSI_STREAM_SPLIT_DATASTREAM_OER_VALUE: "oer"
+#      PSI_STREAM_SPLIT_DATASTREAM_OER_OUTPUT_TOPIC: "oer-raw-granules"
+
+
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.5.3
