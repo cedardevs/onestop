@@ -12,10 +12,12 @@ spec:
     app: zookeeper
   clusterIP: None
   ports:
-    - port: 2888
-      name: server
-    - port: 3888
-      name: leader-election
+    - name: server
+      port: 2888
+      targetPort: server
+    - name: leader-election
+      port: 3888
+      targetPort: leader-election
 ---
 apiVersion: v1
 kind: Service
@@ -29,8 +31,9 @@ spec:
   selector:
     app: zookeeper
   ports:
-    - port: 2181
-      name: client
+    - name: client
+      port: 2181
+      targetPort: client
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -44,11 +47,11 @@ spec:
   selector:
     matchLabels:
       app: zookeeper
-  serviceName: zookeeper
+  serviceName: zookeeper-headless
   replicas: 3
   updateStrategy:
     type: RollingUpdate
-  podManagementPolicy: Parallel
+  podManagementPolicy: OrderedReady
   template:
     metadata:
       labels:
@@ -85,16 +88,23 @@ spec:
               cpu: 10m
               memory: 100Mi
           env:
-            - name: ZOOKEEPER_SERVER_PORT
-              value: "2888"
-            - name: ZOOKEEPER_ELECTION_PORT
-              value: "3888"
             - name: ZOOKEEPER_CLIENT_PORT
               value: "2181"
             - name: ZOOKEEPER_TICK_TIME
               value: "2000"
-            - name: ZOOKEEPER_DATA_DIR
-              value: /var/lib/zookeeper/data
+              # NOTE: this is clearly hard-coded for 3 replicas... probably need to write a fancy setup script to handle arbitrary replicas?
+            - name: ZOOKEEPER_SERVERS
+              value: "zookeeper-sts-0.zookeeper-headless:2888:3888;zookeeper-sts-1.zookeeper-headless:2888:3888;zookeeper-sts-2.zookeeper-headless:2888:3888"
+            - name: ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS
+              value: "true"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "export ZOOKEEPER_SERVER_ID=$(expr ${POD_NAME##*-} + 1) && /etc/confluent/docker/run"
           readinessProbe:
             exec:
               command:
