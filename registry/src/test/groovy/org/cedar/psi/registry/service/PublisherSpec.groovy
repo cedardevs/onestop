@@ -30,6 +30,17 @@ class PublisherSpec extends Specification {
     0 * mockProducer.send(_)
   }
 
+  def 'publishes granule iso with a given id'() {
+    def id = 'ABC'
+    def data = '<text>xml woooo....</text>'
+
+    when:
+    publisher.publishGranuleIso(data, id)
+
+    then:
+    1 * mockProducer.send({it instanceof ProducerRecord && it.key() == 'ABC' && it.value().contains(data)})
+  }
+
   def 'publishes collections with a given id'() {
     def id = 'ABC'
     def data = '<text>xml woooo....</text>'

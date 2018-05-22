@@ -74,6 +74,41 @@ class RegistryIntegrationSpec extends Specification {
     ]
   }
 
+  def 'can post granule iso then get it back out'() {
+    def restTemplate = new RestTemplate()
+    def granuleText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
+    def granuleId = '42'
+
+
+    when:
+    def createEntity = RequestEntity
+        .post("${baseUrl}/metadata/granule/${granuleId}".toURI())
+        .contentType(MediaType.APPLICATION_XML)
+        .body(granuleText)
+    def createResponse = restTemplate.exchange(createEntity, Map)
+
+    then:
+    createResponse.statusCode == HttpStatus.OK
+
+    when:
+    sleep(2000)
+    def retrieveEntity = RequestEntity
+        .get("${baseUrl}/metadata/granule/${granuleId}".toURI())
+        .build()
+    def retrieveResponse = restTemplate.exchange(retrieveEntity, Map)
+
+    then:
+    retrieveResponse.statusCode == HttpStatus.OK
+    retrieveResponse.body == [
+        id: granuleId,
+        type: 'granule',
+        attributes: [
+            raw: [id: granuleId, isoXml: granuleText],
+            parsed: null
+        ]
+    ]
+  }
+
   def 'can post then retrieve collection info'() {
     def restTemplate = new RestTemplate()
     def collectionText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
