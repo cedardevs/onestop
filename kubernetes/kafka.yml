@@ -1,0 +1,152 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-headless
+  labels:
+    app: kafka
+    tier: backend
+    devmode: "true"
+spec:
+  selector:
+    app: kafka
+  clusterIP: None
+  ports:
+    - name: internal
+      port: 9092
+      targetPort: internal
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  labels:
+    app: kafka
+    tier: backend
+    devmode: "true"
+spec:
+  selector:
+    app: kafka
+  ports:
+    - name: client
+      port: 9092
+      targetPort: external
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka-sts
+  labels:
+    app: kafka
+    tier: backend
+    devmode: "true"
+spec:
+  selector:
+    matchLabels:
+      app: kafka
+  serviceName: kafka-headless
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 2
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: "app"
+                      operator: In
+                      values:
+                        - kafka
+                topologyKey: "kubernetes.io/hostname"
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+             - weight: 1
+               podAffinityTerm:
+                 labelSelector:
+                    matchExpressions:
+                      - key: "app"
+                        operator: In
+                        values:
+                          - zookeeper
+                 topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: broker
+          image: confluentinc/cp-kafka:4.1.1
+          imagePullPolicy: Always
+          ports:
+            - name: internal
+              containerPort: 9092
+            - name: external
+              containerPort: 9093
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/kafka/data
+            - name: configmap
+              mountPath: /etc/kafka-configmap
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+          env:
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: "zookeeper:2181"
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xmx512M -Xms512M"
+            - name: KAFKA_LOG4J_ROOT_LOGLEVEL
+              value: "INFO"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          command:
+            - "/bin/bash"
+            - "/etc/kafka-configmap/init.sh"
+          readinessProbe:
+            tcpSocket:
+              port: external
+            timeoutSeconds: 1
+          livenessProbe:
+            tcpSocket:
+              port: external
+            timeoutSeconds: 1
+      volumes:
+        - name: configmap
+          configMap:
+            name: broker-config
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: broker-config
+  labels:
+    app: kafka
+    tier: backend
+    devmode: "true"
+data:
+  init.sh: |-
+    #!/bin/bash
+
+    unset KAFKA_PORT
+    export KAFKA_LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
+    export KAFKA_ADVERTISED_LISTENERS="INTERNAL://${POD_NAME}.kafka-headless:9092,EXTERNAL://kafka:9093"
+    export KAFKA_INTER_BROKER_LISTENER_NAME="INTERNAL"
+    export KAFKA_BROKER_ID="${POD_NAME##*-}"
+
+    /etc/confluent/docker/run
