@@ -83,28 +83,24 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/lib/zookeeper/data
+            - name: configmap
+              mountPath: /etc/zookeeper-configmap
           resources:
             requests:
               cpu: 10m
               memory: 100Mi
           env:
-            - name: ZOOKEEPER_CLIENT_PORT
-              value: "2181"
-            - name: ZOOKEEPER_TICK_TIME
-              value: "2000"
-              # NOTE: this is clearly hard-coded for 3 replicas... probably need to write a fancy setup script to handle arbitrary replicas?
-            - name: ZOOKEEPER_SERVERS
-              value: "zookeeper-sts-0.zookeeper-headless:2888:3888;zookeeper-sts-1.zookeeper-headless:2888:3888;zookeeper-sts-2.zookeeper-headless:2888:3888"
-            - name: ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS
-              value: "true"
             - name: POD_NAME
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: SERVICE_NAME
+              value: "zookeeper-headless" # NOTE! THIS MUST MATCH SERVICE NAME FROM STATEFULSET SPEC!
+            - name: REPLICAS
+              value: "3" # NOTE! THIS MUST MATCH REPLICAS FROM STATEFULSET SPEC!
           command:
-            - "/bin/sh"
-            - "-c"
-            - "export ZOOKEEPER_SERVER_ID=$(expr ${POD_NAME##*-} + 1) && /etc/confluent/docker/run"
+            - "/bin/bash"
+            - "/etc/zookeeper-configmap/init.sh"
           readinessProbe:
             exec:
               command:
@@ -117,6 +113,10 @@ spec:
                 - /bin/sh
                 - -c
                 - '[ "imok" = "$(echo ruok | nc -w 1 -q 1 127.0.0.1 2181)" ]'
+      volumes:
+        - name: configmap
+          configMap:
+            name: zookeeper-config
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -126,4 +126,36 @@ spec:
         resources:
           requests:
             storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zookeeper-config
+  labels:
+    app: zookeeper
+    tier: backend
+    devmode: "true"
+data:
+  init.sh: |-
+    #!/bin/bash
 
+    [ -z $REPLICAS ] && { echo REPLICAS is required; exit 1; }
+    [ -z $POD_NAME ] && { echo POD_NAME is required; exit 1; }
+    [ -z $SERVICE_NAME ] && { echo SERVICE_NAME is required; exit 1; }
+
+    # Build the list of node addresses based on the number of replicas and the names of the pod and headless service
+    NODE_BASE_NAME=${POD_NAME%-*}
+    NODE_LIST=""
+    for ((n=0; n < $REPLICAS; n++))
+    do
+      NODE_LIST="${NODE_LIST}${NODE_BASE_NAME}-$n.${SERVICE_NAME}:2888:3888;"
+    done
+
+    # Set up zookeeper variables
+    export ZOOKEEPER_SERVER_ID=$(expr ${POD_NAME##*-} + 1)
+    export ZOOKEEPER_SERVERS=${NODE_LIST%\;}
+    export ZOOKEEPER_QUORUM_LISTEN_ON_ALL_IPS="true"
+    export ZOOKEEPER_TICK_TIME="2000"
+    export ZOOKEEPER_CLIENT_PORT="2181"
+
+    /etc/confluent/docker/run

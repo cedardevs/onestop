@@ -143,7 +143,9 @@ data:
   init.sh: |-
     #!/bin/bash
 
+    # set by k8s, conflicts w/ vars expected by confluent image
     unset KAFKA_PORT
+
     export KAFKA_LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
     export KAFKA_ADVERTISED_LISTENERS="INTERNAL://${POD_NAME}.kafka-headless:9092,EXTERNAL://kafka:9093"
     export KAFKA_INTER_BROKER_LISTENER_NAME="INTERNAL"
