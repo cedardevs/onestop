@@ -34,7 +34,7 @@ elasticsearch:
         name: search_collection
       granule:
         name: search_granule
-      flattenedGranule:
+      flattened-granule:
         name: search_flattened_granule
 
 search:
