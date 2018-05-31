@@ -10,6 +10,16 @@ import {boxShadow} from '../../common/defaultStyles'
 import A from '../../common/link/Link'
 import {fontFamilySerif} from '../../utils/styleUtils'
 
+import {identifyProtocol} from '../../utils/resultUtils'
+import Tabs from '../../detail/Tabs'
+import VideoView from '../../detail/VideoView'
+
+const styleContent = {
+  fill: '#000032',
+  color: '#000032',
+  backgroundColor: 'white',
+}
+
 const styleResult = {
   minHeight: '15.5em',
   margin: '0 1.618em 1.618em 0',
@@ -251,16 +261,41 @@ class ListResult extends React.Component {
         )
       )
     }
+    //this.renderDisplayImage(item.thumbnail, item.spatialBounding)
+    let tabData = [
+      {
+        title: 'Thumbnail/Map',
+        content: this.renderDisplayImage(item.thumbnail, item.spatialBounding),
+      },
+    ]
 
+    const videoLinks = item.links.filter(
+      link => identifyProtocol(link).label === 'Video'
+    )
+    console.log('video links in granule: ', videoLinks)
+    const showVideoTab = videoLinks.length > 0
+    if (showVideoTab) {
+      tabData.push({
+        title: videoLinks.length === 1 ? 'Video' : 'Videos',
+        content: <VideoView links={videoLinks} />,
+      })
+    }
     const left = (
       <FlexColumn
         key={'ListResult::leftColumn'}
         style={{width: '32%'}}
         items={[
-          this.renderDisplayImage(item.thumbnail, item.spatialBounding),
+          <Tabs
+            key={`${item.id}::granule::tabs`}
+            style={{display: 'flex'}}
+            styleContent={styleContent}
+            data={tabData}
+            activeIndex={0}
+          />,
         ]}
       />
     )
+
     const right = (
       <FlexColumn
         key={'ListResult::rightColumn'}

@@ -84,10 +84,16 @@ export default class VideoView extends React.Component {
           url.indexOf('?') > 0 ? `${url}&rel=0` : `${url}?rel=0`
 
         embeddedVideos.push(
-          <Video key={index} link={linkWithOptions} aspectRatio={0.5625} />
+          <Video
+            key={index}
+            link={linkWithOptions}
+            protocol={link.linkProtocol}
+            aspectRatio={0.5625}
+          />
         )
       }
 
+      // TODO link name needs to not be blank for this to work!!!
       titleList.push(
         <li
           key={index}

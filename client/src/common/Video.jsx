@@ -35,8 +35,8 @@ export default class Video extends React.Component {
   }
 
   render() {
-    const {link} = this.props
-    return (
+    const {link, protocol} = this.props
+    const youtubeVideo = (
       <iframe
         ref={iframeRef => {
           this.iframeRef = iframeRef
@@ -47,5 +47,27 @@ export default class Video extends React.Component {
         style={{width: '100%'}}
       />
     )
+    const mp4Video = (
+      <video
+        ref={videoRef => {
+          this.iframeRef = videoRef
+        }}
+        controls
+        style={{width: '100%'}}
+      >
+        <source type="video/mp4" src={link} />
+      </video>
+    )
+    const other = <div>Could Not Play Video</div>
+
+    if (protocol === 'video:youtube') {
+      return youtubeVideo
+    }
+    else if (link.includes('.mp4')) {
+      return mp4Video
+    }
+    else {
+      return other
+    }
   }
 }
