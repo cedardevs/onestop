@@ -69,10 +69,13 @@ export class SvgIcon extends React.Component {
   }
 
   render() {
-    const {size, verticalAlign, style} = this.props
+    const {size, verticalAlign, style, wrapperStyle} = this.props
     const actualSize = sizeWithDefault(size)
     const appliedStyle = {...styleSvg(size), ...style}
-    const appliedWrapperStyle = {...styleWrapper(size, verticalAlign)}
+    const appliedWrapperStyle = {
+      ...styleWrapper(size, verticalAlign),
+      ...wrapperStyle,
+    }
     return (
       <span style={appliedWrapperStyle}>
         <svg

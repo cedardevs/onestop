@@ -104,7 +104,12 @@ export const identifyProtocol = link => {
 
 export const renderBadgeIcon = protocol => {
   if (protocol.svgPath) {
-    return <SvgIcon path={protocol.svgPath} />
+    return (
+      <SvgIcon
+        wrapperStyle={{paddingBottom: '.23em'}}
+        path={protocol.svgPath}
+      />
+    )
   }
   return <span>{protocol.id}</span>
 }
