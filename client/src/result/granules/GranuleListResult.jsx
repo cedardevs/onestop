@@ -8,17 +8,11 @@ import FlexColumn from '../../common/FlexColumn'
 import FlexRow from '../../common/FlexRow'
 import {boxShadow} from '../../common/defaultStyles'
 import A from '../../common/link/Link'
+import Button from '../../common/input/Button'
 import {fontFamilySerif} from '../../utils/styleUtils'
 
 import {identifyProtocol} from '../../utils/resultUtils'
-import Tabs from '../../detail/Tabs'
-import VideoView from '../../detail/VideoView'
-
-const styleContent = {
-  fill: '#000032',
-  color: '#000032',
-  backgroundColor: 'white',
-}
+import Video from '../../common/Video'
 
 const styleResult = {
   minHeight: '15.5em',
@@ -82,6 +76,7 @@ class ListResult extends React.Component {
   componentWillMount() {
     this.setState({
       focusing: false,
+      videoPlaying: null,
     })
   }
 
@@ -138,7 +133,20 @@ class ListResult extends React.Component {
   }
 
   renderBadge = ({protocol, url, displayName}) => {
+    // const {protocol, url, displayName} = link
     const linkText = displayName ? displayName : protocol.label
+    const videoPlay =
+      protocol.label === 'Video' ? (
+        <Button
+          onClick={() =>
+            this.setState({
+              videoPlaying: {protocol: protocol, url: url},
+            })}
+          title={`Play ${linkText}`}
+        >
+          Play{' '}
+        </Button>
+      ) : null
     return (
       <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
         <A
@@ -162,6 +170,8 @@ class ListResult extends React.Component {
             {linkText}
           </div>
         </A>
+
+        {videoPlay}
       </li>
     )
   }
@@ -222,6 +232,7 @@ class ListResult extends React.Component {
 
   render() {
     const {item, showLinks, showTimeAndSpace} = this.props
+    const {videoPlaying} = this.state
 
     const styleFocused = {
       ...(this.state.focusing ? styleFocusDefault : {}),
@@ -261,37 +272,12 @@ class ListResult extends React.Component {
         )
       )
     }
-    //this.renderDisplayImage(item.thumbnail, item.spatialBounding)
-    let tabData = [
-      {
-        title: 'Thumbnail/Map',
-        content: this.renderDisplayImage(item.thumbnail, item.spatialBounding),
-      },
-    ]
-
-    const videoLinks = item.links.filter(
-      link => identifyProtocol(link).label === 'Video'
-    )
-    console.log('video links in granule: ', videoLinks)
-    const showVideoTab = videoLinks.length > 0
-    if (showVideoTab) {
-      tabData.push({
-        title: videoLinks.length === 1 ? 'Video' : 'Videos',
-        content: <VideoView links={videoLinks} />,
-      })
-    }
     const left = (
       <FlexColumn
         key={'ListResult::leftColumn'}
         style={{width: '32%'}}
         items={[
-          <Tabs
-            key={`${item.id}::granule::tabs`}
-            style={{display: 'flex'}}
-            styleContent={styleContent}
-            data={tabData}
-            activeIndex={0}
-          />,
+          this.renderDisplayImage(item.thumbnail, item.spatialBounding),
         ]}
       />
     )
@@ -309,6 +295,14 @@ class ListResult extends React.Component {
       ...(this.state.focusing ? styleResultFocus : {}),
     }
 
+    const video = videoPlaying ? (
+      <Video
+        link={videoPlaying.url}
+        protocol={videoPlaying.protocol}
+        aspectRatio={0.5625}
+      />
+    ) : null
+
     return (
       <div
         style={styleResultMerged}
@@ -319,6 +313,7 @@ class ListResult extends React.Component {
           style={{padding: '1.618em', flexDirection: 'row-reverse'}}
           items={[ right, left ]}
         />
+        {video}
       </div>
     )
   }
