@@ -13,7 +13,7 @@ spec:
   clusterIP: None
   ports:
     - name: internal
-      port: 9092
+      port: 9093
       targetPort: internal
 ---
 apiVersion: v1
@@ -45,7 +45,7 @@ spec:
     matchLabels:
       app: kafka
   serviceName: kafka-headless
-  replicas: 3
+  replicas: 1
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
@@ -83,9 +83,9 @@ spec:
           imagePullPolicy: Always
           ports:
             - name: internal
-              containerPort: 9092
-            - name: external
               containerPort: 9093
+            - name: external
+              containerPort: 9092
           volumeMounts:
             - name: data
               mountPath: /var/lib/kafka/data
@@ -146,8 +146,8 @@ data:
     # set by k8s, conflicts w/ vars expected by confluent image
     unset KAFKA_PORT
 
-    export KAFKA_LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT"
-    export KAFKA_ADVERTISED_LISTENERS="INTERNAL://${POD_NAME}.kafka-headless:9092,EXTERNAL://kafka:9093"
+    export KAFKA_LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+    export KAFKA_ADVERTISED_LISTENERS="INTERNAL://${POD_NAME}.kafka-headless:9093,PLAINTEXT://kafka:9092"
     export KAFKA_INTER_BROKER_LISTENER_NAME="INTERNAL"
     export KAFKA_BROKER_ID="${POD_NAME##*-}"
 
