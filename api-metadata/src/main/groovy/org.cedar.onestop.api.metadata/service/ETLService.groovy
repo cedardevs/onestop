@@ -24,6 +24,12 @@ class ETLService {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
   private String GRANULE_STAGING_INDEX
 
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
+  private String FLAT_GRANULE_SEARCH_INDEX
+
+  @Value('${elasticsearch.index.universal-type}')
+  String TYPE
+
   @Value('${elasticsearch.index.search.collection.pipeline-name}')
   private String COLLECTION_PIPELINE
 
@@ -89,7 +95,7 @@ class ETLService {
   }
 
   @Scheduled(initialDelay = 60000L, fixedDelay = 600000L) // 1 minute after startup then every 10 minutes after previous run ends
-  public Map updateSearchIndices() {
+  public void updateSearchIndices() {
     log.info("Starting search indices update process")
     def start = System.currentTimeMillis()
     def result =  runETL(COLLECTION_STAGING_INDEX, COLLECTION_SEARCH_INDEX, GRANULE_STAGING_INDEX, GRANULE_SEARCH_INDEX)
@@ -200,6 +206,126 @@ class ETLService {
     ]
   }
 
+  private Map runFlatteningETL() {
+    elasticsearchService.ensureSearchIndices()
+    elasticsearchService.refresh(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
+
+    def wholeCollections = []
+    def wholeCollectionsTotal
+    def strayGranuleCollections = []
+    def maxFlatGranulesStagedDate = getMaxSearchStagedMillis(FLAT_GRANULE_SEARCH_INDEX)
+
+    def nextScrollRequest = { String scroll_id ->
+      def requestBody = [
+          scroll: '1m',
+          scroll_id: scroll_id
+      ]
+      return elasticsearchService.performRequest('POST', '_search/scroll', requestBody)
+    }
+
+    // Get all collections newer than maxFlatGranulesStagedDate
+    def collectionIdRequestBody = [
+        _source: false,
+        sort: "_doc", // Non-scoring query, so this will be most efficient ordering
+        size: 500,
+        query: [
+            bool: [
+                filter: [
+                    range: [
+                        stagedDate: [
+                            gt: maxFlatGranulesStagedDate
+                        ]
+                    ]
+                ]
+            ]
+        ]
+    ]
+    def collectionResponse = elasticsearchService.performRequest('POST', "${COLLECTION_SEARCH_INDEX}/_search?scroll=1m", collectionIdRequestBody)
+    def scrollId = collectionResponse._scroll_id
+    wholeCollectionsTotal = collectionResponse.hits.total
+    wholeCollections << collectionResponse.hits.hits*._id
+
+    while (wholeCollections.size() < wholeCollectionsTotal) {
+      def scrollResponse = nextScrollRequest(scrollId)
+      scrollId = scrollResponse._scroll_id
+      wholeCollections << scrollResponse.hits.hits*._id
+    }
+
+    // Close the search context & free resources
+    elasticsearchService.performRequest('DELETE', "_search/scroll/${scrollId}")
+
+    // Get all collections not already found from stray granules
+    def strayCollectionIdRequestBody = [
+        size: 0,
+        query: [
+            bool: [
+                must: [
+                    [range: [stagedDate: [gt: maxFlatGranulesStagedDate]]]
+                ],
+                must_not: [terms: [internalParentIdentifier: wholeCollections]]
+            ]
+        ],
+        aggregations: [
+            internalParentIdentifiers: [
+                terms: [
+                    field: "internalParentIdentifier",
+                    size: Integer.MAX_VALUE
+                ]
+            ]
+        ]
+    ]
+    def granuleResponse = elasticsearchService.performRequest('POST', "${GRANULE_SEARCH_INDEX}/_search", strayCollectionIdRequestBody)
+    strayGranuleCollections << granuleResponse.aggregations.internalParentIdentifiers.buckets*.key
+
+    // Iterate through all gathered collections for flattening
+    def flatteningTasksInFlight = []
+    def countFlatGranules = [
+        totalFlattenedGranulesInRequest: 0,
+        updatedFlattenedGranules: 0,
+        createdFlattenedGranules: 0
+    ]
+
+    wholeCollections.each { id ->
+      while(flatteningTasksInFlight.size() == MAX_TASKS) {
+        flatteningTasksInFlight.removeAll { taskId ->
+          def status = checkTask(taskId)
+          if(status.completed) {
+            countFlatGranules.totalFlattenedGranulesInRequest += status.totalDocs
+            countFlatGranules.updatedFlattenedGranules += status.updated
+            countFlatGranules.createdFlattenedGranules += status.created
+            deleteTask(taskId)
+          }
+          return status.completed
+        }
+        sleep(1000)
+      }
+
+      def flattenTask = etlFlattenedGranules(id) // Flattening ALL granules (collection has changed)
+      flatteningTasksInFlight << flattenTask
+    }
+
+    strayGranuleCollections.each { id ->
+      while(flatteningTasksInFlight.size() == MAX_TASKS) {
+        flatteningTasksInFlight.removeAll { taskId ->
+          def status = checkTask(taskId)
+          if(status.completed) {
+            countFlatGranules.totalFlattenedGranulesInRequest += status.totalDocs
+            countFlatGranules.updatedFlattenedGranules += status.updated
+            countFlatGranules.createdFlattenedGranules += status.created
+            deleteTask(taskId)
+          }
+          return status.completed
+        }
+        sleep(1000)
+      }
+
+      def flattenTask = etlFlattenedGranules(id, maxFlatGranulesStagedDate) // Only flatten new/updated granules
+      flatteningTasksInFlight << flattenTask
+    }
+
+    return countFlatGranules
+  }
+
   /**
    * @param sourceIndex
    * @param destIndex
@@ -273,6 +399,54 @@ class ETLService {
     def taskId = elasticsearchService.performRequest('POST', endpoint, reindexBody).task
     log.debug("Task [ ${taskId} ] started for indexing of granules")
     return taskId
+  }
+
+  private String etlFlattenedGranules(String internalParentIdentifier, Long stagedAfter = 0) {
+    log.debug("Starting flattened-granule indexing of collection [ ${internalParentIdentifier} ]")
+
+    String collectionEndpoint = "${COLLECTION_SEARCH_INDEX}/${TYPE}/${internalParentIdentifier}"
+    def collectionResponse = elasticsearchService.performRequest('GET', collectionEndpoint)
+    def collectionBody
+    if(collectionResponse.found) {
+      collectionBody = collectionResponse._source
+      def reindexScript = """\
+        for (String f : params.defaults.keySet()) {
+          if (ctx._source[f] == null || ctx._source[f] == []) {
+            ctx._source[f] = params.defaults[f];
+          }
+        }""".replaceAll(/\s+/, ' ')
+      def reindexBody = [
+          conflicts: "proceed",
+          source: [
+              index: GRANULE_SEARCH_INDEX,
+              query: [
+                  bool: [
+                      filter: [
+                          [term: [internalParentIdentifier: internalParentIdentifier]],
+                          [range: [stagedDate: [gt: stagedAfter]]]
+                      ]
+                  ]
+              ]
+          ],
+          dest: [
+              index: FLAT_GRANULE_SEARCH_INDEX
+          ],
+          script: [
+              lang: "painless",
+              inline: reindexScript,
+              params: [defaults: collectionBody]
+          ]
+      ]
+
+      String endpoint = "_reindex?wait_for_completion=false${REQUESTS_PER_SECOND ? ";requests_per_second=${REQUESTS_PER_SECOND}" : ""}"
+      def taskId = elasticsearchService.performRequest('POST', endpoint, reindexBody).task
+      log.debug("Task [ ${taskId} ] started for indexing of flattened granules")
+      return taskId
+    }
+    else {
+      log.debug("Collection ${internalParentIdentifier} not found in search index. No flattened granules indexed.")
+      return null // FIXME perhaps not the best way to handle this...
+    }
   }
 
   /**

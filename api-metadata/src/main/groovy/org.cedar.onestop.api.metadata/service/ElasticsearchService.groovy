@@ -28,6 +28,9 @@ class ElasticsearchService {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.staging.granule.name}')
   String GRANULE_STAGING_INDEX
 
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
+  private String FLAT_GRANULE_SEARCH_INDEX
+
   @Value('${elasticsearch.index.prefix:}')
   String PREFIX
 
@@ -58,6 +61,7 @@ class ElasticsearchService {
   public void ensureSearchIndices() {
     ensureIndex(COLLECTION_SEARCH_INDEX)
     ensureIndex(GRANULE_SEARCH_INDEX)
+    ensureIndex(FLAT_GRANULE_SEARCH_INDEX)
   }
 
   public void ensurePipelines() {
