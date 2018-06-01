@@ -109,6 +109,7 @@ class ElasticsearchService {
   public void dropSearchIndices() {
     drop(COLLECTION_SEARCH_INDEX)
     drop(GRANULE_SEARCH_INDEX)
+    drop(FLAT_GRANULE_SEARCH_INDEX)
   }
 
   public void drop(String indexName) {

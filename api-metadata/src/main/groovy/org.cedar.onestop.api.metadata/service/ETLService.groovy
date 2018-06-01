@@ -76,15 +76,19 @@ class ETLService {
     elasticsearchService.refresh(COLLECTION_STAGING_INDEX, GRANULE_STAGING_INDEX)
     def newCollectionSearchIndex = elasticsearchService.create(COLLECTION_SEARCH_INDEX)
     def newGranuleSearchIndex = elasticsearchService.create(GRANULE_SEARCH_INDEX)
+    def newFlatGranuleSearchIndex = elasticsearchService.create(FLAT_GRANULE_SEARCH_INDEX)
 
     try {
-      def result = runETL(COLLECTION_STAGING_INDEX, newCollectionSearchIndex, GRANULE_STAGING_INDEX, newGranuleSearchIndex)
-      elasticsearchService.refresh(newCollectionSearchIndex, newGranuleSearchIndex)
+      def etlResult = runETL(COLLECTION_STAGING_INDEX, newCollectionSearchIndex, GRANULE_STAGING_INDEX, newGranuleSearchIndex)
+      def flattenResult = runFlatteningETL(newCollectionSearchIndex, newGranuleSearchIndex, newFlatGranuleSearchIndex)
+      elasticsearchService.refresh(newCollectionSearchIndex, newGranuleSearchIndex, newFlatGranuleSearchIndex)
       elasticsearchService.moveAliasToIndex(COLLECTION_SEARCH_INDEX, newCollectionSearchIndex, true)
       elasticsearchService.moveAliasToIndex(GRANULE_SEARCH_INDEX, newGranuleSearchIndex, true)
+      elasticsearchService.moveAliasToIndex(FLAT_GRANULE_SEARCH_INDEX, newFlatGranuleSearchIndex, true)
       def end = System.currentTimeMillis()
-      log.info "Reindexed ${result.updatedCollections + result.createdCollections} of ${result.totalCollectionsInRequest} requested collections and " +
-          "${result.updatedGranules + result.createdGranules} of ${result.totalGranulesInRequest} requested granules in ${(end - start) / 1000}s"
+      log.info "Indexed ${etlResult.updatedCollections + etlResult.createdCollections} of ${etlResult.totalCollectionsInRequest} requested collections, " +
+          "${etlResult.updatedGranules + etlResult.createdGranules} of ${etlResult.totalGranulesInRequest} requested granules, and flattened " +
+          "${flattenResult.totalFlattenedGranulesInRequest} granules in ${(end - start) / 1000}s"
     }
     catch (Exception e) {
       log.error "Search reindexing failed because of: " + ExceptionUtils.getRootCauseMessage(e)
@@ -96,12 +100,20 @@ class ETLService {
 
   @Scheduled(initialDelay = 60000L, fixedDelay = 600000L) // 1 minute after startup then every 10 minutes after previous run ends
   public void updateSearchIndices() {
+    // Update collections & granules
     log.info("Starting search indices update process")
     def start = System.currentTimeMillis()
     def result =  runETL(COLLECTION_STAGING_INDEX, COLLECTION_SEARCH_INDEX, GRANULE_STAGING_INDEX, GRANULE_SEARCH_INDEX)
     def end = System.currentTimeMillis()
     log.info "Reindexed ${result.updatedCollections + result.createdCollections} of ${result.totalCollectionsInRequest} requested collections and " +
         "${result.updatedGranules + result.createdGranules} of ${result.totalGranulesInRequest} requested granules in ${(end - start) / 1000}s"
+
+    // Update flattened granules
+    log.info("Starting flattened granules search index update process")
+    start = System.currentTimeMillis()
+    result = runFlatteningETL(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
+    end = System.currentTimeMillis()
+    log.info "Updated ${result.updatedFlattenedGranules} and created ${result.createdFlattenedGranules} flattened granules in ${(end - start) / 1000}s"
   }
 
   /**
@@ -206,14 +218,14 @@ class ETLService {
     ]
   }
 
-  private Map runFlatteningETL() {
+  private Map runFlatteningETL(String collectionIndex, String source, String destination) {
     elasticsearchService.ensureSearchIndices()
-    elasticsearchService.refresh(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
+    elasticsearchService.refresh(collectionIndex, source, destination)
 
     def wholeCollections = []
     def wholeCollectionsTotal
     def strayGranuleCollections = []
-    def maxFlatGranulesStagedDate = getMaxSearchStagedMillis(FLAT_GRANULE_SEARCH_INDEX)
+    def maxFlatGranulesStagedDate = getMaxSearchStagedMillis(destination)
 
     def nextScrollRequest = { String scroll_id ->
       def requestBody = [
@@ -240,30 +252,33 @@ class ETLService {
             ]
         ]
     ]
-    def collectionResponse = elasticsearchService.performRequest('POST', "${COLLECTION_SEARCH_INDEX}/_search?scroll=1m", collectionIdRequestBody)
+    def collectionResponse = elasticsearchService.performRequest('POST', "${collectionIndex}/_search?scroll=1m", collectionIdRequestBody)
     def scrollId = collectionResponse._scroll_id
     wholeCollectionsTotal = collectionResponse.hits.total
-    wholeCollections << collectionResponse.hits.hits*._id
+    wholeCollections = collectionResponse.hits.hits*._id
 
     while (wholeCollections.size() < wholeCollectionsTotal) {
       def scrollResponse = nextScrollRequest(scrollId)
       scrollId = scrollResponse._scroll_id
-      wholeCollections << scrollResponse.hits.hits*._id
+      wholeCollections.addAll(scrollResponse.hits.hits*._id)
     }
 
     // Close the search context & free resources
     elasticsearchService.performRequest('DELETE', "_search/scroll/${scrollId}")
 
-    // Get all collections not already found from stray granules
+    // Get all collections not already found (if any) from stray granules
+    def boolQuery = [
+        must: [
+            [range: [stagedDate: [gt: maxFlatGranulesStagedDate]]]
+        ]
+    ]
+    if(wholeCollections) {
+      boolQuery.must_not = [terms: [internalParentIdentifier: wholeCollections]]
+    }
     def strayCollectionIdRequestBody = [
         size: 0,
         query: [
-            bool: [
-                must: [
-                    [range: [stagedDate: [gt: maxFlatGranulesStagedDate]]]
-                ],
-                must_not: [terms: [internalParentIdentifier: wholeCollections]]
-            ]
+            bool: boolQuery
         ],
         aggregations: [
             internalParentIdentifiers: [
@@ -274,8 +289,8 @@ class ETLService {
             ]
         ]
     ]
-    def granuleResponse = elasticsearchService.performRequest('POST', "${GRANULE_SEARCH_INDEX}/_search", strayCollectionIdRequestBody)
-    strayGranuleCollections << granuleResponse.aggregations.internalParentIdentifiers.buckets*.key
+    def granuleResponse = elasticsearchService.performRequest('POST', "${source}/_search", strayCollectionIdRequestBody)
+    strayGranuleCollections = granuleResponse.aggregations.internalParentIdentifiers.buckets*.key
 
     // Iterate through all gathered collections for flattening
     def flatteningTasksInFlight = []
@@ -300,7 +315,7 @@ class ETLService {
         sleep(1000)
       }
 
-      def flattenTask = etlFlattenedGranules(id) // Flattening ALL granules (collection has changed)
+      def flattenTask = etlFlattenedGranules(collectionIndex, source, destination, id) // Flattening ALL granules (collection has changed)
       flatteningTasksInFlight << flattenTask
     }
 
@@ -319,7 +334,7 @@ class ETLService {
         sleep(1000)
       }
 
-      def flattenTask = etlFlattenedGranules(id, maxFlatGranulesStagedDate) // Only flatten new/updated granules
+      def flattenTask = etlFlattenedGranules(collectionIndex, source, destination, id, maxFlatGranulesStagedDate) // Only flatten new/updated granules
       flatteningTasksInFlight << flattenTask
     }
 
@@ -401,10 +416,10 @@ class ETLService {
     return taskId
   }
 
-  private String etlFlattenedGranules(String internalParentIdentifier, Long stagedAfter = 0) {
+  private String etlFlattenedGranules(String collectionIndex, String source, String dest, String internalParentIdentifier, Long stagedAfter = 0) {
     log.debug("Starting flattened-granule indexing of collection [ ${internalParentIdentifier} ]")
 
-    String collectionEndpoint = "${COLLECTION_SEARCH_INDEX}/${TYPE}/${internalParentIdentifier}"
+    String collectionEndpoint = "${collectionIndex}/${TYPE}/${internalParentIdentifier}"
     def collectionResponse = elasticsearchService.performRequest('GET', collectionEndpoint)
     def collectionBody
     if(collectionResponse.found) {
@@ -418,7 +433,7 @@ class ETLService {
       def reindexBody = [
           conflicts: "proceed",
           source: [
-              index: GRANULE_SEARCH_INDEX,
+              index: source,
               query: [
                   bool: [
                       filter: [
@@ -429,7 +444,7 @@ class ETLService {
               ]
           ],
           dest: [
-              index: FLAT_GRANULE_SEARCH_INDEX
+              index: dest
           ],
           script: [
               lang: "painless",
@@ -444,7 +459,7 @@ class ETLService {
       return taskId
     }
     else {
-      log.debug("Collection ${internalParentIdentifier} not found in search index. No flattened granules indexed.")
+      log.error("Collection ${internalParentIdentifier} not found in search index. No flattened granules indexed.")
       return null // FIXME perhaps not the best way to handle this...
     }
   }
