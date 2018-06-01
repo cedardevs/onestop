@@ -22,6 +22,11 @@ class PublisherController {
     publisher.publishGranule(data)
   }
 
+  @RequestMapping(value = "/granule/{id}", consumes = "application/xml")
+  void receiveGranuleIso(@RequestBody String data, @PathVariable(required = false) String id) throws Exception {
+    publisher.publishGranuleIso(data, id)
+  }
+
   @RequestMapping(value = "/collection/{id}", consumes = "application/xml")
   void receiveCollection(@RequestBody String data, @PathVariable(required = false) String id) throws Exception {
     publisher.publishCollection(data, id)
