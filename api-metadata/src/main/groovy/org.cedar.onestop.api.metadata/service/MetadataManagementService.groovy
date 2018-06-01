@@ -26,6 +26,9 @@ class MetadataManagementService {
   @Value('${elasticsearch.index.staging.granule.name}')
   String GRANULE_STAGING_INDEX
 
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
+  private String FLAT_GRANULE_SEARCH_INDEX
+
   @Value('${elasticsearch.index.universal-type}')
   String TYPE
 
@@ -306,10 +309,11 @@ class MetadataManagementService {
     parsedIndex = endPosition > 0 ? parsedIndex.substring(0, endPosition) : parsedIndex
 
     def indexToTypeMap = [
-        (COLLECTION_SEARCH_INDEX) : 'collection',
-        (COLLECTION_STAGING_INDEX): 'collection',
-        (GRANULE_SEARCH_INDEX)    : 'granule',
-        (GRANULE_STAGING_INDEX)   : 'granule'
+        (COLLECTION_SEARCH_INDEX)  : 'collection',
+        (COLLECTION_STAGING_INDEX) : 'collection',
+        (GRANULE_SEARCH_INDEX)     : 'granule',
+        (GRANULE_STAGING_INDEX)    : 'granule',
+        (FLAT_GRANULE_SEARCH_INDEX): 'flattenedGranule'
     ]
 
     return indexToTypeMap[parsedIndex]

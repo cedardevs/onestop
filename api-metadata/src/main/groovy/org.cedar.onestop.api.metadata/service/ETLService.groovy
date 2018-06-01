@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.metadata.service
 
+import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -222,9 +223,9 @@ class ETLService {
     elasticsearchService.ensureSearchIndices()
     elasticsearchService.refresh(collectionIndex, source, destination)
 
-    def wholeCollections = []
+    def wholeCollections
     def wholeCollectionsTotal
-    def strayGranuleCollections = []
+    def strayGranuleCollections
     def maxFlatGranulesStagedDate = getMaxSearchStagedMillis(destination)
 
     def nextScrollRequest = { String scroll_id ->
