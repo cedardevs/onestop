@@ -17,7 +17,6 @@ spec:
       containers:
         - name: default-collection-wrapper
           image: cedardevs/psi-script-wrapper
-          imagePullPolicy: Always
           env:
             - name: PSI_KAFKA_APPLICATION_ID
               value: "default-collection-wrapper"
@@ -55,7 +54,6 @@ spec:
       containers:
         - name: dscovr-granule-wrapper
           image: cedardevs/psi-script-wrapper
-          imagePullPolicy: Always
           env:
             - name: PSI_KAFKA_APPLICATION_ID
               value: "dscovr-granule-wrapper"

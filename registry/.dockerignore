@@ -1,4 +1,2 @@
 # ignore everything except build outputs and docker directory
-*
-!build/libs
-!docker
+src

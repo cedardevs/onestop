@@ -1,0 +1,27 @@
+apiVersion: skaffold/v1alpha2
+kind: Config
+build:
+  artifacts:
+  - imageName: cedardevs/psi-registry
+    workspace: ./registry
+    docker:
+      buildArgs:
+        WAR_NAME: registry-0.1.0-SNAPSHOT-all.war
+        VERSION: 0.1.0-SNAPSHOT
+        DATE: now
+        VCS_REF: local
+  - imageName: cedardevs/psi-script-wrapper
+    workspace: ./script-wrapper
+    docker:
+      buildArgs:
+        JAR_NAME: script-wrapper-0.1.0-SNAPSHOT-all.jar
+        VERSION: 0.1.0-SNAPSHOT
+        DATE: now
+        VCS_REF: local
+deploy:
+  kubectl:
+    manifests:
+    - ./kubernetes/zookeeper.yml
+    - ./kubernetes/kafka.yml
+    - ./kubernetes/registry.yml
+    - ./kubernetes/script-wrappers.yml

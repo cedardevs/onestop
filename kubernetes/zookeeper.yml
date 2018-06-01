@@ -48,7 +48,7 @@ spec:
     matchLabels:
       app: zookeeper
   serviceName: zookeeper-headless
-  replicas: 3
+  replicas: 1
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
@@ -97,7 +97,7 @@ spec:
             - name: SERVICE_NAME
               value: "zookeeper-headless" # NOTE! THIS MUST MATCH SERVICE NAME FROM STATEFULSET SPEC!
             - name: REPLICAS
-              value: "3" # NOTE! THIS MUST MATCH REPLICAS FROM STATEFULSET SPEC!
+              value: "1" # NOTE! THIS MUST MATCH REPLICAS FROM STATEFULSET SPEC!
           command:
             - "/bin/bash"
             - "/etc/zookeeper-configmap/init.sh"
