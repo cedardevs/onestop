@@ -106,6 +106,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.name
+            - name: REPLICAS
+              value: "1" # NOTE! THIS MUST MATCH REPLICAS FROM STATEFULSET SPEC!
           command:
             - "/bin/bash"
             - "/etc/kafka-configmap/init.sh"
@@ -150,5 +152,11 @@ data:
     export KAFKA_ADVERTISED_LISTENERS="INTERNAL://${POD_NAME}.kafka-headless:9093,PLAINTEXT://kafka:9092"
     export KAFKA_INTER_BROKER_LISTENER_NAME="INTERNAL"
     export KAFKA_BROKER_ID="${POD_NAME##*-}"
+
+    if [ $REPLICAS -gt 3 ]; then
+      export KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=3
+    else
+      export KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=$REPLICAS
+    fi
 
     /etc/confluent/docker/run
