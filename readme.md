@@ -58,10 +58,61 @@ At this point, modifying a source file in a subproject will:
 1. Build its docker image
 1. Deploy its objects to the cluster
 
-#### One-off Version
+#### One-off Variant
 
 If you would rather not have gradle and skaffold watching for every change, you can instead use
 `./gradlew test` (without the `-t` option) and `skaffold run` to run each step once.
+
+### Accessing Kubernetes Services
+
+The registry api, as well as kafka-ui and kafka-manager are exposed as NodePort services.
+When using minikube, you can open the kakfa-ui and kafka-manager pages in a browser like:
+
+```bash
+minikube service kafka-ui
+minikube service kafka-manager
+``` 
+
+You can also use minikube to help do things like curl to our registry api:
+```bash
+curl -X PUT\
+     -H "Content-Type: application/json"\
+     $(minikube service registry --url)/metadata/granule\
+     --data-binary @regsitry/src/test/resources/test_granule.json
+```
+
+### Persistent Storage
+
+The zookeeper, kafka, and registry deployments are configured to store there data in volumes allocated by 
+persistent volume claims. These claims remain when pods are removed and even when the deployments are deleted.
+You can see the claims and their corresponding volumes them with `kubectl`, like this:
+
+```bash
+kubectl get pvc,pv
+NAME                                            STATUS    VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+persistentvolumeclaim/data-kafka-sts-0          Bound     pvc-e602da5b-5e25-11e8-9f48-080027a6b205   1Gi        RWO            standard       9d
+persistentvolumeclaim/data-registry-0           Bound     pvc-dc8c32dc-65c0-11e8-8652-080027a6b205   1Gi        RWO            standard       3h
+persistentvolumeclaim/data-zookeeper-sts-0      Bound     pvc-3860e2c5-5de4-11e8-9f48-080027a6b205   1Gi        RWO            standard       10d
+
+NAME                                                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS    CLAIM                             STORAGECLASS   REASON    AGE
+persistentvolume/pvc-3860e2c5-5de4-11e8-9f48-080027a6b205   1Gi        RWO            Delete           Bound     default/data-zookeeper-sts-0      standard                 10d
+persistentvolume/pvc-dc8c32dc-65c0-11e8-8652-080027a6b205   1Gi        RWO            Delete           Bound     default/data-registry-0           standard                 3h
+persistentvolume/pvc-e602da5b-5e25-11e8-9f48-080027a6b205   1Gi        RWO            Delete           Bound     default/data-kafka-sts-0          standard                 9d
+```
+
+To remove the persistent data, e.g. to wipe everything out and start over, you just need to delete the persistent volume claims:
+
+```bash
+kubectl delete pvc data-registry-0
+kubectl delete pvc data-kafka-sts-0
+kubectl delete pvc data-zookeeper-sts-0
+```
+
+Or, to delete all volume claims in the current namespace:
+
+```bash
+kubectl delete pvc --all
+```
 
 ## Architectural Background
 
