@@ -5,35 +5,65 @@
 The purpose of this project is to build a system which can both store and run processing workflows on the metadata
 related to every file ingested and archived by NOAA's National Centers for Environmental Information (NCEI). 
 
+## Deployment
+
+### Requirements
+
+1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/), configured to point to any...
+1. Kubernetes cluster (e.g. [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/))
+
+### Quickstart
+
+To deploy the system to a k8s cluster, simply run the following from the root of this repository.
+```bash
+kubectl apply -f kubernetes/*
+```
+
 ## Development
 
 ### Requirements
 
-1. Java
+1. Java 8+
 1. Docker
-1. Docker Compose
+1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/), configured to point to any...
+1. Kubernetes cluster (e.g. [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/))
+1. [skaffold](https://github.com/GoogleContainerTools/skaffold#installation)
+    - Note: if you already have docker, kubectl, and minikube installed, you only need to do the first step in the linked installation guide
+    - Note: skaffold is also available via homebrew
 
-### Quickstart
+### Recommended Development Cycle
 
+From the root of this repo, run:
 ```bash
-git clone https://github.com/cedardevs/psi
-cd psi
-./gradlew composeStart
+./gradlew -t test
 ```
+Which will:
+1. Install gradle if needed
+1. Compile the system's subprojects
+1. Run the unit tests of each subproject
+1. Set up a watch on the source code of each subproject which will rerun compilation and tests when they change
 
-This will test and compile each component, build docker images for them, then use docker-compose to spin up
-docker containers with zookeeper, kafka, and each component.
-
-#### Pipe parsed outputs to Elasticsearch with Kafka Connect
-
-To create the connectors in Kafka Connect to send collections and granules from to Elasticsearch, send these REST requests:
-
+Now, in a seperate shell, run:
 ```bash
-curl -X POST -H "Content-Type: application/json" localhost:8083/connectors --data-binary @onestop_collection_connector.json
-curl -X POST -H "Content-Type: application/json" localhost:8083/connectors --data-binary @onestop_granule_connector.json  
+skaffold dev
 ```
+Which will:
+1. Locally build docker images for each subproject, using the outputs compiled by gradle above
+1. Deploy the k8s objects based on those images, as well as dependencies like zookeeper and kafka, to your k8s cluster
+1. Set up a watch on the docker image source files which will rebuild and redeploy their corresponding images when they change
 
-## Technical Background
+At this point, modifying a source file in a subproject will:
+1. Compile that subproject
+1. Run its unit tests
+1. Build its docker image
+1. Deploy its objects to the cluster
+
+#### One-off Version
+
+If you would rather not have gradle and skaffold watching for every change, you can instead use
+`./gradlew test` (without the `-t` option) and `skaffold run` to run each step once.
+
+## Architectural Background
 
 This project embraces the event-streaming paradigm reflected in the [Kappa Architecture](www.kappa-architecture.com):
 
