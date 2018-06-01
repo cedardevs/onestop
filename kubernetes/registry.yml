@@ -16,7 +16,7 @@ spec:
 
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: registry
   labels:
@@ -25,11 +25,28 @@ spec:
   selector:
     matchLabels:
       app: registry
+  serviceName: registry
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
   template:
     metadata:
       labels:
         app: registry
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: "app"
+                      operator: In
+                      values:
+                        - registry
+                topologyKey: "kubernetes.io/hostname"
       containers:
         - name: registry
           image: cedardevs/psi-registry
@@ -39,3 +56,17 @@ spec:
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: "kafka:9092"
+            - name: STATE_DIR
+              value: "/var/lib/registry/data"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/registry/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
