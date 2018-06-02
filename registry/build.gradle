@@ -32,6 +32,7 @@ dependencies {
   compile('org.springframework.boot:spring-boot-starter-web')
   compile('org.springframework.cloud:spring-cloud-starter')
   compile('org.apache.kafka:kafka-streams:1.1.0')
+  compile('org.apache.kafka:kafka-clients:1.1.0')
 
   compileOnly('org.springframework.boot:spring-boot-starter-tomcat')
 
