@@ -3,10 +3,14 @@ import _ from 'lodash'
 import ReactDOM from 'react-dom'
 
 import {Key} from '../../utils/keyboardUtils'
+import FlexRow from '../../common/FlexRow'
 import Video from '../../common/Video'
+import Button from '../../common/input/Button'
+import {times_circle, SvgIcon} from '../../common/SvgIcon'
 
 const styleTrayContainer = (open, display, height, padding) => {
   return {
+    fill: 'black',
     boxSizing: 'border-box',
     width: '100%',
     transition: open // immediate transition
@@ -18,6 +22,20 @@ const styleTrayContainer = (open, display, height, padding) => {
     display: display,
     padding: padding,
   }
+}
+
+const styleCloseButton = {
+  alignSelf: 'center',
+  background: 'none',
+  border: 'none',
+  outline: 'none',
+  padding: '0.618em',
+  marginLeft: '.618em',
+}
+
+const styleHoverCloseButton = {
+  background: 'none',
+  fill: 'white',
 }
 
 class VideoTray extends React.Component {
@@ -210,8 +228,36 @@ class VideoTray extends React.Component {
       opacity,
       padding,
       videoReady,
+      focusingCloseButton,
     } = this.state
     const {url, protocol} = this.props
+
+    const closeButton = (
+      <Button
+        key="video-close-button"
+        style={styleCloseButton}
+        onClick={this.closeTray}
+        aria-label="close video"
+        styleHover={styleHoverCloseButton}
+        style={styleCloseButton}
+      >
+        <SvgIcon size="1em" path={times_circle} />
+      </Button>
+    )
+
+    const video = videoReady ? (
+      <Video
+        key={`${url}-video-tray`}
+        ref={videoRef => {
+          this.videoRef = videoRef
+        }}
+        link={url}
+        protocol={protocol}
+        aspectRatio={0.5625}
+        autofocus={videoReady}
+        height={height}
+      />
+    ) : null
 
     return (
       <div
@@ -221,19 +267,9 @@ class VideoTray extends React.Component {
         }}
         onKeyUp={this.handleKeyPressed}
         onKeyDown={this.handleKeyDown}
+        role="dialog"
       >
-        {videoReady ? (
-          <Video
-            ref={videoRef => {
-              this.videoRef = videoRef
-            }}
-            link={url}
-            protocol={protocol}
-            aspectRatio={0.5625}
-            autofocus={videoReady}
-            height={height}
-          />
-        ) : null}
+        <FlexRow items={[ video, closeButton ]} />
       </div>
     )
   }
