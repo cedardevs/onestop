@@ -56,14 +56,20 @@ class MetadataStreamService {
 
   private final AdminClient adminClient
   private final long publishInterval
+  private final String stateDir
   private KafkaStreams streamsApp
 
 
-  MetadataStreamService(@Autowired AdminClient adminClient, @Value('${publishing.interval.ms:300000}') long publishInterval) {
+  MetadataStreamService(
+      @Autowired AdminClient adminClient,
+      @Value('${publishing.interval.ms:300000}') long publishInterval,
+      @Value('${state.dir:}') String stateDir) {
+    println ">>>>>> STATE DIR IS ${stateDir}"
     this.adminClient = adminClient
     this.publishInterval = publishInterval
+    this.stateDir = stateDir
     declareTopics(adminClient)
-    this.streamsApp = buildStreamsApp(adminClient, publishInterval)
+    this.streamsApp = buildStreamsApp(adminClient, publishInterval, stateDir)
   }
 
   @PostConstruct
@@ -84,7 +90,7 @@ class MetadataStreamService {
     if (this.streamsApp) {
       this.streamsApp.close()
       this.streamsApp.cleanUp()
-      this.streamsApp = buildStreamsApp(this.adminClient, this.publishInterval)
+      this.streamsApp = buildStreamsApp(this.adminClient, this.publishInterval, this.stateDir)
       this.streamsApp.start()
     }
   }
@@ -119,17 +125,22 @@ class MetadataStreamService {
     return config + additionalConfig
   }
 
-  static KafkaStreams buildStreamsApp(AdminClient adminClient, long publishInterval) {
+  static KafkaStreams buildStreamsApp(AdminClient adminClient, long publishInterval, String stateDir) {
     def kafkaNodes = adminClient.describeCluster().nodes().get()
     def bootstrapServers = kafkaNodes.take(3).collect({ it.host() + ':' + it.port() })
 
-    def streamsConfig = new StreamsConfig([
+    def props = [
         (StreamsConfig.APPLICATION_ID_CONFIG)           : APP_ID,
         (StreamsConfig.BOOTSTRAP_SERVERS_CONFIG)        : bootstrapServers.join(','),
         (StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
         (StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG): Serdes.String().class.name,
         (ConsumerConfig.AUTO_OFFSET_RESET_CONFIG)       : 'earliest'
-    ])
+    ]
+    if (stateDir) {
+      props.put(StreamsConfig.STATE_DIR_CONFIG, stateDir)
+    }
+
+    def streamsConfig = new StreamsConfig(props)
     def streamsTopology = buildTopology(publishInterval)
     return new KafkaStreams(streamsTopology, streamsConfig)
   }

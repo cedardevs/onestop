@@ -79,7 +79,7 @@ shadowJar{
 
 
 docker {
-  additionalBuildArgs = [JAR_NAME: "script-wrapper-0.1.0-SNAPSHOT-all.jar"]
+  additionalBuildArgs = [JAR_NAME: shadowJar.outputs.files.singleFile.name]
 }
 
 BuildDockerImage.dependsOn(shadowJar)
