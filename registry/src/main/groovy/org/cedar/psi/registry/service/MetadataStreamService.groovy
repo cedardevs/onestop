@@ -64,7 +64,6 @@ class MetadataStreamService {
       @Autowired AdminClient adminClient,
       @Value('${publishing.interval.ms:300000}') long publishInterval,
       @Value('${state.dir:}') String stateDir) {
-    println ">>>>>> STATE DIR IS ${stateDir}"
     this.adminClient = adminClient
     this.publishInterval = publishInterval
     this.stateDir = stateDir
