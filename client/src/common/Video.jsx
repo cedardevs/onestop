@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 
 export default class Video extends React.Component {
   componentDidMount() {
@@ -25,12 +26,23 @@ export default class Video extends React.Component {
     // do work only if iframe exists
     if (this.iframeRef) {
       // recall our aspect ratio from props
-      const {aspectRatio} = this.props
+      const {aspectRatio, autofocus} = this.props
       // get new width dynamically
       const iframeRect = this.iframeRef.getBoundingClientRect()
       const newWidth = iframeRect.width
       // maintain aspect ratio when setting height
       this.iframeRef.style.height = newWidth * aspectRatio + 'px'
+
+      if (autofocus) {
+        ReactDOM.findDOMNode(this.iframeRef).focus()
+      }
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.link != prevProps.link && this.videoRef) {
+      // TODO figure out if two youtube links in the granules also need this kind of trigger?
+      this.videoRef.load()
     }
   }
 
@@ -51,6 +63,7 @@ export default class Video extends React.Component {
       <video
         ref={videoRef => {
           this.iframeRef = videoRef
+          this.videoRef = videoRef
         }}
         controls
         style={{width: '100%'}}

@@ -12,7 +12,7 @@ import Button from '../../common/input/Button'
 import {fontFamilySerif} from '../../utils/styleUtils'
 
 import {identifyProtocol} from '../../utils/resultUtils'
-import Video from '../../common/Video'
+import VideoTray from './VideoTray'
 
 const styleResult = {
   minHeight: '15.5em',
@@ -139,8 +139,11 @@ class ListResult extends React.Component {
       protocol.label === 'Video' ? (
         <Button
           onClick={() =>
-            this.setState({
-              videoPlaying: {protocol: protocol, url: url},
+            this.setState(prevState => {
+              return {
+                ...prevState,
+                videoPlaying: {protocol: protocol, url: url},
+              }
             })}
           title={`Play ${linkText}`}
         >
@@ -201,14 +204,20 @@ class ListResult extends React.Component {
   }
 
   handleFocus = event => {
-    this.setState({
-      focusing: true,
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+      }
     })
   }
 
   handleBlur = event => {
-    this.setState({
-      focusing: false,
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+      }
     })
   }
 
@@ -296,11 +305,7 @@ class ListResult extends React.Component {
     }
 
     const video = videoPlaying ? (
-      <Video
-        link={videoPlaying.url}
-        protocol={videoPlaying.protocol}
-        aspectRatio={0.5625}
-      />
+      <VideoTray url={videoPlaying.url} protocol={videoPlaying.protocol} />
     ) : null
 
     return (
