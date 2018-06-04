@@ -13,15 +13,6 @@ LABEL org.label-schema.vendor=CEDAR
 LABEL org.label-schema.vcs-url=https://github.com/cedardevs/psi
 LABEL org.label-schema.vcs-ref=${VCS_REF}
 
-# Install dependencies to run scripts
-# NOTE: Installing groovy this way overrides the default java to be 7,
-#       which then prevents our app from running. Moving on for now.
-RUN apt-get update && \
-    apt-get -y install groovy
-
-# NOTE: adding java to the path prevents the container from defaulting to 1.7
-ENV PATH=$JAVA_HOME/bin:$PATH
-
 WORKDIR /usr/src/app
 COPY build/libs/${JAR_NAME} .
 COPY splitter.yml /usr/src/app/splitter.yml
