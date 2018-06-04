@@ -2,6 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import ReactDOM from 'react-dom'
 
+import {Key} from '../../utils/keyboardUtils'
 import Video from '../../common/Video'
 
 const styleTrayContainer = (open, display, height, padding) => {
@@ -110,8 +111,12 @@ class VideoTray extends React.Component {
         setTimeout(
           () => {
             this.setState(prevState => {
+              if (prevState.closingTray) {
+                this.props.trayCloseComplete()
+              }
               return {
                 ...prevState,
+                ...{closingTray: false},
                 ...this.videoDisplay(false),
                 ...this.videoOpacity(false),
               }
@@ -125,10 +130,10 @@ class VideoTray extends React.Component {
           ...this.videoHeight(false),
           ...this.videoOpacity(false),
           ...this.videoPadding(false),
-          height: '0',
-          // width: '0',
-          opacity: '0',
-          padding: '0',
+          // height: '0',
+          // // width: '0',
+          // opacity: '0',
+          // padding: '0',
           open: false,
         }
         return {...prevState, ...immediateTransition}
@@ -146,6 +151,7 @@ class VideoTray extends React.Component {
       this.animateClose()
     }
   }
+
   componentWillReceiveProps(nextProps) {
     this.animateTransition(nextProps.showVideo)
   }
@@ -155,6 +161,44 @@ class VideoTray extends React.Component {
       'transitionend',
       this.handleTransitionEnd
     )
+  }
+
+  closeTray = () => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        ...{closingTray: true},
+      }
+    })
+    this.props.closeTray()
+  }
+
+  handleKeyPressed = e => {
+    // do nothing if modifiers are pressed
+    if (e.metaKey || e.shiftKey || e.ctrlKey || e.altKey) {
+      return
+    }
+
+    e.stopPropagation()
+
+    if (e.keyCode === Key.ESC) {
+      this.closeTray()
+    }
+  }
+
+  handleKeyDown = e => {
+    // prevent the default behavior for tree control keys
+    // these are the control keys used by the tree menu
+    const controlKeys = [ Key.ESC ]
+    if (
+      !e.metaKey &&
+      !e.shiftKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      controlKeys.includes(e.keyCode)
+    ) {
+      e.preventDefault()
+    }
   }
 
   render() {
@@ -175,6 +219,8 @@ class VideoTray extends React.Component {
         ref={container => {
           this.container = container
         }}
+        onKeyUp={this.handleKeyPressed}
+        onKeyDown={this.handleKeyDown}
       >
         {videoReady ? (
           <Video

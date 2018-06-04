@@ -134,15 +134,23 @@ class ListResult extends React.Component {
 
   renderBadge = ({protocol, url, displayName}) => {
     const linkText = displayName ? displayName : protocol.label
+    let focusRef = null
     const videoPlay =
       protocol.label === 'Video' ? (
         <Button
+          ref={ref => {
+            focusRef = ref
+          }}
           onClick={() => {
             this.props.showGranuleVideo(this.props.itemId)
             this.setState(prevState => {
               return {
                 ...prevState,
-                videoPlaying: {protocol: protocol, url: url},
+                videoPlaying: {
+                  protocol: protocol,
+                  url: url,
+                  returnFocusRef: focusRef,
+                },
               }
             })
           }}
@@ -313,6 +321,15 @@ class ListResult extends React.Component {
 
     const video = (
       <VideoTray
+        closeTray={() => {
+          this.props.showGranuleVideo(null)
+        }}
+        trayCloseComplete={() => {
+          ReactDOM.findDOMNode(videoPlaying.returnFocusRef).scrollIntoView({
+            behavior: 'smooth',
+          })
+          ReactDOM.findDOMNode(videoPlaying.returnFocusRef).focus()
+        }}
         url={videoPlaying ? videoPlaying.url : null}
         protocol={videoPlaying ? videoPlaying.protocol : null}
         showVideo={videoPlaying && granuleVideoId === itemId}
