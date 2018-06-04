@@ -50,6 +50,7 @@ spec:
       containers:
         - name: registry
           image: cedardevs/psi-registry
+          imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 8080
