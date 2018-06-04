@@ -60,6 +60,7 @@ class RegistryIntegrationSpec extends Specification {
     createResponse.statusCode == HttpStatus.OK
 
     when:
+    sleep(200)
     def retrieveEntity = RequestEntity
         .get("${baseUrl}/metadata/granule/${granuleMap.trackingId}".toURI())
         .build()
@@ -94,6 +95,7 @@ class RegistryIntegrationSpec extends Specification {
     createResponse.statusCode == HttpStatus.OK
 
     when:
+    sleep(200)
     def retrieveEntity = RequestEntity
         .get("${baseUrl}/metadata/granule/${granuleId}".toURI())
         .build()
@@ -128,6 +130,7 @@ class RegistryIntegrationSpec extends Specification {
     createResponse.statusCode == HttpStatus.OK
 
     when:
+    sleep(200)
     def retrieveEntity = RequestEntity
         .get("${baseUrl}/metadata/collection/${collectionId}".toURI())
         .build()
