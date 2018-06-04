@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import MapThumbnail from '../../common/MapThumbnail'
-import {processUrl} from '../../utils/urlUtils'
+import {processUrl, isGovExternal} from '../../utils/urlUtils'
 import * as util from '../../utils/resultUtils'
 import FlexColumn from '../../common/FlexColumn'
 import FlexRow from '../../common/FlexRow'
@@ -149,7 +149,7 @@ class ListResult extends React.Component {
     const linkText = displayName ? displayName : protocol.label
     let focusRef = null
     const videoPlay =
-      protocol.label === 'Video' ? (
+      protocol.label === 'Video' && !isGovExternal(url) ? (
         <Button
           key={`video-play-button-${url}`}
           styleHover={styleHoverPlayButton}
