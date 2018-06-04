@@ -12,6 +12,10 @@ export default class Video extends React.Component {
   componentWillUnmount() {
     // remember to remove custom listeners before unmounting
     window.removeEventListener('resize', this.debounceResize)
+    if (this.videoRef) {
+      // TODO figure out if two youtube links in the granules also need this kind of trigger?
+      this.videoRef.stop()
+    }
   }
 
   debounceResize = () => {

@@ -9,7 +9,7 @@ const styleTrayContainer = (open, display, height, padding) => {
     boxSizing: 'border-box',
     width: '100%',
     transition: open // immediate transition
-      ? 'height 0.2s 0.0s, padding 0.2s 0.0s'
+      ? 'padding 0.2s 0.0s, height 0.2s 0.0s'
       : 'height 0.2s 0.0s, padding 0.2s 0.0s',
     // properties set on a separate timer using state:
     height: height,
@@ -22,22 +22,14 @@ const styleTrayContainer = (open, display, height, padding) => {
 class VideoTray extends React.Component {
   constructor(props) {
     super(props)
-    // const {showVideo} = this.props
-    // this.state = {
-    //   open: showVideo,
-    //   display: showVideo ? 'block' : 'none',
-    //   height: showVideo ? '100%' : '0em',
-    //   width: showVideo ? '100%' : '0%',
-    //   opacity: showVideo ? '1' : '0',
-    //   padding: showVideo ? '1.618em' : '0',
-    // }
-    // this.state = this.videoState(false)
+    const {showVideo, url} = this.props
+    const show = showVideo && url
     this.state = {
-      ...{open: false},
-      ...this.videoDisplay(false),
-      ...this.videoHeight(false),
-      ...this.videoOpacity(false),
-      ...this.videoPadding(false),
+      ...{open: show},
+      ...this.videoDisplay(show),
+      ...this.videoHeight(show),
+      ...this.videoOpacity(show),
+      ...this.videoPadding(show),
     }
   }
 
@@ -66,13 +58,13 @@ class VideoTray extends React.Component {
 
   componentDidMount() {
     this.container.addEventListener('transitionend', this.handleTransitionEnd)
+    this.animateTransition(this.props.showVideo)
+  }
 
-    //componentWillReceiveProps(nextProps)
-    // if (this.props.showVideo != nextProps.showVideo) {
+  animateOpen = () => {
     this.setState(prevState => {
       const isOpen = prevState.open
       const isDisplayed = prevState.display === 'block'
-      const shouldClose = isOpen && isDisplayed
       const shouldOpen = !isOpen && !isDisplayed
 
       // these transitions do occasionally have timing issues, but I've only seen them when rapidly toggling a single element on and off..
@@ -93,7 +85,27 @@ class VideoTray extends React.Component {
             }
           })
         }, 15)
+
+        const immediateTransition = {
+          // display: 'block', opacity: '0'
+          ...this.videoDisplay(true),
+          ...this.videoOpacity(false),
+          open: true,
+        }
+        return {...prevState, ...immediateTransition}
       }
+
+      return prevState
+    })
+  }
+
+  animateClose = () => {
+    this.setState(prevState => {
+      const isOpen = prevState.open
+      const isDisplayed = prevState.display === 'block'
+      const shouldClose = isOpen && isDisplayed
+
+      // these transitions do occasionally have timing issues, but I've only seen them when rapidly toggling a single element on and off..
       if (shouldClose) {
         setTimeout(
           () => {
@@ -108,28 +120,34 @@ class VideoTray extends React.Component {
           //this.setState({display: 'none', opacity: '0'})
           500
         )
+
+        const immediateTransition = {
+          ...this.videoHeight(false),
+          ...this.videoOpacity(false),
+          ...this.videoPadding(false),
+          height: '0',
+          // width: '0',
+          opacity: '0',
+          padding: '0',
+          open: false,
+        }
+        return {...prevState, ...immediateTransition}
       }
 
-      const immediateTransition = shouldOpen
-        ? {
-            // display: 'block', opacity: '0'
-            ...this.videoDisplay(true),
-            ...this.videoOpacity(false),
-          }
-        : shouldClose
-          ? {
-              ...this.videoHeight(false),
-              ...this.videoOpacity(false),
-              ...this.videoPadding(false),
-              height: '0',
-              // width: '0',
-              opacity: '0',
-              padding: '0',
-            }
-          : {}
-      return {open: !isOpen, ...immediateTransition}
+      return prevState
     })
-    // }
+  }
+
+  animateTransition = show => {
+    if (show) {
+      this.animateOpen()
+    }
+    else {
+      this.animateClose()
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    this.animateTransition(nextProps.showVideo)
   }
 
   componentWillUnmount() {

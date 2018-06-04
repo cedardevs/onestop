@@ -191,6 +191,7 @@ export default class ListView extends Component {
         itemElement = (
           <ListItemComponent
             item={item}
+            itemId={key}
             key={key}
             onClick={() => onItemSelect(key)}
             shouldFocus={isNextFocus}

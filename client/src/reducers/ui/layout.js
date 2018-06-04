@@ -5,6 +5,7 @@ import {
   SET_LEFT_OPEN_CLOSE,
   TOGGLE_RIGHT,
   TOGGLE_MAP,
+  SHOW_GRANULE_VIDEO,
 } from '../../actions/LayoutActions'
 
 import {LOCATION_CHANGE} from 'react-router-redux'
@@ -16,6 +17,7 @@ export const initialState = Immutable({
   showMap: false,
   showAppliedFilterBubbles: false,
   onDetailPage: false,
+  granuleVideo: null,
 })
 
 export const layout = (state = initialState, action) => {
@@ -38,6 +40,8 @@ export const layout = (state = initialState, action) => {
     case TOGGLE_MAP:
       const previousShowMap = state.showMap
       return Immutable.set(state, 'showMap', !previousShowMap)
+    case SHOW_GRANULE_VIDEO:
+      return Immutable.set(state, 'granuleVideo', action.granuleVideo)
     default:
       return state
   }
