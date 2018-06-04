@@ -70,7 +70,7 @@ class TopologyUtilSpec extends Specification  {
     driver.pipeInput(consumerFactory.create(INPUT_TOPIC, idTwo, value2))
 
     then:
-    assert  value1 == driver.readOutput(OUTPUT_TOPIC_ONE, STRING_DESERIALIZER, STRING_DESERIALIZER).value()
-    assert  value2 == driver.readOutput(OUTPUT_TOPIC_TWO, STRING_DESERIALIZER, STRING_DESERIALIZER).value()
+    assert value1 == driver.readOutput(OUTPUT_TOPIC_ONE, STRING_DESERIALIZER, STRING_DESERIALIZER).value()
+    assert value2 == driver.readOutput(OUTPUT_TOPIC_TWO, STRING_DESERIALIZER, STRING_DESERIALIZER).value()
   }
 }
