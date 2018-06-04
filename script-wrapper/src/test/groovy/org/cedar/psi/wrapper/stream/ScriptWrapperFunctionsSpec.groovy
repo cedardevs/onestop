@@ -1,8 +1,7 @@
-package org.cedar.psi.wrapper
+package org.cedar.psi.wrapper.stream
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.cedar.psi.wrapper.stream.ScriptWrapperFunctions
 import spock.lang.Specification
 
 class ScriptWrapperFunctionsSpec extends Specification {

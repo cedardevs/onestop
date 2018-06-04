@@ -6,6 +6,7 @@ import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.Predicate
+import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.wrapper.stream.ScriptWrapperFunctions
 
 @Slf4j
@@ -22,7 +23,7 @@ class TopologyUtil {
     //stream incoming messages
     KStream inputStream = builder.stream(topologyConfig.topics.input as String)
     //pass them through the script
-    KStream scriptOutputStream = inputStream.mapValues({ msg -> ScriptWrapperFunctions.scriptCaller(msg, command, timeout) })
+    KStream scriptOutputStream = inputStream.mapValues({ msg -> ScriptWrapperFunctions.scriptCaller(msg, command, timeout) } as ValueMapper)
     //split script output into 2 streams, one for good and one for bad
     KStream[] goodAndBadStreams = scriptOutputStream.branch(isValid, isNotValid)
     KStream goodStream = goodAndBadStreams[0]
@@ -32,7 +33,7 @@ class TopologyUtil {
     if(badStream){badStream.to(errorOut)}
 
     //pass the good stream through the parser
-    KStream parsedStream = goodStream.mapValues({ msg -> ScriptWrapperFunctions.parseOutput(msg as String) })
+    KStream parsedStream = goodStream.mapValues({ msg -> ScriptWrapperFunctions.parseOutput(msg as String) } as ValueMapper)
 
     //split the parsed stream into valid and invalid streams
     KStream[] parsedGoodAndBadStreams = parsedStream.branch(isValid, isNotValid)
