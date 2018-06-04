@@ -10,7 +10,7 @@ import {boxShadow} from '../../common/defaultStyles'
 import A from '../../common/link/Link'
 import Button from '../../common/input/Button'
 import {fontFamilySerif} from '../../utils/styleUtils'
-
+import {play_circle_o, SvgIcon} from '../../common/SvgIcon'
 import {identifyProtocol} from '../../utils/resultUtils'
 import VideoTray from './VideoTray'
 
@@ -66,6 +66,19 @@ const styleSectionContent = {
 const styleFocusDefault = {
   outline: 'none',
   border: '.1em dashed white',
+}
+
+const stylePlayButton = {
+  alignSelf: 'center',
+  background: 'none',
+  border: 'none',
+  outline: 'none',
+  padding: '0.309',
+}
+
+const styleHoverPlayButton = {
+  background: 'none',
+  fill: 'blue',
 }
 
 class ListResult extends React.Component {
@@ -138,6 +151,9 @@ class ListResult extends React.Component {
     const videoPlay =
       protocol.label === 'Video' ? (
         <Button
+          key={`video-play-button-${url}`}
+          styleHover={styleHoverPlayButton}
+          style={stylePlayButton}
           ref={ref => {
             focusRef = ref
           }}
@@ -156,7 +172,7 @@ class ListResult extends React.Component {
           }}
           title={`Play ${linkText}`}
         >
-          Play{' '}
+          <SvgIcon size="1em" path={play_circle_o} />
         </Button>
       ) : null
     return (

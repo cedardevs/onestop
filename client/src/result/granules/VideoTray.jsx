@@ -13,12 +13,12 @@ const styleTrayContainer = (open, display, height, padding) => {
     fill: 'black',
     boxSizing: 'border-box',
     width: '100%',
+    overflowY: 'hidden',
     transition: open // immediate transition
       ? 'padding 0.2s 0.0s, height 0.2s 0.0s'
       : 'height 0.2s 0.0s, padding 0.2s 0.0s',
     // properties set on a separate timer using state:
     height: height,
-    // width: width,
     display: display,
     padding: padding,
   }
@@ -29,13 +29,13 @@ const styleCloseButton = {
   background: 'none',
   border: 'none',
   outline: 'none',
-  padding: '0.618em',
+  padding: '0.309',
   marginLeft: '.618em',
 }
 
 const styleHoverCloseButton = {
   background: 'none',
-  fill: 'white',
+  fill: 'blue',
 }
 
 class VideoTray extends React.Component {
@@ -89,12 +89,6 @@ class VideoTray extends React.Component {
       // these transitions do occasionally have timing issues, but I've only seen them when rapidly toggling a single element on and off..
       if (shouldOpen) {
         setTimeout(() => {
-          // this.setState({
-          //   height: 'initial',
-          //   // width: '100%',
-          //   opacity: '1',
-          //   padding: '1.618em',
-          // })
           this.setState(prevState => {
             return {
               ...prevState,
@@ -106,7 +100,6 @@ class VideoTray extends React.Component {
         }, 15)
 
         const immediateTransition = {
-          // display: 'block', opacity: '0'
           ...this.videoDisplay(true),
           ...this.videoOpacity(false),
           open: true,
@@ -126,32 +119,24 @@ class VideoTray extends React.Component {
 
       // these transitions do occasionally have timing issues, but I've only seen them when rapidly toggling a single element on and off..
       if (shouldClose) {
-        setTimeout(
-          () => {
-            this.setState(prevState => {
-              if (prevState.closingTray) {
-                this.props.trayCloseComplete()
-              }
-              return {
-                ...prevState,
-                ...{closingTray: false},
-                ...this.videoDisplay(false),
-                ...this.videoOpacity(false),
-              }
-            })
-          },
-          //this.setState({display: 'none', opacity: '0'})
-          500
-        )
+        setTimeout(() => {
+          this.setState(prevState => {
+            if (prevState.closingTray) {
+              this.props.trayCloseComplete()
+            }
+            return {
+              ...prevState,
+              ...{closingTray: false},
+              ...this.videoDisplay(false),
+              ...this.videoOpacity(false),
+            }
+          })
+        }, 500)
 
         const immediateTransition = {
           ...this.videoHeight(false),
           ...this.videoOpacity(false),
           ...this.videoPadding(false),
-          // height: '0',
-          // // width: '0',
-          // opacity: '0',
-          // padding: '0',
           open: false,
         }
         return {...prevState, ...immediateTransition}
@@ -224,7 +209,6 @@ class VideoTray extends React.Component {
       open,
       display,
       height,
-      // width,
       opacity,
       padding,
       videoReady,
@@ -235,9 +219,8 @@ class VideoTray extends React.Component {
     const closeButton = (
       <Button
         key="video-close-button"
-        style={styleCloseButton}
         onClick={this.closeTray}
-        aria-label="close video"
+        title="close video"
         styleHover={styleHoverCloseButton}
         style={styleCloseButton}
       >
