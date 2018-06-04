@@ -1,5 +1,3 @@
 # ignore everything except build outputs, docker directory, and scripts directory
-*
-!build/libs
-!docker
-!scripts
+data
+src
