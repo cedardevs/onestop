@@ -1,0 +1,65 @@
+buildscript {
+  repositories {
+    maven { url "https://plugins.gradle.org/m2/" }
+  }
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+  }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'org.cedar.dockerplugin'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = 'org.cedar.psi.splitter.stream.SplitterStreamMain'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile('org.codehaus.groovy:groovy:2.4.10')
+  compile('org.codehaus.groovy:groovy-json:2.4.10')
+  compile('org.apache.kafka:kafka-streams:1.1.0')
+  compile('org.slf4j:slf4j-api:1.7.25')
+  compile('org.apache.commons:commons-text:1.2')
+  compile('ch.qos.logback:logback-classic:1.2.3')
+  compile('org.yaml:snakeyaml:1.18')
+
+  testCompile('org.spockframework:spock-core:1.0-groovy-2.4')
+  testCompile('ch.qos.logback:logback-classic:1.2.3')
+  testCompile('org.apache.kafka:kafka-streams-test-utils:1.1.0')
+}
+
+def setupConfigLocation = {
+  def defaultLocation = "file:${System.properties['user.home']}/cedardevs/psi/config-value/${project.name}.yml"
+  def sysPropLocation = System.properties['psi.config.location']
+
+  systemProperty 'psi.config.location', sysPropLocation ?: defaultLocation
+  systemProperty 'project.name', project.name
+}
+
+tasks.withType(JavaExec, setupConfigLocation)
+
+jar {
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+}
+// check http://imperceptiblethoughts.com/shadow/
+shadowJar {
+  baseName = "splitter"
+  classifier = 'all'
+  version = version
+  configurations = [project.configurations.compile]
+}
+
+docker {
+  additionalBuildArgs = [JAR_NAME: "splitter-0.1.0-SNAPSHOT-all.jar"]
+}
+
+BuildDockerImage.dependsOn(shadowJar)
+assemble.dependsOn(BuildDockerImage)
+PublishDockerImage.dependsOn(BuildDockerImage)
+task publish { dependsOn PublishDockerImage }
