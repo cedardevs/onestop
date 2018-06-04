@@ -44,9 +44,10 @@ dependencies {
   testCompile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
   testCompile('org.springframework.boot:spring-boot-starter-test')
   testCompile('org.apache.kafka:kafka-streams-test-utils:1.1.0')
-  testCompile("org.testcontainers:testcontainers-parent:1.6.0")
-  testCompile("org.testcontainers:testcontainers:1.6.0")
-  testCompile("org.testcontainers:kafka:1.6.0")
+  testCompile('org.apache.kafka:kafka-clients:1.1.0:test')
+  testCompile('org.apache.kafka:kafka_2.11:1.1.0')
+  testCompile('org.apache.kafka:kafka_2.11:1.1.0:test')
+  testCompile('org.springframework.kafka:spring-kafka-test')
 }
 
 sourceSets {

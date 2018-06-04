@@ -11,7 +11,6 @@ import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
 
 @Slf4j
 @CompileStatic
@@ -22,7 +21,6 @@ class KafkaConfig {
   private String bootstrapServers
 
   @Bean
-  @Profile('default') // overridden in the integration profile to support integration testing
   Producer<String, String> kafkaProducer() {
     Map<String, Object> configProps = new HashMap<>()
     configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
@@ -33,7 +31,6 @@ class KafkaConfig {
   }
 
   @Bean(destroyMethod = 'close')
-  @Profile('default') // overridden in the integration profile to support integration testing
   AdminClient adminClient() {
     Map<String, Object> config = new HashMap<>()
     config.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)

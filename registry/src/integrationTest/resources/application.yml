@@ -1,0 +1,5 @@
+# set by kafka-spring-test's @EmbeddedKafka
+kafka.bootstrap.servers: ${spring.embedded.kafka.brokers}
+
+# use a random, temp dir for rocksdb state to prevent one run from interfering with the next
+state.dir: ${java.io.tmpdir}/${random.uuid}

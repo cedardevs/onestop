@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
+import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
@@ -16,8 +18,10 @@ import spock.lang.Specification
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @Slf4j
+@DirtiesContext
+@EmbeddedKafka
 @ActiveProfiles('integration')
-@SpringBootTest(classes = [IntegrationTestConfig, MetadataRegistryMain], webEnvironment = RANDOM_PORT)
+@SpringBootTest(classes = [MetadataRegistryMain], webEnvironment = RANDOM_PORT)
 class RegistryIntegrationSpec extends Specification {
 
   @Value('${local.server.port}')
@@ -56,7 +60,6 @@ class RegistryIntegrationSpec extends Specification {
     createResponse.statusCode == HttpStatus.OK
 
     when:
-    sleep(2000)
     def retrieveEntity = RequestEntity
         .get("${baseUrl}/metadata/granule/${granuleMap.trackingId}".toURI())
         .build()
@@ -91,7 +94,6 @@ class RegistryIntegrationSpec extends Specification {
     createResponse.statusCode == HttpStatus.OK
 
     when:
-    sleep(2000)
     def retrieveEntity = RequestEntity
         .get("${baseUrl}/metadata/granule/${granuleId}".toURI())
         .build()
@@ -126,7 +128,6 @@ class RegistryIntegrationSpec extends Specification {
     createResponse.statusCode == HttpStatus.OK
 
     when:
-    sleep(2000)
     def retrieveEntity = RequestEntity
         .get("${baseUrl}/metadata/collection/${collectionId}".toURI())
         .build()
