@@ -48,6 +48,7 @@ spec:
       containers:
         - name: splitter
           image: cedardevs/psi-splitter
+          imagePullPolicy: IfNotPresent
           volumeMounts:
             - name: splitter-config-volume
               mountPath: /etc/splitter/config
