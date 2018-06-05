@@ -146,13 +146,13 @@ class SearchIntegrationTests extends Specification {
           println("PUT new granule: ${response}")
         }
 
-//        collectionData.flattenedGranules.each { flattenedGranule, flattenedGranuleData ->
-//          metadata = cl.getResourceAsStream("data/${name}/${flattenedGranule}.json").text
-//          def flattenedGranuleEndpoint = "/$FLATTENED_GRANULE_SEARCH_INDEX/$TYPE/$flattenedGranuleData.id"
-//          record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-//          response = restClient.performRequest('PUT', flattenedGranuleEndpoint, Collections.EMPTY_MAP, record)
-//          println("PUT new flattened granule: ${response}")
-//        }
+        collectionData.flattenedGranules.each { flattenedGranule, flattenedGranuleData ->
+          metadata = cl.getResourceAsStream("data/${name}/${flattenedGranule}.json").text
+          def flattenedGranuleEndpoint = "/$FLATTENED_GRANULE_SEARCH_INDEX/$TYPE/$flattenedGranuleData.id"
+          record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
+          response = restClient.performRequest('PUT', flattenedGranuleEndpoint, Collections.EMPTY_MAP, record)
+          println("PUT new flattened granule: ${response}")
+        }
       }
     }
 
