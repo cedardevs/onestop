@@ -1,6 +1,5 @@
 package org.cedar.onestop.api.metadata.service
 
-import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -89,13 +88,14 @@ class ETLService {
       def end = System.currentTimeMillis()
       log.info "Indexed ${etlResult.updatedCollections + etlResult.createdCollections} of ${etlResult.totalCollectionsInRequest} requested collections, " +
           "${etlResult.updatedGranules + etlResult.createdGranules} of ${etlResult.totalGranulesInRequest} requested granules, and flattened " +
-          "${flattenResult.totalFlattenedGranulesInRequest} granules in ${(end - start) / 1000}s"
+          "${flattenResult.total} granules in ${(end - start) / 1000}s"
     }
     catch (Exception e) {
       log.error "Search reindexing failed because of: " + ExceptionUtils.getRootCauseMessage(e)
       log.error "Root cause stack trace: \n" + ExceptionUtils.getRootCauseStackTrace(e)
       elasticsearchService.drop(newCollectionSearchIndex)
       elasticsearchService.drop(newGranuleSearchIndex)
+      elasticsearchService.drop(newFlatGranuleSearchIndex)
     }
   }
 
@@ -104,17 +104,17 @@ class ETLService {
     // Update collections & granules
     log.info("Starting search indices update process")
     def start = System.currentTimeMillis()
-    def result =  runETL(COLLECTION_STAGING_INDEX, COLLECTION_SEARCH_INDEX, GRANULE_STAGING_INDEX, GRANULE_SEARCH_INDEX)
+    def etlResult =  runETL(COLLECTION_STAGING_INDEX, COLLECTION_SEARCH_INDEX, GRANULE_STAGING_INDEX, GRANULE_SEARCH_INDEX)
     def end = System.currentTimeMillis()
-    log.info "Reindexed ${result.updatedCollections + result.createdCollections} of ${result.totalCollectionsInRequest} requested collections and " +
-        "${result.updatedGranules + result.createdGranules} of ${result.totalGranulesInRequest} requested granules in ${(end - start) / 1000}s"
+    log.info "Reindexed ${etlResult.updatedCollections + etlResult.createdCollections} of ${etlResult.totalCollectionsInRequest} requested collections and " +
+        "${etlResult.updatedGranules + etlResult.createdGranules} of ${etlResult.totalGranulesInRequest} requested granules in ${(end - start) / 1000}s"
 
     // Update flattened granules
     log.info("Starting flattened granules search index update process")
     start = System.currentTimeMillis()
-    result = runFlatteningETL(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
+    def flatResult = runFlatteningETL(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
     end = System.currentTimeMillis()
-    log.info "Updated ${result.updatedFlattenedGranules} and created ${result.createdFlattenedGranules} flattened granules in ${(end - start) / 1000}s"
+    log.info "Updated ${flatResult.updated} and created ${flatResult.created} flattened granules in ${(end - start) / 1000}s"
   }
 
   /**
@@ -294,21 +294,21 @@ class ETLService {
     strayGranuleCollections = granuleResponse.aggregations.internalParentIdentifiers.buckets*.key
 
     // Iterate through all gathered collections for flattening
-    def flatteningTasksInFlight = []
+    def tasksInFlight = []
     def countFlatGranules = [
-        totalFlattenedGranulesInRequest: 0,
-        updatedFlattenedGranules: 0,
-        createdFlattenedGranules: 0
+        total: 0,
+        updated: 0,
+        created: 0
     ]
 
     wholeCollections.each { id ->
-      while(flatteningTasksInFlight.size() == MAX_TASKS) {
-        flatteningTasksInFlight.removeAll { taskId ->
+      while(tasksInFlight.size() == MAX_TASKS) {
+        tasksInFlight.removeAll { taskId ->
           def status = checkTask(taskId)
           if(status.completed) {
-            countFlatGranules.totalFlattenedGranulesInRequest += status.totalDocs
-            countFlatGranules.updatedFlattenedGranules += status.updated
-            countFlatGranules.createdFlattenedGranules += status.created
+            countFlatGranules.total += status.totalDocs
+            countFlatGranules.updated += status.updated
+            countFlatGranules.created += status.created
             deleteTask(taskId)
           }
           return status.completed
@@ -317,17 +317,19 @@ class ETLService {
       }
 
       def flattenTask = etlFlattenedGranules(collectionIndex, source, destination, id) // Flattening ALL granules (collection has changed)
-      flatteningTasksInFlight << flattenTask
+      if(flattenTask) { // Could be null if collection wasn't found in the search index for some reason
+        tasksInFlight << flattenTask
+      }
     }
 
     strayGranuleCollections.each { id ->
-      while(flatteningTasksInFlight.size() == MAX_TASKS) {
-        flatteningTasksInFlight.removeAll { taskId ->
+      while(tasksInFlight.size() == MAX_TASKS) {
+        tasksInFlight.removeAll { taskId ->
           def status = checkTask(taskId)
           if(status.completed) {
-            countFlatGranules.totalFlattenedGranulesInRequest += status.totalDocs
-            countFlatGranules.updatedFlattenedGranules += status.updated
-            countFlatGranules.createdFlattenedGranules += status.created
+            countFlatGranules.total += status.totalDocs
+            countFlatGranules.updated += status.updated
+            countFlatGranules.created += status.created
             deleteTask(taskId)
           }
           return status.completed
@@ -336,7 +338,24 @@ class ETLService {
       }
 
       def flattenTask = etlFlattenedGranules(collectionIndex, source, destination, id, maxFlatGranulesStagedDate) // Only flatten new/updated granules
-      flatteningTasksInFlight << flattenTask
+      if(flattenTask) { // Could be null if collection wasn't found in the search index for some reason
+        tasksInFlight << flattenTask
+      }
+    }
+
+    // Wait for any remaining tasks to complete
+    while(tasksInFlight.size() > 0) {
+      tasksInFlight.removeAll { taskId ->
+        def status = checkTask(taskId)
+        if(status.completed) {
+          countFlatGranules.total += status.totalDocs
+          countFlatGranules.updated += status.updated
+          countFlatGranules.created += status.created
+          deleteTask(taskId)
+        }
+        return status.completed
+      }
+      sleep(1000)
     }
 
     return countFlatGranules
@@ -425,10 +444,25 @@ class ETLService {
     def collectionBody
     if(collectionResponse.found) {
       collectionBody = collectionResponse._source
+      // Notes: Can't use Math.max because it returns a double. Also, painless has strange behavior with if/elseif --
+      //        need to include last else or will run into obscured errors
       def reindexScript = """\
         for (String f : params.defaults.keySet()) {
-          if (ctx._source[f] == null || ctx._source[f] == []) {
+          if (f == 'stagedDate') {
+            def collectionDate = params.defaults[f];
+            def granuleDate = ctx._source[f];
+            if (collectionDate > granuleDate) {
+              ctx._source[f] = collectionDate;
+            }
+            else {
+              ctx._source[f] = granuleDate;
+            }
+          }
+          else if (ctx._source[f] == null || ctx._source[f] == []) {
             ctx._source[f] = params.defaults[f];
+          }
+          else {
+            ctx._source[f] = ctx._source[f];
           }
         }""".replaceAll(/\s+/, ' ')
       def reindexBody = [
@@ -460,8 +494,8 @@ class ETLService {
       return taskId
     }
     else {
-      log.error("Collection ${internalParentIdentifier} not found in search index. No flattened granules indexed.")
-      return null // FIXME perhaps not the best way to handle this...
+      log.error("Collection ${internalParentIdentifier} not found in search index. No flattened granules indexed for this collection.")
+      return null
     }
   }
 
