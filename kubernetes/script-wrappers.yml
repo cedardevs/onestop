@@ -17,7 +17,6 @@ spec:
       containers:
         - name: default-collection-wrapper
           image: cedardevs/psi-script-wrapper
-          imagePullPolicy: IfNotPresent
           env:
             - name: PSI_KAFKA_APPLICATION_ID
               value: "default-collection-wrapper"
@@ -40,25 +39,24 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: iso-parser
+  name: dscovr-granule-wrapper
   labels:
-    app: iso-parser
+    app: dscovr-granule-wrapper
 spec:
   selector:
     matchLabels:
-      app: iso-parser
+      app: dscovr-granule-wrapper
   template:
     metadata:
       labels:
-        app: iso-parser
+        app: dscovr-granule-wrapper
     spec:
       containers:
-        - name: iso-parser
+        - name: dscovr-granule-wrapper
           image: cedardevs/psi-script-wrapper
-          imagePullPolicy: IfNotPresent
           env:
             - name: PSI_KAFKA_APPLICATION_ID
-              value: "iso-parser"
+              value: "dscovr-granule-wrapper"
             - name: PSI_KAFKA_BOOTSTRAP_SERVERS
               value: "kafka:9092"
             - name: PSI_STREAM_TOPICS_INPUT
@@ -68,7 +66,7 @@ spec:
             - name: PSI_STREAM_TOPICS_ERROROUT
               value: "sme-error-events"
             - name: PSI_STREAM_COMMAND
-              value: "echo"
+              value: "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
             - name: PSI_STREAM_CONVERT_ISO
               value: "true"
             - name: PSI_STREAM_TIMEOUT
@@ -92,7 +90,6 @@ spec:
       containers:
         - name: iso-parser
           image: cedardevs/psi-script-wrapper
-          imagePullPolicy: IfNotPresent
           env:
             - name: PSI_KAFKA_APPLICATION_ID
               value: "iso-parser"
