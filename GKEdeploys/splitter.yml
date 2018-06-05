@@ -16,7 +16,7 @@ data:
 
     stream:
       input:
-        topic: test-input
+        topic: metadata-aggregator-raw-granules-changelog
       split:
         - datastreamOne:
             key: dataStream
