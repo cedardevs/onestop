@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-ui
+  labels:
+    app: kafka-ui
+spec:
+  selector:
+    app: kafka-ui
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: kafka-ui
+  labels:
+    app: kafka-ui
+spec:
+  selector:
+    matchLabels:
+      app: kafka-ui
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      containers:
+        - name: kafka-ui
+          image: landoop/kafka-topics-ui:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: KAFKA_REST_PROXY_URL
+              value: "http://kafka-rest:8080"
+            - name: PROXY
+              value: "true"
