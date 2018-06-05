@@ -201,74 +201,13 @@ class SearchIntegrationTests extends Specification {
     items.size() == 4
 
     and: "Expected results are returned"
-    def beginDates = items.collect { it.attributes.beginDate }
-    beginDates.sort().equals([
-        '2014-06-02T00:00:00.000Z',
-        '2013-03-01T00:00:00.000Z',
-        '2005-01-30T00:00:00.000Z',
-        '2009-11-22T00:00:00.000Z'
-    ].sort())
-    def citeAsStatements = items.collect { it.attributes.citeAsStatements }
-    citeAsStatements.sort().equals([
-        ['Cite as: US DOC; NOAA; NESDIS; Office of Satellite and Product Operations (OSPO) (2014). GHRSST Level 4 OSPO Global Nighttime Foundation Sea Surface Temperature Analysis (GDS version 2). National Oceanographic Data Center, NOAA. Dataset. [access date]'],
-        ['Cite as: Hervey, R. V. and US DOC; NOAA; NWS; National Data Buoy Center (2013). Coastal meteorological and water temperature data from National Water Level Observation Network (NWLON) and Physical Oceanographic Real-Time System (PORTS) stations of the NOAA Center for Operational Oceanographic Products and Services (CO-OPS). National Oceanographic Data Center, NOAA. Dataset. [access date]'],
-        ['Cite as: Medspiration (2005). GHRSST Level 4 EUR Mediterranean Sea Regional Foundation Sea Surface Temperature Analysis (GDS version 2). National Oceanographic Data Center, NOAA. Dataset. [access date]'],
-        ['Cite as: US DOC; NOAA; NESDIS; Office of Satellite Data Processing and Distribution (OSDPD) (2009). GHRSST Level 2P Western Pacific Regional Skin Sea Surface Temperature from the Multifunctional Transport Satellite 1R (MTSAT-1R) (GDS version 1). National Oceanographic Data Center, NOAA. Dataset. [access date]']
-    ].sort())
-    def thumbnail = items.collect { it.attributes.thumbnail }
-    thumbnail.sort().equals([
-        'http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
-        'http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:NDBC-COOPS',
-        'http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED',
-        'http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R'
-    ].sort())
-    def endDates = items.collect { it.attributes.endDates }
-    endDates.sort().equals([
-        null,
-        null,
-        null,
-        null
-    ].sort())
-    def beginYears = items.collect { it.attributes.beginYears }
-    beginYears.sort().equals([
-        null,
-        null,
-        null,
-        null
-    ].sort())
-    def spatialBoundings = items.collect { it.attributes.spatialBounding }
-    spatialBoundings.collect{ it.toString() }.sort().equals([
-        [coordinates:[[[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]], type: 'Polygon'],
-        [coordinates:[[[144.657, -14.28], [-61.821, -14.28], [-61.821, 70.4], [144.657, 70.4], [144.657, -14.28]]], type: 'Polygon'],
-        [coordinates:[[[-5.99, 30.01], [36.49, 30.01], [36.49, 45.99], [-5.99, 45.99], [-5.99, 30.01]]], type: 'Polygon'],
-        [coordinates:[[[60, -73], [-143, -73], [-143, 73], [60, 73], [60, -73]]], type: 'Polygon']
-    ].collect{ it.toString() }.sort())
-
-    // link data is a bit more gnarly, so we'll just compare the number of links
-    def links = items.collect { it.attributes.links }
-    links.size() == 4
-    def endYears = items.collect { it.attributes.endYears }
-    endYears.sort().equals([
-        null,
-        null,
-        null,
-        null
-    ].sort())
-
-    // if we end up with more keys per result than summary should contain, summary source filter is not working!
-    items.each {
-      assert it.attributes.keySet().size() <= [
-          "title",
-          "thumbnail",
-          "spatialBounding",
-          "beginDate",
-          "beginYear",
-          "endDate",
-          "endYear",
-          "links",
-          "citeAsStatements"
-      ].size()
-    }
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED',
+        'gov.noaa.nodc:GHRSST-OSDPD-L2P-MTSAT1R',
+        'gov.noaa.nodc:GHRSST-Geo_Polar_Blended_Night-OSPO-L4-GLOB',
+        'gov.noaa.nodc:NDBC-COOPS'
+    ])
 
     and: 'The correct number of facets is returned'
     def aggs = result.body.meta.facets
