@@ -49,7 +49,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
         - name: registry
-          image: cedardevs/psi-registry:0.1.0-SNAPSHOT
+          image: cedardevs/psi-registry
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
