@@ -220,7 +220,7 @@ class ElasticsearchService {
           'Cryosphere', 'Human Dimensions', 'Land Surface', 'Oceans', 'Paleoclimate', 'Solid Earth',
           'Spectral/Engineering', 'Sun-Earth Interactions', 'Terrestrial Hydrosphere'
       ],
-      'location': [
+      'locations': [
           'Continent', 'Geographic Region', 'Ocean', 'Solid Earth', 'Space', 'Vertical Location'
       ]
   ]
