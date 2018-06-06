@@ -88,7 +88,7 @@ spec:
               containerPort: 9092
           volumeMounts:
             - name: data
-              mountPath: /var/lib/kafka/data
+              mountPath: /data
             - name: configmap
               mountPath: /etc/kafka-configmap
           resources:
@@ -98,6 +98,8 @@ spec:
           env:
             - name: KAFKA_ZOOKEEPER_CONNECT
               value: "zookeeper:2181"
+            - name: KAFKA_LOG_DIR
+              value: "/data/kafka"
             - name: KAFKA_HEAP_OPTS
               value: "-Xmx512M -Xms512M"
             - name: KAFKA_LOG4J_ROOT_LOGLEVEL
