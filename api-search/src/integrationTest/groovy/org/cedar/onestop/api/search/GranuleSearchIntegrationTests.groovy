@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.RequestEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
@@ -24,6 +26,9 @@ class GranuleSearchIntegrationTests extends Specification {
 
   @Autowired
   RestClient restClient
+
+  @Autowired
+  Map testData
 
   @LocalServerPort
   private String port
@@ -46,115 +51,231 @@ class GranuleSearchIntegrationTests extends Specification {
 
   void setup() {
     def cl = ClassLoader.systemClassLoader
-    def searchCollectionIndexJson = cl.getResourceAsStream('search_collectionIndex.json').text
     def searchGranuleIndexJson = cl.getResourceAsStream('search_granuleIndex.json').text
-    def searchFlattenedGranuleIndexJson = cl.getResourceAsStream('search_flattened_granuleIndex.json').text
-
-    def collectionIndexSettings = new NStringEntity(searchCollectionIndexJson, ContentType.APPLICATION_JSON)
     def granuleIndexSettings = new NStringEntity(searchGranuleIndexJson, ContentType.APPLICATION_JSON)
-    def flattenedGranuleIndexSettings = new NStringEntity(searchFlattenedGranuleIndexJson, ContentType.APPLICATION_JSON)
 
     Response response = restClient.performRequest('DELETE', '_all')
     println("DELETE _all: ${response}")
 
-    def collectionResponse = restClient.performRequest('PUT', COLLECTION_SEARCH_INDEX, Collections.EMPTY_MAP, collectionIndexSettings)
-    println("PUT new collection index: ${collectionResponse}")
-
     def granuleResponse = restClient.performRequest('PUT', GRANULE_SEARCH_INDEX, Collections.EMPTY_MAP, granuleIndexSettings)
     println("PUT new granule index: ${granuleResponse}")
 
-    def flattenedGranuleResponse = restClient.performRequest('PUT', FLATTENED_GRANULE_SEARCH_INDEX, Collections.EMPTY_MAP, flattenedGranuleIndexSettings)
-    println("PUT new flattened-granule index: ${flattenedGranuleResponse}")
-
-    Map data = [
-        'DEM': [
-            'C1': [
-                id: 'e7a36e60-1bcb-47b1-ac0d-3c2a2a743f9b',
-                granules: [],
-                flattenedGranules: []
-            ],
-            'C2': [
-                id: 'e5820283-3686-44d0-8edd-28a086eb500e',
-                granules: [],
-                flattenedGranules: []
-            ],
-            'C3': [
-                id: '1415b3db-c602-4dbb-a502-4091fe9df1cf',
-                granules: [],
-                flattenedGranules: []
-            ],
-        ],
-        'GHRSST': [
-            'C1': [
-                id: '920d8155-f764-4777-b7e5-14442b7275b8',
-                granules: [],
-                flattenedGranules: []
-            ],
-            'C2': [
-                id: '882511bc-e99e-4597-b634-47a59ddf9fda',
-                granules: [],
-                flattenedGranules: []
-            ],
-            'C3': [
-                id: '42ea683d-e4e7-434c-8823-abff32e00f34',
-                granules: [],
-                flattenedGranules: []
-            ],
-        ],
-        'COOPS': [
-            'C1': [
-                id: 'fcf83ec9-964b-45b9-befe-378ea6ce52cb',
-                granules: [
-                    'G1': [id: '783089c4-3484-4f70-ac8d-d4818d0cd0dd'],
-                    'G2': [id: 'a207b48f-29fc-4d79-a676-1f265cd9971f'],
-                ],
-                flattenedGranules: [
-                    'FG1': [id: '783089c4-3484-4f70-ac8d-d4818d0cd0dd'],
-                    'FG2': [id: 'a207b48f-29fc-4d79-a676-1f265cd9971f']
-                ]
-            ]
-        ]
-    ]
-
-    data.each{ name, dataset ->
+    testData.each{ name, dataset ->
       dataset.each { collection, collectionData ->
-        def metadata = cl.getResourceAsStream("data/${name}/${collection}.json").text
-        def id = collectionData.id
-        def collectionEndpoint = "/$COLLECTION_SEARCH_INDEX/$TYPE/$id"
-        HttpEntity record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-        response = restClient.performRequest('PUT', collectionEndpoint, Collections.EMPTY_MAP, record)
-        println("PUT new collection: ${response}")
-
         collectionData.granules.each { granule, granuleData ->
-          metadata = cl.getResourceAsStream("data/${name}/${granule}.json").text
+          def metadata = cl.getResourceAsStream("data/${name}/${granule}.json").text
           def granuleEndpoint = "/$GRANULE_SEARCH_INDEX/$TYPE/$granuleData.id"
-          record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
+          def record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
           response = restClient.performRequest('PUT', granuleEndpoint, Collections.EMPTY_MAP, record)
           println("PUT new granule: ${response}")
-        }
-
-        collectionData.flattenedGranules.each { flattenedGranule, flattenedGranuleData ->
-          metadata = cl.getResourceAsStream("data/${name}/${flattenedGranule}.json").text
-          def flattenedGranuleEndpoint = "/$FLATTENED_GRANULE_SEARCH_INDEX/$TYPE/$flattenedGranuleData.id"
-          record = new NStringEntity(metadata, ContentType.APPLICATION_JSON)
-          response = restClient.performRequest('PUT', flattenedGranuleEndpoint, Collections.EMPTY_MAP, record)
-          println("PUT new flattened granule: ${response}")
         }
       }
     }
 
-    def refreshEndpoint = "/${COLLECTION_SEARCH_INDEX},${GRANULE_SEARCH_INDEX},${FLATTENED_GRANULE_SEARCH_INDEX}/_refresh"
+    def refreshEndpoint = "/${GRANULE_SEARCH_INDEX}/_refresh"
     response = restClient.performRequest('POST', refreshEndpoint)
-    println("Refresh all search indices: ${response}")
+    println("Refresh search index: ${response}")
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
     searchBaseUriString = "http://localhost:${port}/${contextPath}/search/"
-    searchCollectionUriString = "http://localhost:${port}/${contextPath}/search/collection"
     searchGranuleUriString = "http://localhost:${port}/${contextPath}/search/granule"
-    searchFlattenedGranuleUriString = "http://localhost:${port}/${contextPath}/search/flattened-granule"
-    collectionBaseUriString = "http://localhost:${port}/${contextPath}/collection/"
     granuleBaseUriString = "http://localhost:${port}/${contextPath}/granule/"
-    flatGranuleBaseUriString = "http://localhost:${port}/${contextPath}/flattened-granule/"
+  }
+
+  def 'Granule endpoint reports count of granules'() {
+    setup:
+    def searchGranuleBaseUri = (granuleBaseUriString).toURI()
+    def requestEntityGranule = RequestEntity.get(searchGranuleBaseUri).build()
+
+    when:
+    def resultGranule = restTemplate.exchange(requestEntityGranule, Map)
+
+    then:
+    resultGranule.statusCode == HttpStatus.OK
+    resultGranule.headers.getContentType() == contentType
+    resultGranule.body.data[0].count == 2
+    resultGranule.body.data*.id.containsAll(['granule'])
+    resultGranule.body.data*.count.every({ it instanceof Number })
+  }
+
+  def 'Valid query-only granule summary search returns OK with expected results'() {
+    setup:
+    def searchBaseUri = (searchGranuleUriString).toURI()
+    def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "temperature"}
+            ]
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 2 items"
+    def items = result.body.data
+    items.size() == 2
+
+    and: "Expected results are returned"
+    def pids = items.collect { it.attributes.internalParentIdentifier }
+    pids.sort().equals([
+        'fcf83ec9-964b-45b9-befe-378ea6ce52cb',
+        'fcf83ec9-964b-45b9-befe-378ea6ce52cb'
+    ].sort())
+
+    // If there are more keys per result than summary should contain, summary source filter is not working!
+    items.each {
+      assert it.attributes.keySet().size() <= [
+          "title",
+          "thumbnail",
+          "spatialBounding",
+          "beginDate",
+          "beginYear",
+          "endDate",
+          "endYear",
+          "links",
+          "citeAsStatements",
+          "internalParentIdentifier"
+      ].size()
+    }
+  }
+
+  def 'Valid query-only granule search with facets returns OK with expected results'() {
+    setup:
+    def searchBaseUri = (searchGranuleUriString).toURI()
+    def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "temperature"}
+            ],
+          "facets" : true,
+          "summary" : false
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 2 items"
+    def items = result.body.data
+    items.size() == 2
+
+    and: "Expected results are returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'CO-OPS.NOS_8638614_201602_D1_v00',
+        'CO-OPS.NOS_9410170_201503_D1_v00'
+    ])
+
+    and: 'The correct number of facets is returned'
+    def aggs = result.body.meta.facets
+    aggs.size() == 10
+
+    and: 'The facets are as expected'
+    aggs.science != null
+    aggs.services != null
+    aggs.locations != null
+    aggs.instruments != null
+    aggs.platforms != null
+    aggs.projects != null
+    aggs.dataCenters != null
+    aggs.horizontalResolution != null
+    aggs.verticalResolution != null
+    aggs.temporalResolution != null
+  }
+
+  def 'Valid filter-only granule search returns OK with expected results'() {
+    setup:
+    def searchBaseUri = (searchGranuleUriString).toURI()
+    def request = """\
+        {
+          "filters":
+            [
+              {"type": "geometry", "relation": "intersects", "geometry": {"type": "Point", "coordinates": [-76.315, 36.977]}}
+            ],
+          "facets": false,
+          "summary": false
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 1 item"
+    def items = result.body.data
+    items.size() == 1
+
+    and: "Expected results are returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'CO-OPS.NOS_8638614_201602_D1_v00'
+    ])
+  }
+
+  def 'Valid query-and-filter granule search returns OK with expected result'() {
+    setup:
+    def searchBaseUri = (searchGranuleUriString).toURI()
+    def request = """\
+        {
+          "queries":
+            [
+              { "type": "queryText", "value": "temperature"}
+            ],
+          "filters":
+            [
+              {"type":"facet","name":"science","values":["Oceans > Ocean Optics"]}
+            ],
+          "summary": false
+        }""".stripIndent()
+
+    def requestEntity = RequestEntity
+        .post(searchBaseUri)
+        .contentType(contentType)
+        .body(request)
+
+    when:
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: "Search returns OK"
+    result.statusCode == HttpStatus.OK
+    result.headers.getContentType() == contentType
+
+    and: "Result contains 2 items"
+    def items = result.body.data
+    items.size() == 2
+
+    and: "Expected result is returned"
+    def actualIds = items.collect { it.attributes.fileIdentifier }
+    actualIds.containsAll([
+        'CO-OPS.NOS_8638614_201602_D1_v00',
+        'CO-OPS.NOS_9410170_201503_D1_v00'
+    ])
   }
 }

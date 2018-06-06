@@ -50,7 +50,6 @@ class FlatGranuleSearchIntegrationTests extends Specification {
   void setup() {
     def cl = ClassLoader.systemClassLoader
     def searchFlattenedGranuleIndexJson = cl.getResourceAsStream('search_flattened_granuleIndex.json').text
-
     def flattenedGranuleIndexSettings = new NStringEntity(searchFlattenedGranuleIndexJson, ContentType.APPLICATION_JSON)
 
     Response response = restClient.performRequest('DELETE', '_all')
