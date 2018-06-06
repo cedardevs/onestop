@@ -16,7 +16,7 @@ data:
 
     stream:
       input:
-        topic: test-input
+        topic: metadata-aggregator-raw-granules-changelog
       split:
         - datastreamOne:
             key: dataStream
@@ -24,7 +24,7 @@ data:
             output:
               topic: raw-dscovr-granules
         - datastreamTwo:
-            key: datastream
+            key: dataStream
             value: oer
             output:
               topic: raw-iso-granules
