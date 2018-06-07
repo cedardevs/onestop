@@ -26,6 +26,10 @@ const styleGranuleListWrapper = {
 const styleShowMore = {
   margin: '1em auto 1.618em auto',
 }
+const styleShowMoreFocus = {
+  outline: '2px dashed #5C87AC',
+  outlineOffset: '.118em',
+}
 
 export default class GranuleList extends Component {
   propsForResult = item => {
@@ -61,6 +65,7 @@ export default class GranuleList extends Component {
           text="Show More Results"
           onClick={() => fetchMoreResults()}
           style={styleShowMore}
+          styleFocus={styleShowMoreFocus}
         />
       ) : null
 
