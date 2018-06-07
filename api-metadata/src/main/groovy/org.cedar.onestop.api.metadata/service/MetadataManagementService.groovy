@@ -67,7 +67,7 @@ class MetadataManagementService {
   public Map loadMetadata(Object[] documents) {
     esService.ensureStagingIndices()
     esService.ensurePipelines()
-    esService.performRequest('POST', '_refresh')
+    esService.refreshAllIndices()
     def results = []
     def bulkRequest = new StringBuilder()
     def loadedIndices = []
@@ -174,7 +174,7 @@ class MetadataManagementService {
   }
 
   public Map getMetadata(String esId, boolean idsOnly = false) {
-
+    esService.refreshAllIndices()
     def resultsData = []
     [PREFIX+COLLECTION_STAGING_INDEX, PREFIX+GRANULE_STAGING_INDEX].each { index ->
       String endpoint = "${index}/${TYPE}/${esId}"
@@ -210,6 +210,7 @@ class MetadataManagementService {
   }
 
   public Map findMetadata(String fileId, String doi, boolean idsOnly = false) {
+    esService.refreshAllIndices()
     String endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX}/_search"
     def searchParams = []
     if (fileId) { searchParams.add( [term: [fileIdentifier: fileId]] ) }
@@ -290,7 +291,7 @@ class MetadataManagementService {
             ]
         ]
     ]
-    def endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX},${PREFIX}${COLLECTION_SEARCH_INDEX},${PREFIX}${GRANULE_SEARCH_INDEX}/_delete_by_query?wait_for_completion=true"
+    def endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX},${PREFIX}${COLLECTION_SEARCH_INDEX},${PREFIX}${GRANULE_SEARCH_INDEX},${PREFIX}${FLAT_GRANULE_SEARCH_INDEX}/_delete_by_query?wait_for_completion=true"
     def deleteResponse = esService.performRequest('POST', endpoint, query)
 
     return [

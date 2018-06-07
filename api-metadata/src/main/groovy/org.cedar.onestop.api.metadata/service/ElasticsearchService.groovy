@@ -101,6 +101,10 @@ class ElasticsearchService {
     performRequest('POST', endpoint)
   }
 
+  public void refreshAllIndices() {
+    performRequest('POST', "${COLLECTION_STAGING_INDEX},${GRANULE_STAGING_INDEX},${COLLECTION_SEARCH_INDEX},${GRANULE_SEARCH_INDEX},${FLAT_GRANULE_SEARCH_INDEX}/_refresh")
+  }
+
   public void dropStagingIndices() {
     drop(COLLECTION_STAGING_INDEX)
     drop(GRANULE_STAGING_INDEX)
