@@ -10,7 +10,7 @@ Getting your development environment set up should be straightforward:
 1. Run `npm run dev`
     - Starts up a webpack dev server hosting the app
     - Starts mocha in watch mode to automatically run the tests as you work
-1. Go to http://localhost:8080/
+1. Go to http://localhost:8080/onestop/
 
 ## Stack
 #### Development/Build Environment
