@@ -22,7 +22,7 @@ const styleHeadingDefault = (open, borderRadius) => {
   }
 }
 
-const styleArrow = {
+const styleArrowDefault = {
   userSelect: 'none',
 }
 
@@ -153,6 +153,8 @@ export default class Expandable extends React.Component {
       styleContent,
       content,
       borderRadius,
+      styleArrow,
+      styleArrowFocus,
     } = this.props
     const {open, display, focusing} = this.state
 
@@ -184,6 +186,12 @@ export default class Expandable extends React.Component {
       ...styleContent,
     }
 
+    const styleArrowMerged = {
+      ...styleArrowDefault,
+      ...styleArrow,
+      ...(focusing ? {...styleArrowFocus} : {}),
+    }
+
     const headingEffective = heading ? (
       <div
         style={stylesHeadingMerged}
@@ -196,7 +204,7 @@ export default class Expandable extends React.Component {
         aria-expanded={ariaExpanded}
       >
         <div style={styleFocused}>{heading}</div>
-        <div aria-hidden="true" style={styleArrow}>
+        <div aria-hidden="true" style={styleArrowMerged}>
           {arrow}
         </div>
       </div>
