@@ -45,15 +45,6 @@ const styleExpandableFocused = {
   outline: 'none',
 }
 
-const styleExpandableArrow = {
-  paddingRight: '2px',
-}
-
-const styleExpandableArrowFocused = {
-  outline: '2px dashed white',
-  outlineOffset: '.118em',
-}
-
 const styleExpandableHeading = {
   backgroundColor: '#3c6280',
 }
@@ -137,8 +128,6 @@ export default class DescriptionView extends Component {
     const filesExpandable = (
       <Expandable
         styleFocus={styleExpandableFocused}
-        styleArrow={styleExpandableArrow}
-        styleArrowFocus={styleExpandableArrowFocused}
         styleWrapper={styleExpandableWrapper}
         showArrow={true}
         heading={<h2 style={styleExpandableH2}>Files</h2>}
@@ -167,8 +156,6 @@ export default class DescriptionView extends Component {
     const citationExpandable = (
       <Expandable
         styleFocus={styleExpandableFocused}
-        styleArrow={styleExpandableArrow}
-        styleArrowFocus={styleExpandableArrowFocused}
         styleWrapper={styleExpandableWrapper}
         showArrow={true}
         heading={<h2 style={styleExpandableH2}>Citation</h2>}
@@ -209,8 +196,6 @@ export default class DescriptionView extends Component {
     const identifiersExpandable = (
       <Expandable
         styleFocus={styleExpandableFocused}
-        styleArrow={styleExpandableArrow}
-        styleArrowFocus={styleExpandableArrowFocused}
         styleWrapper={styleExpandableWrapper}
         showArrow={true}
         heading={<h2 style={styleExpandableH2}>Identifier(s)</h2>}
