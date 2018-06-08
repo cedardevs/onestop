@@ -448,7 +448,7 @@ class ETLService {
       //        need to include last else or will run into obscured errors
       def reindexScript = """\
         for (String f : params.defaults.keySet()) {
-          if (f == 'stagedDate') {
+          if (f == params.stagedDate) {
             def collectionDate = params.defaults[f];
             def granuleDate = ctx._source[f];
             if (collectionDate > granuleDate) {
@@ -484,7 +484,7 @@ class ETLService {
           script: [
               lang: "painless",
               inline: reindexScript,
-              params: [defaults: collectionBody]
+              params: [defaults: collectionBody, stagedDate: 'stagedDate']
           ]
       ]
 
