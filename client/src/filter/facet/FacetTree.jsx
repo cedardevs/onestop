@@ -457,6 +457,7 @@ export default class FacetTree extends React.Component {
         id={this.state.treeId}
         aria-labelledby={this.props.headerId}
         aria-multiselectable="true"
+        aria-describedby="facetFilterInstructions"
         onKeyUp={this.handleKeyPressed} // onKeyDown isnt an actual keypress
         onKeyDown={this.handleKeyDown}
       >
