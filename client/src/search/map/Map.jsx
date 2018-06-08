@@ -13,48 +13,54 @@ const COLOR_GREEN = '#00FFC8'
 
 const MAP_HEIGHT = '400px'
 
-const styleMapContainer = (open, display, height, width) => {
+const styleMapContainer = (open, display, maxHeight, width) => {
   return {
     boxSizing: 'border-box',
     backgroundColor: '#3D97D2',
     transition: open // immediate transition
-      ? 'height 0.2s 0.0s, width 0.2s 0.3s'
-      : 'width 0.2s 0.0s, height 0.2s 0.3s',
+      ? 'max-height .5s 0.0s, width 0.2s 0.2s' // width needs to start opening before max-height completes, or the transitionEnd check will not be able to compute height
+      : 'width 0.2s 0.2s, max-height 0.2s 0.4s',
+    overflow: 'hidden',
     padding: '0em',
     // properties set on a separate timer using state:
-    height: height,
+    maxHeight: maxHeight,
     width: width,
     display: display,
   }
 }
 
-const styleMapText = (open, opacity) => {
+const styleMapText = (open, opacity, flex) => {
   return {
+    zIndex: 1,
     padding: '0.309em 0.618em',
     margin: '0 auto',
     backgroundColor: '#18478F',
-    height: '1.618em',
-    lineHeight: '1.618em',
-    width: '100%',
     textAlign: 'center',
     transition: open //immediate transition
-      ? 'opacity 0.2s 0.5s'
-      : 'opacity 0.2s 0.0s',
+      ? 'flex 0.2s 0.0s ease-out, opacity 0.2s 0.4s'
+      : 'opacity 0.2s 0.0s, flex 0.2s 0.0s ease-out',
+    flex: flex,
     // properties set on a separate timer using state:
     opacity: opacity,
   }
 }
 
-const styleMap = () => {
+const styleMap = (open, opacity, flex) => {
   return {
     zIndex: 1,
     padding: 0,
+    transition: open //immediate transition
+      ? 'flex 0.2s 0.0s ease-out, opacity 0.2s 0.4s'
+      : 'opacity 0.2s 0.0s, flex 0.2s 0.0s ease-out',
+    flex: flex,
     margin: '0 auto',
     display: 'flex',
     position: 'relative',
-    height: `calc(${MAP_HEIGHT} - 1.618em - 2 * 0.618em)`,
+    height: MAP_HEIGHT,
     alignItems: 'flex-start',
     maxWidth: '1200px',
+    // properties set on a separate timer using state:
+    opacity: opacity,
   }
 }
 const SOUTH_WEST = L.latLng(-90, 5 * -360)
@@ -81,7 +87,8 @@ class Map extends React.Component {
       initialized: false,
       open: showMap,
       display: showMap ? 'block' : 'none',
-      height: showMap ? MAP_HEIGHT : '0em',
+      maxHeight: showMap ? 'initial' : '0em',
+      flex: showMap ? '1' : '0',
       width: showMap ? '100%' : '0%',
       opacity: showMap ? '1' : '0',
     }
@@ -91,8 +98,11 @@ class Map extends React.Component {
     // this ensures the map tiles get loaded properly around the animation
     const {map} = this.state
     const property = event.propertyName
-    if (property === 'height' || property === 'width') {
+    if (property === 'max-height' || property === 'width') {
       map.invalidateSize()
+    }
+    if (property === 'max-height') {
+      this.resize()
     }
   }
 
@@ -187,7 +197,8 @@ class Map extends React.Component {
           setTimeout(
             () =>
               this.setState({
-                height: MAP_HEIGHT,
+                maxHeight: '35em', // default maxHeight to something 'big enough' to allow the transition to complete and compute the real maxHeight
+                flex: '1',
                 width: '100%',
                 opacity: '1',
               }),
@@ -202,7 +213,8 @@ class Map extends React.Component {
           ? {display: 'block', opacity: '0'}
           : shouldClose
             ? {
-                height: '0em',
+                maxHeight: '0em',
+                flex: '0',
                 width: '0%',
                 opacity: '0',
               }
@@ -299,6 +311,18 @@ class Map extends React.Component {
     )
   }
 
+  resize = () => {
+    // do work only if container exists
+    if (this.container) {
+      // get actual height dynamically, so that when closing, the max height is set correctly to prevent the text from getting taller as it collapses
+      const containerRect = this.container.getBoundingClientRect()
+      const height = containerRect.height
+      this.setState({
+        maxHeight: height,
+      })
+    }
+  }
+
   updateGeometryAndSubmit = newGeoJSON => {
     const {geoJSON, handleNewGeometry, removeGeometry, submit} = this.props
     if (geoJSON || newGeoJSON) {
@@ -338,21 +362,27 @@ class Map extends React.Component {
   }
 
   render() {
-    const {open, display, height, width, opacity} = this.state
+    const {open, display, flex, maxHeight, width, opacity} = this.state
 
     return (
       <div
-        style={styleMapContainer(open, display, height, width)}
+        style={styleMapContainer(open, display, maxHeight, width)}
         ref={container => {
           this.container = container
         }}
       >
-        <div style={styleMapText(open, opacity)}>
-          Use the square button on the top right of the map to draw a bounding
-          box.
+        <div style={styleMapText(open, opacity, flex)}>
+          <p>
+            Use the square button on the top right of the map to draw a bounding
+            box.
+          </p>
+          <p>
+            If you are unable to use the draw feature, text entry in the
+            Bounding Box Coordinates form will apply the same filter.
+          </p>
         </div>
         <div
-          style={styleMap()}
+          style={styleMap(open, opacity, flex)}
           ref={mapNode => {
             this.mapNode = mapNode
           }}
