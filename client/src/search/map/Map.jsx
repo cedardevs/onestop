@@ -377,8 +377,9 @@ class Map extends React.Component {
             box.
           </p>
           <p>
-            If you are unable to use the draw feature, text entry in the
-            Bounding Box Coordinates form will apply the same filter.
+            If the draw feature does not meet your accessibility needs, text
+            entry in the Bounding Box Coordinates form will apply the same
+            filter.
           </p>
         </div>
         <div
