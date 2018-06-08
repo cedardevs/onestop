@@ -1,6 +1,5 @@
 package org.cedar.onestop.api.search
 
-import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
 import org.elasticsearch.client.Response
@@ -99,7 +98,7 @@ class GranuleSearchIntegrationTests extends Specification {
     resultGranule.body.data*.count.every({ it instanceof Number })
   }
 
-  def 'Valid query-only granule summary search returns OK with expected results'() {
+  def 'Valid granule summary search returns OK with expected results'() {
     setup:
     def searchBaseUri = (searchGranuleUriString).toURI()
     def request = """\

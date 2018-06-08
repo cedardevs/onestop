@@ -99,7 +99,7 @@ class CollectionSearchIntegrationTests extends Specification {
     resultCollection.body.data*.count.every({ it instanceof Number })
   }
 
-  def 'Valid query-only collection search summary returns OK with expected results'() {
+  def 'Valid collection search summary returns OK with expected results'() {
     setup:
     def searchBaseUri = (searchCollectionUriString).toURI()
     def request = """\
