@@ -18,6 +18,7 @@ import './page.css'
 import './media.css'
 import store from './store'
 import history from './history'
+import './leaflet-init'
 
 store.dispatch(initialize())
 
