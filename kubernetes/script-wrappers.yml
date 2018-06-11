@@ -17,6 +17,7 @@ spec:
       containers:
         - name: default-collection-wrapper
           image: cedardevs/psi-script-wrapper
+          imagePullPolicy: IfNotPresent
           env:
             - name: PSI_KAFKA_APPLICATION_ID
               value: "default-collection-wrapper"
@@ -54,19 +55,57 @@ spec:
       containers:
         - name: dscovr-granule-wrapper
           image: cedardevs/psi-script-wrapper
+          imagePullPolicy: IfNotPresent
           env:
             - name: PSI_KAFKA_APPLICATION_ID
               value: "dscovr-granule-wrapper"
             - name: PSI_KAFKA_BOOTSTRAP_SERVERS
               value: "kafka:9092"
             - name: PSI_STREAM_TOPICS_INPUT
-              value: "metadata-aggregator-raw-granules-changelog"
+              value: "raw-dscovr-granules"
             - name: PSI_STREAM_TOPICS_OUTPUT
               value: "parsed-granules"
             - name: PSI_STREAM_TOPICS_ERROROUT
               value: "sme-error-events"
             - name: PSI_STREAM_COMMAND
               value: "python /usr/src/app/scripts/dscovrIsoLite.py stdin"
+            - name: PSI_STREAM_CONVERT_ISO
+              value: "true"
+            - name: PSI_STREAM_TIMEOUT
+              value: "10000"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iso-parser
+  labels:
+    app: iso-parser
+spec:
+  selector:
+    matchLabels:
+      app: iso-parser
+  template:
+    metadata:
+      labels:
+        app: iso-parser
+    spec:
+      containers:
+        - name: iso-parser
+          image: cedardevs/psi-script-wrapper
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PSI_KAFKA_APPLICATION_ID
+              value: "iso-parser"
+            - name: PSI_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
+            - name: PSI_STREAM_TOPICS_INPUT
+              value: "raw-iso-granules"
+            - name: PSI_STREAM_TOPICS_OUTPUT
+              value: "parsed-granules"
+            - name: PSI_STREAM_TOPICS_ERROROUT
+              value: "sme-error-events"
+            - name: PSI_STREAM_COMMAND
+              value: "echo"
             - name: PSI_STREAM_CONVERT_ISO
               value: "true"
             - name: PSI_STREAM_TIMEOUT
