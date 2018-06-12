@@ -120,6 +120,15 @@ export default class Root extends Component {
     //     }
     //   }
     // }
+    const left = leftOpen? <FiltersContainer /> : <FiltersHiddenContainer />
+    const leftWidth = leftOpen? '20em' : '2em'
+
+    // const left = <Switch>
+    //   <Route path="/collections" exact>
+    //     {leftContent}
+    //   </Route>
+    // </Switch>
+
     //
     // const loadingBarStyle = this.isNotLanding() ? {} : {display: 'none'}
     // const onHomePage = !this.isNotLanding()
@@ -137,11 +146,7 @@ export default class Root extends Component {
     // const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
 
     // return (
-    //   <Background onHomePage={onHomePage}>
     //     <Container
-    //       header={header}
-    //       left={left}
-    //       leftWidth={leftWidth}
     //       leftVisible={leftOpen}
     //       middle={middle}
     //       middleBackgroundColor={middleBackgroundColor}
@@ -149,14 +154,15 @@ export default class Root extends Component {
     //       right={null}
     //       rightWidth={256}
     //       rightVisible={showRight}
-    //       footer={<FooterContainer homeUrl={this.homeUrl()} />}
     //     />
-    //   </Background>
     // )
         return (
           <Background>
             <Container
               header={header}
+                    left={left}
+                    leftWidth={leftWidth}
+                    leftVisible={leftOpen}
               footer={<FooterContainer />}
             />
           </Background>
