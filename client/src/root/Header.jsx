@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Switch } from 'react-router'
+import {Route, Switch} from 'react-router'
 
 import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
@@ -146,14 +146,16 @@ class Header extends React.Component {
       />
     )
 
-    const search = <Switch key='header:search:route'>
+    const search = (
+      <Switch key="header:search:route">
         <Route exact path="/">
           {null}
         </Route>
-          <Route path="/">
-            <SearchFieldsContainer key="search" />
-          </Route>
-       </Switch>
+        <Route path="/">
+          <SearchFieldsContainer key="search" />
+        </Route>
+      </Switch>
+    )
     // this.props.showSearch ? (
     //   <SearchFieldsContainer key="search" />
     // ) : null

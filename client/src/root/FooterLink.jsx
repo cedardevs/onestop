@@ -1,6 +1,6 @@
 import React from 'react'
 import A from '../common/link/Link'
-import { Link } from 'react-router-dom'
+import {Link} from 'react-router-dom'
 
 const styleLink = {
   color: 'white',
@@ -47,16 +47,18 @@ class FooterLink extends React.Component {
       ...(this.state.hovering ? styleLinkHover : {}),
     }
 
-    if(to) {
-      return (<Link
-        style={styleLinkMerged}
-        to={to}
-        title={title ? title : null}
-        onMouseOver={this.handleMouseOver}
-        onMouseOut={this.handleMouseOut}
-      >
-        {this.props.children}
-      </Link>)
+    if (to) {
+      return (
+        <Link
+          style={styleLinkMerged}
+          to={to}
+          title={title ? title : null}
+          onMouseOver={this.handleMouseOver}
+          onMouseOut={this.handleMouseOut}
+        >
+          {this.props.children}
+        </Link>
+      )
     }
     return (
       <A

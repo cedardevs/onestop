@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Route, Switch } from 'react-router'
+import {Route, Switch} from 'react-router'
 
 import Background from '../layout/Background'
 import Container from '../layout/Container'
@@ -95,39 +95,48 @@ export default class Root extends Component {
     const header = (
       <div>
         <BannerContainer />
-          <Route path="/">
-            <HeaderContainer/>
-          </Route>
+        <Route path="/">
+          <HeaderContainer />
+        </Route>
         {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
       </div>
-
     )
 
-    const left = leftOpen? <FiltersContainer /> : <FiltersHiddenContainer />
-    const leftWidth = leftOpen? '20em' : '2em'
+    const left = leftOpen ? <FiltersContainer /> : <FiltersHiddenContainer />
+    const leftWidth = leftOpen ? '20em' : '2em'
 
     const middle = (
       <div style={{width: '100%'}}>
-        <Switch><Route path="/" exact/><Route path="/"><LoadingBarContainer/></Route></Switch>
-        <Switch><Route path="/collections" exact>{/*TODO: replace this with ArcGIS map?*/}<MapContainer selection={true} features={false} /></Route></Switch>
+        <Switch>
+          <Route path="/" exact />
+          <Route path="/">
+            <LoadingBarContainer />
+          </Route>
+        </Switch>
+        <Switch>
+          <Route path="/collections" exact>
+            {/*TODO: replace this with ArcGIS map?*/}
+            <MapContainer selection={true} features={false} />
+          </Route>
+        </Switch>
         {this.props.children}
       </div>
     )
 
-        return (
-          <Background>
-            <Container
-              header={header}
-                    left={left}
-                    leftWidth={leftWidth}
-                    leftVisible={leftOpen}
-middle={middle}
-                          right={null}
-                          rightWidth={256}
-                          rightVisible={showRight}
-              footer={<FooterContainer />}
-            />
-          </Background>
-        )
+    return (
+      <Background>
+        <Container
+          header={header}
+          left={left}
+          leftWidth={leftWidth}
+          leftVisible={leftOpen}
+          middle={middle}
+          right={null}
+          rightWidth={256}
+          rightVisible={showRight}
+          footer={<FooterContainer />}
+        />
+      </Background>
+    )
   }
 }

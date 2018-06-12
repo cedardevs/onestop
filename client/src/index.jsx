@@ -19,8 +19,8 @@ import store from './store'
 import history from './history'
 import './leaflet-init'
 
-import { Route } from 'react-router'
-import { ConnectedRouter } from 'react-router-redux'
+import {Route} from 'react-router'
+import {ConnectedRouter} from 'react-router-redux'
 
 store.dispatch(initialize())
 
@@ -56,8 +56,8 @@ const routesLayout = (
 const body = (
   <Provider store={store}>
     <ConnectedRouter history={history}>
-            <RootContainer />
-        </ConnectedRouter>
+      <RootContainer />
+    </ConnectedRouter>
   </Provider>
 )
 

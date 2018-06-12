@@ -4,7 +4,7 @@ import Left from './Left'
 import Middle from './Middle'
 import Right from './Right'
 
-import { Route, Switch } from 'react-router'
+import {Route, Switch} from 'react-router'
 
 const styleContent = {
   display: 'flex',
@@ -33,14 +33,16 @@ export default class Content extends Component {
     return (
       <FlexRow
         items={[
-          <Switch key='left'><Route path="/collections" exact>
-            <Left
-              content={left}
-              width={leftWidth}
-              padding={padding}
-              visible={leftVisible}
-            />
-        </Route></Switch>,
+          <Switch key="left">
+            <Route path="/collections" exact>
+              <Left
+                content={left}
+                width={leftWidth}
+                padding={padding}
+                visible={leftVisible}
+              />
+            </Route>
+          </Switch>,
           <Middle
             content={middle}
             maxWidth={middleMaxWidth}
