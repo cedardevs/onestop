@@ -90,7 +90,7 @@ export default class Root extends Component {
   }
 
   render() {
-    const {showLeft, leftOpen, showRight, onDetailPage} = this.props
+    const {showLeft, leftOpen, showRight} = this.props
 
     const header = (
       <div>
@@ -103,35 +103,17 @@ export default class Root extends Component {
 
     )
 
-    // const layoutContext =
-    //   this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
-
     const left = leftOpen? <FiltersContainer /> : <FiltersHiddenContainer />
     const leftWidth = leftOpen? '20em' : '2em'
 
-    //
-    // const loadingBarStyle = this.isNotLanding() ? {} : {display: 'none'}
-    // const onHomePage = !this.isNotLanding()
-    //
-    // const middle = (
-    //   <div style={{width: '100%'}}>
-    //     <LoadingBarContainer style={loadingBarStyle} />
-    //     {/*TODO: replace this with ArcGIS map?*/}
-    //     <MapContainer selection={true} features={false} />
-    //     {this.props.children}
-    //   </div>
-    // )
+    const middle = (
+      <div style={{width: '100%'}}>
+        <Switch><Route path="/" exact/><Route path="/"><LoadingBarContainer/></Route></Switch>
+        <Switch><Route path="/collections" exact>{/*TODO: replace this with ArcGIS map?*/}<MapContainer selection={true} features={false} /></Route></Switch>
+        {this.props.children}
+      </div>
+    )
 
-    // constrain middle gives the middle section a max-width
-    // const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
-
-    // return (
-    //     <Container
-    //       middle={middle}
-    //       middleBackgroundColor={middleBackgroundColor}
-    //       onHomePage={onHomePage}
-    //     />
-    // )
         return (
           <Background>
             <Container
@@ -139,7 +121,7 @@ export default class Root extends Component {
                     left={left}
                     leftWidth={leftWidth}
                     leftVisible={leftOpen}
-
+middle={middle}
                           right={null}
                           rightWidth={256}
                           rightVisible={showRight}
