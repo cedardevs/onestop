@@ -7,6 +7,8 @@ import {
 } from '../../actions/SearchRequestActions'
 import {showCollections} from '../../actions/FlowActions'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   const {geoJSON} = state.behavior.search
   return {
@@ -27,6 +29,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const MapContainer = connect(mapStateToProps, mapDispatchToProps)(Map)
+const MapContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(Map)
+)
 
 export default MapContainer

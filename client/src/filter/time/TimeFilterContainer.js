@@ -10,6 +10,8 @@ import {
 } from '../../actions/SearchRequestActions'
 import {showCollections} from '../../actions/FlowActions'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   const {startDateTime, endDateTime} = state.behavior.search
   return {
@@ -34,8 +36,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const TimeFilterContainer = connect(mapStateToProps, mapDispatchToProps)(
-  TimeFilter
+const TimeFilterContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(TimeFilter)
 )
 
 export default TimeFilterContainer

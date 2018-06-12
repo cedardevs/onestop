@@ -6,6 +6,8 @@ import {
 } from '../../actions/SearchRequestActions'
 import GranuleList from './GranuleList'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   const {granules, totalGranules} = state.domain.results
   return {
@@ -25,8 +27,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const GranuleListContainer = connect(mapStateToProps, mapDispatchToProps)(
-  GranuleList
+const GranuleListContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(GranuleList)
 )
 
 export default GranuleListContainer

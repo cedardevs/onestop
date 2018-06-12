@@ -9,6 +9,8 @@ import {clearCollections, triggerSearch} from '../actions/SearchRequestActions'
 import {showCollections} from '../actions/FlowActions'
 import AppliedFilters from './AppliedFilters'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   const {
     selectedFacets,
@@ -45,8 +47,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const AppliedFiltersContainer = connect(mapStateToProps, mapDispatchToProps)(
-  AppliedFilters
+const AppliedFiltersContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(AppliedFilters)
 )
 
 export default AppliedFiltersContainer

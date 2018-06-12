@@ -7,6 +7,8 @@ import {
 // import CollectionGrid from './CollectionGridComponent'
 import CollectionGrid from './CollectionGrid'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   const {collections, totalCollections, pageSize} = state.domain.results
   return {
@@ -30,8 +32,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const CollectionGridContainer = connect(mapStateToProps, mapDispatchToProps)(
-  CollectionGrid
+const CollectionGridContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(CollectionGrid)
 )
 
 export default CollectionGridContainer

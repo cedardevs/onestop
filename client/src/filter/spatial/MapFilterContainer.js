@@ -12,6 +12,8 @@ import {
 } from '../../actions/SearchRequestActions'
 import {showCollections} from '../../actions/FlowActions'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   return {
     showMap: state.ui.layout.showMap,
@@ -38,8 +40,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const MapFilterContainer = connect(mapStateToProps, mapDispatchToProps)(
-  MapFilter
+const MapFilterContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(MapFilter)
 )
 
 export default MapFilterContainer
