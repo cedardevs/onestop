@@ -11,6 +11,15 @@ import MapContainer from '../search/map/MapContainer'
 import FiltersContainer from '../filter/FiltersContainer'
 import FiltersHiddenContainer from '../filter/FiltersHiddenContainer'
 
+// import Result from './result/Result'
+import CollectionsContainer from '../result/collections/CollectionsContainer'
+import GranuleListContainer from '../result/granules/GranuleListContainer'
+import ErrorContainer from '../error/ErrorContainer'
+import LandingContainer from '../landing/LandingContainer'
+import DetailContainer from '../detail/DetailContainer'
+import Help from '../common/info/Help'
+import AboutContainer from '../common/info/AboutContainer'
+
 import LoadingBarContainer from '../loading/LoadingBarContainer'
 
 import FooterContainer from './FooterContainer'
@@ -120,6 +129,34 @@ export default class Root extends Component {
           </Route>
         </Switch>
         {this.props.children}
+
+        <Switch>
+          <Route path="/" exact>
+            <LandingContainer />
+          </Route>
+          <Route path="/collections/details">
+            {/*TODO parameterize this path!*/}
+            <DetailContainer />
+          </Route>
+          <Route path="/collections/granules">
+            {/*TODO parameterize this path!*/}
+            <GranuleListContainer />
+          </Route>
+
+          <Route path="/collections">
+            <CollectionsContainer />
+          </Route>
+          <Route path="/about">
+            <AboutContainer />
+          </Route>
+          <Route path="/help">
+            <Help />
+          </Route>
+
+          <Route path="/error">
+            <ErrorContainer />
+          </Route>
+        </Switch>
       </div>
     )
 
