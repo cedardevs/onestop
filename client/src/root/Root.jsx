@@ -106,28 +106,8 @@ export default class Root extends Component {
     // const layoutContext =
     //   this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
 
-    // let left = null
-    // let leftWidth = '20em'
-    //
-    // if (layoutContext) {
-    //   if (showLeft) {
-    //     if (leftOpen) {
-    //       left = <FiltersContainer />
-    //     }
-    //     else {
-    //       leftWidth = '2em' // must match width + 2x padding of container in FilterHidden.jsx
-    //       left = <FiltersHiddenContainer />
-    //     }
-    //   }
-    // }
     const left = leftOpen? <FiltersContainer /> : <FiltersHiddenContainer />
     const leftWidth = leftOpen? '20em' : '2em'
-
-    // const left = <Switch>
-    //   <Route path="/collections" exact>
-    //     {leftContent}
-    //   </Route>
-    // </Switch>
 
     //
     // const loadingBarStyle = this.isNotLanding() ? {} : {display: 'none'}
@@ -147,13 +127,9 @@ export default class Root extends Component {
 
     // return (
     //     <Container
-    //       leftVisible={leftOpen}
     //       middle={middle}
     //       middleBackgroundColor={middleBackgroundColor}
     //       onHomePage={onHomePage}
-    //       right={null}
-    //       rightWidth={256}
-    //       rightVisible={showRight}
     //     />
     // )
         return (
@@ -163,6 +139,10 @@ export default class Root extends Component {
                     left={left}
                     leftWidth={leftWidth}
                     leftVisible={leftOpen}
+
+                          right={null}
+                          rightWidth={256}
+                          rightVisible={showRight}
               footer={<FooterContainer />}
             />
           </Background>
