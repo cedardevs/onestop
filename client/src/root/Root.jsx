@@ -42,17 +42,12 @@ export default class Root extends Component {
     super(props)
 
     this.hasUnsupportedFeatures = this.hasUnsupportedFeatures.bind(this)
-    // this.location = props.location.pathname
     this.state = {
       leftVisible: true,
       rightVisible: false,
       browserWarning: this.hasUnsupportedFeatures(),
     }
   }
-
-  // componentWillUpdate(nextProps) {
-  //   this.location = nextProps.location.pathname
-  // }
 
   hasUnsupportedFeatures() {
     let browserWarning = false
@@ -92,23 +87,6 @@ export default class Root extends Component {
         </p>
       </aside>
     )
-  }
-
-  // isNotLanding() {
-  //   return this.location !== '/'
-  // }
-  //
-  // isAboutPage() {
-  //   return this.location.startsWith('/about')
-  // }
-  //
-  // isHelpPage() {
-  //   return this.location.startsWith('/help')
-  // }
-
-  homeUrl() {
-    const {host, pathname} = location
-    return `//${host}${pathname ? pathname : '/'}#/`
   }
 
   render() {
@@ -179,7 +157,7 @@ export default class Root extends Component {
           <Background>
             <Container
               header={header}
-              footer={<FooterContainer homeUrl={this.homeUrl()} />}
+              footer={<FooterContainer />}
             />
           </Background>
         )
