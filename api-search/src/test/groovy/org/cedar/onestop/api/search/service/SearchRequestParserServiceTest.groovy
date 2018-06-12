@@ -322,6 +322,13 @@ class SearchRequestParserServiceTest extends Specification {
                 order: ['_term': 'asc']
             ]
         ],
+        locations       : [
+            terms: [
+                field: 'gcmdLocations',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
         instruments   : [
             terms: [
                 field: 'gcmdInstruments',
@@ -391,6 +398,13 @@ class SearchRequestParserServiceTest extends Specification {
         services       : [
             terms       : [
                 field: 'gcmdScienceServices',
+                size : Integer.MAX_VALUE,
+                order: ['_term': 'asc']
+            ]
+        ],
+        locations       : [
+            terms: [
+                field: 'gcmdLocations',
                 size : Integer.MAX_VALUE,
                 order: ['_term': 'asc']
             ]

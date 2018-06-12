@@ -37,6 +37,8 @@ elasticsearch:
       granule:
         name: search_granule
         pipeline-name: granule_pipeline
+      flattened-granule:
+        name: search_flattened_granule
     staging:
       collection:
         name: staging_collection

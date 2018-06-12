@@ -13,6 +13,7 @@ class SearchRequestParserService {
   public static final Map<String, String> facetNameMappings = [
       'science'             : 'gcmdScience',
       'services'            : 'gcmdScienceServices',
+      'locations'           : 'gcmdLocations',
       'instruments'         : 'gcmdInstruments',
       'platforms'           : 'gcmdPlatforms',
       'projects'            : 'gcmdProjects',
