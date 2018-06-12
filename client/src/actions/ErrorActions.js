@@ -1,4 +1,4 @@
-import {push} from 'react-router-redux'
+import {push} from 'connected-react-router'
 
 export const CLEAR_ERRORS = 'CLEAR_ERRORS'
 export const SET_ERRORS = 'SET_ERRORS'

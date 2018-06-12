@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import watch from 'redux-watch'
-import {push} from 'react-router-redux'
+import {push} from 'connected-react-router'
 import {
   encodeQueryString,
   decodeQueryString,
