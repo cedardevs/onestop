@@ -19,6 +19,6 @@ export const setErrors = errors => {
 export const showErrors = errors => {
   return (dispatch, getState) => {
     dispatch(setErrors(errors))
-    dispatch(push('error'))
+    dispatch(push('/error'))
   }
 }

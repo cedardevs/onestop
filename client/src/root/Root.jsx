@@ -11,7 +11,7 @@ import MapContainer from '../search/map/MapContainer'
 import FiltersContainer from '../filter/FiltersContainer'
 import FiltersHiddenContainer from '../filter/FiltersHiddenContainer'
 
-// import Result from './result/Result'
+import Result from '../result/Result'
 import CollectionsContainer from '../result/collections/CollectionsContainer'
 import GranuleListContainer from '../result/granules/GranuleListContainer'
 import ErrorContainer from '../error/ErrorContainer'
@@ -134,18 +134,26 @@ export default class Root extends Component {
           <Route path="/" exact>
             <LandingContainer />
           </Route>
+
           <Route path="/collections/details">
             {/*TODO parameterize this path!*/}
             <DetailContainer />
           </Route>
-          <Route path="/collections/granules">
-            {/*TODO parameterize this path!*/}
-            <GranuleListContainer />
-          </Route>
 
           <Route path="/collections">
-            <CollectionsContainer />
+            <Result>
+              <Switch>
+                <Route path="/collections" exact>
+                  <CollectionsContainer />
+                </Route>
+                <Route path="/collections/granules">
+                  {/*TODO parameterize this path!*/}
+                  <GranuleListContainer />
+                </Route>
+              </Switch>
+            </Result>
           </Route>
+
           <Route path="/about">
             <AboutContainer />
           </Route>

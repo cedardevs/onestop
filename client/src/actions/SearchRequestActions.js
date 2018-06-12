@@ -189,6 +189,7 @@ const checkForErrors = response => {
 }
 
 export const getCollection = collectionId => {
+  console.log('GET collection', collectionId)
   const prefetchHandler = dispatch => {
     dispatch(showLoading())
     dispatch(startGetCollection(collectionId))
