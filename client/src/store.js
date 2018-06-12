@@ -1,6 +1,6 @@
 import {createStore, applyMiddleware, compose} from 'redux'
 import {routerMiddleware} from 'react-router-redux'
-import {hashHistory} from 'react-router'
+// import {hashHistory} from 'react-router'
 import Immutable from 'seamless-immutable'
 import thunk from 'redux-thunk'
 import reducer from './reducers/reducer'
@@ -19,7 +19,8 @@ const composeEnhancers = getCompose()
 const store = createStore(
   reducer,
   Immutable(),
-  composeEnhancers(applyMiddleware(thunk, routerMiddleware(hashHistory)))
+  composeEnhancers(applyMiddleware(thunk))
+  //composeEnhancers(applyMiddleware(thunk, routerMiddleware(hashHistory)))
 )
 
 export default store

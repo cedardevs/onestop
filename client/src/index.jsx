@@ -1,6 +1,5 @@
 import React from 'react'
 import {render} from 'react-dom'
-import {Router, Route, IndexRoute} from 'react-router'
 import Result from './result/Result'
 import CollectionsContainer from './result/collections/CollectionsContainer'
 import GranuleListContainer from './result/granules/GranuleListContainer'
@@ -20,8 +19,15 @@ import store from './store'
 import history from './history'
 import './leaflet-init'
 
+import { Route } from 'react-router'
+import { ConnectedRouter } from 'react-router-redux'
+import createHistory from 'history/createBrowserHistory'
+
+const browserHistory = createHistory()
+
 store.dispatch(initialize())
 
+/*
 const routesLayout = (
   <Router history={history}>
     <Route path="/" name="Home" component={RootContainer}>
@@ -48,10 +54,13 @@ const routesLayout = (
     </Route>
   </Router>
 )
+*/
 
 const body = (
   <Provider store={store}>
-    <div>{routesLayout}</div>
+    <ConnectedRouter history={browserHistory}>
+            <RootContainer />
+        </ConnectedRouter>
   </Provider>
 )
 
@@ -114,4 +123,9 @@ const ogUrlMetaTag = document.createElement('meta')
 ogUrlMetaTag.setAttribute('property', 'og:url')
 ogUrlMetaTag.setAttribute('content', `${rootUrl}`)
 document.head.appendChild(ogUrlMetaTag)
+
+const baseRef = document.createElement('base')
+baseRef.setAttribute('href', '/onestop/')
+document.head.appendChild(baseRef)
+
 render(body, appDiv)

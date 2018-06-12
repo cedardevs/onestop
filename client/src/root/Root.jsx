@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import { Route, Switch } from 'react-router'
 
 import Background from '../layout/Background'
 import Container from '../layout/Container'
@@ -41,7 +42,7 @@ export default class Root extends Component {
     super(props)
 
     this.hasUnsupportedFeatures = this.hasUnsupportedFeatures.bind(this)
-    this.location = props.location.pathname
+    // this.location = props.location.pathname
     this.state = {
       leftVisible: true,
       rightVisible: false,
@@ -49,9 +50,9 @@ export default class Root extends Component {
     }
   }
 
-  componentWillUpdate(nextProps) {
-    this.location = nextProps.location.pathname
-  }
+  // componentWillUpdate(nextProps) {
+  //   this.location = nextProps.location.pathname
+  // }
 
   hasUnsupportedFeatures() {
     let browserWarning = false
@@ -93,17 +94,17 @@ export default class Root extends Component {
     )
   }
 
-  isNotLanding() {
-    return this.location !== '/'
-  }
-
-  isAboutPage() {
-    return this.location.startsWith('/about')
-  }
-
-  isHelpPage() {
-    return this.location.startsWith('/help')
-  }
+  // isNotLanding() {
+  //   return this.location !== '/'
+  // }
+  //
+  // isAboutPage() {
+  //   return this.location.startsWith('/about')
+  // }
+  //
+  // isHelpPage() {
+  //   return this.location.startsWith('/help')
+  // }
 
   homeUrl() {
     const {host, pathname} = location
@@ -116,63 +117,73 @@ export default class Root extends Component {
     const header = (
       <div>
         <BannerContainer />
-        <HeaderContainer
-          showSearch={this.isNotLanding()}
-          homeUrl={this.homeUrl()}
-        />
+          <Route path="/onestop">
+            <HeaderContainer
+              homeUrl={this.homeUrl()}
+            />
+          </Route>
         {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
       </div>
+
     )
 
-    const layoutContext =
-      this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
+    // const layoutContext =
+    //   this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
 
-    let left = null
-    let leftWidth = '20em'
-
-    if (layoutContext) {
-      if (showLeft) {
-        if (leftOpen) {
-          left = <FiltersContainer />
-        }
-        else {
-          leftWidth = '2em' // must match width + 2x padding of container in FilterHidden.jsx
-          left = <FiltersHiddenContainer />
-        }
-      }
-    }
-
-    const loadingBarStyle = this.isNotLanding() ? {} : {display: 'none'}
-    const onHomePage = !this.isNotLanding()
-
-    const middle = (
-      <div style={{width: '100%'}}>
-        <LoadingBarContainer style={loadingBarStyle} />
-        {/*TODO: replace this with ArcGIS map?*/}
-        <MapContainer selection={true} features={false} />
-        {this.props.children}
-      </div>
-    )
+    // let left = null
+    // let leftWidth = '20em'
+    //
+    // if (layoutContext) {
+    //   if (showLeft) {
+    //     if (leftOpen) {
+    //       left = <FiltersContainer />
+    //     }
+    //     else {
+    //       leftWidth = '2em' // must match width + 2x padding of container in FilterHidden.jsx
+    //       left = <FiltersHiddenContainer />
+    //     }
+    //   }
+    // }
+    //
+    // const loadingBarStyle = this.isNotLanding() ? {} : {display: 'none'}
+    // const onHomePage = !this.isNotLanding()
+    //
+    // const middle = (
+    //   <div style={{width: '100%'}}>
+    //     <LoadingBarContainer style={loadingBarStyle} />
+    //     {/*TODO: replace this with ArcGIS map?*/}
+    //     <MapContainer selection={true} features={false} />
+    //     {this.props.children}
+    //   </div>
+    // )
 
     // constrain middle gives the middle section a max-width
-    const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
+    // const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
 
-    return (
-      <Background onHomePage={onHomePage}>
-        <Container
-          header={header}
-          left={left}
-          leftWidth={leftWidth}
-          leftVisible={leftOpen}
-          middle={middle}
-          middleBackgroundColor={middleBackgroundColor}
-          onHomePage={onHomePage}
-          right={null}
-          rightWidth={256}
-          rightVisible={showRight}
-          footer={<FooterContainer homeUrl={this.homeUrl()} />}
-        />
-      </Background>
-    )
+    // return (
+    //   <Background onHomePage={onHomePage}>
+    //     <Container
+    //       header={header}
+    //       left={left}
+    //       leftWidth={leftWidth}
+    //       leftVisible={leftOpen}
+    //       middle={middle}
+    //       middleBackgroundColor={middleBackgroundColor}
+    //       onHomePage={onHomePage}
+    //       right={null}
+    //       rightWidth={256}
+    //       rightVisible={showRight}
+    //       footer={<FooterContainer homeUrl={this.homeUrl()} />}
+    //     />
+    //   </Background>
+    // )
+        return (
+          <Background>
+            <Container
+              header={header}
+              footer={<FooterContainer homeUrl={this.homeUrl()} />}
+            />
+          </Background>
+        )
   }
 }

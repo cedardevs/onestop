@@ -113,13 +113,14 @@ module.exports = {
   entry: isProd ? prodEntryPoints : devEntryPoints,
   output: {
     path: path.resolve(__dirname, 'build/dist'),
-    publicPath: './',
+    publicPath: '/',
     filename: '[name]-[hash].bundle.js'
   },
   context: path.resolve(__dirname, 'src'),
   devtool: isProd ? false : 'cheap-module-eval-source-map',
   devServer: isProd ? {} : {
-    publicPath: '/onestop/',
+    publicPath: '/',
+    historyApiFallback: true,
     disableHostCheck: true,
     hot: true,
     proxy: {
