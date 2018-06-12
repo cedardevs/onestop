@@ -7,6 +7,7 @@ import DetailGrid from './DetailGrid'
 import {fontFamilySerif} from '../utils/styleUtils'
 import A from '../common/link/Link'
 import {SiteColors} from '../common/defaultStyles'
+import Meta from '../helmet/Meta'
 
 const styleImage = {
   float: 'left',
@@ -228,10 +229,17 @@ export default class DescriptionView extends Component {
     )
 
     return (
-      <DetailGrid
-        grid={[ [ imageAndDescription, expandableInformation ] ]}
-        colWidths={[ {sm: 8}, {sm: 4} ]}
-      />
+      <div>
+        <Meta
+          title={item.title}
+          description={item.description}
+          thumbnail={processUrl(thumbnail)}
+        />
+        <DetailGrid
+          grid={[ [ imageAndDescription, expandableInformation ] ]}
+          colWidths={[ {sm: 8}, {sm: 4} ]}
+        />
+      </div>
     )
   }
 

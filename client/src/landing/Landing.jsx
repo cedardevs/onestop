@@ -3,8 +3,8 @@ import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import TopicsMenuContainer from './TopicsMenuContainer'
 import FeaturedDatasetsContainer from './FeaturedDatasetsContainer'
 import {fontFamilySerif} from '../utils/styleUtils'
-
 import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
+import Meta from '../helmet/Meta'
 
 const styleCenterContent = {
   display: 'flex',
@@ -52,6 +52,7 @@ class Landing extends React.Component {
   render() {
     return (
       <div style={styleCenterContent}>
+        <Meta />
         <div style={styleShowcase}>
           <h1 style={styleHeroHeader} aria-label="One Stop">
             <span>

@@ -6,6 +6,7 @@ import ListView from '../ListView'
 import GranuleListResult from './GranuleListResult'
 import {identifyProtocol} from '../../utils/resultUtils'
 import {boxShadow} from '../../common/defaultStyles'
+import Meta from '../../helmet/Meta'
 
 const styleCenterContent = {
   display: 'flex',
@@ -47,6 +48,7 @@ export default class GranuleList extends Component {
       totalHits,
       selectCollection,
       fetchMoreResults,
+      collectionTitle,
     } = this.props
 
     // keep track of used protocols in results to avoid unnecessary legend keys
@@ -71,6 +73,11 @@ export default class GranuleList extends Component {
 
     return (
       <div style={styleCenterContent}>
+        <Meta
+          title={`Files for Collection ${collectionTitle}`}
+          robots="noindex"
+        />
+
         <div style={styleGranuleListWrapper}>
           <GranuleListLegend usedProtocols={usedProtocols} />
           <ListView

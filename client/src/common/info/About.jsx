@@ -3,6 +3,7 @@ import {fontFamilySerif} from '../../utils/styleUtils'
 import {SiteColors} from '../defaultStyles'
 import {stop_circle_o, SvgIcon} from '../SvgIcon'
 import A from '../link/Link'
+import Meta from '../../helmet/Meta'
 
 const styleWrapper = {
   width: '100%',
@@ -46,6 +47,7 @@ export default class Help extends React.Component {
   render() {
     return (
       <div style={styleWrapper}>
+        <Meta title="About" />
         <section style={styleAbout}>
           <h1 style={styleH1} aria-label="One Stop Overview">
             <span>

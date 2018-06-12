@@ -131,6 +131,7 @@ export default class Root extends Component {
         {this.props.children}
 
         <Switch>
+          {/*Each page inside this switch should have a Meta!*/}
           <Route path="/" exact>
             <LandingContainer />
           </Route>

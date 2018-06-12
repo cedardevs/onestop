@@ -1,13 +1,5 @@
 import React from 'react'
 import {render} from 'react-dom'
-// import Result from './result/Result'
-// import CollectionsContainer from './result/collections/CollectionsContainer'
-// import GranuleListContainer from './result/granules/GranuleListContainer'
-// import ErrorContainer from './error/ErrorContainer'
-// import LandingContainer from './landing/LandingContainer'
-// import DetailContainer from './detail/DetailContainer'
-// import Help from './common/info/Help'
-// import AboutContainer from './common/info/AboutContainer'
 import {Provider} from 'react-redux'
 import RootContainer from './root/RootContainer'
 import {initialize} from './actions/FlowActions'
@@ -23,35 +15,6 @@ import {Route} from 'react-router'
 import {ConnectedRouter} from 'react-router-redux'
 
 store.dispatch(initialize())
-
-/*
-const routesLayout = (
-  <Router history={history}>
-    <Route path="/" name="Home" component={RootContainer}>
-      <IndexRoute component={LandingContainer} />
-      <Route name="Collections" path="collections" component={Result}>
-        <IndexRoute
-          displayName="Collections"
-          component={CollectionsContainer}
-        />
-      </Route>
-      <Route
-        name="Details"
-        path="collections/details/:id"
-        component={DetailContainer}
-      />
-      <Route
-        name="GranuleDetail"
-        path="collections/granules/:id"
-        component={GranuleListContainer}
-      />
-      <Route name="Error" path="error" component={ErrorContainer} />
-      <Route name="Help" path="help" component={Help} />
-      <Route name="About" path="about" component={AboutContainer} />
-    </Route>
-  </Router>
-)
-*/
 
 const body = (
   <Provider store={store}>
