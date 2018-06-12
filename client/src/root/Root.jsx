@@ -117,10 +117,8 @@ export default class Root extends Component {
     const header = (
       <div>
         <BannerContainer />
-          <Route path="/onestop">
-            <HeaderContainer
-              homeUrl={this.homeUrl()}
-            />
+          <Route path="/">
+            <HeaderContainer/>
           </Route>
         {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
       </div>

@@ -17,9 +17,7 @@ export const getApiPath = state => {
   if (!host || !path) {
     const basePath =
       typeof window !== 'undefined' ? window.location.pathname : '/onestop/'
-    console.log('basepath version: ', basePath)
-    // return basePath + 'api'
-    return '/onestop/api'
+    return basePath + 'api'
   }
   return host + path + 'api'
 }

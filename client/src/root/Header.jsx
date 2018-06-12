@@ -121,17 +121,17 @@ class Header extends React.Component {
     const menuContent = (
       <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>
-          <HeaderLink title="Home" to="/onestop" href={`${this.props.homeUrl}`}>
+          <HeaderLink title="Home" to="/">
             Home
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, false)}>
-          <HeaderLink title="About Us" to="/onestop/about" href={`${this.props.homeUrl}about`}>
+          <HeaderLink title="About Us" to="/about">
             About Us
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, true)}>
-          <HeaderLink title="Help" to="/onestop/help" href={`${this.props.homeUrl}help`}>
+          <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
         </li>
@@ -147,10 +147,10 @@ class Header extends React.Component {
     )
 
     const search = <Switch key='header:search:route'>
-        <Route exact path="/onestop">
+        <Route exact path="/">
           {null}
         </Route>
-          <Route path="/onestop">
+          <Route path="/">
             <SearchFieldsContainer key="search" />
           </Route>
        </Switch>

@@ -63,7 +63,7 @@ export default class HeaderLink extends React.Component {
   }
 
   render() {
-    const {title, href, to} = this.props
+    const {title, to} = this.props
 
     const styleLinkMerged = {
       ...styleLink,

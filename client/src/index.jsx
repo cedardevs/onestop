@@ -21,9 +21,6 @@ import './leaflet-init'
 
 import { Route } from 'react-router'
 import { ConnectedRouter } from 'react-router-redux'
-import createHistory from 'history/createBrowserHistory'
-
-const browserHistory = createHistory()
 
 store.dispatch(initialize())
 
@@ -58,7 +55,7 @@ const routesLayout = (
 
 const body = (
   <Provider store={store}>
-    <ConnectedRouter history={browserHistory}>
+    <ConnectedRouter history={history}>
             <RootContainer />
         </ConnectedRouter>
   </Provider>
@@ -123,9 +120,5 @@ const ogUrlMetaTag = document.createElement('meta')
 ogUrlMetaTag.setAttribute('property', 'og:url')
 ogUrlMetaTag.setAttribute('content', `${rootUrl}`)
 document.head.appendChild(ogUrlMetaTag)
-
-const baseRef = document.createElement('base')
-baseRef.setAttribute('href', '/onestop/')
-document.head.appendChild(baseRef)
 
 render(body, appDiv)
