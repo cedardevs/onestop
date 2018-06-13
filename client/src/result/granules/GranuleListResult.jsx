@@ -131,10 +131,10 @@ class ListResult extends React.Component {
     const {protocol, url, displayName} = link
     const linkText = displayName ? displayName : protocol.label
     const labelledBy = displayName
-      // title the link with references to elements: linkText, protocolLegend, granuleTitle
-      ? `ListResult::Link::${url} protocol::legend::${protocol.id}  ListResult::title::${itemId}`
-      // linkText is the same as protocol, so only include one of the two
-      : `protocol::legend::${protocol.id} ListResult::title::${itemId}`
+      ? // title the link with references to elements: linkText, protocolLegend, granuleTitle
+        `ListResult::Link::${url} protocol::legend::${protocol.id}  ListResult::title::${itemId}`
+      : // linkText is the same as protocol, so only include one of the two
+        `protocol::legend::${protocol.id} ListResult::title::${itemId}`
 
     return (
       <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
