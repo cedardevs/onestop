@@ -1,100 +1,57 @@
 import React, {Component} from 'react'
 
-const styleDefault = (backgroundColor, borderColor) => {
+import Button from '../common/input/Button'
+import xIcon from 'fa/times.svg'
+
+const style = (backgroundColor, borderColor) => {
   return {
     display: 'inline-flex',
     borderRadius: '0.1em 0.4em',
     padding: '.25em .1em .25em .5em',
     marginRight: '0.5em',
     marginBottom: '0.25em',
-    backgroundColor: backgroundColor,
+    background: backgroundColor,
     borderColor: borderColor,
     borderStyle: 'solid',
     borderWidth: '1px',
-    fontSize: '1.2em',
+    fontSize: '1.1em',
   }
 }
 
-const styleHoverDefault = {
-  filter: 'brightness(120%)',
+const styleHover = backgroundColor => {
+  return {
+    filter: 'brightness(120%)',
+    background: backgroundColor,
+  }
 }
 
-const styleFocusDefault = {
-  filter: 'brightness(120%)',
+const styleFocus = {
+  outline: '2px dashed #5C87AC',
+  outlineOffset: '.118em',
 }
 
-const styleClose = {
-  color: 'lightgray',
-  padding: '0 0.5em',
-  cursor: 'pointer',
+const styleIcon = {
+  width: '.8em',
+  height: '.8em',
+  margin: '0 .25em',
 }
 
 export default class AppliedFilterBubble extends Component {
-  componentWillMount() {
-    this.setState({
-      hovering: false,
-      focusing: false,
-    })
-  }
-
-  handleMouseOver = event => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        hovering: true,
-      }
-    })
-  }
-
-  handleMouseOut = event => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        hovering: false,
-      }
-    })
-  }
-
-  handleFocus = event => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: true,
-      }
-    })
-  }
-
-  handleBlur = event => {
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        focusing: false,
-      }
-    })
-  }
-
   render() {
     const {text, onUnselect, backgroundColor, borderColor} = this.props
 
-    const stylesMerged = {
-      ...styleDefault(backgroundColor, borderColor),
-      ...(this.state.hovering ? styleHoverDefault : {}),
-      ...(this.state.focusing ? styleFocusDefault : {}),
-    }
-
     return (
-      <span
-        style={stylesMerged}
-        onMouseOver={this.handleMouseOver}
-        onMouseOut={this.handleMouseOut}
-        onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
-      >
-        {text}
-        <span style={styleClose} onClick={onUnselect}>
-          x
-        </span>
-      </span>
+      <Button
+        style={style(backgroundColor, borderColor)}
+        styleHover={styleHover(backgroundColor)}
+        styleFocus={styleFocus}
+        onClick={onUnselect}
+        title={`Remove ${text} Filter`}
+        icon={xIcon}
+        iconAfter={true}
+        text={text}
+        styleIcon={styleIcon}
+      />
     )
   }
 }
