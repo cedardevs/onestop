@@ -10,6 +10,7 @@ const isProd = nodeEnv === "production"
 const basePlugins = [
   new HtmlWebpackPlugin({
     inject: false,
+    title: 'NOAA OneStop',
     template: require('html-webpack-template'),
     lang: 'en-US',
     meta: [

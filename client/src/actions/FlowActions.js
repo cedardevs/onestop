@@ -9,6 +9,8 @@ import {
   triggerSearch,
   fetchGranules,
   clearCollections,
+  clearGranules,
+  getCollection,
 } from './SearchRequestActions'
 import {
   updateSearch,
@@ -17,6 +19,10 @@ import {
 } from './SearchParamActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchInfo, fetchCounts} from './InfoActions'
+import {
+  getCollectionIdFromDetailPath,
+  getCollectionIdFromGranuleListPath,
+} from '../utils/urlUtils'
 
 export const showCollections = (prefix = '') => {
   return (dispatch, getState) => {
@@ -28,6 +34,23 @@ export const showCollections = (prefix = '') => {
         search: `?${query}`,
       }
       dispatch(push(locationDescriptor))
+    }
+  }
+}
+
+export const loadCollections = newQueryString => {
+  return (dispatch, getState) => {
+    if (newQueryString.indexOf('?') === 0) {
+      newQueryString = newQueryString.slice(1)
+    }
+    const searchFromQuery = decodeQueryString(newQueryString)
+    const searchFromState = _.get(getState(), 'behavior.search')
+    if (!_.isEqual(searchFromQuery, searchFromState)) {
+      dispatch(clearCollections())
+      dispatch(clearGranules())
+      dispatch(clearSelections())
+      dispatch(updateSearch(searchFromQuery))
+      dispatch(triggerSearch())
     }
   }
 }
@@ -46,6 +69,17 @@ export const showGranulesList = id => {
   }
 }
 
+export const loadGranulesList = path => {
+  return dispatch => {
+    const detailId = getCollectionIdFromGranuleListPath(path)
+    dispatch(getCollection(detailId))
+    dispatch(clearSelections())
+    dispatch(toggleSelection(detailId))
+    dispatch(clearGranules())
+    dispatch(fetchGranules())
+  }
+}
+
 export const showDetails = id => {
   if (!id) {
     return
@@ -57,6 +91,15 @@ export const showDetails = id => {
       search: _.isEmpty(query) ? null : `?${query}`,
     }
     dispatch(push(locationDescriptor))
+  }
+}
+
+export const loadDetails = path => {
+  return (dispatch, getState) => {
+    if (!getState().behavior.request.getCollectionInFlight) {
+      const detailId = getCollectionIdFromDetailPath(path)
+      dispatch(getCollection(detailId))
+    }
   }
 }
 
@@ -113,19 +156,5 @@ export const initialize = () => {
     dispatch(fetchConfig())
     dispatch(fetchInfo())
     dispatch(fetchCounts())
-  }
-}
-
-export const loadData = () => {
-  return (dispatch, getState) => {
-    const state = getState()
-
-    const collectionsSelected = !_.isEmpty(state.behavior.search.selectedIds)
-    const granulesLoaded = !_.isEmpty(state.domain.results.granules)
-
-    dispatch(triggerSearch())
-    if (collectionsSelected && !granulesLoaded) {
-      dispatch(fetchGranules())
-    }
   }
 }
