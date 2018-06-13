@@ -127,14 +127,21 @@ class ListResult extends React.Component {
     )
   }
 
-  renderBadge = ({protocol, url, displayName}) => {
+  renderBadge = (link, itemId) => {
+    const {protocol, url, displayName} = link
     const linkText = displayName ? displayName : protocol.label
+    const labelledBy = displayName
+      // title the link with references to elements: linkText, protocolLegend, granuleTitle
+      ? `ListResult::Link::${url} protocol::legend::${protocol.id}  ListResult::title::${itemId}`
+      // linkText is the same as protocol, so only include one of the two
+      : `protocol::legend::${protocol.id} ListResult::title::${itemId}`
+
     return (
       <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
         <A
           href={url}
           key={url}
-          title={url}
+          aria-labelledby={labelledBy}
           target="_blank"
           style={{textDecoration: 'none', display: 'inline-flex'}}
         >
@@ -142,6 +149,7 @@ class ListResult extends React.Component {
             {util.renderBadgeIcon(protocol)}
           </div>
           <div
+            id={`ListResult::Link::${url}`}
             style={{
               ...{
                 textDecoration: 'underline',
@@ -167,9 +175,10 @@ class ListResult extends React.Component {
           : link.linkDescription ? link.linkDescription : null,
       }))
       .sortBy(info => info.protocol.id)
-      .map(this.renderBadge.bind(this))
+      .map(link => {
+        return this.renderBadge(link, this.props.itemId)
+      })
       .value()
-
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges
 
     return (
@@ -211,7 +220,7 @@ class ListResult extends React.Component {
   }
 
   render() {
-    const {item, showLinks, showTimeAndSpace} = this.props
+    const {itemId, item, showLinks, showTimeAndSpace} = this.props
 
     const styleFocused = {
       ...(this.state.focusing ? styleFocusDefault : {}),
@@ -224,7 +233,8 @@ class ListResult extends React.Component {
 
     const rightItems = [
       <h2
-        key={'ListResult::title'}
+        id={`ListResult::title::${itemId}`}
+        key={`ListResult::title::${itemId}`}
         tabIndex={-1}
         ref={header => {
           this.focusItem = header
@@ -290,6 +300,7 @@ class ListResult extends React.Component {
 }
 
 ListResult.propTypes = {
+  itemId: PropTypes.string.isRequired,
   item: PropTypes.object.isRequired,
   showLinks: PropTypes.bool.isRequired,
   showTimeAndSpace: PropTypes.bool.isRequired,

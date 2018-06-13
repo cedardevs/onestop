@@ -190,6 +190,7 @@ export default class ListView extends Component {
       else if (!this.state.showAsGrid && ListItemComponent) {
         itemElement = (
           <ListItemComponent
+            itemId={key}
             item={item}
             key={key}
             onClick={() => onItemSelect(key)}
