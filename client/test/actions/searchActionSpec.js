@@ -96,7 +96,7 @@ describe('The search action', () => {
         payload: {
           "method": "push",
           "args": [
-            "error"
+            "/error"
           ]
         }
       },

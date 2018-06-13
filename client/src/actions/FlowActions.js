@@ -1,5 +1,4 @@
 import _ from 'lodash'
-import watch from 'redux-watch'
 import {push} from 'connected-react-router'
 import {
   encodeQueryString,
@@ -10,8 +9,6 @@ import {
   triggerSearch,
   fetchGranules,
   clearCollections,
-  clearGranules,
-  getCollection,
 } from './SearchRequestActions'
 import {
   updateSearch,
@@ -20,13 +17,6 @@ import {
 } from './SearchParamActions'
 import {fetchConfig} from './ConfigActions'
 import {fetchInfo, fetchCounts} from './InfoActions'
-import {
-  isDetailPage,
-  isGranuleListPage,
-  getCollectionIdFromDetailPath,
-  getCollectionIdFromGranuleListPath,
-} from '../utils/urlUtils'
-import store from '../store'
 
 export const showCollections = (prefix = '') => {
   return (dispatch, getState) => {
@@ -126,38 +116,6 @@ export const initialize = () => {
   }
 }
 
-const loadFromUrl = (path, newQueryString) => {
-  // Note, collection queries are automatically updated by the URL because the query is parsed into search, which triggers loadData via a watch
-  if (
-    isDetailPage(path) &&
-    !store.getState().behavior.request.getCollectionInFlight
-  ) {
-    const detailId = getCollectionIdFromDetailPath(path)
-    store.dispatch(getCollection(detailId))
-  }
-  else if (isGranuleListPage(path)) {
-    const detailId = getCollectionIdFromGranuleListPath(path)
-    store.dispatch(clearSelections())
-    store.dispatch(toggleSelection(detailId))
-    store.dispatch(clearGranules())
-    store.dispatch(fetchGranules())
-  }
-  else {
-    if (newQueryString.indexOf('?') === 0) {
-      newQueryString = newQueryString.slice(1)
-    }
-    const searchFromQuery = decodeQueryString(newQueryString)
-    const searchFromState = _.get(store.getState(), 'behavior.search')
-    if (!_.isEqual(searchFromQuery, searchFromState)) {
-      store.dispatch(clearCollections())
-      store.dispatch(clearGranules())
-      store.dispatch(clearSelections())
-      store.dispatch(updateSearch(searchFromQuery))
-      store.dispatch(loadData())
-    }
-  }
-}
-
 export const loadData = () => {
   return (dispatch, getState) => {
     const state = getState()
@@ -171,15 +129,3 @@ export const loadData = () => {
     }
   }
 }
-
-const routingWatch = watch(
-  store.getState,
-  'behavior.routing.locationBeforeTransitions'
-)
-const routingUpdates = locationBeforeTransitions => {
-  loadFromUrl(
-    locationBeforeTransitions.pathname,
-    locationBeforeTransitions.search
-  )
-}
-store.subscribe(routingWatch(routingUpdates))

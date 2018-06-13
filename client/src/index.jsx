@@ -2,7 +2,7 @@ import React from 'react'
 import {render} from 'react-dom'
 import {Provider} from 'react-redux'
 import RootContainer from './root/RootContainer'
-import {initialize} from './actions/FlowActions'
+import './init'
 import '../style/style'
 import './fonts.css'
 import './page.css'
@@ -13,8 +13,6 @@ import './leaflet-init'
 
 import {Route} from 'react-router'
 import {ConnectedRouter} from 'react-router-redux'
-
-store.dispatch(initialize())
 
 const body = (
   <Provider store={store}>
