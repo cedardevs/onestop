@@ -1,4 +1,4 @@
-FROM java:8-jre
+FROM gcr.io/distroless/java
 
 ARG JAR_NAME
 ARG VCS_REF
@@ -14,7 +14,6 @@ LABEL org.label-schema.vcs-url=https://github.com/cedardevs/psi
 LABEL org.label-schema.vcs-ref=${VCS_REF}
 
 WORKDIR /usr/src/app
-COPY build/libs/${JAR_NAME} .
+COPY build/libs/${JAR_NAME} splitter.jar
 COPY splitter.yml /usr/src/app/splitter.yml
-RUN ln -s ${JAR_NAME} splitter.jar
-CMD ["java", "-jar", "/usr/src/app/splitter.jar"]
+CMD [ "splitter.jar" ]

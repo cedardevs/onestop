@@ -81,23 +81,24 @@ war {
   classpath -= files(configurations.compileOnly)
 }
 
-bootWar {
-  // add a classifier to distinguish the executable war
+bootJar {
+  // add a classifier to distinguish the executable jar
   classifier = 'all'
   launchScript()
 }
 
-task sourceWar(type: War) {
+task sourceJar(type: Jar) {
   classifier = 'sources'
   baseName = "${rootProject.name}-${project.name}"
   from "${projectDir}/src"
 }
 
 docker {
-  additionalBuildArgs = [WAR_NAME: bootWar.outputs.files.singleFile.name]
+  additionalBuildArgs = [JAR_NAME: bootJar.outputs.files.singleFile.name]
 }
 
-BuildDockerImage.dependsOn(bootWar)
+BuildDockerImage.dependsOn(bootJar)
 assemble.dependsOn(BuildDockerImage)
+assemble.dependsOn(sourceJar)
 PublishDockerImage.dependsOn(BuildDockerImage)
 task publish { dependsOn PublishDockerImage }

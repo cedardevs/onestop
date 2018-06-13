@@ -44,19 +44,25 @@ def setupConfigLocation = {
 
 tasks.withType(JavaExec, setupConfigLocation)
 
-jar{
+jar {
+  baseName = "${rootProject.name}-${project.name}"
   manifest {
     attributes 'Main-Class': mainClassName
   }
 }
 // check http://imperceptiblethoughts.com/shadow/
-shadowJar{
-  baseName="script-wrapper"
+shadowJar {
+  baseName = "${rootProject.name}-${project.name}"
   classifier = 'all'
   version = version
   configurations = [project.configurations.compile]
 }
 
+task sourceJar(type: Jar) {
+  classifier = 'sources'
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
 
 docker {
   additionalBuildArgs = [JAR_NAME: shadowJar.outputs.files.singleFile.name]
@@ -64,5 +70,6 @@ docker {
 
 BuildDockerImage.dependsOn(shadowJar)
 assemble.dependsOn(BuildDockerImage)
+assemble.dependsOn(sourceJar)
 PublishDockerImage.dependsOn(BuildDockerImage)
 task publish { dependsOn PublishDockerImage }

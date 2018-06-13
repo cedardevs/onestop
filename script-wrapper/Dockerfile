@@ -10,7 +10,7 @@ LABEL org.label-schema.version=${VERSION}
 LABEL org.label-schema.build-date=${DATE}
 LABEL org.label-schema.name="PSI Script Wrapper"
 LABEL org.label-schema.vendor=CEDAR
-LABEL org.label-schema.vcs-url=https://github.com/cedardevs/onestop
+LABEL org.label-schema.vcs-url=https://github.com/cedardevs/psi
 LABEL org.label-schema.vcs-ref=${VCS_REF}
 
 # Install dependencies to run scripts
@@ -26,5 +26,4 @@ WORKDIR /usr/src/app
 COPY build/libs/${JAR_NAME} .
 COPY scripts/ ./scripts
 RUN ln -s ${JAR_NAME} script-wrapper.jar
-EXPOSE 8080
 CMD ["java", "-jar", "/usr/src/app/script-wrapper.jar"]

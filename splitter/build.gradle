@@ -43,23 +43,31 @@ def setupConfigLocation = {
 tasks.withType(JavaExec, setupConfigLocation)
 
 jar {
+  baseName = "${rootProject.name}-${project.name}"
   manifest {
     attributes 'Main-Class': mainClassName
   }
 }
 // check http://imperceptiblethoughts.com/shadow/
 shadowJar {
-  baseName = "splitter"
+  baseName = "${rootProject.name}-${project.name}"
   classifier = 'all'
   version = version
   configurations = [project.configurations.compile]
 }
 
+task sourceJar(type: Jar) {
+  classifier = 'sources'
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
 docker {
-  additionalBuildArgs = [JAR_NAME: "splitter-0.1.0-SNAPSHOT-all.jar"]
+  additionalBuildArgs = [JAR_NAME: shadowJar.outputs.files.singleFile.name]
 }
 
 BuildDockerImage.dependsOn(shadowJar)
 assemble.dependsOn(BuildDockerImage)
+assemble.dependsOn(sourceJar)
 PublishDockerImage.dependsOn(BuildDockerImage)
 task publish { dependsOn PublishDockerImage }
