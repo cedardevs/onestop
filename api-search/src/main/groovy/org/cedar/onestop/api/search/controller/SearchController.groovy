@@ -1,5 +1,9 @@
 package org.cedar.onestop.api.search.controller
 
+import groovy.json.JsonOutput
+
+import java.io.File
+
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,10 +44,12 @@ class SearchController {
     def result = elasticsearchService.getCollectionById(id)
     if (result.data) {
       response.status = HttpStatus.OK.value()
+      log.info("incoming collection GET request: {\"id\":\"${id}\"}")
     }
     else {
       response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
     }
+
     return result
   }
 
@@ -56,7 +62,7 @@ class SearchController {
       response.status = HttpStatus.BAD_REQUEST.value()
       return [errors: validation.errors]
     }
-    log.info("incoming search params: ${params}")
+    log.info("incoming collection search params: ${JsonOutput.toJson(params)}")
     return elasticsearchService.searchCollections(params)
   }
 
@@ -72,10 +78,12 @@ class SearchController {
     def result = elasticsearchService.getGranuleById(id)
     if (result.data) {
       response.status = HttpStatus.OK.value()
+      log.info("incoming granule GET request: {\"id\":\"${id}\"}")
     }
     else {
       response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
     }
+
     return result
   }
 
@@ -88,7 +96,7 @@ class SearchController {
       response.status = HttpStatus.BAD_REQUEST.value()
       return [errors: validation.errors]
     }
-    log.info("incoming search params: ${params}")
+    log.info("incoming granule search params: ${JsonOutput.toJson(params)}")
     return elasticsearchService.searchGranules(params)
   }
 
@@ -104,6 +112,7 @@ class SearchController {
     def result = elasticsearchService.getFlattenedGranuleById(id)
     if (result.data) {
       response.status = HttpStatus.OK.value()
+      log.info("incoming flattened-granule GET request: {\"id\":\"${id}\"}")
     }
     else {
       response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
@@ -120,7 +129,7 @@ class SearchController {
       response.status = HttpStatus.BAD_REQUEST.value()
       return [errors: validation.errors]
     }
-    log.info("incoming search params: ${params}")
+    log.info("incoming flattened-granule search params: ${JsonOutput.toJson(params)}")
     return elasticsearchService.searchFlattenedGranules(params)
   }
 
