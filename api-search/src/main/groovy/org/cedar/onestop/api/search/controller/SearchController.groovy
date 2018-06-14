@@ -2,8 +2,6 @@ package org.cedar.onestop.api.search.controller
 
 import groovy.json.JsonOutput
 
-import java.io.File
-
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
