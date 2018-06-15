@@ -408,11 +408,15 @@ export default class TimeFilter extends Component {
 
     return (
       <div style={styleTimeFilter}>
-        <p>
-          Provide a start date, end date, or date range. Use year, year and
-          month, or full dates. Future dates are not accepted.
-        </p>
-        <form style={styleForm} onKeyDown={this.handleKeyDown}>
+        <label id="timeFilterInstructions">
+          Provide a start date, end date, or both. Day and month are optional.
+          Future dates are not accepted.
+        </label>
+        <form
+          style={styleForm}
+          onKeyDown={this.handleKeyDown}
+          aria-describedby="timeFilterInstructions"
+        >
           {this.createDateFieldset(
             'start',
             this.state.startDateYear,

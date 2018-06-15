@@ -162,7 +162,7 @@ module.exports = {
       }, {
         loader: 'css-loader'
       }]
-    }, {
+    },  {
       test: /\.css$/,
       exclude: /node_modules/,
       use: [{
@@ -171,20 +171,7 @@ module.exports = {
           sourceMap: !isProd
         }
       }, {
-        loader: 'css-loader',
-        options: {
-          modules: true,
-          importLoaders: true,
-          localIdentName: '[name]__[local]___[hash:base64:5]',
-          plugins: function () {
-            return [
-              require('precss'),
-              require('autoprefixer')
-            ]
-          }
-        }
-      }, {
-        loader: 'postcss-loader'
+        loader: 'css-loader'
       }],
     }, {
       test: /\.(jpe?g|png|gif)$/,

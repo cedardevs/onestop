@@ -10,6 +10,10 @@ import {FilterStyles} from '../../common/defaultStyles'
 
 const styleFacetFilter = FilterStyles.MEDIUM
 
+const styleDescription = {
+  margin: '0.618em',
+}
+
 const styleExpandableCategoryHeading = {
   ...FilterStyles.DARK,
   ...{padding: '0.618em'},
@@ -97,6 +101,19 @@ export default class FacetFilter extends Component {
         />
       )
     })
-    return <div style={styleFacetFilter}>{expandableCategories}</div>
+
+    return (
+      <div style={styleFacetFilter}>
+        <div style={styleDescription}>
+          <label id="facetFilterInstructions">
+            Use up and down arrow keys to navigate keywords, left and right
+            arrow keys to open and close keywords with children, and space or
+            enter to toggle selections. Home and End keys can jump to the top
+            and bottom.
+          </label>
+        </div>
+        {expandableCategories}
+      </div>
+    )
   }
 }

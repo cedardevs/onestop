@@ -172,7 +172,8 @@ export default class Help extends React.Component {
 
           <hr style={styleHR} />
 
-          <h2 style={styleHelpH2}>
+          <h2 style={styleHelpH2}>More Information</h2>
+          <p>
             Find more information about interacting directly with the{' '}
             <A
               target="_blank"
@@ -181,7 +182,7 @@ export default class Help extends React.Component {
             >
               OneStop API
             </A>.
-          </h2>
+          </p>
         </section>
       </div>
     )

@@ -245,7 +245,11 @@ export default class MapFilter extends Component {
   renderCoordinateInput = () => {
     return (
       <div key="MapFilterCoordinatesInput::all" style={styleBreathingRoom}>
-        <form style={styleForm} onKeyDown={this.handleKeyDown}>
+        <form
+          style={styleForm}
+          onKeyDown={this.handleKeyDown}
+          aria-describedby="mapFilterInstructions"
+        >
           <Fieldset
             onFieldsetChange={event => this.onChange(event)}
             legendText="Bounding Box Coordinates:"
@@ -329,10 +333,10 @@ export default class MapFilter extends Component {
 
     return (
       <div style={styleMapFilter}>
-        <p style={styleDescription}>
-          Enter coordinates below or draw on the map. Use the Clear button to
-          reset the map and text boxes.
-        </p>
+        <label id="mapFilterInstructions" style={styleDescription}>
+          Type coordinates or draw on the map. Use the Clear button to reset the
+          location filter.
+        </label>
         {inputColumn}
         <div style={styleSeparator} />
         <h3 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h3>

@@ -69,7 +69,7 @@ const styleSearchButtonFocus = home => {
   return home
     ? {
         outline: '2px dashed #5C87AC',
-        outlineOffset: '.309em',
+        outlineOffset: '.118em',
         zIndex: '1',
       }
     : {}

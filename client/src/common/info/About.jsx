@@ -73,7 +73,8 @@ export default class Help extends React.Component {
             and granule-level metadata systems to accommodate the wide variety
             and vast scale of NOAA's data.
           </p>
-          <h2 style={styleH2}>{this.buildCountString()}</h2>
+          <h2 style={styleH2}>Catalog Information</h2>
+          <p>{this.buildCountString()}</p>
           <div style={styleAccessibilityStatement}>
             <h2 style={styleH2}>Accessibility Statement</h2>
             <p>

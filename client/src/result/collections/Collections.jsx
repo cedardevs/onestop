@@ -12,6 +12,10 @@ const styleCollections = {
 const styleShowMore = {
   margin: '1em auto 1.618em auto',
 }
+const styleShowMoreFocus = {
+  outline: '2px dashed #5C87AC',
+  outlineOffset: '.118em',
+}
 
 export default class Collections extends Component {
   render() {
@@ -30,6 +34,7 @@ export default class Collections extends Component {
           text="Show More Results"
           onClick={() => fetchMoreResults()}
           style={styleShowMore}
+          styleFocus={styleShowMoreFocus}
         />
       ) : null
 

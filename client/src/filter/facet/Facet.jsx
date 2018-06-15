@@ -93,6 +93,7 @@ export default class FacetTreeItem extends React.Component {
         styleHeading={this.props.styleFacet}
         styleContent={this.props.styleChildren}
         styleFocus={styleFocus}
+        styleArrowFocus={{outline: 'none'}}
         showArrow={true}
         content={<div role="group">{children}</div>}
         onToggle={this.props.handleExpandableToggle}

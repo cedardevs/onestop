@@ -13,7 +13,7 @@ import {
 } from '../common/SvgIcon'
 
 const styleStar = {
-  fill: 'goldenrod',
+  // default to text color for stars
 }
 
 const styleMissingDSMM = {

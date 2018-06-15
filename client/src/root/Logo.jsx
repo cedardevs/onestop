@@ -221,7 +221,6 @@ export default class Logo extends Component {
         <div style={styleTextWrapperMerged}>
           <a
             href="#"
-            title="One Stop Home"
             style={stylesOneStopLink}
             onClick={() => this.props.onClick()}
             onFocus={this.handleTextFocus}
