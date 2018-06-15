@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
 import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.HttpServletRequest
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD
@@ -38,11 +40,11 @@ class SearchController {
 
   // GET Collection by ID
   @RequestMapping(path = "/collection/{id}", method = [GET, HEAD], produces = 'application/json')
-  Map getCollection(@PathVariable String id, HttpServletResponse response) {
+  Map getCollection(@PathVariable String id, HttpServletResponse response, HttpServletRequest request) {
     def result = elasticsearchService.getCollectionById(id)
     if (result.data) {
       response.status = HttpStatus.OK.value()
-      log.info("incoming collection GET request: {\"id\":\"${id}\"}")
+      log.info("${request.getMethod()} collection ID param: {\"id\":\"${id}\"}")
     }
     else {
       response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
@@ -53,14 +55,14 @@ class SearchController {
 
   // Search Collections
   @RequestMapping(path = "/search/collection", method = [POST, GET])
-  Map searchCollections(@RequestBody Map params, HttpServletResponse response) {
+  Map searchCollections(@RequestBody Map params, HttpServletResponse response, HttpServletRequest request) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
     if (!validation.success) {
       log.debug("invalid request: ${validation.errors.detail?.join(', ')}")
       response.status = HttpStatus.BAD_REQUEST.value()
       return [errors: validation.errors]
     }
-    log.info("incoming collection search params: ${JsonOutput.toJson(params)}")
+    log.info("${request.getMethod()} collection search params: ${JsonOutput.toJson(params)}")
     return elasticsearchService.searchCollections(params)
   }
 
@@ -72,11 +74,11 @@ class SearchController {
 
   // GET Granule by ID
   @RequestMapping(path = "/granule/{id}", method = [GET, HEAD], produces = 'application/json')
-  Map getGranule(@PathVariable String id, HttpServletResponse response) {
+  Map getGranule(@PathVariable String id, HttpServletResponse response, HttpServletRequest request) {
     def result = elasticsearchService.getGranuleById(id)
     if (result.data) {
       response.status = HttpStatus.OK.value()
-      log.info("incoming granule GET request: {\"id\":\"${id}\"}")
+      log.info("${request.getMethod()} granule ID param: {\"id\":\"${id}\"}")
     }
     else {
       response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
@@ -87,14 +89,14 @@ class SearchController {
 
   // Search Granules
   @RequestMapping(path = "/search/granule", method = [POST, GET])
-  Map searchGranules(@RequestBody Map params, HttpServletResponse response) {
+  Map searchGranules(@RequestBody Map params, HttpServletResponse response, HttpServletRequest request) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
     if (!validation.success) {
       log.debug("invalid request: ${validation.errors.detail?.join(', ')}")
       response.status = HttpStatus.BAD_REQUEST.value()
       return [errors: validation.errors]
     }
-    log.info("incoming granule search params: ${JsonOutput.toJson(params)}")
+    log.info("${request.getMethod()} granule search params: ${JsonOutput.toJson(params)}")
     return elasticsearchService.searchGranules(params)
   }
 
@@ -106,11 +108,11 @@ class SearchController {
 
   // GET Flattened Granule by ID
   @RequestMapping(path = "/flattened-granule/{id}", method = [GET, HEAD], produces = 'application/json')
-  Map getFlattenedGranule(@PathVariable String id, HttpServletResponse response) {
+  Map getFlattenedGranule(@PathVariable String id, HttpServletResponse response, HttpServletRequest request) {
     def result = elasticsearchService.getFlattenedGranuleById(id)
     if (result.data) {
       response.status = HttpStatus.OK.value()
-      log.info("incoming flattened-granule GET request: {\"id\":\"${id}\"}")
+      log.info("${request.getMethod()} flattened-granule ID param: {\"id\":\"${id}\"}")
     }
     else {
       response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
@@ -120,14 +122,14 @@ class SearchController {
 
   // Search Flattened Granules
   @RequestMapping(path = "/search/flattened-granule", method = [POST, GET])
-  Map searchFlattenedGranules(@RequestBody Map params, HttpServletResponse response) {
+  Map searchFlattenedGranules(@RequestBody Map params, HttpServletResponse response, HttpServletRequest request) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
     if (!validation.success) {
       log.debug("invalid request: ${validation.errors.detail?.join(', ')}")
       response.status = HttpStatus.BAD_REQUEST.value()
       return [errors: validation.errors]
     }
-    log.info("incoming flattened-granule search params: ${JsonOutput.toJson(params)}")
+    log.info("${request.getMethod()} flattened-granule search params: ${JsonOutput.toJson(params)}")
     return elasticsearchService.searchFlattenedGranules(params)
   }
 
