@@ -71,8 +71,8 @@ const facets = (category, terms, selectedFacets) => {
 
 export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
   return _.map(facetMap, (terms, category) => {
-    if (!_.isEmpty(terms)) {
-      // Don't load categories that have no results
+    if (!_.isEmpty(terms) && category !== 'locations') {
+      // Don't load categories that have no results & don't load Locations category
       const keywordFacets = facets(category, terms, selectedFacets)
       return {
         name: categoryName(category),
@@ -83,5 +83,5 @@ export const buildKeywordHierarchyMap = (facetMap, selectedFacets) => {
     }
   }).filter(facetCategory => {
     return facetCategory
-  }) // remove undefined?
+  })
 }

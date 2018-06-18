@@ -13,6 +13,7 @@ const basePlugins = [
     title: 'NOAA OneStop',
     template: require('html-webpack-template'),
     lang: 'en-US',
+    favicon: '../img/noaa-favicon.ico',
     meta: [
       {
         property: 'dcterms.format', content:'text/html'
@@ -77,14 +78,13 @@ module.exports = {
   entry: isProd ? prodEntryPoints : devEntryPoints,
   output: {
     path: path.resolve(__dirname, 'build/dist'),
-    publicPath: '/',
+    publicPath: './',
     filename: '[name]-[hash].bundle.js'
   },
   context: path.resolve(__dirname, 'src'),
   devtool: isProd ? false : 'cheap-module-eval-source-map',
   devServer: isProd ? {} : {
-    publicPath: '/',
-    historyApiFallback: true,
+    publicPath: '/onestop/',
     disableHostCheck: true,
     hot: true,
     proxy: {
