@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 
 export default class Video extends React.Component {
   componentDidMount() {
@@ -25,18 +26,29 @@ export default class Video extends React.Component {
     // do work only if iframe exists
     if (this.iframeRef) {
       // recall our aspect ratio from props
-      const {aspectRatio} = this.props
+      const {aspectRatio, autofocus} = this.props
       // get new width dynamically
       const iframeRect = this.iframeRef.getBoundingClientRect()
       const newWidth = iframeRect.width
       // maintain aspect ratio when setting height
       this.iframeRef.style.height = newWidth * aspectRatio + 'px'
+
+      if (autofocus) {
+        ReactDOM.findDOMNode(this.iframeRef).focus()
+      }
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.link != prevProps.link && this.videoRef) {
+      // TODO figure out if two youtube links in the granules also need this kind of trigger?
+      this.videoRef.load()
     }
   }
 
   render() {
-    const {link} = this.props
-    return (
+    const {link, protocol} = this.props
+    const youtubeVideo = (
       <iframe
         ref={iframeRef => {
           this.iframeRef = iframeRef
@@ -47,5 +59,28 @@ export default class Video extends React.Component {
         style={{width: '100%'}}
       />
     )
+    const mp4Video = (
+      <video
+        ref={videoRef => {
+          this.iframeRef = videoRef
+          this.videoRef = videoRef
+        }}
+        controls
+        style={{width: '100%'}}
+      >
+        <source type="video/mp4" src={link} />
+      </video>
+    )
+    const other = <div>Could Not Play Video</div>
+
+    if (protocol === 'video:youtube') {
+      return youtubeVideo
+    }
+    else if (link.includes('.mp4')) {
+      return mp4Video
+    }
+    else {
+      return other
+    }
   }
 }

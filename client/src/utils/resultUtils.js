@@ -1,7 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
 import Immutable from 'seamless-immutable'
-import {SvgIcon, cloud} from '../common/SvgIcon'
+import {SvgIcon, cloud, video_camera} from '../common/SvgIcon'
 import {fontFamilySansSerif} from './styleUtils'
 
 export const styleProtocolListItem = {
@@ -84,6 +84,13 @@ export const protocols = Immutable([
     label: 'THREDDS',
   },
   {id: 'W', names: [ '' ], color: '#a26a03', label: 'Web'},
+  {
+    id: 'Y',
+    names: [ 'video:youtube', 'video:mp4' ],
+    color: '#4f635c',
+    label: 'Video',
+    svgPath: video_camera,
+  },
 ])
 
 export const identifyProtocol = link => {
@@ -97,7 +104,12 @@ export const identifyProtocol = link => {
 
 export const renderBadgeIcon = protocol => {
   if (protocol.svgPath) {
-    return <SvgIcon path={protocol.svgPath} />
+    return (
+      <SvgIcon
+        wrapperStyle={{paddingBottom: '.23em'}}
+        path={protocol.svgPath}
+      />
+    )
   }
   return <span>{protocol.id}</span>
 }
