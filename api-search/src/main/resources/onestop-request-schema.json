@@ -143,9 +143,9 @@
           ]
         },
         "name": {
-          "description": "One of the GCMD keyword categories: science, services, instruments, platforms, projects, dataCenters, horizontalResolution, verticalResolution, temporalResolution.",
+          "description": "One of the GCMD keyword categories: science, services, locations, instruments, platforms, projects, dataCenters, horizontalResolution, verticalResolution, temporalResolution.",
           "type": "string",
-          "enum": ["science", "services", "instruments", "platforms", "projects", "dataCenters", "horizontalResolution", "verticalResolution", "temporalResolution"]
+          "enum": ["science", "services", "locations", "instruments", "platforms", "projects", "dataCenters", "horizontalResolution", "verticalResolution", "temporalResolution"]
         },
         "values": {
           "description": "Exact match GCMD keyword(s), e.g., \"Atmosphere > Atmospheric Temperature > Surface Temperature\"",

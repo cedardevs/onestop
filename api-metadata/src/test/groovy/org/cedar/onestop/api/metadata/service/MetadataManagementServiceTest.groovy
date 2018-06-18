@@ -15,6 +15,7 @@ class MetadataManagementServiceTest extends Specification {
     metadataManagementService.COLLECTION_STAGING_INDEX = 'staging_collection'
     metadataManagementService.GRANULE_SEARCH_INDEX = 'search_granule'
     metadataManagementService.GRANULE_STAGING_INDEX = 'staging_granule'
+    metadataManagementService.FLAT_GRANULE_SEARCH_INDEX = 'search_flattened_granule'
   }
 
   def "Index #index correctly parsed to type"() {
@@ -31,6 +32,7 @@ class MetadataManagementServiceTest extends Specification {
     index                                 | expectedType
     'prefix-search_collection'            | 'collection'
     'prefix-search_granule-1519243661952' | 'granule'
+    'prefix-search_flattened_granule'     | 'flattenedGranule'
     'not-valid-index'                     | null
 
   }
