@@ -43,11 +43,11 @@ const styleOneStopOImageWrapper = {
   left: '.07em',
 }
 
-export default class Help extends React.Component {
+export default class About extends React.Component {
   render() {
     return (
       <div style={styleWrapper}>
-        <Meta title="About" />
+        <Meta title="About NOAA OneStop" />
         <section style={styleAbout}>
           <h1 style={styleH1} aria-label="One Stop Overview">
             <span>

@@ -232,6 +232,7 @@ export default class DescriptionView extends Component {
       <div>
         <Meta
           title={item.title}
+          formatTitle={true}
           description={item.description}
           thumbnail={processUrl(thumbnail)}
         />

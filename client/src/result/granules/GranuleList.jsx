@@ -75,6 +75,7 @@ export default class GranuleList extends Component {
       <div style={styleCenterContent}>
         <Meta
           title={`Files for Collection ${collectionTitle}`}
+          formatTitle={true}
           robots="noindex"
         />
 

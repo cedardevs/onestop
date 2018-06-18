@@ -76,7 +76,7 @@ export default class Help extends React.Component {
   render() {
     return (
       <div style={styleWrapper}>
-        <Meta title="Help" />
+        <Meta title="Help for NOAA OneStop" />
         <section style={styleHelp}>
           <h1 style={styleHelpH1}>How to use this interface:</h1>
           <p>

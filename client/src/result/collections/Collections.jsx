@@ -41,7 +41,11 @@ export default class Collections extends Component {
 
     return (
       <div style={styleCollections}>
-        <Meta title="Collection Search Results" robots="noindex" />
+        <Meta
+          title="Collection Search Results"
+          formatTitle={true}
+          robots="noindex"
+        />
         <ListView
           items={results}
           loading={!!loading}

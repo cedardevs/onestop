@@ -7,7 +7,7 @@ export default class Meta extends Component {
   formatTitle = title => {
     const words = _.words(title)
     if (_.size(words) > 5) {
-      return _.join(_.concat(_.slice(words, 0, 5), '... || NOAA OneStop'), ' ')
+      return _.join(_.concat(_.slice(words, 0, 5), '... on NOAA OneStop'), ' ')
     }
     return title
   }
@@ -21,12 +21,15 @@ export default class Meta extends Component {
   }
 
   render() {
-    const {title, description, robots, thumbnail} = this.props
+    const {title, formatTitle, description, robots, thumbnail} = this.props
 
     /*
     Default values for every variable are critial, because otherwise helmet will leave meta tags set to old values when you return to a previous page (such as clicking the home link after visiting a collection.)
     */
-    const titleValue = title ? this.formatTitle(title) : 'NOAA OneStop'
+    const titleValue = title ? title : 'NOAA OneStop'
+    const formattedTitle = formatTitle
+      ? this.formatTitle(titleValue)
+      : titleValue
     const descriptionValue = description
       ? this.formatDescription(description)
       : 'A NOAA Data Search Platform.'
@@ -40,9 +43,9 @@ export default class Meta extends Component {
 
         <meta property="robots" content={robotsValue} />
 
-        <title>{titleValue}</title>
-        <meta property="dcterms.title" content={titleValue} />
-        <meta property="og:title" content={titleValue} />
+        <title>{formattedTitle}</title>
+        <meta property="dcterms.title" content={formattedTitle} />
+        <meta property="og:title" content={formattedTitle} />
 
         <meta property="description" content={descriptionValue} />
         <meta property="og:description" content={descriptionValue} />
