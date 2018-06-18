@@ -58,7 +58,7 @@ export default class Meta extends Component {
         <meta property="og:image:width" content="800" />
         <meta property="og:image:height" content="400" />
 
-        {/*TODO <meta property="og:url" content="http://localhost:8080/onestop/">*/}
+        <meta property="og:url" content={`${location.href}`}/>
       </Helmet>
     )
   }
