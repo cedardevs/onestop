@@ -136,6 +136,7 @@ export default class Button extends Component {
     const {
       text,
       icon,
+      iconAfter,
       styleIcon,
       onClick,
       style,
@@ -177,10 +178,13 @@ export default class Button extends Component {
         aria-selected={ariaSelected}
         aria-label={title || text}
       >
-        {icon && !this.props.children ? (
+        {icon && !iconAfter && !this.props.children ? (
           <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
         ) : null}
         {text && !this.props.children ? <span>{text}</span> : null}
+        {icon && iconAfter && !this.props.children ? (
+          <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
+        ) : null}
         {this.props.children ? <div>{this.props.children}</div> : null}
       </button>
     )
