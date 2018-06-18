@@ -132,7 +132,7 @@ class Footer extends React.Component {
             </div>
             {' | '}
             <div style={styleImageAttribution}>
-              <FooterLink href={`${this.props.homeUrl}about#attribution`}>
+              <FooterLink to={'/about#attribution'}>
                 Image Attribution{' '}
                 <SvgIcon
                   size="1em"

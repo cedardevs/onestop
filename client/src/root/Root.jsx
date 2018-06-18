@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {Route, Switch} from 'react-router'
 
 import Background from '../layout/Background'
 import Container from '../layout/Container'
@@ -9,6 +10,15 @@ import MapContainer from '../search/map/MapContainer'
 
 import FiltersContainer from '../filter/FiltersContainer'
 import FiltersHiddenContainer from '../filter/FiltersHiddenContainer'
+
+import Result from '../result/Result'
+import CollectionsContainer from '../result/collections/CollectionsContainer'
+import GranuleListContainer from '../result/granules/GranuleListContainer'
+import ErrorContainer from '../error/ErrorContainer'
+import LandingContainer from '../landing/LandingContainer'
+import DetailContainer from '../detail/DetailContainer'
+import Help from '../common/info/Help'
+import AboutContainer from '../common/info/AboutContainer'
 
 import LoadingBarContainer from '../loading/LoadingBarContainer'
 
@@ -41,16 +51,11 @@ export default class Root extends Component {
     super(props)
 
     this.hasUnsupportedFeatures = this.hasUnsupportedFeatures.bind(this)
-    this.location = props.location.pathname
     this.state = {
       leftVisible: true,
       rightVisible: false,
       browserWarning: this.hasUnsupportedFeatures(),
     }
-  }
-
-  componentWillUpdate(nextProps) {
-    this.location = nextProps.location.pathname
   }
 
   hasUnsupportedFeatures() {
@@ -93,84 +98,89 @@ export default class Root extends Component {
     )
   }
 
-  isNotLanding() {
-    return this.location !== '/'
-  }
-
-  isAboutPage() {
-    return this.location.startsWith('/about')
-  }
-
-  isHelpPage() {
-    return this.location.startsWith('/help')
-  }
-
-  homeUrl() {
-    const {host, pathname} = location
-    return `//${host}${pathname ? pathname : '/'}#/`
-  }
-
   render() {
-    const {showLeft, leftOpen, showRight, onDetailPage} = this.props
+    const {showLeft, leftOpen, showRight} = this.props
 
     const header = (
       <div>
         <BannerContainer />
-        <HeaderContainer
-          showSearch={this.isNotLanding()}
-          homeUrl={this.homeUrl()}
-        />
+        <Route path="/">
+          <HeaderContainer />
+        </Route>
         {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
       </div>
     )
 
-    const layoutContext =
-      this.isNotLanding() && !this.isAboutPage() && !this.isHelpPage()
-
-    let left = null
-    let leftWidth = '20em'
-
-    if (layoutContext) {
-      if (showLeft) {
-        if (leftOpen) {
-          left = <FiltersContainer />
-        }
-        else {
-          leftWidth = '2em' // must match width + 2x padding of container in FilterHidden.jsx
-          left = <FiltersHiddenContainer />
-        }
-      }
-    }
-
-    const loadingBarStyle = this.isNotLanding() ? {} : {display: 'none'}
-    const onHomePage = !this.isNotLanding()
+    const left = leftOpen ? <FiltersContainer /> : <FiltersHiddenContainer />
+    const leftWidth = leftOpen ? '20em' : '2em'
 
     const middle = (
       <div style={{width: '100%'}}>
-        <LoadingBarContainer style={loadingBarStyle} />
-        {/*TODO: replace this with ArcGIS map?*/}
-        <MapContainer selection={true} features={false} />
+        <Switch>
+          <Route path="/" exact />
+          <Route path="/">
+            <LoadingBarContainer />
+          </Route>
+        </Switch>
+        <Switch>
+          <Route path="/collections" exact>
+            {/*TODO: replace this with ArcGIS map?*/}
+            <MapContainer selection={true} features={false} />
+          </Route>
+        </Switch>
         {this.props.children}
+
+        <Switch>
+          {/*Each page inside this switch should have a Meta!*/}
+          <Route path="/" exact>
+            <LandingContainer />
+          </Route>
+
+          <Route path="/collections/details">
+            {/*TODO parameterize this path!*/}
+            <DetailContainer />
+          </Route>
+
+          <Route path="/collections">
+            <Result>
+              <Switch>
+                <Route path="/collections" exact>
+                  <CollectionsContainer />
+                </Route>
+                <Route path="/collections/granules">
+                  {/*TODO parameterize this path!*/}
+                  <GranuleListContainer />
+                </Route>
+              </Switch>
+            </Result>
+          </Route>
+
+          <Route path="/about">
+            <AboutContainer />
+          </Route>
+          <Route path="/help">
+            <Help />
+          </Route>
+
+          <Route path="/error">
+            <ErrorContainer />
+          </Route>
+        </Switch>
       </div>
     )
 
-    // constrain middle gives the middle section a max-width
-    const middleBackgroundColor = onDetailPage ? 'white' : 'initial'
-
     return (
-      <Background onHomePage={onHomePage}>
+      <Background>
         <Container
           header={header}
           left={left}
           leftWidth={leftWidth}
           leftVisible={leftOpen}
           middle={middle}
-          middleBackgroundColor={middleBackgroundColor}
-          onHomePage={onHomePage}
           right={null}
           rightWidth={256}
           rightVisible={showRight}
-          footer={<FooterContainer homeUrl={this.homeUrl()} />}
+          footer={<FooterContainer />}
         />
       </Background>
     )

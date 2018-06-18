@@ -54,6 +54,7 @@ export default class Left extends Component {
   render() {
     const {content, visible} = this.props
     const width = this.props.width ? this.props.width : defaultWidth
+
     return (
       <div style={visible ? styleVisible(width) : styleHidden(width)}>
         {content}

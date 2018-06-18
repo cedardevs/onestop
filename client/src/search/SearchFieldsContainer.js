@@ -8,6 +8,8 @@ import {
 } from '../actions/SearchParamActions'
 import {showCollections} from '../actions/FlowActions'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   return {
     queryString: state.behavior.search.queryText,
@@ -27,8 +29,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const SearchFieldsContainer = connect(mapStateToProps, mapDispatchToProps)(
-  SearchFields
+const SearchFieldsContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(SearchFields)
 )
 
 export default SearchFieldsContainer

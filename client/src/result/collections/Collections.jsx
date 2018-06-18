@@ -4,6 +4,7 @@ import CollectionCard from './CollectionCard'
 import CollectionListResult from './CollectionListResult'
 import Button from '../../common/input/Button'
 import ListView from '../ListView'
+import Meta from '../../helmet/Meta'
 
 const styleCollections = {
   color: '#222',
@@ -40,6 +41,7 @@ export default class Collections extends Component {
 
     return (
       <div style={styleCollections}>
+        <Meta title="Collection Search Results" robots="noindex" />
         <ListView
           items={results}
           loading={!!loading}

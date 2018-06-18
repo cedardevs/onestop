@@ -2,6 +2,7 @@ import React from 'react'
 import search from 'fa/search.svg'
 import A from '../../common/link/Link'
 import {fontFamilySerif, fontFamilyMonospace} from '../../utils/styleUtils'
+import Meta from '../../helmet/Meta'
 
 const styleWrapper = {
   width: '100%',
@@ -75,6 +76,7 @@ export default class Help extends React.Component {
   render() {
     return (
       <div style={styleWrapper}>
+        <Meta title="Help" />
         <section style={styleHelp}>
           <h1 style={styleHelpH1}>How to use this interface:</h1>
           <p>

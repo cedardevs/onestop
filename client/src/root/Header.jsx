@@ -1,4 +1,6 @@
 import React from 'react'
+import {Route, Switch} from 'react-router'
+
 import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import Logo from './Logo'
@@ -119,17 +121,17 @@ class Header extends React.Component {
     const menuContent = (
       <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>
-          <HeaderLink title="Home" href={`${this.props.homeUrl}`}>
+          <HeaderLink title="Home" to="/">
             Home
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, false)}>
-          <HeaderLink title="About Us" href={`${this.props.homeUrl}about`}>
+          <HeaderLink title="About Us" to="/about">
             About Us
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, true)}>
-          <HeaderLink title="Help" href={`${this.props.homeUrl}help`}>
+          <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
         </li>
@@ -144,9 +146,19 @@ class Header extends React.Component {
       />
     )
 
-    const search = this.props.showSearch ? (
-      <SearchFieldsContainer key="search" />
-    ) : null
+    const search = (
+      <Switch key="header:search:route">
+        <Route exact path="/">
+          {null}
+        </Route>
+        <Route path="/">
+          <SearchFieldsContainer key="search" />
+        </Route>
+      </Switch>
+    )
+    // this.props.showSearch ? (
+    //   <SearchFieldsContainer key="search" />
+    // ) : null
 
     const menu = (
       <nav key="menu" aria-label="Main" style={styleNav}>
@@ -193,12 +205,7 @@ class Header extends React.Component {
 }
 
 Header.propTypes = {
-  showSearch: PropTypes.bool.isRequired,
   goHome: PropTypes.func.isRequired,
-}
-
-Header.defaultProps = {
-  showSearch: true,
 }
 
 export default Header

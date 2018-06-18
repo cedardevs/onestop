@@ -1,5 +1,5 @@
 import React from 'react'
-import {Link} from 'react-router'
+import {Link} from 'react-router-dom'
 
 const styleLink = {
   textDecoration: 'none',
@@ -63,7 +63,7 @@ export default class HeaderLink extends React.Component {
   }
 
   render() {
-    const {title, href} = this.props
+    const {title, to} = this.props
 
     const styleLinkMerged = {
       ...styleLink,
@@ -73,7 +73,7 @@ export default class HeaderLink extends React.Component {
 
     return (
       <Link
-        href={href}
+        to={to}
         style={styleLinkMerged}
         onMouseOver={this.handleMouseOver}
         onMouseOut={this.handleMouseOut}

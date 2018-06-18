@@ -10,53 +10,18 @@ const isProd = nodeEnv === "production"
 const basePlugins = [
   new HtmlWebpackPlugin({
     inject: false,
-    template: require('html-webpack-template'),
     title: 'NOAA OneStop',
-    favicon: '../img/noaa-favicon.ico',
+    template: require('html-webpack-template'),
     lang: 'en-US',
+    favicon: '../img/noaa-favicon.ico',
     meta: [
       {
-        property: 'description',
-        content: 'A NOAA Data Search Platform.',
-      },
-      {
-        property: 'robots',
-        content: 'index, nofollow',
-      },
-      {
         property: 'dcterms.format', content:'text/html'
-      },
-      {
-        property: 'dcterms.title', content:'NOAA OneStop'
-      },
-      {
-        property: 'og:site_name',
-        content: 'National Oceanic and Atmospheric Administration',
       },
       {
         property: 'og:type',
         content: 'website',
       },
-      {
-        property: 'og:title',
-        content: 'OneStop',
-      },
-      {
-        property: 'og:description',
-        content: 'A NOAA Data Search Platform.',
-      },
-      {
-        property: 'og:image',
-        content: 'https://data.noaa.gov/datasetsearch/img/oneStop.jpg',
-      },
-      {
-        property: 'og:image:width',
-        content: '800',
-      },
-      {
-        property: 'og:image:height',
-        content: '400',
-      }
     ]
   }),
   new webpack.optimize.CommonsChunkPlugin({

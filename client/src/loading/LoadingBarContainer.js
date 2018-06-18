@@ -1,6 +1,8 @@
 import {connect} from 'react-redux'
 import LoadingBar from './LoadingBar'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   const {loading} = state.ui
 
@@ -14,6 +16,6 @@ const mapStateToProps = state => {
   }
 }
 
-const LoadingBarContainer = connect(mapStateToProps)(LoadingBar)
+const LoadingBarContainer = withRouter(connect(mapStateToProps)(LoadingBar))
 
 export default LoadingBarContainer

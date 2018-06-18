@@ -28,7 +28,7 @@ export const layout = (state = initialState, action) => {
       return Immutable.merge(state, {
         showLeft: allowSearching,
         showAppliedFilterBubbles: allowSearching,
-        onDetailPage: onDetailPage,
+        // onDetailPage: onDetailPage,
       })
     case SET_LEFT_OPEN_CLOSE:
       return Immutable.set(state, 'leftOpen', action.value)

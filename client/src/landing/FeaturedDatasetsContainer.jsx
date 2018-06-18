@@ -4,6 +4,8 @@ import {triggerSearch, clearFacets} from '../actions/SearchRequestActions'
 import {updateQuery} from '../actions/SearchParamActions'
 import {showCollections} from '../actions/FlowActions'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   return {
     featured: state.domain.config.featured,
@@ -21,8 +23,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const FeaturedDatasetsContainer = connect(mapStateToProps, mapDispatchToProps)(
-  FeaturedDatasets
+const FeaturedDatasetsContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(FeaturedDatasets)
 )
 
 export default FeaturedDatasetsContainer
