@@ -90,8 +90,10 @@ class ListResult extends React.Component {
           <img
             style={styleImage}
             src={imgUrl}
-            alt="Result Image"
+            alt=""
             aria-hidden="true"
+            width="100px"
+            height="100px"
           />
         </div>
       )
