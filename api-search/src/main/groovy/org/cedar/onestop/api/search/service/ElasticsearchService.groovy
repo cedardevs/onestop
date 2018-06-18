@@ -23,7 +23,7 @@ class ElasticsearchService {
   @Value('${elasticsearch.index.search.granule.name}')
   private String GRANULE_SEARCH_INDEX
 
-  @Value('${elasticsearch.index.search.flattenedGranule.name}')
+  @Value('${elasticsearch.index.search.flattened-granule.name}')
   private String FLATTENED_GRANULE_SEARCH_INDEX
 
   @Value('${elasticsearch.index.universal-type}')
@@ -220,7 +220,7 @@ class ElasticsearchService {
           'Cryosphere', 'Human Dimensions', 'Land Surface', 'Oceans', 'Paleoclimate', 'Solid Earth',
           'Spectral/Engineering', 'Sun-Earth Interactions', 'Terrestrial Hydrosphere'
       ],
-      'location': [
+      'locations': [
           'Continent', 'Geographic Region', 'Ocean', 'Solid Earth', 'Space', 'Vertical Location'
       ]
   ]
