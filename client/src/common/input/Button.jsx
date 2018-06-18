@@ -179,11 +179,25 @@ export default class Button extends Component {
         aria-label={title || text}
       >
         {icon && !iconAfter && !this.props.children ? (
-          <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
+          <img
+            src={icon}
+            width="2em"
+            height="2em"
+            style={styleIconResolved}
+            aria-hidden={true}
+            alt=""
+          />
         ) : null}
         {text && !this.props.children ? <span>{text}</span> : null}
         {icon && iconAfter && !this.props.children ? (
-          <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
+          <img
+            src={icon}
+            style={styleIconResolved}
+            aria-hidden={true}
+            alt=""
+            width="2em"
+            height="2em"
+          />
         ) : null}
         {this.props.children ? <div>{this.props.children}</div> : null}
       </button>
