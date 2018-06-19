@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import moment from 'moment'
 import _ from 'lodash'
+import FlexColumn from '../../common/FlexColumn'
 import Button from '../../common/input/Button'
 import {Key} from '../../utils/keyboardUtils'
 import {
@@ -25,6 +26,10 @@ const styleInputValidity = isValid => {
 const styleTimeFilter = {
   ...FilterStyles.MEDIUM,
   ...{padding: '0.618em'},
+}
+
+const styleBreathingRoom = {
+  marginTop: '1em',
 }
 
 const styleForm = {
@@ -406,39 +411,53 @@ export default class TimeFilter extends Component {
 
     const clearButton = this.createClearButton()
 
+    const inputColumn = (
+      <FlexColumn
+        items={[
+          <div key="DateFilterInput::all" style={styleBreathingRoom}>
+            <form
+              style={styleForm}
+              onKeyDown={this.handleKeyDown}
+              aria-describedby="timeFilterInstructions"
+            >
+              {this.createDateFieldset(
+                'start',
+                this.state.startDateYear,
+                this.state.startDateMonth,
+                this.state.startDateDay,
+                this.state.startValueValid
+              )}
+              {this.createDateFieldset(
+                'end',
+                this.state.endDateYear,
+                this.state.endDateMonth,
+                this.state.endDateDay,
+                this.state.endValueValid
+              )}
+            </form>
+          </div>,
+          <div key="DateFilter::InputColumn::Buttons" style={styleButtonRow}>
+            {applyButton}
+            {clearButton}
+          </div>,
+          <div
+            key="DateFilter::InputColumn::Warning"
+            style={this.warningStyle()}
+            role="alert"
+          >
+            {this.state.warning}
+          </div>,
+        ]}
+      />
+    )
+
     return (
       <div style={styleTimeFilter}>
         <label id="timeFilterInstructions">
           Provide a start date, end date, or both. Day and month are optional.
           Future dates are not accepted.
         </label>
-        <form
-          style={styleForm}
-          onKeyDown={this.handleKeyDown}
-          aria-describedby="timeFilterInstructions"
-        >
-          {this.createDateFieldset(
-            'start',
-            this.state.startDateYear,
-            this.state.startDateMonth,
-            this.state.startDateDay,
-            this.state.startValueValid
-          )}
-          {this.createDateFieldset(
-            'end',
-            this.state.endDateYear,
-            this.state.endDateMonth,
-            this.state.endDateDay,
-            this.state.endValueValid
-          )}
-        </form>
-        <div style={styleButtonRow}>
-          {applyButton}
-          {clearButton}
-        </div>
-        <div style={this.warningStyle()} role="alert">
-          {this.state.warning}
-        </div>
+        {inputColumn}
       </div>
     )
   }
