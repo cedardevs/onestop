@@ -149,6 +149,20 @@ class Checkbox extends Component {
     }
   }
 
+  handleKeyDown = e => {
+    // prevent the default behavior for control keys
+    const controlKeys = [ Key.SPACE, Key.ENTER ]
+    if (
+      !e.metaKey &&
+      !e.shiftKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      controlKeys.includes(e.keyCode)
+    ) {
+      e.preventDefault()
+    }
+  }
+
   render() {
     const styleCheckbox = {
       ...styleCheckboxContainer,
@@ -182,6 +196,7 @@ class Checkbox extends Component {
           onBlur={this.handleBlur}
           onFocus={this.handleFocus}
           onKeyUp={this.handleKeyPressed}
+          onKeyDown={this.handleKeyDown}
         >
           <div style={styleCheck} />
         </div>
