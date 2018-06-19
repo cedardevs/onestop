@@ -106,10 +106,8 @@ export default class FacetFilter extends Component {
       <div style={styleFacetFilter}>
         <div style={styleDescription}>
           <label id="facetFilterInstructions">
-            Use up and down arrow keys to navigate keywords, left and right
-            arrow keys to open and close keywords with children, and space or
-            enter to toggle selections. Home and End keys can jump to the top
-            and bottom.
+            In each subsection, you can use arrow keys navigate keywords, and
+            space or enter to toggle selections.
           </label>
         </div>
         {expandableCategories}
