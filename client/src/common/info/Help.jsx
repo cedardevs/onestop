@@ -43,6 +43,9 @@ const styleIconImg = {
   top: '0.15em',
   maxWidth: '1.1em',
   maxHeight: '1.1em',
+
+  height: '1.1em',
+  width: '1.1em',
 }
 
 const styleTipsListItem = {
@@ -83,7 +86,13 @@ export default class Help extends React.Component {
             To get started, type a term into the Search Box on the home page and
             submit or click the Search Button
             <i style={styleIcon} aria-hidden="true">
-              <img alt="search icon" src={search} style={styleIconImg} />
+              <img
+                alt="search icon"
+                src={search}
+                style={styleIconImg}
+                width="1.1em"
+                height="1.1em"
+              />
             </i>
           </p>
 
