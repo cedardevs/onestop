@@ -140,13 +140,20 @@ module.exports = env => {
             }, {
               loader: 'css-loader',
             }],
-          }, {
-            test: /\.css$/,
-            exclude: [/node_modules/, /fonts/],
-            use: [{
-              loader: 'css-loader',
-            }],
           },{
+            test: /\.css$/,
+            include: /src/,
+            use: [{
+              loader: 'style-loader',
+              options: {
+                sourceMap: !isProd,
+              },
+            }, {
+              loader: 'css-loader',
+            }, {
+              loader: 'resolve-url-loader'
+            }],
+          }, {
             test: /\.css$/,
             include:  /fonts/,
             use: [{
