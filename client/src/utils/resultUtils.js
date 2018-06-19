@@ -46,7 +46,14 @@ export const protocols = Immutable([
   },
   {
     id: 'cloud',
-    names: [ 'cloud', 'aws:s3', 'google:gcs' ],
+    names: [
+      'cloud',
+      'aws:s3',
+      'google:gcs',
+      'google:gcp:gcs',
+      'google:gcp:bigquery',
+      'amazon:aws:s3',
+    ],
     color: '#327cac',
     label: 'Cloud File Access',
     svgPath: cloud,
