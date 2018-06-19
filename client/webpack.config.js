@@ -142,16 +142,31 @@ module.exports = env => {
             }],
           }, {
             test: /\.css$/,
-            exclude: /node_modules/,
+            include: /cssoverride/,
             use: [{
-              loader: 'style-loader',
-              options: {
-                sourceMap: !isProd,
-              },
-            }, {
               loader: 'css-loader',
-            }, {
-              loader: 'resolve-url-loader'
+
+
+            }],
+          },{
+            test: /\.css$/,
+            exclude:  [/node_modules/,/cssoverride/],
+            use: [{
+              loader: 'css-loader',
+
+options: {
+          modules: true,
+          importLoaders: true,
+          localIdentName: '[name]__[local]___[hash:base64:5]',
+          plugins: function () {
+            return [
+              require('precss'),
+              require('autoprefixer')
+            ]
+          }
+        }
+
+
             }],
           }, {
             test: /\.(jpe?g|png|gif|svg)$/,
@@ -167,20 +182,20 @@ module.exports = env => {
             ],
           }, {
             test: /\.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
-            include: /fonts/,
-            use: [{loader: 'file-loader', options: { name: '[name].[ext]' }}],
+            use: [{loader: 'file-loader?name=fonts/[name].[ext]'}]
           }],
         }
     ,
     resolve: {
       modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules',
-        path.resolve('./src/common/link')],
+        path.resolve('./src/common/link'), path.resolve('./cssoverride')],
       extensions:
           ['.js', '.jsx'],
       unsafeCache:
           !isProd,
       alias:
           {
+            'fonts': path.resolve(__dirname, 'fonts/'),
             'fa':
                 path.resolve(__dirname, 'img/font-awesome/white/svg/'),
             modernizr$:

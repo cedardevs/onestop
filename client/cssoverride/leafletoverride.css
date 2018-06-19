@@ -1,0 +1,10 @@
+
+.leaflet-bar > a:focus {
+  outline: 2px dashed green !important;
+  outline-offset: 2px;
+}
+
+.leaflet-container:focus {
+  outline: 2px dashed green !important;
+  outline-offset: 2px;
+}
