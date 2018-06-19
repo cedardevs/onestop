@@ -140,7 +140,7 @@ module.exports = env => {
             }, {
               loader: 'css-loader',
             }],
-          },{
+          }, {
             test: /\.css$/,
             include: /src/,
             use: [{
@@ -158,20 +158,9 @@ module.exports = env => {
             include:  /fonts/,
             use: [{
               loader: 'css-loader',
-
-options: {
-          modules: true,
-          importLoaders: true,
-          localIdentName: '[name]__[local]___[hash:base64:5]',
-          plugins: function () {
-            return [
-              require('precss'),
-              require('autoprefixer')
-            ]
-          }
-        }
-
-
+              options: {
+                modules: true,
+              }
             }],
           }, {
             test: /\.(jpe?g|png|gif|svg)$/,
