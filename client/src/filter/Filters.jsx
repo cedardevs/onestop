@@ -149,7 +149,7 @@ class Filters extends Component {
         key="filtersButtonHide"
         icon={arrowLeft}
         style={{borderRadius: 0}}
-        styleIcon={{width: '1em', height: 'initial'}}
+        styleIcon={{width: '1em', height: '1em'}}
         onClick={() => {
           closeLeft()
         }}
