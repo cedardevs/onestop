@@ -157,6 +157,11 @@ module.exports = env => {
             test: /\.css$/,
             include:  /fonts/,
             use: [{
+              loader: 'style-loader',
+              options: {
+                sourceMap: !isProd
+              }
+            }, {
               loader: 'css-loader',
               options: {
                 modules: true,
