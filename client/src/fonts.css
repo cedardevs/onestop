@@ -55,7 +55,8 @@
 
 @font-face {
   font-family: 'Source Sans Pro';
-  src: url('../fonts/Source_Sans_Pro/SourceSansPro-Italic.ttf') format('truetype');
+  src: url('../fonts/Source_Sans_Pro/SourceSansPro-Italic.ttf')
+    format('truetype');
   font-weight: normal;
   font-style: italic;
 }
@@ -77,7 +78,8 @@
 
 @font-face {
   font-family: 'Source Sans Pro';
-  src: url('../fonts/Source_Sans_Pro/SourceSansPro-Light.ttf') format('truetype');
+  src: url('../fonts/Source_Sans_Pro/SourceSansPro-Light.ttf')
+    format('truetype');
   font-weight: 300;
   font-style: normal;
 }
