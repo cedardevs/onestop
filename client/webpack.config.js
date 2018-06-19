@@ -142,15 +142,13 @@ module.exports = env => {
             }],
           }, {
             test: /\.css$/,
-            include: /cssoverride/,
+            exclude: [/node_modules/, /fonts/],
             use: [{
               loader: 'css-loader',
-
-
             }],
           },{
             test: /\.css$/,
-            exclude:  [/node_modules/,/cssoverride/],
+            include:  /fonts/,
             use: [{
               loader: 'css-loader',
 
@@ -188,7 +186,7 @@ options: {
     ,
     resolve: {
       modules: [path.resolve('./node_modules/leaflet/dist', 'root'), 'node_modules',
-        path.resolve('./src/common/link'), path.resolve('./cssoverride')],
+        path.resolve('./src/common/link')],
       extensions:
           ['.js', '.jsx'],
       unsafeCache:
