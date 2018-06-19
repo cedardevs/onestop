@@ -1,11 +1,16 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
+
 const path = require('path')
 require('babel-polyfill')
 const modernizrrc = path.resolve(__dirname, '.modernizrrc.json')
 require(modernizrrc)
 const nodeEnv = process.env.NODE_ENV || 'development'
 const isProd = nodeEnv === 'production'
+
+const smp = new SpeedMeasurePlugin()
 
 const basePlugins = [
   new HtmlWebpackPlugin({
@@ -75,7 +80,7 @@ const prodEntryPoints = [
 ]
 
 module.exports = env => {
-  return {
+  return smp.wrap({
     entry: isProd ? prodEntryPoints : devEntryPoints,
     output:
         {
@@ -145,6 +150,8 @@ module.exports = env => {
               },
             }, {
               loader: 'css-loader',
+            }, {
+              loader: 'resolve-url-loader'
             }],
           }, {
             test: /\.(jpe?g|png|gif|svg)$/,
@@ -160,7 +167,8 @@ module.exports = env => {
             ],
           }, {
             test: /\.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
-            use: [{loader: 'file-loader?name=fonts/[name].[ext]'}],
+            include: /fonts/,
+            use: [{loader: 'file-loader', options: { name: '[name].[ext]', useRelativePath: isProd }}],
           }],
         }
     ,
@@ -173,8 +181,6 @@ module.exports = env => {
           !isProd,
       alias:
           {
-            'fonts':
-                path.resolve(__dirname, 'fonts/'),
             'fa':
                 path.resolve(__dirname, 'img/font-awesome/white/svg/'),
             modernizr$:
@@ -183,5 +189,5 @@ module.exports = env => {
     }
     ,
     plugins: isProd ? basePlugins.concat(prodPlugins) : basePlugins.concat(devPlugins),
-  }
+  })
 }
