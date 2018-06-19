@@ -168,7 +168,7 @@ module.exports = env => {
           }, {
             test: /\.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
             include: /fonts/,
-            use: [{loader: 'file-loader', options: { name: '[name].[ext]', useRelativePath: isProd }}],
+            use: [{loader: 'file-loader', options: { name: '[name].[ext]' }}],
           }],
         }
     ,
