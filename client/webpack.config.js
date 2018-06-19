@@ -165,6 +165,14 @@ module.exports = env => {
               loader: 'css-loader',
               options: {
                 modules: true,
+                importLoaders: true,
+                localIdentName: '[name]__[local]___[hash:base64:5]',
+                plugins: function () {
+                  return [
+                    require('precss'),
+                    require('autoprefixer')
+                  ]
+                }
               }
             }],
           }, {
