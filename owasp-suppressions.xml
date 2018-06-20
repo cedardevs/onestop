@@ -9,4 +9,15 @@
     <cve>CVE-2016-6497</cve>
   </suppress>
 
+  <suppress>
+    <notes><![CDATA[
+      Has to do with a flaw in default CORS filter configuration.
+      Note that the default packaged war of this application does not contain
+      this dependency as it is designed to be deployed to an existing servlet
+      container.
+      ]]></notes>
+    <filePath regex="true">.*\btomcat-.*\.jar</filePath>
+    <cve>CVE-2018-8014</cve>
+  </suppress>
+
 </suppressions>
