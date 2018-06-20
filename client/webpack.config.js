@@ -142,39 +142,12 @@ module.exports = env => {
             }],
           }, {
             test: /\.css$/,
-            include: /src/,
+            exclude: /node_modules/,
             use: [{
               loader: 'style-loader',
-              options: {
-                sourceMap: !isProd,
-              },
+
             }, {
-              loader: 'css-loader',
-            }, {
-              loader: 'resolve-url-loader'
-            }],
-          }, {
-            test: /\.css$/,
-            include:  /fonts/,
-            use: [{
-              loader: 'style-loader',
-              options: {
-                sourceMap: !isProd
-              }
-            }, {
-              loader: 'css-loader',
-              options: {
-                modules: true,
-                importLoaders: true,
-                localIdentName: '[name]__[local]___[hash:base64:5]',
-                url: false,
-                plugins: function () {
-                  return [
-                    require('precss'),
-                    require('autoprefixer')
-                  ]
-                }
-              }
+              loader: 'css-loader', options: {url:false}
             }],
           }, {
             test: /\.(jpe?g|png|gif|svg)$/,
@@ -190,7 +163,11 @@ module.exports = env => {
             ],
           }, {
             test: /\.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
-            use: [{loader: 'file-loader?name=fonts/[name].[ext]'}]
+            use: [{loader: 'file-loader'
+              , options: {
+                name: 'fonts/[name].[ext]',
+              }
+          }]
           }],
         }
     ,
@@ -203,7 +180,6 @@ module.exports = env => {
           !isProd,
       alias:
           {
-            'fonts': path.resolve(__dirname, 'fonts/'),
             'fa':
                 path.resolve(__dirname, 'img/font-awesome/white/svg/'),
             modernizr$:
