@@ -49,6 +49,10 @@ class SPCredentialsParam {
     static String setKeyPassword(String keyPassword) {
         this.keyPassword = keyPassword
     }
+
+    static void print() {
+        println("\n\nkeyStorePath: ${keyStorePath}\nkeyStorePassword: ${keyStorePassword}\nalias: ${alias}\nkeyPassword: ${keyPassword}")
+    }
 }
 
 class SPCredentials {
