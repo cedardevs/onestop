@@ -34,9 +34,15 @@ ext {
 subprojects {
   project.ext {
     esVersion = "${project.esVersion}"
-    groovyVersion = '2.4.14'
+//    groovyVersion = '2.4.14'
     spockVersion = '1.1-groovy-2.4'
     testContainersVersion = '1.5.1'
+
+    groovyVersion = '2.5.0'
+    openSAMLVersion = '3.3.1'
+    logbackVersion = '1.2.3'
+    javaxServletAPIVersion = '4.0.1'
+    junitVersion = '4.12'
   }
 
   afterEvaluate {

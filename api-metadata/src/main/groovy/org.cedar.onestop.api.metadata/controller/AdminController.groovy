@@ -24,6 +24,11 @@ class AdminController {
     this.elasticsearchService = elasticsearchService
   }
 
+  @RequestMapping(path = '/admin/test', method = GET, produces = 'text/plain')
+  String test() {
+      return "YOU DID IT"
+  }
+
   @RequestMapping(path = '/admin/index/search/rebuild', method = [GET, PUT], produces = 'application/json')
   Map rebuildSearchIndex() {
     etlService.rebuildSearchIndicesAsync()

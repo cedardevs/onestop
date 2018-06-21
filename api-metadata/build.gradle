@@ -10,6 +10,9 @@ targetCompatibility = 1.8
 
 repositories {
   mavenCentral()
+
+  // opensaml repo
+  maven { url "https://build.shibboleth.net/nexus/content/repositories/releases" }
 }
 
 configurations {
@@ -17,6 +20,34 @@ configurations {
 }
 
 dependencies {
+    // groovy
+//    compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
+
+    // spring security
+    compile("org.springframework.boot:spring-boot-starter-security")
+
+    // opensaml
+    compile("org.opensaml:opensaml-core:${project.openSAMLVersion}")
+    compile("org.opensaml:opensaml-saml-api:${project.openSAMLVersion}")
+    compile("org.opensaml:opensaml-saml-impl:${project.openSAMLVersion}")
+    compile("org.opensaml:opensaml-messaging-api:${project.openSAMLVersion}")
+    compile("org.opensaml:opensaml-messaging-impl:${project.openSAMLVersion}")
+    compile("org.opensaml:opensaml-soap-api:${project.openSAMLVersion}")
+    compile("org.opensaml:opensaml-soap-impl:${project.openSAMLVersion}")
+
+    // logback
+    compile("ch.qos.logback:logback-core:${project.logbackVersion}")
+    compile("ch.qos.logback:logback-classic:${project.logbackVersion}")
+
+    // javax servlet
+    compile("javax.servlet:javax.servlet-api:${project.javaxServletAPIVersion}")
+
+    // junit
+    testCompile("junit:junit:${project.junitVersion}")
+  testCompile("org.springframework.security:spring-security-test")
+
+
+
   compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
@@ -57,8 +88,12 @@ bootWar {
 }
 
 bootRun {
-  dependsOn ':dockerComposeInfraStart'
-  finalizedBy ':dockerComposeInfraStop'
+//  dependsOn ':dockerComposeInfraStart'
+//  finalizedBy ':dockerComposeInfraStop'
+
+
+    environment = ["AUTHETNICATION_KEY_STORE": "/Users/elliott/sciapps/jks/sciapps.colorado.edu.jks" ]
+
 }
 
 sourceSets {
