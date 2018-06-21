@@ -6,6 +6,8 @@ import {
 } from '../../actions/SearchRequestActions'
 import Collections from './Collections'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   const {collections, totalCollections, pageSize} = state.domain.results
   return {
@@ -29,8 +31,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const CollectionsContainer = connect(mapStateToProps, mapDispatchToProps)(
-  Collections
+const CollectionsContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(Collections)
 )
 
 export default CollectionsContainer

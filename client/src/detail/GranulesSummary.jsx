@@ -10,6 +10,20 @@ const styleGranuleSummary = {
 const styleLink = {
   textDecoration: 'underline',
   color: SiteColors.LINK,
+  fontSize: '1em',
+  background: 'transparent',
+  padding: '0',
+  outline: 'none',
+}
+
+const styleLinkFocus = {
+  outline: '2px dashed #5C87AC',
+  outlineOffset: '.3em',
+  background: 'transparent',
+}
+
+const styleLinkHover = {
+  background: 'transparent',
 }
 
 export default class GranulesSummary extends React.Component {
@@ -24,9 +38,14 @@ export default class GranulesSummary extends React.Component {
 
     const granulesSummary = (
       <div style={styleGranuleSummary}>
-        <a style={styleLink} onClick={navigateToGranules}>
+        <Button
+          style={styleLink}
+          styleHover={styleLinkHover}
+          styleFocus={styleLinkFocus}
+          onClick={navigateToGranules}
+        >
           {linkText}
-        </a>
+        </Button>
       </div>
     )
 

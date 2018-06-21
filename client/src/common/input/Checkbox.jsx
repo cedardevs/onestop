@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {Key} from '../../utils/keyboardUtils'
 
 const styleContainer = {
   display: 'flex',
@@ -64,21 +65,25 @@ class Checkbox extends Component {
     }
   }
 
-  handleChange = event => {
-    if (this.props.disabled) {
-      return
-    }
+  toggle = () => {
     const {value, onChange} = this.props
     if (onChange) {
       onChange({checked: !this.state.checked, value: value})
     }
-    // prevent parent click from propagating (only fire onClick of checkbox (not parent component onClicks too)
-    event.stopPropagation()
     this.setState(prevState => ({
       checked: !prevState.checked,
       hovering: prevState.hovering,
       pressing: false,
     }))
+  }
+
+  handleChange = event => {
+    if (this.props.disabled) {
+      return
+    }
+    // prevent parent click from propagating (only fire onClick of checkbox (not parent component onClicks too)
+    event.stopPropagation()
+    this.toggle()
   }
 
   handleMouseOver = event => {
@@ -132,6 +137,32 @@ class Checkbox extends Component {
     })
   }
 
+  handleKeyPressed = e => {
+    if (e.keyCode === Key.SPACE) {
+      e.preventDefault() // prevent scrolling down on space press
+      e.stopPropagation()
+      this.toggle()
+    }
+    if (e.keyCode === Key.ENTER) {
+      e.stopPropagation()
+      this.toggle()
+    }
+  }
+
+  handleKeyDown = e => {
+    // prevent the default behavior for control keys
+    const controlKeys = [ Key.SPACE, Key.ENTER ]
+    if (
+      !e.metaKey &&
+      !e.shiftKey &&
+      !e.ctrlKey &&
+      !e.altKey &&
+      controlKeys.includes(e.keyCode)
+    ) {
+      e.preventDefault()
+    }
+  }
+
   render() {
     const styleCheckbox = {
       ...styleCheckboxContainer,
@@ -164,6 +195,8 @@ class Checkbox extends Component {
           onMouseDown={this.handleMouseDown}
           onBlur={this.handleBlur}
           onFocus={this.handleFocus}
+          onKeyUp={this.handleKeyPressed}
+          onKeyDown={this.handleKeyDown}
         >
           <div style={styleCheck} />
         </div>

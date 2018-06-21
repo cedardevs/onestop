@@ -137,7 +137,7 @@ class TextSearchField extends React.Component {
   }
 
   render() {
-    const {onClear, warning} = this.props
+    const {onClear, warningPopup, instructionalCopy} = this.props
 
     const styleSearchFieldMerged = {
       ...styleSearchField,
@@ -157,22 +157,22 @@ class TextSearchField extends React.Component {
 
     const styleSvgIcon = {
       outline: this.state.focusingClear ? '2px dashed #777' : 'none',
+      fill: this.state.focusingClear ? '#2c71a2' : '#777',
     }
-    const svgFillColor = this.state.focusingClear ? '#2c71a2' : '#777'
 
     return (
       <div style={styleSearchFieldMerged}>
-        {warning}
+        {warningPopup}
 
         <input
           style={styleTextFieldMerged}
-          placeholder="Enter any term here to search NCEI data"
+          placeholder={instructionalCopy}
+          title={instructionalCopy}
           onKeyDown={this.handleKeyDown}
           onChange={this.handleChange}
           onFocus={this.handleTextFocus}
           onBlur={this.handleTextBlur}
           value={this.state.value}
-          aria-label="Search Text"
           ref={input => {
             this.searchInput = input
           }}
@@ -186,11 +186,7 @@ class TextSearchField extends React.Component {
           onBlur={this.handleClearBlur}
           aria-label="Clear Search Text"
         >
-          <SvgIcon
-            size="2em"
-            style={styleSvgIcon}
-            path={times_circle(svgFillColor)}
-          />
+          <SvgIcon size="2em" style={styleSvgIcon} path={times_circle} />
         </button>
       </div>
     )

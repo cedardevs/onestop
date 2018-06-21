@@ -33,6 +33,8 @@ export default class FilterHeading extends Component {
       <div style={{...styleContainer, ...this.props.style}}>
         <div style={styleIcon} aria-hidden="true">
           <img
+            width="2em"
+            height="2em"
             style={styleIconImage}
             src={this.props.icon}
             alt={`${this.props.text} Icon`}

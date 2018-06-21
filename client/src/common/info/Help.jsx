@@ -2,6 +2,7 @@ import React from 'react'
 import search from 'fa/search.svg'
 import A from '../../common/link/Link'
 import {fontFamilySerif, fontFamilyMonospace} from '../../utils/styleUtils'
+import Meta from '../../helmet/Meta'
 
 const styleWrapper = {
   width: '100%',
@@ -42,6 +43,9 @@ const styleIconImg = {
   top: '0.15em',
   maxWidth: '1.1em',
   maxHeight: '1.1em',
+
+  height: '1.1em',
+  width: '1.1em',
 }
 
 const styleTipsListItem = {
@@ -75,13 +79,20 @@ export default class Help extends React.Component {
   render() {
     return (
       <div style={styleWrapper}>
+        <Meta title="Help for NOAA OneStop" />
         <section style={styleHelp}>
           <h1 style={styleHelpH1}>How to use this interface:</h1>
           <p>
             To get started, type a term into the Search Box on the home page and
             submit or click the Search Button
             <i style={styleIcon} aria-hidden="true">
-              <img alt="search icon" src={search} style={styleIconImg} />
+              <img
+                alt="search icon"
+                src={search}
+                style={styleIconImg}
+                width="1.1em"
+                height="1.1em"
+              />
             </i>
           </p>
 
@@ -172,7 +183,8 @@ export default class Help extends React.Component {
 
           <hr style={styleHR} />
 
-          <h2 style={styleHelpH2}>
+          <h2 style={styleHelpH2}>More Information</h2>
+          <p>
             Find more information about interacting directly with the{' '}
             <A
               target="_blank"
@@ -181,7 +193,7 @@ export default class Help extends React.Component {
             >
               OneStop API
             </A>.
-          </h2>
+          </p>
         </section>
       </div>
     )

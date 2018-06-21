@@ -88,7 +88,7 @@ class Filters extends Component {
       },
       {
         name: 'time',
-        heading: <FilterHeading icon={timeFilterIcon} text="Time" />,
+        heading: <FilterHeading icon={timeFilterIcon} text="Date" />,
         content: <TimeFilterContainer />,
       },
       {
@@ -149,7 +149,7 @@ class Filters extends Component {
         key="filtersButtonHide"
         icon={arrowLeft}
         style={{borderRadius: 0}}
-        styleIcon={{width: '1em', height: 'initial'}}
+        styleIcon={{width: '1em', height: '1em'}}
         onClick={() => {
           closeLeft()
         }}

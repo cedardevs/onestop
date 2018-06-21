@@ -1,5 +1,5 @@
 import React from 'react'
-import styles from './LoadingBar.css'
+import './LoadingBar.css'
 
 import defaultStyles from '../common/defaultStyles'
 
@@ -25,7 +25,6 @@ export class LoadingBar extends React.Component {
 
   render() {
     const {loading, loadingText, style} = this.props
-
     return (
       <div style={style}>
         <div
@@ -35,7 +34,7 @@ export class LoadingBar extends React.Component {
         >
           <div id={this.props.loadingAlertId}>{this.state.loadingText}</div>
         </div>
-        <div className={loading ? styles.loadingContainer : null} />
+        <div className={loading ? 'loadingContainer' : null} />
       </div>
     )
   }

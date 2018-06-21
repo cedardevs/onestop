@@ -13,7 +13,7 @@ import {
 } from '../common/SvgIcon'
 
 const styleStar = {
-  fill: 'goldenrod',
+  // default to text color for stars
 }
 
 const styleMissingDSMM = {
@@ -132,6 +132,7 @@ class DSMMRating extends Component {
 
     const infoButton = (
       <button
+        key="dsmm-info-button"
         aria-label="DSMM info"
         style={styleInfoButtonMerged}
         aria-expanded={this.state.showInfo}
@@ -155,7 +156,7 @@ class DSMMRating extends Component {
         content={
           <div style={styleExpandableInfoContent}>
             <p>The average DSMM rating of this collection is {dsmmDesc}.</p>
-            <p>
+            <div>
               The{' '}
               <A
                 href="http://doi.org/10.2481/dsj.14-049"
@@ -177,7 +178,7 @@ class DSMMRating extends Component {
                 <li>Transparency Traceability</li>
                 <li>Usability</li>
               </ul>
-            </p>
+            </div>
           </div>
         }
       />
@@ -186,10 +187,11 @@ class DSMMRating extends Component {
     return (
       <div>
         <FlexRow
-          key="dsmm-stars"
           style={{marginBottom: '0.618em'}}
           items={[
-            <div title={`${dsmmDesc} DSMM rating`}>{stars}</div>,
+            <div key="dsmm-stars" title={`${dsmmDesc} DSMM rating`}>
+              {stars}
+            </div>,
             infoButton,
           ]}
         />

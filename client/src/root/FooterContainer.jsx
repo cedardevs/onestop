@@ -1,6 +1,8 @@
 import {connect} from 'react-redux'
 import Footer from './Footer'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   return {
     version: state.domain.info.version,
@@ -11,6 +13,8 @@ const mapDispatchToProps = dispatch => {
   return {}
 }
 
-const FooterContainer = connect(mapStateToProps, mapDispatchToProps)(Footer)
+const FooterContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(Footer)
+)
 
 export default FooterContainer
