@@ -4,8 +4,17 @@ server:
     context-path: /onestop/api
 
 spring:
+  h2.console.enabled: true
   application:
     name: onestop-metadata-api
+    datasource:
+      url: jdbc:h2:mem:testSchema
+      driverClassName: org.h2.Driver
+      username: sa
+      password:
+  jpa:
+    hibernate.ddl-auto: none
+    database-platform: org.hibernate.dialect.H2Dialect
 
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true

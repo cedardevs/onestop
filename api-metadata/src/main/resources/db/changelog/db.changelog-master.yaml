@@ -1,0 +1,40 @@
+databaseChangeLog:
+- changeSet:
+    id: bnguyen001
+    author: bnguyen
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+            name: user_id
+            type: BIGINT
+        - column:
+            name: username
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: password
+            type: VARCHAR(255)
+        tableName: user
+- changeSet:
+    id: bnguyen002
+    author: bnguyen
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+            name: role_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: role
+            type: VARCHAR(255)
+        tableName: role
