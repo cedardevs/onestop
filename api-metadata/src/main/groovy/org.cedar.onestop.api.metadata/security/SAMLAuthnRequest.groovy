@@ -1,0 +1,98 @@
+package org.cedar.onestop.api.metadata.security
+
+import org.joda.time.DateTime
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport
+import org.opensaml.core.xml.io.MarshallingException
+import org.opensaml.saml.common.SAMLVersion
+import org.opensaml.saml.saml2.core.AuthnContextClassRef
+import org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration
+import org.opensaml.saml.saml2.core.AuthnRequest
+import org.opensaml.saml.saml2.core.Issuer
+import org.opensaml.saml.saml2.core.NameIDPolicy
+import org.opensaml.saml.saml2.core.RequestedAuthnContext
+import org.opensaml.security.credential.Credential
+import org.opensaml.xmlsec.signature.Signature
+import org.opensaml.xmlsec.signature.support.SignatureConstants
+import org.opensaml.xmlsec.signature.support.SignatureException
+import org.opensaml.xmlsec.signature.support.Signer
+
+class SAMLAuthnRequest {
+
+    static AuthnRequest buildRequest(IdentityProvider identityProvider, Credential credential) {
+        AuthnRequest authnRequest = SAMLUtil.buildSAMLObject(AuthnRequest.class)
+        authnRequest.setIssueInstant(new DateTime())
+        authnRequest.setVersion(SAMLVersion.VERSION_20)
+        authnRequest.setDestination(identityProvider.getLoginEndpoint())
+        authnRequest.setProtocolBinding(identityProvider.getLoginBinding())
+        authnRequest.setAssertionConsumerServiceURL(identityProvider.assertionConsumerServiceURL)
+        authnRequest.setID(SAMLUtil.generateSecureRandomId())
+        authnRequest.setNameIDPolicy(buildNameIdPolicy(identityProvider))
+        authnRequest.setRequestedAuthnContext(buildRequestedAuthnContext(identityProvider))
+        authnRequest.setIssuer(buildIssuer(identityProvider))
+
+        if(identityProvider.getForceAuthn() != null) {
+            // should IDP force user to re-auth?
+            authnRequest.setForceAuthn(identityProvider.getForceAuthn())
+        }
+
+        if(identityProvider.getIsPassive() != null) {
+            // should IDP refrain rom interacting w/user during auth
+            authnRequest.setIsPassive(identityProvider.getIsPassive())
+        }
+
+        // sign login request
+        Signature signature = buildSignature(identityProvider, credential)
+
+        authnRequest.setSignature(signature)
+
+        try {
+            XMLObjectProviderRegistrySupport.getMarshallerFactory().getMarshaller(authnRequest).marshall(authnRequest)
+        }
+        catch (MarshallingException e) {
+            e.printStackTrace()
+        }
+
+        try {
+            Signer.signObject(signature)
+        }
+        catch (SignatureException e) {
+            e.printStackTrace()
+        }
+
+        return authnRequest
+    }
+
+    private static Signature buildSignature(IdentityProvider identityProvider, Credential credential) {
+
+        Signature signature = SAMLUtil.buildSAMLObject(Signature.class)
+        signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS)
+        signature.setSignatureAlgorithm(identityProvider.getSignatureAlgorithm())
+        signature.setSigningCredential(credential)
+
+        return signature
+    }
+
+    private static NameIDPolicy buildNameIdPolicy(IdentityProvider identityProvider) {
+        NameIDPolicy nameIDPolicy = SAMLUtil.buildSAMLObject(NameIDPolicy.class)
+        nameIDPolicy.setAllowCreate(true) // allow IDP, in fulfillment, to create new id to represent principal... TODO: should we?
+        nameIDPolicy.setFormat(identityProvider.getNameIDPolicyFormat())
+        return nameIDPolicy
+    }
+
+    private static RequestedAuthnContext buildRequestedAuthnContext(IdentityProvider identityProvider) {
+        RequestedAuthnContext requestedAuthnContext = SAMLUtil.buildSAMLObject(RequestedAuthnContext.class)
+        requestedAuthnContext.setComparison(AuthnContextComparisonTypeEnumeration.MINIMUM)
+        identityProvider.getAuthnContextRefs().each {
+            AuthnContextClassRef authnContextClassRef = SAMLUtil.buildSAMLObject(AuthnContextClassRef.class)
+            authnContextClassRef.setAuthnContextClassRef(it)
+            requestedAuthnContext.getAuthnContextClassRefs().add(authnContextClassRef)
+        }
+        return requestedAuthnContext
+    }
+
+    private static Issuer buildIssuer(IdentityProvider identityProvider) {
+        Issuer issuer = SAMLUtil.buildSAMLObject(Issuer.class)
+        issuer.setValue(identityProvider.getIssuerSP())
+    }
+
+}

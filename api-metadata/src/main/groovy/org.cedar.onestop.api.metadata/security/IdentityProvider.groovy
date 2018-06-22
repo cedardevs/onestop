@@ -1,6 +1,9 @@
 package org.cedar.onestop.api.metadata.security
 
 import org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration
+import org.opensaml.saml.saml2.metadata.Endpoint
+import org.opensaml.saml.saml2.metadata.SingleLogoutService
+import org.opensaml.saml.saml2.metadata.SingleSignOnService
 
 class IdentityProvider {
     String name
@@ -20,4 +23,20 @@ class IdentityProvider {
     String signatureAlgorithm
     String signatureCanonicalizationAlgorithm
     String digestAlgorithm
+
+
+    Endpoint buildLoginEndpoint() {
+        SingleSignOnService endpoint = SAMLUtil.buildSAMLObject(SingleSignOnService.class)
+        endpoint.setBinding(loginBinding)
+        endpoint.setLocation(loginEndpoint)
+        return endpoint
+    }
+
+    Endpoint buildLogoutEndpoint() {
+        SingleLogoutService endpoint = SAMLUtil.buildSAMLObject(SingleLogoutService.class)
+        endpoint.setBinding(logoutBinding)
+        endpoint.setLocation(logoutEndpoint)
+        return endpoint
+    }
+
 }
