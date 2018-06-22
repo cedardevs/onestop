@@ -21,7 +21,7 @@ class SecurityFilter extends GenericFilterBean {
 
     // create instance of SAMLFilter to be wrapped by this Spring aware filter bean
     // provide an identity provider for which this filter will authenticate against
-    private SAMLFilter samlFilter = new SAMLFilter(IdentityProviderEnumeration.LOGIN_GOV_LOCAL.getValue())
+    private SAMLFilter samlFilter = new SAMLFilter(IdentityProviderEnumeration.ICAM_NOAA_LOCAL.getValue())
 
     @Override
     protected void initFilterBean() throws ServletException {
