@@ -3,6 +3,7 @@ package org.cedar.onestop.api.metadata.security
 import org.opensaml.security.credential.Credential
 import org.opensaml.security.x509.BasicX509Credential
 
+import javax.xml.bind.DatatypeConverter
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -16,6 +17,8 @@ class CredentialUtil {
     static String keyStorePassword
     static String alias
     static String keyPassword
+
+    static String x509Certificate
 
     static void print() {
         println("\n" +
@@ -32,7 +35,10 @@ class CredentialUtil {
         KeyStore.PrivateKeyEntry privateKeyEntry = (KeyStore.PrivateKeyEntry) keyStore.getEntry(alias, protectionParameter)
         PrivateKey privateKey = privateKeyEntry.getPrivateKey()
         X509Certificate cert = (X509Certificate) privateKeyEntry.getCertificate()
-        privateKeyEntry.getCertificate()
+
+        // save for later so that we can add the proper encoded public x509 cert into AuthnRequest's KeyInfo section
+        x509Certificate = DatatypeConverter.printBase64Binary(cert.getEncoded())
+
         BasicX509Credential credential = new BasicX509Credential(cert, privateKey)
         return credential
     }

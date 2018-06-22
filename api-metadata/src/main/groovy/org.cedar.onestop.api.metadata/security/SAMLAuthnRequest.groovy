@@ -11,7 +11,10 @@ import org.opensaml.saml.saml2.core.Issuer
 import org.opensaml.saml.saml2.core.NameIDPolicy
 import org.opensaml.saml.saml2.core.RequestedAuthnContext
 import org.opensaml.security.credential.Credential
+import org.opensaml.xmlsec.signature.KeyInfo
 import org.opensaml.xmlsec.signature.Signature
+import org.opensaml.xmlsec.signature.X509Certificate
+import org.opensaml.xmlsec.signature.X509Data
 import org.opensaml.xmlsec.signature.support.SignatureConstants
 import org.opensaml.xmlsec.signature.support.SignatureException
 import org.opensaml.xmlsec.signature.support.Signer
@@ -68,8 +71,21 @@ class SAMLAuthnRequest {
         signature.setCanonicalizationAlgorithm(SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS)
         signature.setSignatureAlgorithm(identityProvider.getSignatureAlgorithm())
         signature.setSigningCredential(credential)
+        signature.setKeyInfo(buildKeyInfo())
 
         return signature
+    }
+
+    private static KeyInfo buildKeyInfo() {
+        KeyInfo keyInfo = SAMLUtil.buildSAMLObject(KeyInfo.class)
+        X509Data data = (X509Data) SAMLUtil.buildSAMLObject(X509Data.class)
+        X509Certificate cert = (X509Certificate) SAMLUtil.buildSAMLObject(X509Certificate.class)
+        // x509 certificate was saved as string when credential was built earlier
+        // extracting the cert directly from the credential never seems to get same exact value...
+        cert.setValue(CredentialUtil.x509Certificate)
+        data.getX509Certificates().add(cert)
+        keyInfo.getX509Datas().add(data)
+        return keyInfo
     }
 
     private static NameIDPolicy buildNameIdPolicy(IdentityProvider identityProvider) {
