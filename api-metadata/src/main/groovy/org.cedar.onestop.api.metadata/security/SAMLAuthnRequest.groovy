@@ -9,6 +9,7 @@ import org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration
 import org.opensaml.saml.saml2.core.AuthnRequest
 import org.opensaml.saml.saml2.core.Issuer
 import org.opensaml.saml.saml2.core.NameIDPolicy
+import org.opensaml.saml.saml2.core.NameIDType
 import org.opensaml.saml.saml2.core.RequestedAuthnContext
 import org.opensaml.security.credential.Credential
 import org.opensaml.xmlsec.signature.KeyInfo
@@ -109,6 +110,8 @@ class SAMLAuthnRequest {
     private static Issuer buildIssuer(IdentityProvider identityProvider) {
         Issuer issuer = SAMLUtil.buildSAMLObject(Issuer.class)
         issuer.setValue(identityProvider.getIssuerSP())
+        issuer.setFormat(NameIDType.ENTITY)
+        return issuer
     }
 
 }

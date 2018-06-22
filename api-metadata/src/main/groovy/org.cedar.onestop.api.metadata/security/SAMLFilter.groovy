@@ -1,13 +1,20 @@
 package org.cedar.onestop.api.metadata.security
 
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException
-
+import org.apache.velocity.app.VelocityEngine
+import org.apache.velocity.runtime.RuntimeConstants
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader
 import org.opensaml.core.config.InitializationException
 import org.opensaml.core.config.InitializationService
 import org.opensaml.messaging.context.MessageContext
 import org.opensaml.messaging.encoder.MessageEncodingException
 import org.opensaml.saml.common.messaging.context.SAMLEndpointContext
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext
+import org.opensaml.saml.common.xml.SAMLConstants
+import org.opensaml.saml.saml2.binding.encoding.impl.BaseSAML2MessageEncoder
+import org.opensaml.saml.saml2.binding.encoding.impl.HTTPArtifactEncoder
+import org.opensaml.saml.saml2.binding.encoding.impl.HTTPPostEncoder
+import org.opensaml.saml.saml2.binding.encoding.impl.HTTPPostSimpleSignEncoder
 import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder
 import org.opensaml.saml.saml2.core.*
 import org.opensaml.security.credential.Credential
@@ -91,6 +98,15 @@ class SAMLFilter implements Filter {
         redirectUserWithRequest(httpServletResponse, authnRequest, credential)
     }
 
+    private static VelocityEngine buildVelocityEngine() {
+        VelocityEngine velocityEngine = new VelocityEngine()
+        velocityEngine.setProperty(RuntimeConstants.ENCODING_DEFAULT, "UTF-8")
+        velocityEngine.setProperty(RuntimeConstants.OUTPUT_ENCODING, "UTF-8")
+        velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath")
+        velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName())
+        velocityEngine.init()
+    }
+
     private void redirectUserWithRequest(HttpServletResponse httpServletResponse, AuthnRequest authnRequest, Credential credential) {
 
         MessageContext context = new MessageContext()
@@ -110,26 +126,41 @@ class SAMLFilter implements Filter {
 
         context.getSubcontext(SecurityParametersContext.class, true).setSignatureSigningParameters(signatureSigningParameters)
 
-        HTTPRedirectDeflateEncoder encoder = new HTTPRedirectDeflateEncoder()
+        // depending on the login binding, use different kind of encoder
+        BaseSAML2MessageEncoder encoder
 
-//        VelocityEngine velocityEngine = new VelocityEngine()
-//        velocityEngine.setProperty(RuntimeConstants.ENCODING_DEFAULT, "UTF-8")
-//        velocityEngine.setProperty(RuntimeConstants.OUTPUT_ENCODING, "UTF-8")
-//        velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath")
-//        velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName())
-//        velocityEngine.init()
+        // post login binding
+        if(identityProvider.loginBinding == SAMLConstants.SAML2_POST_BINDING_URI) {
+            logger.info("using POST login binding")
+            encoder = new HTTPPostEncoder()
+            encoder.setVelocityTemplateId("/templates/saml2-post-binding.vm")
+            VelocityEngine velocityEngine = buildVelocityEngine()
+            encoder.setVelocityEngine(velocityEngine)
+        }
+        // artifiact login binding
+        else if(identityProvider.loginBinding == SAMLConstants.SAML2_ARTIFACT_BINDING_URI) {
+            logger.info("using ARTIFACT login binding")
+            encoder = new HTTPArtifactEncoder()
+            encoder.setVelocityTemplateId("/tempaltes/saml2-post-artifact-binding.vm")
+            VelocityEngine velocityEngine = buildVelocityEngine()
+            encoder.setVelocityEngine(velocityEngine)
+        }
+        // simple sign login binding
+        else if(identityProvider.loginBinding == SAMLConstants.SAML2_POST_SIMPLE_SIGN_BINDING_URI) {
+            logger.info("using SIMPLE SIGN login binding")
+            encoder = new HTTPPostSimpleSignEncoder()
+            encoder.setVelocityTemplateId("/templates/saml2-post-simplesign-binding.vm")
+            VelocityEngine velocityEngine = buildVelocityEngine()
+            encoder.setVelocityEngine(velocityEngine)
+        }
+        // otherwise, assume we are using a redirect login binding
+        else {
+            logger.info("using REDIRECT login binding")
+            encoder = new HTTPRedirectDeflateEncoder()
+        }
 
-//        HTTPPostSimpleSignEncoder encoder = new HTTPPostSimpleSignEncoder()
-//        HTTPPostEncoder encoder = new HTTPPostEncoder()
-//        encoder.setVelocityTemplateId("/templates/saml2-post-binding.vm")
-//        encoder.setVelocityTemplateId("/templates/saml2-post-simplesign-binding.vm")
-//        encoder.setVelocityEngine(velocityEngine)
-
-//        println("context: ${context.toString()}")
         encoder.setMessageContext(context)
         encoder.setHttpServletResponse(httpServletResponse)
-//        println("encoder.getBindingURI: ${encoder.getBindingURI()}")
-//        println("encoder.getProperties(): ${encoder.getProperties().toString()}")
 
         try {
             encoder.initialize()
