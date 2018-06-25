@@ -6,6 +6,10 @@ server:
 spring:
   application:
     name: onestop-metadata-api
+  servlet:
+    multipart:
+      max-file-size: -1
+      max-request-size: -1
 
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
