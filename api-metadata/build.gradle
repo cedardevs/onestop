@@ -56,11 +56,6 @@ bootWar {
   onlyIf { !tasks.getByName('war').state.upToDate }
 }
 
-bootRun {
-  dependsOn ':dockerComposeInfraStart'
-  finalizedBy ':dockerComposeInfraStop'
-}
-
 sourceSets {
   integrationTest {
     groovy.srcDir file('src/integrationTest/groovy')
