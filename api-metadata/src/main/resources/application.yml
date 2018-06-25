@@ -14,6 +14,8 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
+features.secure.upload: true
+
 logging:
   level:
       org.cedar.onestop.api.search: INFO

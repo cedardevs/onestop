@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Value
 
 import javax.servlet.http.HttpServletResponse
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+
 @Slf4j
+@ConditionalOnProperty("features.secure.upload")
 @Controller
 class UploadController {
-
 
   @GetMapping('/upload.html')
   String upload(HttpServletResponse response) {
