@@ -38,3 +38,29 @@ databaseChangeLog:
             name: role
             type: VARCHAR(255)
         tableName: role
+- changeSet:
+    id: bnguyen003
+    author: bnguyen
+    changes:
+    - sqlFile:
+        relativeToChangelogFile: true
+        dbms: mysql
+        encoding: utf8
+        endDelimiter: ;
+        path: ../sql_files/seed_roles.sql
+        relativeToChangelogFile: true
+        splitStatements: true
+        stripComments: true
+- changeSet:
+    id: bnguyen004
+    author: bnguyen
+    changes:
+    - sqlFile:
+        relativeToChangelogFile: true
+        dbms: mysql
+        encoding: utf8
+        endDelimiter: ;
+        path: ../sql_files/seed_users.sql
+        relativeToChangelogFile: true
+        splitStatements: true
+        stripComments: true
