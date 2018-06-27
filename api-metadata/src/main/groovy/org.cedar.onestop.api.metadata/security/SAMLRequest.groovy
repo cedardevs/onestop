@@ -8,9 +8,11 @@ import org.opensaml.saml.saml2.core.AuthnContextClassRef
 import org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration
 import org.opensaml.saml.saml2.core.AuthnRequest
 import org.opensaml.saml.saml2.core.Issuer
+import org.opensaml.saml.saml2.core.LogoutRequest
 import org.opensaml.saml.saml2.core.NameIDPolicy
 import org.opensaml.saml.saml2.core.NameIDType
 import org.opensaml.saml.saml2.core.RequestedAuthnContext
+import org.opensaml.saml.saml2.core.impl.LogoutRequestBuilder
 import org.opensaml.security.credential.Credential
 import org.opensaml.xmlsec.signature.KeyInfo
 import org.opensaml.xmlsec.signature.Signature
@@ -20,9 +22,9 @@ import org.opensaml.xmlsec.signature.support.SignatureConstants
 import org.opensaml.xmlsec.signature.support.SignatureException
 import org.opensaml.xmlsec.signature.support.Signer
 
-class SAMLAuthnRequest {
+class SAMLRequest {
 
-    static AuthnRequest buildRequest(IdentityProvider identityProvider, Credential credential) {
+    static AuthnRequest buildAuthnRequest(IdentityProvider identityProvider, Credential credential) {
         AuthnRequest authnRequest = SAMLUtil.buildSAMLObject(AuthnRequest.class)
         authnRequest.setIssueInstant(new DateTime())
         authnRequest.setVersion(SAMLVersion.VERSION_20)
@@ -64,6 +66,29 @@ class SAMLAuthnRequest {
         }
 
         return authnRequest
+    }
+
+
+    static LogoutRequest buildLogoutRequest(IdentityProvider identityProvider, String keyStoreConfig) {
+
+        LogoutRequestBuilder logout_request_builder = new LogoutRequestBuilder()
+        LogoutRequest logoutRequest = logout_request_builder.buildObject(LogoutRequest.DEFAULT_ELEMENT_NAME)
+        logoutRequest.setID(identityProvider.getName() + "_" + UUID.randomUUID().toString())
+        logoutRequest.setDestination(identityProvider.getLogoutEndpoint())
+        logoutRequest.setIssueInstant(new DateTime())
+        logoutRequest.setVersion(SAMLVersion.VERSION_20)
+        logoutRequest.setIssuer(buildIssuer(identityProvider))
+        logoutRequest.setNameID(buildNameID(identityProvider))
+
+        // sign logout request
+//        Signature signature = buildSignature(keyStoreConfig)
+//
+//        logoutRequest.setSignature(signature)
+//        LogoutRequestMarshaller marshaller = new LogoutRequestMarshaller()
+//        marshaller.marshall(logoutRequest)
+//        Signer.signObject(signature)
+
+        return logoutRequest
     }
 
     private static Signature buildSignature(IdentityProvider identityProvider, Credential credential) {

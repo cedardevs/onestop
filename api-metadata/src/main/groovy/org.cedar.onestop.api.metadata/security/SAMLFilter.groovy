@@ -33,7 +33,7 @@ class SAMLFilter implements Filter {
 
     private static Logger logger = LoggerFactory.getLogger(SAMLFilter.class)
 
-    private IdentityProvider identityProvider
+    IdentityProvider identityProvider
 
     SAMLFilter(IdentityProvider identityProvider) {
         this.identityProvider = identityProvider
@@ -69,6 +69,8 @@ class SAMLFilter implements Filter {
     @Override
     void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
+        logger.info("SAMLFilter:::doFilter")
+
         // cast to provide request information for HTTP servlets
         HttpServletRequest httpServletRequest = (HttpServletRequest)request
 
@@ -77,21 +79,32 @@ class SAMLFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse)response
 
         if (httpServletRequest.getSession().getAttribute(SPConstants.AUTHENTICATED_SESSION_ATTRIBUTE) != null) {
+
+            logger.info("SAMLFilter:::[condition] httpServletRequest.getSession().getAttribute(SPConstants.AUTHENTICATED_SESSION_ATTRIBUTE) != null")
+
             chain.doFilter(request, response)
         }
         else {
+
+            logger.info("SAMLFilter:::[condition] ELSE")
+
             setGotoURLOnSession(httpServletRequest)
             redirectUserForAuthentication(httpServletResponse)
         }
     }
 
     private static void setGotoURLOnSession(HttpServletRequest request) {
+        logger.info("SAMLFilter:::setGotoURLOnSession")
+        logger.info("SAMLFilter:::[expression] request.getRequestURL().toString() = ${request.getRequestURL().toString()}")
+
         request.getSession().setAttribute(SPConstants.GOTO_URL_SESSION_ATTRIBUTE, request.getRequestURL().toString())
     }
 
     private void redirectUserForAuthentication(HttpServletResponse httpServletResponse) {
+        logger.info("SAMLFilter:::redirectUserForAuthentication")
+
         Credential credential = CredentialUtil.buildCredential()
-        AuthnRequest authnRequest = SAMLAuthnRequest.buildRequest(identityProvider, credential)
+        AuthnRequest authnRequest = SAMLRequest.buildAuthnRequest(identityProvider, credential)
 
         SAMLUtil.logSAMLObject(authnRequest)
 
@@ -108,6 +121,8 @@ class SAMLFilter implements Filter {
     }
 
     private void redirectUserWithRequest(HttpServletResponse httpServletResponse, AuthnRequest authnRequest, Credential credential) {
+
+        logger.info("SAMLFilter:::redirectUserWithRequest")
 
         MessageContext context = new MessageContext()
 
@@ -137,11 +152,11 @@ class SAMLFilter implements Filter {
             VelocityEngine velocityEngine = buildVelocityEngine()
             encoder.setVelocityEngine(velocityEngine)
         }
-        // artifiact login binding
+        // artifact login binding
         else if(identityProvider.loginBinding == SAMLConstants.SAML2_ARTIFACT_BINDING_URI) {
             logger.info("using ARTIFACT login binding")
             encoder = new HTTPArtifactEncoder()
-            encoder.setVelocityTemplateId("/tempaltes/saml2-post-artifact-binding.vm")
+            encoder.setVelocityTemplateId("/templates/saml2-post-artifact-binding.vm")
             VelocityEngine velocityEngine = buildVelocityEngine()
             encoder.setVelocityEngine(velocityEngine)
         }

@@ -3,15 +3,14 @@ package org.cedar.onestop.api.metadata.controller
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
-import org.opensaml.messaging.decoder.MessageDecodingException
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.PUT
@@ -29,33 +28,14 @@ class AdminController {
     this.elasticsearchService = elasticsearchService
   }
 
+//  @PreAuthorize("hasRole('METADATA_CURATOR')")
   @RequestMapping(path = '/admin/test', method = GET, produces = 'text/plain')
-  String test() {
-      return "YOU DID IT"
-  }
-
-  @RequestMapping(value = "/loginConsume", method = RequestMethod.POST)
-  String loginConsume(
-          HttpServletRequest request,
-          HttpServletResponse response,
-          @RequestParam(value = "SAMLResponse", required = true) String samlResponseString
-  ) throws MessageDecodingException, SecurityException {
-
-    println("WE HAVE REACHED LOGIN CONSUME")
-    return "WE HAVE REACHED LOGIN CONSUME"
-
-  }
-
-  @RequestMapping(value = "/logoutConsume", method = RequestMethod.POST)
-  String logoutConsume(
-          HttpServletRequest request,
-          HttpServletResponse response,
-          @RequestParam(value = "SAMLResponse", required = true) String samlResponseString
-  ) throws MessageDecodingException, SecurityException {
-
-    println("WE HAVE REACHED LOGOUT CONSUME")
-    return "WE HAVE REACHED LOGOUT CONSUME"
-
+  String test(HttpServletRequest request) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication()
+        String uri = request.getRequestURI()
+        String user = auth.getName()
+        String roles = auth.getAuthorities()
+        return "uri: ${uri}, user: ${user}, roles: ${roles}"
   }
 
   @RequestMapping(path = '/admin/index/search/rebuild', method = [GET, PUT], produces = 'application/json')

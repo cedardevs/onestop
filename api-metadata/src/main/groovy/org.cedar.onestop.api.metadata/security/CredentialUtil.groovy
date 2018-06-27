@@ -20,6 +20,8 @@ class CredentialUtil {
 
     static String x509Certificate
 
+    static Credential credential
+
     static void print() {
         println("\n" +
                 "\nkeyStorePath: ${keyStorePath}" +
@@ -40,6 +42,9 @@ class CredentialUtil {
         x509Certificate = DatatypeConverter.printBase64Binary(cert.getEncoded())
 
         BasicX509Credential credential = new BasicX509Credential(cert, privateKey)
+
+        this.credential = credential
+
         return credential
     }
 
