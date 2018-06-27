@@ -69,7 +69,7 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
         // determine which request path we are filtering
         String path = request.getServletPath()
-        String fullPath = request.getRequestURI()
+        String fullPath = request.getRequestURL()
 
         println("CustomSecurityFilter:::path = ${path}")
         println("CustomSecurityFilter:::fullPath = ${fullPath}")
@@ -79,9 +79,9 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
 
         // if we hit "consumeLogin" we've already returned from the identity provider and need to create our authentication context
-        if(path == SPConstants.ENDPOINT_ASSERTION_CONSUMER_LOGIN) {
+        if(fullPath == samlFilter.identityProvider.assertionConsumerServiceURL) {
 
-            println("CustomSecurityFilter:::[condition] path == ENDPOINT_ASSERTION_CONSUMER_LOGIN")
+            println("CustomSecurityFilter:::[condition] fullPath == samlFilter.identityProvider.assertionConsumerServiceURL")
 
             Authentication authentication
             try {
@@ -118,8 +118,8 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
                 }
             }
         }
-        else if(path == SPConstants.ENDPOINT_ASSERTION_CONSUMER_LOGOUT) {
-            println("CustomSecurityFilter:::[condition] path == ENDPOINT_ASSERTION_CONSUMER_LOGIN")
+        else if(fullPath == samlFilter.identityProvider.assertionConsumerServiceLogoutURL) {
+            println("CustomSecurityFilter:::[condition] fullPath == samlFilter.identityProvider.assertionConsumerServiceLogoutURL")
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
         }
         // TODO: do something smarter here...?
