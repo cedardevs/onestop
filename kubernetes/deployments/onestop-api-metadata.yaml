@@ -8,7 +8,6 @@ metadata:
     tier: "backend"
     devmode: "true"
 spec:
-  type: NodePort
   selector:
     app: onestop-api-metadata
   ports:
@@ -16,6 +15,8 @@ spec:
       port: 8098
       targetPort: 8098
       nodePort: 30098
+  type: NodePort
+
 ---
 apiVersion: apps/v1
 kind: Deployment
