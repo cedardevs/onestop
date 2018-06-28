@@ -8,12 +8,14 @@ metadata:
     tier: "backend"
     devmode: "true"
 spec:
+  type: NodePort
   selector:
     app: onestop-api-metadata
   ports:
     - name: http
       port: 8098
       targetPort: 8098
+      nodePort: 30098
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -33,7 +35,7 @@ spec:
     spec:
       containers:
       - name: onestop-api-metadata
-        image: cedardevs/onestop-api-metadata:latest
+        image: cedardevs/onestop-api-metadata
         env:
         - name: ELASTICSEARCH_HOST
           value: elasticsearch

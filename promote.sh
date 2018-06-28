@@ -23,8 +23,10 @@ fi
 
 # update the properties
 updateVersions() {
+  prevVersion=$(cat gradle.properties | grep 'version=' | sed -e 's/version=//g' )
   sed -i -- "s/version=.*/version=$1/g" gradle.properties
   sed -i -- "s/\"version\":.*/\"version\": \"$1\",/g" client/package.json
+  sed -i -- "s/${prevVersion}/$1/g" skaffold.yaml
 }
 
 # commit and push
@@ -32,6 +34,7 @@ updateAndCommit() {
   updateVersions $1
   git add gradle.properties
   git add client/package.json
+  git add skaffold.yaml
   git commit -m "Updating version to $1"
   git push
 }

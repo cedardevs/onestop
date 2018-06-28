@@ -1,0 +1,18 @@
+apiVersion: skaffold/v1alpha2
+kind: Config
+build:
+  artifacts:
+  - imageName: cedardevs/onestop-api-metadata
+    workspace: ./api-metadata
+    docker:
+      buildArgs:
+        WAR_NAME: api-metadata-2.1.0-all.war
+        VERSION: 2.1.0
+        DATE: now
+        VCS_REF: local
+
+deploy:
+  kubectl:
+    manifests:
+    - ./kubernetes/deployments/onestop-api-metadata.yaml
+    - ./kubernetes/deployments/elasticsearch.yaml

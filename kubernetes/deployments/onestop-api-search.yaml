@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
       - name: onestop-api-search
-        image: cedardevs/onestop-api-search:latest
+        image: cedardevs/onestop-api-search
         env:
         - name: ELASTICSEARCH_HOST
           value: elasticsearch

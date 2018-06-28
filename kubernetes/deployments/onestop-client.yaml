@@ -36,7 +36,7 @@ spec:
       restartPolicy: Always
       containers:
       - name: onestop-client
-        image: cedardevs/onestop-client:2.0.0-RC8-SNAPSHOT
+        image: cedardevs/onestop-client
         env:
         - name: ONESTOP_ENDPOINT
           value: onestop-api-search:8097
