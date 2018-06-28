@@ -6,7 +6,7 @@ build:
     workspace: ./registry
     docker:
       buildArgs:
-        WAR_NAME: registry-0.1.0-SNAPSHOT-all.war
+        JAR_NAME: registry-0.1.0-SNAPSHOT-all.jar
         VERSION: 0.1.0-SNAPSHOT
         DATE: now
         VCS_REF: local
@@ -14,7 +14,15 @@ build:
     workspace: ./script-wrapper
     docker:
       buildArgs:
-        JAR_NAME: script-wrapper-0.1.0-SNAPSHOT-all.jar
+        JAR_NAME: psi-script-wrapper-0.1.0-SNAPSHOT-all.jar
+        VERSION: 0.1.0-SNAPSHOT
+        DATE: now
+        VCS_REF: local
+  - imageName: cedardevs/psi-splitter
+    workspace: ./splitter
+    docker:
+      buildArgs:
+        JAR_NAME: psi-splitter-0.1.0-SNAPSHOT-all.jar
         VERSION: 0.1.0-SNAPSHOT
         DATE: now
         VCS_REF: local
@@ -25,3 +33,4 @@ deploy:
     - ./kubernetes/kafka.yml
     - ./kubernetes/registry.yml
     - ./kubernetes/script-wrappers.yml
+    - ./kubernetes/splitter.yml
