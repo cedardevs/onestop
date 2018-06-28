@@ -6,7 +6,7 @@ metadata:
   labels:
     environment: "dev"
     tier: "frontend"
-    devmode: "false"
+    devmode: "true"
 spec:
   selector:
     app: onestop-client

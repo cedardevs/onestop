@@ -34,3 +34,4 @@ deploy:
     - ./kubernetes/deployments/onestop-api-metadata.yaml
     - ./kubernetes/deployments/onestop-api-search.yaml
     - ./kubernetes/deployments/onestop-client.yaml
+    
