@@ -22,7 +22,7 @@ class Role {
     @NotEmpty
     @Column(name='role')
     private String role
-//
-//    @ManyToMany(fetch=FetchType.LAZY, cascade={ CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = 'roles')
-//    private List<User> users = []
+
+    @ManyToMany(fetch=FetchType.LAZY, mappedBy = 'roles')
+    private List<User> users = []
 }

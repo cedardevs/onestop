@@ -9,7 +9,7 @@ spring:
   application:
     name: onestop-metadata-api
     datasource:
-      url: jdbc:h2:mem:testSchema;MODE=MYSQL
+      url: jdbc:h2:testdb:~/test
       driverClassName: org.h2.Driver
       username: sa
       password:

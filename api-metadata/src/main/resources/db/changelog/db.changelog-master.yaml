@@ -42,6 +42,43 @@ databaseChangeLog:
     id: bnguyen003
     author: bnguyen
     changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+                nullable: false
+            name: user_id
+            type: BIGINT
+        - column:
+            constraints:
+                nullable: false
+            name: role_id
+            type: BIGINT
+        tableName: user_roles
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: user
+        constraintName: fk_user
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: user_id
+        referencedTableName: user
+    - addForeignKeyConstraint:
+        baseColumnNames: role_id
+        baseTableName: role
+        constraintName: fk_role
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: RESTRICT
+        onUpdate: RESTRICT
+        referencedColumnNames: role_id
+        referencedTableName: role
+- changeSet:
+    id: bnguyen004
+    author: bnguyen
+    changes:
     - sqlFile:
         relativeToChangelogFile: true
         dbms: mysql
@@ -52,7 +89,7 @@ databaseChangeLog:
         splitStatements: true
         stripComments: true
 - changeSet:
-    id: bnguyen004
+    id: bnguyen005
     author: bnguyen
     changes:
     - sqlFile:
