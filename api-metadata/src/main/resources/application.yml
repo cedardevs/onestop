@@ -5,6 +5,7 @@ server:
 
 spring:
   h2.console.enabled: true
+  h2.console.path: /h2-console
   application:
     name: onestop-metadata-api
     datasource:
