@@ -79,25 +79,110 @@ databaseChangeLog:
     id: bnguyen004
     author: bnguyen
     changes:
-    - sqlFile:
-        relativeToChangelogFile: true
-        dbms: mysql
-        encoding: utf8
-        endDelimiter: ;
-        path: ../sql_files/seed_roles.sql
-        relativeToChangelogFile: true
-        splitStatements: true
-        stripComments: true
+    - insert:
+        tableName: user
+        columns:
+        - column:
+            name: username
+            value: bao
+        - column:
+            name: password
+            value: pass01
 - changeSet:
     id: bnguyen005
     author: bnguyen
     changes:
-    - sqlFile:
-        relativeToChangelogFile: true
-        dbms: mysql
-        encoding: utf8
-        endDelimiter: ;
-        path: ../sql_files/seed_users.sql
-        relativeToChangelogFile: true
-        splitStatements: true
-        stripComments: true
+    - insert:
+        tableName: user
+        columns:
+        - column:
+            name: username
+            value: zeb
+        - column:
+            name: password
+            value: pass02
+- changeSet:
+    id: bnguyen006
+    author: bnguyen
+    changes:
+    - insert:
+        tableName: user
+        columns:
+        - column:
+            name: username
+            value: elliot
+        - column:
+            name: password
+            value: pass03
+- changeSet:
+    id: bnguyen007
+    author: bnguyen
+    changes:
+    - insert:
+        tableName: role
+        columns:
+        - column:
+            name: role
+            value: admin
+- changeSet:
+    id: bnguyen008
+    author: bnguyen
+    changes:
+    - insert:
+        tableName: role
+        columns:
+        - column:
+            name: role
+            value: user
+- changeSet:
+    id: bnguyen009
+    author: bnguyen
+    changes:
+    - insert:
+        tableName: user_roles
+        columns:
+        - column:
+            name: user_id
+            value: 1
+        - column:
+            name: role_id
+            value: 1
+- changeSet:
+    id: bnguyen010
+    author: bnguyen
+    changes:
+    - insert:
+        tableName: user_roles
+        columns:
+        - column:
+            name: user_id
+            value: 1
+        - column:
+            name: role_id
+            value: 2
+- changeSet:
+    id: bnguyen011
+    author: bnguyen
+    changes:
+    - insert:
+        tableName: user_roles
+        columns:
+        - column:
+            name: user_id
+            value: 2
+        - column:
+            name: role_id
+            value: 2
+- changeSet:
+    id: bnguyen012
+    author: bnguyen
+    changes:
+    - insert:
+        tableName: user_roles
+        columns:
+        - column:
+            name: user_id
+            value: 3
+        - column:
+            name: role_id
+            value: 2
