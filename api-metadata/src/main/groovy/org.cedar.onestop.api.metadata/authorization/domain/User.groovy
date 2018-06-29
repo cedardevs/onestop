@@ -19,15 +19,15 @@ class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name='user_id')
-    private Long userId
+    Long userId
 
     @NotEmpty
     @Column(name='username')
-    private String username
+    String username
 
     @NotEmpty
     @Column(name='password')
-    private String password
+    String password
 
     @ManyToMany(fetch=FetchType.LAZY)
     @JoinTable(
@@ -35,5 +35,5 @@ class User {
             joinColumns=[@JoinColumn(name='user_id')],
             inverseJoinColumns=[@JoinColumn(name='role_id')]
     )
-    private List<Role> roles = []
+    List<Role> roles = []
 }

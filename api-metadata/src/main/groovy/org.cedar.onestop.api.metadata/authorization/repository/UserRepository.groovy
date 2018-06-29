@@ -4,6 +4,8 @@ import org.cedar.onestop.api.metadata.authorization.domain.User
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.Repository
 
-interface UserRepository extends Repository<User, Long>{
+import java.lang.invoke.MethodHandleImpl
+
+interface UserRepository extends CrudRepository<User, Long>{
     User findByUsername(String username)
 }

@@ -17,12 +17,12 @@ class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name='role_id')
-    private Long id
+    Long id
 
     @NotEmpty
     @Column(name='role')
-    private String role
+    String role
 
     @ManyToMany(fetch=FetchType.LAZY, mappedBy = 'roles')
-    private List<User> users = []
+    List<User> users = []
 }
