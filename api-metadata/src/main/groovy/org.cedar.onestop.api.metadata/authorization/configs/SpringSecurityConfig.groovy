@@ -11,8 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.web.AuthenticationEntryPoint
 
-import javax.sql.DataSource
-
 @Configuration
 @EnableWebSecurity
 class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -29,10 +27,14 @@ class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().authorizeRequests()
-                .anyRequest().authenticated()
-                .and().httpBasic()
-                .authenticationEntryPoint(authEntryPoint)
+        http.csrf().disable()
+            .authorizeRequests()
+            .antMatchers("/test").hasAuthority('USER')
+            .antMatchers("/admin/**").hasAuthority('ADMIN')
+            .antMatchers("/metadata/**").hasAuthority('ADMIN')
+            .anyRequest().authenticated()
+            .and()
+            .httpBasic().authenticationEntryPoint(authEntryPoint)
     }
 
     @Autowired

@@ -24,8 +24,8 @@ class DatabaseLoader implements ApplicationRunner {
     }
 
     private void seedRoles() {
-        Role admin = new Role(role: 'admin')
-        Role user = new Role(role: 'user')
+        Role admin = new Role(role: 'ADMIN')
+        Role user = new Role(role: 'USER')
 
         roleRepository.save(admin)
         roleRepository.save(user)
@@ -36,8 +36,8 @@ class DatabaseLoader implements ApplicationRunner {
         User zeb = new User(username: 'zeb', password: 'pass02')
         User elliot = new User(username: 'elliot', password: 'pass03')
 
-        Role admin = roleRepository.findByRole('admin')
-        Role user = roleRepository.findByRole('user')
+        Role admin = roleRepository.findByRole('ADMIN')
+        Role user = roleRepository.findByRole('USER')
 
         bao.roles.addAll(admin, user)
         zeb.roles.add(user)
