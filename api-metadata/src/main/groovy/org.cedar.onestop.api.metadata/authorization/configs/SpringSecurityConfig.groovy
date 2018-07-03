@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.metadata.authorization.configs
 
+import org.cedar.onestop.api.metadata.authorization.service.UserDetailsServiceImpl
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -19,7 +20,7 @@ class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationEntryPoint authEntryPoint
 
     @Autowired
-    DataSource dataSource
+    private UserDetailsServiceImpl userDetailsService
 
     @Bean
     BCryptPasswordEncoder encoder() {
@@ -36,9 +37,6 @@ class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication().withUser("user").password("\$2a\$04\$41jLXtgaFOKTTZ7QjCT9keMv4hM4j/7KNzKo24oGAzAAUaqIeJd2m").roles("ADMIN")
-//        auth.jdbcAuthentication().dataSource(dataSource)
-//            .usersByUsernameQuery("SELECT * FROM user WHERE username=?")
-//            .authoritiesByUsernameQuery("SELECT * FROM role WHERE role_id=?")
+        auth.userDetailsService(userDetailsService)
     }
 }

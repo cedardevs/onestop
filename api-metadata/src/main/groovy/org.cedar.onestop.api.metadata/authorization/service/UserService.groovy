@@ -1,9 +1,12 @@
 package org.cedar.onestop.api.metadata.authorization.service
 
-import org.cedar.onestop.api.metadata.authorization.domain.Role
 import org.cedar.onestop.api.metadata.authorization.domain.User
+import org.cedar.onestop.api.metadata.authorization.domain.UserDetailsImpl
 import org.cedar.onestop.api.metadata.authorization.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -17,5 +20,16 @@ class UserService {
         def encodedPassword = encoder.encode(user.password)
         user.password = encodedPassword
         return userRepository.save(user)
+    }
+
+    UserDetails buildUserFromUserEntity(User user) {
+        List<GrantedAuthority> authorities = []
+
+        user.roles.each { role ->
+            authorities.add(new SimpleGrantedAuthority(role.role))
+        }
+        UserDetails userDetails = new UserDetailsImpl(user, authorities)
+
+        return userDetails
     }
 }

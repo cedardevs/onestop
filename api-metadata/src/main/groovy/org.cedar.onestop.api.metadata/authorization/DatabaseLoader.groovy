@@ -3,7 +3,6 @@ package org.cedar.onestop.api.metadata.authorization
 import org.cedar.onestop.api.metadata.authorization.domain.Role
 import org.cedar.onestop.api.metadata.authorization.domain.User
 import org.cedar.onestop.api.metadata.authorization.repository.RoleRepository
-import org.cedar.onestop.api.metadata.authorization.repository.UserRepository
 import org.cedar.onestop.api.metadata.authorization.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
