@@ -1,9 +1,6 @@
 package org.cedar.onestop.api.metadata.springsecurity
 
-import org.cedar.onestop.api.metadata.authorization.domain.User
-import org.cedar.onestop.api.metadata.authorization.domain.UserDetailsImpl
 import org.cedar.onestop.api.metadata.authorization.service.UserDetailsServiceImpl
-import org.cedar.onestop.api.metadata.authorization.service.UserService
 import org.cedar.onestop.api.metadata.security.CredentialUtil
 import org.cedar.onestop.api.metadata.security.IdentityProviderEnumeration
 import org.cedar.onestop.api.metadata.security.SAMLConsume
@@ -15,7 +12,6 @@ import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
-import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter

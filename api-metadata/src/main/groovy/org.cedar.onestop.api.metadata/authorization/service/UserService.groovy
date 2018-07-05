@@ -28,8 +28,4 @@ class UserService {
 
         return userDetails
     }
-
-    User findByEmail(String email) {
-        return userRepository.findByEmail(email)
-    }
 }
