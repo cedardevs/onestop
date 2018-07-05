@@ -13,8 +13,8 @@ class UserDetailsImpl implements UserDetails{
     List<GrantedAuthority> authorities
 
     UserDetailsImpl(User user, List<GrantedAuthority> auths) {
-        this.username = user.username
-        this.password = user.password
+        this.username = user.email
+        this.password = ''
         this.authorities = auths
         this.accountNonExpired = true
         this.accountNonLocked = true

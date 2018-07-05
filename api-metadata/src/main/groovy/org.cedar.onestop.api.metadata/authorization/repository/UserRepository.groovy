@@ -7,5 +7,6 @@ import org.springframework.data.repository.Repository
 import java.lang.invoke.MethodHandleImpl
 
 interface UserRepository extends CrudRepository<User, Long>{
-    User findByUsername(String username)
+    // User findByUsername(String username)
+    User findByEmail(String email)
 }

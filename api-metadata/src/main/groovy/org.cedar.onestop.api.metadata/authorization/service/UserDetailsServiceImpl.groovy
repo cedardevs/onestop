@@ -20,10 +20,10 @@ class UserDetailsServiceImpl implements UserDetailsService {
     private final UserService userService
 
     @Transactional
-    UserDetails loadUserByUsername(String username)
+    UserDetails loadUserByUsername(String email)
         throws UsernameNotFoundException, DataAccessException {
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByEmail(email)
         if (user == null) { throw new UsernameNotFoundException("User Not Found")}
 
         return userService.buildUserFromUserEntity(user)

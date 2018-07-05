@@ -11,6 +11,7 @@ import javax.persistence.JoinTable
 import javax.persistence.ManyToMany
 import javax.persistence.Table
 import javax.persistence.Entity
+import javax.validation.constraints.Email
 import javax.validation.constraints.NotEmpty
 
 @Entity
@@ -22,12 +23,21 @@ class User {
     Long userId
 
     @NotEmpty
-    @Column(name='username')
-    String username
+    @Email
+    @Column(name='email')
+    String email
 
     @NotEmpty
-    @Column(name='password')
-    String password
+    @Column(name='uuid')
+    String uuid
+
+//    @NotEmpty
+//    @Column(name='username')
+//    String username
+//
+//    @NotEmpty
+//    @Column(name='password')
+//    String password
 
     @ManyToMany(fetch=FetchType.LAZY)
     @JoinTable(
