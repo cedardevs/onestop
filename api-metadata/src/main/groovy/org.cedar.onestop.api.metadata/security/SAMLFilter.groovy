@@ -131,6 +131,7 @@ class SAMLFilter implements Filter {
         SAMLPeerEntityContext peerEntityContext = context.getSubcontext(SAMLPeerEntityContext.class, true)
 
         SAMLEndpointContext endpointContext = peerEntityContext.getSubcontext(SAMLEndpointContext.class, true)
+
         endpointContext.setEndpoint(identityProvider.buildLoginEndpoint())
 
         SignatureSigningParameters signatureSigningParameters = new SignatureSigningParameters()

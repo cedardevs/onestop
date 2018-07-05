@@ -10,11 +10,12 @@ enum IdentityProviderEnumeration {
     ICAM_NOAA_SCIAPPS(
             new IdentityProvider(
                     name: "ICAM (sciapps)",
-                    loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:8443/openam/SSORedirect/metaAlias/noaa-online/noaa-online-idp",
+                    loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/SSORedirect/metaAlias/noaa-online/noaa-online-idp",
                     loginBinding: SAMLConstants.SAML2_REDIRECT_BINDING_URI,
                     logoutEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/IDPSloRedirect/metaAlias/noaa-online/noaa-online-idp",
                     logoutBinding: SAMLConstants.SAML2_POST_BINDING_URI,
-                    issuerSP: "urn:gov:gsa:SAML:2.0.profiles:sp:sso:NOAA:api-metadata_sciapps",
+//                    issuerSP: "urn:gov:gsa:SAML:2.0.profiles:sp:sso:NOAA:api-metadata_sciapps",
+                    issuerSP: "https://sciapps.colorado.edu/onestop/api/",
                     issuerIDP: "noaa-online-idp",
                     authnContextRefs: [AuthnContext.PPT_AUTHN_CTX],
                     authnContextComparisonType: AuthnContextComparisonTypeEnumeration.MINIMUM,
@@ -31,11 +32,12 @@ enum IdentityProviderEnumeration {
     ICAM_NOAA_LOCAL(
             new IdentityProvider(
                     name: "ICAM (localhost)",
-                    loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:8443/openam/SSORedirect/metaAlias/noaa-online/noaa-online-idp",
+                    loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/SSORedirect/metaAlias/noaa-online/noaa-online-idp",
                     loginBinding: SAMLConstants.SAML2_REDIRECT_BINDING_URI,
                     logoutEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/IDPSloRedirect/metaAlias/noaa-online/noaa-online-idp",
                     logoutBinding: SAMLConstants.SAML2_POST_BINDING_URI,
-                    issuerSP: "urn:gov:gsa:SAML:2.0.profiles:sp:sso:NOAA:api-metadata_localhost",
+//                    issuerSP: "urn:gov:gsa:SAML:2.0.profiles:sp:sso:NOAA:api-metadata_localhost",
+                    issuerSP: "https://localhost:8098/onestop/api/",
                     issuerIDP: "noaa-online-idp",
                     authnContextRefs: [AuthnContext.PPT_AUTHN_CTX],
                     authnContextComparisonType: AuthnContextComparisonTypeEnumeration.MINIMUM,

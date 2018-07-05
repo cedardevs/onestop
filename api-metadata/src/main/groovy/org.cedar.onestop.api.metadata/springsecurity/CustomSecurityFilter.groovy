@@ -34,8 +34,8 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
     // create instance of SAMLFilter to be wrapped by this Spring aware filter bean
     // provide an identity provider for which this filter will authenticate against
+//    private SAMLFilter samlFilter = new SAMLFilter(IdentityProviderEnumeration.ICAM_NOAA_LOCAL.getValue())
     private SAMLFilter samlFilter = new SAMLFilter(IdentityProviderEnumeration.LOGIN_GOV_LOCAL.getValue())
-
 
     CustomSecurityFilter(AuthenticationManager authenticationManager) {
         super("/")
@@ -62,7 +62,14 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
 
+        println("\n\n==============================================================")
+        println("==============================================================")
+        println("==============================================================")
         println("CustomSecurityFilter:::doFilter()")
+        println("==============================================================")
+        println("==============================================================")
+        println("==============================================================\n\n")
+
 
         HttpServletRequest request = (HttpServletRequest) req
         HttpServletResponse response = (HttpServletResponse) res
@@ -109,6 +116,9 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
                 // redirect to goto url
                 redirectToGotoURL(request, response)
+
+                // TODO: do we continue the chain somewhere here or after the redirect?
+                // why is authorization not working as expected?
             }
             catch(Exception e) {
                 logger.error(e.getMessage(), e)
@@ -135,13 +145,27 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
             // return to other spring security filters
             chain.doFilter(req, res)
         }
+
+        println("\n\n==============================================================")
+        println("==============================================================\n\n")
+    }
+
+    @Override
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+
+        println("CustomSecurityFilter::successfulAuthentication!!!")
+
+        super.successfulAuthentication(request, response, chain, authResult)
     }
 
     @Override
     Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
         // consumeLogin should have a SAMLResponse param in the request
         String samlResponseEncoded = request.getParameter("SAMLResponse")
-        return authUserBySAMLResponse(samlResponseEncoded, request)
+
+        Authentication userAuthenticationToken = authUserBySAMLResponse(samlResponseEncoded, request)
+
+        return userAuthenticationToken
     }
 
     private AbstractAuthenticationToken authUserBySAMLResponse(String samlResponseEncoded, HttpServletRequest request) {
@@ -155,8 +179,8 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
                         return principal
                     }
                 }
-                SimpleGrantedAuthority myrole = new SimpleGrantedAuthority("METADATA_CURATOR")
-                return new PreAuthenticatedAuthenticationToken(securityUser, null, [myrole])
+                SimpleGrantedAuthority myrole = new SimpleGrantedAuthority("METADATA_CURATORZ")
+                return new PreAuthenticatedAuthenticationToken(securityUser, "", [myrole])
             }
         }
         catch(Exception e) {

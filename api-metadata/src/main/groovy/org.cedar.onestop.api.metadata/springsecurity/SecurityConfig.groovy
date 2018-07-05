@@ -1,8 +1,10 @@
 package org.cedar.onestop.api.metadata.springsecurity
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -23,10 +25,17 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
             .csrf().disable()
-//            .authorizeRequests()
-//                .antMatchers("/admin/**").hasRole("METADATA_CURATOR")
-//            .and()
+            .authorizeRequests()
+                .antMatchers("/admin/**").hasAuthority("METADATA_CURATOR")
+            .anyRequest().authenticated()
+            .and()
             .addFilterBefore(new CustomSecurityFilter(authenticationManagerBean()), UsernamePasswordAuthenticationFilter.class)
+    }
+
+    @Autowired
+    void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication()
+                .withUser("elliott.richerson@noaa.gov").password("").authorities("METADATA_CURATOR")
     }
 
 }

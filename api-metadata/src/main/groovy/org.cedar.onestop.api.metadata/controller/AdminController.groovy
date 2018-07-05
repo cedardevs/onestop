@@ -28,14 +28,13 @@ class AdminController {
     this.elasticsearchService = elasticsearchService
   }
 
-//  @PreAuthorize("hasRole('METADATA_CURATOR')")
   @RequestMapping(path = '/admin/test', method = GET, produces = 'text/plain')
   String test(HttpServletRequest request) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication()
-        String uri = request.getRequestURI()
-        String user = auth.getName()
-        String roles = auth.getAuthorities()
-        return "uri: ${uri}, user: ${user}, roles: ${roles}"
+    String uri = request.getRequestURI()
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication()
+    String user = auth.getName()
+    String roles = auth.getAuthorities()
+    return "uri: ${uri}, user: ${user}, roles: ${roles}"
   }
 
   @RequestMapping(path = '/admin/index/search/rebuild', method = [GET, PUT], produces = 'application/json')
