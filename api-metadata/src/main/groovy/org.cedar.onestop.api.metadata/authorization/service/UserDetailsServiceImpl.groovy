@@ -1,7 +1,6 @@
 package org.cedar.onestop.api.metadata.authorization.service
 
 import org.cedar.onestop.api.metadata.authorization.domain.User
-import org.cedar.onestop.api.metadata.authorization.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataAccessException
 import org.springframework.security.core.userdetails.UserDetails
@@ -14,16 +13,13 @@ import javax.transaction.Transactional
 @Service
 class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
-    private final UserRepository userRepository
-
-    @Autowired
     private final UserService userService
 
     @Transactional
     UserDetails loadUserByUsername(String email)
         throws UsernameNotFoundException, DataAccessException {
 
-        User user = userRepository.findByEmail(email)
+        User user = userService.findByEmail(email)
         if (user == null) { throw new UsernameNotFoundException("User Not Found")}
 
         return userService.buildUserFromUserEntity(user)

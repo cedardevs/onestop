@@ -18,6 +18,10 @@ class UserService {
         return userRepository.save(user)
     }
 
+    User findByEmail(String email) {
+        return userRepository.findByEmail(email)
+    }
+
     UserDetails buildUserFromUserEntity(User user) {
         List<GrantedAuthority> authorities = []
 
