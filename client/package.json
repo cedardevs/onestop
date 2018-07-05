@@ -11,7 +11,8 @@
     "testAndWatch": "NODE_ENV=test mocha --recursive ./test -w --watch-extensions js,jsx",
     "format": "find src -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --config .prettierrc.json --write",
     "build": "npm install && npm test && NODE_ENV=production ./node_modules/.bin/webpack -p",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "retire": "retire -p"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
@@ -41,6 +42,7 @@
     "redux-seamless-immutable": "^0.4.0",
     "redux-thunk": "^2.2.0",
     "redux-watch": "^1.1.1",
+    "retire": "^1.6.1",
     "seamless-immutable": "^7.1.3"
   },
   "devDependencies": {
