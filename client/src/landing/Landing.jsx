@@ -2,10 +2,9 @@ import React from 'react'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import TopicsMenuContainer from './TopicsMenuContainer'
 import FeaturedDatasetsContainer from './FeaturedDatasetsContainer'
-import defaultStyles from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
-
 import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
+import Meta from '../helmet/Meta'
 
 const styleCenterContent = {
   display: 'flex',
@@ -39,7 +38,7 @@ const styleHeroText = {
   fontSize: '1.5em',
   fontStyle: 'italic',
   lineHeight: '1.5',
-  marginBottom: '0.5em',
+  marginBottom: '1.3em',
   fontFamily: fontFamilySerif(),
 }
 
@@ -53,18 +52,22 @@ class Landing extends React.Component {
   render() {
     return (
       <div style={styleCenterContent}>
+        <Meta />
         <div style={styleShowcase}>
           <h1 style={styleHeroHeader} aria-label="One Stop">
-            <span style={styleOneStopOImageWrapper}>
-              <SvgIcon size="1.1em" path={stop_circle_o} />
-            </span>neStop
-            <div style={defaultStyles.hideOffscreen}>
-              A NOAA Data Search Platform
-            </div>
+            <span>
+              <span style={styleOneStopOImageWrapper}>
+                <SvgIcon
+                  size="1.1em"
+                  verticalAlign="initial"
+                  path={stop_circle_o}
+                />
+              </span>
+              <span style={{display: 'none'}}>O</span>neStop
+            </span>
           </h1>
           <div style={styleHeroText}>
-            Geophysical, oceans, coastal, weather and climate data discovery all
-            in one place.<br />
+            A NOAA Data Search Platform<br />
           </div>
           <SearchFieldsContainer home={true} />
           <TopicsMenuContainer />

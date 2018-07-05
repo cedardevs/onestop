@@ -1,56 +1,40 @@
 import React from 'react'
 import {render} from 'react-dom'
-import {Router, Route, IndexRoute} from 'react-router'
-import Result from './result/Result'
-import CollectionsContainer from './result/collections/CollectionsContainer'
-import GranuleListContainer from './result/granules/GranuleListContainer'
-import ErrorContainer from './error/ErrorContainer'
-import LandingContainer from './landing/LandingContainer'
-import DetailContainer from './detail/DetailContainer'
-import Help from './common/info/Help'
-import AboutContainer from './common/info/AboutContainer'
 import {Provider} from 'react-redux'
 import RootContainer from './root/RootContainer'
-import {initialize} from './actions/FlowActions'
+import './init'
 import '../style/style'
-import './fonts.css'
+import './fonts/fonts.css'
 import './page.css'
 import './media.css'
 import store from './store'
 import history from './history'
+import './leaflet-init'
 
-store.dispatch(initialize())
+// force webpack to include the fonts in the build/dist
+import './fonts/Merriweather-Regular.ttf'
+import './fonts/Merriweather-Bold.ttf'
+import './fonts/Merriweather-Italic.ttf'
+import './fonts/Merriweather-BoldIt.ttf'
+import './fonts/Merriweather-Light.ttf'
+import './fonts/Merriweather-LightIt.ttf'
+import './fonts/SourceSansPro-Regular.ttf'
+import './fonts/SourceSansPro-Italic.ttf'
+import './fonts/SourceSansPro-Bold.ttf'
+import './fonts/SourceSansPro-BoldItalic.ttf'
+import './fonts/SourceSansPro-Light.ttf'
+import './fonts/SourceSansPro-LightItalic.ttf'
+import './fonts/SourceSansPro-SemiBold.ttf'
+import './fonts/SourceSansPro-SemiBoldItalic.ttf'
 
-const routesLayout = (
-  <Router history={history}>
-    <Route path="/" name="Home" component={RootContainer}>
-      <IndexRoute component={LandingContainer} />
-      <Route name="Collections" path="collections" component={Result}>
-        <IndexRoute
-          displayName="Collections"
-          component={CollectionsContainer}
-        />
-      </Route>
-      <Route
-        name="Details"
-        path="collections/details/:id"
-        component={DetailContainer}
-      />
-      <Route
-        name="GranuleDetail"
-        path="collections/granules/:id"
-        component={GranuleListContainer}
-      />
-      <Route name="Error" path="error" component={ErrorContainer} />
-      <Route name="Help" path="help" component={Help} />
-      <Route name="About" path="about" component={AboutContainer} />
-    </Route>
-  </Router>
-)
+import {Route} from 'react-router'
+import {ConnectedRouter} from 'react-router-redux'
 
 const body = (
   <Provider store={store}>
-    <div>{routesLayout}</div>
+    <ConnectedRouter history={history}>
+      <RootContainer />
+    </ConnectedRouter>
   </Provider>
 )
 
@@ -77,5 +61,41 @@ googleAnalytics.setAttribute(
 googleAnalytics.setAttribute('type', 'text/javascript')
 googleAnalytics.setAttribute('async', 'true')
 document.body.appendChild(googleAnalytics)
+
+const rootUrl = `${window.location.origin + window.location.pathname}`
+
+const jsonLdScript = document.createElement('script')
+jsonLdScript.setAttribute('type', 'application/ld+json')
+jsonLdScript.insertAdjacentHTML(
+  'afterbegin',
+  `{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "@id": "${rootUrl}",
+    "url": "${rootUrl}",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "${rootUrl}#/collections?q={search_term_string}",
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "@id": "https://www.ncei.noaa.gov/",
+      "name": "National Centers for Environmental Information (NCEI)",
+      "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.ncei.noaa.gov/sites/default/files/noaa_logo_circle_72x72.svg",
+          "width": "72",
+          "height": "72"
+      }
+    }
+  }`
+)
+document.body.appendChild(jsonLdScript)
+
+const ogUrlMetaTag = document.createElement('meta')
+ogUrlMetaTag.setAttribute('property', 'og:url')
+ogUrlMetaTag.setAttribute('content', `${rootUrl}`)
+document.head.appendChild(ogUrlMetaTag)
 
 render(body, appDiv)

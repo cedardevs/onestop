@@ -7,12 +7,15 @@ const styles = {
     width: '1px',
     height: '1px',
     overflow: 'hidden',
+    color: 'black',
+    background: 'white',
   },
 }
 
 export default styles
 
 export const boxShadow = '1px 1px 3px rgba(50, 50, 50, 0.75)'
+export const boxShadow2 = '2px 2px 4px rgba(50, 50, 50, 0.75)'
 
 // commenting items that used to be taken from styles.css (used sparsely, in case there are any lingering references)
 export const COLOR_PRIMARY = '#277CB2'
@@ -87,3 +90,49 @@ export const FOOTER_HEIGHT = '5em'
 // $footer-height: 5em;
 export const SECTION_PADDING = '0.9em'
 // $section-padding: .9em;
+
+export const SiteColors = {
+  WARNING: '#900303',
+  VALID: '#327032',
+  HEADER: '#242C36',
+  HEADER_TEXT: '#FFF',
+  LINK: '#2f668a',
+}
+export const SiteStyles = {
+  HEADER: {
+    backgroundColor: SiteColors.HEADER,
+    color: SiteColors.HEADER_TEXT,
+  },
+}
+
+export const FilterColors = {
+  //backgrounds
+  MEDIUM: '#9fd7fc',
+  DARK: '#18478F',
+  DARKEST: '#0E274E',
+  LIGHT: '#cfebfd',
+  LIGHT_EMPHASIS: '#bfe4fd', // one shade darker than light
+  LIGHT_SHADOW: '#8fc1e2',
+  DARK_EMPHASIS: '#12347C',
+  // text
+  DISABLED_TEXT: '#636363',
+  INVERSE_TEXT: '#FFF',
+  TEXT: 'black',
+}
+export const FilterStyles = {
+  MEDIUM: {
+    backgroundColor: FilterColors.MEDIUM,
+  },
+  DARK: {
+    backgroundColor: FilterColors.DARK,
+    color: FilterColors.INVERSE_TEXT,
+  },
+  LIGHT: {
+    backgroundColor: FilterColors.LIGHT,
+    color: FilterColors.TEXT,
+  },
+  DARKEST: {
+    backgroundColor: FilterColors.DARKEST,
+    color: FilterColors.INVERSE_TEXT,
+  },
+}

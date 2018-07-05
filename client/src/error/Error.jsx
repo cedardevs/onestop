@@ -2,6 +2,7 @@ import React from 'react'
 import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 import _ from 'lodash'
+import Meta from '../helmet/Meta'
 
 const defaultError = {
   title: 'Sorry, something has gone wrong',
@@ -92,6 +93,7 @@ class Error extends React.Component {
   render() {
     return (
       <div style={styleError}>
+        <Meta title="Error" robots="noindex" />
         {this.errors.map((error, i) => {
           return (
             <div key={i}>

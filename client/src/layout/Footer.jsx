@@ -9,6 +9,10 @@ const style = {
 export default class Footer extends Component {
   render() {
     const {content} = this.props
-    return <div style={style}>{content}</div>
+    return (
+      <footer role="contentInfo" style={style}>
+        {content}
+      </footer>
+    )
   }
 }

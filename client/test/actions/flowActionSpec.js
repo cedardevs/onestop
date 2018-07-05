@@ -41,26 +41,26 @@ describe('The flow actions', function () {
     assert(dispatchCalls === 3, `There were ${dispatchCalls} dispatch calls made`)
   })
 
-  describe('loadData', function () {
-    it('loads only collections if no ids are selected', function () {
-      const getState = sinon.stub().returns(mockDefaultState)
-      const fn = actions.loadData()
-
-      fn(dispatch, getState)
-      const dispatchCalls = dispatch.callCount
-      assert(dispatchCalls === 1, `There were ${dispatchCalls} dispatch calls made`)
-    })
-
-    it('loads collections and granules if ids are selected', function () {
-      const stateWithIds = _.merge(mockDefaultState, {behavior: {search: {selectedIds: [123]}}})
-      const getState = sinon.stub().returns(stateWithIds)
-      const fn = actions.loadData()
-
-      fn(dispatch, getState)
-      const dispatchCalls = dispatch.callCount
-      assert(dispatchCalls === 2, `There were ${dispatchCalls} dispatch calls made`)
-    })
-  })
+  // describe('loadData', function () {
+  //   it('loads only collections if no ids are selected', function () {
+  //     const getState = sinon.stub().returns(mockDefaultState)
+  //     const fn = actions.loadCollections()
+  //
+  //     fn(dispatch, getState)
+  //     const dispatchCalls = dispatch.callCount
+  //     assert(dispatchCalls === 1, `There were ${dispatchCalls} dispatch calls made`)
+  //   })
+  //
+  //   it('loads collections and granules if ids are selected', function () {
+  //     const stateWithIds = _.merge(mockDefaultState, {behavior: {search: {selectedIds: [123]}}})
+  //     const getState = sinon.stub().returns(stateWithIds)
+  //     const fn = actions.loadCollections()
+  //
+  //     fn(dispatch, getState)
+  //     const dispatchCalls = dispatch.callCount
+  //     assert(dispatchCalls === 2, `There were ${dispatchCalls} dispatch calls made`)
+  //   })
+  // })
 
   it('do not dispatch a transition to the collections view, just a clearSelections action, when no search params are present', function () {
     const getState = sinon.stub().returns(mockDefaultState)

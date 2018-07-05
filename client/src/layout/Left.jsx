@@ -1,8 +1,10 @@
 import React, {Component} from 'react'
 import {boxShadow} from '../common/defaultStyles'
 
+import {FilterColors} from '../common/defaultStyles'
+
 const defaultWidth = '128px'
-const defaultBackgroundColor = '#3D97D2'
+const defaultBackgroundColor = FilterColors.MEDIUM
 const defaultColor = '#111'
 
 const styleVisible = width => {
@@ -52,6 +54,7 @@ export default class Left extends Component {
   render() {
     const {content, visible} = this.props
     const width = this.props.width ? this.props.width : defaultWidth
+
     return (
       <div style={visible ? styleVisible(width) : styleHidden(width)}>
         {content}

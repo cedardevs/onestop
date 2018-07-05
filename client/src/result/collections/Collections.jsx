@@ -4,6 +4,7 @@ import CollectionCard from './CollectionCard'
 import CollectionListResult from './CollectionListResult'
 import Button from '../../common/input/Button'
 import ListView from '../ListView'
+import Meta from '../../helmet/Meta'
 
 const styleCollections = {
   color: '#222',
@@ -11,6 +12,10 @@ const styleCollections = {
 
 const styleShowMore = {
   margin: '1em auto 1.618em auto',
+}
+const styleShowMoreFocus = {
+  outline: '2px dashed #5C87AC',
+  outlineOffset: '.118em',
 }
 
 export default class Collections extends Component {
@@ -30,11 +35,17 @@ export default class Collections extends Component {
           text="Show More Results"
           onClick={() => fetchMoreResults()}
           style={styleShowMore}
+          styleFocus={styleShowMoreFocus}
         />
       ) : null
 
     return (
       <div style={styleCollections}>
+        <Meta
+          title="Collection Search Results"
+          formatTitle={true}
+          robots="noindex"
+        />
         <ListView
           items={results}
           loading={!!loading}

@@ -49,7 +49,12 @@ export default class GranuleListLegend extends Component {
             <div style={styleBadge(protocol)} aria-hidden="true">
               {renderBadgeIcon(protocol)}
             </div>
-            <div style={styleLegendLabel}>{protocol.label}</div>
+            <div
+              id={`protocol::legend::${protocol.id}`}
+              style={styleLegendLabel}
+            >
+              {protocol.label}
+            </div>
           </li>
         )
       })

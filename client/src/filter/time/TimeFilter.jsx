@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import moment from 'moment'
 import _ from 'lodash'
+import FlexColumn from '../../common/FlexColumn'
 import Button from '../../common/input/Button'
 import {Key} from '../../utils/keyboardUtils'
 import {
@@ -8,34 +9,32 @@ import {
   isValidDate,
   isValidDateRange,
 } from '../../utils/inputUtils'
+import Fieldset from '../Fieldset'
+import {
+  FilterColors,
+  FilterStyles,
+  SiteColors,
+} from '../../common/defaultStyles'
 
 const styleInputValidity = isValid => {
   return {
     paddingLeft: '5px',
-    color: isValid ? 'lime' : '#b00101',
+    color: isValid ? SiteColors.VALID : SiteColors.WARNING,
   }
 }
 
 const styleTimeFilter = {
-  backgroundColor: '#3D97D2',
-  padding: '0.618em',
-  color: '#F9F9F9',
+  ...FilterStyles.MEDIUM,
+  ...{padding: '0.618em'},
+}
+
+const styleBreathingRoom = {
+  marginTop: '1em',
 }
 
 const styleForm = {
   display: 'flex',
   flexDirection: 'column',
-}
-
-const styleFieldset = {
-  alignSelf: 'center',
-  marginBottom: '1em',
-  border: '1px solid white',
-  padding: '0.309em',
-}
-
-const styleLegend = {
-  color: 'inherit',
 }
 
 const styleDate = {
@@ -70,29 +69,29 @@ const styleDayWrapper = {
 
 const styleYear = {
   width: '3.25em',
-  color: 'black',
+  color: FilterColors.TEXT,
   height: '100%',
   margin: 0,
   padding: '0 0.309em',
-  border: 'none',
+  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
 }
 
 const styleMonth = {
   width: '7.25em',
-  color: 'black',
+  color: FilterColors.TEXT,
   height: '100%',
   margin: 0,
   padding: 0,
-  border: 'none',
+  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
 }
 const styleDay = {
   width: '1.75em',
-  color: 'black',
+  color: FilterColors.TEXT,
   height: '100%',
   margin: 0,
   padding: '0 0.309em',
-  border: 'none',
+  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
   borderRadius: '0.309em',
 }
 
@@ -176,7 +175,7 @@ export default class TimeFilter extends Component {
     }
     else {
       return {
-        color: '#b00101',
+        color: SiteColors.WARNING,
         textAlign: 'center',
         margin: '0.75em 0 0.5em',
         fontWeight: 'bold',
@@ -377,12 +376,13 @@ export default class TimeFilter extends Component {
   }
 
   createDateFieldset = (name, year, month, day, valid) => {
+    const legendText = `${_.capitalize(name)} Date:`
     return (
-      <fieldset
-        style={styleFieldset}
-        onChange={event => this.onChange(event.target.name, event.target.value)}
+      <Fieldset
+        onFieldsetChange={event =>
+          this.onChange(event.target.name, event.target.value)}
+        legendText={legendText}
       >
-        <legend style={styleLegend}>{_.capitalize(name)} Date: </legend>
         <div style={styleDate}>
           {this.createYearField(name, year)}
           {this.createMonthField(name, month)}
@@ -395,7 +395,7 @@ export default class TimeFilter extends Component {
             </span>
           </div>
         </div>
-      </fieldset>
+      </Fieldset>
     )
   }
 
@@ -411,35 +411,53 @@ export default class TimeFilter extends Component {
 
     const clearButton = this.createClearButton()
 
+    const inputColumn = (
+      <FlexColumn
+        items={[
+          <div key="DateFilterInput::all" style={styleBreathingRoom}>
+            <form
+              style={styleForm}
+              onKeyDown={this.handleKeyDown}
+              aria-describedby="timeFilterInstructions"
+            >
+              {this.createDateFieldset(
+                'start',
+                this.state.startDateYear,
+                this.state.startDateMonth,
+                this.state.startDateDay,
+                this.state.startValueValid
+              )}
+              {this.createDateFieldset(
+                'end',
+                this.state.endDateYear,
+                this.state.endDateMonth,
+                this.state.endDateDay,
+                this.state.endValueValid
+              )}
+            </form>
+          </div>,
+          <div key="DateFilter::InputColumn::Buttons" style={styleButtonRow}>
+            {applyButton}
+            {clearButton}
+          </div>,
+          <div
+            key="DateFilter::InputColumn::Warning"
+            style={this.warningStyle()}
+            role="alert"
+          >
+            {this.state.warning}
+          </div>,
+        ]}
+      />
+    )
+
     return (
       <div style={styleTimeFilter}>
-        <p>
-          Provide a start date, end date, or date range. Use year, year and
-          month, or full dates. Future dates are not accepted.
-        </p>
-        <form style={styleForm} onKeyDown={this.handleKeyDown}>
-          {this.createDateFieldset(
-            'start',
-            this.state.startDateYear,
-            this.state.startDateMonth,
-            this.state.startDateDay,
-            this.state.startValueValid
-          )}
-          {this.createDateFieldset(
-            'end',
-            this.state.endDateYear,
-            this.state.endDateMonth,
-            this.state.endDateDay,
-            this.state.endValueValid
-          )}
-        </form>
-        <div style={styleButtonRow}>
-          {applyButton}
-          {clearButton}
-        </div>
-        <div style={this.warningStyle()} role="alert">
-          {this.state.warning}
-        </div>
+        <label id="timeFilterInstructions">
+          Provide a start date, end date, or both. Day and month are optional.
+          Future dates are not accepted.
+        </label>
+        {inputColumn}
       </div>
     )
   }

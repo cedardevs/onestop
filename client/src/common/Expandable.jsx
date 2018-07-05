@@ -22,8 +22,13 @@ const styleHeadingDefault = (open, borderRadius) => {
   }
 }
 
-const styleArrow = {
+const styleArrowDefault = {
   userSelect: 'none',
+}
+
+const styleArrowFocusDefault = {
+  outline: '2px dashed white',
+  outlineOffset: '.118em',
 }
 
 const styleContentDefault = (open, display, borderRadius) => {
@@ -35,13 +40,12 @@ const styleContentDefault = (open, display, borderRadius) => {
   }
 }
 
-const styleFocusDefault = (open, borderRadius) => {
+const styleFocusDefault = (open, borderRadius, showArrow) => {
   const borderRadiusEffective = open
     ? `${borderRadius} 0 0 0`
     : `${borderRadius} 0 0 ${borderRadius}`
-
   return {
-    outline: '2px dashed white',
+    outline: showArrow ? 'none' : '2px dashed white',
     borderRadius: borderRadius ? borderRadiusEffective : 'none',
   }
 }
@@ -153,13 +157,15 @@ export default class Expandable extends React.Component {
       styleContent,
       content,
       borderRadius,
+      styleArrow,
+      styleArrowFocus,
     } = this.props
     const {open, display, focusing} = this.state
 
     const arrow = showArrow ? open ? (
-      <span>&nbsp;&#9660;</span>
+      <span>&nbsp;&#9660;&nbsp;</span>
     ) : (
-      <span>&nbsp;&#9654;</span>
+      <span>&nbsp;&#9654;&nbsp;</span>
     ) : null
 
     const ariaHidden = display === 'none'
@@ -175,7 +181,7 @@ export default class Expandable extends React.Component {
 
     const styleFocused = {
       ...(focusing
-        ? {...styleFocusDefault(open, borderRadius), ...styleFocus}
+        ? {...styleFocusDefault(open, borderRadius, showArrow), ...styleFocus}
         : {}),
     }
 
@@ -184,23 +190,35 @@ export default class Expandable extends React.Component {
       ...styleContent,
     }
 
+    const styleArrowMerged = {
+      ...styleArrowDefault,
+      ...styleArrow,
+      ...(focusing && showArrow
+        ? {...styleArrowFocusDefault, ...styleArrowFocus}
+        : {}),
+    }
+
+    const headingEffective = heading ? (
+      <div
+        style={stylesHeadingMerged}
+        onClick={this.handleClick}
+        onKeyDown={this.handleKeyPressed}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        tabIndex={tabIndex}
+        role={role}
+        aria-expanded={ariaExpanded}
+      >
+        <div style={styleFocused}>{heading}</div>
+        <div aria-hidden="true" style={styleArrowMerged}>
+          {arrow}
+        </div>
+      </div>
+    ) : null
+
     return (
       <div style={styleWrapper}>
-        <div
-          style={stylesHeadingMerged}
-          onClick={this.handleClick}
-          onKeyDown={this.handleKeyPressed}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
-          tabIndex={tabIndex}
-          role={role}
-          aria-expanded={ariaExpanded}
-        >
-          <div style={styleFocused}>{heading}</div>
-          <div aria-hidden="true" style={styleArrow}>
-            {arrow}
-          </div>
-        </div>
+        {headingEffective}
 
         <div style={styleContentMerged} aria-hidden={ariaHidden}>
           <AnimateHeight

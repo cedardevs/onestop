@@ -9,6 +9,7 @@ const styleSearchField = {
   boxShadow: 'inset 0 1px 1px rgba(0, 0, 0, 0.5)',
   borderRadius: '0.309em',
   display: 'flex',
+  position: 'relative',
 }
 
 const styleSearchFieldFocused = {
@@ -136,7 +137,7 @@ class TextSearchField extends React.Component {
   }
 
   render() {
-    const {onClear} = this.props
+    const {onClear, warningPopup, instructionalCopy} = this.props
 
     const styleSearchFieldMerged = {
       ...styleSearchField,
@@ -156,20 +157,22 @@ class TextSearchField extends React.Component {
 
     const styleSvgIcon = {
       outline: this.state.focusingClear ? '2px dashed #777' : 'none',
+      fill: this.state.focusingClear ? '#2c71a2' : '#777',
     }
-    const svgFillColor = this.state.focusingClear ? '#2c71a2' : '#777'
 
     return (
       <div style={styleSearchFieldMerged}>
+        {warningPopup}
+
         <input
           style={styleTextFieldMerged}
-          placeholder="Enter any term here to search NCEI data"
+          placeholder={instructionalCopy}
+          title={instructionalCopy}
           onKeyDown={this.handleKeyDown}
           onChange={this.handleChange}
           onFocus={this.handleTextFocus}
           onBlur={this.handleTextBlur}
           value={this.state.value}
-          aria-label="Search Text"
           ref={input => {
             this.searchInput = input
           }}
@@ -183,11 +186,7 @@ class TextSearchField extends React.Component {
           onBlur={this.handleClearBlur}
           aria-label="Clear Search Text"
         >
-          <SvgIcon
-            size="2em"
-            style={styleSvgIcon}
-            path={times_circle(svgFillColor)}
-          />
+          <SvgIcon size="2em" style={styleSvgIcon} path={times_circle} />
         </button>
       </div>
     )

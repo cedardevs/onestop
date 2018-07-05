@@ -1,5 +1,9 @@
 import React from 'react'
 import {fontFamilySerif} from '../../utils/styleUtils'
+import {SiteColors} from '../defaultStyles'
+import {stop_circle_o, SvgIcon} from '../SvgIcon'
+import A from '../link/Link'
+import Meta from '../../helmet/Meta'
 
 const styleWrapper = {
   width: '100%',
@@ -27,18 +31,40 @@ const styleH2 = {
 }
 
 const styleAccessibilityStatement = {
-  marginTop: '1.618em',
+  margin: '1.618em 0',
   border: 'gray solid',
   padding: '1em',
   background: '#F9F9F9',
 }
 
-export default class Help extends React.Component {
+const styleOneStopOImageWrapper = {
+  position: 'relative',
+  top: '.15em',
+  left: '.07em',
+}
+
+export default class About extends React.Component {
   render() {
     return (
       <div style={styleWrapper}>
+        <Meta title="About NOAA OneStop" />
         <section style={styleAbout}>
-          <h1 style={styleH1}>OneStop Overview</h1>
+          <h1 style={styleH1} aria-label="One Stop Overview">
+            <span>
+              <span style={styleOneStopOImageWrapper}>
+                <SvgIcon
+                  size="1.1em"
+                  verticalAlign="initial"
+                  path={stop_circle_o}
+                />
+              </span>
+              <span style={{display: 'none'}}>O</span>neStop Overview
+            </span>
+          </h1>
+          <p>
+            A NOAA Data Search Platform. Geophysical, oceans, coastal, weather
+            and climate data discovery all in one place.
+          </p>
           <p>
             The OneStop Project is designed to improve NOAA's data discovery and
             access framework. Focusing on all layers of the framework and not
@@ -49,7 +75,8 @@ export default class Help extends React.Component {
             and granule-level metadata systems to accommodate the wide variety
             and vast scale of NOAA's data.
           </p>
-          <h2 style={styleH2}>{this.buildCountString()}</h2>
+          <h2 style={styleH2}>Catalog Information</h2>
+          <p>{this.buildCountString()}</p>
           <div style={styleAccessibilityStatement}>
             <h2 style={styleH2}>Accessibility Statement</h2>
             <p>
@@ -67,11 +94,35 @@ export default class Help extends React.Component {
             <p>
               If you experience any challenges while accessing parts of our
               site, please contact{' '}
-              <a href={'mailto:ncei.info@noaa.gov'} style={{color: '#55ace4'}}>
+              <a
+                href={'mailto:ncei.info@noaa.gov'}
+                style={{color: SiteColors.LINK}}
+              >
                 ncei.info@noaa.gov
               </a>
             </p>
           </div>
+          <h2 style={styleH2} id="attribution">
+            Image Attribution
+          </h2>
+          <p>
+            Background image,{' '}
+            <A
+              href={
+                'https://www.toptal.com/designers/subtlepatterns/topography/'
+              }
+              style={{color: SiteColors.LINK}}
+            >
+              'Topography', made by Shankar Ganesh
+            </A>,{' '}
+            <A
+              href={'https://creativecommons.org/licenses/by-sa/3.0/'}
+              style={{color: SiteColors.LINK}}
+            >
+              CC BY-SA 3.0
+            </A>{' '}
+            - Subtle Patterns © Toptal Designers
+          </p>
         </section>
       </div>
     )

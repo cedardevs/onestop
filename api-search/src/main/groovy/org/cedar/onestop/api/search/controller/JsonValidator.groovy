@@ -14,6 +14,7 @@ class JsonValidator {
     final mapper = new ObjectMapper()
     final factory = JsonSchemaFactory.byDefault()
     final schemaJson = mapper.readTree(this.classLoader.getResource(schemaName).text)
+    // TODO get the schema from OpenAPI spec: final schema = factory.getJsonSchema(schemaJson, '/components/schemas/requestBody')
     final schema = factory.getJsonSchema(schemaJson)
     final requestJson = mapper.valueToTree(params)
     final report = schema.validate(requestJson)

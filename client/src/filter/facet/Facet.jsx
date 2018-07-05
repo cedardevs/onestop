@@ -75,7 +75,7 @@ export default class FacetTreeItem extends React.Component {
           label={label}
           id={`checkbox-${facetId}`}
           disabled={disabled}
-          tabIndex={tabIndex}
+          tabIndex={-1}
           checked={selected}
           value={{term: term, category: category, id: facetId}}
           onChange={this.props.handleSelectToggleMouse}
@@ -93,6 +93,7 @@ export default class FacetTreeItem extends React.Component {
         styleHeading={this.props.styleFacet}
         styleContent={this.props.styleChildren}
         styleFocus={styleFocus}
+        styleArrowFocus={{outline: 'none'}}
         showArrow={true}
         content={<div role="group">{children}</div>}
         onToggle={this.props.handleExpandableToggle}

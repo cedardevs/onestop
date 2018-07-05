@@ -9,6 +9,8 @@ import {
   triggerSearch,
 } from '../../actions/SearchRequestActions'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   return {
     facets: buildKeywordHierarchyMap(
@@ -31,8 +33,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const FacetFilterContainer = connect(mapStateToProps, mapDispatchToProps)(
-  FacetFilter
+const FacetFilterContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(FacetFilter)
 )
 
 export default FacetFilterContainer

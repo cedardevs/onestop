@@ -1,7 +1,12 @@
 import React from 'react'
 import FlexRow from '../common/FlexRow'
+import FlexColumn from '../common/FlexColumn'
 import {processUrl} from '../utils/urlUtils'
 import {fontFamilySerif} from '../utils/styleUtils'
+import Button from '../common/input/Button'
+
+import pause from 'fa/pause-circle-o.svg'
+import play from 'fa/play-circle-o.svg'
 
 const styleFeaturedDatasetsWrapper = {
   marginTop: '2.618em',
@@ -21,14 +26,16 @@ const styleTitle = (active, first, last, collapseImage) => {
   const topRightRadius = collapseImage ? '1em' : '0'
   const bottomRightRadius = collapseImage ? '1em' : '0'
   return {
-    background: active ? '#263f78' : '#007ec6',
+    background: active ? '#263f78' : '#026dab',
     textAlign: collapseImage ? 'center' : 'right',
     fontFamily: fontFamilySerif(),
     fontSize: '1.25em',
-    padding: '1em',
+    padding: '.609em 1.018em',
     borderRadius: first
       ? `1em ${topRightRadius} 0 0`
       : last ? `0 0 ${bottomRightRadius} 1em` : 'none',
+    display: 'flex',
+    justifyContent: collapseImage ? 'center' : 'flex-end',
   }
 }
 
@@ -73,79 +80,193 @@ const styleFeaturedImage = backgroundURL => {
   }
 }
 
+const styleFeaturedButton = collapseImage => {
+  return {
+    fontFamily: fontFamilySerif(),
+    fontSize: '1em',
+    width: '100%',
+    background: 'transparent',
+    color: 'inherit',
+    textAlign: collapseImage ? 'center' : 'right',
+    justifyContent: collapseImage ? 'center' : 'flex-end',
+    padding: '.309em',
+    margin: '.309em 0',
+  }
+}
+
+const styleFeaturedButtonFocus = {
+  textDecoration: 'underline',
+  background: 'transparent',
+}
+
+const styleFeaturedButtonHover = {
+  textDecoration: 'underline',
+  background: 'transparent',
+}
+
+const stylePlayPauseButton = collapseImage => {
+  return {
+    fontFamily: fontFamilySerif(),
+    fontSize: '1em',
+    background: 'transparent',
+    color: 'inherit',
+    textAlign: collapseImage ? 'center' : 'right',
+    justifyContent: collapseImage ? 'center' : 'flex-end',
+    padding: '.309em',
+    margin: '.309em 0',
+  }
+}
+
+const stylePlayPauseFocus = {
+  outline: '2px dashed white',
+  background: 'transparent',
+}
+
+const stylePlayPauseHover = {
+  outline: '2px dashed white',
+  background: 'transparent',
+}
+
+const stylePlayPauseButtonIcon = {
+  width: '1.3em',
+  height: '1.3em',
+  paddingTop: '0.309em',
+  paddingBottom: '0.309em',
+  paddingRight: '0.309em',
+}
+
+const Timer = function(callback, delay){
+  var timerId,
+    start,
+    remaining = delay
+
+  this.pause = () => {
+    window.clearTimeout(timerId)
+    remaining -= new Date() - start
+  }
+
+  this.resume = () => {
+    start = new Date()
+    window.clearTimeout(timerId)
+    timerId = window.setTimeout(callback, remaining)
+  }
+
+  this.resume()
+}
+
 class FeaturedDatasets extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      current: 0,
+      carouselLength: 0,
+      timer: undefined,
+      collapseImage: false,
+      hovering: false,
+      focusing: false,
+      manualPause: false,
+    }
+  }
+
+  isPaused = () => {
+    const {focusing, hovering, manualPause} = this.state
+    return !focusing && !hovering && !manualPause
+  }
+
   search = query => {
     const {submit, updateQuery} = this.props
     updateQuery(query)
     submit(query)
   }
 
-  onClick(i) {
-    const {featured} = this.props
-    const {current} = this.state
-    if (current === i) {
-      this.search(featured[i].searchTerm)
+  togglePause = () => {
+    if (this.isPaused()) {
+      this.state.timer.resume()
     }
   }
 
-  onEnter(i) {
+  toggleManualPause = () => {
     this.state.timer.pause()
-    this.setState({current: i})
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        manualPause: !prevState.manualPause,
+      }
+    }, this.togglePause)
   }
 
-  onLeave() {
-    this.state.timer.resume()
+  handleBlur = () => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: false,
+        focusingCurrent: null,
+      }
+    }, this.togglePause)
   }
 
-  setupTimer(items) {
+  handleFocus = i => {
+    this.state.timer.pause()
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusing: true,
+        focusingCurrent: i,
+        current: i,
+      }
+    }, this.togglePause)
+  }
+
+  handleMouseOut = () => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        hovering: false,
+        current: prevState.focusing
+          ? prevState.focusingCurrent
+          : prevState.current,
+      }
+    }, this.togglePause)
+  }
+
+  handleMouseOver = i => {
+    this.state.timer.pause()
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        hovering: true,
+        current: i,
+      }
+    }, this.togglePause)
+  }
+
+  setupTimer = items => {
     const {carouselLength, timer} = this.state
 
     if (items && (items.length || carouselLength !== items.length)) {
       this.setState({carouselLength: items.length})
 
-      function Timer(callback, delay){
-        var timerId,
-          start,
-          remaining = delay
-
-        this.pause = () => {
-          window.clearTimeout(timerId)
-          remaining -= new Date() - start
-        }
-
-        this.resume = () => {
-          start = new Date()
-          window.clearTimeout(timerId)
-          timerId = window.setTimeout(callback, remaining)
-        }
-
-        this.resume()
+      if (!timer) {
+        this.setTimerState()
       }
-
-      const self = this
-      if (!timer)
-        (function setTimerState(){
-          self.setState({
-            timer: new Timer(() => {
-              const {carouselLength, current} = self.state
-              const newCurrent = (current + 1) % carouselLength
-              self.setState({current: newCurrent})
-              setTimerState()
-            }, 5000),
-          })
-        })()
     }
   }
 
-  constructor(props) {
-    super(props)
+  setTimerState = () => {
+    this.setState({
+      timer: new Timer(() => this.rotateCarousel(), 5000),
+    })
+  }
 
-    this.state = {
-      current: 0,
-      carouselLength: 0,
-      timer: undefined,
-      collapseImage: false,
+  rotateCarousel = () => {
+    const {carouselLength, current} = this.state
+    if (this.isPaused()) {
+      const newCurrent = (current + 1) % carouselLength
+      this.setState({current: newCurrent})
     }
+    else {
+    }
+    this.setTimerState()
   }
 
   componentWillReceiveProps({featured}) {
@@ -197,7 +318,27 @@ class FeaturedDatasets extends React.Component {
 
   render() {
     const {featured} = this.props
-    const {current, collapseImage} = this.state
+    const {current, collapseImage, manualPause} = this.state
+
+    const manualPauseLabel = !manualPause
+      ? 'Pause Animation'
+      : 'Start Animation'
+    const manualPauseAriaLabel = !manualPause
+      ? 'Pause Featured Datasets Animation'
+      : 'Start Featured Datasets Animation'
+    const manualPauseButton = (
+      <Button
+        title={manualPauseAriaLabel}
+        text={manualPauseLabel}
+        icon={!manualPause ? pause : play}
+        onClick={this.toggleManualPause}
+        style={stylePlayPauseButton(collapseImage)}
+        styleFocus={stylePlayPauseFocus}
+        styleHover={stylePlayPauseHover}
+        styleIcon={stylePlayPauseButtonIcon}
+        ariaSelected={!this.isPaused()}
+      />
+    )
 
     if (featured !== null && featured.length > 0) {
       const titleList = (
@@ -205,19 +346,31 @@ class FeaturedDatasets extends React.Component {
           {featured.map((f, i, arr) => {
             const active = current === i
             const first = i === 0
-            const last = i === arr.length - 1
+            // const last = i === arr.length - 1
+            const last = false
             return (
               <li
                 style={styleTitle(active, first, last, collapseImage)}
                 key={i}
-                onClick={() => this.onClick(i)}
-                onMouseEnter={() => this.onEnter(i)}
-                onMouseLeave={() => this.onLeave()}
+                onMouseEnter={() => this.handleMouseOver(i)}
+                onMouseLeave={this.handleMouseOut}
               >
-                <a onClick={() => this.onClick(i)}>{f.title}</a>
+                <Button
+                  text={f.title}
+                  title={`${f.title} Featured Data Search`}
+                  onClick={() => this.search(f.searchTerm)}
+                  onFocus={() => this.handleFocus(i)}
+                  onBlur={this.handleBlur}
+                  style={styleFeaturedButton(collapseImage)}
+                  styleHover={styleFeaturedButtonHover}
+                  styleFocus={styleFeaturedButtonFocus}
+                />
               </li>
             )
           })}
+          <li style={styleTitle(false, false, true, collapseImage)}>
+            {manualPauseButton}
+          </li>
         </ul>
       )
 
@@ -228,13 +381,15 @@ class FeaturedDatasets extends React.Component {
             if (active) {
               const backgroundURL = processUrl(f.imageUrl)
               return (
-                <div key={i} style={styleImage}>
+                <div key={i} style={styleImage} aria-hidden={true}>
                   <div
                     title={f.title}
                     style={styleFeaturedImage(backgroundURL)}
-                    onClick={() => this.onClick(i)}
-                    onMouseEnter={() => this.onEnter(i)}
-                    onMouseLeave={() => this.onLeave()}
+                    onClick={() => {
+                      this.search(f.searchTerm)
+                    }}
+                    onMouseEnter={() => this.handleMouseOver(i)}
+                    onMouseLeave={this.handleMouseOut}
                   />
                 </div>
               )
@@ -248,7 +403,7 @@ class FeaturedDatasets extends React.Component {
         : [ titleList, imageContainer ]
 
       return (
-        <div
+        <nav
           aria-labelledby="featuredDatasets"
           style={styleFeaturedDatasetsWrapper}
         >
@@ -265,7 +420,7 @@ class FeaturedDatasets extends React.Component {
           </div>
           <br />
           <br />
-        </div>
+        </nav>
       )
     }
     else {

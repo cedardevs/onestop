@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '2.0.0.RELEASE'
+    springBootVersion = '2.0.1.RELEASE'
   }
   repositories {
     maven {
@@ -49,7 +49,7 @@ subprojects {
     configurations.all {
       resolutionStrategy.eachDependency { DependencyResolveDetails details ->
         if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
-          if (details.requested.version.startsWith('2.9') && details.requested.version < '2.9.5') {
+          if (details.requested.version.startsWith('2.9') && details.requested.version <= '2.9.5') {
             details.useVersion '2.9.5'
             details.because 'fixes vulnerability in 2.9.x before 2.9.5'
           }
@@ -113,53 +113,80 @@ buildScan {
   licenseAgree = 'yes'
 }
 
-task dockerComposeStart(type: Exec, description: 'Runs the entire system in docker containers', group: 'docker') {
-  dependsOn ":api-search:build", ":api-metadata:build", ":client:build", "geoportal-search:build"
-  executable = "bash"
-  args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d"]
+task startBackend(type: Exec, description: 'Starts minikube if not already running and sets docker env') {
+  executable = 'bash'
+  workingDir 'kubernetes'
+  args = ['-c', './startMinikube.sh']
 }
 
-task dockerComposeStop(type: Exec, description: 'Stops the entire system in docker containers', group: 'docker') {
-  executable = "bash"
-  args = ["-c", "docker-compose stop"]
+task deployBackend(type: Exec, description: 'Deploys Elasticsearch, both APIs, and Kibana on local minikube') {
+  dependsOn "startBackend", ":api-search:build", ":api-metadata:build"
+  executable = 'bash'
+  workingDir 'kubernetes'
+  args = ['-c', './deployBackend.sh']
 }
 
-task dockerComposeInfraStart(type: Exec, description: 'Runs infrastructure needed under our apps, e.g. elasticsearch', group: 'docker') {
-  executable = "bash"
-  args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d elasticsearch"]
+
+task stopAndCleanBackend(type: Exec, description: 'Deletes all deployments and stops minikube') {
+  workingDir 'kubernetes'
+  executable = 'bash'
+  args = ['-c', "./stopAndCleanBackend.sh"]
 }
 
-task dockerComposeInfraStop(type: Exec, description: 'Stops the infrastructure needed under our apps, e.g. elasticsearch', group: 'docker') {
-  executable = "bash"
-  args = ["-c", "docker-compose stop elasticsearch"]
+task openDashboards(description: 'Opens Kibana and Kubernetes dashboards') {
+  doLast {
+    exec {
+      commandLine 'minikube', 'dashboard'
+    }
+    println "Opening Kibana dashboard in default browser..."
+    exec {
+      commandLine 'open', 'http://localhost:5601/app/kibana#/dev_tools/console?_g=()'
+    }
+  }
 }
 
-task dockerComposeBackendStart(type: Exec, description: 'Runs intrastructure and api modules needed to run the client.', group: 'docker') {
-  dependsOn ":api-search:build", ":api-metadata:build", ":dockerComposeInfraStart"
-  executable = "bash"
-  args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d api-metadata api-search"]
-}
+task uploadTestData(description: 'Uploads test data to elasticsearch.', group: 'upload') {
+  doLast {
+    // delete previously expanded testData directory, if it exists
+    delete 'upload/testData'
 
-task dockerComposeBackendStop(type: Exec, description: 'Stops intrastructure and api modules needed to run the client.', group: 'docker', dependsOn: [":dockerComposeInfraStop"]) {
-  executable = "bash"
-  args = ["-c", "docker-compose stop api-metadata api-search"]
-}
+    // expand the test data tar.gz into testData directory
+    def testDataTGZ = 'testData_20180404.tar.gz'
+    def stdoutExpand = new ByteArrayOutputStream()
+    def stderrExpand = new ByteArrayOutputStream()
+    def resultExpand = exec {
+      ignoreExitValue = true
+      workingDir 'upload'
+      executable = 'bash'
+      args = ['-c', "tar -xvzf ${testDataTGZ}"]
+      standardOutput = stdoutExpand
+      errorOutput = stderrExpand
+    }
+    if(resultExpand.getExitValue() == 0) {
+      print stdoutExpand
+    }
+    else {
+      print stderrExpand
+      throw new GradleException("failed to extract ${testDataTGZ}")
+    }
 
-task dockerComposeKibanaStart(type: Exec, description: 'Runs Kibana.', group: 'docker') {
-  executable = "bash"
-  args = ["-c", "ES_VERSION=$project.esVersion docker-compose up -d kibana"]
-}
-
-task dockerComposeKibanaStop(type: Exec, description: 'Stops Kibana.', group: 'docker') {
-  executable = "bash"
-  args = ["-c", "docker-compose stop kibana"]
-}
-
-task dockerComposeClean(type: Exec, description: 'Stops and removes the entire system of docker containers', group: 'docker') {
-  executable = "bash"
-  args = ["-c", "docker-compose down"]
-}
-
-task clean {
-  dependsOn dockerComposeClean
+    // run the upload script against the testData directory and api-metadata running locally
+    def stdoutUpload = new ByteArrayOutputStream()
+    def stderrUpload = new ByteArrayOutputStream()
+    def resultUpload = exec {
+      ignoreExitValue = true
+      workingDir 'upload'
+      executable = 'bash'
+      args = ['-c', './uploadToOnestopApi.sh ./testData http://localhost:8098/onestop/api/metadata']
+      standardOutput = stdoutUpload
+      errorOutput = stderrUpload
+    }
+    if(resultUpload.getExitValue() == 0) {
+      print stdoutUpload
+    }
+    else {
+      print stderrUpload
+      throw new GradleException("failed to upload test data")
+    }
+  }
 }

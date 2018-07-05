@@ -4,6 +4,8 @@ import {triggerSearch, clearFacets} from '../actions/SearchRequestActions'
 import {updateQuery} from '../actions/SearchParamActions'
 import {showCollections} from '../actions/FlowActions'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   return {
     featured: state.domain.config.featured,
@@ -21,6 +23,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const LandingContainer = connect(mapStateToProps, mapDispatchToProps)(Landing)
+const LandingContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(Landing)
+)
 
 export default LandingContainer

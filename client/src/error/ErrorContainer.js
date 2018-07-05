@@ -4,6 +4,8 @@ import {push, goBack} from 'react-router-redux'
 import {clearErrors} from '../actions/ErrorActions'
 import {updateSearch} from '../actions/SearchParamActions'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   return {
     errors: state.behavior.errors,
@@ -24,6 +26,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const ErrorContainer = connect(mapStateToProps, mapDispatchToProps)(Error)
+const ErrorContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(Error)
+)
 
 export default ErrorContainer

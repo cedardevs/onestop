@@ -7,12 +7,19 @@ import mapIcon from '../../../img/font-awesome/white/svg/globe.svg'
 import Checkbox from '../../common/input/Checkbox'
 import {convertBboxToGeoJson, convertGeoJsonToBbox} from '../../utils/geoUtils'
 import {fontFamilyMonospace} from '../../utils/styleUtils'
+import Fieldset from '../Fieldset'
+import {
+  FilterColors,
+  FilterStyles,
+  SiteColors,
+} from '../../common/defaultStyles'
 
 const styleMapFilter = {
-  backgroundColor: '#3D97D2',
-  padding: '0.618em',
-  color: '#F9F9F9',
-  position: 'relative',
+  ...FilterStyles.MEDIUM,
+  ...{
+    padding: '0.618em',
+    position: 'relative',
+  },
 }
 
 const styleDescription = {
@@ -22,15 +29,6 @@ const styleDescription = {
 const styleForm = {
   display: 'flex',
   flexDirection: 'column',
-}
-
-const styleFieldset = {
-  alignSelf: 'center',
-  border: '1px solid white',
-}
-
-const styleLegend = {
-  color: 'inherit',
 }
 
 const styleButtons = {
@@ -58,10 +56,25 @@ const styleLabel = {
   width: '4em',
 }
 
+const styleCoordWrapper = {
+  height: '2em',
+}
+
 const styleTextBox = {
   width: '10em',
-  color: 'black',
+  color: FilterColors.TEXT,
   fontFamily: fontFamilyMonospace(),
+
+  height: '100%',
+  margin: 0,
+  padding: '0 0.309em',
+  border: `1px solid ${FilterColors.LIGHT_SHADOW}`,
+  borderRadius: '0.309em',
+}
+
+const styleSeparator = {
+  borderBottom: `1px solid ${FilterColors.TEXT}`,
+  margin: '1em 0',
 }
 
 export default class MapFilter extends Component {
@@ -181,7 +194,7 @@ export default class MapFilter extends Component {
     }
     else {
       return {
-        color: '#b00101',
+        color: SiteColors.WARNING,
         textAlign: 'center',
         margin: '0.75em 0 0.5em',
         fontWeight: 'bold',
@@ -213,16 +226,18 @@ export default class MapFilter extends Component {
         <label htmlFor={id} style={styleLabel}>
           {_.capitalize(direction)}
         </label>
-        <input
-          type="text"
-          id={id}
-          name={direction}
-          placeholder={placeholderValue}
-          aria-placeholder={placeholderValue}
-          value={value}
-          style={styleTextBox}
-          onChange={() => {}}
-        />
+        <div style={styleCoordWrapper}>
+          <input
+            type="text"
+            id={id}
+            name={direction}
+            placeholder={placeholderValue}
+            aria-placeholder={placeholderValue}
+            value={value}
+            style={styleTextBox}
+            onChange={() => {}}
+          />
+        </div>
       </div>
     )
   }
@@ -230,17 +245,20 @@ export default class MapFilter extends Component {
   renderCoordinateInput = () => {
     return (
       <div key="MapFilterCoordinatesInput::all" style={styleBreathingRoom}>
-        <form style={styleForm} onKeyDown={this.handleKeyDown}>
-          <fieldset
-            style={styleFieldset}
-            onChange={event => this.onChange(event)}
+        <form
+          style={styleForm}
+          onKeyDown={this.handleKeyDown}
+          aria-describedby="mapFilterInstructions"
+        >
+          <Fieldset
+            onFieldsetChange={event => this.onChange(event)}
+            legendText="Bounding Box Coordinates:"
           >
-            <legend style={styleLegend}>Bounding Box Coordinates: </legend>
             {this.renderInputRow('west', '-180.0 to 180.0')}
             {this.renderInputRow('south', ' -90.0 to  90.0')}
             {this.renderInputRow('east', '-180.0 to 180.0')}
             {this.renderInputRow('north', ' -90.0 to  90.0')}
-          </fieldset>
+          </Fieldset>
         </form>
       </div>
     )
@@ -254,7 +272,6 @@ export default class MapFilter extends Component {
         key="MapFilter::showMapToggle"
         icon={mapIcon}
         text={showMapText}
-        title={showMapText}
         onClick={() => {
           this.props.showMap ? this.handleHideMap() : this.handleShowMap()
         }}
@@ -316,12 +333,12 @@ export default class MapFilter extends Component {
 
     return (
       <div style={styleMapFilter}>
-        <p style={styleDescription}>
-          Enter coordinates below or draw on the map. Use the Clear button to
-          reset the map and text boxes.
-        </p>
+        <label id="mapFilterInstructions" style={styleDescription}>
+          Type coordinates or draw on the map. Use the Clear button to reset the
+          location filter.
+        </label>
         {inputColumn}
-        <div style={{borderBottom: '1px solid white', margin: '1em 0'}} />
+        <div style={styleSeparator} />
         <h3 style={{paddingLeft: '0.308em'}}>Additional Filtering Options:</h3>
         {excludeGlobalCheckbox}
       </div>

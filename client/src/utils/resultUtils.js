@@ -41,18 +41,25 @@ export const protocols = Immutable([
   {
     id: 'C',
     names: [ 'ogc:wcs' ],
-    color: 'coral',
+    color: '#ab4e2c',
     label: 'OGC Web Coverage Service',
   },
   {
     id: 'cloud',
-    names: [ 'cloud' ],
+    names: [
+      'cloud',
+      'aws:s3',
+      'google:gcs',
+      'google:gcp:gcs',
+      'google:gcp:bigquery',
+      'amazon:aws:s3',
+    ],
     color: '#327cac',
     label: 'Cloud File Access',
     svgPath: cloud,
   },
   {id: 'D', names: [ 'download' ], color: 'blue', label: 'Download'},
-  {id: 'F', names: [ 'ftp' ], color: 'red', label: 'FTP'},
+  {id: 'F', names: [ 'ftp' ], color: '#c50000', label: 'FTP'},
   {
     id: 'H',
     names: [ 'http', 'https' ],
@@ -62,13 +69,13 @@ export const protocols = Immutable([
   {
     id: 'L',
     names: [ 'noaa:las' ],
-    color: 'aqua',
+    color: '#008484',
     label: 'NOAA Live Access Server',
   },
   {
     id: 'M',
     names: [ 'ogc:wms' ],
-    color: 'goldenrod',
+    color: '#92631c',
     label: 'OGC Web Map Service',
   },
   {
@@ -80,15 +87,19 @@ export const protocols = Immutable([
   {
     id: 'T',
     names: [ 'thredds', 'unidata:thredds' ],
-    color: 'grey',
+    color: '#616161',
     label: 'THREDDS',
   },
-  {id: 'W', names: [ '' ], color: '#e69500', label: 'Web'},
+  {id: 'W', names: [ '' ], color: '#a26a03', label: 'Web'},
 ])
 
 export const identifyProtocol = link => {
   const name = _.toLower(link.linkProtocol || '')
-  return _.find(protocols, p => p.names.includes(name))
+  const protocol = _.find(protocols, p => p.names.includes(name))
+  if (protocol) {
+    return protocol
+  }
+  return {id: '?', names: [], color: 'black', label: 'Unknown'}
 }
 
 export const renderBadgeIcon = protocol => {

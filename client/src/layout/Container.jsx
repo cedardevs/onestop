@@ -5,6 +5,7 @@ import Header from './Header'
 import Earth from './Earth'
 import Content from './Content'
 import Footer from './Footer'
+import {Route, Switch} from 'react-router'
 
 const defaultPadding = '1em'
 
@@ -24,14 +25,18 @@ export default class Container extends Component {
       leftVisible,
       middle,
       middleMaxWidth,
-      middleBackgroundColor,
-      onHomePage,
       right,
       rightWidth,
       rightVisible,
       footer,
     } = this.props
-    const earth = onHomePage ? <Earth key={'earth'} /> : null
+    const earth = (
+      <Switch key={'earth-switch'}>
+        <Route path="/" exact>
+          <Earth key={'earth'} />
+        </Route>
+      </Switch>
+    )
     const styles = Object.assign({}, styleContainer, style)
     return (
       <div>
@@ -45,8 +50,6 @@ export default class Container extends Component {
               leftVisible={leftVisible}
               middle={middle}
               middleMaxWidth={middleMaxWidth}
-              middleBackgroundColor={middleBackgroundColor}
-              onHomePage={onHomePage}
               right={right}
               rightWidth={rightWidth}
               rightVisible={rightVisible}

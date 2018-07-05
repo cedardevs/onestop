@@ -1,9 +1,5 @@
-import {syncHistoryWithStore} from 'react-router-redux'
-import {hashHistory} from 'react-router'
-import store from './store.js'
+import {createHashHistory} from 'history'
 
-const history = syncHistoryWithStore(hashHistory, store, {
-  selectLocationState: state => state.behavior.routing,
-})
+const history = createHashHistory()
 
 export default history

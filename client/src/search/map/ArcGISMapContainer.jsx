@@ -2,6 +2,8 @@ import {connect} from 'react-redux'
 import ArcGISMap from './ArcGISMap'
 import {updateBounds} from '../../actions/FlowActions'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   return {
     showMap: state.ui.mapFilter.showMap,
@@ -21,8 +23,8 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-const ArcGISMapContainer = connect(mapStateToProps, mapDispatchToProps)(
-  ArcGISMap
+const ArcGISMapContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(ArcGISMap)
 )
 
 export default ArcGISMapContainer

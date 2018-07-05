@@ -1,6 +1,8 @@
 import {connect} from 'react-redux'
 import About from './About'
 
+import {withRouter} from 'react-router'
+
 const mapStateToProps = state => {
   return {
     collectionsCount: state.domain.info.collectionsCount,
@@ -12,6 +14,8 @@ const mapDispatchToProps = dispatch => {
   return {}
 }
 
-const AboutContainer = connect(mapStateToProps, mapDispatchToProps)(About)
+const AboutContainer = withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(About)
+)
 
 export default AboutContainer
