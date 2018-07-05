@@ -63,8 +63,14 @@ task test {
     dependsOn 'npm_test'
 }
 
+task retire(type: Exec) {
+  executable = "bash"
+  args = ["-c", "npm run retire"]
+}
+
 check {
     dependsOn 'test'
+    dependsOn 'retire'
 }
 
 build {
