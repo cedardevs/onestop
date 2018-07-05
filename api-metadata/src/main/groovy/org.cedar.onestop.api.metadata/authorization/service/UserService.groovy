@@ -12,10 +12,15 @@ import org.springframework.stereotype.Service
 @Service
 class UserService {
     @Autowired
-    UserRepository userRepository
+    private final UserRepository userRepository
 
     User saveUser(User user) {
         return userRepository.save(user)
+    }
+
+    User createUser(String email) {
+        User user = new User(email: email, uuid: UUID.randomUUID())
+        userRepository.save(user)
     }
 
     User findByEmail(String email) {

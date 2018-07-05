@@ -3,6 +3,7 @@ package org.cedar.onestop.api.metadata.authorization
 import org.cedar.onestop.api.metadata.authorization.domain.Role
 import org.cedar.onestop.api.metadata.authorization.domain.User
 import org.cedar.onestop.api.metadata.authorization.repository.RoleRepository
+import org.cedar.onestop.api.metadata.authorization.service.RoleService
 import org.cedar.onestop.api.metadata.authorization.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.ApplicationArguments
@@ -15,7 +16,7 @@ class DatabaseLoader implements ApplicationRunner {
     private final UserService userService
 
     @Autowired
-    private final RoleRepository roleRepository
+    private final RoleService roleService
 
     @Override
     void run(ApplicationArguments args) throws Exception {
@@ -24,11 +25,8 @@ class DatabaseLoader implements ApplicationRunner {
     }
 
     private void seedRoles() {
-        Role admin = new Role(role: 'ADMIN')
-        Role user = new Role(role: 'USER')
-
-        roleRepository.save(admin)
-        roleRepository.save(user)
+        roleService.saveRole('ADMIN')
+        roleService.saveRole('USER')
     }
 
     private void seedUsers() {
@@ -36,8 +34,8 @@ class DatabaseLoader implements ApplicationRunner {
         User zeb = new User(email: 'zeb@mail.com', uuid: '9ea916eb-7ab6-4a7d-9e76-944635b0c051')
         User elliot = new User(email: 'elliott.richerson@noaa.gov', uuid: '85c631fb-e165-4878-a482-9cd0435aadf3')
 
-        Role admin = roleRepository.findByRole('ADMIN')
-        Role user = roleRepository.findByRole('USER')
+        Role admin = roleService.findByRole('ADMIN')
+        Role user = roleService.findByRole('USER')
 
         bao.roles.addAll(admin, user)
         zeb.roles.add(user)
