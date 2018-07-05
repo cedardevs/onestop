@@ -2,6 +2,15 @@ server:
   port: 8098
   servlet:
     context-path: /onestop/api
+  ssl:
+#    key-password:
+    key-alias: sciapps.colorado.edu
+    enabled-protocols: TLSv1.2
+    protocol: TLS
+    enabled: true
+    key-store-password: password
+    key-store: /Users/elliott/sciapps/jks/sciapps.colorado.edu.jks
+    key-store-type: JKS
 
 spring:
   h2.console.enabled: true
