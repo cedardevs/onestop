@@ -8,8 +8,8 @@ server:
     enabled-protocols: TLSv1.2
     protocol: TLS
     enabled: true
-    key-store-password: password
-    key-store: /Users/elliott/sciapps/jks/sciapps.colorado.edu.jks
+    key-store-password: \${SCIAPPS_PW}
+    key-store: /Users/nguyenbv/Documents/cedarDevs/ingest/help/keystores/sciapps.colorado.edu.jks
     key-store-type: JKS
 
 spring:

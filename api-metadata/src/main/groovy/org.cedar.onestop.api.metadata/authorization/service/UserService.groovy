@@ -19,12 +19,12 @@ class UserService {
     }
 
     User createUser(String email) {
-        User user = new User(email: email, uuid: UUID.randomUUID())
+        User user = new User(email: sanitize(email), uuid: UUID.randomUUID())
         userRepository.save(user)
     }
 
     User findByEmail(String email) {
-        return userRepository.findByEmail(email)
+        return userRepository.findByEmail(sanitize(email))
     }
 
     UserDetails buildUserFromUserEntity(User user) {
@@ -36,5 +36,9 @@ class UserService {
         UserDetails userDetails = new UserDetailsImpl(user, authorities)
 
         return userDetails
+    }
+
+    private String sanitize(String email) {
+        return email.trim().toLowerCase()
     }
 }
