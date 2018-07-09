@@ -19,7 +19,7 @@ class UserService {
     }
 
     User createUser(String email) {
-        User user = new User(email: sanitize(email), uuid: UUID.randomUUID())
+        User user = new User(email: sanitize(email))
         userRepository.save(user)
     }
 
@@ -31,7 +31,7 @@ class UserService {
         List<GrantedAuthority> authorities = []
 
         user.roles.each { role ->
-            authorities.add(new SimpleGrantedAuthority(role.role))
+            authorities.add(new SimpleGrantedAuthority(role.roleName))
         }
         UserDetails userDetails = new UserDetailsImpl(user, authorities)
 

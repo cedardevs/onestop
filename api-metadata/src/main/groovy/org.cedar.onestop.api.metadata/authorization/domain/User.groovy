@@ -29,17 +29,9 @@ class User {
 
     @NotEmpty
     @Column(name='uuid')
-    String uuid
+    String uuid = UUID.randomUUID()
 
-//    @NotEmpty
-//    @Column(name='username')
-//    String username
-//
-//    @NotEmpty
-//    @Column(name='password')
-//    String password
-
-    @ManyToMany(fetch=FetchType.LAZY)
+    @ManyToMany(fetch=FetchType.LAZY, cascade=[ CascadeType.PERSIST, CascadeType.MERGE])
     @JoinTable(
             name='user_roles',
             joinColumns=[@JoinColumn(name='user_id')],

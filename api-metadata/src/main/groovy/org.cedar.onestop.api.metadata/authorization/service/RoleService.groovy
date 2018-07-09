@@ -14,8 +14,8 @@ class RoleService {
         roleRepository.findByRole(role)
     }
 
-    Role saveRole(String roleName) {
-        Role role = new Role(role: roleName)
+    Role saveRole(String name) {
+        Role role = new Role(roleName: name)
         roleRepository.save(role)
     }
 }

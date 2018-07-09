@@ -20,8 +20,8 @@ class Role {
     Long id
 
     @NotEmpty
-    @Column(name='role')
-    String role
+    @Column(name='role_name')
+    String roleName
 
     @ManyToMany(fetch=FetchType.LAZY, mappedBy = 'roles')
     List<User> users = []

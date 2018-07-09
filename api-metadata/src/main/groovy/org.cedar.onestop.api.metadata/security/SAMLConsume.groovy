@@ -195,7 +195,7 @@ class SAMLConsume {
         messageInfoContext.setMessageIssueInstant(samlResponse.getIssueInstant())
 
         MessageLifetimeSecurityHandler lifetimeSecurityHandler = new MessageLifetimeSecurityHandler()
-        lifetimeSecurityHandler.setClockSkew(1000)
+        lifetimeSecurityHandler.setClockSkew(3000)
         lifetimeSecurityHandler.setMessageLifetime(2000)
         lifetimeSecurityHandler.setRequiredRule(true)
 
