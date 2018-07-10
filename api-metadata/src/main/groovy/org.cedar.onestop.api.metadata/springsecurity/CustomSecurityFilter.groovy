@@ -33,9 +33,6 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
     @Autowired
     ServerProperties serverProperties
 
-//    @Autowired
-//    UserDetailsServiceImpl userDetailsServiceImpl
-
     // create instance of SAMLFilter to be wrapped by this Spring aware filter bean
     // provide an identity provider for which this filter will authenticate against
 //    private SAMLFilter samlFilter = new SAMLFilter(IdentityProviderEnumeration.ICAM_NOAA_LOCAL.getValue())

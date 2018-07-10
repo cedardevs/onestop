@@ -11,7 +11,7 @@ class RoleService {
     private final RoleRepository roleRepository
 
     Role findByRole(String role) {
-        roleRepository.findByRole(role)
+        roleRepository.findByRoleName(role)
     }
 
     Role saveRole(String name) {

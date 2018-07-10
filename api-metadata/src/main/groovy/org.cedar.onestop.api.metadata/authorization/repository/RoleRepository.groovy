@@ -5,5 +5,5 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.Repository
 
 interface RoleRepository extends CrudRepository<Role, Long> {
-    Role findByRole(String role)
+    Role findByRoleName(String name)
 }

@@ -25,6 +25,9 @@ spring:
   jpa:
     hibernate.ddl-auto: none
     database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      show_sql: true
+      format_sql: true
   liquibase:
     default-schema: PUBLIC # default schema for H2, here for documentation
 
