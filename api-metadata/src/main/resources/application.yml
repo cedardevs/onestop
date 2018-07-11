@@ -30,9 +30,15 @@ spring:
       format_sql: true
   liquibase:
     default-schema: PUBLIC # default schema for H2, here for documentation
+  servlet:
+    multipart:
+      max-file-size: 500Mb
+      max-request-size: 500Mb
 
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
+
+features.secure.upload: true
 
 logging:
   level:
