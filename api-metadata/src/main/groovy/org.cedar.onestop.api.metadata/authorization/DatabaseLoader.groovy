@@ -55,16 +55,16 @@ class DatabaseLoader implements ApplicationRunner {
 //            user.roles.add(role)
 //            userService.saveUser(user)
 //        }
-        User bao = userService.createUser('bao.nguyen@noaa.gov')
-        User elliott = userService.createUser('elliott.richerson@noaa.gov')
-
-        Role role = roleService.findByRole('ADMIN')
-
-        bao.roles.add(role)
-        elliott.roles.add(role)
-
-        userService.saveUser(bao)
-        userService.saveUser(elliott)
+//        User bao = userService.createUser('bao.nguyen@noaa.gov')
+//        User elliott = userService.createUser('elliott.richerson@noaa.gov')
+//
+//        Role role = roleService.findByRole('ADMIN')
+//
+//        bao.roles.add(role)
+//        elliott.roles.add(role)
+//
+//        userService.saveUser(bao)
+//        userService.saveUser(elliott)
     }
 
 //    private List<String> upcasedRoleNames(String roles=roleNames) {
