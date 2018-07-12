@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
 import org.springframework.stereotype.Component
 
+import javax.annotation.RegEx
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
 import javax.servlet.ServletRequest
@@ -26,9 +27,12 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 import java.nio.file.AccessDeniedException
 import java.security.Principal
+import java.util.regex.Pattern
 
 @Component
 class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
+
+    private final List<String> securedEndpointsRegex = [/^.+\/metadata/, /^.+\/admin\/.+$/, /^.+\/upload.html$/, /^.+\/userOnly$/]
 
     @Autowired
     ServerProperties serverProperties
@@ -88,6 +92,13 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
         println("IDP getAssertionConsumerServiceURL = ${samlFilter.identityProvider.getAssertionConsumerServiceURL()}")
         println("IDP getAssertionConsumerServiceLogoutURL = ${samlFilter.identityProvider.getAssertionConsumerServiceLogoutURL()}")
 
+        boolean secureEndpoint = false
+        securedEndpointsRegex.each { regex ->
+            if (path.matches(regex)) {
+                secureEndpoint = true
+            }
+        }
+
 
         // if we hit "consumeLogin" we've already returned from the identity provider and need to create our authentication context
         if(fullPath == samlFilter.identityProvider.assertionConsumerServiceURL) {
@@ -137,8 +148,8 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
         }
         // TODO: do something smarter here...?
-        else if(path.startsWith("/admin")) {
-            println("CustomSecurityFilter:::[condition] path.startsWith(\"/admin\")")
+        else if(secureEndpoint) {
+            println("CustomSecurityFilter:::[condition] path is secured endpoint")
 
             // delegate filter to our custom SAML filter
             samlFilter.doFilter(req, res, chain)

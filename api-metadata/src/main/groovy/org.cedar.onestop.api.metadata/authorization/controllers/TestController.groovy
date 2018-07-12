@@ -13,4 +13,9 @@ class TestController {
     String helloWorld() {
         return 'Hello World'
     }
+
+    @GetMapping(path="/test/userOnly")
+    String helloUser() {
+        return 'Hello Authorized User'
+    }
 }
