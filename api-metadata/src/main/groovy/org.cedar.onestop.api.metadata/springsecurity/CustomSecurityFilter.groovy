@@ -32,7 +32,7 @@ import java.util.regex.Pattern
 @Component
 class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
-    private final List<String> securedEndpointsRegex = [/^.+\/metadata/, /^.+\/admin\/.+$/, /^.+\/upload.html$/, /^.+\/userOnly$/]
+    private final List<String> securedEndpointsRegex = [/\/metadata.*$/, /\/admin\/.+$/, /\/upload.html$/, /^.+\/userOnly$/]
 
     @Autowired
     ServerProperties serverProperties

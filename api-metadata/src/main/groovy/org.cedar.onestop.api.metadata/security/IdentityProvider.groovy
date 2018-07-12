@@ -33,12 +33,12 @@ class IdentityProvider {
         // however, endpoint for the HTTP request needs the 8443 for email instead of CAC login.
         // Setting both to 8443 will result in an "500 Invalid destination" error
         // TODO: make this condition easier by consolidating the enum or giving a better property to test off
-        if(name == "ICAM (localhost)" || name == "ICAM (sciapps)") {
-            endpoint.setLocation(loginEndpoint.replace(':443', ':8443'))
-        }
-        else {
+//        if(name == "ICAM (localhost)" || name == "ICAM (sciapps)") {
+//            endpoint.setLocation(loginEndpoint.replace(':443', ':8443'))
+//        }
+//        else {
             endpoint.setLocation(loginEndpoint)
-        }
+//        }
 
         return endpoint
     }
