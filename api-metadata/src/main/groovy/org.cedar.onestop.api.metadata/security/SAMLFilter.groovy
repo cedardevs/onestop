@@ -118,6 +118,7 @@ class SAMLFilter implements Filter {
         velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath")
         velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName())
         velocityEngine.init()
+        return velocityEngine
     }
 
     private void redirectUserWithRequest(HttpServletResponse httpServletResponse, AuthnRequest authnRequest, Credential credential) {
@@ -148,25 +149,25 @@ class SAMLFilter implements Filter {
         // post login binding
         if(identityProvider.loginBinding == SAMLConstants.SAML2_POST_BINDING_URI) {
             logger.info("using POST login binding")
+            VelocityEngine velocityEngine = buildVelocityEngine()
             encoder = new HTTPPostEncoder()
             encoder.setVelocityTemplateId("/templates/saml2-post-binding.vm")
-            VelocityEngine velocityEngine = buildVelocityEngine()
             encoder.setVelocityEngine(velocityEngine)
         }
         // artifact login binding
         else if(identityProvider.loginBinding == SAMLConstants.SAML2_ARTIFACT_BINDING_URI) {
             logger.info("using ARTIFACT login binding")
+            VelocityEngine velocityEngine = buildVelocityEngine()
             encoder = new HTTPArtifactEncoder()
             encoder.setVelocityTemplateId("/templates/saml2-post-artifact-binding.vm")
-            VelocityEngine velocityEngine = buildVelocityEngine()
             encoder.setVelocityEngine(velocityEngine)
         }
         // simple sign login binding
         else if(identityProvider.loginBinding == SAMLConstants.SAML2_POST_SIMPLE_SIGN_BINDING_URI) {
             logger.info("using SIMPLE SIGN login binding")
+            VelocityEngine velocityEngine = buildVelocityEngine()
             encoder = new HTTPPostSimpleSignEncoder()
             encoder.setVelocityTemplateId("/templates/saml2-post-simplesign-binding.vm")
-            VelocityEngine velocityEngine = buildVelocityEngine()
             encoder.setVelocityEngine(velocityEngine)
         }
         // otherwise, assume we are using a redirect login binding

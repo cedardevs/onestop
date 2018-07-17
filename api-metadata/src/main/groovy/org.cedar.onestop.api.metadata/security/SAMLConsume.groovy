@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory
 import org.xml.sax.SAXException
 
 import javax.servlet.http.HttpServletRequest
+import javax.xml.bind.DatatypeConverter
 import java.nio.charset.StandardCharsets
 
 class SAMLConsume {
@@ -133,7 +134,11 @@ class SAMLConsume {
     }
 
     private static String decode(String samlResponseEncoded) {
-        byte[] decodedBytes = Base64.getDecoder().decode(samlResponseEncoded)
+        println("samlResponseEncoded: ${samlResponseEncoded}")
+//        byte[] decodedBytes = Base64.getDecoder().decode(samlResponseEncoded)
+        
+        byte[] decodedBytes = DatatypeConverter.parseBase64Binary(samlResponseEncoded)
+
         return new String(decodedBytes, StandardCharsets.UTF_8)
     }
 
