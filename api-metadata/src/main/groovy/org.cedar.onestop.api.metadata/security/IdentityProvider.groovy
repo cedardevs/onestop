@@ -23,23 +23,41 @@ class IdentityProvider {
     String signatureAlgorithm
     String signatureCanonicalizationAlgorithm
     String digestAlgorithm
+    String emailAssertionName
+    String emailAssertionNameFormat
+    String uuidAssertionName
+    String uuidAssertionNameFormat
 
+    String info() {
+        return "\nIdentityProvider {" +
+                "\n\tname: ${name}" +
+                "\n\tloginEndpoint: ${loginEndpoint}" +
+                "\n\tloginBinding: ${loginBinding}" +
+                "\n\tlogoutEndpoint: ${logoutEndpoint}" +
+                "\n\tlogoutBinding: ${logoutBinding}" +
+                "\n\tissuerSP: ${issuerSP}" +
+                "\n\tissuerIDP: ${issuerIDP}" +
+                "\n\tauthnContextRefs: ${authnContextRefs}" +
+                "\n\tauthnContextComparisonType: ${authnContextComparisonType}" +
+                "\n\tassertionConsumerServiceURL: ${assertionConsumerServiceURL}" +
+                "\n\tassertionConsumerServiceLogoutURL: ${assertionConsumerServiceLogoutURL}" +
+                "\n\tnameIDPolicyFormat: ${nameIDPolicyFormat}" +
+                "\n\tforceAuthn: ${forceAuthn}" +
+                "\n\tisPassive: ${isPassive}" +
+                "\n\tsignatureAlgorithm: ${signatureAlgorithm}" +
+                "\n\tsignatureCanonicalizationAlgorithm: ${signatureCanonicalizationAlgorithm}" +
+                "\n\tdigestAlgorithm: ${digestAlgorithm}" +
+                "\n\temailAssertionName: ${emailAssertionName}" +
+                "\n\temailAssertionNameFormat: ${emailAssertionNameFormat}" +
+                "\n\tuuidAssertionName: ${uuidAssertionName}" +
+                "\n\tuuidAssertionNameFormat: ${uuidAssertionNameFormat}" +
+                "\n}\n"
+    }
 
     Endpoint buildLoginEndpoint() {
         SingleSignOnService endpoint = SAMLUtil.buildSAMLObject(SingleSignOnService.class)
         endpoint.setBinding(loginBinding)
-
-        // ICAM is weird, and requires the AuthnRequest "Destination" attribute to have the 443 binding port;
-        // however, endpoint for the HTTP request needs the 8443 for email instead of CAC login.
-        // Setting both to 8443 will result in an "500 Invalid destination" error
-        // TODO: make this condition easier by consolidating the enum or giving a better property to test off
-//        if(name == "ICAM (localhost)" || name == "ICAM (sciapps)") {
-//            endpoint.setLocation(loginEndpoint.replace(':443', ':8443'))
-//        }
-//        else {
-            endpoint.setLocation(loginEndpoint)
-//        }
-
+        endpoint.setLocation(loginEndpoint)
         return endpoint
     }
 
@@ -49,5 +67,7 @@ class IdentityProvider {
         endpoint.setLocation(logoutEndpoint)
         return endpoint
     }
+
+
 
 }

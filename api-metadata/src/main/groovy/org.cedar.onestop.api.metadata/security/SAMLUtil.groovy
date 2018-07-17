@@ -11,6 +11,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Element
 
+import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 import javax.xml.namespace.QName
 import javax.xml.transform.*
 import javax.xml.transform.dom.DOMSource
@@ -73,6 +75,20 @@ class SAMLUtil {
             e.printStackTrace()
         } catch (TransformerException e) {
             e.printStackTrace()
+        }
+    }
+
+    static void setAuthenticatedSession(HttpServletRequest req) {
+        req.getSession().setAttribute(SPConstants.AUTHENTICATED_SESSION_ATTRIBUTE, true)
+    }
+
+    static void redirectToGotoURL(HttpServletRequest req, HttpServletResponse resp) {
+        String gotoURL = (String)req.getSession().getAttribute(SPConstants.GOTO_URL_SESSION_ATTRIBUTE)
+        logger.info("Redirecting to requested URL: " + gotoURL)
+        try {
+            resp.sendRedirect(gotoURL)
+        } catch (IOException e) {
+            throw new RuntimeException(e)
         }
     }
 }

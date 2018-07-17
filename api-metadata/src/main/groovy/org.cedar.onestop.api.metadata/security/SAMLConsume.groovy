@@ -23,7 +23,6 @@ import org.opensaml.saml.saml2.core.EncryptedAssertion
 import org.opensaml.saml.saml2.core.Response
 import org.opensaml.saml.saml2.encryption.Decrypter
 import org.opensaml.saml.saml2.encryption.EncryptedElementTypeEncryptedKeyResolver
-import org.opensaml.saml.security.impl.SAMLSignatureProfileValidator
 import org.opensaml.security.credential.Credential
 import org.opensaml.xmlsec.encryption.support.ChainingEncryptedKeyResolver
 import org.opensaml.xmlsec.encryption.support.DecryptionException
@@ -32,7 +31,6 @@ import org.opensaml.xmlsec.encryption.support.InlineEncryptedKeyResolver
 import org.opensaml.xmlsec.encryption.support.SimpleRetrievalMethodEncryptedKeyResolver
 import org.opensaml.xmlsec.keyinfo.KeyInfoCredentialResolver
 import org.opensaml.xmlsec.keyinfo.impl.StaticKeyInfoCredentialResolver
-import org.opensaml.xmlsec.signature.support.SignatureValidator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.xml.sax.SAXException
@@ -45,18 +43,12 @@ class SAMLConsume {
 
     private static Logger logger = LoggerFactory.getLogger(SAMLConsume.class)
 
-    final static String EMAIL_ATTRIBUTE_NAME = "email"
-    final static String EMAIL_ATTRIBUTE_NAME_FORMAT = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
-    final static String UUID_ATTRIBUTE_NAME = "uuid"
-    final static String UUID_ATTRIBUTE_NAME_FORMAT = "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
-
-
-    static String getEmail(Assertion assertion) {
-        return getAttributeValue(EMAIL_ATTRIBUTE_NAME, EMAIL_ATTRIBUTE_NAME_FORMAT, assertion)
+    static String getEmail(Assertion assertion, IdentityProvider identityProvider) {
+        return getAttributeValue(identityProvider.emailAssertionName, identityProvider.emailAssertionNameFormat, assertion)
     }
 
-    static String getUUID(Assertion assertion) {
-        return getAttributeValue(UUID_ATTRIBUTE_NAME, UUID_ATTRIBUTE_NAME_FORMAT, assertion)
+    static String getUUID(Assertion assertion, IdentityProvider identityProvider) {
+        return getAttributeValue(identityProvider.uuidAssertionName, identityProvider.uuidAssertionNameFormat, assertion)
     }
 
     private static String getAttributeValue(String attributeName, String attributeNameFormat, Assertion assertion)
@@ -100,45 +92,35 @@ class SAMLConsume {
     }
 
 
-    ////
+    static Map<String, String> getAssertions(String samlResponseEncoded, final HttpServletRequest request, final long clockSkew, final long messageLifetime) {
 
-    static String getSAMLPrincipal(String samlResponseEncoded, final HttpServletRequest request) {
+        Map<String, String> assertions = [email: null, uuid: null]
+
         String samlResponseXML = decode(samlResponseEncoded)
-        println("samlResponseXML: ${samlResponseXML}")
+        logger.debug("SAML Response XML:\n${samlResponseXML}\n")
         Response samlResponse = getSAMLResponse(samlResponseXML)
 
-        validateDestinationAndLifeTime(samlResponse, request)
+        validateDestinationAndLifeTime(samlResponse, request, clockSkew, messageLifetime)
 
         List<Assertion> assertionList = getSAMLAssertions(samlResponse)
-        println("assertionList: ${assertionList}")
-
         String issuer
-        String identityProvider
         String email
         String uuid
         for (Assertion assertion : assertionList) {
-
             issuer = assertion.getIssuer().getValue()
             IdentityProvider idpOfAssertion = IdentityProviderEnumeration.findByIssuerIDP(issuer).getValue()
-            identityProvider = idpOfAssertion ? idpOfAssertion.getName() : "unknown"
-
-            email = getEmail(assertion)
-            uuid = getUUID(assertion)
-
-            println("EMAIL: ${email}")
-            println("UUID: ${uuid}")
+            email = getEmail(assertion, idpOfAssertion)
+            uuid = getUUID(assertion, idpOfAssertion)
         }
 
-        // TODO: is this what we need for the user principal in roles?
-        return email
+        assertions.email = email
+        assertions.uuid = uuid
+
+        return assertions
     }
 
     private static String decode(String samlResponseEncoded) {
-        println("samlResponseEncoded: ${samlResponseEncoded}")
-//        byte[] decodedBytes = Base64.getDecoder().decode(samlResponseEncoded)
-        
         byte[] decodedBytes = DatatypeConverter.parseBase64Binary(samlResponseEncoded)
-
         return new String(decodedBytes, StandardCharsets.UTF_8)
     }
 
@@ -183,7 +165,7 @@ class SAMLConsume {
                     assertionList.add(decryptedAssertion)
                 }
                 catch (DecryptionException e) {
-                    println("SAMLConsume::getSAMLAssertions::DecryptionException = ${e.message}\n\n (assertion will be skipped)")
+                    logger.debug("${e.message} (assertion will be skipped)")
                 }
             }
         }
@@ -191,7 +173,7 @@ class SAMLConsume {
         return assertionList
     }
 
-    private static void validateDestinationAndLifeTime(Response samlResponse, HttpServletRequest request) {
+    private static void validateDestinationAndLifeTime(Response samlResponse, HttpServletRequest request, long clockSkew, long messageLifetime) {
 
         MessageContext context = new MessageContext<Response>()
         context.setMessage(samlResponse)
@@ -222,6 +204,5 @@ class SAMLConsume {
             throw new RuntimeException(e)
         }
     }
-
 
 }

@@ -11,14 +11,12 @@ enum IdentityProviderEnumeration {
             new IdentityProvider(
                     name: "ICAM (sciapps)",
                     loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/SSOPOST/metaAlias/noaa-online/noaa-online-idp",
-//                    loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/SSORedirect/metaAlias/noaa-online/noaa-online-idp",
-                    loginBinding: SAMLConstants.SAML2_POST_BINDING_URI, //SAMLConstants.SAML2_REDIRECT_BINDING_URI,
+                    loginBinding: SAMLConstants.SAML2_POST_BINDING_URI,
                     logoutEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/IDPSloRedirect/metaAlias/noaa-online/noaa-online-idp",
                     logoutBinding: SAMLConstants.SAML2_POST_BINDING_URI,
-//                    issuerSP: "urn:gov:gsa:SAML:2.0.profiles:sp:sso:NOAA:api-metadata_sciapps",
                     issuerSP: "https://sciapps.colorado.edu/onestop/api/",
                     issuerIDP: "noaa-online-idp",
-                    authnContextRefs: [AuthnContext.UNSPECIFIED_AUTHN_CTX], //[AuthnContext.PPT_AUTHN_CTX],
+                    authnContextRefs: [AuthnContext.UNSPECIFIED_AUTHN_CTX],
                     authnContextComparisonType: AuthnContextComparisonTypeEnumeration.MINIMUM,
                     assertionConsumerServiceURL: "https://sciapps.colorado.edu/onestop/api/loginConsume",
                     assertionConsumerServiceLogoutURL: "https://sciapps.colorado.edu/onestop/api/logoutConsume",
@@ -27,21 +25,23 @@ enum IdentityProviderEnumeration {
                     isPassive: null,
                     signatureAlgorithm: SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1,
                     signatureCanonicalizationAlgorithm: SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS,
-                    digestAlgorithm: SignatureConstants.ALGO_ID_DIGEST_SHA1
+                    digestAlgorithm: SignatureConstants.ALGO_ID_DIGEST_SHA1,
+                    emailAssertionName: "mail",
+                    emailAssertionNameFormat: null,
+                    uuidAssertionName: "uid",
+                    uuidAssertionNameFormat: null
             )
     ),
     ICAM_NOAA_LOCAL(
             new IdentityProvider(
                     name: "ICAM (localhost)",
                     loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/SSOPOST/metaAlias/noaa-online/noaa-online-idp",
-//                    loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/SSORedirect/metaAlias/noaa-online/noaa-online-idp",
-                    loginBinding: SAMLConstants.SAML2_POST_BINDING_URI, //SAMLConstants.SAML2_REDIRECT_BINDING_URI,
+                    loginBinding: SAMLConstants.SAML2_POST_BINDING_URI,
                     logoutEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/IDPSloRedirect/metaAlias/noaa-online/noaa-online-idp",
                     logoutBinding: SAMLConstants.SAML2_POST_BINDING_URI,
-//                    issuerSP: "urn:gov:gsa:SAML:2.0.profiles:sp:sso:NOAA:api-metadata_localhost",
                     issuerSP: "https://localhost:8098/onestop/api/",
                     issuerIDP: "noaa-online-idp",
-                    authnContextRefs: [AuthnContext.UNSPECIFIED_AUTHN_CTX], //[AuthnContext.PPT_AUTHN_CTX],
+                    authnContextRefs: [AuthnContext.UNSPECIFIED_AUTHN_CTX],
                     authnContextComparisonType: AuthnContextComparisonTypeEnumeration.MINIMUM,
                     assertionConsumerServiceURL: "https://localhost:8098/onestop/api/loginConsume",
                     assertionConsumerServiceLogoutURL: "https://localhost:8098/onestop/api/logoutConsume",
@@ -50,7 +50,11 @@ enum IdentityProviderEnumeration {
                     isPassive: null,
                     signatureAlgorithm: SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA1,
                     signatureCanonicalizationAlgorithm: SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS,
-                    digestAlgorithm: SignatureConstants.ALGO_ID_DIGEST_SHA1
+                    digestAlgorithm: SignatureConstants.ALGO_ID_DIGEST_SHA1,
+                    emailAssertionName: "mail",
+                    emailAssertionNameFormat: null,
+                    uuidAssertionName: "uid",
+                    uuidAssertionNameFormat: null
             )
     ),
     LOGIN_GOV_SCIAPPS(
@@ -71,7 +75,11 @@ enum IdentityProviderEnumeration {
                     isPassive: true,
                     signatureAlgorithm: SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256,
                     signatureCanonicalizationAlgorithm: SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS,
-                    digestAlgorithm: SignatureConstants.ALGO_ID_DIGEST_SHA256
+                    digestAlgorithm: SignatureConstants.ALGO_ID_DIGEST_SHA256,
+                    emailAssertionName: "email",
+                    emailAssertionNameFormat: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+                    uuidAssertionName: "uuid",
+                    uuidAssertionNameFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
             )
     ),
     LOGIN_GOV_LOCAL(
@@ -92,7 +100,11 @@ enum IdentityProviderEnumeration {
                     isPassive: true,
                     signatureAlgorithm: SignatureConstants.ALGO_ID_SIGNATURE_RSA_SHA256,
                     signatureCanonicalizationAlgorithm: SignatureConstants.ALGO_ID_C14N_EXCL_OMIT_COMMENTS,
-                    digestAlgorithm: SignatureConstants.ALGO_ID_DIGEST_SHA256
+                    digestAlgorithm: SignatureConstants.ALGO_ID_DIGEST_SHA256,
+                    emailAssertionName: "email",
+                    emailAssertionNameFormat: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress",
+                    uuidAssertionName: "uuid",
+                    uuidAssertionNameFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
             )
     )
 

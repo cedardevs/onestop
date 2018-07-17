@@ -69,8 +69,6 @@ class SAMLFilter implements Filter {
     @Override
     void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 
-        logger.info("SAMLFilter:::doFilter")
-
         // cast to provide request information for HTTP servlets
         HttpServletRequest httpServletRequest = (HttpServletRequest)request
 
@@ -79,34 +77,26 @@ class SAMLFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse)response
 
         if (httpServletRequest.getSession().getAttribute(SPConstants.AUTHENTICATED_SESSION_ATTRIBUTE) != null) {
-
-            logger.info("SAMLFilter:::[condition] httpServletRequest.getSession().getAttribute(SPConstants.AUTHENTICATED_SESSION_ATTRIBUTE) != null")
-
+            // we've previously been authenticated, continue filter chain
             chain.doFilter(request, response)
         }
         else {
-
-            logger.info("SAMLFilter:::[condition] ELSE")
-
+            // remember where we want to go and redirect to IDP authentication
             setGotoURLOnSession(httpServletRequest)
             redirectUserForAuthentication(httpServletResponse)
         }
     }
 
     private static void setGotoURLOnSession(HttpServletRequest request) {
-        logger.info("SAMLFilter:::setGotoURLOnSession")
-        logger.info("SAMLFilter:::[expression] request.getRequestURL().toString() = ${request.getRequestURL().toString()}")
-
         request.getSession().setAttribute(SPConstants.GOTO_URL_SESSION_ATTRIBUTE, request.getRequestURL().toString())
     }
 
     private void redirectUserForAuthentication(HttpServletResponse httpServletResponse) {
-        logger.info("SAMLFilter:::redirectUserForAuthentication")
-
         Credential credential = CredentialUtil.buildCredential()
         AuthnRequest authnRequest = SAMLRequest.buildAuthnRequest(identityProvider, credential)
 
-        SAMLUtil.logSAMLObject(authnRequest)
+        // uncomment this line to see AuthnRequest XML in output
+        // SAMLUtil.logSAMLObject(authnRequest)
 
         redirectUserWithRequest(httpServletResponse, authnRequest, credential)
     }
@@ -123,16 +113,10 @@ class SAMLFilter implements Filter {
 
     private void redirectUserWithRequest(HttpServletResponse httpServletResponse, AuthnRequest authnRequest, Credential credential) {
 
-        logger.info("SAMLFilter:::redirectUserWithRequest")
-
         MessageContext context = new MessageContext()
-
         context.setMessage(authnRequest)
-
         SAMLPeerEntityContext peerEntityContext = context.getSubcontext(SAMLPeerEntityContext.class, true)
-
         SAMLEndpointContext endpointContext = peerEntityContext.getSubcontext(SAMLEndpointContext.class, true)
-
         endpointContext.setEndpoint(identityProvider.buildLoginEndpoint())
 
         SignatureSigningParameters signatureSigningParameters = new SignatureSigningParameters()
@@ -190,10 +174,8 @@ class SAMLFilter implements Filter {
         logger.info("Redirecting to IDP")
 
         try {
-
             encoder.encode()
-
-            println("encoder header names: " + encoder.getHttpServletResponse().getHeaderNames().toString())
+            logger.debug("encoder header names: " + encoder.getHttpServletResponse().getHeaderNames().toString())
         }
         catch (MessageEncodingException e) {
             throw new RuntimeException(e)

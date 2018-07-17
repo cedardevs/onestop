@@ -22,13 +22,13 @@ class CredentialUtil {
 
     static Credential credential
 
-    static void print() {
-        println("\n" +
-                "\nkeyStorePath: ${keyStorePath}" +
-                "\nkeyStorePassword: ${keyStorePassword}" +
-                "\nalias: ${alias}" +
-                "\nkeyPassword: ${keyPassword}" +
-                "\n")
+    static String info() {
+        return "\nCredentialUtil {" +
+                "\n\tkeyStorePath: ${keyStorePath}" +
+                "\n\tkeyStorePassword: ${keyStorePassword}" +
+                "\n\talias: ${alias}" +
+                "\n\tkeyPassword: ${keyPassword}" +
+                "\n}\n"
     }
 
     static Credential buildCredential() {
