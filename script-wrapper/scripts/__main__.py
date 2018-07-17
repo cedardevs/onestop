@@ -26,7 +26,7 @@ __author__ = 'wrowland'
 # 10.5) TODONE - Replace dscovrThumbnailCaptionPlaceholder with caption
 # 11) Save modified xml as a dscovrIsoLite.xml record for the granule.
 def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
-                                  IsoLiteTemplateLocation = './scripts/dscovrIsoLiteTemplate.xml'):
+                                  IsoLiteTemplateLocation = './dscovrIsoLiteTemplate.xml'):
     import json
     import dscovr_file_name_parser
     import datetime
@@ -39,7 +39,7 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
 
     # Read in the input_json provided
     try:
-        input_json_dict = json.loads(input_json)
+        input_json_dict = dict(input_json)
     except:
         # json.loads could not decode input_json
         raise Exception('input_json does not appear to be valid json format')
@@ -187,37 +187,34 @@ def dscovrIsoLiteHackyWorkaround (input_json, logLevel = 'Error',
 
     private = parsed_file_name_dict['embargo_flag']
     result = {'publishing': {'private': private}, 'isoXml': IsoLiteXML}
-    return json.dumps(result)
+    print "returning " + json.dumps(result)
+    return result
 
+def main(arguments):
+    import json
+    print "arguments: " + json.dumps(arguments)
 
-if __name__ == '__main__':
-    import sys
-
-#    logLevelOuter='Info'
-#    IsoLiteTemplateLocation='/home/wrowland/Desktop/dscovrIsoLiteTemplate.xml'
     example_json = '{"dataStream": "dscovr", "trackingId": "1b0a2b2a-42d9-410c-b713-bc72ac31a1d9", "checksum": "c3d8ca4ec4b0aa22f900a8d66b3dd1f8", "relativePath": "oe_f1m_dscovr_s20180201000000_e20180201235959_p20180202024241_pub.nc.gz", "path": "/dscovr/valid/oe_f1m_dscovr_s20180201000000_e20180201235959_p20180202024241_pub.nc.gz", "fileSize": 50566, "lastUpdated":"2018-02-02T16:01:10Z"}'
     example_with_enterprise_link_json = '{"dataStream": "dscovr", "trackingId": "1b0a2b2a-42d9-410c-b713-bc72ac31a1d9", "checksum": "c3d8ca4ec4b0aa22f900a8d66b3dd1f8", "relativePath": "oe_f1m_dscovr_s20180201000000_e20180201235959_p20180202024241_pub.nc.gz", "path": "/dscovr/valid/oe_f1m_dscovr_s20180201000000_e20180201235959_p20180202024241_pub.nc.gz", "fileSize": 50566, "lastUpdated": "2018-02-02T16:01:10Z", "enterpriseDownloadLink": "https://www.ngdc.noaa.gov/dscovr/next/", "enterpriseDownloadLinkProtocol": "https"}'
     example_incomplete_json = '{"dataStream": "dscovr", "trackingId": "1b0a2b2a-42d9-410c-b713-bc72ac31a1d9", "checksum": "c3d8ca4ec4b0aa22f900a8d66b3dd1f8", "relativePath": "oe_f1m_dscovr_s20180201000000_e20180201235959_p20180202024241_pub.nc.gz", "path": "/dscovr/valid/oe_f1m_dscovr_s20180201000000_e20180201235959_p20180202024241_pub.nc.gz", "fileSize": 50566}'
 
-    arguments = sys.argv
-    if len(arguments) == 2:
-        #Get json argument from Agile code
-        input_json = arguments[1]
-
-        if input_json == 'test':
-            input_json = example_json
-        elif input_json == 'testWithEnterpriseLink':
-            input_json = example_with_enterprise_link_json
-        elif input_json == 'testIncomplete':
-            input_json = example_incomplete_json
-        elif input_json == 'stdin':
-            input_json = sys.stdin.read()
+    if type(arguments) is type(dict()) and arguments.get("message"):
+        message = arguments.get("message")
+        if message == 'test':
+            input_json = json.loads(example_json)
+        elif message == 'testWithEnterpriseLink':
+            input_json = json.loads(example_with_enterprise_link_json)
+        elif message == 'testIncomplete':
+            input_json = json.loads(example_incomplete_json)
 
         if 'logLevelOuter' in locals():
-            print(dscovrIsoLiteHackyWorkaround(input_json, logLevel=logLevelOuter))
+            return dscovrIsoLiteHackyWorkaround(input_json, logLevel=logLevelOuter)
         else:
-            print(dscovrIsoLiteHackyWorkaround(input_json))
+            return dscovrIsoLiteHackyWorkaround(input_json)
     else:
-        print('Requires input_json, json provided by the person/application calling it.')
-        print('Example: "/path/to/code/dscovrIsoLiteConstructor.py  "' + example_json)
-        print("Running the code with 'test' or 'testWithEnterpriseLink' as arguments will test code with known json")
+        print('Missing arg \'message\'')
+        print('Example wsk cli call - $ wsk action invoke dscovrScript -p message ' + example_json)
+        print('Other usage- ')
+        print('$ wsk action invoke dscovrScript -p message test')
+        print('$ wsk action invoke dscovrScript -p message testWithEnterpriseLink')
+        print('$ wsk action invoke dscovrScript -p message testIncomplete')
