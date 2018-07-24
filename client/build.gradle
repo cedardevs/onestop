@@ -98,7 +98,11 @@ publishing {
     }
 }
 
+docker {
+  additionalBuildArgs = [TAR_NAME: tarResults.outputs.files.singleFile.name]
+}
+
 BuildDockerImage.dependsOn(tarResults)
-assemble.dependsOn(BuildDockerImage)
+// assemble.dependsOn(BuildDockerImage)
 PublishDockerImage.dependsOn(BuildDockerImage)
 publish.dependsOn PublishDockerImage
