@@ -144,6 +144,6 @@ docker {
 }
 
 BuildDockerImage.dependsOn(bootWar)
-assemble.dependsOn(BuildDockerImage)
+// assemble.dependsOn(BuildDockerImage)
 PublishDockerImage.dependsOn(BuildDockerImage)
 publish.dependsOn PublishDockerImage

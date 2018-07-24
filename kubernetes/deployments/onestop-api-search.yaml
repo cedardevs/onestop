@@ -14,7 +14,9 @@ spec:
     - name: http
       port: 8097
       targetPort: 8097
+      nodePort: 30097
   type: NodePort
+  
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -35,7 +37,7 @@ spec:
     spec:
       containers:
       - name: onestop-api-search
-        image: cedardevs/onestop-api-search:latest
+        image: cedardevs/onestop-api-search
         env:
         - name: ELASTICSEARCH_HOST
           value: elasticsearch

@@ -13,7 +13,8 @@ spec:
     - name: http
       port: 9200
       targetPort: 9200
-  type: ClusterIP
+      nodePort: 30092
+  type: NodePort
 ---
 apiVersion: v1
 kind: Service
