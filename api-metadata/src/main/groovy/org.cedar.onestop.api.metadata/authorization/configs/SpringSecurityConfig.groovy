@@ -3,6 +3,7 @@ package org.cedar.onestop.api.metadata.authorization.configs
 import org.cedar.onestop.api.metadata.authorization.service.UserDetailsServiceImpl
 import org.cedar.onestop.api.metadata.springsecurity.CustomSecurityFilter
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -11,8 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
+@ConditionalOnProperty("features.secure.authorization")
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired

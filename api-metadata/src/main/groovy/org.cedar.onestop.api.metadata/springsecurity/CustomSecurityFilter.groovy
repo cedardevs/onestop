@@ -7,6 +7,7 @@ import org.cedar.onestop.api.metadata.security.SAMLConsume
 import org.cedar.onestop.api.metadata.security.SAMLFilter
 import org.cedar.onestop.api.metadata.security.SAMLUtil
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager
@@ -27,6 +28,7 @@ import javax.servlet.http.HttpServletResponse
 import java.nio.file.AccessDeniedException
 import java.security.Principal
 
+@ConditionalOnProperty("features.secure.authorization")
 @Component
 class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 

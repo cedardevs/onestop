@@ -1,5 +1,7 @@
 package org.cedar.onestop.api.metadata.authorization.domain
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.FetchType
@@ -14,6 +16,7 @@ import javax.persistence.Entity
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotEmpty
 
+@ConditionalOnProperty("features.secure.authorization")
 @Entity
 @Table(name='user')
 class User {
