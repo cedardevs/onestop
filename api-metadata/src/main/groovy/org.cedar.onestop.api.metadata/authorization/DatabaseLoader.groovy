@@ -55,7 +55,7 @@ class DatabaseLoader implements ApplicationRunner {
     private List<String> upcasedRoleNames(String roles=roleNames) {
         return roles.split(';').collect { roleName -> roleName.toUpperCase() }
     }
-//
+
     private Map<String,String> mappedUserRoles() {
         Map mapUserRoles = [:]
 

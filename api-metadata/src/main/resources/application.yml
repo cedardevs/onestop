@@ -9,18 +9,22 @@ server:
     protocol: TLS
     enabled: true
     key-store-password: \${SCIAPPS_PW}
-    key-store: /Users/nguyenbv/Documents/cedarDevs/ingest/help/keystores/sciapps.colorado.edu.jks
+    key-store: /usr/src/app/sciapps.colorado.edu.jks
+    # key-store: /Users/nguyenbv/Documents/cedarDevs/ingest/help/keystores/sciapps.colorado.edu.jks
     key-store-type: JKS
 
 spring:
+  # Comment out everything between the dashes if Auth Feature is disabled
+  # -----------------------------------------------------------------
   h2.console.enabled: true
   h2.console.path: /h2-console
   application:
     name: onestop-metadata-api
   datasource:
-    url: jdbc:h2:mem:testdb;TRACE_LEVEL_FILE=4;DB_CLOSE_ON_EXIT=FALSE
+    url: jdbc:h2:mem:testdb;TRACE_LEVEL_FILE=4;DB_CLOSE_ON_EXIT=FALSE # pipes logging output for h2 to console
+    # url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: org.h2.Driver
-    username: sa
+    username: sa # default username
     password:
   jpa:
     hibernate.ddl-auto: none
@@ -28,7 +32,9 @@ spring:
     properties:
       show_sql: true
       format_sql: true
+  # -----------------------------------------------------------------
   liquibase:
+    enabled: true # set to false if Auth feature needs to be disabled
     default-schema: PUBLIC # default schema for H2, here for documentation
   servlet:
     multipart:
