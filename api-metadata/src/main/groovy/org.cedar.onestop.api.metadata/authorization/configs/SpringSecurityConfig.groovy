@@ -34,7 +34,7 @@ class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/upload.html").hasAuthority('ADMIN')
             .antMatchers("/admin/**").hasAuthority('ADMIN')
             .antMatchers("/metadata/**").hasAuthority('ADMIN')
-            .antMatchers("/test").permitAll()
+            .antMatchers("/test/permitAll").permitAll()
             .antMatchers("/test/userOnly").hasAuthority('USER')
             .anyRequest().authenticated()
             .and()

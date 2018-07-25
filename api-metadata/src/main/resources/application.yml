@@ -1,6 +1,6 @@
 # comment out security.ignored if SAML Authentication Feature is enabled. The other features must be flipped
 # in order to feature toggle the Authentication + Authorization Feature
-#security.ignored: /**
+security.ignored: /**
 features.secure.upload: false
 features.secure.authorization: false
 features.basicAuth.disabled: true

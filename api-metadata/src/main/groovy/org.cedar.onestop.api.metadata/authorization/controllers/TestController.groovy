@@ -9,13 +9,13 @@ import java.security.Principal
 @RestController
 class TestController {
 
-    @GetMapping(path="/test")
+    @GetMapping(path="/test/permitAll")
     String helloWorld() {
-        return 'Hello World'
+        return 'This endpoint should be accessible to all.'
     }
 
     @GetMapping(path="/test/userOnly")
     String helloUser() {
-        return 'Hello Authorized User'
+        return 'This endpoint is accessible to users with USER role.'
     }
 }
