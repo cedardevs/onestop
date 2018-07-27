@@ -55,7 +55,7 @@ class LoadIntegrationTests extends Specification {
   void setup() {
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    metadataURI = "http://localhost:${port}/${contextPath}/metadata"
+    metadataURI = "http://localhost:${port}${contextPath}/metadata"
     elasticsearchService.dropSearchIndices()
     elasticsearchService.dropStagingIndices()
     elasticsearchService.ensureIndices()
