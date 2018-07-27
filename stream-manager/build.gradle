@@ -1,0 +1,100 @@
+buildscript {
+    ext {
+        springBootVersion = '2.0.2.RELEASE'
+        springCloudVersion = 'Finchley.RC2'
+    }
+    repositories {
+        mavenCentral()
+        maven { url "https://repo.spring.io/milestone" }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+
+apply plugin: 'war'
+apply plugin: 'groovy'
+apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.cedar.dockerplugin'
+
+configurations {
+    compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+dependencies {
+    compile('org.codehaus.groovy:groovy')
+    compile('org.codehaus.groovy:groovy-json')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.cloud:spring-cloud-starter')
+    compile('org.apache.kafka:kafka-streams:1.1.0')
+
+    compileOnly('org.springframework.boot:spring-boot-starter-tomcat')
+
+    runtime('org.springframework.boot:spring-boot-devtools')
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile("org.spockframework:spock-spring:${project.spockVersion}")
+    testCompile("org.spockframework:spock-core:${project.spockVersion}")
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('org.apache.kafka:kafka-streams-test-utils:1.1.0')
+    testCompile('org.apache.kafka:kafka_2.11:1.1.0')
+    testCompile('org.apache.kafka:kafka_2.11:1.1.0:test')
+    testCompile('org.springframework.kafka:spring-kafka-test')
+}
+
+sourceSets {
+    integrationTest {
+        groovy.srcDir file('src/integrationTest/groovy')
+//    resources.srcDir file("src/main/resources")
+        compileClasspath += main.output + test.output + configurations.testRuntime
+        runtimeClasspath += output + compileClasspath
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
+    mustRunAfter 'test'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
+    reports.junitXml.destination = file("${buildDir}/integration-test-results")
+    reports.html.destination =  file("${buildDir}/reports/integrationTests")
+}
+
+check.dependsOn integrationTest
+
+war {
+    // build a deployable war in addition to the executable one
+    enabled = true
+    classpath -= files(configurations.compileOnly)
+}
+
+bootJar {
+    // add a classifier to distinguish the executable jar
+    classifier = 'all'
+    launchScript()
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    baseName = "${rootProject.name}-${project.name}"
+    from "${projectDir}/src"
+}
+
+docker {
+    additionalBuildArgs = [JAR_NAME: bootJar.outputs.files.singleFile.name]
+}
+
+BuildDockerImage.dependsOn(bootJar)
+assemble.dependsOn(BuildDockerImage)
+assemble.dependsOn(sourceJar)
+PublishDockerImage.dependsOn(BuildDockerImage)
+task publish { dependsOn PublishDockerImage }
