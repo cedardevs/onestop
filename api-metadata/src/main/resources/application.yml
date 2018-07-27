@@ -1,7 +1,26 @@
+# comment out security.ignored if SAML Authentication Feature is enabled. The other features must be flipped
+# in order to feature toggle the Authentication + Authorization Feature
+security.ignored: /**
+features.secure.upload: false
+features.secure.authorization: false
+features.basicAuth.disabled: true
+
 server:
   port: 8098
   servlet:
     context-path: /onestop/api
+  # Comment out everything between the dashes if Auth Feature is disabled
+  # -----------------------------------------------------------------
+#  ssl:
+#    key-alias: \${KEYSTORE_ALIAS}
+#    #key-password: \${KEY_PASSWORD}
+#    enabled-protocols: TLSv1.2
+#    protocol: TLS
+#    enabled: true
+#    key-store-password: \${KEYSTORE_PASSWORD}
+#    key-store: /etc/api-metadata/keystore.jks
+#    key-store-type: JKS
+  # -----------------------------------------------------------------
 
 spring:
   application:
@@ -10,24 +29,42 @@ spring:
     multipart:
       max-file-size: 500Mb
       max-request-size: 500Mb
+  # Comment out everything between the dashes if Auth Feature is disabled
+  # -----------------------------------------------------------------
+#  h2.console.enabled: true
+#  h2.console.path: /h2-console
+#  datasource:
+##    url: jdbc:h2:mem:testdb;TRACE_LEVEL_FILE=4;DB_CLOSE_ON_EXIT=FALSE # pipes logging output for h2 to console
+#    url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE
+#    driverClassName: org.h2.Driver
+#    username: sa # default username
+#    password:
+#  jpa:
+#    hibernate.ddl-auto: none
+#    database-platform: org.hibernate.dialect.H2Dialect
+#    properties:
+#      show_sql: true
+#      format_sql: true
+#  liquibase:
+#    enabled: true # set to false if we don't want to run and check migrations on startup
+#    default-schema: PUBLIC # default schema for H2, here for documentation
+  # -----------------------------------------------------------------
 
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
-features.secure.upload: true
-
 logging:
   level:
-      org.cedar.onestop.api.search: INFO
-      org.gradle: WARN
-      org.apache.http: WARN
-      org.apache.http.wire: WARN
-      org.apache.http.headers: WARN
-      groovyx.net.http: WARN
-      groovyx.net.http.HttpURLClient: WARN
-      org.springframework: INFO
-      org.springframework.amqp: WARN
-      org.hibernate: WARN
+    org.cedar.onestop.api.search: INFO
+    org.gradle: WARN
+    org.apache.http: WARN
+    org.apache.http.wire: WARN
+    org.apache.http.headers: WARN
+    groovyx.net.http: WARN
+    groovyx.net.http.HttpURLClient: WARN
+    org.springframework: INFO
+    org.springframework.amqp: WARN
+    org.hibernate: WARN
 
 elasticsearch:
   version: ${esVersion}

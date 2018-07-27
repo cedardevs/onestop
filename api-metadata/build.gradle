@@ -10,6 +10,9 @@ targetCompatibility = 1.8
 
 repositories {
   mavenCentral()
+
+  // opensaml repo
+  maven { url "https://build.shibboleth.net/nexus/content/repositories/releases" }
 }
 
 configurations {
@@ -17,18 +20,49 @@ configurations {
 }
 
 dependencies {
+    // groovy
+//    compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
+
+  // opensaml
+  compile("org.opensaml:opensaml-core:${project.openSAMLVersion}")
+  compile("org.opensaml:opensaml-saml-api:${project.openSAMLVersion}")
+  compile("org.opensaml:opensaml-saml-impl:${project.openSAMLVersion}")
+  compile("org.opensaml:opensaml-messaging-api:${project.openSAMLVersion}")
+  compile("org.opensaml:opensaml-messaging-impl:${project.openSAMLVersion}")
+  compile("org.opensaml:opensaml-soap-api:${project.openSAMLVersion}")
+  compile("org.opensaml:opensaml-soap-impl:${project.openSAMLVersion}")
+
+  // logback
+  compile("ch.qos.logback:logback-core:${project.logbackVersion}")
+  compile("ch.qos.logback:logback-classic:${project.logbackVersion}")
+
+  // javax servlet
+  compile("javax.servlet:javax.servlet-api:${project.javaxServletAPIVersion}")
+
+  // junit
+  testCompile("junit:junit:${project.junitVersion}")
+  testCompile("org.springframework.security:spring-security-test")
+
+
+
   compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
   compile "org.elasticsearch.client:rest:${project.esVersion}"
   compile "org.springframework.boot:spring-boot-starter-web"
   compile "org.springframework.boot:spring-boot-starter-actuator"
+  compile "org.springframework.boot:spring-boot-starter-security"
   compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
   compile "org.springframework.boot:spring-boot-devtools"
   compile 'org.springframework.cloud:spring-cloud-context'
   compile 'com.github.java-json-tools:json-schema-validator:2.2.8'
   compile 'org.apache.commons:commons-text:1.2'
   compile 'org.apache.lucene:lucene-expressions:7.2.1'
+
+  // Authorization Services
+  compile "org.springframework.boot:spring-boot-starter-data-jpa"
+  compile 'org.liquibase:liquibase-core'
+  compile 'com.h2database:h2:1.4.197'
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
