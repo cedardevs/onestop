@@ -26,9 +26,9 @@ configurations {
 }
 
 dependencies {
-    compile('org.codehaus.groovy:groovy:2.4.10')
-    compile('org.codehaus.groovy:groovy-json:2.4.10')
-    compile("org.codehaus.groovy:groovy-xml:2.4.10")
+    compile('org.codehaus.groovy:groovy:2.4.13')
+    compile('org.codehaus.groovy:groovy-json:2.4.13')
+    compile("org.codehaus.groovy:groovy-xml:2.4.13")
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.cloud:spring-cloud-starter')
     compile('org.apache.kafka:kafka-streams:1.1.0')
