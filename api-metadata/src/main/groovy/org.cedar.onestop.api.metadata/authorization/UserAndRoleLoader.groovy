@@ -16,9 +16,8 @@ import javax.transaction.Transactional
 
 @ConditionalOnProperty("features.secure.authorization")
 @Component
-@PropertySource("roles.yml")
 @Transactional
-class DatabaseLoader implements ApplicationRunner {
+class UserAndRoleLoader implements ApplicationRunner {
     @Autowired
     private final RoleService roleService
 
