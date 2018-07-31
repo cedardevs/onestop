@@ -1,0 +1,2 @@
+# ignore everything except build outputs and docker directory
+src
