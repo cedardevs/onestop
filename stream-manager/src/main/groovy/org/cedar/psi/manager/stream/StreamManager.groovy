@@ -56,11 +56,11 @@ class StreamManager {
 
     // Send messages directly to parser or to topic for SME functions to process
     Predicate toSMETopic = { key, value ->
-      return isForSME(value, config.splitField, config.splitValues)
+      return isForSME(value.toString(), config.splitField, config.splitValues)
     }
 
     Predicate toParsing = { key, value ->
-      return !isForSME(value, config.splitField, config.splitValues)
+      return !isForSME(value.toString(), config.splitField, config.splitValues)
     }
 
     KStream[] smeBranches = builder.stream(config.topics.rawGranules)
@@ -103,5 +103,7 @@ class StreamManager {
     streamsConfiguration.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().class.name)
     streamsConfiguration.put(StreamsConfig.COMMIT_INTERVAL_MS_CONFIG, 500)
     streamsConfiguration.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+
+    return streamsConfiguration
   }
 }
