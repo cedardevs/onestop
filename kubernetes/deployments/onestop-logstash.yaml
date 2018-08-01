@@ -14,8 +14,6 @@ spec:
     - name: http
       port: 5044
       targetPort: 5044
-      nodePort: 30002
-  type: NodePort 
 
 ---
 apiVersion: apps/v1

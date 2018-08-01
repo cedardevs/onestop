@@ -34,4 +34,8 @@ deploy:
     - ./kubernetes/deployments/onestop-api-metadata.yaml
     - ./kubernetes/deployments/onestop-api-search.yaml
     - ./kubernetes/deployments/onestop-client.yaml
+    # These need a local Dockerfile to use with skaffold
+    #- ./kubernetes/deployments/kibana.yaml
+    #- ./kubernetes/deployments/onestop-logstash.yaml
+    #- ./kubernetes/deployments/filebeat-kubernetes.yaml
     
