@@ -27,6 +27,9 @@ class ETLService {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
   private String FLAT_GRANULE_SEARCH_INDEX
 
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
+  private String SITEMAP_INDEX
+
   @Value('${elasticsearch.index.universal-type}')
   String TYPE
 
@@ -77,14 +80,17 @@ class ETLService {
     def newCollectionSearchIndex = elasticsearchService.create(COLLECTION_SEARCH_INDEX)
     def newGranuleSearchIndex = elasticsearchService.create(GRANULE_SEARCH_INDEX)
     def newFlatGranuleSearchIndex = elasticsearchService.create(FLAT_GRANULE_SEARCH_INDEX)
+    def newSitemapIndex = elasticsearchService.create(SITEMAP_INDEX)
 
     try {
       def etlResult = runETL(COLLECTION_STAGING_INDEX, newCollectionSearchIndex, GRANULE_STAGING_INDEX, newGranuleSearchIndex)
       def flattenResult = runFlatteningETL(newCollectionSearchIndex, newGranuleSearchIndex, newFlatGranuleSearchIndex)
-      elasticsearchService.refresh(newCollectionSearchIndex, newGranuleSearchIndex, newFlatGranuleSearchIndex)
+      def sitemapResult = runSitemapEtl(newCollectionSearchIndex, newSitemapIndex)
+      elasticsearchService.refresh(newCollectionSearchIndex, newGranuleSearchIndex, newFlatGranuleSearchIndex, newSitemapIndex)
       elasticsearchService.moveAliasToIndex(COLLECTION_SEARCH_INDEX, newCollectionSearchIndex, true)
       elasticsearchService.moveAliasToIndex(GRANULE_SEARCH_INDEX, newGranuleSearchIndex, true)
       elasticsearchService.moveAliasToIndex(FLAT_GRANULE_SEARCH_INDEX, newFlatGranuleSearchIndex, true)
+      elasticsearchService.moveAliasToIndex(SITEMAP_INDEX, newSitemapIndex, true)
       def end = System.currentTimeMillis()
       log.info "Indexed ${etlResult.updatedCollections + etlResult.createdCollections} of ${etlResult.totalCollectionsInRequest} requested collections, " +
           "${etlResult.updatedGranules + etlResult.createdGranules} of ${etlResult.totalGranulesInRequest} requested granules, and flattened " +
@@ -115,6 +121,127 @@ class ETLService {
     def flatResult = runFlatteningETL(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
     end = System.currentTimeMillis()
     log.info "Updated ${flatResult.updated} and created ${flatResult.created} flattened granules in ${(end - start) / 1000}s"
+  }
+
+// TODO can this be configurable for local testing? @Scheduled(initialDelay = 30000L, fixedDelay = 604800000L)
+  @Scheduled(initialDelay = 600000L, fixedDelay = 604800000L) // 1 hour after startup then once a week after previous run ends
+  public void updateSitemap() {
+    log.info("starting sitemap update process")
+    def start = System.currentTimeMillis()
+    def newSitemapIndex =  elasticsearchService.create(SITEMAP_INDEX)
+    def sitemapResult = runSitemapEtl(COLLECTION_SEARCH_INDEX, newSitemapIndex)
+    elasticsearchService.moveAliasToIndex(SITEMAP_INDEX, newSitemapIndex, true)
+    def end = System.currentTimeMillis()
+    log.info "Sitemap updated with ${sitemapResult.updated} and created ${sitemapResult.created} in ${(end-start) / 1000}s"
+  }
+
+  private Map runSitemapEtl(String collectionIndex, String destination ) {
+    elasticsearchService.ensureSearchIndices()
+    elasticsearchService.refresh(collectionIndex, destination)
+
+    def collections = []
+    def lastSubcollection = []
+    def collectionsTotal
+    def currentCount
+
+    def nextScrollRequest = { String scroll_id ->
+      def requestBody = [
+      scroll: '1m',
+      scroll_id: scroll_id
+      ]
+      return elasticsearchService.performRequest('POST', '_search/scroll', requestBody)
+    }
+
+    def collectionIdRequestBody = [
+      _source: false,
+      sort: "_doc", // Non-scoring query, so this will be most efficient ordering
+      size: 10000
+      ]
+
+    def collectionResponse = elasticsearchService.performRequest('POST', "${collectionIndex}/_search?scroll=1m", collectionIdRequestBody)
+
+    def scrollId = collectionResponse._scroll_id
+
+    collectionsTotal = collectionResponse.hits.total
+    currentCount = collectionResponse.hits.hits*._id.size()
+    lastSubcollection.addAll(collectionResponse.hits.hits*._id)
+
+    while(currentCount < collectionsTotal) {
+      def scrollResponse = nextScrollRequest(scrollId)
+      scrollId = scrollResponse._scroll_id
+
+      currentCount += collectionResponse.hits.hits*._id.size()
+      if(lastSubcollection.size() < 40000) {
+        lastSubcollection.addAll(scrollResponse.hits.hits*._id)
+      } else {
+        collections.add(lastSubcollection)
+        lastSubcollection = []
+        lastSubcollection.addAll(scrollResponse.hits.hits*._id)
+      }
+    }
+    if(lastSubcollection.size() > 0) {
+      collections.add(lastSubcollection)
+    }
+
+    elasticsearchService.performRequest('DELETE', "_search/scroll/${scrollId}")
+
+    def tasksInFlight = []
+    def countSitemappedThings = [
+        total: 0,
+        updated: 0,
+        created: 0
+   ]
+
+    collections.each { subcollection ->
+      while(tasksInFlight.size() == MAX_TASKS) {
+        tasksInFlight.removeAll { taskId ->
+          def status = checkTask(taskId)
+          if(status.completed) {
+            countSitemappedThings.total += status.totalDocs
+            countSitemappedThings.updated += status.updated
+            countSitemappedThings.created += status.created
+            deleteTask(taskId)
+          }
+          return status.completed
+        }
+        sleep(1000)
+      }
+
+      def task = etlSitemapTask(collectionIndex, destination, subcollection)
+      if (task) {
+        tasksInFlight << task
+      }
+    }
+
+    while(tasksInFlight.size() >0) {
+      tasksInFlight.removeAll { taskId ->
+        def status = checkTask(taskId)
+        if(status.completed) {
+
+          countSitemappedThings.total += status.totalDocs
+          countSitemappedThings.updated += status.updated
+          countSitemappedThings.created += status.created
+          deleteTask(taskId)
+        }
+        return status.completed
+      }
+      sleep(1000)
+
+    }
+    return countSitemappedThings
+  }
+
+  private String etlSitemapTask(String collectionIndex, String dest, def collections) {
+    log.info "etl sitemap task: ${collections}"
+
+     String endpoint = "${dest}/${TYPE}/"
+     def body = [
+       lastUpdatedDate: System.currentTimeMillis(),
+       content: collections
+     ]
+    def taskId = elasticsearchService.performRequest('POST', endpoint, body).task
+    log.debug("Task [ ${taskId} ] started for indexing of flattened granules")
+    return taskId
   }
 
   /**

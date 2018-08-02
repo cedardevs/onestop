@@ -39,6 +39,9 @@ class ETLIntegrationTests extends Specification {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
   private String FLAT_GRANULE_SEARCH_INDEX
 
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
+  String SITEMAP_INDEX
+
   private final String COLLECTION_TYPE = 'collection'
   private final String GRANULE_TYPE = 'granule'
   private final String FLAT_GRANULE_TYPE = 'flattenedGranule'
@@ -75,6 +78,23 @@ class ETLIntegrationTests extends Specification {
     and:
     // No flattened granules were made
     !indexed[FLAT_GRANULE_TYPE]
+  }
+
+  def 'updating sitemap with collections'() {
+    setup:
+    insertMetadataFromPath('data/COOPS/C1.xml')
+
+    when:
+    etlService.updateSearchIndices()
+    etlService.updateSitemap()
+
+    elasticsearchService.refresh(SITEMAP_INDEX)
+
+    then:
+    SITEMAP_INDEX == 'sitemap'
+    def indexed = elasticsearchService.searchSitemap()
+    println(indexed)
+    indexed.data.size == 1
   }
 
   def 'updating an orphan granule indexes nothing'() {

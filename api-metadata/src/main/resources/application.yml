@@ -36,6 +36,8 @@ elasticsearch:
   max-tasks: 10
   index:
     universal-type: doc
+    sitemap:
+      name: sitemap
     search:
       collection:
         name: search_collection

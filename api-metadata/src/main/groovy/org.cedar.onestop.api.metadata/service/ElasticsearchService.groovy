@@ -31,8 +31,14 @@ class ElasticsearchService {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
   private String FLAT_GRANULE_SEARCH_INDEX
 
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
+  private String SITEMAP_INDEX
+
   @Value('${elasticsearch.index.prefix:}')
   String PREFIX
+
+  @Value('${elasticsearch.index.universal-type}')
+  private String TYPE
 
   @Value('${elasticsearch.index.search.collection.pipeline-name}')
   private String COLLECTION_PIPELINE
@@ -62,6 +68,7 @@ class ElasticsearchService {
     ensureIndex(COLLECTION_SEARCH_INDEX)
     ensureIndex(GRANULE_SEARCH_INDEX)
     ensureIndex(FLAT_GRANULE_SEARCH_INDEX)
+    ensureIndex(SITEMAP_INDEX)
   }
 
   public void ensurePipelines() {
@@ -114,6 +121,7 @@ class ElasticsearchService {
     drop(COLLECTION_SEARCH_INDEX)
     drop(GRANULE_SEARCH_INDEX)
     drop(FLAT_GRANULE_SEARCH_INDEX)
+    drop(SITEMAP_INDEX)
   }
 
   public void drop(String indexName) {
@@ -180,6 +188,27 @@ class ElasticsearchService {
     if (response.entity) {
       result += new JsonSlurper().parse(response.entity.content) as Map
     }
+    return result
+  }
+
+  // added from api-search to support integration testing (TODO: move this to integration test helper)
+  Map searchSitemap() {
+    def requestBody = [
+      _source: ["lastUpdatedDate",]
+    ]
+    String searchEndpoint = "${SITEMAP_INDEX}/_search"
+    def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
+
+    def result = [
+      data: searchResponse.hits.hits.collect {
+        [id: it._id, type: TYPE, attributes: it._source]
+      },
+      meta: [
+          took : searchResponse.took,
+          total: searchResponse.hits.total
+      ]
+    ]
     return result
   }
 
