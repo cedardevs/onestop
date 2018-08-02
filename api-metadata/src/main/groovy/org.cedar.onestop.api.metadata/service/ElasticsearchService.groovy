@@ -37,9 +37,6 @@ class ElasticsearchService {
   @Value('${elasticsearch.index.prefix:}')
   String PREFIX
 
-  @Value('${elasticsearch.index.universal-type}')
-  private String TYPE
-
   @Value('${elasticsearch.index.search.collection.pipeline-name}')
   private String COLLECTION_PIPELINE
 
@@ -190,26 +187,4 @@ class ElasticsearchService {
     }
     return result
   }
-
-  // added from api-search to support integration testing (TODO: move this to integration test helper)
-  Map searchSitemap() {
-    def requestBody = [
-      _source: ["lastUpdatedDate",]
-    ]
-    String searchEndpoint = "${SITEMAP_INDEX}/_search"
-    def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
-    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
-
-    def result = [
-      data: searchResponse.hits.hits.collect {
-        [id: it._id, type: TYPE, attributes: it._source]
-      },
-      meta: [
-          took : searchResponse.took,
-          total: searchResponse.hits.total
-      ]
-    ]
-    return result
-  }
-
 }
