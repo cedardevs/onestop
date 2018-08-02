@@ -9,6 +9,7 @@ import FlexRow from '../../common/FlexRow'
 import {boxShadow} from '../../common/defaultStyles'
 import A from '../../common/link/Link'
 import {fontFamilySerif} from '../../utils/styleUtils'
+import Checkbox from '../../common/input/Checkbox'
 
 const styleResult = {
   minHeight: '15.5em',
@@ -65,9 +66,6 @@ const styleFocusDefault = {
 }
 
 class ListResult extends React.Component {
-  constructor(props) {
-    super(props)
-  }
 
   componentWillMount() {
     this.setState({
@@ -222,7 +220,7 @@ class ListResult extends React.Component {
   }
 
   render() {
-    const {itemId, item, showLinks, showTimeAndSpace} = this.props
+    const {itemId, item, showLinks, showTimeAndSpace, handleCheckboxChange, checkGranule} = this.props
 
     const styleFocused = {
       ...(this.state.focusing ? styleFocusDefault : {}),
@@ -248,6 +246,16 @@ class ListResult extends React.Component {
         {item.title}
       </h2>,
     ]
+
+    const selectGranuleCheckbox = (
+        <Checkbox
+            key={`checkbox-${itemId}`}
+            label={`Add to Cart: ${itemId}`}
+            id={itemId}
+            checked={checkGranule}
+            onChange={handleCheckboxChange(itemId, item)}
+        />
+    )
 
     if (showLinks) {
       rightItems.push(this.renderLinks(item.links))
@@ -294,7 +302,7 @@ class ListResult extends React.Component {
       >
         <FlexRow
           style={{padding: '1.618em', flexDirection: 'row-reverse'}}
-          items={[ right, left ]}
+          items={[ selectGranuleCheckbox, right, left ]}
         />
       </div>
     )

@@ -33,10 +33,31 @@ const styleShowMoreFocus = {
 }
 
 export default class GranuleList extends Component {
-  propsForResult = item => {
+
+  isGranuleSelected = itemId => {
+    const { selectedGranules } = this.props
+    const checkIt = Object.keys(selectedGranules).includes(itemId)
+    return checkIt
+  }
+
+  handleCheckboxChange = (itemId, item) => {
+    const { selectGranule, deselectGranule } = this.props
+    return checkbox => {
+      if(checkbox.checked) {
+        selectGranule(item, itemId)
+      }
+      else {
+        deselectGranule(itemId)
+      }
+    }
+  }
+
+  propsForResult = (item, itemId) => {
     return {
       showLinks: true,
       showTimeAndSpace: true,
+      handleCheckboxChange: this.handleCheckboxChange,
+      checkGranule: this.isGranuleSelected(itemId)
     }
   }
 
