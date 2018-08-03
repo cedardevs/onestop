@@ -221,4 +221,3 @@ if __name__ == '__main__':
         print('Requires input_json, json provided by the person/application calling it.')
         print('Example: "/path/to/code/dscovrIsoLiteConstructor.py  "' + example_json)
         print("Running the code with 'test' or 'testWithEnterpriseLink' as arguments will test code with known json")
-

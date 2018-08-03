@@ -8,7 +8,7 @@ ARG DATE
 LABEL org.label-schema.schema-version=1.0
 LABEL org.label-schema.version=${VERSION}
 LABEL org.label-schema.build-date=${DATE}
-LABEL org.label-schema.name="PSI Script Wrapper"
+LABEL org.label-schema.name="PSI Stream Manager"
 LABEL org.label-schema.vendor=CEDAR
 LABEL org.label-schema.vcs-url=https://github.com/cedardevs/psi
 LABEL org.label-schema.vcs-ref=${VCS_REF}
@@ -24,6 +24,6 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 
 WORKDIR /usr/src/app
 COPY build/libs/${JAR_NAME} .
-COPY scripts/ ./scripts
-RUN ln -s ${JAR_NAME} script-wrapper.jar
-CMD ["java", "-jar", "/usr/src/app/script-wrapper.jar"]
+#COPY scripts/ ./scripts
+RUN ln -s ${JAR_NAME} stream-manager.jar
+CMD ["java", "-jar", "/usr/src/app/stream-manager.jar"]

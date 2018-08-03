@@ -6,15 +6,15 @@ build:
     workspace: ./registry
     docker:
       buildArgs:
-        WAR_NAME: registry-0.1.0-SNAPSHOT-all.war
+        JAR_NAME: registry-0.1.0-SNAPSHOT-all.jar
         VERSION: 0.1.0-SNAPSHOT
         DATE: now
         VCS_REF: local
-  - imageName: cedardevs/psi-script-wrapper
-    workspace: ./script-wrapper
+  - imageName: cedardevs/psi-stream-manager
+    workspace: ./stream-manager
     docker:
       buildArgs:
-        JAR_NAME: script-wrapper-0.1.0-SNAPSHOT-all.jar
+        JAR_NAME: stream-manager-0.1.0-SNAPSHOT-all.jar
         VERSION: 0.1.0-SNAPSHOT
         DATE: now
         VCS_REF: local
@@ -23,5 +23,7 @@ deploy:
     manifests:
     - ./kubernetes/zookeeper.yml
     - ./kubernetes/kafka.yml
+    - ./kubernetes/kafka-rest.yml
+    - ./kubernetes/kafka-ui.yml
     - ./kubernetes/registry.yml
-    - ./kubernetes/script-wrappers.yml
+    - ./kubernetes/stream-manager.yml
