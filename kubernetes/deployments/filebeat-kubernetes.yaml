@@ -20,16 +20,16 @@ data:
         # Reload module configs as they change:
         reload.enabled: false
 
-    processors:
-      - add_cloud_metadata:
+    # processors:
+    #   - add_cloud_metadata:
 
-    cloud.id: ${ELASTIC_CLOUD_ID}
-    cloud.auth: ${ELASTIC_CLOUD_AUTH}
+    # cloud.id: ${ELASTIC_CLOUD_ID}
+    # cloud.auth: ${ELASTIC_CLOUD_AUTH}
 
     output.logstash:
       hosts: ['onestop-logstash.default:5044']
-      username: ${ELASTICSEARCH_USERNAME}
-      password: ${ELASTICSEARCH_PASSWORD}
+      # username: ${ELASTICSEARCH_USERNAME}
+      # password: ${ELASTICSEARCH_PASSWORD}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -79,15 +79,15 @@ spec:
         - name: ELASTICSEARCH_HOST
           value: onestop-logstash.default
         - name: ELASTICSEARCH_PORT
-          value: "5044"
-        - name: ELASTICSEARCH_USERNAME
-          value: elastic
-        - name: ELASTICSEARCH_PASSWORD
-          value: changeme
-        - name: ELASTIC_CLOUD_ID
-          value:
-        - name: ELASTIC_CLOUD_AUTH
-          value:
+          value: "5044" #redirected to logstash
+        # - name: ELASTICSEARCH_USERNAME
+        #   value: elastic
+        # - name: ELASTICSEARCH_PASSWORD
+        #   value: changeme
+        # - name: ELASTIC_CLOUD_ID
+        #   value:
+        # - name: ELASTIC_CLOUD_AUTH
+        #   value:
         - name: POD_NAMESPACE
           valueFrom:
             fieldRef:
