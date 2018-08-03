@@ -16,6 +16,12 @@ management.endpoint.info.enabled: true
 
 features.secure.upload: true
 
+etl:
+  sitemap:
+    delay:
+      initial: 600000
+      fixed: 604800000
+
 logging:
   level:
       org.cedar.onestop.api.search: INFO

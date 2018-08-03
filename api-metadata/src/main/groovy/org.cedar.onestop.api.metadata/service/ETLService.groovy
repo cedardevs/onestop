@@ -123,8 +123,7 @@ class ETLService {
     log.info "Updated ${flatResult.updated} and created ${flatResult.created} flattened granules in ${(end - start) / 1000}s"
   }
 
-// TODO can this be configurable for local testing? @Scheduled(initialDelay = 30000L, fixedDelay = 604800000L)
-  @Scheduled(initialDelay = 600000L, fixedDelay = 604800000L) // 1 hour after startup then once a week after previous run ends
+  @Scheduled(initialDelayString='${etl.sitemap.delay.initial}', fixedDelayString = '${etl.sitemap.delay.fixed}')
   public void updateSitemap() {
     log.info("starting sitemap update process")
     def start = System.currentTimeMillis()
