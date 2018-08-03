@@ -6,8 +6,7 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.cedar.psi.manager.StreamManagerMain
-import org.cedar.psi.manager.config.AppConfig
-import org.cedar.psi.manager.config.KafkaConfig
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import spock.lang.Specification

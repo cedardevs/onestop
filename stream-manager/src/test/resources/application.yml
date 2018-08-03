@@ -1,3 +1,0 @@
-stream:
-  split-field: dataStream
-  split-values: split1,split2

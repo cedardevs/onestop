@@ -11,47 +11,27 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.Predicate
 import org.apache.kafka.streams.kstream.ValueMapper
-import org.cedar.psi.manager.config.AppConfig
-import org.cedar.psi.manager.config.KafkaConfig
-
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Service
+import org.cedar.psi.manager.config.Constants
 
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
 @Slf4j
-@Service
 class StreamManager {
 
-  private AppConfig appConfig
-  private KafkaConfig kafkaConfig
   private KafkaStreams streamsApp
 
-  @Autowired
-  StreamManager(AppConfig appConfig, KafkaConfig kafkaConfig) {
-    this.appConfig = appConfig
-    this.kafkaConfig = kafkaConfig
-    streamsApp = buildStreamsApp(appConfig, kafkaConfig)
+  StreamManager() {
+    streamsApp = buildStreamsApp()
   }
 
-  @PostConstruct
-  void start() {
-    this.streamsApp?.start()
-  }
-
-  @PreDestroy
-  void stop() {
-    this.streamsApp?.close()
-  }
-
-  static KafkaStreams buildStreamsApp(AppConfig appConfig, KafkaConfig kafkaConfig) {
-    def topology = buildTopology(appConfig)
-    def streamsConfig = streamsConfig(kafkaConfig.application.id, kafkaConfig.bootstrapServers)
+  static KafkaStreams buildStreamsApp() {
+    def topology = buildTopology()
+    def streamsConfig = streamsConfig(Constants.APP_ID, kafkaConfig.bootstrapServers)
     return new KafkaStreams(topology, streamsConfig)
   }
 
-  static Topology buildTopology(AppConfig config) {
+  static Topology buildTopology() {
     def builder = new StreamsBuilder()
 
     // Send messages directly to parser or to topic for SME functions to process

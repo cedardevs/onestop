@@ -1,10 +1,8 @@
 package org.cedar.psi.manager
 
-import org.springframework.boot.WebApplicationType
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.builder.SpringApplicationBuilder
+import groovy.util.logging.Slf4j
 
-@SpringBootApplication
+@Slf4j
 class StreamManagerMain {
 
   static void main(String[] args) {
