@@ -17,11 +17,11 @@ data:
       split-field: dataStream
       split-values: dscovr
       topics:
-        raw-granules: raw-granule
+        raw-granules: metadata-aggregator-raw-granules-changelog
         unparsed-granules: unparsed-granule
-        parsed-granules: parsed-granule
+        parsed-granules: parsed-granules
         sme-granules: sme-granule
-        error-granules: error-granule
+        error-granules: sme-error-events
 
 ---
 apiVersion: apps/v1
