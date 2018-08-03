@@ -24,11 +24,11 @@ class MetadataParsingService {
     }
     catch(SAXException e) {
       responseMap = [error: "Malformed XML encountered; unable to parse. " +
-          "Root cause: ${ExceptionUtils.getRootCauseMessage(e)}"]
+          "Root cause: ${ExceptionUtils.getRootCauseMessage(e).trim()}"]
     }
     catch(Exception e) {
       responseMap = [error: "Malformed data encountered; unable to parse. " +
-          "Root cause: ${ExceptionUtils.getRootCauseMessage(e)}"]
+          "Root cause: ${ExceptionUtils.getRootCauseMessage(e).trim()}"]
     }
 
     return JsonOutput.toJson(responseMap)

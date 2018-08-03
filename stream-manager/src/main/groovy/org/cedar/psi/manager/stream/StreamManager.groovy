@@ -69,14 +69,19 @@ class StreamManager {
     // To SME functions:
     smeBranches[1].to(config.topics.smeGranules)
 
-    // Straight to parsing:
-    KStream parsedNotAnalyzedGranules = smeBranches[0].mapValues({ value ->
+    // Merge straight-to-parsing stream with topic SME granules write to:
+    KStream unparsedGranules = builder.stream(config.topics.unparsedGranules)
+    KStream parsedNotAnalyzedGranules = smeBranches[0].merge(unparsedGranules)
+        .mapValues({ value ->
       return MetadataParsingService.parseToInternalFormat(value as String)
     } as ValueMapper<String, String>)
 
     // Branch again, sending errors to separate topic
     KStream[] parsedStreams = parsedNotAnalyzedGranules.branch(isValid, isNotValid)
     parsedStreams[1].to(config.topics.errorGranules)
+
+    // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
+    //      parallelization, or at least compare with and without topic in load testing?
 
     // Send valid messages to analysis & send final output to topic
     parsedStreams[0].mapValues({ value ->
