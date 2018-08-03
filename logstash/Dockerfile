@@ -1,5 +1,9 @@
 FROM openjdk:8
 
+LABEL org.label-schema.name="OneStop LogStash"
+LABEL org.label-schema.vendor=CEDAR
+LABEL org.label-schema.vcs-url=https://github.com/cedardevs/onestop
+
 # Install Logstash
 RUN apt-get update
 RUN wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | apt-key add -
