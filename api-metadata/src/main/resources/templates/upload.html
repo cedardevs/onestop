@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Upload ISO to OneStop</title>
+  </head>
+  <body>
+    <h1>Upload ISO to OneStop</h1>
+    <form th:action="@{/metadata}" method="post" enctype="multipart/form-data">
+      <input type="file" name="files" id="file_input"  webkitdirectory="" mozdirectory="true" multiple>
+      <input type="submit">
+    </form>
+  </body>
+</html>
