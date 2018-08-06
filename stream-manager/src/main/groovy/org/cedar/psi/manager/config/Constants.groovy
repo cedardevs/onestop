@@ -4,6 +4,7 @@ class Constants {
 
   // Application Info
   static final String APP_ID = 'stream-manager'
+  static final String BOOTSTRAP_DEFAULT = 'localhost:9092'
 
   // Application Topics
   static final String RAW_TOPIC = 'raw_granule'

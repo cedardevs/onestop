@@ -5,31 +5,21 @@ import groovy.json.JsonSlurper
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
-import org.cedar.psi.manager.StreamManagerMain
-
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
+import org.cedar.psi.manager.config.Constants
 import spock.lang.Specification
 
-@SpringBootTest(classes = [StreamManagerMain])
 class StreamManagerSpec extends Specification {
 
-  @Autowired
-  AppConfig appConfig
-
-  @Autowired
-  KafkaConfig kafkaConfig
-
-  def streamsConfig = StreamManager.streamsConfig(kafkaConfig.application.id, kafkaConfig.bootstrapServers)
-  def topology = StreamManager.buildTopology(appConfig)
+  def streamsConfig = StreamManager.streamsConfig(Constants.APP_ID, Constants.BOOTSTRAP_DEFAULT)
+  def topology = StreamManager.buildTopology()
   def driver = new TopologyTestDriver(topology, streamsConfig)
-  def consumerFactory = new ConsumerRecordFactory(appConfig.topics.rawGranules,
+  def consumerFactory = new ConsumerRecordFactory(Constants.RAW_TOPIC,
       Serdes.String().serializer(), Serdes.String().serializer())
-  def rawStore = driver.getKeyValueStore(appConfig.topics.rawGranules)
-  def unparsedStore = driver.getKeyValueStore(appConfig.topics.unparsedGranules)
-  def parsedStore = driver.getKeyValueStore(appConfig.topics.parsedGranules)
-  def smeStore = driver.getKeyValueStore(appConfig.topics.parsedGranules)
-  def errorStore = driver.getKeyValueStore(appConfig.topics.errorGranules)
+  def rawStore = driver.getKeyValueStore(Constants.RAW_TOPIC)
+  def unparsedStore = driver.getKeyValueStore(Constants.UNPARSED_TOPIC)
+  def parsedStore = driver.getKeyValueStore(Constants.PARSED_TOPIC)
+  def smeStore = driver.getKeyValueStore(Constants.SME_TOPIC)
+  def errorStore = driver.getKeyValueStore(Constants.ERROR_TOPIC)
 
   def cleanup(){
     driver.close()
@@ -46,7 +36,7 @@ class StreamManagerSpec extends Specification {
 
     when:
     // Default is raw-granule
-    driver.pipeInput(consumerFactory.create(key, value))
+    driver.pipeInput(consumerFactory.create(Constants.RAW_TOPIC, key, value))
 
     then:
     // Not found in error or SME topics
@@ -54,7 +44,7 @@ class StreamManagerSpec extends Specification {
     smeStore.get(key) == null
 
     and:
-    def output = new JsonSlurper().parseText(parsedStore.get(key)) as Map
+    def output = new JsonSlurper().parseText(parsedStore.get(key) as String) as Map
     !output.containsKey('error')
     output.containsKey('discovery')
     output.discovery.fileIdentifier == 'gov.super.important:FILE-ID'

@@ -13,21 +13,13 @@ import org.apache.kafka.streams.kstream.Predicate
 import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.manager.config.Constants
 
-import javax.annotation.PostConstruct
-import javax.annotation.PreDestroy
 
 @Slf4j
 class StreamManager {
 
-  private KafkaStreams streamsApp
-
-  StreamManager() {
-    streamsApp = buildStreamsApp()
-  }
-
-  static KafkaStreams buildStreamsApp() {
+  static KafkaStreams buildStreamsApp(String bootstrapServers) {
     def topology = buildTopology()
-    def streamsConfig = streamsConfig(Constants.APP_ID, kafkaConfig.bootstrapServers)
+    def streamsConfig = streamsConfig(Constants.APP_ID, bootstrapServers)
     return new KafkaStreams(topology, streamsConfig)
   }
 
@@ -36,21 +28,21 @@ class StreamManager {
 
     // Send messages directly to parser or to topic for SME functions to process
     Predicate toSMETopic = { key, value ->
-      return isForSME(value.toString(), config.splitField, config.splitValues)
+      return isForSME(value.toString(), Constants.SPLIT_FIELD, Constants.SPLIT_VALUES)
     }
 
     Predicate toParsing = { key, value ->
-      return !isForSME(value.toString(), config.splitField, config.splitValues)
+      return !isForSME(value.toString(), Constants.SPLIT_FIELD, Constants.SPLIT_VALUES)
     }
 
-    KStream[] smeBranches = builder.stream(config.topics.rawGranules)
+    KStream[] smeBranches = builder.stream(Constants.RAW_TOPIC)
         .branch(toParsing, toSMETopic)
 
     // To SME functions:
-    smeBranches[1].to(config.topics.smeGranules)
+    smeBranches[1].to(Constants.SME_TOPIC)
 
     // Merge straight-to-parsing stream with topic SME granules write to:
-    KStream unparsedGranules = builder.stream(config.topics.unparsedGranules)
+    KStream unparsedGranules = builder.stream(Constants.UNPARSED_TOPIC)
     KStream parsedNotAnalyzedGranules = smeBranches[0].merge(unparsedGranules)
         .mapValues({ value ->
       return MetadataParsingService.parseToInternalFormat(value as String)
@@ -58,7 +50,7 @@ class StreamManager {
 
     // Branch again, sending errors to separate topic
     KStream[] parsedStreams = parsedNotAnalyzedGranules.branch(isValid, isNotValid)
-    parsedStreams[1].to(config.topics.errorGranules)
+    parsedStreams[1].to(Constants.ERROR_TOPIC)
 
     // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
     //      parallelization, or at least compare with and without topic in load testing?
@@ -66,7 +58,7 @@ class StreamManager {
     // Send valid messages to analysis & send final output to topic
     parsedStreams[0].mapValues({ value ->
       return AnalysisAndValidationService.analyzeParsedMetadata(value as String)
-    } as ValueMapper<String, String>).to(config.topics.parsedGranules)
+    } as ValueMapper<String, String>).to(Constants.PARSED_TOPIC)
 
     return builder.build()
   }
