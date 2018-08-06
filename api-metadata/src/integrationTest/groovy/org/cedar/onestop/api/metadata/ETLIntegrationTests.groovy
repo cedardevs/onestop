@@ -95,6 +95,32 @@ class ETLIntegrationTests extends Specification {
     setup:
     insertMetadataFromPath('data/COOPS/C1.xml')
     insertMetadataFromPath('data/DEM/1.xml')
+
+    when:
+    etlService.updateSearchIndices()
+    etlService.updateSitemap()
+
+    refreshIndices()
+
+    then:
+    def indexedCols = documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
+    def collections = indexedCols[COLLECTION_TYPE]
+    collections.size == 2
+    def indexed = searchSitemap()
+    indexed.data.size == 1
+    def sitemap = getById(SITEMAP_INDEX, indexed.data[0].id)
+    sitemap.data[0].attributes.content.size == 2
+
+    and:
+    def collectionIds = collections.collect({data -> data._id}) as Set
+    def sitemapCollectionIds = sitemap.data[0].attributes.content as Set
+    sitemapCollectionIds == collectionIds
+  }
+
+  def 'sitemap with multiple submaps'() {
+    setup:
+    insertMetadataFromPath('data/COOPS/C1.xml')
+    insertMetadataFromPath('data/DEM/1.xml')
     insertMetadataFromPath('data/DEM/2.xml')
     insertMetadataFromPath('data/DEM/3.xml')
     insertMetadataFromPath('data/GHRSST/1.xml')
@@ -108,18 +134,18 @@ class ETLIntegrationTests extends Specification {
     refreshIndices()
 
     then:
-    def indexedCols = documentsByType(COLLECTION_SEARCH_INDEX, GRANULE_SEARCH_INDEX, FLAT_GRANULE_SEARCH_INDEX)
-    def collections = indexedCols[COLLECTION_TYPE]
-    collections.size == 7
     def indexed = searchSitemap()
-    indexed.data.size == 1
-    def sitemap = getById(SITEMAP_INDEX, indexed.data[0].id)
-    sitemap.data[0].attributes.content.size == 7
+    indexed.data.size == 2
+    def submap1 = getById(SITEMAP_INDEX, indexed.data[0].id)
+    def submap2 = getById(SITEMAP_INDEX, indexed.data[1].id)
 
     and:
-    def collectionIds = collections.collect({data -> data._id}) as Set
-    def sitemapCollectionIds = sitemap.data[0].attributes.content as Set
-    sitemapCollectionIds == collectionIds
+    def submapSizes = ([submap1.data[0].attributes.content.size] as Set) + ([submap2.data[0].attributes.content.size] as Set)
+    submapSizes == [6,1] as Set
+
+    and:
+    def submapIds = (submap1.data[0].attributes.content as Set) + (submap2.data[0].attributes.content as Set)
+    submapIds.size() == 7
   }
 
   def 'updating an orphan granule indexes nothing'() {

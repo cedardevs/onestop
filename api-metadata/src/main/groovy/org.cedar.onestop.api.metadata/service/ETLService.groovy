@@ -33,6 +33,12 @@ class ETLService {
   @Value('${elasticsearch.index.universal-type}')
   String TYPE
 
+  @Value('${etl.sitemap.scroll-size}')
+  Integer SITEMAP_SCROLL_SIZE
+
+  @Value('${etl.sitemap.collections-per-submap}')
+  Integer SITEMAP_COLLECTIONS_PER_SUBMAP
+
   @Value('${elasticsearch.index.search.collection.pipeline-name}')
   private String COLLECTION_PIPELINE
 
@@ -154,7 +160,7 @@ class ETLService {
     def collectionIdRequestBody = [
       _source: false,
       sort: "_doc", // Non-scoring query, so this will be most efficient ordering
-      size: 10000
+      size: SITEMAP_SCROLL_SIZE
       ]
 
     def collectionResponse = elasticsearchService.performRequest('POST', "${collectionIndex}/_search?scroll=1m", collectionIdRequestBody)
@@ -170,7 +176,7 @@ class ETLService {
       scrollId = scrollResponse._scroll_id
 
       currentCount += collectionResponse.hits.hits*._id.size()
-      if(lastSubcollection.size() < 40000) {
+      if(lastSubcollection.size() < SITEMAP_COLLECTIONS_PER_SUBMAP) {
         lastSubcollection.addAll(scrollResponse.hits.hits*._id)
       } else {
         collections.add(lastSubcollection)
