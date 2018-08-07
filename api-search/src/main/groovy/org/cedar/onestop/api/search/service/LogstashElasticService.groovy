@@ -2,17 +2,17 @@ package org.cedar.onestop.api.search.service
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import org.apache.http.Header
+import groovy.util.logging.Slf4j
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
+import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+@Slf4j
 @Service
 class LogstashElasticService {
-    private String LOGSTASH_PREFIX = 'logstash'
-
     private final RestClient restClient
 
     @Autowired
@@ -20,29 +20,50 @@ class LogstashElasticService {
         this.restClient = restClient
     }
 
-    Map getTopTenSearchQueries() {
-        Map query = [
+    Map getTopSearchQueries(Integer size, Integer previousIndicies) {
+        Map query = queryBuilder(size)
+        def headers = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
+        String indicies = indiciesBuilder(previousIndicies)
+        Response response = restClient.performRequest('GET', "/${indicies}/_search", Collections.EMPTY_MAP, headers)
+
+        return responseAsMap(response)
+    }
+
+    private String indiciesBuilder(Integer previousIndicies) {
+        StringBuilder indexBuilder = new StringBuilder()
+        indexBuilder.append("%3Clogstash-%7Bnow%2Fd%7D%3E")
+
+        for (int i = 1; i < previousIndicies; i++) {
+            indexBuilder.append("%2C%3Clogstash-%7Bnow%2Fd-${i}d%7D%3E")
+        }
+
+        return indexBuilder.toString()
+    }
+
+    private Map responseAsMap(Response response) {
+        Map result = [:]
+
+        try {
+            if (response.getEntity()) {
+                result += new JsonSlurper().parse(response?.getEntity()?.getContent()) as Map
+            }
+        } catch (Exception e) {
+            log.info("response error message" + e.toString())
+        }
+        return result
+    }
+
+    private Map queryBuilder(Integer size) {
+        return [
                 "size": 0,
                 "aggs": [
                         "group_by_query": [
                                 "terms": [
-                                        "field": "logParams.queries.value.keyword"
+                                        "field": "logParams.queries.value.keyword",
+                                        "size": size
                                 ]
                         ]
                 ]
         ]
-
-//        Map emptyMap = [:]
-        def headers = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
-        //TODO: Dynamically handle date in the indices
-        def response = restClient.performRequest('GET', '/logstash-2018.08.06/_search', Collections.EMPTY_MAP, headers)
-        Map result = [:]
-//        try {
-            if (response.getEntity()) {
-                result += new JsonSlurper().parse(response?.getEntity()?.getContent()) as Map
-            }
-//        }
-
-        return result
     }
 }

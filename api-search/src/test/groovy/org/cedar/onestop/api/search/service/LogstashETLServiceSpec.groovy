@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.search.service
 
+import groovy.json.JsonSlurper
 import spock.lang.Specification
 
 class LogstashETLServiceSpec extends Specification {
@@ -11,18 +12,18 @@ class LogstashETLServiceSpec extends Specification {
     }
 
     def "Turns logstash search into our output JSON"() {
-        when: "We get an output from Elastic Search"
-        Object esResponse = esOutput()
-        def expected = expectedOutput()
+        when: "We get an output from Elastic Search as a Map"
+        Map esResponse = esOutput()
+        Map expected = expectedOutput()
 
-        then: "We ETL it into a Map object"
-        def result = etlService.reformatJSON(esResponse)
+        then: "We filter the result to include only top search results with number of occurrences"
+        Map result = etlService.etlResponse(esResponse)
 
         expect:
         expected == result
     }
 
-    private static String esOutput() {
+    private static Map esOutput() {
         String output = "{\n" +
                 "  \"took\": 8,\n" +
                 "  \"timed_out\": false,\n" +
@@ -61,7 +62,8 @@ class LogstashETLServiceSpec extends Specification {
                 "    }\n" +
                 "  }\n" +
                 "}"
-        return output
+        Map mappedOutput = new JsonSlurper().parseText(output) as Map
+        return mappedOutput
     }
 
     private static Map expectedOutput() {

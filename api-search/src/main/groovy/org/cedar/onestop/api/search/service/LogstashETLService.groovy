@@ -1,14 +1,11 @@
 package org.cedar.onestop.api.search.service
 
-import groovy.json.JsonSlurper
 import org.springframework.stereotype.Service
 
 @Service
 class LogstashETLService {
 
-    Map reformatJSON(Map esResponse) {
-//        def jsonSlurper = new JsonSlurper()
-//        def parsedResponse = jsonSlurper.parseText(esResponse)
+    Map etlResponse(Map esResponse) {
 
         Map queryCounts = [:]
         List queries = esResponse["aggregations"]["group_by_query"]["buckets"]
