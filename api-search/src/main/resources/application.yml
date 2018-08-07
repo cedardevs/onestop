@@ -29,6 +29,8 @@ elasticsearch:
   port: 9200
   index:
     universal-type: doc
+    sitemap:
+      name: sitemap
     search:
       collection:
         name: search_collection
