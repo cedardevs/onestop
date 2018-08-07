@@ -4,11 +4,13 @@ import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.search.service.LogstashETLService
 import org.cedar.onestop.api.search.service.LogstashElasticService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @Slf4j
+@ConditionalOnProperty("features.logstash.search")
 @RestController
 class LogstashSearchController {
     private final LogstashElasticService logstashElasticService
