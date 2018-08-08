@@ -76,12 +76,6 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
   }
 
   @Override
-  @Deprecated
-  KeyValue<String, String> punctuate(long timestamp) {
-    // do nothing
-  }
-
-  @Override
   void close() {
     triggerKeysStore.flush()
     triggerKeysStore.close()
