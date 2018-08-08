@@ -11,4 +11,3 @@ rootProject.name = 'psi'
 
 include 'registry'
 include 'stream-manager'
-//include 'splitter'
