@@ -1,70 +1,85 @@
-apply plugin: 'war'
+buildscript {
+  repositories {
+    maven { url "https://plugins.gradle.org/m2/" }
+  }
+  dependencies {
+    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+  }
+}
+
 apply plugin: 'groovy'
 apply plugin: 'org.cedar.dockerplugin'
+apply plugin: 'application'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = 'org.cedar.psi.manager.StreamManagerMain'
 
 configurations {
-    compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+  compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
 
-    integrationTestCompile.extendsFrom testCompile
-    integrationTestRuntime.extendsFrom testRuntime
+  integrationTestCompile.extendsFrom testCompile
+  integrationTestRuntime.extendsFrom testRuntime
 }
 
 dependencies {
-    compile('org.codehaus.groovy:groovy:2.4.13')
-    compile('org.codehaus.groovy:groovy-json:2.4.13')
-    compile("org.codehaus.groovy:groovy-xml:2.4.13")
-    compile('org.apache.kafka:kafka-streams:1.1.0')
-    compile('org.apache.commons:commons-text:1.2')
+  compile('org.codehaus.groovy:groovy:2.4.13')
+  compile('org.codehaus.groovy:groovy-json:2.4.13')
+  compile("org.codehaus.groovy:groovy-xml:2.4.13")
+  compile('org.apache.kafka:kafka-streams:2.0.0')
+  compile('org.apache.commons:commons-text:1.2')
 
-    testCompile("org.spockframework:spock-spring:${project.spockVersion}")
-    testCompile("org.spockframework:spock-core:${project.spockVersion}")
-    testCompile('org.apache.kafka:kafka-streams-test-utils:1.1.0')
-    testCompile('org.apache.kafka:kafka_2.11:1.1.0')
-    testCompile('org.apache.kafka:kafka_2.11:1.1.0:test')
+  testCompile("org.spockframework:spock-spring:${project.spockVersion}")
+  testCompile("org.spockframework:spock-core:${project.spockVersion}")
+  testCompile('org.apache.kafka:kafka-streams-test-utils:2.0.0')
+  testCompile('org.apache.kafka:kafka-clients:2.0.0:test')
+  testCompile('org.apache.kafka:kafka_2.12:2.0.0')
+  testCompile('org.apache.kafka:kafka_2.12:2.0.0:test')
 }
 
 sourceSets {
-    integrationTest {
-        groovy.srcDir file('src/integrationTest/groovy')
+  integrationTest {
+    groovy.srcDir file('src/integrationTest/groovy')
 //    resources.srcDir file("src/main/resources")
-        compileClasspath += main.output + test.output + configurations.testRuntime
-        runtimeClasspath += output + compileClasspath
-    }
+    compileClasspath += main.output + test.output + configurations.testRuntime
+    runtimeClasspath += output + compileClasspath
+  }
 }
 
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
-    mustRunAfter 'test'
-    testClassesDirs = sourceSets.integrationTest.output.classesDirs
-    classpath = sourceSets.integrationTest.runtimeClasspath
-    reports.junitXml.destination = file("${buildDir}/integration-test-results")
-    reports.html.destination =  file("${buildDir}/reports/integrationTests")
+  mustRunAfter 'test'
+  testClassesDirs = sourceSets.integrationTest.output.classesDirs
+  classpath = sourceSets.integrationTest.runtimeClasspath
+  reports.junitXml.destination = file("${buildDir}/integration-test-results")
+  reports.html.destination = file("${buildDir}/reports/integrationTests")
 }
 
 check.dependsOn integrationTest
 
-war {
-    // build a deployable war in addition to the executable one
-    enabled = true
-    classpath -= files(configurations.compileOnly)
+jar {
+  baseName = "${rootProject.name}-${project.name}"
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
 }
-
-bootJar {
-    // add a classifier to distinguish the executable jar
-    classifier = 'all'
-    launchScript()
+// check http://imperceptiblethoughts.com/shadow/
+shadowJar {
+  baseName = "${rootProject.name}-${project.name}"
+  classifier = 'all'
+  version = version
+  configurations = [project.configurations.compile]
 }
 
 task sourceJar(type: Jar) {
-    classifier = 'sources'
-    baseName = "${rootProject.name}-${project.name}"
-    from "${projectDir}/src"
+  classifier = 'sources'
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
 }
 
 docker {
-    additionalBuildArgs = [JAR_NAME: bootJar.outputs.files.singleFile.name]
+  additionalBuildArgs = [JAR_NAME: shadowJar.outputs.files.singleFile.name]
 }
 
-BuildDockerImage.dependsOn(bootJar)
+BuildDockerImage.dependsOn(shadowJar)
 assemble.dependsOn(BuildDockerImage)
 assemble.dependsOn(sourceJar)
 PublishDockerImage.dependsOn(BuildDockerImage)
