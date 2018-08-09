@@ -10,6 +10,8 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
+features.logstash.search: true
+
 logging:
   level:
       org.cedar.onestop.api.search: INFO
@@ -56,4 +58,3 @@ search:
 info.version: ${version}
 info.buildDate: ${buildDate}
 
-feature.logstash.search: false
