@@ -19,12 +19,12 @@ class LogstashElasticService {
     LogstashElasticService(RestClient restClient) {
         this.restClient = restClient
     }
-
+    
     Map getTopSearchQueries(Integer size, Integer previousIndicies) {
         Map query = queryBuilder(size)
         def headers = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
         String indicies = indiciesBuilder(previousIndicies)
-        Response response = restClient.performRequest('GET', "/${indicies}/_search", Collections.EMPTY_MAP, headers)
+        Response response = restClient.performRequest('GET', "${indicies}/_search", Collections.EMPTY_MAP, headers)
 
         return responseAsMap(response)
     }
@@ -55,6 +55,22 @@ class LogstashElasticService {
 
     private Map queryBuilder(Integer size) {
         return [
+                "query": [
+                    "bool": [
+                        "must_not": [
+                            ["terms": [
+                                "logParams.queries.value.keyword": [
+                                    "weather",
+                                    "climate",
+                                    "satellites",
+                                    "fisheries",
+                                    "coasts",
+                                    "oceans"
+                                ]
+                            ]]
+                        ]
+                    ]
+                ],
                 "size": 0,
                 "aggs": [
                         "group_by_query": [
@@ -67,3 +83,29 @@ class LogstashElasticService {
         ]
     }
 }
+
+/*
+GET _search
+{
+  "query": {
+    "bool": {
+      "must_not": [
+        {"terms": {
+          "logParams.queries.value.keyword": [
+            "weaather",
+            "work"
+          ]
+        }}
+      ]
+    }
+  }, 
+  "size": 0,
+  "aggs": {
+    "group_by_query": {
+      "terms": {
+        "field": "logParams.queries.value.keyword"
+      }
+    }
+  }
+}
+*/
