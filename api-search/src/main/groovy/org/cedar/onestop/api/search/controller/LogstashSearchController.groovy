@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController
 class LogstashSearchController {
     private final LogstashElasticService logstashElasticService
     private final LogstashETLService logstashETLService
+    private final DEFAULT_NUM_RESULTS = 10
+    private final DEFAULT_NUM_DAYS = 1
 
     @Autowired
     LogstashSearchController(LogstashElasticService service, LogstashETLService etlService) {
@@ -27,10 +29,10 @@ class LogstashSearchController {
      * @param numDays indicates the range of days inclusive today.
      * @return top search results
      */
-    @GetMapping(path='/search/logstash')
+    @GetMapping(path = "/search/logstash")
     Map topSearches(@RequestParam(required = false) Optional<Integer> numResults, @RequestParam(required = false) Optional<Integer> numDays) {
-        Integer extractedNumResults = numResults.isPresent() ? numResults.get() : 10
-        Integer extractedNumDays = numDays.isPresent() ? numDays.get() : 1
+        Integer extractedNumResults = numResults.isPresent() ? numResults.get() : DEFAULT_NUM_RESULTS
+        Integer extractedNumDays = numDays.isPresent() ? numDays.get() : DEFAULT_NUM_DAYS
         Map result = logstashElasticService.getTopSearchQueries(extractedNumResults, extractedNumDays)
         Map etlResult = logstashETLService.etlResponse(result)
         return etlResult
