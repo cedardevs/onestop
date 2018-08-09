@@ -5,9 +5,13 @@ import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.SitemapETLService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+
+import javax.servlet.http.HttpServletRequest
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.PUT
@@ -26,6 +30,15 @@ class AdminController {
   private ElasticsearchService elasticsearchService
 
   AdminController() {}
+
+  @RequestMapping(path = '/admin/test', method = GET, produces = 'text/plain')
+  String test(HttpServletRequest request) {
+    String uri = request.getRequestURI()
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication()
+    String user = auth.getName()
+    String roles = auth.getAuthorities()
+    return "uri: ${uri}, user: ${user}, roles: ${roles}"
+  }
 
   @RequestMapping(path = '/admin/index/search/rebuild', method = [GET, PUT], produces = 'application/json')
   Map rebuildSearchIndex() {
