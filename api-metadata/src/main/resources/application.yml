@@ -15,6 +15,7 @@ management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
 features.secure.upload: true
+features.sitemap: false
 
 etl:
   sitemap:

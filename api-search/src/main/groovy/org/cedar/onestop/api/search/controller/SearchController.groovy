@@ -138,24 +138,4 @@ class SearchController {
     return uiConfig
   }
 
-  @RequestMapping(path = '/sitemap.xml', method = GET)
-  String getSitemap( HttpServletRequest request, HttpServletResponse response) {
-    return SitemapGenerator.makeSitemap(SitemapGenerator.getBaseUrl(request.getRequestURL().toString()), elasticsearchService.searchSitemap().data)
-  }
-
-  @RequestMapping(path = "/sitemap/{id}.txt", method = [GET, HEAD])
-  String getSubSitemap( @PathVariable String id, HttpServletRequest request, HttpServletResponse response
-   ) {
-    def result = elasticsearchService.getSitemapById(id)
-
-    if (result.data) {
-      response.status = HttpStatus.OK.value()
-      return  SitemapGenerator.makeSiteSubmap(SitemapGenerator.getBaseUrl(request.getRequestURL().toString()), result.data)
-
-    }
-    else {
-      response.status = result.status ?: HttpStatus.BAD_REQUEST.value()
-    }
-  }
-
 }
