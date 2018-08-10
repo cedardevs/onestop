@@ -66,7 +66,7 @@ etl:
 
 logging:
   level:
-    org.cedar.onestop.api.search: INFO
+    org.cedar.onestop.api.metadata: INFO
     org.gradle: WARN
     org.apache.http: WARN
     org.apache.http.wire: WARN
