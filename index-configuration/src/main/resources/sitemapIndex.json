@@ -7,7 +7,7 @@
       },
       "properties": {
         "content": {
-          "type": "text",
+          "type": "text"
         },
         "lastUpdatedDate": {
           "type": "date",
