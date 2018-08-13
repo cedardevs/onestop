@@ -8,7 +8,7 @@ buildscript {
   dependencies {
     classpath 'com.gradle:build-scan-plugin:1.11'
     classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
-    classpath 'org.owasp:dependency-check-gradle:3.1.1'
+    classpath 'org.owasp:dependency-check-gradle:3.3.1'
   }
 }
 
