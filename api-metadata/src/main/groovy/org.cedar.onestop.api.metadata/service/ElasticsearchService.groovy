@@ -32,7 +32,7 @@ class ElasticsearchService {
   private String FLAT_GRANULE_SEARCH_INDEX
 
   @Value('${features.sitemap}')
-  private String SITEMAP_ENABLED
+  private Boolean SITEMAP_ENABLED
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
   private String SITEMAP_INDEX
