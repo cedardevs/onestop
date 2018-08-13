@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: kafka-rest
-          image: confluentinc/cp-kafka-rest:5.0.0
+          image: confluentinc/cp-kafka-rest:4.1.1
           imagePullPolicy: Always
           command: ["/bin/bash", "-c", "unset KAFKA_REST_PORT && /etc/confluent/docker/run"]
           ports:

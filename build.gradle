@@ -38,18 +38,6 @@ subprojects {
       maven { url "https://repo.spring.io/milestone" }
     }
 
-    // override versions of dependencies with vulnerabilities
-//    configurations.all {
-//      resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-//        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
-//          if (details.requested.version.startsWith('2.9') && details.requested.version < '2.9.5') {
-//            details.useVersion '2.9.5'
-//            details.because 'fixes vulnerability in 2.9.x before 2.9.5'
-//          }
-//        }
-//      }
-//    }
-
     if (project.plugins.hasPlugin('org.cedar.dockerplugin')) {
       docker {
         username = System.getenv('DOCKER_USER')

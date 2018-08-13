@@ -14,7 +14,7 @@ build:
     workspace: ./stream-manager
     docker:
       buildArgs:
-        JAR_NAME: stream-manager-0.1.0-SNAPSHOT-all.jar
+        JAR_NAME: psi-stream-manager-0.1.0-SNAPSHOT-all.jar
         VERSION: 0.1.0-SNAPSHOT
         DATE: now
         VCS_REF: local

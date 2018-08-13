@@ -6,12 +6,18 @@ class Constants {
   static final String APP_ID = 'stream-manager'
   static final String BOOTSTRAP_DEFAULT = 'localhost:9092'
 
-  // Application Topics
-  static final String RAW_TOPIC = 'raw_granule'
-  static final String UNPARSED_TOPIC = 'unparsed-granule'
-  static final String PARSED_TOPIC = 'parsed-granule'
-  static final String SME_TOPIC = 'sme-granule'
-  static final String ERROR_TOPIC = 'error-granule'
+  // granule Topics
+  static final String RAW_GRANULES_TOPIC = 'metadata-aggregator-raw-granules-changelog'
+  static final String UNPARSED_TOPIC = 'unparsed-granules'
+  static final String PARSED_TOPIC = 'parsed-granules'
+  static final String SME_TOPIC = 'sme-granules'
+
+  // collection Topics
+  static final String RAW_COLLECTIONS_TOPIC = 'metadata-aggregator-raw-collections-changelog'
+  static final String PARSED_COLLECTIONS_TOPIC = 'parsed-collections'
+
+  // common Topics
+  static final String ERROR_TOPIC = 'error-events'
 
   // SME Splitting Info
   static final String SPLIT_FIELD = 'dataStream'

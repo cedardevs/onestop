@@ -35,30 +35,57 @@ class StreamManager {
       return !isForSME(value.toString(), Constants.SPLIT_FIELD, Constants.SPLIT_VALUES)
     }
 
-    KStream[] smeBranches = builder.stream(Constants.RAW_TOPIC)
-        .branch(toParsing, toSMETopic)
+    //stream incoming granule and collection messages
+    KStream granuleInputStream = builder.stream(Constants.RAW_GRANULES_TOPIC)
+    KStream collectionInputStream = builder.stream(Constants.RAW_COLLECTIONS_TOPIC)
+
+    //split script output into 2 streams, one for good and one for bad
+    KStream[] smeBranches = granuleInputStream.branch(toParsing, toSMETopic)
+    KStream toSmeFunction = smeBranches[1]
+    KStream toParsingFunction = smeBranches[0]
 
     // To SME functions:
-    smeBranches[1].to(Constants.SME_TOPIC)
-
+    toSmeFunction.to(Constants.SME_TOPIC)
     // Merge straight-to-parsing stream with topic SME granules write to:
     KStream unparsedGranules = builder.stream(Constants.UNPARSED_TOPIC)
-    KStream parsedNotAnalyzedGranules = smeBranches[0].merge(unparsedGranules)
+    KStream parsedNotAnalyzedGranules = toParsingFunction.merge(unparsedGranules)
         .mapValues({ value ->
       return MetadataParsingService.parseToInternalFormat(value as String)
     } as ValueMapper<String, String>)
 
     // Branch again, sending errors to separate topic
     KStream[] parsedStreams = parsedNotAnalyzedGranules.branch(isValid, isNotValid)
-    parsedStreams[1].to(Constants.ERROR_TOPIC)
-
+    KStream goodParsedStream = parsedStreams[0]
+    KStream badParsedStream = parsedStreams[1]
+    //send the bad stream off to the error topic
+    badParsedStream.to(Constants.ERROR_TOPIC)
     // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
     //      parallelization, or at least compare with and without topic in load testing?
 
     // Send valid messages to analysis & send final output to topic
-    parsedStreams[0].mapValues({ value ->
+    goodParsedStream.mapValues({ value ->
       return AnalysisAndValidationService.analyzeParsedMetadata(value as String)
     } as ValueMapper<String, String>).to(Constants.PARSED_TOPIC)
+
+    // parsing collection:
+    KStream parsedNotAnalyzedCollection = collectionInputStream
+        .mapValues({ value ->
+      return MetadataParsingService.parseToInternalFormat(value as String)
+    } as ValueMapper<String, String>)
+
+    // Branch again, sending errors to separate topic
+    KStream[] parsedCollection = parsedNotAnalyzedCollection.branch(isValid, isNotValid)
+    KStream goodParsedCollection = parsedCollection[0]
+    KStream badParsedCollection = parsedCollection[1]
+    //send the bad stream off to the error topic
+    badParsedCollection.to(Constants.ERROR_TOPIC)
+    // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
+    //      parallelization, or at least compare with and without topic in load testing?
+
+    // Send valid messages to analysis & send final output to topic
+    goodParsedCollection.mapValues({ value ->
+      return AnalysisAndValidationService.analyzeParsedMetadata(value as String)
+    } as ValueMapper<String, String>).to(Constants.PARSED_COLLECTIONS_TOPIC)
 
     return builder.build()
   }
@@ -68,8 +95,8 @@ class StreamManager {
     return splitValues.contains(msg[splitField])
   }
 
-  static Predicate isValid = {k, v -> !new JsonSlurper().parseText(v as String).containsKey('error') }
-  static Predicate isNotValid = {k, v -> new JsonSlurper().parseText(v as String).containsKey('error') }
+  static Predicate isValid = { k, v -> !new JsonSlurper().parseText(v as String).containsKey('error') }
+  static Predicate isNotValid = { k, v -> new JsonSlurper().parseText(v as String).containsKey('error') }
 
   static Properties streamsConfig(String appId, String bootstrapServers) {
     log.info "Building kafka streams appConfig for $appId"

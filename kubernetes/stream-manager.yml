@@ -6,22 +6,6 @@ metadata:
   labels:
     app: stream-manager
     devmode: "true"
-data:
-  splitter.yml: |-
-    kafka:
-      application:
-        id: stream-manager
-      bootstrap-servers: kafka:9092
-
-    stream:
-      split-field: dataStream
-      split-values: dscovr
-      topics:
-        raw-granules: metadata-aggregator-raw-granules-changelog
-        unparsed-granules: unparsed-granule
-        parsed-granules: parsed-granules
-        sme-granules: sme-granule
-        error-granules: sme-error-events
 
 ---
 apiVersion: apps/v1
@@ -43,13 +27,6 @@ spec:
         - name: stream-manager
           image: cedardevs/psi-stream-manager
           imagePullPolicy: IfNotPresent
-          volumeMounts:
-            - name: stream-manager-config-volume
-              mountPath: /etc/stream-manager/config
           env:
-            - name: PSI_CONFIG_LOCATION
-              value: "/etc/stream-manager/config/stream-manager.yml"
-      volumes:
-        - name: stream-manager-config-volume
-          configMap:
-            name: stream-manager-config
+            - name: IM_BOOTSTRAP_SERVERS
+              value: "kafka:9092"
