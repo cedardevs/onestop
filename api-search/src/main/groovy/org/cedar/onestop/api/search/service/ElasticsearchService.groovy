@@ -142,6 +142,13 @@ class ElasticsearchService {
     }
   }
 
+  Map query(Map query, String index) {
+    def headers = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
+    Response response = restClient.performRequest('GET', "${index}/_search", Collections.EMPTY_MAP, headers)
+
+    return parseResponse(response)
+  }
+
   private Map queryElasticsearch(Map params, String index) {
     // TODO: does this parse step need to change based on new different endpoints?
     def query = searchRequestParserService.parseSearchQuery(params)
@@ -164,6 +171,7 @@ class ElasticsearchService {
 
     def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
     def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
+    // def searchResponse = query(requestBody, index) // TODO ????
 
     def result = [
         data: searchResponse.hits.hits.collect {
