@@ -79,7 +79,7 @@ spec:
                  topologyKey: "kubernetes.io/hostname"
       containers:
         - name: broker
-          image: confluentinc/cp-kafka:4.1.1
+          image: confluentinc/cp-kafka:5.0.0
           imagePullPolicy: Always
           ports:
             - name: internal

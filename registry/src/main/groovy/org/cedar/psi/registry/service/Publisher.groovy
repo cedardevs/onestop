@@ -29,7 +29,7 @@ class Publisher {
     def slurpedKey = slurper.parseText(data) as Map
 
     if (!slurpedKey.trackingId) {
-      log.warn("Not publishing message due to no trackingId: ${data}")
+      log.warn("Not publishing message due to missing trackingId: ${data}")
       return
     }
 
@@ -41,7 +41,7 @@ class Publisher {
 
   void publishGranuleIso(String data, String id = null) {
     def key = id ?: UUID.randomUUID().toString() // TODO - discuss w/ team and determine what to really do for IDs
-    def message = [id: id, isoXml: data]
+    def message = [id: id, rawFormat: "isoXml", rawMetadata: data]
     def record = new ProducerRecord<String, String>(RAW_GRANULE_TOPIC, key, JsonOutput.toJson(message))
     log.debug("Sending: ${record}")
     kafkaProducer.send(record)
@@ -49,7 +49,7 @@ class Publisher {
 
   void publishCollection(String data, String id = null) {
     def key = id ?: UUID.randomUUID().toString() // TODO - discuss w/ CoMET team and determine what to really do for IDs
-    def message = [id: id, isoXml: data]
+    def message = [id: id, rawFormat: "isoXml", rawMetadata: data]
     def record = new ProducerRecord<String, String>(RAW_COLLECTION_TOPIC, key, JsonOutput.toJson(message))
     log.debug("Sending: ${record}")
     kafkaProducer.send(record)
