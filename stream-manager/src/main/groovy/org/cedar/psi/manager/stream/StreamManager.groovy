@@ -39,7 +39,7 @@ class StreamManager {
     KStream granuleInputStream = builder.stream(Constants.RAW_GRANULES_TOPIC)
     KStream collectionInputStream = builder.stream(Constants.RAW_COLLECTIONS_TOPIC)
 
-    //split script output into 2 streams, one for good and one for bad
+    // Split granules to those that need SME processing and those ready to parse
     KStream[] smeBranches = granuleInputStream.branch(toParsing, toSMETopic)
     KStream toSmeFunction = smeBranches[1]
     KStream toParsingFunction = smeBranches[0]
