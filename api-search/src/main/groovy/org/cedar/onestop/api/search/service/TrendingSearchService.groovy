@@ -19,7 +19,7 @@ class TrendingSearchService {
       this.filterConfig = filterConfig
   }
 
-  Map getTopSearchQueries(Integer size, Integer previousIndices, String term) {
+  Map getTopSearchTerms(Integer size, Integer previousIndices, String term) {
     Map query = queryBuilder(size, term)
     String indices = indicesBuilder(previousIndices)
     return elasticsearchService.queryElasticsearch(query, indices)
@@ -77,7 +77,7 @@ class TrendingSearchService {
   }
 
   Map topRecentTerms(int numResults, int numDays, String term) {
-    Map response = getTopSearchQueries(numResults, numDays, term)
+    Map response = getTopSearchTerms(numResults, numDays, term)
     return numOccurencesOfTerms(response)
   }
 
