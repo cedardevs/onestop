@@ -4,35 +4,42 @@ import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
 
-@Slf4j
-@ConditionalOnProperty("features.trending.search")
 @Service
+@ConditionalOnProperty("features.trending.search")
 class TrendingSearchService {
   private final ElasticsearchService elasticsearchService
+  private final FilterConfig filterConfig
 
   @Autowired
-  TrendingSearchService(ElasticsearchService elasticsearchService) {
+  TrendingSearchService(ElasticsearchService elasticsearchService, FilterConfig filterConfig) {
       this.elasticsearchService = elasticsearchService
+      this.filterConfig = filterConfig
   }
 
   Map getTopSearchQueries(Integer size, Integer previousIndices) {
     Map query = queryBuilder(size)
     String indices = indicesBuilder(previousIndices)
-    return elasticsearchService.query(query, indices)
+    return elasticsearchService.queryElasticsearch(query, indices)
   }
 
+  @Value('${trending.indiceName}')
+  private final String indiceName
+  
   private String indicesBuilder(Integer previousIndices) {
     StringBuilder indexBuilder = new StringBuilder()
     // TODO do we need to think about including date-sorting in the query, in case logstash needs to be changed to log 1 month at a time
-    indexBuilder.append("%3Clogstash-%7Bnow%2Fd%7D%3E")
+    indexBuilder.append("%3C${indiceName}%7Bnow%2Fd%7D%3E")
 
     for (int i = 1; i < previousIndices; i++) {
-      indexBuilder.append("%2C%3Clogstash-%7Bnow%2Fd-${i}d%7D%3E")
+      indexBuilder.append("%2C%3C${indiceName}%7Bnow%2Fd-${i}d%7D%3E")
     }
 
     return indexBuilder.toString()
   }
+
 
   private Map queryBuilder(Integer size) {
     return [
@@ -40,14 +47,7 @@ class TrendingSearchService {
         "bool": [
           "must_not": [
             ["terms": [
-              "logParams.queries.value.keyword": [
-                "weather",
-                "climate",
-                "satellites",
-                "fisheries",
-                "coasts",
-                "oceans"
-              ]
+              "logParams.queries.value.keyword": filterTerms
             ]]
           ]
         ]
