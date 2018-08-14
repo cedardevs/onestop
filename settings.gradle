@@ -10,7 +10,4 @@
 rootProject.name = 'psi'
 
 include 'registry'
-include 'script-wrapper'
-//include 'workflow'
-include 'splitter'
-
+include 'stream-manager'

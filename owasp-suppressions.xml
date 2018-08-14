@@ -19,6 +19,7 @@
     <filePath regex="true">.*jackson-databind-.*\.jar</filePath>
     <cve>CVE-2017-17485</cve>
     <cve>CVE-2018-5968</cve>
+    <cve>CVE-2018-7489</cve>
   </suppress>
 
   <suppress>

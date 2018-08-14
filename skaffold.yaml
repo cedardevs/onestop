@@ -10,19 +10,11 @@ build:
         VERSION: 0.1.0-SNAPSHOT
         DATE: now
         VCS_REF: local
-  - imageName: cedardevs/psi-script-wrapper
-    workspace: ./script-wrapper
+  - imageName: cedardevs/psi-stream-manager
+    workspace: ./stream-manager
     docker:
       buildArgs:
-        JAR_NAME: psi-script-wrapper-0.1.0-SNAPSHOT-all.jar
-        VERSION: 0.1.0-SNAPSHOT
-        DATE: now
-        VCS_REF: local
-  - imageName: cedardevs/psi-splitter
-    workspace: ./splitter
-    docker:
-      buildArgs:
-        JAR_NAME: psi-splitter-0.1.0-SNAPSHOT-all.jar
+        JAR_NAME: psi-stream-manager-0.1.0-SNAPSHOT-all.jar
         VERSION: 0.1.0-SNAPSHOT
         DATE: now
         VCS_REF: local
@@ -31,6 +23,7 @@ deploy:
     manifests:
     - ./kubernetes/zookeeper.yml
     - ./kubernetes/kafka.yml
+    - ./kubernetes/kafka-rest.yml
+    - ./kubernetes/kafka-ui.yml
     - ./kubernetes/registry.yml
-    - ./kubernetes/script-wrappers.yml
-    - ./kubernetes/splitter.yml
+    - ./kubernetes/stream-manager.yml

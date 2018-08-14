@@ -8,7 +8,7 @@ buildscript {
   dependencies {
     classpath 'com.gradle:build-scan-plugin:1.11'
     classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
-    classpath 'org.owasp:dependency-check-gradle:3.1.1'
+    classpath 'org.owasp:dependency-check-gradle:3.3.1'
   }
 }
 
@@ -36,18 +36,6 @@ subprojects {
     repositories {
       mavenCentral()
       maven { url "https://repo.spring.io/milestone" }
-    }
-
-    // override versions of dependencies with vulnerabilities
-    configurations.all {
-      resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
-          if (details.requested.version.startsWith('2.9') && details.requested.version <= '2.9.5') {
-            details.useVersion '2.9.5'
-            details.because 'fixes vulnerability in 2.9.x before 2.9.5'
-          }
-        }
-      }
     }
 
     if (project.plugins.hasPlugin('org.cedar.dockerplugin')) {

@@ -40,6 +40,8 @@ class MetadataStreamService {
   static final String PARSED_COLLECTION_TOPIC = 'parsed-collections'
   static final String COMBINED_GRANULE_TOPIC = 'combined-granules'
   static final String COMBINED_COLLECTION_TOPIC = 'combined-collections'
+  static final String SME_GRANULE_TOPIC = 'sme-granules'
+  static final String UNPARSED_GRANULE_TOPIC = 'unparsed-granules'
 
   static final String RAW_GRANULE_STORE = 'raw-granules'
   static final String RAW_COLLECTION_STORE = 'raw-collections'
@@ -50,9 +52,8 @@ class MetadataStreamService {
   static final String GRANULE_PUBLISH_KEYS = 'granule-publish-keys'
   static final String COLLECTION_PUBLISH_TIMES = 'collection-publish-times'
   static final String COLLECTION_PUBLISH_KEYS = 'collection-publish-keys'
-
-  static final String SME_ERROR_HANDLER_TOPIC = 'sme-error-events'
-  static final String SME_ERROR_HANDLER_STORE = 'sme-errors'
+  static final String ERROR_HANDLER_TOPIC = 'error-events'
+  static final String ERROR_HANDLER_STORE = 'error-store'
 
   private final AdminClient adminClient
   private final long publishInterval
@@ -97,13 +98,15 @@ class MetadataStreamService {
   static int DEFAULT_NUM_PARTITIONS = 1
   static short DEFAULT_REPLICATION_FACTOR = 1
   static Map<String, Map> topicConfigs = [
-      (RAW_GRANULE_TOPIC): null,
-      (RAW_COLLECTION_TOPIC): null,
-      (PARSED_GRANULE_TOPIC): null,
-      (PARSED_COLLECTION_TOPIC): null,
-      (COMBINED_GRANULE_TOPIC): null,
+      (RAW_GRANULE_TOPIC)        : null,
+      (RAW_COLLECTION_TOPIC)     : null,
+      (PARSED_GRANULE_TOPIC)     : null,
+      (PARSED_COLLECTION_TOPIC)  : null,
+      (COMBINED_GRANULE_TOPIC)   : null,
       (COMBINED_COLLECTION_TOPIC): null,
-      (SME_ERROR_HANDLER_TOPIC): null,
+      (ERROR_HANDLER_TOPIC)      : null,
+      (SME_GRANULE_TOPIC)        : null,
+      (UNPARSED_GRANULE_TOPIC)   : null,
   ] as Map<String, Map>
 
   private static void declareTopics(AdminClient adminClient) {
@@ -180,25 +183,26 @@ class MetadataStreamService {
 
     parsedGranuleTable
         .toStream()
-        .transform({-> granulePublisher}, GRANULE_PUBLISH_TIMES, GRANULE_PUBLISH_KEYS, PARSED_GRANULE_STORE)
+        .transform({ -> granulePublisher }, GRANULE_PUBLISH_TIMES, GRANULE_PUBLISH_KEYS, PARSED_GRANULE_STORE)
         .to(PARSED_GRANULE_TOPIC)
     parsedCollectionTable
         .toStream()
         .mapValues(StreamFunctions.parsedInfoNormalizer)
-        .transform({-> collectionPublisher}, COLLECTION_PUBLISH_TIMES, COLLECTION_PUBLISH_KEYS, PARSED_COLLECTION_STORE)
+        .transform({ -> collectionPublisher
+    }, COLLECTION_PUBLISH_TIMES, COLLECTION_PUBLISH_KEYS, PARSED_COLLECTION_STORE)
         .to(PARSED_COLLECTION_TOPIC)
-
-    KTable smeErrorhandlerTable = builder.table(SME_ERROR_HANDLER_TOPIC, Materialized.as(SME_ERROR_HANDLER_STORE).withLoggingEnabled([:]))
+    // TODO check with team if we need to create store for the following topics
+    KTable errorHandlerTable = builder.table(ERROR_HANDLER_TOPIC, Materialized.as(ERROR_HANDLER_STORE).withLoggingEnabled([:]))
 
     rawGranuleTable
         .outerJoin(parsedGranuleTable, StreamFunctions.buildKeyedJsonJoiner('raw'))
         .toStream()
-        .transformValues({-> new PublishingAwareTransformer()} as ValueTransformerSupplier)
+        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier)
         .to(COMBINED_GRANULE_TOPIC)
     rawCollectionTable
         .outerJoin(parsedCollectionTable, StreamFunctions.buildKeyedJsonJoiner('raw'))
         .toStream()
-        .transformValues({-> new PublishingAwareTransformer()} as ValueTransformerSupplier)
+        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier)
         .to(COMBINED_COLLECTION_TOPIC)
 
     return builder.build()

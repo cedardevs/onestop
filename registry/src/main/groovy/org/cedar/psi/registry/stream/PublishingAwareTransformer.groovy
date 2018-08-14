@@ -27,12 +27,6 @@ class PublishingAwareTransformer implements ValueTransformer<String, String> {
   }
 
   @Override
-  @Deprecated
-  String punctuate(long timestamp) {
-    return null // do nothing
-  }
-
-  @Override
   void close() {
     // nothing to do
   }

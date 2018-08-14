@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stream-manager-config
+  labels:
+    app: stream-manager
+    devmode: "true"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stream-manager
+  labels:
+    app: stream-manager
+spec:
+  selector:
+    matchLabels:
+      app: stream-manager
+  template:
+    metadata:
+      labels:
+        app: stream-manager
+    spec:
+      containers:
+        - name: stream-manager
+          image: cedardevs/psi-stream-manager
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: IM_BOOTSTRAP_SERVERS
+              value: "kafka:9092"

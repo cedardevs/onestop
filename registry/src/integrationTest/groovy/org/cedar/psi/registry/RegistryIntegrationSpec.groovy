@@ -107,7 +107,7 @@ class RegistryIntegrationSpec extends Specification {
         id: granuleId,
         type: 'granule',
         attributes: [
-            raw: [id: granuleId, isoXml: granuleText],
+            raw: [id: granuleId, rawFormat: "isoXml", rawMetadata: granuleText],
             parsed: null
         ]
     ]
@@ -142,7 +142,7 @@ class RegistryIntegrationSpec extends Specification {
         id: collectionId,
         type: 'collection',
         attributes: [
-            raw: [id: collectionId, isoXml: collectionText],
+            raw: [id: collectionId, rawFormat: "isoXml", rawMetadata: collectionText],
             parsed: null
         ]
     ]
