@@ -37,8 +37,13 @@ class TrendingSearchController {
     Map topSearches(@RequestParam(required = false) Optional<Integer> numResults, @RequestParam(required = false) Optional<Integer> numDays) {
       Integer extractedNumResults = numResults.isPresent() ? numResults.get() : DEFAULT_NUM_RESULTS
       Integer extractedNumDays = numDays.isPresent() ? numDays.get() : DEFAULT_NUM_DAYS
-      return trendingSearchService.topRecentSearches(extractedNumResults, extractedNumDays)
+      return trendingSearchService.topRecentTerms(extractedNumResults, extractedNumDays, "queries")
     }
 
-    
+    @GetMapping(path = "/trending/collection")
+    Map topCollections(@RequestParam(required = false) Optional<Integer> numResults, @RequestParam(required = false) Optional<Integer> numDays) {
+      Integer extractedNumResults = numResults.isPresent() ? numResults.get() : DEFAULT_NUM_RESULTS
+      Integer extractedNumDays = numDays.isPresent() ? numDays.get() : DEFAULT_NUM_DAYS
+      return trendingSearchService.topRecentTerms(extractedNumResults, extractedNumDays, "id")
+    }
 }

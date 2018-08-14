@@ -6,5 +6,6 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 @ConfigurationProperties('trending')
 class FilterConfig {
-    List<String> filterTerms
+    List<String> filterSearchTerms
+    List<String> filterCollectionTerms
 }

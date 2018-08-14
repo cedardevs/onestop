@@ -19,8 +19,8 @@ class TrendingSearchService {
       this.filterConfig = filterConfig
   }
 
-  Map getTopSearchQueries(Integer size, Integer previousIndices) {
-    Map query = queryBuilder(size)
+  Map getTopSearchQueries(Integer size, Integer previousIndices, String term) {
+    Map query = queryBuilder(size, term)
     String indices = indicesBuilder(previousIndices)
     return elasticsearchService.queryElasticsearch(query, indices)
   }
@@ -41,22 +41,34 @@ class TrendingSearchService {
   }
 
 
-  private Map queryBuilder(Integer size) {
+  private Map queryBuilder(Integer size, String term) {
+    List<String> filters
+    switch(term) {
+      case "queries":
+        term += ".value.keyword";
+        filters = filterConfig.filterSearchTerms;
+        break;
+      case "id":
+        term += ".keyword";
+        filters = filterConfig.filterCollectionTerms;
+        break;
+    }
+
     return [
       "query": [
         "bool": [
           "must_not": [
             ["terms": [
-              "logParams.queries.value.keyword": filterConfig.filterTerms
+              "logParams.${term}": filters
             ]]
           ]
         ]
       ],
       "size": 0,
       "aggs": [
-        "group_by_query": [
+        "group_by_term": [
           "terms": [
-            "field": "logParams.queries.value.keyword",
+            "field": "logParams.${term}",
             "size": size
           ]
         ]
@@ -64,14 +76,14 @@ class TrendingSearchService {
     ]
   }
 
-  Map topRecentSearches(int numResults, int numDays) {
-    Map response = getTopSearchQueries(numResults, numDays)
+  Map topRecentTerms(int numResults, int numDays, String term) {
+    Map response = getTopSearchQueries(numResults, numDays, term)
     return numOccurencesOfTerms(response)
   }
 
   Map numOccurencesOfTerms(Map response) {
     Map queryCounts = [:]
-    List queries = response["aggregations"]["group_by_query"]["buckets"]
+    List queries = response["aggregations"]["group_by_term"]["buckets"]
     queries.each { Map searchQuery ->
         def key = searchQuery["key"]
         def doc_count = searchQuery["doc_count"]
