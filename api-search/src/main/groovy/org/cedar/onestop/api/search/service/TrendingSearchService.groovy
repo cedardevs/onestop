@@ -47,7 +47,7 @@ class TrendingSearchService {
         "bool": [
           "must_not": [
             ["terms": [
-              "logParams.queries.value.keyword": filterTerms
+              "logParams.queries.value.keyword": filterConfig.filterTerms
             ]]
           ]
         ]
