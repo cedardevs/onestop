@@ -38,7 +38,7 @@ class TrendingSearchServiceSpec extends Specification {
         "hits": []
       },
       "aggregations": {
-        "group_by_query": {
+        "group_by_term": {
           "doc_count_error_upper_bound": 0,
           "sum_other_doc_count": 0,
           "buckets": [
