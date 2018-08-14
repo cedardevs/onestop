@@ -7,13 +7,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.beans.factory.annotation.Value
+
 
 @Slf4j
 @ConditionalOnProperty("features.trending.search")
 @RestController
 class TrendingSearchController {
-    private final DEFAULT_NUM_RESULTS = 10
-    private final DEFAULT_NUM_DAYS = 1
+
+    @Value('${trending.numResults}')
+    private final Integer DEFAULT_NUM_RESULTS
+
+    @Value('${trending.numDays}')
+    private final Integer DEFAULT_NUM_DAYS
+
     private final TrendingSearchService trendingSearchService
 
     @Autowired
@@ -26,10 +33,12 @@ class TrendingSearchController {
      * @param numDays indicates the range of days inclusive today.
      * @return top search results
      */
-    @GetMapping(path = "/search/trending")
+    @GetMapping(path = "/trending/search")
     Map topSearches(@RequestParam(required = false) Optional<Integer> numResults, @RequestParam(required = false) Optional<Integer> numDays) {
       Integer extractedNumResults = numResults.isPresent() ? numResults.get() : DEFAULT_NUM_RESULTS
       Integer extractedNumDays = numDays.isPresent() ? numDays.get() : DEFAULT_NUM_DAYS
       return trendingSearchService.topRecentSearches(extractedNumResults, extractedNumDays)
     }
+
+    
 }

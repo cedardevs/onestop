@@ -10,7 +10,7 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
-features.trending.search: false
+features.trending.search: true
 
 logging:
   level:
@@ -54,6 +54,18 @@ search:
     endDate: 1
     spatialBounding: 1
     dsmmAverage: 1
+
+trending:
+  numResults: 10
+  numDays: 1
+  indiceName: logstash-
+  filterTerms:
+    - weather
+    - climate
+    - satellites
+    - fisheries
+    - coasts
+    - oceans
 
 info.version: ${version}
 info.buildDate: ${buildDate}
