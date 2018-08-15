@@ -10,7 +10,7 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
-features.trending.search: true
+features.trending.search: false
 
 logging:
   level:
