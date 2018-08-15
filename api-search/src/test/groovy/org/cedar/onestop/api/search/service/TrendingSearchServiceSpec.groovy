@@ -5,19 +5,13 @@ import spock.lang.Specification
 
 class TrendingSearchServiceSpec extends Specification {
 
-  private TrendingSearchService service
-
-  def setup() {
-    this.service = new TrendingSearchService()
-  }
-
   def "Turns logstash search into our output JSON"() {
     when: "We get an output from Elastic Search as a Map"
     Map esResponse = esOutput()
     Map expected = expectedOutput()
 
     then: "We filter the result to include only top search results with number of occurrences"
-    Map result = service.numOccurencesOfTerms(esResponse)
+    Map result = TrendingSearchService.numOccurencesOfTerms(esResponse)
 
     expect:
     expected == result
@@ -47,7 +41,7 @@ class TrendingSearchServiceSpec extends Specification {
               "doc_count": 4
             },
             {
-              "key": "climate",
+              "key": "viirs",
               "doc_count": 3
             },
             {
@@ -69,7 +63,7 @@ class TrendingSearchServiceSpec extends Specification {
   private static Map expectedOutput() {
     Map output = [
       "GHRSST": 4,
-      "climate": 3,
+      "viirs": 3,
       "satellite": 2,
       "weather": 1
     ]

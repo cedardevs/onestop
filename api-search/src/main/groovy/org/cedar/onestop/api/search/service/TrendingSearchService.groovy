@@ -81,7 +81,7 @@ class TrendingSearchService {
     return numOccurencesOfTerms(response)
   }
 
-  Map numOccurencesOfTerms(Map response) {
+  static Map numOccurencesOfTerms(Map response) {
     Map queryCounts = [:]
     List queries = response["aggregations"]["group_by_term"]["buckets"]
     queries.each { Map searchQuery ->
