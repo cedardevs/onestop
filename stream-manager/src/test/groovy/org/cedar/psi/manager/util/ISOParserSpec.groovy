@@ -550,7 +550,7 @@ class ISOParserSpec extends Specification {
     ]
   }
 
-  def "Invalid temporal bounding is prevented"() {
+  def "Invalid temporal bounding creates invalidDates entry"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-invalid-dates-metadata.xml").text
 
@@ -567,7 +567,12 @@ class ISOParserSpec extends Specification {
         endYear             : 2005,
         instant             : null,
         instantIndeterminate: null,
-        description         : null
+        description         : null,
+        invalidDates        : [
+          begin  : true,
+          end    : false,
+          instant: false
+        ]
     ]
   }
 
