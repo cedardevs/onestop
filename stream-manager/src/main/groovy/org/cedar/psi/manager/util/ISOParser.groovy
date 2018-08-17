@@ -585,7 +585,11 @@ class ISOParser {
     ]
 
     if(begin.invalid || end.invalid || instant.invalid) {
-
+      temporalBounding.invalidDates = [
+        begin: begin.invalid,
+        end: end.invalid,
+        instant: instant.invalid
+      ]
     }
 
     return temporalBounding
