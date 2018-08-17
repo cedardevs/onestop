@@ -4,6 +4,7 @@ import {showHome} from '../actions/FlowActions'
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
+  // TODO: get selected granules count to display on cart button
   return {}
 }
 

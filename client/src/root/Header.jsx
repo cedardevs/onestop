@@ -8,9 +8,10 @@ import HeaderLink from './HeaderLink'
 import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 
-import {SiteColors} from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
 import FlexRow from '../common/FlexRow'
+
+import cart from 'fa/cart-arrow-down.svg'
 
 const styleHeader = {
   backgroundColor: '#222C37',
@@ -26,7 +27,7 @@ const styleHeaderFlexRow = {
 
 const styleNav = {
   flex: '1',
-  minWidth: '17em',
+  minWidth: '22em',
   display: 'flex',
   justifyContent: 'flex-end',
   marginTop: '1em',
@@ -89,6 +90,16 @@ const styleSkipLinkHover = {
   background: 'transparent',
 }
 
+const styleCartButton = {
+  fontSize: '0.618em'
+}
+
+const styleCartIcon = {
+  width: '1.618em',
+  height: '1.618em',
+  marginRight: '0.309em'
+}
+
 class Header extends React.Component {
   constructor(props) {
     super(props)
@@ -97,7 +108,7 @@ class Header extends React.Component {
     }
   }
 
-  handleFocus = e => {
+  handleFocusSkipLink = e => {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -106,13 +117,18 @@ class Header extends React.Component {
     })
   }
 
-  handleBlur = e => {
+  handleBlurSkipLink = e => {
     this.setState(prevState => {
       return {
         ...prevState,
         focusingSkipLink: false,
       }
     })
+  }
+
+  handleRedirectToCart = () => {
+    const { history } = this.props
+    history.push('/cart')
   }
 
   render() {
@@ -130,10 +146,21 @@ class Header extends React.Component {
             About Us
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, true)}>
+        <li style={styleLinkListItem(false, false)}>
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
+        </li>
+        <li style={styleLinkListItem(false, true)}>
+          <Button
+              style={styleCartButton}
+              title="Shopping Cart"
+              // TODO: get length of selected granules in redux here
+              text={"3"}
+              icon={cart}
+              styleIcon={styleCartIcon}
+              onClick={this.handleRedirectToCart}
+          />
         </li>
       </ul>
     )
@@ -168,7 +195,7 @@ class Header extends React.Component {
 
     const stylesMerged = {
       ...styleSkipLinkWrapper,
-      ...(this.state.focusingSkipLink ? styleShowSkipLink : styleHideSkipLink),
+      ...(focusingSkipLink ? styleShowSkipLink : styleHideSkipLink),
     }
 
     const skipLink = (
@@ -178,8 +205,8 @@ class Header extends React.Component {
           styleHover={styleSkipLinkHover}
           styleFocus={styleSkipLinkFocus}
           text="Skip To Main Content"
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
+          onFocus={this.handleFocusSkipLink}
+          onBlur={this.handleBlurSkipLink}
           onClick={() => {
             document.getElementById('mainBlock').focus()
           }}

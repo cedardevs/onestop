@@ -19,6 +19,7 @@ import LandingContainer from '../landing/LandingContainer'
 import DetailContainer from '../detail/DetailContainer'
 import Help from '../common/info/Help'
 import AboutContainer from '../common/info/AboutContainer'
+import CartContainer from '../cart/CartContainer'
 
 import LoadingBarContainer from '../loading/LoadingBarContainer'
 
@@ -158,8 +159,13 @@ export default class Root extends Component {
           <Route path="/about">
             <AboutContainer />
           </Route>
+
           <Route path="/help">
             <Help />
+          </Route>
+
+          <Route path="/cart">
+            <CartContainer />
           </Route>
 
           <Route path="/error">
