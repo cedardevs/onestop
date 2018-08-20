@@ -33,7 +33,7 @@ class ISOParser {
     })
 
     return [
-        fileId  : slurped.fileIdentifier.CharacterString.text(),
+        fileId  : slurped.fileIdentifier.CharacterString.text() ?: null,
         doi     : doi,
         parentId: slurped.parentIdentifier.Anchor.text() ?: slurped.parentIdentifier.CharacterString.text() ?: null
     ]
@@ -151,7 +151,7 @@ class ISOParser {
 
     def idInfo = metadata.identificationInfo.MD_DataIdentification
 
-    fileIdentifier = metadata.fileIdentifier.CharacterString.text()
+    fileIdentifier = metadata.fileIdentifier.CharacterString.text() ?: null
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
     hierarchyLevelName = metadata.hierarchyLevelName.CharacterString.text().toLowerCase() ?: null
 
@@ -167,11 +167,11 @@ class ISOParser {
         return anchor.text()
       }
     })
-    title = idInfo.citation.CI_Citation.title.CharacterString.text()
+    title = idInfo.citation.CI_Citation.title.CharacterString.text() ?: null
     alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text() ?: null
-    description = idInfo.abstract.CharacterString.text()
+    description = idInfo.abstract.CharacterString.text() ?: null
     def thumbnailPath = idInfo.graphicOverview.MD_BrowseGraphic
-    thumbnail = StringEscapeUtils.unescapeXml(thumbnailPath.fileName.CharacterString.text())
+    thumbnail = StringEscapeUtils.unescapeXml(thumbnailPath.fileName.CharacterString.text()) ?: null
     thumbnailDescription = thumbnailPath.fileDescription.CharacterString.text() ?: null
 
     // Miscellaneous dates:
