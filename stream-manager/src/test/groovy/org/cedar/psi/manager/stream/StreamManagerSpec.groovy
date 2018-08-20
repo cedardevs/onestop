@@ -6,6 +6,7 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.cedar.psi.manager.config.Constants
+import org.cedar.psi.common.serde.JsonSerdes
 import spock.lang.Specification
 
 class StreamManagerSpec extends Specification {
@@ -16,7 +17,7 @@ class StreamManagerSpec extends Specification {
   def topology = StreamManager.buildTopology()
   def driver = new TopologyTestDriver(topology, streamsConfig)
   def consumerFactory = new ConsumerRecordFactory(Constants.RAW_GRANULES_TOPIC,
-      Serdes.String().serializer(), Serdes.String().serializer())
+      Serdes.String().serializer(), JsonSerdes.Map().serializer())
 
   def cleanup(){
     driver.close()
@@ -26,10 +27,10 @@ class StreamManagerSpec extends Specification {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def key = 'A123'
-    def value = JsonOutput.toJson([
+    def value = [
         rawFormat: 'isoXml',
         rawMetadata: xml
-    ])
+    ]
 
     when:
     driver.pipeInput(consumerFactory.create(Constants.RAW_GRANULES_TOPIC, key, value))
@@ -60,11 +61,11 @@ class StreamManagerSpec extends Specification {
     given:
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
     def smeKey = 'sme'
-    def smeValue = JsonOutput.toJson([
+    def smeValue = [
         dataStream: 'dscovr',
         rawFormat: 'isoXml',
         rawMetadata: xmlSME
-    ])
+    ]
 
     when:
     driver.pipeInput(consumerFactory.create(Constants.RAW_GRANULES_TOPIC, smeKey, smeValue))
@@ -73,7 +74,7 @@ class StreamManagerSpec extends Specification {
     // The record is in the SME topic
     def smeOutput = driver.readOutput(Constants.SME_TOPIC, DESERIALIZER, DESERIALIZER)
     smeOutput.key() == smeKey
-    smeOutput.value() == smeValue
+    smeOutput.value() == JsonOutput.toJson(smeValue)
 
     and:
     // There are no errors and nothing in the parsed topic
@@ -86,17 +87,17 @@ class StreamManagerSpec extends Specification {
     def xmlNonSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
     def nonSMEKey = 'notSME'
-    def nonSMEValue = JsonOutput.toJson([
+    def nonSMEValue = [
         dataStream: 'ingested xml',
         rawFormat: 'isoXml',
         rawMetadata: xmlNonSME
-    ])
+    ]
     def smeKey = 'sme'
-    def smeValue = JsonOutput.toJson([
+    def smeValue = [
         dataStream: 'dscovr',
         rawFormat: 'isoXml',
         rawMetadata: xmlSME
-    ])
+    ]
 
     when:
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
@@ -134,11 +135,11 @@ class StreamManagerSpec extends Specification {
   def "Unparsable granule ends up on error-granule topic"() {
     given:
     def key = 'failure101'
-    def value = JsonOutput.toJson([
+    def value = [
         dataStream: 'scoobyDoo',
         rawFormat: 'csv',
         rawData: 'it,does,not,parse'
-    ])
+    ]
 
     when:
     driver.pipeInput(consumerFactory.create(Constants.RAW_GRANULES_TOPIC, key, value))
