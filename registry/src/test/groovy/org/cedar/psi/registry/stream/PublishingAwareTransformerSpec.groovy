@@ -29,9 +29,9 @@ class PublishingAwareTransformerSpec extends Specification {
 
     where:
     input << [
-        '{"publishing": {"private": true}}',
-        '{"publishing": {"private": true, "until": "' + futureDate + '"}}',
-        '{"publishing": {"private": false, "until": "' + pastDate + '"}}',
+        ["publishing": ["private": true]],
+        ["publishing": ["private": true, "until":futureDate]],
+        ["publishing": ["private": false, "until":pastDate]],
     ]
   }
 
@@ -41,10 +41,10 @@ class PublishingAwareTransformerSpec extends Specification {
 
     where:
     input << [
-        '{"metadata": "there is no publishing info in this json"}',
-        '{"publishing": {"private": false}}',
-        '{"publishing": {"private": false, "until": "' + futureDate + '"}}',
-        '{"publishing": {"private": true, "until": "' + pastDate + '"}}',
+        ["metadata": "there is no publishing info in this json"],
+        ["publishing": ["private": false]],
+        ["publishing": ["private": false, "until":futureDate]],
+        ["publishing": ["private": true, "until":pastDate]],
     ]
   }
 

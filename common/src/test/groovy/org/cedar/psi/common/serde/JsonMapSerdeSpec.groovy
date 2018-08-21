@@ -8,7 +8,6 @@ import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.kstream.Consumed
 import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.kstream.Produced
-import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import spock.lang.Specification
 
@@ -75,7 +74,9 @@ class JsonMapSerdeSpec extends Specification {
     driver.pipeInput(consumerFactory.create(topicName, key, value))
 
     then:
-    driver.getKeyValueStore(tableName).get(key) == value
+    def storedResult = driver.getKeyValueStore(tableName).get(key)
+    storedResult instanceof Map
+    storedResult == value
   }
 
   private static buildTestStreamConfig() {

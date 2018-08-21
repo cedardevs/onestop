@@ -13,11 +13,11 @@ import org.cedar.psi.registry.util.TimeFormatUtils
 
 @Slf4j
 @CompileStatic
-class DelayedPublisherTransformer implements Transformer<String, String, KeyValue<String, String>> {
+class DelayedPublisherTransformer implements Transformer<String, Map, KeyValue<String, Map>> {
   private ProcessorContext context
   private KeyValueStore<Long, String> triggerTimesStore
   private KeyValueStore<String, Long> triggerKeysStore
-  private KeyValueStore<String, String> lookupStore
+  private KeyValueStore<String, Map> lookupStore
 
   private String triggerTimesStoreName
   private String triggerKeysStoreName
@@ -38,18 +38,16 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
 
     triggerTimesStore = (KeyValueStore<Long, String>) this.context.getStateStore(triggerTimesStoreName)
     triggerKeysStore = (KeyValueStore<String, Long>) this.context.getStateStore(triggerKeysStoreName)
-    lookupStore = (KeyValueStore<String, String>) this.context.getStateStore(lookupStoreName)
+    lookupStore = (KeyValueStore<String, Map>) this.context.getStateStore(lookupStoreName)
 
     this.context.schedule(interval, PunctuationType.WALL_CLOCK_TIME, this.&publishUpTo)
   }
 
   @Override
-  KeyValue<String, String> transform(String key, String value) {
+  KeyValue<String, Map> transform(String key, Map value) {
     log.debug("transforming value for key ${key}")
     def now = context.timestamp()
-    def slurper = new JsonSlurper()
-    def valueMap = slurper.parseText(value) as Map
-    def publishingInfo = valueMap.publishing as Map ?: [:]
+    def publishingInfo = value?.publishing as Map ?: [:]
     def publishDate = publishingInfo.until ?: null
     def incomingPublishTime = TimeFormatUtils.parseTimestamp(publishDate as String)
     def storedPublishTime = triggerKeysStore.get(key)
@@ -87,7 +85,6 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
 
   void publishUpTo(long timestamp) {
     log.debug("publishing up to ${timestamp}")
-    def slurper = new JsonSlurper()
     def iterator = this.triggerTimesStore.all()
     while (iterator.hasNext() && iterator.peekNextKey() <= timestamp) {
       def keyValue = iterator.next()
@@ -95,16 +92,15 @@ class DelayedPublisherTransformer implements Transformer<String, String, KeyValu
       def triggerKeys = deserializeList(keyValue.value as String)
       triggerKeys?.each { String triggerKey ->
         log.debug("found publish event for ${keyValue}")
-        def lookupValue = lookupStore.get(triggerKey)
-        if (lookupValue) {
-          log.debug("looked up existing state for ${triggerKey}: ${lookupValue}")
-          def valueMap = slurper.parseText(lookupValue) as Map
-          def publishingInfo = valueMap.publishing as Map ?: [:]
+        def value = lookupStore.get(triggerKey)
+        if (value) {
+          log.debug("looked up existing state for ${triggerKey}: ${value}")
+          def publishingInfo = value?.publishing as Map ?: [:]
           def publishDate = publishingInfo?.until ?: null
           def publishTimestamp = TimeFormatUtils.parseTimestamp(publishDate as String)
           if (publishTimestamp && publishTimestamp <= timestamp) {
             log.debug("current publish date for ${triggerKey} has passed => publish")
-            context.forward(triggerKey, lookupValue)
+            context.forward(triggerKey, value)
           }
         }
         log.debug("removing publishing event")
