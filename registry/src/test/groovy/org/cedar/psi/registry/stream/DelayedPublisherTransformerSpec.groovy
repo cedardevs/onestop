@@ -6,12 +6,15 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
+import org.apache.kafka.streams.kstream.Consumed
+import org.apache.kafka.streams.kstream.KTable
 import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.kstream.ValueTransformerSupplier
 import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
+import org.cedar.psi.common.serde.JsonSerdes
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -23,6 +26,8 @@ import java.time.temporal.ChronoUnit
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_SERIALIZER
 import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_DESERIALIZER
+import static org.cedar.psi.registry.util.StreamSpecUtils.JSON_SERIALIZER
+import static org.cedar.psi.registry.util.StreamSpecUtils.JSON_DESERIALIZER
 import static org.cedar.psi.registry.util.StreamSpecUtils.readAllOutput
 
 @Slf4j
@@ -36,7 +41,7 @@ class DelayedPublisherTransformerSpec extends Specification {
   static final KEY_STORE_NAME = 'key'
   static final LOOKUP_STORE_NAME = 'lookup'
   static final long TEST_INTERVAL = 500
-  static final consumerFactory = new ConsumerRecordFactory(INPUT_TOPIC, STRING_SERIALIZER, STRING_SERIALIZER)
+  static final consumerFactory = new ConsumerRecordFactory(INPUT_TOPIC, STRING_SERIALIZER, JSON_SERIALIZER)
 
   DelayedPublisherTransformer transformer
   TopologyTestDriver driver
@@ -51,7 +56,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         (StreamsConfig.APPLICATION_ID_CONFIG)           : 'delayed_publisher_spec',
         (StreamsConfig.BOOTSTRAP_SERVERS_CONFIG)        : 'localhost:9092',
         (StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
-        (StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG): Serdes.String().class.name,
+        (StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG): JsonSerdes.Map().class.name,
         (ConsumerConfig.AUTO_OFFSET_RESET_CONFIG)       : 'earliest'
     ]
     def builder = new StreamsBuilder()
@@ -61,11 +66,16 @@ class DelayedPublisherTransformerSpec extends Specification {
         Stores.inMemoryKeyValueStore(KEY_STORE_NAME), Serdes.String(), Serdes.Long()))
 
     // build a normalized table
-    def lookupTable = builder
-        .stream(INPUT_TOPIC)
+    Materialized<String, Map, KeyValueStore> materializer =
+        Materialized.as(LOOKUP_STORE_NAME)
+            .withKeySerde(Serdes.String())
+            .withValueSerde(JsonSerdes.Map())
+
+    KTable<String, Map> lookupTable = builder
+        .stream(INPUT_TOPIC, Consumed.with(Serdes.String(), JsonSerdes.Map()))
         .mapValues(StreamFunctions.parsedInfoNormalizer)
         .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(LOOKUP_STORE_NAME))
+        .reduce(StreamFunctions.identityReducer, materializer)
 
     // capture publishing events in the table and publishing them back to input when they fire
     lookupTable
@@ -93,7 +103,7 @@ class DelayedPublisherTransformerSpec extends Specification {
 
   def 'value with private #isPrivate is saved and passes through'() {
     def key = 'A'
-    def value = '{"publishing":{"private":' + isPrivate + '}}'
+    def value = ["publishing":["private":isPrivate]]
 
     when:
     sendInput(driver, INPUT_TOPIC, key, value)
@@ -104,7 +114,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     !timeStore.all().hasNext()
 
     and:
-    def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     output.key() == key
     output.value() == (isPrivate ? null : value)
 
@@ -114,8 +124,8 @@ class DelayedPublisherTransformerSpec extends Specification {
 
   def 'value with no publishing info gets private false added'() {
     def key = 'A'
-    def value = '{"discovery":{"metadata":"yes"}}'
-    def expected = '{"discovery":{"metadata":"yes"},"publishing":{"private":false}}'
+    def value = ["discovery":["metadata":"yes"]]
+    def expected = ["discovery":["metadata":"yes"],"publishing":["private":false]]
 
     when:
     sendInput(driver, INPUT_TOPIC, key, value)
@@ -126,7 +136,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     !timeStore.all().hasNext()
 
     and:
-    def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     output.key() == key
     output.value() == expected
   }
@@ -136,7 +146,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
     def futureMillis = Instant.from(futureDate).toEpochMilli()
     def key = 'A'
-    def value = '{"publishing":{"private":true,"until":"' + futureString +'"}}'
+    def value = ["publishing":["private":true,"until":futureString]]
 
     when:
     sendInput(driver, INPUT_TOPIC, key, value)
@@ -147,7 +157,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == value
 
     and:
-    def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def output = driver.readOutput(OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     output.key() == key
     output.value() == null
   }
@@ -158,8 +168,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     def futureMillis = Instant.from(futureDate).toEpochMilli()
     def key1 = 'A'
     def key2 = 'B'
-    def value1 = '{"metadata":"first!","publishing":{"private":true,"until":"' + futureString +'"}}'
-    def value2 = '{"metadata":"second!","publishing":{"private":true,"until":"' + futureString +'"}}'
+    def value1 = ["metadata":"first!","publishing":["private":true,"until":futureString]]
+    def value2 = ["metadata":"second!","publishing":["private":true,"until":futureString]]
 
     when:
     sendInput(driver, INPUT_TOPIC, key1, value1)
@@ -173,7 +183,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key2) == value2
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     OutputVerifier.compareKeyValue(output[0], key1, null)
     OutputVerifier.compareKeyValue(output[1], key2, null)
     output.size() == 2
@@ -184,19 +194,19 @@ class DelayedPublisherTransformerSpec extends Specification {
     def plusFiveTime = ZonedDateTime.now(UTC_ID).plusSeconds(5)
     def plusFiveString = ISO_OFFSET_DATE_TIME.format(plusFiveTime)
     def plusFiveMillis = Instant.from(plusFiveTime).toEpochMilli()
-    def plusFiveMessage = '{"publishing":{"private":true,"until":"' + plusFiveString +'"}}'
+    def plusFiveMessage = ["publishing":["private":true,"until":plusFiveString]]
 
     def plusSixKey = '6'
     def plusSixTime = ZonedDateTime.now(UTC_ID).plusSeconds(6)
     def plusSixString = ISO_OFFSET_DATE_TIME.format(plusSixTime)
     def plusSixMillis = Instant.from(plusSixTime).toEpochMilli()
-    def plusSixMessage = '{"publishing":{"private":true,"until":"' + plusSixString +'"}}'
+    def plusSixMessage = ["publishing":["private":true,"until":plusSixString]]
 
     def plusTenKey = '10'
     def plusTenTime = ZonedDateTime.now(UTC_ID).plusSeconds(10)
     def plusTenString = ISO_OFFSET_DATE_TIME.format(plusTenTime)
     def plusTenMillis = Instant.from(plusTenTime).toEpochMilli()
-    def plusTenMessage = '{"publishing":{"private":true,"until":"' + plusTenString +'"}}'
+    def plusTenMessage = ["publishing":["private":true,"until":plusTenString]]
 
     when: // publish messages, and do it out of order
     sendInput(driver, INPUT_TOPIC, plusSixKey, plusSixMessage)
@@ -229,7 +239,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(plusTenKey) == plusTenMessage // <-- original value remains
 
     and: // 3 original messages plus 2 republished messages have come out
-    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     output.size() == 5
     OutputVerifier.compareKeyValue(output[0], plusSixKey, null)
     OutputVerifier.compareKeyValue(output[1], plusTenKey, null)
@@ -244,8 +254,8 @@ class DelayedPublisherTransformerSpec extends Specification {
     def futureMillis = Instant.from(futureDate).toEpochMilli()
     def key1 = 'A'
     def key2 = 'B'
-    def value1 = '{"metadata":"first!","publishing":{"private":true,"until":"' + futureString +'"}}'
-    def value2 = '{"metadata":"second!","publishing":{"private":true,"until":"' + futureString +'"}}'
+    def value1 = ["metadata":"first!","publishing":["private":true,"until":futureString]]
+    def value2 = ["metadata":"second!","publishing":["private":true,"until":futureString]]
 
     when:
     sendInput(driver, INPUT_TOPIC, key1, value1)
@@ -260,7 +270,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key2) == value2
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     OutputVerifier.compareKeyValue(output[0], key1, null)
     OutputVerifier.compareKeyValue(output[1], key2, null)
     OutputVerifier.compareKeyValue(output[2], key1, value1)
@@ -274,13 +284,13 @@ class DelayedPublisherTransformerSpec extends Specification {
     def futureDate = ZonedDateTime.now(UTC_ID).plusYears(1)
     def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
     def futureMillis = Instant.from(futureDate).toEpochMilli()
-    def firstValue = '{"publishing":{"private":true,"until":"' + futureString +'"}}'
+    def firstValue = ["publishing":["private":true,"until":futureString]]
 
     // second message has past date
     def pastDate = ZonedDateTime.now(UTC_ID).minusDays(1)
     def pastString = ISO_OFFSET_DATE_TIME.format(pastDate)
     def pastMillis = Instant.from(pastDate).toEpochMilli()
-    def secondValue = '{"publishing":{"private":true,"until":"' + pastString +'"}}'
+    def secondValue = ["publishing":["private":true,"until":pastString]]
 
 
     when:
@@ -294,7 +304,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == secondValue
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     output.size() == 2
     OutputVerifier.compareKeyValue(output[0], key, null)
     OutputVerifier.compareKeyValue(output[1], key, secondValue)
@@ -306,10 +316,10 @@ class DelayedPublisherTransformerSpec extends Specification {
     def futureDate = ZonedDateTime.now(UTC_ID).plusYears(1)
     def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
     def futureMillis = Instant.from(futureDate).toEpochMilli()
-    def firstValue = '{"publishing":{"private":true,"until":"' + futureString +'"}}'
+    def firstValue = ["publishing":["private":true,"until":futureString]]
 
     // second message is no longer private
-    def secondValue = '{"publishing":{"private":false}}'
+    def secondValue = ["publishing":["private":false]]
 
     when:
     sendInput(driver, INPUT_TOPIC, key, firstValue)
@@ -321,7 +331,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == secondValue
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     output.size() == 2
     OutputVerifier.compareKeyValue(output[0], key, null)
     OutputVerifier.compareKeyValue(output[1], key, secondValue)
@@ -334,10 +344,10 @@ class DelayedPublisherTransformerSpec extends Specification {
     def futureDate = ZonedDateTime.now(UTC_ID).plusYears(1)
     def futureString = ISO_OFFSET_DATE_TIME.format(futureDate)
     def futureMillis = Instant.from(futureDate).toEpochMilli()
-    def firstValue = '{"publishing":{"private":true,"until":"' + futureString +'"}}'
+    def firstValue = ["publishing":["private":true,"until":futureString]]
 
     // second message is no longer private
-    def secondValue = '{"publishing":{"private":false}}'
+    def secondValue = ["publishing":["private":false]]
 
     when:
     sendInput(driver, INPUT_TOPIC, key1, firstValue)
@@ -352,7 +362,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key2) == firstValue
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     output.size() == 3
     OutputVerifier.compareKeyValue(output[0], key1, null)
     OutputVerifier.compareKeyValue(output[1], key2, null)
@@ -365,13 +375,13 @@ class DelayedPublisherTransformerSpec extends Specification {
     def firstDate = ZonedDateTime.now(UTC_ID).plus(200, ChronoUnit.MILLIS)
     def firstString = ISO_OFFSET_DATE_TIME.format(firstDate)
     def firstMillis = Instant.from(firstDate).toEpochMilli()
-    def firstValue = '{"publishing":{"private":true,"until":"' + firstString +'"}}'
+    def firstValue = ["publishing":["private":true,"until":firstString]]
 
     // second message has far future date
     def secondDate = ZonedDateTime.now(UTC_ID).plusYears(1)
     def secondString = ISO_OFFSET_DATE_TIME.format(secondDate)
     def secondMillis = Instant.from(secondDate).toEpochMilli()
-    def secondValue = '{"publishing":{"private":true,"until":"' + secondString +'"}}'
+    def secondValue = ["publishing":["private":true,"until":secondString]]
 
     when:
     sendInput(driver, INPUT_TOPIC, key, firstValue)
@@ -385,7 +395,7 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == secondValue
 
     and:
-    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     output.size() == 3
     OutputVerifier.compareKeyValue(output[0], key, null)
     OutputVerifier.compareKeyValue(output[1], key, firstValue)
@@ -398,13 +408,13 @@ class DelayedPublisherTransformerSpec extends Specification {
     def firstDate = ZonedDateTime.now(UTC_ID).plusSeconds(1)
     def firstString = ISO_OFFSET_DATE_TIME.format(firstDate)
     def firstMillis = Instant.from(firstDate).toEpochMilli()
-    def firstValue = '{"publishing":{"private":true,"until":"' + firstString +'"}}'
+    def firstValue = ["publishing":["private":true,"until":firstString]]
 
     // second message has far future date
     def secondDate = ZonedDateTime.now(UTC_ID).plusYears(1)
     def secondString = ISO_OFFSET_DATE_TIME.format(secondDate)
     def secondMillis = Instant.from(secondDate).toEpochMilli()
-    def secondValue = '{"publishing":{"private":true,"until":"' + secondString +'"}}'
+    def secondValue = ["publishing":["private":true,"until":secondString]]
 
     when: // both messages arrive, then the initial delay elapses
     sendInput(driver, INPUT_TOPIC, key, firstValue)
@@ -418,13 +428,13 @@ class DelayedPublisherTransformerSpec extends Specification {
     lookupStore.get(key) == secondValue
 
     and: // only the two input values come out; the first republishing event doesn't go off
-    def output = readAllOutput(driver, OUTPUT_TOPIC)
+    def output = readAllOutput(driver, OUTPUT_TOPIC, STRING_DESERIALIZER, JSON_DESERIALIZER)
     output.size() == 2
     OutputVerifier.compareKeyValue(output[0], key, null)
     OutputVerifier.compareKeyValue(output[1], key, null)
   }
 
-  static sendInput(TopologyTestDriver driver, String topic, String key, String value) {
+  static sendInput(TopologyTestDriver driver, String topic, String key, Map value) {
     driver.pipeInput(consumerFactory.create(topic, key, value))
   }
 

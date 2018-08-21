@@ -30,12 +30,10 @@ class MetadataStore {
     def rawStore = lookupRawStoreName(type)
     def parsedStore = lookupParsedStoreName(type)
     if (!rawStore && !parsedStore) { return null }
-    String rawString = rawStore ? getValueFromStore(rawStore, id) : null
-    String parsedString = parsedStore ? getValueFromStore(parsedStore, id) : null
-    if (!rawString && !parsedString) { return null }
-    Map rawMap = rawString ? slurper.parseText(rawString) as Map : null
-    Map parsedMap = parsedString ? slurper.parseText(parsedString) as Map : null
-    return [id: id, type: type, attributes: [raw: rawMap, parsed: parsedMap]]
+    def rawValue = rawStore ? getValueFromStore(rawStore, id) : null
+    def parsedValue = parsedStore ? getValueFromStore(parsedStore, id) : null
+    if (!rawValue && !parsedValue) { return null }
+    return [id: id, type: type, attributes: [raw: rawValue, parsed: parsedValue]]
   }
 
   private getValueFromStore(String storeName, String id) {

@@ -1,0 +1,31 @@
+apply plugin: 'groovy'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile('org.codehaus.groovy:groovy:2.4.13')
+  compile('org.codehaus.groovy:groovy-json:2.4.13')
+  compile('org.apache.kafka:kafka-streams:2.0.0')
+  compile('org.slf4j:slf4j-api:1.7.25')
+  compile('ch.qos.logback:logback-classic:1.2.3')
+
+  testCompile("org.spockframework:spock-core:${project.spockVersion}")
+  testCompile('org.apache.kafka:kafka-streams-test-utils:2.0.0')
+  testCompile('org.apache.kafka:kafka-clients:2.0.0:test')
+  testCompile('org.apache.kafka:kafka_2.12:2.0.0')
+  testCompile('org.apache.kafka:kafka_2.12:2.0.0:test')
+}
+
+jar {
+  baseName = "${rootProject.name}-${project.name}"
+}
+
+task sourceJar(type: Jar) {
+  classifier = 'sources'
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
+assemble.dependsOn(sourceJar)
