@@ -14,16 +14,128 @@ server:
     context-path: /onestop/api
   # Comment out everything between the dashes if Auth Feature is disabled
   # -----------------------------------------------------------------
-  # ssl:
-  #   key-alias: \${KEYSTORE_ALIAS}
-  #   #key-password: \${KEY_PASSWORD}
-  #   enabled-protocols: TLSv1.2
-  #   protocol: TLS
-  #   enabled: true
-  #   key-store-password: \${KEYSTORE_PASSWORD}
-  #   key-store: /etc/api-metadata/keystore.jks
-  #   key-store-type: JKS
+#  ssl:
+#    key-alias: \${KEYSTORE_ALIAS}
+#    #key-password: \${KEY_PASSWORD}
+#    enabled-protocols: TLSv1.2
+#    protocol: TLS
+#    enabled: true
+#    key-store-password: \${KEYSTORE_PASSWORD}
+#    key-store: /Users/elliott/Documents/GitHub/help/keystores/sciapps.colorado.edu.jks
+#    key-store-type: JKS
   # -----------------------------------------------------------------
+
+# SAML Identity Provider Configuration
+# - comment out between dashes if Auth Feature is disabled
+# -----------------------------------------------------------------
+# ICAM (sciapps)
+# -----------------------------------------------------------------
+#identityProvider:
+#  name: "ICAM (sciapps)"
+#  loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/SSOPOST/metaAlias/noaa-online/noaa-online-idp"
+#  loginBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+#  logoutEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/IDPSloRedirect/metaAlias/noaa-online/noaa-online-idp"
+#  logoutBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+#  issuerSP: "https://sciapps.colorado.edu/onestop/api/"
+#  issuerIDP: "noaa-online-idp"
+#  authnContextRefs:
+#    - "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified"
+#  authnContextComparisonType: "minimum"
+#  assertionConsumerServiceURL: "https://sciapps.colorado.edu/onestop/api/loginConsume"
+#  assertionConsumerServiceLogoutURL: "https://sciapps.colorado.edu/onestop/api/logoutConsume"
+#  nameIDPolicyFormat: "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
+##  forceAuthn: null
+##  isPassive: null
+#  signatureAlgorithm: "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+#  signatureCanonicalizationAlgorithm: "http://www.w3.org/2001/10/xml-exc-c14n#"
+#  digestAlgorithm: "http://www.w3.org/2000/09/xmldsig#sha1"
+#  emailAssertionName: "mail"
+##  emailAssertionNameFormat: null
+#  uuidAssertionName: "uid"
+##  uuidAssertionNameFormat: null
+# -----------------------------------------------------------------
+# ICAM (localhost)
+# -----------------------------------------------------------------
+#identityprovider:
+#  name: "ICAM (localhost)"
+#  loginEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/SSOPOST/metaAlias/noaa-online/noaa-online-idp"
+#  loginBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+#  logoutEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/IDPSloRedirect/metaAlias/noaa-online/noaa-online-idp"
+#  logoutBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+#  issuerSP: "https://localhost:8098/onestop/api/"
+#  issuerIDP: "noaa-online-idp"
+#  authnContextRefs:
+#    - "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified"
+#  authnContextComparisonType: "minimum"
+#  assertionConsumerServiceURL: "https://localhost:8098/onestop/api/loginConsume"
+#  assertionConsumerServiceLogoutURL: "https://localhost:8098/onestop/api/logoutConsume"
+#  nameIDPolicyFormat: "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
+#  forceAuthn: null
+#  isPassive: null
+#  signatureAlgorithm: "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
+#  signatureCanonicalizationAlgorithm: "http://www.w3.org/2001/10/xml-exc-c14n#"
+#  digestAlgorithm: "http://www.w3.org/2000/09/xmldsig#sha1"
+#  emailAssertionName: "mail"
+##  emailAssertionNameFormat: null
+#  uuidAssertionName: "uid"
+##  uuidAssertionNameFormat: null
+# -----------------------------------------------------------------
+# login.gov (sciapps)
+# -----------------------------------------------------------------
+#identityProvider:
+#  name: "login.gov (sciapps)"
+#  loginEndpoint: "https://idp.int.identitysandbox.gov/api/saml/auth"
+#  loginBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+#  logoutEndpoint: "https://idp.int.identitysandbox.gov/api/saml/logout"
+#  logoutBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+#  issuerSP: "urn:gov:gsa:SAML:2.0.profiles:sp:sso:NOAA:authentication_sciapps"
+#  issuerIDP: "https://idp.int.identitysandbox.gov/api/saml"
+#  authnContextRefs:
+#    - "http://idmanagement.gov/ns/assurance/loa/1"
+#    - "http://idmanagement.gov/ns/requested_attributes?ReqAttr=email"
+#  authnContextComparisonType: "minimum"
+#  assertionConsumerServiceURL: "https://sciapps.colorado.edu/onestop/api/loginConsume"
+#  assertionConsumerServiceLogoutURL: "https://sciapps.colorado.edu/onestop/api/logoutConsume"
+#  nameIDPolicyFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+#  forceAuthn: false
+#  isPassive: true
+#  signatureAlgorithm: "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
+#  signatureCanonicalizationAlgorithm: "http://www.w3.org/2001/10/xml-exc-c14n#"
+#  digestAlgorithm: "http://www.w3.org/2001/04/xmlenc#sha256"
+#  emailAssertionName: "email"
+#  emailAssertionNameFormat: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+#  uuidAssertionName: "uuid"
+#  uuidAssertionNameFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+# -----------------------------------------------------------------
+# login.gov (localhost)
+# -----------------------------------------------------------------
+#identityProvider:
+#  name: "login.gov (localhost)"
+#  loginEndpoint: "https://idp.int.identitysandbox.gov/api/saml/auth"
+#  loginBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+#  logoutEndpoint: "https://idp.int.identitysandbox.gov/api/saml/logout"
+#  logoutBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+#  issuerSP: "urn:gov:gsa:SAML:2.0.profiles:sp:sso:NOAA:authentication_localhost"
+#  issuerIDP: "https://idp.int.identitysandbox.gov/api/saml"
+#  authnContextRefs:
+#    - "http://idmanagement.gov/ns/assurance/loa/1"
+#    - "http://idmanagement.gov/ns/requested_attributes?ReqAttr=email"
+#  authnContextComparisonType: "minimum"
+#  assertionConsumerServiceURL: "https://localhost:8098/onestop/api/loginConsume"
+#  assertionConsumerServiceLogoutURL: "https://localhost:8098/onestop/api/logoutConsume"
+#  nameIDPolicyFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+#  forceAuthn: false
+#  isPassive: true
+#  signatureAlgorithm: "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"
+#  signatureCanonicalizationAlgorithm: "http://www.w3.org/2001/10/xml-exc-c14n#"
+#  digestAlgorithm: "http://www.w3.org/2001/04/xmlenc#sha256"
+#  emailAssertionName: "email"
+#  emailAssertionNameFormat: "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+#  uuidAssertionName: "uuid"
+#  uuidAssertionNameFormat: "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+# -----------------------------------------------------------------
+
+
 
 spring:
   application:
