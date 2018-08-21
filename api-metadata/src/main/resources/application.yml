@@ -21,7 +21,7 @@ server:
 #    protocol: TLS
 #    enabled: true
 #    key-store-password: \${KEYSTORE_PASSWORD}
-#    key-store: /Users/elliott/Documents/GitHub/help/keystores/sciapps.colorado.edu.jks
+#    key-store: /etc/api-metadata/keystore.jks
 #    key-store-type: JKS
   # -----------------------------------------------------------------
 
