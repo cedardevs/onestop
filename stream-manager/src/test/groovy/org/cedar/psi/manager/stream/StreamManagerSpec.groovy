@@ -61,7 +61,7 @@ class StreamManagerSpec extends Specification {
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
     def smeKey = 'sme'
     def smeValue = JsonOutput.toJson([
-        dataStream: 'dscovr',
+        source: 'common-ingest',
         rawFormat: 'isoXml',
         rawMetadata: xmlSME
     ])
@@ -93,7 +93,7 @@ class StreamManagerSpec extends Specification {
     ])
     def smeKey = 'sme'
     def smeValue = JsonOutput.toJson([
-        dataStream: 'dscovr',
+        source: 'common-ingest',
         rawFormat: 'isoXml',
         rawMetadata: xmlSME
     ])
