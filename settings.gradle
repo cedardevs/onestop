@@ -9,5 +9,6 @@
 
 rootProject.name = 'psi'
 
+include 'common'
 include 'registry'
 include 'stream-manager'

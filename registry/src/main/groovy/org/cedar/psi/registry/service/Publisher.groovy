@@ -1,6 +1,5 @@
 package org.cedar.psi.registry.service
 
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -17,24 +16,24 @@ import static org.cedar.psi.registry.service.MetadataStreamService.RAW_COLLECTIO
 @CompileStatic
 class Publisher {
 
-  private Producer<String, String> kafkaProducer
+  private Producer<String, Map> kafkaProducer
 
   @Autowired
-  Publisher(Producer<String, String> kafkaProducer) {
+  Publisher(Producer<String, Map> kafkaProducer) {
     this.kafkaProducer = kafkaProducer
   }
 
   void publishGranule(String data) {
     def slurper = new JsonSlurper()
-    def slurpedKey = slurper.parseText(data) as Map
+    def slurpedData = slurper.parseText(data) as Map
 
-    if (!slurpedKey.trackingId) {
+    if (!slurpedData.trackingId) {
       log.warn("Not publishing message due to missing trackingId: ${data}")
       return
     }
 
-    String key = slurpedKey.trackingId.toString()
-    def record = new ProducerRecord<String, String>(RAW_GRANULE_TOPIC, key, data)
+    String key = slurpedData.trackingId.toString()
+    def record = new ProducerRecord<String, Map>(RAW_GRANULE_TOPIC, key, slurpedData)
     log.debug("Sending: ${record}")
     kafkaProducer.send(record)
   }
@@ -42,7 +41,7 @@ class Publisher {
   void publishGranuleIso(String data, String id = null) {
     def key = id ?: UUID.randomUUID().toString() // TODO - discuss w/ team and determine what to really do for IDs
     def message = [id: id, rawFormat: "isoXml", rawMetadata: data]
-    def record = new ProducerRecord<String, String>(RAW_GRANULE_TOPIC, key, JsonOutput.toJson(message))
+    def record = new ProducerRecord<String, Map>(RAW_GRANULE_TOPIC, key, message)
     log.debug("Sending: ${record}")
     kafkaProducer.send(record)
   }
@@ -50,7 +49,7 @@ class Publisher {
   void publishCollection(String data, String id = null) {
     def key = id ?: UUID.randomUUID().toString() // TODO - discuss w/ CoMET team and determine what to really do for IDs
     def message = [id: id, rawFormat: "isoXml", rawMetadata: data]
-    def record = new ProducerRecord<String, String>(RAW_COLLECTION_TOPIC, key, JsonOutput.toJson(message))
+    def record = new ProducerRecord<String, Map>(RAW_COLLECTION_TOPIC, key, message)
     log.debug("Sending: ${record}")
     kafkaProducer.send(record)
   }

@@ -17,7 +17,7 @@ class PublisherSpec extends Specification {
     publisher.publishGranule(data)
 
     then:
-    1 * mockProducer.send({it instanceof ProducerRecord && it.key() == 'ABC' && it.value() == data})
+    1 * mockProducer.send({it instanceof ProducerRecord && it.key() == 'ABC' && it.value() == [trackingId: 'ABC', path: '/test/file.txt']})
   }
 
   def 'does not publish granules if no tracking id present'() {
@@ -38,7 +38,7 @@ class PublisherSpec extends Specification {
     publisher.publishGranuleIso(data, id)
 
     then:
-    1 * mockProducer.send({it instanceof ProducerRecord && it.key() == 'ABC' && it.value().contains(data)})
+    1 * mockProducer.send({it instanceof ProducerRecord && it.key() == 'ABC' && it.value().values().contains(data)})
   }
 
   def 'publishes collections with a given id'() {
@@ -49,7 +49,7 @@ class PublisherSpec extends Specification {
     publisher.publishCollection(data, id)
 
     then:
-    1 * mockProducer.send({it instanceof ProducerRecord && it.key() == 'ABC' && it.value().contains(data)})
+    1 * mockProducer.send({it instanceof ProducerRecord && it.key() == 'ABC' && it.value().values().contains(data)})
   }
 
   // TODO - not sure that we actually want to do this in the future
@@ -60,7 +60,7 @@ class PublisherSpec extends Specification {
     publisher.publishCollection(data)
 
     then:
-    1 * mockProducer.send({it instanceof ProducerRecord && it.key() != null && it.value().contains(data)})
+    1 * mockProducer.send({it instanceof ProducerRecord && it.key() != null && it.value().values().contains(data)})
   }
 
 }

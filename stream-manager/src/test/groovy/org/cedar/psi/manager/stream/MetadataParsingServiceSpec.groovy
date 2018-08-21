@@ -11,13 +11,13 @@ class MetadataParsingServiceSpec extends Specification {
   def "ISO metadata in incoming message parsed correctly"() {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-    def incomingMsg = JsonOutput.toJson([
+    def incomingMsg = [
         rawFormat: 'isoXml',
         rawMetadata: xml
-    ])
+    ]
 
     when:
-    def response = new JsonSlurper().parseText(MetadataParsingService.parseToInternalFormat(incomingMsg)) as Map
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
     !response.containsKey("error")
@@ -32,13 +32,13 @@ class MetadataParsingServiceSpec extends Specification {
   def "#type ISO metadata in incoming message results in error"() {
     given:
     def rawMetadata = metadata
-    def incomingMsg = JsonOutput.toJson([
+    def incomingMsg = [
         rawFormat: 'isoXml',
         rawMetadata: rawMetadata
-    ])
+    ]
 
     when:
-    def response = new JsonSlurper().parseText(MetadataParsingService.parseToInternalFormat(incomingMsg)) as Map
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
     response.containsKey("error")
@@ -53,13 +53,13 @@ class MetadataParsingServiceSpec extends Specification {
 
   def "Unknown metadata type in incoming message results in error"() {
     given:
-    def incomingMsg = JsonOutput.toJson([
+    def incomingMsg = [
         rawFormat: 'Not supported',
         rawMetadata: "Won't be parsed"
-    ])
+    ]
 
     when:
-    def response = new JsonSlurper().parseText(MetadataParsingService.parseToInternalFormat(incomingMsg)) as Map
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
     response.containsKey("error")

@@ -103,22 +103,20 @@ class MetadataStoreSpec extends Specification {
     1 * mockParsedStore.get(testId) >> parsedValue
 
     and:
-    def expectedRaw = rawValue ? slurper.parseText(rawValue) : null
-    def expectedParsed = parsedValue ? slurper.parseText(parsedValue) : null
     result == [
         id: testId,
         type: 'granule',
         attributes: [
-            raw: expectedRaw,
-            parsed: expectedParsed
+            raw: rawValue,
+            parsed: parsedValue
         ]
     ]
 
     where:
-    rawValue              | parsedValue
-    '{"hello": "world"}'  | null
-    null                  | '{"answer": 42}'
-    '{"hello": "world"}'  | '{"answer": 42}'
+    rawValue            | parsedValue
+    ["hello": "world"]  | null
+    null                | ["answer": 42]
+    ["hello": "world"]  | ["answer": 42]
   }
 
 }
