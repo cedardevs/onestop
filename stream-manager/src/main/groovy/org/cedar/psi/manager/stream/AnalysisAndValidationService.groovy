@@ -49,7 +49,14 @@ class AnalysisAndValidationService {
 
   static Map analyzeTitles(Map msgMap) {}
 
-  static Map analyzeDescription(Map msgMap) {}
+  static Map analyzeDescription(Map msgMap) {
+    String description = msgMap.description
+
+    return [
+        exists: description ? true : false,
+        characters: description ? description.length() : 0
+    ]
+  }
 
   static Map analyzeThumbnail(Map msgMap) {}
 

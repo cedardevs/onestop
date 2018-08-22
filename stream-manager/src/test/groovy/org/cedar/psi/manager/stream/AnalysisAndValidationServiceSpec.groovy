@@ -28,18 +28,21 @@ class AnalysisAndValidationServiceSpec extends Specification {
         ],
         spatialBounding : [],
         titles          : [],
-        description     : [],
+        description     : [
+            exists: true,
+            characters: 65
+        ],
         thumbnail       : [],
         dataAccess      : []
     ]
-    def
+    inputMap.put('analysis', expectedAnalysisMap)
     def expectedResponse = JsonOutput.toJson(inputMap)
 
     when:
-    def response = AnalysisAndValidationService.analyzeParsedMetadata(inputMap)
+    def response = JsonOutput.toJson(AnalysisAndValidationService.analyzeParsedMetadata(inputMap))
 
     then:
-    responseMap == expectedResponseMap
+    response == expectedResponse
   }
 
   def "Invalidly formatted time fields accurately identified"() {
@@ -100,7 +103,17 @@ class AnalysisAndValidationServiceSpec extends Specification {
   }
 
   def "Missing description detected"() {
-    // TODO
+    given:
+    def inputMap = [:]
+
+    when:
+    def descriptionAnalysis = AnalysisAndValidationService.analyzeDescription(inputMap)
+
+    then:
+    descriptionAnalysis == [
+        exists: false,
+        characters: 0
+    ]
   }
 
   def "Missing thumbnail URL detected"() {
