@@ -11,49 +11,69 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 @ConditionalOnProperty("features.trending.search")
 class TrendingSearchService {
   private final ElasticsearchService elasticsearchService
-  private final FilterConfig filterConfig
+  private final TrendingBlacklistConfig blacklistConfig
+
+  private final String SEARCH_TERM = 'queries'
+  private final String COLLECTION_TERM = 'id'
+
+  @Value('${elasticsearch.index.trending.name}')
+  private final String indiceName
 
   @Autowired
-  TrendingSearchService(ElasticsearchService elasticsearchService, FilterConfig filterConfig) {
+  TrendingSearchService(ElasticsearchService elasticsearchService, TrendingBlacklistConfig blacklistConfig) {
       this.elasticsearchService = elasticsearchService
-      this.filterConfig = filterConfig
+      this.blacklistConfig = blacklistConfig
   }
 
-  Map getTopSearchTerms(Integer size, Integer previousIndices, String term) {
+  Map topRecentSearchTerms(int numResults, int numDays) {
+    return recentTermCounts(numResults, numDays, SEARCH_TERM)
+  }
+
+  Map topRecentCollections(int numResults, int numDays) {
+    return recentTermCounts(numResults, numDays, COLLECTION_TERM)
+  }
+
+  private Map recentTermCounts(int numResults, int numDays, String term) {
+    Map response = getTopRecentTerms(numResults, numDays, term)
+    return numOccurencesOfTerms(response)
+  }
+
+  Map getTopRecentTerms(Integer size, Integer previousIndices, String term) {
     Map query = queryBuilder(size, term)
     String indices = indicesBuilder(previousIndices)
     return elasticsearchService.queryElasticsearch(query, indices)
   }
 
-  @Value('${trending.indiceName}')
-  private final String indiceName
-  
   private String indicesBuilder(Integer previousIndices) {
     StringBuilder indexBuilder = new StringBuilder()
     // TODO do we need to think about including date-sorting in the query, in case logstash needs to be changed to log 1 month at a time
     indexBuilder.append("%3C${indiceName}%7Bnow%2Fd%7D%3E")
 
     for (int i = 1; i < previousIndices; i++) {
+      // Note: %2C is a comma placeholder
       indexBuilder.append("%2C%3C${indiceName}%7Bnow%2Fd-${i}d%7D%3E")
     }
 
     return indexBuilder.toString()
   }
 
-
   private Map queryBuilder(Integer size, String term) {
     List<String> filters
     switch(term) {
-      case "queries":
+      case SEARCH_TERM:
         term += ".value.keyword";
-        filters = filterConfig.filterSearchTerms;
+        filters = blacklistConfig.filterSearchTerms;
         break;
-      case "id":
+      case COLLECTION_TERM:
         term += ".keyword";
-        filters = filterConfig.filterCollectionTerms;
+        filters = blacklistConfig.filterCollectionTerms;
         break;
     }
 
+    // return null if not matching
+  }
+
+  private Map searchQuery(String term, List<String> filters) {
     return [
       "query": [
         "bool": [
@@ -74,11 +94,6 @@ class TrendingSearchService {
         ]
       ]
     ]
-  }
-
-  Map topRecentTerms(int numResults, int numDays, String term) {
-    Map response = getTopSearchTerms(numResults, numDays, term)
-    return numOccurencesOfTerms(response)
   }
 
   static Map numOccurencesOfTerms(Map response) {
