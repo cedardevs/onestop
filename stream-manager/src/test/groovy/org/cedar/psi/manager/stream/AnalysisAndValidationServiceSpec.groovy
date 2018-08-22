@@ -15,4 +15,36 @@ class AnalysisAndValidationServiceSpec extends Specification {
     then:
     response == expectedResponse
   }
+
+  def "All valid fields return expected response from service"() {
+    // TODO
+  }
+
+  def "Invalidly formatted time fields accurately identified"() {
+    // TODO
+  }
+
+  def "Invalid access protocols accurately identified"() {
+    // TODO
+  }
+
+  def "Missing required identifiers detected"() {
+    // TODO
+  }
+
+  def "Mismatch between metadata type and corresponding identifiers detected"() {
+    // TODO
+  }
+
+  def "Missing title detected"() {
+    // TODO
+  }
+
+  def "Missing description detected"() {
+    // TODO
+  }
+
+  def "Missing thumbnail URL detected"() {
+    // TODO
+  }
 }
