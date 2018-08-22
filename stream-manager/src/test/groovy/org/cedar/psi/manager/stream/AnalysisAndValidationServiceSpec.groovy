@@ -1,11 +1,45 @@
 package org.cedar.psi.manager.stream
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import spock.lang.Specification
 
 class AnalysisAndValidationServiceSpec extends Specification {
 
   def "All valid fields return expected response from service"() {
-    // TODO
+    given:
+    def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
+    def inputMap = new JsonSlurper().parseText(inputMsg)
+    def expectedAnalysisMap = [
+        identification  : [],
+        temporalBounding: [
+            beginDate: [
+                exists: true,
+                valid : true
+            ],
+            endDate  : [
+                exists: true,
+                valid : true
+            ],
+            instant  : [
+                exists: false,
+                valid : true
+            ]
+        ],
+        spatialBounding : [],
+        titles          : [],
+        description     : [],
+        thumbnail       : [],
+        dataAccess      : []
+    ]
+    def
+    def expectedResponse = JsonOutput.toJson(inputMap)
+
+    when:
+    def response = AnalysisAndValidationService.analyzeParsedMetadata(inputMap)
+
+    then:
+    responseMap == expectedResponseMap
   }
 
   def "Invalidly formatted time fields accurately identified"() {
