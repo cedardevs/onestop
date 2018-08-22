@@ -4,24 +4,49 @@ import spock.lang.Specification
 
 class AnalysisAndValidationServiceSpec extends Specification {
 
-  def "Correct response returned from service"() {
-    given:
-    def msgToParse = ["testField1":"testValueA", "testField2":123]
-    def expectedResponse = ["testField1":"testValueA","testField2":123,"analysis":[:]]
-
-    when:
-    def response = AnalysisAndValidationService.analyzeParsedMetadata(msgToParse)
-
-    then:
-    response == expectedResponse
-  }
-
   def "All valid fields return expected response from service"() {
     // TODO
   }
 
   def "Invalidly formatted time fields accurately identified"() {
-    // TODO
+    given:
+    def inputMsg = [
+        temporalBounding: [
+            beginDate           : '1984-04-31',
+            beginIndeterminate  : null,
+            beginYear           : null,
+            endDate             : '1985-05-09T00:00:00Z',
+            endIndeterminate    : null,
+            endYear             : 1985,
+            instant             : null,
+            instantIndeterminate: null,
+            description         : null,
+            invalidDates        : [
+                begin  : true,
+                end    : false,
+                instant: false
+            ]
+        ]
+    ]
+
+    when:
+    def timeAnalysis = AnalysisAndValidationService.analyzeTemporalBounding(inputMsg)
+
+    then:
+    timeAnalysis == [
+        beginDate: [
+            exists: true,
+            valid: false
+        ],
+        endDate: [
+            exists: true,
+            valid: true
+        ],
+        instant: [
+            exists: false,
+            valid: true
+        ]
+    ]
   }
 
   def "Invalid access protocols accurately identified"() {
