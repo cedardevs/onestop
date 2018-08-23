@@ -13,17 +13,17 @@ class AnalysisAndValidationServiceSpec extends Specification {
     inputMap.put('discovery', new JsonSlurper().parseText(inputMsg))
     def expectedAnalysisMap = [
         identification  : [
-            fileIdentifier  : [
+            fileIdentifier    : [
                 exists: true
             ],
-            doi             : [
+            doi               : [
                 exists: true
             ],
-            parentIdentifier: [
+            parentIdentifier  : [
                 exists: true
             ],
             hierarchyLevelName: [
-                exists: true,
+                exists            : true,
                 matchesIdentifiers: true
             ]
         ],
@@ -42,12 +42,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
             ]
         ],
         spatialBounding : [
-            type       : [
-                exists: true
-            ],
-            coordinates: [
-                exists: true
-            ]
+            exists: true
         ],
         titles          : [
             title: [
@@ -134,17 +129,17 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
     then:
     identifiersAnalysis == [
-        fileIdentifier  : [
+        fileIdentifier    : [
             exists: true
         ],
-        doi             : [
+        doi               : [
             exists: false
         ],
-        parentIdentifier: [
+        parentIdentifier  : [
             exists: false
         ],
         hierarchyLevelName: [
-            exists: false,
+            exists            : false,
             matchesIdentifiers: true
         ]
     ]
@@ -153,7 +148,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
   def "Mismatch between metadata type and corresponding identifiers detected"() {
     given:
     def metadata = [
-        fileIdentifier: 'xyz',
+        fileIdentifier    : 'xyz',
         hierarchyLevelName: 'granule'
     ]
 
@@ -162,17 +157,17 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
     then:
     identifiersAnalysis == [
-        fileIdentifier  : [
+        fileIdentifier    : [
             exists: true
         ],
-        doi             : [
+        doi               : [
             exists: false
         ],
-        parentIdentifier: [
+        parentIdentifier  : [
             exists: false
         ],
         hierarchyLevelName: [
-            exists: true,
+            exists            : true,
             matchesIdentifiers: false
         ]
     ]

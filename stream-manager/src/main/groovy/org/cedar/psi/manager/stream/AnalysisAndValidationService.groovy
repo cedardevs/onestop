@@ -15,13 +15,13 @@ class AnalysisAndValidationService {
 
 
     def analysisMap = [
-        identification: analyzeIdentifiers(parsedMetadata),
+        identification  : analyzeIdentifiers(parsedMetadata),
         temporalBounding: analyzeTemporalBounding(parsedMetadata),
-        spatialBounding: analyzeSpatialBounding(parsedMetadata),
-        titles: analyzeTitles(parsedMetadata),
-        description: analyzeDescription(parsedMetadata),
-        thumbnail: analyzeThumbnail(parsedMetadata),
-        dataAccess: analyzeDataAccess(parsedMetadata)
+        spatialBounding : analyzeSpatialBounding(parsedMetadata),
+        titles          : analyzeTitles(parsedMetadata),
+        description     : analyzeDescription(parsedMetadata),
+        thumbnail       : analyzeThumbnail(parsedMetadata),
+        dataAccess      : analyzeDataAccess(parsedMetadata)
     ]
 
     msgMap.put('analysis', analysisMap)
@@ -37,17 +37,17 @@ class AnalysisAndValidationService {
     def matchesIdentifiers = (hierarchy == 'granule' && parentIdentifier) || (hierarchy == null)
 
     return [
-        fileIdentifier  : [
+        fileIdentifier    : [
             exists: fileIdentifier ? true : false
         ],
-        doi             : [
+        doi               : [
             exists: doi ? true : false
         ],
-        parentIdentifier: [
+        parentIdentifier  : [
             exists: parentIdentifier ? true : false
         ],
         hierarchyLevelName: [
-            exists: hierarchy ? true : false,
+            exists            : hierarchy ? true : false,
             matchesIdentifiers: matchesIdentifiers
         ]
     ]
@@ -60,31 +60,24 @@ class AnalysisAndValidationService {
     return [
         beginDate: [
             exists: metadata.temporalBounding.beginDate ? true : false,
-            valid: invalidDates ? !invalidDates.begin : true
+            valid : invalidDates ? !invalidDates.begin : true
         ],
         endDate  : [
             exists: metadata.temporalBounding.endDate ? true : false,
-            valid: invalidDates ? !invalidDates.end : true
+            valid : invalidDates ? !invalidDates.end : true
         ],
         instant  : [
             exists: metadata.temporalBounding.instant ? true : false,
-            valid: invalidDates ? !invalidDates.instant : true
+            valid : invalidDates ? !invalidDates.instant : true
         ]
     ]
   }
 
-  // TODO may be need more validation beside it exist?
   static Map analyzeSpatialBounding(Map metadata) {
-    String type = metadata.spatialBounding.type
-    String coordinates = metadata.spatialBounding.coordinates
+    String spatialBounding = metadata.spatialBounding
 
     return [
-        type       : [
-            exists: type ? true : false
-        ],
-        coordinates: [
-            exists: coordinates ? true : false
-        ]
+        exists: spatialBounding ? true : false
     ]
   }
 
@@ -93,12 +86,12 @@ class AnalysisAndValidationService {
     String altTitle = metadata.alternateTitle
 
     return [
-        title: [
+        title         : [
             exists    : title ? true : false,
             characters: title ? title.length() : 0
         ],
         alternateTitle: [
-            exists: altTitle ? true : false,
+            exists    : altTitle ? true : false,
             characters: altTitle ? altTitle.length() : 0
         ]
     ]
