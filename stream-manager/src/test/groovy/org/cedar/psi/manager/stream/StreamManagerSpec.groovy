@@ -85,19 +85,16 @@ class StreamManagerSpec extends Specification {
             ]
         ],
         spatialBounding : [
-            type       : [
-                exists: true
-            ],
-            coordinates: [
-                exists: true
-            ]
+            exists: true
         ],
         titles          : [
             title: [
-                exists: true
+                exists: true,
+                characters: 63
             ],
             alternateTitle: [
-                exists: true
+                exists: true,
+                characters: 51
             ]
         ],
         description     : [
