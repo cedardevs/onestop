@@ -24,8 +24,12 @@ class AnalysisAndValidationService {
 
   static Map analyzeIdentifiers(Map msgMap) {
     String fileIdentifier = msgMap.fileIdentifier
-    String doi = msgMap.doi // TODO
-    String parentIdentifier = msgMap.parentIdentifier // TODO
+    String doi = msgMap.doi
+    String parentIdentifier = msgMap.parentIdentifier
+    String hierarchy = msgMap.hierarchyLevelName
+
+    def matchesIdentifiers = (hierarchy == 'granule' && parentIdentifier) || (hierarchy == null)
+
     return [
         fileIdentifier  : [
             exists: fileIdentifier ? true : false
@@ -35,6 +39,10 @@ class AnalysisAndValidationService {
         ],
         parentIdentifier: [
             exists: parentIdentifier ? true : false
+        ],
+        hierarchyLevelName: [
+            exists: hierarchy ? true : false,
+            matchesIdentifiers: matchesIdentifiers
         ]
     ]
   }
@@ -75,10 +83,13 @@ class AnalysisAndValidationService {
   }
 
   static Map analyzeTitles(Map msgMap) {
-    String title = msgMap.title
-
     return [
-        exists: title ? true : false,
+        title: [
+            exists: msgMap.title ? true : false
+        ],
+        alternateTitle: [
+            exists: msgMap.alternateTitle ? true : false
+        ]
     ]
   }
 

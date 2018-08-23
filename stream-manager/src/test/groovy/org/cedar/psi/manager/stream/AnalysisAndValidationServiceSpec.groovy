@@ -20,6 +20,10 @@ class AnalysisAndValidationServiceSpec extends Specification {
             ],
             parentIdentifier: [
                 exists: true
+            ],
+            hierarchyLevelName: [
+                exists: true,
+                matchesIdentifiers: true
             ]
         ],
         temporalBounding: [
@@ -45,7 +49,12 @@ class AnalysisAndValidationServiceSpec extends Specification {
             ]
         ],
         titles          : [
-            exists: true,
+            title: [
+                exists: true
+            ],
+            alternateTitle: [
+                exists: true
+            ]
         ],
         description     : [
             exists    : true,
@@ -130,24 +139,57 @@ class AnalysisAndValidationServiceSpec extends Specification {
         ],
         parentIdentifier: [
             exists: false
+        ],
+        hierarchyLevelName: [
+            exists: false,
+            matchesIdentifiers: true
         ]
     ]
   }
 
   def "Mismatch between metadata type and corresponding identifiers detected"() {
-    // TODO
-  }
-
-  def "Missing title detected"() {
     given:
-    def inputMsg = [:]
+    def inputMsg = [
+        fileIdentifier: 'xyz',
+        hierarchyLevelName: 'granule'
+    ]
 
     when:
-    def titleAnalysis = AnalysisAndValidationService.analyzeTitles(inputMsg)
+    def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(inputMsg)
 
     then:
-    titleAnalysis == [
-        exists: false
+    identifiersAnalysis == [
+        fileIdentifier  : [
+            exists: true
+        ],
+        doi             : [
+            exists: false
+        ],
+        parentIdentifier: [
+            exists: false
+        ],
+        hierarchyLevelName: [
+            exists: true,
+            matchesIdentifiers: false
+        ]
+    ]
+  }
+
+  def "Missing titles detected"() {
+    given:
+    def inputMap = [:]
+
+    when:
+    def titlesAnalysis = AnalysisAndValidationService.analyzeTitles(inputMap)
+
+    then:
+    titlesAnalysis == [
+        title: [
+            exists: false
+        ],
+        alternateTitle: [
+            exists: false
+        ]
     ]
   }
 
