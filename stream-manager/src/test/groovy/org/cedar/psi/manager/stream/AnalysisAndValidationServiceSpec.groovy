@@ -61,7 +61,9 @@ class AnalysisAndValidationServiceSpec extends Specification {
         thumbnail       : [
             exists: true,
         ],
-        dataAccess      : null
+        dataAccess      : [
+            exists: true
+        ]
     ]
     inputMap.put('analysis', expectedAnalysisMap)
     def expectedResponse = JsonOutput.toJson(inputMap)
@@ -114,8 +116,19 @@ class AnalysisAndValidationServiceSpec extends Specification {
     ]
   }
 
-  def "Invalid access protocols accurately identified"() {
-    // TODO
+  def "Missing links detected"() {
+    given:
+    def metadata = [
+        links: []
+    ]
+
+    when:
+    def dataAccessAnalysis = AnalysisAndValidationService.analyzeDataAccess(metadata)
+
+    then:
+    dataAccessAnalysis == [
+        exists    : false
+    ]
   }
 
   def "Missing required identifiers detected"() {

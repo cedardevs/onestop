@@ -104,7 +104,9 @@ class StreamManagerSpec extends Specification {
         thumbnail       : [
             exists: true,
         ],
-        dataAccess      : null
+        dataAccess      : [
+            exists: true
+        ]
     ]
   }
 

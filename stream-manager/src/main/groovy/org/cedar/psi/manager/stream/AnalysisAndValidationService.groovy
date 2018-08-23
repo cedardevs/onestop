@@ -115,6 +115,8 @@ class AnalysisAndValidationService {
   }
 
   static Map analyzeDataAccess(Map metadata) {
-
+    return [
+        exists: metadata.links ? true : false
+    ]
   }
 }
