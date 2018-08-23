@@ -11,7 +11,17 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
     def inputMap = new JsonSlurper().parseText(inputMsg)
     def expectedAnalysisMap = [
-        identification  : [],
+        identification  : [
+            fileIdentifier  : [
+                exists: true
+            ],
+            doi             : [
+                exists: true
+            ],
+            parentIdentifier: [
+                exists: true
+            ]
+        ],
         temporalBounding: [
             beginDate: [
                 exists: true,
@@ -26,14 +36,25 @@ class AnalysisAndValidationServiceSpec extends Specification {
                 valid : true
             ]
         ],
-        spatialBounding : [],
-        titles          : [],
-        description     : [
+        spatialBounding : [
+            type       : [
+                exists: true
+            ],
+            coordinates: [
+                exists: true
+            ]
+        ],
+        titles          : [
             exists: true,
+        ],
+        description     : [
+            exists    : true,
             characters: 65
         ],
-        thumbnail       : [],
-        dataAccess      : []
+        thumbnail       : [
+            exists: true,
+        ],
+        dataAccess      : null
     ]
     inputMap.put('analysis', expectedAnalysisMap)
     def expectedResponse = JsonOutput.toJson(inputMap)
@@ -73,15 +94,15 @@ class AnalysisAndValidationServiceSpec extends Specification {
     timeAnalysis == [
         beginDate: [
             exists: true,
-            valid: false
+            valid : false
         ],
-        endDate: [
+        endDate  : [
             exists: true,
-            valid: true
+            valid : true
         ],
-        instant: [
+        instant  : [
             exists: false,
-            valid: true
+            valid : true
         ]
     ]
   }
@@ -91,7 +112,26 @@ class AnalysisAndValidationServiceSpec extends Specification {
   }
 
   def "Missing required identifiers detected"() {
-    // TODO
+    given:
+    def inputMsg = [
+        fileIdentifier: 'xyz',
+    ]
+
+    when:
+    def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(inputMsg)
+
+    then:
+    identifiersAnalysis == [
+        fileIdentifier  : [
+            exists: true
+        ],
+        doi             : [
+            exists: false
+        ],
+        parentIdentifier: [
+            exists: false
+        ]
+    ]
   }
 
   def "Mismatch between metadata type and corresponding identifiers detected"() {
@@ -99,7 +139,16 @@ class AnalysisAndValidationServiceSpec extends Specification {
   }
 
   def "Missing title detected"() {
-    // TODO
+    given:
+    def inputMsg = [:]
+
+    when:
+    def titleAnalysis = AnalysisAndValidationService.analyzeTitles(inputMsg)
+
+    then:
+    titleAnalysis == [
+        exists: false
+    ]
   }
 
   def "Missing description detected"() {
@@ -111,12 +160,21 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
     then:
     descriptionAnalysis == [
-        exists: false,
+        exists    : false,
         characters: 0
     ]
   }
 
   def "Missing thumbnail URL detected"() {
-    // TODO
+    given:
+    def inputMsg = [:]
+
+    when:
+    def thumbnailAnalysis = AnalysisAndValidationService.analyzeThumbnail(inputMsg)
+
+    then:
+    thumbnailAnalysis == [
+        exists: false
+    ]
   }
 }

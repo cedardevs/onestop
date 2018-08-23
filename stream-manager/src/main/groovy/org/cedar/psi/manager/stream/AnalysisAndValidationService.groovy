@@ -22,8 +22,22 @@ class AnalysisAndValidationService {
     return msgMap
   }
 
-
-  static Map analyzeIdentifiers(Map msgMap) {}
+  static Map analyzeIdentifiers(Map msgMap) {
+    String fileIdentifier = msgMap.fileIdentifier
+    String doi = msgMap.doi // TODO
+    String parentIdentifier = msgMap.parentIdentifier // TODO
+    return [
+        fileIdentifier  : [
+            exists: fileIdentifier ? true : false
+        ],
+        doi             : [
+            exists: doi ? true : false
+        ],
+        parentIdentifier: [
+            exists: parentIdentifier ? true : false
+        ]
+    ]
+  }
 
   static Map analyzeTemporalBounding(Map msgMap) {
 
@@ -34,31 +48,56 @@ class AnalysisAndValidationService {
             exists: msgMap.temporalBounding.beginDate ? true : false,
             valid: invalidDates ? !invalidDates.begin : true
         ],
-        endDate: [
+        endDate  : [
             exists: msgMap.temporalBounding.endDate ? true : false,
             valid: invalidDates ? !invalidDates.end : true
         ],
-        instant: [
+        instant  : [
             exists: msgMap.temporalBounding.instant ? true : false,
             valid: invalidDates ? !invalidDates.instant : true
         ]
     ]
   }
 
-  static Map analyzeSpatialBounding(Map msgMap) {}
+  // TODO may be need more validation beside it exist?
+  static Map analyzeSpatialBounding(Map msgMap) {
+    String type = msgMap.spatialBounding.type
+    String coordinates = msgMap.spatialBounding.coordinates
 
-  static Map analyzeTitles(Map msgMap) {}
+    return [
+        type       : [
+            exists: type ? true : false
+        ],
+        coordinates: [
+            exists: coordinates ? true : false
+        ]
+    ]
+  }
+
+  static Map analyzeTitles(Map msgMap) {
+    String title = msgMap.title
+
+    return [
+        exists: title ? true : false,
+    ]
+  }
 
   static Map analyzeDescription(Map msgMap) {
     String description = msgMap.description
 
     return [
-        exists: description ? true : false,
+        exists    : description ? true : false,
         characters: description ? description.length() : 0
     ]
   }
 
-  static Map analyzeThumbnail(Map msgMap) {}
+  static Map analyzeThumbnail(Map msgMap) {
+    String thumbnail = msgMap.thumbnail
+
+    return [
+        exists: thumbnail ? true : false,
+    ]
+  }
 
   static Map analyzeDataAccess(Map msgMap) {}
 }
