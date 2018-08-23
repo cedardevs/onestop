@@ -9,7 +9,8 @@ class AnalysisAndValidationServiceSpec extends Specification {
   def "All valid fields return expected response from service"() {
     given:
     def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
-    def inputMap = new JsonSlurper().parseText(inputMsg)
+    def inputMap = [:]
+    inputMap.put('discovery', new JsonSlurper().parseText(inputMsg))
     def expectedAnalysisMap = [
         identification  : [
             fileIdentifier  : [
@@ -77,7 +78,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def "Invalidly formatted time fields accurately identified"() {
     given:
-    def inputMsg = [
+    def metadata = [
         temporalBounding: [
             beginDate           : '1984-04-31',
             beginIndeterminate  : null,
@@ -97,7 +98,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     ]
 
     when:
-    def timeAnalysis = AnalysisAndValidationService.analyzeTemporalBounding(inputMsg)
+    def timeAnalysis = AnalysisAndValidationService.analyzeTemporalBounding(metadata)
 
     then:
     timeAnalysis == [
@@ -122,12 +123,12 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def "Missing required identifiers detected"() {
     given:
-    def inputMsg = [
+    def metadata = [
         fileIdentifier: 'xyz',
     ]
 
     when:
-    def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(inputMsg)
+    def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(metadata)
 
     then:
     identifiersAnalysis == [
@@ -149,13 +150,13 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def "Mismatch between metadata type and corresponding identifiers detected"() {
     given:
-    def inputMsg = [
+    def metadata = [
         fileIdentifier: 'xyz',
         hierarchyLevelName: 'granule'
     ]
 
     when:
-    def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(inputMsg)
+    def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(metadata)
 
     then:
     identifiersAnalysis == [
@@ -177,10 +178,10 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def "Missing titles detected"() {
     given:
-    def inputMap = [:]
+    def metadata = [:]
 
     when:
-    def titlesAnalysis = AnalysisAndValidationService.analyzeTitles(inputMap)
+    def titlesAnalysis = AnalysisAndValidationService.analyzeTitles(metadata)
 
     then:
     titlesAnalysis == [
@@ -195,10 +196,10 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def "Missing description detected"() {
     given:
-    def inputMap = [:]
+    def metadata = [:]
 
     when:
-    def descriptionAnalysis = AnalysisAndValidationService.analyzeDescription(inputMap)
+    def descriptionAnalysis = AnalysisAndValidationService.analyzeDescription(metadata)
 
     then:
     descriptionAnalysis == [
@@ -209,10 +210,10 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def "Missing thumbnail URL detected"() {
     given:
-    def inputMsg = [:]
+    def metadata = [:]
 
     when:
-    def thumbnailAnalysis = AnalysisAndValidationService.analyzeThumbnail(inputMsg)
+    def thumbnailAnalysis = AnalysisAndValidationService.analyzeThumbnail(metadata)
 
     then:
     thumbnailAnalysis == [
