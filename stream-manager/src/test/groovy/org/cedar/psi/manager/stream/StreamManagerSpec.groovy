@@ -116,7 +116,7 @@ class StreamManagerSpec extends Specification {
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
     def smeKey = 'sme'
     def smeValue = [
-        dataStream: 'dscovr',
+        source: 'common-ingest',
         rawFormat: 'isoXml',
         rawMetadata: xmlSME
     ]
@@ -142,13 +142,13 @@ class StreamManagerSpec extends Specification {
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
     def nonSMEKey = 'notSME'
     def nonSMEValue = [
-        dataStream: 'ingested xml',
+        source: null,
         rawFormat: 'isoXml',
         rawMetadata: xmlNonSME
     ]
     def smeKey = 'sme'
     def smeValue = [
-        dataStream: 'dscovr',
+        source: 'common-ingest',
         rawFormat: 'isoXml',
         rawMetadata: xmlSME
     ]
@@ -190,7 +190,7 @@ class StreamManagerSpec extends Specification {
     given:
     def key = 'failure101'
     def value = [
-        dataStream: 'scoobyDoo',
+        source: null,
         rawFormat: 'csv',
         rawData: 'it,does,not,parse'
     ]

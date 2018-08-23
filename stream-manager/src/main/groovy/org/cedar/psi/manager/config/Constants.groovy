@@ -20,8 +20,8 @@ class Constants {
   static final String ERROR_TOPIC = 'error-events'
 
   // SME Splitting Info
-  static final String SPLIT_FIELD = 'dataStream'
+  static final String SPLIT_FIELD = 'source'
   static final List<String> SPLIT_VALUES = new ArrayList<>([
-      'dscovr'
+      'common-ingest'
   ])
 }
