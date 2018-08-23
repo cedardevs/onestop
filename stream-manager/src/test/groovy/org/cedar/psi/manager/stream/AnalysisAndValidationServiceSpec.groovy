@@ -51,10 +51,12 @@ class AnalysisAndValidationServiceSpec extends Specification {
         ],
         titles          : [
             title: [
-                exists: true
+                exists: true,
+                characters: 63
             ],
             alternateTitle: [
-                exists: true
+                exists: true,
+                characters: 51
             ]
         ],
         description     : [
@@ -185,11 +187,13 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
     then:
     titlesAnalysis == [
-        title: [
-            exists: false
+        title         : [
+            exists    : false,
+            characters: 0
         ],
         alternateTitle: [
-            exists: false
+            exists    : false,
+            characters: 0
         ]
     ]
   }

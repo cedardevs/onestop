@@ -89,12 +89,17 @@ class AnalysisAndValidationService {
   }
 
   static Map analyzeTitles(Map metadata) {
+    String title = metadata.title
+    String altTitle = metadata.alternateTitle
+
     return [
         title: [
-            exists: metadata.title ? true : false
+            exists    : title ? true : false,
+            characters: title ? title.length() : 0
         ],
         alternateTitle: [
-            exists: metadata.alternateTitle ? true : false
+            exists: altTitle ? true : false,
+            characters: altTitle ? altTitle.length() : 0
         ]
     ]
   }
