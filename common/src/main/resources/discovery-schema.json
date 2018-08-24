@@ -1,0 +1,211 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Inventory Manager Discovery Schema",
+  "description": "The shape of the discovery object generated within Inventory Manager for a successfully parsed metadata document. This is the internal metadata format used within the system and ultimately sent downstream to OneStop.",
+  "type": "object",
+  "properties": {
+    "fileIdentifier": {
+      "type": ["string", "null"]
+    },
+    "parentIdentifier": {
+      "type": ["string", "null"]
+    },
+    "hierarchyLevelName": {
+      "type": ["string", "null"]
+    },
+    "doi": {
+      "type": ["string", "null"]
+    },
+    "purpose": {
+      "type": ["string", "null"]
+    },
+    "status": {
+      "type": ["string", "null"]
+    },
+    "credit": {
+      "type": ["string", "null"]
+    },
+    "title": {
+      "type": ["string", "null"]
+    },
+    "alternateTitle": {
+      "type": ["string", "null"]
+    },
+    "description": {
+      "type": ["string", "null"]
+    },
+    "keywords": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "accessionValues",
+    "topicCategories",
+    "gcmdScienceServices",
+    "gcmdScience",
+    "gcmdLocations",
+    "gcmdInstruments",
+    "gcmdPlatforms",
+    "gcmdProjects",
+    "gcmdDataCenters",
+    "gcmdHorizontalResolution",
+    "gcmdVerticalResolution",
+    "gcmdTemporalResolution",
+    "temporalBounding",
+    "spatialBounding",
+    "isGlobal",
+    "acquisitionInstruments",
+    "acquisitionOperations",
+    "acquisitionPlatforms",
+    "dataFormats",
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/link"
+      }
+    },
+    "contacts",
+    "creators",
+    "publishers",
+    "thumbnail",
+    "thumbnailDescription": {
+      "type": ["string", "null"]
+    },
+    "creationDate": {
+      "type": ["string", "null"]
+    },
+    "revisionDate": {
+      "type": ["string", "null"]
+    },
+    "publicationDate": {
+      "type": ["string", "null"]
+    },
+    "citeAsStatements",
+    "crossReferences",
+    "largerWorks",
+    "useLimitation": {
+      "type": ["string", "null"]
+    },
+    "legalConstraints": {
+      "type": "array",
+      "items": {
+        "type": ["string", "null"]
+      }
+    },
+    "accessFeeStatement": {
+      "type": ["string", "null"]
+    },
+    "orderingInstructions": {
+      "type": ["string", "null"]
+    },
+    "edition": {
+      "type": ["string", "null"]
+    },
+    "dsmmAccessibility": {
+      "type": "integer"
+    },
+    "dsmmDataIntegrity": {
+      "type": "integer"
+    },
+    "dsmmDataQualityAssessment": {
+      "type": "integer"
+    },
+    "dsmmDataQualityAssurance": {
+      "type": "integer"
+    },
+    "dsmmDataQualityControlMonitoring": {
+      "type": "integer"
+    },
+    "dsmmPreservability": {
+      "type": "integer"
+    },
+    "dsmmProductionSustainability": {
+      "type": "integer"
+    },
+    "dsmmTransparencyTraceability": {
+      "type": "integer"
+    },
+    "dsmmUsability": {
+      "type": "integer"
+    },
+    "dsmmAverage": {
+      "description": "Calculated mean average of individual DSMM scores for Accessibility, Data Integrity, Data Quality Assessment, Data Quality Assurance, Data Quality Control Monitoring, Preservability, Production Sustainability, Transparency Traceability, and Usability.",
+      "type": "number"
+    },
+    "updateFrequency": {
+      "type": ["string", "null"]
+    },
+    "presentationForm": {
+      "type": ["string", "null"]
+    },
+    "services": {
+      "description": "Base64 encoded SV_ServiceIdentification sections, if any, of ISO XML metadata document. Null if not present.",
+      "type": ["string", "null"]
+    }
+  },
+  "additionalProperties": false,
+  "required": [],
+  "definitions": {
+    "link": {
+      "type": "object",
+      "properties": {
+        "linkName": {
+          "type": ["string", "null"]
+        },
+        "linkProtocol": {
+          "type": ["string", "null"]
+        },
+        "linkUrl": {
+          "type": ["string", "null"]
+        },
+        "linkDescription": {
+          "type": ["string", "null"]
+        },
+        "linkFunction": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": [
+        "linkName",
+        "linkProtocol",
+        "linkUrl",
+        "linkDescription",
+        "linkFunction"
+      ],
+      "additionalProperties": false
+    },
+    "responsibleParty": {
+      "type": "object",
+      "properties": {
+        "individualName": {
+          "type": ["string", "null"]
+        },
+        "organizationName": {
+          "type": ["string", "null"]
+        },
+        "positionName": {
+          "type": ["string", "null"]
+        },
+        "role": {
+          "type": ["string", "null"]
+        },
+        "email": {
+          "type": ["string", "null"]
+        },
+        "phone": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": [
+        "individualName",
+        "organizationName",
+        "positionName",
+        "role",
+        "email",
+        "phone"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
