@@ -3,14 +3,14 @@ package org.cedar.onestop.api.search.controller
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.search.service.TrendingSearchService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 
 @Slf4j
-@ConditionalOnProperty("features.trending.search")
+@Profile("feature-trending-search")
 @RestController
 class TrendingSearchController {
 

@@ -1,11 +1,11 @@
 package org.cedar.onestop.api.search.service
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 
 @Configuration
-@ConditionalOnProperty("features.trending.search")
+@Profile("feature-trending-search")
 @ConfigurationProperties('trending')
 class TrendingBlacklistConfig {
 

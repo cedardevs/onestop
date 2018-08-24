@@ -10,7 +10,8 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
-features.trending.search: true
+spring.profiles.include:
+  - default
 
 logging:
   level:
@@ -38,9 +39,6 @@ elasticsearch:
         name: search_granule
       flattened-granule:
         name: search_flattened_granule
-    trending:
-      name:
-        logstash-
 
 search:
   minimumShouldMatch: 75%
@@ -57,19 +55,6 @@ search:
     endDate: 1
     spatialBounding: 1
     dsmmAverage: 1
-
-trending:
-  numResults: 10
-  numDays: 1
-  defaultBlacklistedSearchTerms:
-    - weather
-    - climate
-    - satellites
-    - fisheries
-    - coasts
-    - oceans
-  additionalBlacklistedSearchTerms:
-  blacklistedCollections:
 
 info.version: ${version}
 info.buildDate: ${buildDate}
