@@ -8,6 +8,6 @@ import org.springframework.context.annotation.Configuration
 @ConditionalOnProperty("features.trending.search")
 @ConfigurationProperties('trending')
 class TrendingBlacklistConfig {
-  List<String> filterSearchTerms
-  List<String> filterCollectionTerms
+  List<String> blacklistedSearchTerms
+  List<String> blacklistedCollections
 }

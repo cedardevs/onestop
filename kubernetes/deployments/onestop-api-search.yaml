@@ -15,7 +15,7 @@ spec:
       port: 8097
       nodePort: 30097
   type: NodePort
-  
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -46,6 +46,8 @@ spec:
           value: DEBUG
         - name: SPRING.CONFIG.ADDITIONAL-LOCATION
           value: /deployments/config/application.yaml
+        # - name: FEATURE.TRENDING.SEARCH
+        #   value: true
         volumeMounts:
         - name: application-config
           mountPath: "/deployments/config"
@@ -70,6 +72,12 @@ metadata:
     devmode: "true"
 data:
   application.yaml: |
+    trending:
+      blacklistedSearchTerms:
+        - +nwlon +ports
+        - '"digital elevation"'
+        - '"Gridded Satellite GOES"'
+        - '"NOAA Climate Data Record"'
     ui:
       banner:
         message: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.

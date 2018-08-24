@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.properties.ConfigurationProperties
 
+@Slf4j
 @Service
 @ConditionalOnProperty("features.trending.search")
 class TrendingSearchService {
@@ -58,22 +59,19 @@ class TrendingSearchService {
   }
 
   private Map queryBuilder(Integer size, String term) {
-    List<String> filters
     switch(term) {
       case SEARCH_TERM:
-        term += ".value.keyword";
-        filters = blacklistConfig.filterSearchTerms;
-        break;
+        return searchQuery(term + ".value.keyword", blacklistConfig.blacklistedSearchTerms, size)
+        break
       case COLLECTION_TERM:
-        term += ".keyword";
-        filters = blacklistConfig.filterCollectionTerms;
-        break;
+        return searchQuery(term + ".keyword", blacklistConfig.blacklistedCollections, size)
+        break
     }
 
     // return null if not matching
   }
 
-  private Map searchQuery(String term, List<String> filters) {
+  private Map searchQuery(String term, List<String> filters, Integer size) {
     return [
       "query": [
         "bool": [
