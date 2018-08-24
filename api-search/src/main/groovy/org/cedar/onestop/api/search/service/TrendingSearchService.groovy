@@ -14,8 +14,8 @@ class TrendingSearchService {
   private final ElasticsearchService elasticsearchService
   private final TrendingBlacklistConfig blacklistConfig
 
-  private final String SEARCH_TERM = 'queries'
-  private final String COLLECTION_TERM = 'id'
+  static final String SEARCH_TERM = 'queries'
+  static final String COLLECTION_TERM = 'id'
 
   @Value('${elasticsearch.index.trending.name}')
   private final String TRENDING_INDEX
@@ -58,7 +58,7 @@ class TrendingSearchService {
     return indexBuilder.toString()
   }
 
-  private Map queryBuilder(Integer size, String term) {
+  Map queryBuilder(Integer size, String term) {
     switch(term) {
       case SEARCH_TERM:
         return searchQuery(term + ".value.keyword", blacklistConfig.defaultBlacklistedSearchTerms + blacklistConfig.additionalBlacklistedSearchTerms, size)
@@ -77,7 +77,7 @@ class TrendingSearchService {
         "bool": [
           "must_not": [
             ["terms": [
-              "logParams.${term}": filters
+              ("logParams.${term}" as String): filters
             ]]
           ]
         ]
