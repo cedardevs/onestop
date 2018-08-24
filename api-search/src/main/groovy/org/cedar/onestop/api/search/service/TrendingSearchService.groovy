@@ -26,11 +26,11 @@ class TrendingSearchService {
       this.blacklistConfig = blacklistConfig
   }
 
-  Map topRecentSearchTerms(int numResults, int numDays) {
+  public Map topRecentSearchTerms(int numResults, int numDays) {
     return recentTermCounts(numResults, numDays, SEARCH_TERM)
   }
 
-  Map topRecentCollections(int numResults, int numDays) {
+  public Map topRecentCollections(int numResults, int numDays) {
     return recentTermCounts(numResults, numDays, COLLECTION_TERM)
   }
 
@@ -39,18 +39,18 @@ class TrendingSearchService {
     return numOccurencesOfTerms(response)
   }
 
-  Map getTopRecentTerms(Integer size, Integer previousIndices, String term) {
+  Map getTopRecentTerms(Integer size, Integer numIndices, String term) {
     Map query = queryBuilder(size, term)
-    String indices = indicesBuilder(previousIndices)
+    String indices = indicesBuilder(numIndices)
     return elasticsearchService.queryElasticsearch(query, indices)
   }
 
-  private String indicesBuilder(Integer previousIndices) {
+  String indicesBuilder(Integer numIndices) {
     StringBuilder indexBuilder = new StringBuilder()
     // TODO do we need to think about including date-sorting in the query, in case logstash needs to be changed to log 1 month at a time
     indexBuilder.append("%3C${TRENDING_INDEX}%7Bnow%2Fd%7D%3E")
 
-    for (int i = 1; i < previousIndices; i++) {
+    for (int i = 1; i < numIndices; i++) {
       // Note: %2C is a comma placeholder
       indexBuilder.append("%2C%3C${TRENDING_INDEX}%7Bnow%2Fd-${i}d%7D%3E")
     }
@@ -86,7 +86,7 @@ class TrendingSearchService {
       "aggs": [
         "group_by_term": [
           "terms": [
-            "field": "logParams.${term}",
+            "field": ("logParams.${term}" as String),
             "size": size
           ]
         ]

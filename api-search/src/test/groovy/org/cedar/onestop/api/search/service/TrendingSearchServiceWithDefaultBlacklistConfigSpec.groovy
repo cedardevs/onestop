@@ -21,6 +21,33 @@ class TrendingSearchServiceWithDefaultBlacklistConfigSpec extends Specification 
   }
 
   @Unroll
+  def "Builds the correct indices with #numIndices previous"() {
+    when:
+    String indices = service.indicesBuilder(numIndices)
+
+    then:
+    indices == expectedResult
+
+    where:
+    numIndices | expectedResult
+    // Note: the 'null' in there is because this test doesn't let Spring autowire the service, so the const is not populated from the config
+    -1 | '%3Cnull%7Bnow%2Fd%7D%3E' // it always includes at least 1
+    0 | '%3Cnull%7Bnow%2Fd%7D%3E' // it always includes at least 1
+    1 | '%3Cnull%7Bnow%2Fd%7D%3E'
+    2 | '%3Cnull%7Bnow%2Fd%7D%3E%2C%3Cnull%7Bnow%2Fd-1d%7D%3E'
+    3 | '%3Cnull%7Bnow%2Fd%7D%3E%2C%3Cnull%7Bnow%2Fd-1d%7D%3E%2C%3Cnull%7Bnow%2Fd-2d%7D%3E'
+    4 | '%3Cnull%7Bnow%2Fd%7D%3E%2C%3Cnull%7Bnow%2Fd-1d%7D%3E%2C%3Cnull%7Bnow%2Fd-2d%7D%3E%2C%3Cnull%7Bnow%2Fd-3d%7D%3E'
+  }
+
+  def "Cannot build query for unknown term type" () {
+    when:
+    Map result = service.queryBuilder(0, 'invalid')
+
+    then:
+    result == null
+  }
+
+  @Unroll
   def "Builds the correct query for '#term'" () {
     when:
     Map result = service.queryBuilder(0, term)
