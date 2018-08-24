@@ -10,7 +10,7 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
-features.trending.search: false
+features.trending.search: true
 
 logging:
   level:
@@ -61,13 +61,14 @@ search:
 trending:
   numResults: 10
   numDays: 1
-  blacklistedSearchTerms:
+  defaultBlacklistedSearchTerms:
     - weather
     - climate
     - satellites
     - fisheries
     - coasts
     - oceans
+  additionalBlacklistedSearchTerms:
   blacklistedCollections:
 
 info.version: ${version}

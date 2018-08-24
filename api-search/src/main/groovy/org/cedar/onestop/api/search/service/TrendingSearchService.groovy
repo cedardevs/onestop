@@ -61,7 +61,7 @@ class TrendingSearchService {
   private Map queryBuilder(Integer size, String term) {
     switch(term) {
       case SEARCH_TERM:
-        return searchQuery(term + ".value.keyword", blacklistConfig.blacklistedSearchTerms, size)
+        return searchQuery(term + ".value.keyword", blacklistConfig.defaultBlacklistedSearchTerms + blacklistConfig.additionalBlacklistedSearchTerms, size)
         break
       case COLLECTION_TERM:
         return searchQuery(term + ".keyword", blacklistConfig.blacklistedCollections, size)
