@@ -8,6 +8,8 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
+import javax.servlet.http.HttpServletRequest
+
 import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_TOPIC
 import static org.cedar.psi.registry.service.MetadataStreamService.RAW_COLLECTION_TOPIC
 
@@ -17,41 +19,38 @@ import static org.cedar.psi.registry.service.MetadataStreamService.RAW_COLLECTIO
 class Publisher {
 
   private Producer<String, Map> kafkaProducer
+  final String COLLECTION_PATH_VAR = 'collection'
+  final String GRANULE_PATH_VAR = 'granule'
 
   @Autowired
   Publisher(Producer<String, Map> kafkaProducer) {
     this.kafkaProducer = kafkaProducer
   }
 
-  void publishGranule(String data) {
-    def slurper = new JsonSlurper()
-    def slurpedData = slurper.parseText(data) as Map
-
-    if (!slurpedData.trackingId) {
-      log.warn("Not publishing message due to missing trackingId: ${data}")
-      return
-    }
-
-    String key = slurpedData.trackingId.toString()
-    def record = new ProducerRecord<String, Map>(RAW_GRANULE_TOPIC, key, slurpedData)
+  void publishMetadata(HttpServletRequest request, String type, String source = null, String id = null, String data) {
+    String topic
+    if(type.equalsIgnoreCase(COLLECTION_PATH_VAR)){
+      topic = RAW_COLLECTION_TOPIC
+    }else if (type.equalsIgnoreCase(GRANULE_PATH_VAR)){
+      topic = RAW_GRANULE_TOPIC
+    }else{return}
+    Map message = buildInputTopicMessage(request, id, source, data)
+    def record = new ProducerRecord<String, Map>(topic, id, message)
     log.debug("Sending: ${record}")
     kafkaProducer.send(record)
   }
 
-  void publishGranuleIso(String data, String id = null) {
-    def key = id ?: UUID.randomUUID().toString() // TODO - discuss w/ team and determine what to really do for IDs
-    def message = [id: id, rawFormat: "isoXml", rawMetadata: data]
-    def record = new ProducerRecord<String, Map>(RAW_GRANULE_TOPIC, key, message)
-    log.debug("Sending: ${record}")
-    kafkaProducer.send(record)
-  }
-
-  void publishCollection(String data, String id = null) {
-    def key = id ?: UUID.randomUUID().toString() // TODO - discuss w/ CoMET team and determine what to really do for IDs
-    def message = [id: id, rawFormat: "isoXml", rawMetadata: data]
-    def record = new ProducerRecord<String, Map>(RAW_COLLECTION_TOPIC, key, message)
-    log.debug("Sending: ${record}")
-    kafkaProducer.send(record)
+  Map buildInputTopicMessage(HttpServletRequest request, String source = null, String id = null, String data){
+    [
+        id: id ?: UUID.randomUUID(),
+        method: request?.method,
+        host: request?.remoteHost,
+        requestUrl: request?.requestURL,
+        protocol: request?.protocol,
+        content: data,
+        contentType: request?.contentType,
+        source: source ?: ''
+    ]
   }
 
 }
