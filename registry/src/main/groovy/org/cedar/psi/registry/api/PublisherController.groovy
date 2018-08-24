@@ -22,23 +22,23 @@ class PublisherController {
   Publisher publisher
 
   @RequestMapping(value = "/granule/{id}", consumes = ["application/xml", "application/json"])
-  void receiveGranule(HttpServletRequest request, @RequestBody String data, @PathVariable(required = false) String id) throws Exception {
-    publisher.publishMetadata(request, 'granule', '', id,  data)
+  void receiveGranule(HttpServletRequest request, @RequestBody String data, @PathVariable(required = false) UUID id) throws Exception {
+    publisher.publishMetadata(request, 'granule', '', id as String,  data)
   }
 
   @RequestMapping(value = "/granule/{source}/{id}", consumes = ["application/xml", "application/json"])
-  void receiveGranuleFromSource(HttpServletRequest request, @RequestBody String data, @PathVariable(required=false) String source, @PathVariable(required = false) String id) throws Exception {
-    publisher.publishMetadata(request, 'granule', source, id,  data)
+  void receiveGranuleFromSource(HttpServletRequest request, @RequestBody String data, @PathVariable(required=false) String source, @PathVariable(required = false) UUID id) throws Exception {
+    publisher.publishMetadata(request, 'granule', source, id as String,  data)
   }
 
   @RequestMapping(value = "/collection/{id}", consumes = ["application/xml", "application/json"])
-  void receiveCollection(HttpServletRequest request, @RequestBody String data, @PathVariable(required = false) String id) throws Exception {
-    publisher.publishMetadata(request, 'collection', '', id, data)
+  void receiveCollection(HttpServletRequest request, @RequestBody String data, @PathVariable(required = false) UUID id) throws Exception {
+    publisher.publishMetadata(request, 'collection', '', id as String, data)
   }
 
   @RequestMapping(value = "/collection/{source}/{id}", consumes = ["application/xml", "application/json"])
-  void receiveCollectionFromSource(HttpServletRequest request, @RequestBody String data, @PathVariable(required=false) String source, @PathVariable(required = false) String id) throws Exception {
-    publisher.publishMetadata(request, 'collection', source, id, data)
+  void receiveCollectionFromSource(HttpServletRequest request, @RequestBody String data, @PathVariable(required=false) String source, @PathVariable(required = false) UUID id) throws Exception {
+    publisher.publishMetadata(request, 'collection', source, id as String, data)
   }
 
 }

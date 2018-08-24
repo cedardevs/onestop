@@ -26,9 +26,9 @@ class StreamFunctions {
       def slurper = new JsonSlurper()
       def result = (aggregate ?: [:]) + (nextValue ?: [:])
       if(aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json' ){
-        result.requestBody = JsonOutput.toJson(
-            (slurper.parseText(aggregate.requestBody as String) as Map ) +
-                (slurper.parseText(nextValue.requestBody as String) as Map )
+        result.content = JsonOutput.toJson(
+            (slurper.parseText(aggregate.content as String) as Map ) +
+                (slurper.parseText(nextValue.content as String) as Map )
         )
       }
       return result

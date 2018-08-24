@@ -27,6 +27,7 @@ spec:
       app: registry
   serviceName: registry
   replicas: 1
+
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
@@ -47,6 +48,8 @@ spec:
                       values:
                         - registry
                 topologyKey: "kubernetes.io/hostname"
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: registry
           image: cedardevs/psi-registry

@@ -34,9 +34,9 @@ class Publisher {
     }else if (type.equalsIgnoreCase(GRANULE_PATH_VAR)){
       topic = RAW_GRANULE_TOPIC
     }else{return}
-    Map message = buildInputTopicMessage(request, id, source, data)
-    def record = new ProducerRecord<String, Map>(topic, id, message)
-    log.debug("Sending: ${record}")
+    Map message = buildInputTopicMessage(request, source, id, data)
+    def record = new ProducerRecord<String, Map>(topic, message.id as String, message)
+    log.info("Publishing: ${record}")
     kafkaProducer.send(record)
   }
 
@@ -49,7 +49,7 @@ class Publisher {
         protocol: request?.protocol,
         content: data,
         contentType: request?.contentType,
-        source: source ?: ''
+        source: source ?: null
     ]
   }
 
