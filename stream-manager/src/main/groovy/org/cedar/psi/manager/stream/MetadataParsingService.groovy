@@ -7,11 +7,11 @@ import org.xml.sax.SAXException
 class MetadataParsingService {
 
   static Map parseToInternalFormat(Map msgMap) {
-    String format = msgMap.rawFormat
-    String rawMetadata = msgMap.rawMetadata
+    String format = msgMap.contentType
+    String rawMetadata = msgMap.content
 
     try {
-      if (format == 'isoXml') {
+      if (format == 'application/xml') {
         return [discovery: ISOParser.parseXMLMetadataToMap(rawMetadata)]
       }
       else {
