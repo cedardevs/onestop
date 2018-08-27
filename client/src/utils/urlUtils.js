@@ -42,6 +42,15 @@ export const buildGovExternalOnClick = (href, target, onClick) => {
   }
 }
 
+const sitemapMatch = path => {
+  const sitemapRegex = /\/sitemap.xml/
+  return sitemapRegex.exec(path)
+}
+
+export const isSitemap = path => {
+  return sitemapMatch(path) ? true : false
+}
+
 const detailIdMatch = path => {
   const detailIdRegex = /\/details\/([-\w]+)/
   return detailIdRegex.exec(path)

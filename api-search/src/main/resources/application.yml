@@ -10,6 +10,8 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
+features.sitemap: false
+
 spring.profiles.include:
   - default
 
@@ -32,6 +34,8 @@ elasticsearch:
   port: 9200
   index:
     universal-type: doc
+    sitemap:
+      name: sitemap
     search:
       collection:
         name: search_collection

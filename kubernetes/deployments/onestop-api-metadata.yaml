@@ -43,6 +43,8 @@ spec:
           value: "9200"
         - name: LOGGING_LEVEL_ORG.CEDAR.ONESTOP.API
           value: DEBUG
+        - name: ETL_SITEMAP_DELAY_INITIAL
+          value: "60000"
         - name: KEYSTORE_PASSWORD
           valueFrom:
             secretKeyRef:

@@ -27,13 +27,18 @@ import './fonts/SourceSansPro-LightItalic.ttf'
 import './fonts/SourceSansPro-SemiBold.ttf'
 import './fonts/SourceSansPro-SemiBoldItalic.ttf'
 
-import {Route} from 'react-router'
+import {Route, Switch} from 'react-router'
 import {ConnectedRouter} from 'react-router-redux'
+
+const reload = () => window.location.reload();
 
 const body = (
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <RootContainer />
+      <Switch>
+        <Route path="/sitemap.xml" exact onEnter={reload} />
+        <RootContainer />
+      </Switch>
     </ConnectedRouter>
   </Provider>
 )
