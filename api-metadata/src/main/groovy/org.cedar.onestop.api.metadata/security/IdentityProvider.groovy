@@ -1,6 +1,5 @@
 package org.cedar.onestop.api.metadata.security
 
-import org.opensaml.saml.saml2.core.AuthnContextComparisonTypeEnumeration
 import org.opensaml.saml.saml2.metadata.Endpoint
 import org.opensaml.saml.saml2.metadata.SingleLogoutService
 import org.opensaml.saml.saml2.metadata.SingleSignOnService
@@ -14,7 +13,7 @@ class IdentityProvider {
     String issuerSP
     String issuerIDP
     List<String> authnContextRefs
-    AuthnContextComparisonTypeEnumeration authnContextComparisonType
+    String authnContextComparisonType
     String assertionConsumerServiceURL
     String assertionConsumerServiceLogoutURL
     String nameIDPolicyFormat

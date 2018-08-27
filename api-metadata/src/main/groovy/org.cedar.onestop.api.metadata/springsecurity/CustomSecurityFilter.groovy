@@ -2,11 +2,10 @@ package org.cedar.onestop.api.metadata.springsecurity
 
 import org.cedar.onestop.api.metadata.authorization.service.UserDetailsServiceImpl
 import org.cedar.onestop.api.metadata.security.CredentialUtil
-import org.cedar.onestop.api.metadata.security.IdentityProviderEnumeration
+import org.cedar.onestop.api.metadata.security.IdentityProvider
 import org.cedar.onestop.api.metadata.security.SAMLConsume
 import org.cedar.onestop.api.metadata.security.SAMLFilter
 import org.cedar.onestop.api.metadata.security.SAMLUtil
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.security.authentication.AbstractAuthenticationToken
@@ -17,7 +16,6 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
-import org.springframework.stereotype.Component
 
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
@@ -29,29 +27,45 @@ import java.nio.file.AccessDeniedException
 import java.security.Principal
 
 @ConditionalOnProperty("features.secure.authorization")
-@Component
 class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
     private final List<String> securedEndpointsRegex = [/\/metadata.*$/, /\/admin\/.+$/, /\/upload.html$/, /^.+\/userOnly$/]
 
-    @Autowired
-    ServerProperties serverProperties
-
-    // create instance of SAMLFilter to be wrapped by this Spring aware filter bean
-    // provide an identity provider for which this filter will authenticate against
-    private SAMLFilter samlFilter = new SAMLFilter(IdentityProviderEnumeration.ICAM_NOAA_LOCAL.getValue())
-//    private SAMLFilter samlFilter = new SAMLFilter(IdentityProviderEnumeration.LOGIN_GOV_LOCAL.getValue())
+    // SAMLFilter to be wrapped by this Spring aware filter bean
+    private SAMLFilter samlFilter
 
     UserDetailsServiceImpl userDetailsServiceImpl
 
-    CustomSecurityFilter(AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailsServiceImpl) {
+    CustomSecurityFilter(AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailsServiceImpl, ServerProperties serverProperties, IdentityProviderConfig idpConfig) {
         super("/")
         this.setAuthenticationManager(authenticationManager)
         this.userDetailsServiceImpl = userDetailsServiceImpl
-    }
-
-    @Override
-    protected void initFilterBean() throws ServletException {
+        this.samlFilter = new SAMLFilter(
+                // provide an identity provider for which this filter will authenticate against
+                new IdentityProvider(
+                        name: idpConfig.name,
+                        loginEndpoint: idpConfig.loginEndpoint,
+                        loginBinding: idpConfig.loginBinding,
+                        logoutEndpoint: idpConfig.logoutEndpoint,
+                        logoutBinding: idpConfig.logoutBinding,
+                        issuerSP: idpConfig.issuerSP,
+                        issuerIDP: idpConfig.issuerIDP,
+                        authnContextRefs: idpConfig.authnContextRefs,
+                        authnContextComparisonType: idpConfig.authnContextComparisonType,
+                        assertionConsumerServiceURL: idpConfig.assertionConsumerServiceURL,
+                        assertionConsumerServiceLogoutURL: idpConfig.assertionConsumerServiceLogoutURL,
+                        nameIDPolicyFormat: idpConfig.nameIDPolicyFormat,
+                        forceAuthn: idpConfig.forceAuthn,
+                        isPassive: idpConfig.isPassive,
+                        signatureAlgorithm: idpConfig.signatureAlgorithm,
+                        signatureCanonicalizationAlgorithm: idpConfig.signatureCanonicalizationAlgorithm,
+                        digestAlgorithm: idpConfig.digestAlgorithm,
+                        emailAssertionName: idpConfig.emailAssertionName,
+                        emailAssertionNameFormat: idpConfig.emailAssertionNameFormat,
+                        uuidAssertionName: idpConfig.uuidAssertionName,
+                        uuidAssertionNameFormat: idpConfig.uuidAssertionNameFormat
+                )
+        )
 
         // set keystore values to be used in custom SAML filter via the SecurityProperties known by Spring config
         CredentialUtil.setKeyStorePath(serverProperties.ssl.keyStore)
