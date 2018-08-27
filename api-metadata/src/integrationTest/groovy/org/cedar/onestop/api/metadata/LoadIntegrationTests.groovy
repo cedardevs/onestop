@@ -1,6 +1,9 @@
 package org.cedar.onestop.api.metadata
 
+import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityConfig
+import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
+import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -11,6 +14,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.TestPropertySource
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
@@ -20,7 +24,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @Unroll
 @ActiveProfiles("integration")
-@SpringBootTest(classes = [Application, IntegrationTestConfig], webEnvironment = RANDOM_PORT)
+@SpringBootTest(classes = [Application, IntegrationTestConfig, SpringSecurityDisabled, SpringSecurityConfig, IdentityProviderConfig], webEnvironment = RANDOM_PORT)
+@TestPropertySource(locations = ["classpath:test-securitydisabled.yml"])
 class LoadIntegrationTests extends Specification {
 
   /**
