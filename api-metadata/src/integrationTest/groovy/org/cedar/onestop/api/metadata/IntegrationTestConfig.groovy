@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.annotation.Profile
 import org.testcontainers.containers.GenericContainer
-import org.testcontainers.containers.wait.Wait
+import org.testcontainers.containers.wait.strategy.Wait
 
 
 @Profile("integration")

@@ -1,0 +1,4 @@
+security.ignored: /**
+features.secure.upload: false
+features.secure.authorization: false
+features.basicAuth.disabled: true

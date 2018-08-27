@@ -2,8 +2,10 @@ package org.cedar.onestop.api.metadata.authorization.configs
 
 import org.cedar.onestop.api.metadata.authorization.service.UserDetailsServiceImpl
 import org.cedar.onestop.api.metadata.springsecurity.CustomSecurityFilter
+import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -18,7 +20,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService
+    private ServerProperties serverProperties
+
+    @Autowired
+    private IdentityProviderConfig idpConfig
+
+    @Autowired
+    private UserDetailsServiceImpl userDetailsServiceImpl
 
     // this is needed to pass the authentication manager into our custom security filter
     @Bean
@@ -39,7 +47,7 @@ class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated()
             .and()
             .addFilterBefore(
-                new CustomSecurityFilter(authenticationManagerBean(), userDetailsService),
+                new CustomSecurityFilter(authenticationManagerBean(), userDetailsServiceImpl, serverProperties, idpConfig),
                 UsernamePasswordAuthenticationFilter.class
             )
     }

@@ -123,7 +123,7 @@ class SAMLRequest {
 
     private static RequestedAuthnContext buildRequestedAuthnContext(IdentityProvider identityProvider) {
         RequestedAuthnContext requestedAuthnContext = SAMLUtil.buildSAMLObject(RequestedAuthnContext.class)
-        requestedAuthnContext.setComparison(AuthnContextComparisonTypeEnumeration.MINIMUM)
+        requestedAuthnContext.setComparison(new AuthnContextComparisonTypeEnumeration(identityProvider.authnContextComparisonType))
         identityProvider.getAuthnContextRefs().each {
             AuthnContextClassRef authnContextClassRef = SAMLUtil.buildSAMLObject(AuthnContextClassRef.class)
             authnContextClassRef.setAuthnContextClassRef(it)

@@ -1,9 +1,10 @@
 apply plugin: 'org.cedar.dockerplugin'
+apply from: "${rootDir}/gradle/publishing.gradle"
 
 PublishDockerImage {
   dependsOn BuildDockerImage
 }
 
-task assemble { dependsOn BuildDockerImage }
-task build { dependsOn assemble }
-task publish { dependsOn PublishDockerImage }
+assemble { dependsOn BuildDockerImage }
+build { dependsOn assemble }
+publish { dependsOn PublishDockerImage }
