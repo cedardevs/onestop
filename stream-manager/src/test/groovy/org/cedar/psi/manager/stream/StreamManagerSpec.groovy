@@ -74,7 +74,7 @@ class StreamManagerSpec extends Specification {
     // The record is in the SME topic
     def smeOutput = driver.readOutput(Constants.SME_TOPIC, DESERIALIZER, DESERIALIZER)
     smeOutput.key() == smeKey
-    smeOutput.value() == JsonOutput.toJson(smeValue)
+    smeOutput.value() == smeValue.content
 
     and:
     // There are no errors and nothing in the parsed topic

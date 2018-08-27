@@ -9,6 +9,7 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.Predicate
+import org.apache.kafka.streams.kstream.Produced
 import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.manager.config.Constants
 import org.cedar.psi.common.serde.JsonSerdes
@@ -45,7 +46,7 @@ class StreamManager {
     KStream toSmeFunction = smeBranches[1]
 
     // To SME functions:
-    toSmeFunction.to(Constants.SME_TOPIC)
+    toSmeFunction.mapValues({ v -> v.content } as ValueMapper<Map, Map>).to(Constants.SME_TOPIC, Produced.with(Serdes.String(), Serdes.String()))
     // Merge straight-to-parsing stream with topic SME granules write to:
     KStream<String, Map> unparsedGranules = builder.stream(Constants.UNPARSED_TOPIC)
     KStream<String, Map> parsedNotAnalyzedGranules = toParsingFunction.merge(unparsedGranules)
