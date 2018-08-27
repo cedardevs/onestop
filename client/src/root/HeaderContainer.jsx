@@ -2,10 +2,16 @@ import {connect} from 'react-redux'
 import Header from './Header'
 import {showHome} from '../actions/FlowActions'
 import {withRouter} from 'react-router'
+import {abbreviateNumber} from '../utils/readableUtils'
 
 const mapStateToProps = state => {
-  // TODO: get selected granules count to display on cart button
-  return {}
+
+  const numberOfGranulesSelected = Object.keys(state.cart.granules.selectedGranules).length
+  const abbreviatedNumberOfGranulesSelected = abbreviateNumber(numberOfGranulesSelected)
+
+  return {
+    abbreviatedNumberOfGranulesSelected: abbreviatedNumberOfGranulesSelected
+  }
 }
 
 const mapDispatchToProps = dispatch => {

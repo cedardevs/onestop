@@ -132,6 +132,7 @@ class Header extends React.Component {
   }
 
   render() {
+    const {abbreviatedNumberOfGranulesSelected} = this.props
     const {focusingSkipLink} = this.state
 
     const menuContent = (
@@ -155,8 +156,7 @@ class Header extends React.Component {
           <Button
               style={styleCartButton}
               title="Shopping Cart"
-              // TODO: get length of selected granules in redux here
-              text={"3"}
+              text={abbreviatedNumberOfGranulesSelected}
               icon={cart}
               styleIcon={styleCartIcon}
               onClick={this.handleRedirectToCart}

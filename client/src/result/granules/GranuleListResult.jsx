@@ -250,7 +250,7 @@ class ListResult extends React.Component {
     const selectGranuleCheckbox = (
         <Checkbox
             key={`checkbox-${itemId}`}
-            label={`Add to Cart: ${itemId}`}
+            label={`Add to Cart`}
             id={itemId}
             checked={checkGranule}
             onChange={handleCheckboxChange(itemId, item)}
