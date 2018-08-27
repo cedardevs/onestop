@@ -14,6 +14,7 @@ buildscript {
     classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
     classpath 'org.owasp:dependency-check-gradle:3.1.1'
     classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
+    // classpath 'org.codehaus.groovy:groovy-dateutil:2.5.2'
   }
 }
 
@@ -37,7 +38,8 @@ subprojects {
     spockVersion = '1.1-groovy-2.4'
     testContainersVersion = '1.8.2'
 
-    groovyVersion = '2.5.0'
+    groovyVersion = '2.4.14'
+    // groovyVersion = '2.5.2'
     openSAMLVersion = '3.3.1'
     logbackVersion = '1.2.3'
     javaxServletAPIVersion = '4.0.1'
