@@ -10,6 +10,9 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
+spring.profiles.include:
+  - default
+
 logging:
   level:
       org.cedar.onestop.api.search: INFO
