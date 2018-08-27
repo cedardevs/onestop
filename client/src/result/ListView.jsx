@@ -27,6 +27,12 @@ const styleListControl = {
   margin: '0 1.618em 1.618em 0',
 }
 
+const styleControlButtonIcon = {
+  width: '1em',
+  height: '1em',
+  marginRight: '0.309em'
+}
+
 const styleGrid = {
   display: 'flex',
   flexDirection: 'row',
@@ -135,7 +141,7 @@ export default class ListView extends Component {
           <Button
             text={this.state.showAsGrid ? 'Show List' : 'Show Grid'}
             icon={this.state.showAsGrid ? listIcon : gridIcon}
-            styleIcon={{width: '1em', height: '1em', marginRight: '0.309em'}}
+            styleIcon={styleControlButtonIcon}
             onClick={this.toggleShowAsGrid}
           />
         </div>
@@ -174,7 +180,7 @@ export default class ListView extends Component {
         </div>
       )
 
-      const itemProps = propsForItem ? propsForItem(item) : null
+      const itemProps = propsForItem ? propsForItem(item, key) : null
 
       if (this.state.showAsGrid && GridItemComponent) {
         itemElement = (
