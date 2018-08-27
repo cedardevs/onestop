@@ -1,3 +1,6 @@
+spring.profiles.include:
+  - default
+
 # comma-delimited string (no spaces)
 # auth feature toggle: securityenabled | securitydisabled
 # other features: ...
