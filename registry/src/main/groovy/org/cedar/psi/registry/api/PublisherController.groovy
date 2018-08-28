@@ -24,22 +24,22 @@ class PublisherController {
 
   @RequestMapping(value = "/granule/{id}", consumes = ["application/xml", "application/json"], method = [RequestMethod.POST, RequestMethod.PUT])
   void receiveGranule(HttpServletRequest request, @RequestBody String data, @PathVariable(required = false) UUID id) throws Exception {
-    publisher.publishMetadata(request, 'granule', null, id as String,  data)
+    publisher.publishMetadata(request, 'granule', data, id as String, null)
   }
 
   @RequestMapping(value = "/granule/{source}/{id}", consumes = ["application/xml", "application/json"], method = [RequestMethod.POST, RequestMethod.PUT])
   void receiveGranuleFromSource(HttpServletRequest request, @RequestBody String data, @PathVariable(required=false) String source, @PathVariable(required = false) UUID id) throws Exception {
-    publisher.publishMetadata(request, 'granule', source, id as String,  data)
+    publisher.publishMetadata(request, 'granule', data, id as String, source)
   }
 
   @RequestMapping(value = "/collection/{id}", consumes = ["application/xml", "application/json"], method = [RequestMethod.POST, RequestMethod.PUT])
   void receiveCollection(HttpServletRequest request, @RequestBody String data, @PathVariable(required = false) UUID id) throws Exception {
-    publisher.publishMetadata(request, 'collection', null, id as String, data)
+    publisher.publishMetadata(request, 'collection', data, id as String, null)
   }
 
   @RequestMapping(value = "/collection/{source}/{id}", consumes = ["application/xml", "application/json"], method = [RequestMethod.POST, RequestMethod.PUT])
   void receiveCollectionFromSource(HttpServletRequest request, @RequestBody String data, @PathVariable(required=false) String source, @PathVariable(required = false) UUID id) throws Exception {
-    publisher.publishMetadata(request, 'collection', source, id as String, data)
+    publisher.publishMetadata(request, 'collection', data, id as String, source)
   }
 
 }

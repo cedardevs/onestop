@@ -24,7 +24,7 @@ class PublisherSpec extends Specification {
     request.contentType = contentType
 
     when:
-    publisher.publishMetadata( request, type, source, id, data)
+    publisher.publishMetadata(request, type, data, id, source)
 
     then:
     1 * mockProducer.send({it instanceof ProducerRecord && \
@@ -49,7 +49,7 @@ class PublisherSpec extends Specification {
     request.contentType = 'application/json'
 
     when:
-    publisher.publishMetadata( request, type, source, id, data)
+    publisher.publishMetadata(request, type, data, id, source)
 
     then:
     1 * mockProducer.send({it instanceof ProducerRecord && \
@@ -75,7 +75,7 @@ class PublisherSpec extends Specification {
     request.contentType = contentType
 
     when:
-    publisher.publishMetadata( request, type, source, id, data)
+    publisher.publishMetadata(request, type, data, id, source)
 
     then:
     1 * mockProducer.send({it instanceof ProducerRecord && \
@@ -102,7 +102,7 @@ class PublisherSpec extends Specification {
 
 
     when:
-    publisher.publishMetadata( request, type, source, id, data )
+    publisher.publishMetadata(request, type, data, id, source)
 
     then:
     1 * mockProducer.send({it instanceof ProducerRecord && \

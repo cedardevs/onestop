@@ -29,16 +29,16 @@ class Publisher {
     this.kafkaProducer = kafkaProducer
   }
 
-  void publishMetadata(HttpServletRequest request, String type, String source = null, String id = null, String data) {
+  void publishMetadata(HttpServletRequest request, String type, String data, String id = null, String source = null) {
     String topic = topicsByType[type]
     if (!topic) { return }
-    Map message = buildInputTopicMessage(request, source, id, data)
+    Map message = buildInputTopicMessage(request, data, id, source)
     def record = new ProducerRecord<String, Map>(topic, message.id as String, message)
     log.info("Publishing: ${record}")
     kafkaProducer.send(record)
   }
 
-  Map buildInputTopicMessage(HttpServletRequest request, String source = null, String id = null, String data) {
+  Map buildInputTopicMessage(HttpServletRequest request, String data, String id = null, String source = null) {
     [
         id: id ?: UUID.randomUUID(),
         method: request?.method,
