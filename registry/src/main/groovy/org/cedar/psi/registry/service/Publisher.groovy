@@ -1,6 +1,5 @@
 package org.cedar.psi.registry.service
 
-import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.producer.Producer
@@ -18,9 +17,12 @@ import static org.cedar.psi.registry.service.MetadataStreamService.RAW_COLLECTIO
 @CompileStatic
 class Publisher {
 
+  private final Map topicsByType = [
+      collection: RAW_COLLECTION_TOPIC,
+      granule: RAW_GRANULE_TOPIC
+  ]
+
   private Producer<String, Map> kafkaProducer
-  final String COLLECTION_PATH_VAR = 'collection'
-  final String GRANULE_PATH_VAR = 'granule'
 
   @Autowired
   Publisher(Producer<String, Map> kafkaProducer) {
@@ -28,19 +30,15 @@ class Publisher {
   }
 
   void publishMetadata(HttpServletRequest request, String type, String source = null, String id = null, String data) {
-    String topic
-    if(type.equalsIgnoreCase(COLLECTION_PATH_VAR)){
-      topic = RAW_COLLECTION_TOPIC
-    }else if (type.equalsIgnoreCase(GRANULE_PATH_VAR)){
-      topic = RAW_GRANULE_TOPIC
-    }else{return}
+    String topic = topicsByType[type]
+    if (!topic) { return }
     Map message = buildInputTopicMessage(request, source, id, data)
     def record = new ProducerRecord<String, Map>(topic, message.id as String, message)
     log.info("Publishing: ${record}")
     kafkaProducer.send(record)
   }
 
-  Map buildInputTopicMessage(HttpServletRequest request, String source = null, String id = null, String data){
+  Map buildInputTopicMessage(HttpServletRequest request, String source = null, String id = null, String data) {
     [
         id: id ?: UUID.randomUUID(),
         method: request?.method,
