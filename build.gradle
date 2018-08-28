@@ -46,3 +46,43 @@ subprojects {
     }
   }
 }
+
+subprojects {
+  apply plugin: 'jacoco'
+
+  afterEvaluate {
+    jacocoTestReport {
+      reports {
+        xml.enabled true
+        html.enabled true
+      }
+    }
+    check.dependsOn jacocoTestReport
+  }
+}
+
+
+apply plugin: 'jacoco'
+
+repositories {
+  mavenCentral()
+}
+
+task codeCoverageReport(type: JacocoReport) {
+  executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
+
+  sourceDirectories = fileTree(project.rootDir.absolutePath).include("**/src/main/groovy/")
+  classDirectories = fileTree(project.rootDir.absolutePath).include("**/build/classes/groovy/main")
+
+  reports {
+    xml.enabled true
+    xml.destination "${buildDir}/reports/jacoco/report.xml"
+    html.enabled true
+    html.destination "${buildDir}/reports/jacoco/html"
+    csv.enabled false
+  }
+}
+
+codeCoverageReport.dependsOn {
+  subprojects*.check
+}
