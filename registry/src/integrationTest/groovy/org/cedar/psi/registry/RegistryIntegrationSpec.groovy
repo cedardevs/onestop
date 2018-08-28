@@ -48,7 +48,6 @@ class RegistryIntegrationSpec extends Specification {
     def granuleText = ClassLoader.systemClassLoader.getResourceAsStream('test_granule.json').text
     def granuleMap = new JsonSlurper().parseText(granuleText) as Map
 
-
     when:
     def createEntity = RequestEntity
         .post("${baseUrl}/metadata/granule/common-ingest/${granuleMap.trackingId}".toURI())
@@ -74,24 +73,24 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.attributes.raw.contentType == "application/json"
     retrieveResponse.body.attributes.raw.source == "common-ingest"
 
-
-//    retrieveResponse.body == [
-//        id: granuleMap.trackingId,
-//        type: 'granule',
-//        attributes: [
-//            raw: [
-//                "content": granuleText,
-//                "contentType": "application/json",
-//                "host": "192.168.65.3",
-//                "id": "4d989197-d4a9-4a2b-a579-5eb67b44c3c3",
-//                "method": "POST",
-//                "protocol": "HTTP/1.1",
-//                "requestUrl": "http://localhost:30493/metadata/granule/common-ingest/4d989197-d4a9-4a2b-a579-5eb67b44c3c3",
-//                "source": "common-ingest"
-//            ],
-//            parsed: null
-//        ]
-//    ]
+    and: // let's verify the full response just this once
+    retrieveResponse.body == [
+        id: granuleMap.trackingId,
+        type: 'granule',
+        attributes: [
+            raw: [
+                "content": granuleText,
+                "contentType": "application/json",
+                "host": "127.0.0.1",
+                "id": granuleMap.trackingId,
+                "method": "POST",
+                "protocol": "HTTP/1.1",
+                "requestUrl": "${baseUrl}/metadata/granule/common-ingest/${granuleMap.trackingId}",
+                "source": "common-ingest"
+            ],
+            parsed: null
+        ]
+    ]
   }
 
   def 'can post granule iso then get it back out'() {
@@ -123,14 +122,7 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.type == 'granule'
     retrieveResponse.body.attributes.raw.content == granuleText
     retrieveResponse.body.attributes.raw.contentType == "application/xml"
-//    retrieveResponse.body == [
-//        id: granuleId,
-//        type: 'granule',
-//        attributes: [
-//            raw: [id: granuleId, contentType: "application/xml", content: granuleText],
-//            parsed: null
-//        ]
-//    ]
+    retrieveResponse.body.attributes.raw.source == null
   }
 
   def 'can post then retrieve collection info'() {
@@ -162,14 +154,7 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.type == 'collection'
     retrieveResponse.body.attributes.raw.content == collectionText
     retrieveResponse.body.attributes.raw.contentType == "application/xml"
-//    retrieveResponse.body == [
-//        id: collectionId,
-//        type: 'collection',
-//        attributes: [
-//            raw: [id: collectionId, contentType: "application/xml", content: collectionText],
-//            parsed: null
-//        ]
-//    ]
+    retrieveResponse.body.attributes.raw.source == null
   }
 
 }
