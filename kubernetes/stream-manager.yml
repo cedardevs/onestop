@@ -23,6 +23,8 @@ spec:
       labels:
         app: stream-manager
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: stream-manager
           image: cedardevs/psi-stream-manager

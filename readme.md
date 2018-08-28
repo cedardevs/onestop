@@ -12,11 +12,15 @@ related to every file ingested and archived by NOAA's National Centers for Envir
 1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/), configured to point to any...
 1. Kubernetes cluster (e.g. [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/))
 
+1. Set these env vars- DOCKER_USER, DOCKER_PW, DOCKER_SERVER, DOCKER_EMAIL
+
+
 ### Quickstart
 
 To deploy the system to a k8s cluster, simply run the following from the root of this repository.
 ```bash
-kubectl apply -f kubernetes/*
+kubectl create secret docker-registry regcred --docker-server=$DOCKER_SERVER --docker-username=$DOCKER_USER --docker-password=$DOCKER_PW --docker-email=$DOCKER_EMAIL
+kubectl apply -f kubernetes/
 ```
 
 ## Development

@@ -28,8 +28,8 @@ class StreamManagerSpec extends Specification {
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def key = 'A123'
     def value = [
-        rawFormat: 'isoXml',
-        rawMetadata: xml
+        contentType: 'application/xml',
+        content: xml
     ]
 
     when:
@@ -63,8 +63,8 @@ class StreamManagerSpec extends Specification {
     def smeKey = 'sme'
     def smeValue = [
         source: 'common-ingest',
-        rawFormat: 'isoXml',
-        rawMetadata: xmlSME
+        contentType: 'application/xml',
+        content: xmlSME
     ]
 
     when:
@@ -74,7 +74,7 @@ class StreamManagerSpec extends Specification {
     // The record is in the SME topic
     def smeOutput = driver.readOutput(Constants.SME_TOPIC, DESERIALIZER, DESERIALIZER)
     smeOutput.key() == smeKey
-    smeOutput.value() == JsonOutput.toJson(smeValue)
+    smeOutput.value() == smeValue.content
 
     and:
     // There are no errors and nothing in the parsed topic
@@ -89,14 +89,14 @@ class StreamManagerSpec extends Specification {
     def nonSMEKey = 'notSME'
     def nonSMEValue = [
         source: null,
-        rawFormat: 'isoXml',
-        rawMetadata: xmlNonSME
+        contentType: 'application/xml',
+        content: xmlNonSME
     ]
     def smeKey = 'sme'
     def smeValue = [
         source: 'common-ingest',
-        rawFormat: 'isoXml',
-        rawMetadata: xmlSME
+        contentType: 'application/xml',
+        content: xmlSME
     ]
 
     when:
@@ -137,8 +137,8 @@ class StreamManagerSpec extends Specification {
     def key = 'failure101'
     def value = [
         source: null,
-        rawFormat: 'csv',
-        rawData: 'it,does,not,parse'
+        contentType: 'text/csv',
+        content: 'it,does,not,parse'
     ]
 
     when:

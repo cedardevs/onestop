@@ -1,5 +1,7 @@
 package org.cedar.psi.registry.stream
 
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.kstream.Reducer
@@ -21,7 +23,14 @@ class StreamFunctions {
     @Override
     Map apply(Map aggregate, Map nextValue) {
       log.debug("Merging new value $nextValue into existing aggregate ${aggregate}")
+      def slurper = new JsonSlurper()
       def result = (aggregate ?: [:]) + (nextValue ?: [:])
+      if(aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json' ){
+        result.content = JsonOutput.toJson(
+            (slurper.parseText(aggregate.content as String) as Map ) +
+                (slurper.parseText(nextValue.content as String) as Map )
+        )
+      }
       return result
     }
   }
