@@ -56,10 +56,9 @@ jobs:
           paths:
             - ~/.gradle
             - .gradle
-            - api/build
-            - parser/build
+            - common/build
             - registry/build
-            - script-wrapper/build
+            - stream-manager/build
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       - deploy:
