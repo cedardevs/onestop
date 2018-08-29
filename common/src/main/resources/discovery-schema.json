@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Inventory Manager Discovery Schema",
   "description": "The shape of the discovery object generated within Inventory Manager for a successfully parsed metadata document. This is the internal metadata format used within the system and ultimately sent downstream to OneStop.",
   "type": "object",
@@ -37,38 +37,202 @@
     "keywords": {
       "type": "array",
       "items": {
+        "$ref": "#/definitions/keywordsElement"
+      }
+    },
+    "accessionValues": {
+      "type": "array",
+      "items": {
         "type": "string"
       }
     },
-    "accessionValues",
-    "topicCategories",
-    "gcmdScienceServices",
-    "gcmdScience",
-    "gcmdLocations",
-    "gcmdInstruments",
-    "gcmdPlatforms",
-    "gcmdProjects",
-    "gcmdDataCenters",
-    "gcmdHorizontalResolution",
-    "gcmdVerticalResolution",
-    "gcmdTemporalResolution",
-    "temporalBounding",
-    "spatialBounding",
-    "isGlobal",
-    "acquisitionInstruments",
-    "acquisitionOperations",
-    "acquisitionPlatforms",
-    "dataFormats",
+    "topicCategories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gcmdScienceServices": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gcmdScience": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gcmdLocations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gcmdInstruments": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gcmdPlatforms": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gcmdProjects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gcmdDataCenters": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gcmdHorizontalResolution": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gcmdVerticalResolution": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "gcmdTemporalResolution": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "temporalBounding": {
+      "type": "object",
+      "properties": {
+        "beginDate": {
+          "type": ["string", "null"]
+        },
+        "beginIndeterminate": {
+          "type": ["string", "null"]
+        },
+        "beginYear": {
+          "type": ["integer", "null"]
+        },
+        "endDate": {
+          "type": ["string", "null"]
+        },
+        "endIndeterminate": {
+          "type": ["string", "null"]
+        },
+        "endYear": {
+          "type": ["integer", "null"]
+        },
+        "instant": {
+          "type": ["string", "null"]
+        },
+        "instantIndeterminate": {
+          "type": ["string", "null"]
+        },
+        "description": {
+          "type": ["string", "null"]
+        },
+        "invalidDates": {
+          "type": "object",
+          "properties": {
+            "begin": {
+              "type": "boolean"
+            },
+            "end": {
+              "type": "boolean"
+            },
+            "instant": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "begin",
+            "end",
+            "instant"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "beginDate",
+        "beginIndeterminate",
+        "beginYear",
+        "endDate",
+        "endIndeterminate",
+        "endYear",
+        "instant",
+        "instantIndeterminate",
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "spatialBounding": {
+      "$ref": "#/definitions/Geometry"
+    },
+    "isGlobal": {
+      "type": "boolean"
+    },
+    "acquisitionInstruments": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/instrument"
+      }
+    },
+    "acquisitionOperations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/operation"
+      }
+    },
+    "acquisitionPlatforms": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/platform"
+      }
+    },
+    "dataFormats": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/dataFormat"
+      }
+    },
     "links": {
       "type": "array",
       "items": {
         "$ref": "#/definitions/link"
       }
     },
-    "contacts",
-    "creators",
-    "publishers",
-    "thumbnail",
+    "contacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/responsibleParty"
+      }
+    },
+    "creators": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/responsibleParty"
+      }
+    },
+    "publishers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/responsibleParty"
+      }
+    },
+    "thumbnail": {
+      "type": ["string", "null"]
+    },
     "thumbnailDescription": {
       "type": ["string", "null"]
     },
@@ -81,9 +245,24 @@
     "publicationDate": {
       "type": ["string", "null"]
     },
-    "citeAsStatements",
-    "crossReferences",
-    "largerWorks",
+    "citeAsStatements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "crossReferences": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/reference"
+      }
+    },
+    "largerWorks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/reference"
+      }
+    },
     "useLimitation": {
       "type": ["string", "null"]
     },
@@ -141,12 +320,73 @@
     },
     "services": {
       "description": "Base64 encoded SV_ServiceIdentification sections, if any, of ISO XML metadata document. Null if not present.",
-      "type": ["string", "null"]
+      "array": {
+        "type": ["string", "null"]
+      }
     }
   },
   "additionalProperties": false,
   "required": [],
   "definitions": {
+    "dataFormat": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": ["string", "null"]
+        },
+        "version": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "keywordsElement": {
+      "type": "object",
+      "properties": {
+        "values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "type": ["string", "null"]
+        },
+        "namespace": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "values",
+        "type",
+        "namespace"
+      ],
+      "additionalProperties": false
+    },
+    "instrument": {
+      "type": "object",
+      "properties": {
+        "instrumentIdentifier": {
+          "type": ["string", "null"]
+        },
+        "instrumentType": {
+          "type": ["string", "null"]
+        },
+        "instrumentDescription": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": [
+        "instrumentIdentifier",
+        "instrumentType",
+        "instrumentDescription"
+      ],
+      "additionalProperties": false
+    },
     "link": {
       "type": "object",
       "properties": {
@@ -172,6 +412,76 @@
         "linkUrl",
         "linkDescription",
         "linkFunction"
+      ],
+      "additionalProperties": false
+    },
+    "operation": {
+      "type": "object",
+      "properties": {
+        "operationDescription": {
+          "type": ["string", "null"]
+        },
+        "operationIdentifier": {
+          "type": ["string", "null"]
+        },
+        "operationStatus": {
+          "type": ["string", "null"]
+        },
+        "operationType": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": [
+        "operationDescription",
+        "operationIdentifier",
+        "operationStatus",
+        "operationType"
+      ],
+      "additionalProperties": false
+    },
+    "platform": {
+      "type": "object",
+      "properties": {
+        "platformIdentifier": {
+          "type": ["string", "null"]
+        },
+        "platformDescription": {
+          "type": ["string", "null"]
+        },
+        "platformSponsor": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "platformIdentifier",
+        "platformDescription",
+        "platformSponsor"
+      ],
+      "additionalProperties": false
+    },
+    "reference": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": ["string", "null"]
+        },
+        "date": {
+          "type": ["string", "null"]
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/link"
+          }
+        }
+      },
+      "required": [
+        "title",
+        "date",
+        "links"
       ],
       "additionalProperties": false
     },
@@ -206,6 +516,187 @@
         "phone"
       ],
       "additionalProperties": false
+    },
+    "Geometry": {
+      "description": "One geometry as defined by GeoJSON",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/Point"
+        },
+        {
+          "$ref": "#/definitions/MultiPoint"
+        },
+        {
+          "$ref": "#/definitions/LineString"
+        },
+        {
+          "$ref": "#/definitions/MultiLineString"
+        },
+        {
+          "$ref": "#/definitions/Polygon"
+        },
+        {
+          "$ref": "#/definitions/MultiPolygon"
+        }
+      ]
+    },
+    "Point": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "Point"
+          ]
+        },
+        "coordinates": {
+          "$ref": "#/definitions/position"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ]
+    },
+    "MultiPoint": {
+      "properties": {
+        "type": {
+          "enum": [
+            "MultiPoint"
+          ]
+        },
+        "coordinates": {
+          "$ref": "#/definitions/positionArray"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ]
+    },
+    "LineString": {
+      "properties": {
+        "type": {
+          "enum": [
+            "LineString"
+          ]
+        },
+        "coordinates": {
+          "$ref": "#/definitions/lineString"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ]
+    },
+    "MultiLineString": {
+      "properties": {
+        "type": {
+          "enum": [
+            "MultiLineString"
+          ]
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/lineString"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ]
+    },
+    "Polygon": {
+      "properties": {
+        "type": {
+          "enum": [
+            "Polygon"
+          ]
+        },
+        "coordinates": {
+          "$ref": "#/definitions/polygon"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ]
+    },
+    "MultiPolygon": {
+      "properties": {
+        "type": {
+          "enum": [
+            "MultiPolygon"
+          ]
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/polygon"
+          }
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ]
+    },
+    "position": {
+      "description": "A single position",
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": [
+        {
+          "type": "number",
+          "minimum": -360,
+          "maximum": 360
+        },
+        {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        }
+      ],
+      "additionalItems": false
+    },
+    "positionArray": {
+      "description": "An array of positions",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/position"
+      }
+    },
+    "lineString": {
+      "description": "An array of two or more positions",
+      "allOf": [
+        {
+          "$ref": "#/definitions/positionArray"
+        },
+        {
+          "minItems": 2
+        }
+      ]
+    },
+    "linearRing": {
+      "description": "An array of four positions where the first equals the last",
+      "allOf": [
+        {
+          "$ref": "#/definitions/positionArray"
+        },
+        {
+          "minItems": 4
+        }
+      ]
+    },
+    "polygon": {
+      "description": "An array of linear rings",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/linearRing"
+      }
     }
   }
 }
