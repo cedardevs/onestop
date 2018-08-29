@@ -46,17 +46,17 @@ jobs:
             find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
 
-     - run:
+      - run:
           name: Save jacoco results
           command: |
             mkdir -p ~/tests/jacoco/
             find . -type f -regex ".*/build/reports/.*xml" -exec cp {} ~/tests/jacoco/ \;
           when: always
 
-     - run:
+      - run:
           name: Post jacoco results to codecov
-          command:
-            - bash <(curl -s https://codecov.io/bash)
+          command: |
+            bash <(curl -s https://codecov.io/bash)
 
       - store_test_results:
           path: ~/tests
