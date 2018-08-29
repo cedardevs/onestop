@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Inventory Manager Analysis Schema",
   "description": "The shape of the analysis object generated within Inventory Manager for a successfully parsed metadata document. Content within this object is related to the quality of the content of specific metadata fields, which can be used downstream to determine whether or not a given document should be accepted into another service, such as the OneStop search platform.",
   "type": "object",
