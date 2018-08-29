@@ -51,6 +51,7 @@ jobs:
           command: |
             mkdir -p ~/tests/jacoco/
             find . -type f -regex ".*/build/reports/.*xml" -exec cp {} ~/tests/jacoco/ \;
+            find . -type f -regex ".*/build/reports/.*html" -exec cp {} ~/tests/jacoco/ \;
           when: always
 
       - run:
