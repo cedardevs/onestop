@@ -1,0 +1,22 @@
+{
+  "name": "psi-analysis-to-es",
+  "config": {
+    "tasks.max": "1",
+    "connector.class": "ElasticsearchSink",
+    "connection.url": "http://elasticsearch:9200",
+    "topics": "parsed-collections",
+    "topic.index.map": "parsed-collections:analysis-index",
+    "type.name": "doc",
+    "schema.ignore": true,
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "transforms": "extractAnalysis, AddTimestamp",
+    "transforms.extractAnalysis.type": "org.apache.kafka.connect.transforms.ExtractField$Value",
+    "transforms.extractAnalysis.field": "analysis",
+    "transforms.AddTimestamp.type": "org.apache.kafka.connect.transforms.InsertField$Value",
+    "transforms.AddTimestamp.target.type": "Date",
+    "transforms.AddTimestamp.timestamp.field": "Timestamp",
+    "transforms.AddTimestamp.format": "yyyy-MM-dd HH:mm:ss"
+  }
+}

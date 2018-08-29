@@ -16,6 +16,7 @@ import java.time.format.ResolverStyle
 import java.time.temporal.ChronoField
 import java.time.temporal.TemporalAccessor
 import java.time.temporal.TemporalQuery
+import java.time.format.DateTimeParseException
 
 class ISOParser {
 
@@ -32,7 +33,7 @@ class ISOParser {
     })
 
     return [
-        fileId  : slurped.fileIdentifier.CharacterString.text(),
+        fileId  : slurped.fileIdentifier.CharacterString.text() ?: null,
         doi     : doi,
         parentId: slurped.parentIdentifier.Anchor.text() ?: slurped.parentIdentifier.CharacterString.text() ?: null
     ]
@@ -150,7 +151,7 @@ class ISOParser {
 
     def idInfo = metadata.identificationInfo.MD_DataIdentification
 
-    fileIdentifier = metadata.fileIdentifier.CharacterString.text()
+    fileIdentifier = metadata.fileIdentifier.CharacterString.text() ?: null
     parentIdentifier = metadata.parentIdentifier.Anchor.text() ?: metadata.parentIdentifier.CharacterString.text() ?: null
     hierarchyLevelName = metadata.hierarchyLevelName.CharacterString.text().toLowerCase() ?: null
 
@@ -166,11 +167,11 @@ class ISOParser {
         return anchor.text()
       }
     })
-    title = idInfo.citation.CI_Citation.title.CharacterString.text()
+    title = idInfo.citation.CI_Citation.title.CharacterString.text() ?: null
     alternateTitle = idInfo.citation.CI_Citation.alternateTitle.CharacterString.text() ?: null
-    description = idInfo.abstract.CharacterString.text()
+    description = idInfo.abstract.CharacterString.text() ?: null
     def thumbnailPath = idInfo.graphicOverview.MD_BrowseGraphic
-    thumbnail = StringEscapeUtils.unescapeXml(thumbnailPath.fileName.CharacterString.text())
+    thumbnail = StringEscapeUtils.unescapeXml(thumbnailPath.fileName.CharacterString.text()) ?: null
     thumbnailDescription = thumbnailPath.fileDescription.CharacterString.text() ?: null
 
     // Miscellaneous dates:
@@ -488,6 +489,8 @@ class ISOParser {
 
   static Map elasticDateInfo(String date) {
 
+    def dateInvalid = false
+
     // don't bother parsing if there's nothing here
     if(!date) {
       return null
@@ -496,7 +499,7 @@ class ISOParser {
     // default to null
     String elasticDate = null
     TemporalAccessor parsedDate = null
-    Long year
+    Long year = null
 
     // paleo dates can be longs
     if(date.isLong()) {
@@ -508,29 +511,36 @@ class ISOParser {
       }
     }
     else {
-      // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
-      parsedDate = PARSE_DATE_FORMATTER.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
-      year = parsedDate.get(ChronoField.YEAR)
+      try {
+        // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
+        parsedDate = PARSE_DATE_FORMATTER.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
+        year = parsedDate.get(ChronoField.YEAR)
 
-      // date is in format like: 2010-12-30T00:00:00Z
-      if(parsedDate instanceof ZonedDateTime) {
-        elasticDate = date
+        // date is in format like: 2010-12-30T00:00:00Z
+        if(parsedDate instanceof ZonedDateTime) {
+          elasticDate = date
+        }
+        // date is in format like: 2010-12-30T00:00:00
+        else if(parsedDate instanceof LocalDateTime) {
+          // assume UTC
+          ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
+          elasticDate = parsedDateUTC.format(ELASTIC_DATE_FORMATTER)
+          // re-evaluate year in off-chance year was affected by zone id
+          year = parsedDateUTC.get(ChronoField.YEAR)
+        }
+        // date is in format like: 2010-12-30
+        else if(parsedDate instanceof LocalDate) {
+          elasticDate = date
+        }
       }
-      // date is in format like: 2010-12-30T00:00:00
-      else if(parsedDate instanceof LocalDateTime) {
-        // assume UTC
-        ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
-        elasticDate = parsedDateUTC.format(ELASTIC_DATE_FORMATTER)
-        // re-evaluate year in off-chance year was affected by zone id
-        year = parsedDateUTC.get(ChronoField.YEAR)
-      }
-      // date is in format like: 2010-12-30
-      else if(parsedDate instanceof LocalDate) {
+      catch(DateTimeParseException e) {
+        // Date is in a format that cannot be parsed; indicate as invalid
+        dateInvalid = true
         elasticDate = date
       }
     }
 
-    def dateInfo = [ "date": elasticDate, "year":  year]
+    def dateInfo = [ "date": elasticDate, "year":  year, "invalid": dateInvalid]
     return dateInfo
   }
 
@@ -562,7 +572,7 @@ class ISOParser {
       instant = elasticDateInfo(instantText)
     }
 
-    return [
+    def temporalBounding = [
         beginDate           : begin?.date,
         beginIndeterminate  : beginIndeterminateText,
         beginYear           : begin?.year,
@@ -573,6 +583,16 @@ class ISOParser {
         instantIndeterminate: instantIndeterminateText,
         description         : description
     ]
+
+    if(begin?.invalid || end?.invalid || instant?.invalid) {
+      temporalBounding.invalidDates = [
+        begin  : begin ? begin.invalid : false,
+        end    : end ? end.invalid : false,
+        instant: instant? instant.invalid : false
+      ]
+    }
+
+    return temporalBounding
   }
 
   static Map parseTemporalBounding(String xml) {

@@ -54,7 +54,60 @@ class StreamManagerSpec extends Specification {
     output.containsKey('discovery')
     output.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
     output.containsKey('analysis')
-    output.analysis == [:] // Empty map
+    output.analysis == [
+        identification  : [
+            fileIdentifier  : [
+                exists: true
+            ],
+            doi             : [
+                exists: true
+            ],
+            parentIdentifier: [
+                exists: true
+            ],
+            hierarchyLevelName: [
+                exists: true,
+                matchesIdentifiers: true
+            ]
+        ],
+        temporalBounding: [
+            beginDate: [
+                exists: true,
+                valid : true
+            ],
+            endDate  : [
+                exists: true,
+                valid : true
+            ],
+            instant  : [
+                exists: false,
+                valid : true
+            ]
+        ],
+        spatialBounding : [
+            exists: true
+        ],
+        titles          : [
+            title: [
+                exists: true,
+                characters: 63
+            ],
+            alternateTitle: [
+                exists: true,
+                characters: 51
+            ]
+        ],
+        description     : [
+            exists    : true,
+            characters: 65
+        ],
+        thumbnail       : [
+            exists: true,
+        ],
+        dataAccess      : [
+            exists: true
+        ]
+    ]
   }
 
   def "SME granule ends up in SME topic"() {

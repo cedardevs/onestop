@@ -550,15 +550,30 @@ class ISOParserSpec extends Specification {
     ]
   }
 
-  def "Invalid temporal bounding is prevented"() {
+  def "Invalid temporal bounding creates invalidDates entry"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-invalid-dates-metadata.xml").text
 
     when:
-    ISOParser.parseTemporalBounding(document)
+    def temporalBounding = ISOParser.parseTemporalBounding(document)
 
     then:
-    thrown(DateTimeParseException)
+    temporalBounding == [
+        beginDate           : '1984-04-31',
+        beginIndeterminate  : null,
+        beginYear           : null,
+        endDate             : '1985-05-09T00:00:00Z',
+        endIndeterminate    : null,
+        endYear             : 1985,
+        instant             : null,
+        instantIndeterminate: null,
+        description         : null,
+        invalidDates        : [
+          begin  : true,
+          end    : false,
+          instant: false
+        ]
+    ]
   }
 
   def "Polygon spatial bounding is correctly parsed"() {
