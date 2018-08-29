@@ -53,8 +53,9 @@ jobs:
             find . -type f -regex ".*/build/reports/.*xml" -exec cp {} ~/tests/jacoco/ \;
           when: always
 
-      - test:
-          post:
+     - run:
+          name: Post jacoco results to codecov
+          command:
             - bash <(curl -s https://codecov.io/bash)
 
       - store_test_results:
