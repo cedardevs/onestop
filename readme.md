@@ -1,6 +1,7 @@
 # Persistent Streaming Information: PSI
 
 [![CircleCI](https://circleci.com/gh/cedardevs/psi.svg?style=svg)](https://circleci.com/gh/cedardevs/psi)
+[![codecov](https://codecov.io/gh/cedardevs/psi/branch/master/graph/badge.svg?token=mpaqa2QKdv)](https://codecov.io/gh/cedardevs/psi)
 
 The purpose of this project is to build a system which can both store and run processing workflows on the metadata
 related to every file ingested and archived by NOAA's National Centers for Environmental Information (NCEI). 
