@@ -1,6 +1,5 @@
 package org.cedar.psi.manager.stream
 
-import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 
 @Slf4j
@@ -10,9 +9,6 @@ class AnalysisAndValidationService {
     log.debug("Received $msgMap")
 
     def parsedMetadata = msgMap.discovery
-
-    println(JsonOutput.prettyPrint(JsonOutput.toJson(parsedMetadata)))
-
 
     def analysisMap = [
         identification  : analyzeIdentifiers(parsedMetadata),
