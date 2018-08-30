@@ -50,8 +50,7 @@ jobs:
           name: Save jacoco results
           command: |
             mkdir -p ~/tests/jacoco/
-            find . -type d -regex ".*/build/reports/jacoco/test" -exec cp -r {} ~/tests/jacoco/ \;
-
+            find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/jacoco/ \;
           when: always
 
       - run:
