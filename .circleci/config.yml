@@ -72,7 +72,7 @@ jobs:
             - parser/build
             - registry/build
             - script-wrapper/build
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+          key: v2-dependencies-{{ checksum "build.gradle" }}
 
       - deploy:
           name: Publish
