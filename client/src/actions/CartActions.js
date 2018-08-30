@@ -7,10 +7,27 @@ export const insertSelectedGranule = (item, itemId) => {
   }
 }
 
+export const INSERT_MULTIPLE_SELECTED_GRANULES = 'INSERT_MULTIPLE_SELECTED_GRANULES'
+export const insertMultipleSelectedGranules = (items, itemIds) => {
+  return {
+    type: INSERT_MULTIPLE_SELECTED_GRANULES,
+    items: items,
+    itemIds: itemIds
+  }
+}
+
 export const REMOVE_SELECTED_GRANULE = 'REMOVE_SELECTED_GRANULE'
 export const removeSelectedGranule = (itemId) => {
   return {
     type: REMOVE_SELECTED_GRANULE,
     itemId: itemId,
+  }
+}
+
+export const REMOVE_MULTIPLE_SELECTED_GRANULES = 'REMOVE_MULTIPLE_SELECTED_GRANULES'
+export const removeMultipleSelectedGranules = (itemIds) => {
+  return {
+    type: REMOVE_MULTIPLE_SELECTED_GRANULES,
+    itemIds: itemIds
   }
 }

@@ -27,6 +27,14 @@ const styleDetailWrapper = {
   backgroundColor: 'white',
 }
 
+const styleLoadingMessage = {
+  textAlign: 'center',
+}
+
+const styleErrorMessage = {
+  textAlign: 'center',
+}
+
 const styleTitle = {
   margin: 0,
   padding: '0.691em 0.691em 1.691em 0.691em',
@@ -108,8 +116,10 @@ class Detail extends Component {
 
     if (loading) {
       return (
-        <div style={styleDetailWrapper}>
-          <h1>Loading...</h1>
+        <div style={styleCenterContent}>
+          <div style={styleDetailWrapper}>
+            <h1 style={styleLoadingMessage}>Loading...</h1>
+          </div>
         </div>
       )
     }
@@ -117,8 +127,10 @@ class Detail extends Component {
     if (!item) {
       // TODO error style? actually report an error in the flow if the collection is not found when search returns?
       return (
-        <div style={styleDetailWrapper}>
-          <h1>There was a problem loading your collection.</h1>
+        <div style={styleCenterContent}>
+          <div style={styleDetailWrapper}>
+            <h1 style={styleErrorMessage}>There was a problem loading your collection.</h1>
+          </div>
         </div>
       )
     }

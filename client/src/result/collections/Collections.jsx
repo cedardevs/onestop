@@ -1,9 +1,8 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import CollectionCard from './CollectionCard'
-import CollectionListResult from './CollectionListResult'
 import Button from '../../common/input/Button'
-import ListView from '../ListView'
+import ListView from '../../common/ListView'
 import Meta from '../../helmet/Meta'
 
 const styleCollections = {
@@ -49,6 +48,7 @@ export default class Collections extends Component {
         <ListView
           items={results}
           loading={!!loading}
+          resultsMessage={"Search Results"}
           shown={returnedHits}
           total={totalHits}
           onItemSelect={selectCollection}

@@ -62,6 +62,11 @@ export default class GranuleListLegend extends Component {
 
     return (
       <div style={styleLegend}>
+        <h1 style={styleHeading} aria-label="Cart Actions">
+          Cart Actions
+        </h1>
+        <button onClick={() => { console.log("select all") }}>Select All Visible Granules</button>
+        <button onClick={() => { console.log("deselect all" )}}>Deselect All Visible Granules</button>
         <h1 style={styleHeading} aria-label="Access Protocols Legend">
           Access Protocols:
         </h1>

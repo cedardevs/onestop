@@ -4,7 +4,13 @@ import Cart from './Cart'
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
+
+  const numberOfGranulesSelected = Object.keys(state.cart.granules.selectedGranules).length
+
   return {
+    loading: state.ui.loading ? 1 : 0,
+    selectedGranules: state.cart.granules.selectedGranules,
+    numberOfGranulesSelected: numberOfGranulesSelected
   }
 }
 

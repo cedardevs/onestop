@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import Button from '../common/input/Button'
+import Button from './input/Button'
 import gridIcon from 'fa/th.svg'
 import listIcon from 'fa/th-list.svg'
 import {fontFamilySerif} from '../utils/styleUtils'
@@ -114,6 +114,8 @@ export default class ListView extends Component {
     const {
       items,
       loading,
+      loadingMessage,
+      resultsMessage,
       shown,
       total,
       onItemSelect,
@@ -125,9 +127,9 @@ export default class ListView extends Component {
     const listInfo = (
       <h1 style={styleListInfo}>
         {loading ? (
-          'Loading...'
+          loadingMessage ? loadingMessage : 'Loading...'
         ) : (
-          `Search Results (showing ${shown} of ${total})`
+          `${resultsMessage ? resultsMessage : 'Results'} (showing ${shown} of ${total})`
         )}
       </h1>
     )

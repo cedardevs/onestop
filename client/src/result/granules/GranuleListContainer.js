@@ -1,12 +1,13 @@
 import {connect} from 'react-redux'
-import {showCollections, toggleGranuleFocus} from '../../actions/FlowActions'
 import {
   incrementGranulesOffset,
   fetchGranules,
 } from '../../actions/SearchRequestActions'
 import {
   insertSelectedGranule,
-  removeSelectedGranule
+  insertMultipleSelectedGranules,
+  removeSelectedGranule,
+  removeMultipleSelectedGranules
 } from '../../actions/CartActions'
 import GranuleList from './GranuleList'
 
@@ -35,13 +36,18 @@ const mapDispatchToProps = dispatch => {
       dispatch(incrementGranulesOffset())
       dispatch(fetchGranules(false))
     },
-
     selectGranule: (item, itemId) => {
       dispatch(insertSelectedGranule(item, itemId))
+    },
+    selectVisibleGranules: (items, itemIds) => {
+      dispatch(insertMultipleSelectedGranules(items, itemIds))
     },
     deselectGranule: (itemId) => {
       dispatch(removeSelectedGranule(itemId))
     },
+    deselectVisibleGranules: (itemIds) => {
+      dispatch(removeMultipleSelectedGranules(itemIds))
+    }
   }
 }
 
