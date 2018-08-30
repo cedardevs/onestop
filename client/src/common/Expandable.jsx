@@ -50,6 +50,10 @@ const styleFocusDefault = (open, borderRadius, showArrow) => {
   }
 }
 
+const styleHeadingFocusDefault = () => {
+  return {}
+}
+
 export default class Expandable extends React.Component {
   constructor(props) {
     super(props)
@@ -150,7 +154,10 @@ export default class Expandable extends React.Component {
   render() {
     const {
       showArrow,
+      arrowTextClosed,
+      arrowTextOpened,
       styleFocus,
+      styleHeadingFocus,
       styleWrapper,
       styleHeading,
       heading,
@@ -162,10 +169,11 @@ export default class Expandable extends React.Component {
     } = this.props
     const {open, display, focusing} = this.state
 
+    const arrowText = <span>{open ? arrowTextOpened : arrowTextClosed}&nbsp;</span>
     const arrow = showArrow ? open ? (
-      <span>&nbsp;&#9660;&nbsp;</span>
+        <span>&nbsp;{arrowText}&#9660;&nbsp;</span>
     ) : (
-      <span>&nbsp;&#9654;&nbsp;</span>
+        <span>&nbsp;{arrowText}&#9654;&nbsp;</span>
     ) : null
 
     const ariaHidden = display === 'none'
@@ -177,6 +185,7 @@ export default class Expandable extends React.Component {
     const stylesHeadingMerged = {
       ...styleHeadingDefault(open, borderRadius),
       ...styleHeading,
+      ...(focusing ? {...styleHeadingFocusDefault(), ...styleHeadingFocus} : {})
     }
 
     const styleFocused = {

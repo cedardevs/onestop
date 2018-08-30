@@ -4,8 +4,10 @@ import ListView from '../common/ListView'
 import CartItem from './CartItem'
 import Button from '../common/input/Button'
 import { boxShadow } from '../common/defaultStyles'
+import {identifyProtocol} from '../utils/resultUtils'
 
 import mockCartItems from '../../test/cart/mockCartItems'
+import AccessProtocolFilter from './AccessProtocolFilter'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -82,6 +84,27 @@ export default class Cart extends React.Component {
     const {loading, selectedGranules, numberOfGranulesSelected} = this.props
     const { numShownItems } = this.state
 
+    // keep track of used protocols in results to avoid unnecessary legend keys
+    const usedProtocols = new Set()
+
+    for(let key in selectedGranules) {
+      if(selectedGranules.hasOwnProperty(key)) {
+        const value = selectedGranules[key]
+        _.forEach(value.links, link => {
+          // if(link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess') {
+          return usedProtocols.add(identifyProtocol(link))
+          // }
+        })
+      }
+    }
+    // _.forEach(selectedGranules, value => {
+    //   _.forEach(value.links, link => {
+    //     // if(link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess') {
+    //     return usedProtocols.add(identifyProtocol(link))
+    //     // }
+    //   })
+    // })
+
     const showMoreButton =
         numShownItems < numberOfGranulesSelected ? (
             <Button
@@ -100,6 +123,10 @@ export default class Cart extends React.Component {
           />
 
           <div style={styleCartListWrapper}>
+            <div>
+              <h3>Access Protocols:</h3>
+              <AccessProtocolFilter usedProtocols={usedProtocols}/>
+            </div>
             <ListView
                 items={mockCartItems}
                 loading={!!loading}

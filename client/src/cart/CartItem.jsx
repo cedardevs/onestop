@@ -13,21 +13,25 @@ import * as util from '../utils/resultUtils'
 import { boxShadow } from '../common/defaultStyles'
 
 const styleExpandableWrapper = {
-  margin: '0 1.618em 1.618em 0',
+  margin: '0 0 0.618em 0',
   boxShadow: boxShadow,
+  width: '100%'
 }
 
-const styleExpandableFocused = {
-  // outline: '2px dotted blue'
+const styleExpandableHeadingFocused = {
+  background:'#2C71A2',
+  color: '#FFF'
 }
 
 const styleExpandableHeading = {
+  color: '#000',
+  justifyContent: 'space-between',
+  padding: '0.309em 0.618em'
 }
 
 const styleTitle = {
   fontFamily: fontFamilySerif(),
   fontSize: '1.3em',
-  color: 'rgb(0, 0, 50)',
   border: '.1em dashed transparent', // prevents resize when focus border is set
   margin: '.259em',
   padding: '.259em',
@@ -40,7 +44,7 @@ const styleExpandableContent = {
 }
 
 const styleSummary = {
-  padding: '0.309em'
+  padding: '0', //'0.309em'
 }
 
 const styleDetail = {
@@ -154,6 +158,16 @@ export default class CartItem extends React.Component {
   render() {
     const {itemId, item, handleExpandableToggle} = this.props
 
+    const title = (
+        <h2 key={"cartItemTitle"} style={styleTitle}>{item.title}</h2>
+    )
+
+    const summaryView = (
+        <div style={styleSummary}>
+          <FlexRow items={[title]} />
+        </div>
+    )
+
     const buttonDelete = (
         <Button
             key={"cartItemDelete"}
@@ -163,16 +177,6 @@ export default class CartItem extends React.Component {
             styleIcon={styleDeleteIcon}
             onClick={() => { console.log("click on delete button") }}
         />
-    )
-
-    const title = (
-        <h2 key={"cartItemTitle"} style={styleTitle}>{item.title}</h2>
-    )
-
-    const summaryView = (
-        <div style={styleSummary}>
-          <FlexRow items={[buttonDelete, title]} />
-        </div>
     )
 
     const mapView = (
@@ -186,6 +190,7 @@ export default class CartItem extends React.Component {
 
     const left = (
         <div key="overview-left" style={styleLeft}>
+          {buttonDelete}
           {mapView}
         </div>
     )
@@ -221,18 +226,23 @@ export default class CartItem extends React.Component {
     )
 
     return (
-        <Expandable
-            styleFocus={styleExpandableFocused}
-            styleWrapper={styleExpandableWrapper}
-            showArrow={true}
-            heading={summaryView}
-            styleHeading={styleExpandableHeading}
-            content={detailView}
-            styleContent={styleExpandableContent}
-            value={itemId}
-            // open={this.state.citationExpandable}
-            // onToggle={handleExpandableToggle}
-        />
+        <div style={{marginRight:'1.618em'}}>
+          <Expandable
+              styleHeadingFocus={styleExpandableHeadingFocused}
+              styleWrapper={styleExpandableWrapper}
+              showArrow={true}
+              arrowTextClosed={"show details"}
+              arrowTextOpened={"hide details"}
+              alignArrow={true}
+              heading={summaryView}
+              styleHeading={styleExpandableHeading}
+              content={detailView}
+              styleContent={styleExpandableContent}
+              value={itemId}
+              // open={this.state.citationExpandable}
+              // onToggle={handleExpandableToggle}
+          />
+        </div>
     )
   }
 }
