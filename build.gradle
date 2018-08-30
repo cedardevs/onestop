@@ -46,3 +46,21 @@ subprojects {
     }
   }
 }
+
+subprojects {
+  apply plugin: 'jacoco'
+
+  afterEvaluate {
+    jacocoTestReport {
+      executionData fileTree(projectDir).include("build/jacoco/*.exec")
+
+      reports {
+        xml.enabled true
+        xml.destination "${buildDir}/reports/jacoco/report.xml"
+        html.enabled true
+        html.destination "${buildDir}/reports/jacoco/html"
+      }
+    }
+    check.dependsOn jacocoTestReport
+  }
+}

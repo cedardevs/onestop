@@ -29,9 +29,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "build.gradle" }}
+          - v2-dependencies-{{ checksum "build.gradle" }}
           # fallback to using the latest cache if no exact match is found
-          - v1-dependencies-
+          - v2-dependencies-
 
       # build it!
       - run:
@@ -46,6 +46,18 @@ jobs:
             find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
 
+      - run:
+          name: Save jacoco results
+          command: |
+            mkdir -p ~/tests/jacoco/
+            find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/jacoco/ \;
+          when: always
+
+      - run:
+          name: Post jacoco results to codecov
+          command: |
+            bash <(curl -s https://codecov.io/bash)
+
       - store_test_results:
           path: ~/tests
 
@@ -59,7 +71,7 @@ jobs:
             - common/build
             - registry/build
             - stream-manager/build
-          key: v1-dependencies-{{ checksum "build.gradle" }}
+          key: v2-dependencies-{{ checksum "build.gradle" }}
 
       - deploy:
           name: Publish
