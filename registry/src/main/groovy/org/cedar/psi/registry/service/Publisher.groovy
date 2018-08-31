@@ -32,23 +32,32 @@ class Publisher {
   void publishMetadata(HttpServletRequest request, String type, String data, String id = null, String source = null) {
     String topic = topicsByType[type]
     if (!topic) { return }
-    Map message = buildInputTopicMessage(request, data, id, source)
-    def record = new ProducerRecord<String, Map>(topic, message.id as String, message)
+    String key = buildMessageKey(source, id)
+    Map value = buildInputTopicMessage(request, data, id, source)
+    def record = new ProducerRecord<String, Map>(topic, key, value)
     log.info("Publishing: ${record}")
     kafkaProducer.send(record)
   }
 
+  String buildMessageKey(String source, String id) {
+    if (id && !source) { // is a reference to one of our uuids
+      return id
+    }
+    return UUID.randomUUID()
+  }
+
   Map buildInputTopicMessage(HttpServletRequest request, String data, String id = null, String source = null) {
-    [
-        id: id ?: UUID.randomUUID(),
+    def input = [
         method: request?.method,
         host: request?.remoteHost,
-        requestUrl: request?.requestURL,
+        requestUrl: request?.requestURL as String,
         protocol: request?.protocol,
         content: data,
         contentType: request?.contentType,
         source: source ?: null
     ]
+    def identifiers = source && id ? [(source): id] : [:]
+    return [input: input, identifiers: identifiers]
   }
 
 }

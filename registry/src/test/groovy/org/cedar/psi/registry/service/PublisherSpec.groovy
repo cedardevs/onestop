@@ -4,115 +4,118 @@ import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
+import spock.lang.Unroll
 
 
+@Unroll
 class PublisherSpec extends Specification {
 
   def mockProducer = Mock(Producer)
   def publisher = new Publisher(mockProducer)
 
-  def 'publishes valid granule xml metadata'(){
+  def 'publishes valid #type metadata as #contentType with #source id'() {
     setup:
-    String type = 'granule'
-    String id = 'abc123'
-    String source = 'common-ingest'
-    String data = '<text>xml woooo....</text>'
-    String requestUrl = "https://localhost:8080/metadata/$source/$type/$id"
+    String requestUri = "/metadata/$type/$source/$id"
     String method = 'POST'
-    String contentType = 'application/xml'
-    def request = new MockHttpServletRequest(method,requestUrl)
+    def request = new MockHttpServletRequest(method,requestUri)
     request.contentType = contentType
 
     when:
     publisher.publishMetadata(request, type, data, id, source)
 
     then:
-    1 * mockProducer.send({it instanceof ProducerRecord && \
-      it.key().toString() == id.toString() && \
-      it.value().toString().contains(id.toString()) && \
-      it.value().toString().contains(request.contentType) && \
-      it.value().toString().contains( method )  && \
-      it.value().toString().contains( requestUrl )
+    1 * mockProducer.send({
+      it instanceof ProducerRecord &&
+          it.key() instanceof String &&
+          it.key() != id &&
+          it.value().input.requestUrl == "http://localhost$requestUri" &&
+          it.value().input.method == method  &&
+          it.value().input.content == data &&
+          it.value().input.contentType == contentType &&
+          it.value().input.source == source &&
+          it.value().identifiers == [(source): id]
     })
 
+    where:
+    source          | type        | id    | contentType       | data
+    'common-ingest' | 'granule'   | 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
+    'common-ingest' | 'granule'   | 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    'common-ingest' | 'collection'| 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
+    'common-ingest' | 'collection'| 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
   }
 
-  def 'publishes valid granule json metadata'(){
+  def 'publishes valid #type metadata as #contentType with existing id'() {
     setup:
-    String type = 'granule'
-    String id = 'abc123'
-    String source = 'common-ingest'
-    String data = "{\"trackingId\":\"ABC\", \"path\":\"/test/file.txt\"}"
-    String requestUrl = "https://localhost:8080/metadata/$source/$type/$id"
+    String requestUri = "/metadata/$type/$id"
     String method = 'POST'
-    def request = new MockHttpServletRequest(method,requestUrl)
+    def request = new MockHttpServletRequest(method,requestUri)
+    request.contentType = contentType
+
+    when:
+    publisher.publishMetadata(request, type, data, id)
+
+    then:
+    1 * mockProducer.send({
+      it instanceof ProducerRecord &&
+          it.key() == id &&
+          it.value().input.contentType == contentType &&
+          it.value().input.method == method  &&
+          it.value().input.requestUrl == "http://localhost$requestUri" &&
+          it.value().input.content == data &&
+          it.value().identifiers == [:]
+    })
+
+    where:
+    type        | id    | contentType       | data
+    'granule'   | 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
+    'granule'   | 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    'collection'| 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
+    'collection'| 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
+  }
+
+  def 'publishes valid #type metadata as #contentType with no id'() {
+    setup:
+    String requestUri = "/metadata/$type"
+    String method = 'POST'
+    def request = new MockHttpServletRequest(method,requestUri)
+    request.contentType = contentType
+
+    when:
+    publisher.publishMetadata(request, type, data)
+
+    then:
+    1 * mockProducer.send({
+      it instanceof ProducerRecord &&
+          it.key() instanceof String &&
+          it.value().input.contentType == contentType &&
+          it.value().input.method == method  &&
+          it.value().input.requestUrl == "http://localhost$requestUri" &&
+          it.value().input.content == data &&
+          it.value().identifiers == [:]
+    })
+
+    where:
+    type        |  contentType       | data
+    'granule'   | 'application/xml' | '<text>xml woooo....</text>'
+    'granule'   | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    'collection'| 'application/xml' | '<text>xml woooo....</text>'
+    'collection'| 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
+  }
+
+  def 'publishes nothing for invalid type'() {
+    setup:
+    String type = 'notarealtype'
+    String data = '{"message":"I am incorrect"}'
+    String requestUri = "/metadata/$type"
+    String method = 'POST'
+    def request = new MockHttpServletRequest(method,requestUri)
     request.contentType = 'application/json'
 
     when:
-    publisher.publishMetadata(request, type, data, id, source)
+    publisher.publishMetadata(request, type, data)
 
     then:
-    1 * mockProducer.send({it instanceof ProducerRecord && \
-      it.key().toString() == id.toString() && \
-      it.value().toString().contains(id.toString()) && \
-      it.value().toString().contains(request.contentType) && \
-      it.value().toString().contains( method )  && \
-      it.value().toString().contains( requestUrl )
-    })
-
-  }
-
-  def 'publishes valid collection xml metadata'(){
-    setup:
-    String type = 'collection'
-    String id = 'abc123'
-    String source = 'common-ingest'
-    String data = '<text>xml woooo....</text>'
-    String requestUrl = "https://localhost:8080/metadata/$source/$type/$id"
-    String method = 'POST'
-    String contentType = 'application/xml'
-    def request = new MockHttpServletRequest(method,requestUrl)
-    request.contentType = contentType
-
-    when:
-    publisher.publishMetadata(request, type, data, id, source)
-
-    then:
-    1 * mockProducer.send({it instanceof ProducerRecord && \
-      it.key().toString() == id.toString() && \
-      it.value().toString().contains(id.toString()) && \
-      it.value().toString().contains(contentType) && \
-      it.value().toString().contains( method )  && \
-      it.value().toString().contains( requestUrl )
-    })
-
-  }
-
-  def 'publishes valid collection json metadata'(){
-    setup:
-    String type = 'collection'
-    String id = 'abc123'
-    String source = 'common-ingest'
-    String data = "{\"trackingId\":\"ABC\", \"path\":\"/test/file.txt\"}"
-    String requestUrl = "https://localhost:8080/metadata/$source/$type/$id"
-    String method = 'POST'
-    String contentType = 'application/json'
-    def request = new MockHttpServletRequest(method, requestUrl)
-    request.contentType = contentType
-
-
-    when:
-    publisher.publishMetadata(request, type, data, id, source)
-
-    then:
-    1 * mockProducer.send({it instanceof ProducerRecord && \
-      it.key().toString() == id.toString() && \
-      it.value().toString().contains(id.toString()) && \
-      it.value().toString().contains(contentType) && \
-      it.value().toString().contains( method )  && \
-      it.value().toString().contains( requestUrl )
-    })
-
+    0 * mockProducer.send(_)
   }
 
 }
