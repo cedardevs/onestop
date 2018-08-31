@@ -29,11 +29,11 @@ class StreamManager {
 
     // Send messages directly to parser or to topic for SME functions to process
     Predicate<String, Map> toSMETopic = { String key, Map value ->
-      return isForSME(value, Constants.SPLIT_FIELD, Constants.SPLIT_VALUES)
+      return isForSME(value.input, Constants.SPLIT_FIELD, Constants.SPLIT_VALUES)
     }
 
     Predicate<String, Map> toParsing = { String key, Map value ->
-      return !isForSME(value, Constants.SPLIT_FIELD, Constants.SPLIT_VALUES)
+      return !isForSME(value.input, Constants.SPLIT_FIELD, Constants.SPLIT_VALUES)
     }
 
     //stream incoming granule and collection messages
@@ -46,10 +46,12 @@ class StreamManager {
     KStream toSmeFunction = smeBranches[1]
 
     // To SME functions:
-    toSmeFunction.mapValues({ v -> v.content } as ValueMapper<Map, Map>).to(Constants.SME_TOPIC, Produced.with(Serdes.String(), Serdes.String()))
+    toSmeFunction.mapValues({ v -> v.input.content } as ValueMapper<Map, Map>).to(Constants.SME_TOPIC, Produced.with(Serdes.String(), Serdes.String()))
     // Merge straight-to-parsing stream with topic SME granules write to:
     KStream<String, Map> unparsedGranules = builder.stream(Constants.UNPARSED_TOPIC)
-    KStream<String, Map> parsedNotAnalyzedGranules = toParsingFunction.merge(unparsedGranules)
+    KStream<String, Map> parsedNotAnalyzedGranules = toParsingFunction
+        .mapValues({ v -> v.input } as ValueMapper<Map, Map>)
+        .merge(unparsedGranules)
         .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v) } as ValueMapper<Map, Map>)
 
     // Branch again, sending errors to separate topic

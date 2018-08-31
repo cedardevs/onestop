@@ -28,8 +28,10 @@ class StreamManagerSpec extends Specification {
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def key = 'A123'
     def value = [
-        contentType: 'application/xml',
-        content: xml
+        input:[
+            contentType: 'application/xml',
+            content: xml
+        ]
     ]
 
     when:
@@ -115,9 +117,11 @@ class StreamManagerSpec extends Specification {
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
     def smeKey = 'sme'
     def smeValue = [
-        source: 'common-ingest',
-        contentType: 'application/xml',
-        content: xmlSME
+        input: [
+            source: 'common-ingest',
+            contentType: 'application/xml',
+            content: xmlSME
+        ]
     ]
 
     when:
@@ -127,7 +131,7 @@ class StreamManagerSpec extends Specification {
     // The record is in the SME topic
     def smeOutput = driver.readOutput(Constants.SME_TOPIC, DESERIALIZER, DESERIALIZER)
     smeOutput.key() == smeKey
-    smeOutput.value() == smeValue.content
+    smeOutput.value() == smeValue.input.content
 
     and:
     // There are no errors and nothing in the parsed topic
@@ -139,14 +143,16 @@ class StreamManagerSpec extends Specification {
     given:
     def xmlNonSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
-    def nonSMEKey = 'notSME'
-    def nonSMEValue = [
-        source: null,
-        contentType: 'application/xml',
-        content: xmlNonSME
+    def nonSMEInputKey = 'notSME'
+    def nonSMEInputValue = [
+        input: [
+            source: null,
+            contentType: 'application/xml',
+            content: xmlNonSME
+        ]
     ]
-    def smeKey = 'sme'
-    def smeValue = [
+    def unparsedKey = 'sme'
+    def unparsedValue = [
         source: 'common-ingest',
         contentType: 'application/xml',
         content: xmlSME
@@ -154,8 +160,8 @@ class StreamManagerSpec extends Specification {
 
     when:
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
-    driver.pipeInput(consumerFactory.create(Constants.RAW_GRANULES_TOPIC, nonSMEKey, nonSMEValue))
-    driver.pipeInput(consumerFactory.create(Constants.UNPARSED_TOPIC, smeKey, smeValue))
+    driver.pipeInput(consumerFactory.create(Constants.RAW_GRANULES_TOPIC, nonSMEInputKey, nonSMEInputValue))
+    driver.pipeInput(consumerFactory.create(Constants.UNPARSED_TOPIC, unparsedKey, unparsedValue))
 
     then:
     // Both records are in the parsed topic
@@ -164,18 +170,18 @@ class StreamManagerSpec extends Specification {
       def record = driver.readOutput(Constants.PARSED_TOPIC, DESERIALIZER, DESERIALIZER)
       results[record.key()] = record.value()
     }
-    results.containsKey(nonSMEKey)
-    results.containsKey(smeKey)
+    results.containsKey(nonSMEInputKey)
+    results.containsKey(unparsedKey)
 
     // Verify some parsed fields:
     and:
-    def nonSMEResult = new JsonSlurper().parseText(results[nonSMEKey] as String) as Map
+    def nonSMEResult = new JsonSlurper().parseText(results[nonSMEInputKey] as String) as Map
     nonSMEResult.containsKey('discovery')
     !nonSMEResult.containsKey('error')
     nonSMEResult.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
 
     and:
-    def smeResult = new JsonSlurper().parseText(results[smeKey] as String) as Map
+    def smeResult = new JsonSlurper().parseText(results[unparsedKey] as String) as Map
     smeResult.containsKey('discovery')
     !smeResult.containsKey('error')
     smeResult.discovery.fileIdentifier == 'dummy-file-identifier'
@@ -189,9 +195,11 @@ class StreamManagerSpec extends Specification {
     given:
     def key = 'failure101'
     def value = [
-        source: null,
-        contentType: 'text/csv',
-        content: 'it,does,not,parse'
+        input: [
+            source: null,
+            contentType: 'text/csv',
+            content: 'it,does,not,parse'
+        ]
     ]
 
     when:
