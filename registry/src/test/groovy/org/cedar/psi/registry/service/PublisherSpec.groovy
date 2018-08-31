@@ -6,6 +6,8 @@ import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.util.concurrent.Future
+
 
 @Unroll
 class PublisherSpec extends Specification {
@@ -34,7 +36,7 @@ class PublisherSpec extends Specification {
           it.value().input.contentType == contentType &&
           it.value().input.source == source &&
           it.value().identifiers == [(source): id]
-    })
+    }) >> Mock(Future)
 
     where:
     source          | type        | id    | contentType       | data
@@ -63,7 +65,7 @@ class PublisherSpec extends Specification {
           it.value().input.requestUrl == "http://localhost$requestUri" &&
           it.value().input.content == data &&
           it.value().identifiers == [:]
-    })
+    }) >> Mock(Future)
 
     where:
     type        | id    | contentType       | data
@@ -92,7 +94,7 @@ class PublisherSpec extends Specification {
           it.value().input.requestUrl == "http://localhost$requestUri" &&
           it.value().input.content == data &&
           it.value().identifiers == [:]
-    })
+    }) >> Mock(Future)
 
     where:
     type        |  contentType       | data

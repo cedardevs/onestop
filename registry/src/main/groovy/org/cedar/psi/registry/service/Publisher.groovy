@@ -41,7 +41,7 @@ class Publisher {
     Map value = buildInputTopicMessage(request, data, id, source)
     def record = new ProducerRecord<String, Map>(topic, key, value)
     log.info("Publishing: ${record}")
-    kafkaProducer.send(record)
+    kafkaProducer.send(record).get()
     return [
         status: 200,
         content: [id: key, type: type, attributes: value.subMap(['identifiers'])]
