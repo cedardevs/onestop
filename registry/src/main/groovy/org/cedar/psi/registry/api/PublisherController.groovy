@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST
 import static org.springframework.web.bind.annotation.RequestMethod.PUT
@@ -24,34 +25,21 @@ class PublisherController {
   @Autowired
   Publisher publisher
 
-  @RequestMapping(value = "/granule")
-  Map receiveGranule(HttpServletRequest request, @RequestBody String data) throws Exception {
-    publisher.publishMetadata(request, 'granule', data, null, null)
+  @RequestMapping(value = "/{type}")
+  Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type) throws Exception {
+    receiveContent(request, response, data, type, null, null)
   }
 
-  @RequestMapping(value = "/granule/{id}")
-  Map receiveGranule(HttpServletRequest request, @RequestBody String data, @PathVariable UUID id) throws Exception {
-    publisher.publishMetadata(request, 'granule', data, id as String, null)
+  @RequestMapping(value = "/{type}/{id}")
+  Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type, @PathVariable UUID id) throws Exception {
+    receiveContent(request, response, data, type, null, id)
   }
 
-  @RequestMapping(value = "/granule/{source}/{id}")
-  Map receiveGranuleFromSource(HttpServletRequest request, @RequestBody String data, @PathVariable String source, @PathVariable UUID id) throws Exception {
-    publisher.publishMetadata(request, 'granule', data, id as String, source)
-  }
-
-  @RequestMapping(value = "/collection")
-  Map receiveCollection(HttpServletRequest request, @RequestBody String data) throws Exception {
-    publisher.publishMetadata(request, 'collection', data, null, null)
-  }
-
-  @RequestMapping(value = "/collection/{id}")
-  Map receiveCollection(HttpServletRequest request, @RequestBody String data, @PathVariable UUID id) throws Exception {
-    publisher.publishMetadata(request, 'collection', data, id as String, null)
-  }
-
-  @RequestMapping(value = "/collection/{source}/{id}")
-  Map receiveCollectionFromSource(HttpServletRequest request, @RequestBody String data, @PathVariable String source, @PathVariable UUID id) throws Exception {
-    publisher.publishMetadata(request, 'collection', data, id as String, source)
+  @RequestMapping(value = "/{type}/{source}/{id}")
+  Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type, @PathVariable String source, @PathVariable UUID id) throws Exception {
+    def result = publisher.publishMetadata(request, type, data, id as String, source)
+    response.status = result.status as Integer
+    return result.content as Map
   }
 
 }

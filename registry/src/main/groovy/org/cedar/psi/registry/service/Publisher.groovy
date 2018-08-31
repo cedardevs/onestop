@@ -31,13 +31,21 @@ class Publisher {
 
   Map publishMetadata(HttpServletRequest request, String type, String data, String id = null, String source = null) {
     String topic = topicsByType[type]
-    if (!topic) { return }
+    if (!topic) {
+      return [
+          status: 404,
+          content: [errors:[[title: "Unsupported entity type: ${type}"]]]
+      ]
+    }
     String key = buildMessageKey(source, id)
     Map value = buildInputTopicMessage(request, data, id, source)
     def record = new ProducerRecord<String, Map>(topic, key, value)
     log.info("Publishing: ${record}")
     kafkaProducer.send(record)
-    return [id: key, type: type, attributes: value.subMap(['identifiers'])]
+    return [
+        status: 200,
+        content: [id: key, type: type, attributes: value.subMap(['identifiers'])]
+    ]
   }
 
   String buildMessageKey(String source, String id) {

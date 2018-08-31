@@ -12,6 +12,7 @@ import org.springframework.http.RequestEntity
 import org.springframework.kafka.test.context.EmbeddedKafka
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
@@ -193,6 +194,26 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.attributes.input.contentType == "application/xml"
     retrieveResponse.body.attributes.input.source == null
     retrieveResponse.body.attributes.identifiers == [:]
+  }
+
+  def 'returns 404 for unsupported type'() {
+    def restTemplate = new RestTemplate()
+    def collectionText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
+
+    when:
+    def createEntity = RequestEntity
+        .post("${baseUrl}/metadata/not-a-real-type/".toURI())
+        .contentType(MediaType.APPLICATION_XML)
+        .body(collectionText)
+    def createResponse = restTemplate.exchange(createEntity, Map)
+
+    then:
+    def exception = thrown(HttpClientErrorException)
+    exception.statusCode.value() == 404
+    def body = new JsonSlurper().parse(exception.responseBodyAsByteArray) as Map
+    body.errors instanceof List
+    body.errors[0] instanceof Map
+    body.errors[0].title instanceof CharSequence
   }
 
 }
