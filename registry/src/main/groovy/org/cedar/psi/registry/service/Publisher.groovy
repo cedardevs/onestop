@@ -29,7 +29,7 @@ class Publisher {
     this.kafkaProducer = kafkaProducer
   }
 
-  void publishMetadata(HttpServletRequest request, String type, String data, String id = null, String source = null) {
+  Map publishMetadata(HttpServletRequest request, String type, String data, String id = null, String source = null) {
     String topic = topicsByType[type]
     if (!topic) { return }
     String key = buildMessageKey(source, id)
@@ -37,6 +37,7 @@ class Publisher {
     def record = new ProducerRecord<String, Map>(topic, key, value)
     log.info("Publishing: ${record}")
     kafkaProducer.send(record)
+    return [id: key, type: type, attributes: value.subMap(['identifiers'])]
   }
 
   String buildMessageKey(String source, String id) {

@@ -30,17 +30,17 @@ class MetadataStore {
     def rawStore = lookupRawStoreName(type)
     def parsedStore = lookupParsedStoreName(type)
     if (!rawStore && !parsedStore) { return null }
-    def rawValue = rawStore ? getValueFromStore(rawStore, id) : null
-    def parsedValue = parsedStore ? getValueFromStore(parsedStore, id) : null
+    Map rawValue = rawStore ? getValueFromStore(rawStore, id) : null
+    Map parsedValue = parsedStore ? getValueFromStore(parsedStore, id) : null
     if (!rawValue && !parsedValue) { return null }
-    return [id: id, type: type, attributes: [raw: rawValue, parsed: parsedValue]]
+    return [id: id, type: type, attributes: mergeAttributes(rawValue, parsedValue)]
   }
 
-  private getValueFromStore(String storeName, String id) {
+  private Map getValueFromStore(String storeName, String id) {
     try {
       def store = metadataStreamService.streamsApp.store(storeName, QueryableStoreTypes.keyValueStore())
       if (!store) { return null }
-      return store.get(id)
+      return store.get(id) as Map
     }
     catch (Exception e) {
       log.error("Failed to retrieve value with id [${id}] from state store [${storeName}]", e)
@@ -56,6 +56,31 @@ class MetadataStore {
   private static String lookupParsedStoreName(String type) {
     return type == 'granule' ? PARSED_GRANULE_STORE :
         type == 'collection' ? PARSED_COLLECTION_STORE : null
+  }
+
+  /**
+   * this is not a full recursive merge
+   * it combines maps and lists with the same key in each input map
+   */
+  private Map mergeAttributes(Map raw, Map parsed) {
+    def result = [:]
+    if (raw) {
+      result.putAll(raw)
+    }
+    if (parsed) {
+      parsed.each { k, v ->
+        if (result[k] instanceof Map && v instanceof Map) {
+          result[k] = (result[k] as Map) + (v as Map)
+        }
+        else if (result[k] instanceof List && v instanceof List) {
+          result[k] = (result[k] as List) + (v as List)
+        }
+        else {
+          result[k] = v
+        }
+      }
+    }
+    return result
   }
 
 }

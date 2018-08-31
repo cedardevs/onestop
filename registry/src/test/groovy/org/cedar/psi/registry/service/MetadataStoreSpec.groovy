@@ -106,17 +106,14 @@ class MetadataStoreSpec extends Specification {
     result == [
         id: testId,
         type: 'granule',
-        attributes: [
-            raw: rawValue,
-            parsed: parsedValue
-        ]
+        attributes: combined
     ]
 
     where:
-    rawValue            | parsedValue
-    ["hello": "world"]  | null
-    null                | ["answer": 42]
-    ["hello": "world"]  | ["answer": 42]
+    rawValue            | parsedValue   | combined
+    ["hello": "world"]  | null          | ["hello": "world"]
+    null                | ["answer": 42]| ["answer": 42]
+    ["hello": "world"]  | ["answer": 42]| ["hello": "world", "answer": 42]
   }
 
 }

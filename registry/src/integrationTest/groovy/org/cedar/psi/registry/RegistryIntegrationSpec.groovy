@@ -43,7 +43,7 @@ class RegistryIntegrationSpec extends Specification {
   }
 
 
-  def 'can post then retrieve granule info'() {
+  def 'can post then retrieve granule info with source identifier'() {
     def restTemplate = new RestTemplate()
     def granuleText = ClassLoader.systemClassLoader.getResourceAsStream('test_granule.json').text
     def granuleMap = new JsonSlurper().parseText(granuleText) as Map
@@ -54,46 +54,50 @@ class RegistryIntegrationSpec extends Specification {
         .contentType(MediaType.APPLICATION_JSON)
         .body(granuleText)
     def createResponse = restTemplate.exchange(createEntity, Map)
+    def granuleId = createResponse.body.id
 
     then:
+    granuleId instanceof String
     createResponse.statusCode == HttpStatus.OK
 
     when:
     sleep(200)
     def retrieveEntity = RequestEntity
-        .get("${baseUrl}/metadata/granule/${granuleMap.trackingId}".toURI())
+        .get("${baseUrl}/metadata/granule/${granuleId}".toURI())
         .build()
     def retrieveResponse = restTemplate.exchange(retrieveEntity, Map)
 
     then:
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body.id == granuleMap.trackingId
+    retrieveResponse.body.id == granuleId
     retrieveResponse.body.type == 'granule'
-    retrieveResponse.body.attributes.raw.content == granuleText
-    retrieveResponse.body.attributes.raw.contentType == "application/json"
-    retrieveResponse.body.attributes.raw.source == "common-ingest"
+    retrieveResponse.body.attributes.input.content == granuleText
+    retrieveResponse.body.attributes.input.contentType == "application/json"
+    retrieveResponse.body.attributes.input.source == "common-ingest"
+    retrieveResponse.body.attributes.identifiers.'common-ingest' == granuleMap.trackingId
 
     and: // let's verify the full response just this once
     retrieveResponse.body == [
-        id: granuleMap.trackingId,
+        id: granuleId,
         type: 'granule',
         attributes: [
-            raw: [
+            input: [
                 "content": granuleText,
                 "contentType": "application/json",
                 "host": "127.0.0.1",
-                "id": granuleMap.trackingId,
                 "method": "POST",
                 "protocol": "HTTP/1.1",
                 "requestUrl": "${baseUrl}/metadata/granule/common-ingest/${granuleMap.trackingId}",
                 "source": "common-ingest"
             ],
-            parsed: null
+            identifiers: [
+                'common-ingest': granuleMap.trackingId
+            ]
         ]
     ]
   }
 
-  def 'can post granule iso then get it back out'() {
+  def 'can post then retrieve granule iso with an existing key'() {
     def restTemplate = new RestTemplate()
     def granuleText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
     def granuleId = UUID.randomUUID()
@@ -120,16 +124,16 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.id == granuleId  as String
     retrieveResponse.body.type == 'granule'
-    retrieveResponse.body.attributes.raw.content == granuleText
-    retrieveResponse.body.attributes.raw.contentType == "application/xml"
-    retrieveResponse.body.attributes.raw.source == null
+    retrieveResponse.body.attributes.input.content == granuleText
+    retrieveResponse.body.attributes.input.contentType == "application/xml"
+    retrieveResponse.body.attributes.input.source == null
+    retrieveResponse.body.attributes.identifiers == [:]
   }
 
-  def 'can post then retrieve collection info'() {
+  def 'can post then retrieve collection info with an existing key'() {
     def restTemplate = new RestTemplate()
     def collectionText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
     def collectionId = UUID.randomUUID()
-
 
     when:
     def createEntity = RequestEntity
@@ -152,9 +156,43 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.id == collectionId as String
     retrieveResponse.body.type == 'collection'
-    retrieveResponse.body.attributes.raw.content == collectionText
-    retrieveResponse.body.attributes.raw.contentType == "application/xml"
-    retrieveResponse.body.attributes.raw.source == null
+    retrieveResponse.body.attributes.input.content == collectionText
+    retrieveResponse.body.attributes.input.contentType == "application/xml"
+    retrieveResponse.body.attributes.input.source == null
+    retrieveResponse.body.attributes.identifiers == [:]
+  }
+
+  def 'can post then retrieve collection info with no key'() {
+    def restTemplate = new RestTemplate()
+    def collectionText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
+
+    when:
+    def createEntity = RequestEntity
+        .post("${baseUrl}/metadata/collection/".toURI())
+        .contentType(MediaType.APPLICATION_XML)
+        .body(collectionText)
+    def createResponse = restTemplate.exchange(createEntity, Map)
+    def collectionId = createResponse.body.id
+
+    then:
+    collectionId instanceof String
+    createResponse.statusCode == HttpStatus.OK
+
+    when:
+    sleep(200)
+    def retrieveEntity = RequestEntity
+        .get("${baseUrl}/metadata/collection/${collectionId}".toURI())
+        .build()
+    def retrieveResponse = restTemplate.exchange(retrieveEntity, Map)
+
+    then:
+    retrieveResponse.statusCode == HttpStatus.OK
+    retrieveResponse.body.id == collectionId as String
+    retrieveResponse.body.type == 'collection'
+    retrieveResponse.body.attributes.input.content == collectionText
+    retrieveResponse.body.attributes.input.contentType == "application/xml"
+    retrieveResponse.body.attributes.input.source == null
+    retrieveResponse.body.attributes.identifiers == [:]
   }
 
 }
