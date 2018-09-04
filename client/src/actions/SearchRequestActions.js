@@ -245,3 +245,22 @@ const buildGetAction = (
       .catch(jsError => errorHandler(dispatch, jsError))
   }
 }
+
+export const getSitemap = () => {
+  return buildSitemapAction()
+}
+
+const buildSitemapAction = () => {
+  return (dispatch, getState) => {
+    let state = getState()
+
+    const endpoint = getApiPath(state) + '/sitemap.xml'
+    const fetchParams = {
+      method: 'GET',
+    }
+
+    return fetch(endpoint, fetchParams)
+      .then(response => checkForErrors(response))
+      .then(response => (window.location.href = response.url))
+  }
+}

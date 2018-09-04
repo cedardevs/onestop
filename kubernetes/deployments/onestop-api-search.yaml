@@ -15,7 +15,7 @@ spec:
       port: 8097
       nodePort: 30097
   type: NodePort
-  
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -70,6 +70,9 @@ metadata:
     devmode: "true"
 data:
   application.yaml: |
+    spring.profiles.include:
+      - default
+      - feature-trending-search
     ui:
       banner:
         message: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
@@ -86,3 +89,12 @@ data:
           - title: Climate Data Record (CDR)
             searchTerm: '"NOAA Climate Data Record"'
             imageUrl: "https://www.ncdc.noaa.gov/sites/default/files/styles/cdr-full-width/public/cdr/AVHRRSurfaceReflectance.png"
+    ---
+    spring:
+      profiles: feature-trending-search
+    trending:
+      additionalBlacklistedSearchTerms:
+      - +nwlon +ports
+      - '"digital elevation"'
+      - '"Gridded Satellite GOES"'
+      - '"NOAA Climate Data Record"'

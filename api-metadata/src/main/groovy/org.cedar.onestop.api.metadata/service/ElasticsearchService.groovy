@@ -31,6 +31,12 @@ class ElasticsearchService {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
   private String FLAT_GRANULE_SEARCH_INDEX
 
+  @Value('${features.sitemap}')
+  private Boolean SITEMAP_ENABLED
+
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
+  private String SITEMAP_INDEX
+
   @Value('${elasticsearch.index.prefix:}')
   String PREFIX
 
@@ -62,6 +68,9 @@ class ElasticsearchService {
     ensureIndex(COLLECTION_SEARCH_INDEX)
     ensureIndex(GRANULE_SEARCH_INDEX)
     ensureIndex(FLAT_GRANULE_SEARCH_INDEX)
+    if(SITEMAP_ENABLED) {
+      ensureIndex(SITEMAP_INDEX)
+    }
   }
 
   public void ensurePipelines() {
@@ -114,6 +123,9 @@ class ElasticsearchService {
     drop(COLLECTION_SEARCH_INDEX)
     drop(GRANULE_SEARCH_INDEX)
     drop(FLAT_GRANULE_SEARCH_INDEX)
+    if(SITEMAP_ENABLED) {
+      drop(SITEMAP_INDEX)
+    }
   }
 
   public void drop(String indexName) {
@@ -182,5 +194,4 @@ class ElasticsearchService {
     }
     return result
   }
-
 }

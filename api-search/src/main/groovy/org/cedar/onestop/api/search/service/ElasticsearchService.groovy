@@ -26,6 +26,9 @@ class ElasticsearchService {
   @Value('${elasticsearch.index.search.flattened-granule.name}')
   private String FLATTENED_GRANULE_SEARCH_INDEX
 
+  @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
+  private String SITEMAP_INDEX
+
   @Value('${elasticsearch.index.universal-type}')
   private String TYPE
 
@@ -43,15 +46,15 @@ class ElasticsearchService {
   }
 
   Map searchFlattenedGranules(Map searchParams) {
-    return queryElasticsearch(searchParams, PREFIX+FLATTENED_GRANULE_SEARCH_INDEX)
+    return searchFromRequest(searchParams, PREFIX+FLATTENED_GRANULE_SEARCH_INDEX)
   }
 
   Map searchGranules(Map searchParams) {
-    return queryElasticsearch(searchParams, PREFIX+GRANULE_SEARCH_INDEX)
+    return searchFromRequest(searchParams, PREFIX+GRANULE_SEARCH_INDEX)
   }
 
   Map searchCollections(Map searchParams) {
-    return queryElasticsearch(searchParams, PREFIX+COLLECTION_SEARCH_INDEX)
+    return searchFromRequest(searchParams, PREFIX+COLLECTION_SEARCH_INDEX)
   }
 
   Map getCollectionById(String id) {
@@ -82,6 +85,31 @@ class ElasticsearchService {
   Map getGranuleById(String id) {
     return getById(GRANULE_SEARCH_INDEX, id)
   }
+
+  Map getSitemapById(String id) {
+    return getById(SITEMAP_INDEX, id)
+  }
+
+  Map searchSitemap() {
+    def requestBody = [
+      _source: ["lastUpdatedDate",]
+    ]
+    String searchEndpoint = "${SITEMAP_INDEX}/_search"
+    def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
+    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
+
+    def result = [
+      data: searchResponse.hits.hits.collect {
+        [id: it._id, type: determineType(it._index), attributes: it._source]
+      },
+      meta: [
+          took : searchResponse.took,
+          total: searchResponse.hits.total
+      ]
+    ]
+    return result
+  }
+
 
   Map getFlattenedGranuleById(String id) {
     return getById(FLATTENED_GRANULE_SEARCH_INDEX, id)
@@ -142,13 +170,20 @@ class ElasticsearchService {
     }
   }
 
-  private Map queryElasticsearch(Map params, String index) {
+  Map queryElasticsearch(Map query, String index) {
+    def headers = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
+    Response response = restClient.performRequest('GET', "${index}/_search", Collections.EMPTY_MAP, headers)
+
+    return parseResponse(response)
+  }
+
+  private Map searchFromRequest(Map params, String index) {
     // TODO: does this parse step need to change based on new different endpoints?
     def query = searchRequestParserService.parseSearchQuery(params)
     def getFacets = params.facets as boolean
     def pageParams = params.page as Map
 
-    def requestBody = addAggregations(query, getFacets)
+    Map requestBody = addAggregations(query, getFacets)
 
     // default summary to true
     def summary = params.summary == null ? true : params.summary as boolean
@@ -156,14 +191,11 @@ class ElasticsearchService {
       requestBody = addSourceFilter(requestBody)
     }
 
-    String searchEndpoint = "${index}/_search"
-
     requestBody.size = pageParams?.max ?: 10
     requestBody.from = pageParams?.offset ?: 0
     requestBody = pruneEmptyElements(requestBody)
 
-    def searchRequest = new NStringEntity(JsonOutput.toJson(requestBody), ContentType.APPLICATION_JSON)
-    def searchResponse = parseResponse(restClient.performRequest("GET", searchEndpoint, Collections.EMPTY_MAP, searchRequest))
+    Map searchResponse = queryElasticsearch(requestBody, index)
 
     def result = [
         data: searchResponse.hits.hits.collect {

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.elasticsearch.client.RestClient
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -44,14 +45,24 @@ class ETLIntegrationTests extends Specification {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
   private String FLAT_GRANULE_SEARCH_INDEX
 
+  @Value('${elasticsearch.index.prefix:}')
+  String PREFIX
+
+  @Value('${elasticsearch.index.universal-type}')
+  private String TYPE
+
   private final String COLLECTION_TYPE = 'collection'
   private final String GRANULE_TYPE = 'granule'
   private final String FLAT_GRANULE_TYPE = 'flattenedGranule'
 
+  @Autowired
+  RestClient restClient
+
   void setup() {
-    elasticsearchService.dropStagingIndices()
     elasticsearchService.dropSearchIndices()
+    elasticsearchService.dropStagingIndices()
     elasticsearchService.ensureIndices()
+    refreshIndices()
   }
 
   def 'update does nothing when staging is empty'() {
@@ -297,6 +308,10 @@ class ETLIntegrationTests extends Specification {
     ]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
     return response.hits.hits.collectEntries { [(it._source.fileIdentifier): it._version] }
+  }
+
+  private refreshIndices() {
+    restClient.performRequest('POST', '_refresh')
   }
 
 }

@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Profile
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
 
-
 @Profile("integration")
 @TestConfiguration
 class IntegrationTestConfig {
