@@ -77,8 +77,6 @@ class MetadataStreamService {
     }
   }
 
-  static int DEFAULT_NUM_PARTITIONS = 1
-  static short DEFAULT_REPLICATION_FACTOR = 1
   static Map<String, Map> topicConfigs = [
       (Topics.RAW_GRANULE_TOPIC)        : null,
       (Topics.RAW_COLLECTION_TOPIC)     : null,
@@ -95,7 +93,7 @@ class MetadataStreamService {
     def currentTopics = adminClient.listTopics().names().get()
     def missingTopics = topicConfigs.findAll({ !currentTopics.contains(it.key) })
     def newTopics = missingTopics.collect { name, config ->
-      return new NewTopic(name, DEFAULT_NUM_PARTITIONS, DEFAULT_REPLICATION_FACTOR).configs(config)
+      return new NewTopic(name, Topics.DEFAULT_NUM_PARTITIONS, Topics.DEFAULT_REPLICATION_FACTOR).configs(config)
     }
     def result = adminClient.createTopics(newTopics)
     result.all().get()
