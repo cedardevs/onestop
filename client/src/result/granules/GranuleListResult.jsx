@@ -65,6 +65,16 @@ const styleFocusDefault = {
   border: '.1em dashed white',
 }
 
+const styleBadgeLink = {
+  textDecoration: 'none',
+  display: 'inline-flex'
+}
+
+const styleBadgeLinkFocused = {
+  outline: '2px dashed white',
+  outlineOffset: '0.105em'
+}
+
 class ListResult extends React.Component {
 
   componentWillMount() {
@@ -143,7 +153,8 @@ class ListResult extends React.Component {
           key={url}
           aria-labelledby={labelledBy}
           target="_blank"
-          style={{textDecoration: 'none', display: 'inline-flex'}}
+          style={styleBadgeLink}
+          styleFocus={styleBadgeLinkFocused}
         >
           <div style={util.styleBadge(protocol)} aria-hidden="true">
             {util.renderBadgeIcon(protocol)}

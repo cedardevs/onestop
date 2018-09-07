@@ -23,8 +23,8 @@ const styleExpandableWrapper = {
 }
 
 const styleExpandableHeadingFocused = {
-  background:'#2C71A2',
-  color: '#FFF'
+  textDecoration: 'underline',
+  outline: '2px dashed black'
 }
 
 const styleExpandableHeading = {
@@ -48,7 +48,7 @@ const styleExpandableContent = {
 }
 
 const styleSummary = {
-  padding: '0', //'0.309em'
+  padding: '0',
 }
 
 const styleDetail = {
@@ -106,6 +106,16 @@ const stylePreviewMap = {
   paddingTop: '0.25em',
 }
 
+const styleBadgeLink = {
+  textDecoration: 'none',
+  display: 'inline-flex'
+}
+
+const styleBadgeLinkFocused = {
+  outline: '2px dashed black',
+  outlineOffset: '0.105em'
+}
+
 export default class CartItem extends React.Component {
 
   renderBadge = (link, itemId) => {
@@ -124,7 +134,8 @@ export default class CartItem extends React.Component {
               key={url}
               aria-labelledby={labelledBy}
               target="_blank"
-              style={{textDecoration: 'none', display: 'inline-flex'}}
+              style={styleBadgeLink}
+              styleFocus={styleBadgeLinkFocused}
           >
             <div style={util.styleBadge(protocol)} aria-hidden="true">
               {util.renderBadgeIcon(protocol)}
