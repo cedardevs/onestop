@@ -7,7 +7,6 @@ import { boxShadow } from '../common/defaultStyles'
 import {identifyProtocol} from '../utils/resultUtils'
 
 import mockCartItems from '../../test/cart/mockCartItems'
-import AccessProtocolFilter from './AccessProtocolFilter'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -22,6 +21,8 @@ const styleCartListWrapper = {
   boxShadow: boxShadow,
   marginRight: '3px',
   marginLeft: '1px',
+  paddingTop: '1.618em',
+  paddingBottom: '1.618em',
   backgroundColor: 'white',
   color: '#222',
 }
@@ -123,10 +124,6 @@ export default class Cart extends React.Component {
           />
 
           <div style={styleCartListWrapper}>
-            <div>
-              <h3>Access Protocols:</h3>
-              <AccessProtocolFilter usedProtocols={usedProtocols}/>
-            </div>
             <ListView
                 items={mockCartItems}
                 loading={!!loading}
