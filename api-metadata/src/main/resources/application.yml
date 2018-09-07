@@ -67,3 +67,11 @@ elasticsearch:
         name: staging_granule
 
 info.version: ${version}
+
+kafka:
+  bootstrap:
+    servers: localhost:9092
+  topic:
+    PARSED_GRANULES_TOPIC: 'metadata-aggregator-parsed-granules-changelog'
+    PARSED_COLLECTIONS_TOPIC: 'metadata-aggregator-parsed-collections-changelog'
+#  topics: metadata-aggregator-parsed-granules-changelog, metadata-aggregator-parsed-collections-changelog
