@@ -101,3 +101,7 @@ Temporary Items
 
 # files created by promote script
 *--
+
+#Files created by eclipse plugin in VS Code
+.project
+.classpath

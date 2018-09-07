@@ -12,8 +12,8 @@ spec:
   ports:
     - name: http
       port: 9200
-      targetPort: 9200
-  type: ClusterIP
+      nodePort: 30092
+  type: NodePort
 ---
 apiVersion: v1
 kind: Service
@@ -28,7 +28,6 @@ spec:
   ports:
     - name: transport
       port: 9300
-      targetPort: 9300
   clusterIP: None
 ---
 apiVersion: apps/v1

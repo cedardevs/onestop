@@ -4,15 +4,15 @@ kind: Service
 metadata:
   name: onestop-geoportal-search
   labels:
+    environment: dev
     tier: "backend"
-    devmode: "false"
+    devmode: "true"
 spec:
   selector:
     app: onestop-geoportal-search
   ports:
     - name: http
       port: 8080
-      targetPort: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -20,7 +20,7 @@ metadata:
   name: onestop-geoportal-search
   labels:
     tier: "backend"
-    devmode: "false"
+    devmode: "true"
 spec:
   replicas: 1
   selector:

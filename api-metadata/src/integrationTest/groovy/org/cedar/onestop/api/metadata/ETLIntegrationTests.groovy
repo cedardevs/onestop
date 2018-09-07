@@ -1,18 +1,24 @@
 package org.cedar.onestop.api.metadata
 
+import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityConfig
+import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled
 import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
+import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.elasticsearch.client.RestClient
+import org.springframework.test.context.TestPropertySource
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
 @ActiveProfiles("integration")
-@SpringBootTest(classes = [Application, IntegrationTestConfig])
+@SpringBootTest(classes = [Application, IntegrationTestConfig, SpringSecurityDisabled, SpringSecurityConfig, IdentityProviderConfig])
+@TestPropertySource(locations = ["classpath:test-securitydisabled.yml"])
 class ETLIntegrationTests extends Specification {
 
   @Autowired
@@ -39,14 +45,24 @@ class ETLIntegrationTests extends Specification {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
   private String FLAT_GRANULE_SEARCH_INDEX
 
+  @Value('${elasticsearch.index.prefix:}')
+  String PREFIX
+
+  @Value('${elasticsearch.index.universal-type}')
+  private String TYPE
+
   private final String COLLECTION_TYPE = 'collection'
   private final String GRANULE_TYPE = 'granule'
   private final String FLAT_GRANULE_TYPE = 'flattenedGranule'
 
+  @Autowired
+  RestClient restClient
+
   void setup() {
-    elasticsearchService.dropStagingIndices()
     elasticsearchService.dropSearchIndices()
+    elasticsearchService.dropStagingIndices()
     elasticsearchService.ensureIndices()
+    refreshIndices()
   }
 
   def 'update does nothing when staging is empty'() {
@@ -292,6 +308,10 @@ class ETLIntegrationTests extends Specification {
     ]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
     return response.hits.hits.collectEntries { [(it._source.fileIdentifier): it._version] }
+  }
+
+  private refreshIndices() {
+    restClient.performRequest('POST', '_refresh')
   }
 
 }

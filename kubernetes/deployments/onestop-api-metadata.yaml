@@ -13,7 +13,9 @@ spec:
   ports:
     - name: http
       port: 8098
-      targetPort: 8098
+      nodePort: 30098
+  type: NodePort
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -33,7 +35,7 @@ spec:
     spec:
       containers:
       - name: onestop-api-metadata
-        image: cedardevs/onestop-api-metadata:latest
+        image: cedardevs/onestop-api-metadata
         env:
         - name: ELASTICSEARCH_HOST
           value: elasticsearch
@@ -41,6 +43,34 @@ spec:
           value: "9200"
         - name: LOGGING_LEVEL_ORG.CEDAR.ONESTOP.API
           value: DEBUG
+        - name: ETL_SITEMAP_DELAY_INITIAL
+          value: "60000"
+        - name: KEYSTORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: keystore
+              key: keystore_password
+        - name: KEYSTORE_ALIAS
+          valueFrom:
+            secretKeyRef:
+              name: keystore
+              key: keystore_alias
+        - name: KEY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: keystore
+              key: key_password
         ports:
         - containerPort: 8098
+        volumeMounts:
+          - name: keystore
+            mountPath: "/etc/api-metadata/keystore.jks"
+            subPath: keystore.jks
       restartPolicy: Always
+      volumes:
+        - name: keystore
+          secret:
+            secretName: keystore
+            items:
+              - key: keystore.jks
+                path: keystore.jks

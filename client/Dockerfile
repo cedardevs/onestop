@@ -2,6 +2,8 @@ FROM nginx:alpine
 ARG VCS_REF
 ARG VERSION
 ARG DATE
+ARG TAR_NAME
+
 # Install curl (debugging only; remove later)
 #RUN apt-get update && apt-get install -y --no-install-recommends curl \
 #    && rm -rf /var/lib/apt/lists/*
@@ -16,7 +18,7 @@ LABEL org.label-schema.vcs-ref=${VCS_REF}
 
 EXPOSE 80
 
-COPY build/dist /usr/share/nginx/html
+ADD build/libs/${TAR_NAME} /usr/share/nginx/html
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 WORKDIR /usr/app
 COPY docker/entrypoint.sh /usr/app

@@ -6,10 +6,14 @@ import {
   loadCollections,
   loadGranulesList,
 } from './actions/FlowActions'
-import {isDetailPage, isGranuleListPage} from './utils/urlUtils'
+import {getSitemap} from './actions/SearchRequestActions'
+import {isDetailPage, isGranuleListPage, isSitemap} from './utils/urlUtils'
 
 const loadFromUrl = (path, newQueryString) => {
-  if (isDetailPage(path)) {
+  if (isSitemap(path)) {
+    store.dispatch(getSitemap())
+  }
+  else if (isDetailPage(path)) {
     store.dispatch(loadDetails(path))
   }
   else if (isGranuleListPage(path)) {

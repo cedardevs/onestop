@@ -1,3 +1,11 @@
+spring.profiles.include:
+  - default
+
+# comma-delimited string (no spaces)
+# auth feature toggle: securityenabled | securitydisabled
+# other features: ...
+spring.profiles.active: "securitydisabled"
+
 server:
   port: 8098
   servlet:
@@ -10,18 +18,29 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
+features.secure.upload: true
+features.sitemap: false
+
+etl:
+  sitemap:
+    delay:
+      initial: 600000
+      fixed: 604800000
+    scroll-size: 10000
+    collections-per-submap: 40000
+
 logging:
   level:
-      org.cedar.onestop.api.search: INFO
-      org.gradle: WARN
-      org.apache.http: WARN
-      org.apache.http.wire: WARN
-      org.apache.http.headers: WARN
-      groovyx.net.http: WARN
-      groovyx.net.http.HttpURLClient: WARN
-      org.springframework: INFO
-      org.springframework.amqp: WARN
-      org.hibernate: WARN
+    org.cedar.onestop.api.metadata: INFO
+    org.gradle: WARN
+    org.apache.http: WARN
+    org.apache.http.wire: WARN
+    org.apache.http.headers: WARN
+    groovyx.net.http: WARN
+    groovyx.net.http.HttpURLClient: WARN
+    org.springframework: INFO
+    org.springframework.amqp: WARN
+    org.hibernate: WARN
 
 elasticsearch:
   version: ${esVersion}
@@ -30,6 +49,8 @@ elasticsearch:
   max-tasks: 10
   index:
     universal-type: doc
+    sitemap:
+      name: sitemap
     search:
       collection:
         name: search_collection

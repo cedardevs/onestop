@@ -57,11 +57,6 @@ bootWar {
   onlyIf { !tasks.getByName('war').state.upToDate }
 }
 
-bootRun {
-  dependsOn ':dockerComposeInfraStart'
-  finalizedBy ':dockerComposeInfraStop'
-}
-
 configurations.configure {
   integrationTestCompile.extendsFrom testCompile
   integrationTestRuntime.extendsFrom testRuntime
@@ -117,6 +112,6 @@ docker {
 }
 
 BuildDockerImage.dependsOn(bootWar)
-assemble.dependsOn(BuildDockerImage)
+// assemble.dependsOn(BuildDockerImage)
 PublishDockerImage.dependsOn(BuildDockerImage)
 publish.dependsOn PublishDockerImage
