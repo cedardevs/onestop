@@ -44,7 +44,11 @@ const styleTitle = {
 }
 
 const styleExpandableContent = {
-  background: '#EEE',
+
+}
+
+const styleExpandableContentOpen = {
+  // borderTop: '2px dashed #222'
 }
 
 const styleSummary = {
@@ -252,6 +256,7 @@ export default class CartItem extends React.Component {
             styleHeading={styleExpandableHeading}
             content={detailView}
             styleContent={styleExpandableContent}
+            styleContentOpen={styleExpandableContentOpen}
             value={itemId}
             // open={this.state.citationExpandable}
             // onToggle={handleExpandableToggle}

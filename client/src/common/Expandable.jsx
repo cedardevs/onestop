@@ -162,6 +162,7 @@ export default class Expandable extends React.Component {
       styleHeading,
       heading,
       styleContent,
+      styleContentOpen,
       content,
       borderRadius,
       styleArrow,
@@ -197,6 +198,7 @@ export default class Expandable extends React.Component {
     const styleContentMerged = {
       ...styleContentDefault(open, display, borderRadius),
       ...styleContent,
+      ...(open ? styleContentOpen : {})
     }
 
     const styleArrowMerged = {
