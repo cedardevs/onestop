@@ -12,9 +12,13 @@ import MapThumbnail from '../common/MapThumbnail'
 import * as util from '../utils/resultUtils'
 import { boxShadow } from '../common/defaultStyles'
 
-const styleExpandableWrapper = {
-  margin: '0 0 0.618em 0',
+const styleWrapper = {
+  margin:'0 1.618em 0.618em 0',
   boxShadow: boxShadow,
+  borderRadius: '0 0.309em 0.309em 0',
+}
+
+const styleExpandableWrapper = {
   width: '100%'
 }
 
@@ -76,8 +80,19 @@ const styleSectionHeadingTop = {
 }
 
 const styleDeleteButton = {
-  borderRadius: '1em',
-  padding: '0 0.309em'
+  boxShadow: boxShadow,
+  padding: '0.309em 0.618em',
+  borderRadius: '0 0.309em 0.309em 0',
+  background: '#851A11'
+}
+
+const styleDeleteButtonHover = {
+  background: 'linear-gradient(black, #851A11)'
+}
+
+const styleDeleteButtonFocus = {
+  background: 'linear-gradient(black, #851A11)',
+  outline: '2px dashed black'
 }
 
 const styleDeleteIcon = {
@@ -168,17 +183,6 @@ export default class CartItem extends React.Component {
         </div>
     )
 
-    const buttonDelete = (
-        <Button
-            key={"cartItemDelete"}
-            style={styleDeleteButton}
-            title="Shopping Cart"
-            icon={trash}
-            styleIcon={styleDeleteIcon}
-            onClick={() => { console.log("click on delete button") }}
-        />
-    )
-
     const mapView = (
         <div aria-hidden={true}>
           <h3 style={styleSectionHeadingTop}>Map:</h3>
@@ -190,7 +194,6 @@ export default class CartItem extends React.Component {
 
     const left = (
         <div key="overview-left" style={styleLeft}>
-          {buttonDelete}
           {mapView}
         </div>
     )
@@ -225,23 +228,41 @@ export default class CartItem extends React.Component {
         </div>
     )
 
+    const expandable = (
+        <Expandable
+            key={"cartItemExpandable"}
+            styleHeadingFocus={styleExpandableHeadingFocused}
+            styleWrapper={styleExpandableWrapper}
+            showArrow={true}
+            arrowTextClosed={"show details"}
+            arrowTextOpened={"hide details"}
+            alignArrow={true}
+            heading={summaryView}
+            styleHeading={styleExpandableHeading}
+            content={detailView}
+            styleContent={styleExpandableContent}
+            value={itemId}
+            // open={this.state.citationExpandable}
+            // onToggle={handleExpandableToggle}
+        />
+    )
+
+    const buttonDelete = (
+        <Button
+            key={"cartItemDelete"}
+            style={styleDeleteButton}
+            styleHover={styleDeleteButtonHover}
+            styleFocus={styleDeleteButtonFocus}
+            title="Shopping Cart"
+            icon={trash}
+            styleIcon={styleDeleteIcon}
+            onClick={() => { console.log(`click on delete button: ${itemId}`) }}
+        />
+    )
+
     return (
-        <div style={{marginRight:'1.618em'}}>
-          <Expandable
-              styleHeadingFocus={styleExpandableHeadingFocused}
-              styleWrapper={styleExpandableWrapper}
-              showArrow={true}
-              arrowTextClosed={"show details"}
-              arrowTextOpened={"hide details"}
-              alignArrow={true}
-              heading={summaryView}
-              styleHeading={styleExpandableHeading}
-              content={detailView}
-              styleContent={styleExpandableContent}
-              value={itemId}
-              // open={this.state.citationExpandable}
-              // onToggle={handleExpandableToggle}
-          />
+        <div style={styleWrapper}>
+          <FlexRow items={[expandable, buttonDelete]} />
         </div>
     )
   }
