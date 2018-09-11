@@ -4,7 +4,6 @@ import groovy.json.JsonOutput
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import java.time.format.DateTimeParseException
 
 @Unroll
 class ISOParserSpec extends Specification {
@@ -12,11 +11,13 @@ class ISOParserSpec extends Specification {
   // https://github.com/cedardevs/onestop/blob/master/api-metadata/src/test/groovy/org/cedar/onestop/api/metadata/service/MetadataParserTest.groovy
 
   def "XML metadata record is correctly parsed in full"() {
+    // FIXME
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
     def parsedXml = ISOParser.parseXMLMetadataToMap(document)
+    println(JsonOutput.prettyPrint(JsonOutput.toJson(parsedXml)))
 
     then:
     parsedXml.fileIdentifier == 'gov.super.important:FILE-ID'
@@ -706,6 +707,7 @@ class ISOParserSpec extends Specification {
   }
 
   def "Responsible parties are correctly parsed"() {
+    // FIXME
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
