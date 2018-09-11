@@ -1,6 +1,7 @@
 package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,57 +14,90 @@ import org.xml.sax.SAXException
 @Slf4j
 @Service
 class MetadataManagementService {
-
+  
   @Value('${elasticsearch.index.search.collection.name}')
   String COLLECTION_SEARCH_INDEX
-
+  
   @Value('${elasticsearch.index.staging.collection.name}')
   String COLLECTION_STAGING_INDEX
-
+  
   @Value('${elasticsearch.index.search.granule.name}')
   String GRANULE_SEARCH_INDEX
-
+  
   @Value('${elasticsearch.index.staging.granule.name}')
   String GRANULE_STAGING_INDEX
-
+  
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
   private String FLAT_GRANULE_SEARCH_INDEX
-
+  
   @Value('${elasticsearch.index.universal-type}')
   String TYPE
-
+  
   @Value('${elasticsearch.index.prefix:}')
   String PREFIX
-
+  
   private ElasticsearchService esService
-
+  
   @Autowired
   public MetadataManagementService(ElasticsearchService esService) {
     this.esService = esService
   }
-
+  
   /**
    * Output shape:
-   * {
-   *   "data": [
-   *     {
-   *       "id": <>,
+   *{*   "data": [
+   *{*       "id": <>,
    *       "type": <>,
    *       "attributes": <parsed source>,
-   *       "meta": {
-   *         "filename": "<original filename>,
+   *       "meta": {*         "filename": "<original filename>,
    *         "status": 200|201|400...
    *         "created": true|false,
-   *         "error": null|{...}
-   *       }
-   *     },
+   *         "error": null|{...}*}*},
    *     ...
    *   ]
-   * }
-   *
+   *}*
    * @param documents
    * @return
    */
+
+  Map loadParsedMetadata(Map payload) {
+    log.debug("Load request failed: ${payload}")
+    esService.ensureStagingIndices()
+    esService.ensurePipelines()
+    esService.refreshAllIndices()
+    
+    def results = []
+    def bulkRequest = new StringBuilder()
+    def source = payload.discovery
+    try {
+      def type = source.parentIdentifier ? 'granule' : 'collection'
+
+      def result = [
+          id        : payload.id,
+          type      : type,
+          attributes: source,
+      ]
+
+      def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
+      def bulkCommand = [index: [_index: index, _type: TYPE, _id: payload.id]]
+      bulkRequest << JsonOutput.toJson(bulkCommand)
+      bulkRequest << '\n'
+      bulkRequest << JsonOutput.toJson(source)
+      bulkRequest << '\n'
+      results << result
+  
+      String bulkRequestBody = bulkRequest.toString()
+      if (bulkRequestBody) { // Don't send a request if there is nothing to send
+        def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
+        log.info("bulkResponse: ${bulkResponse}")
+      }
+    } catch (Exception e) {
+      log.error("Load request failed: ${e}")
+    }
+    
+    return [data: results]
+  }
+  
   public Map loadMetadata(Object[] documents) {
     esService.ensureStagingIndices()
     esService.ensurePipelines()
@@ -71,14 +105,13 @@ class MetadataManagementService {
     def results = []
     def bulkRequest = new StringBuilder()
     def loadedIndices = []
-
+    
     documents.eachWithIndex { document, i ->
       def filename
       if (document instanceof MultipartFile) {
         filename = document.originalFilename
         document = document.inputStream.text
-      }
-      else {
+      } else {
         filename = null
         document = document as String
       }
@@ -92,24 +125,23 @@ class MetadataManagementService {
         def existingIds = existingRecord.data*.id
         def esId = existingIds?.size() == 1 ? existingIds[0] : null
         def result = [
-            id: esId,
-            type: type,
+            id        : esId,
+            type      : type,
             attributes: source,
-            meta: [
+            meta      : [
                 filename: filename,
             ]
         ]
-
+        
         if (existingIds?.size() > 1) {
           result.meta.error = [
               status: HttpStatus.CONFLICT.value(),
-              title: 'Ambiguous metadata records in existence; metadata not loaded.',
+              title : 'Ambiguous metadata records in existence; metadata not loaded.',
               detail: "Please GET records with ids [ ${existingIds.join(',')} ] and DELETE any " +
                   "erroneous records. Ambiguity because of fileIdentifier [ ${fileId} ] and/or DOI [ ${doi} ]."
           ]
-        }
-        else {
-          def index = type == 'collection' ? PREFIX+COLLECTION_STAGING_INDEX : PREFIX+GRANULE_STAGING_INDEX
+        } else {
+          def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
           def bulkCommand = [index: [_index: index, _type: TYPE, _id: esId]]
           bulkRequest << JsonOutput.toJson(bulkCommand)
           bulkRequest << '\n'
@@ -119,13 +151,13 @@ class MetadataManagementService {
         }
         results << result
       }
-      catch(SAXException e) {
+      catch (SAXException e) {
         results << [
             meta: [
                 filename: filename,
-                error: [
+                error   : [
                     status: HttpStatus.BAD_REQUEST.value(),
-                    title: 'Load request failed due to malformed XML.',
+                    title : 'Load request failed due to malformed XML.',
                     detail: ExceptionUtils.getRootCauseMessage(e)
                 ]
             ]
@@ -135,18 +167,18 @@ class MetadataManagementService {
         results << [
             meta: [
                 filename: filename,
-                error: [
+                error   : [
                     status: HttpStatus.BAD_REQUEST.value(),
-                    title: 'Load request failed due to malformed data.',
+                    title : 'Load request failed due to malformed data.',
                     detail: ExceptionUtils.getRootCauseMessage(e)
                 ]
             ]
         ]
       }
     }
-
-    String bulkRequestBody =  bulkRequest.toString()
-    if(bulkRequestBody) { // Don't send a request if there is nothing to send
+    
+    String bulkRequestBody = bulkRequest.toString()
+    if (bulkRequestBody) { // Don't send a request if there is nothing to send
       def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
       bulkResponse.items.eachWithIndex { result, i ->
         def resultRecord = results.get(loadedIndices[i])
@@ -158,31 +190,30 @@ class MetadataManagementService {
         }
       }
     }
-
+    
     return [data: results]
   }
-
+  
   public Map loadMetadata(String document) {
     String[] documentArray = [document]
     def result = loadMetadata(documentArray).data[0]
     if (result.meta.error) {
       return [errors: [result.meta.error]]
-    }
-    else {
+    } else {
       return [data: result]
     }
   }
-
+  
   public Map getMetadata(String esId, boolean idsOnly = false) {
     esService.refreshAllIndices()
     def resultsData = []
-    [PREFIX+COLLECTION_STAGING_INDEX, PREFIX+GRANULE_STAGING_INDEX].each { index ->
+    [PREFIX + COLLECTION_STAGING_INDEX, PREFIX + GRANULE_STAGING_INDEX].each { index ->
       String endpoint = "${index}/${TYPE}/${esId}"
       if (idsOnly) {
         endpoint += '?_source=fileIdentifier,doi'
       }
       def response = esService.performRequest("GET", endpoint)
-
+      
       if (response.found) {
         resultsData.add(
             [
@@ -191,16 +222,15 @@ class MetadataManagementService {
                 attributes: response._source
             ]
         )
-
+        
       }
     }
-
-    if(resultsData) {
+    
+    if (resultsData) {
       return [
           data: resultsData
       ]
-    }
-    else {
+    } else {
       return [
           status: HttpStatus.NOT_FOUND.value(),
           title : 'No such document',
@@ -208,15 +238,19 @@ class MetadataManagementService {
       ]
     }
   }
-
+  
   public Map findMetadata(String fileId, String doi, boolean idsOnly = false) {
     esService.refreshAllIndices()
     String endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX}/_search"
     def searchParams = []
-    if (fileId) { searchParams.add( [term: [fileIdentifier: fileId]] ) }
-    if (doi) { searchParams.add( [term: [doi: doi]] ) }
+    if (fileId) {
+      searchParams.add([term: [fileIdentifier: fileId]])
+    }
+    if (doi) {
+      searchParams.add([term: [doi: doi]])
+    }
     def requestBody = [
-        query: [
+        query  : [
             bool: [
                 should: searchParams
             ]
@@ -224,18 +258,17 @@ class MetadataManagementService {
         _source: idsOnly ? ['fileIdentifier', 'doi'] : true
     ]
     def response = esService.performRequest('GET', endpoint, requestBody)
-
+    
     if (response.hits.total > 0) {
       def resources = response.hits.hits.collect {
         [
-            id: it._id,
-            type: determineType(it._index),
+            id        : it._id,
+            type      : determineType(it._index),
             attributes: it._source
         ]
       }
-      return [ data: resources ]
-    }
-    else {
+      return [data: resources]
+    } else {
       return [
           status: HttpStatus.NOT_FOUND.value(),
           title : 'No such document',
@@ -243,25 +276,27 @@ class MetadataManagementService {
       ]
     }
   }
-
+  
   public Map deleteMetadata(String esId, boolean recursive) {
     def record = getMetadata(esId, true)
-    if (record.data) { return delete(record, recursive) }
-    else {
+    if (record.data) {
+      return delete(record, recursive)
+    } else {
       // Record does not exist -- return NOT_FOUND response
       return record
     }
   }
-
+  
   public Map deleteMetadata(String fileId, String doi, boolean recursive) {
     def record = findMetadata(fileId, doi, true)
-    if (record.data) { return delete(record, recursive) }
-    else {
+    if (record.data) {
+      return delete(record, recursive)
+    } else {
       // Record does not exist -- return NOT_FOUND response
       return record
     }
   }
-
+  
   private Map delete(Map record, boolean recursive) {
     // collect up the ids, types, and potential granule parentIds to be deleted
     def ids = []
@@ -279,7 +314,7 @@ class MetadataManagementService {
         }
       }
     }
-
+    
     // Use delete_by_query to match collection & associated granules all at once
     def query = [
         query: [
@@ -293,22 +328,22 @@ class MetadataManagementService {
     ]
     def endpoint = "${PREFIX}${COLLECTION_STAGING_INDEX},${PREFIX}${GRANULE_STAGING_INDEX},${PREFIX}${COLLECTION_SEARCH_INDEX},${PREFIX}${GRANULE_SEARCH_INDEX},${PREFIX}${FLAT_GRANULE_SEARCH_INDEX}/_delete_by_query?wait_for_completion=true"
     def deleteResponse = esService.performRequest('POST', endpoint, query)
-
+    
     return [
         response: [
             data: toBeDeleted,
             meta: deleteResponse
         ],
-        status: deleteResponse.failures ? HttpStatus.MULTI_STATUS.value() : HttpStatus.OK.value()
+        status  : deleteResponse.failures ? HttpStatus.MULTI_STATUS.value() : HttpStatus.OK.value()
     ]
   }
-
+  
   public String determineType(String index) {
-
+    
     def parsedIndex = PREFIX ? index.replace(PREFIX, '') : index
     def endPosition = parsedIndex.lastIndexOf('-')
     parsedIndex = endPosition > 0 ? parsedIndex.substring(0, endPosition) : parsedIndex
-
+    
     def indexToTypeMap = [
         (COLLECTION_SEARCH_INDEX)  : 'collection',
         (COLLECTION_STAGING_INDEX) : 'collection',
@@ -316,7 +351,8 @@ class MetadataManagementService {
         (GRANULE_STAGING_INDEX)    : 'granule',
         (FLAT_GRANULE_SEARCH_INDEX): 'flattenedGranule'
     ]
-
+    
     return indexToTypeMap[parsedIndex]
   }
+  
 }

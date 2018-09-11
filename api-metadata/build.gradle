@@ -31,7 +31,8 @@ dependencies {
   compile("org.opensaml:opensaml-messaging-impl:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-api:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-impl:${project.openSAMLVersion}")
-
+  compile "org.springframework.kafka:spring-kafka:2.1.9.RELEASE"
+  
   // logback
   compile("ch.qos.logback:logback-core:${project.logbackVersion}")
   compile("ch.qos.logback:logback-classic:${project.logbackVersion}")
