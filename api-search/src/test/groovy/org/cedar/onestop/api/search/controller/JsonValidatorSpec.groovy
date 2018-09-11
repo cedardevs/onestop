@@ -166,6 +166,9 @@ class JsonValidatorSpec extends Specification {
     {"type":"collection", "values":["fakeUUID"]}
   ],
   "summary": false
+}""",
+"""\
+{"queries":[], "filters":[{"type":"datetime", "after":"0000-01-01T00:00:00Z", "before":"2018-08-31T00:00:00Z"}], "facets":true, "page":{"max":1000, "offset":0}}
 }"""
     ]
   }
@@ -265,6 +268,12 @@ class JsonValidatorSpec extends Specification {
   "filters": [
     {"type": "facet", "name": "notScience", "values": ["Atmosphere"]}
   ]
+}""",
+"""\
+{"queries":[], "filters":[{"type":"datetime", "after":"0000-01-01T00:00:00Z", "before":"2018-08-31T00:00:00Z"}], "facets":true, "page":{"max":9999999, "offset":0}}
+}""",
+"""\
+{"queries":[], "filters":[{"type":"datetime", "after":"0000-01-01T00:00:00Z", "before":"2018-08-31T00:00:00Z"}], "facets":true, "page":{"max":1001, "offset":0}}
 }"""
     ]
   }
