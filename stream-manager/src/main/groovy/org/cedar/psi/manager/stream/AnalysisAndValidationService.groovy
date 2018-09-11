@@ -7,11 +7,12 @@ import groovy.util.logging.Slf4j
 class AnalysisAndValidationService {
 
   static Map analyzeParsedMetadata(Map msgMap) {
+    log.info "Analyzing message with id: ${msgMap?.id}"
     log.debug("Received $msgMap")
 
     def parsedMetadata = msgMap.discovery
 
-    println(JsonOutput.prettyPrint(JsonOutput.toJson(parsedMetadata)))
+//    println(JsonOutput.prettyPrint(JsonOutput.toJson(parsedMetadata)))
 
 
     def analysisMap = [
