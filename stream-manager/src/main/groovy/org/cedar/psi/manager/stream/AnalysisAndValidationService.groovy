@@ -11,9 +11,6 @@ class AnalysisAndValidationService {
 
     def parsedMetadata = msgMap.discovery
 
-    println(JsonOutput.prettyPrint(JsonOutput.toJson(parsedMetadata)))
-
-
     def analysisMap = [
         identification  : analyzeIdentifiers(parsedMetadata),
         temporalBounding: analyzeTemporalBounding(parsedMetadata),
