@@ -71,7 +71,6 @@ metadata:
 data:
   application.yaml: |
     spring.profiles.include:
-      - default
       - feature-trending-search
     ui:
       banner:
