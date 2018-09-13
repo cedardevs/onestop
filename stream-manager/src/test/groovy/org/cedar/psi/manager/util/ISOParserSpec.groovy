@@ -86,9 +86,9 @@ class ISOParserSpec extends Specification {
     JsonOutput.toJson(parsedXml.keywords) == JsonOutput.toJson([
         [
             "values": [
-                "SIO >\n              Super Important Organization",
-                "OSIO >   OTHER SUPER IMPORTANT ORGANIZATION",
-                "SSIO > Super SIO        (Super Important Organization)"
+                "SIO > Super Important Organization",
+                "OSIO > OTHER SUPER IMPORTANT ORGANIZATION",
+                "SSIO > Super SIO (Super Important Organization)"
             ],
             "type": "dataCenter",
             "namespace": "GCMD Keywords - Data Centers"
@@ -132,8 +132,8 @@ class ISOParserSpec extends Specification {
                 "EARTH SCIENCE > ATMOSPHERE > ATMOSPHERIC TEMPERATURE > SURFACE TEMPERATURE > DEW POINT TEMPERATURE",
                 "EARTH SCIENCE > OCEANS > SALINITY/DENSITY > SALINITY",
                 "EARTH SCIENCE > VOLCANOES > THIS KEYWORD > IS INVALID",
-                "Earth Science > Spectral/Engineering >\n              microwave > Brightness Temperature",
-                "Earth Science > Spectral/Engineering >\n              microwave > Temperature Anomalies"
+                "Earth Science > Spectral/Engineering > microwave > Brightness Temperature",
+                "Earth Science > Spectral/Engineering > microwave > Temperature Anomalies"
             ],
             "type": "theme",
             "namespace": "GCMD Keywords - Science Keywords"

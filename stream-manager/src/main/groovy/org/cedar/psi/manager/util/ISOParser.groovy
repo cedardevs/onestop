@@ -275,8 +275,9 @@ class ISOParser {
 
       keywordsInGroup.each { k ->
         def text = k.CharacterString.text() ?: k.Anchor.text()
-        if(text) { // Just in case, since we don't know this namespace...
-          values.add(text.trim())
+        if(text) {
+          // Replace any non-trimmed whitespace with a single space character (e.g., in case of tabs or linefeeds)
+          values.add(text.trim().replaceAll("\\s+", " "))
         }
       }
 
