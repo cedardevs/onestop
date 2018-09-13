@@ -7,12 +7,12 @@ user.roles: elliott.richerson@noaa.gov:ADMIN;bao.nguyen@noaa.gov:ADMIN
 
 server:
   ssl:
-    key-alias: \${KEYSTORE_ALIAS}
-    #key-password: \${KEY_PASSWORD}
+    key-alias: ${KEYSTORE_ALIAS}
+    #key-password: ${KEY_PASSWORD}
     enabled-protocols: TLSv1.2
     protocol: TLS
     enabled: true
-    key-store-password: \${KEYSTORE_PASSWORD}
+    key-store-password: ${KEYSTORE_PASSWORD}
     key-store: /etc/api-metadata/keystore.jks
     key-store-type: JKS
 
@@ -52,16 +52,17 @@ identityprovider:
   loginBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
   logoutEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/IDPSloRedirect/metaAlias/noaa-online/noaa-online-idp"
   logoutBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-  issuerSP: "https://localhost:8098/onestop/api/"
+  issuerSP: "https://localhost:30098/onestop/admin/"
   issuerIDP: "noaa-online-idp"
   authnContextRefs:
     - "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified"
   authnContextComparisonType: "minimum"
-  assertionConsumerServiceURL: "https://localhost:8098/onestop/api/loginConsume"
-  assertionConsumerServiceLogoutURL: "https://localhost:8098/onestop/api/logoutConsume"
+  assertionConsumerServiceURL: "https://localhost:30098/onestop/admin/loginConsume"
+  assertionConsumerServiceLogoutURL: "https://localhost:30098/onestop/admin/logoutConsume"
   nameIDPolicyFormat: "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
   signatureAlgorithm: "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
   signatureCanonicalizationAlgorithm: "http://www.w3.org/2001/10/xml-exc-c14n#"
   digestAlgorithm: "http://www.w3.org/2000/09/xmldsig#sha1"
   emailAssertionName: "mail"
   uuidAssertionName: "uid"
+
