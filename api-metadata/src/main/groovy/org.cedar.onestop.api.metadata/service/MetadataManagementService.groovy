@@ -1,7 +1,6 @@
 package org.cedar.onestop.api.metadata.service
 
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -69,6 +68,7 @@ class MetadataManagementService {
     def results = []
     def bulkRequest = new StringBuilder()
     def source = payload.discovery
+    source.stagedDate = System.currentTimeMillis()
     try {
       def type = source.parentIdentifier ? 'granule' : 'collection'
 
