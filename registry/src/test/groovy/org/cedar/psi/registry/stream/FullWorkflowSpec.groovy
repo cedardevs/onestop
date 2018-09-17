@@ -14,11 +14,11 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
-import static org.cedar.psi.registry.service.MetadataStreamService.COMBINED_GRANULE_TOPIC
-import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_GRANULE_STORE
-import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_GRANULE_TOPIC
-import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_STORE
-import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_TOPIC
+import static org.cedar.psi.common.constants.Topics.COMBINED_GRANULE_TOPIC
+import static org.cedar.psi.common.constants.Topics.PARSED_GRANULE_STORE
+import static org.cedar.psi.common.constants.Topics.PARSED_GRANULE_TOPIC
+import static org.cedar.psi.common.constants.Topics.RAW_GRANULE_STORE
+import static org.cedar.psi.common.constants.Topics.RAW_GRANULE_TOPIC
 import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_SERIALIZER
 import static org.cedar.psi.registry.util.StreamSpecUtils.JSON_SERIALIZER
 import static org.cedar.psi.registry.util.StreamSpecUtils.readAllOutput

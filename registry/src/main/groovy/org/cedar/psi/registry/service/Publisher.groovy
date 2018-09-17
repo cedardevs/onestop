@@ -9,8 +9,10 @@ import org.springframework.stereotype.Service
 
 import javax.servlet.http.HttpServletRequest
 
-import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_TOPIC
-import static org.cedar.psi.registry.service.MetadataStreamService.RAW_COLLECTION_TOPIC
+import static org.cedar.psi.common.constants.Topics.RAW_GRANULE_TOPIC
+import static org.cedar.psi.common.constants.Topics.RAW_COLLECTION_TOPIC
+
+
 
 @Slf4j
 @Service

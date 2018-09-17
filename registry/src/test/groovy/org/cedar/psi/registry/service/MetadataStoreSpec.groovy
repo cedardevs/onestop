@@ -8,8 +8,8 @@ import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_STORE
-import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_GRANULE_STORE
+import static org.cedar.psi.common.constants.Topics.RAW_GRANULE_STORE
+import static org.cedar.psi.common.constants.Topics.PARSED_GRANULE_STORE
 
 
 @Unroll
