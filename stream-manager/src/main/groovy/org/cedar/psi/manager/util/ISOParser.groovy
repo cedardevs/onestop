@@ -2,6 +2,7 @@ package org.cedar.psi.manager.util
 
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
+import groovy.util.slurpersupport.NodeChild
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.text.WordUtils
 import groovy.xml.XmlUtil
@@ -859,15 +860,38 @@ class ISOParser {
     return parseMiscellaneous(new XmlSlurper().parseText(xml))
   }
 
+  def convertToMap(nodes) {
+    nodes.children().collectEntries {
+      [ it.name(), it.childNodes() ? convertToMap(it) : it.text() ]
+    }
+  }
+
   static Set parseServices(GPathResult metadata) {
     def serviceIds = metadata.identificationInfo.'**'.findAll {
       it.name() == 'SV_ServiceIdentification'
     }
-    Set services = []
-    serviceIds.each { service ->
-      def xmlBlobService = XmlUtil.serialize(service) ?: null
-      // blob of XML needs to be base64 encoded for elastic search to include is as 'binary' type
-      services.add(xmlBlobService.bytes.encodeBase64().toString())
+    Set<Map> services = []
+
+    serviceIds.each{
+      Map service = [
+          title: (it?.citation?.CI_Citation?.title?.CharacterString as String).trim(),
+          alternateTitle: (it?.citation?.CI_Citation?.alternateTitle?.CharacterString as String).trim(),
+          abstract: (it?.abstract?.CharacterString as String).trim(),
+          operations:[]
+      ]
+      def operations = it.'**'.findAll {
+        it.name() == 'containsOperations'
+      }
+      operations.each{ o ->
+        service.operations.add( [
+            protocol: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.protocol?.CharacterString as String).trim(),
+            url: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.linkage?.URL as String).trim(),
+            applicationProfile: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.applicationProfile?.CharacterString as String).trim(),
+            name: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.name?.CharacterString as String).trim(),
+            description: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.description?.CharacterString as String).trim(),
+        ])
+      }
+      services.add(service)
     }
     return services
   }
