@@ -148,10 +148,8 @@
   "temporalBounding": {
     "beginDate": "2005-05-09T00:00:00Z",
     "beginIndeterminate": null,
-    "beginYear": 2005,
     "endDate": "2010-10-01",
     "endIndeterminate": null,
-    "endYear": 2010,
     "instant": null,
     "instantIndeterminate": null,
     "description": null
