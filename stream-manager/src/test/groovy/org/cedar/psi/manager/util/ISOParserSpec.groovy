@@ -816,18 +816,26 @@ class ISOParserSpec extends Specification {
         title:'Multibeam Bathymetric Surveys ArcGIS Map Service',
         alternateTitle:'Alternate Title for Testing',
         abstract: "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green.",
+        date: '2012-01-01',
+        dateType: 'creation',
+        pointOfContact: [
+            individualName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+            organizationName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]'
+        ],
         operations:[
-            [protocol:'http',
-             url:'https://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/multibeam/MapServer',
-             applicationProfile:'https://www.geoplatform.gov/spec/esri-map-rest',
-             name:'Multibeam Bathymetric Surveys ArcGIS Cached Map Service',
-             description: 'Capabilities document for Open Geospatial Consortium Web Map Service for Multibeam Bathymetric Surveys'
+            [
+                protocol:'http',
+                url:'https://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/multibeam/MapServer',
+                applicationProfile:'https://www.geoplatform.gov/spec/esri-map-rest',
+                name:'Multibeam Bathymetric Surveys ArcGIS Cached Map Service',
+                description: 'Capabilities document for Open Geospatial Consortium Web Map Service for Multibeam Bathymetric Surveys'
             ],
-            [protocol:'http',
-             url:'https://maps.ngdc.noaa.gov/arcgis/services/web_mercator/multibeam_dynamic/MapServer/WMSServer?request=GetCapabilities&service=WMS',
-             applicationProfile:'http://opengis.net/spec/wms',
-             name:'Multibeam Bathymetric Surveys Web Map Service (WMS)',
-             description: 'The Multibeam Bathymetric Surveys ArcGIS cached map service provides rapid display of ship tracks from global scales down to zoom level 9 (approx. 1:1,200,000 scale).'
+            [
+                protocol:'http',
+                url:'https://maps.ngdc.noaa.gov/arcgis/services/web_mercator/multibeam_dynamic/MapServer/WMSServer?request=GetCapabilities&service=WMS',
+                applicationProfile:'http://opengis.net/spec/wms',
+                name:'Multibeam Bathymetric Surveys Web Map Service (WMS)',
+                description: 'The Multibeam Bathymetric Surveys ArcGIS cached map service provides rapid display of ship tracks from global scales down to zoom level 9 (approx. 1:1,200,000 scale).'
             ]
         ]
     ]

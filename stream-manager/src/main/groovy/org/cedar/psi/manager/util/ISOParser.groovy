@@ -877,6 +877,12 @@ class ISOParser {
           title: (it?.citation?.CI_Citation?.title?.CharacterString as String).trim(),
           alternateTitle: (it?.citation?.CI_Citation?.alternateTitle?.CharacterString as String).trim(),
           abstract: (it?.abstract?.CharacterString as String).trim(),
+          date: it?.citation?.CI_Citation?.date?.Date as String,
+          dateType: it?.citation?.CI_Citation?.dateType?.CI_DateTypeCode as String,
+          pointOfContact: [
+              individualName: it?.pointOfContact?.CI_ResponsibleParty?.individualName?.CharacterString as String,
+              organizationName: it?.pointOfContact?.CI_ResponsibleParty?.organisationName?.CharacterString as String
+          ],
           operations:[]
       ]
       def operations = it.'**'.findAll {
