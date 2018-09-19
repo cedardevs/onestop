@@ -13,6 +13,9 @@
           "properties": {
             "exists": {
               "type": "boolean"
+            },
+            "value" : {
+              "type": [null, "string"]
             }
           },
           "required": [
@@ -25,6 +28,9 @@
           "properties": {
             "exists": {
               "type": "boolean"
+            },
+            "value" : {
+              "type": [null, "string"]
             }
           },
           "required": [
@@ -37,6 +43,9 @@
           "properties": {
             "exists": {
               "type": "boolean"
+            },
+            "value" : {
+              "type": [null, "string"]
             }
           },
           "required": [
