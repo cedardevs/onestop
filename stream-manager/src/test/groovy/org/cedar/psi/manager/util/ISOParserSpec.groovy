@@ -4,8 +4,6 @@ import groovy.json.JsonOutput
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import java.time.format.DateTimeParseException
-
 @Unroll
 class ISOParserSpec extends Specification {
   // FIXME These tests should be the same as:
