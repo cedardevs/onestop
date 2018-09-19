@@ -860,12 +860,6 @@ class ISOParser {
     return parseMiscellaneous(new XmlSlurper().parseText(xml))
   }
 
-  def convertToMap(nodes) {
-    nodes.children().collectEntries {
-      [ it.name(), it.childNodes() ? convertToMap(it) : it.text() ]
-    }
-  }
-
   static Set parseServices(GPathResult metadata) {
     def serviceIds = metadata.identificationInfo.'**'.findAll {
       it.name() == 'SV_ServiceIdentification'
