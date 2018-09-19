@@ -17,7 +17,7 @@ class StreamManagerSpec extends Specification {
   def streamsConfig = StreamManager.streamsConfig(Constants.APP_ID, Constants.BOOTSTRAP_DEFAULT)
   def topology = StreamManager.buildTopology()
   def driver = new TopologyTestDriver(topology, streamsConfig)
-  def consumerFactory = new ConsumerRecordFactory(Topics.RAW_GRANULE_TOPIC,
+  def consumerFactory = new ConsumerRecordFactory(Topics.RAW_GRANULE_CHANGELOG_TOPIC,
       Serdes.String().serializer(), JsonSerdes.Map().serializer())
 
   def cleanup(){
@@ -34,7 +34,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_TOPIC, key, value))
+    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, key, value))
 
     then:
     // Not found in error or SME topics
@@ -122,7 +122,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_TOPIC, smeKey, smeValue))
+    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, smeKey, smeValue))
 
     then:
     // The record is in the SME topic
@@ -155,7 +155,7 @@ class StreamManagerSpec extends Specification {
 
     when:
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
-    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_TOPIC, nonSMEKey, nonSMEValue))
+    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, nonSMEKey, nonSMEValue))
     driver.pipeInput(consumerFactory.create(Topics.UNPARSED_GRANULE_TOPIC, smeKey, smeValue))
 
     then:
@@ -196,7 +196,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_TOPIC, key, value))
+    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, key, value))
 
     then:
     // Nothing in the parsed or sme topics

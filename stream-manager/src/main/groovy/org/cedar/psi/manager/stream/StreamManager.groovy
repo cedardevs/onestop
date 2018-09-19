@@ -38,8 +38,8 @@ class StreamManager {
     }
 
     //stream incoming granule and collection messages
-    KStream<String, Map> granuleInputStream = builder.stream(Topics.RAW_GRANULE_TOPIC)
-    KStream<String, Map> collectionInputStream = builder.stream(Topics.RAW_COLLECTION_TOPIC)
+    KStream<String, Map> granuleInputStream = builder.stream(Topics.RAW_GRANULE_CHANGELOG_TOPIC)
+    KStream<String, Map> collectionInputStream = builder.stream(Topics.RAW_COLLECTION_CHANGELOG_TOPIC)
 
     // Split granules to those that need SME processing and those ready to parse
     KStream<String, Map>[] smeBranches = granuleInputStream.branch(toParsing, toSMETopic)

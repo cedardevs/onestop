@@ -5,7 +5,9 @@ class Topics {
   static int DEFAULT_NUM_PARTITIONS = 1
   static short DEFAULT_REPLICATION_FACTOR = 1
   static final String RAW_GRANULE_TOPIC = 'raw-granule-events'
+  static final String RAW_COLLECTION_CHANGELOG_TOPIC = 'metadata-aggregator-raw-collections-changelog'
   static final String RAW_COLLECTION_TOPIC = 'raw-collection-events'
+  static final String RAW_GRANULE_CHANGELOG_TOPIC = 'metadata-aggregator-raw-granules-changelog'
   static final String PARSED_GRANULE_TOPIC = 'parsed-granules'
   static final String PARSED_COLLECTION_TOPIC = 'parsed-collections'
   static final String COMBINED_GRANULE_TOPIC = 'combined-granules'
