@@ -48,10 +48,9 @@ class RegistryIntegrationSpec extends Specification {
     def granuleText = ClassLoader.systemClassLoader.getResourceAsStream('test_granule.json').text
     def granuleMap = new JsonSlurper().parseText(granuleText) as Map
 
-
     when:
     def createEntity = RequestEntity
-        .post("${baseUrl}/metadata/granule".toURI())
+        .post("${baseUrl}/metadata/granule/common-ingest/${granuleMap.trackingId}".toURI())
         .contentType(MediaType.APPLICATION_JSON)
         .body(granuleText)
     def createResponse = restTemplate.exchange(createEntity, Map)
@@ -68,11 +67,27 @@ class RegistryIntegrationSpec extends Specification {
 
     then:
     retrieveResponse.statusCode == HttpStatus.OK
+    retrieveResponse.body.id == granuleMap.trackingId
+    retrieveResponse.body.type == 'granule'
+    retrieveResponse.body.attributes.raw.content == granuleText
+    retrieveResponse.body.attributes.raw.contentType == "application/json"
+    retrieveResponse.body.attributes.raw.source == "common-ingest"
+
+    and: // let's verify the full response just this once
     retrieveResponse.body == [
         id: granuleMap.trackingId,
         type: 'granule',
         attributes: [
-            raw: granuleMap,
+            raw: [
+                "content": granuleText,
+                "contentType": "application/json",
+                "host": "127.0.0.1",
+                "id": granuleMap.trackingId,
+                "method": "POST",
+                "protocol": "HTTP/1.1",
+                "requestUrl": "${baseUrl}/metadata/granule/common-ingest/${granuleMap.trackingId}",
+                "source": "common-ingest"
+            ],
             parsed: null
         ]
     ]
@@ -81,7 +96,7 @@ class RegistryIntegrationSpec extends Specification {
   def 'can post granule iso then get it back out'() {
     def restTemplate = new RestTemplate()
     def granuleText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
-    def granuleId = '42'
+    def granuleId = UUID.randomUUID()
 
 
     when:
@@ -103,20 +118,17 @@ class RegistryIntegrationSpec extends Specification {
 
     then:
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body == [
-        id: granuleId,
-        type: 'granule',
-        attributes: [
-            raw: [id: granuleId, rawFormat: "isoXml", rawMetadata: granuleText],
-            parsed: null
-        ]
-    ]
+    retrieveResponse.body.id == granuleId  as String
+    retrieveResponse.body.type == 'granule'
+    retrieveResponse.body.attributes.raw.content == granuleText
+    retrieveResponse.body.attributes.raw.contentType == "application/xml"
+    retrieveResponse.body.attributes.raw.source == null
   }
 
   def 'can post then retrieve collection info'() {
     def restTemplate = new RestTemplate()
     def collectionText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
-    def collectionId = '42'
+    def collectionId = UUID.randomUUID()
 
 
     when:
@@ -138,14 +150,11 @@ class RegistryIntegrationSpec extends Specification {
 
     then:
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body == [
-        id: collectionId,
-        type: 'collection',
-        attributes: [
-            raw: [id: collectionId, rawFormat: "isoXml", rawMetadata: collectionText],
-            parsed: null
-        ]
-    ]
+    retrieveResponse.body.id == collectionId as String
+    retrieveResponse.body.type == 'collection'
+    retrieveResponse.body.attributes.raw.content == collectionText
+    retrieveResponse.body.attributes.raw.contentType == "application/xml"
+    retrieveResponse.body.attributes.raw.source == null
   }
 
 }

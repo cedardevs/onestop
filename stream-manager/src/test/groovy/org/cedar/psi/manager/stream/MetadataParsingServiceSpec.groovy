@@ -12,8 +12,8 @@ class MetadataParsingServiceSpec extends Specification {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def incomingMsg = [
-        rawFormat: 'isoXml',
-        rawMetadata: xml
+        contentType: 'application/xml',
+        content: xml
     ]
 
     when:
@@ -33,8 +33,8 @@ class MetadataParsingServiceSpec extends Specification {
     given:
     def rawMetadata = metadata
     def incomingMsg = [
-        rawFormat: 'isoXml',
-        rawMetadata: rawMetadata
+        contentType: 'application/xml',
+        content: rawMetadata
     ]
 
     when:
@@ -54,8 +54,8 @@ class MetadataParsingServiceSpec extends Specification {
   def "Unknown metadata type in incoming message results in error"() {
     given:
     def incomingMsg = [
-        rawFormat: 'Not supported',
-        rawMetadata: "Won't be parsed"
+        contentType: 'Not supported',
+        content: "Won't be parsed"
     ]
 
     when:
