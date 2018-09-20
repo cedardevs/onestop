@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Uploaded ISO to OneStop</title>
+</head>
+<body>
+
+<!-- IF RESULTS NOT NULL -->
+<div th:if="${data}">
+    <ul th:each="result : ${data}">
+        <!-- IF ERROR IN THIS RESULT -->
+        <div th:if="${result.meta.error}">
+            <li th:text="${'ERROR: ' + result.meta.filename + '-> ' + result.meta.error.title}" />
+        </div>
+        <!-- ELSE NOT AN ERROR -->
+        <div th:unless="${result.meta.error}">
+            <li th:text="${'SUCCESS: ' + result.meta.filename}" />
+        </div>
+    </ul>
+</div>
+
+<!-- ELSE RESULTS ARE NULL -->
+<div th:unless="${data}">
+    <span>There are no results.</span>
+</div>
+
+</body>
+</html>

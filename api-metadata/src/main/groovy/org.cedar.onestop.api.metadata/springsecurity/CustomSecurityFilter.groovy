@@ -29,7 +29,7 @@ import java.security.Principal
 @ConditionalOnProperty("features.secure.authorization")
 class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
-    private final List<String> securedEndpointsRegex = [/\/metadata.*$/, /\/admin\/.+$/, /\/upload.html$/, /^.+\/userOnly$/]
+    private final List<String> securedEndpointsRegex = [/\/metadata.*$/, /\/admin\/.+$/, /\/upload.html$/, /\/uploadResponse.html$/, /^.+\/userOnly$/]
 
     // SAMLFilter to be wrapped by this Spring aware filter bean
     private SAMLFilter samlFilter

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.multipart.MultipartFile
 
 import javax.servlet.http.HttpServletResponse
 
@@ -24,15 +23,6 @@ class MetadataController {
   @Autowired
   public MetadataController(MetadataManagementService metadataService) {
     this.metadataService = metadataService
-  }
-
-  @RequestMapping(path = '/metadata', method = POST, produces = 'application/json')
-  Map load(@RequestParam("files") MultipartFile[] metadataRecords, HttpServletResponse response) {
-    log.debug("Received ${metadataRecords.length} metadata files to load")
-
-    def result = metadataService.loadMetadata(metadataRecords)
-    response.status = HttpStatus.MULTI_STATUS.value()
-    return result
   }
 
   @RequestMapping(path = '/metadata', method = POST,
