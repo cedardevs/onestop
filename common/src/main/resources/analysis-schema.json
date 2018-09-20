@@ -14,7 +14,7 @@
             "exists": {
               "type": "boolean"
             },
-            "value" : {
+            "fileIdentifierString" : {
               "type": [null, "string"]
             }
           },
@@ -29,7 +29,7 @@
             "exists": {
               "type": "boolean"
             },
-            "value" : {
+            "doiString" : {
               "type": [null, "string"]
             }
           },
@@ -44,7 +44,7 @@
             "exists": {
               "type": "boolean"
             },
-            "value" : {
+            "parentIdentifierString" : {
               "type": [null, "string"]
             }
           },
