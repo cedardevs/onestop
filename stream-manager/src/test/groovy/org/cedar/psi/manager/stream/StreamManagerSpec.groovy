@@ -6,6 +6,7 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.cedar.psi.manager.config.Constants
+import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
 import spock.lang.Specification
 
@@ -16,7 +17,7 @@ class StreamManagerSpec extends Specification {
   def streamsConfig = StreamManager.streamsConfig(Constants.APP_ID, Constants.BOOTSTRAP_DEFAULT)
   def topology = StreamManager.buildTopology()
   def driver = new TopologyTestDriver(topology, streamsConfig)
-  def consumerFactory = new ConsumerRecordFactory(Constants.RAW_GRANULES_TOPIC,
+  def consumerFactory = new ConsumerRecordFactory(Topics.RAW_GRANULE_CHANGELOG_TOPIC,
       Serdes.String().serializer(), JsonSerdes.Map().serializer())
 
   def cleanup(){
@@ -33,18 +34,18 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Constants.RAW_GRANULES_TOPIC, key, value))
+    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, key, value))
 
     then:
     // Not found in error or SME topics
-    driver.readOutput(Constants.ERROR_TOPIC, DESERIALIZER, DESERIALIZER) == null
-    driver.readOutput(Constants.SME_TOPIC, DESERIALIZER, DESERIALIZER) == null
+    driver.readOutput(Topics.ERROR_HANDLER_TOPIC, DESERIALIZER, DESERIALIZER) == null
+    driver.readOutput(Topics.SME_GRANULE_TOPIC, DESERIALIZER, DESERIALIZER) == null
 
     and:
     // There is only 1 record in the PARSED_TOPIC
-    def finalOutput = driver.readOutput(Constants.PARSED_TOPIC, DESERIALIZER, DESERIALIZER)
+    def finalOutput = driver.readOutput(Topics.PARSED_GRANULE_TOPIC, DESERIALIZER, DESERIALIZER)
     finalOutput != null
-    driver.readOutput(Constants.PARSED_TOPIC, DESERIALIZER, DESERIALIZER) == null
+    driver.readOutput(Topics.PARSED_GRANULE_TOPIC, DESERIALIZER, DESERIALIZER) == null
 
     and:
     // Verify some fields
@@ -121,18 +122,18 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Constants.RAW_GRANULES_TOPIC, smeKey, smeValue))
+    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, smeKey, smeValue))
 
     then:
     // The record is in the SME topic
-    def smeOutput = driver.readOutput(Constants.SME_TOPIC, DESERIALIZER, DESERIALIZER)
+    def smeOutput = driver.readOutput(Topics.SME_GRANULE_TOPIC, DESERIALIZER, DESERIALIZER)
     smeOutput.key() == smeKey
     smeOutput.value() == smeValue.content
 
     and:
     // There are no errors and nothing in the parsed topic
-    driver.readOutput(Constants.PARSED_TOPIC, DESERIALIZER, DESERIALIZER) == null
-    driver.readOutput(Constants.ERROR_TOPIC, DESERIALIZER, DESERIALIZER) == null
+    driver.readOutput(Topics.PARSED_GRANULE_TOPIC, DESERIALIZER, DESERIALIZER) == null
+    driver.readOutput(Topics.ERROR_HANDLER_TOPIC, DESERIALIZER, DESERIALIZER) == null
   }
 
   def "Non-SME granule and SME granule end up in parsed-granule topic"() {
@@ -154,14 +155,14 @@ class StreamManagerSpec extends Specification {
 
     when:
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
-    driver.pipeInput(consumerFactory.create(Constants.RAW_GRANULES_TOPIC, nonSMEKey, nonSMEValue))
-    driver.pipeInput(consumerFactory.create(Constants.UNPARSED_TOPIC, smeKey, smeValue))
+    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, nonSMEKey, nonSMEValue))
+    driver.pipeInput(consumerFactory.create(Topics.UNPARSED_GRANULE_TOPIC, smeKey, smeValue))
 
     then:
     // Both records are in the parsed topic
     def results = [:]
     2.times {
-      def record = driver.readOutput(Constants.PARSED_TOPIC, DESERIALIZER, DESERIALIZER)
+      def record = driver.readOutput(Topics.PARSED_GRANULE_STORE, DESERIALIZER, DESERIALIZER)
       results[record.key()] = record.value()
     }
     results.containsKey(nonSMEKey)
@@ -182,7 +183,7 @@ class StreamManagerSpec extends Specification {
 
     and:
     // No errors
-    driver.readOutput(Constants.ERROR_TOPIC, DESERIALIZER, DESERIALIZER) == null
+    driver.readOutput(Topics.ERROR_HANDLER_TOPIC, DESERIALIZER, DESERIALIZER) == null
   }
 
   def "Unparsable granule ends up on error-granule topic"() {
@@ -195,16 +196,16 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Constants.RAW_GRANULES_TOPIC, key, value))
+    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, key, value))
 
     then:
     // Nothing in the parsed or sme topics
-    driver.readOutput(Constants.PARSED_TOPIC, DESERIALIZER, DESERIALIZER) == null
-    driver.readOutput(Constants.SME_TOPIC, DESERIALIZER, DESERIALIZER) == null
+    driver.readOutput(Topics.PARSED_GRANULE_TOPIC, DESERIALIZER, DESERIALIZER) == null
+    driver.readOutput(Topics.SME_GRANULE_TOPIC, DESERIALIZER, DESERIALIZER) == null
 
     and:
     // An error has appeared
-    def error = driver.readOutput(Constants.ERROR_TOPIC, DESERIALIZER, DESERIALIZER)
+    def error = driver.readOutput(Topics.ERROR_HANDLER_TOPIC, DESERIALIZER, DESERIALIZER)
     error.key() == key
     error.value() == JsonOutput.toJson([
         error: 'Unknown raw format of metadata'

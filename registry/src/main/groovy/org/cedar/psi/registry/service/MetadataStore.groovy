@@ -7,10 +7,11 @@ import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_STORE
-import static org.cedar.psi.registry.service.MetadataStreamService.RAW_COLLECTION_STORE
-import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_GRANULE_STORE
-import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_COLLECTION_STORE
+import static org.cedar.psi.common.constants.Topics.RAW_GRANULE_STORE
+import static org.cedar.psi.common.constants.Topics.RAW_COLLECTION_STORE
+import static org.cedar.psi.common.constants.Topics.PARSED_GRANULE_STORE
+import static org.cedar.psi.common.constants.Topics.PARSED_COLLECTION_STORE
+
 
 @Slf4j
 @Service
