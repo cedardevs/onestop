@@ -36,15 +36,15 @@ class AnalysisAndValidationService {
     return [
         fileIdentifier    : [
             exists: fileIdentifier ? true : false,
-            value: fileIdentifier ?: null
+            fileIdentifierString: fileIdentifier ?: null
         ],
         doi               : [
             exists: doi ? true : false,
-            value: doi ?: null
+            doiString: doi ?: null
         ],
         parentIdentifier  : [
             exists: parentIdentifier ? true : false,
-            value: parentIdentifier ?: null
+            parentIdentifierString: parentIdentifier ?: null
         ],
         hierarchyLevelName: [
             exists            : hierarchy ? true : false,

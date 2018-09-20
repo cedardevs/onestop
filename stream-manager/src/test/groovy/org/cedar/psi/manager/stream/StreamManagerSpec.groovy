@@ -58,13 +58,17 @@ class StreamManagerSpec extends Specification {
     output.analysis == [
         identification  : [
             fileIdentifier  : [
-                exists: true
+                exists: true,
+                fileIdentifierString: 'gov.super.important:FILE-ID'
             ],
             doi             : [
-                exists: true
+                exists: true,
+                doiString: 'doi:10.5072/FK2TEST'
+
             ],
             parentIdentifier: [
-                exists: true
+                exists: true,
+                parentIdentifierString: 'gov.super.important:PARENT-ID'
             ],
             hierarchyLevelName: [
                 exists: true,
