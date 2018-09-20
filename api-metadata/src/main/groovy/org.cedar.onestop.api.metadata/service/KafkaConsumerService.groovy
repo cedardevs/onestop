@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
 
+import java.util.concurrent.CountDownLatch
+
 @Slf4j
 @Service
 class KafkaConsumerService {
@@ -18,26 +20,37 @@ class KafkaConsumerService {
   private MetadataManagementService metadataManagementService
   
   @KafkaListener(topics = '${kafka.topic.PARSED_COLLECTIONS_TOPIC}')
-  Map listen(ConsumerRecord record) {
-    def message = record.value() as String
-    def id = record.key() as String
-  
+  void listen(List<ConsumerRecord<String, String>> records) {
+    def slurper = new JsonSlurper()
     try {
       log.info("consuming message from a topic ...")
-      def slurper = new JsonSlurper()
-      def messageMap = slurper.parseText(message) as Map
-  
-      def analysis = messageMap.analysis as Map
-      def title = analysis.titles['title'] as Map
-      def fileIdentifier = analysis.identification['fileIdentifier'] as Map
-      def messageToMap = [id: id, discovery: messageMap.discovery]
-      if (!title.exists || !fileIdentifier.exists) {
-        log.error("message is not valid: title: ${title.exists} and fileIdentifier: ${fileIdentifier.exists}")
-      } else {
-        return metadataManagementService.loadParsedMetadata(messageToMap)
+      def valuesIds = records.collect {
+        def id = it.key()
+        def messageMap = slurper.parseText(it.value() as String) as Map
+        validateMessages(messageMap) ?
+            [id: id , discovery: messageMap.discovery ] :
+              null
+        
       }
+      valuesIds.removeAll(Collections.singleton(null))
+      metadataManagementService.loadParsedMetadata(valuesIds as Map)
+      
     } catch (Exception e) {
       log.error("Unexpected error", e)
     }
+  
+  }
+  
+  Boolean validateMessages(Map messageMap) {
+      def analysis = messageMap.analysis
+      def isValid = false
+      def title = analysis.titles['title'] as Map
+      def fileIdentifier = analysis.identification['fileIdentifier'] as Map
+      if (!title.exists || !fileIdentifier.exists) {
+        return isValid
+      } else {
+        isValid = true
+        return isValid
+      }
   }
 }

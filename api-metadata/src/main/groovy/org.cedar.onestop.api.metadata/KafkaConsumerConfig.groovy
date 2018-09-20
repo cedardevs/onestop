@@ -10,6 +10,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.config.KafkaListenerContainerFactory
 import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
+import org.springframework.kafka.listener.BatchLoggingErrorHandler
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
 
 @EnableKafka
@@ -18,6 +19,12 @@ class KafkaConsumerConfig {
   
   @Value('${kafka.bootstrap.servers}')
   private String bootstrapServers
+  
+  @Value('${kafka.bootstrap.max_wait_ms}')
+  private String max_Wait_ms
+  
+  @Value('${kafka.bootstrap.max_poll_records}')
+  private String max_poll_records
   
   @Bean
   Map<String, Object> consumerConfigs() {
@@ -28,6 +35,8 @@ class KafkaConsumerConfig {
     configProps.put(ConsumerConfig.CLIENT_ID_CONFIG, 'api-Consumer')
     configProps.put(ConsumerConfig.GROUP_ID_CONFIG, 'api-metadata')
     configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
+    configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 300000)
+    configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 30)
     
     return configProps
   }
@@ -41,6 +50,10 @@ class KafkaConsumerConfig {
   KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
     ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>()
     factory.setConsumerFactory(consumerFactory())
+    //set batch listener to true
+    factory.setBatchListener(true)
+    factory.getContainerProperties().setBatchErrorHandler(new BatchLoggingErrorHandler())
+    
     return factory
   }
   

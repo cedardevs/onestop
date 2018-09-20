@@ -60,39 +60,43 @@ class MetadataManagementService {
    */
 
   Map loadParsedMetadata(Map payload) {
-    log.debug("Load request failed: ${payload}")
     esService.ensureStagingIndices()
     esService.ensurePipelines()
     esService.refreshAllIndices()
-    
-    def results = []
     def bulkRequest = new StringBuilder()
-    def source = payload.discovery
-    source.stagedDate = System.currentTimeMillis()
-    try {
-      def type = source.parentIdentifier ? 'granule' : 'collection'
-
-      def result = [
-          id        : payload.id,
-          type      : type,
-          attributes: source,
-      ]
-
-      def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
-      def bulkCommand = [index: [_index: index, _type: TYPE, _id: payload.id]]
-      bulkRequest << JsonOutput.toJson(bulkCommand)
-      bulkRequest << '\n'
-      bulkRequest << JsonOutput.toJson(source)
-      bulkRequest << '\n'
-      results << result
-  
-      String bulkRequestBody = bulkRequest.toString()
-      if (bulkRequestBody) { // Don't send a request if there is nothing to send
-        def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
-        log.info("bulkResponse: ${bulkResponse}")
+    def loadedIndices = []
+    def results = []
+    
+    payload.eachWithIndex { record, i ->
+      def source = record.discovery as Map
+      def id = record.id
+      source.stagedDate = System.currentTimeMillis()
+      try {
+        def type = source.parentIdentifier ? 'granule' : 'collection'
+        def result = [
+            id        : id,
+            type      : type,
+            attributes: source,
+        ]
+      
+        def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
+        def bulkCommand = [index: [_index: index, _type: TYPE, _id: id]]
+        bulkRequest << JsonOutput.toJson(bulkCommand)
+        bulkRequest << '\n'
+        bulkRequest << JsonOutput.toJson(source)
+        bulkRequest << '\n'
+        results << result
+        loadedIndices << i
+        
+      } catch (Exception e) {
+        log.error("Load request failed: ${e}")
       }
-    } catch (Exception e) {
-      log.error("Load request failed: ${e}")
+    }
+  
+    String bulkRequestBody = bulkRequest.toString()
+    if (bulkRequestBody) { // Don't send a request if there is nothing to send
+      def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
+      log.info("bulkResponse: ${bulkResponse} loadedIndices: ${loadedIndices} ")
     }
     
     return [data: results]
