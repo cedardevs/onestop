@@ -5,17 +5,24 @@ import groovy.util.logging.Slf4j
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.DateTimeParseException
 import java.time.format.ResolverStyle
 import java.time.temporal.ChronoField
+import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAccessor
+import java.time.temporal.TemporalQueries
 import java.time.temporal.TemporalQuery
 
 @Slf4j
 class AnalysisAndValidationService {
+
+  // Just to decrease chance of typos
+  static final String UNDEFINED = 'UNDEFINED'
+  static final String INVALID = 'INVALID'
 
   static Map analyzeParsedMetadata(Map msgMap) {
     log.info "Analyzing message with id: ${msgMap?.id}"
@@ -62,132 +69,106 @@ class AnalysisAndValidationService {
     ]
   }
 
-  // handle 3 optional date formats in priority of full-parse option to minimal-parse options
-  static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
-      .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
-      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
-      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
-      .toFormatter()
-      .withResolverStyle(ResolverStyle.STRICT)
+  static Map dateInfo(String dateString, boolean start) {
 
-  // use custom formatter for when time zone information is not supplied in a LocalDateTime format for ES's happiness
-  static final DateTimeFormatter ELASTIC_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-
-//  static Map elasticDateInfo(String date) {
-//
-//    def dateInvalid = false
-//
-//    // don't bother parsing if there's nothing here
-//    if(!date) {
-//      return null
-//    }
-//
-//    // default to null
-//    String elasticDate = null
-//    TemporalAccessor parsedDate = null
-//    Long year = null
-//
-//    // paleo dates can be longs
-//    if(date.isLong()) {
-//      elasticDate = date
-//      year = Long.parseLong(date)
-//      // we only care about the year if outside of limits
-//      if(year < MIN_DATE_LONG || year > MAX_DATE_LONG) {
-//        elasticDate = null
-//      }
-//    }
-//    else {
-//      try {
-//        // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
-//        parsedDate = PARSE_DATE_FORMATTER.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
-//        year = parsedDate.get(ChronoField.YEAR)
-//
-//        // date is in format like: 2010-12-30T00:00:00Z
-//        if(parsedDate instanceof ZonedDateTime) {
-//          elasticDate = date
-//        }
-//        // date is in format like: 2010-12-30T00:00:00
-//        else if(parsedDate instanceof LocalDateTime) {
-//          // assume UTC
-//          ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
-//          elasticDate = parsedDateUTC.format(ELASTIC_DATE_FORMATTER)
-//          // re-evaluate year in off-chance year was affected by zone id
-//          year = parsedDateUTC.get(ChronoField.YEAR)
-//        }
-//        // date is in format like: 2010-12-30
-//        else if(parsedDate instanceof LocalDate) {
-//          elasticDate = date
-//        }
-//      }
-
-  static Map dateInfo(String dateString) {
-
-    def DateTimeFormatter DATE_OPT_TIME_PARSER = DateTimeFormatter.ofPattern("yyyy['-'MM['-'dd]]['T'HH[':'mm[':'ss]]][X]")
+    final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
+        .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
+        .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
+        .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
+        .toFormatter()
+        .withResolverStyle(ResolverStyle.STRICT)
 
     def exists = dateString ? true : false
     def yearOnly = exists ? dateString.isLong() : 'NA'
 
-    def parsedDate, validFormat
-    if(exists) {
-      if(yearOnly) {
-        // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
-        def MIN_YEAR_LONG = -292275055L
-        def MAX_YEAR_LONG = 292278994L
-        def year = Long.parseLong(dateString)
-        validFormat = year < MIN_YEAR_LONG || year > MAX_YEAR_LONG ? false : true
-        parsedDate = validFormat ? DATE_OPT_TIME_PARSER.parse(dateString) : null
-      }
-      else {
-        try {
-          parsedDate = DATE_OPT_TIME_PARSER.parse(dateString)
-          validFormat = true
-        }
-        catch(DateTimeParseException e) {
-          validFormat = false
-          parsedDate = null
-        }
-      }
+    def utcDateTimeString, validSearchFormat, precision, timezone
+    if(yearOnly) {
+      def year = Long.parseLong(dateString)
+      // Year must be in the range [-292275055,292278994] in order to be parsed as a date by ES (Joda time magic number). However,
+      // this number is a bit arbitrary, and prone to change when ES switches to the Java time library. We will limit the year
+      // ourselves instead to -100,000 -- since this is a fairly safe bet for supportability across many date libraries if the
+      // utcDateTime ends up used as is by a downstream app.
+      validSearchFormat = year < -100000L ? false : true
+      precision = ChronoUnit.YEARS.toString()
+      timezone = UNDEFINED
+      utcDateTimeString = "${year}-01-01T00:00:00Z"
     }
     else {
-      validFormat = 'NA'
-      parsedDate = null
+      try{
+        def parsedDate = PARSE_DATE_FORMATTER.parseBest(dateString, ZonedDateTime.&from as TemporalQuery,
+            LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
+        validSearchFormat = true
+        precision = parsedDate.query(TemporalQueries.precision()).toString()
+        if(parsedDate instanceof LocalDate) {
+          parsedDate = start ? parsedDate.atTime(0, 0, 0) : parsedDate.atTime(23, 59, 59)
+          parsedDate = parsedDate.atZone(ZoneOffset.UTC)
+        }
+        else if(parsedDate instanceof LocalDateTime) {
+          parsedDate = parsedDate.atZone(ZoneOffset.UTC)
+        }
+        else if(parsedDate instanceof ZonedDateTime) {
+          timezone = parsedDate.offset.toString()
+          parsedDate = parsedDate.withZoneSameInstant(ZoneOffset.UTC)
+        }
+        utcDateTimeString = parsedDate.toString()
+      }
+      catch(DateTimeParseException e) {
+        validSearchFormat = false
+        precision = INVALID
+        timezone = INVALID
+        utcDateTimeString = INVALID
+      }
+
     }
 
     return [
         exists: exists,
-        yearOnly: yearOnly,
-        validFormat: validFormat,
-        dateObject: parsedDate
+        precision: precision,
+        validSearchFormat: validSearchFormat,
+        zoneSpecified: timezone ?: UNDEFINED,
+        utcDateTimeString: utcDateTimeString
     ]
   }
 
   static Map analyzeTemporalBounding(Map metadata) {
 
-    def beginExists, beginValidFormat, beginYearOnly, endExists, endValidFormat, endYearOnly, beginLTEEnd
+    // Gather info on individual dates:
+    def beginInfo = dateInfo(metadata.temporalBounding.beginDate, true)
+    def endInfo = dateInfo(metadata.temporalBounding.endDate, false)
 
-    def beginInfo = dateInfo(metadata.temporalBounding.beginDate)
-    def endInfo = dateInfo(metadata.temporalBounding.endDate)
 
-    // Compare parsed dates, if they both exist
-    if(beginInfo.exists && endInfo.exists) {
-      // FIXME
-      // Compare when both year only
-      // Compare when one is year only and other is not
-      // Compare parsed date objects -- they have to be the same format. Should dateInfo put everything into dateTimeZ for this?
-
+    // Determine the descriptor of the given time range:
+    def descriptor
+    if(beginInfo.exists) {
+      // ( begin && end ) OR ( begin && !end )
+      descriptor = endInfo.exists ? 'BOUNDED' : 'ONGOING'
     }
     else {
-      beginLTEEnd = 'NA'
+      // ( !begin && end ) OR ( !begin && !end )
+      descriptor == endInfo.exists ? INVALID : UNDEFINED
     }
 
+
+    // Determine if the given time range is valid:
+    def beginLTEEnd
+    if(descriptor == INVALID || descriptor == UNDEFINED) {
+      beginLTEEnd = UNDEFINED
+    }
+    else if(descriptor == 'ONGOING') {
+      beginLTEEnd = true
+    }
+    else {
+
+    }
+
+
     return [
-        beginExists     : beginInfo.exists,
-        beginYearOnly   : beginInfo.yearOnly,
-        beginValidFormat: beginInfo.validFormat,
-        endExists       : endInfo.exists,
-        endYearOnly     : endInfo.yearOnly,
-        endValidFormat  : endInfo.validFormat,
-        beginLTEEnd     : beginLTEEnd
+        begin: beginInfo,
+        end: endInfo,
+        range: [
+            descriptor: descriptor,
+            beginLTEEnd: beginLTEEnd
+        ]
     ]
   }
 

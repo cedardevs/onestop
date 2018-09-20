@@ -4,6 +4,15 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import spock.lang.Specification
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalQueries
+import java.time.temporal.TemporalQuery
+
 class AnalysisAndValidationServiceSpec extends Specification {
 
   def "All valid fields return expected response from service"() {
@@ -28,17 +37,23 @@ class AnalysisAndValidationServiceSpec extends Specification {
             ]
         ],
         temporalBounding: [
-            beginDate: [
+            begin: [
                 exists: true,
-                valid : true
+                precision: ChronoUnit.SECONDS.toString(),
+                validSearchFormat: true,
+                zoneSpecified: ZoneOffset.UTC.toString(),
+                utcDateTimeString: '2005-05-09T00:00:00Z'
             ],
-            endDate  : [
+            end: [
                 exists: true,
-                valid : true
+                precision: ChronoUnit.DAYS.toString(),
+                validSearchFormat: true,
+                zoneSpecified: 'UNDEFINED',
+                utcDateTimeString: '2010-10-01T23:59:59Z'
             ],
-            instant  : [
-                exists: false,
-                valid : true
+            range: [
+                descriptor: 'BOUNDED',
+                beginLTEEnd: true
             ]
         ],
         spatialBounding : [
@@ -75,6 +90,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     response == expectedResponse
   }
 
+  // FIXME
   def "Invalidly formatted time fields accurately identified"() {
     given:
     def metadata = [
