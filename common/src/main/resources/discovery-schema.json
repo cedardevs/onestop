@@ -319,10 +319,9 @@
       "type": ["string", "null"]
     },
     "services": {
+      "type": "object",
       "description": "Base64 encoded SV_ServiceIdentification sections, if any, of ISO XML metadata document. Null if not present.",
-      "array": {
-        "type": ["string", "null"]
-      }
+      "additionalProperties": true
     }
   },
   "additionalProperties": false,
