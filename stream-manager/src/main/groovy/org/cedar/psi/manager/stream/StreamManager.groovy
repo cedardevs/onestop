@@ -12,6 +12,7 @@ import org.apache.kafka.streams.kstream.Predicate
 import org.apache.kafka.streams.kstream.Produced
 import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.manager.config.Constants
+import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
 
 
@@ -37,8 +38,8 @@ class StreamManager {
     }
 
     //stream incoming granule and collection messages
-    KStream<String, Map> granuleInputStream = builder.stream(Constants.RAW_GRANULES_TOPIC)
-    KStream<String, Map> collectionInputStream = builder.stream(Constants.RAW_COLLECTIONS_TOPIC)
+    KStream<String, Map> granuleInputStream = builder.stream(Topics.RAW_GRANULE_CHANGELOG_TOPIC)
+    KStream<String, Map> collectionInputStream = builder.stream(Topics.RAW_COLLECTION_CHANGELOG_TOPIC)
 
     // Split granules to those that need SME processing and those ready to parse
     KStream<String, Map>[] smeBranches = granuleInputStream.branch(toParsing, toSMETopic)
@@ -46,9 +47,9 @@ class StreamManager {
     KStream toSmeFunction = smeBranches[1]
 
     // To SME functions:
-    toSmeFunction.mapValues({ v -> v.content } as ValueMapper<Map, Map>).to(Constants.SME_TOPIC, Produced.with(Serdes.String(), Serdes.String()))
+    toSmeFunction.mapValues({ v -> v.content } as ValueMapper<Map, Map>).to(Topics.SME_GRANULE_TOPIC, Produced.with(Serdes.String(), Serdes.String()))
     // Merge straight-to-parsing stream with topic SME granules write to:
-    KStream<String, Map> unparsedGranules = builder.stream(Constants.UNPARSED_TOPIC)
+    KStream<String, Map> unparsedGranules = builder.stream(Topics.UNPARSED_GRANULE_TOPIC)
     KStream<String, Map> parsedNotAnalyzedGranules = toParsingFunction.merge(unparsedGranules)
         .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v) } as ValueMapper<Map, Map>)
 
@@ -57,14 +58,14 @@ class StreamManager {
     KStream goodParsedStream = parsedStreams[0]
     KStream badParsedStream = parsedStreams[1]
     //send the bad stream off to the error topic
-    badParsedStream.to(Constants.ERROR_TOPIC)
+    badParsedStream.to(Topics.ERROR_HANDLER_TOPIC)
     // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
     //      parallelization, or at least compare with and without topic in load testing?
 
     // Send valid messages to analysis & send final output to topic
     goodParsedStream
         .mapValues({ v -> AnalysisAndValidationService.analyzeParsedMetadata(v)} as ValueMapper<Map, Map>)
-        .to(Constants.PARSED_TOPIC)
+        .to(Topics.PARSED_GRANULE_TOPIC)
 
     // parsing collection:
     KStream<String, Map> parsedNotAnalyzedCollection = collectionInputStream
@@ -75,14 +76,14 @@ class StreamManager {
     KStream goodParsedCollection = parsedCollection[0]
     KStream badParsedCollection = parsedCollection[1]
     //send the bad stream off to the error topic
-    badParsedCollection.to(Constants.ERROR_TOPIC)
+    badParsedCollection.to(Topics.ERROR_HANDLER_TOPIC)
     // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
     //      parallelization, or at least compare with and without topic in load testing?
 
     // Send valid messages to analysis & send final output to topic
     goodParsedCollection
         .mapValues({ v -> AnalysisAndValidationService.analyzeParsedMetadata(v)} as ValueMapper<Map, Map>)
-        .to(Constants.PARSED_COLLECTIONS_TOPIC)
+        .to(Topics.PARSED_COLLECTION_TOPIC)
 
     return builder.build()
   }
