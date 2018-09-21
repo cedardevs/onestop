@@ -129,7 +129,9 @@ class Detail extends Component {
       return (
         <div style={styleCenterContent}>
           <div style={styleDetailWrapper}>
-            <h1 style={styleErrorMessage}>There was a problem loading your collection.</h1>
+            <h1 style={styleErrorMessage}>
+              There was a problem loading your collection.
+            </h1>
           </div>
         </div>
       )

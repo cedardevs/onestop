@@ -114,10 +114,11 @@ export default class Root extends Component {
 
     const left = leftOpen ? <FiltersContainer /> : <FiltersHiddenContainer />
     const leftWidth = leftOpen ? '20em' : '2em'
-    const cart = shoppingCartEnabled ?
-              (<Route path="/cart">
-                <CartContainer />
-              </Route>) : null
+    const cart = shoppingCartEnabled ? (
+      <Route path="/cart">
+        <CartContainer />
+      </Route>
+    ) : null
 
     const middle = (
       <div style={{width: '100%'}}>

@@ -32,17 +32,16 @@ const styleShowMoreFocus = {
 }
 
 export default class GranuleList extends Component {
-
   isGranuleSelected = itemId => {
-    const { selectedGranules } = this.props
+    const {selectedGranules} = this.props
     const checkIt = Object.keys(selectedGranules).includes(itemId)
     return checkIt
   }
 
   handleCheckboxChange = (itemId, item) => {
-    const { selectGranule, deselectGranule } = this.props
+    const {selectGranule, deselectGranule} = this.props
     return checkbox => {
-      if(checkbox.checked) {
+      if (checkbox.checked) {
         selectGranule(item, itemId)
       }
       else {
@@ -52,19 +51,19 @@ export default class GranuleList extends Component {
   }
 
   handleSelectAll = () => {
-    const { results, selectVisibleGranules } = this.props
-    console.log("results:", results)
+    const {results, selectVisibleGranules} = this.props
+    console.log('results:', results)
   }
 
   propsForResult = (item, itemId) => {
-    const { shoppingCartEnabled } = this.props
+    const {shoppingCartEnabled} = this.props
 
     return {
       showLinks: true,
       showTimeAndSpace: true,
       handleCheckboxChange: this.handleCheckboxChange,
       checkGranule: this.isGranuleSelected(itemId),
-      shoppingCartEnabled: shoppingCartEnabled
+      shoppingCartEnabled: shoppingCartEnabled,
     }
   }
 
@@ -82,7 +81,6 @@ export default class GranuleList extends Component {
     // keep track of used protocols in results to avoid unnecessary legend keys
     const usedProtocols = new Set()
     _.forEach(results, value => {
-
       //
 
       _.forEach(value.links, link => {
@@ -115,7 +113,7 @@ export default class GranuleList extends Component {
           <ListView
             items={results}
             loading={!!loading}
-            resultsMessage={"Collection Files"}
+            resultsMessage={'Collection Files'}
             shown={returnedHits}
             total={totalHits}
             onItemSelect={selectCollection}

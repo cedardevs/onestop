@@ -21,8 +21,8 @@ export const clearConfig = () => {
 }
 
 export const enableFeature = featuresList => {
-  const featureToggles = _.map(featuresList, (toggle) => toggle.featureName)
-  const shoppingCartEnabled = featureToggles.includes("shoppingCart")
+  const featureToggles = _.map(featuresList, toggle => toggle.featureName)
+  const shoppingCartEnabled = featureToggles.includes('shoppingCart')
   return {
     type: ENABLE_FEATURE,
     shoppingCartEnabled: shoppingCartEnabled,

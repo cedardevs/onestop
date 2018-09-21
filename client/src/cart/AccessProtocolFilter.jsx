@@ -1,5 +1,5 @@
 import React from 'react'
-import { renderBadgeIcon, styleBadge } from '../utils/resultUtils'
+import {renderBadgeIcon, styleBadge} from '../utils/resultUtils'
 
 const styleLegendList = {
   justifyContent: 'flex-start',
@@ -24,31 +24,28 @@ const styleLegendLabel = {
 
 export default class AccessProtocolFilter extends React.Component {
   render() {
-
     const {usedProtocols} = this.props
 
     const legendItems = _.chain(_.toArray(usedProtocols))
-        .sortBy('id')
-        .uniqBy('id')
-        .map((protocol, i) => {
-          return (
-              <li key={i} style={styleLegendItem}>
-                <div style={styleBadge(protocol)} aria-hidden="true">
-                  {renderBadgeIcon(protocol)}
-                </div>
-                <div
-                    id={`protocol::legend::${protocol.id}`}
-                    style={styleLegendLabel}
-                >
-                  {protocol.label}
-                </div>
-              </li>
-          )
-        })
-        .value()
+      .sortBy('id')
+      .uniqBy('id')
+      .map((protocol, i) => {
+        return (
+          <li key={i} style={styleLegendItem}>
+            <div style={styleBadge(protocol)} aria-hidden="true">
+              {renderBadgeIcon(protocol)}
+            </div>
+            <div
+              id={`protocol::legend::${protocol.id}`}
+              style={styleLegendLabel}
+            >
+              {protocol.label}
+            </div>
+          </li>
+        )
+      })
+      .value()
 
-    return (
-        <ul style={styleLegendList}>{legendItems}</ul>
-    )
+    return <ul style={styleLegendList}>{legendItems}</ul>
   }
 }

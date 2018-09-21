@@ -91,13 +91,13 @@ const styleSkipLinkHover = {
 }
 
 const styleCartButton = {
-  fontSize: '0.618em'
+  fontSize: '0.618em',
 }
 
 const styleCartIcon = {
   width: '1.618em',
   height: '1.618em',
-  marginRight: '0.309em'
+  marginRight: '0.309em',
 }
 
 class Header extends React.Component {
@@ -127,23 +127,28 @@ class Header extends React.Component {
   }
 
   handleRedirectToCart = () => {
-    const { history } = this.props
+    const {history} = this.props
     history.push('/cart')
   }
 
   render() {
-    const {abbreviatedNumberOfGranulesSelected, shoppingCartEnabled} = this.props
+    const {
+      abbreviatedNumberOfGranulesSelected,
+      shoppingCartEnabled,
+    } = this.props
     const {focusingSkipLink} = this.state
-    const shoppingCartLink = shoppingCartEnabled? (<li style={styleLinkListItem(false, true)}>
-      <Button
+    const shoppingCartLink = shoppingCartEnabled ? (
+      <li style={styleLinkListItem(false, true)}>
+        <Button
           style={styleCartButton}
           title="Shopping Cart"
           text={abbreviatedNumberOfGranulesSelected}
           icon={cart}
           styleIcon={styleCartIcon}
           onClick={this.handleRedirectToCart}
-      />
-  </li>) : null
+        />
+      </li>
+    ) : null
     const menuContent = (
       <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>

@@ -30,7 +30,7 @@ const styleListControl = {
 const styleControlButtonIcon = {
   width: '1em',
   height: '1em',
-  marginRight: '0.309em'
+  marginRight: '0.309em',
 }
 
 const styleGrid = {
@@ -126,10 +126,14 @@ export default class ListView extends Component {
 
     const listInfo = (
       <h1 style={styleListInfo}>
-        {loading ? (
-          loadingMessage ? loadingMessage : 'Loading...'
+        {loading ? loadingMessage ? (
+          loadingMessage
         ) : (
-          `${resultsMessage ? resultsMessage : 'Results'} (showing ${shown} of ${total})`
+          'Loading...'
+        ) : (
+          `${resultsMessage
+            ? resultsMessage
+            : 'Results'} (showing ${shown} of ${total})`
         )}
       </h1>
     )

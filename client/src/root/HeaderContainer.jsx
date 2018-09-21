@@ -5,13 +5,16 @@ import {withRouter} from 'react-router'
 import {abbreviateNumber} from '../utils/readableUtils'
 
 const mapStateToProps = state => {
-
-  const numberOfGranulesSelected = Object.keys(state.cart.granules.selectedGranules).length
-  const abbreviatedNumberOfGranulesSelected = abbreviateNumber(numberOfGranulesSelected)
+  const numberOfGranulesSelected = Object.keys(
+    state.cart.granules.selectedGranules
+  ).length
+  const abbreviatedNumberOfGranulesSelected = abbreviateNumber(
+    numberOfGranulesSelected
+  )
 
   return {
     abbreviatedNumberOfGranulesSelected: abbreviatedNumberOfGranulesSelected,
-    shoppingCartEnabled: state.domain.config.shoppingCartEnabled
+    shoppingCartEnabled: state.domain.config.shoppingCartEnabled,
   }
 }
 

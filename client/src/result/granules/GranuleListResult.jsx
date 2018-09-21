@@ -67,16 +67,15 @@ const styleFocusDefault = {
 
 const styleBadgeLink = {
   textDecoration: 'none',
-  display: 'inline-flex'
+  display: 'inline-flex',
 }
 
 const styleBadgeLinkFocused = {
   outline: '2px dashed white',
-  outlineOffset: '0.105em'
+  outlineOffset: '0.105em',
 }
 
 class ListResult extends React.Component {
-
   componentWillMount() {
     this.setState({
       focusing: false,
@@ -231,7 +230,15 @@ class ListResult extends React.Component {
   }
 
   render() {
-    const {itemId, item, showLinks, showTimeAndSpace, handleCheckboxChange, checkGranule, shoppingCartEnabled} = this.props
+    const {
+      itemId,
+      item,
+      showLinks,
+      showTimeAndSpace,
+      handleCheckboxChange,
+      checkGranule,
+      shoppingCartEnabled,
+    } = this.props
 
     const styleFocused = {
       ...(this.state.focusing ? styleFocusDefault : {}),
@@ -258,14 +265,14 @@ class ListResult extends React.Component {
       </h2>,
     ]
 
-    const selectGranuleCheckbox = shoppingCartEnabled? (
-        <Checkbox
-            key={`checkbox-${itemId}`}
-            label={`Add to Cart`}
-            id={itemId}
-            checked={checkGranule}
-            onChange={handleCheckboxChange(itemId, item)}
-        />
+    const selectGranuleCheckbox = shoppingCartEnabled ? (
+      <Checkbox
+        key={`checkbox-${itemId}`}
+        label={`Add to Cart`}
+        id={itemId}
+        checked={checkGranule}
+        onChange={handleCheckboxChange(itemId, item)}
+      />
     ) : null
 
     if (showLinks) {

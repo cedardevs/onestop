@@ -1,5 +1,9 @@
 import Immutable from 'seamless-immutable'
-import {CLEAR_CONFIG, SET_CONFIG, ENABLE_FEATURE} from '../../actions/ConfigActions'
+import {
+  CLEAR_CONFIG,
+  SET_CONFIG,
+  ENABLE_FEATURE,
+} from '../../actions/ConfigActions'
 
 export const initialState = Immutable({
   banner: {},
@@ -17,7 +21,7 @@ export const config = (state = initialState, action) => {
 
     case ENABLE_FEATURE:
       return Immutable.merge(state, {
-        shoppingCartEnabled: action.shoppingCartEnabled
+        shoppingCartEnabled: action.shoppingCartEnabled,
       })
 
     default:

@@ -12,7 +12,6 @@ const stylePressDefault = {}
 const styleFocusDefault = {}
 
 class Link extends Component {
-
   componentWillMount() {
     this.setState({
       hovering: false,
@@ -115,14 +114,23 @@ class Link extends Component {
   }
 
   render() {
-    const {href, target, onClick, style, styleHover, stylePress, styleFocus, ...others} = this.props
+    const {
+      href,
+      target,
+      onClick,
+      style,
+      styleHover,
+      stylePress,
+      styleFocus,
+      ...others
+    } = this.props
 
     const stylesMerged = {
       ...styleLink,
       ...style,
       ...(this.state.hovering ? {...styleHoverDefault, ...styleHover} : {}),
       ...(this.state.pressing ? {...stylePressDefault, ...stylePress} : {}),
-      ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {})
+      ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {}),
     }
 
     return (
