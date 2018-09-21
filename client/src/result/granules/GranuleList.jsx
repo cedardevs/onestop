@@ -57,11 +57,14 @@ export default class GranuleList extends Component {
   }
 
   propsForResult = (item, itemId) => {
+    const { shoppingCartEnabled } = this.props
+
     return {
       showLinks: true,
       showTimeAndSpace: true,
       handleCheckboxChange: this.handleCheckboxChange,
-      checkGranule: this.isGranuleSelected(itemId)
+      checkGranule: this.isGranuleSelected(itemId),
+      shoppingCartEnabled: shoppingCartEnabled
     }
   }
 

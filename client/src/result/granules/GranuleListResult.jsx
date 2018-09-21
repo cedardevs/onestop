@@ -231,7 +231,7 @@ class ListResult extends React.Component {
   }
 
   render() {
-    const {itemId, item, showLinks, showTimeAndSpace, handleCheckboxChange, checkGranule} = this.props
+    const {itemId, item, showLinks, showTimeAndSpace, handleCheckboxChange, checkGranule, shoppingCartEnabled} = this.props
 
     const styleFocused = {
       ...(this.state.focusing ? styleFocusDefault : {}),
@@ -258,7 +258,7 @@ class ListResult extends React.Component {
       </h2>,
     ]
 
-    const selectGranuleCheckbox = (
+    const selectGranuleCheckbox = shoppingCartEnabled? (
         <Checkbox
             key={`checkbox-${itemId}`}
             label={`Add to Cart`}
@@ -266,7 +266,7 @@ class ListResult extends React.Component {
             checked={checkGranule}
             onChange={handleCheckboxChange(itemId, item)}
         />
-    )
+    ) : null
 
     if (showLinks) {
       rightItems.push(this.renderLinks(item.links))

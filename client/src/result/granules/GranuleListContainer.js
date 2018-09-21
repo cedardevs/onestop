@@ -17,7 +17,6 @@ const mapStateToProps = state => {
 
   const {granules, totalGranules} = state.domain.results
   const focusedItem = state.domain.results.collectionDetail
-
   return {
     collectionTitle: focusedItem
       ? focusedItem.collection.attributes.title
@@ -26,7 +25,8 @@ const mapStateToProps = state => {
     totalHits: totalGranules,
     returnedHits: (granules && Object.keys(granules).length) || 0,
     loading: state.ui.loading ? 1 : 0,
-    selectedGranules: state.cart.granules.selectedGranules
+    selectedGranules: state.cart.granules.selectedGranules,
+    shoppingCartEnabled: state.domain.config.shoppingCartEnabled
   }
 }
 

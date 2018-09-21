@@ -10,7 +10,8 @@ const mapStateToProps = state => {
   const abbreviatedNumberOfGranulesSelected = abbreviateNumber(numberOfGranulesSelected)
 
   return {
-    abbreviatedNumberOfGranulesSelected: abbreviatedNumberOfGranulesSelected
+    abbreviatedNumberOfGranulesSelected: abbreviatedNumberOfGranulesSelected,
+    shoppingCartEnabled: state.domain.config.shoppingCartEnabled
   }
 }
 

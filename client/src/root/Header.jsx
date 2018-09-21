@@ -132,9 +132,18 @@ class Header extends React.Component {
   }
 
   render() {
-    const {abbreviatedNumberOfGranulesSelected} = this.props
+    const {abbreviatedNumberOfGranulesSelected, shoppingCartEnabled} = this.props
     const {focusingSkipLink} = this.state
-
+    const shoppingCartLink = shoppingCartEnabled? (<li style={styleLinkListItem(false, true)}>
+      <Button
+          style={styleCartButton}
+          title="Shopping Cart"
+          text={abbreviatedNumberOfGranulesSelected}
+          icon={cart}
+          styleIcon={styleCartIcon}
+          onClick={this.handleRedirectToCart}
+      />
+  </li>) : null
     const menuContent = (
       <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>
@@ -147,21 +156,12 @@ class Header extends React.Component {
             About Us
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, false)}>
+        <li style={styleLinkListItem(false, !shoppingCartEnabled)}>
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, true)}>
-          <Button
-              style={styleCartButton}
-              title="Shopping Cart"
-              text={abbreviatedNumberOfGranulesSelected}
-              icon={cart}
-              styleIcon={styleCartIcon}
-              onClick={this.handleRedirectToCart}
-          />
-        </li>
+        {shoppingCartLink}
       </ul>
     )
 
