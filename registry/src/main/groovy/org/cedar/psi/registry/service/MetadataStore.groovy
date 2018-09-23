@@ -7,10 +7,7 @@ import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-import static org.cedar.psi.common.constants.Topics.RAW_GRANULE_STORE
-import static org.cedar.psi.common.constants.Topics.RAW_COLLECTION_STORE
-import static org.cedar.psi.common.constants.Topics.PARSED_GRANULE_STORE
-import static org.cedar.psi.common.constants.Topics.PARSED_COLLECTION_STORE
+import static org.cedar.psi.common.constants.Topics.*
 
 
 @Slf4j
@@ -28,8 +25,8 @@ class MetadataStore {
   }
 
   Map retrieveEntity(String type, String id) {
-    def rawStore = lookupRawStoreName(type)
-    def parsedStore = lookupParsedStoreName(type)
+    def rawStore = inputStore(type)
+    def parsedStore = parsedStore(type)
     if (!rawStore && !parsedStore) { return null }
     Map rawValue = rawStore ? getValueFromStore(rawStore, id) : null
     Map parsedValue = parsedStore ? getValueFromStore(parsedStore, id) : null
@@ -47,16 +44,6 @@ class MetadataStore {
       log.error("Failed to retrieve value with id [${id}] from state store [${storeName}]", e)
       throw e
     }
-  }
-
-  private static String lookupRawStoreName(String type) {
-    return type == 'granule' ? RAW_GRANULE_STORE :
-        type == 'collection' ? RAW_COLLECTION_STORE : null
-  }
-
-  private static String lookupParsedStoreName(String type) {
-    return type == 'granule' ? PARSED_GRANULE_STORE :
-        type == 'collection' ? PARSED_COLLECTION_STORE : null
   }
 
   /**

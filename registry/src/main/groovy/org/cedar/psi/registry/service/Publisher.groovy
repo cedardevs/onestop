@@ -9,9 +9,7 @@ import org.springframework.stereotype.Service
 
 import javax.servlet.http.HttpServletRequest
 
-import static org.cedar.psi.common.constants.Topics.RAW_GRANULE_TOPIC
-import static org.cedar.psi.common.constants.Topics.RAW_COLLECTION_TOPIC
-
+import static org.cedar.psi.common.constants.Topics.inputTopic
 
 
 @Slf4j
@@ -20,8 +18,8 @@ import static org.cedar.psi.common.constants.Topics.RAW_COLLECTION_TOPIC
 class Publisher {
 
   private final Map topicsByType = [
-      collection: RAW_COLLECTION_TOPIC,
-      granule: RAW_GRANULE_TOPIC
+      collection: inputTopic('collection'),
+      granule: inputTopic('granule')
   ]
 
   private Producer<String, Map> kafkaProducer

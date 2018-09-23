@@ -78,15 +78,15 @@ class MetadataStreamService {
   }
 
   static Map<String, Map> topicConfigs = [
-      (Topics.RAW_GRANULE_TOPIC)        : null,
-      (Topics.RAW_COLLECTION_TOPIC)     : null,
-      (Topics.PARSED_GRANULE_TOPIC)     : null,
-      (Topics.PARSED_COLLECTION_TOPIC)  : null,
-      (Topics.COMBINED_GRANULE_TOPIC)   : null,
-      (Topics.COMBINED_COLLECTION_TOPIC): null,
-      (Topics.ERROR_HANDLER_TOPIC)      : null,
-      (Topics.SME_GRANULE_TOPIC)        : null,
-      (Topics.UNPARSED_GRANULE_TOPIC)   : null,
+      (Topics.inputTopic('granule'))      : null,
+      (Topics.inputTopic('collection'))   : null,
+      (Topics.parsedTopic('granule'))     : null,
+      (Topics.parsedTopic('collection'))  : null,
+      (Topics.combinedTopic('granule'))   : null,
+      (Topics.combinedTopic('collection')): null,
+      (Topics.errorTopic())               : null,
+      (Topics.smeTopic('granule'))        : null,
+      (Topics.unparsedTopic('granule'))   : null,
   ] as Map<String, Map>
 
   private static void declareTopics(AdminClient adminClient) {
@@ -130,52 +130,52 @@ class MetadataStreamService {
   static Topology buildTopology(long publishInterval) {
     def builder = new StreamsBuilder()
 
-    KStream<String, Map> rawGranules = builder.stream(Topics.RAW_GRANULE_TOPIC)
+    KStream<String, Map> rawGranules = builder.stream(Topics.inputTopic('granule'))
     KGroupedStream groupedGranules = rawGranules.groupByKey()
-    KTable rawGranuleTable = groupedGranules.reduce(StreamFunctions.mergeContentMaps, Materialized.as(Topics.RAW_GRANULE_STORE).withValueSerde(JsonSerdes.Map()))
+    KTable rawGranuleTable = groupedGranules.reduce(StreamFunctions.mergeContentMaps, Materialized.as(Topics.inputStore('granule')).withValueSerde(JsonSerdes.Map()))
 
-    KStream<String, Map> rawCollections = builder.stream(Topics.RAW_COLLECTION_TOPIC)
+    KStream<String, Map> rawCollections = builder.stream(Topics.inputTopic('collection'))
     KGroupedStream groupedCollections = rawCollections.groupByKey()
-    KTable rawCollectionTable = groupedCollections.reduce(StreamFunctions.mergeContentMaps, Materialized.as(Topics.RAW_COLLECTION_STORE).withValueSerde(JsonSerdes.Map()))
+    KTable rawCollectionTable = groupedCollections.reduce(StreamFunctions.mergeContentMaps, Materialized.as(Topics.inputStore('collection')).withValueSerde(JsonSerdes.Map()))
 
     KTable parsedGranuleTable = builder
-        .stream(Topics.PARSED_GRANULE_TOPIC, Consumed.with(Serdes.String(), JsonSerdes.Map()))
+        .stream(Topics.parsedTopic('granule'), Consumed.with(Serdes.String(), JsonSerdes.Map()))
         .mapValues(StreamFunctions.parsedInfoNormalizer)
         .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(Topics.PARSED_GRANULE_STORE).withValueSerde(JsonSerdes.Map()))
+        .reduce(StreamFunctions.identityReducer, Materialized.as(Topics.parsedStore('granule')).withValueSerde(JsonSerdes.Map()))
     KTable parsedCollectionTable = builder
-        .stream(Topics.PARSED_COLLECTION_TOPIC, Consumed.with(Serdes.String(), JsonSerdes.Map()))
+        .stream(Topics.parsedTopic('collection'), Consumed.with(Serdes.String(), JsonSerdes.Map()))
         .mapValues(StreamFunctions.parsedInfoNormalizer)
         .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(Topics.PARSED_COLLECTION_STORE).withValueSerde(JsonSerdes.Map()))
+        .reduce(StreamFunctions.identityReducer, Materialized.as(Topics.parsedStore('collection')).withValueSerde(JsonSerdes.Map()))
 
     builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(Topics.GRANULE_PUBLISH_TIMES), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
+        Stores.persistentKeyValueStore(Topics.publishTimeStore('granule')), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
     builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(Topics.GRANULE_PUBLISH_KEYS), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
+        Stores.persistentKeyValueStore(Topics.publishKeyStore('granule')), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
     builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(Topics.COLLECTION_PUBLISH_TIMES), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
+        Stores.persistentKeyValueStore(Topics.publishTimeStore('collection')), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
     builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(Topics.COLLECTION_PUBLISH_KEYS), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
+        Stores.persistentKeyValueStore(Topics.publishKeyStore('collection')), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
 
-    def granulePublisher = new DelayedPublisherTransformer(Topics.GRANULE_PUBLISH_TIMES, Topics.GRANULE_PUBLISH_KEYS, Topics.PARSED_GRANULE_STORE, publishInterval)
-    def collectionPublisher = new DelayedPublisherTransformer(Topics.COLLECTION_PUBLISH_TIMES,Topics. COLLECTION_PUBLISH_KEYS, Topics.PARSED_COLLECTION_STORE, publishInterval)
+    def granulePublisher = new DelayedPublisherTransformer(Topics.publishTimeStore('granule'), Topics.publishKeyStore('granule'), Topics.parsedStore('granule'), publishInterval)
+    def collectionPublisher = new DelayedPublisherTransformer(Topics.publishTimeStore('collection'), Topics.publishKeyStore('collection'), Topics.parsedStore('collection'), publishInterval)
 
     parsedGranuleTable
         .toStream()
-        .transform({ -> granulePublisher }, Topics.GRANULE_PUBLISH_TIMES, Topics.GRANULE_PUBLISH_KEYS, Topics.PARSED_GRANULE_STORE)
-        .to(Topics.PARSED_GRANULE_TOPIC)
+        .transform({ -> granulePublisher }, Topics.publishTimeStore('granule'), Topics.publishKeyStore('granule'), Topics.parsedStore('granule'))
+        .to(Topics.parsedTopic('granule'))
     parsedCollectionTable
         .toStream()
         .mapValues(StreamFunctions.parsedInfoNormalizer)
-        .transform({ -> collectionPublisher }, Topics.COLLECTION_PUBLISH_TIMES, Topics.COLLECTION_PUBLISH_KEYS, Topics.PARSED_COLLECTION_STORE)
-        .to(Topics.PARSED_COLLECTION_TOPIC)
+        .transform({ -> collectionPublisher }, Topics.publishTimeStore('collection'), Topics.publishKeyStore('collection'), Topics.parsedStore('collection'))
+        .to(Topics.parsedTopic('collection'))
     // TODO check with team if we need to create store for the following topics
 
     KTable<String, Map> errorHandlerTable = builder.table(
-        Topics.ERROR_HANDLER_TOPIC,
+        Topics.errorTopic(),
         Consumed.with(Serdes.String(), JsonSerdes.Map()),
-        Materialized.as(Topics.ERROR_HANDLER_STORE)
+        Materialized.as(Topics.errorStore())
             .withLoggingEnabled([:])
             .withKeySerde(Serdes.String())
             .withValueSerde(JsonSerdes.Map())
@@ -185,12 +185,12 @@ class MetadataStreamService {
         .outerJoin(parsedGranuleTable, StreamFunctions.buildKeyedMapJoiner('raw'))
         .toStream()
         .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier)
-        .to(Topics.COMBINED_GRANULE_TOPIC)
+        .to(Topics.combinedTopic('granule'))
     rawCollectionTable
         .outerJoin(parsedCollectionTable, StreamFunctions.buildKeyedMapJoiner('raw'))
         .toStream()
         .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier)
-        .to(Topics.COMBINED_COLLECTION_TOPIC)
+        .to(Topics.combinedTopic('granule'))
 
     return builder.build()
   }

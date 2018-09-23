@@ -8,8 +8,7 @@ import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static org.cedar.psi.common.constants.Topics.RAW_GRANULE_STORE
-import static org.cedar.psi.common.constants.Topics.PARSED_GRANULE_STORE
+import static org.cedar.psi.common.constants.Topics.*
 
 
 @Unroll
@@ -43,8 +42,8 @@ class MetadataStoreSpec extends Specification {
 
     then:
     _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
-    1 * mockStreamsApp.store(RAW_GRANULE_STORE, _ as QueryableStoreType) >> null
-    1 * mockStreamsApp.store(PARSED_GRANULE_STORE, _ as QueryableStoreType) >> null
+    1 * mockStreamsApp.store(inputStore('granule'), _ as QueryableStoreType) >> null
+    1 * mockStreamsApp.store(parsedStore('granule'), _ as QueryableStoreType) >> null
     0 * mockRawStore.get(testId)
     0 * mockParsedStore.get(testId)
 
@@ -60,8 +59,8 @@ class MetadataStoreSpec extends Specification {
 
     then:
     _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
-    1 * mockStreamsApp.store(RAW_GRANULE_STORE, _ as QueryableStoreType) >> mockRawStore
-    1 * mockStreamsApp.store(PARSED_GRANULE_STORE, _ as QueryableStoreType) >> mockParsedStore
+    1 * mockStreamsApp.store(inputStore('granule'), _ as QueryableStoreType) >> mockRawStore
+    1 * mockStreamsApp.store(parsedStore('granule'), _ as QueryableStoreType) >> mockParsedStore
     1 * mockRawStore.get(testId) >> null
     1 * mockParsedStore.get(testId) >> null
 
@@ -77,8 +76,8 @@ class MetadataStoreSpec extends Specification {
 
     then:
     _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
-    1 * mockStreamsApp.store(RAW_GRANULE_STORE, _ as QueryableStoreType) >> mockRawStore
-    1 * mockStreamsApp.store(PARSED_GRANULE_STORE, _ as QueryableStoreType) >> {
+    1 * mockStreamsApp.store(inputStore('granule'), _ as QueryableStoreType) >> mockRawStore
+    1 * mockStreamsApp.store(parsedStore('granule'), _ as QueryableStoreType) >> {
       throw new InvalidStateStoreException('test')
     }
     1 * mockRawStore.get(testId)
@@ -97,8 +96,8 @@ class MetadataStoreSpec extends Specification {
 
     then:
     _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
-    1 * mockStreamsApp.store(RAW_GRANULE_STORE, _ as QueryableStoreType) >> mockRawStore
-    1 * mockStreamsApp.store(PARSED_GRANULE_STORE, _ as QueryableStoreType) >> mockParsedStore
+    1 * mockStreamsApp.store(inputStore('granule'), _ as QueryableStoreType) >> mockRawStore
+    1 * mockStreamsApp.store(parsedStore('granule'), _ as QueryableStoreType) >> mockParsedStore
     1 * mockRawStore.get(testId) >> rawValue
     1 * mockParsedStore.get(testId) >> parsedValue
 

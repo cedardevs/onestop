@@ -1,28 +1,108 @@
 package org.cedar.psi.common.constants
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class Topics {
 
-  static int DEFAULT_NUM_PARTITIONS = 1
-  static short DEFAULT_REPLICATION_FACTOR = 1
-  static final String RAW_GRANULE_TOPIC = 'raw-granule-events'
-  static final String RAW_COLLECTION_TOPIC = 'raw-collection-events'
-  static final String PARSED_GRANULE_TOPIC = 'parsed-granules'
-  static final String PARSED_COLLECTION_TOPIC = 'parsed-collections'
-  static final String COMBINED_GRANULE_TOPIC = 'combined-granules'
-  static final String COMBINED_COLLECTION_TOPIC = 'combined-collections'
-  static final String SME_GRANULE_TOPIC = 'sme-granules'
-  static final String UNPARSED_GRANULE_TOPIC = 'unparsed-granules'
+  static final int DEFAULT_NUM_PARTITIONS = 1
+  static final short DEFAULT_REPLICATION_FACTOR = 1
 
-  static final String RAW_GRANULE_STORE = 'raw-granules'
-  static final String RAW_COLLECTION_STORE = 'raw-collections'
-  static final String PARSED_GRANULE_STORE = 'parsed-granules'
-  static final String PARSED_COLLECTION_STORE = 'parsed-collections'
+  static final Map<String, List<String>> INPUTS = [
+      'collection': ['comet', 'adhoc'],
+      'granule'   : ['common-ingest', 'class', 'adhoc'],
+  ]
 
-  static final String GRANULE_PUBLISH_TIMES = 'granule-publish-times'
-  static final String GRANULE_PUBLISH_KEYS = 'granule-publish-keys'
-  static final String COLLECTION_PUBLISH_TIMES = 'collection-publish-times'
-  static final String COLLECTION_PUBLISH_KEYS = 'collection-publish-keys'
-  static final String ERROR_HANDLER_TOPIC = 'error-events'
-  static final String ERROR_HANDLER_STORE = 'error-store'
+  static Set<String> inputTypes() {
+    INPUTS.keySet()
+  }
+
+  static List<String> inputSources() {
+    def uniqueSources = INPUTS.inject(new HashSet()) { result, t, sources ->
+      result.addAll(sources)
+      result
+    }
+    return uniqueSources as List
+  }
+  static List<String> inputSources(String type) {
+    return INPUTS[type] ?: Collections.<String>emptyList()
+  }
+
+  static Boolean isValidInput(String type) {
+    INPUTS.containsKey(type)
+  }
+  static Boolean isValidInput(String type, String source) {
+    INPUTS[type]?.contains(source)
+  }
+
+  static String inputTopic(String type) {
+    if (!isValidInput(type)) { return null }
+    "raw-${type}-events"
+  }
+  static String inputTopic(String type, String source) {
+    if (!isValidInput(type, source)) { return null }
+    "raw-${source}-${type}-events"
+  }
+
+  static String inputStore(String type) {
+    if (!isValidInput(type)) { return null }
+    "raw-${type}s"
+  }
+  static String inputStore(String type, String source) {
+    if (!isValidInput(type, source)) { return null }
+    "raw-${source}-${type}s"
+  }
+
+  static String inputChangelogTopic(String appName, String type) {
+    if (!isValidInput(type)) { return null }
+    "$appName-${inputStore(type)}-changelog"
+  }
+  static String inputChangelogTopic(String appName, String type, String source) {
+    if (!isValidInput(type, source)) { return null }
+    "$appName-${inputStore(type, source)}-changelog"
+  }
+
+  static String parsedTopic(String type) {
+    if (!isValidInput(type)) { return null }
+    "parsed-${type}s"
+  }
+
+  static String parsedStore(String type) {
+    if (!isValidInput(type)) { return null }
+    "parsed-${type}s"
+  }
+
+  static String smeTopic(String type) {
+    if (!isValidInput(type)) { return null }
+    "sme-${type}s"
+  }
+
+  static String unparsedTopic(String type) {
+    if (!isValidInput(type)) { return null }
+    "unparsed-${type}s"
+  }
+
+  static String combinedTopic(String type) {
+    if (!isValidInput(type)) { return null }
+    "combined-${type}s"
+  }
+
+  static String publishTimeStore(String type) {
+    if (!isValidInput(type)) { return null }
+    "$type-publish-times"
+  }
+
+  static String publishKeyStore(String type) {
+    if (!isValidInput(type)) { return null }
+    "$type-publish-keys"
+  }
+
+  static String errorTopic() {
+    'error-events'
+  }
+
+  static String errorStore() {
+    'error-store'
+  }
 
 }
