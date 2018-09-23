@@ -19,7 +19,7 @@ class StreamFunctions {
     }
   }
 
-  static Reducer<Map> mergeMaps = new Reducer<Map>() {
+  static Reducer<Map> mergeContentMaps = new Reducer<Map>() {
     @Override
     Map apply(Map aggregate, Map nextValue) {
       log.debug("Merging new value $nextValue into existing aggregate ${aggregate}")

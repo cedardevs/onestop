@@ -132,11 +132,11 @@ class MetadataStreamService {
 
     KStream<String, Map> rawGranules = builder.stream(Topics.RAW_GRANULE_TOPIC)
     KGroupedStream groupedGranules = rawGranules.groupByKey()
-    KTable rawGranuleTable = groupedGranules.reduce(StreamFunctions.mergeMaps, Materialized.as(Topics.RAW_GRANULE_STORE).withValueSerde(JsonSerdes.Map()))
+    KTable rawGranuleTable = groupedGranules.reduce(StreamFunctions.mergeContentMaps, Materialized.as(Topics.RAW_GRANULE_STORE).withValueSerde(JsonSerdes.Map()))
 
     KStream<String, Map> rawCollections = builder.stream(Topics.RAW_COLLECTION_TOPIC)
     KGroupedStream groupedCollections = rawCollections.groupByKey()
-    KTable rawCollectionTable = groupedCollections.reduce(StreamFunctions.mergeMaps, Materialized.as(Topics.RAW_COLLECTION_STORE).withValueSerde(JsonSerdes.Map()))
+    KTable rawCollectionTable = groupedCollections.reduce(StreamFunctions.mergeContentMaps, Materialized.as(Topics.RAW_COLLECTION_STORE).withValueSerde(JsonSerdes.Map()))
 
     KTable parsedGranuleTable = builder
         .stream(Topics.PARSED_GRANULE_TOPIC, Consumed.with(Serdes.String(), JsonSerdes.Map()))
