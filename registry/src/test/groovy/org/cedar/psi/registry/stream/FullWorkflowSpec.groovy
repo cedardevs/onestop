@@ -66,8 +66,8 @@ class FullWorkflowSpec extends Specification {
     then:
     parsedGranuleStore.get(key) == value2PlusPublishing
     def output = readAllOutput(driver, combinedTopic('granule'))
-    OutputVerifier.compareKeyValue(output[0], key, ["raw":null,"discovery":["title":"replace me"],"publishing":["private":false]])
-    OutputVerifier.compareKeyValue(output[1], key, ["raw":null,"discovery":["title":"test"],"publishing":["private":false]])
+    OutputVerifier.compareKeyValue(output[0], key, ["input":null,"discovery":["title":"replace me"],"publishing":["private":false]])
+    OutputVerifier.compareKeyValue(output[1], key, ["input":null,"discovery":["title":"test"],"publishing":["private":false]])
     output.size() == 2
   }
 
@@ -106,7 +106,7 @@ class FullWorkflowSpec extends Specification {
     then:
     parsedGranuleStore.get(key) == plusFiveMessage
     def output2 = readAllOutput(driver, combinedTopic('granule'))
-    OutputVerifier.compareKeyValue(output2[0], key, ["raw":null,"discovery":["metadata":"yes"],"publishing":["private":true,"until":plusFiveString]])
+    OutputVerifier.compareKeyValue(output2[0], key, ["input":null,"discovery":["metadata":"yes"],"publishing":["private":true,"until":plusFiveString]])
     output2.size() == 1
   }
 

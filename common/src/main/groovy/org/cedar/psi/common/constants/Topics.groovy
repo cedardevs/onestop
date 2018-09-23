@@ -105,4 +105,17 @@ class Topics {
     'error-store'
   }
 
+  static List<String> allTopics() {
+    return inputTypes().collect({ type -> allTopics(type) }).flatten() as List<String>
+  }
+
+  static List<String> allTopics(String type) {
+    if (!isValidInput(type)) { return Collections.<String>emptyList() }
+    return inputSources(type).collect { source -> inputTopic(type, source) } +
+        parsedTopic(type) +
+        unparsedTopic(type) +
+        smeTopic(type) +
+        combinedTopic(type)
+  }
+
 }

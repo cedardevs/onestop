@@ -12,8 +12,6 @@ import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.Consumed
-import org.apache.kafka.streams.kstream.KGroupedStream
-import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.KTable
 import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.kstream.ValueTransformerSupplier
@@ -130,48 +128,11 @@ class MetadataStreamService {
   static Topology buildTopology(long publishInterval) {
     def builder = new StreamsBuilder()
 
-    KStream<String, Map> rawGranules = builder.stream(Topics.inputTopic('granule'))
-    KGroupedStream groupedGranules = rawGranules.groupByKey()
-    KTable rawGranuleTable = groupedGranules.reduce(StreamFunctions.mergeContentMaps, Materialized.as(Topics.inputStore('granule')).withValueSerde(JsonSerdes.Map()))
+    Topics.inputTypes().each { type ->
+      addTopologyForType(builder, type, publishInterval)
+    }
 
-    KStream<String, Map> rawCollections = builder.stream(Topics.inputTopic('collection'))
-    KGroupedStream groupedCollections = rawCollections.groupByKey()
-    KTable rawCollectionTable = groupedCollections.reduce(StreamFunctions.mergeContentMaps, Materialized.as(Topics.inputStore('collection')).withValueSerde(JsonSerdes.Map()))
-
-    KTable parsedGranuleTable = builder
-        .stream(Topics.parsedTopic('granule'), Consumed.with(Serdes.String(), JsonSerdes.Map()))
-        .mapValues(StreamFunctions.parsedInfoNormalizer)
-        .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(Topics.parsedStore('granule')).withValueSerde(JsonSerdes.Map()))
-    KTable parsedCollectionTable = builder
-        .stream(Topics.parsedTopic('collection'), Consumed.with(Serdes.String(), JsonSerdes.Map()))
-        .mapValues(StreamFunctions.parsedInfoNormalizer)
-        .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(Topics.parsedStore('collection')).withValueSerde(JsonSerdes.Map()))
-
-    builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(Topics.publishTimeStore('granule')), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
-    builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(Topics.publishKeyStore('granule')), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
-    builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(Topics.publishTimeStore('collection')), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
-    builder.addStateStore(Stores.keyValueStoreBuilder(
-        Stores.persistentKeyValueStore(Topics.publishKeyStore('collection')), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
-
-    def granulePublisher = new DelayedPublisherTransformer(Topics.publishTimeStore('granule'), Topics.publishKeyStore('granule'), Topics.parsedStore('granule'), publishInterval)
-    def collectionPublisher = new DelayedPublisherTransformer(Topics.publishTimeStore('collection'), Topics.publishKeyStore('collection'), Topics.parsedStore('collection'), publishInterval)
-
-    parsedGranuleTable
-        .toStream()
-        .transform({ -> granulePublisher }, Topics.publishTimeStore('granule'), Topics.publishKeyStore('granule'), Topics.parsedStore('granule'))
-        .to(Topics.parsedTopic('granule'))
-    parsedCollectionTable
-        .toStream()
-        .mapValues(StreamFunctions.parsedInfoNormalizer)
-        .transform({ -> collectionPublisher }, Topics.publishTimeStore('collection'), Topics.publishKeyStore('collection'), Topics.parsedStore('collection'))
-        .to(Topics.parsedTopic('collection'))
-    // TODO check with team if we need to create store for the following topics
-
+    // TODO this table is unused, plus should we really store every error forever?
     KTable<String, Map> errorHandlerTable = builder.table(
         Topics.errorTopic(),
         Consumed.with(Serdes.String(), JsonSerdes.Map()),
@@ -181,18 +142,47 @@ class MetadataStreamService {
             .withValueSerde(JsonSerdes.Map())
     )
 
-    rawGranuleTable
-        .outerJoin(parsedGranuleTable, StreamFunctions.buildKeyedMapJoiner('raw'))
-        .toStream()
-        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier)
-        .to(Topics.combinedTopic('granule'))
-    rawCollectionTable
-        .outerJoin(parsedCollectionTable, StreamFunctions.buildKeyedMapJoiner('raw'))
-        .toStream()
-        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier)
-        .to(Topics.combinedTopic('granule'))
-
     return builder.build()
+  }
+
+  static StreamsBuilder addTopologyForType(StreamsBuilder builder, String type, Long publishInterval = null) {
+    // build input table
+    KTable inputTable = builder
+        .stream(Topics.inputTopic(type))
+        .groupByKey()
+        .reduce(StreamFunctions.mergeContentMaps, Materialized.as(Topics.inputStore(type)).withValueSerde(JsonSerdes.Map()))
+
+    // build parsed table
+    KTable parsedTable = builder
+        .stream(Topics.parsedTopic(type), Consumed.with(Serdes.String(), JsonSerdes.Map()))
+        .mapValues(StreamFunctions.parsedInfoNormalizer)
+        .groupByKey()
+        .reduce(StreamFunctions.identityReducer, Materialized.as(Topics.parsedStore(type)).withValueSerde(JsonSerdes.Map()))
+
+    // add publisher
+    if (publishInterval) {
+      builder.addStateStore(Stores.keyValueStoreBuilder(
+          Stores.persistentKeyValueStore(
+              Topics.publishTimeStore(type)), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
+      builder.addStateStore(Stores.keyValueStoreBuilder(
+          Stores.persistentKeyValueStore(
+              Topics.publishKeyStore(type)), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
+
+      def granulePublisher = new DelayedPublisherTransformer(Topics.publishTimeStore(type), Topics.publishKeyStore(type), Topics.parsedStore(type), publishInterval)
+      parsedTable
+          .toStream()
+          .transform({ -> granulePublisher }, Topics.publishTimeStore(type), Topics.publishKeyStore(type), Topics.parsedStore(type))
+          .to(Topics.parsedTopic(type))
+    }
+
+    // build combined topic
+    inputTable
+        .outerJoin(parsedTable, StreamFunctions.buildKeyedMapJoiner('input'))
+        .toStream()
+        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier)
+        .to(Topics.combinedTopic(type))
+
+    return builder
   }
 
 }
