@@ -31,10 +31,15 @@ class FullWorkflowSpec extends Specification {
   ]
   def topology = MetadataStreamService.buildTopology(5000)
   def driver = new TopologyTestDriver(topology, new Properties(config))
-  def consumerFactory = new ConsumerRecordFactory(inputTopic('granule'), STRING_SERIALIZER, JSON_SERIALIZER)
+  def consumerFactory = new ConsumerRecordFactory(STRING_SERIALIZER, JSON_SERIALIZER)
 
-  def rawGranuleStore = driver.getKeyValueStore(inputStore('granule'))
-  def parsedGranuleStore = driver.getKeyValueStore(parsedStore('granule'))
+  def inputType = 'granule'
+  def inputSource = DEFAULT_SOURCE
+  def inputTopic = inputTopic(inputType, inputSource)
+  def parsedTopic = parsedTopic(inputType)
+  def publishedTopic = publishedTopic(inputType)
+  def inputStore = driver.getKeyValueStore(inputStore(inputType, inputSource))
+  def parsedStore = driver.getKeyValueStore(parsedStore(inputType))
 
   def cleanup(){
     driver.close()
@@ -46,11 +51,11 @@ class FullWorkflowSpec extends Specification {
     def value2 = ["id":"A","links":[["linkUrl":"http://somewhere.com"]]]
 
     when:
-    driver.pipeInput(consumerFactory.create(inputTopic('granule'), key, value1))
-    driver.pipeInput(consumerFactory.create(inputTopic('granule'), key, value2))
+    driver.pipeInput(consumerFactory.create(inputTopic, key, value1))
+    driver.pipeInput(consumerFactory.create(inputTopic, key, value2))
 
     then:
-    rawGranuleStore.get('A') == ["id":"A","size":42,"links":[["linkUrl":"http://somewhere.com"]]]
+    inputStore.get('A') == ["id":"A", "size":42, "links":[["linkUrl":"http://somewhere.com"]]]
   }
 
   def 'saves and updates parsed granule info'() {
@@ -60,14 +65,14 @@ class FullWorkflowSpec extends Specification {
     def value2PlusPublishing = ["discovery":["title":"test"],"publishing":["private":false]]
 
     when:
-    driver.pipeInput(consumerFactory.create(parsedTopic('granule'), key, value1))
-    driver.pipeInput(consumerFactory.create(parsedTopic('granule'), key, value2))
+    driver.pipeInput(consumerFactory.create(parsedTopic, key, value1))
+    driver.pipeInput(consumerFactory.create(parsedTopic, key, value2))
 
     then:
-    parsedGranuleStore.get(key) == value2PlusPublishing
-    def output = readAllOutput(driver, combinedTopic('granule'))
-    OutputVerifier.compareKeyValue(output[0], key, ["input":null,"discovery":["title":"replace me"],"publishing":["private":false]])
-    OutputVerifier.compareKeyValue(output[1], key, ["input":null,"discovery":["title":"test"],"publishing":["private":false]])
+    parsedStore.get(key) == value2PlusPublishing
+    def output = readAllOutput(driver, publishedTopic)
+    OutputVerifier.compareKeyValue(output[0], key, ["discovery":["title":"replace me"],"publishing":["private":false]])
+    OutputVerifier.compareKeyValue(output[1], key, ["discovery":["title":"test"],"publishing":["private":false]])
     output.size() == 2
   }
 
@@ -76,11 +81,11 @@ class FullWorkflowSpec extends Specification {
     def value = ["discovery":["title":"secret"],"publishing":["private":true]]
 
     when:
-    driver.pipeInput(consumerFactory.create(parsedTopic('granule'), key, value))
+    driver.pipeInput(consumerFactory.create(parsedTopic, key, value))
 
     then:
-    parsedGranuleStore.get(key) == value
-    def output = readAllOutput(driver, combinedTopic('granule'))
+    parsedStore.get(key) == value
+    def output = readAllOutput(driver, publishedTopic)
     OutputVerifier.compareKeyValue(output[0], key, null)
     output.size() == 1
   }
@@ -92,11 +97,11 @@ class FullWorkflowSpec extends Specification {
     def plusFiveMessage = ["discovery":["metadata":"yes"],"publishing":["private":true,"until":plusFiveString]]
 
     when:
-    driver.pipeInput(consumerFactory.create(parsedTopic('granule'), key, plusFiveMessage))
+    driver.pipeInput(consumerFactory.create(parsedTopic, key, plusFiveMessage))
 
     then: // a tombstone is published
-    parsedGranuleStore.get(key) == plusFiveMessage
-    def output1 = readAllOutput(driver, combinedTopic('granule'))
+    parsedStore.get(key) == plusFiveMessage
+    def output1 = readAllOutput(driver, publishedTopic)
     OutputVerifier.compareKeyValue(output1[0], key, null)
     output1.size() == 1
 
@@ -104,9 +109,9 @@ class FullWorkflowSpec extends Specification {
     driver.advanceWallClockTime(6000)
 
     then:
-    parsedGranuleStore.get(key) == plusFiveMessage
-    def output2 = readAllOutput(driver, combinedTopic('granule'))
-    OutputVerifier.compareKeyValue(output2[0], key, ["input":null,"discovery":["metadata":"yes"],"publishing":["private":true,"until":plusFiveString]])
+    parsedStore.get(key) == plusFiveMessage
+    def output2 = readAllOutput(driver, publishedTopic)
+    OutputVerifier.compareKeyValue(output2[0], key, ["discovery":["metadata":"yes"],"publishing":["private":true,"until":plusFiveString]])
     output2.size() == 1
   }
 

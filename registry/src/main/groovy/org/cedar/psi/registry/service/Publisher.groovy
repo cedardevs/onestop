@@ -17,11 +17,6 @@ import static org.cedar.psi.common.constants.Topics.inputTopic
 @CompileStatic
 class Publisher {
 
-  private final Map topicsByType = [
-      collection: inputTopic('collection'),
-      granule: inputTopic('granule')
-  ]
-
   private Producer<String, Map> kafkaProducer
 
   @Autowired
@@ -29,33 +24,26 @@ class Publisher {
     this.kafkaProducer = kafkaProducer
   }
 
-  Map publishMetadata(HttpServletRequest request, String type, String data, String id = null, String source = null) {
-    String topic = topicsByType[type]
+  Map publishMetadata(HttpServletRequest request, String type, String data, String source, String id = null) {
+    String topic = inputTopic(type, source)
     if (!topic) {
       return [
           status: 404,
           content: [errors:[[title: "Unsupported entity type: ${type}"]]]
       ]
     }
-    String key = buildMessageKey(source, id)
-    Map value = buildInputTopicMessage(request, data, id, source)
+    String key = id ?: UUID.randomUUID().toString()
+    Map value = buildInputTopicMessage(request, data, source, key)
     def record = new ProducerRecord<String, Map>(topic, key, value)
     log.info("Publishing: ${record}")
-    kafkaProducer.send(record).get()
+    kafkaProducer.send(record)?.get()
     return [
         status: 200,
         content: [id: key, type: type, attributes: value.subMap(['identifiers'])]
     ]
   }
 
-  String buildMessageKey(String source, String id) {
-    if (id && !source) { // is a reference to one of our uuids
-      return id
-    }
-    return UUID.randomUUID()
-  }
-
-  Map buildInputTopicMessage(HttpServletRequest request, String data, String id = null, String source = null) {
+  Map buildInputTopicMessage(HttpServletRequest request, String data, String source, String id) {
     def input = [
         method: request?.method,
         host: request?.remoteHost,
@@ -63,10 +51,9 @@ class Publisher {
         protocol: request?.protocol,
         content: data,
         contentType: request?.contentType,
-        source: source ?: null
+        source: source
     ]
-    def identifiers = source && id ? [(source): id] : [:]
-    return [input: input, identifiers: identifiers]
+    return [input: input, identifiers: [(source): id]]
   }
 
 }

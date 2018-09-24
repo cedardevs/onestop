@@ -16,13 +16,16 @@ class MetadataStoreSpec extends Specification {
 
   MetadataStreamService mockMetadataStreamService
   KafkaStreams mockStreamsApp
-  ReadOnlyKeyValueStore mockRawStore
+  ReadOnlyKeyValueStore mockInputStore
   ReadOnlyKeyValueStore mockParsedStore
   MetadataStore metadataStore
 
+  final testType = 'granule'
+  final testSource = 'class'
+
   def setup() {
     mockStreamsApp = Mock(KafkaStreams)
-    mockRawStore = Mock(ReadOnlyKeyValueStore)
+    mockInputStore = Mock(ReadOnlyKeyValueStore)
     mockParsedStore = Mock(ReadOnlyKeyValueStore)
     mockMetadataStreamService = Mock(MetadataStreamService)
 
@@ -31,20 +34,20 @@ class MetadataStoreSpec extends Specification {
 
   def 'returns null for unknown types'() {
     expect:
-    metadataStore.retrieveEntity('notarealtype', 'notarealid') == null
+    metadataStore.retrieveEntity('notarealtype', 'notarealsource', 'notarealid') == null
   }
 
   def 'returns null for a nonexistent store'() {
     def testId = 'notarealid'
 
     when:
-    def result = metadataStore.retrieveEntity('granule', testId)
+    def result = metadataStore.retrieveEntity(testType, testSource, testId)
 
     then:
     _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
-    1 * mockStreamsApp.store(inputStore('granule'), _ as QueryableStoreType) >> null
-    1 * mockStreamsApp.store(parsedStore('granule'), _ as QueryableStoreType) >> null
-    0 * mockRawStore.get(testId)
+    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> null
+    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> null
+    0 * mockInputStore.get(testId)
     0 * mockParsedStore.get(testId)
 
     and:
@@ -55,13 +58,13 @@ class MetadataStoreSpec extends Specification {
     def testId = 'notarealid'
 
     when:
-    def result = metadataStore.retrieveEntity('granule', testId)
+    def result = metadataStore.retrieveEntity(testType, testSource, testId)
 
     then:
     _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
-    1 * mockStreamsApp.store(inputStore('granule'), _ as QueryableStoreType) >> mockRawStore
-    1 * mockStreamsApp.store(parsedStore('granule'), _ as QueryableStoreType) >> mockParsedStore
-    1 * mockRawStore.get(testId) >> null
+    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
+    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
+    1 * mockInputStore.get(testId) >> null
     1 * mockParsedStore.get(testId) >> null
 
     and:
@@ -72,15 +75,15 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    metadataStore.retrieveEntity('granule', testId)
+    metadataStore.retrieveEntity(testType, testSource, testId)
 
     then:
     _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
-    1 * mockStreamsApp.store(inputStore('granule'), _ as QueryableStoreType) >> mockRawStore
-    1 * mockStreamsApp.store(parsedStore('granule'), _ as QueryableStoreType) >> {
+    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
+    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> {
       throw new InvalidStateStoreException('test')
     }
-    1 * mockRawStore.get(testId)
+    1 * mockInputStore.get(testId)
     0 * mockParsedStore.get(testId)
 
     and:
@@ -92,19 +95,19 @@ class MetadataStoreSpec extends Specification {
     def slurper = new JsonSlurper()
 
     when:
-    def result = metadataStore.retrieveEntity('granule', testId)
+    def result = metadataStore.retrieveEntity(testType, testSource, testId)
 
     then:
     _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
-    1 * mockStreamsApp.store(inputStore('granule'), _ as QueryableStoreType) >> mockRawStore
-    1 * mockStreamsApp.store(parsedStore('granule'), _ as QueryableStoreType) >> mockParsedStore
-    1 * mockRawStore.get(testId) >> rawValue
+    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
+    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
+    1 * mockInputStore.get(testId) >> rawValue
     1 * mockParsedStore.get(testId) >> parsedValue
 
     and:
     result == [
         id: testId,
-        type: 'granule',
+        type: testType,
         attributes: combined
     ]
 

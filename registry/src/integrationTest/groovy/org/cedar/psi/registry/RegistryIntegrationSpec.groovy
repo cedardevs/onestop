@@ -3,6 +3,7 @@ package org.cedar.psi.registry
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.admin.AdminClient
+import org.cedar.psi.common.constants.Topics
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
@@ -64,7 +65,7 @@ class RegistryIntegrationSpec extends Specification {
     when:
     sleep(200)
     def retrieveEntity = RequestEntity
-        .get("${baseUrl}/metadata/granule/${granuleId}".toURI())
+        .get("${baseUrl}/metadata/granule/common-ingest/${granuleId}".toURI())
         .build()
     def retrieveResponse = restTemplate.exchange(retrieveEntity, Map)
 
@@ -127,8 +128,8 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.type == 'granule'
     retrieveResponse.body.attributes.input.content == granuleText
     retrieveResponse.body.attributes.input.contentType == "application/xml"
-    retrieveResponse.body.attributes.input.source == null
-    retrieveResponse.body.attributes.identifiers == [:]
+    retrieveResponse.body.attributes.input.source == Topics.DEFAULT_SOURCE
+    retrieveResponse.body.attributes.identifiers == [(Topics.DEFAULT_SOURCE): granuleId.toString()]
   }
 
   def 'can post then retrieve collection info with an existing key'() {
@@ -159,8 +160,8 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.type == 'collection'
     retrieveResponse.body.attributes.input.content == collectionText
     retrieveResponse.body.attributes.input.contentType == "application/xml"
-    retrieveResponse.body.attributes.input.source == null
-    retrieveResponse.body.attributes.identifiers == [:]
+    retrieveResponse.body.attributes.input.source == Topics.DEFAULT_SOURCE
+    retrieveResponse.body.attributes.identifiers == [(Topics.DEFAULT_SOURCE): collectionId.toString()]
   }
 
   def 'can post then retrieve collection info with no key'() {
@@ -192,8 +193,8 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.type == 'collection'
     retrieveResponse.body.attributes.input.content == collectionText
     retrieveResponse.body.attributes.input.contentType == "application/xml"
-    retrieveResponse.body.attributes.input.source == null
-    retrieveResponse.body.attributes.identifiers == [:]
+    retrieveResponse.body.attributes.input.source == Topics.DEFAULT_SOURCE
+    retrieveResponse.body.attributes.identifiers == [(Topics.DEFAULT_SOURCE): (collectionId as String)]
   }
 
   def 'returns 404 for unsupported type'() {

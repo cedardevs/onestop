@@ -2,6 +2,7 @@ package org.cedar.psi.registry.service
 
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
+import org.cedar.psi.common.constants.Topics
 import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -23,13 +24,13 @@ class PublisherSpec extends Specification {
     request.contentType = contentType
 
     when:
-    publisher.publishMetadata(request, type, data, id, source)
+    publisher.publishMetadata(request, type, data, source, id)
 
     then:
     1 * mockProducer.send({
       it instanceof ProducerRecord &&
-          it.key() instanceof String &&
-          it.key() != id &&
+          it.topic() == Topics.inputTopic(type, source) &&
+          it.key() == id &&
           it.value().input.requestUrl == "http://localhost$requestUri" &&
           it.value().input.method == method  &&
           it.value().input.content == data &&
@@ -42,8 +43,8 @@ class PublisherSpec extends Specification {
     source          | type        | id    | contentType       | data
     'common-ingest' | 'granule'   | 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
     'common-ingest' | 'granule'   | 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
-    'common-ingest' | 'collection'| 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
-    'common-ingest' | 'collection'| 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    'comet'         | 'collection'| 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
+    'comet'         | 'collection'| 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
   }
 
   def 'publishes valid #type metadata as #contentType with existing id'() {
@@ -54,17 +55,18 @@ class PublisherSpec extends Specification {
     request.contentType = contentType
 
     when:
-    publisher.publishMetadata(request, type, data, id)
+    publisher.publishMetadata(request, type, data, Topics.DEFAULT_SOURCE, id)
 
     then:
     1 * mockProducer.send({
       it instanceof ProducerRecord &&
+          it.topic() == Topics.inputTopic(type, Topics.DEFAULT_SOURCE) &&
           it.key() == id &&
           it.value().input.contentType == contentType &&
           it.value().input.method == method  &&
           it.value().input.requestUrl == "http://localhost$requestUri" &&
           it.value().input.content == data &&
-          it.value().identifiers == [:]
+          it.value().identifiers == [(Topics.DEFAULT_SOURCE): id]
     }) >> Mock(Future)
 
     where:
@@ -83,17 +85,18 @@ class PublisherSpec extends Specification {
     request.contentType = contentType
 
     when:
-    publisher.publishMetadata(request, type, data)
+    publisher.publishMetadata(request, type, data, Topics.DEFAULT_SOURCE)
 
     then:
     1 * mockProducer.send({
       it instanceof ProducerRecord &&
+          it.topic() == Topics.inputTopic(type, Topics.DEFAULT_SOURCE) &&
           it.key() instanceof String &&
           it.value().input.contentType == contentType &&
           it.value().input.method == method  &&
           it.value().input.requestUrl == "http://localhost$requestUri" &&
           it.value().input.content == data &&
-          it.value().identifiers == [:]
+          it.value().identifiers[Topics.DEFAULT_SOURCE] instanceof String
     }) >> Mock(Future)
 
     where:
@@ -114,7 +117,7 @@ class PublisherSpec extends Specification {
     request.contentType = 'application/json'
 
     when:
-    publisher.publishMetadata(request, type, data)
+    publisher.publishMetadata(request, type, data, Topics.DEFAULT_SOURCE)
 
     then:
     0 * mockProducer.send(_)

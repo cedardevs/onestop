@@ -11,17 +11,19 @@ import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.Predicate
 import org.apache.kafka.streams.kstream.Produced
 import org.apache.kafka.streams.kstream.ValueMapper
-import org.cedar.psi.manager.config.Constants
-import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
+import org.cedar.psi.manager.config.Constants
 
+import static org.cedar.psi.common.constants.StreamsApps.MANAGER_ID
+import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID
+import static org.cedar.psi.common.constants.Topics.*
 
 @Slf4j
 class StreamManager {
 
   static KafkaStreams buildStreamsApp(String bootstrapServers) {
     def topology = buildTopology()
-    def streamsConfig = streamsConfig(Constants.APP_ID, bootstrapServers)
+    def streamsConfig = streamsConfig(MANAGER_ID, bootstrapServers)
     return new KafkaStreams(topology, streamsConfig)
   }
 
@@ -38,8 +40,8 @@ class StreamManager {
     }
 
     //stream incoming granule and collection messages
-    KStream<String, Map> granuleInputStream = builder.stream(Topics.inputTopic('granule'))
-    KStream<String, Map> collectionInputStream = builder.stream(Topics.inputTopic('collection'))
+    KStream<String, Map> granuleInputStream = builder.stream(inputChangelogTopics(REGISTRY_ID, 'granule'))
+    KStream<String, Map> collectionInputStream = builder.stream(inputChangelogTopics(REGISTRY_ID, 'collection'))
 
     // Split granules to those that need SME processing and those ready to parse
     KStream<String, Map>[] smeBranches = granuleInputStream.branch(toParsing, toSMETopic)
@@ -47,9 +49,9 @@ class StreamManager {
     KStream toSmeFunction = smeBranches[1]
 
     // To SME functions:
-    toSmeFunction.mapValues({ v -> v.input.content } as ValueMapper<Map, Map>).to(Topics.smeTopic('granule'), Produced.with(Serdes.String(), Serdes.String()))
+    toSmeFunction.mapValues({ v -> v.input.content } as ValueMapper<Map, Map>).to(smeTopic('granule'), Produced.with(Serdes.String(), Serdes.String()))
     // Merge straight-to-parsing stream with topic SME granules write to:
-    KStream<String, Map> unparsedGranules = builder.stream(Topics.unparsedTopic('granule'))
+    KStream<String, Map> unparsedGranules = builder.stream(unparsedTopic('granule'))
     KStream<String, Map> parsedNotAnalyzedGranules = toParsingFunction
         .mapValues({ v -> v.input } as ValueMapper<Map, Map>)
         .merge(unparsedGranules)
@@ -60,14 +62,14 @@ class StreamManager {
     KStream goodParsedStream = parsedStreams[0]
     KStream badParsedStream = parsedStreams[1]
     //send the bad stream off to the error topic
-    badParsedStream.to(Topics.errorTopic())
+    badParsedStream.to(errorTopic())
     // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
     //      parallelization, or at least compare with and without topic in load testing?
 
     // Send valid messages to analysis & send final output to topic
     goodParsedStream
         .mapValues({ v -> AnalysisAndValidationService.analyzeParsedMetadata(v)} as ValueMapper<Map, Map>)
-        .to(Topics.parsedTopic('granule'))
+        .to(parsedTopic('granule'))
 
     // parsing collection:
     KStream<String, Map> parsedNotAnalyzedCollection = collectionInputStream
@@ -78,14 +80,14 @@ class StreamManager {
     KStream goodParsedCollection = parsedCollection[0]
     KStream badParsedCollection = parsedCollection[1]
     //send the bad stream off to the error topic
-    badParsedCollection.to(Topics.errorTopic())
+    badParsedCollection.to(errorTopic())
     // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
     //      parallelization, or at least compare with and without topic in load testing?
 
     // Send valid messages to analysis & send final output to topic
     goodParsedCollection
         .mapValues({ v -> AnalysisAndValidationService.analyzeParsedMetadata(v)} as ValueMapper<Map, Map>)
-        .to(Topics.parsedTopic('collection'))
+        .to(parsedTopic('collection'))
 
     return builder.build()
   }

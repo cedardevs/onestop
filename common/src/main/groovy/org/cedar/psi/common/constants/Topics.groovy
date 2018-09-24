@@ -8,9 +8,11 @@ class Topics {
   static final int DEFAULT_NUM_PARTITIONS = 1
   static final short DEFAULT_REPLICATION_FACTOR = 1
 
+  static final String DEFAULT_SOURCE = 'unknown'
+
   static final Map<String, List<String>> INPUTS = [
-      'collection': ['comet', 'adhoc'],
-      'granule'   : ['common-ingest', 'class', 'adhoc'],
+      'collection': ['comet', DEFAULT_SOURCE],
+      'granule'   : ['common-ingest', 'class', DEFAULT_SOURCE],
   ]
 
   static Set<String> inputTypes() {
@@ -35,31 +37,41 @@ class Topics {
     INPUTS[type]?.contains(source)
   }
 
-  static String inputTopic(String type) {
-    if (!isValidInput(type)) { return null }
-    "raw-${type}-events"
+  static List<String> inputTopics() {
+    inputTypes().collect({ type -> inputTopics(type) }).flatten() as List<String>
   }
+
+  static List<String> inputTopics(String type) {
+    if (!isValidInput(type)) { return null }
+    inputSources(type).collect { source -> inputTopic(type, source) }
+  }
+
   static String inputTopic(String type, String source) {
     if (!isValidInput(type, source)) { return null }
     "raw-${source}-${type}-events"
   }
 
-  static String inputStore(String type) {
-    if (!isValidInput(type)) { return null }
-    "raw-${type}s"
-  }
   static String inputStore(String type, String source) {
     if (!isValidInput(type, source)) { return null }
     "raw-${source}-${type}s"
   }
 
-  static String inputChangelogTopic(String appName, String type) {
-    if (!isValidInput(type)) { return null }
-    "$appName-${inputStore(type)}-changelog"
+  static List<String> inputChangelogTopics(String appName) {
+    inputTypes().collect({ type -> inputChangelogTopics(appName, type) }).flatten() as List<String>
   }
+
+  static List<String> inputChangelogTopics(String appName, String type) {
+    if (!isValidInput(type)) { return Collections.<String>emptyList() }
+    inputSources(type).collect { source -> inputChangelogTopic(appName, type, source) }
+  }
+
   static String inputChangelogTopic(String appName, String type, String source) {
     if (!isValidInput(type, source)) { return null }
     "$appName-${inputStore(type, source)}-changelog"
+  }
+
+  static List<String> parsedTopics() {
+    inputTypes().collect { type -> parsedTopic(type) }
   }
 
   static String parsedTopic(String type) {
@@ -72,9 +84,17 @@ class Topics {
     "parsed-${type}s"
   }
 
+  static List<String> smeTopics() {
+    inputTypes().collect { type -> smeTopic(type) }
+  }
+
   static String smeTopic(String type) {
     if (!isValidInput(type)) { return null }
     "sme-${type}s"
+  }
+
+  static List<String> unparsedTopics() {
+    inputTypes().collect { type -> unparsedTopic(type) }
   }
 
   static String unparsedTopic(String type) {
@@ -82,7 +102,11 @@ class Topics {
     "unparsed-${type}s"
   }
 
-  static String combinedTopic(String type) {
+  static List<String> publishedTopics() {
+    inputTypes().collect { type -> publishedTopic(type) }
+  }
+
+  static String publishedTopic(String type) {
     if (!isValidInput(type)) { return null }
     "combined-${type}s"
   }
@@ -103,19 +127,6 @@ class Topics {
 
   static String errorStore() {
     'error-store'
-  }
-
-  static List<String> allTopics() {
-    return inputTypes().collect({ type -> allTopics(type) }).flatten() as List<String>
-  }
-
-  static List<String> allTopics(String type) {
-    if (!isValidInput(type)) { return Collections.<String>emptyList() }
-    return inputSources(type).collect { source -> inputTopic(type, source) } +
-        parsedTopic(type) +
-        unparsedTopic(type) +
-        smeTopic(type) +
-        combinedTopic(type)
   }
 
 }

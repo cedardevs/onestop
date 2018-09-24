@@ -5,6 +5,7 @@ import groovy.json.JsonSlurper
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
+import org.cedar.psi.common.constants.StreamsApps
 import org.cedar.psi.manager.config.Constants
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
@@ -14,11 +15,14 @@ class StreamManagerSpec extends Specification {
 
   def DESERIALIZER = Serdes.String().deserializer()
 
-  def streamsConfig = StreamManager.streamsConfig(Constants.APP_ID, Constants.BOOTSTRAP_DEFAULT)
+  def streamsConfig = StreamManager.streamsConfig(StreamsApps.MANAGER_ID, Constants.BOOTSTRAP_DEFAULT)
   def topology = StreamManager.buildTopology()
   def driver = new TopologyTestDriver(topology, streamsConfig)
-  def consumerFactory = new ConsumerRecordFactory(Topics.inputTopic('granule'),
-      Serdes.String().serializer(), JsonSerdes.Map().serializer())
+  def consumerFactory = new ConsumerRecordFactory(Serdes.String().serializer(), JsonSerdes.Map().serializer())
+
+  def testType = 'granule'
+  def testSource = Topics.DEFAULT_SOURCE
+  def testChangelog = Topics.inputChangelogTopic(StreamsApps.REGISTRY_ID, testType, testSource)
 
   def cleanup(){
     driver.close()
@@ -36,7 +40,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Topics.inputTopic('granule'), key, value))
+    driver.pipeInput(consumerFactory.create(testChangelog, key, value))
 
     then:
     // Not found in error or SME topics
@@ -126,7 +130,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Topics.inputTopic('granule'), smeKey, smeValue))
+    driver.pipeInput(consumerFactory.create(testChangelog, smeKey, smeValue))
 
     then:
     // The record is in the SME topic
@@ -161,7 +165,7 @@ class StreamManagerSpec extends Specification {
 
     when:
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
-    driver.pipeInput(consumerFactory.create(Topics.inputTopic('granule'), nonSMEInputKey, nonSMEInputValue))
+    driver.pipeInput(consumerFactory.create(testChangelog, nonSMEInputKey, nonSMEInputValue))
     driver.pipeInput(consumerFactory.create(Topics.unparsedTopic('granule'), unparsedKey, unparsedValue))
 
     then:
@@ -204,7 +208,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Topics.inputTopic('granule'), key, value))
+    driver.pipeInput(consumerFactory.create(testChangelog, key, value))
 
     then:
     // Nothing in the parsed or sme topics

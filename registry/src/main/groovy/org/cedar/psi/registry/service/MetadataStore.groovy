@@ -24,8 +24,8 @@ class MetadataStore {
     this.slurper = new JsonSlurper()
   }
 
-  Map retrieveEntity(String type, String id) {
-    def rawStore = inputStore(type)
+  Map retrieveEntity(String type, String source, String id) {
+    def rawStore = inputStore(type, source)
     def parsedStore = parsedStore(type)
     if (!rawStore && !parsedStore) { return null }
     Map rawValue = rawStore ? getValueFromStore(rawStore, id) : null

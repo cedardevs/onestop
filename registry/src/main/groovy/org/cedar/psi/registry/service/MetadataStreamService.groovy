@@ -17,7 +17,6 @@ import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.kstream.ValueTransformerSupplier
 import org.apache.kafka.streams.state.Stores
 import org.cedar.psi.common.serde.JsonSerdes
-import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.stream.DelayedPublisherTransformer
 import org.cedar.psi.registry.stream.PublishingAwareTransformer
 import org.cedar.psi.registry.stream.StreamFunctions
@@ -28,12 +27,13 @@ import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
+import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID
+import static org.cedar.psi.common.constants.Topics.*
+
 @Slf4j
 @Service
 @CompileStatic
 class MetadataStreamService {
-
-  static final String APP_ID = 'metadata-aggregator'
 
   private final AdminClient adminClient
   private final long publishInterval
@@ -75,23 +75,16 @@ class MetadataStreamService {
     }
   }
 
-  static Map<String, Map> topicConfigs = [
-      (Topics.inputTopic('granule'))      : null,
-      (Topics.inputTopic('collection'))   : null,
-      (Topics.parsedTopic('granule'))     : null,
-      (Topics.parsedTopic('collection'))  : null,
-      (Topics.combinedTopic('granule'))   : null,
-      (Topics.combinedTopic('collection')): null,
-      (Topics.errorTopic())               : null,
-      (Topics.smeTopic('granule'))        : null,
-      (Topics.unparsedTopic('granule'))   : null,
-  ] as Map<String, Map>
+  // add custom config by topic name here
+  static Map<String, Map> topicConfigs = [:] as Map<String, Map>
 
   private static void declareTopics(AdminClient adminClient) {
     def currentTopics = adminClient.listTopics().names().get()
-    def missingTopics = topicConfigs.findAll({ !currentTopics.contains(it.key) })
-    def newTopics = missingTopics.collect { name, config ->
-      return new NewTopic(name, Topics.DEFAULT_NUM_PARTITIONS, Topics.DEFAULT_REPLICATION_FACTOR).configs(config)
+    def declaredTopics = inputTopics() + parsedTopics() + unparsedTopics() + smeTopics() + publishedTopics()
+    def missingTopics = declaredTopics.findAll({ !currentTopics.contains(it) })
+    def newTopics = missingTopics.collect { name ->
+      return new NewTopic(name, DEFAULT_NUM_PARTITIONS, DEFAULT_REPLICATION_FACTOR)
+          .configs(topicConfigs[name] ?: [:])
     }
     def result = adminClient.createTopics(newTopics)
     result.all().get()
@@ -110,7 +103,7 @@ class MetadataStreamService {
     def bootstrapServers = kafkaNodes.take(3).collect({ it.host() + ':' + it.port() })
 
     def props = [
-        (StreamsConfig.APPLICATION_ID_CONFIG)           : APP_ID,
+        (StreamsConfig.APPLICATION_ID_CONFIG)           : REGISTRY_ID,
         (StreamsConfig.BOOTSTRAP_SERVERS_CONFIG)        : bootstrapServers.join(','),
         (StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
         (StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG): JsonSerdes.Map().class.name,
@@ -128,15 +121,15 @@ class MetadataStreamService {
   static Topology buildTopology(long publishInterval) {
     def builder = new StreamsBuilder()
 
-    Topics.inputTypes().each { type ->
+    inputTypes().each { type ->
       addTopologyForType(builder, type, publishInterval)
     }
 
     // TODO this table is unused, plus should we really store every error forever?
     KTable<String, Map> errorHandlerTable = builder.table(
-        Topics.errorTopic(),
+        errorTopic(),
         Consumed.with(Serdes.String(), JsonSerdes.Map()),
-        Materialized.as(Topics.errorStore())
+        Materialized.as(errorStore())
             .withLoggingEnabled([:])
             .withKeySerde(Serdes.String())
             .withValueSerde(JsonSerdes.Map())
@@ -146,41 +139,43 @@ class MetadataStreamService {
   }
 
   static StreamsBuilder addTopologyForType(StreamsBuilder builder, String type, Long publishInterval = null) {
-    // build input table
-    KTable inputTable = builder
-        .stream(Topics.inputTopic(type))
-        .groupByKey()
-        .reduce(StreamFunctions.mergeContentMaps, Materialized.as(Topics.inputStore(type)).withValueSerde(JsonSerdes.Map()))
+    // build input table for each source
+    Map<String, KTable> inputTables = inputSources(type).collectEntries { source ->
+      [(source): builder
+          .stream(inputTopic(type, source))
+          .groupByKey()
+          .reduce(StreamFunctions.mergeContentMaps, Materialized.as(inputStore(type, source)).withValueSerde(JsonSerdes.Map()))]
+    }
 
     // build parsed table
     KTable parsedTable = builder
-        .stream(Topics.parsedTopic(type), Consumed.with(Serdes.String(), JsonSerdes.Map()))
+        .stream(parsedTopic(type), Consumed.with(Serdes.String(), JsonSerdes.Map()))
         .mapValues(StreamFunctions.parsedInfoNormalizer)
         .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(Topics.parsedStore(type)).withValueSerde(JsonSerdes.Map()))
+        .reduce(StreamFunctions.identityReducer, Materialized.as(parsedStore(type)).withValueSerde(JsonSerdes.Map()))
 
-    // add publisher
+    // add delayed publisher
     if (publishInterval) {
       builder.addStateStore(Stores.keyValueStoreBuilder(
           Stores.persistentKeyValueStore(
-              Topics.publishTimeStore(type)), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
+              publishTimeStore(type)), Serdes.Long(), Serdes.String()).withLoggingEnabled([:]))
       builder.addStateStore(Stores.keyValueStoreBuilder(
           Stores.persistentKeyValueStore(
-              Topics.publishKeyStore(type)), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
+              publishKeyStore(type)), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
 
-      def granulePublisher = new DelayedPublisherTransformer(Topics.publishTimeStore(type), Topics.publishKeyStore(type), Topics.parsedStore(type), publishInterval)
+      // re-published items go back through the parsed topic
+      def publisher = new DelayedPublisherTransformer(publishTimeStore(type), publishKeyStore(type), parsedStore(type), publishInterval)
       parsedTable
           .toStream()
-          .transform({ -> granulePublisher }, Topics.publishTimeStore(type), Topics.publishKeyStore(type), Topics.parsedStore(type))
-          .to(Topics.parsedTopic(type))
+          .transform({ -> publisher }, publishTimeStore(type), publishKeyStore(type), parsedStore(type))
+          .to(parsedTopic(type))
     }
 
-    // build combined topic
-    inputTable
-        .outerJoin(parsedTable, StreamFunctions.buildKeyedMapJoiner('input'))
+    // build published topic
+    parsedTable
         .toStream()
         .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier)
-        .to(Topics.combinedTopic(type))
+        .to(publishedTopic(type))
 
     return builder
   }
