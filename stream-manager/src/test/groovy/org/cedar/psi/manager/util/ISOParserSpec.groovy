@@ -4,7 +4,6 @@ import groovy.json.JsonOutput
 import spock.lang.Specification
 import spock.lang.Unroll
 
-
 @Unroll
 class ISOParserSpec extends Specification {
 
