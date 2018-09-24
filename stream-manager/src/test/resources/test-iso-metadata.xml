@@ -692,7 +692,8 @@
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
-            <gmx:Anchor xlink:actuate="onRequest">Air temperature</gmx:Anchor>
+            <gmx:Anchor xlink:actuate="onRequest">Air
+              temperature</gmx:Anchor>
           </gmd:keyword>
           <gmd:keyword>
             <gmx:Anchor xlink:actuate="onRequest">Water temperature</gmx:Anchor>
@@ -713,10 +714,10 @@
       <gmd:descriptiveKeywords>
         <gmd:MD_Keywords>
           <gmd:keyword>
-            <gco:CharacterString>Wind speed</gco:CharacterString>
+            <gco:CharacterString>   Wind speed</gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
-            <gco:CharacterString>Wind direction</gco:CharacterString>
+            <gco:CharacterString>Wind direction   </gco:CharacterString>
           </gmd:keyword>
           <gmd:keyword>
             <gco:CharacterString>Wind speed</gco:CharacterString>
