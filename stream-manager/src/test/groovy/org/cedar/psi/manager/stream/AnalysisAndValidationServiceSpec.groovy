@@ -1,14 +1,35 @@
 package org.cedar.psi.manager.stream
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.fge.jsonschema.main.JsonSchema
+import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import spock.lang.Specification
 
 class AnalysisAndValidationServiceSpec extends Specification {
 
+  final String analysisSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('analysis-schema.json').text
+  final String identifierSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('identifiers-schema.json').text
+  final String inputSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('input-schema.json').text
+
+  final ObjectMapper mapper = new ObjectMapper()
+  final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
+
+  final JsonNode analysisSchemaNode = mapper.readTree(analysisSchemaString)
+  final JsonNode identifierSchemaNode = mapper.readTree(identifierSchemaString)
+  final JsonNode inputSchemaNode = mapper.readTree(inputSchemaString)
+
+  final JsonSchema analysisSchema = factory.getJsonSchema(analysisSchemaNode)
+  final JsonSchema identifierSchema = factory.getJsonSchema(identifierSchemaNode)
+  final JsonSchema inputSchema = factory.getJsonSchema(inputSchemaNode)
+
   def "All valid fields return expected response from service"() {
     given:
     def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
+    inputSchema.validate(mapper.readTree(inputMsg))
+
     def inputMap = [:]
     inputMap.put('discovery', new JsonSlurper().parseText(inputMsg))
     def expectedAnalysisMap = [
@@ -75,6 +96,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def response = JsonOutput.toJson(AnalysisAndValidationService.analyzeParsedMetadata(inputMap))
 
     then:
+    analysisSchema.validate(mapper.readTree(response))
     response == expectedResponse
   }
 
@@ -144,6 +166,8 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(metadata)
 
     then:
+    identifierSchema.validate(mapper.readTree(JsonOutput.toJson(identifiersAnalysis)))
+
     identifiersAnalysis == [
         fileIdentifier    : [
             exists: true,
@@ -175,6 +199,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(metadata)
 
     then:
+    identifierSchema.validate(mapper.readTree(JsonOutput.toJson(identifiersAnalysis)))
     identifiersAnalysis == [
         fileIdentifier    : [
             exists: true,

@@ -14,8 +14,10 @@
             "exists": {
               "type": "boolean"
             },
-            "fileIdentifierString" : {
-              "type": [null, "string"]
+            "fileIdentifierString": {
+              "type": [
+                "string"
+              ]
             }
           },
           "required": [
@@ -29,8 +31,10 @@
             "exists": {
               "type": "boolean"
             },
-            "doiString" : {
-              "type": [null, "string"]
+            "doiString": {
+              "type": [
+                "string"
+              ]
             }
           },
           "required": [
@@ -44,8 +48,10 @@
             "exists": {
               "type": "boolean"
             },
-            "parentIdentifierString" : {
-              "type": [null, "string"]
+            "parentIdentifierString": {
+              "type": [
+                "string"
+              ]
             }
           },
           "required": [
@@ -71,7 +77,6 @@
           "additionalProperties": false
         }
       },
-      "required": [],
       "additionalProperties": false
     },
     "temporalBounding": {

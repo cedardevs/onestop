@@ -1,12 +1,24 @@
 package org.cedar.psi.manager.stream
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.fge.jsonschema.main.JsonSchema
+import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
 class MetadataParsingServiceSpec extends Specification {
+
+  final String inputSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('input-schema.json').text
+
+  final ObjectMapper mapper = new ObjectMapper()
+  final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
+
+  final JsonNode inputSchemaNode = mapper.readTree(inputSchemaString)
+  final JsonSchema inputSchema = factory.getJsonSchema(inputSchemaNode)
+
 
   def "ISO metadata in incoming message parsed correctly"() {
     given:
@@ -17,6 +29,7 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(incomingMsg)))
     def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
@@ -27,6 +40,9 @@ class MetadataParsingServiceSpec extends Specification {
     // Verify a field; in-depth validation in ISOParserSpec
     def parsed = response.discovery
     parsed.fileIdentifier == 'gov.super.important:FILE-ID'
+    //internal format should match input schema
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(response)))
+
   }
 
   def "#type ISO metadata in incoming message results in error"() {
@@ -38,12 +54,14 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(incomingMsg)))
     def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
     response.containsKey("error")
     !response.containsKey("discovery")
     response.error == errorMessage
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(response)))
 
     where:
     type    | metadata  | errorMessage
@@ -59,12 +77,15 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(incomingMsg)))
     def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
     response.containsKey("error")
     !response.containsKey("discovery")
     response.error == 'Unknown raw format of metadata'
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(response)))
+
   }
 
   def "test stuff"() {

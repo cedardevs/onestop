@@ -1,5 +1,9 @@
 package org.cedar.psi.manager.stream
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.fge.jsonschema.main.JsonSchema
+import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.kafka.common.serialization.Serdes
@@ -20,6 +24,27 @@ class StreamManagerSpec extends Specification {
   def consumerFactory = new ConsumerRecordFactory(Topics.RAW_GRANULE_CHANGELOG_TOPIC,
       Serdes.String().serializer(), JsonSerdes.Map().serializer())
 
+  final String analysisSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('analysis-schema.json').text
+  final String discoverySchemaString = ClassLoader.systemClassLoader.getResourceAsStream('discovery-schema.json').text
+  final String identifierSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('identifiers-schema.json').text
+  final String inputSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('input-schema.json').text
+  final String registryResponseSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('registryResponse-schema.json').text
+
+  final ObjectMapper mapper = new ObjectMapper()
+  final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
+
+  final JsonNode analysisSchemaNode = mapper.readTree(analysisSchemaString)
+  final JsonNode discoverySchemaNode = mapper.readTree(discoverySchemaString)
+  final JsonNode identifierSchemaNode = mapper.readTree(identifierSchemaString)
+  final JsonNode inputSchemaNode = mapper.readTree(inputSchemaString)
+  final JsonNode registryResponseSchemaNode = mapper.readTree(registryResponseSchemaString)
+
+  final JsonSchema analysisSchema = factory.getJsonSchema(analysisSchemaNode)
+  final JsonSchema discoverySchema = factory.getJsonSchema(discoverySchemaNode)
+  final JsonSchema identifierSchema = factory.getJsonSchema(identifierSchemaNode)
+  final JsonSchema inputSchema = factory.getJsonSchema(inputSchemaNode)
+  final JsonSchema registryResponseSchema = factory.getJsonSchema(registryResponseSchemaNode)
+
   def cleanup(){
     driver.close()
   }
@@ -34,6 +59,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(value)))
     driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, key, value))
 
     then:
@@ -113,6 +139,13 @@ class StreamManagerSpec extends Specification {
             exists: true
         ]
     ]
+    //validate against schema
+    analysisSchema.validate(mapper.readTree(JsonOutput.toJson(output.analysis)))
+    discoverySchema.validate(mapper.readTree(JsonOutput.toJson(output.discovery)))
+    identifierSchema.validate(mapper.readTree(JsonOutput.toJson(output.discovery.identifiers)))
+    //this one effectively does all the others, but it is easier to debug when we do one at a time
+    registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(output)))
+
   }
 
   def "SME granule ends up in SME topic"() {
@@ -126,6 +159,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(smeValue)))
     driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, smeKey, smeValue))
 
     then:
@@ -138,6 +172,7 @@ class StreamManagerSpec extends Specification {
     // There are no errors and nothing in the parsed topic
     driver.readOutput(Topics.PARSED_GRANULE_TOPIC, DESERIALIZER, DESERIALIZER) == null
     driver.readOutput(Topics.ERROR_HANDLER_TOPIC, DESERIALIZER, DESERIALIZER) == null
+
   }
 
   def "Non-SME granule and SME granule end up in parsed-granule topic"() {
@@ -158,6 +193,8 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(smeValue)))
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(nonSMEValue)))
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
     driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, nonSMEKey, nonSMEValue))
     driver.pipeInput(consumerFactory.create(Topics.UNPARSED_GRANULE_TOPIC, smeKey, smeValue))
@@ -178,12 +215,14 @@ class StreamManagerSpec extends Specification {
     nonSMEResult.containsKey('discovery')
     !nonSMEResult.containsKey('error')
     nonSMEResult.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
+    analysisSchema.validate(mapper.readTree(JsonOutput.toJson(nonSMEResult)))
 
     and:
     def smeResult = new JsonSlurper().parseText(results[smeKey] as String) as Map
     smeResult.containsKey('discovery')
     !smeResult.containsKey('error')
     smeResult.discovery.fileIdentifier == 'dummy-file-identifier'
+    analysisSchema.validate(mapper.readTree(JsonOutput.toJson(smeResult)))
 
     and:
     // No errors
@@ -200,6 +239,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(value)))
     driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, key, value))
 
     then:
