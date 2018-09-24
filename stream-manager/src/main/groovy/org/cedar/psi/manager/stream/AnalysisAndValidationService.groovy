@@ -115,7 +115,7 @@ class AnalysisAndValidationService {
         }
         else if(parsedDate instanceof ZonedDateTime) {
           timezone = parsedDate.offset.toString()
-          parsedDate = parsedDate.withZoneSameInstant(ZoneOffset.UTC)
+          parsedDate = parsedDate.withZoneSameInstant(ZoneOffset.UTC).toInstant()
         }
         utcDateTimeString = parsedDate.toString()
       }
