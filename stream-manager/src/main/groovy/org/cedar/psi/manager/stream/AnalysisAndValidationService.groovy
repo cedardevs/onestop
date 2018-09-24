@@ -79,7 +79,17 @@ class AnalysisAndValidationService {
         .withResolverStyle(ResolverStyle.STRICT)
 
     def exists = dateString ? true : false
-    def yearOnly = exists ? dateString.isLong() : 'NA'
+    if(!exists) {
+      return [
+          exists: exists,
+          precision: UNDEFINED,
+          validSearchFormat: UNDEFINED,
+          zoneSpecified: UNDEFINED,
+          utcDateTimeString: UNDEFINED
+      ]
+    }
+
+    def yearOnly = dateString.isLong()
 
     def utcDateTimeString, validSearchFormat, precision, timezone
     if(yearOnly) {
@@ -126,7 +136,7 @@ class AnalysisAndValidationService {
         precision: precision,
         validSearchFormat: validSearchFormat,
         zoneSpecified: timezone ?: UNDEFINED,
-        utcDateTimeString: utcDateTimeString
+        utcDateTimeString: utcDateTimeString as String
     ]
   }
 
@@ -158,7 +168,24 @@ class AnalysisAndValidationService {
       beginLTEEnd = true
     }
     else {
-
+      if(beginInfo.validSearchFormat && endInfo.validSearchFormat) {
+        // Compare actual dates with UTC string
+        def beginDate = ZonedDateTime.parse(beginInfo.utcDateTimeString)
+        def endDate = ZonedDateTime.parse(endInfo.utcDateTimeString)
+        beginLTEEnd = beginDate.isBefore(endDate) || beginDate.isEqual(endDate)
+      }
+      else if( (beginInfo.precision == 'YEARS' && endInfo.precision == 'YEARS') ||
+          (beginInfo.precision == 'YEARS' && endInfo.validSearchFormat) ||
+          (beginInfo.validSearchFormat && endInfo.precision == 'YEARS') ) {
+        // Compare years only as longs; parse both as string objects since both may not be just a long
+        def beginYear = Long.parseLong(beginInfo.utcDateTimeString.split('-')[0])
+        def endYear = Long.parseLong(endInfo.utcDateTimeString.split('-')[0])
+        beginLTEEnd = beginYear <= endYear
+      }
+      else {
+        // One or both has an INVALID search format that is not just due to a paleo year
+        beginLTEEnd = UNDEFINED
+      }
     }
 
 
