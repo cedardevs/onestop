@@ -156,8 +156,9 @@ class AnalysisAndValidationService {
     }
 
     // Update descriptor if !begin and !end but instant exists
-    if(instantInfo.exists) {
-
+    if(descriptor == UNDEFINED && instantInfo.exists) {
+      // Instant describes range, but its validity still needs to be validated
+      descriptor = (instantInfo.validSearchFormat || instantInfo.precision == ChronoUnit.YEARS.toString()) ? 'INSTANT' : INVALID
     }
 
     // Determine if the given time range is valid:
@@ -165,7 +166,7 @@ class AnalysisAndValidationService {
     if(descriptor == INVALID || descriptor == UNDEFINED) {
       beginLTEEnd = UNDEFINED
     }
-    else if(descriptor == 'ONGOING') {
+    else if(descriptor == 'ONGOING' || descriptor == 'INSTANT') {
       beginLTEEnd = true
     }
     else {

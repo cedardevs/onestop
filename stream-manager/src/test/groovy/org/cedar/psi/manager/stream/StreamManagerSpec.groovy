@@ -88,6 +88,13 @@ class StreamManagerSpec extends Specification {
                 zoneSpecified: 'UNDEFINED',
                 utcDateTimeString: '2010-10-01T23:59:59Z'
             ],
+            instant: [
+                exists: false,
+                precision: 'UNDEFINED',
+                validSearchFormat: 'UNDEFINED',
+                zoneSpecified: 'UNDEFINED',
+                utcDateTimeString: 'UNDEFINED'
+            ],
             range: [
                 descriptor: 'BOUNDED',
                 beginLTEEnd: true
