@@ -9,20 +9,13 @@ import org.springframework.stereotype.Service
 
 import javax.servlet.http.HttpServletRequest
 
-import static org.cedar.psi.common.constants.Topics.RAW_GRANULE_TOPIC
-import static org.cedar.psi.common.constants.Topics.RAW_COLLECTION_TOPIC
-
+import static org.cedar.psi.common.constants.Topics.inputTopic
 
 
 @Slf4j
 @Service
 @CompileStatic
 class Publisher {
-
-  private final Map topicsByType = [
-      collection: RAW_COLLECTION_TOPIC,
-      granule: RAW_GRANULE_TOPIC
-  ]
 
   private Producer<String, Map> kafkaProducer
 
@@ -31,26 +24,36 @@ class Publisher {
     this.kafkaProducer = kafkaProducer
   }
 
-  void publishMetadata(HttpServletRequest request, String type, String data, String id = null, String source = null) {
-    String topic = topicsByType[type]
-    if (!topic) { return }
-    Map message = buildInputTopicMessage(request, data, id, source)
-    def record = new ProducerRecord<String, Map>(topic, message.id as String, message)
+  Map publishMetadata(HttpServletRequest request, String type, String data, String source, String id = null) {
+    String topic = inputTopic(type, source)
+    if (!topic) {
+      return [
+          status: 404,
+          content: [errors:[[title: "Unsupported entity type: ${type}"]]]
+      ]
+    }
+    String key = id ?: UUID.randomUUID().toString()
+    Map value = buildInputTopicMessage(request, data, source, key)
+    def record = new ProducerRecord<String, Map>(topic, key, value)
     log.info("Publishing: ${record}")
-    kafkaProducer.send(record)
+    kafkaProducer.send(record)?.get()
+    return [
+        status: 200,
+        content: [id: key, type: type, attributes: value.subMap(['identifiers'])]
+    ]
   }
 
-  Map buildInputTopicMessage(HttpServletRequest request, String data, String id = null, String source = null) {
-    [
-        id: id ?: UUID.randomUUID(),
+  Map buildInputTopicMessage(HttpServletRequest request, String data, String source, String id) {
+    def input = [
         method: request?.method,
         host: request?.remoteHost,
-        requestUrl: request?.requestURL,
+        requestUrl: request?.requestURL as String,
         protocol: request?.protocol,
         content: data,
         contentType: request?.contentType,
-        source: source ?: null
+        source: source
     ]
+    return [input: input, identifiers: [(source): id]]
   }
 
 }
