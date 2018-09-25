@@ -146,7 +146,7 @@
     "Seasonal"
   ],
   "temporalBounding": {
-    "beginDate": "2005-05-09T00:00:00Z",
+    "beginDate": "2005-05-09T01:00:00+01:00",
     "beginIndeterminate": null,
     "endDate": "2010-10-01",
     "endIndeterminate": null,

@@ -143,7 +143,6 @@ class AnalysisAndValidationService {
     def beginInfo = dateInfo(metadata.temporalBounding.beginDate, true)
     def endInfo = dateInfo(metadata.temporalBounding.endDate, false)
 
-
     // Determine the descriptor of the given time range:
     def descriptor
     if(beginInfo.exists) {
@@ -152,7 +151,7 @@ class AnalysisAndValidationService {
     }
     else {
       // ( !begin && end ) OR ( !begin && !end )
-      descriptor == endInfo.exists ? INVALID : UNDEFINED
+      descriptor = endInfo.exists ? INVALID : UNDEFINED
     }
 
 
@@ -165,26 +164,33 @@ class AnalysisAndValidationService {
       beginLTEEnd = true
     }
     else {
-      if(beginInfo.validSearchFormat && endInfo.validSearchFormat) {
+      if(beginInfo.validSearchFormat == true && endInfo.validSearchFormat == true) {
         // Compare actual dates with UTC string
         def beginDate = ZonedDateTime.parse(beginInfo.utcDateTimeString)
         def endDate = ZonedDateTime.parse(endInfo.utcDateTimeString)
         beginLTEEnd = beginDate.isBefore(endDate) || beginDate.isEqual(endDate)
       }
-      else if( (beginInfo.precision == 'YEARS' && endInfo.precision == 'YEARS') ||
-          (beginInfo.precision == 'YEARS' && endInfo.validSearchFormat) ||
-          (beginInfo.validSearchFormat && endInfo.precision == 'YEARS') ) {
-        // Compare years only as longs; parse both as string objects since both may not be just a long
-        def beginYear = Long.parseLong(beginInfo.utcDateTimeString.split('-')[0])
-        def endYear = Long.parseLong(endInfo.utcDateTimeString.split('-')[0])
+      else if( (beginInfo.precision == ChronoUnit.YEARS.toString() && endInfo.precision == ChronoUnit.YEARS.toString()) ||
+          (beginInfo.precision == ChronoUnit.YEARS.toString() && endInfo.validSearchFormat == true) ||
+          (beginInfo.validSearchFormat == true && endInfo.precision == ChronoUnit.YEARS.toString()) ) {
+        // Compare years only as longs; parse both as string objects since both may not be just a long.
+        // Watch out for negative years...
+        def beginYearText = beginInfo.utcDateTimeString.substring(0, beginInfo.utcDateTimeString.indexOf('-', 1))
+        def endYearText = endInfo.utcDateTimeString.substring(0, endInfo.utcDateTimeString.indexOf('-', 1))
+        def beginYear = Long.parseLong(beginYearText)
+        def endYear = Long.parseLong(endYearText)
         beginLTEEnd = beginYear <= endYear
       }
       else {
         // One or both has an INVALID search format that is not just due to a paleo year
         beginLTEEnd = UNDEFINED
       }
-    }
 
+      // Update descriptor to INVALID if !beginLTEEnd since BOUNDED is no longer accurate
+      if(beginLTEEnd == false) {
+        descriptor = INVALID
+      }
+    }
 
     return [
         begin: beginInfo,
