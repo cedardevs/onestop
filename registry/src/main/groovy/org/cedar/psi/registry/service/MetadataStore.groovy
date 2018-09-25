@@ -7,10 +7,8 @@ import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-import static org.cedar.psi.registry.service.MetadataStreamService.RAW_GRANULE_STORE
-import static org.cedar.psi.registry.service.MetadataStreamService.RAW_COLLECTION_STORE
-import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_GRANULE_STORE
-import static org.cedar.psi.registry.service.MetadataStreamService.PARSED_COLLECTION_STORE
+import static org.cedar.psi.common.constants.Topics.*
+
 
 @Slf4j
 @Service
@@ -26,21 +24,21 @@ class MetadataStore {
     this.slurper = new JsonSlurper()
   }
 
-  Map retrieveEntity(String type, String id) {
-    def rawStore = lookupRawStoreName(type)
-    def parsedStore = lookupParsedStoreName(type)
+  Map retrieveEntity(String type, String source, String id) {
+    def rawStore = inputStore(type, source)
+    def parsedStore = parsedStore(type)
     if (!rawStore && !parsedStore) { return null }
-    def rawValue = rawStore ? getValueFromStore(rawStore, id) : null
-    def parsedValue = parsedStore ? getValueFromStore(parsedStore, id) : null
+    Map rawValue = rawStore ? getValueFromStore(rawStore, id) : null
+    Map parsedValue = parsedStore ? getValueFromStore(parsedStore, id) : null
     if (!rawValue && !parsedValue) { return null }
-    return [id: id, type: type, attributes: [raw: rawValue, parsed: parsedValue]]
+    return [id: id, type: type, attributes: mergeAttributes(rawValue, parsedValue)]
   }
 
-  private getValueFromStore(String storeName, String id) {
+  private Map getValueFromStore(String storeName, String id) {
     try {
       def store = metadataStreamService.streamsApp.store(storeName, QueryableStoreTypes.keyValueStore())
       if (!store) { return null }
-      return store.get(id)
+      return store.get(id) as Map
     }
     catch (Exception e) {
       log.error("Failed to retrieve value with id [${id}] from state store [${storeName}]", e)
@@ -48,14 +46,29 @@ class MetadataStore {
     }
   }
 
-  private static String lookupRawStoreName(String type) {
-    return type == 'granule' ? RAW_GRANULE_STORE :
-        type == 'collection' ? RAW_COLLECTION_STORE : null
-  }
-
-  private static String lookupParsedStoreName(String type) {
-    return type == 'granule' ? PARSED_GRANULE_STORE :
-        type == 'collection' ? PARSED_COLLECTION_STORE : null
+  /**
+   * this is not a full recursive merge
+   * it combines maps and lists with the same key in each input map
+   */
+  private Map mergeAttributes(Map raw, Map parsed) {
+    def result = [:]
+    if (raw) {
+      result.putAll(raw)
+    }
+    if (parsed) {
+      parsed.each { k, v ->
+        if (result[k] instanceof Map && v instanceof Map) {
+          result[k] = (result[k] as Map) + (v as Map)
+        }
+        else if (result[k] instanceof List && v instanceof List) {
+          result[k] = (result[k] as List) + (v as List)
+        }
+        else {
+          result[k] = v
+        }
+      }
+    }
+    return result
   }
 
 }

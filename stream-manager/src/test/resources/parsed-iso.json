@@ -13,7 +13,7 @@
     {
       "values": [
         "SIO > Super Important Organization",
-        "OSIO > Other Super Important Organization",
+        "OSIO > OTHER SUPER IMPORTANT ORGANIZATION",
         "SSIO > Super SIO (Super Important Organization)"
       ],
       "type": "dataCenter",
@@ -21,8 +21,17 @@
     },
     {
       "values": [
-        "Environmental Advisories > Fire Advisories > Wildfires",
-        "This Keyword Is > Misplaced And Invalid",
+        "0038924",
+        "0038947",
+        "0038970"
+      ],
+      "type": null,
+      "namespace": "NCEI ACCESSION NUMBER"
+    },
+    {
+      "values": [
+        "EARTH SCIENCE SERVICES > ENVIRONMENTAL ADVISORIES > FIRE ADVISORIES > WILDFIRES",
+        "EARTH SCIENCE > This Keyword is > Misplaced and Invalid",
         "This Keyword > Is Just > WRONG"
       ],
       "type": "service",
@@ -46,104 +55,42 @@
     },
     {
       "values": [
-        "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
-        "Oceans > Salinity/Density > Salinity",
-        "Volcanoes > This Keyword > Is Invalid",
-        "Spectral/Engineering > Microwave > Brightness Temperature",
-        "Spectral/Engineering > Microwave > Temperature Anomalies"
+        "EARTH SCIENCE > ATMOSPHERE > ATMOSPHERIC TEMPERATURE > SURFACE TEMPERATURE > DEW POINT TEMPERATURE",
+        "EARTH SCIENCE > OCEANS > SALINITY/DENSITY > SALINITY",
+        "EARTH SCIENCE > VOLCANOES > THIS KEYWORD > IS INVALID",
+        "Earth Science > Spectral/Engineering > microwave > Brightness Temperature",
+        "Earth Science > Spectral/Engineering > microwave > Temperature Anomalies"
       ],
       "type": "theme",
       "namespace": "GCMD Keywords - Science Keywords"
     },
     {
       "values": [
-        "Geographic Region > Arctic",
-        "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
-        "Liquid Earth > This Keyword > Is Invalid"
+        "GEOGRAPHIC REGION > ARCTIC",
+        "OCEAN > ATLANTIC OCEAN > NORTH ATLANTIC OCEAN > GULF OF MEXICO",
+        "LIQUID EARTH > THIS KEYWORD > IS INVALID"
       ],
       "type": "place",
       "namespace": "GCMD Keywords - Locations"
     },
     {
       "values": [
-        "Seasonal"
+        "SEASONAL"
       ],
       "type": "dataResolution",
       "namespace": "Global Change Master Directory Keywords - Temporal Data Resolution"
     },
     {
       "values": [
-        "> 1 Km"
+        "> 1 km"
       ],
       "type": "dataResolution",
       "namespace": "GCMD Keywords - Vertical Data Resolution"
     }
   ],
-  "accessionValues": [
-    "0038924",
-    "0038947",
-    "0038970"
-  ],
   "topicCategories": [
     "environment",
     "oceans"
-  ],
-  "gcmdScienceServices": [
-    "Environmental Advisories > Fire Advisories > Wildfires",
-    "Environmental Advisories > Fire Advisories",
-    "Environmental Advisories"
-  ],
-  "gcmdScience": [
-    "This Keyword Is > Misplaced And Invalid",
-    "This Keyword Is",
-    "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
-    "Atmosphere > Atmospheric Temperature > Surface Temperature",
-    "Atmosphere > Atmospheric Temperature",
-    "Atmosphere",
-    "Oceans > Salinity/Density > Salinity",
-    "Oceans > Salinity/Density",
-    "Oceans",
-    "Volcanoes > This Keyword > Is Invalid",
-    "Volcanoes > This Keyword",
-    "Volcanoes",
-    "Spectral/Engineering > Microwave > Brightness Temperature",
-    "Spectral/Engineering > Microwave",
-    "Spectral/Engineering",
-    "Spectral/Engineering > Microwave > Temperature Anomalies"
-  ],
-  "gcmdLocations": [
-    "Geographic Region > Arctic",
-    "Geographic Region",
-    "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
-    "Ocean > Atlantic Ocean > North Atlantic Ocean",
-    "Ocean > Atlantic Ocean",
-    "Ocean",
-    "Liquid Earth > This Keyword > Is Invalid",
-    "Liquid Earth > This Keyword",
-    "Liquid Earth"
-  ],
-  "gcmdInstruments": [
-
-  ],
-  "gcmdPlatforms": [
-
-  ],
-  "gcmdProjects": [
-
-  ],
-  "gcmdDataCenters": [
-    "SIO > Super Important Organization",
-    "OSIO > Other Super Important Organization",
-    "SSIO > Super SIO (Super Important Organization)"
-  ],
-  "gcmdHorizontalResolution": [
-
-  ],
-  "gcmdVerticalResolution": [
-    "> 1 Km"
-  ],
-  "gcmdTemporalResolution": [
-    "Seasonal"
   ],
   "temporalBounding": {
     "beginDate": "2005-05-09T01:00:00+01:00",
@@ -234,7 +181,15 @@
       "linkFunction": "search"
     }
   ],
-  "contacts": [
+  "responsibleParties": [
+    {
+      "individualName": null,
+      "organizationName": "Super Important Organization",
+      "positionName": null,
+      "role": "publisher",
+      "email": "email@sio.co",
+      "phone": "555-123-4567"
+    },
     {
       "individualName": "John Smith",
       "organizationName": "University of Awesome",
@@ -250,9 +205,7 @@
       "role": "distributor",
       "email": "jane.doe@uoa.edu",
       "phone": "555-555-5556"
-    }
-  ],
-  "creators": [
+    },
     {
       "individualName": "Jarianna Whackositz",
       "organizationName": "Secret Underground Society",
@@ -292,16 +245,14 @@
       "role": "collaborator",
       "email": "sm@mock-creator-email.org",
       "phone": "555-555-5562"
-    }
-  ],
-  "publishers": [
+    },
     {
       "individualName": null,
-      "organizationName": "Super Important Organization",
+      "organizationName": "Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)",
       "positionName": null,
-      "role": "publisher",
-      "email": "email@sio.co",
-      "phone": "555-123-4567"
+      "role": "custodian",
+      "email": null,
+      "phone": null
     }
   ],
   "thumbnail": "https://www.example.com/exportImage?soCool=yes&format=png",

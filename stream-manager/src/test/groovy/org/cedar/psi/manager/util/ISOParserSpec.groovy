@@ -84,103 +84,85 @@ class ISOParserSpec extends Specification {
     // Deep equality check
     JsonOutput.toJson(parsedXml.keywords) == JsonOutput.toJson([
         [
-            values: ['SIO > Super Important Organization','OSIO > Other Super Important Organization', 'SSIO > Super SIO (Super Important Organization)'],
-            type: 'dataCenter',
-            namespace: 'GCMD Keywords - Data Centers'
-        ],
-        [
-            values: ['Environmental Advisories > Fire Advisories > Wildfires', 'This Keyword Is > Misplaced And Invalid', 'This Keyword > Is Just > WRONG'],
-            type: 'service',
-            namespace: 'Global Change Master Directory Science and Services Keywords'
-        ],
-        [
-            values: ['Air temperature', 'Water temperature'],
-            type: 'theme',
-            namespace: 'Miscellaneous keyword type'
-        ],
-        [
-            values: ['Wind speed', 'Wind direction'],
-            type: 'theme',
-            namespace: 'Miscellaneous keyword type'
-        ],
-        [
-            values: [
-                'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
-                'Oceans > Salinity/Density > Salinity',
-                'Volcanoes > This Keyword > Is Invalid',
-                'Spectral/Engineering > Microwave > Brightness Temperature',
-                'Spectral/Engineering > Microwave > Temperature Anomalies'
+            "values": [
+                "SIO > Super Important Organization",
+                "OSIO > OTHER SUPER IMPORTANT ORGANIZATION",
+                "SSIO > Super SIO (Super Important Organization)"
             ],
-            type: 'theme',
-            namespace: 'GCMD Keywords - Science Keywords'
+            "type": "dataCenter",
+            "namespace": "GCMD Keywords - Data Centers"
         ],
         [
-            values: ['Geographic Region > Arctic', 'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico', 'Liquid Earth > This Keyword > Is Invalid'],
-            type: 'place',
-            namespace: 'GCMD Keywords - Locations'
+            "values": [
+                "0038924",
+                "0038947",
+                "0038970"
+            ],
+            "type": null,
+            "namespace": "NCEI ACCESSION NUMBER"
         ],
         [
-            values: ['Seasonal'],
-            type: 'dataResolution',
-            namespace: 'Global Change Master Directory Keywords - Temporal Data Resolution'
+            "values": [
+                "EARTH SCIENCE SERVICES > ENVIRONMENTAL ADVISORIES > FIRE ADVISORIES > WILDFIRES",
+                "EARTH SCIENCE > This Keyword is > Misplaced and Invalid",
+                "This Keyword > Is Just > WRONG"
+            ],
+            "type": "service",
+            "namespace": "Global Change Master Directory Science and Services Keywords"
         ],
         [
-            values: ['> 1 Km'],
-            type: 'dataResolution',
-            namespace: 'GCMD Keywords - Vertical Data Resolution'
+            "values": [
+                "Air temperature",
+                "Water temperature"
+            ],
+            "type": "theme",
+            "namespace": "Miscellaneous keyword type"
+        ],
+        [
+            "values": [
+                "Wind speed",
+                "Wind direction"
+            ],
+            "type": "theme",
+            "namespace": "Miscellaneous keyword type"
+        ],
+        [
+            "values": [
+                "EARTH SCIENCE > ATMOSPHERE > ATMOSPHERIC TEMPERATURE > SURFACE TEMPERATURE > DEW POINT TEMPERATURE",
+                "EARTH SCIENCE > OCEANS > SALINITY/DENSITY > SALINITY",
+                "EARTH SCIENCE > VOLCANOES > THIS KEYWORD > IS INVALID",
+                "Earth Science > Spectral/Engineering > microwave > Brightness Temperature",
+                "Earth Science > Spectral/Engineering > microwave > Temperature Anomalies"
+            ],
+            "type": "theme",
+            "namespace": "GCMD Keywords - Science Keywords"
+        ],
+        [
+            "values": [
+                "GEOGRAPHIC REGION > ARCTIC",
+                "OCEAN > ATLANTIC OCEAN > NORTH ATLANTIC OCEAN > GULF OF MEXICO",
+                "LIQUID EARTH > THIS KEYWORD > IS INVALID"
+            ],
+            "type": "place",
+            "namespace": "GCMD Keywords - Locations"
+        ],
+        [
+            "values": [
+                "SEASONAL"
+            ],
+            "type": "dataResolution",
+            "namespace": "Global Change Master Directory Keywords - Temporal Data Resolution"
+        ],
+        [
+            "values": [
+                "> 1 km"
+            ],
+            "type": "dataResolution",
+            "namespace": "GCMD Keywords - Vertical Data Resolution"
         ]
     ] as Set)
-    parsedXml.accessionValues == [
-        '0038924',
-        '0038947',
-        '0038970'
-    ] as Set
     parsedXml.topicCategories == ['environment', 'oceans'] as Set
-    parsedXml.gcmdScienceServices == [
-        'Environmental Advisories',
-        'Environmental Advisories > Fire Advisories',
-        'Environmental Advisories > Fire Advisories > Wildfires'
-    ] as Set
-    parsedXml.gcmdScience == [
-        'Atmosphere',
-        'Atmosphere > Atmospheric Temperature',
-        'Atmosphere > Atmospheric Temperature > Surface Temperature',
-        'Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature',
-        'Oceans',
-        'Oceans > Salinity/Density',
-        'Oceans > Salinity/Density > Salinity',
-        'Spectral/Engineering',
-        'Spectral/Engineering > Microwave',
-        'Spectral/Engineering > Microwave > Brightness Temperature',
-        'Spectral/Engineering > Microwave > Temperature Anomalies',
-        'This Keyword Is',
-        'This Keyword Is > Misplaced And Invalid',
-        'Volcanoes',
-        'Volcanoes > This Keyword',
-        'Volcanoes > This Keyword > Is Invalid'
-    ] as Set
-    parsedXml.gcmdLocations == [
-        'Geographic Region',
-        'Geographic Region > Arctic',
-        'Ocean',
-        'Ocean > Atlantic Ocean',
-        'Ocean > Atlantic Ocean > North Atlantic Ocean',
-        'Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico',
-        'Liquid Earth',
-        'Liquid Earth > This Keyword',
-        'Liquid Earth > This Keyword > Is Invalid'
-    ] as Set
-    parsedXml.gcmdInstruments == [] as Set
-    parsedXml.gcmdPlatforms == [] as Set
-    parsedXml.gcmdProjects == [] as Set
-    parsedXml.gcmdDataCenters == [
-        'SIO > Super Important Organization',
-        'OSIO > Other Super Important Organization',
-        'SSIO > Super SIO (Super Important Organization)'
-    ] as Set
-    parsedXml.gcmdHorizontalResolution == [] as Set
-    parsedXml.gcmdVerticalResolution == ['> 1 Km'] as Set
-    parsedXml.gcmdTemporalResolution == ['Seasonal'] as Set
+
   }
 
   def "Temporal bounding is correctly parsed"() {
@@ -332,14 +314,23 @@ class ISOParserSpec extends Specification {
   }
 
   def "Responsible parties are correctly parsed"() {
+    // FIXME
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
 
     when:
-    def responsibleParties = ISOParser.parseDataResponsibleParties(document)
+    def responsibleParties = ISOParser.parseResponsibleParties(document)
 
     then:
-    responsibleParties.contacts == [
+    responsibleParties == [
+        [
+            individualName  : null,
+            organizationName: 'Super Important Organization',
+            positionName    : null,
+            role            : 'publisher',
+            email           : 'email@sio.co',
+            phone           : '555-123-4567'
+        ],
         [
             individualName  : 'John Smith',
             organizationName: 'University of Awesome',
@@ -356,9 +347,6 @@ class ISOParserSpec extends Specification {
             email           : 'jane.doe@uoa.edu',
             phone           : '555-555-5556'
         ],
-    ] as Set
-
-    responsibleParties.creators == [
         [
             individualName  : 'Jarianna Whackositz',
             organizationName: 'Secret Underground Society',
@@ -399,17 +387,14 @@ class ISOParserSpec extends Specification {
             email           : 'sm@mock-creator-email.org',
             phone           : '555-555-5562'
         ],
-    ] as Set
-
-    responsibleParties.publishers == [
         [
-            individualName  : null,
-            organizationName: 'Super Important Organization',
-            positionName    : null,
-            role            : 'publisher',
-            email           : 'email@sio.co',
-            phone           : '555-123-4567'
-        ],
+            individualName: null,
+            organizationName: 'Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)',
+            positionName: null,
+            role: 'custodian',
+            email: null,
+            phone: null
+        ]
     ] as Set
   }
 
