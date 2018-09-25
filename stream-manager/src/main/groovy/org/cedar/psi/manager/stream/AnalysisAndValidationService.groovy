@@ -92,10 +92,10 @@ class AnalysisAndValidationService {
     if(yearOnly) {
       def year = Long.parseLong(dateString)
       // Year must be in the range [-292275055,292278994] in order to be parsed as a date by ES (Joda time magic number). However,
-      // this number is a bit arbitrary, and prone to change when ES switches to the Java time library. We will limit the year
-      // ourselves instead to -100,000 -- since this is a fairly safe bet for supportability across many date libraries if the
-      // utcDateTime ends up used as is by a downstream app.
-      validSearchFormat = year < -100000L ? false : true
+      // this number is a bit arbitrary, and prone to change when ES switches to the Java time library (minimum supported year
+      // being -999999999). We will limit the year ourselves instead to -100,000,000 -- since this is a fairly safe bet for
+      // supportability across many date libraries if the utcDateTime ends up used as is by a downstream app.
+      validSearchFormat = year < -100000000L ? false : true
       precision = ChronoUnit.YEARS.toString()
       timezone = UNDEFINED
       utcDateTimeString = "${year}-01-01T00:00:00Z"
@@ -142,6 +142,7 @@ class AnalysisAndValidationService {
     // Gather info on individual dates:
     def beginInfo = dateInfo(metadata.temporalBounding.beginDate, true)
     def endInfo = dateInfo(metadata.temporalBounding.endDate, false)
+    def instantInfo = dateInfo(metadata.temporalBounding.instant, true)
 
     // Determine the descriptor of the given time range:
     def descriptor
@@ -154,6 +155,10 @@ class AnalysisAndValidationService {
       descriptor = endInfo.exists ? INVALID : UNDEFINED
     }
 
+    // Update descriptor if !begin and !end but instant exists
+    if(instantInfo.exists) {
+
+    }
 
     // Determine if the given time range is valid:
     def beginLTEEnd
@@ -195,6 +200,7 @@ class AnalysisAndValidationService {
     return [
         begin: beginInfo,
         end: endInfo,
+        instant: instantInfo,
         range: [
             descriptor: descriptor,
             beginLTEEnd: beginLTEEnd
