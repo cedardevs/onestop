@@ -6,6 +6,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.annotation.KafkaListener
+import org.springframework.kafka.annotation.TopicPartition
 import org.springframework.stereotype.Service
 
 import java.util.concurrent.CountDownLatch
@@ -14,16 +15,20 @@ import java.util.concurrent.CountDownLatch
 @Service
 class KafkaConsumerService {
   @Value('${kafka.topic.PARSED_COLLECTIONS_TOPIC}')
-  private String parsedCollectionTopic
+  String parsedCollectionTopic
+  
+  @Value('${kafka.topic.PARSED_GRANULES_TOPIC}')
+  String parsedGranulesTopic
   
   @Autowired
   private MetadataManagementService metadataManagementService
-  
-  @KafkaListener(topics = '${kafka.topic.PARSED_COLLECTIONS_TOPIC}')
+  // @KafkaListener(topics = ['parsedCollectionTopic', 'parsedGranulesTopic'])
+  @KafkaListener(topics = ['${kafka.topic.PARSED_COLLECTIONS_TOPIC}', '${kafka.topic.PARSED_GRANULES_TOPIC}'])
   void listen(List<ConsumerRecord<String, String>> records) {
+    // Update collections & granules
     def slurper = new JsonSlurper()
+    log.info("consuming message from a topic ${records.topic}")
     try {
-      log.info("consuming message from a topic ...")
       def valuesIds = records.collect {
         def id = it.key()
         def messageMap = slurper.parseText(it.value() as String) as Map

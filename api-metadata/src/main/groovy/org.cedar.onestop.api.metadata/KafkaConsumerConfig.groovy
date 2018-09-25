@@ -35,8 +35,8 @@ class KafkaConsumerConfig {
     configProps.put(ConsumerConfig.CLIENT_ID_CONFIG, 'api-Consumer')
     configProps.put(ConsumerConfig.GROUP_ID_CONFIG, 'api-metadata')
     configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
-    configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, 300000)
-    configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 30)
+    configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, max_Wait_ms)
+    configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, max_poll_records)
     
     return configProps
   }
