@@ -69,59 +69,41 @@
       "description": "Assessment of the temporal bounding in the metadata.",
       "type": "object",
       "properties": {
-        "beginDate": {
-          "type": "object",
-          "properties": {
-            "exists": {
-              "type": "boolean"
-            },
-            "valid": {
-              "type": "boolean"
-            }
-          },
-          "required": [
-            "exists",
-            "valid"
-          ],
-          "additionalProperties": false
+        "begin": {
+          "$ref": "#/definitions/dateInfo"
         },
-        "endDate": {
-          "type": "object",
-          "properties": {
-            "exists": {
-              "type": "boolean"
-            },
-            "valid": {
-              "type": "boolean"
-            }
-          },
-          "required": [
-            "exists",
-            "valid"
-          ],
-          "additionalProperties": false
+        "end": {
+          "$ref": "#/definitions/dateInfo"
         },
         "instant": {
+          "$ref": "#/definitions/dateInfo"
+        },
+        "range": {
           "type": "object",
           "properties": {
-            "exists": {
-              "type": "boolean"
+            "descriptor": {
+              "type": {
+                "enum": ["BOUNDED", "INSTANT", "INVALID", "ONGOING", "UNDEFINED"]
+              }
             },
-            "valid": {
-              "type": "boolean"
+            "beginLTEEnd": {
+              "type": {
+                "enum": [true, false, "UNDEFINED"]
+              }
             }
           },
+          "additionalProperties": false,
           "required": [
-            "exists",
-            "valid"
-          ],
-          "additionalProperties": false
+            "descriptor",
+            "beginLTEEnd"
+          ]
         }
       },
       "required": [
-        "beginDate",
-        "endDate",
-        "instant"
+        "begin",
+        "end",
+        "instant",
+        "range"
       ],
       "additionalProperties": false
     },
@@ -225,5 +207,39 @@
       "additionalProperties": false
     }
   },
-  "additionalProperties": false
+  "additionalProperties": false,
+  "definitions": {
+    "dateInfo": {
+      "type": "object",
+      "properties": {
+        "exists": {
+          "type": "boolean"
+        },
+        "precision": {
+          "type": {
+            "enum": ["Years", "Days", "Nanos", "UNDEFINED", "INVALID"]
+          }
+        },
+        "validSearchFormat": {
+          "type": {
+            "enum": [true, false, "UNDEFINED"]
+          }
+        },
+        "zoneSpecified": {
+          "type": "string"
+        },
+        "utcDateTimeString": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "exists",
+        "precision",
+        "validSearchFormat",
+        "zoneSpecified",
+        "utcDateTimeString"
+      ]
+    }
+  }
 }
