@@ -112,12 +112,14 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    etlService.updateSearchIndices()
+    def collectionVersions = indexedCollectionVersions().keySet()
+    def granuleVersions = indexedGranuleVersions().keySet()
+    def flatGranuleVersions = indexedFlatGranuleVersions().keySet()
 
     then:
-    indexedCollectionVersions().keySet() == ['gov.noaa.nodc:NDBC-COOPS'] as Set
-    indexedGranuleVersions().keySet()  == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
-    indexedFlatGranuleVersions().keySet() == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
+    collectionVersions  == ['gov.noaa.nodc:NDBC-COOPS'] as Set
+    granuleVersions     == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
+    flatGranuleVersions == ['CO-OPS.NOS_8638614_201602_D1_v00'] as Set
   }
 
   def 'updating twice does nothing the second time'() {
@@ -301,6 +303,7 @@ class ETLIntegrationTests extends Specification {
 
   private Map indexedItemVersions(String index) {
     elasticsearchService.refresh(index)
+    etlService.updateSearchIndices()
     def endpoint = "$index/_search"
     def request = [
         version: true,
