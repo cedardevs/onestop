@@ -5,14 +5,14 @@ import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.kafka.annotation.KafkaListener
-import org.springframework.kafka.annotation.TopicPartition
 import org.springframework.stereotype.Service
 
-import java.util.concurrent.CountDownLatch
 
 @Slf4j
 @Service
+@ConditionalOnProperty("features.kafka.consumer")
 class KafkaConsumerService {
   @Value('${kafka.topic.PARSED_COLLECTIONS_TOPIC}')
   String parsedCollectionTopic
@@ -22,7 +22,7 @@ class KafkaConsumerService {
   
   @Autowired
   private MetadataManagementService metadataManagementService
-  // @KafkaListener(topics = ['parsedCollectionTopic', 'parsedGranulesTopic'])
+  
   @KafkaListener(topics = ['${kafka.topic.PARSED_COLLECTIONS_TOPIC}', '${kafka.topic.PARSED_GRANULES_TOPIC}'])
   void listen(List<ConsumerRecord<String, String>> records) {
     // Update collections & granules

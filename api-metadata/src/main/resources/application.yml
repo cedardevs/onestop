@@ -3,8 +3,9 @@ spring.profiles.include:
 
 # comma-delimited string (no spaces)
 # auth feature toggle: securityenabled | securitydisabled
+# kafka feature toggle: kafkaenabled | kafkadisabled
 # other features: ...
-spring.profiles.active: "securitydisabled"
+spring.profiles.active: "securitydisabled,kafkadisabled"
 
 server:
   port: 8098
@@ -67,13 +68,3 @@ elasticsearch:
         name: staging_granule
 
 info.version: ${version}
-
-kafka:
-  bootstrap:
-    servers: kafka:9092
-    max_poll_records: 20
-    max_wait_ms: 300000  # 5 min
-  topic:
-    PARSED_GRANULES_TOPIC: 'metadata-aggregator-parsed-granules-changelog'
-    PARSED_COLLECTIONS_TOPIC: 'metadata-aggregator-parsed-collections-changelog'
-#  topics: metadata-aggregator-parsed-granules-changelog, metadata-aggregator-parsed-collections-changelog
