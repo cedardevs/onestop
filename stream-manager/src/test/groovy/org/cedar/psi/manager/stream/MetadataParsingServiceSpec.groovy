@@ -12,12 +12,15 @@ class MetadataParsingServiceSpec extends Specification {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def incomingMsg = [
-        contentType: 'application/xml',
-        content: xml
+        input: [
+          contentType: 'application/xml',
+          content: xml
+        ],
+        identifiers: ['comet': '1234']
     ]
 
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg.input, incomingMsg.id)
 
     then:
     !response.containsKey("error")
@@ -33,12 +36,15 @@ class MetadataParsingServiceSpec extends Specification {
     given:
     def rawMetadata = metadata
     def incomingMsg = [
-        contentType: 'application/xml',
-        content: rawMetadata
+        input: [
+            contentType: 'application/xml',
+            content: rawMetadata
+        ],
+        id: ['common-ingest': '123']
     ]
 
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg.input, incomingMsg.id)
 
     then:
     response.containsKey("error")
@@ -54,12 +60,16 @@ class MetadataParsingServiceSpec extends Specification {
   def "Unknown metadata type in incoming message results in error"() {
     given:
     def incomingMsg = [
-        contentType: 'Not supported',
-        content: "Won't be parsed"
+        input: [
+            contentType: 'Not supported',
+            content: "Won't be parsed"
+        ],
+        identifiers: ['unknown': '12']
     ]
 
+
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg.input, incomingMsg.id)
 
     then:
     response.containsKey("error")
