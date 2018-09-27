@@ -54,7 +54,6 @@ class ISOParser {
     def acquisitionInfo = parseAcquisitionInfo(metadata)
     def dsmmMap = parseDSMM(metadata)
     def spatialMap = parseSpatialInfo(metadata)
-    def responsibleParties = parseDataResponsibleParties(metadata)
     def services = parseServices(metadata)
     def miscellaneous = parseMiscellaneous(metadata)
 
@@ -71,18 +70,7 @@ class ISOParser {
         alternateTitle                  : citationInfo.alternateTitle,
         description                     : citationInfo.description,
         keywords                        : keywordsMap.keywords,
-        accessionValues                 : keywordsMap.accessionValues,
         topicCategories                 : keywordsMap.topicCategories,
-        gcmdScienceServices             : keywordsMap.gcmdScienceServices,
-        gcmdScience                     : keywordsMap.gcmdScience,
-        gcmdLocations                   : keywordsMap.gcmdLocations,
-        gcmdInstruments                 : keywordsMap.gcmdInstruments,
-        gcmdPlatforms                   : keywordsMap.gcmdPlatforms,
-        gcmdProjects                    : keywordsMap.gcmdProjects,
-        gcmdDataCenters                 : keywordsMap.gcmdDataCenters,
-        gcmdHorizontalResolution        : keywordsMap.gcmdHorizontalResolution,
-        gcmdVerticalResolution          : keywordsMap.gcmdVerticalResolution,
-        gcmdTemporalResolution          : keywordsMap.gcmdTemporalResolution,
         temporalBounding                : parseTemporalBounding(metadata),
         spatialBounding                 : spatialMap.spatialBounding,
         isGlobal                        : spatialMap.isGlobal,
@@ -91,9 +79,7 @@ class ISOParser {
         acquisitionPlatforms            : acquisitionInfo.acquisitionPlatforms,
         dataFormats                     : parseDataFormats(metadata),
         links                           : parseLinks(metadata),
-        contacts                        : responsibleParties.contacts,
-        creators                        : responsibleParties.creators,
-        publishers                      : responsibleParties.publishers,
+        responsibleParties              : parseResponsibleParties(metadata),
         thumbnail                       : citationInfo.thumbnail,
         thumbnailDescription            : citationInfo.thumbnailDescription,
         creationDate                    : citationInfo.creationDate,
@@ -277,18 +263,7 @@ class ISOParser {
     def idInfo = metadata.identificationInfo.MD_DataIdentification
 
     def keywords = [] as Set
-    def accessionValues = [] as Set
     def topicCategories = [] as Set
-    def gcmdScience = [] as Set
-    def gcmdScienceServices = [] as Set
-    def gcmdLocations = [] as Set
-    def gcmdPlatforms = [] as Set
-    def gcmdInstruments = [] as Set
-    def gcmdProjects = [] as Set
-    def gcmdHorizontalResolution = [] as Set
-    def gcmdVerticalResolution = [] as Set
-    def gcmdTemporalResolution = [] as Set
-    def gcmdDataCenters = [] as Set
 
     topicCategories.addAll(idInfo.topicCategory.'**'.findAll { it.name() == 'MD_TopicCategoryCode' }*.text())
 
@@ -299,174 +274,26 @@ class ISOParser {
       def keywordsInGroup = group.'**'.findAll { it.name() == 'keyword' }
       def values = [] as Set
 
-      if(namespace.toUpperCase() == 'NCEI ACCESSION NUMBER') {
-        // Accession values are NOT keywords
-        keywordsInGroup.each { k ->
-          accessionValues.add(extractKnownText(k))
+      keywordsInGroup.each { k ->
+        def text = k.CharacterString.text() ?: k.Anchor.text()
+        if(text) {
+          // Replace any non-trimmed whitespace with a single space character (e.g., in case of tabs or linefeeds)
+          values.add(text.trim().replaceAll("\\s+", " "))
         }
       }
 
-      else {
-        if(namespace.toLowerCase().contains('gcmd') || namespace.toLowerCase().contains('global change master directory')) {
-          switch (namespace.toLowerCase()) {
-            case { it.contains('science') }:
-              keywordsInGroup.each { k ->
-                def text = extractKnownText(k)
-                if(text.toLowerCase().startsWith('earth science services')) {
-                  text = normalizeHierarchyKeyword(text)
-                  gcmdScienceServices.addAll(tokenizeHierarchyKeyword(text))
-                }
-                else if(text.toLowerCase().startsWith('earth science')) {
-                  text = normalizeHierarchyKeyword(text)
-                  gcmdScience.addAll(tokenizeHierarchyKeyword(text))
-                }
-                values.add(text)
-              }
-              break
-            case { it.contains('location') || it.contains('place') }:
-              keywordsInGroup.each { k ->
-                def text = extractKnownText(k)
-                text = normalizeHierarchyKeyword(text)
-                gcmdLocations.addAll(tokenizeHierarchyKeyword(text))
-                values.add(text)
-              }
-              break
-            case { it.contains('platform') }:
-              keywordsInGroup.each { k ->
-                def text = extractKnownText(k)
-                text = normalizeNonHierarchicalKeyword(text)
-                gcmdPlatforms.add(text)
-                values.add(text)
-              }
-              break
-            case { it.contains('instrument') }:
-              keywordsInGroup.each { k ->
-                def text = extractKnownText(k)
-                text = normalizeNonHierarchicalKeyword(text)
-                gcmdInstruments.add(text)
-                values.add(text)
-              }
-              break
-            case { it.contains('data center') }:
-              keywordsInGroup.each { k ->
-                def text = extractKnownText(k)
-                text = normalizeNonHierarchicalKeyword(text)
-                gcmdDataCenters.add(text)
-                values.add(text)
-              }
-              break
-            case { it.contains('horizontal data resolution') }:
-              keywordsInGroup.each { k ->
-                def text = extractKnownText(k)
-                text = WordUtils.capitalizeFully(text, capitalizingDelimiters)
-                gcmdHorizontalResolution.add(text)
-                values.add(text)
-              }
-              break
-            case { it.contains('vertical data resolution') }:
-              keywordsInGroup.each { k ->
-                def text = extractKnownText(k)
-                text = WordUtils.capitalizeFully(text, capitalizingDelimiters)
-                gcmdVerticalResolution.add(text)
-                values.add(text)
-              }
-              break
-            case { it.contains('temporal data resolution') }:
-              keywordsInGroup.each { k ->
-                def text = extractKnownText(k)
-                text = WordUtils.capitalizeFully(text, capitalizingDelimiters)
-                gcmdTemporalResolution.add(text)
-                values.add(text)
-              }
-              break
-            case { it.contains('project') }:
-              keywordsInGroup.each { k ->
-                def text = extractKnownText(k)
-                text = normalizeNonHierarchicalKeyword(text)
-                gcmdProjects.add(text)
-                values.add(text)
-              }
-              break
-            default:
-              // Namespace didn't meet our checks, save as regular keywords only
-              keywordsInGroup.each { k ->
-                values.add(extractKnownText(k))
-              }
-          }
-        }
-
-        else {
-          // Not a known namespace
-          keywordsInGroup.each { k ->
-            def text = k.CharacterString.text() ?: k.Anchor.text()
-            if(text) { // Just in case, since we don't know this namespace...
-              values.add(text.trim())
-            }
-          }
-        }
-
-        // Add whole group of keywords
-        keywords.add([
-            values: values,
-            type: type,
-            namespace: namespace
-        ])
-      }
+      // Add whole group of keywords
+      keywords.add([
+          values: values,
+          type: type,
+          namespace: namespace
+      ])
     }
 
     return [
         keywords                : keywords,
-        accessionValues         : accessionValues,
-        topicCategories         : topicCategories,
-        gcmdScienceServices     : gcmdScienceServices,
-        gcmdScience             : gcmdScience,
-        gcmdLocations           : gcmdLocations,
-        gcmdInstruments         : gcmdInstruments,
-        gcmdPlatforms           : gcmdPlatforms,
-        gcmdProjects            : gcmdProjects,
-        gcmdDataCenters         : gcmdDataCenters,
-        gcmdHorizontalResolution: gcmdHorizontalResolution,
-        gcmdVerticalResolution  : gcmdVerticalResolution,
-        gcmdTemporalResolution  : gcmdTemporalResolution
+        topicCategories         : topicCategories
     ]
-  }
-
-  static String cleanInternalGCMDKeywordWhitespace(String text) {
-    String cleanString = text.replaceAll("\\s+", " ")
-    return cleanString
-  }
-
-  static final char[] capitalizingDelimiters = [' ', '/', '.', '(', '-', '_'].collect({ it as char })
-
-  static String normalizeNonHierarchicalKeyword(String text) {
-    // These are in the format 'Short Name > Long Name', where 'Short Name' is likely an acronym. This normalizing allows
-    // for title casing the 'Long Name' if and only if it's given in all caps or all lowercase (so we don't title case an
-    // acronym here)
-    def cleanText = cleanInternalGCMDKeywordWhitespace(text)
-    def elements = Arrays.asList(cleanText.split(' > '))
-    String longName = elements.last()
-    if(longName == longName.toUpperCase() || longName == longName.toLowerCase()) {
-      longName = WordUtils.capitalizeFully(longName, capitalizingDelimiters)
-      elements.set(elements.size() - 1, longName)
-    }
-    return String.join(' > ', elements)
-  }
-
-  static String normalizeHierarchyKeyword(String text) {
-    def cleanText = cleanInternalGCMDKeywordWhitespace(text)
-    return WordUtils.capitalizeFully(cleanText, capitalizingDelimiters)
-        .replace('Earth Science > ', '').replace('Earth Science Services > ', '')
-  }
-
-  static List<String> tokenizeHierarchyKeyword(String text) {
-    def result = []
-    def i = text.length()
-    while (i > 0) {
-      text = text.substring(0, i).trim()
-      result.add(text)
-      i = text.lastIndexOf('>', i)
-    }
-    return result
   }
 
   static Map parseKeywordsAndTopics(String xml) {
@@ -747,12 +574,6 @@ class ISOParser {
     return parseLinks(new XmlSlurper().parseText(xml))
   }
 
-  static List<GPathResult> parseResponsibleParties(GPathResult metadata) {
-    return metadata.'**'.findAll {
-      it.name() == 'CI_ResponsibleParty'
-    }
-  }
-
   static Map<String, String> parseParty(GPathResult party) {
     String individualName = party.individualName.CharacterString.text() ?: party.individualName.Anchor.text() ?: null
     String organizationName = party.organisationName.CharacterString.text() ?: party.organisationName.Anchor.text() ?: null
@@ -770,34 +591,20 @@ class ISOParser {
     ]
   }
 
-  static Map<String, Set> parseDataResponsibleParties(GPathResult metadata) {
-
-    Set contacts = []
-    Set contactRoles = ['pointOfContact', 'distributor']
-    Set creators = []
-    Set creatorRoles = ['resourceProvider', 'originator', 'principalInvestigator', 'author', 'collaborator', 'coAuthor']
-    Set publishers = []
-    Set publisherRoles = ['publisher']
-
-    GPathResult dataPath = metadata.identificationInfo.MD_DataIdentification
-    List<GPathResult> parties = parseResponsibleParties(dataPath)
-    parties.each { party ->
-      Map<String, String> parsedParty = parseParty(party)
-      if (contactRoles.contains(parsedParty.role)) {
-        contacts.add(parsedParty)
-      }
-      else if (creatorRoles.contains(parsedParty.role)) {
-        creators.add(parsedParty)
-      }
-      else if (publisherRoles.contains(parsedParty.role)) {
-        publishers.add(parsedParty)
-      }
+  static Set parseResponsibleParties(GPathResult metadata) {
+    Set responsibleParties = []
+    List<GPathResult> parties = metadata.identificationInfo.MD_DataIdentification.'**'.findAll {
+      it.name() == 'CI_ResponsibleParty'
     }
-    return [contacts: contacts, creators: creators, publishers: publishers]
+    parties.each { party ->
+      def parsedParty = parseParty(party)
+      responsibleParties.add(parsedParty)
+    }
+    return responsibleParties
   }
 
-  static Map<String, Set> parseDataResponsibleParties(String xml) {
-    return parseDataResponsibleParties(new XmlSlurper().parseText(xml))
+  static Set parseResponsibleParties(String xml) {
+    return parseResponsibleParties(new XmlSlurper().parseText(xml))
   }
 
   static Map parseDSMM(GPathResult metadata) {
