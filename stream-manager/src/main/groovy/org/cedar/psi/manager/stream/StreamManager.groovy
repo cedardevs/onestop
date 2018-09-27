@@ -55,7 +55,7 @@ class StreamManager {
     KStream<String, Map> parsedNotAnalyzedGranules = toParsingFunction
         .mapValues({ v -> v.input } as ValueMapper<Map, Map>)
         .merge(unparsedGranules)
-        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v) } as ValueMapper<Map, Map>)
+        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v.input, v.identifiers) } as ValueMapper<Map, Map>)
 
     // Branch again, sending errors to separate topic
     KStream<String, Map>[] parsedStreams = parsedNotAnalyzedGranules.branch(isValid, isNotValid)
@@ -73,7 +73,7 @@ class StreamManager {
 
     // parsing collection:
     KStream<String, Map> parsedNotAnalyzedCollection = collectionInputStream
-        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v)} as ValueMapper<Map, Map>)
+        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v.input, v.identifiers)} as ValueMapper<Map, Map>)
 
     // Branch again, sending errors to separate topic
     KStream<String, Map>[] parsedCollection = parsedNotAnalyzedCollection.branch(isValid, isNotValid)
