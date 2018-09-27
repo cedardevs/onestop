@@ -8,10 +8,10 @@ import org.xml.sax.SAXException
 @Slf4j
 class MetadataParsingService {
 
-  static Map parseToInternalFormat(Map msgMap, Map srcId) {
+  static Map parseToInternalFormat(Map msgMap) {
     String format = msgMap.contentType
     String rawMetadata = msgMap.content
-    log.info "Parsing message with source and id: ${srcId} and conentType: $format "
+//    log.info "Parsing message with source and id: ${msgMap.identifiers} and conentType: $format "
 
     Map result = [:]
 
@@ -28,7 +28,7 @@ class MetadataParsingService {
           "Root cause: ${ExceptionUtils.getRootCauseMessage(e).trim()}"]
     }
     catch(Exception e) {      
-      log.error "Unable to parse message with source and id: ${srcId}"
+//      log.error "Unable to parse message with source and id: ${srcId}"
       log.error "Caught exception: $e"
       result = [error: "Malformed data encountered; unable to parse. " +
           "Root cause: ${ExceptionUtils.getRootCauseMessage(e).trim()}"]
