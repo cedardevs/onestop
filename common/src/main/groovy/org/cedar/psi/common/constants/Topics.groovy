@@ -1,30 +1,132 @@
 package org.cedar.psi.common.constants
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class Topics {
 
-  static int DEFAULT_NUM_PARTITIONS = 1
-  static short DEFAULT_REPLICATION_FACTOR = 1
-  static final String RAW_GRANULE_TOPIC = 'raw-granule-events'
-  static final String RAW_COLLECTION_CHANGELOG_TOPIC = 'metadata-aggregator-raw-collections-changelog'
-  static final String RAW_COLLECTION_TOPIC = 'raw-collection-events'
-  static final String RAW_GRANULE_CHANGELOG_TOPIC = 'metadata-aggregator-raw-granules-changelog'
-  static final String PARSED_GRANULE_TOPIC = 'parsed-granules'
-  static final String PARSED_COLLECTION_TOPIC = 'parsed-collections'
-  static final String COMBINED_GRANULE_TOPIC = 'combined-granules'
-  static final String COMBINED_COLLECTION_TOPIC = 'combined-collections'
-  static final String SME_GRANULE_TOPIC = 'sme-granules'
-  static final String UNPARSED_GRANULE_TOPIC = 'unparsed-granules'
+  static final int DEFAULT_NUM_PARTITIONS = 1
+  static final short DEFAULT_REPLICATION_FACTOR = 1
 
-  static final String RAW_GRANULE_STORE = 'raw-granules'
-  static final String RAW_COLLECTION_STORE = 'raw-collections'
-  static final String PARSED_GRANULE_STORE = 'parsed-granules'
-  static final String PARSED_COLLECTION_STORE = 'parsed-collections'
+  static final String DEFAULT_SOURCE = 'unknown'
 
-  static final String GRANULE_PUBLISH_TIMES = 'granule-publish-times'
-  static final String GRANULE_PUBLISH_KEYS = 'granule-publish-keys'
-  static final String COLLECTION_PUBLISH_TIMES = 'collection-publish-times'
-  static final String COLLECTION_PUBLISH_KEYS = 'collection-publish-keys'
-  static final String ERROR_HANDLER_TOPIC = 'error-events'
-  static final String ERROR_HANDLER_STORE = 'error-store'
+  static final Map<String, List<String>> INPUTS = [
+      'collection': ['comet', DEFAULT_SOURCE],
+      'granule'   : ['common-ingest', 'class', DEFAULT_SOURCE],
+  ]
+
+  static Set<String> inputTypes() {
+    INPUTS.keySet()
+  }
+
+  static List<String> inputSources() {
+    def uniqueSources = INPUTS.inject(new HashSet()) { result, t, sources ->
+      result.addAll(sources)
+      result
+    }
+    return uniqueSources as List
+  }
+  static List<String> inputSources(String type) {
+    return INPUTS[type] ?: Collections.<String>emptyList()
+  }
+
+  static Boolean isValidInput(String type) {
+    INPUTS.containsKey(type)
+  }
+  static Boolean isValidInput(String type, String source) {
+    INPUTS[type]?.contains(source)
+  }
+
+  static List<String> inputTopics() {
+    inputTypes().collect({ type -> inputTopics(type) }).flatten() as List<String>
+  }
+
+  static List<String> inputTopics(String type) {
+    if (!isValidInput(type)) { return null }
+    inputSources(type).collect { source -> inputTopic(type, source) }
+  }
+
+  static String inputTopic(String type, String source) {
+    if (!isValidInput(type, source)) { return null }
+    "raw-${source}-${type}-events"
+  }
+
+  static String inputStore(String type, String source) {
+    if (!isValidInput(type, source)) { return null }
+    "raw-${source}-${type}s"
+  }
+
+  static List<String> inputChangelogTopics(String appName) {
+    inputTypes().collect({ type -> inputChangelogTopics(appName, type) }).flatten() as List<String>
+  }
+
+  static List<String> inputChangelogTopics(String appName, String type) {
+    if (!isValidInput(type)) { return Collections.<String>emptyList() }
+    inputSources(type).collect { source -> inputChangelogTopic(appName, type, source) }
+  }
+
+  static String inputChangelogTopic(String appName, String type, String source) {
+    if (!isValidInput(type, source)) { return null }
+    "$appName-${inputStore(type, source)}-changelog"
+  }
+
+  static List<String> parsedTopics() {
+    inputTypes().collect { type -> parsedTopic(type) }
+  }
+
+  static String parsedTopic(String type) {
+    if (!isValidInput(type)) { return null }
+    "parsed-${type}s"
+  }
+
+  static String parsedStore(String type) {
+    if (!isValidInput(type)) { return null }
+    "parsed-${type}s"
+  }
+
+  static List<String> smeTopics() {
+    inputTypes().collect { type -> smeTopic(type) }
+  }
+
+  static String smeTopic(String type) {
+    if (!isValidInput(type)) { return null }
+    "sme-${type}s"
+  }
+
+  static List<String> unparsedTopics() {
+    inputTypes().collect { type -> unparsedTopic(type) }
+  }
+
+  static String unparsedTopic(String type) {
+    if (!isValidInput(type)) { return null }
+    "unparsed-${type}s"
+  }
+
+  static List<String> publishedTopics() {
+    inputTypes().collect { type -> publishedTopic(type) }
+  }
+
+  static String publishedTopic(String type) {
+    if (!isValidInput(type)) { return null }
+    "combined-${type}s"
+  }
+
+  static String publishTimeStore(String type) {
+    if (!isValidInput(type)) { return null }
+    "$type-publish-times"
+  }
+
+  static String publishKeyStore(String type) {
+    if (!isValidInput(type)) { return null }
+    "$type-publish-keys"
+  }
+
+  static String errorTopic() {
+    'error-events'
+  }
+
+  static String errorStore() {
+    'error-store'
+  }
 
 }
