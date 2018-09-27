@@ -112,6 +112,7 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
+    Thread.sleep(18000)
     def collectionVersions = indexedCollectionVersions().keySet()
     def granuleVersions = indexedGranuleVersions().keySet()
     def flatGranuleVersions = indexedFlatGranuleVersions().keySet()
