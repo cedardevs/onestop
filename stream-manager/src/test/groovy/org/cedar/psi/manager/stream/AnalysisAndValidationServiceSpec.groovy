@@ -14,13 +14,16 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def expectedAnalysisMap = [
         identification  : [
             fileIdentifier    : [
-                exists: true
+                exists: true,
+                fileIdentifierString: 'gov.super.important:FILE-ID'
             ],
             doi               : [
-                exists: true
+                exists: true,
+                doiString: 'doi:10.5072/FK2TEST'
             ],
             parentIdentifier  : [
-                exists: true
+                exists: true,
+                parentIdentifierString: 'gov.super.important:PARENT-ID'
             ],
             hierarchyLevelName: [
                 exists            : true,
@@ -143,13 +146,16 @@ class AnalysisAndValidationServiceSpec extends Specification {
     then:
     identifiersAnalysis == [
         fileIdentifier    : [
-            exists: true
+            exists: true,
+            fileIdentifierString: 'xyz'
         ],
         doi               : [
-            exists: false
+            exists: false,
+            doiString: null
         ],
         parentIdentifier  : [
-            exists: false
+            exists: false,
+            parentIdentifierString: null
         ],
         hierarchyLevelName: [
             exists            : false,
@@ -171,13 +177,16 @@ class AnalysisAndValidationServiceSpec extends Specification {
     then:
     identifiersAnalysis == [
         fileIdentifier    : [
-            exists: true
+            exists: true,
+            fileIdentifierString: 'xyz'
         ],
         doi               : [
-            exists: false
+            exists: false,
+            doiString: null
         ],
         parentIdentifier  : [
-            exists: false
+            exists: false,
+            parentIdentifierString: null
         ],
         hierarchyLevelName: [
             exists            : true,
