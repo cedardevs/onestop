@@ -77,7 +77,6 @@
           "additionalProperties": false
         }
       },
-      "required": [],
       "additionalProperties": false
     },
     "temporalBounding": {
@@ -97,14 +96,20 @@
           "type": "object",
           "properties": {
             "descriptor": {
-              "type": {
-                "enum": ["BOUNDED", "INSTANT", "INVALID", "ONGOING", "UNDEFINED"]
-              }
+              "enum": [
+                "BOUNDED",
+                "INSTANT",
+                "INVALID",
+                "ONGOING",
+                "UNDEFINED"
+              ]
             },
             "beginLTEEnd": {
-              "type": {
-                "enum": [true, false, "UNDEFINED"]
-              }
+              "enum": [
+                true,
+                false,
+                "UNDEFINED"
+              ]
             }
           },
           "additionalProperties": false,
@@ -231,14 +236,20 @@
           "type": "boolean"
         },
         "precision": {
-          "type": {
-            "enum": ["Years", "Days", "Nanos", "UNDEFINED", "INVALID"]
-          }
+          "enum": [
+            "Years",
+            "Days",
+            "Nanos",
+            "UNDEFINED",
+            "INVALID"
+          ]
         },
         "validSearchFormat": {
-          "type": {
-            "enum": [true, false, "UNDEFINED"]
-          }
+          "enum": [
+            true,
+            false,
+            "UNDEFINED"
+          ]
         },
         "zoneSpecified": {
           "type": "string"
