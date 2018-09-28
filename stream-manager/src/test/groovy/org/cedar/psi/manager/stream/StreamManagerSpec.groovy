@@ -66,7 +66,7 @@ class StreamManagerSpec extends Specification {
 
     when:
     inputSchema.validate(mapper.readTree(JsonOutput.toJson(value)))
-    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, key, value))
+    driver.pipeInput(consumerFactory.create(testChangelog, key, value))
 
     then:
     // Not found in error or SME topics
@@ -167,7 +167,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, smeKey, smeValue))
+    driver.pipeInput(consumerFactory.create(testChangelog, smeKey, smeValue))
 
     then:
     // The record is in the SME topic
@@ -177,8 +177,8 @@ class StreamManagerSpec extends Specification {
 
     and:
     // There are no errors and nothing in the parsed topic
-    driver.readOutput(Topics.PARSED_GRANULE_TOPIC, DESERIALIZER, DESERIALIZER) == null
-    driver.readOutput(Topics.ERROR_HANDLER_TOPIC, DESERIALIZER, DESERIALIZER) == null
+    driver.readOutput(Topics.parsedTopic('granule'), DESERIALIZER, DESERIALIZER) == null
+    driver.readOutput(Topics.errorTopic(), DESERIALIZER, DESERIALIZER) == null
   }
 
   def "Non-SME granule and SME granule end up in parsed-granule topic"() {
@@ -201,8 +201,8 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(smeValue)))
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(nonSMEValue)))
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(xmlSME)))
+    inputSchema.validate(mapper.readTree(JsonOutput.toJson(xmlNonSME)))
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
     driver.pipeInput(consumerFactory.create(testChangelog, nonSMEInputKey, nonSMEInputValue))
     driver.pipeInput(consumerFactory.create(Topics.unparsedTopic('granule'), unparsedKey, unparsedValue))
@@ -247,7 +247,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    driver.pipeInput(consumerFactory.create(Topics.RAW_GRANULE_CHANGELOG_TOPIC, key, value))
+    driver.pipeInput(consumerFactory.create(testChangelog, key, value))
 
     then:
     // Nothing in the parsed or sme topics
