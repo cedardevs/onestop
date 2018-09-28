@@ -58,3 +58,19 @@ output to a topic:
 }
 ```
 
+### Reset Stream-Manager
+Scaling down the consumer-
+```
+# kubectl scale deployment.apps/im-psi-stream-manager --replicas=0
+deployment.apps/im-psi-stream-manager scaled
+```
+exec into the kafka container
+```
+kubectl exec -it ka-kafka-0 bash
+```
+Reset all of stream-manager's offsets 
+```
+kafka-streams-application-reset --application-id stream-manager --input-topics metadata-aggregator-raw-unknown-collections-changelog, metadata-aggregator-raw-unknown-granules-changelog, metadata-aggregator-raw-class-granules-changelog, unparsed-granules, metadata-aggregator-raw-common-ingest-granules-changelog, metadata-aggregator-raw-comet-collections-changelog ka-kafka:9092 zk-zookeeper:2181
+```
+
+
