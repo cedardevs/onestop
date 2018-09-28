@@ -39,6 +39,7 @@ dependencies {
   testCompile('org.apache.kafka:kafka_2.12:2.0.0')
   testCompile('ch.qos.logback:logback-classic:1.2.3')
   testCompile('org.apache.kafka:kafka_2.12:2.0.0:test')
+  testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
 }
 
 //sourceSets {
