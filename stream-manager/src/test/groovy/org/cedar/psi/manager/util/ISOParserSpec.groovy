@@ -493,26 +493,39 @@ class ISOParserSpec extends Specification {
   def "Services are correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-
+    Map expectedResult = [
+        title:'Multibeam Bathymetric Surveys ArcGIS Map Service',
+        alternateTitle:'Alternate Title for Testing',
+        abstract: "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green.",
+        date: '2012-01-01',
+        dateType: 'creation',
+        pointOfContact: [
+            individualName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+            organizationName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]'
+        ],
+        operations:[
+            [
+                protocol:'http',
+                url:'https://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/multibeam/MapServer',
+                applicationProfile:'https://www.geoplatform.gov/spec/esri-map-rest',
+                name:'Multibeam Bathymetric Surveys ArcGIS Cached Map Service',
+                description: 'Capabilities document for Open Geospatial Consortium Web Map Service for Multibeam Bathymetric Surveys'
+            ],
+            [
+                protocol:'http',
+                url:'https://maps.ngdc.noaa.gov/arcgis/services/web_mercator/multibeam_dynamic/MapServer/WMSServer?request=GetCapabilities&service=WMS',
+                applicationProfile:'http://opengis.net/spec/wms',
+                name:'Multibeam Bathymetric Surveys Web Map Service (WMS)',
+                description: 'The Multibeam Bathymetric Surveys ArcGIS cached map service provides rapid display of ship tracks from global scales down to zoom level 9 (approx. 1:1,200,000 scale).'
+            ]
+        ]
+    ]
     when:
-    def serviceTextBlobs = ISOParser.parseServices(document)
-    serviceTextBlobs.each { String s ->
-      // blob of XML needs to be base64 encoded for elastic search to include is as 'binary' type
-      // decoding here (for testing purposes) to see if the original string is XML or causes a parsing exception
-      byte[] decodedXML = s.decodeBase64()
-      String xmlString = new String(decodedXML)
-      new XmlSlurper().parseText(xmlString)
-    }
+    Set serviceTextBlobs = ISOParser.parseServices(document)
 
     then:
     notThrown(Exception)
-    serviceTextBlobs.each { String s ->
-      assert s in String
-      byte[] decodedXML = s.decodeBase64()
-      String xmlString = new String(decodedXML)
-      def serviceNode = new XmlSlurper().parseText(xmlString)
-      assert serviceNode.name() == 'SV_ServiceIdentification'
-    }
+    serviceTextBlobs[0] as Map == expectedResult
   }
 
   def "Miscellaneous items are correctly parsed"() {
