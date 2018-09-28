@@ -176,81 +176,11 @@ class ISOParserSpec extends Specification {
     temporalBounding == [
         beginDate           : '2005-05-09T00:00:00Z',
         beginIndeterminate  : null,
-        beginYear           : 2005,
         endDate             : '2010-10-01',
         endIndeterminate    : null,
-        endYear             : 2010,
         instant             : null,
         instantIndeterminate: null,
         description         : null
-    ]
-  }
-
-  def "Very old temporal bounding is correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-paleo-dates-metadata.xml").text
-
-    when:
-    def temporalBounding = ISOParser.parseTemporalBounding(document)
-
-    then:
-    temporalBounding == [
-        beginDate           : null,
-        beginIndeterminate  : null,
-        beginYear           : -617905000,
-        endDate             : '-1601050',
-        endIndeterminate    : null,
-        endYear             : -1601050,
-        instant             : null,
-        instantIndeterminate: null,
-        description         : 'Start_Date: 6181000 cal yr BP; Stop_Date: 1603000 cal yr BP; '
-    ]
-  }
-
-  def "Temporal bounding without time zone information is correctly parsed with UTC"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-no-timezone-dates-metadata.xml").text
-
-    when:
-    def temporalBounding = ISOParser.parseTemporalBounding(document)
-
-    then:
-    temporalBounding == [
-        beginDate           : '2005-05-09T00:00:00Z',
-        beginIndeterminate  : null,
-        beginYear           : 2005,
-        endDate             : '2010-10-01T00:00:00Z',
-        endIndeterminate    : null,
-        endYear             : 2010,
-        instant             : null,
-        instantIndeterminate: null,
-        description         : null
-    ]
-  }
-
-  def "Invalid temporal bounding creates invalidDates entry"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-invalid-dates-metadata.xml").text
-
-    when:
-    def temporalBounding = ISOParser.parseTemporalBounding(document)
-
-    then:
-    temporalBounding == [
-        beginDate           : '1984-04-31',
-        beginIndeterminate  : null,
-        beginYear           : null,
-        endDate             : '1985-05-09T00:00:00Z',
-        endIndeterminate    : null,
-        endYear             : 1985,
-        instant             : null,
-        instantIndeterminate: null,
-        description         : null,
-        invalidDates        : [
-          begin  : true,
-          end    : false,
-          instant: false
-        ]
     ]
   }
 

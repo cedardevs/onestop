@@ -121,17 +121,11 @@
         "beginIndeterminate": {
           "type": ["string", "null"]
         },
-        "beginYear": {
-          "type": ["integer", "null"]
-        },
         "endDate": {
           "type": ["string", "null"]
         },
         "endIndeterminate": {
           "type": ["string", "null"]
-        },
-        "endYear": {
-          "type": ["integer", "null"]
         },
         "instant": {
           "type": ["string", "null"]
@@ -141,35 +135,13 @@
         },
         "description": {
           "type": ["string", "null"]
-        },
-        "invalidDates": {
-          "type": "object",
-          "properties": {
-            "begin": {
-              "type": "boolean"
-            },
-            "end": {
-              "type": "boolean"
-            },
-            "instant": {
-              "type": "boolean"
-            }
-          },
-          "required": [
-            "begin",
-            "end",
-            "instant"
-          ],
-          "additionalProperties": false
         }
       },
       "required": [
         "beginDate",
         "beginIndeterminate",
-        "beginYear",
         "endDate",
         "endIndeterminate",
-        "endYear",
         "instant",
         "instantIndeterminate",
         "description"

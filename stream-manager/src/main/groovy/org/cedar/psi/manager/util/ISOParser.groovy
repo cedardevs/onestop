@@ -7,18 +7,6 @@ import org.apache.commons.text.StringEscapeUtils
 import org.apache.commons.text.WordUtils
 import groovy.xml.XmlUtil
 
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatterBuilder
-import java.time.format.ResolverStyle
-import java.time.temporal.ChronoField
-import java.time.temporal.TemporalAccessor
-import java.time.temporal.TemporalQuery
-import java.time.format.DateTimeParseException
-
 class ISOParser {
 
   static Map parseIdentifierInfo(String xml) {
@@ -300,78 +288,6 @@ class ISOParser {
     return parseKeywordsAndTopics(new XmlSlurper().parseText(xml))
   }
 
-  // Year must be in the range [-292275055,292278994] in order to be parsed as date by ES (Joda time magic number)
-  static final MIN_DATE_LONG = -292275055L
-  static final MAX_DATE_LONG = 292278994L
-
-  // handle 3 optional date formats in priority of full-parse option to minimal-parse options
-  static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
-      .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
-      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
-      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
-      .toFormatter()
-      .withResolverStyle(ResolverStyle.STRICT)
-
-  // use custom formatter for when time zone information is not supplied in a LocalDateTime format for ES's happiness
-  static final DateTimeFormatter ELASTIC_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'")
-
-  static Map elasticDateInfo(String date) {
-
-    def dateInvalid = false
-
-    // don't bother parsing if there's nothing here
-    if(!date) {
-      return null
-    }
-
-    // default to null
-    String elasticDate = null
-    TemporalAccessor parsedDate = null
-    Long year = null
-
-    // paleo dates can be longs
-    if(date.isLong()) {
-      elasticDate = date
-      year = Long.parseLong(date)
-      // we only care about the year if outside of limits
-      if(year < MIN_DATE_LONG || year > MAX_DATE_LONG) {
-        elasticDate = null
-      }
-    }
-    else {
-      try {
-        // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
-        parsedDate = PARSE_DATE_FORMATTER.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
-        year = parsedDate.get(ChronoField.YEAR)
-
-        // date is in format like: 2010-12-30T00:00:00Z
-        if(parsedDate instanceof ZonedDateTime) {
-          elasticDate = date
-        }
-        // date is in format like: 2010-12-30T00:00:00
-        else if(parsedDate instanceof LocalDateTime) {
-          // assume UTC
-          ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
-          elasticDate = parsedDateUTC.format(ELASTIC_DATE_FORMATTER)
-          // re-evaluate year in off-chance year was affected by zone id
-          year = parsedDateUTC.get(ChronoField.YEAR)
-        }
-        // date is in format like: 2010-12-30
-        else if(parsedDate instanceof LocalDate) {
-          elasticDate = date
-        }
-      }
-      catch(DateTimeParseException e) {
-        // Date is in a format that cannot be parsed; indicate as invalid
-        dateInvalid = true
-        elasticDate = date
-      }
-    }
-
-    def dateInfo = [ "date": elasticDate, "year":  year, "invalid": dateInvalid]
-    return dateInfo
-  }
-
   static Map parseTemporalBounding(GPathResult metadata) {
 
     def boundingExtent = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent
@@ -380,7 +296,6 @@ class ISOParser {
     def time = boundingExtent.temporalElement?.'**'?.find { it -> it.name() == 'EX_TemporalExtent'}?.extent
 
     String beginText, beginIndeterminateText, endText, endIndeterminateText, instantText, instantIndeterminateText
-    def begin, end, instant
     if(time) {
       // parse potential date fields out of XML
       beginText = time.TimePeriod.beginPosition.text() ?:
@@ -393,34 +308,17 @@ class ISOParser {
           time.TimePeriod.end.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
       instantText = time.TimeInstant.timePosition.text() ?: null
       instantIndeterminateText = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
-
-      // massage the date fields for elastic search (handles multiple formats and invalid dates)
-      begin = elasticDateInfo(beginText)
-      end = elasticDateInfo(endText)
-      instant = elasticDateInfo(instantText)
     }
 
-    def temporalBounding = [
-        beginDate           : begin?.date,
+    return [
+        beginDate           : beginText,
         beginIndeterminate  : beginIndeterminateText,
-        beginYear           : begin?.year,
-        endDate             : end?.date,
+        endDate             : endText,
         endIndeterminate    : endIndeterminateText,
-        endYear             : end?.year,
-        instant             : instant?.date,
+        instant             : instantText,
         instantIndeterminate: instantIndeterminateText,
         description         : description
     ]
-
-    if(begin?.invalid || end?.invalid || instant?.invalid) {
-      temporalBounding.invalidDates = [
-        begin  : begin ? begin.invalid : false,
-        end    : end ? end.invalid : false,
-        instant: instant? instant.invalid : false
-      ]
-    }
-
-    return temporalBounding
   }
 
   static Map parseTemporalBounding(String xml) {

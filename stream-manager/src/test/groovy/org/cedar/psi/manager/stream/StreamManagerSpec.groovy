@@ -15,6 +15,9 @@ import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
 import spock.lang.Specification
 
+import java.time.ZoneOffset
+import java.time.temporal.ChronoUnit
+
 class StreamManagerSpec extends Specification {
 
   def DESERIALIZER = Serdes.String().deserializer()
@@ -108,17 +111,30 @@ class StreamManagerSpec extends Specification {
             ]
         ],
         temporalBounding: [
-            beginDate: [
+            begin: [
                 exists: true,
-                valid : true
+                precision: ChronoUnit.NANOS.toString(),
+                validSearchFormat: true,
+                zoneSpecified: ZoneOffset.UTC.toString(),
+                utcDateTimeString: '2005-05-09T00:00:00Z'
             ],
-            endDate  : [
+            end: [
                 exists: true,
-                valid : true
+                precision: ChronoUnit.DAYS.toString(),
+                validSearchFormat: true,
+                zoneSpecified: 'UNDEFINED',
+                utcDateTimeString: '2010-10-01T23:59:59Z'
             ],
-            instant  : [
+            instant: [
                 exists: false,
-                valid : true
+                precision: 'UNDEFINED',
+                validSearchFormat: 'UNDEFINED',
+                zoneSpecified: 'UNDEFINED',
+                utcDateTimeString: 'UNDEFINED'
+            ],
+            range: [
+                descriptor: 'BOUNDED',
+                beginLTEEnd: true
             ]
         ],
         spatialBounding : [
