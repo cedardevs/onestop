@@ -52,6 +52,7 @@ dependencies {
 //    testCompile('org.springframework.kafka:spring-kafka-test')
   // specify latest spring kafka version for Kafka 2.0.0 Compatibility
   testCompile('org.springframework.kafka:spring-kafka-test:2.2.0.M1')
+  testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
 }
 
 sourceSets {

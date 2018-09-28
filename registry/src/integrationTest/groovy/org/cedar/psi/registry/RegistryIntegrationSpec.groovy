@@ -1,5 +1,10 @@
 package org.cedar.psi.registry
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.fge.jsonschema.main.JsonSchema
+import com.github.fge.jsonschema.main.JsonSchemaFactory
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.admin.AdminClient
@@ -38,6 +43,11 @@ class RegistryIntegrationSpec extends Specification {
   RestTemplate restTemplate
   String baseUrl
 
+  final ObjectMapper mapper = new ObjectMapper()
+  final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
+  final String registryResponseSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('registryResponse-schema.json').text
+  final JsonNode registryResponseSchemaNode = mapper.readTree(registryResponseSchemaString)
+  final JsonSchema registryResponseSchema = factory.getJsonSchema(registryResponseSchemaNode)
 
   def setup() {
     restTemplate = new RestTemplate()
@@ -48,6 +58,7 @@ class RegistryIntegrationSpec extends Specification {
   def 'can post then retrieve granule info with source identifier'() {
     def restTemplate = new RestTemplate()
     def granuleText = ClassLoader.systemClassLoader.getResourceAsStream('test_granule.json').text
+
     def granuleMap = new JsonSlurper().parseText(granuleText) as Map
 
     when:
@@ -70,6 +81,7 @@ class RegistryIntegrationSpec extends Specification {
     def retrieveResponse = restTemplate.exchange(retrieveEntity, Map)
 
     then:
+    registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(retrieveResponse.body)))
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.id == granuleId
     retrieveResponse.body.type == 'granule'
@@ -123,6 +135,7 @@ class RegistryIntegrationSpec extends Specification {
     def retrieveResponse = restTemplate.exchange(retrieveEntity, Map)
 
     then:
+    registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(retrieveResponse.body)))
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.id == granuleId  as String
     retrieveResponse.body.type == 'granule'
@@ -155,6 +168,7 @@ class RegistryIntegrationSpec extends Specification {
     def retrieveResponse = restTemplate.exchange(retrieveEntity, Map)
 
     then:
+    registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(retrieveResponse.body)))
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.id == collectionId as String
     retrieveResponse.body.type == 'collection'
