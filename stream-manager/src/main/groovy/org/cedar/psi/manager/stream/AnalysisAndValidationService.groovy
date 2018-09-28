@@ -22,7 +22,7 @@ class AnalysisAndValidationService {
   static final String INVALID = 'INVALID'
 
   static Map analyzeParsedMetadata(Map msgMap) {
-    log.info "Analyzing message with id: ${msgMap?.id}"
+    log.info "Analyzing message}"
     log.debug("Received $msgMap")
     def parsedMetadata = msgMap.discovery
 
@@ -50,13 +50,16 @@ class AnalysisAndValidationService {
 
     return [
         fileIdentifier    : [
-            exists: fileIdentifier ? true : false
+            exists: fileIdentifier ? true : false,
+            fileIdentifierString: fileIdentifier ?: null
         ],
         doi               : [
-            exists: doi ? true : false
+            exists: doi ? true : false,
+            doiString: doi ?: null
         ],
         parentIdentifier  : [
-            exists: parentIdentifier ? true : false
+            exists: parentIdentifier ? true : false,
+            parentIdentifierString: parentIdentifier ?: null
         ],
         hierarchyLevelName: [
             exists            : hierarchy ? true : false,
