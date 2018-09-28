@@ -6,9 +6,8 @@ import groovy.util.logging.Slf4j
 class AnalysisAndValidationService {
 
   static Map analyzeParsedMetadata(Map msgMap) {
-    log.info "Analyzing message with id: ${msgMap?.id}"
+    log.info "Analyzing message}"
     log.debug("Received $msgMap")
-
     def parsedMetadata = msgMap.discovery
 
     def analysisMap = [

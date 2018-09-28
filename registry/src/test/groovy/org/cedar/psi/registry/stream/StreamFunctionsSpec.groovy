@@ -20,7 +20,7 @@ class StreamFunctionsSpec extends Specification {
     ]
 
     when:
-    def mergedMaps = StreamFunctions.mergeMaps.apply(currentAggregate, newValue)
+    def mergedMaps = StreamFunctions.mergeContentMaps.apply(currentAggregate, newValue)
 
     then:
     mergedMaps == mergedAggregate
@@ -42,7 +42,7 @@ class StreamFunctionsSpec extends Specification {
     ]
 
     when:
-    def mergedMaps = StreamFunctions.mergeMaps.apply(currentAggregate, newValue)
+    def mergedMaps = StreamFunctions.mergeContentMaps.apply(currentAggregate, newValue)
 
     then:
     mergedMaps == mergedAggregate

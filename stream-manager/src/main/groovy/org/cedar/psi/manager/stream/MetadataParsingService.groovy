@@ -11,26 +11,29 @@ class MetadataParsingService {
   static Map parseToInternalFormat(Map msgMap) {
     String format = msgMap.contentType
     String rawMetadata = msgMap.content
-    log.info "Parsing message with id: ${msgMap?.id} and conentType: $format "
+//    log.info "Parsing message with source and id: ${msgMap.identifiers} and conentType: $format "
+
+    Map result = [:]
 
     try {
       if (format == 'application/xml') {
-        return [discovery: ISOParser.parseXMLMetadataToMap(rawMetadata)]
+        result = [discovery: ISOParser.parseXMLMetadataToMap(rawMetadata)]
       }
       else {
-        return [error: 'Unknown raw format of metadata']
+        result = [error: 'Unknown raw format of metadata']
       }
     }
     catch(SAXException e) {
-      return [error: "Malformed XML encountered; unable to parse. " +
+      result = [error: "Malformed XML encountered; unable to parse. " +
           "Root cause: ${ExceptionUtils.getRootCauseMessage(e).trim()}"]
     }
-    catch(Exception e) {
-      log.error "Unable to parse message with id: ${msgMap?.id}"
+    catch(Exception e) {      
+//      log.error "Unable to parse message with source and id: ${srcId}"
       log.error "Caught exception: $e"
-      return [error: "Malformed data encountered; unable to parse. " +
+      result = [error: "Malformed data encountered; unable to parse. " +
           "Root cause: ${ExceptionUtils.getRootCauseMessage(e).trim()}"]
     }
-  }
 
+    return result
+  }
 }
