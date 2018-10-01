@@ -12,9 +12,6 @@ management.endpoint.info.enabled: true
 
 features.sitemap: false
 
-spring.profiles.include:
-  - default
-
 logging:
   level:
       org.cedar.onestop.api.search: INFO
