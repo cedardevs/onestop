@@ -3,7 +3,7 @@
 # auth feature toggle: securityenabled | securitydisabled
 # kafka feature toggle: kafkaenabled | kafkadisabled
 # other features: ...
-spring.profiles.active: "securitydisabled,kafkadisabled"
+spring.profiles.active: "securitydisabled,kafkaenabled"
 
 server:
   port: 8098
