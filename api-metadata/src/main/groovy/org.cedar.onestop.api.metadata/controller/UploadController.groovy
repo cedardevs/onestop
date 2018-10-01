@@ -39,7 +39,24 @@ class UploadController {
 
     def results = metadataService.loadMetadata(metadataRecords)
 
-    redirectAttributes.addFlashAttribute("data", results.data)
+    def successes = results.data.findAll {
+      !it.meta.error
+    }
+
+    def errors = results.data.findAll {
+      it.meta.error
+    }
+
+    int nSuccess = successes.size()
+    int nErrors = errors.size()
+    int total = nSuccess + nErrors
+
+    redirectAttributes.addFlashAttribute("nSuccess", nSuccess)
+    redirectAttributes.addFlashAttribute("nErrors", nErrors)
+    redirectAttributes.addFlashAttribute("successes", successes)
+    redirectAttributes.addFlashAttribute("errors", errors)
+    redirectAttributes.addFlashAttribute("results", results)
+
     return 'redirect:/uploadResponse.html'
   }
 
