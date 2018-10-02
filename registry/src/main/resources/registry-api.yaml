@@ -29,6 +29,7 @@ paths:
           $ref: "#/components/responses/createItem"
         default:
           $ref: "#/components/responses/error"
+
   /registry/{type}/{id}:
     parameters:
       - $ref: '#/components/parameters/metadataType'
@@ -54,6 +55,7 @@ paths:
           $ref: "#/components/responses/notFound"
         default:
           $ref: "#/components/responses/error"
+
   /registry/{type}/{source}:
     parameters:
       - $ref: '#/components/parameters/metadataType'
@@ -68,6 +70,7 @@ paths:
           $ref: "#/components/responses/createItem"
         default:
           $ref: "#/components/responses/error"
+
   /registry/{type}/{source}/{id}:
     parameters:
       - $ref: '#/components/parameters/metadataType'
@@ -162,6 +165,15 @@ components:
             $ref: '#/components/schemas/isoXmlDocument'
 
   schemas:
+    source:
+      type: string
+      enum:
+        - granule
+        - collection
+    id:
+      type: string
+      format: uuid
+      example: d290f1ee-6c54-4b01-90e6-d701748f0851
     Error:
       type: object
     InventoryItem:
@@ -172,14 +184,9 @@ components:
         - attributes
       properties:
         id:
-          type: string
-          format: uuid
-          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          $ref: '#/components/schemas/id'
         type:
-          type: string
-          enum:
-            - granule
-            - collection
+          $ref: '#/components/schemas/source'
         attributes:
           $ref: '#/components/schemas/Attributes'
     Attributes:
@@ -591,8 +598,7 @@ components:
           type: string
           format: ipv4
         id:
-          type: string
-          format: UUID
+          $ref: '#/components/schemas/id'
         method:
           enum:
           - POST
@@ -830,12 +836,17 @@ components:
       minItems: 2
       maxItems: 2
       items:
-        type: number
-        minimum: -360
-        maximum: 360
-        # - type: number
-        #   minimum: -90
-        #   maximum: 90
+        anyOf:
+        - $ref: '#/components/schemas/latPos'
+        - $ref: '#/components/schemas/longPos'
+    longPos:
+      type: number
+      minimum: -360
+      maximum: 360
+    latPos:
+      type: number
+      minimum: -90
+      maximum: 90
     positionArray:
       description: An array of positions
       type: array
