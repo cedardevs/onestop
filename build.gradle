@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '2.0.1.RELEASE'
+    springBootVersion = '2.0.4.RELEASE'
   }
   repositories {
     maven {
@@ -28,7 +28,7 @@ ext {
   esVersion = '5.5.3'
   // isRelease used by docker plugin as well
   isRelease = System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean
-  springCloudVersion = 'Finchley.M7'
+  springCloudVersion = 'Finchley.SR1'
 }
 
 subprojects {
