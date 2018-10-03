@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Profile
 
 @Slf4j
 @Configuration
-@Profile("default")
+@Profile("!integration")
 class DefaultApplicationConfig {
 
   @Value('${elasticsearch.port}')
