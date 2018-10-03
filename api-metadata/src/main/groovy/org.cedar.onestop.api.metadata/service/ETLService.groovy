@@ -188,8 +188,8 @@ class ETLService {
     // Wait for any remaining tasks to complete
     while(granuleTasksInFlight.size() > 0) {
       granuleTasksInFlight.removeAll { taskId ->
-        def status = checkTask(taskId)
-        if(status.completed) {
+         def status = checkTask(taskId)
+         if(status.completed) {
           countGranules.total += status.totalDocs
           countGranules.updated += status.updated
           countGranules.created += status.created
@@ -529,6 +529,8 @@ class ETLService {
   private Map checkTask(String taskId) {
     def result = elasticsearchService.performRequest('GET', "_tasks/${taskId}")
     def completed = result.completed
+
+
     return [
         completed: completed,
         totalDocs: result.task.status.total,
