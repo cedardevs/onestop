@@ -1,15 +1,15 @@
 openapi: 3.0.0
 servers:
-  - url: 'https://virtserver.swaggerhub.com/StrayCat1/Inventory-Manager/1.0.0'
+  - url: 'https://sciapps.colorado.edu'
 info:
   description: Inventory Manager API
-  version: "1.0.0-oas3"
+  version: "0.1.0"
   title: Inventory Manager Registry API
   contact:
     email: cedar.cires@colorado.edu
   license:
     name: GNU GPL
-    url: 'https://www.gnu.org/licenses/gpl-3.0.en.html'
+    url: 'https://www.gnu.org/licenses/gpl-2.0.en.html'
 tags:
   - name: admins
     description: Secured Admin-only calls
@@ -44,7 +44,6 @@ paths:
           $ref: "#/components/responses/createItem"
         default:
           $ref: "#/components/responses/error"
-
     get:
       summary: Retrieve a metadata record by id
       operationId: showRecordByUUID
