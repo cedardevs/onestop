@@ -141,7 +141,7 @@ class Header extends React.Component {
       <li style={styleLinkListItem(false, true)}>
         <Button
           style={styleCartButton}
-          title="Shopping Cart"
+          title={`Shopping Cart ${abbreviatedNumberOfGranulesSelected} files selected`}
           text={abbreviatedNumberOfGranulesSelected}
           icon={cart}
           styleIcon={styleCartIcon}
