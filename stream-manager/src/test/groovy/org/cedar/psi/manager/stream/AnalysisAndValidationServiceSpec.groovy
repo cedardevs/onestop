@@ -158,6 +158,9 @@ class AnalysisAndValidationServiceSpec extends Specification {
     true        | 'start and end both invalid but paleo and start before end'     | [temporalBounding: [beginDate: '-2000000000', endDate: '-1000000000']]
     false       | 'start and end both invalid but paleo and start after end'      | [temporalBounding: [beginDate: '-1000000000', endDate: '-2000000000']]
     true        | 'start and end both same instant'                               | [temporalBounding: [beginDate: '2000-01-01T00:00:00Z', endDate: '2000-01-01T00:00:00Z']]
+    true        | 'start exists but not end'                                      | [temporalBounding: [beginDate: '2000-01-01T00:00:00Z', endDate: '']]
+    'UNDEFINED' | 'start does not exist but end does'                             | [temporalBounding: [beginDate: '', endDate: '2000-01-01T00:00:00Z']]
+    'UNDEFINED' | 'neither start nor end exist'                                   | [temporalBounding: [beginDate: '', endDate: '']]
     'UNDEFINED' | 'start is invalid format but paleo and end is fully invalid'    | [temporalBounding: [beginDate: '-1000000000', endDate: '1999-13-12']]
     'UNDEFINED' | 'start is fully invalid and end is invalid format but paleo'    | [temporalBounding: [beginDate: '15mya', endDate: '-1000000000']]
     'UNDEFINED' | 'start is valid and end is fully invalid'                       | [temporalBounding: [beginDate: '2000-01-01T00:00:00Z', endDate: '2000-12-31T25:00:00Z']]
@@ -244,7 +247,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def "Missing titles detected"() {
     given:
-    def metadata = [:]
+    def metadata = [title: '']
 
     when:
     def titlesAnalysis = AnalysisAndValidationService.analyzeTitles(metadata)
@@ -264,7 +267,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def "Missing description detected"() {
     given:
-    def metadata = [:]
+    def metadata = [description: '']
 
     when:
     def descriptionAnalysis = AnalysisAndValidationService.analyzeDescription(metadata)
