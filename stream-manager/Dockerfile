@@ -1,4 +1,4 @@
-FROM java:8-jre
+FROM gcr.io/distroless/java
 
 ARG JAR_NAME
 ARG VCS_REF
