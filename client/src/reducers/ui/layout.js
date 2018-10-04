@@ -5,7 +5,7 @@ import {
   SET_LEFT_OPEN_CLOSE,
   TOGGLE_RIGHT,
   TOGGLE_MAP,
-  SET_HEADER_MENU_OPEN
+  SET_HEADER_MENU_OPEN,
 } from '../../actions/LayoutActions'
 
 import {LOCATION_CHANGE} from 'react-router-redux'
@@ -17,7 +17,7 @@ export const initialState = Immutable({
   showMap: false,
   showAppliedFilterBubbles: false,
   onDetailPage: false,
-  headerMenuOpen: false
+  headerMenuOpen: false,
 })
 
 export const layout = (state = initialState, action) => {

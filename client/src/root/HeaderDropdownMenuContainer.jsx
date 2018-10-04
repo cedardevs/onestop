@@ -4,18 +4,16 @@ import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
   return {
-    open: state.ui.layout.headerMenuOpen
+    open: state.ui.layout.headerMenuOpen,
   }
 }
 
 const mapDispatchToProps = dispatch => {
-  return {
-
-  }
+  return {}
 }
 
 const HeaderDropdownMenuContainer = withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(HeaderDropdownMenu)
+  connect(mapStateToProps, mapDispatchToProps)(HeaderDropdownMenu)
 )
 
 export default HeaderDropdownMenuContainer

@@ -1,5 +1,5 @@
 import React from 'react'
-import { boxShadow } from '../common/defaultStyles'
+import {boxShadow} from '../common/defaultStyles'
 import Button from '../common/input/Button'
 import remove from 'fa/remove.svg'
 import email from 'fa/envelope.svg'
@@ -13,26 +13,26 @@ const styleActionPanel = {
   borderRadius: '0 0.309em 0.309em 0',
 }
 
-const styleButton = (color) => {
+const styleButton = color => {
   return {
     // boxShadow: boxShadow,
     padding: '0.309em',
     borderRadius: '0.309em',
-    background: color
+    background: color,
   }
 }
 
-const styleButtonHover = (color) => {
+const styleButtonHover = color => {
   return {
-    background: `linear-gradient(black, ${color})`
+    background: `linear-gradient(black, ${color})`,
   }
 }
 
-const styleButtonFocus = (color) => {
+const styleButtonFocus = color => {
   return {
     background: `linear-gradient(black, ${color})`,
     outline: '2px dashed black',
-    outlineOffset: '2px'
+    outlineOffset: '2px',
   }
 }
 
@@ -51,21 +51,22 @@ const styleDeleteButtonFocus = styleButtonFocus('#851A11')
 
 export default class ActionPane extends React.Component {
   render() {
-
-    const { expanded } = this.props
+    const {expanded} = this.props
 
     const emailButton = (
-        <Button
-            key="emailButton"
-            style={styleEmailButton}
-            styleHover={styleEmailButtonHover}
-            styleFocus={styleEmailButtonFocus}
-            title="Email"
-            icon={email}
-            styleIcon={styleIcon}
-            iconPadding={"0.309em"}
-            onClick={() => { console.log(`click on email button: ${itemId}`) }}
-        />
+      <Button
+        key="emailButton"
+        style={styleEmailButton}
+        styleHover={styleEmailButtonHover}
+        styleFocus={styleEmailButtonFocus}
+        title="Email"
+        icon={email}
+        styleIcon={styleIcon}
+        iconPadding={'0.309em'}
+        onClick={() => {
+          console.log(`click on email button: ${itemId}`)
+        }}
+      />
     )
 
     // TODO: populate expanded buttons array to show additional actions when cart item is expanded
@@ -73,24 +74,26 @@ export default class ActionPane extends React.Component {
     const expandableButtons = expanded ? [] : []
 
     const deleteButton = (
-        <Button
-            key="deleteButton"
-            style={styleDeleteButton}
-            styleHover={styleDeleteButtonHover}
-            styleFocus={styleDeleteButtonFocus}
-            title="Delete"
-            icon={remove}
-            styleIcon={styleIcon}
-            iconPadding={"0.309em"}
-            onClick={() => { console.log(`click on delete button: ${itemId}`) }}
-        />
+      <Button
+        key="deleteButton"
+        style={styleDeleteButton}
+        styleHover={styleDeleteButtonHover}
+        styleFocus={styleDeleteButtonFocus}
+        title="Delete"
+        icon={remove}
+        styleIcon={styleIcon}
+        iconPadding={'0.309em'}
+        onClick={() => {
+          console.log(`click on delete button: ${itemId}`)
+        }}
+      />
     )
 
     return (
-        <div style={styleActionPanel}>
-          {expandableButtons}
-          {deleteButton}
-        </div>
+      <div style={styleActionPanel}>
+        {expandableButtons}
+        {deleteButton}
+      </div>
     )
   }
 }

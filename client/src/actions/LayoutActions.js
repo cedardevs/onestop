@@ -27,9 +27,9 @@ export const toggleMap = () => {
 }
 
 export const SET_HEADER_MENU_OPEN = 'SET_HEADER_MENU_OPEN'
-export const setHeaderMenuOpen = (isOpen) => {
+export const setHeaderMenuOpen = isOpen => {
   return {
     type: SET_HEADER_MENU_OPEN,
-    value: isOpen
+    value: isOpen,
   }
 }

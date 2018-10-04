@@ -1,6 +1,6 @@
 import React from 'react'
 import {Link, withRouter} from 'react-router-dom'
-import { Key } from '../utils/keyboardUtils'
+import {Key} from '../utils/keyboardUtils'
 
 const styleLink = {
   textDecoration: 'none',
@@ -28,7 +28,7 @@ class HeaderLink extends React.Component {
     this.setState({
       hovering: false,
       focusing: false,
-      keying: false
+      keying: false,
     })
   }
 
@@ -68,7 +68,7 @@ class HeaderLink extends React.Component {
     })
   }
 
-  setKeying = (isKeying) => {
+  setKeying = isKeying => {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -88,17 +88,17 @@ class HeaderLink extends React.Component {
   }
 
   handleKeyUp = e => {
-    const { history, location, to } = this.props;
+    const {history, location, to} = this.props
     if (e.keyCode === Key.SPACE) {
       e.preventDefault() // prevent scrolling down on space press
       this.setKeying(false)
-      if(location.pathname !== to) {
+      if (location.pathname !== to) {
         history.push(this.props.to)
       }
     }
     if (e.keyCode === Key.ENTER) {
       this.setKeying(false)
-      if(location.pathname !== to) {
+      if (location.pathname !== to) {
         history.push(this.props.to)
       }
     }
@@ -111,7 +111,7 @@ class HeaderLink extends React.Component {
       ...styleLink,
       ...(this.state.hovering ? styleLinkHover : {}),
       ...(this.state.focusing ? styleLinkFocusing : {}),
-      ...(this.state.keying ? styleLinkKeying : {})
+      ...(this.state.keying ? styleLinkKeying : {}),
     }
 
     return (

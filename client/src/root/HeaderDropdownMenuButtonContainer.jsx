@@ -5,18 +5,18 @@ import HeaderDropdownMenuButton from './HeaderDropdownMenuButton'
 
 const mapStateToProps = state => {
   return {
-    open: state.ui.layout.headerMenuOpen
+    open: state.ui.layout.headerMenuOpen,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    setOpen: (isOpen) => dispatch(setHeaderMenuOpen(isOpen))
+    setOpen: isOpen => dispatch(setHeaderMenuOpen(isOpen)),
   }
 }
 
 const HeaderDropdownMenuButtonContainer = withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(HeaderDropdownMenuButton)
+  connect(mapStateToProps, mapDispatchToProps)(HeaderDropdownMenuButton)
 )
 
 export default HeaderDropdownMenuButtonContainer

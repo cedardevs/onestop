@@ -22,7 +22,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     goHome: () => dispatch(showHome()),
-    setHeaderMenuOpen: (isOpen) => dispatch(setHeaderMenuOpen(isOpen))
+    setHeaderMenuOpen: isOpen => dispatch(setHeaderMenuOpen(isOpen)),
   }
 }
 

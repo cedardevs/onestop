@@ -8,14 +8,14 @@ import HeaderLink from './HeaderLink'
 import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 
-import { fontFamilySerif } from '../utils/styleUtils'
+import {fontFamilySerif} from '../utils/styleUtils'
 import FlexRow from '../common/FlexRow'
 
 import HeaderDropdownMenuContainer from './HeaderDropdownMenuContainer'
 import HeaderDropdownMenuButtonContainer from './HeaderDropdownMenuButtonContainer'
 
 const styleWrapper = {
-  position: 'relative'
+  position: 'relative',
 }
 
 const styleHeader = {
@@ -54,7 +54,7 @@ const styleLinkListItem = (firstItem, lastItem) => {
       ? '0 0 0 0.309em'
       : firstItem ? '0 0.309em 0 0' : '0 0.309em 0 0.309em',
     borderRight: !lastItem ? '1px solid white' : 0,
-    display: 'inline-flex'
+    display: 'inline-flex',
   }
 }
 
@@ -100,7 +100,7 @@ class Header extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      focusingSkipLink: false
+      focusingSkipLink: false,
     }
   }
 
@@ -123,7 +123,6 @@ class Header extends React.Component {
   }
 
   render() {
-    const {abbreviatedNumberOfGranulesSelected, setHeaderMenuOpen} = this.props
     const {focusingSkipLink} = this.state
 
     const menuContent = (
@@ -144,7 +143,7 @@ class Header extends React.Component {
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, true)}>
-          <HeaderDropdownMenuButtonContainer/>
+          <HeaderDropdownMenuButtonContainer />
         </li>
       </ul>
     )

@@ -6,6 +6,7 @@
   "license": "GPL-2.0",
   "scripts": {
     "dev": "webpack-dev-server --env.URL_API_SEARCH=http://localhost:8097 --progress --config webpack.config.js --colors & npm run testAndWatch",
+    "kub": "webpack-dev-server --env.URL_API_SEARCH=http://localhost:30097 --progress --config webpack.config.js --colors & npm run testAndWatch",
     "test": "NODE_ENV=test mocha --recursive ./test",
     "testAndWatch": "NODE_ENV=test mocha --recursive ./test -w --watch-extensions js,jsx",
     "format": "find src -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --config .prettierrc.json --write",
