@@ -161,6 +161,7 @@ export default class Expandable extends React.Component {
       styleWrapper,
       styleHeading,
       heading,
+      headingTitle,
       styleContent,
       styleContentOpen,
       content,
@@ -221,6 +222,7 @@ export default class Expandable extends React.Component {
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         tabIndex={tabIndex}
+        title={headingTitle}
         role={role}
         aria-expanded={ariaExpanded}
       >

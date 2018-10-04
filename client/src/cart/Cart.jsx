@@ -125,7 +125,7 @@ export default class Cart extends React.Component {
           <ListView
             items={mockCartItems}
             loading={!!loading}
-            resultsMessage={'Selected Granules'}
+            resultsMessage={'Files for download'}
             shown={numShownItems}
             total={numberOfGranulesSelected}
             onItemSelect={this.handleSelectItem}

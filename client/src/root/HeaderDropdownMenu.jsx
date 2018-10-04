@@ -1,8 +1,10 @@
 import React from 'react'
+import {withRouter} from 'react-router-dom'
 import {boxShadow} from '../common/defaultStyles'
 import cart from 'fa/cart-arrow-down.svg'
 
 import AnimateHeight from 'react-animate-height'
+import Button from '../common/input/Button'
 const ANIMATION_DURATION = 200
 
 const styleExtraMenu = {
@@ -23,8 +25,13 @@ const styleExtraMenuList = {
   paddingInlineStart: 0,
 }
 
+const styleCartText = {
+  margin: '0 1em 0 0',
+}
+
 const styleCartButton = {
   fontSize: '0.618em',
+  display: 'inline-flex',
 }
 
 const styleCartIcon = {
@@ -50,10 +57,12 @@ const styleSeparatorOpen = {
   width: '100%',
 }
 
-export default class HeaderDropdownMenu extends React.Component {
+class HeaderDropdownMenu extends React.Component {
   handleRedirectToCart = () => {
-    const {history} = this.props
-    history.push('/cart')
+    const {history, location} = this.props
+    if (location.pathname !== '/cart') {
+      history.push('/cart')
+    }
   }
 
   handleAnimationStart = open => {
@@ -69,11 +78,32 @@ export default class HeaderDropdownMenu extends React.Component {
   }
 
   render() {
-    const {open} = this.props
+    const {open, cartEnabled, abbreviatedNumberOfGranulesSelected} = this.props
 
     const stylesSeparatorMerged = {
       ...styleSeparator,
       ...(open ? styleSeparatorOpen : {}),
+    }
+
+    const shoppingCartMenuItem = (
+      <div key="cartMenuItem">
+        <span style={styleCartText} role="alert">
+          Files for download
+        </span>
+        <Button
+          style={styleCartButton}
+          title={`${abbreviatedNumberOfGranulesSelected} Files for download`}
+          text={abbreviatedNumberOfGranulesSelected}
+          icon={cart}
+          styleIcon={styleCartIcon}
+          onClick={this.handleRedirectToCart}
+        />
+      </div>
+    )
+
+    const menuItems = []
+    if (cartEnabled) {
+      menuItems.push(shoppingCartMenuItem)
     }
 
     const extraMenuContent = (
@@ -82,10 +112,7 @@ export default class HeaderDropdownMenu extends React.Component {
           <div style={stylesSeparatorMerged} />
         </div>
 
-        <ul style={styleExtraMenuList}>
-          <li>item 1</li>
-          <li>item 2</li>
-        </ul>
+        <ul style={styleExtraMenuList}>{menuItems}</ul>
       </div>
     )
 
@@ -102,3 +129,5 @@ export default class HeaderDropdownMenu extends React.Component {
     )
   }
 }
+
+export default withRouter(HeaderDropdownMenu)

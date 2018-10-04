@@ -51,7 +51,7 @@ const styleDeleteButtonFocus = styleButtonFocus('#851A11')
 
 export default class ActionPane extends React.Component {
   render() {
-    const {expanded} = this.props
+    const {expanded, item} = this.props
 
     const emailButton = (
       <Button
@@ -59,7 +59,7 @@ export default class ActionPane extends React.Component {
         style={styleEmailButton}
         styleHover={styleEmailButtonHover}
         styleFocus={styleEmailButtonFocus}
-        title="Email"
+        title={`Email ${item.title}`}
         icon={email}
         styleIcon={styleIcon}
         iconPadding={'0.309em'}
@@ -79,7 +79,7 @@ export default class ActionPane extends React.Component {
         style={styleDeleteButton}
         styleHover={styleDeleteButtonHover}
         styleFocus={styleDeleteButtonFocus}
-        title="Delete"
+        title={`Remove ${item.title}`}
         icon={remove}
         styleIcon={styleIcon}
         iconPadding={'0.309em'}

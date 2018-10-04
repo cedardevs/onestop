@@ -93,13 +93,13 @@ class HeaderLink extends React.Component {
       e.preventDefault() // prevent scrolling down on space press
       this.setKeying(false)
       if (location.pathname !== to) {
-        history.push(this.props.to)
+        history.push(to)
       }
     }
     if (e.keyCode === Key.ENTER) {
       this.setKeying(false)
       if (location.pathname !== to) {
-        history.push(this.props.to)
+        history.push(to)
       }
     }
   }

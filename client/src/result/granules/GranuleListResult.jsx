@@ -75,6 +75,10 @@ const styleBadgeLinkFocused = {
   outlineOffset: '0.105em',
 }
 
+const styleCheckboxLabel = {
+  width: '6em'
+}
+
 class ListResult extends React.Component {
   componentWillMount() {
     this.setState({
@@ -268,7 +272,9 @@ class ListResult extends React.Component {
     const selectGranuleCheckbox = shoppingCartEnabled ? (
       <Checkbox
         key={`checkbox-${itemId}`}
-        label={`Add to Cart`}
+        title={`Mark ${item.title} as file to download`}
+        label={`Mark as file to download`}
+        styleLabel={styleCheckboxLabel}
         id={itemId}
         checked={checkGranule}
         onChange={handleCheckboxChange(itemId, item)}

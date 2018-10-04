@@ -56,6 +56,10 @@ const styleDetail = {
   padding: '1.618em',
 }
 
+const styleLeftRightFlexRow = {
+  flexDirection: 'row-reverse',
+}
+
 const styleLeft = {
   flex: '1 1 auto',
   width: '50%',
@@ -96,6 +100,11 @@ const styleBadgeLinkFocused = {
   outlineOffset: '0.105em',
 }
 
+const styleLinkText = {
+  textDecoration: 'underline',
+  margin: '0.6em 0',
+}
+
 export default class CartItem extends React.Component {
   constructor(props) {
     super(props)
@@ -112,21 +121,20 @@ export default class CartItem extends React.Component {
     })
   }
 
-  renderBadge = (link, itemId) => {
+  renderBadge = (link, itemId, item) => {
     const {protocol, url, displayName} = link
     const linkText = displayName ? displayName : protocol.label
-    const labelledBy = displayName
-      ? // title the link with references to elements: linkText, protocolLegend, granuleTitle
-        `ListResult::Link::${url} protocol::legend::${protocol.id}  ListResult::title::${itemId}`
-      : // linkText is the same as protocol, so only include one of the two
-        `protocol::legend::${protocol.id} ListResult::title::${itemId}`
+
+    const ariaTitle = displayName
+      ? `${linkText} ${protocol.label} ${item.title}`
+      : `${linkText} ${item.title}`
 
     return (
       <li key={`accessLink::${url}`} style={util.styleProtocolListItem}>
         <A
           href={url}
           key={url}
-          aria-labelledby={labelledBy}
+          title={ariaTitle}
           target="_blank"
           style={styleBadgeLink}
           styleFocus={styleBadgeLinkFocused}
@@ -135,13 +143,7 @@ export default class CartItem extends React.Component {
             {util.renderBadgeIcon(protocol)}
           </div>
           <div
-            id={`ListResult::Link::${url}`}
-            style={{
-              ...{
-                textDecoration: 'underline',
-                margin: '0.6em 0',
-              },
-            }}
+            style={styleLinkText}
           >
             {linkText}
           </div>
@@ -162,7 +164,7 @@ export default class CartItem extends React.Component {
       }))
       .sortBy(info => info.protocol.id)
       .map(link => {
-        return this.renderBadge(link, this.props.itemId)
+        return this.renderBadge(link, this.props.itemId, this.props.item)
       })
       .value()
     const badgesElement = _.isEmpty(badges) ? 'N/A' : badges
@@ -231,7 +233,7 @@ export default class CartItem extends React.Component {
 
     const detailView = (
       <div style={styleDetail}>
-        <FlexRow items={[ left, right ]} />
+        <FlexRow items={[ right, left ]} style={styleLeftRightFlexRow} />
       </div>
     )
 
@@ -245,6 +247,7 @@ export default class CartItem extends React.Component {
         arrowTextOpened={'hide details'}
         alignArrow={true}
         heading={summaryView}
+        headingTitle={item.title}
         styleHeading={styleExpandableHeading}
         content={detailView}
         styleContent={styleExpandableContent}
@@ -256,7 +259,11 @@ export default class CartItem extends React.Component {
     )
 
     const actionPane = (
-      <ActionPane key={'cartItemActionPane'} expanded={this.state.expanded} />
+      <ActionPane
+        key={'cartItemActionPane'}
+        expanded={this.state.expanded}
+        item={item}
+      />
     )
 
     return (
