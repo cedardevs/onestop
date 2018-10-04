@@ -137,6 +137,7 @@ export default class Button extends Component {
       text,
       icon,
       iconAfter,
+      iconPadding,
       styleIcon,
       onClick,
       style,
@@ -156,7 +157,7 @@ export default class Button extends Component {
       ...(this.state.hovering ? {...styleHoverDefault, ...styleHover} : {}),
       ...(this.state.pressing ? {...stylePressDefault, ...stylePress} : {}),
       ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {}),
-      ...(icon && !text ? styleIconPadding : {}),
+      ...(icon && !text ? (iconPadding ? iconPadding : styleIconPadding) : {}),
     }
 
     const styleIconResolved = styleIcon

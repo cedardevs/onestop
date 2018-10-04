@@ -8,10 +8,15 @@ import HeaderLink from './HeaderLink'
 import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 
-import {fontFamilySerif} from '../utils/styleUtils'
+import { fontFamilySerif } from '../utils/styleUtils'
 import FlexRow from '../common/FlexRow'
 
-import cart from 'fa/cart-arrow-down.svg'
+import HeaderDropdownMenuContainer from './HeaderDropdownMenuContainer'
+import HeaderDropdownMenuButtonContainer from './HeaderDropdownMenuButtonContainer'
+
+const styleWrapper = {
+  position: 'relative'
+}
 
 const styleHeader = {
   backgroundColor: '#222C37',
@@ -49,6 +54,7 @@ const styleLinkListItem = (firstItem, lastItem) => {
       ? '0 0 0 0.309em'
       : firstItem ? '0 0.309em 0 0' : '0 0.309em 0 0.309em',
     borderRight: !lastItem ? '1px solid white' : 0,
+    display: 'inline-flex'
   }
 }
 
@@ -90,21 +96,11 @@ const styleSkipLinkHover = {
   background: 'transparent',
 }
 
-const styleCartButton = {
-  fontSize: '0.618em'
-}
-
-const styleCartIcon = {
-  width: '1.618em',
-  height: '1.618em',
-  marginRight: '0.309em'
-}
-
 class Header extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      focusingSkipLink: false,
+      focusingSkipLink: false
     }
   }
 
@@ -126,13 +122,8 @@ class Header extends React.Component {
     })
   }
 
-  handleRedirectToCart = () => {
-    const { history } = this.props
-    history.push('/cart')
-  }
-
   render() {
-    const {abbreviatedNumberOfGranulesSelected} = this.props
+    const {abbreviatedNumberOfGranulesSelected, setHeaderMenuOpen} = this.props
     const {focusingSkipLink} = this.state
 
     const menuContent = (
@@ -153,14 +144,7 @@ class Header extends React.Component {
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, true)}>
-          <Button
-              style={styleCartButton}
-              title="Shopping Cart"
-              text={abbreviatedNumberOfGranulesSelected}
-              icon={cart}
-              styleIcon={styleCartIcon}
-              onClick={this.handleRedirectToCart}
-          />
+          <HeaderDropdownMenuButtonContainer/>
         </li>
       </ul>
     )
@@ -215,17 +199,20 @@ class Header extends React.Component {
     )
 
     return (
-      <div style={styleHeader}>
-        <FlexRow
-          style={styleHeaderFlexRow}
-          items={[
-            <FlexRow
-              key="insignia-and-search"
-              items={[ skipLink, insignia, search ]}
-            />,
-            menu,
-          ]}
-        />
+      <div style={styleWrapper}>
+        <div style={styleHeader}>
+          <FlexRow
+            style={styleHeaderFlexRow}
+            items={[
+              <FlexRow
+                key="insignia-and-search"
+                items={[ skipLink, insignia, search ]}
+              />,
+              menu,
+            ]}
+          />
+        </div>
+        <HeaderDropdownMenuContainer />
       </div>
     )
   }

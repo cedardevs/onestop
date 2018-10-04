@@ -3,6 +3,7 @@ import Header from './Header'
 import {showHome} from '../actions/FlowActions'
 import {withRouter} from 'react-router'
 import {abbreviateNumber} from '../utils/readableUtils'
+import {setHeaderMenuOpen} from '../actions/LayoutActions'
 
 const mapStateToProps = state => {
 
@@ -17,6 +18,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     goHome: () => dispatch(showHome()),
+    setHeaderMenuOpen: (isOpen) => dispatch(setHeaderMenuOpen(isOpen))
   }
 }
 

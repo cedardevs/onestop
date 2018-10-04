@@ -25,3 +25,11 @@ export const toggleMap = () => {
     type: TOGGLE_MAP,
   }
 }
+
+export const SET_HEADER_MENU_OPEN = 'SET_HEADER_MENU_OPEN'
+export const setHeaderMenuOpen = (isOpen) => {
+  return {
+    type: SET_HEADER_MENU_OPEN,
+    value: isOpen
+  }
+}

@@ -1,5 +1,6 @@
 import React from 'react'
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
+import { Key } from '../utils/keyboardUtils'
 
 const styleLink = {
   textDecoration: 'none',
@@ -18,11 +19,16 @@ const styleLinkFocusing = {
   outline: '2px dashed #d7d7d7',
 }
 
-export default class HeaderLink extends React.Component {
+const styleLinkKeying = {
+  color: '#277cb2',
+}
+
+class HeaderLink extends React.Component {
   componentWillMount() {
     this.setState({
       hovering: false,
       focusing: false,
+      keying: false
     })
   }
 
@@ -62,13 +68,50 @@ export default class HeaderLink extends React.Component {
     })
   }
 
+  setKeying = (isKeying) => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        keying: isKeying,
+      }
+    })
+  }
+
+  handleKeyDown = e => {
+    if (e.keyCode === Key.SPACE) {
+      e.preventDefault() // prevent scrolling down on space press
+      this.setKeying(true)
+    }
+    if (e.keyCode === Key.ENTER) {
+      this.setKeying(true)
+    }
+  }
+
+  handleKeyUp = e => {
+    const { history, location, to } = this.props;
+    if (e.keyCode === Key.SPACE) {
+      e.preventDefault() // prevent scrolling down on space press
+      this.setKeying(false)
+      if(location.pathname !== to) {
+        history.push(this.props.to)
+      }
+    }
+    if (e.keyCode === Key.ENTER) {
+      this.setKeying(false)
+      if(location.pathname !== to) {
+        history.push(this.props.to)
+      }
+    }
+  }
+
   render() {
-    const {title, to} = this.props
+    const {to} = this.props
 
     const styleLinkMerged = {
       ...styleLink,
       ...(this.state.hovering ? styleLinkHover : {}),
       ...(this.state.focusing ? styleLinkFocusing : {}),
+      ...(this.state.keying ? styleLinkKeying : {})
     }
 
     return (
@@ -79,9 +122,13 @@ export default class HeaderLink extends React.Component {
         onMouseOut={this.handleMouseOut}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
+        onKeyDown={this.handleKeyDown}
+        onKeyUp={this.handleKeyUp}
       >
         {this.props.children}
       </Link>
     )
   }
 }
+
+export default withRouter(HeaderLink)

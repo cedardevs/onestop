@@ -1,16 +1,15 @@
 import React from 'react'
 import Expandable from '../common/Expandable'
-import Button from '../common/input/Button'
 import FlexRow from '../common/FlexRow'
 import A from '../common/link/Link'
 
-import trash from 'fa/trash.svg'
 import TimeSummary from '../detail/TimeSummary'
 import { fontFamilySerif } from '../utils/styleUtils'
 import SpatialSummary from '../detail/SpatialSummary'
 import MapThumbnail from '../common/MapThumbnail'
 import * as util from '../utils/resultUtils'
 import { boxShadow } from '../common/defaultStyles'
+import ActionPane from './ActionPane'
 
 const styleWrapper = {
   margin:'0 1.618em 0.618em 0',
@@ -83,27 +82,6 @@ const styleSectionHeadingTop = {
   marginTop: '0em',
 }
 
-const styleDeleteButton = {
-  boxShadow: boxShadow,
-  padding: '0.309em 0.618em',
-  borderRadius: '0 0.309em 0.309em 0',
-  background: '#851A11'
-}
-
-const styleDeleteButtonHover = {
-  background: 'linear-gradient(black, #851A11)'
-}
-
-const styleDeleteButtonFocus = {
-  background: 'linear-gradient(black, #851A11)',
-  outline: '2px dashed black'
-}
-
-const styleDeleteIcon = {
-  width: '1.618em',
-  height: '1.618em',
-}
-
 const stylePreviewMap = {
   zIndex: 4,
   height: '16em',
@@ -121,6 +99,21 @@ const styleBadgeLinkFocused = {
 }
 
 export default class CartItem extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = { expanded: false }
+  }
+
+  handleExpandableToggle = (event) => {
+    console.log("handleExpandableToggle:event = ", event)
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        expanded: !!event.open,
+      }
+    })
+  }
 
   renderBadge = (link, itemId) => {
     const {protocol, url, displayName} = link
@@ -258,27 +251,21 @@ export default class CartItem extends React.Component {
             styleContent={styleExpandableContent}
             styleContentOpen={styleExpandableContentOpen}
             value={itemId}
-            // open={this.state.citationExpandable}
-            // onToggle={handleExpandableToggle}
+            onToggle={this.handleExpandableToggle}
+            open={this.state.expanded}
         />
     )
 
-    const buttonDelete = (
-        <Button
-            key={"cartItemDelete"}
-            style={styleDeleteButton}
-            styleHover={styleDeleteButtonHover}
-            styleFocus={styleDeleteButtonFocus}
-            title="Shopping Cart"
-            icon={trash}
-            styleIcon={styleDeleteIcon}
-            onClick={() => { console.log(`click on delete button: ${itemId}`) }}
+    const actionPane = (
+        <ActionPane
+            key={"cartItemActionPane"}
+            expanded={this.state.expanded}
         />
     )
 
     return (
         <div style={styleWrapper}>
-          <FlexRow items={[expandable, buttonDelete]} />
+          <FlexRow items={[expandable, actionPane]} />
         </div>
     )
   }
