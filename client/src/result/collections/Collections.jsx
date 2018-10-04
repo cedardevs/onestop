@@ -48,7 +48,7 @@ export default class Collections extends Component {
         <ListView
           items={results}
           loading={!!loading}
-          resultsMessage={"Search Results"}
+          resultsMessage={'Search Results'}
           shown={returnedHits}
           total={totalHits}
           onItemSelect={selectCollection}

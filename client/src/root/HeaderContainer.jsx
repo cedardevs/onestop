@@ -6,12 +6,16 @@ import {abbreviateNumber} from '../utils/readableUtils'
 import {setHeaderMenuOpen} from '../actions/LayoutActions'
 
 const mapStateToProps = state => {
-
-  const numberOfGranulesSelected = Object.keys(state.cart.granules.selectedGranules).length
-  const abbreviatedNumberOfGranulesSelected = abbreviateNumber(numberOfGranulesSelected)
+  const numberOfGranulesSelected = Object.keys(
+    state.cart.granules.selectedGranules
+  ).length
+  const abbreviatedNumberOfGranulesSelected = abbreviateNumber(
+    numberOfGranulesSelected
+  )
 
   return {
-    abbreviatedNumberOfGranulesSelected: abbreviatedNumberOfGranulesSelected
+    abbreviatedNumberOfGranulesSelected: abbreviatedNumberOfGranulesSelected,
+    shoppingCartEnabled: state.domain.config.shoppingCartEnabled,
   }
 }
 

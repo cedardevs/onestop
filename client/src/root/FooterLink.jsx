@@ -14,7 +14,7 @@ const styleLinkHover = {
 }
 
 const styleAFocus = {
-  outline: '2px dashed white'
+  outline: '2px dashed white',
 }
 
 class FooterLink extends React.Component {

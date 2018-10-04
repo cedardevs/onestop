@@ -100,7 +100,7 @@ export default class Root extends Component {
   }
 
   render() {
-    const {showLeft, leftOpen, showRight} = this.props
+    const {showLeft, leftOpen, showRight, shoppingCartEnabled} = this.props
 
     const header = (
       <div>
@@ -114,6 +114,11 @@ export default class Root extends Component {
 
     const left = leftOpen ? <FiltersContainer /> : <FiltersHiddenContainer />
     const leftWidth = leftOpen ? '20em' : '2em'
+    const cart = shoppingCartEnabled ? (
+      <Route path="/cart">
+        <CartContainer />
+      </Route>
+    ) : null
 
     const middle = (
       <div style={{width: '100%'}}>
@@ -164,9 +169,7 @@ export default class Root extends Component {
             <Help />
           </Route>
 
-          <Route path="/cart">
-            <CartContainer />
-          </Route>
+          {cart}
 
           <Route path="/error">
             <ErrorContainer />
