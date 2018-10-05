@@ -12,6 +12,8 @@ server:
 spring:
   application:
     name: onestop-metadata-api
+  jmx:
+    default-domain: onestop-metadata-api
 
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
