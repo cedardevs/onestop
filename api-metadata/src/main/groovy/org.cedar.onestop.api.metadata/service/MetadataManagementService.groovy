@@ -68,17 +68,17 @@ class MetadataManagementService {
     def results = []
     
     payload.eachWithIndex { record, i ->
-      def source = record.discovery as Map
+      def discovery = record.discovery as Map
       def id = record.id
-      
-      source.stagedDate = System.currentTimeMillis()
+  
+      discovery.stagedDate = System.currentTimeMillis()
       try {
-        def type = source.parentIdentifier ? 'granule' : 'collection'
-        def metadata = ManipulateMetadataService.oneStopReady(source)
+        def type = discovery.parentIdentifier ? 'granule' : 'collection'
+        def source = ManipulateMetadataService.oneStopReady(discovery)
         def result = [
             id        : id,
             type      : type,
-            attributes: metadata,
+            attributes: source,
         ]
       
         def index = type == 'collection' ? PREFIX + COLLECTION_STAGING_INDEX : PREFIX + GRANULE_STAGING_INDEX
