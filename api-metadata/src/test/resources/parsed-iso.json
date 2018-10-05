@@ -1,14 +1,14 @@
 {
-  "fileIdentifier": "gov.super.important:FILE-ID",
-  "parentIdentifier": "gov.super.important:PARENT-ID",
-  "hierarchyLevelName": "granule",
-  "doi": "doi:10.5072/FK2TEST",
-  "purpose": "Provide quality super important data to the user community.",
-  "status": "completed",
-  "credit": null,
-  "title": "Important Organization's Important File's Super Important Title",
-  "alternateTitle": "Still (But Slightly Less) Important Alternate Title",
-  "description": "Wall of overly detailed, super informative, extra important text.",
+  "fileIdentifier": "gov.noaa.nodc:GHRSST-AMSRE-REMSS-L2P",
+  "parentIdentifier": null,
+  "hierarchyLevelName": null,
+  "doi": null,
+  "purpose": "Basic research",
+  "status": "onGoing",
+  "credit": "L2P data is sponsored by the National Oceanographic Partnership Program (NOPP).",
+  "title": "GHRSST Level 2P Global Subskin Sea Surface Temperature from the Advanced Scanning Microwave Radiometer",
+  "alternateTitle": "AMSRE 25km gridded SST data set",
+  "description": "version 2 format specifications.",
   "keywords": [
     {
       "values": [
@@ -17,32 +17,25 @@
         "SSIO > Super SIO (Super Important Organization)"
       ],
       "type": "dataCenter",
-      "namespace": "GCMD Keywords - Data Centers"
+      "namespace": "Global Change Master Directory (GCMD) Data Center Keywords"
     },
     {
       "values": [
-        "Environmental Advisories > Fire Advisories > Wildfires",
-        "This Keyword Is > Misplaced And Invalid",
-        "This Keyword > Is Just > WRONG"
+        "0003665",
+        "0003666",
+        "0003667",
+        "0003668",
+        "0003669"
       ],
-      "type": "service",
-      "namespace": "Global Change Master Directory Science and Services Keywords"
+      "type": null,
+      "namespace": "NCEI ACCESSION NUMBER"
     },
     {
       "values": [
-        "Air temperature",
-        "Water temperature"
-      ],
-      "type": "theme",
-      "namespace": "Miscellaneous keyword type"
-    },
-    {
-      "values": [
-        "Wind speed",
-        "Wind direction"
+        "EARTH SCIENCE > OCEANS > OCEAN TEMPERATURE > SEA SURFACE TEMPERATURE"
       ],
       "type": "theme",
-      "namespace": "Miscellaneous keyword type"
+      "namespace": "Global Change Master Directory (GCMD) Science and Services Keywords"
     },
     {
       "values": [
@@ -53,7 +46,7 @@
         "Spectral/Engineering > Microwave > Temperature Anomalies"
       ],
       "type": "theme",
-      "namespace": "GCMD Keywords - Science Keywords"
+      "namespace": "GCMD Keywords - Earth Science Keywords"
     },
     {
       "values": [
@@ -79,79 +72,17 @@
       "namespace": "GCMD Keywords - Vertical Data Resolution"
     }
   ],
-  "accessionValues": [
-    "0038924",
-    "0038947",
-    "0038970"
-  ],
   "topicCategories": [
     "environment",
-    "oceans"
-  ],
-  "gcmdScienceServices": [
-    "Environmental Advisories > Fire Advisories > Wildfires",
-    "Environmental Advisories > Fire Advisories",
-    "Environmental Advisories"
-  ],
-  "gcmdScience": [
-    "This Keyword Is > Misplaced And Invalid",
-    "This Keyword Is",
-    "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
-    "Atmosphere > Atmospheric Temperature > Surface Temperature",
-    "Atmosphere > Atmospheric Temperature",
-    "Atmosphere",
-    "Oceans > Salinity/Density > Salinity",
-    "Oceans > Salinity/Density",
-    "Oceans",
-    "Volcanoes > This Keyword > Is Invalid",
-    "Volcanoes > This Keyword",
-    "Volcanoes",
-    "Spectral/Engineering > Microwave > Brightness Temperature",
-    "Spectral/Engineering > Microwave",
-    "Spectral/Engineering",
-    "Spectral/Engineering > Microwave > Temperature Anomalies"
-  ],
-  "gcmdLocations": [
-    "Geographic Region > Arctic",
-    "Geographic Region",
-    "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
-    "Ocean > Atlantic Ocean > North Atlantic Ocean",
-    "Ocean > Atlantic Ocean",
-    "Ocean",
-    "Liquid Earth > This Keyword > Is Invalid",
-    "Liquid Earth > This Keyword",
-    "Liquid Earth"
-  ],
-  "gcmdInstruments": [
-
-  ],
-  "gcmdPlatforms": [
-
-  ],
-  "gcmdProjects": [
-
-  ],
-  "gcmdDataCenters": [
-    "SIO > Super Important Organization",
-    "OSIO > Other Super Important Organization",
-    "SSIO > Super SIO (Super Important Organization)"
-  ],
-  "gcmdHorizontalResolution": [
-
-  ],
-  "gcmdVerticalResolution": [
-    "> 1 Km"
-  ],
-  "gcmdTemporalResolution": [
-    "Seasonal"
+    "oceans",
+    "climatologyMeteorologyAtmosphere",
+    "biota"
   ],
   "temporalBounding": {
-    "beginDate": "2005-05-09T00:00:00Z",
+    "beginDate": "2002-06-01",
     "beginIndeterminate": null,
-    "beginYear": 2005,
-    "endDate": "2010-10-01",
+    "endDate": "2011-10-04",
     "endIndeterminate": null,
-    "endYear": 2010,
     "instant": null,
     "instantIndeterminate": null,
     "description": null
@@ -186,9 +117,9 @@
   "isGlobal": true,
   "acquisitionInstruments": [
     {
-      "instrumentIdentifier": "SII > Super Important Instrument",
+      "instrumentIdentifier": "AMSR-E > Advanced Microwave Scanning Radiometer-EOS",
       "instrumentType": "sensor",
-      "instrumentDescription": "The Super Important Organization's (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system."
+      "instrumentDescription": "The Advanced Microwave Scann"
     }
   ],
   "acquisitionOperations": [
@@ -201,60 +132,53 @@
   ],
   "acquisitionPlatforms": [
     {
-      "platformIdentifier": "TS-18 > TumbleSat-18",
-      "platformDescription": "The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.",
+      "platformIdentifier": "AQUA > Earth Observing System, AQUA",
+      "platformDescription": "Aqua is a NASA polar orbiting mission designed to collect information on the Earth's atmospheric",
       "platformSponsor": [
-        "Super Important Organization",
-        "Other (Kind Of) Important Organization"
+        "Remote Sensing Systems",
+        "NASA/JPL/PODAAC > Physical Oceanography Distributed Active Archive Center, Jet Propulsion Laboratory, NASA"
       ]
     }
   ],
   "dataFormats": [
     {
       "name": "NETCDF",
-      "version": "classic"
-    },
-    {
-      "name": "CSV",
-      "version": null
-    },
-    {
-      "name": "ASCII",
-      "version": null
-    },
-    {
-      "name": "NETCDF",
-      "version": "4"
+      "version": "netCDF-4"
     }
   ],
   "links": [
     {
-      "linkName": "Super Important Access Link",
-      "linkProtocol": "HTTP",
-      "linkUrl": "http://www.example.com",
-      "linkDescription": "Everything Important, All In One Place",
-      "linkFunction": "search"
-    }
-  ],
-  "contacts": [
-    {
-      "individualName": "John Smith",
-      "organizationName": "University of Awesome",
-      "positionName": "Chief Awesomeness Officer",
-      "role": "pointOfContact",
-      "email": "john.smith@uoa.edu",
-      "phone": "555-555-5555"
+      "linkName": "Descriptive Information",
+      "linkProtocol": "HTTPS",
+      "linkUrl": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.noaa.nodc:GHRSST-AMSRE-REMSS-L2P",
+      "linkDescription": "Navigate directly to the URL for a descriptive web page with download links.",
+      "linkFunction": "information"
     },
     {
-      "individualName": "Jane Doe",
-      "organizationName": "University of Awesome",
-      "positionName": "VP of Awesome Behavior",
-      "role": "distributor",
-      "email": "jane.doe@uoa.edu",
-      "phone": "555-555-5556"
+      "linkName": "FTP",
+      "linkProtocol": "FTP",
+      "linkUrl": "ftp://ftp.nodc.noaa.gov/pub/data.nodc/ghrsst/L2P/AMSRE/REMSS/",
+      "linkDescription": "These data are available through the File Transfer Protocol (FTP). You may use any FTP client to download these data.",
+      "linkFunction": "download"
     }
   ],
-  "creators": [
+  "responsibleParties": [
+    {
+      "individualName": null,
+      "organizationName": "Super Important Organization",
+      "positionName": null,
+      "role": "publisher",
+      "email": "email@sio.co",
+      "phone": "555-123-4567"
+    },
+    {
+      "individualName": "Edward M. Armstrong",
+      "organizationName": "US NASA; Jet Propulsion Laboratory (JPL)",
+      "positionName": null,
+      "role": "originator",
+      "email": "edward.m.armstrong@jpl.nasa.gov",
+      "phone": "555-555-5559"
+    },
     {
       "individualName": "Jarianna Whackositz",
       "organizationName": "Secret Underground Society",
@@ -264,68 +188,47 @@
       "phone": "555-555-5558"
     },
     {
-      "individualName": "Dr. Quinn McClojure Man",
-      "organizationName": "Soap Boxes Inc.",
-      "positionName": "Software Developer",
-      "role": "originator",
-      "email": "dqmm@mock-creator-email.org",
-      "phone": "555-555-5559"
-    },
-    {
-      "individualName": "Zebulon Pike",
-      "organizationName": "Pikes Peak Inc.",
-      "positionName": "Software Developer",
-      "role": "principalInvestigator",
-      "email": "zp@mock-creator-email.org",
-      "phone": "555-555-5560"
-    },
-    {
-      "individualName": "Little Rhinoceros",
-      "organizationName": "Alien Infested Spider Monkey Rescue",
-      "positionName": "Software Developer",
-      "role": "author",
-      "email": "lr@mock-creator-email.org",
-      "phone": "555-555-5561"
-    },
-    {
-      "individualName": "Skeletor McSkittles",
-      "organizationName": "The Underworld",
-      "positionName": "Bringer of Skittles",
-      "role": "collaborator",
-      "email": "sm@mock-creator-email.org",
-      "phone": "555-555-5562"
+      "individualName": "John Smith",
+      "organizationName": "University of Boulder",
+      "positionName": "Chief Awesomeness Officer",
+      "role": "pointOfContact",
+      "email": "NCEI.Info@noaa.gov",
+      "phone": "555-555-5555"
     }
   ],
-  "publishers": [
-    {
-      "individualName": null,
-      "organizationName": "Super Important Organization",
-      "positionName": null,
-      "role": "publisher",
-      "email": "email@sio.co",
-      "phone": "555-123-4567"
-    }
-  ],
-  "thumbnail": "https://www.example.com/exportImage?soCool=yes&format=png",
+  "thumbnail": "https://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:GHRSST-AMSRE-REMSS-L2P",
   "thumbnailDescription": "Preview graphic",
   "creationDate": null,
-  "revisionDate": "2011-01-02",
-  "publicationDate": "2010-11-15",
+  "revisionDate": "2017-08-23",
+  "publicationDate": "2010-11-09",
   "citeAsStatements": [
     "[CITE AS STATEMENT 2]",
     "[CITE AS STATEMENT 1]"
   ],
   "crossReferences": [
     {
-      "title": "[TITLE OF PUBLICATION]",
-      "date": "9999-01-01",
+      "title": "Full details of the AQUA mission",
+      "date": null,
       "links": [
         {
-          "linkName": null,
-          "linkProtocol": null,
-          "linkUrl": "HTTPS://WWW.EXAMPLE.COM",
-          "linkDescription": "[DESCRIPTION OF URL]",
-          "linkFunction": "information"
+          "linkName": "Full details of the AQUA mission",
+          "linkProtocol": "HTTP",
+          "linkUrl": "http://aqua.nasa.gov/",
+          "linkDescription": "Full details of the AQUA mission",
+          "linkFunction": null
+        }
+      ]
+    },
+    {
+      "title": "Portal to the GHRSST Global Data Assembly Center and data access",
+      "date": null,
+      "links": [
+        {
+          "linkName": "Portal to the GHRSST Global Data Assembly Center and data access",
+          "linkProtocol": "HTTP",
+          "linkUrl": "http://ghrsst.jpl.nasa.gov",
+          "linkDescription": "Portal to the GHRSST Global Data Assembly Center and data access",
+          "linkFunction": null
         }
       ]
     }
@@ -335,28 +238,28 @@
       "title": "[TITLE OF PROJECT]",
       "date": "9999-10-10",
       "links": [
-
       ]
     }
   ],
-  "useLimitation": "[NOAA LEGAL STATEMENT]",
+  "useLimitation": "accessLevel: Public",
   "legalConstraints": [
-    "[CITE AS STATEMENT 1]",
-    "[CITE AS STATEMENT 2]"
+    "Cite as: Remote Sensing Systems (REMSS) (2002). GHRSST Level 2P Global Subskin Sea Surface Temperature from the Advanced Scanning Microwave Radiometer - Earth Observing System (AMSR-E) on the NASA Aqua Satellite (GDS versions 1 and 2). National Oceanographic Data Center, NOAA. Dataset. [access date]",
+    "NOAA and NCEI cannot provide any warranty as to the accuracy, reliability, or completeness of furnished data. Users assume responsibility to determine the usability of these data. The user is responsible for the results of any application of this data for other than its intended purpose."
   ],
-  "accessFeeStatement": "template fees",
-  "orderingInstructions": "template ordering instructions",
-  "edition": "[EDITION]",
-  "dsmmAccessibility": 4,
-  "dsmmDataIntegrity": 0,
+  "accessFeeStatement": null,
+  "orderingInstructions": null,
+  "edition": "7.0",
+  "dsmmAccessibility": 5,
+  "dsmmDataIntegrity": 3,
   "dsmmDataQualityAssessment": 2,
   "dsmmDataQualityAssurance": 3,
   "dsmmDataQualityControlMonitoring": 1,
   "dsmmPreservability": 5,
-  "dsmmProductionSustainability": 4,
+  "dsmmProductionSustainability": 2,
   "dsmmTransparencyTraceability": 2,
-  "dsmmUsability": 3,
-  "dsmmAverage": 2.6666666667,
+  "dsmmUsability": 4,
+  "dsmmAverage": 3,
   "updateFrequency": "asNeeded",
-  "presentationForm": "tableDigital"
+  "presentationForm": "tableDigital",
+  "services": []
 }
