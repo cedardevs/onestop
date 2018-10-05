@@ -2,159 +2,130 @@ openapi: 3.0.0
 servers:
   - url: 'https://sciapps.colorado.edu'
 info:
-  description: Inventory Manager API
-  version: "0.1.0"
-  title: Inventory Manager Registry API
   contact:
     email: cedar.cires@colorado.edu
+  description: Inventory Manager API
   license:
     name: GNU GPL
     url: 'https://www.gnu.org/licenses/gpl-2.0.en.html'
+  title: Inventory Manager Registry API
+  version: 0.1.0
 tags:
-  - name: admins
-    description: Secured Admin-only calls
-  - name: developers
-    description: Operations available to regular developers
+  - description: Secured Admin-only calls
+    name: admins
+  - description: Operations available to regular developers
+    name: developers
 paths:
-  /registry/{type}:
+  '/registry/{type}':
     parameters:
       - $ref: '#/components/parameters/metadataType'
     post:
-      summary: Create a metadata record from an unspecified source
       operationId: createRecord
       requestBody:
-        $ref: "#/components/requestBodies/postBody"
+        $ref: '#/components/requestBodies/postBody'
       responses:
         '201':
-          $ref: "#/components/responses/createItem"
+          $ref: '#/components/responses/createItem'
         default:
-          $ref: "#/components/responses/error"
-
-  /registry/{type}/{id}:
-    parameters:
-      - $ref: '#/components/parameters/metadataType'
-      - $ref: '#/components/parameters/metadataUUID'
-    post:
-      summary: Create a metadata record from an unspecified source with an existing UUID
-      operationId: createRecordWithUUID
-      requestBody:
-        $ref: "#/components/requestBodies/postBody"
-      responses:
-        '201':
-          $ref: "#/components/responses/createItem"
-        default:
-          $ref: "#/components/responses/error"
+          $ref: '#/components/responses/error'
+      summary: Create a metadata record from an unspecified source
+  '/registry/{type}/{id}':
     get:
-      summary: Retrieve a metadata record by id
       operationId: showRecordByUUID
       responses:
         '200':
-          $ref: "#/components/responses/getItemById"
+          $ref: '#/components/responses/getItemById'
         '404':
-          $ref: "#/components/responses/notFound"
+          $ref: '#/components/responses/notFound'
         default:
-          $ref: "#/components/responses/error"
-
-  /registry/{type}/{source}:
+          $ref: '#/components/responses/error'
+      summary: Retrieve a metadata record by id
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataUUID'
+    post:
+      operationId: createRecordWithUUID
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        default:
+          $ref: '#/components/responses/error'
+      summary: >-
+        Create a metadata record from an unspecified source with an existing
+        UUID
+  '/registry/{type}/{source}':
     parameters:
       - $ref: '#/components/parameters/metadataType'
       - $ref: '#/components/parameters/metadataSource'
     post:
-      summary: Create a metadata record from specified source
       operationId: createRecordFromSource
       requestBody:
-        $ref: "#/components/requestBodies/postBody"
+        $ref: '#/components/requestBodies/postBody'
       responses:
         '201':
-          $ref: "#/components/responses/createItem"
+          $ref: '#/components/responses/createItem'
         default:
-          $ref: "#/components/responses/error"
-
-  /registry/{type}/{source}/{id}:
+          $ref: '#/components/responses/error'
+      summary: Create a metadata record from specified source
+  '/registry/{type}/{source}/{id}':
+    get:
+      operationId: showRecordFromSourceByUUID
+      responses:
+        '200':
+          $ref: '#/components/responses/getItemById'
+        '404':
+          $ref: '#/components/responses/notFound'
+        default:
+          $ref: '#/components/responses/error'
+      summary: Retrieve a metadata record from source by id
     parameters:
       - $ref: '#/components/parameters/metadataType'
       - $ref: '#/components/parameters/metadataSource'
       - $ref: '#/components/parameters/metadataUUID'
     post:
-      summary: Create a metadata record with provided id
       operationId: createRecordFromSourceWithUUID
       requestBody:
-        $ref: "#/components/requestBodies/postBody"
+        $ref: '#/components/requestBodies/postBody'
       responses:
         '201':
-          $ref: "#/components/responses/createItem"
+          $ref: '#/components/responses/createItem'
         default:
-          $ref: "#/components/responses/error"
-    get:
-      summary: Retrieve a metadata record from source by id
-      operationId: showRecordFromSourceByUUID
-      responses:
-        '200':
-          $ref: "#/components/responses/getItemById"
-        '404':
-          $ref: "#/components/responses/notFound"
-        default:
-          $ref: "#/components/responses/error"
-
+          $ref: '#/components/responses/error'
+      summary: Create a metadata record with provided id
 components:
   parameters:
-    metadataType:
-      name: type
-      in: path
-      required: true
-      description: The type of metadata record to retreive (i.e. granule or collection).
-      schema:
-        type: string
-        enum:
-          - granule
-          - collection
     metadataSource:
-      name: source
-      in: path
-      required: true
       description: The source that generated this metadata record
+      in: path
+      name: source
+      required: true
       schema:
-        type: string
         enum:
           - class
           - comet
           - common-ingest
-    metadataUUID:
-      name: id
+        type: string
+    metadataType:
+      description: The type of metadata record to retreive (i.e. granule or collection).
       in: path
+      name: type
       required: true
+      schema:
+        enum:
+          - granule
+          - collection
+        type: string
+    metadataUUID:
       description: The UUID associated with this record
+      in: path
+      name: id
+      required: true
       schema:
         type: string
-  responses:
-    createItem:
-      description: Response contains metadata record
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/InventoryItem"
-    error:
-      description: unexpected error
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-    getItemById:
-      description: Contains the
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/InventoryItem"
-    notFound:
-      description: Record not found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
   requestBodies:
     postBody:
-      description: Either an ISO 19115 XML document or json
-      required: true
       content:
         application/json:
           schema:
@@ -162,240 +133,266 @@ components:
         application/xml:
           schema:
             $ref: '#/components/schemas/isoXmlDocument'
-
+      description: Either an ISO 19115 XML document or json
+      required: true
+  responses:
+    createItem:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InventoryItem'
+      description: Response contains metadata record
+    error:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: unexpected error
+    getItemById:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InventoryItem'
+      description: Contains the
+    notFound:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+      description: Record not found
   schemas:
-    source:
-      type: string
-      enum:
-        - granule
-        - collection
-    id:
-      type: string
-      format: uuid
-      example: d290f1ee-6c54-4b01-90e6-d701748f0851
-    Error:
-      type: object
-    InventoryItem:
-      type: object
-      required:
-        - id
-        - type
-        - attributes
+    Analysis:
+      additionalProperties: false
       properties:
-        id:
-          $ref: '#/components/schemas/id'
-        type:
-          $ref: '#/components/schemas/source'
-        attributes:
-          $ref: '#/components/schemas/Attributes'
+        dataAccess:
+          additionalProperties: false
+          description: Assessment of the data access elements in the metadata.
+          properties:
+            exists:
+              type: boolean
+          required:
+            - exists
+          type: object
+        description:
+          additionalProperties: false
+          description: Assessment of the description in the metadata.
+          properties:
+            characters:
+              type: integer
+            exists:
+              type: boolean
+          required:
+            - exists
+            - characters
+          type: object
+        identification:
+          additionalProperties: false
+          description: Assessment of the identifying elements of the metadata.
+          properties:
+            doi:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+              required:
+                - exists
+              type: object
+            fileIdentifier:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+              required:
+                - exists
+              type: object
+            hierarchyLevelName:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+                matchesIdentifiers:
+                  description: >-
+                    Resolves to true if 'granule' specified as hierarchy level
+                    and both fileId & parentId provided OR if no hierarchy level
+                    specified.
+                  type: boolean
+              required:
+                - exists
+                - matchesIdentifiers
+              type: object
+            parentIdentifier:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+              required:
+                - exists
+              type: object
+          type: object
+        spatialBounding:
+          additionalProperties: false
+          description: Assessment of the spatial bounding in the metadata.
+          properties:
+            exists:
+              type: boolean
+          required:
+            - exists
+          type: object
+        temporalBounding:
+          additionalProperties: false
+          description: Assessment of the temporal bounding in the metadata.
+          properties:
+            beginDate:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+                valid:
+                  type: boolean
+              required:
+                - exists
+                - valid
+              type: object
+            endDate:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+                valid:
+                  type: boolean
+              required:
+                - exists
+                - valid
+              type: object
+            instant:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+                valid:
+                  type: boolean
+              required:
+                - exists
+                - valid
+              type: object
+          required:
+            - beginDate
+            - endDate
+            - instant
+          type: object
+        thumbnail:
+          additionalProperties: false
+          description: Assessment of the thumbnail information in the metadata.
+          properties:
+            exists:
+              type: boolean
+          required:
+            - exists
+          type: object
+        titles:
+          additionalProperties: false
+          description: Assessment of the titles in the metadata.
+          properties:
+            alternateTitle:
+              additionalProperties: false
+              properties:
+                characters:
+                  type: integer
+                exists:
+                  type: boolean
+              required:
+                - exists
+                - characters
+              type: object
+            title:
+              additionalProperties: false
+              properties:
+                characters:
+                  type: integer
+                exists:
+                  type: boolean
+              required:
+                - exists
+                - characters
+              type: object
+          required:
+            - title
+            - alternateTitle
+          type: object
+      type: object
     Attributes:
-      type: object
-      required:
-        - identifiers
       properties:
-        identifiers:
-          $ref: '#/components/schemas/Identifiers'
-        discovery:
-          $ref: '#/components/schemas/Discovery'
         analysis:
           $ref: '#/components/schemas/Analysis'
+        discovery:
+          $ref: '#/components/schemas/Discovery'
+        identifiers:
+          $ref: '#/components/schemas/Identifiers'
         input:
           $ref: '#/components/schemas/Input'
-    Identifiers:
+      required:
+        - identifiers
       type: object
     Discovery:
-      type: object
+      additionalProperties: false
       properties:
-        fileIdentifier:
+        accessFeeStatement:
           type: string
-        parentIdentifier:
+        accessionValues:
+          items:
+            type: string
+          type: array
+        acquisitionInstruments:
+          items:
+            $ref: '#/components/schemas/instrument'
+          type: array
+        acquisitionOperations:
+          items:
+            $ref: '#/components/schemas/operation'
+          type: array
+        acquisitionPlatforms:
+          items:
+            $ref: '#/components/schemas/platform'
+          type: array
+        alternateTitle:
           type: string
-        hierarchyLevelName:
+        citeAsStatements:
+          items:
+            type: string
+          type: array
+        contacts:
+          items:
+            $ref: '#/components/schemas/responsibleParty'
+          type: array
+        creationDate:
+          type: string
+        creators:
+          items:
+            $ref: '#/components/schemas/responsibleParty'
+          type: array
+        credit:
+          type: string
+        crossReferences:
+          items:
+            $ref: '#/components/schemas/reference'
+          type: array
+        dataFormats:
+          items:
+            $ref: '#/components/schemas/dataFormat'
+          type: array
+        description:
           type: string
         doi:
           type: string
-        purpose:
-          type: string
-        status:
-          type: string
-        credit:
-          type: string
-        title:
-          type: string
-        alternateTitle:
-          type: string
-        description:
-          type: string
-        keywords:
-          type: array
-          items:
-            "$ref": "#/components/schemas/keywordsElement"
-        accessionValues:
-          type: array
-          items:
-            type: string
-        topicCategories:
-          type: array
-          items:
-            type: string
-        gcmdScienceServices:
-          type: array
-          items:
-            type: string
-        gcmdScience:
-          type: array
-          items:
-            type: string
-        gcmdLocations:
-          type: array
-          items:
-            type: string
-        gcmdInstruments:
-          type: array
-          items:
-            type: string
-        gcmdPlatforms:
-          type: array
-          items:
-            type: string
-        gcmdProjects:
-          type: array
-          items:
-            type: string
-        gcmdDataCenters:
-          type: array
-          items:
-            type: string
-        gcmdHorizontalResolution:
-          type: array
-          items:
-            type: string
-        gcmdVerticalResolution:
-          type: array
-          items:
-            type: string
-        gcmdTemporalResolution:
-          type: array
-          items:
-            type: string
-        temporalBounding:
-          type: object
-          properties:
-            beginDate:
-              type: string
-            beginIndeterminate:
-              type: string
-            beginYear:
-              type: integer
-            endDate:
-              type: string
-            endIndeterminate:
-              type: string
-            endYear:
-              type: integer
-            instant:
-              type: string
-            instantIndeterminate:
-              type: string
-            description:
-              type: string
-            invalidDates:
-              type: object
-              properties:
-                begin:
-                  type: boolean
-                end:
-                  type: boolean
-                instant:
-                  type: boolean
-              required:
-              - begin
-              - end
-              - instant
-              additionalProperties: false
-          required:
-          - beginDate
-          - beginIndeterminate
-          - beginYear
-          - endDate
-          - endIndeterminate
-          - endYear
-          - instant
-          - instantIndeterminate
-          - description
-          additionalProperties: false
-        spatialBounding:
-          "$ref": "#/components/schemas/Geometry"
-        isGlobal:
-          type: boolean
-        acquisitionInstruments:
-          type: array
-          items:
-            "$ref": "#/components/schemas/instrument"
-        acquisitionOperations:
-          type: array
-          items:
-            "$ref": "#/components/schemas/operation"
-        acquisitionPlatforms:
-          type: array
-          items:
-            "$ref": "#/components/schemas/platform"
-        dataFormats:
-          type: array
-          items:
-            "$ref": "#/components/schemas/dataFormat"
-        links:
-          type: array
-          items:
-            "$ref": "#/components/schemas/link"
-        contacts:
-          type: array
-          items:
-            "$ref": "#/components/schemas/responsibleParty"
-        creators:
-          type: array
-          items:
-            "$ref": "#/components/schemas/responsibleParty"
-        publishers:
-          type: array
-          items:
-            "$ref": "#/components/schemas/responsibleParty"
-        thumbnail:
-          type: string
-        thumbnailDescription:
-          type: string
-        creationDate:
-          type: string
-        revisionDate:
-          type: string
-        publicationDate:
-          type: string
-        citeAsStatements:
-          type: array
-          items:
-            type: string
-        crossReferences:
-          type: array
-          items:
-            "$ref": "#/components/schemas/reference"
-        largerWorks:
-          type: array
-          items:
-            "$ref": "#/components/schemas/reference"
-        useLimitation:
-          type: string
-        legalConstraints:
-          type: array
-          items:
-            type: string
-        accessFeeStatement:
-          type: string
-        orderingInstructions:
-          type: string
-        edition:
-          type: string
         dsmmAccessibility:
           type: integer
+        dsmmAverage:
+          description: >-
+            Calculated mean average of individual DSMM scores for Accessibility,
+            Data Integrity, Data Quality Assessment, Data Quality Assurance,
+            Data Quality Control Monitoring, Preservability, Production
+            Sustainability, Transparency Traceability, and Usability.
+          type: number
         dsmmDataIntegrity:
           type: integer
         dsmmDataQualityAssessment:
@@ -412,279 +409,374 @@ components:
           type: integer
         dsmmUsability:
           type: integer
-        dsmmAverage:
-          description: Calculated mean average of individual DSMM scores for Accessibility,
-            Data Integrity, Data Quality Assessment, Data Quality Assurance, Data Quality
-            Control Monitoring, Preservability, Production Sustainability, Transparency
-            Traceability, and Usability.
-          type: number
-        updateFrequency:
+        edition:
+          type: string
+        fileIdentifier:
+          type: string
+        gcmdDataCenters:
+          items:
+            type: string
+          type: array
+        gcmdHorizontalResolution:
+          items:
+            type: string
+          type: array
+        gcmdInstruments:
+          items:
+            type: string
+          type: array
+        gcmdLocations:
+          items:
+            type: string
+          type: array
+        gcmdPlatforms:
+          items:
+            type: string
+          type: array
+        gcmdProjects:
+          items:
+            type: string
+          type: array
+        gcmdScience:
+          items:
+            type: string
+          type: array
+        gcmdScienceServices:
+          items:
+            type: string
+          type: array
+        gcmdTemporalResolution:
+          items:
+            type: string
+          type: array
+        gcmdVerticalResolution:
+          items:
+            type: string
+          type: array
+        hierarchyLevelName:
+          type: string
+        isGlobal:
+          type: boolean
+        keywords:
+          items:
+            $ref: '#/components/schemas/keywordsElement'
+          type: array
+        largerWorks:
+          items:
+            $ref: '#/components/schemas/reference'
+          type: array
+        legalConstraints:
+          items:
+            type: string
+          type: array
+        links:
+          items:
+            $ref: '#/components/schemas/link'
+          type: array
+        orderingInstructions:
+          type: string
+        parentIdentifier:
           type: string
         presentationForm:
           type: string
-        services:
-          description: Base64 encoded SV_ServiceIdentification sections, if any, of ISO
-            XML metadata document. Null if not present.
+        publicationDate:
           type: string
-      additionalProperties: false
-    Analysis:
-      type: object
-      properties:
-        identification:
-          description: Assessment of the identifying elements of the metadata.
-          type: object
-          properties:
-            fileIdentifier:
-              type: object
-              properties:
-                exists:
-                  type: boolean
-              required:
-              - exists
-              additionalProperties: false
-            doi:
-              type: object
-              properties:
-                exists:
-                  type: boolean
-              required:
-              - exists
-              additionalProperties: false
-            parentIdentifier:
-              type: object
-              properties:
-                exists:
-                  type: boolean
-              required:
-              - exists
-              additionalProperties: false
-            hierarchyLevelName:
-              type: object
-              properties:
-                exists:
-                  type: boolean
-                matchesIdentifiers:
-                  description: Resolves to true if 'granule' specified as hierarchy level
-                    and both fileId & parentId provided OR if no hierarchy level specified.
-                  type: boolean
-              required:
-              - exists
-              - matchesIdentifiers
-              additionalProperties: false
-          additionalProperties: false
+        publishers:
+          items:
+            $ref: '#/components/schemas/responsibleParty'
+          type: array
+        purpose:
+          type: string
+        revisionDate:
+          type: string
+        services:
+          description: >-
+            Base64 encoded SV_ServiceIdentification sections, if any, of ISO XML
+            metadata document. Null if not present.
+          type: string
+        spatialBounding:
+          $ref: '#/components/schemas/Geometry'
+        status:
+          type: string
         temporalBounding:
-          description: Assessment of the temporal bounding in the metadata.
-          type: object
+          additionalProperties: false
           properties:
             beginDate:
-              type: object
-              properties:
-                exists:
-                  type: boolean
-                valid:
-                  type: boolean
-              required:
-              - exists
-              - valid
-              additionalProperties: false
-            endDate:
-              type: object
-              properties:
-                exists:
-                  type: boolean
-                valid:
-                  type: boolean
-              required:
-              - exists
-              - valid
-              additionalProperties: false
-            instant:
-              type: object
-              properties:
-                exists:
-                  type: boolean
-                valid:
-                  type: boolean
-              required:
-              - exists
-              - valid
-              additionalProperties: false
-          required:
-          - beginDate
-          - endDate
-          - instant
-          additionalProperties: false
-        spatialBounding:
-          description: Assessment of the spatial bounding in the metadata.
-          type: object
-          properties:
-            exists:
-              type: boolean
-          required:
-          - exists
-          additionalProperties: false
-        titles:
-          description: Assessment of the titles in the metadata.
-          type: object
-          properties:
-            title:
-              type: object
-              properties:
-                exists:
-                  type: boolean
-                characters:
-                  type: integer
-              required:
-              - exists
-              - characters
-              additionalProperties: false
-            alternateTitle:
-              type: object
-              properties:
-                exists:
-                  type: boolean
-                characters:
-                  type: integer
-              required:
-              - exists
-              - characters
-              additionalProperties: false
-          required:
-          - title
-          - alternateTitle
-          additionalProperties: false
-        description:
-          description: Assessment of the description in the metadata.
-          type: object
-          properties:
-            exists:
-              type: boolean
-            characters:
+              type: string
+            beginIndeterminate:
+              type: string
+            beginYear:
               type: integer
+            description:
+              type: string
+            endDate:
+              type: string
+            endIndeterminate:
+              type: string
+            endYear:
+              type: integer
+            instant:
+              type: string
+            instantIndeterminate:
+              type: string
+            invalidDates:
+              additionalProperties: false
+              properties:
+                begin:
+                  type: boolean
+                end:
+                  type: boolean
+                instant:
+                  type: boolean
+              required:
+                - begin
+                - end
+                - instant
+              type: object
           required:
-          - exists
-          - characters
-          additionalProperties: false
+            - beginDate
+            - beginIndeterminate
+            - beginYear
+            - endDate
+            - endIndeterminate
+            - endYear
+            - instant
+            - instantIndeterminate
+            - description
+          type: object
         thumbnail:
-          description: Assessment of the thumbnail information in the metadata.
-          type: object
-          properties:
-            exists:
-              type: boolean
-          required:
-          - exists
-          additionalProperties: false
-        dataAccess:
-          description: Assessment of the data access elements in the metadata.
-          type: object
-          properties:
-            exists:
-              type: boolean
-          required:
-          - exists
-          additionalProperties: false
-      additionalProperties: false
-    Input:
+          type: string
+        thumbnailDescription:
+          type: string
+        title:
+          type: string
+        topicCategories:
+          items:
+            type: string
+          type: array
+        updateFrequency:
+          type: string
+        useLimitation:
+          type: string
       type: object
+    Error:
+      type: object
+    Geometry:
+      description: One geometry as defined by GeoJSON
+      oneOf:
+        - $ref: '#/components/schemas/Point'
+        - $ref: '#/components/schemas/MultiPoint'
+        - $ref: '#/components/schemas/LineString'
+        - $ref: '#/components/schemas/MultiLineString'
+        - $ref: '#/components/schemas/Polygon'
+        - $ref: '#/components/schemas/MultiPolygon'
+    Identifiers:
+      type: object
+    Input:
+      additionalProperties: false
       properties:
         content:
           type: string
         contentType:
           enum:
-          - application/xml
-          - application/json
+            - application/xml
+            - application/json
         host:
-          type: string
           format: ipv4
+          type: string
         id:
           $ref: '#/components/schemas/id'
         method:
           enum:
-          - POST
-          - PUT
+            - POST
+            - PUT
         protocol:
           type: string
         requestUrl:
-          type: string
           format: uri
+          type: string
         source:
           enum:
-          - class
-          - comet
-          - common-ingest
+            - class
+            - comet
+            - common-ingest
       required:
-      - content
-      - contentType
-      - host
-      - id
-      - method
-      - protocol
-      - requestUrl
-      - source
-      additionalProperties: false
-    dataFormat:
+        - content
+        - contentType
+        - host
+        - id
+        - method
+        - protocol
+        - requestUrl
+        - source
       type: object
+    InventoryItem:
+      properties:
+        attributes:
+          $ref: '#/components/schemas/Attributes'
+        id:
+          $ref: '#/components/schemas/id'
+        type:
+          $ref: '#/components/schemas/source'
+      required:
+        - id
+        - type
+        - attributes
+      type: object
+    LineString:
+      properties:
+        coordinates:
+          $ref: '#/components/schemas/lineString'
+        type:
+          enum:
+            - LineString
+      required:
+        - type
+        - coordinates
+    MultiLineString:
+      properties:
+        coordinates:
+          items:
+            $ref: '#/components/schemas/lineString'
+          type: array
+        type:
+          enum:
+            - MultiLineString
+      required:
+        - type
+        - coordinates
+    MultiPoint:
+      properties:
+        coordinates:
+          $ref: '#/components/schemas/positionArray'
+        type:
+          enum:
+            - MultiPoint
+      required:
+        - type
+        - coordinates
+    MultiPolygon:
+      properties:
+        coordinates:
+          items:
+            $ref: '#/components/schemas/polygon'
+          type: array
+        type:
+          enum:
+            - MultiPolygon
+      required:
+        - type
+        - coordinates
+    Point:
+      properties:
+        coordinates:
+          $ref: '#/components/schemas/position'
+        type:
+          enum:
+            - Point
+      required:
+        - type
+        - coordinates
+      type: object
+    Polygon:
+      properties:
+        coordinates:
+          $ref: '#/components/schemas/polygon'
+        type:
+          enum:
+            - Polygon
+      required:
+        - type
+        - coordinates
+    dataFormat:
+      additionalProperties: false
       properties:
         name:
           type: string
         version:
           type: string
       required:
-      - name
-      - version
-      additionalProperties: false
-    keywordsElement:
+        - name
+        - version
       type: object
-      properties:
-        values:
-          type: array
-          items:
-            type: string
-        type:
-          type: string
-        namespace:
-          type: string
-      required:
-      - values
-      - type
-      - namespace
-      additionalProperties: false
+    defaultJsonPostBody:
+      type: object
+    id:
+      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      format: uuid
+      type: string
     instrument:
-      type: object
+      additionalProperties: false
       properties:
+        instrumentDescription:
+          type: string
         instrumentIdentifier:
           type: string
         instrumentType:
           type: string
-        instrumentDescription:
-          type: string
       required:
-      - instrumentIdentifier
-      - instrumentType
-      - instrumentDescription
-      additionalProperties: false
-    link:
+        - instrumentIdentifier
+        - instrumentType
+        - instrumentDescription
       type: object
+    isoXmlDocument:
+      type: object
+    keywordsElement:
+      additionalProperties: false
       properties:
+        namespace:
+          type: string
+        type:
+          type: string
+        values:
+          items:
+            type: string
+          type: array
+      required:
+        - values
+        - type
+        - namespace
+      type: object
+    latPos:
+      maximum: 90
+      minimum: -90
+      type: number
+    lineString:
+      allOf:
+        - $ref: '#/components/schemas/positionArray'
+        - minItems: 2
+      description: An array of two or more positions
+    linearRing:
+      allOf:
+        - $ref: '#/components/schemas/positionArray'
+        - minItems: 4
+      description: An array of four positions where the first equals the last
+    link:
+      additionalProperties: false
+      properties:
+        linkDescription:
+          type: string
+        linkFunction:
+          type: string
         linkName:
           type: string
         linkProtocol:
           type: string
         linkUrl:
           type: string
-        linkDescription:
-          type: string
-        linkFunction:
-          type: string
       required:
-      - linkName
-      - linkProtocol
-      - linkUrl
-      - linkDescription
-      - linkFunction
-      additionalProperties: false
-    operation:
+        - linkName
+        - linkProtocol
+        - linkUrl
+        - linkDescription
+        - linkFunction
       type: object
+    longPos:
+      maximum: 360
+      minimum: -360
+      type: number
+    operation:
+      additionalProperties: false
       properties:
         operationDescription:
           type: string
@@ -695,178 +787,87 @@ components:
         operationType:
           type: string
       required:
-      - operationDescription
-      - operationIdentifier
-      - operationStatus
-      - operationType
-      additionalProperties: false
-    platform:
+        - operationDescription
+        - operationIdentifier
+        - operationStatus
+        - operationType
       type: object
+    platform:
+      additionalProperties: false
       properties:
-        platformIdentifier:
-          type: string
         platformDescription:
           type: string
+        platformIdentifier:
+          type: string
         platformSponsor:
-          type: array
           items:
             type: string
+          type: array
       required:
-      - platformIdentifier
-      - platformDescription
-      - platformSponsor
-      additionalProperties: false
-    reference:
+        - platformIdentifier
+        - platformDescription
+        - platformSponsor
       type: object
+    polygon:
+      description: An array of linear rings
+      items:
+        $ref: '#/components/schemas/linearRing'
+      type: array
+    position:
+      description: A single position
+      items:
+        anyOf:
+          - $ref: '#/components/schemas/latPos'
+          - $ref: '#/components/schemas/longPos'
+      maxItems: 2
+      minItems: 2
+      type: array
+    positionArray:
+      description: An array of positions
+      items:
+        $ref: '#/components/schemas/position'
+      type: array
+    reference:
+      additionalProperties: false
       properties:
-        title:
-          type: string
         date:
           type: string
         links:
-          type: array
           items:
-            "$ref": "#/components/schemas/link"
+            $ref: '#/components/schemas/link'
+          type: array
+        title:
+          type: string
       required:
-      - title
-      - date
-      - links
-      additionalProperties: false
-    responsibleParty:
+        - title
+        - date
+        - links
       type: object
+    responsibleParty:
+      additionalProperties: false
       properties:
+        email:
+          type: string
         individualName:
           type: string
         organizationName:
+          type: string
+        phone:
           type: string
         positionName:
           type: string
         role:
           type: string
-        email:
-          type: string
-        phone:
-          type: string
       required:
-      - individualName
-      - organizationName
-      - positionName
-      - role
-      - email
-      - phone
-      additionalProperties: false
-    Geometry:
-      description: One geometry as defined by GeoJSON
-      oneOf:
-      - "$ref": "#/components/schemas/Point"
-      - "$ref": "#/components/schemas/MultiPoint"
-      - "$ref": "#/components/schemas/LineString"
-      - "$ref": "#/components/schemas/MultiLineString"
-      - "$ref": "#/components/schemas/Polygon"
-      - "$ref": "#/components/schemas/MultiPolygon"
-    Point:
+        - individualName
+        - organizationName
+        - positionName
+        - role
+        - email
+        - phone
       type: object
-      properties:
-        type:
-          enum:
-          - Point
-        coordinates:
-          "$ref": "#/components/schemas/position"
-      required:
-      - type
-      - coordinates
-    MultiPoint:
-      properties:
-        type:
-          enum:
-          - MultiPoint
-        coordinates:
-          "$ref": "#/components/schemas/positionArray"
-      required:
-      - type
-      - coordinates
-    LineString:
-      properties:
-        type:
-          enum:
-          - LineString
-        coordinates:
-          "$ref": "#/components/schemas/lineString"
-      required:
-      - type
-      - coordinates
-    MultiLineString:
-      properties:
-        type:
-          enum:
-          - MultiLineString
-        coordinates:
-          type: array
-          items:
-            "$ref": "#/components/schemas/lineString"
-      required:
-      - type
-      - coordinates
-    Polygon:
-      properties:
-        type:
-          enum:
-          - Polygon
-        coordinates:
-          "$ref": "#/components/schemas/polygon"
-      required:
-      - type
-      - coordinates
-    MultiPolygon:
-      properties:
-        type:
-          enum:
-          - MultiPolygon
-        coordinates:
-          type: array
-          items:
-            "$ref": "#/components/schemas/polygon"
-      required:
-      - type
-      - coordinates
-    position:
-      description: A single position
-      type: array
-      minItems: 2
-      maxItems: 2
-      items:
-        anyOf:
-        - $ref: '#/components/schemas/latPos'
-        - $ref: '#/components/schemas/longPos'
-    longPos:
-      type: number
-      minimum: -360
-      maximum: 360
-    latPos:
-      type: number
-      minimum: -90
-      maximum: 90
-    positionArray:
-      description: An array of positions
-      type: array
-      items:
-        "$ref": "#/components/schemas/position"
-    lineString:
-      description: An array of two or more positions
-      allOf:
-      - "$ref": "#/components/schemas/positionArray"
-      - minItems: 2
-    linearRing:
-      description: An array of four positions where the first equals the last
-      allOf:
-      - "$ref": "#/components/schemas/positionArray"
-      - minItems: 4
-    polygon:
-      description: An array of linear rings
-      type: array
-      items:
-        "$ref": "#/components/schemas/linearRing"
-    isoXmlDocument:
-      type: object
-    defaultJsonPostBody:
-      type: object
+    source:
+      enum:
+        - granule
+        - collection
+      type: string
