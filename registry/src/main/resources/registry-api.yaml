@@ -490,10 +490,7 @@ components:
         revisionDate:
           type: string
         services:
-          description: >-
-            Base64 encoded SV_ServiceIdentification sections, if any, of ISO XML
-            metadata document. Null if not present.
-          type: string
+          $ref: "#/components/schemas/services"
         spatialBounding:
           $ref: '#/components/schemas/Geometry'
         status:
@@ -572,6 +569,8 @@ components:
         - $ref: '#/components/schemas/MultiPolygon'
     Identifiers:
       type: object
+    individualName:
+      type: string
     Input:
       additionalProperties: false
       properties:
@@ -792,6 +791,8 @@ components:
         - operationStatus
         - operationType
       type: object
+    organizationName:
+      type: string
     platform:
       additionalProperties: false
       properties:
@@ -866,6 +867,33 @@ components:
         - email
         - phone
       type: object
+    service:
+      type: object
+      properties:
+        title:
+          type: string
+        alternateTitle:
+          type: string
+        abstract:
+          type: string
+        date:
+          type: string
+        dateType:
+          type: string
+        pointOfContact:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/individualName"
+              - $ref: "#/components/schemas/organizationName"
+        operations:
+          type: array
+          items:
+            type: object
+    services:
+      type: array
+      items:
+        $ref: "#/components/schemas/service"
     source:
       enum:
         - granule

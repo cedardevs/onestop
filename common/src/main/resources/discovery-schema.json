@@ -293,6 +293,10 @@
     "services": {
       "type": "array",
       "description": "List of objects that represent an SV_ServiceIdentification section, if any, of ISO 19115 XML metadata document. Empty if not present.",
+      "items":{
+        "type": "object",
+        "$ref": "#/definitions/service"
+      },
       "additionalProperties": true
     }
   },
@@ -667,6 +671,9 @@
       "items": {
         "$ref": "#/definitions/linearRing"
       }
+    },
+    "service":{
+      "type":"object"
     }
   }
 }
