@@ -44,6 +44,8 @@ spec:
           value: onestop-geoportal-search:8080
         - name: ONESTOP_ADMIN_ENDPOINT
           value: onestop-api-metadata:8098
+        - name: GOOGLE_VERIFY_OWNERSHIP_FILE
+          value: empty.html
         ports:
         - containerPort: 80
           name: http
