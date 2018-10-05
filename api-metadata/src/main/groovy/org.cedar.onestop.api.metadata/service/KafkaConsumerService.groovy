@@ -51,7 +51,11 @@ class KafkaConsumerService {
       def isValid = false
       def title = analysis.titles['title'] as Map
       def fileIdentifier = analysis.identification['fileIdentifier'] as Map
+      def hierarchyLevel = analysis.identification['hierarchyLevelName'] as Map
+    log.info("analysis: ${analysis as Map}")
       if (!title.exists || !fileIdentifier.exists) {
+        return isValid
+      } else if(!hierarchyLevel.matchesIdentifiers && fileIdentifier.fileIdentifierString){
         return isValid
       } else {
         isValid = true
