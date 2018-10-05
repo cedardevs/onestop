@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service
 @Slf4j
 @Service
 class ManipulateMetadataService {
-  
   static Map oneStopReady(Map record) {
     // create gcmdkeywords
     def gcmdKeyword = createGcmdKeyword(record)
@@ -18,7 +17,6 @@ class ManipulateMetadataService {
     record.remove("services")
     
     def metadata = record << gcmdKeyword << partyData
-    
     return metadata
   }
   
@@ -144,7 +142,6 @@ class ManipulateMetadataService {
   /*
   Create contacts, creators and publishers from responsibleParties
   */
-  
   static Map<String, String> parseParty(Map party) {
     String individualName = party.individualName ?: null
     String organizationName = party.organizationName ?: null
@@ -220,10 +217,4 @@ class ManipulateMetadataService {
     }
     return result
   }
-  
-  //Create isGlobal from analysis block (see #237 for details) ? this is already in palce
-  
-  //Update begin and end dates & years based on instant value if date range is 'INSTANT'
-  
-  //Create beginYear and endYear for all dates
 }
