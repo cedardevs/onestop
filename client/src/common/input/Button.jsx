@@ -134,6 +134,7 @@ export default class Button extends Component {
 
   render() {
     const {
+      id,
       text,
       icon,
       iconAfter,
@@ -157,7 +158,7 @@ export default class Button extends Component {
       ...(this.state.hovering ? {...styleHoverDefault, ...styleHover} : {}),
       ...(this.state.pressing ? {...stylePressDefault, ...stylePress} : {}),
       ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {}),
-      ...(icon && !text ? (iconPadding ? iconPadding : styleIconPadding) : {}),
+      ...(icon && !text ? (iconPadding ? { padding: iconPadding } : styleIconPadding) : {}),
     }
 
     const styleIconResolved = styleIcon
@@ -166,6 +167,7 @@ export default class Button extends Component {
 
     return (
       <button
+        id={id}
         style={stylesMerged}
         onClick={onClick}
         onMouseOver={this.handleMouseOver}
@@ -182,8 +184,6 @@ export default class Button extends Component {
         {icon && !iconAfter && !this.props.children ? (
           <img
             src={icon}
-            width="2em"
-            height="2em"
             style={styleIconResolved}
             aria-hidden={true}
             alt=""
@@ -196,8 +196,6 @@ export default class Button extends Component {
             style={styleIconResolved}
             aria-hidden={true}
             alt=""
-            width="2em"
-            height="2em"
           />
         ) : null}
         {this.props.children ? <div>{this.props.children}</div> : null}

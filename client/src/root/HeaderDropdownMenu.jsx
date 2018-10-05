@@ -5,6 +5,8 @@ import cart from 'fa/cart-arrow-down.svg'
 
 import AnimateHeight from 'react-animate-height'
 import Button from '../common/input/Button'
+import { Key } from '../utils/keyboardUtils'
+import FocusManager from '../common/FocusManager'
 const ANIMATION_DURATION = 200
 
 const styleExtraMenu = {
@@ -58,10 +60,12 @@ const styleSeparatorOpen = {
 }
 
 class HeaderDropdownMenu extends React.Component {
+
   handleRedirectToCart = () => {
-    const {history, location} = this.props
+    const {history, location, setOpen} = this.props
     if (location.pathname !== '/cart') {
       history.push('/cart')
+      setOpen(false)
     }
   }
 
@@ -74,6 +78,24 @@ class HeaderDropdownMenu extends React.Component {
   handleAnimationEnd = open => {
     if (open) {
       // animate separator visible
+    }
+  }
+
+  handleKeyDown = e => {
+    if (e.keyCode === Key.ESCAPE) {
+
+    }
+  }
+
+  handleTotalFocus = e => {
+    console.log("handleTotalFocus::e:", e)
+  }
+
+  handleTotalBlur = e => {
+    console.log("handleTotalBlur::e:", e)
+    const { setOpen } = this.props
+    if(setOpen) {
+      setOpen(false)
     }
   }
 
@@ -91,6 +113,8 @@ class HeaderDropdownMenu extends React.Component {
           Files for download
         </span>
         <Button
+          key="cartButton"
+          id="cartButton"
           style={styleCartButton}
           title={`${abbreviatedNumberOfGranulesSelected} Files for download`}
           text={abbreviatedNumberOfGranulesSelected}
@@ -111,21 +135,22 @@ class HeaderDropdownMenu extends React.Component {
         <div style={styleSeparatorWrapper}>
           <div style={stylesSeparatorMerged} />
         </div>
-
         <ul style={styleExtraMenuList}>{menuItems}</ul>
       </div>
     )
 
     return (
-      <AnimateHeight
-        duration={ANIMATION_DURATION}
-        height={open ? 'auto' : 0}
-        style={styleExtraMenu}
-        onAnimationStart={() => this.handleAnimationStart(open)}
-        onAnimationEnd={() => this.handleAnimationEnd(open)}
-      >
-        {extraMenuContent}
-      </AnimateHeight>
+      <FocusManager onFocus={this.handleTotalFocus} onBlur={this.handleTotalBlur}>
+        <AnimateHeight
+          duration={ANIMATION_DURATION}
+          height={open ? 'auto' : 0}
+          style={styleExtraMenu}
+          onAnimationStart={() => this.handleAnimationStart(open)}
+          onAnimationEnd={() => this.handleAnimationEnd(open)}
+        >
+          {extraMenuContent}
+        </AnimateHeight>
+      </FocusManager>
     )
   }
 }

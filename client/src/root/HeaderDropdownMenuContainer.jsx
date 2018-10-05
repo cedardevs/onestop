@@ -2,6 +2,8 @@ import {connect} from 'react-redux'
 import HeaderDropdownMenu from './HeaderDropdownMenu'
 import {withRouter} from 'react-router'
 import {abbreviateNumber} from '../utils/readableUtils'
+import {setHeaderMenuOpen} from '../actions/LayoutActions'
+
 
 const mapStateToProps = state => {
   const numberOfGranulesSelected = Object.keys(
@@ -19,7 +21,9 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => {
-  return {}
+  return {
+    setOpen: isOpen => dispatch(setHeaderMenuOpen(isOpen))
+  }
 }
 
 const HeaderDropdownMenuContainer = withRouter(
