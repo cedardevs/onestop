@@ -9,14 +9,14 @@ import org.springframework.stereotype.Service
 class ManipulateMetadataService {
   static Map oneStopReady(Map record) {
     // create gcmdkeywords
-    Map gcmdKeyword = createGcmdKeyword(record)
+    Map gcmdKeywords = createGcmdKeyword(record)
     // create contacts ,creators and publishers
-    def partyData = parseDataResponsibleParties(record.responsibleParties as Map)
+    Map<String, Set> partyData = parseDataResponsibleParties(record.responsibleParties as Map)
     // drop fields
     record.remove("responsibleParties")
     record.remove("services")
     
-    def metadata = record << gcmdKeyword << partyData
+    def metadata = record << gcmdKeywords << partyData
     return metadata
   }
   
