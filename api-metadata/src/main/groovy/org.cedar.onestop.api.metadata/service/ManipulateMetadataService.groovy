@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 class ManipulateMetadataService {
   static Map oneStopReady(Map record) {
     // create gcmdkeywords
-    def gcmdKeyword = createGcmdKeyword(record)
+    Map gcmdKeyword = createGcmdKeyword(record)
     // create contacts ,creators and publishers
     def partyData = parseDataResponsibleParties(record.responsibleParties as Map)
     // drop fields
@@ -33,11 +33,10 @@ class ManipulateMetadataService {
     def gcmdTemporalResolution = [] as Set
     def gcmdDataCenters = [] as Set
     
-    // create a list of keywords
+    //remove and create new keywords with out accession values
     def newKeywords = record.keywords.findAll { keys ->
       keys.namespace != 'NCEI ACCESSION NUMBER'
     }
-    //remove and create new keywords with out accession values
     record.remove("keywords")
     def keywords = newKeywords
     

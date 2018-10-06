@@ -142,6 +142,8 @@ class ManipulateMetadtaServiceTest extends Specification {
   
   def "Create GCMD keyword lists" () {
     given:
+    def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
+    def inputMap = [discovery: new JsonSlurper().parseText(inputMsg)] as Map
     def gcmdKeywordMap = inputMap.discovery as Map
   
     when:
