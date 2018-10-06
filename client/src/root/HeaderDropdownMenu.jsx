@@ -5,7 +5,6 @@ import cart from 'fa/cart-arrow-down.svg'
 
 import AnimateHeight from 'react-animate-height'
 import Button from '../common/input/Button'
-import { Key } from '../utils/keyboardUtils'
 import FocusManager from '../common/FocusManager'
 const ANIMATION_DURATION = 200
 
@@ -81,18 +80,7 @@ class HeaderDropdownMenu extends React.Component {
     }
   }
 
-  handleKeyDown = e => {
-    if (e.keyCode === Key.ESCAPE) {
-
-    }
-  }
-
-  handleTotalFocus = e => {
-    console.log("handleTotalFocus::e:", e)
-  }
-
   handleTotalBlur = e => {
-    console.log("handleTotalBlur::e:", e)
     const { setOpen } = this.props
     if(setOpen) {
       setOpen(false)
@@ -114,7 +102,6 @@ class HeaderDropdownMenu extends React.Component {
         </span>
         <Button
           key="cartButton"
-          id="cartButton"
           style={styleCartButton}
           title={`${abbreviatedNumberOfGranulesSelected} Files for download`}
           text={abbreviatedNumberOfGranulesSelected}
@@ -140,7 +127,7 @@ class HeaderDropdownMenu extends React.Component {
     )
 
     return (
-      <FocusManager onFocus={this.handleTotalFocus} onBlur={this.handleTotalBlur}>
+      <FocusManager onBlur={this.handleTotalBlur} blurOnEscape={true}>
         <AnimateHeight
           duration={ANIMATION_DURATION}
           height={open ? 'auto' : 0}
