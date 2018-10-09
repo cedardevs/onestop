@@ -1,0 +1,87 @@
+# Java Gradle CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-java/ for more details
+#
+version: 2
+jobs:
+  build:
+    docker:
+      # specify the version you desire here
+      - image: circleci/openjdk:8-jdk
+
+      # Specify stream dependencies here if necessary
+      # CircleCI maintains a library of pre-built images
+      # documented at https://circleci.com/docs/2.0/circleci-images/
+      # - image: circleci/postgres:9.4
+
+    working_directory: ~/repo
+
+    environment:
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+
+    steps:
+      - checkout
+
+      - setup_remote_docker
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "build.gradle" }}
+          # fallback to using the latest cache if no exact match is found
+          - v2-dependencies-
+
+      # build it!
+      - run:
+          name: Build
+          command: ./gradlew build
+
+      - run:
+          name: Save test results
+          command: |
+            mkdir -p ~/tests/junit/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+          when: always
+
+      # - run:
+      #     name: Save jacoco results
+      #     command: |
+      #       mkdir -p ~/tests/jacoco/
+      #       find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/jacoco/ \;
+      #     when: always
+      #
+      # - run:
+      #     name: Post jacoco results to codecov
+      #     command: |
+      #       bash <(curl -s https://codecov.io/bash)
+
+      - store_test_results:
+          path: ~/tests
+
+      - store_artifacts:
+          path: ~/tests
+
+      - save_cache:
+          paths:
+            - ~/.gradle/caches/
+            - ~/.gradle/wrapper/
+            - .gradle
+            - api-search/build
+            - api-search/dist
+            - api-metadata/build
+            - api-metadata/dist
+            - buildSrc/.gradle
+            - buildSrc/build
+            - client/.gradle
+            - client/node_modules
+            - client/build
+          key: v2-dependencies-{{ checksum "build.gradle" }}
+
+      - deploy:
+          name: Publish
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ] || [ "${CIRCLE_BRANCH}" == "release/*" ]; then
+              ./gradlew publish -x BuildDockerImage
+            fi
