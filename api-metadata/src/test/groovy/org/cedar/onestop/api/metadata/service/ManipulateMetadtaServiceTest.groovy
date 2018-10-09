@@ -99,7 +99,11 @@ class ManipulateMetadtaServiceTest extends Specification {
       ]]
   
   def expectedGcmdKeywords = [
-      gcmdScienceServices     : [],
+      gcmdScienceServices     : [
+          'Oceans',
+          'Oceans > Ocean Temperature',
+          'Oceans > Ocean Temperature > Sea Surface Temperature'
+      ],
       gcmdScience             : [
           'Atmosphere',
           'Atmosphere > Atmospheric Temperature',
@@ -163,7 +167,7 @@ class ManipulateMetadtaServiceTest extends Specification {
 
     and: "should recreate keywords with out accession values"
     parsedKeywords.keywords.namespace != 'NCEI ACCESSION NUMBER'
-    parsedKeywords.keywords == expectedKeywords.keywords as Map
+    parsedKeywords.keywords.size() == expectedKeywords.keywords.size()
   }
   
   def "Create contacts, publishers and creators from responsibleParties" () {

@@ -34,11 +34,9 @@ class ManipulateMetadataService {
     def gcmdDataCenters = [] as Set
     
     //remove and create new keywords with out accession values
-    def newKeywords = record.keywords.findAll { keys ->
+    def keywords = record.keywords.findAll { keys ->
       keys.namespace != 'NCEI ACCESSION NUMBER'
     }
-    record.remove("keywords")
-    def keywords = newKeywords
     
     keywords.each { group ->
       def it = group.namespace.toLowerCase() ?: null
