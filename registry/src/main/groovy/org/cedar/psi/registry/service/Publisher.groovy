@@ -35,7 +35,8 @@ class Publisher {
     String key = id ?: UUID.randomUUID().toString()
     Map value = buildInputTopicMessage(request, data, source, key)
     def record = new ProducerRecord<String, Map>(topic, key, value)
-    log.info("Publishing: ${record}")
+    log.info ("Publishing $type with id: ${id} and source: $source")
+    log.debug("Publishing: ${record}")
     kafkaProducer.send(record)?.get()
     return [
         status: 200,
