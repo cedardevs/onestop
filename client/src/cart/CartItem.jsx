@@ -142,11 +142,7 @@ export default class CartItem extends React.Component {
           <div style={util.styleBadge(protocol)} aria-hidden="true">
             {util.renderBadgeIcon(protocol)}
           </div>
-          <div
-            style={styleLinkText}
-          >
-            {linkText}
-          </div>
+          <div style={styleLinkText}>{linkText}</div>
         </A>
       </li>
     )

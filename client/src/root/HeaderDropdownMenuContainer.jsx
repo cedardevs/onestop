@@ -4,7 +4,6 @@ import {withRouter} from 'react-router'
 import {abbreviateNumber} from '../utils/readableUtils'
 import {setHeaderMenuOpen} from '../actions/LayoutActions'
 
-
 const mapStateToProps = state => {
   const numberOfGranulesSelected = Object.keys(
     state.cart.granules.selectedGranules
@@ -22,7 +21,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    setOpen: isOpen => dispatch(setHeaderMenuOpen(isOpen))
+    setOpen: isOpen => dispatch(setHeaderMenuOpen(isOpen)),
   }
 }
 

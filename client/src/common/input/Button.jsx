@@ -158,7 +158,9 @@ export default class Button extends Component {
       ...(this.state.hovering ? {...styleHoverDefault, ...styleHover} : {}),
       ...(this.state.pressing ? {...stylePressDefault, ...stylePress} : {}),
       ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {}),
-      ...(icon && !text ? (iconPadding ? { padding: iconPadding } : styleIconPadding) : {}),
+      ...(icon && !text
+        ? iconPadding ? {padding: iconPadding} : styleIconPadding
+        : {}),
     }
 
     const styleIconResolved = styleIcon
@@ -182,21 +184,11 @@ export default class Button extends Component {
         aria-label={title || text}
       >
         {icon && !iconAfter && !this.props.children ? (
-          <img
-            src={icon}
-            style={styleIconResolved}
-            aria-hidden={true}
-            alt=""
-          />
+          <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
         ) : null}
         {text && !this.props.children ? <span>{text}</span> : null}
         {icon && iconAfter && !this.props.children ? (
-          <img
-            src={icon}
-            style={styleIconResolved}
-            aria-hidden={true}
-            alt=""
-          />
+          <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
         ) : null}
         {this.props.children ? <div>{this.props.children}</div> : null}
       </button>

@@ -59,7 +59,6 @@ const styleSeparatorOpen = {
 }
 
 class HeaderDropdownMenu extends React.Component {
-
   handleRedirectToCart = () => {
     const {history, location, setOpen} = this.props
     if (location.pathname !== '/cart') {
@@ -81,8 +80,8 @@ class HeaderDropdownMenu extends React.Component {
   }
 
   handleTotalBlur = e => {
-    const { setOpen } = this.props
-    if(setOpen) {
+    const {setOpen} = this.props
+    if (setOpen) {
       setOpen(false)
     }
   }

@@ -211,7 +211,9 @@ class Checkbox extends Component {
           onChange={() => {}}
           style={styleInput}
         />
-        <label style={this.props.styleLabel} htmlFor={this.props.id}>{this.props.label}</label>
+        <label style={this.props.styleLabel} htmlFor={this.props.id}>
+          {this.props.label}
+        </label>
       </div>
     )
   }
