@@ -5,9 +5,11 @@ import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 
 import javax.servlet.http.HttpServletResponse
@@ -34,7 +36,7 @@ class UploadController {
   }
 
   @RequestMapping(path = '/metadata', method = POST, produces = 'application/json')
-  String load(@RequestParam("files") MultipartFile[] metadataRecords, RedirectAttributes redirectAttributes) {//HttpServletResponse response) {
+  ModelAndView load(@RequestParam("files") MultipartFile[] metadataRecords, RedirectAttributes redirectAttributes) {
     log.debug("Received ${metadataRecords.length} metadata files to load")
 
     def results = metadataService.loadMetadata(metadataRecords)
@@ -51,18 +53,20 @@ class UploadController {
     int nErrors = errors.size()
     int total = nSuccess + nErrors
 
+    ModelAndView mav = new ModelAndView('redirect:/uploadResponse.html')
+
     redirectAttributes.addFlashAttribute("nSuccess", nSuccess)
     redirectAttributes.addFlashAttribute("nErrors", nErrors)
     redirectAttributes.addFlashAttribute("successes", successes)
     redirectAttributes.addFlashAttribute("errors", errors)
     redirectAttributes.addFlashAttribute("results", results)
 
-    return 'redirect:/uploadResponse.html'
+    return mav
   }
 
   @GetMapping('/uploadResponse.html')
-  String uploadResponse() {
-    return 'uploadResponse'
+  ModelAndView uploadResponse(@ModelAttribute("results") Map results) {
+    return new ModelAndView('uploadResponse')
   }
 
 }
