@@ -76,7 +76,7 @@ const styleBadgeLinkFocused = {
 }
 
 const styleCheckboxLabel = {
-  width: '6em'
+  width: '6em',
 }
 
 class ListResult extends React.Component {

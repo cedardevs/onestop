@@ -1,9 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Key } from '../utils/keyboardUtils'
+import {Key} from '../utils/keyboardUtils'
 
 export default class FocusManager extends React.Component {
-
   constructor(props) {
     super(props)
     this._immediateID = null
@@ -14,31 +13,37 @@ export default class FocusManager extends React.Component {
   }
 
   focus = event => {
-    const { onFocus } = this.props
-    const { isManagingFocus } = this.state
+    const {onFocus} = this.props
+    const {isManagingFocus} = this.state
     clearImmediate(this._immediateID)
     if (!isManagingFocus) {
-      this.setState({
-        isManagingFocus: true,
-      }, () => {
-        if (onFocus) {
-          onFocus(event)
+      this.setState(
+        {
+          isManagingFocus: true,
+        },
+        () => {
+          if (onFocus) {
+            onFocus(event)
+          }
         }
-      })
+      )
     }
   }
 
   blur = event => {
-    const { onBlur } = this.props
-    const { isManagingFocus } = this.state
+    const {onBlur} = this.props
+    const {isManagingFocus} = this.state
     if (isManagingFocus) {
-      this.setState({
-        isManagingFocus: false,
-      }, () => {
-        if (onBlur) {
-          onBlur(event)
+      this.setState(
+        {
+          isManagingFocus: false,
+        },
+        () => {
+          if (onBlur) {
+            onBlur(event)
+          }
         }
-      })
+      )
     }
   }
 
@@ -56,12 +61,12 @@ export default class FocusManager extends React.Component {
   }
 
   handleKeyDown = event => {
-    const { blurOnEscape, blurOnShiftTab, blurOnTab } = this.props
+    const {blurOnEscape, blurOnShiftTab, blurOnTab} = this.props
 
-    if(event.shiftKey && event.keyCode === Key.TAB && blurOnShiftTab){
+    if (event.shiftKey && event.keyCode === Key.TAB && blurOnShiftTab) {
       this.blur(event)
     }
-    else if(event.keyCode === Key.TAB && blurOnTab) {
+    else if (event.keyCode === Key.TAB && blurOnTab) {
       this.blur(event)
     }
 
@@ -84,16 +89,18 @@ export default class FocusManager extends React.Component {
   }
 
   render() {
+    const {style} = this.props
     return (
-        <div
-            role="focusManager"
-            onBlur={this.handleBlur}
-            onFocus={this.handleFocus}
-            onKeyDown={this.handleKeyDown}
-            onKeyUp={this.handleKeyUp}
-        >
-          {this.props.children}
-        </div>
+      <div
+        role="focusManager"
+        onBlur={this.handleBlur}
+        onFocus={this.handleFocus}
+        onKeyDown={this.handleKeyDown}
+        onKeyUp={this.handleKeyUp}
+        style={style}
+      >
+        {this.props.children}
+      </div>
     )
   }
 }
@@ -103,4 +110,4 @@ FocusManager.defaultProps = {
   blurOnEscape: false,
   blurOnShiftTab: false,
   blurOnTab: false,
-};
+}

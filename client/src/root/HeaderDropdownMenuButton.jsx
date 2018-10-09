@@ -2,6 +2,12 @@ import React from 'react'
 import {SvgIcon, times, bars} from '../common/SvgIcon'
 import FocusManager from '../common/FocusManager'
 
+const styleWrapper = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+}
+
 const styleButtonDefault = {
   display: 'flex',
   justifyContent: 'center',
@@ -12,7 +18,7 @@ const styleButtonDefault = {
   border: 'transparent',
   textAlign: 'center',
   margin: 0,
-  padding: '0 0.309em 0 0.309em',
+  padding: '0.309em',
 }
 
 const styleButtonHoverDefault = {}
@@ -142,8 +148,8 @@ export default class HeaderDropdownMenuButton extends React.Component {
   }
 
   handleTotalBlur = e => {
-    const { setOpen } = this.props
-    if(setOpen) {
+    const {setOpen} = this.props
+    if (setOpen) {
       setOpen(false)
     }
   }
@@ -200,21 +206,26 @@ export default class HeaderDropdownMenuButton extends React.Component {
     )
 
     return (
-        <FocusManager onBlur={this.handleTotalBlur} blurOnEscape={true} blurOnShiftTab={true}>
-          <button
-            onClick={() => setOpen(!open)}
-            onMouseOver={this.handleMouseOver}
-            onMouseOut={this.handleMouseOut}
-            onMouseDown={this.handleMouseDown}
-            onMouseUp={this.handleMouseUp}
-            onFocus={this.handleFocus}
-            onBlur={this.handleBlur}
-            style={stylesButtonMerged}
-            title="Extra Menu"
-          >
-            {icon}
-          </button>
-        </FocusManager>
+      <FocusManager
+        onBlur={this.handleTotalBlur}
+        blurOnEscape={true}
+        blurOnShiftTab={true}
+        style={styleWrapper}
+      >
+        <button
+          onClick={() => setOpen(!open)}
+          onMouseOver={this.handleMouseOver}
+          onMouseOut={this.handleMouseOut}
+          onMouseDown={this.handleMouseDown}
+          onMouseUp={this.handleMouseUp}
+          onFocus={this.handleFocus}
+          onBlur={this.handleBlur}
+          style={stylesButtonMerged}
+          title="Extra Menu"
+        >
+          {icon}
+        </button>
+      </FocusManager>
     )
   }
 }
