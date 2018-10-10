@@ -270,7 +270,7 @@ class ETLIntegrationTests extends Specification {
   }
 
 
-  //---- Helpers -----
+  //---- Helper functions -----
 
   private void insertMetadataFromPath(String path) {
     insertMetadata(ClassLoader.systemClassLoader.getResourceAsStream(path).text)
