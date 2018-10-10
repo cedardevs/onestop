@@ -37,6 +37,6 @@ install: true
 script:
 - if [[ "$TRAVIS_BRANCH" == 'master' ]] || [[ "$TRAVIS_BRANCH" == "release/*" ]] ||
   [[ "$TRAVIS_BRANCH" == v* ]]; then echo "Calling
-  publish as part of build for $TRAVIS_BRANCH"; travis_wait 20 ./gradlew build publish --scan --stacktrace;
-  else echo "Calling build without publish for $TRAVIS_BRANCH"; travis_wait 20 ./gradlew build --scan
+  publish as part of build for $TRAVIS_BRANCH"; ./gradlew build publish --scan --stacktrace;
+  else echo "Calling build without publish for $TRAVIS_BRANCH"; ./gradlew build --scan
   --stacktrace; fi
