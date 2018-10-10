@@ -77,7 +77,7 @@ jobs:
             - client/.gradle
             - client/node_modules
             - client/build
-          key: v2-dependencies-{{ checksum "build.gradle" }}
+          key: onestop-cache-v2-{{ checksum "build.gradle" }}
 
       - deploy:
           name: Publish
