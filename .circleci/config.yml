@@ -28,9 +28,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - v2-dependencies-{{ checksum "build.gradle" }}
+          - onestop-cache-v2-{{ checksum "build.gradle" }}
           # fallback to using the latest cache if no exact match is found
-          - v2-dependencies-
+          - onestop-cache-v2-
 
       # build it!
       - run:
