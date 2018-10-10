@@ -15,7 +15,7 @@ For Overview, Usage, Deployment, and Development information about this project,
 
 This software was developed by Team Foam-Cat,
 under the OneStop project: 1553647,
-NOAA award number NA12OAR4320127 to CIRES.
+NOAA award number NA12OAR4320137 to CIRES.
 This code is licensed under GPL version 2.
 © 2016 The Regents of the University of Colorado.
 
