@@ -62,7 +62,7 @@ class UploadIntegrationTests extends Specification {
     private granulePath = "data/COOPS/G1.xml"
 
     RestTemplate restTemplate
-    String metadataURI
+    String metadataFormURI
 
     def allowRedirects() {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory()
@@ -74,7 +74,7 @@ class UploadIntegrationTests extends Specification {
     void setup() {
         restTemplate = new RestTemplate()
         restTemplate.errorHandler = new TestResponseErrorHandler()
-        metadataURI = "http://localhost:${port}${contextPath}/metadata"
+        metadataFormURI = "http://localhost:${port}${contextPath}/metadata-form"
         elasticsearchService.dropSearchIndices()
         elasticsearchService.dropStagingIndices()
         elasticsearchService.ensureIndices()
@@ -98,7 +98,7 @@ class UploadIntegrationTests extends Specification {
     private buildMultiLoadRequest(String[] paths) {
         def multipartMap = new LinkedMultiValueMap<String, Object>()
         paths.each { multipartMap.add("files", new ClassPathResource(it)) }
-        RequestEntity.post(metadataURI.toURI()).contentType(MediaType.MULTIPART_FORM_DATA).body(multipartMap)
+        RequestEntity.post(metadataFormURI.toURI()).contentType(MediaType.MULTIPART_FORM_DATA).body(multipartMap)
     }
 
 

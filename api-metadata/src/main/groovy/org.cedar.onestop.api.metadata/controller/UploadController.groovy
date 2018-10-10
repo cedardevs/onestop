@@ -35,7 +35,7 @@ class UploadController {
     return 'upload'
   }
 
-  @RequestMapping(path = '/metadata', method = POST, produces = 'application/json')
+  @RequestMapping(path = '/metadata-form', method = POST, produces = 'application/json')
   ModelAndView load(@RequestParam("files") MultipartFile[] metadataRecords, RedirectAttributes redirectAttributes) {
     log.debug("Received ${metadataRecords.length} metadata files to load")
 

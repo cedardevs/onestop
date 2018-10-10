@@ -249,7 +249,7 @@
               <li>If you uploaded granules with no corresponding collection, they will not show in OneStop results, and you will see no error upon submission of this form.</li>
           </ul>
 
-          <form id="upload_form" th:action="@{/metadata}" method="post" enctype="multipart/form-data">
+          <form id="upload_form" th:action="@{/metadata-form}" method="post" enctype="multipart/form-data">
               <label id="file_selector" for="files_input">
                   Select file(s)
                   <input type="file" name="files" id="files_input" accept=".xml" multiple />
