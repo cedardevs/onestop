@@ -29,7 +29,7 @@ import java.security.Principal
 @ConditionalOnProperty("features.secure.authorization")
 class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
-    private final List<String> securedEndpointsRegex = [/\/metadata.*$/, /\/admin\/.+$/, /\/upload.html$/, /^.+\/userOnly$/]
+    private final List<String> securedEndpointsRegex = [/\/metadata.*$/, /\/admin\/.+$/, /\/upload.html$/, /\/uploadResponse.html$/, /^.+\/userOnly$/]
 
     // SAMLFilter to be wrapped by this Spring aware filter bean
     private SAMLFilter samlFilter
@@ -161,8 +161,8 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
     private AbstractAuthenticationToken authUserBySAMLResponse(String samlResponseEncoded, HttpServletRequest request) {
         AbstractAuthenticationToken authenticationToken = null
         try {
-            long clockSkew = 3000       // milliseconds before a lower time bound, or after an upper time bound, to consider still acceptable
-            long messageLifetime = 2000 // milliseconds for which a message is valid after it is issued
+            long clockSkew = 5000       // milliseconds before a lower time bound, or after an upper time bound, to consider still acceptable
+            long messageLifetime = 5000 // milliseconds for which a message is valid after it is issued
             Map<String,String> assertions = SAMLConsume.getAssertions(samlResponseEncoded, request, clockSkew, messageLifetime)
 
             if(assertions.email != null) {

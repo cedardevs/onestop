@@ -20,6 +20,7 @@ services:
       - elasticsearch_host=elasticsearch
       - elasticsearch_port=9200
       - logging_level_org.cedar.onestop.api=DEBUG
+      - SPRING_PROFILES_ACTIVE=securitydisabled,kafkadisabled
 
   api-metadata:
     image: cedardevs/onestop-api-metadata:latest
@@ -39,3 +40,4 @@ services:
     ports:
       - 9300:9300
       - 9200:9200
+
