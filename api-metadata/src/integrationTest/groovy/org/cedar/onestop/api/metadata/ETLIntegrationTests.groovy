@@ -59,10 +59,9 @@ class ETLIntegrationTests extends Specification {
   RestClient restClient
 
   void setup() {
+    elasticsearchService.performRequest("PUT", "_cluster/settings", ['transient': ['script.max_compilations_per_minute': 200]])
     elasticsearchService.dropSearchIndices()
     elasticsearchService.dropStagingIndices()
-    elasticsearchService.ensureIndices()
-    refreshIndices()
   }
 
   def 'update does nothing when staging is empty'() {
@@ -112,7 +111,8 @@ class ETLIntegrationTests extends Specification {
     insertMetadataFromPath('data/COOPS/G1.xml')
 
     when:
-    Thread.sleep(18000)
+    etlService.updateSearchIndices() // runs the ETLs
+
     def collectionVersions = indexedCollectionVersions().keySet()
     def granuleVersions = indexedGranuleVersions().keySet()
     def flatGranuleVersions = indexedFlatGranuleVersions().keySet()
@@ -270,7 +270,7 @@ class ETLIntegrationTests extends Specification {
   }
 
 
-  //---- Helpers -----
+  //---- Helper functions -----
 
   private void insertMetadataFromPath(String path) {
     insertMetadata(ClassLoader.systemClassLoader.getResourceAsStream(path).text)
@@ -303,8 +303,6 @@ class ETLIntegrationTests extends Specification {
   }
 
   private Map indexedItemVersions(String index) {
-    elasticsearchService.refresh(index)
-    etlService.updateSearchIndices()
     def endpoint = "$index/_search"
     def request = [
         version: true,
@@ -312,10 +310,6 @@ class ETLIntegrationTests extends Specification {
     ]
     def response = elasticsearchService.performRequest('GET', endpoint, request)
     return response.hits.hits.collectEntries { [(it._source.fileIdentifier): it._version] }
-  }
-
-  private refreshIndices() {
-    restClient.performRequest('POST', '_refresh')
   }
 
 }

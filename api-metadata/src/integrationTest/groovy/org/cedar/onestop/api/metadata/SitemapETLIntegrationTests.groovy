@@ -54,8 +54,6 @@ class SitemapETLIntegrationTests extends Specification {
   private String TYPE
 
   private final String COLLECTION_TYPE = 'collection'
-  private final String GRANULE_TYPE = 'granule'
-  private final String FLAT_GRANULE_TYPE = 'flattenedGranule'
 
   @Autowired
   RestClient restClient
@@ -63,8 +61,6 @@ class SitemapETLIntegrationTests extends Specification {
   void setup() {
     elasticsearchService.dropSearchIndices()
     elasticsearchService.dropStagingIndices()
-    elasticsearchService.ensureIndices()
-    refreshIndices()
   }
 
   def 'updating sitemap with collections'() {

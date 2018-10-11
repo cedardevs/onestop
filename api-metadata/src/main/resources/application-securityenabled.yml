@@ -3,7 +3,7 @@ features.secure.authorization: true
 features.basicAuth.disabled: false
 
 roles.names: ADMIN;USER
-user.roles: elliott.richerson@noaa.gov:ADMIN;bao.nguyen@noaa.gov:ADMIN
+user.roles: elliott.richerson@noaa.gov:ADMIN;david.neufeld@noaa.gov:ADMIN
 
 server:
   ssl:
@@ -65,4 +65,3 @@ identityprovider:
   digestAlgorithm: "http://www.w3.org/2000/09/xmldsig#sha1"
   emailAssertionName: "mail"
   uuidAssertionName: "uid"
-

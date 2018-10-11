@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Uploaded ISO to OneStop</title>
+    <style>
+        /* CSS RESET */
+
+        /* http://meyerweb.com/eric/tools/css/reset/
+           v2.0 | 20110126
+           License: none (public domain)
+        */
+
+        html, body, div, span, applet, object, iframe,
+        h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+        a, abbr, acronym, address, big, cite, code,
+        del, dfn, em, img, ins, kbd, q, s, samp,
+        small, strike, strong, sub, sup, tt, var,
+        b, u, i, center,
+        dl, dt, dd, ol, ul, li,
+        fieldset, form, label, legend,
+        table, caption, tbody, tfoot, thead, tr, th, td,
+        article, aside, canvas, details, embed,
+        figure, figcaption, footer, header, hgroup,
+        menu, nav, output, ruby, section, summary,
+        time, mark, audio, video {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+        /* HTML5 display-role reset for older browsers */
+        article, aside, details, figcaption, figure,
+        footer, header, hgroup, menu, nav, section {
+            display: block;
+        }
+        body {
+            line-height: 1;
+        }
+        ol, ul {
+            list-style: none;
+        }
+        blockquote, q {
+            quotes: none;
+        }
+        blockquote:before, blockquote:after,
+        q:before, q:after {
+            content: '';
+            content: none;
+        }
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        /* MEDIA QUERIES */
+        @media (min-width: 160px) {
+            body {
+                font-size: 11px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        @media (min-width: 320px) {
+            body {
+                font-size: 12px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        @media (min-width: 480px) {
+            body {
+                font-size: 13px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        @media (min-width: 640px) {
+            body {
+                font-size: 14px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        @media (min-width: 800px) {
+            body {
+                font-size: 15px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        @media (min-width: 960px) {
+            body {
+                font-size: 16px;
+                transition: all 0.2s ease-out;
+            }
+        }
+
+        /* CUSTOM STYLES */
+
+        body, html {
+            height: 100%;
+            display: grid;
+        }
+
+        body {
+            transition: all 0.2s ease-out;
+            font-family: "Source Sans Pro", "Helvetica Neue", "Helvetica", "Roboto",
+            "Arial", sans-serif;
+            /* letter-spacing: 0.1em; */
+            /* line-height: 1.33em; */
+            color: white;
+            background: #222C37;
+            min-height: 100%;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 1.618em;
+            margin: 0 0 0.618em 0;
+        }
+
+        p {
+            margin: 0 0 1.618em 0;
+        }
+
+        .list {
+            list-style-type: none;
+            margin: 0 0 1.618em 0;
+            border-top: 1px solid white;
+        }
+
+        .list li {
+            border-bottom: 1px solid white;
+        }
+
+        #upload_response_container {
+            margin: auto;
+            padding: 8em;
+        }
+
+        .listcontent {
+            padding: 0.618em;
+        }
+
+        .success {
+            background: #222;
+            color: white;
+        }
+
+        .error {
+            background: #850507;
+            color: white;
+        }
+
+        .file {
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+        }
+
+        .errormessage {
+            margin-top: 0.618em;
+        }
+    </style>
+</head>
+<body>
+
+<div id="upload_response_container">
+
+    <h1 th:if="${nErrors &gt; 0}" id="n_errors" th:text="${'Failed to upload ' + nErrors + ' files'}" />
+    <ul class="list" th:if="${nErrors &gt; 0}">
+        <li th:each="result : ${errors}">
+            <div class="listcontent error">
+                <div class="file" th:text="${result.meta.filename}" />
+                <div class="errormessage" th:text="${'Error: ' + result.meta.error.title}" />
+            </div>
+        </li>
+    </ul>
+
+    <h1 th:if="${nSuccess &gt; 0}" id="n_success" th:text="${'Uploaded ' + nSuccess + ' files'}" />
+    <ul class="list" th:if="${nSuccess &gt; 0}">
+        <li th:each="result : ${successes}">
+            <div class="listcontent success">
+                <div class="file" th:text="${result.meta.filename}" />
+            </div>
+        </li>
+    </ul>
+
+    <div th:unless="${results}">
+        <span>There are no results.</span>
+    </div>
+</div>
+
+</body>
+</html>
