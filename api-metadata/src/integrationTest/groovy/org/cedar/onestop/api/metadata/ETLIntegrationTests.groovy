@@ -1,25 +1,16 @@
 package org.cedar.onestop.api.metadata
 
-import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityConfig
-import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled
+
 import org.cedar.onestop.api.metadata.service.ETLService
-import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
-import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
+import org.cedar.onestop.api.metadata.service.MetadataManagementService
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import org.elasticsearch.client.RestClient
-import org.springframework.test.context.TestPropertySource
-import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
-@ActiveProfiles("integration")
-@SpringBootTest(classes = [Application, IntegrationTestConfig, SpringSecurityDisabled, SpringSecurityConfig, IdentityProviderConfig])
-@TestPropertySource(locations = ["classpath:test-securitydisabled.yml"])
-class ETLIntegrationTests extends Specification {
+class ETLIntegrationTests extends IntegrationTest {
 
   @Autowired
   private ElasticsearchService elasticsearchService
@@ -270,7 +261,7 @@ class ETLIntegrationTests extends Specification {
   }
 
 
-  //---- Helpers -----
+  //---- Helper functions -----
 
   private void insertMetadataFromPath(String path) {
     insertMetadata(ClassLoader.systemClassLoader.getResourceAsStream(path).text)

@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.search
 
+
 import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Value
@@ -19,7 +20,7 @@ class IntegrationTestConfig {
 
   @Bean(name = 'esContainer', initMethod = 'start', destroyMethod = 'stop')
   GenericContainer esContainer() {
-    String dockerImageName = "docker.elastic.co/elasticsearch/elasticsearch:${esVersion}"
+      String dockerImageName = "docker.elastic.co/elasticsearch/elasticsearch:${esVersion}"
     GenericContainer esContainer = new GenericContainer(dockerImageName)
         .withExposedPorts(9200)
         .waitingFor(Wait.forHttp('/'))
