@@ -199,7 +199,7 @@ class ManipulateMetadtaServiceTest extends Specification {
 
   }
   
-  def "paleo date capture and set an incoming date to null"() {
+  def "paleo date captured and set an incoming date to null"() {
     given:
     def temporalAnalysis = analysisMap.temporalBounding as Map
     def temporalBounding = inputMap.discovery.temporalBounding as Map
