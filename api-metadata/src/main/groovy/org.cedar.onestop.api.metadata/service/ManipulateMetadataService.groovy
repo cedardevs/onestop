@@ -4,20 +4,40 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.text.WordUtils
 import org.springframework.stereotype.Service
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.format.ResolverStyle
+import java.time.temporal.ChronoField
+import java.time.temporal.TemporalAccessor
+import java.time.temporal.TemporalQuery
+
 @Slf4j
 @Service
 class ManipulateMetadataService {
-  static Map oneStopReady(Map record) {
+  static Map oneStopReady(Map discovery) {
     // create gcmdkeywords
-    Map gcmdKeywords = createGcmdKeyword(record)
+    Map gcmdKeywords = createGcmdKeyword(discovery)
+    discovery.putAll(gcmdKeywords)
+  
     // create contacts ,creators and publishers
-    Map<String, Set> partyData = parseDataResponsibleParties(record.responsibleParties as Map)
+    Map<String, Set> partyData = parseDataResponsibleParties(discovery.responsibleParties as Map)
+    discovery.putAll(partyData)
+  
+    // add start and end year to temporal Bounding
+    def beginYear = elasticDateInfo(discovery.temporalBounding.beginDate)
+    def endYear = elasticDateInfo(discovery.temporalBounding.endDate)
+    discovery.temporalBounding.put('beginYear', beginYear?.year)
+    discovery.temporalBounding.put('endYear', endYear?.year)
+  
     // drop fields
-    record.remove("responsibleParties")
-    record.remove("services")
+    discovery.remove("responsibleParties")
+    discovery.remove("services")
     
-    def metadata = record << gcmdKeywords << partyData
-    return metadata
+    return discovery
   }
   
   //Create GCMD keyword lists
@@ -55,17 +75,6 @@ class ManipulateMetadataService {
               gcmdScience.addAll(tokenizeHierarchyKeyword(text))
             }
             break
-//            case { it.contains('science') }:
-//              keywordsInGroup.each { k ->
-//                if (it.startsWith('earth science services')) {
-//                def text = normalizeHierarchyKeyword(k)
-//                gcmdScienceServices.addAll(tokenizeHierarchyKeyword(text))
-//                } else if (it.startsWith('earth science')) {
-//                def text = normalizeHierarchyKeyword(k)
-//                gcmdScience.addAll(tokenizeHierarchyKeyword(text))
-//                }
-//              }
-//              break
           case { it.contains('location') || it.contains('place') }:
             keywordsInGroup.each { k ->
               def text = normalizeHierarchyKeyword(k)
@@ -156,15 +165,15 @@ class ManipulateMetadataService {
     ]
   }
   
-  static Map<String, Set> parseDataResponsibleParties(Map metadata) {
+  static Map<String, Set> parseDataResponsibleParties(Map responsibleParties) {
     Set contacts = []
     Set contactRoles = ['pointOfContact', 'distributor']
     Set creators = []
     Set creatorRoles = ['resourceProvider', 'originator', 'principalInvestigator', 'author', 'collaborator', 'coAuthor']
     Set publishers = []
     Set publisherRoles = ['publisher']
-    
-    metadata.each { party ->
+  
+    responsibleParties.each { party ->
       def parsedParty = parseParty(party as Map)
       if (contactRoles.contains(parsedParty.role)) {
         contacts.add(parsedParty)
@@ -177,6 +186,47 @@ class ManipulateMetadataService {
     return [contacts: contacts, creators: creators, publishers: publishers]
   }
   
+  // handle 3 optional date formats in priority of full-parse option to minimal-parse options
+  static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
+      .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
+      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
+      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
+      .toFormatter()
+      .withResolverStyle(ResolverStyle.STRICT)
+  
+  static Map elasticDateInfo(String date) {
+    
+    // don't bother parsing if there's nothing here
+    if(!date) {
+      return null
+    }
+    
+    // default to null
+    TemporalAccessor parsedDate = null
+    Long year
+    
+    // paleo dates can be longs
+    if(date.isLong()) {
+      year = Long.parseLong(date)
+    }
+    else {
+      // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
+      parsedDate = PARSE_DATE_FORMATTER.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
+      year = parsedDate.get(ChronoField.YEAR)
+      
+      if(parsedDate instanceof LocalDateTime) {
+        // assume UTC
+        ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
+        // re-evaluate year in off-chance year was affected by zone id
+        year = parsedDateUTC.get(ChronoField.YEAR)
+      }
+    }
+    
+    def dateInfo = ["year":  year]
+    return dateInfo
+  }
+  
+  // helper functions
   static String normalizeHierarchyKeyword(String text) {
     def cleanText = cleanInternalGCMDKeywordWhitespace(text)
     return WordUtils.capitalizeFully(cleanText, capitalizingDelimiters)

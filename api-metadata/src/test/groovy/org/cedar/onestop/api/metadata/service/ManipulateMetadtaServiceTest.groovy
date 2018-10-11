@@ -146,8 +146,6 @@ class ManipulateMetadtaServiceTest extends Specification {
   
   def "Create GCMD keyword lists" () {
     given:
-    def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
-    def inputMap = [discovery: new JsonSlurper().parseText(inputMsg)] as Map
     def gcmdKeywordMap = inputMap.discovery as Map
   
     when:
@@ -172,24 +170,41 @@ class ManipulateMetadtaServiceTest extends Specification {
   
   def "Create contacts, publishers and creators from responsibleParties" () {
     given:
-    def responsiblePartiesMap = inputMap.discovery.responsibleParties
+    def partyMap = inputMap.discovery.responsibleParties as Map
     
     when:
-    Map responsibleParties = ManipulateMetadataService.parseDataResponsibleParties(responsiblePartiesMap as Map)
+    Map partiesMap = ManipulateMetadataService.parseDataResponsibleParties(partyMap)
     
     then:
-    responsibleParties.contacts == expectedResponsibleParties.contacts as Set
-    responsibleParties.creators == expectedResponsibleParties.creators as Set
-    responsibleParties.publishers == expectedResponsibleParties.publishers as Set
+    partiesMap.contacts == expectedResponsibleParties.contacts as Set
+    partiesMap.creators == expectedResponsibleParties.creators as Set
+    partiesMap.publishers == expectedResponsibleParties.publishers as Set
+  }
+  
+  def "Create start and end year"() {
+    given:
+    def date = [temporalBounding: inputMap.discovery.temporalBounding]
+    def beginDate = date.temporalBounding.beginDate as String
+    def endDate = date.temporalBounding.endDate as String
+    
+    when:
+    Map beginYear = ManipulateMetadataService.elasticDateInfo(beginDate)
+    Map endYear = ManipulateMetadataService.elasticDateInfo(endDate)
+    
+    then: "start year is added"
+    beginYear.year == 2002
+  
+    and: "end year is added"
+    endYear.year == 2011
   }
   
   def "new record is ready for onestop" () {
     given:
-    def recordMap = inputMap.discovery as Map
+    def discovery = inputMap.discovery as Map
     def expectedMap = inputMap.discovery as Map
     
     when:
-    def metadata = ManipulateMetadataService.oneStopReady(recordMap)
+    def metadata = ManipulateMetadataService.oneStopReady(discovery)
     expectedMap.remove("keywords")
     expectedMap.remove("services")
     expectedMap.remove("responsibleParties")
