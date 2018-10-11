@@ -100,6 +100,15 @@ subprojects {
 
 }
 
+import java.time.*
+gradle.taskGraph.beforeTask { Task task ->
+    task.ext.setProperty("startTime", Instant.now())
+}
+
+gradle.taskGraph.afterTask { Task task, TaskState state ->
+    println task.name + " took " + Duration.between(task.ext.startTime, Instant.now()).toSeconds() + " seconds"
+}
+
 task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
   onlyIf { isRelease }
   executable = "bash"
