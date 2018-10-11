@@ -8,6 +8,8 @@ import spock.lang.Unroll
 class ManipulateMetadtaServiceTest extends Specification {
   def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
   def inputMap = [discovery: new JsonSlurper().parseText(inputMsg)] as Map
+  def analysisMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-analysis.json').text
+  def analysisMap = new JsonSlurper().parseText(analysisMsg) as Map
   def expectedResponsibleParties = [
       contacts  : [
           [
@@ -183,28 +185,53 @@ class ManipulateMetadtaServiceTest extends Specification {
   
   def "Create start and end year"() {
     given:
-    def date = [temporalBounding: inputMap.discovery.temporalBounding]
-    def beginDate = date.temporalBounding.beginDate as String
-    def endDate = date.temporalBounding.endDate as String
+    def temporalAnalysis = analysisMap.temporalBounding as Map
+    def temporalBounding = inputMap.discovery.temporalBounding as Map
     
     when:
-    Map beginYear = ManipulateMetadataService.elasticDateInfo(beginDate)
-    Map endYear = ManipulateMetadataService.elasticDateInfo(endDate)
+    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
     
     then: "start year is added"
-    beginYear.year == 2002
+    temporalBoundingMsg.beginYear == 2002
   
     and: "end year is added"
-    endYear.year == 2011
+    temporalBoundingMsg.endYear == 2011
+
+  }
+  
+  def "paleo date capture and set an incoming date to null"() {
+    given:
+    def temporalAnalysis = analysisMap.temporalBounding as Map
+    def temporalBounding = inputMap.discovery.temporalBounding as Map
+    // reset values
+    temporalAnalysis.begin.validSearchFormat = false
+    temporalAnalysis.end.validSearchFormat = false
+    temporalAnalysis.begin.precision = 'Years'
+    temporalAnalysis.end.precision = 'Years'
+    
+    when:
+    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
+    
+    then: "add start year and update start date to null"
+    temporalBoundingMsg.beginYear == 2002
+    temporalBoundingMsg.beginDate == null
+    
+    and: "create end year and update date to null"
+    temporalBoundingMsg.endYear == 2011
+    temporalBoundingMsg.endDate == null
+    
   }
   
   def "new record is ready for onestop" () {
     given:
+    def analysisMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-analysis.json').text
+    def analysisMap = new JsonSlurper().parseText(analysisMsg) as Map
     def discovery = inputMap.discovery as Map
+    def analysis = analysisMap as Map
     def expectedMap = inputMap.discovery as Map
     
     when:
-    def metadata = ManipulateMetadataService.oneStopReady(discovery)
+    def metadata = ManipulateMetadataService.oneStopReady(discovery, analysis)
     expectedMap.remove("keywords")
     expectedMap.remove("services")
     expectedMap.remove("responsibleParties")

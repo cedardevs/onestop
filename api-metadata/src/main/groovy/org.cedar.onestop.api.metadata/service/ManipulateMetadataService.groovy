@@ -12,31 +12,29 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.ResolverStyle
 import java.time.temporal.ChronoField
+import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAccessor
 import java.time.temporal.TemporalQuery
 
 @Slf4j
 @Service
 class ManipulateMetadataService {
-  static Map oneStopReady(Map discovery) {
+  static Map oneStopReady(Map discovery, Map analysis) {
     // create gcmdkeywords
     Map gcmdKeywords = createGcmdKeyword(discovery)
     discovery.putAll(gcmdKeywords)
-  
+    
     // create contacts ,creators and publishers
     Map<String, Set> partyData = parseDataResponsibleParties(discovery.responsibleParties as Map)
     discovery.putAll(partyData)
-  
-    // add start and end year to temporal Bounding
-    def beginYear = elasticDateInfo(discovery.temporalBounding.beginDate)
-    def endYear = elasticDateInfo(discovery.temporalBounding.endDate)
-    discovery.temporalBounding.put('beginYear', beginYear?.year)
-    discovery.temporalBounding.put('endYear', endYear?.year)
-  
+    
+    // update temporal Bounding
+    def temporalBounding = elasticDateInfo(discovery.temporalBounding, analysis.temporalBounding)
+    discovery.temporalBounding.putAll(temporalBounding)
+    
     // drop fields
     discovery.remove("responsibleParties")
     discovery.remove("services")
-    
     return discovery
   }
   
@@ -148,6 +146,7 @@ class ManipulateMetadataService {
   /*
   Create contacts, creators and publishers from responsibleParties
   */
+  
   static Map<String, String> parseParty(Map party) {
     String individualName = party.individualName ?: null
     String organizationName = party.organizationName ?: null
@@ -172,7 +171,7 @@ class ManipulateMetadataService {
     Set creatorRoles = ['resourceProvider', 'originator', 'principalInvestigator', 'author', 'collaborator', 'coAuthor']
     Set publishers = []
     Set publisherRoles = ['publisher']
-  
+    
     responsibleParties.each { party ->
       def parsedParty = parseParty(party as Map)
       if (contactRoles.contains(parsedParty.role)) {
@@ -194,36 +193,71 @@ class ManipulateMetadataService {
       .toFormatter()
       .withResolverStyle(ResolverStyle.STRICT)
   
-  static Map elasticDateInfo(String date) {
-    
-    // don't bother parsing if there's nothing here
-    if(!date) {
-      return null
-    }
-    
-    // default to null
+  static Map elasticDateInfo(Map temporalBounding, Map temporalAnlysis) {
+    /*
+    * validSearchFormat == false AND associated precision == ChronoUnit.YEARS.toString(), null
+    * */
+    def beginDateAnlysis = temporalAnlysis.begin as Map
+    def endDateAnlysis = temporalAnlysis.end as Map
     TemporalAccessor parsedDate = null
-    Long year
-    
-    // paleo dates can be longs
-    if(date.isLong()) {
-      year = Long.parseLong(date)
-    }
-    else {
-      // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
-      parsedDate = PARSE_DATE_FORMATTER.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
-      year = parsedDate.get(ChronoField.YEAR)
+    Long beginYear
+    Long endYear
+    // begin date and year
+    if (!temporalBounding.beginDate) {
+      beginYear = null
+    } else {
+        String beginDate = temporalBounding.beginDate as String
+        // paleo dates can be longs
+        if (beginDate.isLong()) {
+          beginYear = Long.parseLong(beginDate)
+        } else {
+          // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
+          parsedDate = PARSE_DATE_FORMATTER.parseBest(beginDate, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
+          beginYear = parsedDate.get(ChronoField.YEAR)
       
-      if(parsedDate instanceof LocalDateTime) {
-        // assume UTC
-        ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
-        // re-evaluate year in off-chance year was affected by zone id
-        year = parsedDateUTC.get(ChronoField.YEAR)
+          if (parsedDate instanceof LocalDateTime) {
+            // assume UTC
+            ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
+            // re-evaluate year in off-chance year was affected by zone id
+            beginYear = parsedDateUTC.get(ChronoField.YEAR)
+          }
+        }
+      if (beginDateAnlysis.validSearchFormat == false && beginDateAnlysis.precision == ChronoUnit.YEARS.toString()) {
+        temporalBounding.beginDate = null
       }
     }
     
-    def dateInfo = ["year":  year]
-    return dateInfo
+    // end date and year
+    if (!temporalBounding.endDate) {
+        endYear = null
+    } else {
+        String endDate = temporalBounding.endDate as String
+        // paleo dates can be longs
+        if (endDate.isLong()) {
+          endYear = Long.parseLong(endDate)
+        } else {
+          // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
+          parsedDate = PARSE_DATE_FORMATTER.parseBest(endDate, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
+          endYear = parsedDate.get(ChronoField.YEAR)
+      
+          if (parsedDate instanceof LocalDateTime) {
+            // assume UTC
+            ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
+            // re-evaluate year in off-chance year was affected by zone id
+            endYear = parsedDateUTC.get(ChronoField.YEAR)
+          }
+        }
+        
+      if (!endDateAnlysis.validSearchFormat && endDateAnlysis.precision == ChronoUnit.YEARS.toString()) {
+        temporalBounding.endDate = null
+      }
+    }
+    def begin = ['beginYear': beginYear]
+    def end = ['endYear': endYear]
+    temporalBounding.putAll(begin)
+    temporalBounding.putAll(end)
+    
+    return temporalBounding
   }
   
   // helper functions
