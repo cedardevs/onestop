@@ -1,21 +1,17 @@
 package org.cedar.onestop.api.metadata
 
+
 import org.cedar.onestop.api.metadata.service.ETLService
-import org.cedar.onestop.api.metadata.service.SitemapETLService
-import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
+import org.cedar.onestop.api.metadata.service.MetadataManagementService
+import org.cedar.onestop.api.metadata.service.SitemapETLService
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
-import org.elasticsearch.client.RestClient
-import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
-@ActiveProfiles("integration")
-@SpringBootTest(classes = [Application, IntegrationTestConfig])
-class SitemapETLIntegrationTests extends Specification {
+class SitemapETLIntegrationTests extends IntegrationTest {
 
   @Autowired
   private ElasticsearchService elasticsearchService
