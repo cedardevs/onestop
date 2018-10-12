@@ -8,7 +8,7 @@ import './fonts/fonts.css'
 import './page.css'
 import './media.css'
 import store from './store'
-import history from './history'
+import browserHistory from './history'
 import './leaflet-init'
 
 // force webpack to include the fonts in the build/dist
@@ -34,9 +34,9 @@ const reload = () => window.location.reload();
 
 const body = (
   <Provider store={store}>
-    <ConnectedRouter history={history}>
+    <ConnectedRouter history={browserHistory}>
       <Switch>
-        <Route path="/sitemap.xml" exact onEnter={reload} />
+        <Route path="/onestop/sitemap.xml" exact onEnter={reload} />
         <RootContainer />
       </Switch>
     </ConnectedRouter>
@@ -102,5 +102,9 @@ const ogUrlMetaTag = document.createElement('meta')
 ogUrlMetaTag.setAttribute('property', 'og:url')
 ogUrlMetaTag.setAttribute('content', `${rootUrl}`)
 document.head.appendChild(ogUrlMetaTag)
+
+const baseRef = document.createElement('base')
+baseRef.setAttribute('href', '/onestop/')
+document.head.appendChild(baseRef)
 
 render(body, appDiv)

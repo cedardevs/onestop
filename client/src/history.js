@@ -1,5 +1,5 @@
-import {createHashHistory} from 'history'
+import createHistory from 'history/createBrowserHistory'
 
-const history = createHashHistory()
+const browserHistory = createHistory()
 
-export default history
+export default browserHistory

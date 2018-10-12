@@ -121,17 +121,17 @@ class Header extends React.Component {
     const menuContent = (
       <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>
-          <HeaderLink title="Home" to="/">
+          <HeaderLink title="Home" to="/onestop">
             Home
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, false)}>
-          <HeaderLink title="About Us" to="/about">
+          <HeaderLink title="About Us" to="/onestop/about">
             About Us
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, true)}>
-          <HeaderLink title="Help" to="/help">
+          <HeaderLink title="Help" to="/onestop/help">
             Help
           </HeaderLink>
         </li>
@@ -141,24 +141,20 @@ class Header extends React.Component {
     const insignia = (
       <Logo
         key="insignia"
-        onClick={this.props.goHome}
         style={{flex: '0 0 275px'}}
       />
     )
 
     const search = (
       <Switch key="header:search:route">
-        <Route exact path="/">
+        <Route exact path="/onestop">
           {null}
         </Route>
-        <Route path="/">
+        <Route path="/onestop">
           <SearchFieldsContainer key="search" />
         </Route>
       </Switch>
     )
-    // this.props.showSearch ? (
-    //   <SearchFieldsContainer key="search" />
-    // ) : null
 
     const menu = (
       <nav key="menu" aria-label="Main" style={styleNav}>
@@ -168,7 +164,7 @@ class Header extends React.Component {
 
     const stylesMerged = {
       ...styleSkipLinkWrapper,
-      ...(this.state.focusingSkipLink ? styleShowSkipLink : styleHideSkipLink),
+      ...(focusingSkipLink ? styleShowSkipLink : styleHideSkipLink),
     }
 
     const skipLink = (
@@ -202,10 +198,6 @@ class Header extends React.Component {
       </div>
     )
   }
-}
-
-Header.propTypes = {
-  goHome: PropTypes.func.isRequired,
 }
 
 export default Header

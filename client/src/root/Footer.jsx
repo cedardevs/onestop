@@ -102,7 +102,7 @@ class Footer extends React.Component {
         i === links.length - 1 ? styleLinkLast : styleLinkNotLast
       return (
         <li style={styleFooterItem} key={i}>
-          <FooterLink href={link.href} title={link.text} style={styleLink}>
+          <FooterLink to={'/about#attribution'} title={link.text} style={styleLink}>
             {link.text}{' '}
           </FooterLink>
         </li>

@@ -24,16 +24,16 @@ import {
   getCollectionIdFromGranuleListPath,
 } from '../utils/urlUtils'
 
-export const showCollections = (prefix = '') => {
+export const showCollections = history => {
   return (dispatch, getState) => {
     dispatch(clearSelections())
     const query = encodeQueryString(getState())
     if (!_.isEmpty(query)) {
       const locationDescriptor = {
-        pathname: `${prefix}/collections`,
+        pathname: '/onestop/collections',
         search: `?${query}`,
       }
-      dispatch(push(locationDescriptor))
+      dispatch(history.push(locationDescriptor))
     }
   }
 }
@@ -55,17 +55,17 @@ export const loadCollections = newQueryString => {
   }
 }
 
-export const showGranulesList = id => {
+export const showGranulesList = (history, id) => {
   if (!id) {
     return
   }
   return (dispatch, getState) => {
     const query = encodeQueryString(getState())
     const locationDescriptor = {
-      pathname: `/collections/granules/${id}`,
+      pathname: `/onestop/collections/granules/${id}`,
       search: `?${query}`,
     }
-    dispatch(push(locationDescriptor))
+    dispatch(history.push(locationDescriptor))
   }
 }
 
@@ -80,17 +80,17 @@ export const loadGranulesList = path => {
   }
 }
 
-export const showDetails = id => {
+export const showDetails = (history, id) => {
   if (!id) {
     return
   }
   return (dispatch, getState) => {
     const query = encodeQueryString(getState())
     const locationDescriptor = {
-      pathname: `collections/details/${id}`,
+      pathname: `/onestop/collections/details/${id}`,
       search: _.isEmpty(query) ? null : `?${query}`,
     }
-    dispatch(push(locationDescriptor))
+    dispatch(history.push(locationDescriptor))
   }
 }
 
@@ -103,10 +103,10 @@ export const loadDetails = path => {
   }
 }
 
-export const showHome = () => {
+export const showHome = history => {
   return dispatch => {
     dispatch(updateSearch())
-    dispatch(push(`/`))
+    dispatch(history.push('/onestop'))
     dispatch(clearCollections())
   }
 }

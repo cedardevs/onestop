@@ -12,12 +12,12 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
       dispatch(clearFacets())
       dispatch(triggerSearch())
-      dispatch(showCollections())
+      dispatch(showCollections(ownProps.history))
     },
     updateQuery: text => dispatch(updateQuery(text)),
   }

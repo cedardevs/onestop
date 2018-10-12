@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {Route, Switch} from 'react-router'
 
-import Background from '../layout/Background'
 import Container from '../layout/Container'
+import Background from '../layout/Background'
 
 import BannerContainer from './banner/BannerContainer'
 import HeaderContainer from './HeaderContainer'
@@ -104,7 +104,7 @@ export default class Root extends Component {
     const header = (
       <div>
         <BannerContainer />
-        <Route path="/">
+        <Route path="/onestop">
           <HeaderContainer />
         </Route>
         {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
@@ -117,37 +117,36 @@ export default class Root extends Component {
     const middle = (
       <div style={{width: '100%'}}>
         <Switch>
-          <Route path="/" exact />
-          <Route path="/">
+          <Route path="/onestop" exact />
+          <Route path="/onstop">
             <LoadingBarContainer />
           </Route>
         </Switch>
         <Switch>
-          <Route path="/collections" exact>
+          <Route path="/onestop/collections" exact>
             {/*TODO: replace this with ArcGIS map?*/}
             <MapContainer selection={true} features={false} />
           </Route>
         </Switch>
-        {this.props.children}
 
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
-          <Route path="/" exact>
+          <Route path="/onestop" exact>
             <LandingContainer />
           </Route>
 
-          <Route path="/collections/details">
+          <Route path="/onestop/collections/details">
             {/*TODO parameterize this path!*/}
             <DetailContainer />
           </Route>
 
-          <Route path="/collections">
+          <Route path="/onestop/collections">
             <Result>
               <Switch>
-                <Route path="/collections" exact>
+                <Route path="/onestop/collections" exact>
                   <CollectionsContainer />
                 </Route>
-                <Route path="/collections/granules">
+                <Route path="/onestop/collections/granules/:id">
                   {/*TODO parameterize this path!*/}
                   <GranuleListContainer />
                 </Route>
@@ -155,14 +154,14 @@ export default class Root extends Component {
             </Result>
           </Route>
 
-          <Route path="/about">
+          <Route path="/onestop/about">
             <AboutContainer />
           </Route>
-          <Route path="/help">
+          <Route path="/onestop/help">
             <Help />
           </Route>
 
-          <Route path="/error">
+          <Route path="/onestop/error">
             <ErrorContainer />
           </Route>
         </Switch>

@@ -6,12 +6,12 @@ import {showCollections} from '../actions/FlowActions'
 
 import {withRouter} from 'react-router'
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
       dispatch(clearFacets())
       dispatch(triggerSearch())
-      dispatch(showCollections())
+      dispatch(showCollections(ownProps.history))
     },
     updateQuery: text => dispatch(updateQuery(text)),
   }

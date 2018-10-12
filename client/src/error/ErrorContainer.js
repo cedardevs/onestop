@@ -3,6 +3,7 @@ import Error from './Error'
 import {push, goBack} from 'react-router-redux'
 import {clearErrors} from '../actions/ErrorActions'
 import {updateSearch} from '../actions/SearchParamActions'
+import {showHome} from '../actions/FlowActions'
 
 import {withRouter} from 'react-router'
 
@@ -12,7 +13,7 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     goBack: () => {
       dispatch(clearErrors())
@@ -21,7 +22,7 @@ const mapDispatchToProps = dispatch => {
     goHome: () => {
       dispatch(clearErrors())
       dispatch(updateSearch())
-      dispatch(push('/'))
+      dispatch(showHome(ownProps.history))
     },
   }
 }

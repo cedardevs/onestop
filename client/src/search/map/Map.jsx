@@ -363,7 +363,6 @@ class Map extends React.Component {
 
   render() {
     const {open, display, flex, maxHeight, width, opacity} = this.state
-
     return (
       <div
         style={styleMapContainer(open, display, maxHeight, width)}

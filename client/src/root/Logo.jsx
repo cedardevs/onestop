@@ -4,6 +4,7 @@ import defaultStyles from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
+import { Key } from '../utils/keyboardUtils'
 
 //-- Styles
 const styleLogoWrapper = {
@@ -99,9 +100,16 @@ const styleOneStopOImageWrapper = {
   fill: 'inherit',
   transition: 'fill 0.3s ease',
 }
+
+const styleOnestopO = {
+  display: 'inline-block',
+  width: 0,
+  overflowX: 'hidden'
+}
+
 //-- Component
 
-export default class Logo extends Component {
+export default class      Logo extends Component {
   componentWillMount() {
     this.setState({
       focusingImage: false,
@@ -203,7 +211,6 @@ export default class Logo extends Component {
             href="http://www.noaa.gov"
             title="NOAA"
             aria-hidden={true}
-            onClick={() => this.props.onClick()}
             onFocus={this.handleImageFocus}
             onBlur={this.handleImageBlur}
             onMouseOver={this.handleImageMouseOver}
@@ -220,9 +227,9 @@ export default class Logo extends Component {
         </div>
         <div style={styleTextWrapperMerged}>
           <a
-            href="#"
+            href="/onestop"
             style={stylesOneStopLink}
-            onClick={() => this.props.onClick()}
+            onClick={this.props.onClick}
             onFocus={this.handleTextFocus}
             onBlur={this.handleTextBlur}
             onMouseOver={this.handleTextMouseOver}
@@ -234,11 +241,13 @@ export default class Logo extends Component {
                   size="1.1em"
                   verticalAlign="initial"
                   path={stop_circle_o}
+                  aria-hidden="true"
                 />
               </span>
               <span
+                tabIndex={-1}
                 aria-hidden="true"
-                style={{display: 'inline-block', width: 0, overflowX: 'hidden'}}
+                style={styleOnestopO}
               >
                 O
               </span>

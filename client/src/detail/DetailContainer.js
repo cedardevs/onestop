@@ -14,10 +14,10 @@ const mapStateToProps = (state, reactProps) => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     navigateToGranules: id => {
-      dispatch(showGranulesList(id))
+      dispatch(showGranulesList(ownProps.history, id))
     },
   }
 }
