@@ -222,6 +222,47 @@ class ManipulateMetadtaServiceTest extends Specification {
     
   }
   
+  def "Update begin and end dates & years based on instant value "() {
+    given:
+    def temporalAnalysis = analysisMap.temporalBounding as Map
+    def temporalBounding = inputMap.discovery.temporalBounding as Map
+    // reset iso values
+    temporalBounding.beginDate = null
+    temporalBounding.endDate = null
+    temporalBounding.instant = '2001-01-01'
+    temporalAnalysis.instant.validSearchFormat = false
+    temporalAnalysis.range.descriptor = "INSTANT"
+
+    when:
+    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
+
+    then: "add start year and update start date to null"
+    temporalBoundingMsg.beginYear == 2001
+    temporalBoundingMsg.beginDate == '2001-01-01'
+    
+  }
+  
+  def "Update dates & years based on instant value when precision is year "() {
+    given:
+    def temporalAnalysis = analysisMap.temporalBounding as Map
+    def temporalBounding = inputMap.discovery.temporalBounding as Map
+    // reset iso values
+    temporalBounding.beginDate = null
+    temporalBounding.endDate = null
+    temporalBounding.instant = '2001-01-01'
+    temporalAnalysis.instant.validSearchFormat = false
+    temporalAnalysis.range.descriptor = "INSTANT"
+    temporalAnalysis.instant.precision = 'Years'
+  
+    when:
+    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
+    
+    then: "add start year and update start date to null"
+    temporalBoundingMsg.beginYear == 2001
+    temporalBoundingMsg.beginDate == null
+    
+  }
+  
   def "new record is ready for onestop" () {
     given:
     def analysisMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-analysis.json').text

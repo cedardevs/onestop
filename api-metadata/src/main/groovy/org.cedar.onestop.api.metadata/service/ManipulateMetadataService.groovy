@@ -206,22 +206,10 @@ class ManipulateMetadataService {
     if (!temporalBounding.beginDate) {
       beginYear = null
     } else {
-        String beginDate = temporalBounding.beginDate as String
-        // paleo dates can be longs
-        if (beginDate.isLong()) {
-          beginYear = Long.parseLong(beginDate)
-        } else {
-          // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
-          parsedDate = PARSE_DATE_FORMATTER.parseBest(beginDate, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
-          beginYear = parsedDate.get(ChronoField.YEAR)
-      
-          if (parsedDate instanceof LocalDateTime) {
-            // assume UTC
-            ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
-            // re-evaluate year in off-chance year was affected by zone id
-            beginYear = parsedDateUTC.get(ChronoField.YEAR)
-          }
-        }
+      String beginDate = temporalBounding.beginDate as String
+      // paleo dates can be longs
+      beginYear = parsedYear(beginDate)
+      // invalid Format
       if (beginDateAnlysis.validSearchFormat == false && beginDateAnlysis.precision == ChronoUnit.YEARS.toString()) {
         temporalBounding.beginDate = null
       }
@@ -229,35 +217,60 @@ class ManipulateMetadataService {
     
     // end date and year
     if (!temporalBounding.endDate) {
-        endYear = null
+      endYear = null
     } else {
-        String endDate = temporalBounding.endDate as String
-        // paleo dates can be longs
-        if (endDate.isLong()) {
-          endYear = Long.parseLong(endDate)
-        } else {
-          // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
-          parsedDate = PARSE_DATE_FORMATTER.parseBest(endDate, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
-          endYear = parsedDate.get(ChronoField.YEAR)
-      
-          if (parsedDate instanceof LocalDateTime) {
-            // assume UTC
-            ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
-            // re-evaluate year in off-chance year was affected by zone id
-            endYear = parsedDateUTC.get(ChronoField.YEAR)
-          }
-        }
-        
-      if (!endDateAnlysis.validSearchFormat && endDateAnlysis.precision == ChronoUnit.YEARS.toString()) {
+      String endDate = temporalBounding.endDate as String
+      // paleo dates can be longs
+      endYear = parsedYear(endDate)
+      // invalid Format
+      if (endDateAnlysis.validSearchFormat == false && endDateAnlysis.precision == ChronoUnit.YEARS.toString()) {
         temporalBounding.endDate = null
       }
     }
+    
+    //Update begin and end dates & years based on instant value if date range is 'INSTANT'
+    // ToDo this definitely need to be reviewed (can't see much in too it till i see such data)
+    // ToDo what if the precision is days
+    def range = temporalAnlysis.range as Map
+    def instant = temporalAnlysis.instant as Map
+    if(range.descriptor == 'INSTANT'){
+      if(instant.validSearchFormat==false && instant.precision == ChronoUnit.YEARS.toString()){
+        beginYear = parsedYear(temporalBounding.instant as String)
+      } else {
+        temporalBounding.beginDate = temporalBounding.instant
+        beginYear = parsedYear(temporalBounding.instant as String)
+      }
+    }
+    
+    // update year
     def begin = ['beginYear': beginYear]
     def end = ['endYear': endYear]
     temporalBounding.putAll(begin)
     temporalBounding.putAll(end)
     
     return temporalBounding
+  }
+  
+  // parse year
+  static Long parsedYear(String date) {
+    TemporalAccessor parsedDate = null
+    Long year
+    if (date.isLong()) {
+      year = Long.parseLong(date)
+    } else {
+      // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
+      parsedDate = PARSE_DATE_FORMATTER.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
+      year = parsedDate.get(ChronoField.YEAR)
+      
+      if (parsedDate instanceof LocalDateTime) {
+        // assume UTC
+        ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
+        // re-evaluate year in off-chance year was affected by zone id
+        year = parsedDateUTC.get(ChronoField.YEAR)
+      }
+    }
+    
+    return year
   }
   
   // helper functions
