@@ -34,7 +34,7 @@ export default class Content extends Component {
       <FlexRow
         items={[
           <Switch key="left">
-            <Route path="/onestop/collections" exact>
+            <Route path="/collections" exact>
               <Left
                 content={left}
                 width={leftWidth}

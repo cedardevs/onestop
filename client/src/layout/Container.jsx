@@ -32,7 +32,7 @@ export default class Container extends Component {
     } = this.props
     const earth = (
       <Switch key={'earth-switch'}>
-        <Route path="/onestop" exact>
+        <Route path="/" exact>
           <Earth key={'earth'} />
         </Route>
       </Switch>

@@ -104,7 +104,7 @@ export default class Root extends Component {
     const header = (
       <div>
         <BannerContainer />
-        <Route path="/onestop">
+        <Route path="/">
           <HeaderContainer />
         </Route>
         {this.state.browserWarning ? this.unsupportedBrowserWarning() : <div />}
@@ -117,13 +117,13 @@ export default class Root extends Component {
     const middle = (
       <div style={{width: '100%'}}>
         <Switch>
-          <Route path="/onestop" exact />
-          <Route path="/onstop">
+          <Route path="/" exact />
+          <Route path="/">
             <LoadingBarContainer />
           </Route>
         </Switch>
         <Switch>
-          <Route path="/onestop/collections" exact>
+          <Route path="/collections" exact>
             {/*TODO: replace this with ArcGIS map?*/}
             <MapContainer selection={true} features={false} />
           </Route>
@@ -131,22 +131,22 @@ export default class Root extends Component {
 
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
-          <Route path="/onestop" exact>
+          <Route path="/" exact>
             <LandingContainer />
           </Route>
 
-          <Route path="/onestop/collections/details">
+          <Route path="/collections/details">
             {/*TODO parameterize this path!*/}
             <DetailContainer />
           </Route>
 
-          <Route path="/onestop/collections">
+          <Route path="/collections">
             <Result>
               <Switch>
-                <Route path="/onestop/collections" exact>
+                <Route path="/collections" exact>
                   <CollectionsContainer />
                 </Route>
-                <Route path="/onestop/collections/granules/:id">
+                <Route path="/collections/granules/:id">
                   {/*TODO parameterize this path!*/}
                   <GranuleListContainer />
                 </Route>
@@ -154,14 +154,14 @@ export default class Root extends Component {
             </Result>
           </Route>
 
-          <Route path="/onestop/about">
+          <Route path="/about">
             <AboutContainer />
           </Route>
-          <Route path="/onestop/help">
+          <Route path="/help">
             <Help />
           </Route>
 
-          <Route path="/onestop/error">
+          <Route path="/error">
             <ErrorContainer />
           </Route>
         </Switch>

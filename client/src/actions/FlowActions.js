@@ -30,7 +30,7 @@ export const showCollections = history => {
     const query = encodeQueryString(getState())
     if (!_.isEmpty(query)) {
       const locationDescriptor = {
-        pathname: '/onestop/collections',
+        pathname: '/collections',
         search: `?${query}`,
       }
       dispatch(history.push(locationDescriptor))
@@ -62,7 +62,7 @@ export const showGranulesList = (history, id) => {
   return (dispatch, getState) => {
     const query = encodeQueryString(getState())
     const locationDescriptor = {
-      pathname: `/onestop/collections/granules/${id}`,
+      pathname: `/collections/granules/${id}`,
       search: `?${query}`,
     }
     dispatch(history.push(locationDescriptor))
@@ -87,7 +87,7 @@ export const showDetails = (history, id) => {
   return (dispatch, getState) => {
     const query = encodeQueryString(getState())
     const locationDescriptor = {
-      pathname: `/onestop/collections/details/${id}`,
+      pathname: `/collections/details/${id}`,
       search: _.isEmpty(query) ? null : `?${query}`,
     }
     dispatch(history.push(locationDescriptor))
@@ -106,7 +106,7 @@ export const loadDetails = path => {
 export const showHome = history => {
   return dispatch => {
     dispatch(updateSearch())
-    dispatch(history.push('/onestop'))
+    dispatch(history.push('/'))
     dispatch(clearCollections())
   }
 }

@@ -36,7 +36,7 @@ const body = (
   <Provider store={store}>
     <ConnectedRouter history={browserHistory}>
       <Switch>
-        <Route path="/onestop/sitemap.xml" exact onEnter={reload} />
+        <Route path="/sitemap.xml" exact onEnter={reload} />
         <RootContainer />
       </Switch>
     </ConnectedRouter>
@@ -103,8 +103,8 @@ ogUrlMetaTag.setAttribute('property', 'og:url')
 ogUrlMetaTag.setAttribute('content', `${rootUrl}`)
 document.head.appendChild(ogUrlMetaTag)
 
-const baseRef = document.createElement('base')
-baseRef.setAttribute('href', '/onestop/')
-document.head.appendChild(baseRef)
+// const baseRef = document.createElement('base')
+// baseRef.setAttribute('href', '/onestop/')
+// document.head.appendChild(baseRef)
 
 render(body, appDiv)
