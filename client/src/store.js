@@ -1,9 +1,7 @@
 import {createStore, applyMiddleware, compose} from 'redux'
-// import {routerMiddleware} from 'connected-react-router'
 import Immutable from 'seamless-immutable'
 import thunk from 'redux-thunk'
 import reducer from './reducers/reducer'
-// import history from './history'
 
 const getCompose = () => {
   if (
@@ -20,7 +18,6 @@ const store = createStore(
   reducer,
   Immutable(),
   composeEnhancers(applyMiddleware(thunk))
-  //composeEnhancers(applyMiddleware(thunk, routerMiddleware(hashHistory)))
 )
 
 
