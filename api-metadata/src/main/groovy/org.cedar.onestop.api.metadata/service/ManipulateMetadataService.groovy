@@ -122,8 +122,8 @@ class ManipulateMetadataService {
             }
             break
           default:
-            // Namespace didn't meet our checks, save as regular keywords only
-            log.info("Namespace didn't meet our checks")
+            // Namespace didn't meet our checks
+            log.debug("Namespace didn't meet our checks")
         }
       }
     }
@@ -233,8 +233,8 @@ class ManipulateMetadataService {
     // ToDo what if the precision is days
     def range = temporalAnlysis.range as Map
     def instant = temporalAnlysis.instant as Map
-    if(range.descriptor == 'INSTANT'){
-      if(instant.validSearchFormat==false && instant.precision == ChronoUnit.YEARS.toString()){
+    if (range.descriptor == 'INSTANT') {
+      if (instant.validSearchFormat == false && instant.precision == ChronoUnit.YEARS.toString()) {
         beginYear = parsedYear(temporalBounding.instant as String)
       } else {
         temporalBounding.beginDate = temporalBounding.instant
