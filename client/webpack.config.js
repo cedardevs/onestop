@@ -95,6 +95,7 @@ module.exports = env => {
         isProd ? false : 'cheap-module-eval-source-map',
     devServer:
         isProd ? {} : {
+          publicPath: '/',
           historyApiFallback: true,
           disableHostCheck: true,
           hot: true,

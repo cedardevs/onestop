@@ -38,8 +38,6 @@ spec:
       - name: onestop-client
         image: cedardevs/onestop-client
         env:
-        - name: ONESTOP_CLIENT_ENDPOINT
-          value: onestop-client:80
         - name: ONESTOP_SEARCH_API_ENDPOINT
           value: onestop-api-search:8097
         - name: GEOPORTAL_ENDPOINT
