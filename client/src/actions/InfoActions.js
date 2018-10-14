@@ -28,7 +28,7 @@ export const setTotalCounts = counts => {
 
 export const fetchInfo = () => {
   return (dispatch, getState) => {
-    const url = getApiPath(getState()) + '/actuator/info'
+    const url = getApiPath() + '/actuator/info'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
       .then(response => response.json())
@@ -39,8 +39,8 @@ export const fetchInfo = () => {
 
 export const fetchCounts = () => {
   return (dispatch, getState) => {
-    const urlCollectionCounts = getApiPath(getState()) + '/collection'
-    const urlGranuleCounts = getApiPath(getState()) + '/granule'
+    const urlCollectionCounts = getApiPath() + '/collection'
+    const urlGranuleCounts = getApiPath() + '/granule'
     const params = {headers: {Accept: 'application/json'}}
     const json = {}
     fetch(urlCollectionCounts, params)

@@ -100,7 +100,7 @@ module.exports = env => {
           disableHostCheck: true,
           hot: true,
           proxy: {
-            '/api/*': {
+            '/onestop/api/*': {
               target: `${env.URL_API_SEARCH}/`,
               secure: false,
             },

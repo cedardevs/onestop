@@ -20,7 +20,7 @@ export const clearConfig = () => {
 
 export const fetchConfig = () => {
   return (dispatch, getState) => {
-    const url = getApiPath(getState()) + '/uiConfig'
+    const url = getApiPath() + '/uiConfig'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
       .then(response => response.json())

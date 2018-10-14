@@ -8,7 +8,7 @@ services:
     depends_on:
       - api-search
     environment:
-      - "ONESTOP_ENDPOINT=api-search:8097"
+      - "ONESTOP_SEARCH_API_ENDPOINT=api-search:8097"
 
   api-search:
     image: cedardevs/onestop-api-search:latest
