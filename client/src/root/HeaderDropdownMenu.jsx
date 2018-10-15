@@ -6,6 +6,7 @@ import cart from 'fa/cart-arrow-down.svg'
 import AnimateHeight from 'react-animate-height'
 import Button from '../common/input/Button'
 import FocusManager from '../common/FocusManager'
+import {FEATURE_CART, HEADER_DROPDOWN_FEATURES} from '../utils/featureUtils'
 const ANIMATION_DURATION = 200
 
 const styleExtraMenu = {
@@ -87,14 +88,18 @@ class HeaderDropdownMenu extends React.Component {
   }
 
   render() {
-    const {open, cartEnabled, abbreviatedNumberOfGranulesSelected} = this.props
+    const {
+      open,
+      featuresEnabled,
+      abbreviatedNumberOfGranulesSelected,
+    } = this.props
 
     const stylesSeparatorMerged = {
       ...styleSeparator,
       ...(open ? styleSeparatorOpen : {}),
     }
 
-    const shoppingCartMenuItem = (
+    const cartMenuItem = (
       <div key="cartMenuItem">
         <span style={styleCartText} role="alert">
           Files for download
@@ -111,10 +116,17 @@ class HeaderDropdownMenu extends React.Component {
       </div>
     )
 
-    const menuItems = []
-    if (cartEnabled) {
-      menuItems.push(shoppingCartMenuItem)
+    const potentialMenuItems = {
+      [FEATURE_CART]: cartMenuItem,
     }
+
+    const enabledMenuFeatures = featuresEnabled.filter(f =>
+      HEADER_DROPDOWN_FEATURES.includes(f)
+    )
+
+    const menuItems = enabledMenuFeatures.map(feature => {
+      return potentialMenuItems[feature]
+    })
 
     const extraMenuContent = (
       <div style={styleExtraMenuContent}>

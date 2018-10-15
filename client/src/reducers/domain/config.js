@@ -2,13 +2,14 @@ import Immutable from 'seamless-immutable'
 import {
   CLEAR_CONFIG,
   SET_CONFIG,
-  ENABLE_FEATURE,
+  TOGGLE_FEATURES,
 } from '../../actions/ConfigActions'
 
 export const initialState = Immutable({
   banner: {},
   featured: [],
-  shoppingCartEnabled: false,
+  featuresEnabled: [],
+  headerDropdownMenuFeatureAvailable: false,
 })
 
 export const config = (state = initialState, action) => {
@@ -19,9 +20,11 @@ export const config = (state = initialState, action) => {
     case CLEAR_CONFIG:
       return initialState
 
-    case ENABLE_FEATURE:
+    case TOGGLE_FEATURES:
       return Immutable.merge(state, {
-        shoppingCartEnabled: action.shoppingCartEnabled,
+        featuresEnabled: action.featuresEnabled,
+        headerDropdownMenuFeatureAvailable:
+          action.headerDropdownMenuFeatureAvailable,
       })
 
     default:

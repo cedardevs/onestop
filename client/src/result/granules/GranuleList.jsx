@@ -52,18 +52,17 @@ export default class GranuleList extends Component {
 
   handleSelectAll = () => {
     const {results, selectVisibleGranules} = this.props
-    console.log('results:', results)
   }
 
   propsForResult = (item, itemId) => {
-    const {shoppingCartEnabled} = this.props
+    const {featuresEnabled} = this.props
 
     return {
       showLinks: true,
       showTimeAndSpace: true,
       handleCheckboxChange: this.handleCheckboxChange,
       checkGranule: this.isGranuleSelected(itemId),
-      shoppingCartEnabled: shoppingCartEnabled,
+      featuresEnabled: featuresEnabled,
     }
   }
 

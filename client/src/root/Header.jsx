@@ -123,7 +123,14 @@ class Header extends React.Component {
   }
 
   render() {
+    const {headerDropdownMenuFeatureAvailable} = this.props
     const {focusingSkipLink} = this.state
+
+    const headerDropDownMenuListItem = headerDropdownMenuFeatureAvailable ? (
+      <li style={styleLinkListItem(false, true)}>
+        <HeaderDropdownMenuButtonContainer />
+      </li>
+    ) : null
 
     const menuContent = (
       <ul style={styleLinkList}>
@@ -137,14 +144,14 @@ class Header extends React.Component {
             About Us
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, false)}>
+        <li
+          style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}
+        >
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, true)}>
-          <HeaderDropdownMenuButtonContainer />
-        </li>
+        {headerDropDownMenuListItem}
       </ul>
     )
 

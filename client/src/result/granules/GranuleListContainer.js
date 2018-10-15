@@ -25,7 +25,7 @@ const mapStateToProps = state => {
     returnedHits: (granules && Object.keys(granules).length) || 0,
     loading: state.ui.loading ? 1 : 0,
     selectedGranules: state.cart.granules.selectedGranules,
-    shoppingCartEnabled: state.domain.config.shoppingCartEnabled,
+    featuresEnabled: state.domain.config.featuresEnabled,
   }
 }
 

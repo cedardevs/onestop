@@ -10,6 +10,7 @@ import {boxShadow} from '../../common/defaultStyles'
 import A from '../../common/link/Link'
 import {fontFamilySerif} from '../../utils/styleUtils'
 import Checkbox from '../../common/input/Checkbox'
+import {FEATURE_CART} from '../../utils/featureUtils'
 
 const styleResult = {
   minHeight: '15.5em',
@@ -241,7 +242,7 @@ class ListResult extends React.Component {
       showTimeAndSpace,
       handleCheckboxChange,
       checkGranule,
-      shoppingCartEnabled,
+      featuresEnabled,
     } = this.props
 
     const styleFocused = {
@@ -269,7 +270,7 @@ class ListResult extends React.Component {
       </h2>,
     ]
 
-    const selectGranuleCheckbox = shoppingCartEnabled ? (
+    const selectGranuleCheckbox = featuresEnabled.includes(FEATURE_CART) ? (
       <Checkbox
         key={`checkbox-${itemId}`}
         title={`Mark ${item.title} as file to download`}

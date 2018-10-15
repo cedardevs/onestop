@@ -76,7 +76,7 @@ data:
       banner:
         message: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
       enabledFeatureToggles:
-        - featureName: shoppingCart
+        - featureName: cart
       featured:
           - title: GOES Data
             searchTerm: '"Gridded Satellite GOES"'

@@ -61,7 +61,6 @@ export default class Cart extends React.Component {
   }
 
   handleSelectItem = e => {
-    console.log('handleSelectItem: e = ', e)
   }
 
   handleShowMore = () => {

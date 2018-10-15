@@ -112,7 +112,6 @@ export default class CartItem extends React.Component {
   }
 
   handleExpandableToggle = event => {
-    console.log('handleExpandableToggle:event = ', event)
     this.setState(prevState => {
       return {
         ...prevState,

@@ -7,7 +7,7 @@ const mapStateToProps = state => {
     showLeft: state.ui.layout.showLeft,
     leftOpen: state.ui.layout.leftOpen,
     showRight: state.ui.layout.showRight,
-    shoppingCartEnabled: state.domain.config.shoppingCartEnabled,
+    featuresEnabled: state.domain.config.featuresEnabled,
   }
 }
 

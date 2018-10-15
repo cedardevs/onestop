@@ -14,7 +14,7 @@ const mapStateToProps = state => {
 
   return {
     open: state.ui.layout.headerMenuOpen,
-    cartEnabled: state.domain.config.shoppingCartEnabled,
+    featuresEnabled: state.domain.config.featuresEnabled,
     abbreviatedNumberOfGranulesSelected: abbreviatedNumberOfGranulesSelected,
   }
 }
