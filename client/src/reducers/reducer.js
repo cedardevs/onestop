@@ -10,7 +10,6 @@ import config from './domain/config'
 import info from './domain/info'
 import results from './domain/results'
 
-import granuleDetails from './ui/granuleDetails'
 import loading from './ui/loading'
 import background from './ui/background'
 import layout from './ui/layout'
@@ -23,7 +22,6 @@ const domain = combineReducers({
 })
 
 const ui = combineReducers({
-  granuleDetails,
   loading,
   background,
   layout,
