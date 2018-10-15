@@ -13,13 +13,8 @@ export const api = (state = initialState, action) => {
 // SELECTORS
 
 export const getApiPath = state => {
-  const {host, path} = state.domain.api
-  if (!host || !path) {
-    const basePath =
-      typeof window !== 'undefined' ? window.location.pathname : '/onestop/'
-    return basePath + 'api'
-  }
-  return host + path + 'api'
+
+  return '/onestop/api'
 }
 
 export default api
