@@ -231,11 +231,6 @@
     },
     {
       "remove": {
-        "field": "accessionValues"
-      }
-    },
-    {
-      "remove": {
         "field": "topicCategories"
       }
     },
@@ -347,11 +342,6 @@
     {
       "remove": {
         "field": "presentationForm"
-      }
-    },
-    {
-      "remove": {
-        "field": "services"
       }
     },
     {

@@ -8,6 +8,8 @@ import spock.lang.Unroll
 class ManipulateMetadtaServiceTest extends Specification {
   def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
   def inputMap = [discovery: new JsonSlurper().parseText(inputMsg)] as Map
+  def analysisMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-analysis.json').text
+  def analysisMap = new JsonSlurper().parseText(analysisMsg) as Map
   def expectedResponsibleParties = [
       contacts  : [
           [
@@ -99,7 +101,11 @@ class ManipulateMetadtaServiceTest extends Specification {
       ]]
   
   def expectedGcmdKeywords = [
-      gcmdScienceServices     : [],
+      gcmdScienceServices     : [
+          'Oceans',
+          'Oceans > Ocean Temperature',
+          'Oceans > Ocean Temperature > Sea Surface Temperature'
+      ],
       gcmdScience             : [
           'Atmosphere',
           'Atmosphere > Atmospheric Temperature',
@@ -142,8 +148,6 @@ class ManipulateMetadtaServiceTest extends Specification {
   
   def "Create GCMD keyword lists" () {
     given:
-    def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
-    def inputMap = [discovery: new JsonSlurper().parseText(inputMsg)] as Map
     def gcmdKeywordMap = inputMap.discovery as Map
   
     when:
@@ -163,29 +167,112 @@ class ManipulateMetadtaServiceTest extends Specification {
 
     and: "should recreate keywords with out accession values"
     parsedKeywords.keywords.namespace != 'NCEI ACCESSION NUMBER'
-    parsedKeywords.keywords == expectedKeywords.keywords as Map
+    parsedKeywords.keywords.size() == expectedKeywords.keywords.size()
   }
   
   def "Create contacts, publishers and creators from responsibleParties" () {
     given:
-    def responsiblePartiesMap = inputMap.discovery.responsibleParties
+    def partyMap = inputMap.discovery.responsibleParties as Map
     
     when:
-    Map responsibleParties = ManipulateMetadataService.parseDataResponsibleParties(responsiblePartiesMap as Map)
+    Map partiesMap = ManipulateMetadataService.parseDataResponsibleParties(partyMap)
     
     then:
-    responsibleParties.contacts == expectedResponsibleParties.contacts as Set
-    responsibleParties.creators == expectedResponsibleParties.creators as Set
-    responsibleParties.publishers == expectedResponsibleParties.publishers as Set
+    partiesMap.contacts == expectedResponsibleParties.contacts as Set
+    partiesMap.creators == expectedResponsibleParties.creators as Set
+    partiesMap.publishers == expectedResponsibleParties.publishers as Set
+  }
+  
+  def "Create start and end year"() {
+    given:
+    def temporalAnalysis = analysisMap.temporalBounding as Map
+    def temporalBounding = inputMap.discovery.temporalBounding as Map
+    
+    when:
+    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
+    
+    then: "start year is added"
+    temporalBoundingMsg.beginYear == 2002
+  
+    and: "end year is added"
+    temporalBoundingMsg.endYear == 2011
+
+  }
+  
+  def "paleo date captured and set an incoming date to null"() {
+    given:
+    def temporalAnalysis = analysisMap.temporalBounding as Map
+    def temporalBounding = inputMap.discovery.temporalBounding as Map
+    // reset values
+    temporalAnalysis.begin.validSearchFormat = false
+    temporalAnalysis.end.validSearchFormat = false
+    temporalAnalysis.begin.precision = 'Years'
+    temporalAnalysis.end.precision = 'Years'
+    
+    when:
+    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
+    
+    then: "add start year and update start date to null"
+    temporalBoundingMsg.beginYear == 2002
+    temporalBoundingMsg.beginDate == null
+    
+    and: "create end year and update date to null"
+    temporalBoundingMsg.endYear == 2011
+    temporalBoundingMsg.endDate == null
+    
+  }
+  
+  def "Update begin and end dates & years based on instant value "() {
+    given:
+    def temporalAnalysis = analysisMap.temporalBounding as Map
+    def temporalBounding = inputMap.discovery.temporalBounding as Map
+    // reset iso values
+    temporalBounding.beginDate = null
+    temporalBounding.endDate = null
+    temporalBounding.instant = '2001-01-01'
+    temporalAnalysis.instant.validSearchFormat = false
+    temporalAnalysis.range.descriptor = "INSTANT"
+
+    when:
+    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
+
+    then: "add start year and update start date to null"
+    temporalBoundingMsg.beginYear == 2001
+    temporalBoundingMsg.beginDate == '2001-01-01'
+    
+  }
+  
+  def "Update dates & years based on instant value when precision is year "() {
+    given:
+    def temporalAnalysis = analysisMap.temporalBounding as Map
+    def temporalBounding = inputMap.discovery.temporalBounding as Map
+    // reset iso values
+    temporalBounding.beginDate = null
+    temporalBounding.endDate = null
+    temporalBounding.instant = '2001-01-01'
+    temporalAnalysis.instant.validSearchFormat = false
+    temporalAnalysis.range.descriptor = "INSTANT"
+    temporalAnalysis.instant.precision = 'Years'
+  
+    when:
+    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
+    
+    then: "add start year and update start date to null"
+    temporalBoundingMsg.beginYear == 2001
+    temporalBoundingMsg.beginDate == null
+    
   }
   
   def "new record is ready for onestop" () {
     given:
-    def recordMap = inputMap.discovery as Map
+    def analysisMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-analysis.json').text
+    def analysisMap = new JsonSlurper().parseText(analysisMsg) as Map
+    def discovery = inputMap.discovery as Map
+    def analysis = analysisMap as Map
     def expectedMap = inputMap.discovery as Map
     
     when:
-    def metadata = ManipulateMetadataService.oneStopReady(recordMap)
+    def metadata = ManipulateMetadataService.oneStopReady(discovery, analysis)
     expectedMap.remove("keywords")
     expectedMap.remove("services")
     expectedMap.remove("responsibleParties")

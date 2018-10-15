@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
 
+import java.time.temporal.ChronoUnit
+
 
 @Slf4j
 @Service
@@ -33,8 +35,8 @@ class KafkaConsumerService {
         def id = it.key()
         def messageMap = slurper.parseText(it.value() as String) as Map
         validateMessages(messageMap) ?
-            [id: id , discovery: messageMap.discovery ] :
-              null
+            [id: id, discovery: messageMap.discovery, analysis: messageMap.analysis] :
+            null
         
       }
       valuesIds.removeAll(Collections.singleton(null))
@@ -43,23 +45,37 @@ class KafkaConsumerService {
     } catch (Exception e) {
       log.error("Unexpected error", e)
     }
-  
+    
   }
   
   Boolean validateMessages(Map messageMap) {
-      def analysis = messageMap.analysis
-      def isValid = false
-      def title = analysis.titles['title'] as Map
-      def fileIdentifier = analysis.identification['fileIdentifier'] as Map
-      def hierarchyLevel = analysis.identification['hierarchyLevelName'] as Map
-    log.info("analysis: ${analysis as Map}")
-      if (!title.exists || !fileIdentifier.exists) {
-        return isValid
-      } else if(!hierarchyLevel.matchesIdentifiers && fileIdentifier.fileIdentifierString){
-        return isValid
-      } else {
-        isValid = true
-        return isValid
-      }
+    def analysis = messageMap.analysis
+    def isValid = false
+    def title = analysis.titles['title'] as Map
+    def fileIdentifier = analysis.identification['fileIdentifier'] as Map
+    def hierarchyLevel = analysis.identification['hierarchyLevelName'] as Map
+    def beginDate = analysis.temporalBounding['begin'] as Map
+    def endDate = analysis.temporalBounding['end'] as Map
+    def range = analysis.temporalBounding['range'] as Map
+    //validate record
+    if (!title.exists || !fileIdentifier.exists) {
+      log.info("Missing title or fileIdentifier detected")
+      return isValid
+    } else if (!hierarchyLevel.matchesIdentifiers && fileIdentifier.fileIdentifierString == null) {
+      log.info("Mismatch between metadata type and corresponding identifiers detected")
+      return isValid
+    } else if (!beginDate.exists && !endDate.exists && range.descriptor == 'INVALID') {
+      log.info("date does not exist")
+      return isValid
+    } else if (!beginDate.validSearchFormat && beginDate.precision != ChronoUnit.YEARS.toString()) {
+      log.info("inValid begin date format")
+      return isValid
+    } else if (!endDate.validSearchFormat && endDate.precision != ChronoUnit.YEARS.toString()) {
+      log.info("inValid end date format: ${ChronoUnit.YEARS.toString()}")
+      return isValid
+    } else {
+      isValid = true
+      return isValid
+    }
   }
 }

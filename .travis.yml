@@ -35,7 +35,7 @@ env:
   - secure: THhIjVJUKOwPeXlo9plvx8VT91rzbpb2kJfFAjrXjl2IN62MCsJJqbN6+HVghab8N0nExOvWQHlSXGW7th87/UxuDlDR8mOEufIfVm4xyr7/nizygHEYO+inzSxDJbc3wFDc6IgMOOeWkPeH1ck1Pj9Wx7AxuWFbzjGUJiDPH8/SIxmzYKrx5SsMArguURER9sw4838gaqm6RuloroAqWk/tf6aRUUdBNeHU2pDwR9YRi1ygWI3Cgd/0MWlHoZIf3BF3aYOcFwKCKbrCNgVqZj6mPY9uqot4p5l6/5oMPKAkukT+qEtg67nqwcLiDr00elf1fWriV8zSJxileI438dwtBKpgQPmgn3mMHZfS7mjG2w42JNUR/hq58A8A93i+wrETgcRlIWaOBH3rXK97rW/+axEh93Aqze06+jPsqwDtuT0CxWqzFoaMdkLGgqlIKaB93N80bWwxsYSCiL7APR069J5110yV+6svhBRrd6kBJsQHYGbZtV6tOsNIKtp1Dra2CEb91Vo1Ls9GYIQoPhvjNj9Ns0W1+ZJ0nWhaPofB/iqkmZXih8sFIAeRvB9CDhWwq2crNYuksAbYRWd6RbYqLPL1oROuEZCtGhDqh/3co3w1lroBp+YjaMFV+5DMdE7suVc38UthX/K8y2frkCKUCUg9O80okwvIVYDhJOc=
 install: true
 script:
-- travis_wait 20; if [[ "$TRAVIS_BRANCH" == 'master' ]] || [[ "$TRAVIS_BRANCH" == "release/*" ]] ||
+- if [[ "$TRAVIS_BRANCH" == 'master' ]] || [[ "$TRAVIS_BRANCH" == "release/*" ]] ||
   [[ "$TRAVIS_BRANCH" == v* ]]; then echo "Calling
   publish as part of build for $TRAVIS_BRANCH"; ./gradlew build publish --scan --stacktrace;
   else echo "Calling build without publish for $TRAVIS_BRANCH"; ./gradlew build --scan
