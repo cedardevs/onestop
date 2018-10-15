@@ -34,7 +34,7 @@ class ManipulateMetadataService {
     
     // drop fields
     discovery.remove("responsibleParties")
-    discovery.remove("services")
+    discovery.services = [] // this needs to be in place for as long as the manual upload is around
     return discovery
   }
   
@@ -130,6 +130,7 @@ class ManipulateMetadataService {
     
     return [
         keywords                : keywords,
+        accessionValues         : [],  // this needs to be in place for as long as the manual upload is around
         gcmdScienceServices     : gcmdScienceServices,
         gcmdScience             : gcmdScience,
         gcmdLocations           : gcmdLocations,
