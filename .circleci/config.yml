@@ -5,9 +5,9 @@
 version: 2
 jobs:
   build:
-    docker:
+    machine: true
       # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+      #- image: circleci/openjdk:8-jdk
 
       # Specify stream dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -23,7 +23,7 @@ jobs:
     steps:
       - checkout
 
-      - setup_remote_docker
+      #- setup_remote_docker
 
       # Download and cache dependencies
       - restore_cache:
