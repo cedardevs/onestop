@@ -3,8 +3,70 @@
 [![CircleCI](https://circleci.com/gh/cedardevs/psi.svg?style=svg)](https://circleci.com/gh/cedardevs/psi)
 [![codecov](https://codecov.io/gh/cedardevs/psi/branch/master/graph/badge.svg?token=mpaqa2QKdv)](https://codecov.io/gh/cedardevs/psi)
 
-The purpose of this project is to build a system which can both store and run processing workflows on the metadata
-related to every file ingested and archived by NOAA's National Centers for Environmental Information (NCEI). 
+The purpose of this project is to build a system which can store metadata related to every file ingested and archived 
+by NOAA's National Centers for Environmental Information (NCEI), to enable stream processing workflows on that metadata,
+and to feed it into downstream client applications for search, analysis, etc.
+
+## Components
+
+The project consists of two Java-based microservices, backed by a Kafka cluster.
+
+### Registry
+
+#### Purpose
+
+The [registry](registry/) hosts the public API of the system and stores its persistent state. Specifically, it 
+serves several basic purposes:
+
+1. Receive metadata input via HTTP and send them to the appropriate Kafka topics
+1. Use [Kafka Streams](https://docs.confluent.io/current/streams/index.html) to materialize state stores of both 
+raw input and the values parsed from it (by the Stream Manager component)
+1. Use [interactive queries](https://docs.confluent.io/current/streams/developer-guide/interactive-queries.html)
+to support retrieval of all stored metadata via HTTP.
+
+#### Requirements
+
+- Java: 8+
+- Storage:
+    - Each node requires a local file system in which to store the current state of each entity
+    - File system should *not* be shared between nodes
+    - No need to replicate or backup this storage as all data can be re-materialized from Kafka
+    - Volume grows linearly with the number of inventoried entities
+- Network Connectivity:
+    - Initiates connections to the Kafka cluster
+    - Receives connections from API clients (e.g. metadata sources)
+    
+#### Config
+
+| Environment Variable    | Importance | Required? | Default            | Description |
+| ----------------------- | ---------- | --------- | ------------------ | ----------- |
+| KAFKA_BOOTSTRAP_SERVERS | High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
+| STATE_DIR               | High       | No        | /tmp/kafka-streams | Path to the directory under which local state should be stored |
+| PUBLISHING_INTERVAL_MS  | Low        | No        | 300000 (5 minutes) | Frequency with which check for changes in entity publish status |
+  
+
+### Stream Manager
+
+#### Purpose
+
+The stream manager processes all the metadata that passes through the inventory management system. Metadata that is
+not yet well-formed (i.e. in ISO-19115 XML format) is passed off to a Kafka topic to be transformed into well-formed
+metadata via domain-specific logic. Once the metadata is well formed, discovery information if parsed out of it, and
+that discovery information is then analyzed. All resulting info is then sent back to the registry for storage.
+
+
+#### Requirements
+
+- Java: 8+
+- Storage: None
+- Network Connectivity:
+    - Initiates connections to the Kafka cluster
+    
+#### Config
+
+| Environment Variable    | Importance | Required? | Default            | Description |
+| ----------------------- | ---------- | --------- | ------------------ | ----------- |
+| IM_BOOTSTRAP_SERVERS    | High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
 
 ## Deployment
 
