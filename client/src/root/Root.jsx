@@ -19,12 +19,14 @@ import LandingContainer from '../landing/LandingContainer'
 import DetailContainer from '../detail/DetailContainer'
 import Help from '../common/info/Help'
 import AboutContainer from '../common/info/AboutContainer'
+import CartContainer from '../cart/CartContainer'
 
 import LoadingBarContainer from '../loading/LoadingBarContainer'
 
 import FooterContainer from './FooterContainer'
 
 import {COLOR_SECONDARY_DARK} from '../common/defaultStyles'
+import {FEATURE_CART} from '../utils/featureUtils'
 
 const styleBrowserWarning = {
   background: COLOR_SECONDARY_DARK,
@@ -99,7 +101,7 @@ export default class Root extends Component {
   }
 
   render() {
-    const {showLeft, leftOpen, showRight} = this.props
+    const {showLeft, leftOpen, showRight, featuresEnabled} = this.props
 
     const header = (
       <div>
@@ -113,6 +115,11 @@ export default class Root extends Component {
 
     const left = leftOpen ? <FiltersContainer /> : <FiltersHiddenContainer />
     const leftWidth = leftOpen ? '20em' : '2em'
+    const cart = featuresEnabled.includes(FEATURE_CART) ? (
+      <Route path="/cart">
+        <CartContainer />
+      </Route>
+    ) : null
 
     const middle = (
       <div style={{width: '100%'}}>
@@ -157,9 +164,12 @@ export default class Root extends Component {
           <Route path="/about">
             <AboutContainer />
           </Route>
+
           <Route path="/help">
             <Help />
           </Route>
+
+          {cart}
 
           <Route path="/error">
             <ErrorContainer />

@@ -4,7 +4,10 @@ import {showHome} from '../actions/FlowActions'
 import {withRouter} from 'react-router'
 
 const mapStateToProps = state => {
-  return {}
+  return {
+    headerDropdownMenuFeatureAvailable:
+      state.domain.config.headerDropdownMenuFeatureAvailable,
+  }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component
 @ConfigurationProperties('ui')
 class UiConfig {
 
-  Boolean granuleDetails
   BannerConfig banner
   List<FeaturedConfig> featured
 
@@ -21,10 +20,16 @@ class UiConfig {
     String background
   }
 
-  static class FeaturedConfig {
+  static class FeaturedConfig { // featured datasets
     String title
     String searchTerm
     String imageUrl
+  }
+
+  List<FeatureToggles> enabledFeatureToggles
+
+  static class FeatureToggles {
+    String featureName
   }
 
 }

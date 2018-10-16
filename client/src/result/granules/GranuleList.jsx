@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import GranuleListLegend from './GranuleListLegend'
 import Button from '../../common/input/Button'
-import ListView from '../ListView'
+import ListView from '../../common/ListView'
 import GranuleListResult from './GranuleListResult'
 import {identifyProtocol} from '../../utils/resultUtils'
 import {boxShadow} from '../../common/defaultStyles'
@@ -14,7 +14,6 @@ const styleCenterContent = {
 }
 
 const styleGranuleListWrapper = {
-  color: 'black',
   maxWidth: '80em',
   width: '80em',
   boxShadow: boxShadow,
@@ -33,10 +32,37 @@ const styleShowMoreFocus = {
 }
 
 export default class GranuleList extends Component {
-  propsForResult = item => {
+  isGranuleSelected = itemId => {
+    const {selectedGranules} = this.props
+    const checkIt = Object.keys(selectedGranules).includes(itemId)
+    return checkIt
+  }
+
+  handleCheckboxChange = (itemId, item) => {
+    const {selectGranule, deselectGranule} = this.props
+    return checkbox => {
+      if (checkbox.checked) {
+        selectGranule(item, itemId)
+      }
+      else {
+        deselectGranule(itemId)
+      }
+    }
+  }
+
+  handleSelectAll = () => {
+    const {results, selectVisibleGranules} = this.props
+  }
+
+  propsForResult = (item, itemId) => {
+    const {featuresEnabled} = this.props
+
     return {
       showLinks: true,
       showTimeAndSpace: true,
+      handleCheckboxChange: this.handleCheckboxChange,
+      checkGranule: this.isGranuleSelected(itemId),
+      featuresEnabled: featuresEnabled,
     }
   }
 
@@ -54,6 +80,8 @@ export default class GranuleList extends Component {
     // keep track of used protocols in results to avoid unnecessary legend keys
     const usedProtocols = new Set()
     _.forEach(results, value => {
+      //
+
       _.forEach(value.links, link => {
         // if(link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess') {
         return usedProtocols.add(identifyProtocol(link))
@@ -84,6 +112,7 @@ export default class GranuleList extends Component {
           <ListView
             items={results}
             loading={!!loading}
+            resultsMessage={'Collection Files'}
             shown={returnedHits}
             total={totalHits}
             onItemSelect={selectCollection}

@@ -30,7 +30,7 @@ import './fonts/SourceSansPro-SemiBoldItalic.ttf'
 import {Route, Switch} from 'react-router'
 import {ConnectedRouter} from 'react-router-redux'
 
-const reload = () => window.location.reload();
+const reload = () => window.location.reload()
 
 const body = (
   <Provider store={store}>

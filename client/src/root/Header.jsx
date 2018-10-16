@@ -8,9 +8,15 @@ import HeaderLink from './HeaderLink'
 import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 
-import {SiteColors} from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
 import FlexRow from '../common/FlexRow'
+
+import HeaderDropdownMenuContainer from './HeaderDropdownMenuContainer'
+import HeaderDropdownMenuButtonContainer from './HeaderDropdownMenuButtonContainer'
+
+const styleWrapper = {
+  position: 'relative',
+}
 
 const styleHeader = {
   backgroundColor: '#222C37',
@@ -26,7 +32,7 @@ const styleHeaderFlexRow = {
 
 const styleNav = {
   flex: '1',
-  minWidth: '17em',
+  minWidth: '22em',
   display: 'flex',
   justifyContent: 'flex-end',
   marginTop: '1em',
@@ -48,6 +54,7 @@ const styleLinkListItem = (firstItem, lastItem) => {
       ? '0 0 0 0.309em'
       : firstItem ? '0 0.309em 0 0' : '0 0.309em 0 0.309em',
     borderRight: !lastItem ? '1px solid white' : 0,
+    display: 'inline-flex',
   }
 }
 
@@ -97,7 +104,7 @@ class Header extends React.Component {
     }
   }
 
-  handleFocus = e => {
+  handleFocusSkipLink = e => {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -106,7 +113,7 @@ class Header extends React.Component {
     })
   }
 
-  handleBlur = e => {
+  handleBlurSkipLink = e => {
     this.setState(prevState => {
       return {
         ...prevState,
@@ -116,7 +123,14 @@ class Header extends React.Component {
   }
 
   render() {
+    const {headerDropdownMenuFeatureAvailable} = this.props
     const {focusingSkipLink} = this.state
+
+    const headerDropDownMenuListItem = headerDropdownMenuFeatureAvailable ? (
+      <li style={styleLinkListItem(false, true)}>
+        <HeaderDropdownMenuButtonContainer />
+      </li>
+    ) : null
 
     const menuContent = (
       <ul style={styleLinkList}>
@@ -130,11 +144,14 @@ class Header extends React.Component {
             About Us
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, true)}>
+        <li
+          style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}
+        >
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
         </li>
+        {headerDropDownMenuListItem}
       </ul>
     )
 
@@ -174,8 +191,8 @@ class Header extends React.Component {
           styleHover={styleSkipLinkHover}
           styleFocus={styleSkipLinkFocus}
           text="Skip To Main Content"
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
+          onFocus={this.handleFocusSkipLink}
+          onBlur={this.handleBlurSkipLink}
           onClick={() => {
             document.getElementById('mainBlock').focus()
           }}
@@ -184,17 +201,20 @@ class Header extends React.Component {
     )
 
     return (
-      <div style={styleHeader}>
-        <FlexRow
-          style={styleHeaderFlexRow}
-          items={[
-            <FlexRow
-              key="insignia-and-search"
-              items={[ skipLink, insignia, search ]}
-            />,
-            menu,
-          ]}
-        />
+      <div style={styleWrapper}>
+        <div style={styleHeader}>
+          <FlexRow
+            style={styleHeaderFlexRow}
+            items={[
+              <FlexRow
+                key="insignia-and-search"
+                items={[ skipLink, insignia, search ]}
+              />,
+              menu,
+            ]}
+          />
+        </div>
+        <HeaderDropdownMenuContainer />
       </div>
     )
   }
