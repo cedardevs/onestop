@@ -20,6 +20,6 @@ export const getApiPath = state => {
     return basePath + 'api'
   }
   return host + path + 'api'
-
+}
 
 export default api
