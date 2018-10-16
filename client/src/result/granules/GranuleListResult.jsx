@@ -9,6 +9,8 @@ import FlexRow from '../../common/FlexRow'
 import {boxShadow} from '../../common/defaultStyles'
 import A from '../../common/link/Link'
 import {fontFamilySerif} from '../../utils/styleUtils'
+import Checkbox from '../../common/input/Checkbox'
+import {FEATURE_CART} from '../../utils/featureUtils'
 
 const styleResult = {
   minHeight: '15.5em',
@@ -64,11 +66,21 @@ const styleFocusDefault = {
   border: '.1em dashed white',
 }
 
-class ListResult extends React.Component {
-  constructor(props) {
-    super(props)
-  }
+const styleBadgeLink = {
+  textDecoration: 'none',
+  display: 'inline-flex',
+}
 
+const styleBadgeLinkFocused = {
+  outline: '2px dashed white',
+  outlineOffset: '0.105em',
+}
+
+const styleCheckboxLabel = {
+  width: '6em',
+}
+
+class ListResult extends React.Component {
   componentWillMount() {
     this.setState({
       focusing: false,
@@ -145,7 +157,8 @@ class ListResult extends React.Component {
           key={url}
           aria-labelledby={labelledBy}
           target="_blank"
-          style={{textDecoration: 'none', display: 'inline-flex'}}
+          style={styleBadgeLink}
+          styleFocus={styleBadgeLinkFocused}
         >
           <div style={util.styleBadge(protocol)} aria-hidden="true">
             {util.renderBadgeIcon(protocol)}
@@ -222,7 +235,15 @@ class ListResult extends React.Component {
   }
 
   render() {
-    const {itemId, item, showLinks, showTimeAndSpace} = this.props
+    const {
+      itemId,
+      item,
+      showLinks,
+      showTimeAndSpace,
+      handleCheckboxChange,
+      checkGranule,
+      featuresEnabled,
+    } = this.props
 
     const styleFocused = {
       ...(this.state.focusing ? styleFocusDefault : {}),
@@ -248,6 +269,18 @@ class ListResult extends React.Component {
         {item.title}
       </h2>,
     ]
+
+    const selectGranuleCheckbox = featuresEnabled.includes(FEATURE_CART) ? (
+      <Checkbox
+        key={`checkbox-${itemId}`}
+        title={`Mark ${item.title} as file to download`}
+        label={`Mark as file to download`}
+        styleLabel={styleCheckboxLabel}
+        id={itemId}
+        checked={checkGranule}
+        onChange={handleCheckboxChange(itemId, item)}
+      />
+    ) : null
 
     if (showLinks) {
       rightItems.push(this.renderLinks(item.links))
@@ -294,7 +327,7 @@ class ListResult extends React.Component {
       >
         <FlexRow
           style={{padding: '1.618em', flexDirection: 'row-reverse'}}
-          items={[ right, left ]}
+          items={[ selectGranuleCheckbox, right, left ]}
         />
       </div>
     )

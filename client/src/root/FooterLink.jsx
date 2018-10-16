@@ -13,6 +13,10 @@ const styleLinkHover = {
   textDecoration: 'underline',
 }
 
+const styleAFocus = {
+  outline: '2px dashed white',
+}
+
 class FooterLink extends React.Component {
   componentWillMount() {
     this.setState({
@@ -63,6 +67,7 @@ class FooterLink extends React.Component {
     return (
       <A
         style={styleLinkMerged}
+        styleFocus={styleAFocus}
         href={href}
         target={target ? target : null}
         title={title ? title : null}

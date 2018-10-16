@@ -184,6 +184,7 @@ class Checkbox extends Component {
       <div style={styleContainer}>
         <div
           role="checkbox"
+          title={this.props.title}
           aria-checked={this.state.checked}
           aria-label={this.props.label}
           aria-disabled={this.props.disabled}
@@ -210,7 +211,9 @@ class Checkbox extends Component {
           onChange={() => {}}
           style={styleInput}
         />
-        <label htmlFor={this.props.id}>{this.props.label}</label>
+        <label style={this.props.styleLabel} htmlFor={this.props.id}>
+          {this.props.label}
+        </label>
       </div>
     )
   }
