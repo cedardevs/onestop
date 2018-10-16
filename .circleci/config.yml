@@ -36,6 +36,7 @@ jobs:
       - run:
           name: Build
           command: ./gradlew build
+          no_output_timeout: 30m
 
       - run:
           name: Save test results
