@@ -112,15 +112,15 @@ class ManipulateMetadataService {
             }
             break
           default:
-            // Namespace didn't meet our checks
-            log.debug("Namespace didn't meet our checks")
+            // Namespace didn't meet our checks for known GCMD format
+            break
         }
       }
     }
     
     return [
         keywords                : keywords,
-        accessionValues         : [],  // this needs to be in place for as long as the manual upload is around
+        accessionValues         : [],  // FIXME this needs to be in place until we can use ES6 ignore_missing flags
         gcmdScienceServices     : gcmdScienceServices,
         gcmdScience             : gcmdScience,
         gcmdLocations           : gcmdLocations,
