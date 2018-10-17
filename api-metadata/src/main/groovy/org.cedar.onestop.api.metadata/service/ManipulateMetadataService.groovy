@@ -4,17 +4,7 @@ import groovy.util.logging.Slf4j
 import org.apache.commons.text.WordUtils
 import org.springframework.stereotype.Service
 
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatterBuilder
-import java.time.format.ResolverStyle
-import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalAccessor
-import java.time.temporal.TemporalQuery
 
 @Slf4j
 @Service
@@ -29,7 +19,7 @@ class ManipulateMetadataService {
     discovery.putAll(partyData)
     
     // update temporal Bounding
-    def temporalBounding = elasticDateInfo(discovery.temporalBounding, analysis.temporalBounding)
+    def temporalBounding = readyDatesForSearch(discovery.temporalBounding, analysis.temporalBounding)
     discovery.temporalBounding.putAll(temporalBounding)
     
     // drop fields
@@ -186,92 +176,75 @@ class ManipulateMetadataService {
     return [contacts: contacts, creators: creators, publishers: publishers]
   }
   
-  // handle 3 optional date formats in priority of full-parse option to minimal-parse options
-  static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
-      .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
-      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
-      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
-      .toFormatter()
-      .withResolverStyle(ResolverStyle.STRICT)
-  
-  static Map elasticDateInfo(Map temporalBounding, Map temporalAnlysis) {
-    /*
-    * validSearchFormat == false AND associated precision == ChronoUnit.YEARS.toString(), null
-    * */
-    def beginDateAnlysis = temporalAnlysis.begin as Map
-    def endDateAnlysis = temporalAnlysis.end as Map
-    TemporalAccessor parsedDate = null
-    Long beginYear
-    Long endYear
-    // begin date and year
-    if (!temporalBounding.beginDate) {
-      beginYear = null
-    } else {
-      String beginDate = temporalBounding.beginDate as String
-      // paleo dates can be longs
-      beginYear = parsedYear(beginDate)
-      // invalid Format
-      if (beginDateAnlysis.validSearchFormat == false && beginDateAnlysis.precision == ChronoUnit.YEARS.toString()) {
-        temporalBounding.beginDate = null
+  static Map readyDatesForSearch(Map temporalBounding, Map temporalAnalysis) {
+
+    def newTemporalBounding = [:]
+    newTemporalBounding.putAll(temporalBounding)
+
+    def beginDate, beginYear, endDate, endYear
+
+    // If bounding is actually an instant, set search fields accordingly
+    if(temporalAnalysis.range.descriptor == 'INSTANT') {
+      def instant = temporalAnalysis.instant
+      def year = parseYear(instant.utcDateTimeString)
+
+      // The following will all be the same regardless of precision:
+      beginDate = instant.utcDateTimeString // instants normalized to beginning of day
+      beginYear = year
+      endYear = year
+
+      // Add time and/or date to endDate based on precision
+      switch(instant.precision) {
+        case ChronoUnit.DAYS.toString():
+          // End of day
+          endDate = "${temporalBounding.instant}T23:59:59Z" as String
+          break
+        case ChronoUnit.YEARS.toString():
+          if(!instant.validSearchFormat) {
+            // Paleo date, so only return year value (null out dates)
+            beginDate = null
+            endDate = null
+          }
+          else {
+            // Last day of year + end of day
+            endDate = "${temporalBounding.instant}-12-31T23:59:59Z" as String
+          }
+          break
+        default:
+          // Precision is NANOS so use instant value as-is
+          endDate = instant.utcDateTimeString
+          break
       }
     }
-    
-    // end date and year
-    if (!temporalBounding.endDate) {
-      endYear = null
-    } else {
-      String endDate = temporalBounding.endDate as String
-      // paleo dates can be longs
-      endYear = parsedYear(endDate)
-      // invalid Format
-      if (endDateAnlysis.validSearchFormat == false && endDateAnlysis.precision == ChronoUnit.YEARS.toString()) {
-        temporalBounding.endDate = null
-      }
+    else {
+      def begin = temporalAnalysis.begin
+      def end = temporalAnalysis.end
+
+      // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
+      // use value from analysis block where dates are UTC datetime normalized
+      beginDate = begin.exists && begin.validSearchFormat == true ? begin.utcDateTimeString : null
+      endDate = end.exists && end.validSearchFormat == true ? end.utcDateTimeString : null
+      beginYear = parseYear(begin.utcDateTimeString)
+      endYear = parseYear(end.utcDateTimeString)
     }
-    
-    //Update begin and end dates & years based on instant value if date range is 'INSTANT'
-    // ToDo this definitely need to be reviewed (can't see much in too it till i see such data)
-    // ToDo what if the precision is days
-    def range = temporalAnlysis.range as Map
-    def instant = temporalAnlysis.instant as Map
-    if (range.descriptor == 'INSTANT') {
-      if (instant.validSearchFormat == false && instant.precision == ChronoUnit.YEARS.toString()) {
-        beginYear = parsedYear(temporalBounding.instant as String)
-      } else {
-        temporalBounding.beginDate = temporalBounding.instant
-        beginYear = parsedYear(temporalBounding.instant as String)
-      }
-    }
-    
-    // update year
-    def begin = ['beginYear': beginYear]
-    def end = ['endYear': endYear]
-    temporalBounding.putAll(begin)
-    temporalBounding.putAll(end)
-    
-    return temporalBounding
+
+    // Replace & add fields before returning
+    newTemporalBounding.put('beginDate', beginDate)
+    newTemporalBounding.put('beginYear', beginYear)
+    newTemporalBounding.put('endDate', endDate)
+    newTemporalBounding.put('endYear', endYear)
+    return newTemporalBounding
   }
-  
-  // parse year
-  static Long parsedYear(String date) {
-    TemporalAccessor parsedDate = null
-    Long year
-    if (date.isLong()) {
-      year = Long.parseLong(date)
-    } else {
-      // the "::" operator in Java8 is ".&" in groovy until groovy fully adopts "::"
-      parsedDate = PARSE_DATE_FORMATTER.parseBest(date, ZonedDateTime.&from as TemporalQuery, LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
-      year = parsedDate.get(ChronoField.YEAR)
-      
-      if (parsedDate instanceof LocalDateTime) {
-        // assume UTC
-        ZonedDateTime parsedDateUTC = parsedDate.atZone(ZoneId.of("UTC"))
-        // re-evaluate year in off-chance year was affected by zone id
-        year = parsedDateUTC.get(ChronoField.YEAR)
-      }
+
+  static Long parseYear(String utcDateTime) {
+    if(utcDateTime == 'UNDEFINED') {
+      return null
     }
-    
-    return year
+    else {
+      // Watch out for BCE years
+      return Long.parseLong(utcDateTime.substring(0, utcDateTime.indexOf('-', 1)))
+    }
+
   }
   
   // helper functions

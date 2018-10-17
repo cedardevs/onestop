@@ -1,15 +1,16 @@
 package org.cedar.onestop.api.metadata.service
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import spock.lang.Specification
 import spock.lang.Unroll
 
+import java.time.temporal.ChronoUnit
+
 @Unroll
-class ManipulateMetadtaServiceTest extends Specification {
+class ManipulateMetadataServiceTest extends Specification {
   def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
   def inputMap = [discovery: new JsonSlurper().parseText(inputMsg)] as Map
-  def analysisMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-analysis.json').text
-  def analysisMap = new JsonSlurper().parseText(analysisMsg) as Map
   def expectedResponsibleParties = [
       contacts  : [
           [
@@ -182,85 +183,29 @@ class ManipulateMetadtaServiceTest extends Specification {
     partiesMap.creators == expectedResponsibleParties.creators as Set
     partiesMap.publishers == expectedResponsibleParties.publishers as Set
   }
-  
-  def "Create start and end year"() {
-    given:
-    def temporalAnalysis = analysisMap.temporalBounding as Map
-    def temporalBounding = inputMap.discovery.temporalBounding as Map
-    
-    when:
-    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
-    
-    then: "start year is added"
-    temporalBoundingMsg.beginYear == 2002
-  
-    and: "end year is added"
-    temporalBoundingMsg.endYear == 2011
 
-  }
-  
-  def "paleo date captured and set an incoming date to null"() {
+  def "When #situation, expected temporal bounding generated"() {
     given:
-    def temporalAnalysis = analysisMap.temporalBounding as Map
-    def temporalBounding = inputMap.discovery.temporalBounding as Map
-    // reset values
-    temporalAnalysis.begin.validSearchFormat = false
-    temporalAnalysis.end.validSearchFormat = false
-    temporalAnalysis.begin.precision = 'Years'
-    temporalAnalysis.end.precision = 'Years'
-    
-    when:
-    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
-    
-    then: "add start year and update start date to null"
-    temporalBoundingMsg.beginYear == 2002
-    temporalBoundingMsg.beginDate == null
-    
-    and: "create end year and update date to null"
-    temporalBoundingMsg.endYear == 2011
-    temporalBoundingMsg.endDate == null
-    
-  }
-  
-  def "Update begin and end dates & years based on instant value "() {
-    given:
-    def temporalAnalysis = analysisMap.temporalBounding as Map
-    def temporalBounding = inputMap.discovery.temporalBounding as Map
-    // reset iso values
-    temporalBounding.beginDate = null
-    temporalBounding.endDate = null
-    temporalBounding.instant = '2001-01-01'
-    temporalAnalysis.instant.validSearchFormat = false
-    temporalAnalysis.range.descriptor = "INSTANT"
+    def parsedTime = timeMetadata
+    def analyzedTime = timeAnalysis
 
     when:
-    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
+    def newTimeMetadata = ManipulateMetadataService.readyDatesForSearch(parsedTime, analyzedTime)
 
-    then: "add start year and update start date to null"
-    temporalBoundingMsg.beginYear == 2001
-    temporalBoundingMsg.beginDate == '2001-01-01'
-    
-  }
-  
-  def "Update dates & years based on instant value when precision is year "() {
-    given:
-    def temporalAnalysis = analysisMap.temporalBounding as Map
-    def temporalBounding = inputMap.discovery.temporalBounding as Map
-    // reset iso values
-    temporalBounding.beginDate = null
-    temporalBounding.endDate = null
-    temporalBounding.instant = '2001-01-01'
-    temporalAnalysis.instant.validSearchFormat = false
-    temporalAnalysis.range.descriptor = "INSTANT"
-    temporalAnalysis.instant.precision = 'Years'
-  
-    when:
-    Map temporalBoundingMsg = ManipulateMetadataService.elasticDateInfo(temporalBounding, temporalAnalysis)
-    
-    then: "add start year and update start date to null"
-    temporalBoundingMsg.beginYear == 2001
-    temporalBoundingMsg.beginDate == null
-    
+    then:
+    JsonOutput.toJson(newTimeMetadata) == JsonOutput.toJson(expectedResult)
+
+    // Only include data that will be checked to cut down on size of below tables
+    where:
+    situation                                | timeMetadata                                                  | timeAnalysis                                                                                                                                                                 | expectedResult
+    'instant with days precision'            | [beginDate: '', endDate: '', instant: '1999-12-31']           | [instant: [exists: true, precision: ChronoUnit.DAYS.toString(), validSearchFormat: true, utcDateTimeString: '1999-12-31T00:00:00Z'], range:[descriptor: 'INSTANT']]          | [beginDate: '1999-12-31T00:00:00Z', endDate: '1999-12-31T23:59:59Z', instant: '1999-12-31', beginYear: 1999, endYear: 1999]
+    'non-paleo instant with years precision' | [beginDate: '', endDate: '', instant: '2000']                 | [instant: [exists: true, precision: ChronoUnit.YEARS.toString(), validSearchFormat: true, utcDateTimeString: '2000-01-01T00:00:00Z'], range:[descriptor: 'INSTANT']]         | [beginDate: '2000-01-01T00:00:00Z', endDate: '2000-12-31T23:59:59Z', instant: '2000', beginYear: 2000, endYear: 2000]
+    'paleo instant'                          | [beginDate: '', endDate: '', instant: '-1000000000']          | [instant: [exists: true, precision: ChronoUnit.YEARS.toString(), validSearchFormat: false, utcDateTimeString: '-1000000000-01-01T00:00:00Z'], range:[descriptor: 'INSTANT']] | [beginDate: null, endDate: null, instant: '-1000000000', beginYear: -1000000000, endYear: -1000000000]
+    'instant with nanos precision'           | [beginDate: '', endDate: '', instant: '2008-04-01T00:00:00Z'] | [instant: [exists: true, precision: ChronoUnit.NANOS.toString(), validSearchFormat: true, utcDateTimeString: '2008-04-01T00:00:00Z'], range:[descriptor: 'INSTANT']]         | [beginDate: '2008-04-01T00:00:00Z', endDate: '2008-04-01T00:00:00Z', instant: '2008-04-01T00:00:00Z', beginYear: 2008, endYear: 2008]
+    'non-paleo bounded range'                | [beginDate: '1900-01-01', endDate: '2009']                    | [begin: [exists: true, precision: ChronoUnit.DAYS.toString(), validSearchFormat: true, utcDateTimeString: '1900-01-01T00:00:00Z'], end: [exists: true, precision: ChronoUnit.YEARS.toString(), validSearchFormat: true, utcDateTimeString: '2009-12-31T23:59:59Z'], range:[descriptor: 'BOUNDED']]                  | [beginDate: '1900-01-01T00:00:00Z', endDate: '2009-12-31T23:59:59Z', beginYear: 1900, endYear: 2009]
+    'paleo bounded range'                    | [beginDate: '-2000000000', endDate: '-1000000000']            | [begin: [exists: true, precision: ChronoUnit.YEARS.toString(), validSearchFormat: false, utcDateTimeString: '-2000000000-01-01T00:00:00Z'], end: [exists: true, precision: ChronoUnit.YEARS.toString(), validSearchFormat: false, utcDateTimeString: '-1000000000-12-31T23:59:59Z'], range:[descriptor: 'BOUNDED']] | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000]
+    'ongoing range'                          | [beginDate: '1975-06-15T12:30:00Z', endDate: '']              | [begin: [exists: true, precision: ChronoUnit.NANOS.toString(), validSearchFormat: true, utcDateTimeString: '1975-06-15T12:30:00Z'], end: [exists: false, precision: 'UNDEFINED', validSearchFormat: 'UNDEFINED', utcDateTimeString: 'UNDEFINED'], range:[descriptor: 'ONGOING']]                                    | [beginDate: '1975-06-15T12:30:00Z', endDate: null, beginYear: 1975, endYear: null]
+    'undefined range'                        | [beginDate: null, endDate: null]                              | [begin: [exists: false, validSearchFormat: 'UNDEFINED', utcDateTimeString: 'UNDEFINED'], end: [exists: false, validSearchFormat: 'UNDEFINED', utcDateTimeString: 'UNDEFINED'], range:[descriptor: 'UNDEFINED']]                                                                                                     | [beginDate: null, endDate: null, beginYear: null, endYear: null]
   }
   
   def "new record is ready for onestop" () {
