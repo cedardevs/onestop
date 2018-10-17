@@ -49,6 +49,7 @@ class KafkaConsumerService {
   }
   
   Boolean validateMessages(Map messageMap) {
+    // FIXME add id to log messages to make them parseable
     def analysis = messageMap.analysis
     def isValid = false
     def title = analysis.titles['title'] as Map
@@ -56,7 +57,6 @@ class KafkaConsumerService {
     def hierarchyLevel = analysis.identification['hierarchyLevelName'] as Map
     def beginDate = analysis.temporalBounding['begin'] as Map
     def endDate = analysis.temporalBounding['end'] as Map
-    def range = analysis.temporalBounding['range'] as Map
     //validate record
     if (!title.exists || !fileIdentifier.exists) {
       log.info("Missing title or fileIdentifier detected")
@@ -64,14 +64,8 @@ class KafkaConsumerService {
     } else if (!hierarchyLevel.matchesIdentifiers && fileIdentifier.fileIdentifierString == null) {
       log.info("Mismatch between metadata type and corresponding identifiers detected")
       return isValid
-    } else if (!beginDate.exists && !endDate.exists && range.descriptor == 'INVALID') {
-      log.info("date does not exist")
-      return isValid
-    } else if (!beginDate.validSearchFormat && beginDate.precision != ChronoUnit.YEARS.toString()) {
-      log.info("inValid begin date format")
-      return isValid
-    } else if (!endDate.validSearchFormat && endDate.precision != ChronoUnit.YEARS.toString()) {
-      log.info("inValid end date format: ${ChronoUnit.YEARS.toString()}")
+    } else if (beginDate.utcDateTimeString == 'INVALID' || endDate.utcDateTimeString == 'INVALID') {
+      log.info("Invalid begin and/or end date")
       return isValid
     } else {
       isValid = true
