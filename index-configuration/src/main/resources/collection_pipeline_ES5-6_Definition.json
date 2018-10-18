@@ -229,7 +229,8 @@
           "updateFrequency",
           "presentationForm",
           "services"
-        ]
+        ],
+        "ignore_missing": true
       }
     },
     {
