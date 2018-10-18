@@ -258,6 +258,7 @@ export default class CartItem extends React.Component {
         key={'cartItemActionPane'}
         expanded={this.state.expanded}
         item={item}
+        itemId={itemId}
       />
     )
 

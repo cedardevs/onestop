@@ -6,7 +6,7 @@ import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 import {identifyProtocol} from '../utils/resultUtils'
 
-import mockCartItems from '../../test/cart/mockCartItems'
+// import mockCartItems from '../../test/cart/mockCartItems'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -122,7 +122,7 @@ export default class Cart extends React.Component {
 
         <div style={styleCartListWrapper}>
           <ListView
-            items={mockCartItems}
+            items={selectedGranules}
             loading={!!loading}
             resultsMessage={'Files for download'}
             shown={numShownItems}
