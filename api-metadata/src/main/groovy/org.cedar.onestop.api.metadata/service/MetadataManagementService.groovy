@@ -74,7 +74,7 @@ class MetadataManagementService {
   
       try {
         def type = discovery.parentIdentifier ? 'granule' : 'collection'
-        def source = ManipulateMetadataService.oneStopReady(discovery, analysis)
+        def source = InventoryManagerToOneStopUtil.reformatMessageForSearch(discovery, analysis)
         source.stagedDate = System.currentTimeMillis()
         def result = [
             id        : id,

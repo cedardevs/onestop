@@ -32,7 +32,7 @@ class KafkaConsumerService {
       def valuesIds = records.collect {
         def id = it.key()
         def messageMap = slurper.parseText(it.value() as String) as Map
-        validateMessages(messageMap, id) ?
+        InventoryManagerToOneStopUtil.validateMessage(messageMap, id) ?
             [id: id, discovery: messageMap.discovery, analysis: messageMap.analysis] :
             null
         
@@ -44,55 +44,5 @@ class KafkaConsumerService {
       log.error("Unexpected error", e)
     }
     
-  }
-  
-  Boolean validateMessages(Map messageMap, String id) {
-    def analysis = messageMap.analysis
-    def title = analysis.titles['title'] as Map
-    def fileIdentifier = analysis.identification['fileIdentifier'] as Map
-    def parentIdentifier = analysis.identification['parentIdentifier'] as Map
-    def beginDate = analysis.temporalBounding['begin'] as Map
-    def endDate = analysis.temporalBounding['end'] as Map
-
-    String failureMsg = "INVALID RECORD [ $id ]. VALIDATION FAILURES: "
-    def failures = []
-
-    // Validate record
-    if(!fileIdentifier.exists) {
-      failures.add('Missing fileIdentifier')
-    }
-    if(!title.exists) {
-      failures.add('Missing title')
-    }
-    if(messageMap.discovery.hierarchyLevelName == 'granule' && !parentIdentifier.exists) {
-      failures.add('Mismatch between metadata type and identifiers detected')
-    }
-    if(beginDate.utcDateTimeString == 'INVALID') {
-      failures.add('Invalid beginDate')
-    }
-    if(endDate.utcDateTimeString == 'INVALID') {
-      failures.add('Invalid endDate')
-    }
-
-    if(!failures) {
-      return true
-    }
-    else {
-      failureMsg += "[ ${failures.join(', ')} ]"
-      log.info(failureMsg)
-      return false
-    }
-
-
-//    } else if (!hierarchyLevel.matchesIdentifiers && fileIdentifier.fileIdentifierString == null) {
-//      log.info("Mismatch between metadata type and corresponding identifiers detected.")
-//      return isValid
-//    } else if (beginDate.utcDateTimeString == 'INVALID' || endDate.utcDateTimeString == 'INVALID') {
-//      log.info("Invalid begin and/or end date.")
-//      return isValid
-//    } else {
-//      isValid = true
-//      return isValid
-//    }
   }
 }
