@@ -3,7 +3,7 @@ import {boxShadow} from '../common/defaultStyles'
 import Button from '../common/input/Button'
 import remove from 'fa/remove.svg'
 import email from 'fa/envelope.svg'
-import {storageAvailable, removeGranule} from '../utils/localStorageUtil'
+import {storageAvailable, removeGranuleFromLocalStorage} from '../utils/localStorageUtil'
 
 const styleActionPanel = {
   display: 'flex',
@@ -52,7 +52,7 @@ const styleDeleteButtonFocus = styleButtonFocus('#851A11')
 
 export default class ActionPane extends React.Component {
   render() {
-    const {expanded, item, itemId} = this.props
+    const {expanded, item, itemId, deselectGranule} = this.props
 
     const emailButton = (
       <Button
@@ -85,10 +85,8 @@ export default class ActionPane extends React.Component {
         styleIcon={styleIcon}
         iconPadding={'0.309em'}
         onClick={() => {
-          console.log(`click on delete button: ${itemId}`)
           if(storageAvailable('localStorage')){
-              console.log("removing: " + itemId)
-              removeGranule(itemId)
+              deselectGranule(itemId)
           }
         }}
       />

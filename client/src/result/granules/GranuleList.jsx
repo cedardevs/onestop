@@ -8,7 +8,6 @@ import {identifyProtocol} from '../../utils/resultUtils'
 import {boxShadow} from '../../common/defaultStyles'
 import Meta from '../../helmet/Meta'
 
-import {storageAvailable, insertGranule, removeGranule} from '../../utils/localStorageUtil'
 
 const styleCenterContent = {
   display: 'flex',
@@ -44,17 +43,9 @@ export default class GranuleList extends Component {
     const {selectGranule, deselectGranule} = this.props
     return checkbox => {
       if (checkbox.checked) {
-          if(storageAvailable('localStorage')){
-            console.log("Inserting: " + itemId)
-            insertGranule(itemId, item)
-          }
         selectGranule(item, itemId)
       }
       else {
-          if(storageAvailable('localStorage')){
-              console.log("removing: " + itemId)
-              removeGranule(itemId)
-          }
         deselectGranule(itemId)
       }
     }

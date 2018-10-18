@@ -4,6 +4,7 @@ import {
   INSERT_SELECTED_GRANULE,
   REMOVE_MULTIPLE_SELECTED_GRANULES,
   REMOVE_SELECTED_GRANULE,
+  CLEAR_SELECTED_GRANULES,
 } from '../../actions/CartActions'
 
 export const initialState = Immutable({
@@ -31,6 +32,10 @@ export const info = (state = initialState, action) => {
     case REMOVE_MULTIPLE_SELECTED_GRANULES:
       //TODO: implement state transition
       return state
+    case CLEAR_SELECTED_GRANULES:
+      const newRemoveAllState = state.set('selectedGranules', null)
+      // delete state['selectedGranules']
+      return newRemoveAllState
     default:
       return state
   }

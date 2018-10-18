@@ -5,6 +5,8 @@ import CartItem from './CartItem'
 import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 import {identifyProtocol} from '../utils/resultUtils'
+import cancel from 'fa/ban.svg'
+
 
 // import mockCartItems from '../../test/cart/mockCartItems'
 
@@ -13,6 +15,19 @@ const SHOW_MORE_INCREMENT = 10
 const styleCenterContent = {
   display: 'flex',
   justifyContent: 'center',
+}
+
+const styleClearCartButton = {
+    fontSize: '0.618em',
+    display: 'inline-flex',
+    float: 'right',
+    marginRight: '5%',
+}
+
+const styleClearCartIcon = {
+    width: '1.618em',
+    height: '1.618em',
+    marginRight: '0.309em',
 }
 
 const styleCartListWrapper = {
@@ -44,6 +59,7 @@ export default class Cart extends React.Component {
           ? props.numberOfGranulesSelected
           : SHOW_MORE_INCREMENT,
     }
+    this.props = props
   }
 
   // handleExpandableToggle = event => {
@@ -55,9 +71,11 @@ export default class Cart extends React.Component {
   // }
 
   propsForResult = (item, itemId) => {
-    return {
-      // handleExpandableToggle: this.handleExpandableToggle
-    }
+    const {deselectGranule} = this.props
+    let resultProps = {}
+    // resultProps[deselectGranule] = deselectGranule
+      // resultProps[deselectGranule] = deselectGranule(item)
+    return {deselectGranule: deselectGranule}
   }
 
   handleSelectItem = e => {
@@ -82,7 +100,7 @@ export default class Cart extends React.Component {
   }
 
   render() {
-    const {loading, selectedGranules, numberOfGranulesSelected} = this.props
+    const {loading, selectedGranules, numberOfGranulesSelected, deselectAllGranules} = this.props
     const {numShownItems} = this.state
 
     // keep track of used protocols in results to avoid unnecessary legend keys
@@ -121,6 +139,15 @@ export default class Cart extends React.Component {
         <Meta title="File Access Cart" robots="noindex" />
 
         <div style={styleCartListWrapper}>
+          <Button
+              key="clearCartButton"
+              style={styleClearCartButton}
+              title={"Clear cart"}
+              text={"Clear cart"}
+              icon={cancel}
+              styleIcon={styleClearCartIcon}
+              onClick={deselectAllGranules}
+          />
           <ListView
             items={selectedGranules}
             loading={!!loading}

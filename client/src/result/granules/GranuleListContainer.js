@@ -9,6 +9,8 @@ import {
   removeSelectedGranule,
   removeMultipleSelectedGranules,
 } from '../../actions/CartActions'
+import {insertGranule, removeGranuleFromLocalStorage, getSelectedGranulesFromStorage} from '../../utils/localStorageUtil'
+
 import GranuleList from './GranuleList'
 
 import {withRouter} from 'react-router'
@@ -24,7 +26,7 @@ const mapStateToProps = state => {
     totalHits: totalGranules,
     returnedHits: (granules && Object.keys(granules).length) || 0,
     loading: state.ui.loading ? 1 : 0,
-    selectedGranules: state.cart.granules.selectedGranules,
+    selectedGranules: getSelectedGranulesFromStorage(state),
     featuresEnabled: state.domain.config.featuresEnabled,
   }
 }
@@ -36,12 +38,14 @@ const mapDispatchToProps = dispatch => {
       dispatch(fetchGranules(false))
     },
     selectGranule: (item, itemId) => {
+      insertGranule(itemId, item)
       dispatch(insertSelectedGranule(item, itemId))
     },
     selectVisibleGranules: (items, itemIds) => {
       dispatch(insertMultipleSelectedGranules(items, itemIds))
     },
     deselectGranule: itemId => {
+      removeGranuleFromLocalStorage(itemId)
       dispatch(removeSelectedGranule(itemId))
     },
     deselectVisibleGranules: itemIds => {

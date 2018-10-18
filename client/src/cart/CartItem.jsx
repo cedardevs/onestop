@@ -109,6 +109,8 @@ export default class CartItem extends React.Component {
   constructor(props) {
     super(props)
     this.state = {expanded: false}
+    this.props = props
+    const {deselectGranule} = this.props
   }
 
   handleExpandableToggle = event => {
@@ -253,12 +255,14 @@ export default class CartItem extends React.Component {
       />
     )
 
+    const {deselectGranule} = this.props
     const actionPane = (
       <ActionPane
         key={'cartItemActionPane'}
         expanded={this.state.expanded}
         item={item}
         itemId={itemId}
+        deselectGranule = {deselectGranule}
       />
     )
 

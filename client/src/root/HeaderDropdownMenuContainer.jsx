@@ -3,15 +3,13 @@ import HeaderDropdownMenu from './HeaderDropdownMenu'
 import {withRouter} from 'react-router'
 import {abbreviateNumber} from '../utils/readableUtils'
 import {setHeaderMenuOpen} from '../actions/LayoutActions'
+import {storageAvailable, getSelectedGranulesFromStorage} from '../utils/localStorageUtil'
 
 const mapStateToProps = state => {
-  const numberOfGranulesSelected = Object.keys(
-    state.cart.granules.selectedGranules
-  ).length
-  const abbreviatedNumberOfGranulesSelected = abbreviateNumber(
+  const numberOfGranulesSelected = Object.keys(getSelectedGranulesFromStorage(state)).length
+    const abbreviatedNumberOfGranulesSelected = abbreviateNumber(
     numberOfGranulesSelected
   )
-
   return {
     open: state.ui.layout.headerMenuOpen,
     featuresEnabled: state.domain.config.featuresEnabled,
