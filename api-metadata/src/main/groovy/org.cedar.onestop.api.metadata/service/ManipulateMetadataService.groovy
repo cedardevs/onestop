@@ -24,7 +24,7 @@ class ManipulateMetadataService {
     
     // drop fields
     discovery.remove("responsibleParties")
-    discovery.services = [] // this needs to be in place for as long as the manual upload is around
+    discovery.services = [] // FIXME this needs to be in place until we can use ES6 ignore_missing flags
     return discovery
   }
   
