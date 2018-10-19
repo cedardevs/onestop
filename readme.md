@@ -51,7 +51,7 @@ to support retrieval of all stored metadata via HTTP.
 
 The [stream manager](stream-manager) processes all the metadata that passes through the inventory management system. Metadata that is
 not yet well-formed (i.e. in ISO-19115 XML format) is passed off to a Kafka topic to be transformed into well-formed
-metadata via domain-specific logic. Once the metadata is well formed, discovery information if parsed out of it, and
+metadata via domain-specific logic. Once the metadata is well formed, discovery information is parsed out of it, and
 that discovery information is then analyzed. All resulting info is then sent back to the registry for storage.
 
 
