@@ -3,26 +3,191 @@
 [![CircleCI](https://circleci.com/gh/cedardevs/psi.svg?style=svg)](https://circleci.com/gh/cedardevs/psi)
 [![codecov](https://codecov.io/gh/cedardevs/psi/branch/master/graph/badge.svg?token=mpaqa2QKdv)](https://codecov.io/gh/cedardevs/psi)
 
-The purpose of this project is to build a system which can both store and run processing workflows on the metadata
-related to every file ingested and archived by NOAA's National Centers for Environmental Information (NCEI). 
+The purpose of this project is to build a system which can store metadata related to every file ingested and archived 
+by NOAA's National Centers for Environmental Information (NCEI), to enable stream processing workflows on that metadata,
+and to feed it into downstream client applications for search, analysis, etc.
 
-## Deployment
+## Components
 
-### Requirements
+The project consists of two Java-based microservices, backed by a Kafka cluster.
 
+### Registry
+
+#### Purpose
+
+The [registry](registry) hosts the public API of the system and stores its persistent state. Specifically, it 
+serves several basic purposes:
+
+1. Receive metadata input via HTTP and send them to the appropriate Kafka topics
+1. Use [Kafka Streams](https://docs.confluent.io/current/streams/index.html) to materialize state stores of both 
+raw input and the values parsed from it (by the Stream Manager component)
+1. Use [interactive queries](https://docs.confluent.io/current/streams/developer-guide/interactive-queries.html)
+to support retrieval of all stored metadata via HTTP.
+
+#### Requirements
+
+- Java: 8+
+- Storage:
+    - Each node requires a local file system in which to store the current state of each entity
+    - File system should *not* be shared between nodes
+    - No need to replicate or backup this storage as all data can be re-materialized from Kafka
+    - Volume grows linearly with the number of inventoried entities
+- Network Connectivity:
+    - Initiates connections to the Kafka cluster
+    - Receives connections from API clients (e.g. metadata sources)
+    
+#### Config
+
+| Environment Variable    | Importance | Required? | Default            | Description |
+| ----------------------- | ---------- | --------- | ------------------ | ----------- |
+| KAFKA_BOOTSTRAP_SERVERS | High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
+| STATE_DIR               | High       | No        | /tmp/kafka-streams | Path to the directory under which local state should be stored |
+| PUBLISHING_INTERVAL_MS  | Low        | No        | 300000 (5 minutes) | Frequency with which check for changes in entity publish status |
+  
+
+### Stream Manager
+
+#### Purpose
+
+The [stream manager](stream-manager) processes all the metadata that passes through the inventory management system. Metadata that is
+not yet well-formed (i.e. in ISO-19115 XML format) is passed off to a Kafka topic to be transformed into well-formed
+metadata via domain-specific logic. Once the metadata is well formed, discovery information is parsed out of it, and
+that discovery information is then analyzed. All resulting info is then sent back to the registry for storage.
+
+
+#### Requirements
+
+- Java: 8+
+- Storage: None
+- Network Connectivity:
+    - Initiates connections to the Kafka cluster
+    
+#### Config
+
+| Environment Variable    | Importance | Required? | Default            | Description |
+| ----------------------- | ---------- | --------- | ------------------ | ----------- |
+| KAFKA_BOOTSTRAP_SERVERS*| High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
+
+\* This variable was originally named `IM_BOOTSTRAP_SERVERS`. This old name continues to work in 0.1.x versions but
+is deprecated and will be removed in a future version. 
+
+## Build
+
+Requires: Java 8+
+
+Use Gradle to build the components with: `./gradlew build`
+
+The build produces the following artifacts for each component: 
+
+- docker image
+- fat, executable jar
+- thin war
+    - *N/A for stream-manager; it is not a web application*
+- sources jar
+
+In addition to these artifacts, there are also some example Kubernetes manifest files under [the kubernetes folder](kubernetes).
+These manifests can be used in development with skaffold and are a good starting point, but they **ARE NOT PRODUCTION-READY**.
+
+As a result of these various artifacts, there are a variety of ways to... 
+
+## Deploy
+
+There are several ways to deploy the system, corresponding with the several artifacts that it produces.
+
+#### Executable Jars
+
+Requires:
+1. Java 8+
+1. A running kafka cluster
+
+You can deploy the components of PSI by setting env variables to point to Kafka and running the `-all` jars with java:
+
+```bash
+export KAFKA_BOOTSTRAP_SERVERS=...
+java -jar registry/build/libs/psi-registry-$VERSION-all.jar
+java -jar stream-manager/build/libs/psi-stream-manager-$VERSION-all.jar
+```
+
+##### Variation: External Servlet Container
+
+The registry web application can also be deployed into an externally-managed servlet container using its war artifact.
+For example it might look something like this for a Tomcat installation:
+
+```bash
+cat << EOF > $CATALINA_HOME/bin/setenv.sh
+#!/bin/bash
+export KAFKA_BOOTSTRAP_SERVERS=...
+EOF
+
+cp registry/build/libs/psi-registry-$VERSION.war $CATALINA_HOME/webapps
+$CATALINA_HOME/bin/shutdown.sh && $CATALINA_HOME/bin/startup.sh
+```
+
+#### Docker Images
+
+Requires:
+1. Docker (or another container engine)
+
+Another option is to use the docker images built by this project. For example, these commands will create and run containers
+for the registry and stream-manager, as well as Kafka and Zookeeper using the well-maintained [Confluent Platform images](https://github.com/confluentinc/cp-docker-images).
+
+```bash
+docker network create psi
+
+docker run -d \
+  --name zookeeper \
+  --env ZOOKEEPER_CLIENT_PORT=2181 \
+  --network psi \
+  --expose 2181 \
+  confluentinc/cp-zookeeper
+
+docker run -d \
+  --name kafka \
+  --env KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 \
+  --env KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092 \
+  --network psi \
+  --expose 9092 \
+  confluentinc/cp-kafka
+
+docker run -d \
+  --name registry \
+  --env KAFKA_BOOTSTRAP_SERVERS=kafka:9092 \
+  --network psi \
+  -p 8080 \
+  cedardevs/psi-registry
+
+docker run -d \
+  --name manager \
+  --env KAFKA_BOOTSTRAP_SERVERS=kafka:9092 \
+  --network psi \
+  cedardevs/psi-stream-manager
+```
+
+Of course higher level tools can be used to manage these containers, like docker-compose, docker swarm, or...
+
+#### Kubernetes
+
+Requirements:
 1. [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/), configured to point to any...
 1. Kubernetes cluster (e.g. [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/))
 
-1. Set these env vars- DOCKER_USER, DOCKER_PW, DOCKER_SERVER, DOCKER_EMAIL
+Finally, this project contains a set of Kubernetes manifest files **as a demonstration** in the [kubernetes directory](kubernetes).
+To deploy the whole system, including some extra development tools ([kafka-manager](https://github.com/yahoo/kafka-manager), 
+[kafka-rest](https://docs.confluent.io/current/kafka-rest/docs/index.html), and [kafka-topics-ui](https://github.com/Landoop/kafka-topics-ui))
+simply run:
 
-
-### Quickstart
-
-To deploy the system to a k8s cluster, simply run the following from the root of this repository.
 ```bash
-kubectl create secret docker-registry regcred --docker-server=$DOCKER_SERVER --docker-username=$DOCKER_USER --docker-password=$DOCKER_PW --docker-email=$DOCKER_EMAIL
 kubectl apply -f kubernetes/
 ```
+
+> NOTE: The images for this project are currently not published publicly. If your kubernetes hosts do not already have the images
+> present they will have to pull them from a registry. To do so, you must create a `regcred` secret in your cluster:
+>
+> ```bash
+> kubectl create secret docker-registry regcred --docker-server=... --docker-username=... --docker-password=... --docker-email=...
+> ```
+
+> WARNING: The manifests include in this project are intended to provide a starting point and should **NOT** be viewed as production-ready.
 
 ## Development
 

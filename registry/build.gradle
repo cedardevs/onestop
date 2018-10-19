@@ -84,11 +84,18 @@ war {
   // build a deployable war in addition to the executable one
   enabled = true
   classpath -= files(configurations.compileOnly)
+  baseName = "${rootProject.name}-${project.name}"
+}
+
+bootWar {
+  // we're building a regular war and bootable jar, don't need a bootable war as well
+  enabled = false
 }
 
 bootJar {
   // add a classifier to distinguish the executable jar
   classifier = 'all'
+  baseName = "${rootProject.name}-${project.name}"
   launchScript()
 }
 
@@ -105,5 +112,6 @@ docker {
 BuildDockerImage.dependsOn(bootJar)
 assemble.dependsOn(BuildDockerImage)
 assemble.dependsOn(sourceJar)
+assemble.dependsOn(bootJar)
 PublishDockerImage.dependsOn(BuildDockerImage)
 task publish { dependsOn PublishDockerImage }
