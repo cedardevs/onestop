@@ -230,4 +230,93 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     metadata.services == null
     metadata.responsibleParties == null
   }
+
+  def "valid message passes validation check"() {
+    given:
+    // Only populate fields to be checked
+    def messageMap = [
+        analysis: [
+            titles: [
+                title: [
+                    exists: true
+                ]
+            ],
+            identification: [
+                fileIdentifier: [
+                    exists: true
+                ],
+                parentIdentifier: [
+                    exists: false
+                ]
+            ],
+            temporalBounding: [
+                begin: [
+                    exists: true,
+                    utcDateTimeString: '1990-01-01'
+                ],
+                end: [
+                    exists: true,
+                    utcDateTimeString: '2000-01-01'
+                ],
+                instant: [
+                    exists: false,
+                    utcDateTimeString: 'UNDEFINED'
+                ]
+            ]
+        ],
+        discovery: [
+            hierarchyLevelName: null
+        ]
+    ]
+    when:
+    def isValid = InventoryManagerToOneStopUtil.validateMessage(messageMap, 'dummy id')
+
+    then:
+    isValid
+  }
+
+  def "invalid message fails validation check"() {
+    given:
+    // Only populate fields to be checked
+    def messageMap = [
+        analysis: [
+            titles: [
+                title: [
+                    exists: false
+                ]
+            ],
+            identification: [
+                fileIdentifier: [
+                    exists: false
+                ],
+                parentIdentifier: [
+                    exists: false
+                ]
+            ],
+            temporalBounding: [
+                begin: [
+                    exists: true,
+                    utcDateTimeString: 'INVALID'
+                ],
+                end: [
+                    exists: true,
+                    utcDateTimeString: 'INVALID'
+                ],
+                instant: [
+                    exists: false,
+                    utcDateTimeString: 'UNDEFINED'
+                ]
+            ]
+        ],
+        discovery: [
+            hierarchyLevelName: 'granule'
+        ]
+    ]
+
+    when:
+    def isValid = InventoryManagerToOneStopUtil.validateMessage(messageMap, 'dummy id')
+
+    then:
+    !isValid
+  }
 }
