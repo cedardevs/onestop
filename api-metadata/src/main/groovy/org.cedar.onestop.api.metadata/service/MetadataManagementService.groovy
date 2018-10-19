@@ -59,7 +59,7 @@ class MetadataManagementService {
    * @return
    */
 
-  Map loadParsedMetadata(Map payload) {
+  Map loadParsedMetadata(List<Map> payload) {
     esService.ensureStagingIndices()
     esService.ensurePipelines()
     esService.refreshAllIndices()

@@ -29,16 +29,16 @@ class KafkaConsumerService {
     def slurper = new JsonSlurper()
     log.info("consuming message from a topic ${records.topic}")
     try {
-      def valuesIds = records.collect {
+      List<Map> valuesIds = records.collect {
         def id = it.key()
         def messageMap = slurper.parseText(it.value() as String) as Map
         InventoryManagerToOneStopUtil.validateMessage(messageMap, id) ?
-            [id: id, discovery: messageMap.discovery, analysis: messageMap.analysis] :
+            [id: id, discovery: messageMap.discovery, analysis: messageMap.analysis] as Map :
             null
         
       }
       valuesIds.removeAll(Collections.singleton(null))
-      metadataManagementService.loadParsedMetadata(valuesIds as Map)
+      metadataManagementService.loadParsedMetadata(valuesIds)
       
     } catch (Exception e) {
       log.error("Unexpected error", e)
