@@ -72,8 +72,6 @@ export default class Cart extends React.Component {
   propsForResult = (item, itemId) => {
     const {deselectGranule} = this.props
     let resultProps = {}
-    // resultProps[deselectGranule] = deselectGranule
-    // resultProps[deselectGranule] = deselectGranule(item)
     return {deselectGranule: deselectGranule}
   }
 

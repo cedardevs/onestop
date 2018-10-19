@@ -47,7 +47,9 @@ export const removeGranuleFromLocalStorage = itemId => {
 export const getSelectedGranulesFromStorage = state => {
   if (storageAvailable('localStorage')) {
     try {
-      return JSON.parse(localStorage.getItem('selectedGranules'))
+        const parsedSelectedGranules = JSON.parse(localStorage.getItem('selectedGranules'))
+        return parsedSelectedGranules ? parsedSelectedGranules : {}
+      // return JSON.parse(localStorage.getItem('selectedGranules'))
     } catch (e) {}
     return {}
   }
