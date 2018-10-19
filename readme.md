@@ -104,7 +104,7 @@ You can deploy the components of PSI by setting env variables to point to Kafka 
 
 ```bash
 export KAFKA_BOOTSTRAP_SERVERS=...
-java -jar registry/build/libs/registry-$VERSION-all.jar
+java -jar registry/build/libs/psi-registry-$VERSION-all.jar
 java -jar stream-manager/build/libs/psi-stream-manager-$VERSION-all.jar
 ```
 
@@ -119,7 +119,7 @@ cat << EOF > $CATALINA_HOME/bin/setenv.sh
 export KAFKA_BOOTSTRAP_SERVERS=...
 EOF
 
-cp registry/build/libs/registry-$VERSION.war $CATALINA_HOME/webapps
+cp registry/build/libs/psi-registry-$VERSION.war $CATALINA_HOME/webapps
 $CATALINA_HOME/bin/shutdown.sh && $CATALINA_HOME/bin/startup.sh
 ```
 
