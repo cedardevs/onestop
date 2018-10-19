@@ -20,10 +20,16 @@ class UiConfig {
     String background
   }
 
-  static class FeaturedConfig {
+  static class FeaturedConfig { // featured datasets
     String title
     String searchTerm
     String imageUrl
+  }
+
+  List<FeatureToggles> enabledFeatureToggles
+
+  static class FeatureToggles {
+    String featureName
   }
 
 }

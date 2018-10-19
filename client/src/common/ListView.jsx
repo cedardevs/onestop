@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import Button from '../common/input/Button'
+import Button from './input/Button'
 import gridIcon from 'fa/th.svg'
 import listIcon from 'fa/th-list.svg'
 import {fontFamilySerif} from '../utils/styleUtils'
@@ -25,6 +25,12 @@ const styleListControl = {
   backgroundColor: 'rgba(0,0,0, 0.2)',
   borderRadius: '0.309em',
   margin: '0 1.618em 1.618em 0',
+}
+
+const styleControlButtonIcon = {
+  width: '1em',
+  height: '1em',
+  marginRight: '0.309em',
 }
 
 const styleGrid = {
@@ -108,6 +114,8 @@ export default class ListView extends Component {
     const {
       items,
       loading,
+      loadingMessage,
+      resultsMessage,
       shown,
       total,
       onItemSelect,
@@ -118,10 +126,14 @@ export default class ListView extends Component {
 
     const listInfo = (
       <h1 style={styleListInfo}>
-        {loading ? (
+        {loading ? loadingMessage ? (
+          loadingMessage
+        ) : (
           'Loading...'
         ) : (
-          `Search Results (showing ${shown} of ${total})`
+          `${resultsMessage
+            ? resultsMessage
+            : 'Results'} (showing ${shown} of ${total})`
         )}
       </h1>
     )
@@ -135,7 +147,7 @@ export default class ListView extends Component {
           <Button
             text={this.state.showAsGrid ? 'Show List' : 'Show Grid'}
             icon={this.state.showAsGrid ? listIcon : gridIcon}
-            styleIcon={{width: '1em', height: '1em', marginRight: '0.309em'}}
+            styleIcon={styleControlButtonIcon}
             onClick={this.toggleShowAsGrid}
           />
         </div>
@@ -174,7 +186,7 @@ export default class ListView extends Component {
         </div>
       )
 
-      const itemProps = propsForItem ? propsForItem(item) : null
+      const itemProps = propsForItem ? propsForItem(item, key) : null
 
       if (this.state.showAsGrid && GridItemComponent) {
         itemElement = (
