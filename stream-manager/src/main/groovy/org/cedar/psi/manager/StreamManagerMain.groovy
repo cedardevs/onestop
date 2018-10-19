@@ -17,7 +17,10 @@ class StreamManagerMain {
     }
     else {
       try {
-        bootstrapServers = System.getenv('IM_BOOTSTRAP_SERVERS') ?: Constants.BOOTSTRAP_DEFAULT
+        bootstrapServers =
+            System.getenv('KAFKA_BOOTSTRAP_SERVERS') ?:
+                System.getenv('IM_BOOTSTRAP_SERVERS') ?:
+                    Constants.BOOTSTRAP_DEFAULT
       }
       catch(SecurityException e) {
         log.error 'Application does not have permission to read environment variables.\n' +

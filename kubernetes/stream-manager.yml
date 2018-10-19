@@ -30,5 +30,5 @@ spec:
           image: cedardevs/psi-stream-manager
           imagePullPolicy: IfNotPresent
           env:
-            - name: IM_BOOTSTRAP_SERVERS
+            - name: KAFKA_BOOTSTRAP_SERVERS
               value: "kafka:9092"

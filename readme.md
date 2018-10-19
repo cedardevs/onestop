@@ -66,7 +66,10 @@ that discovery information is then analyzed. All resulting info is then sent bac
 
 | Environment Variable    | Importance | Required? | Default            | Description |
 | ----------------------- | ---------- | --------- | ------------------ | ----------- |
-| IM_BOOTSTRAP_SERVERS    | High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
+| KAFKA_BOOTSTRAP_SERVERS*| High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
+
+\* This variable was originally named `IM_BOOTSTRAP_SERVERS`. This old name continues to work in 0.1.x versions but
+is deprecated and will be removed in a future version. 
 
 ## Build
 
@@ -100,8 +103,9 @@ Requires:
 You can deploy the components of PSI by setting env variables to point to Kafka and running the `-all` jars with java:
 
 ```bash
-KAFKA_BOOTSTRAP_SERVERS=... java -jar registry/build/libs/registry-$VERSION-all.jar
-IM_BOOTSTRAP_SERVERS=... java -jar stream-manager/build/libs/psi-stream-manager-$VERSION-all.jar
+export KAFKA_BOOTSTRAP_SERVERS=...
+java -jar registry/build/libs/registry-$VERSION-all.jar
+java -jar stream-manager/build/libs/psi-stream-manager-$VERSION-all.jar
 ```
 
 ##### Variation: External Servlet Container
@@ -154,7 +158,7 @@ docker run -d \
 
 docker run -d \
   --name manager \
-  --env IM_BOOTSTRAP_SERVERS=kafka:9092 \
+  --env KAFKA_BOOTSTRAP_SERVERS=kafka:9092 \
   --network psi \
   cedardevs/psi-stream-manager
 ```
