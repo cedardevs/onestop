@@ -5,10 +5,8 @@ import {HEADER_DROPDOWN_FEATURES} from '../utils/featureUtils'
 
 import _ from 'lodash'
 
+// synchronous actions
 export const SET_CONFIG = 'set_config'
-export const CLEAR_CONFIG = 'clear_config'
-export const TOGGLE_FEATURES = 'TOGGLE_FEATURES'
-
 export const setConfig = config => {
   return {
     type: SET_CONFIG,
@@ -16,12 +14,14 @@ export const setConfig = config => {
   }
 }
 
+export const CLEAR_CONFIG = 'clear_config'
 export const clearConfig = () => {
   return {
     type: CLEAR_CONFIG,
   }
 }
 
+export const TOGGLE_FEATURES = 'TOGGLE_FEATURES'
 export const toggleFeatures = featuresList => {
   const featuresEnabled = _.map(featuresList, toggle => toggle.featureName)
   const headerDropdownMenuFeatureAvailable = featuresEnabled.some(f =>
@@ -35,6 +35,7 @@ export const toggleFeatures = featuresList => {
   }
 }
 
+// asynchronous actions
 export const fetchConfig = () => {
   return (dispatch, getState) => {
     const url = getApiPath() + '/uiConfig'

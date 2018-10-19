@@ -1,3 +1,4 @@
+// synchronous actions
 export const INSERT_SELECTED_GRANULE = 'INSERT_SELECTED_GRANULE'
 export const insertSelectedGranule = (item, itemId) => {
   return {

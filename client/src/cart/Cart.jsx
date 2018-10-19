@@ -60,8 +60,7 @@ export default class Cart extends React.Component {
     }
   }
 
-  handleSelectItem = e => {
-  }
+  handleSelectItem = e => {}
 
   handleShowMore = () => {
     const {numberOfGranulesSelected} = this.props

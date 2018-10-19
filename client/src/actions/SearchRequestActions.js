@@ -168,11 +168,11 @@ const buildSearchAction = (
       .then(response => checkForErrors(response))
       .then(response => response.json())
       .then(json => successHandler(dispatch, json))
-      .catch(ajaxError =>
-        ajaxError.response
+      .catch(ajaxError => {
+        return ajaxError.response
           .json()
           .then(errorJson => errorHandler(dispatch, errorJson))
-      )
+      })
       .catch(jsError => errorHandler(dispatch, jsError))
   }
 }

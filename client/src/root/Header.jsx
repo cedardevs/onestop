@@ -155,12 +155,7 @@ class Header extends React.Component {
       </ul>
     )
 
-    const insignia = (
-      <Logo
-        key="insignia"
-        style={{flex: '0 0 275px'}}
-      />
-    )
+    const insignia = <Logo key="insignia" style={{flex: '0 0 275px'}} />
 
     const search = (
       <Switch key="header:search:route">

@@ -1,10 +1,5 @@
 import _ from 'lodash'
-import {push} from 'connected-react-router'
-import {
-  encodeQueryString,
-  decodeQueryString,
-  decodeLocation,
-} from '../utils/queryUtils'
+import {encodeQueryString, decodeQueryString} from '../utils/queryUtils'
 import {
   triggerSearch,
   fetchGranules,
@@ -24,6 +19,31 @@ import {
   getCollectionIdFromGranuleListPath,
 } from '../utils/urlUtils'
 
+// synchronous actions
+export const LOADING_SHOW = 'LOADING_SHOW'
+export const showLoading = () => {
+  return {
+    type: LOADING_SHOW,
+  }
+}
+
+export const LOADING_HIDE = 'LOADING_HIDE'
+export const hideLoading = () => {
+  return {
+    type: LOADING_HIDE,
+  }
+}
+
+export const UPDATE_BOUNDS = 'UPDATE_BOUNDS'
+export const updateBounds = (to, source) => {
+  return {
+    type: UPDATE_BOUNDS,
+    to: to,
+    source: source,
+  }
+}
+
+// composite actions
 export const showCollections = history => {
   return (dispatch, getState) => {
     dispatch(clearSelections())
@@ -33,24 +53,7 @@ export const showCollections = history => {
         pathname: '/collections',
         search: `?${query}`,
       }
-      dispatch(history.push(locationDescriptor))
-    }
-  }
-}
-
-export const loadCollections = newQueryString => {
-  return (dispatch, getState) => {
-    if (newQueryString.indexOf('?') === 0) {
-      newQueryString = newQueryString.slice(1)
-    }
-    const searchFromQuery = decodeQueryString(newQueryString)
-    const searchFromState = _.get(getState(), 'behavior.search')
-    if (!_.isEqual(searchFromQuery, searchFromState)) {
-      dispatch(clearCollections())
-      dispatch(clearGranules())
-      dispatch(clearSelections())
-      dispatch(updateSearch(searchFromQuery))
-      dispatch(triggerSearch())
+      history.push(locationDescriptor)
     }
   }
 }
@@ -65,7 +68,7 @@ export const showGranulesList = (history, id) => {
       pathname: `/collections/granules/${id}`,
       search: `?${query}`,
     }
-    dispatch(history.push(locationDescriptor))
+    history.push(locationDescriptor)
   }
 }
 
@@ -90,7 +93,7 @@ export const showDetails = (history, id) => {
       pathname: `/collections/details/${id}`,
       search: _.isEmpty(query) ? null : `?${query}`,
     }
-    dispatch(history.push(locationDescriptor))
+    history.push(locationDescriptor)
   }
 }
 
@@ -106,48 +109,26 @@ export const loadDetails = path => {
 export const showHome = history => {
   return dispatch => {
     dispatch(updateSearch())
-    dispatch(history.push('/'))
+    history.push('/')
     dispatch(clearCollections())
   }
 }
 
-export const TOGGLE_GRANULE_FOCUS = 'toggle_granule_focus'
-export const toggleGranuleFocus = (id, bool) => {
-  return {
-    type: TOGGLE_GRANULE_FOCUS,
-    id,
-    focused: bool,
-  }
-}
-
-export const LOADING_SHOW = 'LOADING_SHOW'
-export const showLoading = () => {
-  return {
-    type: LOADING_SHOW,
-  }
-}
-
-export const LOADING_HIDE = 'LOADING_HIDE'
-export const hideLoading = () => {
-  return {
-    type: LOADING_HIDE,
-  }
-}
-
-export const TOGGLE_BACKGROUND_IMAGE = 'TOGGLE_BACKGROUND_IMAGE'
-const toggleBackgroundImage = boolVisible => {
-  return {
-    type: TOGGLE_BACKGROUND_IMAGE,
-    visible: boolVisible,
-  }
-}
-
-export const UPDATE_BOUNDS = 'UPDATE_BOUNDS'
-export const updateBounds = (to, source) => {
-  return {
-    type: UPDATE_BOUNDS,
-    to: to,
-    source: source,
+// asynchronous actions
+export const loadCollections = newQueryString => {
+  return (dispatch, getState) => {
+    if (newQueryString.indexOf('?') === 0) {
+      newQueryString = newQueryString.slice(1)
+    }
+    const searchFromQuery = decodeQueryString(newQueryString)
+    const searchFromState = _.get(getState(), 'behavior.search')
+    if (!_.isEqual(searchFromQuery, searchFromState)) {
+      dispatch(clearCollections())
+      dispatch(clearGranules())
+      dispatch(clearSelections())
+      dispatch(updateSearch(searchFromQuery))
+      dispatch(triggerSearch())
+    }
   }
 }
 

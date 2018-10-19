@@ -1,13 +1,18 @@
 import '../../specHelper'
 import Immutable from 'seamless-immutable'
-import { expect } from 'chai'
-import { search, initialState } from '../../../src/reducers/behavior/search'
+import {expect} from 'chai'
+import {search, initialState} from '../../../src/reducers/behavior/search'
 import {
-  updateSearch, newGeometry, removeGeometry, toggleSelection, toggleExcludeGlobal,  clearSelections
+  updateSearch,
+  newGeometry,
+  removeGeometry,
+  toggleSelection,
+  toggleExcludeGlobal,
+  clearSelections,
 } from '../../../src/actions/SearchParamActions'
 
-describe('The search reducer', function () {
-  it('has a default state', function () {
+describe('The search reducer', function(){
+  it('has a default state', function(){
     const initialAction = {type: 'init'}
     const result = search(initialState, initialAction)
 
@@ -18,19 +23,22 @@ describe('The search reducer', function () {
       endDateTime: null,
       selectedFacets: {},
       selectedIds: [],
-      excludeGlobal: null
+      excludeGlobal: null,
     })
   })
 
-  describe('updateSearch cases', function () {
-    it('updates all search params', function () {
+  describe('updateSearch cases', function(){
+    it('updates all search params', function(){
       const newSearchParams = {
         queryText: 'new',
-        geoJSON: {type: 'Point', geometry: {type: 'Point', coordinates: [0, 0]}},
+        geoJSON: {
+          type: 'Point',
+          geometry: {type: 'Point', coordinates: [ 0, 0 ]},
+        },
         startDateTime: '2000-01-01T00:00:00Z',
         endDateTime: '3000-01-01T00:00:00Z',
-        selectedFacets: {science: ["Oceans"]},
-        selectedIds: ['ABCXYZ'],
+        selectedFacets: {science: [ 'Oceans' ]},
+        selectedIds: [ 'ABCXYZ' ],
         excludeGlobal: true,
       }
 
@@ -39,9 +47,9 @@ describe('The search reducer', function () {
       result.should.deep.equal(newSearchParams)
     })
 
-    it('defaults to initial state for missing fields', function () {
+    it('defaults to initial state for missing fields', function(){
       const newSearchParams = {
-        queryText: 'new'
+        queryText: 'new',
       }
 
       const updateAction = updateSearch(newSearchParams)
@@ -49,69 +57,81 @@ describe('The search reducer', function () {
       result.should.deep.equal(Immutable.merge(initialState, newSearchParams))
     })
 
-    it('works for empty or undefined params', function () {
+    it('works for empty or undefined params', function(){
       search(initialState, updateSearch({})).should.deep.equal(initialState)
       search(initialState, updateSearch(null)).should.deep.equal(initialState)
-      search(initialState, updateSearch(undefined)).should.deep.equal(initialState)
+      search(initialState, updateSearch(undefined)).should.deep.equal(
+        initialState
+      )
     })
   })
 
-  describe('geometry cases', function () {
+  describe('geometry cases', function(){
     const validGeoJSON = {
       type: 'Feature',
       geometry: {
         type: 'Polygon',
-        coordinates: [[[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]]]
+        coordinates: [
+          [
+            [ 100.0, 0.0 ],
+            [ 101.0, 0.0 ],
+            [ 101.0, 1.0 ],
+            [ 100.0, 1.0 ],
+            [ 100.0, 0.0 ],
+          ],
+        ],
       },
       properties: {
-        description: 'Valid test GeoJSON'
-      }
+        description: 'Valid test GeoJSON',
+      },
     }
 
-    it('updates the state for a new geometry', function () {
+    it('updates the state for a new geometry', function(){
       const newGeomAction = newGeometry(validGeoJSON)
       const result = search(initialState, newGeomAction)
       result.geoJSON.should.deep.equal(validGeoJSON)
     })
 
-    it('defaults back to initial state for geometry removal', function () {
+    it('defaults back to initial state for geometry removal', function(){
       const removeGeomAction = removeGeometry()
       const result = search({geoJSON: validGeoJSON}, removeGeomAction)
       expect(result.geoJSON).to.be.null
     })
   })
 
-  describe('selected collections cases', function () {
-    it('toggles selected collections', function () {
+  describe('selected collections cases', function(){
+    it('toggles selected collections', function(){
       const toggleA = toggleSelection('A')
       const toggleB = toggleSelection('B')
       // toggle A --> ['A']
       const addedAResult = search(initialState, toggleA)
-      addedAResult.selectedIds.should.deep.equal(['A'])
+      addedAResult.selectedIds.should.deep.equal([ 'A' ])
       // toggle B --> ['A', 'B']
       const addedBResult = search(addedAResult, toggleB)
-      addedBResult.selectedIds.should.deep.equal(['A', 'B'])
+      addedBResult.selectedIds.should.deep.equal([ 'A', 'B' ])
       // toggle A --> ['B']
       const removedAResult = search(addedBResult, toggleA)
-      removedAResult.selectedIds.should.deep.equal(['B'])
+      removedAResult.selectedIds.should.deep.equal([ 'B' ])
     })
 
-    it('can clear existing collection selections', function () {
-      const stateWithCollections = Immutable({selectedIds: ['ABC']})
+    it('can clear existing collection selections', function(){
+      const stateWithCollections = Immutable({selectedIds: [ 'ABC' ]})
       const result = search(stateWithCollections, clearSelections())
       result.selectedIds.should.deep.equal([])
     })
   })
 
-  describe('facet cases', function () {
+  describe('facet cases', function(){
     it('should handle TOGGLE_FACET w/ facets selected', () => {
       const selectedFacets = {
-        science:["Oceans", "Oceans > Ocean Temperature"],
-        instruments:["Earth Remote Sensing Instruments > Passive Remote Sensing > Spectrometers/Radiometers > Imaging Spectrometers/Radiometers > AVHRR-3 > Advanced Very High Resolution Radiometer-3"]
+        science: [ 'Oceans', 'Oceans > Ocean Temperature' ],
+        instruments: [
+          'Earth Remote Sensing Instruments > Passive Remote Sensing > Spectrometers/Radiometers > Imaging Spectrometers/Radiometers > AVHRR-3 > Advanced Very High Resolution Radiometer-3',
+        ],
       }
       const modFacetsAction = {
-        type:"TOGGLE_FACET",
-        selectedFacets: selectedFacets
+        type: 'TOGGLE_FACET',
+        selectedFacets: selectedFacets,
       }
 
       const reducerResp = search(initialState, modFacetsAction)
@@ -119,42 +139,42 @@ describe('The search reducer', function () {
     })
 
     it('should handle TOGGLE_FACET w/ no facets selected', () => {
-      const actionWithNoFacets = {type:"TOGGLE_FACETS", selectedFacets: {}}
+      const actionWithNoFacets = {type: 'TOGGLE_FACETS', selectedFacets: {}}
       const reducerResp = search(initialState, actionWithNoFacets)
       reducerResp.selectedFacets.should.deep.equal({})
     })
   })
 
-  describe('toggleGlobal', function() {
+  describe('toggleGlobal', function(){
     it('should handle TOGGLE_EXCLUDE_GLOBAL starting at null', () => {
       const toggleExcludeGlobalAction = {
-        type: "TOGGLE_EXCLUDE_GLOBAL"
+        type: 'TOGGLE_EXCLUDE_GLOBAL',
       }
 
       const reducerResp = search(initialState, toggleExcludeGlobalAction)
       reducerResp.excludeGlobal.should.equal(true)
     })
     it('should handle TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at true', () => {
-        const globalExcludedState = {
-            excludeGlobal: true,
-        }
-        const toggleExcludeGlobalAction = {
-            type: "TOGGLE_EXCLUDE_GLOBAL"
-        }
+      const globalExcludedState = {
+        excludeGlobal: true,
+      }
+      const toggleExcludeGlobalAction = {
+        type: 'TOGGLE_EXCLUDE_GLOBAL',
+      }
 
-        const reducerResp = search(globalExcludedState, toggleExcludeGlobalAction)
-        reducerResp.excludeGlobal.should.equal(false)
+      const reducerResp = search(globalExcludedState, toggleExcludeGlobalAction)
+      reducerResp.excludeGlobal.should.equal(false)
     })
     it('should handle TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at false', () => {
-        const globalExcludedState = {
-            excludeGlobal: false,
-        }
-        const toggleExcludeGlobalAction = {
-            type: "TOGGLE_EXCLUDE_GLOBAL"
-        }
+      const globalExcludedState = {
+        excludeGlobal: false,
+      }
+      const toggleExcludeGlobalAction = {
+        type: 'TOGGLE_EXCLUDE_GLOBAL',
+      }
 
-        const reducerResp = search(globalExcludedState, toggleExcludeGlobalAction)
-        reducerResp.excludeGlobal.should.equal(true)
+      const reducerResp = search(globalExcludedState, toggleExcludeGlobalAction)
+      reducerResp.excludeGlobal.should.equal(true)
     })
   })
 })

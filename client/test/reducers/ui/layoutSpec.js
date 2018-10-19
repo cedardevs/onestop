@@ -1,9 +1,9 @@
 import '../../specHelper'
-import { layout, initialState } from '../../../src/reducers/ui/layout'
+import {layout, initialState} from '../../../src/reducers/ui/layout'
 // import {push} from 'react-router-redux'
 import {LOCATION_CHANGE} from 'react-router-redux'
 
-const pushMock = (descriptor) => {
+const pushMock = descriptor => {
   // using push from react-router-redux does not directly trigger the LOCATION_CHANGE action, it triggers a history action
   return {
     type: LOCATION_CHANGE,
@@ -11,8 +11,8 @@ const pushMock = (descriptor) => {
   }
 }
 
-describe('The layout reducer', function() {
-  it('sets showLeft to true for collections', function () {
+describe('The layout reducer', function(){
+  it('sets showLeft to true for collections', function(){
     const locationDescriptor = {
       pathname: '/collections',
       search: '?q=dem',
@@ -22,7 +22,7 @@ describe('The layout reducer', function() {
     result.showLeft.should.equal(true)
   })
 
-  it('sets showLeft to false for details', function () {
+  it('sets showLeft to false for details', function(){
     const locationDescriptor = {
       pathname: '/collections/details/ASDF',
       search: '?q=dem',
@@ -31,5 +31,4 @@ describe('The layout reducer', function() {
     const result = layout(initialState, action)
     result.showLeft.should.equal(false)
   })
-
 })

@@ -1,18 +1,21 @@
 import '../specHelper'
-import { expect, assert } from 'chai'
+import {expect, assert} from 'chai'
 import * as protocolUtils from '../../src/utils/resultUtils'
 import _ from 'lodash'
 
-describe('The resultUtils', function () {
-
-  it('has distinct id and color combinations for each protocol', function() {
+describe('The resultUtils', function(){
+  it('has distinct id and color combinations for each protocol', function(){
     const protocolIdCombos = _.map(protocolUtils.protocols, p => {
       return `${p.id}-${p.color}`
     })
-    assert.deepEqual(protocolIdCombos, _.uniq(protocolIdCombos), `${protocolIdCombos} vs ${_.uniq(protocolIdCombos)}`)
+    assert.deepEqual(
+      protocolIdCombos,
+      _.uniq(protocolIdCombos),
+      `${protocolIdCombos} vs ${_.uniq(protocolIdCombos)}`
+    )
   })
 
-  it('can identify ogc:wcs', function () {
+  it('can identify ogc:wcs', function(){
     const testCases = [
       {linkProtocol: 'ogc:wcs'},
       {linkProtocol: 'OGC:wcs'},
@@ -20,7 +23,7 @@ describe('The resultUtils', function () {
       {linkProtocol: 'OGC:WCS'},
     ]
 
-    _.each(testCases, (p) => {
+    _.each(testCases, p => {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('C')
       protocol.label.should.equal('OGC Web Coverage Service')
@@ -28,14 +31,14 @@ describe('The resultUtils', function () {
     })
   })
 
-  it('can identify download links', function () {
+  it('can identify download links', function(){
     const testCases = [
       {linkProtocol: 'download'},
       {linkProtocol: 'Download'},
       {linkProtocol: 'DOWNLOAD'},
     ]
 
-    _.each(testCases, (p) => {
+    _.each(testCases, p => {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('D')
       protocol.label.should.equal('Download')
@@ -43,13 +46,10 @@ describe('The resultUtils', function () {
     })
   })
 
-  it('can identify FTP links', function () {
-    const testCases = [
-      {linkProtocol: 'FTP'},
-      {linkProtocol: 'ftp'},
-    ]
+  it('can identify FTP links', function(){
+    const testCases = [ {linkProtocol: 'FTP'}, {linkProtocol: 'ftp'} ]
 
-    _.each(testCases, (p) => {
+    _.each(testCases, p => {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('F')
       protocol.label.should.equal('FTP')
@@ -57,7 +57,7 @@ describe('The resultUtils', function () {
     })
   })
 
-  it('can identify http links', function () {
+  it('can identify http links', function(){
     const testCases = [
       {linkProtocol: 'HTTP'},
       {linkProtocol: 'HTTPS'},
@@ -65,7 +65,7 @@ describe('The resultUtils', function () {
       {linkProtocol: 'https'},
     ]
 
-    _.each(testCases, (p) => {
+    _.each(testCases, p => {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('H')
       protocol.label.should.equal('HTTP/HTTPS')
@@ -73,13 +73,10 @@ describe('The resultUtils', function () {
     })
   })
 
-  it('can identify noaa:las', function () {
-    const testCases = [
-      {linkProtocol: 'noaa:las'},
-      {linkProtocol: 'NOAA:LAS'},
-    ]
+  it('can identify noaa:las', function(){
+    const testCases = [ {linkProtocol: 'noaa:las'}, {linkProtocol: 'NOAA:LAS'} ]
 
-    _.each(testCases, (p) => {
+    _.each(testCases, p => {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('L')
       protocol.label.should.equal('NOAA Live Access Server')
@@ -87,13 +84,10 @@ describe('The resultUtils', function () {
     })
   })
 
-  it('can identify ogc:wms', function () {
-    const testCases = [
-      {linkProtocol: 'ogc:wms'},
-      {linkProtocol: 'OGC:WMS'},
-    ]
+  it('can identify ogc:wms', function(){
+    const testCases = [ {linkProtocol: 'ogc:wms'}, {linkProtocol: 'OGC:WMS'} ]
 
-    _.each(testCases, (p) => {
+    _.each(testCases, p => {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('M')
       protocol.label.should.equal('OGC Web Map Service')
@@ -101,7 +95,7 @@ describe('The resultUtils', function () {
     })
   })
 
-  it('can identify opendap', function () {
+  it('can identify opendap', function(){
     const testCases = [
       {linkProtocol: 'opendap'},
       {linkProtocol: 'OPENDAP'},
@@ -110,7 +104,7 @@ describe('The resultUtils', function () {
       {linkProtocol: 'OPeNDAP:Hyrax'},
     ]
 
-    _.each(testCases, (p) => {
+    _.each(testCases, p => {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('O')
       protocol.label.should.equal('OPeNDAP')
@@ -118,14 +112,14 @@ describe('The resultUtils', function () {
     })
   })
 
-  it('can identify thredds', function () {
+  it('can identify thredds', function(){
     const testCases = [
       {linkProtocol: 'thredds'},
       {linkProtocol: 'THREDDS'},
       {linkProtocol: 'UNIDATA:THREDDS'},
     ]
 
-    _.each(testCases, (p) => {
+    _.each(testCases, p => {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('T')
       protocol.label.should.equal('THREDDS')
@@ -133,12 +127,10 @@ describe('The resultUtils', function () {
     })
   })
 
-  it('can identify empty protocols', function () {
-    const testCases = [
-      {linkProtocol: ''},
-    ]
+  it('can identify empty protocols', function(){
+    const testCases = [ {linkProtocol: ''} ]
 
-    _.each(testCases, (p) => {
+    _.each(testCases, p => {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('W')
       protocol.label.should.equal('Web')
@@ -146,7 +138,7 @@ describe('The resultUtils', function () {
     })
   })
 
-  it('cannot default unknown protocols', function () {
+  it('cannot default unknown protocols', function(){
     const testCases = [
       {linkProtocol: 'nonsense'},
       {linkProtocol: ' '},
@@ -154,14 +146,11 @@ describe('The resultUtils', function () {
       {linkProtocol: 'etc'},
     ]
 
-    _.each(testCases, (p) => {
+    _.each(testCases, p => {
       const protocol = protocolUtils.identifyProtocol(p)
       protocol.id.should.equal('?')
       protocol.label.should.equal('Unknown')
       protocol.color.should.equal('black')
     })
   })
-
-
-
 })

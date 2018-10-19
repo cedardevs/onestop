@@ -13,7 +13,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
       dispatch(triggerSearch())
       dispatch(showCollections(ownProps.history))
     },
-    updateQuery: text => dispatch(updateQuery(text)),
+    updateQuery: text => {
+      dispatch(updateQuery(text))
+    },
   }
 }
 

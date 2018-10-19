@@ -1,12 +1,11 @@
 import '../specHelper'
 import _ from 'lodash'
 import * as actions from '../../src/actions/FlowActions'
-import { expect, assert } from 'chai'
+import {expect, assert} from 'chai'
 import sinon from 'sinon'
 // import * as router from 'react-router';
 
-describe('The flow actions', function () {
-
+describe('The flow actions', function(){
   const mockDefaultState = {
     domain: {
       api: {
@@ -14,17 +13,17 @@ describe('The flow actions', function () {
         path: '',
       },
       results: {
-        granules: {}
-      }
+        granules: {},
+      },
     },
     behavior: {
       request: {
         collectionInFlight: false,
-        granuleInFlight: false
+        granuleInFlight: false,
       },
       search: {
-        selectedIds: []
-      }
+        selectedIds: [],
+      },
     },
   }
 
@@ -92,5 +91,4 @@ describe('The flow actions', function () {
   //   const dispatchCalls = dispatch.callCount
   //   assert(dispatchCalls === 2, `There were ${dispatchCalls} dispatch calls made`)
   // })
-
 })

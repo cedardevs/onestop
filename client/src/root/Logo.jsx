@@ -1,10 +1,8 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
-import defaultStyles from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
-import { Key } from '../utils/keyboardUtils'
 
 //-- Styles
 const styleLogoWrapper = {
@@ -104,12 +102,12 @@ const styleOneStopOImageWrapper = {
 const styleOnestopO = {
   display: 'inline-block',
   width: 0,
-  overflowX: 'hidden'
+  overflowX: 'hidden',
 }
 
 //-- Component
 
-export default class      Logo extends Component {
+export default class Logo extends Component {
   componentWillMount() {
     this.setState({
       focusingImage: false,
@@ -244,11 +242,7 @@ export default class      Logo extends Component {
                   aria-hidden="true"
                 />
               </span>
-              <span
-                tabIndex={-1}
-                aria-hidden="true"
-                style={styleOnestopO}
-              >
+              <span tabIndex={-1} aria-hidden="true" style={styleOnestopO}>
                 O
               </span>
               <span aria-hidden="true">neStop</span>
