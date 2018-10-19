@@ -8,13 +8,23 @@ import org.cedar.psi.manager.stream.StreamManager
 class StreamManagerMain {
 
   static void main(String[] args) {
-    def bootstrapServers = getBootstrapServers(System.getenv(), args)
+    def bootstrapServers = getBootstrapServers(getEnv(), args)
     log.info("Starting stream with bootstrap servers ${bootstrapServers}")
     def streams = StreamManager.buildStreamsApp(bootstrapServers)
     streams.start()
 
     // Add shutdown hook to respond to SIGTERM and gracefully close Kafka Streams
     Runtime.getRuntime().addShutdownHook(new Thread({ streams.close() }))
+  }
+
+  static Map getEnv() {
+    try {
+      return System.getenv()
+    }
+    catch(SecurityException e) {
+      log.error 'Application does not have permission to read environment variables. Using defaults.'
+      return [:]
+    }
   }
 
   // Check for supplied bootstrap servers before using default.
@@ -24,14 +34,7 @@ class StreamManagerMain {
       return args[0]
     }
 
-    try {
-      return env['KAFKA_BOOTSTRAP_SERVERS'] ?: env['IM_BOOTSTRAP_SERVERS'] ?: Constants.BOOTSTRAP_DEFAULT
-    }
-    catch(SecurityException e) {
-      log.error 'Application does not have permission to read environment variables.\n' +
-          'Defaulting to "localhost:9092" as bootstrap servers.'
-      return Constants.BOOTSTRAP_DEFAULT
-    }
+    return env['KAFKA_BOOTSTRAP_SERVERS'] ?: env['IM_BOOTSTRAP_SERVERS'] ?: Constants.BOOTSTRAP_DEFAULT
   }
 
 }
