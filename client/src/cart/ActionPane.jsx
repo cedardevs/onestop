@@ -3,10 +3,6 @@ import {boxShadow} from '../common/defaultStyles'
 import Button from '../common/input/Button'
 import remove from 'fa/remove.svg'
 import email from 'fa/envelope.svg'
-import {
-  storageAvailable,
-  removeGranuleFromLocalStorage,
-} from '../utils/localStorageUtil'
 
 const styleActionPanel = {
   display: 'flex',
@@ -88,9 +84,7 @@ export default class ActionPane extends React.Component {
         styleIcon={styleIcon}
         iconPadding={'0.309em'}
         onClick={() => {
-          if (storageAvailable('localStorage')) {
-            deselectGranule(itemId)
-          }
+          deselectGranule(itemId)
         }}
       />
     )
