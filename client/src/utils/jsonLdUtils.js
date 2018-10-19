@@ -5,17 +5,12 @@ import moment from 'moment/moment'
 export const toJsonLd = item => {
   const parts = [
     basicToJsonLd(item),
-    doiToJsonLd(item)
+    doiToJsonLd(item),
+    thumbnailToJsonLd(item)
   ]
 
   return `{${_.join(_.compact(parts), ',')}
 }`
-//   return `{
-//   "@context": "http://schema.org",
-//   "@type": "Dataset",
-//   "name": "${item.title}",
-//   "description": "${item.description}"
-// }`
 }
 
 export const basicToJsonLd = item => {
@@ -32,4 +27,14 @@ export const doiToJsonLd = item => {
   "alternateName": "${item.doi}",
   "url": "https://accession.nodc.noaa.gov/${item.doi}",
   "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=${item.doi}"`
+}
+
+export const thumbnailToJsonLd = item => {
+  if (item.thumbnail)
+  return `
+  "image": {
+    "@type": "ImageObject",
+    "url" : "${item.thumbnail}",
+    "contentUrl" : "${item.thumbnail}"
+  }`
 }
