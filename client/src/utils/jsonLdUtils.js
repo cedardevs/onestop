@@ -6,7 +6,8 @@ export const toJsonLd = item => {
   const parts = [
     basicToJsonLd(item),
     doiToJsonLd(item),
-    thumbnailToJsonLd(item)
+    thumbnailToJsonLd(item),
+    temporalToJsonLd(item)
   ]
 
   return `{${_.join(_.compact(parts), ',')}
@@ -37,4 +38,10 @@ export const thumbnailToJsonLd = item => {
     "url" : "${item.thumbnail}",
     "contentUrl" : "${item.thumbnail}"
   }`
+}
+
+export const temporalToJsonLd = item => {
+  if (item.beginDate)
+  return `
+  "temporalCoverage": "${item.beginDate}/${item.endDate}"`
 }

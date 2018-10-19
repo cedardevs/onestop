@@ -44,7 +44,6 @@ describe('The jsonLdUtils', function() {
 }`)
   })
 
-
   it('adds image if thumbnail is provided', function () {
     const input = {
       title: "the title of the record",
@@ -74,12 +73,39 @@ describe('The jsonLdUtils', function() {
 }`)
   })
 
+  it('adds temporal if begin and end date provided', function () {
+    const input = {
+      title: "the title of the record",
+      description: "A rather long description (not!)",
+      beginDate: "2018-10-19",
+      endDate: "2019-01-02"
+    }
+
+    assert.equal(util.temporalToJsonLd(input), `
+  "temporalCoverage": "2018-10-19/2019-01-02"`)
+
+    assert.equal(util.temporalToJsonLd({}), null, 'no date in map should return null for temporalToJsonLd helper')
+
+    assert.equal(util.temporalToJsonLd({beginDate: "2018-10-19"}), `
+  "temporalCoverage": "2018-10-19/undefined"`, 'unbounded date range') // TODO this passed in the structured data parser, but is it really ok?
+
+    assert.equal(util.toJsonLd(input), `{
+  "@context": "http://schema.org",
+  "@type": "Dataset",
+  "name": "the title of the record",
+  "description": "A rather long description (not!)",
+  "temporalCoverage": "2018-10-19/2019-01-02"
+}`)
+  })
+
   it('full item', function () {
     const input = {
       title: "the title of the record",
       description: "A rather long description (not!)",
       doi: "doi:10.1234/ABCDEFGH",
-      thumbnail: "http://example.com/thumbnail"
+      thumbnail: "http://example.com/thumbnail",
+      beginDate: "2018-10-19",
+      endDate: "2019-01-02"
     }
 
     assert.equal(util.toJsonLd(input), `{
@@ -94,7 +120,8 @@ describe('The jsonLdUtils', function() {
     "@type": "ImageObject",
     "url" : "http://example.com/thumbnail",
     "contentUrl" : "http://example.com/thumbnail"
-  }
+  },
+  "temporalCoverage": "2018-10-19/2019-01-02"
 }`)
   })
 })
