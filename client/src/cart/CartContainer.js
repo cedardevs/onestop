@@ -2,8 +2,15 @@ import {connect} from 'react-redux'
 import Cart from './Cart'
 
 import {withRouter} from 'react-router'
-import {removeAllGranulesFromLocalStorage, removeGranuleFromLocalStorage, getSelectedGranulesFromStorage} from '../utils/localStorageUtil'
-import {removeSelectedGranule, removeAllSelectedGranule} from '../actions/CartActions'
+import {
+  removeAllGranulesFromLocalStorage,
+  removeGranuleFromLocalStorage,
+  getSelectedGranulesFromStorage,
+} from '../utils/localStorageUtil'
+import {
+  removeSelectedGranule,
+  removeAllSelectedGranule,
+} from '../actions/CartActions'
 
 // const mapStateToProps = state => {
 //   const numberOfGranulesSelected = Object.keys(
@@ -19,7 +26,9 @@ import {removeSelectedGranule, removeAllSelectedGranule} from '../actions/CartAc
 
 const mapStateToProps = state => {
   const selectedGranules = getSelectedGranulesFromStorage(state)
-  const numberOfGranulesSelected = selectedGranules ?  Object.keys(selectedGranules).length : 0
+  const numberOfGranulesSelected = selectedGranules
+    ? Object.keys(getSelectedGranulesFromStorage(state)).length
+    : 0
 
   return {
     loading: state.ui.loading ? 1 : 0,
@@ -30,14 +39,14 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    deselectGranule: (itemId) => {
+    deselectGranule: itemId => {
       removeGranuleFromLocalStorage(itemId)
       dispatch(removeSelectedGranule(itemId))
     },
     deselectAllGranules: () => {
       removeAllGranulesFromLocalStorage()
       dispatch(removeAllSelectedGranule())
-    }
+    },
   }
 }
 

@@ -1,8 +1,8 @@
 export const CLEAR_SELECTED_GRANULES = 'CLEAR_SELECTED_GRANULES'
 export const removeAllSelectedGranule = () => {
-    return {
-        type: CLEAR_SELECTED_GRANULES
-    }
+  return {
+    type: CLEAR_SELECTED_GRANULES,
+  }
 }
 
 export const INSERT_SELECTED_GRANULE = 'INSERT_SELECTED_GRANULE'

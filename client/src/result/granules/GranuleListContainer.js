@@ -9,7 +9,11 @@ import {
   removeSelectedGranule,
   removeMultipleSelectedGranules,
 } from '../../actions/CartActions'
-import {insertGranule, removeGranuleFromLocalStorage, getSelectedGranulesFromStorage} from '../../utils/localStorageUtil'
+import {
+  insertGranule,
+  removeGranuleFromLocalStorage,
+  getSelectedGranulesFromStorage,
+} from '../../utils/localStorageUtil'
 
 import GranuleList from './GranuleList'
 

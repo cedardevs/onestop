@@ -262,7 +262,7 @@ export default class CartItem extends React.Component {
         expanded={this.state.expanded}
         item={item}
         itemId={itemId}
-        deselectGranule = {deselectGranule}
+        deselectGranule={deselectGranule}
       />
     )
 

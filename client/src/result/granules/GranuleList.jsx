@@ -8,7 +8,6 @@ import {identifyProtocol} from '../../utils/resultUtils'
 import {boxShadow} from '../../common/defaultStyles'
 import Meta from '../../helmet/Meta'
 
-
 const styleCenterContent = {
   display: 'flex',
   justifyContent: 'center',

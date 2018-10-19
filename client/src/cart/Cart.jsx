@@ -7,7 +7,6 @@ import {boxShadow} from '../common/defaultStyles'
 import {identifyProtocol} from '../utils/resultUtils'
 import cancel from 'fa/ban.svg'
 
-
 // import mockCartItems from '../../test/cart/mockCartItems'
 
 const SHOW_MORE_INCREMENT = 10
@@ -18,16 +17,16 @@ const styleCenterContent = {
 }
 
 const styleClearCartButton = {
-    fontSize: '0.618em',
-    display: 'inline-flex',
-    float: 'right',
-    marginRight: '5%',
+  fontSize: '0.618em',
+  display: 'inline-flex',
+  float: 'right',
+  marginRight: '5%',
 }
 
 const styleClearCartIcon = {
-    width: '1.618em',
-    height: '1.618em',
-    marginRight: '0.309em',
+  width: '1.618em',
+  height: '1.618em',
+  marginRight: '0.309em',
 }
 
 const styleCartListWrapper = {
@@ -74,12 +73,11 @@ export default class Cart extends React.Component {
     const {deselectGranule} = this.props
     let resultProps = {}
     // resultProps[deselectGranule] = deselectGranule
-      // resultProps[deselectGranule] = deselectGranule(item)
+    // resultProps[deselectGranule] = deselectGranule(item)
     return {deselectGranule: deselectGranule}
   }
 
-  handleSelectItem = e => {
-  }
+  handleSelectItem = e => {}
 
   handleShowMore = () => {
     const {numberOfGranulesSelected} = this.props
@@ -100,9 +98,14 @@ export default class Cart extends React.Component {
   }
 
   render() {
-    const {loading, selectedGranules, numberOfGranulesSelected, deselectAllGranules} = this.props
+    const {
+      loading,
+      selectedGranules,
+      numberOfGranulesSelected,
+      deselectAllGranules,
+    } = this.props
     const {numShownItems} = this.state
-
+    const selectedGranulesCount = Object.keys(selectedGranules).length
     // keep track of used protocols in results to avoid unnecessary legend keys
     const usedProtocols = new Set()
 
@@ -140,20 +143,21 @@ export default class Cart extends React.Component {
 
         <div style={styleCartListWrapper}>
           <Button
-              key="clearCartButton"
-              style={styleClearCartButton}
-              title={"Clear cart"}
-              text={"Clear cart"}
-              icon={cancel}
-              styleIcon={styleClearCartIcon}
-              onClick={deselectAllGranules}
+            key="clearCartButton"
+            style={styleClearCartButton}
+            title={'Clear cart'}
+            text={'Clear cart'}
+            icon={cancel}
+            styleIcon={styleClearCartIcon}
+            onClick={deselectAllGranules}
           />
           <ListView
             items={selectedGranules}
             loading={!!loading}
             resultsMessage={'Files for download'}
             shown={numShownItems}
-            total={numberOfGranulesSelected}
+            total={selectedGranulesCount}
+            // total={numberOfGranulesSelected}
             onItemSelect={this.handleSelectItem}
             ListItemComponent={CartItem}
             GridItemComponent={null}
