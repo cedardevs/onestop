@@ -104,6 +104,10 @@ export default class Cart extends React.Component {
     } = this.props
     const {numShownItems} = this.state
     const selectedGranulesCount = Object.keys(selectedGranules).length
+    const shownGranules =
+      selectedGranulesCount < numShownItems
+        ? selectedGranulesCount
+        : numShownItems
     // keep track of used protocols in results to avoid unnecessary legend keys
     const usedProtocols = new Set()
 
@@ -153,7 +157,7 @@ export default class Cart extends React.Component {
             items={selectedGranules}
             loading={!!loading}
             resultsMessage={'Files for download'}
-            shown={numShownItems}
+            shown={shownGranules}
             total={selectedGranulesCount}
             // total={numberOfGranulesSelected}
             onItemSelect={this.handleSelectItem}
