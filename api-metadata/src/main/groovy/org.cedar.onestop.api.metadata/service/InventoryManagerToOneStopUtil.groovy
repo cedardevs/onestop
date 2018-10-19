@@ -15,6 +15,7 @@ class InventoryManagerToOneStopUtil {
     def parentIdentifier = analysis.identification['parentIdentifier'] as Map
     def beginDate = analysis.temporalBounding['begin'] as Map
     def endDate = analysis.temporalBounding['end'] as Map
+    def instant = analysis.temporalBounding['instant'] as Map
 
     String failureMsg = "INVALID RECORD [ $id ]. VALIDATION FAILURES: "
     def failures = []
@@ -34,6 +35,9 @@ class InventoryManagerToOneStopUtil {
     }
     if(endDate.utcDateTimeString == 'INVALID') {
       failures.add('Invalid endDate')
+    }
+    if(!beginDate.exists && !endDate.exists && instant.utcDateTimeString == 'INVALID') {
+      failures.add('Invalid instant-only date')
     }
 
     if(!failures) {
@@ -58,7 +62,7 @@ class InventoryManagerToOneStopUtil {
     // update temporal Bounding
     def temporalBounding = readyDatesForSearch(discovery.temporalBounding, analysis.temporalBounding)
     discovery.temporalBounding.putAll(temporalBounding)
-    
+
     // drop fields
     discovery.remove("responsibleParties")
     discovery.services = [] // FIXME this needs to be in place until we can use ES6 ignore_missing flags
