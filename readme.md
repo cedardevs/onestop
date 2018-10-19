@@ -180,18 +180,14 @@ simply run:
 kubectl apply -f kubernetes/
 ```
 
-<aside class="notice">
-NOTE: The images for this project are currently not published publicly. If your kubernetes hosts do not already have the images
-present they will have to pull them from a registry. To do so, you must create a `regcred` secret in your cluster:
+> NOTE: The images for this project are currently not published publicly. If your kubernetes hosts do not already have the images
+> present they will have to pull them from a registry. To do so, you must create a `regcred` secret in your cluster:
+>
+> ```bash
+> kubectl create secret docker-registry regcred --docker-server=... --docker-username=... --docker-password=... --docker-email=...
+> ```
 
-```bash
-kubectl create secret docker-registry regcred --docker-server=... --docker-username=... --docker-password=... --docker-email=...
-```
-</aside>
-
-<aside class="warning">
-WARNING: The manifests include in this project are intended to provide a starting point and should **NOT** be viewed as production-ready.
-</aside>
+> WARNING: The manifests include in this project are intended to provide a starting point and should **NOT** be viewed as production-ready.
 
 ## Development
 
