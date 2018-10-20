@@ -27,7 +27,7 @@ class KafkaConsumerService {
   void listen(List<ConsumerRecord<String, String>> records) {
     // Update collections & granules
     def slurper = new JsonSlurper()
-    log.info("consuming message from a topic ${records.topic}")
+    log.info("consuming message from kafka topic")
     try {
       List<Map> valuesIds = records.collect {
         def id = it.key()

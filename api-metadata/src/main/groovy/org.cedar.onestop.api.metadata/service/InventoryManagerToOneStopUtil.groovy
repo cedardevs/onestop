@@ -56,7 +56,7 @@ class InventoryManagerToOneStopUtil {
     discovery.putAll(gcmdKeywords)
     
     // create contacts ,creators and publishers
-    Map<String, Set> partyData = parseDataResponsibleParties(discovery.responsibleParties as Map)
+    Map<String, Set> partyData = parseDataResponsibleParties(discovery.responsibleParties)
     discovery.putAll(partyData)
     
     // update temporal Bounding
@@ -196,7 +196,7 @@ class InventoryManagerToOneStopUtil {
     ]
   }
   
-  static Map<String, Set> parseDataResponsibleParties(Map responsibleParties) {
+  static Map<String, Set> parseDataResponsibleParties(List<Map> responsibleParties) {
     Set contacts = []
     Set contactRoles = ['pointOfContact', 'distributor']
     Set creators = []
@@ -206,6 +206,7 @@ class InventoryManagerToOneStopUtil {
     
     responsibleParties.each { party ->
       def parsedParty = parseParty(party as Map)
+      log.info("parsedParty: $parsedParty")
       if (contactRoles.contains(parsedParty.role)) {
         contacts.add(parsedParty)
       } else if (creatorRoles.contains(parsedParty.role)) {

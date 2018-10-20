@@ -173,7 +173,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
   
   def "Create contacts, publishers and creators from responsibleParties" () {
     given:
-    def partyMap = inputMap.discovery.responsibleParties as Map
+    List<Map> partyMap = inputMap.discovery.responsibleParties
     
     when:
     Map partiesMap = InventoryManagerToOneStopUtil.parseDataResponsibleParties(partyMap)
@@ -212,16 +212,18 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     given:
     def analysisMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-analysis.json').text
     def analysisMap = new JsonSlurper().parseText(analysisMsg) as Map
-    def discovery = inputMap.discovery as Map
-    def analysis = analysisMap as Map
-    def expectedMap = inputMap.discovery as Map
+    Map discovery = inputMap.discovery
+    Map analysis = analysisMap
+    Map expectedMap = inputMap.discovery
     
     when:
     def metadata = InventoryManagerToOneStopUtil.reformatMessageForSearch(discovery, analysis)
     expectedMap.remove("keywords")
     expectedMap.remove("services")
     expectedMap.remove("responsibleParties")
-    expectedMap << expectedResponsibleParties << expectedGcmdKeywords << expectedKeywords
+    expectedMap.putAll(expectedResponsibleParties)
+    expectedMap.putAll(expectedGcmdKeywords)
+    expectedMap.putAll(expectedKeywords)
   
     then:
     metadata == expectedMap
