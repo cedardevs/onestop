@@ -1,8 +1,9 @@
 # DEFAULTS
 # comma-delimited string (no spaces)
 # auth feature toggle: securityenabled | securitydisabled
+# kafka feature toggle: kafkaenabled | kafkadisabled
 # other features: ...
-spring.profiles.active: "securitydisabled"
+spring.profiles.active: "securitydisabled,kafkadisabled"
 
 server:
   port: 8098

@@ -31,7 +31,8 @@ dependencies {
   compile("org.opensaml:opensaml-messaging-impl:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-api:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-impl:${project.openSAMLVersion}")
-
+  compile "org.springframework.kafka:spring-kafka:2.1.10.RELEASE"
+  
   // logback
   compile("ch.qos.logback:logback-core:${project.logbackVersion}")
   compile("ch.qos.logback:logback-classic:${project.logbackVersion}")
@@ -74,6 +75,8 @@ dependencies {
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile "org.testcontainers:testcontainers:${project.testContainersVersion}"
   testCompile 'net.bytebuddy:byte-buddy:1.7.11'
+  testCompile "org.springframework.kafka:spring-kafka-test:2.1.10.RELEASE"
+  
 }
 
 ext {
