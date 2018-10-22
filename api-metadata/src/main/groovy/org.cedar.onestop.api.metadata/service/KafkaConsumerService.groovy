@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
 
-
 @Slf4j
 @Service
 @ConditionalOnProperty("features.kafka.consumer")
