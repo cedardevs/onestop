@@ -3,6 +3,11 @@ import '../specHelper'
 import * as util from '../../src/utils/jsonLdUtils'
 import {assert} from 'chai'
 
+const jsonEquals = (expected, actual) => {
+  // compare multiline strings after removing leading whitespace, making it easier to have sensible looking tests
+  assert.equal(expected.replace(/^\s\s*/gm, ""), actual.replace(/^\s\s*/gm, ""))
+}
+
 describe('In the jsonLdUtils', function () {
 
   // Note: resulting JsonLD verified using https://search.google.com/structured-data/testing-tool/u/0/
@@ -14,12 +19,13 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('creates a very simple JSON-LD object', function () {
-      assert.equal(util.toJsonLd(input), `{
-  "@context": "http://schema.org",
-  "@type": "Dataset",
-  "name": "the title of the record",
-  "description": "A rather long description (not!)"
-}`)
+      jsonEquals(util.toJsonLd(input), `{
+        "@context": "http://schema.org",
+        "@type": "Dataset",
+        "name": "the title of the record",
+        "description": "A rather long description (not!)"
+      }`
+    )
   })
 
     it('does not generate a doi block', function () {
@@ -53,22 +59,24 @@ describe('In the jsonLdUtils', function () {
   // "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"`
 
     it('generates a doi block', function () {
-      assert.equal(util.doiToJsonLd(input), `
-  "alternateName": "doi:10.1234/ABCDEFGH",
-  "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
-  "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"`)
+      jsonEquals(util.doiToJsonLd(input), `
+        "alternateName": "doi:10.1234/ABCDEFGH",
+        "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
+        "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"`
+      )
     })
 
     it('generates json-ld', function () {
-      assert.equal(util.toJsonLd(input), `{
-  "@context": "http://schema.org",
-  "@type": "Dataset",
-  "name": "the title of the record",
-  "description": "A rather long description (not!)",
-  "alternateName": "doi:10.1234/ABCDEFGH",
-  "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
-  "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"
-}`)
+      jsonEquals(util.toJsonLd(input), `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)",
+          "alternateName": "doi:10.1234/ABCDEFGH",
+          "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
+          "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"
+        }`
+      )
     })
   })
 
@@ -80,26 +88,30 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates an image block', function () {
-      assert.equal(util.thumbnailToJsonLd(input), `
-  "image": {
-    "@type": "ImageObject",
-    "url" : "http://example.com/thumbnail",
-    "contentUrl" : "http://example.com/thumbnail"
-  }`)
+      jsonEquals(util.thumbnailToJsonLd(input),
+      `
+        "image": {
+          "@type": "ImageObject",
+          "url" : "http://example.com/thumbnail",
+          "contentUrl" : "http://example.com/thumbnail"
+        }`
+      )
     })
 
     it('generates json-ld', function () {
-      assert.equal(util.toJsonLd(input), `{
-  "@context": "http://schema.org",
-  "@type": "Dataset",
-  "name": "the title of the record",
-  "description": "A rather long description (not!)",
-  "image": {
-    "@type": "ImageObject",
-    "url" : "http://example.com/thumbnail",
-    "contentUrl" : "http://example.com/thumbnail"
-  }
-}`)
+      jsonEquals(util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)",
+          "image": {
+            "@type": "ImageObject",
+            "url" : "http://example.com/thumbnail",
+            "contentUrl" : "http://example.com/thumbnail"
+          }
+        }`
+      )
     })
   })
 
@@ -113,17 +125,18 @@ describe('In the jsonLdUtils', function () {
 
     it('generates an temporal block', function () {
       util.temporalToJsonLd(input), `
-  "temporalCoverage": "2018-10-19/2019-01-02"`
+        "temporalCoverage": "2018-10-19/2019-01-02"`
     })
 
     it('generates json-ld', function () {
-      assert.equal(util.toJsonLd(input), `{
-  "@context": "http://schema.org",
-  "@type": "Dataset",
-  "name": "the title of the record",
-  "description": "A rather long description (not!)",
-  "temporalCoverage": "2018-10-19/2019-01-02"
-}`)
+      jsonEquals(util.toJsonLd(input), `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)",
+          "temporalCoverage": "2018-10-19/2019-01-02"
+        }`
+      )
     })
   })
 
@@ -136,7 +149,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates an temporal block', function () {
       util.temporalToJsonLd(input), `
-  "temporalCoverage": "2018-10-19/undefined"`
+        "temporalCoverage": "2018-10-19/undefined"`
     })
   })
 
@@ -155,51 +168,54 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates a geo shape', function () {
-      assert.equal(util.buildCoordinatesString(input), `
-    {
-      "@type": "Place",
-      "name": "geographic bounding box",
-      "geo": {
-        "@type": "GeoShape",
-        "description": "minY,minX maxY,maxX",
-        "box": "32,-180 62,-116"
-      }
-    }`)
+      jsonEquals(util.buildCoordinatesString(input), `
+        {
+          "@type": "Place",
+          "name": "geographic bounding box",
+          "geo": {
+            "@type": "GeoShape",
+            "description": "minY,minX maxY,maxX",
+            "box": "32,-180 62,-116"
+          }
+        }`
+      )
     })
 
     it('generates a spatial block', function () {
-      assert.equal(util.spatialToJsonLd(input), `
-  "spatialCoverage": [
-    {
-      "@type": "Place",
-      "name": "geographic bounding box",
-      "geo": {
-        "@type": "GeoShape",
-        "description": "minY,minX maxY,maxX",
-        "box": "32,-180 62,-116"
-      }
-    }
-  ]`)
+      jsonEquals(util.spatialToJsonLd(input), `
+        "spatialCoverage": [
+          {
+            "@type": "Place",
+            "name": "geographic bounding box",
+            "geo": {
+              "@type": "GeoShape",
+              "description": "minY,minX maxY,maxX",
+              "box": "32,-180 62,-116"
+            }
+          }
+        ]`
+      )
     })
 
     it('generates json-ld', function () {
-      assert.equal(util.toJsonLd(input), `{
-  "@context": "http://schema.org",
-  "@type": "Dataset",
-  "name": "the title of the record",
-  "description": "A rather long description (not!)",
-  "spatialCoverage": [
-    {
-      "@type": "Place",
-      "name": "geographic bounding box",
-      "geo": {
-        "@type": "GeoShape",
-        "description": "minY,minX maxY,maxX",
-        "box": "32,-180 62,-116"
-      }
-    }
-  ]
-}`)
+      jsonEquals(util.toJsonLd(input), `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)",
+          "spatialCoverage": [
+            {
+              "@type": "Place",
+              "name": "geographic bounding box",
+              "geo": {
+                "@type": "GeoShape",
+                "description": "minY,minX maxY,maxX",
+                "box": "32,-180 62,-116"
+              }
+            }
+          ]
+        }`
+      )
     })
   })
 
@@ -217,51 +233,54 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates a geo shape', function () {
-      assert.equal(util.buildCoordinatesString(input), `
-    {
-      "@type": "Place",
-      "name": "geographic bounding line",
-      "geo": {
-        "@type": "GeoShape",
-        "description": "y,x y,x",
-        "line": "51.5,-7.7 51.6,-7.7"
-      }
-    }`)
+      jsonEquals(util.buildCoordinatesString(input), `
+        {
+          "@type": "Place",
+          "name": "geographic bounding line",
+          "geo": {
+            "@type": "GeoShape",
+            "description": "y,x y,x",
+            "line": "51.5,-7.7 51.6,-7.7"
+          }
+        }`
+      )
     })
 
     it('generates a spatial block', function () {
-      assert.equal(util.spatialToJsonLd(input), `
-  "spatialCoverage": [
-    {
-      "@type": "Place",
-      "name": "geographic bounding line",
-      "geo": {
-        "@type": "GeoShape",
-        "description": "y,x y,x",
-        "line": "51.5,-7.7 51.6,-7.7"
-      }
-    }
-  ]`)
+      jsonEquals(util.spatialToJsonLd(input), `
+        "spatialCoverage": [
+          {
+            "@type": "Place",
+            "name": "geographic bounding line",
+            "geo": {
+              "@type": "GeoShape",
+              "description": "y,x y,x",
+              "line": "51.5,-7.7 51.6,-7.7"
+            }
+          }
+        ]`
+      )
     })
 
     it('generates json-ld', function () {
-      assert.equal(util.toJsonLd(input), `{
-  "@context": "http://schema.org",
-  "@type": "Dataset",
-  "name": "the title of the record",
-  "description": "A rather long description (not!)",
-  "spatialCoverage": [
-    {
-      "@type": "Place",
-      "name": "geographic bounding line",
-      "geo": {
-        "@type": "GeoShape",
-        "description": "y,x y,x",
-        "line": "51.5,-7.7 51.6,-7.7"
-      }
-    }
-  ]
-}`)
+      jsonEquals(util.toJsonLd(input), `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)",
+          "spatialCoverage": [
+            {
+              "@type": "Place",
+              "name": "geographic bounding line",
+              "geo": {
+                "@type": "GeoShape",
+                "description": "y,x y,x",
+                "line": "51.5,-7.7 51.6,-7.7"
+              }
+            }
+          ]
+        }`
+      )
     })
   })
 
@@ -278,51 +297,54 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates a geo shape', function () {
-      assert.equal(util.buildCoordinatesString(input), `
-    {
-      "@type": "Place",
-      "name": "geographic bounding point",
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "69.222",
-        "longitude": "-49.815"
-      }
-    }`)
+      jsonEquals(util.buildCoordinatesString(input), `
+        {
+          "@type": "Place",
+          "name": "geographic bounding point",
+          "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": "69.222",
+            "longitude": "-49.815"
+          }
+        }`
+      )
     })
 
     it('generates a spatial block', function () {
-      assert.equal(util.spatialToJsonLd(input), `
-  "spatialCoverage": [
-    {
-      "@type": "Place",
-      "name": "geographic bounding point",
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "69.222",
-        "longitude": "-49.815"
-      }
-    }
-  ]`)
+      jsonEquals(util.spatialToJsonLd(input), `
+        "spatialCoverage": [
+          {
+            "@type": "Place",
+            "name": "geographic bounding point",
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": "69.222",
+              "longitude": "-49.815"
+            }
+          }
+        ]`
+      )
     })
 
     it('generates json-ld', function () {
-      assert.equal(util.toJsonLd(input), `{
-  "@context": "http://schema.org",
-  "@type": "Dataset",
-  "name": "the title of the record",
-  "description": "A rather long description (not!)",
-  "spatialCoverage": [
-    {
-      "@type": "Place",
-      "name": "geographic bounding point",
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "69.222",
-        "longitude": "-49.815"
-      }
-    }
-  ]
-}`)
+      jsonEquals(util.toJsonLd(input), `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)",
+          "spatialCoverage": [
+            {
+              "@type": "Place",
+              "name": "geographic bounding point",
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": "69.222",
+                "longitude": "-49.815"
+              }
+            }
+          ]
+        }`
+      )
     })
   })
 //
@@ -346,7 +368,7 @@ describe('In the jsonLdUtils', function () {
 //
 //     }
 //
-//     assert.equal(util.spatialKeywordsToJsonLd(input), `
+//     jsonEquals(util.spatialKeywordsToJsonLd(input), `
 //   "spatialCoverage": [
 //     {
 //       "@type": "Place",
@@ -366,9 +388,9 @@ describe('In the jsonLdUtils', function () {
 //     }
 //   ]`)
 //
-//     assert.equal(util.spatialKeywordsToJsonLd({}), null, 'no coordinates in map should return null for spatialToJsonLd helper')
+//     jsonEquals(util.spatialKeywordsToJsonLd({}), null, 'no coordinates in map should return null for spatialToJsonLd helper')
 //
-//     assert.equal(util.toJsonLd(input), `{
+//     jsonEquals(util.toJsonLd(input), `{
 //   "@context": "http://schema.org",
 //   "@type": "Dataset",
 //   "name": "the title of the record",
@@ -417,33 +439,35 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates full json-ld', function () {
-
-      assert.equal(util.toJsonLd(input), `{
-  "@context": "http://schema.org",
-  "@type": "Dataset",
-  "name": "the title of the record",
-  "description": "A rather long description (not!)",
-  "alternateName": "doi:10.1234/ABCDEFGH",
-  "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
-  "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH",
-  "image": {
-    "@type": "ImageObject",
-    "url" : "http://example.com/thumbnail",
-    "contentUrl" : "http://example.com/thumbnail"
-  },
-  "temporalCoverage": "2018-10-19/2019-01-02",
-  "spatialCoverage": [
-    {
-      "@type": "Place",
-      "name": "geographic bounding box",
-      "geo": {
-        "@type": "GeoShape",
-        "description": "minY,minX maxY,maxX",
-        "box": "-90,-180 90,180"
-      }
-    }
-  ]
-}`)
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)",
+          "alternateName": "doi:10.1234/ABCDEFGH",
+          "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
+          "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH",
+          "image": {
+            "@type": "ImageObject",
+            "url" : "http://example.com/thumbnail",
+            "contentUrl" : "http://example.com/thumbnail"
+          },
+          "temporalCoverage": "2018-10-19/2019-01-02",
+          "spatialCoverage": [
+            {
+              "@type": "Place",
+              "name": "geographic bounding box",
+              "geo": {
+                "@type": "GeoShape",
+                "description": "minY,minX maxY,maxX",
+                "box": "-90,-180 90,180"
+              }
+            }
+          ]
+        }`
+      )
     })
   })
 
