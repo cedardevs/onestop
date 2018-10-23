@@ -1,7 +1,6 @@
 import _ from 'lodash'
 import moment from 'moment/moment'
 
-// if the input represents a finite number, coerces and returns it, else null
 export const toJsonLd = item => {
   const parts = [
     basicToJsonLd(item),
@@ -56,17 +55,22 @@ export const spatialToJsonLd = item => {
   return `"spatialCoverage": [
     ${_.join(_.compact(parts), ',\n')}
   ]`
-  // if (item.spatialBounding)
-  // return buildCoordinatesString(item.spatialBounding)
+}
+
+export const spatialKeywordsSubset = item => {
+  return _.intersection(item.keywords, item.gcmdLocations)
+}
+
+export const placenameToJsonLd = location => {
+  return `{
+    "@type": "Place",
+    "name": "${location}"
+  }`
 }
 
 export const spatialKeywordsToJsonLd = item => {
-  return _.map(_.intersection(item.keywords, item.gcmdLocations), location => {
-    return `{
-      "@type": "Place",
-      "name": "${location}"
-    }`
-  })
+  // gcmdLocations has extra entries for each layer in the keywords, but the intersection with the original keywords correctly identifies the correct subset
+  return _.map(spatialKeywordsSubset(item), placenameToJsonLd)
 }
 
 export const buildCoordinatesString = item => {

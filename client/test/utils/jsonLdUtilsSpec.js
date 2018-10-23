@@ -364,75 +364,149 @@ describe('In the jsonLdUtils', function () {
       )
     })
   })
-//
-//   //"gcmdLocations":["Continent > North America > United States Of America","Continent > North America","Continent","Ocean > Pacific Ocean > North Pacific Ocean","Ocean > Pacific Ocean","Ocean","Vertical Location > Land Surface","Vertical Location","Vertical Location > Sea Floor"]
-//
-//   it('adds spatial if gcmdLocations', function () {
-//     const input = {
-//       title: "the title of the record",
-//       description: "A rather long description (not!)",
-//       gcmdLocations: [
-//         "Continent > North America > United States Of America",
-//         "Continent > North America",
-//         "Continent",
-//         "Ocean > Pacific Ocean > North Pacific Ocean",
-//         "Ocean > Pacific Ocean",
-//         "Ocean",
-//         "Vertical Location > Land Surface",
-//         "Vertical Location",
-//         "Vertical Location > Sea Floor"],
-//         keywords: ["Oceans > Bathymetry/Seafloor Topography > Seafloor Topography", "Oceans > Bathymetry/Seafloor Topography > Bathymetry", "Oceans > Bathymetry/Seafloor Topography > Water Depth", "Land Surface > Topography > Terrain Elevation", "Land Surface > Topography > Terrain Elevation > Topographical Relief Maps", "Oceans > Coastal Processes > Coastal Elevation", "Models/Analyses > DEM > Digital Elevation Model", "ICSU-WDS > International Council for Science - World Data System", "< 1 meter", "Coastal Relief", "Gridded elevations", "Integrated bathymetry and topography", "Continent > North America > United States Of America", "Ocean > Pacific Ocean > North Pacific Ocean", "Vertical Location > Land Surface", "Vertical Location > Sea Floor", "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce", "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"],
-//
-//     }
-//
-//     jsonEquals(util.spatialKeywordsToJsonLd(input), `
-//   "spatialCoverage": [
-//     {
-//       "@type": "Place",
-//       "name": "Continent > North America > United States Of America"
-//     },
-//     {
-//       "@type": "Place",
-//       "name": "Ocean > Pacific Ocean > North Pacific Ocean"
-//     },
-//     {
-//       "@type": "Place",
-//       "name": "Vertical Location > Land Surface"
-//     },
-//     {
-//       "@type": "Place",
-//       "name": "Vertical Location > Sea Floor"
-//     }
-//   ]`)
-//
-//     jsonEquals(util.spatialKeywordsToJsonLd({}), null, 'no coordinates in map should return null for spatialToJsonLd helper')
-//
-//     jsonEquals(util.toJsonLd(input), `{
-//   "@context": "http://schema.org",
-//   "@type": "Dataset",
-//   "name": "the title of the record",
-//   "description": "A rather long description (not!)",
-//   "spatialCoverage": [
-//     {
-//       "@type": "Place",
-//       "name": "Continent > North America > United States Of America"
-//     },
-//     {
-//       "@type": "Place",
-//       "name": "Ocean > Pacific Ocean > North Pacific Ocean"
-//     },
-//     {
-//       "@type": "Place",
-//       "name": "Vertical Location > Land Surface"
-//     },
-//     {
-//       "@type": "Place",
-//       "name": "Vertical Location > Sea Floor"
-//     }
-//   ]
-// }`)
-//   })
-//
+
+  it('generates keyword places', function () {
+    const testCases = [
+      {
+        input: "Continent > North America > United States Of America",
+        output: `{
+          "@type": "Place",
+          "name": "Continent > North America > United States Of America"
+        }`
+      },
+      {
+        input: "Ocean > Pacific Ocean > North Pacific Ocean",
+        output: `{
+          "@type": "Place",
+          "name": "Ocean > Pacific Ocean > North Pacific Ocean"
+        }`
+      },
+      {
+        input: "Vertical Location > Land Surface",
+        output: `{
+          "@type": "Place",
+          "name": "Vertical Location > Land Surface"
+        }`
+      },
+      {
+        input: "Vertical Location > Sea Floor",
+        output: `{
+          "@type": "Place",
+          "name": "Vertical Location > Sea Floor"
+        }`
+      },
+    ]
+
+    testCases.forEach((c) => {
+      jsonEquals(util.placenameToJsonLd(c.input), c.output)
+    })
+  })
+
+  describe('a collection with gcmdLocations', function () {
+    const input = {
+      title: "the title of the record",
+      description: "A rather long description (not!)",
+      gcmdLocations: [
+        "Continent > North America > United States Of America",
+        "Continent > North America",
+        "Continent",
+        "Ocean > Pacific Ocean > North Pacific Ocean",
+        "Ocean > Pacific Ocean",
+        "Ocean",
+        "Vertical Location > Land Surface",
+        "Vertical Location",
+        "Vertical Location > Sea Floor",
+      ],
+      keywords: [
+        "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
+        "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
+        "Oceans > Bathymetry/Seafloor Topography > Water Depth",
+        "Land Surface > Topography > Terrain Elevation",
+        "Land Surface > Topography > Terrain Elevation > Topographical Relief Maps",
+        "Oceans > Coastal Processes > Coastal Elevation",
+        "Models/Analyses > DEM > Digital Elevation Model",
+        "ICSU-WDS > International Council for Science - World Data System",
+        "< 1 meter",
+        "Coastal Relief",
+        "Gridded elevations",
+        "Integrated bathymetry and topography",
+        "Continent > North America > United States Of America",
+        "Ocean > Pacific Ocean > North Pacific Ocean",
+        "Vertical Location > Land Surface",
+        "Vertical Location > Sea Floor",
+        "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+        "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+      ],
+    }
+
+    it('identifies the correct place keywords', function () {
+      assert.deepEqual(
+        util.spatialKeywordsSubset(input),
+        [
+          "Continent > North America > United States Of America",
+          "Ocean > Pacific Ocean > North Pacific Ocean",
+          "Vertical Location > Land Surface",
+          "Vertical Location > Sea Floor"
+        ]
+      )
+    })
+
+    it('generates a spatial block', function () {
+      jsonEquals(
+        util.spatialToJsonLd(input),
+        `"spatialCoverage": [
+          {
+            "@type": "Place",
+            "name": "Continent > North America > United States Of America"
+          },
+          {
+            "@type": "Place",
+            "name": "Ocean > Pacific Ocean > North Pacific Ocean"
+          },
+          {
+            "@type": "Place",
+            "name": "Vertical Location > Land Surface"
+          },
+          {
+            "@type": "Place",
+            "name": "Vertical Location > Sea Floor"
+          }
+        ]`
+      )
+    })
+
+    it('generates json-ld', function () {
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)",
+          "spatialCoverage": [
+            {
+              "@type": "Place",
+              "name": "Continent > North America > United States Of America"
+            },
+            {
+              "@type": "Place",
+              "name": "Ocean > Pacific Ocean > North Pacific Ocean"
+            },
+            {
+              "@type": "Place",
+              "name": "Vertical Location > Land Surface"
+            },
+            {
+              "@type": "Place",
+              "name": "Vertical Location > Sea Floor"
+            }
+          ]
+        }`
+      )
+    })
+
+  })
+
   describe('a complete collection', function () {
     const input = {
       title: "the title of the record",
@@ -453,6 +527,14 @@ describe('In the jsonLdUtils', function () {
         ],
         type: "Polygon"
       },
+      gcmdLocations: [
+        "Continent > North America > United States Of America",
+        "Vertical Location > Sea Floor",
+      ],
+      keywords: [
+        "Continent > North America > United States Of America",
+        "Vertical Location > Sea Floor",
+      ],
     }
 
     it('generates full json-ld', function () {
@@ -481,6 +563,14 @@ describe('In the jsonLdUtils', function () {
                 "description": "minY,minX maxY,maxX",
                 "box": "-90,-180 90,180"
               }
+            },
+            {
+              "@type": "Place",
+              "name": "Continent > North America > United States Of America"
+            },
+            {
+              "@type": "Place",
+              "name": "Vertical Location > Sea Floor"
             }
           ]
         }`
