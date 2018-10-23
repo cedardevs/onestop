@@ -51,7 +51,7 @@ const styleDeleteButtonFocus = styleButtonFocus('#851A11')
 
 export default class ActionPane extends React.Component {
   render() {
-    const {expanded, item} = this.props
+    const {expanded, item, itemId, deselectGranule} = this.props
 
     const emailButton = (
       <Button
@@ -84,7 +84,7 @@ export default class ActionPane extends React.Component {
         styleIcon={styleIcon}
         iconPadding={'0.309em'}
         onClick={() => {
-          console.log(`click on delete button: ${itemId}`)
+          deselectGranule(itemId)
         }}
       />
     )
