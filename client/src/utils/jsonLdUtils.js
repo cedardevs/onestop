@@ -12,13 +12,13 @@ export const toJsonLd = item => {
   ]
 
   // remove nulls and join
-  return `{${_.join(_.compact(parts), ',')}
-}`
+  return `{
+    ${_.join(_.compact(parts), ',\n')}
+  }`
 }
 
 export const basicToJsonLd = item => {
-  return `
-  "@context": "http://schema.org",
+  return `"@context": "http://schema.org",
   "@type": "Dataset",
   "name": "${item.title}",
   "description": "${item.description}"`
@@ -26,16 +26,14 @@ export const basicToJsonLd = item => {
 
 export const doiToJsonLd = item => {
   if (item.doi)
-  return `
-  "alternateName": "${item.doi}",
+  return `"alternateName": "${item.doi}",
   "url": "https://accession.nodc.noaa.gov/${item.doi}",
   "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=${item.doi}"`
 }
 
 export const thumbnailToJsonLd = item => {
   if (item.thumbnail)
-  return `
-  "image": {
+  return `"image": {
     "@type": "ImageObject",
     "url" : "${item.thumbnail}",
     "contentUrl" : "${item.thumbnail}"
@@ -44,8 +42,7 @@ export const thumbnailToJsonLd = item => {
 
 export const temporalToJsonLd = item => {
   if (item.beginDate)
-  return `
-  "temporalCoverage": "${item.beginDate}/${item.endDate}"`
+  return `"temporalCoverage": "${item.beginDate}/${item.endDate}"`
 }
 
 export const spatialToJsonLd = item => {
@@ -56,8 +53,8 @@ export const spatialToJsonLd = item => {
 
   if( _.compact(parts).length > 0)
      // remove nulls and join
-  return `
-  "spatialCoverage": [${_.join(_.compact(parts), ',')}
+  return `"spatialCoverage": [
+    ${_.join(_.compact(parts), ',\n')}
   ]`
   // if (item.spatialBounding)
   // return buildCoordinatesString(item.spatialBounding)
@@ -65,8 +62,7 @@ export const spatialToJsonLd = item => {
 
 export const spatialKeywordsToJsonLd = item => {
   return _.map(_.intersection(item.keywords, item.gcmdLocations), location => {
-    return `
-    {
+    return `{
       "@type": "Place",
       "name": "${location}"
     }`
@@ -83,8 +79,7 @@ export const buildCoordinatesString = item => {
   // A box is the area enclosed by the rectangle formed by two points. The first point is the lower corner, the second point is the upper corner. A box is expressed as two points separated by a space character.
   if (geometry) {
     if (geometry.type.toLowerCase() === 'point') {
-      return `
-    {
+      return `{
       "@type": "Place",
       "name": "geographic bounding point",
       "geo": {
@@ -95,8 +90,7 @@ export const buildCoordinatesString = item => {
     }`
     }
     else if (geometry.type.toLowerCase() === 'linestring') {
-      return `
-    {
+      return `{
       "@type": "Place",
       "name": "geographic bounding line",
       "geo": {
@@ -107,8 +101,7 @@ export const buildCoordinatesString = item => {
     }`
     }
     else {
-      return `
-    {
+      return `{
       "@type": "Place",
       "name": "geographic bounding box",
       "geo": {

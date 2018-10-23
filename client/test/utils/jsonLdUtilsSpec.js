@@ -19,14 +19,16 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('creates a very simple JSON-LD object', function () {
-      jsonEquals(util.toJsonLd(input), `{
-        "@context": "http://schema.org",
-        "@type": "Dataset",
-        "name": "the title of the record",
-        "description": "A rather long description (not!)"
-      }`
-    )
-  })
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)"
+        }`
+      )
+    })
 
     it('does not generate a doi block', function () {
       assert.equal(util.doiToJsonLd(input), null)
@@ -59,15 +61,18 @@ describe('In the jsonLdUtils', function () {
   // "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"`
 
     it('generates a doi block', function () {
-      jsonEquals(util.doiToJsonLd(input), `
-        "alternateName": "doi:10.1234/ABCDEFGH",
+      jsonEquals(
+        util.doiToJsonLd(input),
+        `"alternateName": "doi:10.1234/ABCDEFGH",
         "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
         "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"`
       )
     })
 
     it('generates json-ld', function () {
-      jsonEquals(util.toJsonLd(input), `{
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
@@ -88,9 +93,9 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates an image block', function () {
-      jsonEquals(util.thumbnailToJsonLd(input),
-      `
-        "image": {
+      jsonEquals(
+        util.thumbnailToJsonLd(input),
+        `"image": {
           "@type": "ImageObject",
           "url" : "http://example.com/thumbnail",
           "contentUrl" : "http://example.com/thumbnail"
@@ -99,7 +104,8 @@ describe('In the jsonLdUtils', function () {
     })
 
     it('generates json-ld', function () {
-      jsonEquals(util.toJsonLd(input),
+      jsonEquals(
+        util.toJsonLd(input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -124,12 +130,13 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates an temporal block', function () {
-      util.temporalToJsonLd(input), `
-        "temporalCoverage": "2018-10-19/2019-01-02"`
+      jsonEquals(util.temporalToJsonLd(input), `"temporalCoverage": "2018-10-19/2019-01-02"`)
     })
 
     it('generates json-ld', function () {
-      jsonEquals(util.toJsonLd(input), `{
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
@@ -148,8 +155,7 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates an temporal block', function () {
-      util.temporalToJsonLd(input), `
-        "temporalCoverage": "2018-10-19/undefined"`
+      jsonEquals(util.temporalToJsonLd(input), `"temporalCoverage": "2018-10-19/undefined"`)
     })
   })
 
@@ -168,8 +174,9 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates a geo shape', function () {
-      jsonEquals(util.buildCoordinatesString(input), `
-        {
+      jsonEquals(
+        util.buildCoordinatesString(input),
+        `{
           "@type": "Place",
           "name": "geographic bounding box",
           "geo": {
@@ -182,8 +189,9 @@ describe('In the jsonLdUtils', function () {
     })
 
     it('generates a spatial block', function () {
-      jsonEquals(util.spatialToJsonLd(input), `
-        "spatialCoverage": [
+      jsonEquals(
+        util.spatialToJsonLd(input),
+        `"spatialCoverage": [
           {
             "@type": "Place",
             "name": "geographic bounding box",
@@ -198,7 +206,9 @@ describe('In the jsonLdUtils', function () {
     })
 
     it('generates json-ld', function () {
-      jsonEquals(util.toJsonLd(input), `{
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
@@ -233,8 +243,9 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates a geo shape', function () {
-      jsonEquals(util.buildCoordinatesString(input), `
-        {
+      jsonEquals(
+        util.buildCoordinatesString(input),
+        `{
           "@type": "Place",
           "name": "geographic bounding line",
           "geo": {
@@ -247,8 +258,8 @@ describe('In the jsonLdUtils', function () {
     })
 
     it('generates a spatial block', function () {
-      jsonEquals(util.spatialToJsonLd(input), `
-        "spatialCoverage": [
+      jsonEquals(
+        util.spatialToJsonLd(input), `"spatialCoverage": [
           {
             "@type": "Place",
             "name": "geographic bounding line",
@@ -263,7 +274,9 @@ describe('In the jsonLdUtils', function () {
     })
 
     it('generates json-ld', function () {
-      jsonEquals(util.toJsonLd(input), `{
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
@@ -297,8 +310,9 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates a geo shape', function () {
-      jsonEquals(util.buildCoordinatesString(input), `
-        {
+      jsonEquals(
+        util.buildCoordinatesString(input),
+        `{
           "@type": "Place",
           "name": "geographic bounding point",
           "geo": {
@@ -311,8 +325,9 @@ describe('In the jsonLdUtils', function () {
     })
 
     it('generates a spatial block', function () {
-      jsonEquals(util.spatialToJsonLd(input), `
-        "spatialCoverage": [
+      jsonEquals(
+        util.spatialToJsonLd(input),
+        `"spatialCoverage": [
           {
             "@type": "Place",
             "name": "geographic bounding point",
@@ -327,7 +342,9 @@ describe('In the jsonLdUtils', function () {
     })
 
     it('generates json-ld', function () {
-      jsonEquals(util.toJsonLd(input), `{
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
