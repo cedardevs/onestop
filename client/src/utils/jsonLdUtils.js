@@ -8,9 +8,10 @@ export const toJsonLd = item => {
     doiToJsonLd(item),
     thumbnailToJsonLd(item),
     temporalToJsonLd(item),
-    spatialToJsonLd(item)
+    spatialToJsonLd(item),
   ]
 
+  // remove nulls and join
   return `{${_.join(_.compact(parts), ',')}
 }`
 }
@@ -48,11 +49,32 @@ export const temporalToJsonLd = item => {
 }
 
 export const spatialToJsonLd = item => {
-  if (item.spatialBounding)
-  return buildCoordinatesString(item.spatialBounding)
+  const parts = _.concat([],
+    [buildCoordinatesString(item)],
+    spatialKeywordsToJsonLd(item)
+  )
+
+  if( _.compact(parts).length > 0)
+     // remove nulls and join
+  return `
+  "spatialCoverage": [${_.join(_.compact(parts), ',')}
+  ]`
+  // if (item.spatialBounding)
+  // return buildCoordinatesString(item.spatialBounding)
 }
 
-export const buildCoordinatesString = geometry => {
+export const spatialKeywordsToJsonLd = item => {
+  return _.map(_.intersection(item.keywords, item.gcmdLocations), location => {
+    return `
+    {
+      "@type": "Place",
+      "name": "${location}"
+    }`
+  })
+}
+
+export const buildCoordinatesString = item => {
+  const geometry = item.spatialBounding
   // For point, want GeoCoordnates: longitude:[0], latitude:[1]
   // The geographic shape of a place. A GeoShape can be described using several properties whose values are based on latitude/longitude pairs. Either whitespace or commas can be used to separate latitude and longitude; whitespace should be used when writing a list of several such points.
   // For line, want GeoShape: line: y,x y,x
@@ -62,7 +84,6 @@ export const buildCoordinatesString = geometry => {
   if (geometry) {
     if (geometry.type.toLowerCase() === 'point') {
       return `
-  "spatialCoverage": [
     {
       "@type": "Place",
       "name": "geographic bounding point",
@@ -71,12 +92,10 @@ export const buildCoordinatesString = geometry => {
         "latitude": "${geometry.coordinates[0][1]}",
         "longitude": "${geometry.coordinates[0][0]}"
       }
-    }
-  ]`
+    }`
     }
     else if (geometry.type.toLowerCase() === 'linestring') {
       return `
-  "spatialCoverage": [
     {
       "@type": "Place",
       "name": "geographic bounding line",
@@ -85,12 +104,10 @@ export const buildCoordinatesString = geometry => {
         "description": "y,x y,x",
         "line": "${geometry.coordinates[0][1]},${geometry.coordinates[0][0]} ${geometry.coordinates[1][1]},${geometry.coordinates[1][0]}"
       }
-    }
-  ]`
+    }`
     }
     else {
       return `
-  "spatialCoverage": [
     {
       "@type": "Place",
       "name": "geographic bounding box",
@@ -99,8 +116,7 @@ export const buildCoordinatesString = geometry => {
         "description": "minY,minX maxY,maxX",
         "box": "${geometry.coordinates[0][0][1]},${geometry.coordinates[0][0][0]} ${geometry.coordinates[0][2][1]},${geometry.coordinates[0][2][0]}"
       }
-    }
-  ]`
+    }`
     }
   }
   else {

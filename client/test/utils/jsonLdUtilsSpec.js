@@ -3,17 +3,18 @@ import '../specHelper'
 import * as util from '../../src/utils/jsonLdUtils'
 import {assert} from 'chai'
 
-describe('The jsonLdUtils', function() {
+describe('In the jsonLdUtils', function () {
 
   // Note: resulting JsonLD verified using https://search.google.com/structured-data/testing-tool/u/0/
 
-  it('creates a very simple JSON-LD object', function () {
+  describe('a collection with no optional fields', function () {
     const input = {
       title: "the title of the record",
       description: "A rather long description (not!)"
     }
 
-    assert.equal(util.toJsonLd(input), `{
+    it('creates a very simple JSON-LD object', function () {
+      assert.equal(util.toJsonLd(input), `{
   "@context": "http://schema.org",
   "@type": "Dataset",
   "name": "the title of the record",
@@ -21,21 +22,45 @@ describe('The jsonLdUtils', function() {
 }`)
   })
 
-  it('adds some DOI specific fields if the doi is provided', function () {
+    it('does not generate a doi block', function () {
+      assert.equal(util.doiToJsonLd(input), null)
+    })
+
+    it('does not generate a thumbnail image block', function () {
+      assert.equal(util.thumbnailToJsonLd(input), null)
+    })
+
+    it('does not generate a temporal block', function () {
+      assert.equal(util.temporalToJsonLd(input), null)
+    })
+
+    it('does not generate a spatial block', function () {
+      assert.equal(util.spatialToJsonLd(input), null)
+    })
+
+  })
+
+  describe('a collection with a doi', function () {
     const input = {
       title: "the title of the record",
       description: "A rather long description (not!)",
       doi: "doi:10.1234/ABCDEFGH"
     }
 
-    assert.equal(util.doiToJsonLd(input), `
+  // TODO   const expectedBlock = `
+  // "alternateName": "doi:10.1234/ABCDEFGH",
+  // "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
+  // "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"`
+
+    it('generates a doi block', function () {
+      assert.equal(util.doiToJsonLd(input), `
   "alternateName": "doi:10.1234/ABCDEFGH",
   "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
   "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"`)
+    })
 
-    assert.equal(util.doiToJsonLd({}), null, 'no doi in map should return null for doiToJsonLd helper')
-
-    assert.equal(util.toJsonLd(input), `{
+    it('generates json-ld', function () {
+      assert.equal(util.toJsonLd(input), `{
   "@context": "http://schema.org",
   "@type": "Dataset",
   "name": "the title of the record",
@@ -44,25 +69,27 @@ describe('The jsonLdUtils', function() {
   "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
   "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"
 }`)
+    })
   })
 
-  it('adds image if thumbnail is provided', function () {
+  describe('a collection with a thumbnail', function () {
     const input = {
       title: "the title of the record",
       description: "A rather long description (not!)",
       thumbnail: "http://example.com/thumbnail"
     }
 
-    assert.equal(util.thumbnailToJsonLd(input), `
+    it('generates an image block', function () {
+      assert.equal(util.thumbnailToJsonLd(input), `
   "image": {
     "@type": "ImageObject",
     "url" : "http://example.com/thumbnail",
     "contentUrl" : "http://example.com/thumbnail"
   }`)
+    })
 
-    assert.equal(util.thumbnailToJsonLd({}), null, 'no thumbnail in map should return null for thumbnailToJsonLd helper')
-
-    assert.equal(util.toJsonLd(input), `{
+    it('generates json-ld', function () {
+      assert.equal(util.toJsonLd(input), `{
   "@context": "http://schema.org",
   "@type": "Dataset",
   "name": "the title of the record",
@@ -73,9 +100,10 @@ describe('The jsonLdUtils', function() {
     "contentUrl" : "http://example.com/thumbnail"
   }
 }`)
+    })
   })
 
-  it('adds temporal if begin and end date provided', function () {
+  describe('a collection with a bounded date range', function () {
     const input = {
       title: "the title of the record",
       description: "A rather long description (not!)",
@@ -83,24 +111,36 @@ describe('The jsonLdUtils', function() {
       endDate: "2019-01-02"
     }
 
-    assert.equal(util.temporalToJsonLd(input), `
-  "temporalCoverage": "2018-10-19/2019-01-02"`)
+    it('generates an temporal block', function () {
+      util.temporalToJsonLd(input), `
+  "temporalCoverage": "2018-10-19/2019-01-02"`
+    })
 
-    assert.equal(util.temporalToJsonLd({}), null, 'no date in map should return null for temporalToJsonLd helper')
-
-    assert.equal(util.temporalToJsonLd({beginDate: "2018-10-19"}), `
-  "temporalCoverage": "2018-10-19/undefined"`, 'unbounded date range') // TODO this passed in the structured data parser, but is it really ok?
-
-    assert.equal(util.toJsonLd(input), `{
+    it('generates json-ld', function () {
+      assert.equal(util.toJsonLd(input), `{
   "@context": "http://schema.org",
   "@type": "Dataset",
   "name": "the title of the record",
   "description": "A rather long description (not!)",
   "temporalCoverage": "2018-10-19/2019-01-02"
 }`)
+    })
   })
 
-  it('adds spatial if polygon', function () {
+  describe('a collection with an unbounded date range', function () {
+    const input = {
+      title: "the title of the record",
+      description: "A rather long description (not!)",
+      beginDate: "2018-10-19",
+    }
+
+    it('generates an temporal block', function () {
+      util.temporalToJsonLd(input), `
+  "temporalCoverage": "2018-10-19/undefined"`
+    })
+  })
+
+  describe('a collection with a bounding box', function () {
     const input = {
       title: "the title of the record",
       description: "A rather long description (not!)",
@@ -114,7 +154,21 @@ describe('The jsonLdUtils', function() {
       }
     }
 
-    assert.equal(util.spatialToJsonLd(input), `
+    it('generates a geo shape', function () {
+      assert.equal(util.buildCoordinatesString(input), `
+    {
+      "@type": "Place",
+      "name": "geographic bounding box",
+      "geo": {
+        "@type": "GeoShape",
+        "description": "minY,minX maxY,maxX",
+        "box": "32,-180 62,-116"
+      }
+    }`)
+    })
+
+    it('generates a spatial block', function () {
+      assert.equal(util.spatialToJsonLd(input), `
   "spatialCoverage": [
     {
       "@type": "Place",
@@ -126,10 +180,10 @@ describe('The jsonLdUtils', function() {
       }
     }
   ]`)
+    })
 
-    assert.equal(util.spatialToJsonLd({}), null, 'no coordinates in map should return null for spatialToJsonLd helper')
-
-    assert.equal(util.toJsonLd(input), `{
+    it('generates json-ld', function () {
+      assert.equal(util.toJsonLd(input), `{
   "@context": "http://schema.org",
   "@type": "Dataset",
   "name": "the title of the record",
@@ -146,36 +200,10 @@ describe('The jsonLdUtils', function() {
     }
   ]
 }`)
+    })
   })
 
-  it('adds spatial if point', function () {
-    const input = {
-      title: "the title of the record",
-      description: "A rather long description (not!)",
-      spatialBounding: {
-        coordinates: [
-          [-49.815, 69.222]
-        ],
-        type: "Point"
-      }
-    }
-
-    assert.equal(util.spatialToJsonLd(input), `
-  "spatialCoverage": [
-    {
-      "@type": "Place",
-      "name": "geographic bounding point",
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": "69.222",
-        "longitude": "-49.815"
-      }
-    }
-  ]`)
-
-  })
-
-  it('adds spatial if line', function () {
+  describe('a collection with a line', function () {
     const input = {
       title: "the title of the record",
       description: "A rather long description (not!)",
@@ -188,7 +216,21 @@ describe('The jsonLdUtils', function() {
       }
     }
 
-    assert.equal(util.spatialToJsonLd(input), `
+    it('generates a geo shape', function () {
+      assert.equal(util.buildCoordinatesString(input), `
+    {
+      "@type": "Place",
+      "name": "geographic bounding line",
+      "geo": {
+        "@type": "GeoShape",
+        "description": "y,x y,x",
+        "line": "51.5,-7.7 51.6,-7.7"
+      }
+    }`)
+    })
+
+    it('generates a spatial block', function () {
+      assert.equal(util.spatialToJsonLd(input), `
   "spatialCoverage": [
     {
       "@type": "Place",
@@ -200,10 +242,159 @@ describe('The jsonLdUtils', function() {
       }
     }
   ]`)
+    })
 
+    it('generates json-ld', function () {
+      assert.equal(util.toJsonLd(input), `{
+  "@context": "http://schema.org",
+  "@type": "Dataset",
+  "name": "the title of the record",
+  "description": "A rather long description (not!)",
+  "spatialCoverage": [
+    {
+      "@type": "Place",
+      "name": "geographic bounding line",
+      "geo": {
+        "@type": "GeoShape",
+        "description": "y,x y,x",
+        "line": "51.5,-7.7 51.6,-7.7"
+      }
+    }
+  ]
+}`)
+    })
   })
 
-  it('full item', function () {
+  describe('a collection with a line', function () {
+    const input = {
+      title: "the title of the record",
+      description: "A rather long description (not!)",
+      spatialBounding: {
+        coordinates: [
+          [-49.815, 69.222]
+        ],
+        type: "Point"
+      }
+    }
+
+    it('generates a geo shape', function () {
+      assert.equal(util.buildCoordinatesString(input), `
+    {
+      "@type": "Place",
+      "name": "geographic bounding point",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "69.222",
+        "longitude": "-49.815"
+      }
+    }`)
+    })
+
+    it('generates a spatial block', function () {
+      assert.equal(util.spatialToJsonLd(input), `
+  "spatialCoverage": [
+    {
+      "@type": "Place",
+      "name": "geographic bounding point",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "69.222",
+        "longitude": "-49.815"
+      }
+    }
+  ]`)
+    })
+
+    it('generates json-ld', function () {
+      assert.equal(util.toJsonLd(input), `{
+  "@context": "http://schema.org",
+  "@type": "Dataset",
+  "name": "the title of the record",
+  "description": "A rather long description (not!)",
+  "spatialCoverage": [
+    {
+      "@type": "Place",
+      "name": "geographic bounding point",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "69.222",
+        "longitude": "-49.815"
+      }
+    }
+  ]
+}`)
+    })
+  })
+//
+//   //"gcmdLocations":["Continent > North America > United States Of America","Continent > North America","Continent","Ocean > Pacific Ocean > North Pacific Ocean","Ocean > Pacific Ocean","Ocean","Vertical Location > Land Surface","Vertical Location","Vertical Location > Sea Floor"]
+//
+//   it('adds spatial if gcmdLocations', function () {
+//     const input = {
+//       title: "the title of the record",
+//       description: "A rather long description (not!)",
+//       gcmdLocations: [
+//         "Continent > North America > United States Of America",
+//         "Continent > North America",
+//         "Continent",
+//         "Ocean > Pacific Ocean > North Pacific Ocean",
+//         "Ocean > Pacific Ocean",
+//         "Ocean",
+//         "Vertical Location > Land Surface",
+//         "Vertical Location",
+//         "Vertical Location > Sea Floor"],
+//         keywords: ["Oceans > Bathymetry/Seafloor Topography > Seafloor Topography", "Oceans > Bathymetry/Seafloor Topography > Bathymetry", "Oceans > Bathymetry/Seafloor Topography > Water Depth", "Land Surface > Topography > Terrain Elevation", "Land Surface > Topography > Terrain Elevation > Topographical Relief Maps", "Oceans > Coastal Processes > Coastal Elevation", "Models/Analyses > DEM > Digital Elevation Model", "ICSU-WDS > International Council for Science - World Data System", "< 1 meter", "Coastal Relief", "Gridded elevations", "Integrated bathymetry and topography", "Continent > North America > United States Of America", "Ocean > Pacific Ocean > North Pacific Ocean", "Vertical Location > Land Surface", "Vertical Location > Sea Floor", "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce", "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"],
+//
+//     }
+//
+//     assert.equal(util.spatialKeywordsToJsonLd(input), `
+//   "spatialCoverage": [
+//     {
+//       "@type": "Place",
+//       "name": "Continent > North America > United States Of America"
+//     },
+//     {
+//       "@type": "Place",
+//       "name": "Ocean > Pacific Ocean > North Pacific Ocean"
+//     },
+//     {
+//       "@type": "Place",
+//       "name": "Vertical Location > Land Surface"
+//     },
+//     {
+//       "@type": "Place",
+//       "name": "Vertical Location > Sea Floor"
+//     }
+//   ]`)
+//
+//     assert.equal(util.spatialKeywordsToJsonLd({}), null, 'no coordinates in map should return null for spatialToJsonLd helper')
+//
+//     assert.equal(util.toJsonLd(input), `{
+//   "@context": "http://schema.org",
+//   "@type": "Dataset",
+//   "name": "the title of the record",
+//   "description": "A rather long description (not!)",
+//   "spatialCoverage": [
+//     {
+//       "@type": "Place",
+//       "name": "Continent > North America > United States Of America"
+//     },
+//     {
+//       "@type": "Place",
+//       "name": "Ocean > Pacific Ocean > North Pacific Ocean"
+//     },
+//     {
+//       "@type": "Place",
+//       "name": "Vertical Location > Land Surface"
+//     },
+//     {
+//       "@type": "Place",
+//       "name": "Vertical Location > Sea Floor"
+//     }
+//   ]
+// }`)
+//   })
+//
+  describe('a complete collection', function () {
     const input = {
       title: "the title of the record",
       description: "A rather long description (not!)",
@@ -225,7 +416,9 @@ describe('The jsonLdUtils', function() {
       },
     }
 
-    assert.equal(util.toJsonLd(input), `{
+    it('generates full json-ld', function () {
+
+      assert.equal(util.toJsonLd(input), `{
   "@context": "http://schema.org",
   "@type": "Dataset",
   "name": "the title of the record",
@@ -251,5 +444,8 @@ describe('The jsonLdUtils', function() {
     }
   ]
 }`)
+    })
   })
+
+
 })
