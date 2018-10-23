@@ -5,8 +5,10 @@ import CartItem from './CartItem'
 import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 import {identifyProtocol} from '../utils/resultUtils'
+import cancel from 'fa/ban.svg'
+import {fontFamilySerif} from '../utils/styleUtils'
 
-import mockCartItems from '../../test/cart/mockCartItems'
+// import mockCartItems from '../../test/cart/mockCartItems'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -27,6 +29,29 @@ const styleCartListWrapper = {
   color: '#222',
 }
 
+const styleCartActions = {
+  margin: '0 0 1.618em 1.618em',
+}
+
+const styleCartActionsTitle = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.2em',
+  margin: '0 1.618em 0.618em 0',
+  padding: 0,
+}
+
+const styleClearCartButton = {
+  fontSize: '1em',
+  display: 'inline-flex',
+  padding: '0.309em',
+}
+
+const styleClearCartIcon = {
+  width: '1.618em',
+  height: '1.618em',
+  marginRight: '0.309em',
+}
+
 const styleShowMore = {
   margin: '1em auto 1.618em auto',
 }
@@ -37,13 +62,14 @@ const styleShowMoreFocus = {
 
 export default class Cart extends React.Component {
   constructor(props) {
-    super()
+    super(props)
     this.state = {
       numShownItems:
         props.numberOfGranulesSelected < SHOW_MORE_INCREMENT
           ? props.numberOfGranulesSelected
           : SHOW_MORE_INCREMENT,
     }
+    this.props = props
   }
 
   // handleExpandableToggle = event => {
@@ -55,9 +81,9 @@ export default class Cart extends React.Component {
   // }
 
   propsForResult = (item, itemId) => {
-    return {
-      // handleExpandableToggle: this.handleExpandableToggle
-    }
+    const {deselectGranule} = this.props
+    let resultProps = {}
+    return {deselectGranule: deselectGranule}
   }
 
   handleSelectItem = e => {}
@@ -81,9 +107,18 @@ export default class Cart extends React.Component {
   }
 
   render() {
-    const {loading, selectedGranules, numberOfGranulesSelected} = this.props
+    const {
+      loading,
+      selectedGranules,
+      numberOfGranulesSelected,
+      deselectAllGranules,
+    } = this.props
     const {numShownItems} = this.state
-
+    const selectedGranulesCount = Object.keys(selectedGranules).length
+    const shownGranules =
+      selectedGranulesCount < numShownItems
+        ? selectedGranulesCount
+        : numShownItems
     // keep track of used protocols in results to avoid unnecessary legend keys
     const usedProtocols = new Set()
 
@@ -97,13 +132,6 @@ export default class Cart extends React.Component {
         })
       }
     }
-    // _.forEach(selectedGranules, value => {
-    //   _.forEach(value.links, link => {
-    //     // if(link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess') {
-    //     return usedProtocols.add(identifyProtocol(link))
-    //     // }
-    //   })
-    // })
 
     const showMoreButton =
       numShownItems < numberOfGranulesSelected ? (
@@ -115,17 +143,35 @@ export default class Cart extends React.Component {
         />
       ) : null
 
+    const cartActions =
+      selectedGranulesCount === 0 ? null : (
+        <div style={styleCartActions}>
+          <h1 style={styleCartActionsTitle}>Cart Actions</h1>
+          <Button
+            key="clearCartButton"
+            style={styleClearCartButton}
+            title={'Clear cart'}
+            text={'Clear cart'}
+            icon={cancel}
+            styleIcon={styleClearCartIcon}
+            onClick={deselectAllGranules}
+          />
+        </div>
+      )
+
     return (
       <div style={styleCenterContent}>
         <Meta title="File Access Cart" robots="noindex" />
 
         <div style={styleCartListWrapper}>
+          {cartActions}
           <ListView
-            items={mockCartItems}
+            items={selectedGranules}
             loading={!!loading}
             resultsMessage={'Files for download'}
-            shown={numShownItems}
-            total={numberOfGranulesSelected}
+            shown={shownGranules}
+            total={selectedGranulesCount}
+            // total={numberOfGranulesSelected}
             onItemSelect={this.handleSelectItem}
             ListItemComponent={CartItem}
             GridItemComponent={null}

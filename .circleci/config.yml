@@ -18,9 +18,9 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-          - onestop-cache-v2-{{ checksum "build.gradle" }}
+          - onestop-cache-v3-{{ checksum "build.gradle" }}
           # fallback to using the latest cache if no exact match is found
-          - onestop-cache-v2-
+          - onestop-cache-v3-
 
       # Virtual Memory for Elasticsearch:
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
@@ -62,7 +62,7 @@ jobs:
             - client/.gradle
             - client/node_modules
             - client/build
-          key: onestop-cache-v2-{{ checksum "build.gradle" }}
+          key: onestop-cache-v3-{{ checksum "build.gradle" }}
 
       - deploy:
           name: Publish

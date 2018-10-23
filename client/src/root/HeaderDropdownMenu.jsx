@@ -60,6 +60,19 @@ const styleSeparatorOpen = {
 }
 
 class HeaderDropdownMenu extends React.Component {
+  constructor(props) {
+    super(props)
+    this.insideRef = React.createRef()
+  }
+
+  componentWillMount() {
+    document.addEventListener('mousedown', this.handleMouseDown, false)
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleMouseDown, false)
+  }
+
   handleRedirectToCart = () => {
     const {history, location, setOpen} = this.props
     if (location.pathname !== '/cart') {
@@ -85,6 +98,18 @@ class HeaderDropdownMenu extends React.Component {
     if (setOpen) {
       setOpen(false)
     }
+  }
+
+  handleClickOutside = event => {
+    const {setOpen} = this.props
+    setOpen(false)
+  }
+
+  handleMouseDown = event => {
+    if (this.insideRef.current === event.target) {
+      return
+    }
+    this.handleClickOutside(event)
   }
 
   render() {
@@ -129,7 +154,7 @@ class HeaderDropdownMenu extends React.Component {
     })
 
     const extraMenuContent = (
-      <div style={styleExtraMenuContent}>
+      <div style={styleExtraMenuContent} ref={this.insideRef}>
         <div style={styleSeparatorWrapper}>
           <div style={stylesSeparatorMerged} />
         </div>
@@ -138,7 +163,11 @@ class HeaderDropdownMenu extends React.Component {
     )
 
     return (
-      <FocusManager onBlur={this.handleTotalBlur} blurOnEscape={true}>
+      <FocusManager
+        onBlur={this.handleTotalBlur}
+        blurOnEscape={true}
+        blurOnClickOutside={true}
+      >
         <AnimateHeight
           duration={ANIMATION_DURATION}
           height={open ? 'auto' : 0}
