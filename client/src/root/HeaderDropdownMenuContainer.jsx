@@ -3,9 +3,7 @@ import HeaderDropdownMenu from './HeaderDropdownMenu'
 import {withRouter} from 'react-router'
 import {abbreviateNumber} from '../utils/readableUtils'
 import {setHeaderMenuOpen} from '../actions/LayoutActions'
-import {
-  getSelectedGranulesFromStorage,
-} from '../utils/localStorageUtil'
+import {getSelectedGranulesFromStorage} from '../utils/localStorageUtil'
 
 const mapStateToProps = state => {
   const numberOfGranulesSelected = Object.keys(

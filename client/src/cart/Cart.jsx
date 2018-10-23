@@ -6,6 +6,7 @@ import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 import {identifyProtocol} from '../utils/resultUtils'
 import cancel from 'fa/ban.svg'
+import {fontFamilySerif} from '../utils/styleUtils'
 
 // import mockCartItems from '../../test/cart/mockCartItems'
 
@@ -14,19 +15,6 @@ const SHOW_MORE_INCREMENT = 10
 const styleCenterContent = {
   display: 'flex',
   justifyContent: 'center',
-}
-
-const styleClearCartButton = {
-  fontSize: '0.618em',
-  display: 'inline-flex',
-  float: 'right',
-  marginRight: '5%',
-}
-
-const styleClearCartIcon = {
-  width: '1.618em',
-  height: '1.618em',
-  marginRight: '0.309em',
 }
 
 const styleCartListWrapper = {
@@ -41,6 +29,29 @@ const styleCartListWrapper = {
   color: '#222',
 }
 
+const styleCartActions = {
+  margin: '0 0 1.618em 1.618em',
+}
+
+const styleCartActionsTitle = {
+  fontFamily: fontFamilySerif(),
+  fontSize: '1.2em',
+  margin: '0 1.618em 0.618em 0',
+  padding: 0,
+}
+
+const styleClearCartButton = {
+  fontSize: '1em',
+  display: 'inline-flex',
+  padding: '0.309em',
+}
+
+const styleClearCartIcon = {
+  width: '1.618em',
+  height: '1.618em',
+  marginRight: '0.309em',
+}
+
 const styleShowMore = {
   margin: '1em auto 1.618em auto',
 }
@@ -51,7 +62,7 @@ const styleShowMoreFocus = {
 
 export default class Cart extends React.Component {
   constructor(props) {
-    super()
+    super(props)
     this.state = {
       numShownItems:
         props.numberOfGranulesSelected < SHOW_MORE_INCREMENT
@@ -121,13 +132,6 @@ export default class Cart extends React.Component {
         })
       }
     }
-    // _.forEach(selectedGranules, value => {
-    //   _.forEach(value.links, link => {
-    //     // if(link.linkFunction.toLowerCase() === 'download' || link.linkFunction.toLowerCase() === 'fileaccess') {
-    //     return usedProtocols.add(identifyProtocol(link))
-    //     // }
-    //   })
-    // })
 
     const showMoreButton =
       numShownItems < numberOfGranulesSelected ? (
@@ -139,11 +143,10 @@ export default class Cart extends React.Component {
         />
       ) : null
 
-    return (
-      <div style={styleCenterContent}>
-        <Meta title="File Access Cart" robots="noindex" />
-
-        <div style={styleCartListWrapper}>
+    const cartActions =
+      selectedGranulesCount === 0 ? null : (
+        <div style={styleCartActions}>
+          <h1 style={styleCartActionsTitle}>Cart Actions</h1>
           <Button
             key="clearCartButton"
             style={styleClearCartButton}
@@ -153,6 +156,15 @@ export default class Cart extends React.Component {
             styleIcon={styleClearCartIcon}
             onClick={deselectAllGranules}
           />
+        </div>
+      )
+
+    return (
+      <div style={styleCenterContent}>
+        <Meta title="File Access Cart" robots="noindex" />
+
+        <div style={styleCartListWrapper}>
+          {cartActions}
           <ListView
             items={selectedGranules}
             loading={!!loading}
