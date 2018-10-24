@@ -30,15 +30,20 @@ import './fonts/SourceSansPro-SemiBoldItalic.ttf'
 import {Route, Switch} from 'react-router'
 import {ConnectedRouter} from 'react-router-redux'
 
+import GA from './analytics/GoogleAnalytics'
+
 const reload = () => window.location.reload()
 
 const body = (
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <Switch>
-        <Route path="/sitemap.xml" exact onEnter={reload} />
-        <RootContainer />
-      </Switch>
+      <div>
+        { GA.init() && <GA.RouteTracker /> }
+        <Switch>
+          <Route path="/sitemap.xml" exact onEnter={reload} />
+          <RootContainer />
+        </Switch>
+      </div>
     </ConnectedRouter>
   </Provider>
 )
@@ -47,16 +52,18 @@ const appDiv = document.createElement('div')
 appDiv.setAttribute('id', 'app')
 appDiv.setAttribute('style', 'height:100%')
 document.body.appendChild(appDiv)
-
-const fedAnalyticsScript = document.createElement('script')
-fedAnalyticsScript.insertAdjacentHTML(
-  'afterbegin',
-  'window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;' +
-    "ga('create', 'UA-108560292-1', 'data.noaa.gov');" +
-    "ga('set', 'anonymizeIp', true);" +
-    "ga('send', 'pageview');"
-)
-document.body.appendChild(fedAnalyticsScript)
+//
+// const fedAnalyticsScript = document.createElement('script')
+// fedAnalyticsScript.insertAdjacentHTML(
+//   'afterbegin',
+//   'window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;' +
+//     // "ga('create', 'UA-108560292-1', 'data.noaa.gov');" +
+//     "ga('create', 'UA-127993388-1', 'sciapps.colorado.edu/onestop');" +
+//     "ga('set', 'transport', 'beacon');" +
+//     "ga('set', 'anonymizeIp', true);" +
+//     "ga('send', 'pageview');"
+// )
+// document.body.appendChild(fedAnalyticsScript)
 
 const googleAnalytics = document.createElement('script')
 googleAnalytics.setAttribute(
