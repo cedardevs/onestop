@@ -8,6 +8,7 @@ export const toJsonLd = item => {
     thumbnailToJsonLd(item),
     temporalToJsonLd(item),
     spatialToJsonLd(item),
+    downloadLinksToDistributionJsonLd(item),
   ]
 
   // remove nulls and join
@@ -119,4 +120,32 @@ export const buildCoordinatesString = item => {
   else {
     // return 'No spatial bounding provided.'
   }
+}
+
+export const downloadLinksToDistributionJsonLd = item => {
+  if (!item.links) return null
+  const downloadLinks = item.links.filter(
+    link => link.linkFunction === 'download'
+  )
+  if(downloadLinks.length > 0)
+  return `"distribution": [
+    ${_.join(_.map(downloadLinks, linkToJsonLd), ',\n')}
+  ]`
+}
+
+export const linkToJsonLd = link => {
+  const {linkUrl, linkName, linkProtocol, linkDescription} = link
+
+  const parts = [
+    `"@Type": "DataDownload"`,
+    linkUrl? `"url": "${linkUrl}"` : null,
+    linkDescription? `"description": "${linkDescription}"` : null,
+    linkName? `"name": "${linkName}"` : null,
+    linkProtocol? `"encodingFormat": "${linkProtocol}"` : null,
+  ]
+
+  // remove nulls and join
+  return `{
+    ${_.join(_.compact(parts), ',\n')}
+  }`
 }

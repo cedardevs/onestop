@@ -46,6 +46,10 @@ describe('In the jsonLdUtils', function () {
       assert.equal(util.spatialToJsonLd(input), null)
     })
 
+    it('does not generate a distribution block', function () {
+      assert.equal(util.downloadLinksToDistributionJsonLd(input), null)
+    })
+
   })
 
   describe('a collection with a doi', function () {
@@ -54,11 +58,6 @@ describe('In the jsonLdUtils', function () {
       description: "A rather long description (not!)",
       doi: "doi:10.1234/ABCDEFGH"
     }
-
-  // TODO   const expectedBlock = `
-  // "alternateName": "doi:10.1234/ABCDEFGH",
-  // "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
-  // "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"`
 
     it('generates a doi block', function () {
       jsonEquals(
@@ -507,6 +506,184 @@ describe('In the jsonLdUtils', function () {
 
   })
 
+  it('generates download links', function () {
+    const testCases = [
+      {
+        input: {
+          linkUrl: "http://example.com/download",
+          linkDescription: "an example link",
+          linkName: "get data here",
+          linkProtocol: "http",
+        },
+        output: `{
+          "@Type": "DataDownload",
+          "url": "http://example.com/download",
+          "description": "an example link",
+          "name": "get data here",
+          "encodingFormat": "http"
+        }`
+      },
+      {
+        input: {
+          linkUrl: "http://example.com/download",
+          linkName: "get data here",
+          linkProtocol: "http",
+        },
+        output: `{
+          "@Type": "DataDownload",
+          "url": "http://example.com/download",
+          "name": "get data here",
+          "encodingFormat": "http"
+        }`
+      },
+      {
+        input: {
+          linkUrl: "http://example.com/download",
+          linkDescription: "an example link",
+          linkProtocol: "http",
+        },
+        output: `{
+          "@Type": "DataDownload",
+          "url": "http://example.com/download",
+          "description": "an example link",
+          "encodingFormat": "http"
+        }`
+      },
+      {
+        input: {
+          linkUrl: "http://example.com/download",
+          linkDescription: "an example link",
+          linkName: "get data here",
+        },
+        output: `{
+          "@Type": "DataDownload",
+          "url": "http://example.com/download",
+          "description": "an example link",
+          "name": "get data here"
+        }`
+      },
+      {
+        input: {
+          linkUrl: "http://example.com/download",
+        },
+        output: `{
+          "@Type": "DataDownload",
+          "url": "http://example.com/download"
+        }`
+      },
+    ]
+
+    testCases.forEach((c) => {
+      jsonEquals(util.linkToJsonLd(c.input), c.output)
+    })
+  })
+
+  describe('a collection with download links', function () {
+    const input = {
+      title: "the title of the record",
+      description: "A rather long description (not!)",
+      links: [
+        {
+          linkUrl: "http://example.com/download_1",
+          linkDescription: "an example link",
+          linkName: "get data here",
+          linkProtocol: "http",
+          linkFunction: "download",
+        },
+        {
+          linkUrl: "http://example.com/download_2",
+          linkDescription: "another link",
+          linkName: "cloud",
+          linkProtocol: "s3",
+          linkFunction: "download",
+        },
+      ]
+    }
+
+    it('generates a distribution block', function () {
+      jsonEquals(
+        util.downloadLinksToDistributionJsonLd(input),
+        `"distribution": [
+          {
+            "@Type": "DataDownload",
+            "url": "http://example.com/download_1",
+            "description": "an example link",
+            "name": "get data here",
+            "encodingFormat": "http"
+          },
+          {
+            "@Type": "DataDownload",
+            "url": "http://example.com/download_2",
+            "description": "another link",
+            "name": "cloud",
+            "encodingFormat": "s3"
+          }
+        ]`
+      )
+    })
+
+    it('generates json-ld', function () {
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)",
+          "distribution": [
+            {
+              "@Type": "DataDownload",
+              "url": "http://example.com/download_1",
+              "description": "an example link",
+              "name": "get data here",
+              "encodingFormat": "http"
+            },
+            {
+              "@Type": "DataDownload",
+              "url": "http://example.com/download_2",
+              "description": "another link",
+              "name": "cloud",
+              "encodingFormat": "s3"
+            }
+          ]
+        }`
+      )
+    })
+  })
+
+  describe('a collection with information links', function () {
+    const input = {
+      title: "the title of the record",
+      description: "A rather long description (not!)",
+      links: [
+        {
+          linkUrl: "http://example.com/help",
+          linkDescription: "helpful info",
+          linkName: "info page",
+          linkProtocol: "http",
+          linkFunction: "information",
+        },
+      ]
+    }
+
+    it('does not generate a distribution block', function () {
+      assert.equal(util.downloadLinksToDistributionJsonLd(input), null)
+    })
+
+    it('generates json-ld', function () {
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)"
+        }`
+      )
+    })
+
+  })
+
   describe('a complete collection', function () {
     const input = {
       title: "the title of the record",
@@ -535,6 +712,29 @@ describe('In the jsonLdUtils', function () {
         "Continent > North America > United States Of America",
         "Vertical Location > Sea Floor",
       ],
+      links: [
+        {
+          linkUrl: "http://example.com/download_1",
+          linkDescription: "an example link",
+          linkName: "get data here",
+          linkProtocol: "http",
+          linkFunction: "download",
+        },
+        {
+          linkUrl: "http://example.com/download_2",
+          linkDescription: "another link",
+          linkName: "cloud",
+          linkProtocol: "s3",
+          linkFunction: "download",
+        },
+        {
+          linkUrl: "http://example.com/help",
+          linkDescription: "helpful info",
+          linkName: "info page",
+          linkProtocol: "http",
+          linkFunction: "information",
+        },
+      ]
     }
 
     it('generates full json-ld', function () {
@@ -571,6 +771,22 @@ describe('In the jsonLdUtils', function () {
             {
               "@type": "Place",
               "name": "Vertical Location > Sea Floor"
+            }
+          ],
+          "distribution": [
+            {
+              "@Type": "DataDownload",
+              "url": "http://example.com/download_1",
+              "description": "an example link",
+              "name": "get data here",
+              "encodingFormat": "http"
+            },
+            {
+              "@Type": "DataDownload",
+              "url": "http://example.com/download_2",
+              "description": "another link",
+              "name": "cloud",
+              "encodingFormat": "s3"
             }
           ]
         }`
