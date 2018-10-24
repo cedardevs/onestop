@@ -154,7 +154,32 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates an temporal block', function () {
-      jsonEquals(util.temporalToJsonLd(input), `"temporalCoverage": "2018-10-19/undefined"`)
+      jsonEquals(util.temporalToJsonLd(input), `"temporalCoverage": "2018-10-19/.."`)
+    })
+  })
+
+  describe('a collection with a missing start date', function () {
+    const input = {
+      title: "the title of the record",
+      description: "A rather long description (not!)",
+      endDate: "2018-10-19",
+    }
+
+    it('generates an temporal block', function () {
+      jsonEquals(util.temporalToJsonLd(input), `"temporalCoverage": "../2018-10-19"`)
+    })
+  })
+
+  describe('a collection with an instant date', function () {
+    const input = {
+      title: "the title of the record",
+      description: "A rather long description (not!)",
+      beginDate: "2018-10-19",
+      endDate: "2018-10-19",
+    }
+
+    it('generates an temporal block', function () {
+      jsonEquals(util.temporalToJsonLd(input), `"temporalCoverage": "2018-10-19"`)
     })
   })
 

@@ -41,8 +41,17 @@ export const thumbnailToJsonLd = item => {
 }
 
 export const temporalToJsonLd = item => {
+  if (item.beginDate && item.endDate) {
+    if (item.beginDate == item.endDate) {
+      return `"temporalCoverage": "${item.beginDate}"`
+    } else {
+      return `"temporalCoverage": "${item.beginDate}/${item.endDate}"`
+    }
+  }
   if (item.beginDate)
-  return `"temporalCoverage": "${item.beginDate}/${item.endDate}"`
+  return `"temporalCoverage": "${item.beginDate}/.."`
+  if (item.endDate)
+  return `"temporalCoverage": "../${item.endDate}"`
 }
 
 export const spatialToJsonLd = item => {
