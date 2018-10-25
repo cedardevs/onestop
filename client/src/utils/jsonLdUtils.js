@@ -6,6 +6,7 @@ export const toJsonLd = item => {
     `"@context": "http://schema.org",
     "@type": "Dataset"`,
     nameField(item),
+    alternateNameField(item),
     descriptionField(item),
     identifierField(item),
     urlFields(item),
@@ -24,6 +25,11 @@ export const toJsonLd = item => {
 export const nameField = item => {
   if(item.title)
   return `"name": "${item.title}"`
+}
+
+export const alternateNameField = item => {
+  if(item.fileIdentifier)
+  return `"alternateName": "${item.fileIdentifier}"`
 }
 
 export const descriptionField = item => {

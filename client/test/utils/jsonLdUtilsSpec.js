@@ -39,6 +39,7 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
+          "alternateName": "gov.test.cires.example:abc",
           "description": "A rather long description (not!)",
           "identifier" : [
             {
@@ -111,6 +112,13 @@ describe('In the jsonLdUtils', function () {
       )
     })
 
+    it('generates the url block', function () {
+      jsonEquals(
+        util.alternateNameField(input),
+        `"alternateName": "gov.test.cires.example:abc"`
+      )
+    })
+
     it('generates json-ld', function () {
       jsonEquals(
         util.toJsonLd(input),
@@ -118,6 +126,7 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
+          "alternateName": "gov.test.cires.example:abc",
           "identifier" : [
             {
               "value" : "gov.test.cires.example:abc",
@@ -228,6 +237,7 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
+          "alternateName": "gov.test.cires.example:abc",
           "identifier" : [
             {
               "value" : "gov.test.cires.example:abc",
@@ -905,10 +915,6 @@ describe('In the jsonLdUtils', function () {
       ]
     }
 
-/*
-TODO figure out
-"alternateName": "doi:10.1234/ABCDEFGH",
-*/
     it('generates full json-ld', function () {
       jsonEquals(
         util.toJsonLd(input),
@@ -916,6 +922,7 @@ TODO figure out
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
+          "alternateName": "gov.test.cires.example:abc",
           "description": "A rather long description (not!)",
           "identifier" : [
             {
