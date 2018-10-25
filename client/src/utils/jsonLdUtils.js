@@ -84,7 +84,8 @@ export const imageField = item => {
   return `"image": {
     "@type": "ImageObject",
     "url" : "${item.thumbnail}",
-    "contentUrl" : "${item.thumbnail}"
+    "contentUrl" : "${item.thumbnail}",
+    "caption": "Preview graphic"
   }`
 }
 

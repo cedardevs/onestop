@@ -269,7 +269,8 @@ describe('In the jsonLdUtils', function () {
         `"image": {
           "@type": "ImageObject",
           "url" : "http://example.com/thumbnail",
-          "contentUrl" : "http://example.com/thumbnail"
+          "contentUrl" : "http://example.com/thumbnail",
+          "caption": "Preview graphic"
         }`
       )
     })
@@ -284,7 +285,8 @@ describe('In the jsonLdUtils', function () {
           "image": {
             "@type": "ImageObject",
             "url" : "http://example.com/thumbnail",
-            "contentUrl" : "http://example.com/thumbnail"
+            "contentUrl" : "http://example.com/thumbnail",
+            "caption": "Preview graphic"
           }
         }`
       )
@@ -941,7 +943,8 @@ describe('In the jsonLdUtils', function () {
           "image": {
             "@type": "ImageObject",
             "url" : "http://example.com/thumbnail",
-            "contentUrl" : "http://example.com/thumbnail"
+            "contentUrl" : "http://example.com/thumbnail",
+            "caption": "Preview graphic"
           },
           "temporalCoverage": "2018-10-19/2019-01-02",
           "spatialCoverage": [
