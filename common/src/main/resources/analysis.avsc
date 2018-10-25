@@ -1,0 +1,10 @@
+{
+  "type": "record",
+  "namespace": "org.cedar.psi",
+  "name": "analysis",
+  "doc": "",
+  "fields": [
+    {"name": "", "type": "", "doc": ""},
+    {"name": "", "type": "", "doc": ""}
+  ]
+}
