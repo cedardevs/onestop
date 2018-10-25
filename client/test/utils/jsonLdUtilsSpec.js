@@ -11,8 +11,19 @@ const jsonEquals = (expected, actual) => {
 describe('In the jsonLdUtils', function () {
 
   // Note: resulting JsonLD verified using https://search.google.com/structured-data/testing-tool/u/0/
+  describe('an empty map for input', function () {
+    const input = {}
 
-
+    it('does not break the utility functions', function () {
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset"
+        }`
+      )
+    })
+  })
 
   describe('a collection with no optional fields', function () {
     const input = {
@@ -551,7 +562,7 @@ describe('In the jsonLdUtils', function () {
           linkProtocol: "http",
         },
         output: `{
-          "@Type": "DataDownload",
+          "@type": "DataDownload",
           "url": "http://example.com/download",
           "description": "an example link",
           "name": "get data here",
@@ -565,7 +576,7 @@ describe('In the jsonLdUtils', function () {
           linkProtocol: "http",
         },
         output: `{
-          "@Type": "DataDownload",
+          "@type": "DataDownload",
           "url": "http://example.com/download",
           "name": "get data here",
           "encodingFormat": "http"
@@ -578,7 +589,7 @@ describe('In the jsonLdUtils', function () {
           linkProtocol: "http",
         },
         output: `{
-          "@Type": "DataDownload",
+          "@type": "DataDownload",
           "url": "http://example.com/download",
           "description": "an example link",
           "encodingFormat": "http"
@@ -591,7 +602,7 @@ describe('In the jsonLdUtils', function () {
           linkName: "get data here",
         },
         output: `{
-          "@Type": "DataDownload",
+          "@type": "DataDownload",
           "url": "http://example.com/download",
           "description": "an example link",
           "name": "get data here"
@@ -602,7 +613,7 @@ describe('In the jsonLdUtils', function () {
           linkUrl: "http://example.com/download",
         },
         output: `{
-          "@Type": "DataDownload",
+          "@type": "DataDownload",
           "url": "http://example.com/download"
         }`
       },
@@ -640,14 +651,14 @@ describe('In the jsonLdUtils', function () {
         util.downloadLinksToDistributionJsonLd(input),
         `"distribution": [
           {
-            "@Type": "DataDownload",
+            "@type": "DataDownload",
             "url": "http://example.com/download_1",
             "description": "an example link",
             "name": "get data here",
             "encodingFormat": "http"
           },
           {
-            "@Type": "DataDownload",
+            "@type": "DataDownload",
             "url": "http://example.com/download_2",
             "description": "another link",
             "name": "cloud",
@@ -667,14 +678,14 @@ describe('In the jsonLdUtils', function () {
           "description": "A rather long description (not!)",
           "distribution": [
             {
-              "@Type": "DataDownload",
+              "@type": "DataDownload",
               "url": "http://example.com/download_1",
               "description": "an example link",
               "name": "get data here",
               "encodingFormat": "http"
             },
             {
-              "@Type": "DataDownload",
+              "@type": "DataDownload",
               "url": "http://example.com/download_2",
               "description": "another link",
               "name": "cloud",
@@ -868,14 +879,14 @@ describe('In the jsonLdUtils', function () {
           ],
           "distribution": [
             {
-              "@Type": "DataDownload",
+              "@type": "DataDownload",
               "url": "http://example.com/download_1",
               "description": "an example link",
               "name": "get data here",
               "encodingFormat": "http"
             },
             {
-              "@Type": "DataDownload",
+              "@type": "DataDownload",
               "url": "http://example.com/download_2",
               "description": "another link",
               "name": "cloud",

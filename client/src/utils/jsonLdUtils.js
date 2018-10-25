@@ -3,7 +3,10 @@ import moment from 'moment/moment'
 
 export const toJsonLd = item => {
   const parts = [
-    basicToJsonLd(item),
+    `"@context": "http://schema.org",
+    "@type": "Dataset"`,
+    nameField(item),
+    descriptionField(item),
     identifiersToJsonLd(item),
     doiToJsonLd(item),
     thumbnailToJsonLd(item),
@@ -18,11 +21,14 @@ export const toJsonLd = item => {
   }`
 }
 
-export const basicToJsonLd = item => {
-  return `"@context": "http://schema.org",
-  "@type": "Dataset",
-  "name": "${item.title}",
-  "description": "${item.description}"`
+export const nameField = item => {
+  if(item.title)
+  return `"name": "${item.title}"`
+}
+
+export const descriptionField = item => {
+  if(item.description)
+  return `"description": "${item.description}"`
 }
 
 export const fileIdentifierToJsonLd = item => {
@@ -171,7 +177,7 @@ export const linkToJsonLd = link => {
   const {linkUrl, linkName, linkProtocol, linkDescription} = link
 
   const parts = [
-    `"@Type": "DataDownload"`,
+    `"@type": "DataDownload"`,
     linkUrl? `"url": "${linkUrl}"` : null,
     linkDescription? `"description": "${linkDescription}"` : null,
     linkName? `"name": "${linkName}"` : null,
