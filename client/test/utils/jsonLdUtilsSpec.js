@@ -29,7 +29,7 @@ describe('In the jsonLdUtils', function () {
     const input = {
       title: "the title of the record",
       description: "A rather long description (not!)",
-      fileIdentifier: "gov.test.cires.example:abc"
+      fileIdentifier: "gov.test.cires.example:abc",
     }
 
     it('creates a very simple JSON-LD object', function () {
@@ -76,8 +76,7 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with a doi', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
-      doi: "doi:10.1234/ABCDEFGH"
+      doi: "doi:10.1234/ABCDEFGH",
     }
 
     it('generates a doi block', function () {
@@ -96,7 +95,6 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "description": "A rather long description (not!)",
           "alternateName": "doi:10.1234/ABCDEFGH",
           "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
           "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"
@@ -108,8 +106,7 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with a thumbnail', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
-      thumbnail: "http://example.com/thumbnail"
+      thumbnail: "http://example.com/thumbnail",
     }
 
     it('generates an image block', function () {
@@ -130,7 +127,6 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "description": "A rather long description (not!)",
           "image": {
             "@type": "ImageObject",
             "url" : "http://example.com/thumbnail",
@@ -144,9 +140,8 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with a bounded date range', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
       beginDate: "2018-10-19",
-      endDate: "2019-01-02"
+      endDate: "2019-01-02",
     }
 
     it('generates an temporal block', function () {
@@ -160,7 +155,6 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "description": "A rather long description (not!)",
           "temporalCoverage": "2018-10-19/2019-01-02"
         }`
       )
@@ -170,7 +164,6 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with an unbounded date range', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
       beginDate: "2018-10-19",
     }
 
@@ -182,7 +175,6 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with a missing start date', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
       endDate: "2018-10-19",
     }
 
@@ -193,8 +185,6 @@ describe('In the jsonLdUtils', function () {
 
   describe('a collection with an instant date', function () {
     const input = {
-      title: "the title of the record",
-      description: "A rather long description (not!)",
       beginDate: "2018-10-19",
       endDate: "2018-10-19",
     }
@@ -207,7 +197,6 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with a bounding box', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
       spatialBounding: {
         coordinates: [
           [
@@ -215,7 +204,7 @@ describe('In the jsonLdUtils', function () {
           ]
         ],
         type: "Polygon"
-      }
+      },
     }
 
     it('generates a geo shape', function () {
@@ -257,7 +246,6 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "description": "A rather long description (not!)",
           "spatialCoverage": [
             {
               "@type": "Place",
@@ -277,14 +265,13 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with a line', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
       spatialBounding: {
         coordinates: [
           [-7.7,51.5],
           [-7.7,51.6]
         ],
         type: "LineString"
-      }
+      },
     }
 
     it('generates a geo shape', function () {
@@ -325,7 +312,6 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "description": "A rather long description (not!)",
           "spatialCoverage": [
             {
               "@type": "Place",
@@ -345,13 +331,12 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with a line', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
       spatialBounding: {
         coordinates: [
           [-49.815, 69.222]
         ],
         type: "Point"
-      }
+      },
     }
 
     it('generates a geo shape', function () {
@@ -393,7 +378,6 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "description": "A rather long description (not!)",
           "spatialCoverage": [
             {
               "@type": "Place",
@@ -450,7 +434,6 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with gcmdLocations', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
       gcmdLocations: [
         "Continent > North America > United States Of America",
         "Continent > North America",
@@ -527,7 +510,6 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "description": "A rather long description (not!)",
           "spatialCoverage": [
             {
               "@type": "Place",
@@ -627,7 +609,6 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with download links', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
       links: [
         {
           linkUrl: "http://example.com/download_1",
@@ -643,7 +624,7 @@ describe('In the jsonLdUtils', function () {
           linkProtocol: "s3",
           linkFunction: "download",
         },
-      ]
+      ],
     }
 
     it('generates a distribution block', function () {
@@ -675,7 +656,6 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "description": "A rather long description (not!)",
           "distribution": [
             {
               "@type": "DataDownload",
@@ -700,7 +680,6 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with information links', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
       links: [
         {
           linkUrl: "http://example.com/help",
@@ -709,7 +688,7 @@ describe('In the jsonLdUtils', function () {
           linkProtocol: "http",
           linkFunction: "information",
         },
-      ]
+      ],
     }
 
     it('does not generate a distribution block', function () {
@@ -722,8 +701,7 @@ describe('In the jsonLdUtils', function () {
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
-          "name": "the title of the record",
-          "description": "A rather long description (not!)"
+          "name": "the title of the record"
         }`
       )
     })
@@ -732,7 +710,6 @@ describe('In the jsonLdUtils', function () {
   describe('a collection with just a fileIdentifier', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)",
       fileIdentifier: "gov.test.cires.example:abc",
     }
 
@@ -767,7 +744,6 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "description": "A rather long description (not!)",
           "identifier" : [
              {
                 "value" : "gov.test.cires.example:abc",
