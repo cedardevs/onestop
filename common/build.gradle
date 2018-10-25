@@ -1,4 +1,7 @@
-apply plugin: 'groovy'
+plugins {
+  id 'groovy'
+  id "com.commercehub.gradle.plugin.avro" version "0.9.1"
+}
 
 repositories {
   mavenCentral()
@@ -8,6 +11,7 @@ dependencies {
   compile('org.codehaus.groovy:groovy:2.4.13')
   compile('org.codehaus.groovy:groovy-json:2.4.13')
   compile('org.apache.kafka:kafka-streams:2.0.0')
+  compile('org.apache.avro:avro:1.8.2')
   compile('org.slf4j:slf4j-api:1.7.25')
   compile('ch.qos.logback:logback-classic:1.2.3')
 
@@ -27,5 +31,12 @@ task sourceJar(type: Jar) {
   baseName = "${rootProject.name}-${project.name}"
   from "${projectDir}/src"
 }
+
+//task generateAvro(type: com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask) {
+//  source("src/main/resources/avro")
+//  outputDir = file("src/main/groovy")
+//}
+
+//compileJava.source(generateAvro.outputs)
 
 assemble.dependsOn(sourceJar)
