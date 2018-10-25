@@ -46,7 +46,8 @@ describe('In the jsonLdUtils', function () {
               "propertyID" : "NCEI Dataset Identifier",
               "@type" : "PropertyValue"
             }
-          ]
+          ],
+          "url": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
         }`
       )
     })
@@ -103,6 +104,13 @@ describe('In the jsonLdUtils', function () {
       )
     })
 
+    it('generates the url block', function () {
+      jsonEquals(
+        util.urlFields(input),
+        `"url": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"`
+      )
+    })
+
     it('generates json-ld', function () {
       jsonEquals(
         util.toJsonLd(input),
@@ -116,7 +124,8 @@ describe('In the jsonLdUtils', function () {
               "propertyID" : "NCEI Dataset Identifier",
               "@type" : "PropertyValue"
             }
-          ]
+          ],
+          "url": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
         }`
       )
     })
@@ -152,6 +161,13 @@ describe('In the jsonLdUtils', function () {
       )
     })
 
+    it('generates the url block', function () {
+      jsonEquals(
+        util.urlFields(input),
+        `"url": "https://doi.org/doi:10.1234/ABCDEFGH"`
+      )
+    })
+
     it('generates json-ld', function () {
       jsonEquals(
         util.toJsonLd(input),
@@ -165,7 +181,8 @@ describe('In the jsonLdUtils', function () {
               "propertyID" : "Digital Object Identifier (DOI)",
               "@type" : "PropertyValue"
             }
-          ]
+          ],
+          "url": "https://doi.org/doi:10.1234/ABCDEFGH"
         }`
       )
     })
@@ -196,6 +213,14 @@ describe('In the jsonLdUtils', function () {
       )
     })
 
+    it('generates the url block', function () {
+      jsonEquals(
+        util.urlFields(input),
+        `"url": "https://doi.org/doi:10.1234/ABCDEFGH",
+        "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"`
+      )
+    })
+
     it('generates json-ld', function () {
       jsonEquals(
         util.toJsonLd(input),
@@ -214,7 +239,9 @@ describe('In the jsonLdUtils', function () {
               "propertyID" : "Digital Object Identifier (DOI)",
               "@type" : "PropertyValue"
             }
-          ]
+          ],
+          "url": "https://doi.org/doi:10.1234/ABCDEFGH",
+          "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
         }`
       )
     })
@@ -881,8 +908,6 @@ describe('In the jsonLdUtils', function () {
 /*
 TODO figure out
 "alternateName": "doi:10.1234/ABCDEFGH",
-"url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
-"sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH",
 */
     it('generates full json-ld', function () {
       jsonEquals(
@@ -904,6 +929,8 @@ TODO figure out
               "@type" : "PropertyValue"
             }
           ],
+          "url": "https://doi.org/doi:10.1234/ABCDEFGH",
+          "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc",
           "image": {
             "@type": "ImageObject",
             "url" : "http://example.com/thumbnail",

@@ -8,6 +8,7 @@ export const toJsonLd = item => {
     nameField(item),
     descriptionField(item),
     identifierField(item),
+    urlFields(item),
     imageField(item),
     temporalCoverageField(item),
     spatialCoverageField(item),
@@ -60,6 +61,16 @@ export const doiListItem = item => {
     "propertyID" : "Digital Object Identifier (DOI)",
     "@type" : "PropertyValue"
   }`
+}
+
+export const urlFields = item => {
+  if (item.doi && item.fileIdentifier)
+  return `"url": "https://doi.org/${item.doi}",
+  "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=${item.fileIdentifier}"`
+  if (item.fileIdentifier)
+  return `"url": "https://data.nodc.noaa.gov/cgi-bin/iso?id=${item.fileIdentifier}"`
+  if (item.doi)
+  return `"url": "https://doi.org/${item.doi}"`
 }
 
 export const imageField = item => {
