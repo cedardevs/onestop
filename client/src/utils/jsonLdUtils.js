@@ -7,11 +7,11 @@ export const toJsonLd = item => {
     "@type": "Dataset"`,
     nameField(item),
     descriptionField(item),
-    identifiersToJsonLd(item),
-    thumbnailToJsonLd(item),
-    temporalToJsonLd(item),
-    spatialToJsonLd(item),
-    downloadLinksToDistributionJsonLd(item),
+    identifierField(item),
+    imageField(item),
+    temporalCoverageField(item),
+    spatialCoverageField(item),
+    distributionField(item),
   ]
 
   // remove nulls and join
@@ -30,7 +30,7 @@ export const descriptionField = item => {
   return `"description": "${item.description}"`
 }
 
-export const fileIdentifierToJsonLd = item => {
+export const fileIdentifierListItem = item => {
   if(item.fileIdentifier)
   return `{
     "value" : "${item.fileIdentifier}",
@@ -39,11 +39,11 @@ export const fileIdentifierToJsonLd = item => {
   }`
 }
 
-export const identifiersToJsonLd = item => {
+export const identifierField = item => {
   // TODO should I include the uuid ?
   const parts = [
-    fileIdentifierToJsonLd(item),
-    doiToJsonLd(item),
+    fileIdentifierListItem(item),
+    doiListItem(item),
   ]
 
   if( _.compact(parts).length > 0)
@@ -53,7 +53,7 @@ export const identifiersToJsonLd = item => {
   ]`
 }
 
-export const doiToJsonLd = item => {
+export const doiListItem = item => {
   if (item.doi)
   return `{
     "value" : "${item.doi}",
@@ -62,7 +62,7 @@ export const doiToJsonLd = item => {
   }`
 }
 
-export const thumbnailToJsonLd = item => {
+export const imageField = item => {
   if (item.thumbnail)
   return `"image": {
     "@type": "ImageObject",
@@ -71,7 +71,7 @@ export const thumbnailToJsonLd = item => {
   }`
 }
 
-export const temporalToJsonLd = item => {
+export const temporalCoverageField = item => {
   if (item.beginDate && item.endDate) {
     if (item.beginDate == item.endDate) {
       return `"temporalCoverage": "${item.beginDate}"`
@@ -85,10 +85,10 @@ export const temporalToJsonLd = item => {
   return `"temporalCoverage": "../${item.endDate}"`
 }
 
-export const spatialToJsonLd = item => {
+export const spatialCoverageField = item => {
   const parts = _.concat([],
-    [buildCoordinatesString(item)],
-    spatialKeywordsToJsonLd(item)
+    [geoListItem(item)],
+    placenameList(item)
   )
 
   if( _.compact(parts).length > 0)
@@ -102,19 +102,19 @@ export const spatialKeywordsSubset = item => {
   return _.intersection(item.keywords, item.gcmdLocations)
 }
 
-export const placenameToJsonLd = location => {
+export const placenameListItem = location => {
   return `{
     "@type": "Place",
     "name": "${location}"
   }`
 }
 
-export const spatialKeywordsToJsonLd = item => {
+export const placenameList = item => {
   // gcmdLocations has extra entries for each layer in the keywords, but the intersection with the original keywords correctly identifies the correct subset
-  return _.map(spatialKeywordsSubset(item), placenameToJsonLd)
+  return _.map(spatialKeywordsSubset(item), placenameListItem)
 }
 
-export const buildCoordinatesString = item => {
+export const geoListItem = item => {
   const geometry = item.spatialBounding
   // For point, want GeoCoordnates: longitude:[0], latitude:[1]
   // The geographic shape of a place. A GeoShape can be described using several properties whose values are based on latitude/longitude pairs. Either whitespace or commas can be used to separate latitude and longitude; whitespace should be used when writing a list of several such points.
@@ -162,18 +162,18 @@ export const buildCoordinatesString = item => {
   }
 }
 
-export const downloadLinksToDistributionJsonLd = item => {
+export const distributionField = item => {
   if (!item.links) return null
   const downloadLinks = item.links.filter(
     link => link.linkFunction === 'download'
   )
   if(downloadLinks.length > 0)
   return `"distribution": [
-    ${_.join(_.map(downloadLinks, linkToJsonLd), ',\n')}
+    ${_.join(_.map(downloadLinks, downloadLinkList), ',\n')}
   ]`
 }
 
-export const linkToJsonLd = link => {
+export const downloadLinkList = link => {
   const {linkUrl, linkName, linkProtocol, linkDescription} = link
 
   const parts = [

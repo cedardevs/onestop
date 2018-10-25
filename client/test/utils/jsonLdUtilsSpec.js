@@ -1,5 +1,5 @@
 import '../specHelper'
-// import { toJsonLd, doiToJsonLd } from '../../src/utils/jsonLdUtils'
+// import { toJsonLd, doiListItem } from '../../src/utils/jsonLdUtils'
 import * as util from '../../src/utils/jsonLdUtils'
 import {assert} from 'chai'
 
@@ -52,23 +52,23 @@ describe('In the jsonLdUtils', function () {
     })
 
     it('does not generate a doi block', function () {
-      assert.equal(util.doiToJsonLd(input), null)
+      assert.equal(util.doiListItem(input), null)
     })
 
     it('does not generate a thumbnail image block', function () {
-      assert.equal(util.thumbnailToJsonLd(input), null)
+      assert.equal(util.imageField(input), null)
     })
 
     it('does not generate a temporal block', function () {
-      assert.equal(util.temporalToJsonLd(input), null)
+      assert.equal(util.temporalCoverageField(input), null)
     })
 
     it('does not generate a spatial block', function () {
-      assert.equal(util.spatialToJsonLd(input), null)
+      assert.equal(util.spatialCoverageField(input), null)
     })
 
     it('does not generate a distribution block', function () {
-      assert.equal(util.downloadLinksToDistributionJsonLd(input), null)
+      assert.equal(util.distributionField(input), null)
     })
 
   })
@@ -81,7 +81,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates an id from the fileIdentifier', function () {
       jsonEquals(
-        util.fileIdentifierToJsonLd(input),
+        util.fileIdentifierListItem(input),
         `{
           "value" : "gov.test.cires.example:abc",
           "propertyID" : "NCEI Dataset Identifier",
@@ -92,7 +92,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a simple identifier block', function () {
       jsonEquals(
-        util.identifiersToJsonLd(input),
+        util.identifierField(input),
         `"identifier" : [
           {
             "value" : "gov.test.cires.example:abc",
@@ -130,7 +130,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a doi block', function () {
       jsonEquals(
-        util.doiToJsonLd(input),
+        util.doiListItem(input),
         `{
           "value" : "doi:10.1234/ABCDEFGH",
           "propertyID" : "Digital Object Identifier (DOI)",
@@ -141,7 +141,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a simple identifier block', function () {
       jsonEquals(
-        util.identifiersToJsonLd(input),
+        util.identifierField(input),
         `"identifier" : [
           {
             "value" : "doi:10.1234/ABCDEFGH",
@@ -180,7 +180,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates the identifier block', function () {
       jsonEquals(
-        util.identifiersToJsonLd(input),
+        util.identifierField(input),
         `"identifier" : [
           {
             "value" : "gov.test.cires.example:abc",
@@ -228,7 +228,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates an image block', function () {
       jsonEquals(
-        util.thumbnailToJsonLd(input),
+        util.imageField(input),
         `"image": {
           "@type": "ImageObject",
           "url" : "http://example.com/thumbnail",
@@ -262,7 +262,7 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates an temporal block', function () {
-      jsonEquals(util.temporalToJsonLd(input), `"temporalCoverage": "2018-10-19/2019-01-02"`)
+      jsonEquals(util.temporalCoverageField(input), `"temporalCoverage": "2018-10-19/2019-01-02"`)
     })
 
     it('generates json-ld', function () {
@@ -285,7 +285,7 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates an temporal block', function () {
-      jsonEquals(util.temporalToJsonLd(input), `"temporalCoverage": "2018-10-19/.."`)
+      jsonEquals(util.temporalCoverageField(input), `"temporalCoverage": "2018-10-19/.."`)
     })
   })
 
@@ -296,7 +296,7 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates an temporal block', function () {
-      jsonEquals(util.temporalToJsonLd(input), `"temporalCoverage": "../2018-10-19"`)
+      jsonEquals(util.temporalCoverageField(input), `"temporalCoverage": "../2018-10-19"`)
     })
   })
 
@@ -307,7 +307,7 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('generates an temporal block', function () {
-      jsonEquals(util.temporalToJsonLd(input), `"temporalCoverage": "2018-10-19"`)
+      jsonEquals(util.temporalCoverageField(input), `"temporalCoverage": "2018-10-19"`)
     })
   })
 
@@ -326,7 +326,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a geo shape', function () {
       jsonEquals(
-        util.buildCoordinatesString(input),
+        util.geoListItem(input),
         `{
           "@type": "Place",
           "name": "geographic bounding box",
@@ -341,7 +341,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a spatial block', function () {
       jsonEquals(
-        util.spatialToJsonLd(input),
+        util.spatialCoverageField(input),
         `"spatialCoverage": [
           {
             "@type": "Place",
@@ -393,7 +393,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a geo shape', function () {
       jsonEquals(
-        util.buildCoordinatesString(input),
+        util.geoListItem(input),
         `{
           "@type": "Place",
           "name": "geographic bounding line",
@@ -408,7 +408,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a spatial block', function () {
       jsonEquals(
-        util.spatialToJsonLd(input), `"spatialCoverage": [
+        util.spatialCoverageField(input), `"spatialCoverage": [
           {
             "@type": "Place",
             "name": "geographic bounding line",
@@ -458,7 +458,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a geo shape', function () {
       jsonEquals(
-        util.buildCoordinatesString(input),
+        util.geoListItem(input),
         `{
           "@type": "Place",
           "name": "geographic bounding point",
@@ -473,7 +473,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a spatial block', function () {
       jsonEquals(
-        util.spatialToJsonLd(input),
+        util.spatialCoverageField(input),
         `"spatialCoverage": [
           {
             "@type": "Place",
@@ -544,7 +544,7 @@ describe('In the jsonLdUtils', function () {
     ]
 
     testCases.forEach((c) => {
-      jsonEquals(util.placenameToJsonLd(c.input), c.output)
+      jsonEquals(util.placenameListItem(c.input), c.output)
     })
   })
 
@@ -598,7 +598,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a spatial block', function () {
       jsonEquals(
-        util.spatialToJsonLd(input),
+        util.spatialCoverageField(input),
         `"spatialCoverage": [
           {
             "@type": "Place",
@@ -719,7 +719,7 @@ describe('In the jsonLdUtils', function () {
     ]
 
     testCases.forEach((c) => {
-      jsonEquals(util.linkToJsonLd(c.input), c.output)
+      jsonEquals(util.downloadLinkList(c.input), c.output)
     })
   })
 
@@ -746,7 +746,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates a distribution block', function () {
       jsonEquals(
-        util.downloadLinksToDistributionJsonLd(input),
+        util.distributionField(input),
         `"distribution": [
           {
             "@type": "DataDownload",
@@ -809,7 +809,7 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('does not generate a distribution block', function () {
-      assert.equal(util.downloadLinksToDistributionJsonLd(input), null)
+      assert.equal(util.distributionField(input), null)
     })
 
     it('generates json-ld', function () {
