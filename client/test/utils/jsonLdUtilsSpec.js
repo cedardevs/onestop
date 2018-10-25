@@ -12,10 +12,13 @@ describe('In the jsonLdUtils', function () {
 
   // Note: resulting JsonLD verified using https://search.google.com/structured-data/testing-tool/u/0/
 
+
+
   describe('a collection with no optional fields', function () {
     const input = {
       title: "the title of the record",
-      description: "A rather long description (not!)"
+      description: "A rather long description (not!)",
+      fileIdentifier: "gov.test.cires.example:abc"
     }
 
     it('creates a very simple JSON-LD object', function () {
@@ -25,7 +28,14 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "description": "A rather long description (not!)"
+          "description": "A rather long description (not!)",
+          "identifier" : [
+             {
+                "value" : "gov.test.cires.example:abc",
+                "propertyID" : "NCEI Dataset Identifier",
+                "@type" : "PropertyValue"
+             }
+          ]
         }`
       )
     })
@@ -706,13 +716,64 @@ describe('In the jsonLdUtils', function () {
         }`
       )
     })
+  })
 
+  describe('a collection with just a fileIdentifier', function () {
+    const input = {
+      title: "the title of the record",
+      description: "A rather long description (not!)",
+      fileIdentifier: "gov.test.cires.example:abc",
+    }
+
+    it('generates an id from the fileIdentifier', function () {
+      jsonEquals(
+        util.fileIdentifierToJsonLd(input),
+        `{
+           "value" : "gov.test.cires.example:abc",
+           "propertyID" : "NCEI Dataset Identifier",
+           "@type" : "PropertyValue"
+        }`
+      )
+    })
+
+    it('generates a simple idendifier block', function () {
+      jsonEquals(
+        util.identifiersToJsonLd(input),
+        `"identifier" : [
+           {
+              "value" : "gov.test.cires.example:abc",
+              "propertyID" : "NCEI Dataset Identifier",
+              "@type" : "PropertyValue"
+           }
+        ]`
+      )
+    })
+
+    it('generates json-ld', function () {
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "description": "A rather long description (not!)",
+          "identifier" : [
+             {
+                "value" : "gov.test.cires.example:abc",
+                "propertyID" : "NCEI Dataset Identifier",
+                "@type" : "PropertyValue"
+             }
+          ]
+        }`
+      )
+    })
   })
 
   describe('a complete collection', function () {
     const input = {
       title: "the title of the record",
       description: "A rather long description (not!)",
+      fileIdentifier: "gov.test.cires.example:abc",
       doi: "doi:10.1234/ABCDEFGH",
       thumbnail: "http://example.com/thumbnail",
       beginDate: "2018-10-19",
@@ -770,6 +831,13 @@ describe('In the jsonLdUtils', function () {
           "@type": "Dataset",
           "name": "the title of the record",
           "description": "A rather long description (not!)",
+          "identifier" : [
+             {
+                "value" : "gov.test.cires.example:abc",
+                "propertyID" : "NCEI Dataset Identifier",
+                "@type" : "PropertyValue"
+             }
+          ],
           "alternateName": "doi:10.1234/ABCDEFGH",
           "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
           "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH",

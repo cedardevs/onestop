@@ -4,6 +4,7 @@ import moment from 'moment/moment'
 export const toJsonLd = item => {
   const parts = [
     basicToJsonLd(item),
+    identifiersToJsonLd(item),
     doiToJsonLd(item),
     thumbnailToJsonLd(item),
     temporalToJsonLd(item),
@@ -24,7 +25,31 @@ export const basicToJsonLd = item => {
   "description": "${item.description}"`
 }
 
+export const fileIdentifierToJsonLd = item => {
+  if(item.fileIdentifier)
+  return `{
+     "value" : "${item.fileIdentifier}",
+     "propertyID" : "NCEI Dataset Identifier",
+     "@type" : "PropertyValue"
+  }`
+}
+
+export const identifiersToJsonLd = item => {
+  // TODO should I include the uuid ?
+  const parts = [
+    fileIdentifierToJsonLd(item),
+    // doiToJsonLd(item), TODO
+  ]
+
+  if( _.compact(parts).length > 0)
+  // remove nulls and join
+  return `"identifier" : [
+    ${_.join(_.compact(parts), ',\n')}
+  ]`
+}
+
 export const doiToJsonLd = item => {
+  // TODO revisit this
   if (item.doi)
   return `"alternateName": "${item.doi}",
   "url": "https://accession.nodc.noaa.gov/${item.doi}",
