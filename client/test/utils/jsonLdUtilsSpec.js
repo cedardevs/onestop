@@ -602,23 +602,13 @@ describe('In the jsonLdUtils', function () {
         "Vertical Location > Sea Floor",
       ],
       keywords: [
-        "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
-        "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
         "Oceans > Bathymetry/Seafloor Topography > Water Depth",
         "Land Surface > Topography > Terrain Elevation",
-        "Land Surface > Topography > Terrain Elevation > Topographical Relief Maps",
-        "Oceans > Coastal Processes > Coastal Elevation",
-        "Models/Analyses > DEM > Digital Elevation Model",
-        "ICSU-WDS > International Council for Science - World Data System",
-        "< 1 meter",
-        "Coastal Relief",
-        "Gridded elevations",
         "Integrated bathymetry and topography",
         "Continent > North America > United States Of America",
         "Ocean > Pacific Ocean > North Pacific Ocean",
         "Vertical Location > Land Surface",
         "Vertical Location > Sea Floor",
-        "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
         "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
       ],
     }
@@ -683,11 +673,103 @@ describe('In the jsonLdUtils', function () {
               "@type": "Place",
               "name": "Vertical Location > Sea Floor"
             }
+          ],
+          "keywords": [
+            "Oceans > Bathymetry/Seafloor Topography > Water Depth",
+            "Land Surface > Topography > Terrain Elevation",
+            "Integrated bathymetry and topography",
+            "Continent > North America > United States Of America",
+            "Ocean > Pacific Ocean > North Pacific Ocean",
+            "Vertical Location > Land Surface",
+            "Vertical Location > Sea Floor",
+            "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
           ]
         }`
       )
     })
+  })
 
+  describe('a collection with keywords', function () {
+    const input = {
+      title: "the title of the record",
+      keywords: [
+        "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
+        "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
+        "Oceans > Bathymetry/Seafloor Topography > Water Depth",
+        "Land Surface > Topography > Terrain Elevation",
+        "Land Surface > Topography > Terrain Elevation > Topographical Relief Maps",
+        "Oceans > Coastal Processes > Coastal Elevation",
+        "Models/Analyses > DEM > Digital Elevation Model",
+        "ICSU-WDS > International Council for Science - World Data System",
+        "< 1 meter",
+        "Coastal Relief",
+        "Gridded elevations",
+        "Integrated bathymetry and topography",
+        "Continent > North America > United States Of America",
+        "Ocean > Pacific Ocean > North Pacific Ocean",
+        "Vertical Location > Land Surface",
+        "Vertical Location > Sea Floor",
+        "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+        "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+      ],
+    }
+
+    it('generates a keyword block', function () {
+      jsonEquals(
+        util.keywordsField(input),
+        `"keywords": [
+          "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
+          "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
+          "Oceans > Bathymetry/Seafloor Topography > Water Depth",
+          "Land Surface > Topography > Terrain Elevation",
+          "Land Surface > Topography > Terrain Elevation > Topographical Relief Maps",
+          "Oceans > Coastal Processes > Coastal Elevation",
+          "Models/Analyses > DEM > Digital Elevation Model",
+          "ICSU-WDS > International Council for Science - World Data System",
+          "< 1 meter",
+          "Coastal Relief",
+          "Gridded elevations",
+          "Integrated bathymetry and topography",
+          "Continent > North America > United States Of America",
+          "Ocean > Pacific Ocean > North Pacific Ocean",
+          "Vertical Location > Land Surface",
+          "Vertical Location > Sea Floor",
+          "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+          "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+        ]`
+      )
+    })
+
+    it('generates json-ld', function () {
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "keywords": [
+            "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
+            "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
+            "Oceans > Bathymetry/Seafloor Topography > Water Depth",
+            "Land Surface > Topography > Terrain Elevation",
+            "Land Surface > Topography > Terrain Elevation > Topographical Relief Maps",
+            "Oceans > Coastal Processes > Coastal Elevation",
+            "Models/Analyses > DEM > Digital Elevation Model",
+            "ICSU-WDS > International Council for Science - World Data System",
+            "< 1 meter",
+            "Coastal Relief",
+            "Gridded elevations",
+            "Integrated bathymetry and topography",
+            "Continent > North America > United States Of America",
+            "Ocean > Pacific Ocean > North Pacific Ocean",
+            "Vertical Location > Land Surface",
+            "Vertical Location > Sea Floor",
+            "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+            "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+          ]
+        }`
+      )
+    })
   })
 
   it('generates download links', function () {
@@ -981,6 +1063,10 @@ describe('In the jsonLdUtils', function () {
               "name": "cloud",
               "encodingFormat": "s3"
             }
+          ],
+          "keywords": [
+            "Continent > North America > United States Of America",
+            "Vertical Location > Sea Floor"
           ]
         }`
       )

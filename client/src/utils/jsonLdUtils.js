@@ -14,6 +14,7 @@ export const toJsonLd = item => {
     temporalCoverageField(item),
     spatialCoverageField(item),
     distributionField(item),
+    keywordsField(item),
   ]
 
   // remove nulls and join
@@ -206,4 +207,11 @@ export const downloadLinkList = link => {
   return `{
     ${_.join(_.compact(parts), ',\n')}
   }`
+}
+
+export const keywordsField = item => {
+  if (item.keywords)
+  return `"keywords": [
+    ${_.join(_.map(item.keywords, keyword=>`"${keyword}"`), ',\n')}
+  ]`
 }
