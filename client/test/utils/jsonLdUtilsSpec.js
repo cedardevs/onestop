@@ -41,11 +41,11 @@ describe('In the jsonLdUtils', function () {
           "name": "the title of the record",
           "description": "A rather long description (not!)",
           "identifier" : [
-             {
-                "value" : "gov.test.cires.example:abc",
-                "propertyID" : "NCEI Dataset Identifier",
-                "@type" : "PropertyValue"
-             }
+            {
+              "value" : "gov.test.cires.example:abc",
+              "propertyID" : "NCEI Dataset Identifier",
+              "@type" : "PropertyValue"
+            }
           ]
         }`
       )
@@ -73,18 +73,33 @@ describe('In the jsonLdUtils', function () {
 
   })
 
-  describe('a collection with a doi', function () {
+  describe('a collection with just a fileIdentifier', function () {
     const input = {
       title: "the title of the record",
-      doi: "doi:10.1234/ABCDEFGH",
+      fileIdentifier: "gov.test.cires.example:abc",
     }
 
-    it('generates a doi block', function () {
+    it('generates an id from the fileIdentifier', function () {
       jsonEquals(
-        util.doiToJsonLd(input),
-        `"alternateName": "doi:10.1234/ABCDEFGH",
-        "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
-        "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"`
+        util.fileIdentifierToJsonLd(input),
+        `{
+          "value" : "gov.test.cires.example:abc",
+          "propertyID" : "NCEI Dataset Identifier",
+          "@type" : "PropertyValue"
+        }`
+      )
+    })
+
+    it('generates a simple identifier block', function () {
+      jsonEquals(
+        util.identifiersToJsonLd(input),
+        `"identifier" : [
+          {
+            "value" : "gov.test.cires.example:abc",
+            "propertyID" : "NCEI Dataset Identifier",
+            "@type" : "PropertyValue"
+          }
+        ]`
       )
     })
 
@@ -95,9 +110,111 @@ describe('In the jsonLdUtils', function () {
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "alternateName": "doi:10.1234/ABCDEFGH",
-          "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
-          "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH"
+          "identifier" : [
+            {
+              "value" : "gov.test.cires.example:abc",
+              "propertyID" : "NCEI Dataset Identifier",
+              "@type" : "PropertyValue"
+            }
+          ]
+        }`
+      )
+    })
+  })
+
+  describe('a collection with a doi', function () {
+    const input = {
+      title: "the title of the record",
+      doi: "doi:10.1234/ABCDEFGH",
+    }
+
+    it('generates a doi block', function () {
+      jsonEquals(
+        util.doiToJsonLd(input),
+        `{
+          "value" : "doi:10.1234/ABCDEFGH",
+          "propertyID" : "Digital Object Identifier (DOI)",
+          "@type" : "PropertyValue"
+        }`
+      )
+    })
+
+    it('generates a simple identifier block', function () {
+      jsonEquals(
+        util.identifiersToJsonLd(input),
+        `"identifier" : [
+          {
+            "value" : "doi:10.1234/ABCDEFGH",
+            "propertyID" : "Digital Object Identifier (DOI)",
+            "@type" : "PropertyValue"
+          }
+        ]`
+      )
+    })
+
+    it('generates json-ld', function () {
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "identifier" : [
+            {
+              "value" : "doi:10.1234/ABCDEFGH",
+              "propertyID" : "Digital Object Identifier (DOI)",
+              "@type" : "PropertyValue"
+            }
+          ]
+        }`
+      )
+    })
+  })
+
+  describe('a collection with multiple identifiers', function () {
+    const input = {
+      title: "the title of the record",
+      fileIdentifier: "gov.test.cires.example:abc",
+      doi: "doi:10.1234/ABCDEFGH",
+    }
+
+    it('generates the identifier block', function () {
+      jsonEquals(
+        util.identifiersToJsonLd(input),
+        `"identifier" : [
+          {
+            "value" : "gov.test.cires.example:abc",
+            "propertyID" : "NCEI Dataset Identifier",
+            "@type" : "PropertyValue"
+          },
+          {
+            "value" : "doi:10.1234/ABCDEFGH",
+            "propertyID" : "Digital Object Identifier (DOI)",
+            "@type" : "PropertyValue"
+          }
+        ]`
+      )
+    })
+
+    it('generates json-ld', function () {
+      jsonEquals(
+        util.toJsonLd(input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "identifier" : [
+            {
+              "value" : "gov.test.cires.example:abc",
+              "propertyID" : "NCEI Dataset Identifier",
+              "@type" : "PropertyValue"
+            },
+            {
+              "value" : "doi:10.1234/ABCDEFGH",
+              "propertyID" : "Digital Object Identifier (DOI)",
+              "@type" : "PropertyValue"
+            }
+          ]
         }`
       )
     })
@@ -707,55 +824,6 @@ describe('In the jsonLdUtils', function () {
     })
   })
 
-  describe('a collection with just a fileIdentifier', function () {
-    const input = {
-      title: "the title of the record",
-      fileIdentifier: "gov.test.cires.example:abc",
-    }
-
-    it('generates an id from the fileIdentifier', function () {
-      jsonEquals(
-        util.fileIdentifierToJsonLd(input),
-        `{
-           "value" : "gov.test.cires.example:abc",
-           "propertyID" : "NCEI Dataset Identifier",
-           "@type" : "PropertyValue"
-        }`
-      )
-    })
-
-    it('generates a simple idendifier block', function () {
-      jsonEquals(
-        util.identifiersToJsonLd(input),
-        `"identifier" : [
-           {
-              "value" : "gov.test.cires.example:abc",
-              "propertyID" : "NCEI Dataset Identifier",
-              "@type" : "PropertyValue"
-           }
-        ]`
-      )
-    })
-
-    it('generates json-ld', function () {
-      jsonEquals(
-        util.toJsonLd(input),
-        `{
-          "@context": "http://schema.org",
-          "@type": "Dataset",
-          "name": "the title of the record",
-          "identifier" : [
-             {
-                "value" : "gov.test.cires.example:abc",
-                "propertyID" : "NCEI Dataset Identifier",
-                "@type" : "PropertyValue"
-             }
-          ]
-        }`
-      )
-    })
-  })
-
   describe('a complete collection', function () {
     const input = {
       title: "the title of the record",
@@ -810,6 +878,12 @@ describe('In the jsonLdUtils', function () {
       ]
     }
 
+/*
+TODO figure out
+"alternateName": "doi:10.1234/ABCDEFGH",
+"url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
+"sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH",
+*/
     it('generates full json-ld', function () {
       jsonEquals(
         util.toJsonLd(input),
@@ -819,15 +893,17 @@ describe('In the jsonLdUtils', function () {
           "name": "the title of the record",
           "description": "A rather long description (not!)",
           "identifier" : [
-             {
-                "value" : "gov.test.cires.example:abc",
-                "propertyID" : "NCEI Dataset Identifier",
-                "@type" : "PropertyValue"
-             }
+            {
+              "value" : "gov.test.cires.example:abc",
+              "propertyID" : "NCEI Dataset Identifier",
+              "@type" : "PropertyValue"
+            },
+            {
+              "value" : "doi:10.1234/ABCDEFGH",
+              "propertyID" : "Digital Object Identifier (DOI)",
+              "@type" : "PropertyValue"
+            }
           ],
-          "alternateName": "doi:10.1234/ABCDEFGH",
-          "url": "https://accession.nodc.noaa.gov/doi:10.1234/ABCDEFGH",
-          "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=doi:10.1234/ABCDEFGH",
           "image": {
             "@type": "ImageObject",
             "url" : "http://example.com/thumbnail",

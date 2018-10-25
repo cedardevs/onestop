@@ -8,7 +8,6 @@ export const toJsonLd = item => {
     nameField(item),
     descriptionField(item),
     identifiersToJsonLd(item),
-    doiToJsonLd(item),
     thumbnailToJsonLd(item),
     temporalToJsonLd(item),
     spatialToJsonLd(item),
@@ -34,9 +33,9 @@ export const descriptionField = item => {
 export const fileIdentifierToJsonLd = item => {
   if(item.fileIdentifier)
   return `{
-     "value" : "${item.fileIdentifier}",
-     "propertyID" : "NCEI Dataset Identifier",
-     "@type" : "PropertyValue"
+    "value" : "${item.fileIdentifier}",
+    "propertyID" : "NCEI Dataset Identifier",
+    "@type" : "PropertyValue"
   }`
 }
 
@@ -44,7 +43,7 @@ export const identifiersToJsonLd = item => {
   // TODO should I include the uuid ?
   const parts = [
     fileIdentifierToJsonLd(item),
-    // doiToJsonLd(item), TODO
+    doiToJsonLd(item),
   ]
 
   if( _.compact(parts).length > 0)
@@ -55,11 +54,12 @@ export const identifiersToJsonLd = item => {
 }
 
 export const doiToJsonLd = item => {
-  // TODO revisit this
   if (item.doi)
-  return `"alternateName": "${item.doi}",
-  "url": "https://accession.nodc.noaa.gov/${item.doi}",
-  "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=${item.doi}"`
+  return `{
+    "value" : "${item.doi}",
+    "propertyID" : "Digital Object Identifier (DOI)",
+    "@type" : "PropertyValue"
+  }`
 }
 
 export const thumbnailToJsonLd = item => {
