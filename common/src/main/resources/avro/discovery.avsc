@@ -1,0 +1,78 @@
+{
+  "type": "record",
+  "namespace": "org.cedar.psi.common.avro",
+  "name": "discovery",
+  "doc": "The shape of the discovery object generated within Inventory Manager for a successfully parsed metadata document. This is the internal metadata format used within the system and ultimately sent downstream to OneStop.",
+  "fields": [
+    {"name": "fileIdentifier", "type": ["null", "string"], "default": "null"},
+    {"name": "parentIdentifier", "type": ["null", "string"], "default": "null"},
+    {"name": "hierarchyLevelName", "type": ["null", "string"], "default": "null"},
+    {"name": "doi", "type": ["null", "string"], "default": "null"},
+    {"name": "purpose", "type": ["null", "string"], "default": "null"},
+    {"name": "status", "type": ["null", "string"], "default": "null"},
+    {"name": "credit", "type": ["null", "string"], "default": "null"},
+    {"name": "title", "type": ["null", "string"], "default": "null"},
+    {"name": "alternateTitle", "type": ["null", "string"], "default": "null"},
+    {"name": "description", "type": ["null", "string"], "default": "null"},
+    {"name": "keywords", "type": {
+      "type": "array",
+      "items": {
+        "name": "keywordsElement",
+        "type": "record",
+        "fields": [
+          {"name": "values", "type": "array", "items": "string"},
+          {"name": "type", "type": ["null", "string"],  "default": "null"},
+          {"name": "namespace", "type": "string"}
+        ]
+      }
+      }},
+    {"name": "topicCategories", "type": "array", "items": ["null", "string"]},
+    {"name": "temporalBounding", "type": "record", "fields": [
+      {"name": "beginDate", "type": ["null", "string"],  "default": "null"},
+      {"name": "beginIndeterminate", "type": ["null", "string"],  "default": "null"},
+      {"name": "endDate", "type": ["null", "string"],  "default": "null"},
+      {"name": "endIndeterminate", "type": ["null", "string"],  "default": "null"},
+      {"name": "instant", "type": ["null", "string"],  "default": "null"},
+      {"name": "instantIndeterminate", "type": ["null", "string"],  "default": "null"},
+      {"name": "description", "type": ["null", "string"],  "default": "null"}
+      ]
+    },
+    {"name": "spatialBounding", "type": "record", "fields": [
+
+      ]
+    },
+    {"name": "isGlobal", "type": "boolean"},
+    {"name": "acquisitionInstruments", "type": ""},
+    {"name": "acquisitionOperations", "type": ""},
+    {"name": "acquisitionPlatforms", "type": ""},
+    {"name": "dataFormats", "type": ""},
+    {"name": "links", "type": ""},
+    {"name": "responsibleParties", "type": ""},
+    {"name": "thumbnail", "type": ""},
+    {"name": "thumbnailDescription", "type": ""},
+    {"name": "creationDate", "type": ""},
+    {"name": "revisionDate", "type": ""},
+    {"name": "publicationDate", "type": ""},
+    {"name": "citeAsStatements", "type": ""},
+    {"name": "crossReferences", "type": ""},
+    {"name": "largerWorks", "type": ""},
+    {"name": "useLimitation", "type": ""},
+    {"name": "legalConstraints", "type": ""},
+    {"name": "accessFeeStatement", "type": ""},
+    {"name": "orderingInstructions", "type": ""},
+    {"name": "edition", "type": ""},
+    {"name": "dsmmAccessibility", "type": ""},
+    {"name": "dsmmDataIntegrity", "type": ""},
+    {"name": "dsmmDataQualityAssessment", "type": ""},
+    {"name": "dsmmDataQualityAssurance", "type": ""},
+    {"name": "dsmmDataQualityControlMonitoring", "type": ""},
+    {"name": "dsmmPreservability", "type": ""},
+    {"name": "dsmmProductionSustainability", "type": ""},
+    {"name": "dsmmTransparencyTraceability", "type": ""},
+    {"name": "dsmmUsability", "type": ""},
+    {"name": "dsmmAverage", "type": ""},
+    {"name": "updateFrequency", "type": ""},
+    {"name": "presentationForm", "type": ""},
+    {"name": "services", "type": ""}
+  ]
+}

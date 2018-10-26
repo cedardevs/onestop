@@ -1,6 +1,6 @@
 {
   "type": "record",
-  "namespace": "org.cedar.psi",
+  "namespace": "org.cedar.psi.common.avro",
   "name": "analysis",
   "doc": "",
   "fields": [
