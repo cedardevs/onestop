@@ -831,11 +831,13 @@ describe('In the jsonLdUtils', function () {
           linkDescription: "an example link",
           linkName: "get data here",
           linkProtocol: "http",
+          linkFunction: "information",
         },
         output: `{
           "@type": "DataDownload",
           "url": "http://example.com/download",
           "description": "an example link",
+          "disambiguatingDescription": "information (http)",
           "name": "get data here",
           "encodingFormat": "http"
         }`
@@ -849,6 +851,7 @@ describe('In the jsonLdUtils', function () {
         output: `{
           "@type": "DataDownload",
           "url": "http://example.com/download",
+          "disambiguatingDescription": "download (http)",
           "name": "get data here",
           "encodingFormat": "http"
         }`
@@ -863,6 +866,7 @@ describe('In the jsonLdUtils', function () {
           "@type": "DataDownload",
           "url": "http://example.com/download",
           "description": "an example link",
+          "disambiguatingDescription": "download (http)",
           "encodingFormat": "http"
         }`
       },
@@ -876,6 +880,7 @@ describe('In the jsonLdUtils', function () {
           "@type": "DataDownload",
           "url": "http://example.com/download",
           "description": "an example link",
+          "disambiguatingDescription": "download (HTTP)",
           "name": "get data here"
         }`
       },
@@ -885,7 +890,8 @@ describe('In the jsonLdUtils', function () {
         },
         output: `{
           "@type": "DataDownload",
-          "url": "http://example.com/download"
+          "url": "http://example.com/download",
+          "disambiguatingDescription": "download (HTTP)"
         }`
       },
     ]
@@ -924,6 +930,7 @@ describe('In the jsonLdUtils', function () {
             "@type": "DataDownload",
             "url": "http://example.com/download_1",
             "description": "an example link",
+            "disambiguatingDescription": "download (http)",
             "name": "get data here",
             "encodingFormat": "http"
           },
@@ -931,6 +938,7 @@ describe('In the jsonLdUtils', function () {
             "@type": "DataDownload",
             "url": "http://example.com/download_2",
             "description": "another link",
+            "disambiguatingDescription": "download (s3)",
             "name": "cloud",
             "encodingFormat": "s3"
           }
@@ -950,6 +958,7 @@ describe('In the jsonLdUtils', function () {
               "@type": "DataDownload",
               "url": "http://example.com/download_1",
               "description": "an example link",
+              "disambiguatingDescription": "download (http)",
               "name": "get data here",
               "encodingFormat": "http"
             },
@@ -957,6 +966,7 @@ describe('In the jsonLdUtils', function () {
               "@type": "DataDownload",
               "url": "http://example.com/download_2",
               "description": "another link",
+              "disambiguatingDescription": "download (s3)",
               "name": "cloud",
               "encodingFormat": "s3"
             }
@@ -980,8 +990,20 @@ describe('In the jsonLdUtils', function () {
       ],
     }
 
-    it('does not generate a distribution block', function () {
-      assert.equal(util.distributionField(input), null)
+    it('generates a distribution block', function () {
+      jsonEquals(
+        util.distributionField(input),
+        `"distribution": [
+          {
+            "@type": "DataDownload",
+            "url": "http://example.com/help",
+            "description": "helpful info",
+            "disambiguatingDescription": "information (http)",
+            "name": "info page",
+            "encodingFormat": "http"
+          }
+        ]`
+      )
     })
 
     it('generates json-ld', function () {
@@ -990,7 +1012,17 @@ describe('In the jsonLdUtils', function () {
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
-          "name": "the title of the record"
+          "name": "the title of the record",
+          "distribution": [
+            {
+              "@type": "DataDownload",
+              "url": "http://example.com/help",
+              "description": "helpful info",
+              "disambiguatingDescription": "information (http)",
+              "name": "info page",
+              "encodingFormat": "http"
+            }
+          ]
         }`
       )
     })
@@ -1112,6 +1144,7 @@ describe('In the jsonLdUtils', function () {
               "@type": "DataDownload",
               "url": "http://example.com/download_1",
               "description": "an example link",
+              "disambiguatingDescription": "download (http)",
               "name": "get data here",
               "encodingFormat": "http"
             },
@@ -1119,8 +1152,17 @@ describe('In the jsonLdUtils', function () {
               "@type": "DataDownload",
               "url": "http://example.com/download_2",
               "description": "another link",
+              "disambiguatingDescription": "download (s3)",
               "name": "cloud",
               "encodingFormat": "s3"
+            },
+            {
+              "@type": "DataDownload",
+              "url": "http://example.com/help",
+              "description": "helpful info",
+              "disambiguatingDescription": "information (http)",
+              "name": "info page",
+              "encodingFormat": "http"
             }
           ],
           "keywords": [

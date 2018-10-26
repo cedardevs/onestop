@@ -201,22 +201,20 @@ export const geoListItem = item => {
 
 export const distributionField = item => {
   if (!item.links) return null
-  const downloadLinks = item.links.filter(
-    link => link.linkFunction === 'download'
-  )
-  if(downloadLinks.length > 0)
   return `"distribution": [
-    ${_.join(_.map(downloadLinks, downloadLinkList), ',\n')}
+    ${_.join(_.map(item.links, downloadLinkList), ',\n')}
   ]`
 }
 
 export const downloadLinkList = link => {
-  const {linkUrl, linkName, linkProtocol, linkDescription} = link
+  const {linkUrl, linkName, linkProtocol, linkDescription, linkFunction} = link
 
+  const disambiguation = `${linkFunction || 'download'} (${linkProtocol || 'HTTP'})`
   const parts = [
     `"@type": "DataDownload"`,
     linkUrl? `"url": "${linkUrl}"`: null,
     linkDescription? `"description": "${linkDescription}"`: null,
+    `"disambiguatingDescription": "${disambiguation}"`,
     linkName? `"name": "${linkName}"`: null,
     linkProtocol? `"encodingFormat": "${linkProtocol}"`: null,
   ]
