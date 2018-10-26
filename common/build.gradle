@@ -32,11 +32,14 @@ task sourceJar(type: Jar) {
   from "${projectDir}/src"
 }
 
-//task generateAvro(type: com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask) {
-//  source("src/main/resources/avro")
-//  outputDir = file("src/main/groovy")
-//}
+avro {
+  fieldVisibility = "PUBLIC"
+}
 
-//compileJava.source(generateAvro.outputs)
+task generateAvro(type: com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask) {
+  source("src/main/resources/avro")
+  outputDir = file("src/main/schemas")
+}
 
+compileJava.source(generateAvro.outputs)
 assemble.dependsOn(sourceJar)
