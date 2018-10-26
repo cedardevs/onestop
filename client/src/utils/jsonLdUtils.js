@@ -16,6 +16,7 @@ export const toJsonLd = (uuid, item, pageUrl) => {
     spatialCoverageField(item),
     distributionField(item),
     keywordsField(item),
+    encodingFormatField(item),
   ]
 
   // remove nulls and join
@@ -239,5 +240,16 @@ export const keywordsField = item => {
   // remove nulls and join
   return `"keywords": [
     ${_.join(_.map(_.compact(parts), keyword=>`"${keyword}"`), ',\n')}
+  ]`
+}
+
+export const encodingFormatField = item => {
+  if(item.dataFormats)
+  return `"encodingFormat": [
+    ${_.join(_.map(item.dataFormats, format => {
+      if(format.name && format.version)
+      return `"${format.name} ${format.version}"`
+      return `"${format.name}"`
+    }), ',\n')}
   ]`
 }

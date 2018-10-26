@@ -94,6 +94,10 @@ describe('In the jsonLdUtils', function () {
     it('does not generate a keyword block', function () {
       assert.equal(util.keywordsField(input), null)
     })
+
+    it('does not generate an encoding format block', function () {
+      assert.equal(util.encodingFormatField(input), null)
+    })
   })
 
   describe('a collection with just a fileIdentifier', function () {
@@ -1008,6 +1012,47 @@ describe('In the jsonLdUtils', function () {
     })
   })
 
+  describe('a collection with dataFormats', function () {
+    const input = {
+      title: "the title of the record",
+      dataFormats: [
+        {
+          "name": "NETCDF",
+          "version": "netCDF-4 Classic"
+        },
+        {
+          "name": "FITS",
+          "version": null
+        },
+      ],
+    }
+
+    it('generates an encodingFormat block', function () {
+      jsonEquals(
+        util.encodingFormatField(input),
+        `"encodingFormat": [
+          "NETCDF netCDF-4 Classic",
+          "FITS"
+        ]`
+      )
+    })
+
+    it('generates json-ld', function () {
+      jsonEquals(
+        util.toJsonLd(null, input),
+        `{
+          "@context": "http://schema.org",
+          "@type": "Dataset",
+          "name": "the title of the record",
+          "encodingFormat": [
+            "NETCDF netCDF-4 Classic",
+            "FITS"
+          ]
+        }`
+      )
+    })
+  })
+
   describe('a complete collection', function () {
     const input = {
       title: "the title of the record",
@@ -1065,7 +1110,13 @@ describe('In the jsonLdUtils', function () {
           linkProtocol: "http",
           linkFunction: "information",
         },
-      ]
+      ],
+      dataFormats: [
+        {
+          "name": "NETCDF",
+          "version": "netCDF-4 Classic"
+        },
+      ],
     }
 
     it('generates full json-ld', function () {
@@ -1153,6 +1204,9 @@ describe('In the jsonLdUtils', function () {
           ],
           "keywords": [
             "Oceans > Bathymetry/Seafloor Topography > Water Depth"
+          ],
+          "encodingFormat": [
+            "NETCDF netCDF-4 Classic"
           ]
         }`
       )
