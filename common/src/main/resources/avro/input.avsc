@@ -1,7 +1,7 @@
 {
   "type": "record",
   "namespace": "org.cedar.psi.common.avro",
-  "name": "InputSchema",
+  "name": "Input",
   "doc": "This event records incoming request",
   "fields": [
     {
@@ -17,13 +17,8 @@
       "type": "string"
     },
     {
-      "name": "contentType",
-      "type": {
-        "type": "enum",
-        "name": "contentType",
-        "symbols": ["xml","json"]
-      },
-      "doc": " The type of data that is sent"
+     "name": "contentType",
+     "type": "ContentType"
     },
     {
       "name": "host",
@@ -31,18 +26,13 @@
       "format": "ipv4"
     },
     {
+      "name": "methods",
+      "type": "Methods"
+    },
+    {
       "name": "id",
       "type": "string",
       "doc": "An identification that is used to track the metadata"
-    },
-    {
-      "name": "method",
-      "type": {
-        "type": "enum",
-        "name": "methods",
-        "symbols": ["POST", "PUT"]
-      },
-      "doc": "Create or Update resources"
     },
     {
       "name": "protocol",
@@ -54,16 +44,8 @@
       "format": "uri"
     },
     {
-      "name": "source",
-      "type": {
-        "type": "enum",
-        "name": "sources",
-        "symbols": [
-          "null",
-          "common_ingest"
-        ]
-      },
-      "doc": "Input sources"
+      "name": "sources",
+      "type": "Sources"
     }
   ]
 }
