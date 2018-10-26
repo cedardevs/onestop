@@ -1,0 +1,7 @@
+{
+  "type": "enum",
+  "namespace": "org.cedar.psi.common.avro",
+  "name": "ContentType",
+  "doc": " The type of data that is sent"
+  "symbols": ["xml","json"]
+}
