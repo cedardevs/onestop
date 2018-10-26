@@ -11,7 +11,7 @@ const jsonEquals = (expected, actual) => {
 describe('In the jsonLdUtils', function () {
 
   const uuid = "aabbccdd-1234-5678-9009-87654312abcd"
-  const testBaseUrl = "https://sciapps.colorado.edu"
+  const pageUrl = "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd"
 
   // Note: resulting JsonLD verified using https://search.google.com/structured-data/testing-tool/u/0/
   describe('an empty map for input', function () {
@@ -37,14 +37,14 @@ describe('In the jsonLdUtils', function () {
 
     it('generates the url block', function () {
       jsonEquals(
-        util.urlField(uuid, testBaseUrl),
+        util.urlField(pageUrl),
         `"url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd"`
       )
     })
 
     it('creates a very simple JSON-LD object', function () {
       jsonEquals(
-        util.toJsonLd(uuid, input, testBaseUrl),
+        util.toJsonLd(uuid, input, pageUrl),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -268,14 +268,14 @@ describe('In the jsonLdUtils', function () {
 
     it('generates the url block', function () {
       jsonEquals(
-        util.urlField(uuid, testBaseUrl),
+        util.urlField(pageUrl),
         `"url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd"`
       )
     })
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(uuid, input, testBaseUrl),
+        util.toJsonLd(uuid, input, pageUrl),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -1052,7 +1052,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates full json-ld', function () {
       jsonEquals(
-        util.toJsonLd(uuid, input, testBaseUrl),
+        util.toJsonLd(uuid, input, pageUrl),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",

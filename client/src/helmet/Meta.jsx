@@ -2,6 +2,8 @@ import {Helmet} from 'react-helmet'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
+import {buildCoordinatesString} from '../utils/resultUtils'
+import {toJsonLd} from '../utils/jsonLdUtils'
 
 export default class Meta extends Component {
   formatTitle = title => {
@@ -21,7 +23,7 @@ export default class Meta extends Component {
   }
 
   render() {
-    const {title, formatTitle, description, robots, thumbnail} = this.props
+    const {title, formatTitle, description, robots, thumbnail, item, itemUuid} = this.props
 
     /*
     Default values for every variable are critial, because otherwise helmet will leave meta tags set to old values when you return to a previous page (such as clicking the home link after visiting a collection.)
@@ -36,6 +38,7 @@ export default class Meta extends Component {
     const robotsValue = robots || 'index, nofollow'
     const imageValue =
       thumbnail || 'https://data.noaa.gov/datasetsearch/img/oneStop.jpg'
+    const jsonLD = item? toJsonLd(itemUuid, item, location.href):null
 
     return (
       <Helmet>
@@ -59,6 +62,8 @@ export default class Meta extends Component {
         <meta property="og:image:height" content="400" />
 
         <meta property="og:url" content={`${location.href}`} />
+
+        <script type="application/ld+json">{jsonLD}</script>
       </Helmet>
     )
   }

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import moment from 'moment/moment'
 
-export const toJsonLd = (uuid, item, baseUrl) => {
+export const toJsonLd = (uuid, item, pageUrl) => {
   const parts = [
     `"@context": "http://schema.org",
     "@type": "Dataset"`,
@@ -9,7 +9,7 @@ export const toJsonLd = (uuid, item, baseUrl) => {
     alternateNameField(item),
     descriptionField(item),
     identifierField(uuid, item),
-    urlField(uuid, baseUrl? baseUrl : 'https://data.noaa.gov'), // TODO baseUrl headaches... again...
+    urlField(pageUrl),
     sameAsField(item),
     imageField(item),
     temporalCoverageField(item),
@@ -80,8 +80,9 @@ export const doiListItem = item => {
   }`
 }
 
-export const urlField = (uuid, baseUrl) => {
-  return (uuid && baseUrl)? `"url": "${baseUrl}/onestop/#/collections/details/${uuid}"` : null
+export const urlField = pageUrl => {
+  if(pageUrl)
+  return `"url": "${pageUrl}"`
 }
 
 export const sameAsField = item => {
