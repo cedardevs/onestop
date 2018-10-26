@@ -23,7 +23,15 @@ export default class Meta extends Component {
   }
 
   render() {
-    const {title, formatTitle, description, robots, thumbnail, item, itemUuid} = this.props
+    const {
+      title,
+      formatTitle,
+      description,
+      robots,
+      thumbnail,
+      item,
+      itemUuid,
+    } = this.props
 
     /*
     Default values for every variable are critial, because otherwise helmet will leave meta tags set to old values when you return to a previous page (such as clicking the home link after visiting a collection.)
@@ -38,7 +46,7 @@ export default class Meta extends Component {
     const robotsValue = robots || 'index, nofollow'
     const imageValue =
       thumbnail || 'https://data.noaa.gov/datasetsearch/img/oneStop.jpg'
-    const jsonLD = item? toJsonLd(itemUuid, item, location.href):null
+    const jsonLD = item ? toJsonLd(itemUuid, item, location.href) : null
 
     return (
       <Helmet>

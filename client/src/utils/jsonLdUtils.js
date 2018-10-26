@@ -26,23 +26,20 @@ export const toJsonLd = (uuid, item, pageUrl) => {
 }
 
 export const nameField = item => {
-  if(item.title)
-  return `"name": "${item.title}"`
+  if (item.title) return `"name": "${item.title}"`
 }
 
 export const alternateNameField = item => {
-  if(item.fileIdentifier)
-  return `"alternateName": "${item.fileIdentifier}"`
+  if (item.fileIdentifier) return `"alternateName": "${item.fileIdentifier}"`
 }
 
 export const descriptionField = item => {
-  if(item.description)
-  return `"description": "${item.description}"`
+  if (item.description) return `"description": "${item.description}"`
 }
 
 export const fileIdentifierListItem = item => {
-  if(item.fileIdentifier)
-  return `{
+  if (item.fileIdentifier)
+    return `{
     "value": "${item.fileIdentifier}",
     "propertyID": "NCEI Dataset Identifier",
     "@type": "PropertyValue"
@@ -50,8 +47,8 @@ export const fileIdentifierListItem = item => {
 }
 
 export const uuidListItem = uuid => {
-  if(uuid)
-  return `{
+  if (uuid)
+    return `{
     "value": "${uuid}",
     "propertyID": "OneStop uuid",
     "@type": "PropertyValue"
@@ -65,16 +62,16 @@ export const identifierField = (uuid, item) => {
     doiListItem(item),
   ]
 
-  if( _.compact(parts).length > 0)
-  // remove nulls and join
-  return `"identifier": [
+  if (_.compact(parts).length > 0)
+    // remove nulls and join
+    return `"identifier": [
     ${_.join(_.compact(parts), ',\n')}
   ]`
 }
 
 export const doiListItem = item => {
   if (item.doi)
-  return `{
+    return `{
     "value": "${item.doi}",
     "propertyID": "Digital Object Identifier (DOI)",
     "@type": "PropertyValue"
@@ -82,26 +79,27 @@ export const doiListItem = item => {
 }
 
 export const urlField = pageUrl => {
-  if(pageUrl)
-  return `"url": "${pageUrl}"`
+  if (pageUrl) return `"url": "${pageUrl}"`
 }
 
 export const sameAsField = item => {
   const parts = [
-    item.doi? `"https://doi.org/${item.doi}"`: null,
-    item.fileIdentifier? `"https://data.nodc.noaa.gov/cgi-bin/iso?id=${item.fileIdentifier}"`: null,
+    item.doi ? `"https://doi.org/${item.doi}"` : null,
+    item.fileIdentifier
+      ? `"https://data.nodc.noaa.gov/cgi-bin/iso?id=${item.fileIdentifier}"`
+      : null,
   ]
 
-  if( _.compact(parts).length > 0)
-  // remove nulls and join
-  return `"sameAs": [
+  if (_.compact(parts).length > 0)
+    // remove nulls and join
+    return `"sameAs": [
     ${_.join(_.compact(parts), ',\n')}
   ]`
 }
 
 export const imageField = item => {
   if (item.thumbnail)
-  return `"image": {
+    return `"image": {
     "@type": "ImageObject",
     "url": "${item.thumbnail}",
     "contentUrl": "${item.thumbnail}",
@@ -113,25 +111,21 @@ export const temporalCoverageField = item => {
   if (item.beginDate && item.endDate) {
     if (item.beginDate == item.endDate) {
       return `"temporalCoverage": "${item.beginDate}"`
-    } else {
+    }
+    else {
       return `"temporalCoverage": "${item.beginDate}/${item.endDate}"`
     }
   }
-  if (item.beginDate)
-  return `"temporalCoverage": "${item.beginDate}/.."`
-  if (item.endDate)
-  return `"temporalCoverage": "../${item.endDate}"`
+  if (item.beginDate) return `"temporalCoverage": "${item.beginDate}/.."`
+  if (item.endDate) return `"temporalCoverage": "../${item.endDate}"`
 }
 
 export const spatialCoverageField = item => {
-  const parts = _.concat(
-    [geoListItem(item)],
-    placenameList(item)
-  )
+  const parts = _.concat([ geoListItem(item) ], placenameList(item))
 
-  if( _.compact(parts).length > 0)
-     // remove nulls and join
-  return `"spatialCoverage": [
+  if (_.compact(parts).length > 0)
+    // remove nulls and join
+    return `"spatialCoverage": [
     ${_.join(_.compact(parts), ',\n')}
   ]`
 }
@@ -183,7 +177,9 @@ export const geoListItem = item => {
       "geo": {
         "@type": "GeoShape",
         "description": "y,x y,x",
-        "line": "${geometry.coordinates[0][1]},${geometry.coordinates[0][0]} ${geometry.coordinates[1][1]},${geometry.coordinates[1][0]}"
+        "line": "${geometry.coordinates[0][1]},${geometry
+        .coordinates[0][0]} ${geometry.coordinates[1][1]},${geometry
+        .coordinates[1][0]}"
       }
     }`
     }
@@ -194,7 +190,9 @@ export const geoListItem = item => {
       "geo": {
         "@type": "GeoShape",
         "description": "minY,minX maxY,maxX",
-        "box": "${geometry.coordinates[0][0][1]},${geometry.coordinates[0][0][0]} ${geometry.coordinates[0][2][1]},${geometry.coordinates[0][2][0]}"
+        "box": "${geometry.coordinates[0][0][1]},${geometry
+        .coordinates[0][0][0]} ${geometry.coordinates[0][2][1]},${geometry
+        .coordinates[0][2][0]}"
       }
     }`
     }
@@ -214,14 +212,15 @@ export const distributionField = item => {
 export const downloadLinkList = link => {
   const {linkUrl, linkName, linkProtocol, linkDescription, linkFunction} = link
 
-  const disambiguation = `${linkFunction || 'download'} (${linkProtocol || 'HTTP'})`
+  const disambiguation = `${linkFunction || 'download'} (${linkProtocol ||
+    'HTTP'})`
   const parts = [
     `"@type": "DataDownload"`,
-    linkUrl? `"url": "${linkUrl}"`: null,
-    linkDescription? `"description": "${linkDescription}"`: null,
+    linkUrl ? `"url": "${linkUrl}"` : null,
+    linkDescription ? `"description": "${linkDescription}"` : null,
     `"disambiguatingDescription": "${disambiguation}"`,
-    linkName? `"name": "${linkName}"`: null,
-    linkProtocol? `"encodingFormat": "${linkProtocol}"`: null,
+    linkName ? `"name": "${linkName}"` : null,
+    linkProtocol ? `"encodingFormat": "${linkProtocol}"` : null,
   ]
 
   // remove nulls and join
@@ -232,24 +231,27 @@ export const downloadLinkList = link => {
 
 export const keywordsField = item => {
   // remove empty strings
-  const parts = _.remove(scienceKeywordsSubset(item), function(word) {
-    return word != ""
+  const parts = _.remove(scienceKeywordsSubset(item), function(word){
+    return word != ''
   })
 
-  if( _.compact(parts).length > 0)
-  // remove nulls and join
-  return `"keywords": [
-    ${_.join(_.map(_.compact(parts), keyword=>`"${keyword}"`), ',\n')}
+  if (_.compact(parts).length > 0)
+    // remove nulls and join
+    return `"keywords": [
+    ${_.join(_.map(_.compact(parts), keyword => `"${keyword}"`), ',\n')}
   ]`
 }
 
 export const encodingFormatField = item => {
-  if(item.dataFormats)
-  return `"encodingFormat": [
-    ${_.join(_.map(item.dataFormats, format => {
-      if(format.name && format.version)
-      return `"${format.name} ${format.version}"`
-      return `"${format.name}"`
-    }), ',\n')}
+  if (item.dataFormats)
+    return `"encodingFormat": [
+    ${_.join(
+      _.map(item.dataFormats, format => {
+        if (format.name && format.version)
+          return `"${format.name} ${format.version}"`
+        return `"${format.name}"`
+      }),
+      ',\n'
+    )}
   ]`
 }
