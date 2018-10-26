@@ -123,7 +123,7 @@ export const temporalCoverageField = item => {
 }
 
 export const spatialCoverageField = item => {
-  const parts = _.concat([],
+  const parts = _.concat(
     [geoListItem(item)],
     placenameList(item)
   )
@@ -135,7 +135,11 @@ export const spatialCoverageField = item => {
   ]`
 }
 
-export const spatialKeywordsSubset = item => {
+export const scienceKeywordsSubset = item => {
+  return _.intersection(item.keywords, item.gcmdScience)
+}
+
+export const locationKeywordsSubset = item => {
   return _.intersection(item.keywords, item.gcmdLocations)
 }
 
@@ -148,7 +152,7 @@ export const placenameListItem = location => {
 
 export const placenameList = item => {
   // gcmdLocations has extra entries for each layer in the keywords, but the intersection with the original keywords correctly identifies the correct subset
-  return _.map(spatialKeywordsSubset(item), placenameListItem)
+  return _.map(locationKeywordsSubset(item), placenameListItem)
 }
 
 export const geoListItem = item => {
@@ -226,8 +230,14 @@ export const downloadLinkList = link => {
 }
 
 export const keywordsField = item => {
-  if (item.keywords)
+  // remove empty strings
+  const parts = _.remove(scienceKeywordsSubset(item), function(word) {
+    return word != ""
+  })
+
+  if( _.compact(parts).length > 0)
+  // remove nulls and join
   return `"keywords": [
-    ${_.join(_.map(item.keywords, keyword=>`"${keyword}"`), ',\n')}
+    ${_.join(_.map(_.compact(parts), keyword=>`"${keyword}"`), ',\n')}
   ]`
 }

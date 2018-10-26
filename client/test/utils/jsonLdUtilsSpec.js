@@ -666,7 +666,7 @@ describe('In the jsonLdUtils', function () {
 
     it('identifies the correct place keywords', function () {
       assert.deepEqual(
-        util.spatialKeywordsSubset(input),
+        util.locationKeywordsSubset(input),
         [
           "Continent > North America > United States Of America",
           "Ocean > Pacific Ocean > North Pacific Ocean",
@@ -724,16 +724,6 @@ describe('In the jsonLdUtils', function () {
               "@type": "Place",
               "name": "Vertical Location > Sea Floor"
             }
-          ],
-          "keywords": [
-            "Oceans > Bathymetry/Seafloor Topography > Water Depth",
-            "Land Surface > Topography > Terrain Elevation",
-            "Integrated bathymetry and topography",
-            "Continent > North America > United States Of America",
-            "Ocean > Pacific Ocean > North Pacific Ocean",
-            "Vertical Location > Land Surface",
-            "Vertical Location > Sea Floor",
-            "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
           ]
         }`
       )
@@ -763,6 +753,20 @@ describe('In the jsonLdUtils', function () {
         "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
         "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
       ],
+      gcmdScience: [
+        "Oceans",
+        "Oceans > Bathymetry/Seafloor Topography",
+        "Oceans > Bathymetry/Seafloor Topography > Seafloor Topography",
+        "Oceans > Bathymetry/Seafloor Topography > Bathymetry",
+        "Oceans > Bathymetry/Seafloor Topography > Water Depth",
+        "Land Surface",
+        "Land Surface > Topography",
+        "Land Surface > Topography > Terrain Elevation",
+        "Land Surface > Topography > Terrain Elevation > Topographical Relief Maps",
+        "Oceans",
+        "Oceans > Coastal Processes",
+        "Oceans > Coastal Processes > Coastal Elevation",
+      ]
     }
 
     it('generates a keyword block', function () {
@@ -774,19 +778,7 @@ describe('In the jsonLdUtils', function () {
           "Oceans > Bathymetry/Seafloor Topography > Water Depth",
           "Land Surface > Topography > Terrain Elevation",
           "Land Surface > Topography > Terrain Elevation > Topographical Relief Maps",
-          "Oceans > Coastal Processes > Coastal Elevation",
-          "Models/Analyses > DEM > Digital Elevation Model",
-          "ICSU-WDS > International Council for Science - World Data System",
-          "< 1 meter",
-          "Coastal Relief",
-          "Gridded elevations",
-          "Integrated bathymetry and topography",
-          "Continent > North America > United States Of America",
-          "Ocean > Pacific Ocean > North Pacific Ocean",
-          "Vertical Location > Land Surface",
-          "Vertical Location > Sea Floor",
-          "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-          "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+          "Oceans > Coastal Processes > Coastal Elevation"
         ]`
       )
     })
@@ -804,19 +796,7 @@ describe('In the jsonLdUtils', function () {
             "Oceans > Bathymetry/Seafloor Topography > Water Depth",
             "Land Surface > Topography > Terrain Elevation",
             "Land Surface > Topography > Terrain Elevation > Topographical Relief Maps",
-            "Oceans > Coastal Processes > Coastal Elevation",
-            "Models/Analyses > DEM > Digital Elevation Model",
-            "ICSU-WDS > International Council for Science - World Data System",
-            "< 1 meter",
-            "Coastal Relief",
-            "Gridded elevations",
-            "Integrated bathymetry and topography",
-            "Continent > North America > United States Of America",
-            "Ocean > Pacific Ocean > North Pacific Ocean",
-            "Vertical Location > Land Surface",
-            "Vertical Location > Sea Floor",
-            "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-            "DOC/NOAA/NESDIS/NGDC > National Geophysical Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+            "Oceans > Coastal Processes > Coastal Elevation"
           ]
         }`
       )
@@ -1053,7 +1033,13 @@ describe('In the jsonLdUtils', function () {
         "Continent > North America > United States Of America",
         "Vertical Location > Sea Floor",
       ],
+      gcmdScience: [
+        "Oceans",
+        "Oceans > Bathymetry/Seafloor Topography",
+        "Oceans > Bathymetry/Seafloor Topography > Water Depth",
+      ],
       keywords: [
+        "Oceans > Bathymetry/Seafloor Topography > Water Depth",
         "Continent > North America > United States Of America",
         "Vertical Location > Sea Floor",
       ],
@@ -1166,8 +1152,7 @@ describe('In the jsonLdUtils', function () {
             }
           ],
           "keywords": [
-            "Continent > North America > United States Of America",
-            "Vertical Location > Sea Floor"
+            "Oceans > Bathymetry/Seafloor Topography > Water Depth"
           ]
         }`
       )
