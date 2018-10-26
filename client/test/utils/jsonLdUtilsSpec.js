@@ -10,13 +10,16 @@ const jsonEquals = (expected, actual) => {
 
 describe('In the jsonLdUtils', function () {
 
+  const uuid = "aabbccdd-1234-5678-9009-87654312abcd"
+  const testBaseUrl = "https://sciapps.colorado.edu"
+
   // Note: resulting JsonLD verified using https://search.google.com/structured-data/testing-tool/u/0/
   describe('an empty map for input', function () {
     const input = {}
 
     it('does not break the utility functions', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset"
@@ -32,23 +35,38 @@ describe('In the jsonLdUtils', function () {
       fileIdentifier: "gov.test.cires.example:abc",
     }
 
+    it('generates the url block', function () {
+      jsonEquals(
+        util.urlField(uuid, testBaseUrl),
+        `"url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd"`
+      )
+    })
+
     it('creates a very simple JSON-LD object', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(uuid, input, testBaseUrl),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
           "alternateName": "gov.test.cires.example:abc",
           "description": "A rather long description (not!)",
-          "identifier" : [
+          "identifier": [
             {
-              "value" : "gov.test.cires.example:abc",
-              "propertyID" : "NCEI Dataset Identifier",
-              "@type" : "PropertyValue"
+              "value": "aabbccdd-1234-5678-9009-87654312abcd",
+              "propertyID": "OneStop uuid",
+              "@type": "PropertyValue"
+            },
+            {
+              "value": "gov.test.cires.example:abc",
+              "propertyID": "NCEI Dataset Identifier",
+              "@type": "PropertyValue"
             }
           ],
-          "url": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
+          "url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd",
+          "sameAs": [
+            "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
+          ]
         }`
       )
     })
@@ -73,6 +91,9 @@ describe('In the jsonLdUtils', function () {
       assert.equal(util.distributionField(input), null)
     })
 
+    it('does not generate a keyword block', function () {
+      assert.equal(util.keywordsField(input), null)
+    })
   })
 
   describe('a collection with just a fileIdentifier', function () {
@@ -85,34 +106,36 @@ describe('In the jsonLdUtils', function () {
       jsonEquals(
         util.fileIdentifierListItem(input),
         `{
-          "value" : "gov.test.cires.example:abc",
-          "propertyID" : "NCEI Dataset Identifier",
-          "@type" : "PropertyValue"
+          "value": "gov.test.cires.example:abc",
+          "propertyID": "NCEI Dataset Identifier",
+          "@type": "PropertyValue"
         }`
       )
     })
 
     it('generates a simple identifier block', function () {
       jsonEquals(
-        util.identifierField(input),
-        `"identifier" : [
+        util.identifierField(null, input),
+        `"identifier": [
           {
-            "value" : "gov.test.cires.example:abc",
-            "propertyID" : "NCEI Dataset Identifier",
-            "@type" : "PropertyValue"
+            "value": "gov.test.cires.example:abc",
+            "propertyID": "NCEI Dataset Identifier",
+            "@type": "PropertyValue"
           }
         ]`
       )
     })
 
-    it('generates the url block', function () {
+    it('generates the sameAs block', function () {
       jsonEquals(
-        util.urlFields(input),
-        `"url": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"`
+        util.sameAsField(input),
+        `"sameAs": [
+          "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
+        ]`
       )
     })
 
-    it('generates the url block', function () {
+    it('generates the alternateName block', function () {
       jsonEquals(
         util.alternateNameField(input),
         `"alternateName": "gov.test.cires.example:abc"`
@@ -121,20 +144,22 @@ describe('In the jsonLdUtils', function () {
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
           "alternateName": "gov.test.cires.example:abc",
-          "identifier" : [
+          "identifier": [
             {
-              "value" : "gov.test.cires.example:abc",
-              "propertyID" : "NCEI Dataset Identifier",
-              "@type" : "PropertyValue"
+              "value": "gov.test.cires.example:abc",
+              "propertyID": "NCEI Dataset Identifier",
+              "@type": "PropertyValue"
             }
           ],
-          "url": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
+          "sameAs": [
+            "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
+          ]
         }`
       )
     })
@@ -150,48 +175,52 @@ describe('In the jsonLdUtils', function () {
       jsonEquals(
         util.doiListItem(input),
         `{
-          "value" : "doi:10.1234/ABCDEFGH",
-          "propertyID" : "Digital Object Identifier (DOI)",
-          "@type" : "PropertyValue"
+          "value": "doi:10.1234/ABCDEFGH",
+          "propertyID": "Digital Object Identifier (DOI)",
+          "@type": "PropertyValue"
         }`
       )
     })
 
     it('generates a simple identifier block', function () {
       jsonEquals(
-        util.identifierField(input),
-        `"identifier" : [
+        util.identifierField(null, input),
+        `"identifier": [
           {
-            "value" : "doi:10.1234/ABCDEFGH",
-            "propertyID" : "Digital Object Identifier (DOI)",
-            "@type" : "PropertyValue"
+            "value": "doi:10.1234/ABCDEFGH",
+            "propertyID": "Digital Object Identifier (DOI)",
+            "@type": "PropertyValue"
           }
         ]`
       )
     })
 
-    it('generates the url block', function () {
+    it('generates the sameAs block', function () {
       jsonEquals(
-        util.urlFields(input),
-        `"url": "https://doi.org/doi:10.1234/ABCDEFGH"`
+        util.sameAsField(input),
+        `"sameAs": [
+          "https://doi.org/doi:10.1234/ABCDEFGH"
+        ]`
       )
     })
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
-          "identifier" : [
+          "identifier": [
             {
-              "value" : "doi:10.1234/ABCDEFGH",
-              "propertyID" : "Digital Object Identifier (DOI)",
-              "@type" : "PropertyValue"
+              "value": "doi:10.1234/ABCDEFGH",
+              "propertyID": "Digital Object Identifier (DOI)",
+              "@type": "PropertyValue"
             }
           ],
-          "url": "https://doi.org/doi:10.1234/ABCDEFGH"
+          "sameAs": [
+            "https://doi.org/doi:10.1234/ABCDEFGH"
+          ]
         }`
       )
     })
@@ -206,52 +235,74 @@ describe('In the jsonLdUtils', function () {
 
     it('generates the identifier block', function () {
       jsonEquals(
-        util.identifierField(input),
-        `"identifier" : [
+        util.identifierField(uuid, input),
+        `"identifier": [
           {
-            "value" : "gov.test.cires.example:abc",
-            "propertyID" : "NCEI Dataset Identifier",
-            "@type" : "PropertyValue"
+            "value": "aabbccdd-1234-5678-9009-87654312abcd",
+            "propertyID": "OneStop uuid",
+            "@type": "PropertyValue"
           },
           {
-            "value" : "doi:10.1234/ABCDEFGH",
-            "propertyID" : "Digital Object Identifier (DOI)",
-            "@type" : "PropertyValue"
+            "value": "gov.test.cires.example:abc",
+            "propertyID": "NCEI Dataset Identifier",
+            "@type": "PropertyValue"
+          },
+          {
+            "value": "doi:10.1234/ABCDEFGH",
+            "propertyID": "Digital Object Identifier (DOI)",
+            "@type": "PropertyValue"
           }
+        ]`
+      )
+    })
+
+    it('generates the sameAs block', function () {
+      jsonEquals(
+        util.sameAsField(input),
+        `"sameAs": [
+          "https://doi.org/doi:10.1234/ABCDEFGH",
+          "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
         ]`
       )
     })
 
     it('generates the url block', function () {
       jsonEquals(
-        util.urlFields(input),
-        `"url": "https://doi.org/doi:10.1234/ABCDEFGH",
-        "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"`
+        util.urlField(uuid, testBaseUrl),
+        `"url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd"`
       )
     })
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(uuid, input, testBaseUrl),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
           "alternateName": "gov.test.cires.example:abc",
-          "identifier" : [
+          "identifier": [
             {
-              "value" : "gov.test.cires.example:abc",
-              "propertyID" : "NCEI Dataset Identifier",
-              "@type" : "PropertyValue"
+              "value": "aabbccdd-1234-5678-9009-87654312abcd",
+              "propertyID": "OneStop uuid",
+              "@type": "PropertyValue"
             },
             {
-              "value" : "doi:10.1234/ABCDEFGH",
-              "propertyID" : "Digital Object Identifier (DOI)",
-              "@type" : "PropertyValue"
+              "value": "gov.test.cires.example:abc",
+              "propertyID": "NCEI Dataset Identifier",
+              "@type": "PropertyValue"
+            },
+            {
+              "value": "doi:10.1234/ABCDEFGH",
+              "propertyID": "Digital Object Identifier (DOI)",
+              "@type": "PropertyValue"
             }
           ],
-          "url": "https://doi.org/doi:10.1234/ABCDEFGH",
-          "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
+          "url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd",
+          "sameAs": [
+            "https://doi.org/doi:10.1234/ABCDEFGH",
+            "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
+          ]
         }`
       )
     })
@@ -268,8 +319,8 @@ describe('In the jsonLdUtils', function () {
         util.imageField(input),
         `"image": {
           "@type": "ImageObject",
-          "url" : "http://example.com/thumbnail",
-          "contentUrl" : "http://example.com/thumbnail",
+          "url": "http://example.com/thumbnail",
+          "contentUrl": "http://example.com/thumbnail",
           "caption": "Preview graphic"
         }`
       )
@@ -277,15 +328,15 @@ describe('In the jsonLdUtils', function () {
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
           "image": {
             "@type": "ImageObject",
-            "url" : "http://example.com/thumbnail",
-            "contentUrl" : "http://example.com/thumbnail",
+            "url": "http://example.com/thumbnail",
+            "contentUrl": "http://example.com/thumbnail",
             "caption": "Preview graphic"
           }
         }`
@@ -306,7 +357,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -397,7 +448,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -463,7 +514,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -529,7 +580,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -651,7 +702,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -742,7 +793,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -889,7 +940,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -935,7 +986,7 @@ describe('In the jsonLdUtils', function () {
 
     it('generates json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(null, input),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
@@ -1001,31 +1052,39 @@ describe('In the jsonLdUtils', function () {
 
     it('generates full json-ld', function () {
       jsonEquals(
-        util.toJsonLd(input),
+        util.toJsonLd(uuid, input, testBaseUrl),
         `{
           "@context": "http://schema.org",
           "@type": "Dataset",
           "name": "the title of the record",
           "alternateName": "gov.test.cires.example:abc",
           "description": "A rather long description (not!)",
-          "identifier" : [
+          "identifier": [
             {
-              "value" : "gov.test.cires.example:abc",
-              "propertyID" : "NCEI Dataset Identifier",
-              "@type" : "PropertyValue"
+              "value": "aabbccdd-1234-5678-9009-87654312abcd",
+              "propertyID": "OneStop uuid",
+              "@type": "PropertyValue"
             },
             {
-              "value" : "doi:10.1234/ABCDEFGH",
-              "propertyID" : "Digital Object Identifier (DOI)",
-              "@type" : "PropertyValue"
+              "value": "gov.test.cires.example:abc",
+              "propertyID": "NCEI Dataset Identifier",
+              "@type": "PropertyValue"
+            },
+            {
+              "value": "doi:10.1234/ABCDEFGH",
+              "propertyID": "Digital Object Identifier (DOI)",
+              "@type": "PropertyValue"
             }
           ],
-          "url": "https://doi.org/doi:10.1234/ABCDEFGH",
-          "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc",
+          "url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd",
+          "sameAs": [
+            "https://doi.org/doi:10.1234/ABCDEFGH",
+            "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
+          ],
           "image": {
             "@type": "ImageObject",
-            "url" : "http://example.com/thumbnail",
-            "contentUrl" : "http://example.com/thumbnail",
+            "url": "http://example.com/thumbnail",
+            "contentUrl": "http://example.com/thumbnail",
             "caption": "Preview graphic"
           },
           "temporalCoverage": "2018-10-19/2019-01-02",

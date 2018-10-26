@@ -1,15 +1,16 @@
 import _ from 'lodash'
 import moment from 'moment/moment'
 
-export const toJsonLd = item => {
+export const toJsonLd = (uuid, item, baseUrl) => {
   const parts = [
     `"@context": "http://schema.org",
     "@type": "Dataset"`,
     nameField(item),
     alternateNameField(item),
     descriptionField(item),
-    identifierField(item),
-    urlFields(item),
+    identifierField(uuid, item),
+    urlField(uuid, baseUrl? baseUrl : 'https://data.noaa.gov'), // TODO baseUrl headaches... again...
+    sameAsField(item),
     imageField(item),
     temporalCoverageField(item),
     spatialCoverageField(item),
@@ -41,22 +42,31 @@ export const descriptionField = item => {
 export const fileIdentifierListItem = item => {
   if(item.fileIdentifier)
   return `{
-    "value" : "${item.fileIdentifier}",
-    "propertyID" : "NCEI Dataset Identifier",
-    "@type" : "PropertyValue"
+    "value": "${item.fileIdentifier}",
+    "propertyID": "NCEI Dataset Identifier",
+    "@type": "PropertyValue"
   }`
 }
 
-export const identifierField = item => {
-  // TODO should I include the uuid ?
+export const uuidListItem = uuid => {
+  if(uuid)
+  return `{
+    "value": "${uuid}",
+    "propertyID": "OneStop uuid",
+    "@type": "PropertyValue"
+  }`
+}
+
+export const identifierField = (uuid, item) => {
   const parts = [
+    uuidListItem(uuid),
     fileIdentifierListItem(item),
     doiListItem(item),
   ]
 
   if( _.compact(parts).length > 0)
   // remove nulls and join
-  return `"identifier" : [
+  return `"identifier": [
     ${_.join(_.compact(parts), ',\n')}
   ]`
 }
@@ -64,28 +74,35 @@ export const identifierField = item => {
 export const doiListItem = item => {
   if (item.doi)
   return `{
-    "value" : "${item.doi}",
-    "propertyID" : "Digital Object Identifier (DOI)",
-    "@type" : "PropertyValue"
+    "value": "${item.doi}",
+    "propertyID": "Digital Object Identifier (DOI)",
+    "@type": "PropertyValue"
   }`
 }
 
-export const urlFields = item => {
-  if (item.doi && item.fileIdentifier)
-  return `"url": "https://doi.org/${item.doi}",
-  "sameAs": "https://data.nodc.noaa.gov/cgi-bin/iso?id=${item.fileIdentifier}"`
-  if (item.fileIdentifier)
-  return `"url": "https://data.nodc.noaa.gov/cgi-bin/iso?id=${item.fileIdentifier}"`
-  if (item.doi)
-  return `"url": "https://doi.org/${item.doi}"`
+export const urlField = (uuid, baseUrl) => {
+  return (uuid && baseUrl)? `"url": "${baseUrl}/onestop/#/collections/details/${uuid}"` : null
+}
+
+export const sameAsField = item => {
+  const parts = [
+    item.doi? `"https://doi.org/${item.doi}"`: null,
+    item.fileIdentifier? `"https://data.nodc.noaa.gov/cgi-bin/iso?id=${item.fileIdentifier}"`: null,
+  ]
+
+  if( _.compact(parts).length > 0)
+  // remove nulls and join
+  return `"sameAs": [
+    ${_.join(_.compact(parts), ',\n')}
+  ]`
 }
 
 export const imageField = item => {
   if (item.thumbnail)
   return `"image": {
     "@type": "ImageObject",
-    "url" : "${item.thumbnail}",
-    "contentUrl" : "${item.thumbnail}",
+    "url": "${item.thumbnail}",
+    "contentUrl": "${item.thumbnail}",
     "caption": "Preview graphic"
   }`
 }
@@ -197,10 +214,10 @@ export const downloadLinkList = link => {
 
   const parts = [
     `"@type": "DataDownload"`,
-    linkUrl? `"url": "${linkUrl}"` : null,
-    linkDescription? `"description": "${linkDescription}"` : null,
-    linkName? `"name": "${linkName}"` : null,
-    linkProtocol? `"encodingFormat": "${linkProtocol}"` : null,
+    linkUrl? `"url": "${linkUrl}"`: null,
+    linkDescription? `"description": "${linkDescription}"`: null,
+    linkName? `"name": "${linkName}"`: null,
+    linkProtocol? `"encodingFormat": "${linkProtocol}"`: null,
   ]
 
   // remove nulls and join
