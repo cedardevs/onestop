@@ -38,7 +38,7 @@ spec:
         image: cedardevs/onestop-api-metadata
         env:
         - name: SPRING_PROFILES_ACTIVE
-          value: "securitydisabled"
+          value: "securitydisabled,kafkadisabled"
         - name: ELASTICSEARCH_HOST
           value: elasticsearch
         - name: ELASTICSEARCH_PORT

@@ -20,6 +20,7 @@ export const getApiPath = state => {
     return basePath + 'api'
   }
   return host + path + 'api'
+  // return '/onestop/api'
 }
 
 export default api
