@@ -2,7 +2,6 @@ import {Helmet} from 'react-helmet'
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import _ from 'lodash'
-import {buildCoordinatesString} from '../utils/resultUtils'
 import {toJsonLd} from '../utils/jsonLdUtils'
 
 export default class Meta extends Component {
@@ -46,7 +45,11 @@ export default class Meta extends Component {
     const robotsValue = robots || 'index, nofollow'
     const imageValue =
       thumbnail || 'https://data.noaa.gov/datasetsearch/img/oneStop.jpg'
-    const jsonLD = item ? toJsonLd(itemUuid, item, location.href) : null
+    const jsonLD = item ? (
+      <script type="application/ld+json">
+        {toJsonLd(itemUuid, item, location.href)}
+      </script>
+    ) : null
 
     return (
       <Helmet>
@@ -71,7 +74,7 @@ export default class Meta extends Component {
 
         <meta property="og:url" content={`${location.href}`} />
 
-        <script type="application/ld+json">{jsonLD}</script>
+        {jsonLD}
       </Helmet>
     )
   }
