@@ -56,9 +56,9 @@ subprojects {
 
       reports {
         xml.enabled true
-        xml.destination "${buildDir}/reports/jacoco/report.xml"
+        xml.destination = file("${buildDir}/reports/jacoco/report.xml")
         html.enabled true
-        html.destination "${buildDir}/reports/jacoco/html"
+        html.destination = file("${buildDir}/reports/jacoco/html")
       }
     }
     check.dependsOn jacocoTestReport
