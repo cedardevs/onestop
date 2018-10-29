@@ -1,5 +1,4 @@
 import '../specHelper'
-// import { toJsonLd, doiListItem } from '../../src/utils/jsonLdUtils'
 import * as util from '../../src/utils/jsonLdUtils'
 import {assert} from 'chai'
 
@@ -8,12 +7,14 @@ const jsonEquals = (expected, actual) => {
   assert.equal(expected.replace(/^\s\s*/gm, ""), actual.replace(/^\s\s*/gm, ""))
 }
 
+// Note: resulting JsonLD verified using https://search.google.com/structured-data/testing-tool/u/0/
+// this tool requires wrapping the json in <script type="application/ld+json"></script> to validate
+
 describe('In the jsonLdUtils', function () {
 
   const uuid = "aabbccdd-1234-5678-9009-87654312abcd"
   const pageUrl = "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd"
 
-  // Note: resulting JsonLD verified using https://search.google.com/structured-data/testing-tool/u/0/
   describe('an empty map for input', function () {
     const input = {}
 
