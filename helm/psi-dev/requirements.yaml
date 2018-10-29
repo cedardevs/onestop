@@ -1,0 +1,8 @@
+---
+dependencies:
+- name: cp-helm-charts
+  version: ~0.1.0
+  repository: https://raw.githubusercontent.com/confluentinc/cp-helm-charts/master
+- name: ambassador
+  version: ~0.40.0
+  repository: https://www.getambassador.io

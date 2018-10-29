@@ -1,0 +1,29 @@
+# Default values for psi-manager.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: cedardevs/psi-stream-manager
+  tag: 0.2.0-SNAPSHOT
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 80
+
+kafka: {}
+#  override just the name of kafka's headless service:
+#  serviceNameOverride:
+#  override the full bootstrap servers string:
+#  bootstrapServers:
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

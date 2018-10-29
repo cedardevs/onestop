@@ -1,0 +1,87 @@
+---
+apiVersion: apps/v1beta2
+kind: StatefulSet
+metadata:
+  name: {{ template "psi-registry.fullname" . }}
+  labels:
+    app: {{ template "psi-registry.name" . }}
+    chart: {{ template "psi-registry.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  serviceName: {{ template "psi-registry.fullname" . }}
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels:
+      app: {{ template "psi-registry.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "psi-registry.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      securityContext:
+        fsGroup: 102
+{{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.image.pullSecrets | indent 8 }}
+{{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "{{ template "psi-registry.kafka.bootstrapServers" . }}"
+            - name: STATE_DIR
+              value: "/var/lib/registry/data"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/registry/data
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+{{- else }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: "app"
+                      operator: In
+                      values:
+                        - {{ template "psi-registry.name" . }}
+                topologyKey: "kubernetes.io/hostname"
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+{{- if .Values.volume.storageClass }}
+        storageClassName: {{ .Values.volume.storageClass }}
+{{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.volume.size }}

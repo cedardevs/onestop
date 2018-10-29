@@ -1,0 +1,6 @@
+#---
+#apiVersion: ambassador/v0
+#kind:  Mapping
+#name:  {{ template "psi-dev.fullname" . }}-kafka-rest-mapping
+#prefix: /kafka-rest/
+#service: {{ template "psi-dev.cp-kafka-rest.fullname" . }}:8082

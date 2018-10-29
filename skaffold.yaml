@@ -1,29 +1,41 @@
-apiVersion: skaffold/v1alpha2
+apiVersion: skaffold/v1alpha5
 kind: Config
 build:
   artifacts:
-  - imageName: cedardevs/psi-registry
-    workspace: ./registry
+  - image: cedardevs/psi-registry
+    context: ./registry
     docker:
       buildArgs:
-        JAR_NAME: registry-0.1.0-SNAPSHOT-all.jar
-        VERSION: 0.1.0-SNAPSHOT
         DATE: now
+        JAR_NAME: psi-registry-0.2.0-SNAPSHOT-all.jar
         VCS_REF: local
-  - imageName: cedardevs/psi-stream-manager
-    workspace: ./stream-manager
+        VERSION: 0.2.0-SNAPSHOT
+  - image: cedardevs/psi-stream-manager
+    context: ./stream-manager
     docker:
       buildArgs:
-        JAR_NAME: psi-stream-manager-0.1.0-SNAPSHOT-all.jar
-        VERSION: 0.1.0-SNAPSHOT
         DATE: now
+        JAR_NAME: psi-stream-manager-0.2.0-SNAPSHOT-all.jar
         VCS_REF: local
+        VERSION: 0.2.0-SNAPSHOT
 deploy:
-  kubectl:
-    manifests:
-    - ./kubernetes/zookeeper.yml
-    - ./kubernetes/kafka.yml
-    - ./kubernetes/kafka-rest.yml
-    - ./kubernetes/kafka-ui.yml
-    - ./kubernetes/registry.yml
-    - ./kubernetes/stream-manager.yml
+  helm:
+    releases:
+    - name: psi-registry
+      chartPath: helm/psi/psi-registry
+      values:
+        image: cedardevs/psi-registry
+      setValues:
+        kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
+      imageStrategy:
+        helm: {}
+    - name: psi-manager
+      chartPath: helm/psi/psi-manager
+      values:
+        image: cedardevs/psi-stream-manager
+      setValues:
+        kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
+      imageStrategy:
+        helm: {}
+    - name: psi-dev
+      chartPath: helm/psi-dev
