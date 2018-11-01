@@ -43,7 +43,7 @@
     "redux-seamless-immutable": "^0.4.0",
     "redux-thunk": "^2.3.0",
     "redux-watch": "^1.1.1",
-    "retire": "^2.0.0",
+    "retire": "^1.6.2",
     "seamless-immutable": "^7.1.4"
   },
   "devDependencies": {
