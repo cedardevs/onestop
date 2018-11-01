@@ -55,7 +55,7 @@ describe('In the jsonLdUtils', function () {
           "identifier": [
             {
               "value": "aabbccdd-1234-5678-9009-87654312abcd",
-              "propertyID": "OneStop uuid",
+              "propertyID": "OneStop UUID",
               "@type": "PropertyValue"
             },
             {
@@ -244,7 +244,7 @@ describe('In the jsonLdUtils', function () {
         `"identifier": [
           {
             "value": "aabbccdd-1234-5678-9009-87654312abcd",
-            "propertyID": "OneStop uuid",
+            "propertyID": "OneStop UUID",
             "@type": "PropertyValue"
           },
           {
@@ -289,7 +289,7 @@ describe('In the jsonLdUtils', function () {
           "identifier": [
             {
               "value": "aabbccdd-1234-5678-9009-87654312abcd",
-              "propertyID": "OneStop uuid",
+              "propertyID": "OneStop UUID",
               "@type": "PropertyValue"
             },
             {
@@ -1132,7 +1132,7 @@ describe('In the jsonLdUtils', function () {
           "identifier": [
             {
               "value": "aabbccdd-1234-5678-9009-87654312abcd",
-              "propertyID": "OneStop uuid",
+              "propertyID": "OneStop UUID",
               "@type": "PropertyValue"
             },
             {

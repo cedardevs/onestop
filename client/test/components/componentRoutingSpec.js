@@ -94,7 +94,7 @@ describe('The home page', () => {
       'http://www.noaa.gov/',
       '//www.nesdis.noaa.gov/',
       'https://github.com/cedardevs/onestop/releases',
-      undefined,
+      undefined, // anchored link for image attribution (internal)
     ]
 
     footerHrefs.should.have.same.members(expectedHrefs)
