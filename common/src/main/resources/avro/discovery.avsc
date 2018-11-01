@@ -1,78 +1,675 @@
-{
-  "type": "record",
-  "namespace": "org.cedar.psi.common.avro",
-  "name": "discovery",
-  "doc": "The shape of the discovery object generated within Inventory Manager for a successfully parsed metadata document. This is the internal metadata format used within the system and ultimately sent downstream to OneStop.",
-  "fields": [
-    {"name": "fileIdentifier", "type": ["null", "string"], "default": "null"},
-    {"name": "parentIdentifier", "type": ["null", "string"], "default": "null"},
-    {"name": "hierarchyLevelName", "type": ["null", "string"], "default": "null"},
-    {"name": "doi", "type": ["null", "string"], "default": "null"},
-    {"name": "purpose", "type": ["null", "string"], "default": "null"},
-    {"name": "status", "type": ["null", "string"], "default": "null"},
-    {"name": "credit", "type": ["null", "string"], "default": "null"},
-    {"name": "title", "type": ["null", "string"], "default": "null"},
-    {"name": "alternateTitle", "type": ["null", "string"], "default": "null"},
-    {"name": "description", "type": ["null", "string"], "default": "null"},
-    {"name": "keywords", "type": {
-      "type": "array",
-      "items": {
-        "name": "keywordsElement",
-        "type": "record",
-        "fields": [
-          {"name": "values", "type": "array", "items": "string"},
-          {"name": "type", "type": ["null", "string"],  "default": "null"},
-          {"name": "namespace", "type": "string"}
-        ]
+[
+  {
+    "type": "record",
+    "name": "Links",
+    "namespace": "org.cedar.psi.common.avro",
+    "fields": [
+      {
+        "name": "link",
+        "type": {
+          "type": "array",
+          "items": {
+            "name": "Link",
+            "type": "record",
+            "fields": [
+              {
+                "name": "linkName",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "linkProtocol",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "linkUrl",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "linkDescription",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "linkFunction",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            ]
+          }
+        }
       }
-      }},
-    {"name": "topicCategories", "type": "array", "items": ["null", "string"]},
-    {"name": "temporalBounding", "type": "record", "fields": [
-      {"name": "beginDate", "type": ["null", "string"],  "default": "null"},
-      {"name": "beginIndeterminate", "type": ["null", "string"],  "default": "null"},
-      {"name": "endDate", "type": ["null", "string"],  "default": "null"},
-      {"name": "endIndeterminate", "type": ["null", "string"],  "default": "null"},
-      {"name": "instant", "type": ["null", "string"],  "default": "null"},
-      {"name": "instantIndeterminate", "type": ["null", "string"],  "default": "null"},
-      {"name": "description", "type": ["null", "string"],  "default": "null"}
-      ]
-    },
-    {"name": "spatialBounding", "type": "record", "fields": [
-
-      ]
-    },
-    {"name": "isGlobal", "type": "boolean"},
-    {"name": "acquisitionInstruments", "type": ""},
-    {"name": "acquisitionOperations", "type": ""},
-    {"name": "acquisitionPlatforms", "type": ""},
-    {"name": "dataFormats", "type": ""},
-    {"name": "links", "type": ""},
-    {"name": "responsibleParties", "type": ""},
-    {"name": "thumbnail", "type": ""},
-    {"name": "thumbnailDescription", "type": ""},
-    {"name": "creationDate", "type": ""},
-    {"name": "revisionDate", "type": ""},
-    {"name": "publicationDate", "type": ""},
-    {"name": "citeAsStatements", "type": ""},
-    {"name": "crossReferences", "type": ""},
-    {"name": "largerWorks", "type": ""},
-    {"name": "useLimitation", "type": ""},
-    {"name": "legalConstraints", "type": ""},
-    {"name": "accessFeeStatement", "type": ""},
-    {"name": "orderingInstructions", "type": ""},
-    {"name": "edition", "type": ""},
-    {"name": "dsmmAccessibility", "type": ""},
-    {"name": "dsmmDataIntegrity", "type": ""},
-    {"name": "dsmmDataQualityAssessment", "type": ""},
-    {"name": "dsmmDataQualityAssurance", "type": ""},
-    {"name": "dsmmDataQualityControlMonitoring", "type": ""},
-    {"name": "dsmmPreservability", "type": ""},
-    {"name": "dsmmProductionSustainability", "type": ""},
-    {"name": "dsmmTransparencyTraceability", "type": ""},
-    {"name": "dsmmUsability", "type": ""},
-    {"name": "dsmmAverage", "type": ""},
-    {"name": "updateFrequency", "type": ""},
-    {"name": "presentationForm", "type": ""},
-    {"name": "services", "type": ""}
-  ]
-}
+    ]
+  },
+  {
+    "type": "record",
+    "name": "TemporalBounding",
+    "namespace": "org.cedar.psi.common.avro",
+    "fields": [
+      {
+        "name": "beginDate",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "beginIndeterminate",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "endDate",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "endIndeterminate",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "instant",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "instantIndeterminate",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "description",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "namespace": "org.cedar.psi.common.avro",
+    "name": "Discovery",
+    "doc": "The shape of the discovery object generated within Inventory Manager for a successfully parsed metadata document. This is the internal metadata format used within the system and ultimately sent downstream to OneStop.",
+    "fields": [
+      {
+        "name": "fileIdentifier",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "parentIdentifier",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "hierarchyLevelName",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "doi",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "purpose",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "status",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "credit",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "title",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "alternateTitle",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "description",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": "null"
+      },
+      {
+        "name": "keywords",
+        "type": {
+          "type": "array",
+          "items": {
+            "name": "KeywordsElement",
+            "type": "record",
+            "fields": [
+              {
+                "name": "values",
+                "type": {
+                  "type": "array",
+                  "items": [
+                    "null",
+                    "string"
+                  ]
+                }
+              },
+              {
+                "name": "type",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": "null"
+              },
+              {
+                "name": "namespace",
+                "type": "string"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "topicCategories",
+        "type": {
+          "type": "array",
+          "items": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      {
+        "name": "temporalBounding",
+        "type": "TemporalBounding"
+      },
+      {
+        "name": "spatialBounding",
+        "type": {
+          "type": "array",
+          "items": {
+            "name": "Geometry",
+            "type": "record",
+            "doc": "One geometry as defined by GeoJSON",
+            "fields": []
+          }
+        }
+      },
+      {
+        "name": "isGlobal",
+        "type": "boolean"
+      },
+      {
+        "name": "acquisitionInstruments",
+        "type": {
+          "type": "array",
+          "items": {
+            "name": "Instruments",
+            "type": "record",
+            "fields": [
+              {
+                "name": "instrumentIdentifier",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "instrumentType",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "instrumentDescription",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "acquisitionOperations",
+        "type": {
+          "type": "array",
+          "items": {
+            "name": "Operation",
+            "type": "record",
+            "fields": [
+              {
+                "name": "operationDescription",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "operationIdentifier",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "operationStatus",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "operationType",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "acquisitionPlatforms",
+        "type": {
+          "type": "array",
+          "items": {
+            "name": "Platform",
+            "type": "record",
+            "fields": [
+              {
+                "name": "platformIdentifier",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "platformDescription",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "platformSponsor",
+                "type": {
+                  "type": "array",
+                  "items": "string"
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "dataFormats",
+        "type": {
+          "type": "array",
+          "items": {
+            "name": "DataFormat",
+            "type": "record",
+            "fields": [
+              {
+                "name": "name",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "version",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "links",
+        "type": "Links"
+      },
+      {
+        "name": "responsibleParties",
+        "type": {
+          "type": "array",
+          "items": {
+            "name": "ResponsibleParty",
+            "type": "record",
+            "fields": [
+              {
+                "name": "individualName",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "organizationName",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "positionName",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "role",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "email",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "phone",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "thumbnail",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "thumbnailDescription",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "creationDate",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "revisionDate",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "publicationDate",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "citeAsStatements",
+        "type": {
+          "type": "array",
+          "items": "string"
+        }
+      },
+      {
+        "name": "crossReferences",
+        "type": {
+          "type": "array",
+          "items": "string"
+        }
+      },
+      {
+        "name": "largerWorks",
+        "type": {
+          "type": "array",
+          "items": {
+            "name": "Reference",
+            "type": "record",
+            "fields": [
+              {
+                "name": "title",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "date",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              {
+                "name": "links",
+                "type": "Links"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "useLimitation",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "legalConstraints",
+        "type": {
+          "type": "array",
+          "items": [
+            "null",
+            "string"
+          ]
+        }
+      },
+      {
+        "name": "accessFeeStatement",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "orderingInstructions",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "edition",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "dsmmAccessibility",
+        "type": [
+          "int",
+          "null"
+        ]
+      },
+      {
+        "name": "dsmmDataIntegrity",
+        "type": [
+          "int",
+          "null"
+        ]
+      },
+      {
+        "name": "dsmmDataQualityAssessment",
+        "type": [
+          "int",
+          "null"
+        ]
+      },
+      {
+        "name": "dsmmDataQualityAssurance",
+        "type": [
+          "int",
+          "null"
+        ]
+      },
+      {
+        "name": "dsmmDataQualityControlMonitoring",
+        "type": [
+          "int",
+          "null"
+        ]
+      },
+      {
+        "name": "dsmmPreservability",
+        "type": [
+          "int",
+          "null"
+        ]
+      },
+      {
+        "name": "dsmmProductionSustainability",
+        "type": [
+          "int",
+          "null"
+        ]
+      },
+      {
+        "name": "dsmmTransparencyTraceability",
+        "type": [
+          "int",
+          "null"
+        ]
+      },
+      {
+        "name": "dsmmUsability",
+        "type": [
+          "int",
+          "null"
+        ]
+      },
+      {
+        "name": "dsmmAverage",
+        "type": [
+          "int",
+          "null"
+        ],
+        "doc": "Calculated mean average of individual DSMM scores for Accessibility, Data Integrity, Data Quality Assessment, Data Quality Assurance, Data Quality Control Monitoring, Preservability, Production Sustainability, Transparency Traceability, and Usability."
+      },
+      {
+        "name": "updateFrequency",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "presentationForm",
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      {
+        "name": "services",
+        "type": {
+          "type": "array",
+          "items": [
+            "null",
+            "string"
+          ],
+          "default": "null",
+          "doc": "List of objects that represent an SV_ServiceIdentification section, if any, of ISO 19115 XML metadata document. Empty if not present."
+        }
+      }
+    ]
+  }
+]

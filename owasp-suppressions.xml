@@ -46,4 +46,8 @@
     <cve>CVE-2013-4499</cve>
   </suppress>
 
+  <suppress>
+    <cve>CVE-2015-4035</cve>
+  </suppress>
+
 </suppressions>

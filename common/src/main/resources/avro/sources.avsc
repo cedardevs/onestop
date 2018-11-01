@@ -3,5 +3,8 @@
   "namespace": "org.cedar.psi.common.avro",
   "name": "Sources",
   "doc": "Input Sources of metadata",
-  "symbols": ["null","common_ingest"]
+  "symbols": [
+    "null",
+    "common_ingest"
+  ]
 }

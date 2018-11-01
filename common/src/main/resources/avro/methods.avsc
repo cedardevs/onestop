@@ -1,7 +1,10 @@
- {
-   "type": "enum",
-   "namespace": "org.cedar.psi.common.avro",
-   "name": "Methods",
-   "doc": "Create or Update resources",
-   "symbols": ["POST", "PUT"]
- }
+{
+  "type": "enum",
+  "namespace": "org.cedar.psi.common.avro",
+  "name": "Methods",
+  "doc": "Create or Update resources",
+  "symbols": [
+    "POST",
+    "PUT"
+  ]
+}

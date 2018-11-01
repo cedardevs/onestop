@@ -5,20 +5,12 @@
   "doc": "This event records incoming request",
   "fields": [
     {
-      "name": "title",
-      "type": "string"
-    },
-    {
-      "name": "description",
-      "type": "string"
-    },
-    {
       "name": "content",
       "type": "string"
     },
     {
-     "name": "contentType",
-     "type": "ContentType"
+      "name": "contentType",
+      "type": "ContentType"
     },
     {
       "name": "host",
