@@ -1,10 +1,234 @@
-{
-  "type": "record",
-  "namespace": "org.cedar.psi.common.avro",
-  "name": "analysis",
-  "doc": "",
-  "fields": [
-    {"name": "", "type": "", "doc": ""},
-    {"name": "", "type": "", "doc": ""}
-  ]
-}
+[
+  {
+    "type": "record",
+    "namespace": "org.cedar.psi.common.avro",
+    "name": "Summery",
+    "fields": [
+      {
+        "name": "exists",
+        "type": "boolean"
+      },
+      {
+        "name": "characters",
+        "type": "int"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "DateAnalysis",
+    "namespace": "org.cedar.psi.common.avro",
+    "fields": [
+      {
+        "name": "exists",
+        "type": "boolean"
+      },
+      {
+        "name": "precision",
+        "type": "Precision"
+      },
+      {
+        "name": "validSearchFormat",
+        "type": "ValidSearchFormat"
+      },
+      {
+        "name": "zoneSpecified",
+        "type": "string"
+      },
+      {
+        "name": "utcDateTimeString",
+        "type": "string"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "Analysis",
+    "namespace": "org.cedar.psi.common.avro",
+    "doc": "The shape of the analysis object generated within Inventory Manager for a successfully parsed metadata document. Content within this object is related to the quality of the content of specific metadata fields, which can be used downstream to determine whether or not a given document should be accepted into another service, such as the OneStop search platform.",
+    "fields": [
+      {
+        "name": "identification",
+        "doc": "Assessment of the identifying elements of the metadata.",
+        "type": {
+          "type": "record",
+          "name": "Identification",
+          "fields": [
+            {
+              "name": "fileIdentifier",
+              "type": {
+                "type": "record",
+                "name": "FileIdentifier",
+                "fields": [
+                  {
+                    "name": "exists",
+                    "type": "boolean"
+                  },
+                  {
+                    "name": "fileIdentifierString",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "doi",
+              "type": {
+                "type": "record",
+                "name": "Doi",
+                "fields": [
+                  {
+                    "name": "exists",
+                    "type": "boolean"
+                  },
+                  {
+                    "name": "doiString",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "parentIdentifier",
+              "type": {
+                "type": "record",
+                "name": "ParentIdentifier",
+                "fields": [
+                  {
+                    "name": "exists",
+                    "type": "boolean"
+                  },
+                  {
+                    "name": "parentIdentifierString",
+                    "type": "string"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "hierarchyLevelName",
+              "type": {
+                "type": "record",
+                "name": "HierarchyLevelName",
+                "fields": [
+                  {
+                    "name": "exists",
+                    "type": "boolean"
+                  },
+                  {
+                    "name": "matchesIdentifiers",
+                    "type": "boolean",
+                    "doc": "Resolves to true if 'granule' specified as hierarchy level and both fileId & parentId provided OR if no hierarchy level specified."
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "temporalBounding",
+        "type": {
+          "type": "record",
+          "name": "TemporalBoundingAnalysis",
+          "fields": [
+            {
+              "name": "begin",
+              "type": "DateAnalysis"
+            },
+            {
+              "name": "end",
+              "type": "DateAnalysis"
+            },
+            {
+              "name": "instant",
+              "type": "DateAnalysis"
+            },
+            {
+              "name": "range",
+              "type": {
+                "type": "record",
+                "name": "range",
+                "fields": [
+                  {
+                    "name": "descriptor",
+                    "type": "string"
+                  },
+                  {
+                    "name": "beginLTEEnd",
+                    "type": "string"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      {
+        "name": "spatialBounding",
+        "doc": "Assessment of the spatial bounding in the metadata.",
+        "type": {
+          "type": "record",
+          "name": "SpatialBoundingAnalysis",
+          "fields": [
+            {
+              "name": "exists",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      {
+        "name": "titles",
+        "doc": "Assessment of the titles in the metadata.",
+        "type": {
+          "type": "record",
+          "name": "Titles",
+          "fields": [
+            {
+              "name": "title",
+              "type": "Summery"
+            },
+            {
+              "name": "alternateTitle",
+              "type": "Summery"
+            }
+          ]
+        }
+      },
+      {
+        "name": "description",
+        "doc": "Assessment of the description in the metadata.",
+        "type": "Summery"
+      },
+      {
+        "name": "thumbnail",
+        "doc": "Assessment of the thumbnail information in the metadata.",
+        "type": {
+          "type": "record",
+          "name": "Thumbnail",
+          "fields": [
+            {
+              "name": "exists",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      {
+        "name": "dataAccess",
+        "doc": "Assessment of the data access elements in the metadata.",
+        "type": {
+          "type": "record",
+          "name": "DataAccess",
+          "fields": [
+            {
+              "name": "exists",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    ]
+  }
+]
