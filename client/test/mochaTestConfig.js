@@ -15,9 +15,13 @@ process.env.NODE_ENV = 'test'
 global.requestAnimationFrame = cb => {
   setTimeout(cb, 0)
 }
+global.cancelAnimationFrame = af => {}
 
 // global define for leaflet-draw use of `L` in tests
 global.L = require('leaflet')
+
+// global define of lodash for tests
+global._ = require('lodash')
 
 // https://medium.com/@kayodeniyi/setting-up-tests-for-react-using-mocha-expect-and-enzyme-8f53af96fe7e
 const enzyme = require('enzyme')
