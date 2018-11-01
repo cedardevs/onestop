@@ -6,10 +6,13 @@ import _ from 'lodash'
 export default class Meta extends Component {
   formatTitle = title => {
     const words = _.words(title)
-    if (_.size(words) > 5) {
-      return _.join(_.concat(_.slice(words, 0, 5), '... on NOAA OneStop'), ' ')
-    }
-    return title
+
+    const shortenedTitle =
+      _.size(words) > 5
+        ? _.join(_.concat(_.slice(words, 0, 5), '...'), ' ')
+        : title
+
+    return _.join(_.concat(shortenedTitle, 'on NOAA OneStop'), ' ')
   }
 
   formatDescription = description => {
