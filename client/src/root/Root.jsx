@@ -148,17 +148,17 @@ export default class Root extends Component {
           </Route>
 
           <Route path="/collections">
-            <Result>
-              <Switch>
-                <Route path="/collections" exact>
+            <Switch>
+              <Route path="/collections" exact>
+                <Result>
                   <CollectionsContainer />
-                </Route>
-                <Route path="/collections/granules/:id">
-                  {/*TODO parameterize this path!*/}
-                  <GranuleListContainer />
-                </Route>
-              </Switch>
-            </Result>
+                </Result>
+              </Route>
+              <Route path="/collections/granules/:id">
+                {/*TODO parameterize this path!*/}
+                <GranuleListContainer />
+              </Route>
+            </Switch>
           </Route>
 
           <Route path="/about">

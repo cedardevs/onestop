@@ -1,7 +1,7 @@
 import '../../specHelper'
 import {layout, initialState} from '../../../src/reducers/ui/layout'
 // import {push} from 'react-router-redux'
-import {LOCATION_CHANGE} from 'react-router-redux'
+import {LOCATION_CHANGE} from 'connected-react-router'
 
 const pushMock = descriptor => {
   // using push from react-router-redux does not directly trigger the LOCATION_CHANGE action, it triggers a history action

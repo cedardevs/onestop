@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import Error from './Error'
-import {push, goBack} from 'react-router-redux'
+import {goBack} from 'connected-react-router'
 import {clearErrors} from '../actions/ErrorActions'
 import {updateSearch} from '../actions/SearchParamActions'
 import {showHome} from '../actions/FlowActions'

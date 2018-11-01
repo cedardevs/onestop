@@ -4,7 +4,7 @@ import Detail from './Detail'
 
 import {withRouter} from 'react-router'
 
-const mapStateToProps = (state, reactProps) => {
+const mapStateToProps = state => {
   const focusedItem = state.domain.results.collectionDetail
   return {
     id: focusedItem ? focusedItem.collection.id : null,

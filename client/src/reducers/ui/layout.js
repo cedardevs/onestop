@@ -8,7 +8,7 @@ import {
   SET_HEADER_MENU_OPEN,
 } from '../../actions/LayoutActions'
 
-import {LOCATION_CHANGE} from 'react-router-redux'
+import {LOCATION_CHANGE} from 'connected-react-router'
 
 export const initialState = Immutable({
   showLeft: true,
@@ -23,6 +23,9 @@ export const initialState = Immutable({
 export const layout = (state = initialState, action) => {
   switch (action.type) {
     case LOCATION_CHANGE:
+      if (!action.payload) {
+        return state
+      }
       const path = action.payload.pathname
       const onDetailPage = isDetailPage(path)
       const onGranuleListPage = isGranuleListPage(path)
