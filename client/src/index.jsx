@@ -20,9 +20,10 @@ const appDiv = document.createElement('div')
 appDiv.id = 'app'
 document.body.appendChild(appDiv)
 
-// const baseRef = document.createElement('base')
-// baseRef.setAttribute('href', '/onestop/')
-// document.head.appendChild(baseRef)
+// specify the base URL for all relative URLs in the page
+const baseRef = document.createElement('base')
+baseRef.href = '/onestop/'
+document.head.appendChild(baseRef)
 
 // render the app
 render(App(store, history), appDiv)
