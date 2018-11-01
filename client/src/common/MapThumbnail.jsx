@@ -67,6 +67,7 @@ class MapThumbnail extends React.Component {
       doubleClickZoom: this.props.interactive,
       boxZoom: this.props.interactive,
       tap: this.props.interactive,
+      keyboard: this.props.interactive,
     })
     this.fitMapToResults(geoJsonLayer)
   }

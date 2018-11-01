@@ -120,6 +120,7 @@ class Footer extends React.Component {
               <FooterLink
                 href={'https://github.com/cedardevs/onestop/releases'}
                 target={'_blank'}
+                title={'code on GitHub'}
               >
                 Version: {this.props.version}{' '}
                 <SvgIcon
