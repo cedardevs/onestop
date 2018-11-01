@@ -1,0 +1,17 @@
+  {
+    "type": "record",
+    "namespace": "org.cedar.psi.common.avro",
+    "name": "Publishing",
+    "doc": "TBD",
+    "fields": [
+      {
+        "name": "private",
+        "type": "boolean"
+      },
+      {
+        "name": "until",
+        "type": "string",
+        "format": "date-time"
+      }
+    ]
+  }
