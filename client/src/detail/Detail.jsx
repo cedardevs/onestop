@@ -189,6 +189,7 @@ class Detail extends Component {
           </h1>
           <DescriptionView
             item={item}
+            itemUuid={id}
             totalGranuleCount={totalGranuleCount}
             navigateToGranules={() => navigateToGranules(id)}
           />
