@@ -18,12 +18,12 @@ describe('The facet action', function () {
     expect(facetAction).toEqual(expectedAction)
   })
 
-  // it('clears facets', function () {
-  //   const state = reducer(initialState, {})
-  //   const expectedActions = { type: 'CLEAR_FACETS' }
-  //   const store = mockStore(state) // TODO ????? why doesnn't it like this
-  //
-  //   store.dispatch(clearFacets())
-  //   (store.getActions()[0]).toEqual(expectedActions)
-  // })
+  it('clears facets', function () {
+    const state = reducer(initialState, {})
+    const expectedActions = { type: 'CLEAR_FACETS' }
+    const store = mockStore(state)
+    
+    store.dispatch(clearFacets())
+    expect(store.getActions()[0]).toEqual(expectedActions)
+  })
 })

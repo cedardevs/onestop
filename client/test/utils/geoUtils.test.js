@@ -48,10 +48,10 @@ describe('The geoUtils', function () {
     it('can find 1 rotation for an off-center array', function () {
       expect(geoUtils.findMaxRotations([[350, 30], [380, 45]])).toBe(1)
     })
-    it('can find 0 rotations for an off-center array', function () {
+    it('can find 0 rotations for an off-center array (small region)', function () {
       expect(geoUtils.findMaxRotations([[-10, 30], [20, 45]])).toBe(0)
     })
-    it('can find 0 rotations for an off-center array 180,90', function () {
+    it('can find 0 rotations for an off-center array (large region))', function () {
       expect(geoUtils.findMaxRotations([[-180, -90], [180, 90]])).toBe(0)
     })
     it('can find -1 rotations for an off-center array', function () {

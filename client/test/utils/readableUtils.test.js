@@ -43,7 +43,7 @@ describe('The readableUtils abbreviateNumber function', function() {
     ]
 
     testCases.forEach((c) => {
-      it(`makes ${c.input} readable`, function() {
+      it(`formats ${c.input} as ${c.output}`, function() {
         expect(abbreviateNumber(c.input, decPlace)).toBe(c.output)
       })
     })

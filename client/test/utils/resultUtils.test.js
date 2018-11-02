@@ -19,7 +19,7 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      it(`for input ${p}`, function() {
+      it(`for input ${p.linkProtocol}`, function() {
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('C')
         expect(protocol.label).toBe('OGC Web Coverage Service')
@@ -36,7 +36,7 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      it(`for input ${p}`, function() {
+      it(`for input ${p.linkProtocol}`, function() {
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('D')
         expect(protocol.label).toBe('Download')
@@ -52,7 +52,7 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      it(`for input ${p}`, function() {
+      it(`for input ${p.linkProtocol}`, function() {
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('F')
         expect(protocol.label).toBe('FTP')
@@ -70,7 +70,7 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      it(`for input ${p}`, function() {
+      it(`for input ${p.linkProtocol}`, function() {
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('H')
         expect(protocol.label).toBe('HTTP/HTTPS')
@@ -86,7 +86,7 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      it(`for input ${p}`, function() {
+      it(`for input ${p.linkProtocol}`, function() {
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('L')
         expect(protocol.label).toBe('NOAA Live Access Server')
@@ -102,7 +102,7 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      it(`for input ${p}`, function() {
+      it(`for input ${p.linkProtocol}`, function() {
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('M')
         expect(protocol.label).toBe('OGC Web Map Service')
@@ -121,7 +121,7 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      it(`for input ${p}`, function() {
+      it(`for input ${p.linkProtocol}`, function() {
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('O')
         expect(protocol.label).toBe('OPeNDAP')
@@ -138,7 +138,7 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      it(`for input ${p}`, function() {
+      it(`for input ${p.linkProtocol}`, function() {
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('T')
         expect(protocol.label).toBe('THREDDS')
@@ -153,7 +153,7 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      it(`for input ${p}`, function() {
+      it(`for input ${p.linkProtocol}`, function() {
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('W')
         expect(protocol.label).toBe('Web')
@@ -171,7 +171,7 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      it(`for input ${p}`, function() {
+      it(`for input ${p.linkProtocol}`, function() {
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('?')
         expect(protocol.label).toBe('Unknown')

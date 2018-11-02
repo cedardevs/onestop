@@ -74,7 +74,7 @@ describe('The URL Utils', function () {
             expect(collectionId).toBe(test.collectionIdFromDetailPath)
           })
         } else {
-          it(`knows ${test.path} has no collectionId`, function () {
+          it(`knows ${test.path} has no collectionId in detail path`, function () {
             expect(collectionId).toBeNull()
           })
         }
@@ -88,7 +88,7 @@ describe('The URL Utils', function () {
             expect(collectionId).toBe(test.collectionIdFromGranuleListPath)
           })
         } else {
-          it(`knows ${test.path} has no collectionId`, function () {
+          it(`knows ${test.path} has no collectionId in granule list path`, function () {
             expect(collectionId).toBeNull()
           })
         }
