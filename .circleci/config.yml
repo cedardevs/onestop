@@ -31,7 +31,7 @@ jobs:
           - onestop-cache-v3-{{ checksum "build.gradle" }}
           # fallback to using the latest cache if no exact match is found
           - onestop-cache-v3-
-          
+
       # Virtual Memory for Elasticsearch:
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
       - run:
@@ -52,17 +52,17 @@ jobs:
             find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
 
-      # - run:
-      #     name: Save jacoco results
-      #     command: |
-      #       mkdir -p ~/tests/jacoco/
-      #       find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/jacoco/ \;
-      #     when: always
-      #
-      # - run:
-      #     name: Post jacoco results to codecov
-      #     command: |
-      #       bash <(curl -s https://codecov.io/bash)
+      - run:
+          name: Save jacoco results
+          command: |
+            mkdir -p ~/tests/jacoco/
+            find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/jacoco/ \;
+          when: always
+
+      - run:
+          name: Post jacoco results to codecov
+          command: |
+            bash <(curl -s https://codecov.io/bash)
 
       - store_test_results:
           path: ~/tests
