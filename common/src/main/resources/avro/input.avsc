@@ -9,8 +9,8 @@
       "type": "string"
     },
     {
-      "name": "contentType",
-      "type": "ContentType"
+     "name": "contentType",
+     "type": "string"
     },
     {
       "name": "host",
@@ -18,13 +18,8 @@
       "format": "ipv4"
     },
     {
-      "name": "methods",
-      "type": "Methods"
-    },
-    {
-      "name": "id",
-      "type": "string",
-      "doc": "An identification that is used to track the metadata"
+      "name": "method",
+      "type": "Method"
     },
     {
       "name": "protocol",
@@ -36,8 +31,8 @@
       "format": "uri"
     },
     {
-      "name": "sources",
-      "type": "Sources"
+      "name": "source",
+      "type": "string"
     }
   ]
 }
