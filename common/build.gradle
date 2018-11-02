@@ -36,10 +36,11 @@ avro {
   fieldVisibility = "PUBLIC"
 }
 
-task generateAvro(type: com.commercehub.gradle.plugin.avro.GenerateAvroJavaTask) {
+generateAvroJava {
   source("src/main/resources/avro")
-  outputDir = file("src/main/schemas")
+  outputDir = file("${buildDir}/generated/java")
 }
 
-compileJava.source(generateAvro.outputs)
+sourceSets.main.java.srcDir(generateAvroJava.outputDir)
+
 assemble.dependsOn(sourceJar)
