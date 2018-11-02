@@ -8,10 +8,9 @@
     "dev": "webpack-dev-server --env.URL_API_SEARCH=http://localhost:8097 --progress --config webpack.config.js --colors & npm run testAndWatch",
     "kub": "webpack-dev-server --env.URL_API_SEARCH=http://localhost:30097 --progress --config webpack.config.js --colors & npm run testAndWatch",
     "test": "jest --config jest.config.js && codecov",
-    "testAndWatch": "NODE_ENV=test mocha --recursive ./test -w --watch-extensions js,jsx",
     "format": "find src -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --config .prettierrc.json --write",
     "build": "npm install && npm test && NODE_ENV=production ./node_modules/.bin/webpack -p",
-    "clean": "rm -rf dist",
+    "clean": "rm -rf dist && rm -rf build && rm -rf coverage",
     "retire": "retire -p"
   },
   "dependencies": {
@@ -63,6 +62,7 @@
     "html-webpack-template": "^6.1.0",
     "jest": "^23.6",
     "jest-html-reporter": "^2.4.2",
+    "jest-junit": "^5.2.0",
     "json-loader": "^0.5.7",
     "mocha": "^4.0.1",
     "modernizr": "^3.5.0",

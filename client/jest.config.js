@@ -13,23 +13,7 @@ module.exports = {
     ["./node_modules/jest-html-reporter", {
         "pageTitle": "Test Report",
         "outputPath": "./coverage/junit/index.html"
-    }]
+    }],
+    [ "jest-junit", { outputDirectory: "./coverage/junit" } ]
   ]
 };
-// {
-//   "coverageDirectory": "./coverage/",
-//   "collectCoverage": true,
-//   "coverageReporters": [
-//     "text",
-//     "text-summary",
-//     "html",
-//     "lcov"
-//   ],
-//   "reporters": [
-//     "default",
-//     ["./node_modules/jest-html-reporter", {
-//         "pageTitle": "Test Report",
-//         "outputPath": "./coverage/junit/index.html"
-//     }]
-//   ]
-// }
