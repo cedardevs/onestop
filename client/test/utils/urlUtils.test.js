@@ -7,7 +7,7 @@ describe('The URL Utils', function () {
     {path: 'collections/granules/foobar?q=test', isDetail: false, isGranuleList: true, collectionIdFromGranuleListPath: 'foobar'},
   ]
 
-  it('identify external urls', function () {
+  describe('identify external urls', function () {
     const urls = [
         '//www.google.com',
         'http://www.google.com',
@@ -16,10 +16,14 @@ describe('The URL Utils', function () {
         'ftps://www.google.com'
     ]
 
-    urls.forEach((url) => expect(urlUtils.isGovExternal(url)).toBeTruthy())
+    urls.forEach((url) => {
+      it(`like ${url}`, function () {
+        expect(urlUtils.isGovExternal(url)).toBeTruthy()
+      })
+    })
   })
 
-  it('identify internal urls', function () {
+  describe('identify internal urls', function () {
     const urls = [
         '/search',
         '//www.ngdc.noaa.gov',
@@ -27,42 +31,69 @@ describe('The URL Utils', function () {
         'https://www.ngdc.noaa.gov'
     ]
 
-    urls.forEach((url) => expect(urlUtils.isGovExternal(url)).toBeFalsy())
-  })
-
-  it('can identify the details page', function () {
-    pathTests.forEach( test => {
-      expect(urlUtils.isDetailPage(test.path)).toBe(test.isDetail)
+    urls.forEach((url) => {
+      it(`like ${url}`, function () {
+        expect(urlUtils.isGovExternal(url)).toBeFalsy()
+      })
     })
   })
 
-  it('can identify the granule list page', function () {
+  describe('can identify the page by path', function () {
     pathTests.forEach( test => {
-      expect(urlUtils.isGranuleListPage(test.path)).toBe(test.isGranuleList)
-    })
-  })
-
-  it('can identify the collection id on the detail page', function () {
-    pathTests.forEach( test => {
-      const collectionId = urlUtils.getCollectionIdFromDetailPath(test.path)
-
-      if(test.collectionIdFromDetailPath) {
-        expect(collectionId).toBe(test.isDetail ? test.collectionIdFromDetailPath : null)
+      if(test.isDetail) {
+        it(`knows ${test.path} is a detail page`, function () {
+          expect(urlUtils.isDetailPage(test.path)).toBeTruthy()
+        })
       } else {
-        expect(collectionId).toBeNull()
+        it(`knows ${test.path} is not a detail page`, function () {
+          expect(urlUtils.isDetailPage(test.path)).toBeFalsy()
+        })
       }
+
+      if(test.isGranuleList) {
+        it(`knows ${test.path} is a graule list`, function () {
+          expect(urlUtils.isGranuleListPage(test.path)).toBeTruthy()
+        })
+      } else {
+        it(`knows ${test.path} is not a granule list`, function () {
+          expect(urlUtils.isGranuleListPage(test.path)).toBeFalsy()
+        })
+      }
+
     })
   })
 
-  it('can identify the collection id on the granule list page', function () {
+  describe('can identify the collection id', function () {
     pathTests.forEach( test => {
-      const collectionId = urlUtils.getCollectionIdFromGranuleListPath(test.path)
 
-      if(test.collectionIdFromGranuleListPath) {
-        expect(collectionId).toBe(test.isGranuleList ? test.collectionIdFromGranuleListPath : null)
-      } else {
-        expect(collectionId).toBeNull()
-      }
+      describe('from the detail path', function () {
+        const collectionId = urlUtils.getCollectionIdFromDetailPath(test.path)
+
+        if(test.collectionIdFromDetailPath && test.isDetail) {
+          it(`knows ${test.path} has collectionId ${test.collectionIdFromDetailPath}`, function () {
+            expect(collectionId).toBe(test.collectionIdFromDetailPath)
+          })
+        } else {
+          it(`knows ${test.path} has no collectionId`, function () {
+            expect(collectionId).toBeNull()
+          })
+        }
+      })
+
+      describe('from the granule list path', function () {
+        const collectionId = urlUtils.getCollectionIdFromGranuleListPath(test.path)
+
+        if(test.collectionIdFromGranuleListPath && test.isGranuleList) {
+          it(`knows ${test.path} has collectionId ${test.collectionIdFromGranuleListPath}`, function () {
+            expect(collectionId).toBe(test.collectionIdFromGranuleListPath)
+          })
+        } else {
+          it(`knows ${test.path} has no collectionId`, function () {
+            expect(collectionId).toBeNull()
+          })
+        }
+      })
+
     })
   })
 })

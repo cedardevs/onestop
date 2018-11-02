@@ -10,7 +10,7 @@ describe('The resultUtils', function () {
     expect(protocolIdCombos).toEqual(_.uniq(protocolIdCombos))
   })
 
-  it('can identify ogc:wcs', function () {
+  describe('can identify ogc:wcs', function () {
     const testCases = [
       {linkProtocol: 'ogc:wcs'},
       {linkProtocol: 'OGC:wcs'},
@@ -19,14 +19,16 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol.id).toBe('C')
-      expect(protocol.label).toBe('OGC Web Coverage Service')
-      expect(protocol.color).toBe('#ab4e2c')
+      it(`for input ${p}`, function() {
+        const protocol = protocolUtils.identifyProtocol(p)
+        expect(protocol.id).toBe('C')
+        expect(protocol.label).toBe('OGC Web Coverage Service')
+        expect(protocol.color).toBe('#ab4e2c')
+      })
     })
   })
 
-  it('can identify download links', function () {
+  describe('can identify download links', function () {
     const testCases = [
       {linkProtocol: 'download'},
       {linkProtocol: 'Download'},
@@ -34,28 +36,32 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol.id).toBe('D')
-      expect(protocol.label).toBe('Download')
-      expect(protocol.color).toBe('blue')
+      it(`for input ${p}`, function() {
+        const protocol = protocolUtils.identifyProtocol(p)
+        expect(protocol.id).toBe('D')
+        expect(protocol.label).toBe('Download')
+        expect(protocol.color).toBe('blue')
+      })
     })
   })
 
-  it('can identify FTP links', function () {
+  describe('can identify FTP links', function () {
     const testCases = [
       {linkProtocol: 'FTP'},
       {linkProtocol: 'ftp'},
     ]
 
     _.each(testCases, (p) => {
-      const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol.id).toBe('F')
-      expect(protocol.label).toBe('FTP')
-      expect(protocol.color).toBe('#c50000')
+      it(`for input ${p}`, function() {
+        const protocol = protocolUtils.identifyProtocol(p)
+        expect(protocol.id).toBe('F')
+        expect(protocol.label).toBe('FTP')
+        expect(protocol.color).toBe('#c50000')
+      })
     })
   })
 
-  it('can identify http links', function () {
+  describe('can identify http links', function () {
     const testCases = [
       {linkProtocol: 'HTTP'},
       {linkProtocol: 'HTTPS'},
@@ -64,42 +70,48 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol.id).toBe('H')
-      expect(protocol.label).toBe('HTTP/HTTPS')
-      expect(protocol.color).toBe('purple')
+      it(`for input ${p}`, function() {
+        const protocol = protocolUtils.identifyProtocol(p)
+        expect(protocol.id).toBe('H')
+        expect(protocol.label).toBe('HTTP/HTTPS')
+        expect(protocol.color).toBe('purple')
+      })
     })
   })
 
-  it('can identify noaa:las', function () {
+  describe('can identify noaa:las', function () {
     const testCases = [
       {linkProtocol: 'noaa:las'},
       {linkProtocol: 'NOAA:LAS'},
     ]
 
     _.each(testCases, (p) => {
-      const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol.id).toBe('L')
-      expect(protocol.label).toBe('NOAA Live Access Server')
-      expect(protocol.color).toBe('#008484')
+      it(`for input ${p}`, function() {
+        const protocol = protocolUtils.identifyProtocol(p)
+        expect(protocol.id).toBe('L')
+        expect(protocol.label).toBe('NOAA Live Access Server')
+        expect(protocol.color).toBe('#008484')
+      })
     })
   })
 
-  it('can identify ogc:wms', function () {
+  describe('can identify ogc:wms', function () {
     const testCases = [
       {linkProtocol: 'ogc:wms'},
       {linkProtocol: 'OGC:WMS'},
     ]
 
     _.each(testCases, (p) => {
-      const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol.id).toBe('M')
-      expect(protocol.label).toBe('OGC Web Map Service')
-      expect(protocol.color).toBe('#92631c')
+      it(`for input ${p}`, function() {
+        const protocol = protocolUtils.identifyProtocol(p)
+        expect(protocol.id).toBe('M')
+        expect(protocol.label).toBe('OGC Web Map Service')
+        expect(protocol.color).toBe('#92631c')
+      })
     })
   })
 
-  it('can identify opendap', function () {
+  describe('can identify opendap', function () {
     const testCases = [
       {linkProtocol: 'opendap'},
       {linkProtocol: 'OPENDAP'},
@@ -109,14 +121,16 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol.id).toBe('O')
-      expect(protocol.label).toBe('OPeNDAP')
-      expect(protocol.color).toBe('green')
+      it(`for input ${p}`, function() {
+        const protocol = protocolUtils.identifyProtocol(p)
+        expect(protocol.id).toBe('O')
+        expect(protocol.label).toBe('OPeNDAP')
+        expect(protocol.color).toBe('green')
+      })
     })
   })
 
-  it('can identify thredds', function () {
+  describe('can identify thredds', function () {
     const testCases = [
       {linkProtocol: 'thredds'},
       {linkProtocol: 'THREDDS'},
@@ -124,27 +138,31 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol.id).toBe('T')
-      expect(protocol.label).toBe('THREDDS')
-      expect(protocol.color).toBe('#616161')
+      it(`for input ${p}`, function() {
+        const protocol = protocolUtils.identifyProtocol(p)
+        expect(protocol.id).toBe('T')
+        expect(protocol.label).toBe('THREDDS')
+        expect(protocol.color).toBe('#616161')
+      })
     })
   })
 
-  it('can identify empty protocols', function () {
+  describe('can identify empty protocols', function () {
     const testCases = [
       {linkProtocol: ''},
     ]
 
     _.each(testCases, (p) => {
-      const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol.id).toBe('W')
-      expect(protocol.label).toBe('Web')
-      expect(protocol.color).toBe('#a26a03')
+      it(`for input ${p}`, function() {
+        const protocol = protocolUtils.identifyProtocol(p)
+        expect(protocol.id).toBe('W')
+        expect(protocol.label).toBe('Web')
+        expect(protocol.color).toBe('#a26a03')
+      })
     })
   })
 
-  it('cannot default unknown protocols', function () {
+  describe('cannot default unknown protocols', function () {
     const testCases = [
       {linkProtocol: 'nonsense'},
       {linkProtocol: ' '},
@@ -153,10 +171,12 @@ describe('The resultUtils', function () {
     ]
 
     _.each(testCases, (p) => {
-      const protocol = protocolUtils.identifyProtocol(p)
-      expect(protocol.id).toBe('?')
-      expect(protocol.label).toBe('Unknown')
-      expect(protocol.color).toBe('black')
+      it(`for input ${p}`, function() {
+        const protocol = protocolUtils.identifyProtocol(p)
+        expect(protocol.id).toBe('?')
+        expect(protocol.label).toBe('Unknown')
+        expect(protocol.color).toBe('black')
+      })
     })
   })
 

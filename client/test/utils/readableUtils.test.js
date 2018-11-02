@@ -2,7 +2,7 @@ import {abbreviateNumber} from '../../src/utils/readableUtils'
 
 describe('The readableUtils abbreviateNumber function', function() {
 
-  it('converts numbers to the appropriate abbreviated strings with 1 decimal place', function () {
+  describe('converts numbers to the appropriate abbreviated strings with 1 decimal place', function () {
 
     const decPlace = 1
 
@@ -43,7 +43,9 @@ describe('The readableUtils abbreviateNumber function', function() {
     ]
 
     testCases.forEach((c) => {
-      expect(abbreviateNumber(c.input, decPlace)).toBe(c.output)
+      it(`makes ${c.input} readable`, function() {
+        expect(abbreviateNumber(c.input, decPlace)).toBe(c.output)
+      })
     })
   })
 

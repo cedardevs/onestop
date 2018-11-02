@@ -2,31 +2,64 @@ import * as geoUtils from '../../src/utils/geoUtils'
 
 describe('The geoUtils', function () {
 
-  it('can shift a single coordinate', function () {
+  describe('single coordinate', function () {
     const coord = [20, 45]
-    expect(geoUtils.shiftCoordinate(coord, 3)).toEqual([1100, 45])
-    expect(geoUtils.shiftCoordinate(coord, 1)).toEqual([380, 45])
-    expect(geoUtils.shiftCoordinate(coord, 0)).toEqual([20, 45])
-    expect(geoUtils.shiftCoordinate(coord, -1)).toEqual([-340, 45])
-    expect(geoUtils.shiftCoordinate(coord, -3)).toEqual([-1060, 45])
+
+    it('shifts 3 rotations', function () {
+      expect(geoUtils.shiftCoordinate(coord, 3)).toEqual([1100, 45])
+    })
+    it('shifts 1 rotation', function () {
+      expect(geoUtils.shiftCoordinate(coord, 1)).toEqual([380, 45])
+    })
+    it('shifts 0 rotations', function () {
+      expect(geoUtils.shiftCoordinate(coord, 0)).toEqual([20, 45])
+    })
+    it('shifts -1 rotations', function () {
+      expect(geoUtils.shiftCoordinate(coord, -1)).toEqual([-340, 45])
+    })
+    it('shifts -3 rotations', function () {
+      expect(geoUtils.shiftCoordinate(coord, -3)).toEqual([-1060, 45])
+    })
   })
 
-  it('can shift an array of coordinates', function () {
+  describe('an array of coordinates', function () {
     const coords = [[-10, 30], [20, 45]]
-    expect(geoUtils.shiftCoordinates(coords, 3)).toEqual([[1070, 30], [1100, 45]])
-    expect(geoUtils.shiftCoordinates(coords, 1)).toEqual([[350, 30], [380, 45]])
-    expect(geoUtils.shiftCoordinates(coords, 0)).toEqual([[-10, 30], [20, 45]])
-    expect(geoUtils.shiftCoordinates(coords, -1)).toEqual([[-370, 30], [-340, 45]])
-    expect(geoUtils.shiftCoordinates(coords, -3)).toEqual([[-1090, 30], [-1060, 45]])
+    it('shifts 3 rotations', function () {
+      expect(geoUtils.shiftCoordinates(coords, 3)).toEqual([[1070, 30], [1100, 45]])
+    })
+    it('shifts 1 rotation', function () {
+      expect(geoUtils.shiftCoordinates(coords, 1)).toEqual([[350, 30], [380, 45]])
+    })
+    it('shifts 0 rotations', function () {
+      expect(geoUtils.shiftCoordinates(coords, 0)).toEqual([[-10, 30], [20, 45]])
+    })
+    it('shifts -1 rotations', function () {
+      expect(geoUtils.shiftCoordinates(coords, -1)).toEqual([[-370, 30], [-340, 45]])
+    })
+    it('shifts -3 rotations', function () {
+      expect(geoUtils.shiftCoordinates(coords, -3)).toEqual([[-1090, 30], [-1060, 45]])
+    })
   })
 
-  it('can find how many rotations off-center an array of is', function () {
-    expect(geoUtils.findMaxRotations([[1070, 30], [1100, 45]])).toBe(3)
-    expect(geoUtils.findMaxRotations([[350, 30], [380, 45]])).toBe(1)
-    expect(geoUtils.findMaxRotations([[-10, 30], [20, 45]])).toBe(0)
-    expect(geoUtils.findMaxRotations([[-180, -90], [180, 90]])).toBe(0)
-    expect(geoUtils.findMaxRotations([[-370, 30], [-340, 45]])).toBe(-1)
-    expect(geoUtils.findMaxRotations([[-1090, 30], [-1060, 45]])).toBe(-3)
+  describe('findMaxRotations', function () {
+    it('can find 3 rotations for an off-center array', function () {
+      expect(geoUtils.findMaxRotations([[1070, 30], [1100, 45]])).toBe(3)
+    })
+    it('can find 1 rotation for an off-center array', function () {
+      expect(geoUtils.findMaxRotations([[350, 30], [380, 45]])).toBe(1)
+    })
+    it('can find 0 rotations for an off-center array', function () {
+      expect(geoUtils.findMaxRotations([[-10, 30], [20, 45]])).toBe(0)
+    })
+    it('can find 0 rotations for an off-center array 180,90', function () {
+      expect(geoUtils.findMaxRotations([[-180, -90], [180, 90]])).toBe(0)
+    })
+    it('can find -1 rotations for an off-center array', function () {
+      expect(geoUtils.findMaxRotations([[-370, 30], [-340, 45]])).toBe(-1)
+    })
+    it('can find -3 rotations for an off-center array', function () {
+      expect(geoUtils.findMaxRotations([[-1090, 30], [-1060, 45]])).toBe(-3)
+    })
   })
 
   describe('can re-center', function () {
