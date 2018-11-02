@@ -1,7 +1,5 @@
-import '../specHelper'
 import _ from 'lodash'
 import * as actions from '../../src/actions/FlowActions'
-import { expect, assert } from 'chai'
 import sinon from 'sinon'
 
 describe('The flow actions', function () {
@@ -37,8 +35,7 @@ describe('The flow actions', function () {
     const fn = actions.initialize()
 
     fn(dispatch, getState)
-    const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls === 3, `There were ${dispatchCalls} dispatch calls made`)
+    expect(dispatch.callCount).toBe(3)
   })
 
   // describe('loadData', function () {
@@ -67,8 +64,7 @@ describe('The flow actions', function () {
     const fn = actions.showCollections()
 
     fn(dispatch, getState)
-    const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls === 1, `There were ${dispatchCalls} dispatch calls made`)
+    expect(dispatch.callCount).toBe(1)
   })
 
   it('dispatch a clearSelections action and transition to the collections view when search params are present', function () {
@@ -77,8 +73,7 @@ describe('The flow actions', function () {
     const fn = actions.showCollections()
 
     fn(dispatch, getState)
-    const dispatchCalls = dispatch.callCount
-    assert(dispatchCalls === 2, `There were ${dispatchCalls} dispatch calls made`)
+    expect(dispatch.callCount).toBe(2)
   })
 
 })

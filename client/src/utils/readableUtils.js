@@ -28,5 +28,5 @@ export const abbreviateNumber = (number, decPlaces) => {
     }
   }
 
-  return number
+  return number.toString()
 }

@@ -1,4 +1,3 @@
-import '../specHelper'
 import * as keywordUtils from '../../src/utils/keywordUtils'
 
 describe('The keyword utils', function(){
@@ -127,8 +126,8 @@ describe('The keyword utils', function(){
         ],
       }
       const result = keywordUtils.buildKeywordHierarchyMap(input, {})
-      result.length.should.equal(1)
-      result[0].should.deep.equal(expected)
+      expect(result.length).toBe(1)
+      expect(result[0]).toEqual(expected)
     })
 
     it('will handle non-science category data', function(){
@@ -177,8 +176,8 @@ describe('The keyword utils', function(){
       }
 
       const result = keywordUtils.buildKeywordHierarchyMap(input, {})
-      result.length.should.equal(1)
-      result[0].should.deep.equal(expected)
+      expect(result.length).toBe(1)
+      expect(result[0]).toEqual(expected)
     })
   })
 })

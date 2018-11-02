@@ -1,5 +1,3 @@
-import '../specHelper'
-import { expect, assert } from 'chai'
 import * as protocolUtils from '../../src/utils/resultUtils'
 import _ from 'lodash'
 
@@ -9,7 +7,7 @@ describe('The resultUtils', function () {
     const protocolIdCombos = _.map(protocolUtils.protocols, p => {
       return `${p.id}-${p.color}`
     })
-    assert.deepEqual(protocolIdCombos, _.uniq(protocolIdCombos), `${protocolIdCombos} vs ${_.uniq(protocolIdCombos)}`)
+    expect(protocolIdCombos).toEqual(_.uniq(protocolIdCombos))
   })
 
   it('can identify ogc:wcs', function () {
@@ -22,9 +20,9 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      protocol.id.should.equal('C')
-      protocol.label.should.equal('OGC Web Coverage Service')
-      protocol.color.should.equal('#ab4e2c')
+      expect(protocol.id).toBe('C')
+      expect(protocol.label).toBe('OGC Web Coverage Service')
+      expect(protocol.color).toBe('#ab4e2c')
     })
   })
 
@@ -37,9 +35,9 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      protocol.id.should.equal('D')
-      protocol.label.should.equal('Download')
-      protocol.color.should.equal('blue')
+      expect(protocol.id).toBe('D')
+      expect(protocol.label).toBe('Download')
+      expect(protocol.color).toBe('blue')
     })
   })
 
@@ -51,9 +49,9 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      protocol.id.should.equal('F')
-      protocol.label.should.equal('FTP')
-      protocol.color.should.equal('#c50000')
+      expect(protocol.id).toBe('F')
+      expect(protocol.label).toBe('FTP')
+      expect(protocol.color).toBe('#c50000')
     })
   })
 
@@ -67,9 +65,9 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      protocol.id.should.equal('H')
-      protocol.label.should.equal('HTTP/HTTPS')
-      protocol.color.should.equal('purple')
+      expect(protocol.id).toBe('H')
+      expect(protocol.label).toBe('HTTP/HTTPS')
+      expect(protocol.color).toBe('purple')
     })
   })
 
@@ -81,9 +79,9 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      protocol.id.should.equal('L')
-      protocol.label.should.equal('NOAA Live Access Server')
-      protocol.color.should.equal('#008484')
+      expect(protocol.id).toBe('L')
+      expect(protocol.label).toBe('NOAA Live Access Server')
+      expect(protocol.color).toBe('#008484')
     })
   })
 
@@ -95,9 +93,9 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      protocol.id.should.equal('M')
-      protocol.label.should.equal('OGC Web Map Service')
-      protocol.color.should.equal('#92631c')
+      expect(protocol.id).toBe('M')
+      expect(protocol.label).toBe('OGC Web Map Service')
+      expect(protocol.color).toBe('#92631c')
     })
   })
 
@@ -112,9 +110,9 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      protocol.id.should.equal('O')
-      protocol.label.should.equal('OPeNDAP')
-      protocol.color.should.equal('green')
+      expect(protocol.id).toBe('O')
+      expect(protocol.label).toBe('OPeNDAP')
+      expect(protocol.color).toBe('green')
     })
   })
 
@@ -127,9 +125,9 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      protocol.id.should.equal('T')
-      protocol.label.should.equal('THREDDS')
-      protocol.color.should.equal('#616161')
+      expect(protocol.id).toBe('T')
+      expect(protocol.label).toBe('THREDDS')
+      expect(protocol.color).toBe('#616161')
     })
   })
 
@@ -140,9 +138,9 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      protocol.id.should.equal('W')
-      protocol.label.should.equal('Web')
-      protocol.color.should.equal('#a26a03')
+      expect(protocol.id).toBe('W')
+      expect(protocol.label).toBe('Web')
+      expect(protocol.color).toBe('#a26a03')
     })
   })
 
@@ -156,9 +154,9 @@ describe('The resultUtils', function () {
 
     _.each(testCases, (p) => {
       const protocol = protocolUtils.identifyProtocol(p)
-      protocol.id.should.equal('?')
-      protocol.label.should.equal('Unknown')
-      protocol.color.should.equal('black')
+      expect(protocol.id).toBe('?')
+      expect(protocol.label).toBe('Unknown')
+      expect(protocol.color).toBe('black')
     })
   })
 

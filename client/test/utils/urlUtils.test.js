@@ -1,6 +1,4 @@
-import '../specHelper'
 import * as urlUtils from '../../src/utils/urlUtils'
-import { expect } from 'chai'
 
 describe('The URL Utils', function () {
   const pathTests = [
@@ -18,7 +16,7 @@ describe('The URL Utils', function () {
         'ftps://www.google.com'
     ]
 
-    urls.forEach((url) => urlUtils.isGovExternal(url).should.equal(true, `Failed for url: ${url}`))
+    urls.forEach((url) => expect(urlUtils.isGovExternal(url)).toBeTruthy())
   })
 
   it('identify internal urls', function () {
@@ -29,18 +27,18 @@ describe('The URL Utils', function () {
         'https://www.ngdc.noaa.gov'
     ]
 
-    urls.forEach((url) => urlUtils.isGovExternal(url).should.equal(false, `Failed for url: ${url}`))
+    urls.forEach((url) => expect(urlUtils.isGovExternal(url)).toBeFalsy())
   })
 
   it('can identify the details page', function () {
     pathTests.forEach( test => {
-      urlUtils.isDetailPage(test.path).should.equal(test.isDetail, `Failed for test ${test.path} is ${test.isDetail}`)
+      expect(urlUtils.isDetailPage(test.path)).toBe(test.isDetail)
     })
   })
 
   it('can identify the granule list page', function () {
     pathTests.forEach( test => {
-      urlUtils.isGranuleListPage(test.path).should.equal(test.isGranuleList, `Failed for test ${test.path} is ${test.isGranuleList}`)
+      expect(urlUtils.isGranuleListPage(test.path)).toBe(test.isGranuleList)
     })
   })
 
@@ -49,9 +47,9 @@ describe('The URL Utils', function () {
       const collectionId = urlUtils.getCollectionIdFromDetailPath(test.path)
 
       if(test.collectionIdFromDetailPath) {
-        collectionId.should.equal(test.isDetail ? test.collectionIdFromDetailPath : null, `Failed for test ${test.path} expected collection id  ${test.collectionIdFromDetailPath}`)
+        expect(collectionId).toBe(test.isDetail ? test.collectionIdFromDetailPath : null)
       } else {
-        expect(collectionId).to.be.null
+        expect(collectionId).toBeNull()
       }
     })
   })
@@ -61,9 +59,9 @@ describe('The URL Utils', function () {
       const collectionId = urlUtils.getCollectionIdFromGranuleListPath(test.path)
 
       if(test.collectionIdFromGranuleListPath) {
-        collectionId.should.equal(test.isGranuleList ? test.collectionIdFromGranuleListPath : null, `Failed for test ${test.path} expected collection id  ${test.collectionIdFromGranuleListPath}`)
+        expect(collectionId).toBe(test.isGranuleList ? test.collectionIdFromGranuleListPath : null)
       } else {
-        expect(collectionId).to.be.null
+        expect(collectionId).toBeNull()
       }
     })
   })

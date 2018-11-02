@@ -1,6 +1,4 @@
-import '../specHelper'
 import { isValidDate, isValidDateRange, textToNumber, ymdToDateMap } from '../../src/utils/inputUtils'
-import {assert} from 'chai'
 
 describe('The inputUtils', function() {
 
@@ -16,7 +14,7 @@ describe('The inputUtils', function() {
     ]
 
     testCases.forEach((c) => {
-      assert.equal(textToNumber(c.input), c.output, `for input ${c.input}`)
+      expect(textToNumber(c.input)).toBe(c.output)//, `for input ${c.input}`)
     })
   })
 
@@ -29,7 +27,7 @@ describe('The inputUtils', function() {
     ]
 
     testCases.forEach((c) => {
-      assert.deepEqual(ymdToDateMap(c.year, c.month, c.day), c.output, `for input date ${c.year}-${c.month}-${c.day}`)
+      expect(ymdToDateMap(c.year, c.month, c.day)).toEqual(c.output)//, c.output, `for input date ${c.year}-${c.month}-${c.day}`)
     })
   })
 
@@ -50,7 +48,7 @@ describe('The inputUtils', function() {
     ]
 
     testCases.forEach((c) => {
-      assert.equal(isValidDate(c.year, c.month, c.day), c.output, `for input date ${c.year}-${c.month}-${c.day}`)
+      expect(isValidDate(c.year, c.month, c.day)).toBe(c.output)//, `for input date ${c.year}-${c.month}-${c.day}`)
     })
   })
 
@@ -84,8 +82,8 @@ describe('The inputUtils', function() {
     ]
 
     testCases.forEach((c) => {
-      assert.equal(isValidDateRange(c.start, c.end), c.output,
-        `for input range ${c.start.year}-${c.start.month}-${c.start.day} - ${c.end.year}-${c.end.month}-${c.end.day}`)
+      expect(isValidDateRange(c.start, c.end)).toBe(c.output)//,
+        // `for input range ${c.start.year}-${c.start.month}-${c.start.day} - ${c.end.year}-${c.end.month}-${c.end.day}`)
     })
   })
 
