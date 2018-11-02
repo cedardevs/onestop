@@ -41,7 +41,7 @@ jobs:
       # build it!
       - run:
           name: Build
-          command: ./gradlew build
+          command: ./gradlew build -x integrationTest
           no_output_timeout: 30m
 
       - run:
