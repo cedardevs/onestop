@@ -16,13 +16,13 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     submit: () => {
       dispatch(removeAllFilters())
       dispatch(clearCollections())
       dispatch(triggerSearch())
-      dispatch(showCollections())
+      dispatch(showCollections(ownProps.history))
     },
     updateQuery: text => dispatch(updateQuery(text)),
     clearSearch: () => dispatch(updateSearch()),

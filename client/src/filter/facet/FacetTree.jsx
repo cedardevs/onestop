@@ -373,7 +373,7 @@ export default class FacetTree extends React.Component {
     return facetChildren
   }
 
-  handleKeyPressed = e => {
+  handleKeyUp = e => {
     // do nothing if modifiers are pressed
     if (e.metaKey || e.shiftKey || e.ctrlKey || e.altKey) {
       return
@@ -458,7 +458,7 @@ export default class FacetTree extends React.Component {
         aria-labelledby={this.props.headerId}
         aria-multiselectable="true"
         aria-describedby="facetFilterInstructions"
-        onKeyUp={this.handleKeyPressed} // onKeyDown isnt an actual keypress
+        onKeyUp={this.handleKeyUp} // onKeyDown isnt an actual keypress
         onKeyDown={this.handleKeyDown}
       >
         {facetHierarchy}

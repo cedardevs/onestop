@@ -154,7 +154,7 @@ const buildSearchAction = (
 
     prefetchHandler(dispatch)
 
-    const endpoint = getApiPath(state) + '/search/' + endpointName
+    const endpoint = getApiPath() + '/search/' + endpointName
     const fetchParams = {
       method: 'POST',
       headers: {
@@ -168,11 +168,11 @@ const buildSearchAction = (
       .then(response => checkForErrors(response))
       .then(response => response.json())
       .then(json => successHandler(dispatch, json))
-      .catch(ajaxError =>
-        ajaxError.response
+      .catch(ajaxError => {
+        return ajaxError.response
           .json()
           .then(errorJson => errorHandler(dispatch, errorJson))
-      )
+      })
       .catch(jsError => errorHandler(dispatch, jsError))
   }
 }
@@ -223,7 +223,7 @@ const buildGetAction = (
 ) => {
   return (dispatch, getState) => {
     prefetchHandler(dispatch)
-    const endpoint = getApiPath(getState()) + '/' + endpointName + '/' + id
+    const endpoint = getApiPath() + '/' + endpointName + '/' + id
     const fetchParams = {
       method: 'GET',
       headers: {
@@ -254,7 +254,7 @@ const buildSitemapAction = () => {
   return (dispatch, getState) => {
     let state = getState()
 
-    const endpoint = getApiPath(state) + '/sitemap.xml'
+    const endpoint = getApiPath() + '/sitemap.xml'
     const fetchParams = {
       method: 'GET',
     }

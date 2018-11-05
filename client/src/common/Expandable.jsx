@@ -103,7 +103,7 @@ export default class Expandable extends React.Component {
     this.toggle()
   }
 
-  handleKeyPressed = e => {
+  handleKeyDown = e => {
     if (e.keyCode === Key.SPACE) {
       e.preventDefault() // prevent scrolling down on space press
       this.toggle()
@@ -218,7 +218,7 @@ export default class Expandable extends React.Component {
       <div
         style={stylesHeadingMerged}
         onClick={this.handleClick}
-        onKeyDown={this.handleKeyPressed}
+        onKeyDown={this.handleKeyDown}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
         tabIndex={tabIndex}

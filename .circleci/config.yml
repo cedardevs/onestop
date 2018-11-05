@@ -6,14 +6,6 @@ version: 2
 jobs:
   build:
     machine: true
-      # specify the version you desire here
-      #- image: circleci/openjdk:8-jdk
-
-      # Specify stream dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     working_directory: ~/repo
 
     environment:
@@ -23,15 +15,13 @@ jobs:
     steps:
       - checkout
 
-      #- setup_remote_docker
-
       # Download and cache dependencies
       - restore_cache:
           keys:
           - onestop-cache-v3-{{ checksum "build.gradle" }}
           # fallback to using the latest cache if no exact match is found
           - onestop-cache-v3-
-          
+
       # Virtual Memory for Elasticsearch:
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
       - run:
@@ -51,18 +41,6 @@ jobs:
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
             find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
-
-      # - run:
-      #     name: Save jacoco results
-      #     command: |
-      #       mkdir -p ~/tests/jacoco/
-      #       find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/jacoco/ \;
-      #     when: always
-      #
-      # - run:
-      #     name: Post jacoco results to codecov
-      #     command: |
-      #       bash <(curl -s https://codecov.io/bash)
 
       - store_test_results:
           path: ~/tests

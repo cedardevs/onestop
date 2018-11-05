@@ -1,3 +1,4 @@
+// synchronous actions
 export const SET_LEFT_OPEN_CLOSE = 'SET_LEFT_OPEN_CLOSE'
 export const openLeft = () => {
   return {

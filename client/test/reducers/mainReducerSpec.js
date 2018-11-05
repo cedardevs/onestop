@@ -2,10 +2,8 @@ import '../specHelper'
 import Immutable from 'seamless-immutable'
 import reducer from '../../src/reducers/reducer'
 
-
-describe('The main reducer', function() {
-
-  it('returns a composed initial state', function() {
+describe('The main reducer', function(){
+  it('returns a composed initial state', function(){
     const initialState = new Map()
     const initialAction = {type: 'init'}
     const result = reducer(initialState, initialAction)

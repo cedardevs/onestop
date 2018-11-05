@@ -1,18 +1,18 @@
 {
   "presets": [
-    [
-      "env",
-      {
-        "modules": false
-      }
-    ],
+    [ "env", { "modules": false } ],
     "react",
     "stage-2"
   ],
   "env": {
     "test": {
       "presets": [
-        "env"
+        [ "env", { "targets": {"node": "current"} } ],
+        "react",
+        "stage-2"
+      ],
+      "plugins": [
+        [ "babel-plugin-webpack-aliases", { "config": "./webpack.config.js" } ]
       ]
     }
   }

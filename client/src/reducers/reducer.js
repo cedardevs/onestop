@@ -11,7 +11,6 @@ import info from './domain/info'
 import results from './domain/results'
 
 import loading from './ui/loading'
-import background from './ui/background'
 import layout from './ui/layout'
 
 import granules from './cart/granules'
@@ -25,7 +24,6 @@ const domain = combineReducers({
 
 const ui = combineReducers({
   loading,
-  background,
   layout,
 })
 

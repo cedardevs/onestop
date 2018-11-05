@@ -155,13 +155,7 @@ class Header extends React.Component {
       </ul>
     )
 
-    const insignia = (
-      <Logo
-        key="insignia"
-        onClick={this.props.goHome}
-        style={{flex: '0 0 275px'}}
-      />
-    )
+    const insignia = <Logo key="insignia" style={{flex: '0 0 275px'}} />
 
     const search = (
       <Switch key="header:search:route">
@@ -173,9 +167,6 @@ class Header extends React.Component {
         </Route>
       </Switch>
     )
-    // this.props.showSearch ? (
-    //   <SearchFieldsContainer key="search" />
-    // ) : null
 
     const menu = (
       <nav key="menu" aria-label="Main" style={styleNav}>
@@ -222,10 +213,6 @@ class Header extends React.Component {
       </div>
     )
   }
-}
-
-Header.propTypes = {
-  goHome: PropTypes.func.isRequired,
 }
 
 export default Header

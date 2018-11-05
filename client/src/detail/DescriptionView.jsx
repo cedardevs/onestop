@@ -102,7 +102,7 @@ export default class DescriptionView extends Component {
   }
 
   render() {
-    const {item, totalGranuleCount, navigateToGranules} = this.props
+    const {item, itemUuid, totalGranuleCount, navigateToGranules} = this.props
 
     // thumbnail might be undefined or an empty string, so check for both
     const thumbnail =
@@ -235,6 +235,8 @@ export default class DescriptionView extends Component {
           formatTitle={true}
           description={item.description}
           thumbnail={processUrl(thumbnail)}
+          item={item}
+          itemUuid={itemUuid}
         />
         <DetailGrid
           grid={[ [ imageAndDescription, expandableInformation ] ]}

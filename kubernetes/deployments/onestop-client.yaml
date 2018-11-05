@@ -38,11 +38,11 @@ spec:
       - name: onestop-client
         image: cedardevs/onestop-client
         env:
-        - name: ONESTOP_ENDPOINT
+        - name: ONESTOP_SEARCH_API_ENDPOINT
           value: onestop-api-search:8097
         - name: GEOPORTAL_ENDPOINT
           value: onestop-geoportal-search:8080
-        - name: ONESTOP_ADMIN_ENDPOINT
+        - name: ONESTOP_ADMIN_API_ENDPOINT
           value: onestop-api-metadata:8098
         - name: ONESTOP_GA_TRACKING_ID
           value: UA-127993388-1

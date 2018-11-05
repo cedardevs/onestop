@@ -32,8 +32,8 @@ const routingWatch = watch(
 )
 const routingUpdates = locationBeforeTransitions => {
   loadFromUrl(
-    locationBeforeTransitions.pathname,
-    locationBeforeTransitions.search
+    locationBeforeTransitions.location.pathname,
+    locationBeforeTransitions.location.search
   )
 }
 store.subscribe(routingWatch(routingUpdates))

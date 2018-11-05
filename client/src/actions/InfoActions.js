@@ -2,10 +2,8 @@ import fetch from 'isomorphic-fetch'
 
 import {getApiPath} from '../reducers/domain/api'
 
+// synchronous actions
 export const SET_INFO = 'set_info'
-export const CLEAR_INFO = 'clear_info'
-export const SET_TOTAL_COUNTS = 'set_total_counts'
-
 export const setInfo = info => {
   return {
     type: SET_INFO,
@@ -13,12 +11,14 @@ export const setInfo = info => {
   }
 }
 
+export const CLEAR_INFO = 'clear_info'
 export const clearInfo = () => {
   return {
     type: CLEAR_INFO,
   }
 }
 
+export const SET_TOTAL_COUNTS = 'set_total_counts'
 export const setTotalCounts = counts => {
   return {
     type: SET_TOTAL_COUNTS,
@@ -26,9 +26,10 @@ export const setTotalCounts = counts => {
   }
 }
 
+// asynchronous actions
 export const fetchInfo = () => {
   return (dispatch, getState) => {
-    const url = getApiPath(getState()) + '/actuator/info'
+    const url = getApiPath() + '/actuator/info'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
       .then(response => response.json())
@@ -39,8 +40,8 @@ export const fetchInfo = () => {
 
 export const fetchCounts = () => {
   return (dispatch, getState) => {
-    const urlCollectionCounts = getApiPath(getState()) + '/collection'
-    const urlGranuleCounts = getApiPath(getState()) + '/granule'
+    const urlCollectionCounts = getApiPath() + '/collection'
+    const urlGranuleCounts = getApiPath() + '/granule'
     const params = {headers: {Accept: 'application/json'}}
     const json = {}
     fetch(urlCollectionCounts, params)
