@@ -35,7 +35,7 @@ class UiConfig {
   GoogleAnalytics googleAnalytics
 
   static class GoogleAnalytics{
-    List<Map> trackingIds
+    List<Map> profiles
     ReactGAOptions reactGaOptions
   }
 
