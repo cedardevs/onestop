@@ -106,7 +106,7 @@ subprojects {
           html.destination "${buildDir}/reports/jacoco/html"
         }
       }
-      check.dependsOn jacocoTestReport
+      // test.dependsOn jacocoTestReport
     }
 
   }
