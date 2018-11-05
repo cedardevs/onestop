@@ -3,7 +3,7 @@ import _ from 'lodash'
 import {showLoading, hideLoading} from './FlowActions'
 import {showErrors} from './ErrorActions'
 import {assembleSearchRequest} from '../utils/queryUtils'
-import {getApiPath} from '../reducers/domain/api'
+import {API_PATH} from '../utils/urlUtils'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -154,7 +154,8 @@ const buildSearchAction = (
 
     prefetchHandler(dispatch)
 
-    const endpoint = getApiPath() + '/search/' + endpointName
+    const endpoint = API_PATH + '/search/' + endpointName
+
     const fetchParams = {
       method: 'POST',
       headers: {
@@ -165,7 +166,9 @@ const buildSearchAction = (
     }
 
     return fetch(endpoint, fetchParams)
-      .then(response => checkForErrors(response))
+      .then(response => {
+        return checkForErrors(response)
+      })
       .then(response => response.json())
       .then(json => successHandler(dispatch, json))
       .catch(ajaxError => {
@@ -223,7 +226,7 @@ const buildGetAction = (
 ) => {
   return (dispatch, getState) => {
     prefetchHandler(dispatch)
-    const endpoint = getApiPath() + '/' + endpointName + '/' + id
+    const endpoint = API_PATH + '/' + endpointName + '/' + id
     const fetchParams = {
       method: 'GET',
       headers: {
@@ -254,7 +257,7 @@ const buildSitemapAction = () => {
   return (dispatch, getState) => {
     let state = getState()
 
-    const endpoint = getApiPath() + '/sitemap.xml'
+    const endpoint = API_PATH + '/sitemap.xml'
     const fetchParams = {
       method: 'GET',
     }

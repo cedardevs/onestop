@@ -1,3 +1,5 @@
+export const API_PATH = '/onestop/api'
+
 // makes urls protocol-relative and url-encodes quotes
 export const processUrl = url => {
   if (typeof url === 'string') {

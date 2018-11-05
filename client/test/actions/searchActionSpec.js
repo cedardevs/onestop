@@ -1,3 +1,124 @@
+import '../specHelper'
+import nock from 'nock'
+
+import React from 'react'
+import {mount} from 'enzyme'
+
+import App from '../../src/App'
+
+import store from '../../src/store' // create Redux store with appropriate middleware
+import history from '../../src/history'
+
+import {assembleSearchRequestString} from '../../src/utils/queryUtils'
+import {searchQuery, errorQuery, errorsArray} from '../mockSearchQuery'
+
+import * as SearchRequestActions from '../../src/actions/SearchRequestActions'
+import * as SearchParamActions from '../../src/actions/SearchParamActions'
+
+const debugStore = (label, path) => {
+  const state = store.getState()
+  const stateSelector = _.get(state, path, state)
+  console.log('%s:\n\n%s', label, JSON.stringify(stateSelector, null, 4))
+}
+
+describe('The search action', () => {
+  const testingRoot = 'http://localhost:9090'
+
+  const url = '/'
+  let component = null
+
+  before(() => {
+    history.push(url)
+    component = mount(App(store, history))
+  })
+
+  beforeEach(() => {
+    nock.disableNetConnect()
+  })
+  afterEach(() => {
+    nock.cleanAll()
+  })
+
+  it('triggerSearch executes a search from requestBody', () => {
+    // debugStore("triggerSearch")
+
+    const searchForGranules = false
+    const retrieveFacets = true
+
+    // debugStore("before", "behavior.search.queryText")
+
+    store.dispatch(SearchParamActions.updateQuery('alaska'))
+    // debugStore("after", "behavior.search.queryText")
+
+    const requestBody = assembleSearchRequestString(
+      store.getState(),
+      searchForGranules,
+      retrieveFacets
+    )
+
+    console.log('requestBody:', JSON.stringify(requestBody, null, 3))
+
+    searchQuery(testingRoot, requestBody)
+
+    store.dispatch(SearchRequestActions.triggerSearch(retrieveFacets))
+
+    debugStore('after trigger')
+
+    // const testState = Immutable({
+    //   behavior: {
+    //     search: {
+    //       queryText: {text: 'alaska'},
+    //     },
+    //     request: {collectionInFlight: false},
+    //   },
+    //   domain: {
+    //     api: {
+    //       host: testingRoot,
+    //       path: '/onestop/',
+    //     },
+    //     results: {
+    //       collectionsPageOffset: 0,
+    //     },
+    //   },
+    // })
+    // const requestBody = assembleSearchRequestString(testState, false, true)
+    // searchQuery(testingRoot, requestBody)
+    //
+    // const expectedMetadata = {
+    //   facets: {science: [ {term: 'land', count: 2} ]},
+    //   total: 2,
+    //   took: 100,
+    // }
+    // const expectedItems = new Map()
+    // expectedItems.set('123ABC', {
+    //   type: 'collection',
+    //   field0: 'field0',
+    //   field1: 'field1',
+    // })
+    // expectedItems.set('789XYZ', {
+    //   type: 'collection',
+    //   field0: 'field00',
+    //   field1: 'field01',
+    // })
+    //
+    // const expectedActions = [
+    //   {type: LOADING_SHOW},
+    //   {type: module.SEARCH},
+    //   {type: module.FACETS_RECEIVED, metadata: expectedMetadata},
+    //   {type: module.COUNT_HITS, totalHits: 2},
+    //   {type: module.SEARCH_COMPLETE, items: expectedItems},
+    //   {type: LOADING_HIDE},
+    // ]
+    //
+    // const store = mockStore(Immutable(testState))
+    // return store.dispatch(module.triggerSearch()).then(() => {
+    //   store.getActions().should.deep.equal(expectedActions)
+    // })
+  })
+})
+
+///////
+
 // import '../specHelper'
 // import * as module from '../../src/actions/SearchRequestActions'
 // import {UPDATE_QUERY, updateQuery} from '../../src/actions/SearchParamActions'
