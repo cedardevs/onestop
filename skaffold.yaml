@@ -27,6 +27,7 @@ deploy:
         image: cedardevs/psi-registry
       setValues:
         kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
+        cp-schema-registry.url: http://psi-dev-cp-schema-registry:8081
       imageStrategy:
         helm: {}
     - name: psi-manager
@@ -35,6 +36,7 @@ deploy:
         image: cedardevs/psi-stream-manager
       setValues:
         kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
+#        cp-schema-registry.url: psi-dev-cp-schema-registry:8081
       imageStrategy:
         helm: {}
     - name: psi-dev

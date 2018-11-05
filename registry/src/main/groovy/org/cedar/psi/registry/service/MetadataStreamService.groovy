@@ -1,20 +1,19 @@
 package org.cedar.psi.registry.service
 
+import groovy.json.JsonOutput
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde
+import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.NewTopic
-import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.config.TopicConfig
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
-import org.apache.kafka.streams.kstream.Consumed
-import org.apache.kafka.streams.kstream.KTable
-import org.apache.kafka.streams.kstream.Materialized
-import org.apache.kafka.streams.kstream.ValueTransformerSupplier
+import org.apache.kafka.streams.kstream.*
 import org.apache.kafka.streams.state.Stores
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.registry.stream.DelayedPublisherTransformer
@@ -27,6 +26,9 @@ import org.springframework.stereotype.Service
 import javax.annotation.PostConstruct
 import javax.annotation.PreDestroy
 
+import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
+import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
+import static org.apache.kafka.streams.StreamsConfig.*
 import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID
 import static org.cedar.psi.common.constants.Topics.*
 
@@ -36,6 +38,7 @@ import static org.cedar.psi.common.constants.Topics.*
 class MetadataStreamService {
 
   private final AdminClient adminClient
+  private final String schemaRegistryUrl
   private final long publishInterval
   private final String stateDir
   private KafkaStreams streamsApp
@@ -43,13 +46,15 @@ class MetadataStreamService {
 
   MetadataStreamService(
       @Autowired AdminClient adminClient,
+      @Value('${schema.registry.url}') String schemaRegistryUrl,
       @Value('${publishing.interval.ms:300000}') long publishInterval,
       @Value('${state.dir:}') String stateDir) {
     this.adminClient = adminClient
+    this.schemaRegistryUrl = schemaRegistryUrl
     this.publishInterval = publishInterval
     this.stateDir = stateDir
     declareTopics(adminClient)
-    this.streamsApp = buildStreamsApp(adminClient, publishInterval, stateDir)
+    this.streamsApp = buildStreamsApp(adminClient, schemaRegistryUrl, publishInterval, stateDir)
   }
 
   @PostConstruct
@@ -70,7 +75,7 @@ class MetadataStreamService {
     if (this.streamsApp) {
       this.streamsApp.close()
       this.streamsApp.cleanUp()
-      this.streamsApp = buildStreamsApp(this.adminClient, this.publishInterval, this.stateDir)
+      this.streamsApp = buildStreamsApp(this.adminClient, this.schemaRegistryUrl, this.publishInterval, this.stateDir)
       this.streamsApp.start()
     }
   }
@@ -98,16 +103,17 @@ class MetadataStreamService {
     return config + additionalConfig
   }
 
-  static KafkaStreams buildStreamsApp(AdminClient adminClient, long publishInterval, String stateDir) {
+  static KafkaStreams buildStreamsApp(AdminClient adminClient, String schemaRegistryUrl, long publishInterval, String stateDir) {
     def kafkaNodes = adminClient.describeCluster().nodes().get()
     def bootstrapServers = kafkaNodes.take(3).collect({ it.host() + ':' + it.port() })
 
     def props = [
-        (StreamsConfig.APPLICATION_ID_CONFIG)           : REGISTRY_ID,
-        (StreamsConfig.BOOTSTRAP_SERVERS_CONFIG)        : bootstrapServers.join(','),
-        (StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
-        (StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG): JsonSerdes.Map().class.name,
-        (ConsumerConfig.AUTO_OFFSET_RESET_CONFIG)       : 'earliest'
+        (APPLICATION_ID_CONFIG)           : REGISTRY_ID,
+        (BOOTSTRAP_SERVERS_CONFIG)        : bootstrapServers.join(','),
+        (SCHEMA_REGISTRY_URL_CONFIG)      : schemaRegistryUrl,
+        (DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
+        (DEFAULT_VALUE_SERDE_CLASS_CONFIG): JsonSerdes.Map().class.name,
+        (AUTO_OFFSET_RESET_CONFIG)        : 'earliest'
     ]
     if (stateDir) {
       props.put(StreamsConfig.STATE_DIR_CONFIG, stateDir)
@@ -143,6 +149,7 @@ class MetadataStreamService {
     Map<String, KTable> inputTables = inputSources(type).collectEntries { source ->
       [(source): builder
           .stream(inputTopic(type, source))
+          .mapValues({ JsonOutput.toJson(it as Map) } as ValueMapper<GenericRecord, Map>)
           .groupByKey()
           .reduce(StreamFunctions.mergeContentMaps, Materialized.as(inputStore(type, source)).withValueSerde(JsonSerdes.Map()))]
     }
