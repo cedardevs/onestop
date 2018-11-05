@@ -41,6 +41,8 @@ spec:
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: "{{ template "psi-registry.kafka.bootstrapServers" . }}"
+            - name: SCHEMA_REGISTRY_URL
+              value: "{{ template "psi-registry.cp-schema-registry.url" . }}"
             - name: STATE_DIR
               value: "/var/lib/registry/data"
           volumeMounts:

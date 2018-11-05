@@ -3,6 +3,7 @@ package org.cedar.psi.registry.service
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.cedar.psi.common.constants.Topics
+import org.cedar.psi.common.avro.Method
 import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -31,12 +32,13 @@ class PublisherSpec extends Specification {
       it instanceof ProducerRecord &&
           it.topic() == Topics.inputTopic(type, source) &&
           it.key() == id &&
-          it.value().input.requestUrl == "http://localhost$requestUri" &&
-          it.value().input.method == method  &&
-          it.value().input.content == data &&
-          it.value().input.contentType == contentType &&
-          it.value().input.source == source &&
-          it.value().identifiers == [(source): id]
+          it.value().requestUrl == "http://localhost$requestUri" &&
+          it.value().method == Method.valueOf(method)  &&
+          it.value().content == data &&
+          it.value().contentType == contentType &&
+          it.value().source == source //&&
+//          TODO - reinstate identifers?
+//          it.value().identifiers == [(source): id]
     }) >> Mock(Future)
 
     where:
@@ -62,11 +64,12 @@ class PublisherSpec extends Specification {
       it instanceof ProducerRecord &&
           it.topic() == Topics.inputTopic(type, Topics.DEFAULT_SOURCE) &&
           it.key() == id &&
-          it.value().input.contentType == contentType &&
-          it.value().input.method == method  &&
-          it.value().input.requestUrl == "http://localhost$requestUri" &&
-          it.value().input.content == data &&
-          it.value().identifiers == [(Topics.DEFAULT_SOURCE): id]
+          it.value().contentType == contentType &&
+          it.value().method == Method.valueOf(method) &&
+          it.value().requestUrl == "http://localhost$requestUri" &&
+          it.value().content == data //&&
+//          TODO - reinstate identifers?
+//          it.value().identifiers == [(Topics.DEFAULT_SOURCE): id]
     }) >> Mock(Future)
 
     where:
@@ -92,11 +95,12 @@ class PublisherSpec extends Specification {
       it instanceof ProducerRecord &&
           it.topic() == Topics.inputTopic(type, Topics.DEFAULT_SOURCE) &&
           it.key() instanceof String &&
-          it.value().input.contentType == contentType &&
-          it.value().input.method == method  &&
-          it.value().input.requestUrl == "http://localhost$requestUri" &&
-          it.value().input.content == data &&
-          it.value().identifiers[Topics.DEFAULT_SOURCE] instanceof String
+          it.value().contentType == contentType &&
+          it.value().method == Method.valueOf(method) &&
+          it.value().requestUrl == "http://localhost$requestUri" &&
+          it.value().content == data //&&
+//          TODO - reinstate identifers?
+//          it.value().identifiers[Topics.DEFAULT_SOURCE] instanceof String
     }) >> Mock(Future)
 
     where:
