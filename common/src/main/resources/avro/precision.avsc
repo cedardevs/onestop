@@ -1,1 +1,0 @@
-{  "type": "enum",  "namespace": "org.cedar.psi.common.avro",  "name": "Precision",  "doc": " The type of data that is sent",  "symbols": [    "Years",    "Days",    "Nanos",    "UNDEFINED",    "INVALID"  ]}

@@ -25,11 +25,11 @@
       },
       {
         "name": "precision",
-        "type": "Precision"
+        "type": "string"
       },
       {
         "name": "validSearchFormat",
-        "type": "ValidSearchFormat"
+        "type": ["boolean", "string"]
       },
       {
         "name": "zoneSpecified",

@@ -10,8 +10,8 @@
       },
       {
         "name": "until",
-        "type": "string",
-        "format": "date-time"
+        "type": "long",
+        "logicalType": "timestamp-millis"
       }
     ]
   }

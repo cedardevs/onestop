@@ -1,1 +1,0 @@
-{  "type": "enum",  "namespace": "org.cedar.psi.common.avro",  "name": "ValidSearchFormat",  "symbols": [    "true",    "false",    "UNDEFINED"  ]}

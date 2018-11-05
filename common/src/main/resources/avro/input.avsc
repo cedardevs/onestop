@@ -14,8 +14,7 @@
     },
     {
       "name": "host",
-      "type": "string",
-      "format": "ipv4"
+      "type": "string"
     },
     {
       "name": "method",
@@ -27,8 +26,7 @@
     },
     {
       "name": "requestUrl",
-      "type": "string",
-      "format": "uri"
+      "type": "string"
     },
     {
       "name": "source",
