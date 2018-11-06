@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "webpack-dev-server --env.URL_API_SEARCH=http://localhost:8097 --progress --config webpack.config.js --colors & npm run testAndWatch",
     "kub": "webpack-dev-server --env.URL_API_SEARCH=http://localhost:30097 --progress --config webpack.config.js --colors & npm run testAndWatch",
-    "test": "jest --config jest.config.js && codecov",
+    "test": "jest --config jest.config.js",
     "format": "find src -name '*.js' -o -name '*.jsx' -o -name '*.css' | xargs ./node_modules/.bin/prettier --config .prettierrc.json --write",
     "build": "npm install && npm test && NODE_ENV=production ./node_modules/.bin/webpack -p",
     "clean": "rm -rf dist && rm -rf build && rm -rf coverage",
@@ -54,7 +54,6 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
-    "codecov": "^3.1.0",
     "css-loader": "^0.28.10",
     "eslint": "^4.18.2",
     "eslint-loader": "^2.0.0",
