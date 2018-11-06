@@ -1,10 +1,8 @@
-import '../specHelper'
 import * as util from '../../src/utils/jsonLdUtils'
-import {assert} from 'chai'
 
 const jsonEquals = (expected, actual) => {
   // compare multiline strings after removing leading whitespace, making it easier to have sensible looking tests
-  assert.equal(expected.replace(/^\s\s*/gm, ""), actual.replace(/^\s\s*/gm, ""))
+  expect(expected.replace(/^\s\s*/gm, "")).toBe(actual.replace(/^\s\s*/gm, ""))
 }
 
 // Note: resulting JsonLD verified using https://search.google.com/structured-data/testing-tool/u/0/
@@ -73,31 +71,31 @@ describe('In the jsonLdUtils', function () {
     })
 
     it('does not generate a doi block', function () {
-      assert.equal(util.doiListItem(input), null)
+      expect(util.doiListItem(input)).toBe(undefined)
     })
 
     it('does not generate a thumbnail image block', function () {
-      assert.equal(util.imageField(input), null)
+      expect(util.imageField(input)).toBe(undefined)
     })
 
     it('does not generate a temporal block', function () {
-      assert.equal(util.temporalCoverageField(input), null)
+      expect(util.temporalCoverageField(input)).toBe(undefined)
     })
 
     it('does not generate a spatial block', function () {
-      assert.equal(util.spatialCoverageField(input), null)
+      expect(util.spatialCoverageField(input)).toBe(undefined)
     })
 
     it('does not generate a distribution block', function () {
-      assert.equal(util.distributionField(input), null)
+      expect(util.distributionField(input)).toBe(undefined)
     })
 
     it('does not generate a keyword block', function () {
-      assert.equal(util.keywordsField(input), null)
+      expect(util.keywordsField(input)).toBe(undefined)
     })
 
     it('does not generate an encoding format block', function () {
-      assert.equal(util.encodingFormatField(input), null)
+      expect(util.encodingFormatField(input)).toBe(undefined)
     })
   })
 
@@ -670,8 +668,8 @@ describe('In the jsonLdUtils', function () {
     }
 
     it('identifies the correct place keywords', function () {
-      assert.deepEqual(
-        util.locationKeywordsSubset(input),
+      expect(
+        util.locationKeywordsSubset(input)).toEqual(
         [
           "Continent > North America > United States Of America",
           "Ocean > Pacific Ocean > North Pacific Ocean",

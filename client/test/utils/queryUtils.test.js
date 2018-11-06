@@ -1,4 +1,3 @@
-import '../specHelper'
 import Immutable from 'seamless-immutable'
 import * as queryUtils from '../../src/utils/queryUtils'
 import { initialState } from "../../src/reducers/behavior/search"
@@ -10,8 +9,8 @@ describe('The queryUtils', function () {
       it(`with ${testCase.name}`, function () {
         const objectResult = queryUtils.assembleSearchRequest(testCase.inputState, false, true)
         const stringResult = queryUtils.assembleSearchRequestString(testCase.inputState, false, true)
-        objectResult.should.deep.equal(testCase.expectedResult)
-        stringResult.should.equal(JSON.stringify(testCase.expectedResult))
+        expect(objectResult).toEqual(testCase.expectedResult)
+        expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
       })
     })
   })
@@ -21,8 +20,8 @@ describe('The queryUtils', function () {
       it(`with ${testCase.name}`, function () {
         const objectResult = queryUtils.assembleSearchRequest(testCase.inputState, true, false)
         const stringResult = queryUtils.assembleSearchRequestString(testCase.inputState, true, false)
-        objectResult.should.deep.equal(testCase.expectedResult)
-        stringResult.should.equal(JSON.stringify(testCase.expectedResult))
+        expect(objectResult).toEqual(testCase.expectedResult)
+        expect(stringResult).toBe(JSON.stringify(testCase.expectedResult))
       })
     })
   })
@@ -31,9 +30,9 @@ describe('The queryUtils', function () {
     queryTestCases().forEach((testCase) => {
       const tempState = {behavior: {search: testCase.state}}
       const encodedString = queryUtils.encodeQueryString(tempState)
-      encodedString.should.equal(testCase.string)
+      expect(encodedString).toBe(testCase.string)
       const decodedString = queryUtils.decodeQueryString(encodedString)
-      decodedString.should.deep.equal(testCase.state)
+      expect(decodedString).toEqual(testCase.state)
     })
   })
 })

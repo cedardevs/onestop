@@ -203,7 +203,7 @@ export const geoListItem = item => {
 }
 
 export const distributionField = item => {
-  if (!item.links) return null
+  if (!item.links) return undefined
   return `"distribution": [
     ${_.join(_.map(item.links, downloadLinkList), ',\n')}
   ]`

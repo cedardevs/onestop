@@ -1,4 +1,3 @@
-import '../specHelper'
 import * as module from '../../src/actions/SearchRequestActions'
 import { UPDATE_QUERY, updateQuery } from '../../src/actions/SearchParamActions'
 import { LOADING_SHOW, LOADING_HIDE } from '../../src/actions/FlowActions'
@@ -62,7 +61,7 @@ describe('The search action', () => {
     const store = mockStore(Immutable(testState))
     return store.dispatch(module.triggerSearch())
         .then(() => {
-          store.getActions().should.deep.equal(expectedActions)
+          expect(store.getActions()).toEqual(expectedActions)
         })
   })
 
@@ -107,7 +106,7 @@ describe('The search action', () => {
     const store = mockStore(testState)
     return store.dispatch(module.triggerSearch())
         .then(() => {
-          store.getActions().should.deep.equal(expectedActions)
+          expect(store.getActions()).toEqual(expectedActions)
         })
   })
 
@@ -126,7 +125,7 @@ describe('The search action', () => {
     const store = mockStore(testState)
     return store.dispatch(module.triggerSearch())
         .then(() => {
-          store.getActions().should.deep.equal([]) // No actions dispatched
+          expect(store.getActions()).toEqual([]) // No actions dispatched
         })
   })
 
@@ -134,14 +133,14 @@ describe('The search action', () => {
     const action = updateQuery('bermuda triangle')
     const expectedAction = {type: UPDATE_QUERY, searchText: 'bermuda triangle'}
 
-    action.should.deep.equal(expectedAction)
+    expect(action).toEqual(expectedAction)
   })
 
   it('startSearch returns (like batman, but better)', () => {
     const action = module.startSearch()
     const expectedAction = {type: module.SEARCH}
 
-    action.should.deep.equal(expectedAction)
+    expect(action).toEqual(expectedAction)
   })
 
   it('completeSearch sets result items', () => {
@@ -157,7 +156,7 @@ describe('The search action', () => {
     const action = module.completeSearch(items)
     const expectedAction = {type: module.SEARCH_COMPLETE, items: items}
 
-    action.should.deep.equal(expectedAction)
+    expect(action).toEqual(expectedAction)
   })
 })
 
@@ -210,7 +209,7 @@ describe('The granule actions', function () {
     nock(testingRoot).post(searchEndpoint, expectedBody).reply(200, successResponse)
 
     return store.dispatch(module.fetchGranules()).then(() => {
-      store.getActions().should.deep.equal([
+      expect(store.getActions()).toEqual([
         {type: LOADING_SHOW},
         {type: module.FETCHING_GRANULES},
         {type: module.COUNT_GRANULES, totalGranules: successResponse.meta.total},
@@ -250,7 +249,7 @@ describe('The granule actions', function () {
     nock(testingRoot).post(searchEndpoint, expectedBody).reply(200, successResponse)
 
     return store.dispatch(module.fetchGranules()).then(() => {
-      store.getActions().should.deep.equal([
+      expect(store.getActions()).toEqual([
         {type: LOADING_SHOW},
         {type: module.FETCHING_GRANULES},
         {type: module.COUNT_GRANULES, totalGranules: successResponse.meta.total},

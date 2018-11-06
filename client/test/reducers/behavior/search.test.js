@@ -1,6 +1,4 @@
-import '../../specHelper'
 import Immutable from 'seamless-immutable'
-import { expect } from 'chai'
 import { search, initialState } from '../../../src/reducers/behavior/search'
 import {
   updateSearch, newGeometry, removeGeometry, toggleSelection, toggleExcludeGlobal,  clearSelections
@@ -11,7 +9,7 @@ describe('The search reducer', function () {
     const initialAction = {type: 'init'}
     const result = search(initialState, initialAction)
 
-    result.should.deep.equal({
+    expect(result).toEqual({
       queryText: '',
       geoJSON: null,
       startDateTime: null,
@@ -36,7 +34,7 @@ describe('The search reducer', function () {
 
       const updateAction = updateSearch(newSearchParams)
       const result = search(initialState, updateAction)
-      result.should.deep.equal(newSearchParams)
+      expect(result).toEqual(newSearchParams)
     })
 
     it('defaults to initial state for missing fields', function () {
@@ -46,13 +44,13 @@ describe('The search reducer', function () {
 
       const updateAction = updateSearch(newSearchParams)
       const result = search(initialState, updateAction)
-      result.should.deep.equal(Immutable.merge(initialState, newSearchParams))
+      expect(result).toEqual(Immutable.merge(initialState, newSearchParams))
     })
 
     it('works for empty or undefined params', function () {
-      search(initialState, updateSearch({})).should.deep.equal(initialState)
-      search(initialState, updateSearch(null)).should.deep.equal(initialState)
-      search(initialState, updateSearch(undefined)).should.deep.equal(initialState)
+      expect(search(initialState, updateSearch({}))).toEqual(initialState)
+      expect(search(initialState, updateSearch(null))).toEqual(initialState)
+      expect(search(initialState, updateSearch(undefined))).toEqual(initialState)
     })
   })
 
@@ -71,13 +69,13 @@ describe('The search reducer', function () {
     it('updates the state for a new geometry', function () {
       const newGeomAction = newGeometry(validGeoJSON)
       const result = search(initialState, newGeomAction)
-      result.geoJSON.should.deep.equal(validGeoJSON)
+      expect(result.geoJSON).toEqual(validGeoJSON)
     })
 
     it('defaults back to initial state for geometry removal', function () {
       const removeGeomAction = removeGeometry()
       const result = search({geoJSON: validGeoJSON}, removeGeomAction)
-      expect(result.geoJSON).to.be.null
+      expect(result.geoJSON).toBeNull()
     })
   })
 
@@ -87,19 +85,19 @@ describe('The search reducer', function () {
       const toggleB = toggleSelection('B')
       // toggle A --> ['A']
       const addedAResult = search(initialState, toggleA)
-      addedAResult.selectedIds.should.deep.equal(['A'])
+      expect(addedAResult.selectedIds).toEqual(['A'])
       // toggle B --> ['A', 'B']
       const addedBResult = search(addedAResult, toggleB)
-      addedBResult.selectedIds.should.deep.equal(['A', 'B'])
+      expect(addedBResult.selectedIds).toEqual(['A', 'B'])
       // toggle A --> ['B']
       const removedAResult = search(addedBResult, toggleA)
-      removedAResult.selectedIds.should.deep.equal(['B'])
+      expect(removedAResult.selectedIds).toEqual(['B'])
     })
 
     it('can clear existing collection selections', function () {
       const stateWithCollections = Immutable({selectedIds: ['ABC']})
       const result = search(stateWithCollections, clearSelections())
-      result.selectedIds.should.deep.equal([])
+      expect(result.selectedIds).toEqual([])
     })
   })
 
@@ -115,13 +113,13 @@ describe('The search reducer', function () {
       }
 
       const reducerResp = search(initialState, modFacetsAction)
-      reducerResp.selectedFacets.should.deep.equal(selectedFacets)
+      expect(reducerResp.selectedFacets).toEqual(selectedFacets)
     })
 
     it('should handle TOGGLE_FACET w/ no facets selected', () => {
       const actionWithNoFacets = {type:"TOGGLE_FACETS", selectedFacets: {}}
       const reducerResp = search(initialState, actionWithNoFacets)
-      reducerResp.selectedFacets.should.deep.equal({})
+      expect(reducerResp.selectedFacets).toEqual({})
     })
   })
 
@@ -132,7 +130,7 @@ describe('The search reducer', function () {
       }
 
       const reducerResp = search(initialState, toggleExcludeGlobalAction)
-      reducerResp.excludeGlobal.should.equal(true)
+      expect(reducerResp.excludeGlobal).toBeTruthy()
     })
     it('should handle TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at true', () => {
         const globalExcludedState = {
@@ -143,7 +141,7 @@ describe('The search reducer', function () {
         }
 
         const reducerResp = search(globalExcludedState, toggleExcludeGlobalAction)
-        reducerResp.excludeGlobal.should.equal(false)
+        expect(reducerResp.excludeGlobal).toBeFalsy()
     })
     it('should handle TOGGLE_EXCLUDE_GLOBAL starting with excludeGlobal at false', () => {
         const globalExcludedState = {
@@ -154,7 +152,7 @@ describe('The search reducer', function () {
         }
 
         const reducerResp = search(globalExcludedState, toggleExcludeGlobalAction)
-        reducerResp.excludeGlobal.should.equal(true)
+        expect(reducerResp.excludeGlobal).toBeTruthy()
     })
   })
 })

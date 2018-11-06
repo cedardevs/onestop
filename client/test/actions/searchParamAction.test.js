@@ -1,4 +1,3 @@
-import '../specHelper'
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import reducer from '../../src/reducers/reducer'
@@ -13,7 +12,7 @@ describe('The search params actions', function () {
       const mapAction = actions.newGeometry(geoJSON)
       const expectedAction = { type: 'new_geometry', geoJSON: {geometry: 'test object'} }
 
-      mapAction.should.deep.equal(expectedAction)
+      expect(mapAction).toEqual(expectedAction)
     })
   })
 
@@ -26,7 +25,7 @@ describe('The search params actions', function () {
       const expectedAction =  { type: 'UPDATE_DATE_RANGE',
         startDate: '2016-07-25T15:45:00-06:00', endDate: ''}
 
-      temporalAction.should.deep.equal(expectedAction)
+      expect(temporalAction).toEqual(expectedAction)
     })
 
     it('sets end date time ', function () {
@@ -34,7 +33,7 @@ describe('The search params actions', function () {
       const expectedAction =  { type: 'UPDATE_DATE_RANGE',
         startDate: '', endDate: '2016-07-25T15:45:00-06:00' }
 
-      temporalAction.should.deep.equal(expectedAction)
+      expect(temporalAction).toEqual(expectedAction)
     })
   })
 
@@ -49,7 +48,7 @@ describe('The search params actions', function () {
 
       const store = mockStore(initialState)
       store.dispatch(actions.toggleFacet(facets.name, facets.value, facets.selected))
-      store.getActions()[0].should.deep.equal(expectedActions)
+      expect(store.getActions()[0]).toEqual(expectedActions)
     })
 
     it('removes facet from facets selected', function () {
@@ -59,7 +58,7 @@ describe('The search params actions', function () {
       const store = mockStore(state)
 
       store.dispatch(actions.toggleFacet('a', 'a', false))
-      store.getActions()[0].should.deep.equal(expectedActions)
+      expect(store.getActions()[0]).toEqual(expectedActions)
     })
   })
 })

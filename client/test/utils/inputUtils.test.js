@@ -1,10 +1,8 @@
-import '../specHelper'
 import { isValidDate, isValidDateRange, textToNumber, ymdToDateMap } from '../../src/utils/inputUtils'
-import {assert} from 'chai'
 
 describe('The inputUtils', function() {
 
-  it('converts text to numbers', function () {
+  describe('converts text to numbers', function () {
     const testCases = [
       {input: 1, output: 1},
       {input: 1.2, output: 1.2},
@@ -16,11 +14,13 @@ describe('The inputUtils', function() {
     ]
 
     testCases.forEach((c) => {
-      assert.equal(textToNumber(c.input), c.output, `for input ${c.input}`)
+      it(`for input ${c.input}`, function () {
+        expect(textToNumber(c.input)).toBe(c.output)
+      })
     })
   })
 
-  it('builds date maps', function () {
+  describe('can builds date maps', function () {
     const testCases = [
       {year: '2000', month: '4', day: '24', output: {year: 2000, month: 4, day: 24}},
       {year: '2000', month: '4', day: '', output: {year: 2000, month: 4, day: null}},
@@ -29,11 +29,13 @@ describe('The inputUtils', function() {
     ]
 
     testCases.forEach((c) => {
-      assert.deepEqual(ymdToDateMap(c.year, c.month, c.day), c.output, `for input date ${c.year}-${c.month}-${c.day}`)
+      it(`for input date ${c.year}-${c.month}-${c.day}`, function () {
+        expect(ymdToDateMap(c.year, c.month, c.day)).toEqual(c.output)
+      })
     })
   })
 
-  it('validates dates', function () {
+  describe('can check date validity', function () {
     const testCases = [
       {year: '', month: '', day: '', output: true},
       {year: '2000', month: '', day: '', output: true},
@@ -50,11 +52,13 @@ describe('The inputUtils', function() {
     ]
 
     testCases.forEach((c) => {
-      assert.equal(isValidDate(c.year, c.month, c.day), c.output, `for input date ${c.year}-${c.month}-${c.day}`)
+      it(`for input date ${c.year}-${c.month}-${c.day}`, function () {
+        expect(isValidDate(c.year, c.month, c.day)).toBe(c.output)
+      })
     })
   })
 
-  it('validates date ranges', function () {
+  describe('can check date range validity', function () {
     const testCases = [
       {
         start: {year: null, month: null, day: null},
@@ -84,8 +88,9 @@ describe('The inputUtils', function() {
     ]
 
     testCases.forEach((c) => {
-      assert.equal(isValidDateRange(c.start, c.end), c.output,
-        `for input range ${c.start.year}-${c.start.month}-${c.start.day} - ${c.end.year}-${c.end.month}-${c.end.day}`)
+      it(`for input range ${c.start.year}-${c.start.month}-${c.start.day} - ${c.end.year}-${c.end.month}-${c.end.day}`, function () {
+        expect(isValidDateRange(c.start, c.end)).toBe(c.output)//,
+      })
     })
   })
 

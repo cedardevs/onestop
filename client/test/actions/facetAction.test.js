@@ -1,4 +1,3 @@
-import '../specHelper'
 import { facetsReceived, clearFacets } from '../../src/actions/SearchRequestActions'
 import reducer from '../../src/reducers/reducer'
 import configureMockStore from 'redux-mock-store'
@@ -16,15 +15,15 @@ describe('The facet action', function () {
     const facetAction = facetsReceived(metadata)
     const expectedAction = { type: 'FACETS_RECEIVED', metadata: metadata}
 
-    facetAction.should.deep.equal(expectedAction)
+    expect(facetAction).toEqual(expectedAction)
   })
 
   it('clears facets', function () {
     const state = reducer(initialState, {})
     const expectedActions = { type: 'CLEAR_FACETS' }
     const store = mockStore(state)
-
+    
     store.dispatch(clearFacets())
-    store.getActions()[0].should.deep.equal(expectedActions)
+    expect(store.getActions()[0]).toEqual(expectedActions)
   })
 })
