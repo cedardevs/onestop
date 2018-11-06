@@ -71,35 +71,11 @@ describe('The flow actions', () => {
     ///
 
     // TODO: is there a dangling event handler here?
-    // why do we have to use `mocha --exit` or call `done()` in this test for mocha to exit properly?
-    // done()
+    // why do we have to use `mocha --exit` in this test for mocha to exit properly?
+    // we'll keep this commented out until we consider changes to initialize()
+  })
 
-    // const actualCollections = store.getState().domain.results.collections
-    // const expectedCollections = {
-    //   '123ABC': {
-    //     type: 'collection',
-    //     field0: 'field0',
-    //     field1: 'field1',
-    //   },
-    //   '789XYZ': {
-    //     type: 'collection',
-    //     field0: 'field00',
-    //     field1: 'field01',
-    //   },
-    // }
-    // const actualFacets = store.getState().domain.results.facets
-    // const expectedFacets = {
-    //   science: [
-    //     {
-    //       term: 'land',
-    //       count: 2,
-    //     },
-    //   ],
-    // }
-    // actualCollections.should.deep.equal(expectedCollections)
-    // actualFacets.should.deep.equal(expectedFacets)
-  }).timeout(10000)
-
+  // TODO: rewrite these tests with new testing paradigm
   // describe('loadData', function () {
   //   it('loads only collections if no ids are selected', function () {
   //     const getState = sinon.stub().returns(mockDefaultState)

@@ -15,14 +15,12 @@ export const initialState = Immutable({
 export const config = (state = initialState, action) => {
   switch (action.type) {
     case SET_CONFIG:
-      // console.log("SET_CONFIG:action:", JSON.stringify(action, null , 3))
       return Immutable.merge(state, action.config)
 
     case CLEAR_CONFIG:
       return initialState
 
     case TOGGLE_FEATURES:
-      // console.log("TOGGLE_FEATURES:action:", JSON.stringify(action, null , 3))
       return Immutable.merge(state, {
         featuresEnabled: action.featuresEnabled,
         headerDropdownMenuFeatureAvailable:
