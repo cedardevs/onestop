@@ -63,6 +63,7 @@
     "enzyme-adapter-react-16": "^1.6.0",
     "eslint": "^4.18.2",
     "eslint-loader": "^2.0.0",
+    "fetch-mock": "^7.2.5",
     "file-loader": "^1.1.5",
     "html-webpack-plugin": "^2.30.1",
     "html-webpack-template": "^6.1.0",

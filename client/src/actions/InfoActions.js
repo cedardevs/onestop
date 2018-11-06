@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-fetch'
+import 'isomorphic-fetch'
 import {API_PATH} from '../utils/urlUtils'
 
 // synchronous actions

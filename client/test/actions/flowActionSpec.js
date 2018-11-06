@@ -1,50 +1,104 @@
 import '../specHelper'
-import _ from 'lodash'
-import * as actions from '../../src/actions/FlowActions'
-import {expect, assert} from 'chai'
-import sinon from 'sinon'
-// import * as router from 'react-router';
+import fetchMock from 'fetch-mock'
+import React from 'react'
+import {mount} from 'enzyme'
+import App from '../../src/App'
+import store from '../../src/store' // create Redux store with appropriate middleware
+import history from '../../src/history'
 
-describe('The flow actions', function(){
-  const mockDefaultState = {
-    domain: {
-      api: {
-        host: '',
-        path: '',
-      },
-      results: {
-        granules: {},
-      },
-    },
-    behavior: {
-      request: {
-        collectionInFlight: false,
-        granuleInFlight: false,
-      },
-      search: {
-        selectedIds: [],
-      },
-    },
-  }
+import * as FlowActions from '../../src/actions/FlowActions'
+import {RESET_STORE} from '../../src/reducers/reducer'
+import {API_PATH} from '../../src/utils/urlUtils'
+import {
+  mockCollectionCountResponse,
+  mockGranuleCountResponse,
+} from '../mockCount'
+import {mockConfigResponse} from '../mockConfig'
+import {mockInfoResponse} from '../mockInfo'
 
-  let dispatch
-  // let browserHistoryPushStub
+const debugStore = (label, path) => {
+  const state = store.getState()
+  const stateSelector = _.get(state, path, state)
+  console.log('%s:\n\n%s', label, JSON.stringify(stateSelector, null, 4))
+}
 
-  beforeEach(() => {
-    // router.browserHistory = { push: ()=>{} };
-    // browserHistoryPushStub = sinon.stub(router.browserHistory, 'push', () => { });
+describe('The flow actions', () => {
+  let url = '/'
+  let component = null
+  let stateBefore = null
+  const resetStore = () => ({type: RESET_STORE})
 
-    dispatch = sinon.stub()
+  before(() => {
+    // initially go to index/home
+    history.push(url)
+    // mount the entire application with store and history
+    // tests use memoryHistory based on NODE_ENV=='test'
+    component = mount(App(store, history))
   })
 
-  // it('initialize triggers config, version info, total counts, and data loading', function () {
-  //   const getState = sinon.stub().returns(mockDefaultState)
-  //   const fn = actions.initialize()
-  //
-  //   fn(dispatch, getState)
-  //   const dispatchCalls = dispatch.callCount
-  //   assert(dispatchCalls === 3, `There were ${dispatchCalls} dispatch calls made`)
-  // })
+  beforeEach(async () => {
+    // return to index/home
+    history.push(url)
+    // reset store to initial conditions
+    await store.dispatch(resetStore())
+    // capture state before test
+    stateBefore = store.getState()
+  })
+
+  afterEach(() => {
+    fetchMock.reset()
+  })
+
+  it('initialize triggers config, version info, total counts, and data loading', async () => {
+    // mock fetch config
+    fetchMock.get(`path:${API_PATH}/uiConfig`, mockConfigResponse)
+
+    // mock fetch info
+    fetchMock.get(`path:${API_PATH}/actuator/info`, mockInfoResponse)
+
+    // mock fetch collection & granule counts
+    fetchMock.get(`path:${API_PATH}/collection`, mockCollectionCountResponse)
+    fetchMock.get(`path:${API_PATH}/granule`, mockGranuleCountResponse)
+
+    // debugStore("BEFORE")
+
+    // trigger initialize
+    // store.dispatch(FlowActions.initialize()).then(() => {
+    //   debugStore("THEN1")
+    // })
+
+    // debugStore("AFTER")
+    ///
+
+    // TODO: is there a dangling event handler here?
+    // why do we have to use `mocha --exit` or call `done()` in this test for mocha to exit properly?
+    // done()
+
+    // const actualCollections = store.getState().domain.results.collections
+    // const expectedCollections = {
+    //   '123ABC': {
+    //     type: 'collection',
+    //     field0: 'field0',
+    //     field1: 'field1',
+    //   },
+    //   '789XYZ': {
+    //     type: 'collection',
+    //     field0: 'field00',
+    //     field1: 'field01',
+    //   },
+    // }
+    // const actualFacets = store.getState().domain.results.facets
+    // const expectedFacets = {
+    //   science: [
+    //     {
+    //       term: 'land',
+    //       count: 2,
+    //     },
+    //   ],
+    // }
+    // actualCollections.should.deep.equal(expectedCollections)
+    // actualFacets.should.deep.equal(expectedFacets)
+  }).timeout(10000)
 
   // describe('loadData', function () {
   //   it('loads only collections if no ids are selected', function () {

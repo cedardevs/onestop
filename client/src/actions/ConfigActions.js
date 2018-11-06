@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-fetch'
+import 'isomorphic-fetch'
 
 import {HEADER_DROPDOWN_FEATURES} from '../utils/featureUtils'
 

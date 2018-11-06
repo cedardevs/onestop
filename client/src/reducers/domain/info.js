@@ -10,12 +10,14 @@ export const initialState = Immutable({
 export const info = (state = initialState, action) => {
   switch (action.type) {
     case SET_INFO:
+      // console.log("SET_INFO:action:", JSON.stringify(action, null , 3))
       return Immutable.merge(state, action.info)
 
     case CLEAR_INFO:
       return initialState
 
     case SET_TOTAL_COUNTS:
+      // console.log("SET_TOTAL_COUNTS:action:", JSON.stringify(action, null , 3))
       return Immutable.merge(state, {
         collectionsCount: action.counts.collections,
         granulesCount: action.counts.granules,

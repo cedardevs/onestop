@@ -1,19 +1,22 @@
 import '../specHelper'
-import nock from 'nock'
-
+import fetchMock from 'fetch-mock'
 import React from 'react'
 import {mount} from 'enzyme'
-
 import App from '../../src/App'
-
 import store from '../../src/store' // create Redux store with appropriate middleware
 import history from '../../src/history'
 
-import {assembleSearchRequestString} from '../../src/utils/queryUtils'
-import {searchQuery, errorQuery, errorsArray} from '../mockSearchQuery'
+import {
+  collectionErrorsArray,
+  mockSearchCollectionResponse,
+  mockSearchCollectionErrorResponse,
+} from '../mockSearchCollection'
 
 import * as SearchRequestActions from '../../src/actions/SearchRequestActions'
 import * as SearchParamActions from '../../src/actions/SearchParamActions'
+import {RESET_STORE} from '../../src/reducers/reducer'
+import {mockSearchGranuleResponse} from '../mockSearchGranule'
+import {toggleFacet} from '../../src/actions/SearchParamActions'
 
 const debugStore = (label, path) => {
   const state = store.getState()
@@ -22,388 +25,296 @@ const debugStore = (label, path) => {
 }
 
 describe('The search action', () => {
-  const testingRoot = 'http://localhost:9090'
-
-  const url = '/'
+  let url = '/'
+  let urlSearchCollection = '/onestop/api/search/collection'
   let component = null
+  let stateBefore = null
+  const resetStore = () => ({type: RESET_STORE})
 
   before(() => {
+    // initially go to index/home
     history.push(url)
+    // mount the entire application with store and history
+    // tests use memoryHistory based on NODE_ENV=='test'
     component = mount(App(store, history))
   })
 
-  beforeEach(() => {
-    nock.disableNetConnect()
+  beforeEach(async () => {
+    // return to index/home
+    history.push(url)
+    // reset store to initial conditions
+    await store.dispatch(resetStore())
+    // capture state before test
+    stateBefore = store.getState()
   })
+
   afterEach(() => {
-    nock.cleanAll()
+    fetchMock.reset()
   })
 
-  it('triggerSearch executes a search from requestBody', () => {
-    // debugStore("triggerSearch")
+  it('triggerSearch executes a search when a query is set and updates collections and facets', async () => {
+    // mock search request & response
+    fetchMock.post(`path:${urlSearchCollection}`, mockSearchCollectionResponse)
 
-    const searchForGranules = false
+    // update search query via redux store action
+    await store.dispatch(SearchParamActions.updateQuery('alaska'))
+
+    // trigger search and ask for facets
     const retrieveFacets = true
+    await store.dispatch(SearchRequestActions.triggerSearch(retrieveFacets))
 
-    // debugStore("before", "behavior.search.queryText")
+    const actualCollections = store.getState().domain.results.collections
+    const expectedCollections = {
+      '123ABC': {
+        type: 'collection',
+        field0: 'field0',
+        field1: 'field1',
+      },
+      '789XYZ': {
+        type: 'collection',
+        field0: 'field00',
+        field1: 'field01',
+      },
+    }
+    const actualFacets = store.getState().domain.results.facets
+    const expectedFacets = {
+      science: [
+        {
+          term: 'land',
+          count: 2,
+        },
+      ],
+    }
+    actualCollections.should.deep.equal(expectedCollections)
+    actualFacets.should.deep.equal(expectedFacets)
+  })
 
-    store.dispatch(SearchParamActions.updateQuery('alaska'))
-    // debugStore("after", "behavior.search.queryText")
+  it('triggerSearch fails to updates collections and facets when a query is not set', async () => {
+    // mock search request & response
+    fetchMock.post(`path:${urlSearchCollection}`, mockSearchCollectionResponse)
 
-    const requestBody = assembleSearchRequestString(
-      store.getState(),
-      searchForGranules,
-      retrieveFacets
-    )
+    // ...omit setting query via `updateQuery` action
 
-    console.log('requestBody:', JSON.stringify(requestBody, null, 3))
+    // trigger search and ask for facets
+    const retrieveFacets = true
+    await store.dispatch(SearchRequestActions.triggerSearch(retrieveFacets))
 
-    searchQuery(testingRoot, requestBody)
+    const actualCollections = store.getState().domain.results.collections
+    const expectedCollections = {}
+    const actualFacets = store.getState().domain.results.facets
+    const expectedFacets = {}
+    actualCollections.should.deep.equal(expectedCollections)
+    actualFacets.should.deep.equal(expectedFacets)
+  })
 
+  it('triggerSearch handles failed search requests', async () => {
+    // mock search request & response
+    fetchMock.post(`path:${urlSearchCollection}`, {
+      status: 500,
+      body: mockSearchCollectionErrorResponse,
+    })
+
+    // update search query via redux store action
+    await store.dispatch(SearchParamActions.updateQuery('alaska'))
+
+    // trigger search and ask for facets
+    const retrieveFacets = true
+    await store.dispatch(SearchRequestActions.triggerSearch(retrieveFacets))
+
+    const actualErrors = store.getState().behavior.errors
+    const expectedErrors = collectionErrorsArray
+
+    actualErrors.should.deep.equal(expectedErrors)
+  })
+
+  it('triggerSearch does not start a new search when a search is already in flight', async () => {
+    // mock search request & response
+    fetchMock.post(`path:${urlSearchCollection}`, mockSearchCollectionResponse)
+
+    // update search query via redux store action
+    await store.dispatch(SearchParamActions.updateQuery('alaska'))
+
+    // the `startSearch` action is what triggers the `collectionInFlight` to true
+    // we want to artificially set this after we set a valid query so that we can ensure no results come back
+    // in other words, the fetch mocked above should never trigger when we know another search is running
+    await store.dispatch(SearchRequestActions.startSearch())
+
+    // trigger search and ask for facets
+    const retrieveFacets = true
     store.dispatch(SearchRequestActions.triggerSearch(retrieveFacets))
 
-    debugStore('after trigger')
+    const actualCollections = store.getState().domain.results.collections
+    const expectedCollections = {}
+    const actualFacets = store.getState().domain.results.facets
+    const expectedFacets = {}
+    actualCollections.should.deep.equal(expectedCollections)
+    actualFacets.should.deep.equal(expectedFacets)
+  })
 
-    // const testState = Immutable({
-    //   behavior: {
-    //     search: {
-    //       queryText: {text: 'alaska'},
-    //     },
-    //     request: {collectionInFlight: false},
-    //   },
-    //   domain: {
-    //     api: {
-    //       host: testingRoot,
-    //       path: '/onestop/',
-    //     },
-    //     results: {
-    //       collectionsPageOffset: 0,
-    //     },
-    //   },
-    // })
-    // const requestBody = assembleSearchRequestString(testState, false, true)
-    // searchQuery(testingRoot, requestBody)
-    //
-    // const expectedMetadata = {
-    //   facets: {science: [ {term: 'land', count: 2} ]},
-    //   total: 2,
-    //   took: 100,
-    // }
-    // const expectedItems = new Map()
-    // expectedItems.set('123ABC', {
-    //   type: 'collection',
-    //   field0: 'field0',
-    //   field1: 'field1',
-    // })
-    // expectedItems.set('789XYZ', {
-    //   type: 'collection',
-    //   field0: 'field00',
-    //   field1: 'field01',
-    // })
-    //
-    // const expectedActions = [
-    //   {type: LOADING_SHOW},
-    //   {type: module.SEARCH},
-    //   {type: module.FACETS_RECEIVED, metadata: expectedMetadata},
-    //   {type: module.COUNT_HITS, totalHits: 2},
-    //   {type: module.SEARCH_COMPLETE, items: expectedItems},
-    //   {type: LOADING_HIDE},
-    // ]
-    //
-    // const store = mockStore(Immutable(testState))
-    // return store.dispatch(module.triggerSearch()).then(() => {
-    //   store.getActions().should.deep.equal(expectedActions)
-    // })
+  it('updateQuery sets queryText', async () => {
+    const queryTextBefore = stateBefore.behavior.search.queryText
+    const newQueryText = 'bermuda triangle'
+    // update search query via redux store action
+    await store.dispatch(SearchParamActions.updateQuery(newQueryText))
+    const queryTextAfter = store.getState().behavior.search.queryText
+    queryTextAfter.should.not.equal(queryTextBefore)
+    queryTextAfter.should.equal(newQueryText)
+  })
+
+  it('startSearch sets collectionInFlight', async () => {
+    const collectionInFlightBefore =
+      stateBefore.behavior.request.collectionInFlight
+    // the `startSearch` action is what triggers the `collectionInFlight` to true
+    await store.dispatch(SearchRequestActions.startSearch())
+    const collectionInFlightAfter = store.getState().behavior.request
+      .collectionInFlight
+    collectionInFlightBefore.should.equal(false)
+    collectionInFlightAfter.should.equal(true)
+  })
+
+  it('completeSearch sets result items and resets collectionInFlight to false', async () => {
+    const collectionsBefore = stateBefore.domain.results.collections
+    // the `startSearch` action is what triggers the `collectionInFlight` to true
+    await store.dispatch(SearchRequestActions.startSearch())
+    // the mock items to "complete" the search with
+    const items = new Map()
+    items.set('data1', {
+      type: 'collection',
+      importantInfo1: 'this is important',
+      importantInfo2: 'but this is more important',
+    })
+    items.set('data2', {
+      type: 'collection',
+      importantInfo3: 'what could possibly be this important?',
+      importantInfo4: 'how about this!',
+    })
+
+    await store.dispatch(SearchRequestActions.completeSearch(items))
+    const collectionsAfter = store.getState().domain.results.collections
+    const collectionInFlightAfter = store.getState().behavior.request
+      .collectionInFlight
+
+    const expectedCollectionKeys = Array.from(items.keys())
+    const actualCollectionsKeys = Object.keys(collectionsAfter)
+
+    collectionsBefore.should.deep.equal({})
+    actualCollectionsKeys.should.deep.equal(expectedCollectionKeys)
+    collectionInFlightAfter.should.equal(false)
   })
 })
 
-///////
+describe('The granule actions', () => {
+  let url = '/'
+  let urlSearchGranule = '/onestop/api/search/granule'
+  let component = null
+  let stateBefore = null
+  const resetStore = () => ({type: RESET_STORE})
 
-// import '../specHelper'
-// import * as module from '../../src/actions/SearchRequestActions'
-// import {UPDATE_QUERY, updateQuery} from '../../src/actions/SearchParamActions'
-// import {LOADING_SHOW, LOADING_HIDE} from '../../src/actions/FlowActions'
-// import {SET_ERRORS} from '../../src/actions/ErrorActions'
-// import configureMockStore from 'redux-mock-store'
-// import thunk from 'redux-thunk'
-// import Immutable from 'seamless-immutable'
-// import nock from 'nock'
-// import {searchQuery, errorQuery, errorsArray} from '../mockSearchQuery'
-// import {assembleSearchRequestString} from '../../src/utils/queryUtils'
-//
-// const middlewares = [ thunk ]
-// const mockStore = configureMockStore(middlewares)
-//
-// describe('The search action', () => {
-//   beforeEach(() => {
-//     nock.disableNetConnect()
-//   })
-//   afterEach(() => {
-//     nock.cleanAll()
-//   })
-//
-//   const testingRoot = 'http://localhost:9090'
-//
-//   it('triggerSearch executes a search from requestBody', () => {
-//     const testState = Immutable({
-//       behavior: {
-//         search: {
-//           queryText: {text: 'alaska'},
-//         },
-//         request: {collectionInFlight: false},
-//       },
-//       domain: {
-//         api: {
-//           host: testingRoot,
-//           path: '/onestop/',
-//         },
-//         results: {
-//           collectionsPageOffset: 0,
-//         },
-//       },
-//     })
-//     const requestBody = assembleSearchRequestString(testState, false, true)
-//     searchQuery(testingRoot, requestBody)
-//
-//     const expectedMetadata = {
-//       facets: {science: [ {term: 'land', count: 2} ]},
-//       total: 2,
-//       took: 100,
-//     }
-//     const expectedItems = new Map()
-//     expectedItems.set('123ABC', {
-//       type: 'collection',
-//       field0: 'field0',
-//       field1: 'field1',
-//     })
-//     expectedItems.set('789XYZ', {
-//       type: 'collection',
-//       field0: 'field00',
-//       field1: 'field01',
-//     })
-//
-//     const expectedActions = [
-//       {type: LOADING_SHOW},
-//       {type: module.SEARCH},
-//       {type: module.FACETS_RECEIVED, metadata: expectedMetadata},
-//       {type: module.COUNT_HITS, totalHits: 2},
-//       {type: module.SEARCH_COMPLETE, items: expectedItems},
-//       {type: LOADING_HIDE},
-//     ]
-//
-//     const store = mockStore(Immutable(testState))
-//     return store.dispatch(module.triggerSearch()).then(() => {
-//       store.getActions().should.deep.equal(expectedActions)
-//     })
-//   })
-//
-//   it('triggerSearch handles failed search requests', () => {
-//     const testState = Immutable({
-//       behavior: {
-//         search: {
-//           queryText: {text: 'alaska'},
-//         },
-//         request: {collectionInFlight: false},
-//       },
-//       domain: {
-//         api: {
-//           host: testingRoot,
-//           path: '/onestop/',
-//         },
-//         results: {
-//           collectionsPageOffset: 0,
-//         },
-//       },
-//     })
-//     const requestBody = assembleSearchRequestString(testState, false, true)
-//     errorQuery(testingRoot, requestBody)
-//
-//     const expectedActions = [
-//       {type: LOADING_SHOW},
-//       {type: module.SEARCH},
-//       {type: LOADING_HIDE},
-//       {type: SET_ERRORS, errors: errorsArray},
-//       {
-//         type: '@@router/CALL_HISTORY_METHOD',
-//         payload: {
-//           method: 'push',
-//           args: [ '/error' ],
-//         },
-//       },
-//       {type: module.CLEAR_FACETS},
-//       {type: module.SEARCH_COMPLETE, items: new Map()},
-//     ]
-//
-//     const store = mockStore(testState)
-//     return store.dispatch(module.triggerSearch()).then(() => {
-//       store.getActions().should.deep.equal(expectedActions)
-//     })
-//   })
-//
-//   it('triggerSearch does not start a new search when a search is already in flight', () => {
-//     const testState = Immutable({
-//       behavior: {
-//         request: {collectionInFlight: true},
-//       },
-//       domain: {
-//         results: {
-//           collectionsPageOffset: 0,
-//         },
-//       },
-//     })
-//
-//     const store = mockStore(testState)
-//     return store.dispatch(module.triggerSearch()).then(() => {
-//       store.getActions().should.deep.equal([]) // No actions dispatched
-//     })
-//   })
-//
-//   it('updateQuery sets searchText', () => {
-//     const action = updateQuery('bermuda triangle')
-//     const expectedAction = {type: UPDATE_QUERY, searchText: 'bermuda triangle'}
-//
-//     action.should.deep.equal(expectedAction)
-//   })
-//
-//   it('startSearch returns (like batman, but better)', () => {
-//     const action = module.startSearch()
-//     const expectedAction = {type: module.SEARCH}
-//
-//     action.should.deep.equal(expectedAction)
-//   })
-//
-//   it('completeSearch sets result items', () => {
-//     const items = {
-//       data: [
-//         {
-//           type: 'collection',
-//           id: 'dummyId',
-//           attributes: {
-//             importantInfo1: 'this is important',
-//             importantInfo2: 'but this is more important',
-//           },
-//         },
-//       ],
-//     }
-//     const action = module.completeSearch(items)
-//     const expectedAction = {type: module.SEARCH_COMPLETE, items: items}
-//
-//     action.should.deep.equal(expectedAction)
-//   })
-// })
-//
-// describe('The granule actions', function(){
-//   beforeEach(nock.disableNetConnect)
-//   afterEach(nock.cleanAll)
-//
-//   const testingRoot = 'http://localhost:9090'
-//   const searchEndpoint = '/onestop/api/search/granule'
-//   const successResponse = {
-//     data: [
-//       {
-//         type: 'granule',
-//         id: '1',
-//         attributes: {id: 1, title: 'one'},
-//         behavior: '',
-//       },
-//       {
-//         type: 'granule',
-//         id: '2',
-//         attributes: {id: 2, title: 'two'},
-//       },
-//     ],
-//     meta: {
-//       total: 42,
-//     },
-//   }
-//
-//   it('fetches granules with selected collections', function(){
-//     const collections = [ 'A', 'B' ]
-//     const state = {
-//       behavior: {
-//         request: {
-//           granuleInFlight: false,
-//         },
-//         search: {
-//           selectedIds: collections,
-//         },
-//       },
-//       domain: {
-//         api: {
-//           host: testingRoot,
-//           path: '/onestop/',
-//         },
-//         results: {
-//           collectionsPageOffset: 0,
-//         },
-//       },
-//     }
-//     const store = mockStore(Immutable(state))
-//     const expectedBody = assembleSearchRequestString(state, true, false)
-//     nock(testingRoot)
-//       .post(searchEndpoint, expectedBody)
-//       .reply(200, successResponse)
-//
-//     return store.dispatch(module.fetchGranules()).then(() => {
-//       store
-//         .getActions()
-//         .should.deep.equal([
-//           {type: LOADING_SHOW},
-//           {type: module.FETCHING_GRANULES},
-//           {
-//             type: module.COUNT_GRANULES,
-//             totalGranules: successResponse.meta.total,
-//           },
-//           {type: module.FETCHED_GRANULES, granules: successResponse.data},
-//           {type: LOADING_HIDE},
-//         ])
-//     })
-//   })
-//
-//   it('fetches granules with collection search params', function(){
-//     const collections = [ 'A', 'B' ]
-//     const state = {
-//       behavior: {
-//         request: {
-//           granuleInFlight: false,
-//         },
-//         search: {
-//           selectedIds: collections,
-//           queryText: 'my query',
-//           selectedFacets: {
-//             location: [ 'Oceans' ],
-//           },
-//         },
-//       },
-//       domain: {
-//         api: {
-//           host: testingRoot,
-//           path: '/onestop/',
-//         },
-//         results: {
-//           collectionsPageOffset: 0,
-//         },
-//       },
-//     }
-//     const store = mockStore(Immutable(state))
-//     const expectedBody = assembleSearchRequestString(state, true, false)
-//     nock(testingRoot)
-//       .post(searchEndpoint, expectedBody)
-//       .reply(200, successResponse)
-//
-//     return store.dispatch(module.fetchGranules()).then(() => {
-//       store
-//         .getActions()
-//         .should.deep.equal([
-//           {type: LOADING_SHOW},
-//           {type: module.FETCHING_GRANULES},
-//           {
-//             type: module.COUNT_GRANULES,
-//             totalGranules: successResponse.meta.total,
-//           },
-//           {type: module.FETCHED_GRANULES, granules: successResponse.data},
-//           {type: LOADING_HIDE},
-//         ])
-//     })
-//   })
-// })
+  before(() => {
+    // initially go to index/home
+    history.push(url)
+    // mount the entire application with store and history
+    // tests use memoryHistory based on NODE_ENV=='test'
+    component = mount(App(store, history))
+  })
+
+  beforeEach(async () => {
+    // return to index/home
+    history.push(url)
+    // reset store to initial conditions
+    await store.dispatch(resetStore())
+    // capture state before test
+    stateBefore = store.getState()
+  })
+
+  afterEach(() => {
+    fetchMock.reset()
+  })
+
+  it('fetches granules with selected collections', async () => {
+    // mock search request & response
+    fetchMock.post(`path:${urlSearchGranule}`, mockSearchGranuleResponse)
+
+    // update selected collection ids via `toggleSelection` action
+    const collectionIds = [ 'A', 'B' ]
+    await Promise.all(
+      collectionIds.map(collectionId => {
+        return store.dispatch(SearchParamActions.toggleSelection(collectionId))
+      })
+    )
+
+    // trigger search
+    await store.dispatch(SearchRequestActions.fetchGranules())
+
+    const actualGranules = store.getState().domain.results.granules
+    const expectedGranules = {
+      '1': {
+        id: 1,
+        title: 'one',
+      },
+      '2': {
+        id: 2,
+        title: 'two',
+      },
+    }
+    actualGranules.should.deep.equal(expectedGranules)
+  })
+
+  it('fetches granules with selected collections, queryText, and selectedFacets', async () => {
+    // mock search request & response
+    fetchMock.post(`path:${urlSearchGranule}`, mockSearchGranuleResponse)
+
+    // update selected collection ids via `toggleSelection` action
+    const collectionIds = [ 'A', 'B' ]
+    await Promise.all(
+      collectionIds.map(collectionId => {
+        return store.dispatch(SearchParamActions.toggleSelection(collectionId))
+      })
+    )
+
+    // update search query via redux store action
+    const newQueryText = 'bermuda triangle'
+    await store.dispatch(SearchParamActions.updateQuery(newQueryText))
+
+    // updated selected facets via `toggleFacet` action
+    const selectedFacets = [
+      {
+        category: 'science',
+        facetName: 'Agriculture',
+        selected: true,
+      },
+    ]
+    await Promise.all(
+      selectedFacets.map(facet => {
+        return store.dispatch(
+          toggleFacet(facet.category, facet.facetName, facet.selected)
+        )
+      })
+    )
+
+    // trigger search
+    await store.dispatch(SearchRequestActions.fetchGranules())
+
+    const actualGranules = store.getState().domain.results.granules
+    const expectedGranules = {
+      '1': {
+        id: 1,
+        title: 'one',
+      },
+      '2': {
+        id: 2,
+        title: 'two',
+      },
+    }
+    const actualQueryText = store.getState().behavior.search.queryText
+    const actualSelectedFacets = store.getState().behavior.search.selectedFacets
+    const actualNumScienceFacets = actualSelectedFacets['science'].length
+    const expectedNumScienceFacets = selectedFacets.filter(facet => {
+      return facet.category === 'science'
+    }).length
+
+    actualGranules.should.deep.equal(expectedGranules)
+    actualQueryText.should.equal(newQueryText)
+    actualNumScienceFacets.should.equal(expectedNumScienceFacets)
+  })
+})

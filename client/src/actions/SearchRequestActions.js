@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-fetch'
+import 'isomorphic-fetch'
 import _ from 'lodash'
 import {showLoading, hideLoading} from './FlowActions'
 import {showErrors} from './ErrorActions'
@@ -166,9 +166,7 @@ const buildSearchAction = (
     }
 
     return fetch(endpoint, fetchParams)
-      .then(response => {
-        return checkForErrors(response)
-      })
+      .then(response => checkForErrors(response))
       .then(response => response.json())
       .then(json => successHandler(dispatch, json))
       .catch(ajaxError => {
