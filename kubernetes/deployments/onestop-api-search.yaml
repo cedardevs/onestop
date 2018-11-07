@@ -73,14 +73,6 @@ data:
     spring.profiles.include:
       - feature-trending-search
     ui:
-      googleAnalytics:
-        profiles:
-          - trackingId: 'UA-127993388-1'
-            gaOptions:
-              userId: 127993388
-        reactGaOptions:
-          debug: true
-          alwaysSendToDefaultTracker: false
       banner:
         message: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
       enabledFeatureToggles:

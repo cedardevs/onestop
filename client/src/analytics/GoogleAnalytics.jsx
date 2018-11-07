@@ -16,6 +16,7 @@ export default class GoogleAnalytics extends Component {
 
     if (
       !analyticsInitiated &&
+      analyticsConfig &&
       analyticsConfig.profiles &&
       analyticsConfig.profiles
     ) {
