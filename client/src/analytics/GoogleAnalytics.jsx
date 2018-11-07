@@ -19,8 +19,11 @@ export default class GoogleAnalytics extends Component {
         console.log("COMPONENT DID UPDATE")
         const {analyticsConfig, analyticsInitiated, initAnalytics} = this.props
 
-        if(!analyticsInitiated){
+        if(!analyticsInitiated && analyticsConfig.profiles && analyticsConfig.profiles){
             console.log("GA INIT")
+            console.log(analyticsConfig.profiles)
+            console.log(analyticsConfig.reactGaOptions)
+
             ReactGA.initialize(analyticsConfig.profiles, analyticsConfig.reactGaOptions)
             initAnalytics()
         }
@@ -29,7 +32,7 @@ export default class GoogleAnalytics extends Component {
         const isDifferentPathname = pathname !== prevLocation.pathname
         const isDifferentSearch = search !== prevLocation.search
 
-        if (isDifferentPathname || isDifferentSearch) {
+        if (analyticsInitiated && (isDifferentPathname || isDifferentSearch)) {
             console.log("SENDING PAGE CHANGE")
             this.logPageChange(pathname, search)
         }

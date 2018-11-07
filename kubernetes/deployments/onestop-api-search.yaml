@@ -77,7 +77,6 @@ data:
         profiles:
           - trackingId: 'UA-127993388-1'
             gaOptions:
-              name: 'cedar_cires_sciapps'
               userId: 127993388
         reactGaOptions:
           debug: true
