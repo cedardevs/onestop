@@ -1,5 +1,3 @@
-import '../specHelper'
-
 import React from 'react'
 import {mount} from 'enzyme'
 
@@ -30,54 +28,54 @@ describe('The home page', () => {
   const url = '/'
   let component = null
 
-  before(() => {
+  beforeAll(() => {
     history.push(url)
     component = mount(App(store, history))
   })
 
   it('should render banner if banner message exists', () => {
     const banner = component.find(Banner)
-    banner.length.should.equal(1)
+    expect(banner.length).toBe(1)
     const props = banner.props()
     if (!props.message) {
-      banner.isEmptyRender().should.equal(true)
+      expect(banner.isEmptyRender()).toBeTruthy()
     }
     else {
-      banner.isEmptyRender().should.equal(false)
+      expect(banner.isEmptyRender()).not.toBeTruthy()
     }
   })
 
   it('should have Header', () => {
-    component.find(Header).length.should.equal(1)
+    expect(component.find(Header).length).toBe(1)
   })
 
   it('should have Landing', () => {
-    component.find(Landing).length.should.equal(1)
+    expect(component.find(Landing).length).toBe(1)
   })
 
   it('should have SearchFields under Landing', () => {
     const searchFields = component.find(SearchFields)
-    searchFields.length.should.equal(1)
-    searchFields.closest(Landing).length.should.equal(1)
+    expect(searchFields.length).toBe(1)
+    expect(searchFields.closest(Landing).length).toBe(1)
   })
 
   it('should have TopicsMenu under Landing', () => {
     const topicsMenu = component.find(TopicsMenu)
-    topicsMenu.length.should.equal(1)
-    topicsMenu.closest(Landing).length.should.equal(1)
+    expect(topicsMenu.length).toBe(1)
+    expect(topicsMenu.closest(Landing).length).toBe(1)
   })
 
   it('should have FeaturedDatasets under Landing', () => {
     const featuredDatasets = component.find(FeaturedDatasets)
-    featuredDatasets.length.should.equal(1)
-    featuredDatasets.closest(Landing).length.should.equal(1)
+    expect(featuredDatasets.length).toBe(1)
+    expect(featuredDatasets.closest(Landing).length).toBe(1)
   })
 
   it('should have Footer w/expected links', () => {
     const footer = component.find(Footer)
-    footer.length.should.equal(1)
+    expect(footer.length).toBe(1)
     const footerLinks = footer.find(FooterLink)
-    footerLinks.length.should.equal(11)
+    expect(footerLinks.length).toBe(11)
 
     const footerHrefs = footerLinks.map(link => {
       return link.prop('href')
@@ -97,23 +95,25 @@ describe('The home page', () => {
       undefined, // anchored link for image attribution (internal)
     ]
 
-    footerHrefs.should.have.same.members(expectedHrefs)
+    expect(footerHrefs.sort()).toEqual(
+      expect.arrayContaining(expectedHrefs.sort())
+    )
   })
 
   it('should NOT have Filters', () => {
-    component.find(Filters).length.should.equal(0)
+    expect(component.find(Filters).length).toBe(0)
   })
 
   it('should NOT have Collections', () => {
-    component.find(Collections).length.should.equal(0)
+    expect(component.find(Collections).length).toBe(0)
   })
 
   it('should NOT have Detail', () => {
-    component.find(Detail).length.should.equal(0)
+    expect(component.find(Detail).length).toBe(0)
   })
 
   it('should NOT have GranuleList', () => {
-    component.find(GranuleList).length.should.equal(0)
+    expect(component.find(GranuleList).length).toBe(0)
   })
 })
 
@@ -129,33 +129,33 @@ describe('The collections page', () => {
     locationAfter = store.getState().router.location
   }
 
-  before(() => {
+  beforeAll(() => {
     store.subscribe(listener)
     history.push(url)
     component = mount(App(store, history))
   })
 
   it('should have a different router location after url pushed to history', () => {
-    locationBefore.pathname.should.not.equal(locationAfter.pathname)
+    expect(locationBefore.pathname).not.toBe(locationAfter.pathname)
   })
 
   it('should have a router search equal to the url query', () => {
-    locationAfter.search.should.equal(query)
+    expect(locationAfter.search).toBe(query)
   })
 
   it('should have Filters', () => {
-    component.find(Filters).length.should.equal(1)
+    expect(component.find(Filters).length).toBe(1)
   })
 
   it('should have Collections', () => {
-    component.find(Collections).length.should.equal(1)
+    expect(component.find(Collections).length).toBe(1)
   })
 
   it('should NOT have Detail', () => {
-    component.find(Detail).length.should.equal(0)
+    expect(component.find(Detail).length).toBe(0)
   })
 
   it('should NOT have GranuleList', () => {
-    component.find(GranuleList).length.should.equal(0)
+    expect(component.find(GranuleList).length).toBe(0)
   })
 })

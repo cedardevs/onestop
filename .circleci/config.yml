@@ -40,7 +40,21 @@ jobs:
             mkdir -p ~/tests/junit/
             find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
             find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
+            find . -type f -regex ".*/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
           when: always
+
+      - run:
+          name: Save coverage results
+          command: |
+            mkdir -p ~/tests/coverage/
+            find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/coverage/ \;
+            find . -type d -regex ".*/coverage/lcov-report/" -exec cp -r {} ~/tests/coverage/ \;
+          when: always
+
+      - run:
+          name: Post coverage results to codecov
+          command: |
+            bash <(curl -s https://codecov.io/bash)
 
       - store_test_results:
           path: ~/tests

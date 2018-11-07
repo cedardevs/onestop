@@ -1,4 +1,3 @@
-import '../specHelper'
 import fetchMock from 'fetch-mock'
 import React from 'react'
 import {mount} from 'enzyme'
@@ -31,7 +30,7 @@ describe('The search action', () => {
   let stateBefore = null
   const resetStore = () => ({type: RESET_STORE})
 
-  before(() => {
+  beforeAll(() => {
     // initially go to index/home
     history.push(url)
     // mount the entire application with store and history
@@ -85,8 +84,8 @@ describe('The search action', () => {
         },
       ],
     }
-    actualCollections.should.deep.equal(expectedCollections)
-    actualFacets.should.deep.equal(expectedFacets)
+    expect(actualCollections).toEqual(expectedCollections)
+    expect(actualFacets).toEqual(expectedFacets)
   })
 
   it('triggerSearch fails to updates collections and facets when a query is not set', async () => {
@@ -103,8 +102,8 @@ describe('The search action', () => {
     const expectedCollections = {}
     const actualFacets = store.getState().domain.results.facets
     const expectedFacets = {}
-    actualCollections.should.deep.equal(expectedCollections)
-    actualFacets.should.deep.equal(expectedFacets)
+    expect(actualCollections).toEqual(expectedCollections)
+    expect(actualFacets).toEqual(expectedFacets)
   })
 
   it('triggerSearch handles failed search requests', async () => {
@@ -124,7 +123,7 @@ describe('The search action', () => {
     const actualErrors = store.getState().behavior.errors
     const expectedErrors = collectionErrorsArray
 
-    actualErrors.should.deep.equal(expectedErrors)
+    expect(actualErrors).toEqual(expectedErrors)
   })
 
   it('triggerSearch does not start a new search when a search is already in flight', async () => {
@@ -147,8 +146,8 @@ describe('The search action', () => {
     const expectedCollections = {}
     const actualFacets = store.getState().domain.results.facets
     const expectedFacets = {}
-    actualCollections.should.deep.equal(expectedCollections)
-    actualFacets.should.deep.equal(expectedFacets)
+    expect(actualCollections).toEqual(expectedCollections)
+    expect(actualFacets).toEqual(expectedFacets)
   })
 
   it('updateQuery sets queryText', async () => {
@@ -157,8 +156,8 @@ describe('The search action', () => {
     // update search query via redux store action
     await store.dispatch(SearchParamActions.updateQuery(newQueryText))
     const queryTextAfter = store.getState().behavior.search.queryText
-    queryTextAfter.should.not.equal(queryTextBefore)
-    queryTextAfter.should.equal(newQueryText)
+    expect(queryTextAfter).not.toBe(queryTextBefore)
+    expect(queryTextAfter).toBe(newQueryText)
   })
 
   it('startSearch sets collectionInFlight', async () => {
@@ -168,8 +167,8 @@ describe('The search action', () => {
     await store.dispatch(SearchRequestActions.startSearch())
     const collectionInFlightAfter = store.getState().behavior.request
       .collectionInFlight
-    collectionInFlightBefore.should.equal(false)
-    collectionInFlightAfter.should.equal(true)
+    expect(collectionInFlightBefore).not.toBeTruthy()
+    expect(collectionInFlightAfter).toBeTruthy()
   })
 
   it('completeSearch sets result items and resets collectionInFlight to false', async () => {
@@ -197,9 +196,9 @@ describe('The search action', () => {
     const expectedCollectionKeys = Array.from(items.keys())
     const actualCollectionsKeys = Object.keys(collectionsAfter)
 
-    collectionsBefore.should.deep.equal({})
-    actualCollectionsKeys.should.deep.equal(expectedCollectionKeys)
-    collectionInFlightAfter.should.equal(false)
+    expect(collectionsBefore).toEqual({})
+    expect(actualCollectionsKeys).toEqual(expectedCollectionKeys)
+    expect(collectionInFlightAfter).not.toBeTruthy()
   })
 })
 
@@ -210,7 +209,7 @@ describe('The granule actions', () => {
   let stateBefore = null
   const resetStore = () => ({type: RESET_STORE})
 
-  before(() => {
+  beforeAll(() => {
     // initially go to index/home
     history.push(url)
     // mount the entire application with store and history
@@ -257,7 +256,7 @@ describe('The granule actions', () => {
         title: 'two',
       },
     }
-    actualGranules.should.deep.equal(expectedGranules)
+    expect(actualGranules).toEqual(expectedGranules)
   })
 
   it('fetches granules with selected collections, queryText, and selectedFacets', async () => {
@@ -313,8 +312,8 @@ describe('The granule actions', () => {
       return facet.category === 'science'
     }).length
 
-    actualGranules.should.deep.equal(expectedGranules)
-    actualQueryText.should.equal(newQueryText)
-    actualNumScienceFacets.should.equal(expectedNumScienceFacets)
+    expect(actualGranules).toEqual(expectedGranules)
+    expect(actualQueryText).toBe(newQueryText)
+    expect(actualNumScienceFacets).toBe(expectedNumScienceFacets)
   })
 })

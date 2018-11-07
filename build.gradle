@@ -33,6 +33,9 @@ ext {
 }
 
 subprojects {
+
+  apply plugin: 'jacoco'
+
   project.ext {
     esVersion = "${project.esVersion}"
     spockVersion = '1.1-groovy-2.4'
@@ -94,6 +97,15 @@ subprojects {
         failOnError = false
       }
 
+      jacocoTestReport {
+        executionData fileTree(projectDir).include("build/jacoco/*.exec")
+         reports {
+          xml.enabled true
+          xml.destination "${buildDir}/reports/jacoco/report.xml"
+          html.enabled true
+          html.destination "${buildDir}/reports/jacoco/html"
+        }
+      }
     }
 
   }

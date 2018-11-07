@@ -1,4 +1,3 @@
-import '../specHelper'
 import fetchMock from 'fetch-mock'
 import React from 'react'
 import {mount} from 'enzyme'
@@ -28,7 +27,7 @@ describe('The flow actions', () => {
   let stateBefore = null
   const resetStore = () => ({type: RESET_STORE})
 
-  before(() => {
+  beforeAll(() => {
     // initially go to index/home
     history.push(url)
     // mount the entire application with store and history
@@ -99,17 +98,10 @@ describe('The flow actions', () => {
 
   // it('do not dispatch a transition to the collections view, just a clearSelections action, when no search params are present', function () {
   //   const getState = sinon.stub().returns(mockDefaultState)
-  //
-  //   console.log("before: ", browserHistoryPushStub)
-  //
-  //
   //   const fn = actions.showCollections()
   //
-  //   console.log("after: ", browserHistoryPushStub)
-  //
   //   fn(dispatch, getState)
-  //   const dispatchCalls = dispatch.callCount
-  //   assert(dispatchCalls === 1, `There were ${dispatchCalls} dispatch calls made`)
+  //   expect(dispatch.callCount).toBe(1)
   // })
   //
   // it('dispatch a clearSelections action and transition to the collections view when search params are present', function () {
@@ -118,7 +110,6 @@ describe('The flow actions', () => {
   //   const fn = actions.showCollections()
   //
   //   fn(dispatch, getState)
-  //   const dispatchCalls = dispatch.callCount
-  //   assert(dispatchCalls === 2, `There were ${dispatchCalls} dispatch calls made`)
+  //   expect(dispatch.callCount).toBe(2)
   // })
 })

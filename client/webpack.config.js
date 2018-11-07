@@ -122,11 +122,8 @@ module.exports = env => {
             use: {
               loader: 'babel-loader',
               options: {
-                presets: [
-                  ['env', {modules: false}],
-                  'react',
-                  'stage-0',
-                ],
+                babelrc: true,
+                babelrcRoots: ['.', '../'],
               },
             },
           }, {
