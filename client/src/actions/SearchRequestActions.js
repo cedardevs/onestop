@@ -1,9 +1,9 @@
-import fetch from 'isomorphic-fetch'
+import 'isomorphic-fetch'
 import _ from 'lodash'
 import {showLoading, hideLoading} from './FlowActions'
 import {showErrors} from './ErrorActions'
 import {assembleSearchRequest} from '../utils/queryUtils'
-import {getApiPath} from '../reducers/domain/api'
+import {API_PATH} from '../utils/urlUtils'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -154,7 +154,8 @@ const buildSearchAction = (
 
     prefetchHandler(dispatch)
 
-    const endpoint = getApiPath(state) + '/search/' + endpointName
+    const endpoint = API_PATH + '/search/' + endpointName
+
     const fetchParams = {
       method: 'POST',
       headers: {
@@ -168,11 +169,11 @@ const buildSearchAction = (
       .then(response => checkForErrors(response))
       .then(response => response.json())
       .then(json => successHandler(dispatch, json))
-      .catch(ajaxError =>
-        ajaxError.response
+      .catch(ajaxError => {
+        return ajaxError.response
           .json()
           .then(errorJson => errorHandler(dispatch, errorJson))
-      )
+      })
       .catch(jsError => errorHandler(dispatch, jsError))
   }
 }
@@ -223,7 +224,7 @@ const buildGetAction = (
 ) => {
   return (dispatch, getState) => {
     prefetchHandler(dispatch)
-    const endpoint = getApiPath(getState()) + '/' + endpointName + '/' + id
+    const endpoint = API_PATH + '/' + endpointName + '/' + id
     const fetchParams = {
       method: 'GET',
       headers: {
@@ -254,7 +255,7 @@ const buildSitemapAction = () => {
   return (dispatch, getState) => {
     let state = getState()
 
-    const endpoint = getApiPath(state) + '/sitemap.xml'
+    const endpoint = API_PATH + '/sitemap.xml'
     const fetchParams = {
       method: 'GET',
     }

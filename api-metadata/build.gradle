@@ -73,7 +73,8 @@ dependencies {
   testCompile "org.spockframework:spock-core:${project.spockVersion}"
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
-  testCompile "org.testcontainers:testcontainers:${project.testContainersVersion}"
+  testCompile "org.testcontainers:testcontainers:1.10.0"
+  testCompile "org.testcontainers:elasticsearch:1.10.0"
   testCompile 'net.bytebuddy:byte-buddy:1.7.11'
   testCompile "org.springframework.kafka:spring-kafka-test:2.1.10.RELEASE"
   

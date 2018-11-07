@@ -1,9 +1,9 @@
 import {createStore, applyMiddleware, compose} from 'redux'
-import {routerMiddleware} from 'connected-react-router'
+import {connectRouter, routerMiddleware} from 'connected-react-router'
 import Immutable from 'seamless-immutable'
 import thunk from 'redux-thunk'
-import reducer from './reducers/reducer'
 import history from './history'
+import reducer from './reducers/reducer'
 
 const getCompose = () => {
   if (
@@ -16,10 +16,16 @@ const getCompose = () => {
 }
 
 const composeEnhancers = getCompose()
+
 const store = createStore(
-  reducer,
+  connectRouter(history)(reducer), // new root reducer with router state
   Immutable(),
-  composeEnhancers(applyMiddleware(thunk, routerMiddleware(history)))
+  composeEnhancers(
+    applyMiddleware(
+      routerMiddleware(history), // for dispatching history actions
+      thunk
+    )
+  )
 )
 
 export default store

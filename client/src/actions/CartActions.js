@@ -1,3 +1,4 @@
+// synchronous actions
 export const CLEAR_SELECTED_GRANULES = 'CLEAR_SELECTED_GRANULES'
 export const removeAllSelectedGranule = () => {
   return {

@@ -1,7 +1,7 @@
 module.exports = {
   verbose: true,
   coverageDirectory: "./coverage/",
-  collectCoverage: true,
+  collectCoverage: false,
   collectCoverageFrom: [
     "src/**/*.{js,jsx}"
   ],
@@ -35,5 +35,10 @@ module.exports = {
   reporters: [
     "default",
     [ "jest-junit", { outputDirectory: "./coverage/junit" } ]
-  ]
+  ],
+  moduleNameMapper: {
+    "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/fileMock.js",
+    "\\.(css|less)$": "<rootDir>/styleMock.js"
+  },
+  setupTestFrameworkScriptFile: "<rootDir>/setupTests.js"
 };

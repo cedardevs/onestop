@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {Route, Switch} from 'react-router'
 
-import Background from '../layout/Background'
 import Container from '../layout/Container'
+import Background from '../layout/Background'
 
 import BannerContainer from './banner/BannerContainer'
 import HeaderContainer from './HeaderContainer'
@@ -135,7 +135,6 @@ export default class Root extends Component {
             <MapContainer selection={true} features={false} />
           </Route>
         </Switch>
-        {this.props.children}
 
         <Switch>
           {/*Each page inside this switch should have a Meta!*/}
@@ -149,17 +148,17 @@ export default class Root extends Component {
           </Route>
 
           <Route path="/collections">
-            <Result>
-              <Switch>
-                <Route path="/collections" exact>
+            <Switch>
+              <Route path="/collections" exact>
+                <Result>
                   <CollectionsContainer />
-                </Route>
-                <Route path="/collections/granules">
-                  {/*TODO parameterize this path!*/}
-                  <GranuleListContainer />
-                </Route>
-              </Switch>
-            </Result>
+                </Result>
+              </Route>
+              <Route path="/collections/granules/:id">
+                {/*TODO parameterize this path!*/}
+                <GranuleListContainer />
+              </Route>
+            </Switch>
           </Route>
 
           <Route path="/about">

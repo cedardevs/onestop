@@ -85,8 +85,7 @@ module.exports = env => {
     output:
         {
           path: path.resolve(__dirname, 'build/dist'),
-          publicPath:
-              './',
+          publicPath: '/',
           filename:
               '[name]-[hash].bundle.js',
         }
@@ -96,7 +95,8 @@ module.exports = env => {
         isProd ? false : 'cheap-module-eval-source-map',
     devServer:
         isProd ? {} : {
-          publicPath: '/onestop/',
+          publicPath: '/',
+          historyApiFallback: true,
           disableHostCheck: true,
           hot: true,
           proxy: {
@@ -122,11 +122,8 @@ module.exports = env => {
             use: {
               loader: 'babel-loader',
               options: {
-                presets: [
-                  ['env', {modules: false}],
-                  'react',
-                  'stage-0',
-                ],
+                babelrc: true,
+                babelrcRoots: ['.', '../'],
               },
             },
           }, {
@@ -166,7 +163,7 @@ module.exports = env => {
             use: [{loader: 'file-loader'
               , options: {
                 name: 'fonts/[name].[ext]',
-              }
+            }
           }]
           }],
         }

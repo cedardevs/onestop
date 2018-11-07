@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ReactDOM from 'react-dom'
 import L from 'leaflet'
-import E from 'esri-leaflet'
+import * as E from 'esri-leaflet'
 import _ from 'lodash'
 import {
   ensureDatelineFriendlyGeometry,

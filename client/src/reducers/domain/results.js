@@ -38,7 +38,6 @@ export const results = (state = initialState, action) => {
       })
       let allCollections = state.collections.merge(newCollections)
       return Immutable.set(state, 'collections', allCollections)
-
     case CLEAR_COLLECTIONS:
       return Immutable.merge(state, {
         collections: initialState.collections,

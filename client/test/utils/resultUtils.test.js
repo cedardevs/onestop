@@ -1,16 +1,15 @@
 import * as protocolUtils from '../../src/utils/resultUtils'
 import _ from 'lodash'
 
-describe('The resultUtils', function () {
-
-  it('has distinct id and color combinations for each protocol', function() {
+describe('The resultUtils', function(){
+  it('has distinct id and color combinations for each protocol', function(){
     const protocolIdCombos = _.map(protocolUtils.protocols, p => {
       return `${p.id}-${p.color}`
     })
     expect(protocolIdCombos).toEqual(_.uniq(protocolIdCombos))
   })
 
-  describe('can identify ogc:wcs', function () {
+  describe('can identify ogc:wcs', function(){
     const testCases = [
       {linkProtocol: 'ogc:wcs'},
       {linkProtocol: 'OGC:wcs'},
@@ -18,8 +17,8 @@ describe('The resultUtils', function () {
       {linkProtocol: 'OGC:WCS'},
     ]
 
-    _.each(testCases, (p) => {
-      it(`for input ${p.linkProtocol}`, function() {
+    _.each(testCases, p => {
+      it(`for input ${p.linkProtocol}`, function(){
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('C')
         expect(protocol.label).toBe('OGC Web Coverage Service')
@@ -28,15 +27,15 @@ describe('The resultUtils', function () {
     })
   })
 
-  describe('can identify download links', function () {
+  describe('can identify download links', function(){
     const testCases = [
       {linkProtocol: 'download'},
       {linkProtocol: 'Download'},
       {linkProtocol: 'DOWNLOAD'},
     ]
 
-    _.each(testCases, (p) => {
-      it(`for input ${p.linkProtocol}`, function() {
+    _.each(testCases, p => {
+      it(`for input ${p.linkProtocol}`, function(){
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('D')
         expect(protocol.label).toBe('Download')
@@ -45,14 +44,11 @@ describe('The resultUtils', function () {
     })
   })
 
-  describe('can identify FTP links', function () {
-    const testCases = [
-      {linkProtocol: 'FTP'},
-      {linkProtocol: 'ftp'},
-    ]
+  describe('can identify FTP links', function(){
+    const testCases = [ {linkProtocol: 'FTP'}, {linkProtocol: 'ftp'} ]
 
-    _.each(testCases, (p) => {
-      it(`for input ${p.linkProtocol}`, function() {
+    _.each(testCases, p => {
+      it(`for input ${p.linkProtocol}`, function(){
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('F')
         expect(protocol.label).toBe('FTP')
@@ -61,7 +57,7 @@ describe('The resultUtils', function () {
     })
   })
 
-  describe('can identify http links', function () {
+  describe('can identify http links', function(){
     const testCases = [
       {linkProtocol: 'HTTP'},
       {linkProtocol: 'HTTPS'},
@@ -69,8 +65,8 @@ describe('The resultUtils', function () {
       {linkProtocol: 'https'},
     ]
 
-    _.each(testCases, (p) => {
-      it(`for input ${p.linkProtocol}`, function() {
+    _.each(testCases, p => {
+      it(`for input ${p.linkProtocol}`, function(){
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('H')
         expect(protocol.label).toBe('HTTP/HTTPS')
@@ -79,14 +75,11 @@ describe('The resultUtils', function () {
     })
   })
 
-  describe('can identify noaa:las', function () {
-    const testCases = [
-      {linkProtocol: 'noaa:las'},
-      {linkProtocol: 'NOAA:LAS'},
-    ]
+  describe('can identify noaa:las', function(){
+    const testCases = [ {linkProtocol: 'noaa:las'}, {linkProtocol: 'NOAA:LAS'} ]
 
-    _.each(testCases, (p) => {
-      it(`for input ${p.linkProtocol}`, function() {
+    _.each(testCases, p => {
+      it(`for input ${p.linkProtocol}`, function(){
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('L')
         expect(protocol.label).toBe('NOAA Live Access Server')
@@ -95,14 +88,11 @@ describe('The resultUtils', function () {
     })
   })
 
-  describe('can identify ogc:wms', function () {
-    const testCases = [
-      {linkProtocol: 'ogc:wms'},
-      {linkProtocol: 'OGC:WMS'},
-    ]
+  describe('can identify ogc:wms', function(){
+    const testCases = [ {linkProtocol: 'ogc:wms'}, {linkProtocol: 'OGC:WMS'} ]
 
-    _.each(testCases, (p) => {
-      it(`for input ${p.linkProtocol}`, function() {
+    _.each(testCases, p => {
+      it(`for input ${p.linkProtocol}`, function(){
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('M')
         expect(protocol.label).toBe('OGC Web Map Service')
@@ -111,7 +101,7 @@ describe('The resultUtils', function () {
     })
   })
 
-  describe('can identify opendap', function () {
+  describe('can identify opendap', function(){
     const testCases = [
       {linkProtocol: 'opendap'},
       {linkProtocol: 'OPENDAP'},
@@ -120,8 +110,8 @@ describe('The resultUtils', function () {
       {linkProtocol: 'OPeNDAP:Hyrax'},
     ]
 
-    _.each(testCases, (p) => {
-      it(`for input ${p.linkProtocol}`, function() {
+    _.each(testCases, p => {
+      it(`for input ${p.linkProtocol}`, function(){
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('O')
         expect(protocol.label).toBe('OPeNDAP')
@@ -130,15 +120,15 @@ describe('The resultUtils', function () {
     })
   })
 
-  describe('can identify thredds', function () {
+  describe('can identify thredds', function(){
     const testCases = [
       {linkProtocol: 'thredds'},
       {linkProtocol: 'THREDDS'},
       {linkProtocol: 'UNIDATA:THREDDS'},
     ]
 
-    _.each(testCases, (p) => {
-      it(`for input ${p.linkProtocol}`, function() {
+    _.each(testCases, p => {
+      it(`for input ${p.linkProtocol}`, function(){
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('T')
         expect(protocol.label).toBe('THREDDS')
@@ -147,13 +137,11 @@ describe('The resultUtils', function () {
     })
   })
 
-  describe('can identify empty protocols', function () {
-    const testCases = [
-      {linkProtocol: ''},
-    ]
+  describe('can identify empty protocols', function(){
+    const testCases = [ {linkProtocol: ''} ]
 
-    _.each(testCases, (p) => {
-      it(`for input ${p.linkProtocol}`, function() {
+    _.each(testCases, p => {
+      it(`for input ${p.linkProtocol}`, function(){
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('W')
         expect(protocol.label).toBe('Web')
@@ -162,7 +150,7 @@ describe('The resultUtils', function () {
     })
   })
 
-  describe('cannot default unknown protocols', function () {
+  describe('cannot default unknown protocols', function(){
     const testCases = [
       {linkProtocol: 'nonsense'},
       {linkProtocol: ' '},
@@ -170,8 +158,8 @@ describe('The resultUtils', function () {
       {linkProtocol: 'etc'},
     ]
 
-    _.each(testCases, (p) => {
-      it(`for input ${p.linkProtocol}`, function() {
+    _.each(testCases, p => {
+      it(`for input ${p.linkProtocol}`, function(){
         const protocol = protocolUtils.identifyProtocol(p)
         expect(protocol.id).toBe('?')
         expect(protocol.label).toBe('Unknown')
@@ -179,7 +167,4 @@ describe('The resultUtils', function () {
       })
     })
   })
-
-
-
 })

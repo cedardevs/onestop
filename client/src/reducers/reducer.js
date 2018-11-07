@@ -5,19 +5,18 @@ import routing from './behavior/routing'
 import errors from './behavior/error'
 import request from './behavior/request'
 
-import {api} from './domain/api'
 import config from './domain/config'
 import info from './domain/info'
 import results from './domain/results'
 
 import loading from './ui/loading'
-import background from './ui/background'
 import layout from './ui/layout'
 
 import granules from './cart/granules'
 
+export const RESET_STORE = 'reset_store'
+
 const domain = combineReducers({
-  api,
   config,
   info,
   results,
@@ -25,7 +24,6 @@ const domain = combineReducers({
 
 const ui = combineReducers({
   loading,
-  background,
   layout,
 })
 
@@ -42,6 +40,10 @@ const cart = combineReducers({
 
 // TODO: Pass search state elements to query removing the need for state duplication
 const reducer = (state, action) => {
+  // allow a top-level reducer action to trigger all reducers to initial state
+  if (action.type === RESET_STORE) {
+    state = undefined
+  }
   return {
     domain: domain((state && state.domain) || undefined, action),
     behavior: behavior((state && state.behavior) || undefined, action),

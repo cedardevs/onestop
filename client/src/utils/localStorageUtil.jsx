@@ -55,7 +55,7 @@ export const getSelectedGranulesFromStorage = state => {
     return {}
   }
   else {
-    state.cart.granules.selectedGranules
+    return state.cart.granules.selectedGranules
   }
 }
 

@@ -44,7 +44,7 @@ const styleLegend = {
 export default class Fieldset extends React.Component {
   render() {
     return (
-      <fieldset style={styleFieldset} onChange={this.props.onFieldsetChange}>
+      <fieldset style={styleFieldset}>
         <legend style={styleLegend}>
           <div style={mask} />
           {this.props.legendText}

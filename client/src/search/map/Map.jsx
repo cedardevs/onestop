@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import watch from 'redux-watch'
 import store from '../../store'
 import L from 'leaflet'
-import E from 'esri-leaflet'
+import * as E from 'esri-leaflet'
 import 'leaflet-draw'
 import _ from 'lodash'
 import {recenterGeometry} from '../../utils/geoUtils'
@@ -363,7 +363,6 @@ class Map extends React.Component {
 
   render() {
     const {open, display, flex, maxHeight, width, opacity} = this.state
-
     return (
       <div
         style={styleMapContainer(open, display, maxHeight, width)}

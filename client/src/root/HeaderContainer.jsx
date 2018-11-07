@@ -10,9 +10,9 @@ const mapStateToProps = state => {
   }
 }
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    goHome: () => dispatch(showHome()),
+    goHome: () => dispatch(showHome(ownProps.history)),
   }
 }
 

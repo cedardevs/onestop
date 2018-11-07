@@ -50,7 +50,7 @@ export const uuidListItem = uuid => {
   if (uuid)
     return `{
     "value": "${uuid}",
-    "propertyID": "OneStop uuid",
+    "propertyID": "OneStop UUID",
     "@type": "PropertyValue"
   }`
 }

@@ -1,7 +1,6 @@
 import * as keywordUtils from '../../src/utils/keywordUtils'
 
 describe('The keyword utils', function(){
-
   describe('hierarchy map util', function(){
     it('can build a hierarchy map with science theme data', function(){
       const input = {
