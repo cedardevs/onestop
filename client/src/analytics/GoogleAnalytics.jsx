@@ -5,31 +5,10 @@ import ReactGA from 'react-ga'
 import { Route } from 'react-router-dom'
 
 export default class GoogleAnalytics extends Component {
-    //
-    // constructor(props) {
-    //     console.log(props)
-    //
-    //     super(props)
-    //     // this.props = props
-    //     // const {analyticsConfig, analyticsInitiated, initAnalytics} = this.props
-    //     // console.log(analyticsConfig)
-    //     // console.log(analyticsInitiated)
-    //     // console.log(initAnalytics)
-    //
-    //     // if(!analyticsInitiated){
-    //     //     ReactGA.initialize(analyticsConfig.profiles, analyticsConfig.reactGaOptions)
-    //     //     initAnalytics()
-    //     // }
-    //     this.props = props
-    // }
 
     componentDidMount () {
         const {analyticsConfig, analyticsInitiated, initAnalytics} = this.props
         console.log("COMPONENT DID MOUNT")
-        console.log(this.props)
-        // console.log(analyticsConfig)
-        // console.log(analyticsInitiated)
-        // console.log(initAnalytics)
         this.logPageChange(
             this.props.location.pathname,
             this.props.location.search
@@ -37,6 +16,15 @@ export default class GoogleAnalytics extends Component {
     }
 
     componentDidUpdate ({ location: prevLocation }) {
+        console.log("COMPONENT DID UPDATE")
+        const {analyticsConfig, analyticsInitiated, initAnalytics} = this.props
+
+        if(!analyticsInitiated){
+            console.log("GA INIT")
+            ReactGA.initialize(analyticsConfig.profiles, analyticsConfig.reactGaOptions)
+            initAnalytics()
+        }
+
         const { location: { pathname, search } } = this.props
         const isDifferentPathname = pathname !== prevLocation.pathname
         const isDifferentSearch = search !== prevLocation.search
@@ -64,44 +52,11 @@ export default class GoogleAnalytics extends Component {
 }
 
 GoogleAnalytics.propTypes = {
-    analyticsConfig: PropTypes.shape({
-        profiles: PropTypes.array,
-        options: PropTypes.object
-    }),
+    analyticsConfig: PropTypes.object,
+    analyticsInitiated: PropTypes.bool,
     location: PropTypes.shape({
         pathname: PropTypes.string,
         search: PropTypes.string
     }).isRequired,
     options: PropTypes.object
 }
-
-const RouteTracker = () =>
-    <Route component={GoogleAnalytics} />
-
-const init = (options = {}) => {
-    const env = window._env_ || process.env || {}
-    const isGAEnabled = true
-    // const isGAEnabled = !!env.ONESTOP_GA_TRACKING_ID
-    console.log("INIT GA")
-    console.log(options)
-    console.log(options.profiles)
-    console.log(options.reactGaOptions)
-
-    if (isGAEnabled && options.profiles) {
-        // ReactGA.initialize(
-        //     'UA-127993388-1', {
-        //         debug: 'true',
-        //         ...options
-        //     }
-        // )
-        ReactGA.initialize(options.profiles, options.reactGaOptions)
-    }
-
-    return isGAEnabled
-}
-
-// export default {
-//     GoogleAnalytics,
-//     RouteTracker,
-//     init
-// }

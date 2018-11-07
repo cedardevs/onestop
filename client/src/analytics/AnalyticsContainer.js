@@ -6,7 +6,6 @@ import {withRouter} from 'react-router'
 import {initAnalytics} from '../actions/AnalyticsActions'
 
 const mapStateToProps = state => {
-    console.log(state.domain.config.googleAnalytics)
     return {
         analyticsConfig: state.domain.config.googleAnalytics,
         analyticsInitiated: state.domain.config.analyticsInitiated,
