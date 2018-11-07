@@ -32,6 +32,7 @@
     "react-animate-height": "^2.0.6",
     "react-browser-detection": "^1.2.0",
     "react-dom": "^16.6.0",
+    "react-ga": "^2.5.3",
     "react-grid-system": "^4.3.1",
     "react-helmet": "^5.2.0",
     "react-redux": "^5.1.0",
