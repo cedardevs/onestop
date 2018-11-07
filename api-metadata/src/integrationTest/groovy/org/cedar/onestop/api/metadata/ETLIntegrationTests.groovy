@@ -164,7 +164,7 @@ class ETLIntegrationTests extends IntegrationTest {
 
     then: 'Only the collection is reindexed, not the granules'
     def collections = indexedCollectionVersions()
-    collections['gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'] == 1
+    collections['gov.noaa.nodc:GHRSST-EUR-L4UHFnd-MED'] == 2
     collections['gov.noaa.nodc:NDBC-COOPS'] == 2
     def granules = indexedGranuleVersions()
     granules['CO-OPS.NOS_8638614_201602_D1_v00'] == 1
