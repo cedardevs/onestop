@@ -29,8 +29,8 @@ export const config = (state = initialState, action) => {
 
     case INIT_ANALYTICS:
       return Immutable.merge(state, {
-        analyticsInitiated: true
-    })
+        analyticsInitiated: true,
+      })
     default:
       return state
   }

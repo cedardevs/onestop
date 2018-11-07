@@ -6,22 +6,22 @@ import {withRouter} from 'react-router'
 import {initAnalytics} from '../actions/AnalyticsActions'
 
 const mapStateToProps = state => {
-    return {
-        analyticsConfig: state.domain.config.googleAnalytics,
-        analyticsInitiated: state.domain.config.analyticsInitiated,
-    }
+  return {
+    analyticsConfig: state.domain.config.googleAnalytics,
+    analyticsInitiated: state.domain.config.analyticsInitiated,
+  }
 }
 
 const mapDispatchToProps = dispatch => {
-    return {
-        initAnalytics: () => {
-            dispatch(initAnalytics())
-        },
-    }
+  return {
+    initAnalytics: () => {
+      dispatch(initAnalytics())
+    },
+  }
 }
 
 const AnalyticsContainer = withRouter(
-    connect(mapStateToProps, mapDispatchToProps)(GoogleAnalytics)
+  connect(mapStateToProps, mapDispatchToProps)(GoogleAnalytics)
 )
 
 export default AnalyticsContainer

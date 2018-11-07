@@ -12,7 +12,7 @@ const App = (store, history) => {
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <div>
-            <AnalyticsContainer/>
+          <AnalyticsContainer />
           <Switch>
             <Route path="/sitemap.xml" exact onEnter={reload} />
             <RootContainer />
