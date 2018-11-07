@@ -44,6 +44,10 @@ spec:
           value: onestop-geoportal-search:8080
         - name: ONESTOP_ADMIN_API_ENDPOINT
           value: onestop-api-metadata:8098
+        - name: ONESTOP_GA_TRACKING_ID
+          value: UA-127993388-1
+        - name: ONESTOP_GA_DEBUG
+          value: true
         ports:
         - containerPort: 80
           name: http

@@ -32,4 +32,19 @@ class UiConfig {
     String featureName
   }
 
+  GoogleAnalytics googleAnalytics
+
+  static class GoogleAnalytics{
+    List<Map> profiles
+    Map reactGaOptions
+  }
+
+//  class ReactGAOptions {
+//    Boolean debug
+//    String titleCase
+//    String gaOptions
+//    String gaAddress
+//    Boolean alwaysSendToDefaultTracker
+//  }
+
 }
