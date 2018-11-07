@@ -1,41 +1,38 @@
-apiVersion: skaffold/v1alpha2
+apiVersion: skaffold/v1alpha5
 kind: Config
 build:
   artifacts:
-  - imageName: cedardevs/onestop-api-metadata
-    workspace: ./api-metadata
+  - image: cedardevs/onestop-api-metadata
+    context: ./api-metadata
     docker:
       buildArgs:
+        DATE: now
+        VCS_REF: local
+        VERSION: 2.1.0
         WAR_NAME: api-metadata-2.1.0-all.war
-        VERSION: 2.1.0
-        DATE: now
-        VCS_REF: local
-  - imageName: cedardevs/onestop-api-search
-    workspace: ./api-search
+  - image: cedardevs/onestop-api-search
+    context: ./api-search
     docker:
       buildArgs:
+        DATE: now
+        VCS_REF: local
+        VERSION: 2.1.0
         WAR_NAME: api-search-2.1.0-all.war
-        VERSION: 2.1.0
-        DATE: now
-        VCS_REF: local
-  - imageName: cedardevs/onestop-client
-    workspace: ./client
-    docker:
-      buildArgs:
-        VERSION: 2.1.0
-        DATE: now
-        VCS_REF: local
-        TAR_NAME: onestop-client-2.1.0.tar.gz
-
+#  - image: cedardevs/onestop-client
+#    context: ./client
+#    docker:
+#      buildArgs:
+#        DATE: now
+#        TAR_NAME: onestop-client-2.1.0.tar.gz
+#        VCS_REF: local
+#        VERSION: 2.1.0
 deploy:
   kubectl:
     manifests:
     - ./kubernetes/deployments/elasticsearch.yaml
     - ./kubernetes/deployments/onestop-api-metadata.yaml
     - ./kubernetes/deployments/onestop-api-search.yaml
-    - ./kubernetes/deployments/onestop-client.yaml
+#    - ./kubernetes/deployments/onestop-client.yaml
     - ./kubernetes/deployments/onestop-logstash.yaml
     - ./kubernetes/deployments/filebeat-kubernetes.yaml
     - ./kubernetes/deployments/kibana.yaml
-    # TODO: geoportal-search
-    

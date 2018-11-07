@@ -36,15 +36,15 @@ class UiConfig {
 
   static class GoogleAnalytics{
     List<Map> profiles
-    ReactGAOptions reactGaOptions
+    Map reactGaOptions
   }
 
-  class ReactGAOptions {
-    Boolean debug
-    String titleCase
-    String gaOptions
-    String gaAddress
-    Boolean alwaysSendToDefaultTracker
-  }
+//  class ReactGAOptions {
+//    Boolean debug
+//    String titleCase
+//    String gaOptions
+//    String gaAddress
+//    Boolean alwaysSendToDefaultTracker
+//  }
 
 }
