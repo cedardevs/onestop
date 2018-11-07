@@ -1,4 +1,3 @@
-import '../specHelper'
 import {
   facetsReceived,
   clearFacets,
@@ -27,7 +26,7 @@ describe('The facet action', function(){
     const facetAction = facetsReceived(metadata)
     const expectedAction = {type: 'FACETS_RECEIVED', metadata: metadata}
 
-    facetAction.should.deep.equal(expectedAction)
+    expect(facetAction).toEqual(expectedAction)
   })
 
   it('clears facets', function(){
@@ -36,6 +35,6 @@ describe('The facet action', function(){
     const store = mockStore(state)
 
     store.dispatch(clearFacets())
-    store.getActions()[0].should.deep.equal(expectedActions)
+    expect(store.getActions()[0]).toEqual(expectedActions)
   })
 })

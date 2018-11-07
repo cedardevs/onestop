@@ -1,9 +1,7 @@
-import '../specHelper'
 import {abbreviateNumber} from '../../src/utils/readableUtils'
-import {assert} from 'chai'
 
 describe('The readableUtils abbreviateNumber function', function(){
-  it('converts numbers to the appropriate abbreviated strings with 1 decimal place', function(){
+  describe('converts numbers to the appropriate abbreviated strings with 1 decimal place', function(){
     const decPlace = 1
 
     const testCases = [
@@ -43,11 +41,9 @@ describe('The readableUtils abbreviateNumber function', function(){
     ]
 
     testCases.forEach(c => {
-      assert.equal(
-        abbreviateNumber(c.input, decPlace),
-        c.output,
-        `for input ${c.input}`
-      )
+      it(`formats ${c.input} as ${c.output}`, function(){
+        expect(abbreviateNumber(c.input, decPlace)).toBe(c.output)
+      })
     })
   })
 })
