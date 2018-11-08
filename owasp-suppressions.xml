@@ -47,6 +47,16 @@
   </suppress>
 
   <suppress>
+    <notes><![CDATA[
+      file name: zookeeper-3.4.13.jar
+      The CVE (https://nvd.nist.gov/vuln/detail/CVE-2018-8012) explicitly states that it only applies to
+      versions of zookeeper prior to 3.4.10. We're currently using 3.4.14.
+    ]]></notes>
+    <gav regex="true">^org\.apache\.zookeeper:zookeeper:3\.4\.[1-9][0-9]+$</gav>
+    <cve>CVE-2018-8012</cve>
+  </suppress>
+
+  <suppress>
     <cve>CVE-2015-4035</cve>
   </suppress>
 

@@ -35,10 +35,9 @@ dependencies {
   compile('org.codehaus.groovy:groovy-json')
   compile('org.springframework.boot:spring-boot-starter-actuator')
   compile('org.springframework.boot:spring-boot-starter-web')
-  compile('org.springframework.cloud:spring-cloud-starter')
   compile('org.apache.kafka:kafka-streams:2.0.0')
   compile('org.apache.kafka:kafka-clients:2.0.0')
-  compile('io.confluent:kafka-streams-avro-serde:5.0.0')
+  compile('io.confluent:kafka-streams-avro-serde:5.0.1')
   compile('org.apache.avro:avro:1.8.2')
   compile(project(':common'))
 
@@ -58,8 +57,8 @@ dependencies {
 //    testCompile('org.springframework.kafka:spring-kafka-test')
   // specify latest spring kafka version for Kafka 2.0.0 Compatibility
   testCompile('org.springframework.kafka:spring-kafka-test:2.2.0.M1')
-  testCompile('io.confluent:kafka-schema-registry:5.0.0')
-  testCompile('io.confluent:kafka-schema-registry:5.0.0:tests')
+  testCompile('io.confluent:kafka-schema-registry:5.0.1')
+  testCompile('io.confluent:kafka-schema-registry:5.0.1:tests')
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
 }
 
