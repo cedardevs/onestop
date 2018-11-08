@@ -57,6 +57,11 @@
   </suppress>
 
   <suppress>
+    <notes><![CDATA[
+      file name: xz-1.5.jar
+      This CVE (https://nvd.nist.gov/vuln/detail/CVE-2015-4035) refers to a script which is included in the
+      xzgrep command line tool. That script is not included in this jar, which is used to compress avro messages.
+    ]]></notes>
     <cve>CVE-2015-4035</cve>
   </suppress>
 
