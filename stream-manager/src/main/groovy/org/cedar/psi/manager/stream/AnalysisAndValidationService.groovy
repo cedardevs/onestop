@@ -20,6 +20,7 @@ class AnalysisAndValidationService {
   // Just to decrease chance of typos
   static final String UNDEFINED = 'UNDEFINED'
   static final String INVALID = 'INVALID'
+  static final String VALID = 'VALID'
 
   static Map analyzeParsedMetadata(Map msgMap) {
     log.info "Analyzing message}"
@@ -49,22 +50,14 @@ class AnalysisAndValidationService {
     def matchesIdentifiers = (hierarchy == 'granule' && parentIdentifier) || (hierarchy == null)
 
     return [
-        fileIdentifier    : [
-            exists: fileIdentifier ? true : false,
-            fileIdentifierString: fileIdentifier ?: null
-        ],
-        doi               : [
-            exists: doi ? true : false,
-            doiString: doi ?: null
-        ],
-        parentIdentifier  : [
-            exists: parentIdentifier ? true : false,
-            parentIdentifierString: parentIdentifier ?: null
-        ],
-        hierarchyLevelName: [
-            exists            : hierarchy ? true : false,
-            matchesIdentifiers: matchesIdentifiers
-        ]
+        fileIdentifierExists: fileIdentifier ? true : false,
+        fileIdentifierString: fileIdentifier ?: null,
+        doiExists: doi ? true : false,
+        doiString: doi ?: null,
+        parentIdentifierExists: parentIdentifier ? true : false,
+        parentIdentifierString: parentIdentifier ?: null,
+        hierarchyLevelNameExists            : hierarchy ? true : false,
+        matchesIdentifiers: matchesIdentifiers
     ]
   }
 
@@ -200,7 +193,7 @@ class AnalysisAndValidationService {
       }
     }
 
-    return [
+    def TemporalBoundingMap =  [
         begin: beginInfo,
         end: endInfo,
         instant: instantInfo,
@@ -209,13 +202,25 @@ class AnalysisAndValidationService {
             beginLTEEnd: beginLTEEnd
         ]
     ]
+
+    Map AnalysisMap = [:]
+    TemporalBoundingMap.each {
+      AnalysisMap.putAll(flattenMap(it))
+    }
+
+    return AnalysisMap
+  }
+
+  static Map flattenMap(entry) {
+    def res = [:]
+    entry.value.each{ res[entry.key + it.key] = it.value  }
+    return res
   }
 
   static Map analyzeSpatialBounding(Map metadata) {
     String spatialBounding = metadata.spatialBounding
-
     return [
-        exists: spatialBounding ? true : false
+        spatialBoundingExists: spatialBounding ? true : false
     ]
   }
 
@@ -224,14 +229,10 @@ class AnalysisAndValidationService {
     String altTitle = metadata.alternateTitle
 
     return [
-        title         : [
-            exists    : title ? true : false,
-            characters: title ? title.length() : 0
-        ],
-        alternateTitle: [
-            exists    : altTitle ? true : false,
-            characters: altTitle ? altTitle.length() : 0
-        ]
+        titleExists    : title ? true : false,
+        titleCharacters: title ? title.length() : 0,
+        alternateTitleExists    : altTitle ? true : false,
+        alternateTitleCharacters: altTitle ? altTitle.length() : 0
     ]
   }
 
@@ -239,8 +240,8 @@ class AnalysisAndValidationService {
     String description = metadata.description
 
     return [
-        exists    : description ? true : false,
-        characters: description ? description.length() : 0
+        descriptionExists    : description ? true : false,
+        descriptionCharacters: description ? description.length() : 0
     ]
   }
 
@@ -248,13 +249,13 @@ class AnalysisAndValidationService {
     String thumbnail = metadata.thumbnail
 
     return [
-        exists: thumbnail ? true : false,
+        thumbnailExists: thumbnail ? true : false,
     ]
   }
 
   static Map analyzeDataAccess(Map metadata) {
     return [
-        exists: metadata.links ? true : false
+        dataAccessExists: metadata.links ? true : false
     ]
   }
 }

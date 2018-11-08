@@ -1,11 +1,14 @@
 package org.cedar.psi.manager.stream
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.fge.jsonschema.main.JsonSchema
-import com.github.fge.jsonschema.main.JsonSchemaFactory
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.apache.avro.AvroTypeException
+import org.apache.avro.Schema
+import org.apache.avro.io.DatumReader
+import org.apache.avro.io.Decoder
+import org.apache.avro.io.DecoderFactory
+import org.apache.avro.specific.SpecificDatumReader
+import org.cedar.psi.common.avro.Analysis
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -14,109 +17,78 @@ import java.time.temporal.ChronoUnit
 @Unroll
 class AnalysisAndValidationServiceSpec extends Specification {
 
-  final String analysisSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('analysis-schema.json').text
-  final String identifierSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('identifiers-schema.json').text
-  final String inputSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('input-schema.json').text
-
-  final ObjectMapper mapper = new ObjectMapper()
-  final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
-
-  final JsonNode analysisSchemaNode = mapper.readTree(analysisSchemaString)
-  final JsonNode identifierSchemaNode = mapper.readTree(identifierSchemaString)
-  final JsonNode inputSchemaNode = mapper.readTree(inputSchemaString)
-
-  final JsonSchema analysisSchema = factory.getJsonSchema(analysisSchemaNode)
-  final JsonSchema identifierSchema = factory.getJsonSchema(identifierSchemaNode)
-  final JsonSchema inputSchema = factory.getJsonSchema(inputSchemaNode)
+  final String analysisAvro = ClassLoader.systemClassLoader.getResourceAsStream('avro/analysis.avsc').text
 
   def "All valid fields return expected response from service"() {
     given:
     def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
-    inputSchema.validate(mapper.readTree(inputMsg))
 
     def inputMap = [:]
     inputMap.put('discovery', new JsonSlurper().parseText(inputMsg))
     def expectedAnalysisMap = [
         identification  : [
-            fileIdentifier    : [
-                exists: true,
-                fileIdentifierString: 'gov.super.important:FILE-ID'
-            ],
-            doi               : [
-                exists: true,
-                doiString: 'doi:10.5072/FK2TEST'
-            ],
-            parentIdentifier  : [
-                exists: true,
-                parentIdentifierString: 'gov.super.important:PARENT-ID'
-            ],
-            hierarchyLevelName: [
-                exists            : true,
-                matchesIdentifiers: true
-            ]
+            fileIdentifierExists    : true,
+            fileIdentifierString    : 'gov.super.important:FILE-ID',
+            doiExists               : true,
+            doiString               : 'doi:10.5072/FK2TEST',
+            parentIdentifierExists  : true,
+            parentIdentifierString  : 'gov.super.important:PARENT-ID',
+            hierarchyLevelNameExists: true,
+            matchesIdentifiers      : true
         ],
         temporalBounding: [
-            begin: [
-                exists: true,
-                // For why below value is not seconds, see:
-                // https://docs.oracle.com/javase/8/docs/api/java/time/temporal/TemporalQueries.html#precision--
-                precision: ChronoUnit.NANOS.toString(),
-                validSearchFormat: true,
-                zoneSpecified: '+01:00',
-                utcDateTimeString: '2005-05-09T00:00:00Z'
-            ],
-            end: [
-                exists: true,
-                precision: ChronoUnit.DAYS.toString(),
-                validSearchFormat: true,
-                zoneSpecified: 'UNDEFINED',
-                utcDateTimeString: '2010-10-01T23:59:59Z'
-            ],
-            instant: [
-                exists: false,
-                precision: 'UNDEFINED',
-                validSearchFormat: 'UNDEFINED',
-                zoneSpecified: 'UNDEFINED',
-                utcDateTimeString: 'UNDEFINED'
-            ],
-            range: [
-                descriptor: 'BOUNDED',
-                beginLTEEnd: true
-            ]
+            beginExists             : true,
+            // For why below value is not seconds, see:
+            // https://docs.oracle.com/javase/8/docs/api/java/time/temporal/TemporalQueries.html#precision--
+            beginPrecision          : ChronoUnit.NANOS.toString(),
+            beginValidSearchFormat  : true,
+            beginZoneSpecified      : '+01:00',
+            beginUtcDateTimeString  : '2005-05-09T00:00:00Z',
+            endExists               : true,
+            endPrecision            : ChronoUnit.DAYS.toString(),
+            endValidSearchFormat    : true,
+            endZoneSpecified        : 'UNDEFINED',
+            endUtcDateTimeString    : '2010-10-01T23:59:59Z',
+            instantExists           : false,
+            instantPrecision        : 'UNDEFINED',
+            instantValidSearchFormat: 'UNDEFINED',
+            instantZoneSpecified    : 'UNDEFINED',
+            instantUtcDateTimeString: 'UNDEFINED',
+            rangeDescriptor         : 'BOUNDED',
+            rangeBeginLTEEnd        : true
         ],
         spatialBounding : [
-            exists: true
+            spatialBoundingExists: true
         ],
         titles          : [
-            title: [
-                exists: true,
-                characters: 63
-            ],
-            alternateTitle: [
-                exists: true,
-                characters: 51
-            ]
+            titleExists             : true,
+            titleCharacters         : 63,
+            alternateTitleExists    : true,
+            alternateTitleCharacters: 51
         ],
         description     : [
-            exists    : true,
-            characters: 65
+            descriptionExists    : true,
+            descriptionCharacters: 65
         ],
         thumbnail       : [
-            exists: true,
+            thumbnailExists: true,
         ],
         dataAccess      : [
-            exists: true
+            dataAccessExists: true
         ]
     ]
     inputMap.put('analysis', expectedAnalysisMap)
     def expectedResponse = JsonOutput.toJson(inputMap)
 
     when:
-    def response = JsonOutput.toJson(AnalysisAndValidationService.analyzeParsedMetadata(inputMap))
+    def response = AnalysisAndValidationService.analyzeParsedMetadata(inputMap)
+    def responseJson = JsonOutput.toJson(AnalysisAndValidationService.analyzeParsedMetadata(inputMap))
+    def analysisJson = JsonOutput.toJson(response.analysis)
+    Schema schema = new Schema.Parser().parse(analysisAvro)
 
     then:
-    analysisSchema.validate(mapper.readTree(response))
-    response == expectedResponse
+    validateJson(analysisJson, schema)
+    responseJson == expectedResponse
   }
 
   def "#descriptor date range correctly identified when #situation"() {
@@ -127,7 +99,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def timeAnalysis = AnalysisAndValidationService.analyzeTemporalBounding(timeMetadata)
 
     then:
-    timeAnalysis.range.descriptor == descriptor
+    timeAnalysis.rangedescriptor == descriptor
 
     where:
     descriptor  | situation                                                   | metadataMap
@@ -148,7 +120,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def timeAnalysis = AnalysisAndValidationService.analyzeTemporalBounding(timeMetadata)
 
     then:
-    timeAnalysis.range.beginLTEEnd == value
+    timeAnalysis.rangebeginLTEEnd == value
 
     where:
     value       | situation                                                       | metadataMap
@@ -179,7 +151,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
     then:
     dataAccessAnalysis == [
-        exists    : false
+        dataAccessExists: false
     ]
   }
 
@@ -194,22 +166,14 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
     then:
     identifiersAnalysis == [
-        fileIdentifier    : [
-            exists: true,
-            fileIdentifierString: 'xyz'
-        ],
-        doi               : [
-            exists: false,
-            doiString: null
-        ],
-        parentIdentifier  : [
-            exists: false,
-            parentIdentifierString: null
-        ],
-        hierarchyLevelName: [
-            exists            : false,
-            matchesIdentifiers: true
-        ]
+        fileIdentifierExists    : true,
+        fileIdentifierString    : 'xyz',
+        doiExists               : false,
+        doiString               : null,
+        parentIdentifierExists  : false,
+        parentIdentifierString  : null,
+        hierarchyLevelNameExists: false,
+        matchesIdentifiers      : true
     ]
   }
 
@@ -224,24 +188,15 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(metadata)
 
     then:
-    identifierSchema.validate(mapper.readTree(JsonOutput.toJson(identifiersAnalysis)))
     identifiersAnalysis == [
-        fileIdentifier    : [
-            exists: true,
-            fileIdentifierString: 'xyz'
-        ],
-        doi               : [
-            exists: false,
-            doiString: null
-        ],
-        parentIdentifier  : [
-            exists: false,
-            parentIdentifierString: null
-        ],
-        hierarchyLevelName: [
-            exists            : true,
-            matchesIdentifiers: false
-        ]
+        fileIdentifierExists    : true,
+        fileIdentifierString    : 'xyz',
+        doiExists               : false,
+        doiString               : null,
+        parentIdentifierExists  : false,
+        parentIdentifierString  : null,
+        hierarchyLevelNameExists: true,
+        matchesIdentifiers      : false
     ]
   }
 
@@ -253,15 +208,12 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def titlesAnalysis = AnalysisAndValidationService.analyzeTitles(metadata)
 
     then:
+    then:
     titlesAnalysis == [
-        title         : [
-            exists    : false,
-            characters: 0
-        ],
-        alternateTitle: [
-            exists    : false,
-            characters: 0
-        ]
+        titleExists             : false,
+        titleCharacters         : 0,
+        alternateTitleExists    : false,
+        alternateTitleCharacters: 0
     ]
   }
 
@@ -274,8 +226,8 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
     then:
     descriptionAnalysis == [
-        exists    : false,
-        characters: 0
+        descriptionExists    : false,
+        descriptionCharacters: 0
     ]
   }
 
@@ -288,7 +240,22 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
     then:
     thumbnailAnalysis == [
-        exists: false
+        thumbnailExists: false
     ]
+  }
+
+  static boolean validateJson(String json, Schema schema) throws Exception {
+    InputStream input = new ByteArrayInputStream(json.getBytes())
+    DataInputStream din = new DataInputStream(input)
+
+    try {
+      DatumReader reader = new SpecificDatumReader(Analysis)
+      Decoder decoder = DecoderFactory.get().jsonDecoder(schema, din)
+      reader.read(null, decoder)
+      return true
+    } catch (AvroTypeException e) {
+      System.out.println(e.getMessage())
+      return false
+    }
   }
 }
