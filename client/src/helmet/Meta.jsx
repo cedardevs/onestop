@@ -56,7 +56,7 @@ export default class Meta extends Component {
 
     return (
       <Helmet>
-        <link href="/noaa-favicon.ico" rel="shortcut icon" />
+        <link href="/onestop/static/noaa-favicon.ico" rel="shortcut icon" />
 
         <meta property="robots" content={robotsValue} />
 
