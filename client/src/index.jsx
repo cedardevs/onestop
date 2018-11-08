@@ -4,6 +4,7 @@ import App from './App'
 import store from './store' // create Redux store with appropriate middleware
 import history from './history' // create history object based on environment
 
+import '../img/noaa-favicon.ico'
 import './jsonLd' // add json LD scripts
 import './meta' // add meta tag
 import './fonts' // include custom fonts in bundle

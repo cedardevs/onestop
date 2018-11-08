@@ -11,7 +11,6 @@ export default class GoogleAnalytics extends Component {
   }
 
   componentDidUpdate({location: prevLocation}) {
-    console.log('COMPONENT DID UPDATE')
     const {analyticsConfig, analyticsInitiated, initAnalytics} = this.props
 
     if (
@@ -32,7 +31,6 @@ export default class GoogleAnalytics extends Component {
     const isDifferentSearch = search !== prevLocation.search
 
     if (analyticsInitiated && (isDifferentPathname || isDifferentSearch)) {
-      console.log('SENDING PAGE CHANGE')
       this.logPageChange(pathname, search)
     }
   }

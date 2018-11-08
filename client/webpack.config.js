@@ -10,6 +10,9 @@ require(modernizrrc)
 const nodeEnv = process.env.NODE_ENV || 'development'
 const isProd = nodeEnv === 'production'
 
+const rootPath = 'onestop'
+const assetPath = 'static'
+
 const smp = new SpeedMeasurePlugin()
 
 const basePlugins = [
@@ -18,7 +21,6 @@ const basePlugins = [
     title: 'NOAA OneStop',
     template: require('html-webpack-template'),
     lang: 'en-US',
-    favicon: '../img/noaa-favicon.ico',
     meta: [
       {
         property: 'dcterms.format', content: 'text/html',
@@ -85,9 +87,8 @@ module.exports = env => {
     output:
         {
           path: path.resolve(__dirname, 'build/dist'),
-          publicPath: '/',
-          filename:
-              '[name]-[hash].bundle.js',
+          publicPath: `/${rootPath}/`,
+          filename: '[name]-[hash].bundle.js',
         }
     ,
     context: path.resolve(__dirname, 'src'),
@@ -95,8 +96,10 @@ module.exports = env => {
         isProd ? false : 'cheap-module-eval-source-map',
     devServer:
         isProd ? {} : {
-          publicPath: '/',
-          historyApiFallback: true,
+          publicPath: `/${rootPath}/`,
+          historyApiFallback: {
+            index: `/${rootPath}/`,
+          },
           disableHostCheck: true,
           hot: true,
           proxy: {
@@ -155,6 +158,20 @@ module.exports = env => {
                   hash: 'sha512',
                   digestType: 'hex',
                   name: '[hash].[ext]',
+                  outputPath: `${assetPath}/img`
+                },
+              },
+            ],
+          }, {
+            test: /\.(ico)$/,
+            exclude: /node_modules/,
+            include: /img/,
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  name: '[name].[ext]',
+                  outputPath: assetPath
                 },
               },
             ],
@@ -162,7 +179,8 @@ module.exports = env => {
             test: /\.(ttf|otf|eot|woff(2)?)(\?[a-z0-9]+)?$/,
             use: [{loader: 'file-loader'
               , options: {
-                name: 'fonts/[name].[ext]',
+                name: '/[name].[ext]',
+                outputPath: `${assetPath}/fonts`
             }
           }]
           }],
