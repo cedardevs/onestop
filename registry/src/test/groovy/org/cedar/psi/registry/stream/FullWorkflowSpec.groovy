@@ -1,18 +1,13 @@
 package org.cedar.psi.registry.stream
 
-import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient
-import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
-import org.apache.kafka.clients.admin.MockAdminClient
-import org.apache.kafka.common.Node
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
-import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.registry.service.MetadataStreamService
+import org.cedar.psi.registry.util.MockSchemaRegistrySerde
 import spock.lang.Specification
 
 import java.time.ZoneId
@@ -23,6 +18,7 @@ import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
 import static org.apache.kafka.streams.StreamsConfig.*
 import static org.cedar.psi.common.constants.Topics.*
+import static org.cedar.psi.registry.util.StreamSpecUtils.JSON_SERIALIZER
 import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_SERIALIZER
 import static org.cedar.psi.registry.util.StreamSpecUtils.readAllOutput
 
@@ -33,29 +29,17 @@ class FullWorkflowSpec extends Specification {
 
   def config = [
       (APPLICATION_ID_CONFIG)           : 'delayed_publisher_spec',
-      (BOOTSTRAP_SERVERS_CONFIG)        : 'localhost:9092',
-      (SCHEMA_REGISTRY_URL_CONFIG)      : 'localhost:8081',
+      (BOOTSTRAP_SERVERS_CONFIG)        : 'http://localhost:9092',
+      (SCHEMA_REGISTRY_URL_CONFIG)      : 'http://localhost:8081',
       (DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
-      (DEFAULT_VALUE_SERDE_CLASS_CONFIG): JsonSerdes.Map() .class.name,
+      (DEFAULT_VALUE_SERDE_CLASS_CONFIG): MockSchemaRegistrySerde.class.name,
       (AUTO_OFFSET_RESET_CONFIG)        : 'earliest'
   ]
-  def mockScremaRegistryClient = new MockSchemaRegistryClient()
-  def inputSerdeProps = [
-      (KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG): "localhost:8081",
-      (KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG): "true"
-  ]
-  def inputSerde = new SpecificAvroSerde<Input>(mockScremaRegistryClient).with {
-    it.configure(["schema.registry.url": "localhost:8081"], false)
-    it
-  }
 
-  def mockNode = new Node(0, 'localhost', 9200)
-  def mockAdminClient = new MockAdminClient([mockNode], mockNode)
-
-//  def streamService = new MetadataStreamService(mockAdminClient, 5000, Files.newTemporaryFolder())
   def topology = MetadataStreamService.buildTopology(5000)
   def driver = new TopologyTestDriver(topology, new Properties(config))
-  def consumerFactory = new ConsumerRecordFactory(STRING_SERIALIZER, inputSerde.serializer())
+  def inputFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
+  def jsonFactory = new ConsumerRecordFactory(STRING_SERIALIZER, JSON_SERIALIZER)
 
   def inputType = 'granule'
   def inputSource = DEFAULT_SOURCE
@@ -75,11 +59,11 @@ class FullWorkflowSpec extends Specification {
     def value2 = new Input(content: '{"name":"test"}', method: Method.POST, contentType: 'application/json', host: 'localhost', protocol: 'http', requestUrl: '/test', source: 'test')
 
     when:
-    driver.pipeInput(consumerFactory.create(inputTopic, key, value1))
-    driver.pipeInput(consumerFactory.create(inputTopic, key, value2))
+    driver.pipeInput(inputFactory.create(inputTopic, key, value1))
+    driver.pipeInput(inputFactory.create(inputTopic, key, value2))
 
     then:
-    inputStore.get('A') == ["size":42, name: "test"]
+    inputStore.get('A') == new Input(content: '{"size":42,"name":"test"}', method: Method.POST, contentType: 'application/json', host: 'localhost', protocol: 'http', requestUrl: '/test', source: 'test')
   }
 
   def 'saves and updates parsed granule info'() {
@@ -89,8 +73,8 @@ class FullWorkflowSpec extends Specification {
     def value2PlusPublishing = ["discovery":["title":"test"],"publishing":["private":false]]
 
     when:
-    driver.pipeInput(consumerFactory.create(parsedTopic, key, value1))
-    driver.pipeInput(consumerFactory.create(parsedTopic, key, value2))
+    driver.pipeInput(jsonFactory.create(parsedTopic, key, value1))
+    driver.pipeInput(jsonFactory.create(parsedTopic, key, value2))
 
     then:
     parsedStore.get(key) == value2PlusPublishing
@@ -105,7 +89,7 @@ class FullWorkflowSpec extends Specification {
     def value = ["discovery":["title":"secret"],"publishing":["private":true]]
 
     when:
-    driver.pipeInput(consumerFactory.create(parsedTopic, key, value))
+    driver.pipeInput(jsonFactory.create(parsedTopic, key, value))
 
     then:
     parsedStore.get(key) == value
@@ -121,7 +105,7 @@ class FullWorkflowSpec extends Specification {
     def plusFiveMessage = ["discovery":["metadata":"yes"],"publishing":["private":true,"until":plusFiveString]]
 
     when:
-    driver.pipeInput(consumerFactory.create(parsedTopic, key, plusFiveMessage))
+    driver.pipeInput(jsonFactory.create(parsedTopic, key, plusFiveMessage))
 
     then: // a tombstone is published
     parsedStore.get(key) == plusFiveMessage

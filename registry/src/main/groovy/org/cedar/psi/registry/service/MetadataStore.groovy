@@ -25,20 +25,26 @@ class MetadataStore {
   }
 
   Map retrieveEntity(String type, String source, String id) {
-    def rawStore = inputStore(type, source)
+    def inputStore = inputStore(type, source)
     def parsedStore = parsedStore(type)
-    if (!rawStore && !parsedStore) { return null }
-    Map rawValue = rawStore ? getValueFromStore(rawStore, id) : null
-    Map parsedValue = parsedStore ? getValueFromStore(parsedStore, id) : null
-    if (!rawValue && !parsedValue) { return null }
-    return [id: id, type: type, attributes: mergeAttributes(rawValue, parsedValue)]
+    if (!inputStore && !parsedStore) { return null }
+    def inputValue = inputStore ? getFromStore(inputStore, id) : null
+    def parsedValue = parsedStore ? getFromStore(parsedStore, id) : null
+    if (!inputValue && !parsedValue) { return null }
+    def inputMap = inputValue ? [input: inputValue] : [:]
+    def parsedMap = parsedValue ? parsedValue as Map : [:]
+    return [
+        id: id,
+        type: type,
+        attributes: mergeAttributes(inputMap, parsedMap)
+    ]
   }
 
-  private Map getValueFromStore(String storeName, String id) {
+  private Object getFromStore(String storeName, String id) {
     try {
       def store = metadataStreamService.streamsApp.store(storeName, QueryableStoreTypes.keyValueStore())
       if (!store) { return null }
-      return store.get(id) as Map
+      return store.get(id)
     }
     catch (Exception e) {
       log.error("Failed to retrieve value with id [${id}] from state store [${storeName}]", e)

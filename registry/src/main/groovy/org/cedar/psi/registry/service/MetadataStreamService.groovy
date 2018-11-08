@@ -1,10 +1,8 @@
 package org.cedar.psi.registry.service
 
-import groovy.json.JsonOutput
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import io.confluent.kafka.streams.serdes.avro.GenericAvroSerde
-import org.apache.avro.generic.GenericRecord
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.clients.admin.NewTopic
 import org.apache.kafka.common.config.TopicConfig
@@ -15,6 +13,7 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.*
 import org.apache.kafka.streams.state.Stores
+import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.registry.stream.DelayedPublisherTransformer
 import org.cedar.psi.registry.stream.PublishingAwareTransformer
@@ -112,7 +111,7 @@ class MetadataStreamService {
         (BOOTSTRAP_SERVERS_CONFIG)        : bootstrapServers.join(','),
         (SCHEMA_REGISTRY_URL_CONFIG)      : schemaRegistryUrl,
         (DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
-        (DEFAULT_VALUE_SERDE_CLASS_CONFIG): JsonSerdes.Map().class.name,
+        (DEFAULT_VALUE_SERDE_CLASS_CONFIG): SpecificAvroSerde.class.name,
         (AUTO_OFFSET_RESET_CONFIG)        : 'earliest'
     ]
     if (stateDir) {
@@ -147,15 +146,15 @@ class MetadataStreamService {
   static StreamsBuilder addTopologyForType(StreamsBuilder builder, String type, Long publishInterval = null) {
     // build input table for each source
     Map<String, KTable> inputTables = inputSources(type).collectEntries { source ->
-      [(source): builder
-          .stream(inputTopic(type, source))
-          .mapValues({ JsonOutput.toJson(it as Map) } as ValueMapper<GenericRecord, Map>)
+      KStream<String, Input> inputStream = builder.stream(inputTopic(type, source))
+      KTable<String, Input> inputTable = inputStream
           .groupByKey()
-          .reduce(StreamFunctions.mergeContentMaps, Materialized.as(inputStore(type, source)).withValueSerde(JsonSerdes.Map()))]
+          .reduce(StreamFunctions.mergeInputs, Materialized.as(inputStore(type, source)))
+      return [(source): inputTable]
     }
 
     // build parsed table
-    KTable parsedTable = builder
+    KTable<String, Map> parsedTable = builder
         .stream(parsedTopic(type), Consumed.with(Serdes.String(), JsonSerdes.Map()))
         .mapValues(StreamFunctions.parsedInfoNormalizer)
         .groupByKey()
@@ -175,14 +174,14 @@ class MetadataStreamService {
       parsedTable
           .toStream()
           .transform({ -> publisher }, publishTimeStore(type), publishKeyStore(type), parsedStore(type))
-          .to(parsedTopic(type))
+          .to(parsedTopic(type), Produced.with(Serdes.String(), JsonSerdes.Map()))
     }
 
     // build published topic
     parsedTable
         .toStream()
-        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier)
-        .to(publishedTopic(type))
+        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier<Map, Map>)
+        .to(publishedTopic(type), Produced.with(Serdes.String(), JsonSerdes.Map()))
 
     return builder
   }
