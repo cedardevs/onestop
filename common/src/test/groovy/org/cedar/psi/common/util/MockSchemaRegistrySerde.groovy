@@ -1,4 +1,4 @@
-package org.cedar.psi.registry.util
+package org.cedar.psi.common.util
 
 import io.confluent.kafka.schemaregistry.client.MockSchemaRegistryClient
 import io.confluent.kafka.schemaregistry.client.SchemaRegistryClient

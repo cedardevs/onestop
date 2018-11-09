@@ -24,11 +24,11 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
-import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_SERIALIZER
-import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_DESERIALIZER
-import static org.cedar.psi.registry.util.StreamSpecUtils.JSON_SERIALIZER
-import static org.cedar.psi.registry.util.StreamSpecUtils.JSON_DESERIALIZER
-import static org.cedar.psi.registry.util.StreamSpecUtils.readAllOutput
+import static org.cedar.psi.common.util.StreamSpecUtils.STRING_SERIALIZER
+import static org.cedar.psi.common.util.StreamSpecUtils.STRING_DESERIALIZER
+import static org.cedar.psi.common.util.StreamSpecUtils.JSON_SERIALIZER
+import static org.cedar.psi.common.util.StreamSpecUtils.JSON_DESERIALIZER
+import static org.cedar.psi.common.util.StreamSpecUtils.readAllOutput
 
 @Slf4j
 @Unroll

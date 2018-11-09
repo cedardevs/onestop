@@ -7,7 +7,7 @@ import org.apache.kafka.streams.test.OutputVerifier
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
 import org.cedar.psi.registry.service.MetadataStreamService
-import org.cedar.psi.registry.util.MockSchemaRegistrySerde
+import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import spock.lang.Specification
 
 import java.time.ZoneId
@@ -18,9 +18,9 @@ import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
 import static org.apache.kafka.streams.StreamsConfig.*
 import static org.cedar.psi.common.constants.Topics.*
-import static org.cedar.psi.registry.util.StreamSpecUtils.JSON_SERIALIZER
-import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_SERIALIZER
-import static org.cedar.psi.registry.util.StreamSpecUtils.readAllOutput
+import static org.cedar.psi.common.util.StreamSpecUtils.JSON_SERIALIZER
+import static org.cedar.psi.common.util.StreamSpecUtils.STRING_SERIALIZER
+import static org.cedar.psi.common.util.StreamSpecUtils.readAllOutput
 
 
 class FullWorkflowSpec extends Specification {
