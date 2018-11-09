@@ -10,9 +10,9 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.cedar.psi.common.constants.StreamsApps
-import org.cedar.psi.manager.config.Constants
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
+import org.cedar.psi.manager.config.ManagerConfig
 import spock.lang.Specification
 
 import java.time.ZoneOffset
@@ -22,7 +22,7 @@ class StreamManagerSpec extends Specification {
 
   def DESERIALIZER = Serdes.String().deserializer()
 
-  def streamsConfig = StreamManager.streamsConfig(StreamsApps.MANAGER_ID, Constants.BOOTSTRAP_DEFAULT)
+  def streamsConfig = StreamManager.streamsConfig(StreamsApps.MANAGER_ID, ManagerConfig.BOOTSTRAP_SERVERS_DEFAULT)
   def topology = StreamManager.buildTopology()
   def driver = new TopologyTestDriver(topology, streamsConfig)
   def consumerFactory = new ConsumerRecordFactory(Serdes.String().serializer(), JsonSerdes.Map().serializer())

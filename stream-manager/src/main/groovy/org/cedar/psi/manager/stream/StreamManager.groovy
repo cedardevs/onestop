@@ -13,6 +13,7 @@ import org.apache.kafka.streams.kstream.Produced
 import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.manager.config.Constants
+import org.cedar.psi.manager.config.ManagerConfig
 
 import static org.cedar.psi.common.constants.StreamsApps.MANAGER_ID
 import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID
@@ -21,9 +22,9 @@ import static org.cedar.psi.common.constants.Topics.*
 @Slf4j
 class StreamManager {
 
-  static KafkaStreams buildStreamsApp(String bootstrapServers) {
+  static KafkaStreams buildStreamsApp(ManagerConfig config) {
     def topology = buildTopology()
-    def streamsConfig = streamsConfig(MANAGER_ID, bootstrapServers)
+    def streamsConfig = streamsConfig(MANAGER_ID, config.bootstrapServers())
     return new KafkaStreams(topology, streamsConfig)
   }
 
