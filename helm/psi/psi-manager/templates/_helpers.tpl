@@ -57,7 +57,7 @@ Create a default fully qualified schema registry name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "psi-manager.cp-schema-registry.fullname" -}}
-{{- $name := default "cp-schema-registry" (index .Values "cp-schema-registry" "nameOverride") -}}
+{{- $name := default "cp-schema-registry" (index .Values "cp-schema-registry" "serviceNameOverride") -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -65,7 +65,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 Form the Schema Registry URL. If Schema Registry is installed as part of this chart, use k8s service discovery,
 else use user-provided URL
 */}}
-{{- define "psi-manager.cp-schema-registry.service-name" -}}
+{{- define "psi-manager.cp-schema-registry.url" -}}
 {{- if (index .Values "cp-schema-registry" "url") -}}
 {{- printf "%s" (index .Values "cp-schema-registry" "url") -}}
 {{- else -}}
