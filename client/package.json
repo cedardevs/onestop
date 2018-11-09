@@ -13,7 +13,7 @@
     "test": "jest --config jest.config.js",
     "testFresh": "jest --no-cache --config jest.config.js",
     "build": "npm install && npm test && NODE_ENV=production ./node_modules/.bin/webpack -p",
-    "clean": "rm -rf dist && rm -rf build && rm -rf coverage",
+    "clean": "rm -rf build && rm -rf coverage",
     "retire": "retire -p"
   },
   "dependencies": {

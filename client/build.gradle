@@ -9,9 +9,13 @@ node {
 
 clean {
     doFirst {
-        file("${buildDir}/dist").deleteDir()
-        file("${buildDir}/libs").deleteDir()
+      npm_clean
     }
+}
+
+task npm_clean(type: Exec) {
+  executable = "bash"
+  args = ["-c", "npm run clean"]
 }
 
 def sourceDirs = ['node_modules', 'img', 'src', 'style']
