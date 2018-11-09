@@ -1,6 +1,5 @@
 package org.cedar.psi.manager.stream
 
-import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
 import org.apache.kafka.common.serialization.Serdes
@@ -14,6 +13,7 @@ import org.apache.kafka.streams.kstream.Produced
 import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.serde.JsonSerdes
+import org.cedar.psi.common.util.AvroUtils
 import org.cedar.psi.manager.config.ManagerConfig
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
@@ -54,7 +54,7 @@ class StreamManager {
     // Merge straight-to-parsing stream with topic SME granules write to:
     KStream<String, Map> unparsedGranules = builder.stream(unparsedTopic('granule'), Consumed.with(Serdes.String(), JsonSerdes.Map()))
     KStream<String, Map> parsedNotAnalyzedGranules = toParsingFunction
-        .mapValues({ v -> new JsonSlurper().parseText(v.toString()) as Map } as ValueMapper<Input, Map>)
+        .mapValues( AvroUtils.&avroToMap as ValueMapper<Input, Map>)
         .merge(unparsedGranules)
         .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v) } as ValueMapper<Map, Map>)
 
