@@ -45,17 +45,30 @@ export default class NotFound extends React.Component {
   }
 
   render() {
+    // retrieve the attempted route location
     const {location} = this.props
 
+    // split the unresolved route by slashes, filtering out any non-truthy values
     let possibleQueryComponents = location.pathname.split('/').filter(Boolean)
+
+    // if route is deeply nested, only suggest queries based on first 3 path components
+    if (possibleQueryComponents.length > 3) {
+      possibleQueryComponents = possibleQueryComponents.slice(0, 3)
+    }
+
+    // use simple logical AND/OR in query text suggestions
     const joinPossibilities = [ ' AND ', ' OR ' ]
+
     const uniqueSuggestedQueries = [
+      // ensure suggestions are unique (in case 1 path component)
       ...new Set(
         joinPossibilities.map(joinChar => {
           return possibleQueryComponents.join(joinChar)
         })
       ),
     ]
+
+    // construct links to trigger searches based on suggestions
     const suggestions = uniqueSuggestedQueries.map((query, index) => {
       return (
         <li key={index}>
