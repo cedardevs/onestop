@@ -7,8 +7,8 @@ import {boxShadow} from '../common/defaultStyles'
 import {identifyProtocol} from '../utils/resultUtils'
 import cancel from 'fa/ban.svg'
 import {fontFamilySerif} from '../utils/styleUtils'
-
-// import mockCartItems from '../../test/cart/mockCartItems'
+import FlexColumn from '../common/FlexColumn'
+import ScriptDownloader from './ScriptDownloader'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -40,10 +40,15 @@ const styleCartActionsTitle = {
   padding: 0,
 }
 
+const styleActionButtons = {
+  justifyContent: 'space-between',
+  marginRight: '1.618em',
+}
+
 const styleClearCartButton = {
   fontSize: '1em',
   display: 'inline-flex',
-  padding: '0.309em',
+  padding: '0.309em 0.618em 0.309em 0.309em',
 }
 
 const styleClearCartIcon = {
@@ -143,19 +148,27 @@ export default class Cart extends React.Component {
         />
       ) : null
 
+    const cartActionButtons = [
+      <Button
+        key="clearCartButton"
+        style={styleClearCartButton}
+        title={'Clear cart'}
+        text={'Clear cart'}
+        icon={cancel}
+        styleIcon={styleClearCartIcon}
+        onClick={deselectAllGranules}
+      />,
+      <ScriptDownloader
+        key="scriptDownloaderButton"
+        selectedGranules={selectedGranules}
+      />,
+    ]
+
     const cartActions =
       selectedGranulesCount === 0 ? null : (
         <div style={styleCartActions}>
           <h1 style={styleCartActionsTitle}>Cart Actions</h1>
-          <Button
-            key="clearCartButton"
-            style={styleClearCartButton}
-            title={'Clear cart'}
-            text={'Clear cart'}
-            icon={cancel}
-            styleIcon={styleClearCartIcon}
-            onClick={deselectAllGranules}
-          />
+          <FlexColumn style={styleActionButtons} items={cartActionButtons} />
         </div>
       )
 
