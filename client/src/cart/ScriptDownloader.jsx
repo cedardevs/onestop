@@ -24,7 +24,7 @@ const styleWgetScriptIcon = {
 }
 
 export default class ScriptDownloader extends React.Component {
-  getUniqueDownloadableSourcesAndProtocols = selectedGranules => {
+  getSourcesAndProtocols = selectedGranules => {
     const downloadableSrcAndProto = Object.keys(
       selectedGranules
     ).map(granuleId => {
@@ -52,7 +52,7 @@ export default class ScriptDownloader extends React.Component {
     return uniqueSourcesAndProtocols
   }
 
-  getDownloadLinksForSourceAndProtocol = (source, protocol) => {
+  getLinks = (source, protocol) => {
     const {selectedGranules} = this.props
     const selectedGranuleIds = Object.keys(selectedGranules)
     let downloadLinks = []
@@ -73,12 +73,16 @@ export default class ScriptDownloader extends React.Component {
     return _.uniq(downloadLinks)
   }
 
-  downloadWgetScript = () => {
+  countLinks = (source, protocol) => {
+    return this.getLinks(source, protocol).length
+  }
+
+  downloadScript = () => {
     const {sourcesAndProtocols, selectedSourceAndProtocol} = this.state
     const sourceAndProtocol = sourcesAndProtocols[selectedSourceAndProtocol]
     const source = sourceAndProtocol.source
     const protocol = sourceAndProtocol.protocol
-    const links = this.getDownloadLinksForSourceAndProtocol(source, protocol)
+    const links = this.getLinks(source, protocol)
     let blob = new Blob([ links.join('\n') ], {
       type: 'text/plain;charset=utf-8',
     })
@@ -105,9 +109,7 @@ export default class ScriptDownloader extends React.Component {
 
   componentDidMount() {
     const {selectedGranules} = this.props
-    const sourcesAndProtocols = this.getUniqueDownloadableSourcesAndProtocols(
-      selectedGranules
-    )
+    const sourcesAndProtocols = this.getSourcesAndProtocols(selectedGranules)
     this.setState({
       sourcesAndProtocols: sourcesAndProtocols,
     })
@@ -116,9 +118,7 @@ export default class ScriptDownloader extends React.Component {
   componentDidUpdate(prevProps) {
     const {selectedGranules} = this.props
     if (selectedGranules !== prevProps.selectedGranules) {
-      const sourcesAndProtocols = this.getUniqueDownloadableSourcesAndProtocols(
-        selectedGranules
-      )
+      const sourcesAndProtocols = this.getSourcesAndProtocols(selectedGranules)
       this.setState({
         sourcesAndProtocols: sourcesAndProtocols,
       })
@@ -147,7 +147,10 @@ export default class ScriptDownloader extends React.Component {
           if (curr.protocol === protocol) {
             acc.push(
               <option key={currIndex} value={currIndex}>
-                {curr.source}
+                {`${curr.source} (${this.countLinks(
+                  curr.source,
+                  curr.protocol
+                )})`}
               </option>
             )
           }
@@ -172,7 +175,7 @@ export default class ScriptDownloader extends React.Component {
           text={'Download wget script'}
           icon={download}
           styleIcon={styleWgetScriptIcon}
-          onClick={this.downloadWgetScript}
+          onClick={this.downloadScript}
         />
         <select
           key="protocolSourceSelect"
