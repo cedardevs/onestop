@@ -2,10 +2,7 @@ package org.cedar.psi.manager.util
 
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
-import groovy.util.slurpersupport.NodeChild
 import org.apache.commons.text.StringEscapeUtils
-import org.apache.commons.text.WordUtils
-import groovy.xml.XmlUtil
 
 class ISOParser {
 

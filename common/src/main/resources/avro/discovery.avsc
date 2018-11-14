@@ -15,37 +15,42 @@
               {
                 "name": "linkName",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "linkProtocol",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "linkUrl",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "linkDescription",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "linkFunction",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               }
             ]
           }
@@ -64,7 +69,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "beginIndeterminate",
@@ -72,7 +77,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "endDate",
@@ -80,7 +85,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "endIndeterminate",
@@ -88,7 +93,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "instant",
@@ -96,7 +101,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "instantIndeterminate",
@@ -104,7 +109,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "description",
@@ -112,7 +117,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       }
     ]
   },
@@ -128,7 +133,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "parentIdentifier",
@@ -136,7 +141,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "hierarchyLevelName",
@@ -144,7 +149,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "doi",
@@ -152,7 +157,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "purpose",
@@ -160,7 +165,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "status",
@@ -168,7 +173,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "credit",
@@ -176,7 +181,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "title",
@@ -184,7 +189,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "alternateTitle",
@@ -192,7 +197,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "description",
@@ -200,7 +205,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "keywords",
@@ -217,7 +222,8 @@
                   "items": [
                     "null",
                     "string"
-                  ]
+                  ],
+                  "default": null
                 }
               },
               {
@@ -226,11 +232,15 @@
                   "null",
                   "string"
                 ],
-                "default": "null"
+                "default": null
               },
               {
                 "name": "namespace",
-                "type": "string"
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
               }
             ]
           }
@@ -243,7 +253,8 @@
           "items": [
             "null",
             "string"
-          ]
+          ],
+          "default": null
         }
       },
       {
@@ -252,15 +263,7 @@
       },
       {
         "name": "spatialBounding",
-        "type": {
-          "type": "array",
-          "items": {
-            "name": "Geometry",
-            "type": "record",
-            "doc": "One geometry as defined by GeoJSON",
-            "fields": []
-          }
-        }
+        "type": "Geometry"
       },
       {
         "name": "isGlobal",
@@ -277,23 +280,26 @@
               {
                 "name": "instrumentIdentifier",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "instrumentType",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "instrumentDescription",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               }
             ]
           }
@@ -310,30 +316,34 @@
               {
                 "name": "operationDescription",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "operationIdentifier",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "operationStatus",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "operationType",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               }
             ]
           }
@@ -350,23 +360,29 @@
               {
                 "name": "platformIdentifier",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "platformDescription",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "platformSponsor",
-                "type": {
-                  "type": "array",
-                  "items": "string"
-                }
+                "type": [
+                  "null",
+                  {
+                    "type": "array",
+                    "items": "string"
+                  }
+                ],
+                "default": null
               }
             ]
           }
@@ -383,16 +399,18 @@
               {
                 "name": "name",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "version",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               }
             ]
           }
@@ -413,44 +431,50 @@
               {
                 "name": "individualName",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "organizationName",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "positionName",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "role",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "email",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "phone",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               }
             ]
           }
@@ -461,35 +485,40 @@
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "thumbnailDescription",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "creationDate",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "revisionDate",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "publicationDate",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "citeAsStatements",
@@ -502,7 +531,11 @@
         "name": "crossReferences",
         "type": {
           "type": "array",
-          "items": "string"
+          "items": [
+            "null",
+            "string"
+          ],
+          "default": null
         }
       },
       {
@@ -516,16 +549,18 @@
               {
                 "name": "title",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "date",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "links",
@@ -540,7 +575,8 @@
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "legalConstraints",
@@ -549,7 +585,8 @@
           "items": [
             "null",
             "string"
-          ]
+          ],
+          "default": null
         }
       },
       {
@@ -557,14 +594,16 @@
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "orderingInstructions",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "edition",
@@ -576,72 +615,82 @@
       {
         "name": "dsmmAccessibility",
         "type": [
-          "int",
-          "null"
-        ]
+          "null",
+          "int"
+        ],
+        "default": 0
       },
       {
         "name": "dsmmDataIntegrity",
         "type": [
-          "int",
-          "null"
-        ]
+          "null",
+          "int"
+        ],
+        "default": 0
       },
       {
         "name": "dsmmDataQualityAssessment",
         "type": [
-          "int",
-          "null"
-        ]
+          "null",
+          "int"
+        ],
+        "default": 0
       },
       {
         "name": "dsmmDataQualityAssurance",
         "type": [
-          "int",
-          "null"
-        ]
+          "null",
+          "int"
+        ],
+        "default": 0
       },
       {
         "name": "dsmmDataQualityControlMonitoring",
         "type": [
-          "int",
-          "null"
-        ]
+          "null",
+          "int"
+        ],
+        "default": 0
       },
       {
         "name": "dsmmPreservability",
         "type": [
-          "int",
-          "null"
-        ]
+          "null",
+          "int"
+        ],
+        "default": 0
       },
       {
         "name": "dsmmProductionSustainability",
         "type": [
-          "int",
-          "null"
-        ]
+          "null",
+          "int"
+        ],
+        "default": 0
       },
       {
         "name": "dsmmTransparencyTraceability",
         "type": [
-          "int",
-          "null"
-        ]
+          "null",
+          "int"
+        ],
+        "default": 0
       },
       {
         "name": "dsmmUsability",
         "type": [
-          "int",
-          "null"
-        ]
+          "null",
+          "int"
+        ],
+        "default": 0
       },
       {
         "name": "dsmmAverage",
         "type": [
-          "int",
-          "null"
+          "null",
+          "float"
         ],
+        "default": 0,
         "doc": "Calculated mean average of individual DSMM scores for Accessibility, Data Integrity, Data Quality Assessment, Data Quality Assurance, Data Quality Control Monitoring, Preservability, Production Sustainability, Transparency Traceability, and Usability."
       },
       {
@@ -649,24 +698,23 @@
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "presentationForm",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "services",
         "type": {
           "type": "array",
-          "items": [
-            "null",
-            "string"
-          ],
-          "default": "null",
+          "items": "string",
+          "default": [],
           "doc": "List of objects that represent an SV_ServiceIdentification section, if any, of ISO 19115 XML metadata document. Empty if not present."
         }
       }
