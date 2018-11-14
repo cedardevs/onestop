@@ -3,37 +3,29 @@ package org.cedar.psi.manager.stream
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.cedar.psi.manager.util.ISOParser
-import org.xml.sax.SAXException
+import org.cedar.psi.common.avro.ErrorEvent
 
 @Slf4j
 class MetadataParsingService {
 
-  static Map parseToInternalFormat(Map msgMap) {
-    String format = msgMap.contentType
-    String rawMetadata = msgMap.content
-//    log.info "Parsing message with source and id: ${msgMap.identifiers} and conentType: $format "
-
-    Map result = [:]
+  static Object parseToInternalFormat(Map msgMap) {
+    String contentType = msgMap.contentType
+    String content = msgMap.content
 
     try {
-      if (format == 'application/xml') {
-        result = [discovery: ISOParser.parseXMLMetadataToMap(rawMetadata)]
+      if (!content) {
+        return new ErrorEvent(title: "No content provided")
       }
-      else {
-        result = [error: 'Unknown raw format of metadata']
+      if (contentType != 'application/xml') {
+        return new ErrorEvent(title: "Unsupported content type", detail: "Content type [${contentType}] is not supported")
       }
-    }
-    catch(SAXException e) {
-      result = [error: "Malformed XML encountered; unable to parse. " +
-          "Root cause: ${ExceptionUtils.getRootCauseMessage(e).trim()}"]
-    }
-    catch(Exception e) {      
-//      log.error "Unable to parse message with source and id: ${srcId}"
-      log.error "Caught exception: $e"
-      result = [error: "Malformed data encountered; unable to parse. " +
-          "Root cause: ${ExceptionUtils.getRootCauseMessage(e).trim()}"]
-    }
 
-    return result
+      return [discovery: ISOParser.parseXMLMetadataToMap(content)]
+    }
+    catch(Exception e) {
+      log.error "Caught exception: $e"
+      return new ErrorEvent(title: "Unable to parse malformed content", detail: ExceptionUtils.getRootCauseMessage(e).trim())
+    }
   }
+
 }

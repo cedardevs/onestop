@@ -22,8 +22,11 @@ import static org.apache.kafka.streams.StreamsConfig.*
 import static org.cedar.psi.common.constants.StreamsApps.MANAGER_ID
 import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID
 import static org.cedar.psi.common.constants.Topics.*
-import static org.cedar.psi.manager.util.RoutingUtils.getIsNotSME
-import static org.cedar.psi.manager.util.RoutingUtils.getIsSME
+import static org.cedar.psi.manager.util.RoutingUtils.isDefault
+import static org.cedar.psi.manager.util.RoutingUtils.isDefault
+import static org.cedar.psi.manager.util.RoutingUtils.isError
+import static org.cedar.psi.manager.util.RoutingUtils.isSME
+import static org.cedar.psi.manager.util.RoutingUtils.not
 
 @Slf4j
 class StreamManager {
@@ -42,7 +45,7 @@ class StreamManager {
     KStream<String, Input> collectionInputStream = builder.stream(inputChangelogTopics(REGISTRY_ID, 'collection'))
 
     // Split granules to those that need SME processing and those ready to parse
-    KStream<String, Input>[] smeBranches = granuleInputStream.branch(isSME, isNotSME)
+    KStream<String, Input>[] smeBranches = granuleInputStream.branch(isSME, not(isSME))
     KStream toSmeFunction = smeBranches[0]
     KStream toParsingFunction = smeBranches[1]
 
@@ -53,48 +56,46 @@ class StreamManager {
 
     // Merge straight-to-parsing stream with topic SME granules write to:
     KStream<String, Map> unparsedGranules = builder.stream(unparsedTopic('granule'), Consumed.with(Serdes.String(), JsonSerdes.Map()))
-    KStream<String, Map> parsedNotAnalyzedGranules = toParsingFunction
-        .mapValues( AvroUtils.&avroToMap as ValueMapper<Input, Map>)
+    KStream<String, Object> parsedNotAnalyzedGranules = toParsingFunction
+        .mapValues(AvroUtils.&avroToMap as ValueMapper<Input, Map>)
         .merge(unparsedGranules)
-        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v) } as ValueMapper<Map, Map>)
+        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v) } as ValueMapper<Map, Object>)
 
     // Branch again, sending errors to separate topic
-    KStream<String, Map>[] parsedStreams = parsedNotAnalyzedGranules.branch(isValid, isNotValid)
-    KStream goodParsedStream = parsedStreams[0]
-    KStream badParsedStream = parsedStreams[1]
-    //send the bad stream off to the error topic
-    badParsedStream.to(errorTopic(), Produced.with(Serdes.String(), JsonSerdes.Map()))
+    KStream<String, Object>[] parsedStreams = parsedNotAnalyzedGranules.branch(isError, isDefault)
+    KStream badParsedStream = parsedStreams[0]
+    badParsedStream.to(errorTopic())
+
     // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
     //      parallelization, or at least compare with and without topic in load testing?
 
     // Send valid messages to analysis & send final output to topic
+    KStream goodParsedStream = parsedStreams[1]
     goodParsedStream
         .mapValues({ v -> AnalysisAndValidationService.analyzeParsedMetadata(v) } as ValueMapper<Map, Map>)
         .to(parsedTopic('granule'), Produced.with(Serdes.String(), JsonSerdes.Map()))
 
     // parsing collection:
-    KStream<String, Map> parsedNotAnalyzedCollection = collectionInputStream
-        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v.input) } as ValueMapper<Map, Map>)
+    KStream<String, Object> parsedNotAnalyzedCollection = collectionInputStream
+        .mapValues(AvroUtils.&avroToMap as ValueMapper<Input, Map>)
+        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v) } as ValueMapper<Map, Object>)
 
     // Branch again, sending errors to separate topic
-    KStream<String, Map>[] parsedCollection = parsedNotAnalyzedCollection.branch(isValid, isNotValid)
-    KStream goodParsedCollection = parsedCollection[0]
-    KStream badParsedCollection = parsedCollection[1]
-    //send the bad stream off to the error topic
-    badParsedCollection.to(errorTopic(), Produced.with(Serdes.String(), JsonSerdes.Map()))
+    KStream<String, Map>[] parsedCollection = parsedNotAnalyzedCollection.branch(isError, isDefault)
+    KStream badParsedCollection = parsedCollection[0]
+    badParsedCollection.to(errorTopic())
+
     // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
     //      parallelization, or at least compare with and without topic in load testing?
 
     // Send valid messages to analysis & send final output to topic
+    KStream goodParsedCollection = parsedCollection[1]
     goodParsedCollection
         .mapValues({ v -> AnalysisAndValidationService.analyzeParsedMetadata(v) } as ValueMapper<Map, Map>)
         .to(parsedTopic('collection'), Produced.with(Serdes.String(), JsonSerdes.Map()))
 
     return builder.build()
   }
-
-  static Predicate<String, Map> isValid = { String k, Map v -> !v.containsKey('error') }
-  static Predicate<String, Map> isNotValid = { String k, Map v -> v.containsKey('error') }
 
   static Properties streamsConfig(String appId, ManagerConfig config) {
     log.info "Building kafka streams appConfig for $appId"
