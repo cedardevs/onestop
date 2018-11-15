@@ -1,0 +1,16 @@
+{
+  "type": "record",
+  "namespace": "org.cedar.psi.common.avro",
+  "name": "ParsedRecord",
+  "doc": "",
+  "fields": [
+    {
+      "name": "discovery",
+      "type": "Discovery"
+    },
+    {
+      "name": "publishing",
+      "type": "Publishing"
+    }
+  ]
+}

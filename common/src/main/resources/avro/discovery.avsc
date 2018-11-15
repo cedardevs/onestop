@@ -1,126 +1,3 @@
-[
-  {
-    "type": "record",
-    "name": "Links",
-    "namespace": "org.cedar.psi.common.avro",
-    "fields": [
-      {
-        "name": "link",
-        "type": {
-          "type": "array",
-          "items": {
-            "name": "Link",
-            "type": "record",
-            "fields": [
-              {
-                "name": "linkName",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "linkProtocol",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "linkUrl",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "linkDescription",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "linkFunction",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              }
-            ]
-          }
-        }
-      }
-    ]
-  },
-  {
-    "type": "record",
-    "name": "TemporalBounding",
-    "namespace": "org.cedar.psi.common.avro",
-    "fields": [
-      {
-        "name": "beginDate",
-        "type": [
-          "null",
-          "string"
-        ],
-        "default": null
-      },
-      {
-        "name": "beginIndeterminate",
-        "type": [
-          "null",
-          "string"
-        ],
-        "default": null
-      },
-      {
-        "name": "endDate",
-        "type": [
-          "null",
-          "string"
-        ],
-        "default": null
-      },
-      {
-        "name": "endIndeterminate",
-        "type": [
-          "null",
-          "string"
-        ],
-        "default": null
-      },
-      {
-        "name": "instant",
-        "type": [
-          "null",
-          "string"
-        ],
-        "default": null
-      },
-      {
-        "name": "instantIndeterminate",
-        "type": [
-          "null",
-          "string"
-        ],
-        "default": null
-      },
-      {
-        "name": "description",
-        "type": [
-          "null",
-          "string"
-        ],
-        "default": null
-      }
-    ]
-  },
   {
     "type": "record",
     "namespace": "org.cedar.psi.common.avro",
@@ -209,7 +86,8 @@
       },
       {
         "name": "keywords",
-        "type": {
+        "type":["null",
+        {
           "type": "array",
           "items": {
             "name": "KeywordsElement",
@@ -219,59 +97,50 @@
                 "name": "values",
                 "type": {
                   "type": "array",
-                  "items": [
-                    "null",
-                    "string"
-                  ],
-                  "default": null
+                  "items":  "string"
                 }
               },
               {
                 "name": "type",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
+                "type": "string"
               },
               {
                 "name": "namespace",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
+                "type": "string"
               }
             ]
           }
-        }
+        }],
+        "default": []
       },
       {
         "name": "topicCategories",
-        "type": {
+        "type":["null",
+        {
           "type": "array",
-          "items": [
-            "null",
-            "string"
-          ],
-          "default": null
-        }
+          "items": "string"
+        }],
+        "default": []
       },
       {
         "name": "temporalBounding",
-        "type": "TemporalBounding"
+        "type": ["null", "TemporalBounding"],
+        "default": null
       },
       {
         "name": "spatialBounding",
-        "type": "Geometry"
+        "type": ["null", "Geometry"],
+        "default": null
       },
       {
         "name": "isGlobal",
-        "type": "boolean"
+        "type": ["null", "boolean"],
+        "default": null
       },
       {
         "name": "acquisitionInstruments",
-        "type": {
+        "type":["null",
+        {
           "type": "array",
           "items": {
             "name": "Instruments",
@@ -303,11 +172,13 @@
               }
             ]
           }
-        }
+        }],
+        "default": []
       },
       {
         "name": "acquisitionOperations",
-        "type": {
+        "type":["null",
+        {
           "type": "array",
           "items": {
             "name": "Operation",
@@ -347,11 +218,13 @@
               }
             ]
           }
-        }
+        }],
+        "default": []
       },
       {
         "name": "acquisitionPlatforms",
-        "type": {
+        "type":["null",
+        {
           "type": "array",
           "items": {
             "name": "Platform",
@@ -375,22 +248,22 @@
               },
               {
                 "name": "platformSponsor",
-                "type": [
-                  "null",
+                "type":
                   {
                     "type": "array",
                     "items": "string"
-                  }
-                ],
-                "default": null
+                  },
+                "default": []
               }
             ]
           }
-        }
+        }],
+        "default": []
       },
       {
         "name": "dataFormats",
-        "type": {
+        "type":["null",
+        {
           "type": "array",
           "items": {
             "name": "DataFormat",
@@ -414,15 +287,65 @@
               }
             ]
           }
-        }
+        }],
+        "default": []
       },
       {
         "name": "links",
-        "type": "Links"
+        "type": ["null", {
+          "type": "array",
+          "items": {
+            "name": "Link",
+            "type": "record",
+            "fields": [
+              {
+                "name": "linkName",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "linkProtocol",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "linkUrl",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "linkDescription",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "linkFunction",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              }
+            ]
+          }
+        }],
+        "default": []
       },
       {
         "name": "responsibleParties",
-        "type": {
+        "type":["null", {
           "type": "array",
           "items": {
             "name": "ResponsibleParty",
@@ -478,7 +401,8 @@
               }
             ]
           }
-        }
+        }],
+        "default": []
       },
       {
         "name": "thumbnail",
@@ -522,25 +446,15 @@
       },
       {
         "name": "citeAsStatements",
-        "type": {
+        "type": ["null", {
           "type": "array",
           "items": "string"
-        }
-      },
-      {
-        "name": "crossReferences",
-        "type": {
-          "type": "array",
-          "items": [
-            "null",
-            "string"
-          ],
-          "default": null
-        }
+        }],
+        "default": []
       },
       {
         "name": "largerWorks",
-        "type": {
+        "type": ["null", {
           "type": "array",
           "items": {
             "name": "Reference",
@@ -564,11 +478,17 @@
               },
               {
                 "name": "links",
-                "type": "Links"
+                "type": "Link"
               }
             ]
           }
-        }
+        }],
+        "default": []
+      },
+      {
+        "name": "crossReferences",
+        "type": ["null","Reference"],
+        "default": []
       },
       {
         "name": "useLimitation",
@@ -580,14 +500,11 @@
       },
       {
         "name": "legalConstraints",
-        "type": {
+        "type": ["null", {
           "type": "array",
-          "items": [
-            "null",
-            "string"
-          ],
-          "default": null
-        }
+          "items": "string"
+        }],
+        "default": []
       },
       {
         "name": "accessFeeStatement",
@@ -610,7 +527,8 @@
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "dsmmAccessibility",
@@ -707,17 +625,17 @@
           "null",
           "string"
         ],
-        "default": null
+        "default": "null"
       },
       {
         "name": "services",
-        "type": {
+        "type": ["null", {
           "type": "array",
-          "items": "string",
-          "default": [],
-          "doc": "List of objects that represent an SV_ServiceIdentification section, if any, of ISO 19115 XML metadata document. Empty if not present."
-        }
+          "items": "string"
+        }],
+        "default": "",
+        "doc": "List of objects that represent an SV_ServiceIdentification section, if any, of ISO 19115 XML metadata document. Empty if not present."
       }
     ]
   }
-]
+
