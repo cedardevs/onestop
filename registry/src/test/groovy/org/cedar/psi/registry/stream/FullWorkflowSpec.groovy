@@ -4,10 +4,14 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
+import org.cedar.psi.common.avro.Discovery
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
+import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.avro.Publishing
 import org.cedar.psi.registry.service.MetadataStreamService
-import org.cedar.psi.registry.util.MockSchemaRegistrySerde
+import org.cedar.psi.common.util.MockSchemaRegistrySerde
+import org.cedar.psi.registry.util.TimeFormatUtils
 import spock.lang.Specification
 
 import java.time.ZoneId
@@ -18,10 +22,8 @@ import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
 import static org.apache.kafka.streams.StreamsConfig.*
 import static org.cedar.psi.common.constants.Topics.*
-import static org.cedar.psi.registry.util.StreamSpecUtils.JSON_SERIALIZER
-import static org.cedar.psi.registry.util.StreamSpecUtils.STRING_SERIALIZER
-import static org.cedar.psi.registry.util.StreamSpecUtils.readAllOutput
-
+import static org.cedar.psi.common.util.StreamSpecUtils.STRING_SERIALIZER
+import static org.cedar.psi.common.util.StreamSpecUtils.readAllOutput
 
 class FullWorkflowSpec extends Specification {
 
@@ -39,7 +41,7 @@ class FullWorkflowSpec extends Specification {
   def topology = MetadataStreamService.buildTopology(5000)
   def driver = new TopologyTestDriver(topology, new Properties(config))
   def inputFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
-  def jsonFactory = new ConsumerRecordFactory(STRING_SERIALIZER, JSON_SERIALIZER)
+  def parsedFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
 
   def inputType = 'granule'
   def inputSource = DEFAULT_SOURCE
@@ -66,30 +68,86 @@ class FullWorkflowSpec extends Specification {
     inputStore.get('A') == new Input(content: '{"size":42,"name":"test"}', method: Method.POST, contentType: 'application/json', host: 'localhost', protocol: 'http', requestUrl: '/test', source: 'test')
   }
 
-  def 'saves and updates parsed granule info'() {
+  def 'values for disvocery and publishing are set to the default values '() {
     def key = 'A'
-    def value1 = ["discovery":["title":"replace me"]]
-    def value2 = ["discovery":["title":"test"]]
-    def value2PlusPublishing = ["discovery":["title":"test"],"publishing":["private":false]]
+    def discovery1 = Discovery.newBuilder()
+        .build()
+
+    def publishing = Publishing.newBuilder()
+        .build()
+
+    def value1 = ParsedRecord.newBuilder()
+        .setDiscovery(discovery1)
+        .setPublishing(publishing)
+        .build()
 
     when:
-    driver.pipeInput(jsonFactory.create(parsedTopic, key, value1))
-    driver.pipeInput(jsonFactory.create(parsedTopic, key, value2))
+    driver.pipeInput(parsedFactory.create(parsedTopic, key, value1))
 
     then:
-    parsedStore.get(key) == value2PlusPublishing
+    parsedStore.get(key) == value1
     def output = readAllOutput(driver, publishedTopic)
-    OutputVerifier.compareKeyValue(output[0], key, ["discovery":["title":"replace me"],"publishing":["private":false]])
-    OutputVerifier.compareKeyValue(output[1], key, ["discovery":["title":"test"],"publishing":["private":false]])
+    OutputVerifier.compareKeyValue(output[0], key, value1)
+    output.size() == 1
+  }
+
+  def 'saves and updates parsed granule values with  '() {
+    def key = 'A'
+    def discovery1 = Discovery.newBuilder()
+        .setFileIdentifier('gov.super.important:FILE-ID')
+        .setTitle("Title")
+        .setHierarchyLevelName('granule')
+        .setParentIdentifier(null )
+        .build()
+    def discovery2 = Discovery.newBuilder()
+        .setFileIdentifier('gov.super.important:FILE-ID')
+        .setTitle("SuperTitle")
+        .setHierarchyLevelName('granule')
+        .setParentIdentifier('gov.super.important:PARENT-ID')
+        .setAlternateTitle('Still title')
+        .setDescription('Important')
+        .build()
+    def publishing = Publishing.newBuilder()
+        .build()
+
+    def value1 = ParsedRecord.newBuilder()
+        .setDiscovery(discovery1)
+        .setPublishing(publishing)
+        .build()
+    def value2 = ParsedRecord.newBuilder()
+        .setDiscovery(discovery2)
+        .setPublishing(publishing)
+        .build()
+
+    when:
+    driver.pipeInput(parsedFactory.create(parsedTopic, key, value1))
+    driver.pipeInput(parsedFactory.create(parsedTopic, key, value2))
+
+    then:
+    parsedStore.get(key) == value2
+    def output = readAllOutput(driver, publishedTopic)
+    OutputVerifier.compareKeyValue(output[0], key, value1)
+    OutputVerifier.compareKeyValue(output[1], key, value2)
     output.size() == 2
   }
 
   def 'sends tombstones for private granules'() {
     def key = 'A'
-    def value = ["discovery":["title":"secret"],"publishing":["private":true]]
+    def discovery = Discovery.newBuilder()
+        .setTitle("secret")
+        .build()
+
+    def publishing = Publishing.newBuilder()
+        .setIsPrivate(true)
+        .build()
+
+    def value = ParsedRecord.newBuilder()
+        .setDiscovery(discovery)
+        .setPublishing(publishing)
+        .build()
 
     when:
-    driver.pipeInput(jsonFactory.create(parsedTopic, key, value))
+    driver.pipeInput(parsedFactory.create(parsedTopic, key, value))
 
     then:
     parsedStore.get(key) == value
@@ -102,10 +160,23 @@ class FullWorkflowSpec extends Specification {
     def key = 'A'
     def plusFiveTime = ZonedDateTime.now(UTC_ID).plusSeconds(5)
     def plusFiveString = ISO_OFFSET_DATE_TIME.format(plusFiveTime)
-    def plusFiveMessage = ["discovery":["metadata":"yes"],"publishing":["private":true,"until":plusFiveString]]
+    Long plusFiveLong = TimeFormatUtils.parseTimestamp(plusFiveString)
+    def discovery = Discovery.newBuilder()
+        .setTitle("secret")
+        .build()
+
+    def publishing = Publishing.newBuilder()
+        .setIsPrivate(true)
+        .setUntil(plusFiveLong)
+        .build()
+
+    def plusFiveMessage = ParsedRecord.newBuilder()
+        .setDiscovery(discovery)
+        .setPublishing(publishing)
+        .build()
 
     when:
-    driver.pipeInput(jsonFactory.create(parsedTopic, key, plusFiveMessage))
+    driver.pipeInput(parsedFactory.create(parsedTopic, key, plusFiveMessage))
 
     then: // a tombstone is published
     parsedStore.get(key) == plusFiveMessage
@@ -119,7 +190,7 @@ class FullWorkflowSpec extends Specification {
     then:
     parsedStore.get(key) == plusFiveMessage
     def output2 = readAllOutput(driver, publishedTopic)
-    OutputVerifier.compareKeyValue(output2[0], key, ["discovery":["metadata":"yes"],"publishing":["private":true,"until":plusFiveString]])
+    OutputVerifier.compareKeyValue(output2[0], key, plusFiveMessage)
     output2.size() == 1
   }
 

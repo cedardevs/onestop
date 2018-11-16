@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '2.0.4.RELEASE'
+    springBootVersion = '2.1.0.RELEASE'
     springCloudVersion = 'Finchley.RC2'
   }
   repositories {
@@ -26,20 +26,13 @@ configurations {
   integrationTestRuntime.extendsFrom testRuntime
 }
 
-repositories {
-  maven { url 'https://packages.confluent.io/maven/' }
-}
-
 dependencies {
   compile('org.codehaus.groovy:groovy')
   compile('org.codehaus.groovy:groovy-json')
   compile('org.springframework.boot:spring-boot-starter-actuator')
   compile('org.springframework.boot:spring-boot-starter-web')
-  compile('org.springframework.cloud:spring-cloud-starter')
-  compile('org.apache.kafka:kafka-streams:2.0.0')
-  compile('org.apache.kafka:kafka-clients:2.0.0')
-  compile('io.confluent:kafka-streams-avro-serde:5.0.0')
-  compile('org.apache.avro:avro:1.8.2')
+  compile('org.apache.kafka:kafka-streams:2.0.1')
+  compile('io.confluent:kafka-streams-avro-serde:5.0.1')
   compile(project(':common'))
 
   compileOnly('org.springframework.boot:spring-boot-starter-tomcat')
@@ -51,16 +44,17 @@ dependencies {
   testCompile("org.spockframework:spock-core:${project.spockVersion}")
   testCompile('org.codehaus.groovy.modules.http-builder:http-builder:0.7.1')
   testCompile('org.springframework.boot:spring-boot-starter-test')
-  testCompile('org.apache.kafka:kafka-streams-test-utils:2.0.0')
-  testCompile('org.apache.kafka:kafka-clients:2.0.0:test')
-  testCompile('org.apache.kafka:kafka_2.12:2.0.0')
-  testCompile('org.apache.kafka:kafka_2.12:2.0.0:test')
 //    testCompile('org.springframework.kafka:spring-kafka-test')
   // specify latest spring kafka version for Kafka 2.0.0 Compatibility
   testCompile('org.springframework.kafka:spring-kafka-test:2.2.0.M1')
-  testCompile('io.confluent:kafka-schema-registry:5.0.0')
-  testCompile('io.confluent:kafka-schema-registry:5.0.0:tests')
+  testCompile('org.apache.kafka:kafka-streams-test-utils:2.0.1')
+  testCompile('org.apache.kafka:kafka-clients:2.0.1:test')
+  testCompile('org.apache.kafka:kafka_2.12:2.0.1')
+  testCompile('org.apache.kafka:kafka_2.12:2.0.1:test')
+  testCompile('io.confluent:kafka-schema-registry:5.0.1')
+  testCompile('io.confluent:kafka-schema-registry:5.0.1:tests')
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
+  testCompile(project(path: ':common', configuration: 'testArtifacts'))
 }
 
 sourceSets {

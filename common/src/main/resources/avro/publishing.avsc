@@ -5,13 +5,15 @@
     "doc": "TBD",
     "fields": [
       {
-        "name": "private",
-        "type": "boolean"
+        "name": "isPrivate",
+        "type": "boolean",
+        "default": false
       },
       {
         "name": "until",
         "type": "long",
-        "logicalType": "timestamp-millis"
+        "logicalType": "timestamp-millis",
+        "default": 0
       }
     ]
   }

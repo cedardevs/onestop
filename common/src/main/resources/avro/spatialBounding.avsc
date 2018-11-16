@@ -1,0 +1,208 @@
+[
+  {
+    "namespace": "org.cedar.psi.common.avro",
+    "doc": "A single position",
+    "name": "Position",
+    "type": "record",
+    "fields": [
+      {
+        "name": "position",
+        "type": {
+          "type": "array",
+          "items": [
+            "double"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "namespace": "org.cedar.psi.common.avro",
+    "doc": "An array of positions",
+    "name": "PositionArray",
+    "type": "record",
+    "fields": [
+      {
+        "name": "positionArray",
+        "type": {
+          "type": "array",
+          "items": [
+            "Position"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "namespace": "org.cedar.psi.common.avro",
+    "doc": "An array of four positions where the first equals the last",
+    "name": "LineRing",
+    "type": "record",
+    "fields": [
+      {
+        "name": "lineRing",
+        "type": {
+          "type": "array",
+          "items": [
+            "PositionArray"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "namespace": "org.cedar.psi.common.avro",
+    "doc": "An array of linear rings",
+    "name": "PolygonArray",
+    "type": "record",
+    "fields": [
+      {
+        "name": "polygonArray",
+        "type": {
+          "type": "array",
+          "items": [
+            "LineRing"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "Point",
+    "namespace": "org.cedar.psi.common.avro",
+    "fields": [
+      {
+        "name": "type",
+        "type": "string"
+      },
+      {
+        "name": "coordinates",
+        "type": "Position"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "MultiPoint",
+    "namespace": "org.cedar.psi.common.avro",
+    "fields": [
+      {
+        "name": "type",
+        "type": "string"
+      },
+      {
+        "name": "coordinates",
+        "type": "PositionArray"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "LineString",
+    "doc": "An array of two or more positions",
+    "namespace": "org.cedar.psi.common.avro",
+    "fields": [
+      {
+        "name": "type",
+        "type": "string"
+      },
+      {
+        "name": "coordinates",
+        "type": "PositionArray"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "MultiLineString",
+    "namespace": "org.cedar.psi.common.avro",
+    "fields": [
+      {
+        "name": "type",
+        "type": "string"
+      },
+      {
+        "name": "coordinates",
+        "type": {
+          "type": "array",
+          "items": [
+            "PositionArray"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "Polygon",
+    "namespace": "org.cedar.psi.common.avro",
+    "fields": [
+      {
+        "name": "type",
+        "type": "string"
+      },
+      {
+        "name": "coordinates",
+        "type": "PolygonArray"
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "MultiPolygon",
+    "namespace": "org.cedar.psi.common.avro",
+    "fields": [
+      {
+        "name": "type",
+        "type": "string"
+      },
+      {
+        "name": "coordinates",
+        "type": {
+          "type": "array",
+          "items": [
+            "PolygonArray"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "type": "record",
+    "name": "Geometry",
+    "namespace": "org.cedar.psi.common.avro",
+    "fields": [
+      {
+        "name": "point",
+        "type": "Point",
+        "default": null
+      },
+      {
+        "name": "multiPoint",
+        "type": "MultiPoint",
+        "default": null
+      },
+      {
+        "name": "lineString",
+        "type": "LineString",
+        "default": null
+      },
+      {
+        "name": "multiLineString",
+        "type": "MultiLineString",
+        "default": null
+      },
+      {
+        "name": "polygon",
+        "type": "Polygon",
+        "default": null
+      },
+      {
+        "name": "multiPolygon",
+        "type": "MultiPolygon",
+        "default": null
+      }
+    ]
+  }
+]

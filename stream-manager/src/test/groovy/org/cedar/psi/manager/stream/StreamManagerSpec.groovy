@@ -8,24 +8,33 @@ import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
+import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.test.ConsumerRecordFactory
+import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.Method
 import org.cedar.psi.common.constants.StreamsApps
-import org.cedar.psi.manager.config.Constants
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
+import org.cedar.psi.common.util.MockSchemaRegistrySerde
+import org.cedar.psi.manager.config.ManagerConfig
 import spock.lang.Specification
 
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 
+
 class StreamManagerSpec extends Specification {
 
   def DESERIALIZER = Serdes.String().deserializer()
 
-  def streamsConfig = StreamManager.streamsConfig(StreamsApps.MANAGER_ID, Constants.BOOTSTRAP_DEFAULT)
+  def streamsConfig = StreamManager.streamsConfig(StreamsApps.MANAGER_ID, new ManagerConfig()).with {
+    it.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, MockSchemaRegistrySerde.class.name)
+    it
+  }
   def topology = StreamManager.buildTopology()
   def driver = new TopologyTestDriver(topology, streamsConfig)
-  def consumerFactory = new ConsumerRecordFactory(Serdes.String().serializer(), JsonSerdes.Map().serializer())
+  def inputFactory = new ConsumerRecordFactory(Serdes.String().serializer(), new MockSchemaRegistrySerde().serializer())
+  def jsonFactory = new ConsumerRecordFactory(Serdes.String().serializer(), JsonSerdes.Map().serializer())
 
   def testType = 'granule'
   def testSource = Topics.DEFAULT_SOURCE
@@ -52,7 +61,7 @@ class StreamManagerSpec extends Specification {
   final JsonSchema inputSchema = factory.getJsonSchema(inputSchemaNode)
   final JsonSchema registryResponseSchema = factory.getJsonSchema(registryResponseSchemaNode)
 
-  def cleanup(){
+  def cleanup() {
     driver.close()
   }
 
@@ -60,16 +69,11 @@ class StreamManagerSpec extends Specification {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def key = 'A123'
-    def value = [
-        input:[
-            contentType: 'application/xml',
-            content: xml
-        ]
-    ]
+    def input = buildInput(contentType: 'application/xml', content: xml)
 
     when:
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(value)))
-    driver.pipeInput(consumerFactory.create(testChangelog, key, value))
+//    inputSchema.validate(mapper.readTree(JsonOutput.toJson(input)))
+    driver.pipeInput(inputFactory.create(testChangelog, key, input))
 
     then:
     // Not found in error or SME topics
@@ -92,48 +96,48 @@ class StreamManagerSpec extends Specification {
     output.containsKey('analysis')
     output.analysis == [
         identification  : [
-            fileIdentifier  : [
-                exists: true,
+            fileIdentifier    : [
+                exists              : true,
                 fileIdentifierString: 'gov.super.important:FILE-ID'
             ],
-            doi             : [
-                exists: true,
+            doi               : [
+                exists   : true,
                 doiString: 'doi:10.5072/FK2TEST'
 
             ],
-            parentIdentifier: [
-                exists: true,
+            parentIdentifier  : [
+                exists                : true,
                 parentIdentifierString: 'gov.super.important:PARENT-ID'
             ],
             hierarchyLevelName: [
-                exists: true,
+                exists            : true,
                 matchesIdentifiers: true
             ]
         ],
         temporalBounding: [
-            begin: [
-                exists: true,
-                precision: ChronoUnit.NANOS.toString(),
+            begin  : [
+                exists           : true,
+                precision        : ChronoUnit.NANOS.toString(),
                 validSearchFormat: true,
-                zoneSpecified: ZoneOffset.UTC.toString(),
+                zoneSpecified    : ZoneOffset.UTC.toString(),
                 utcDateTimeString: '2005-05-09T00:00:00Z'
             ],
-            end: [
-                exists: true,
-                precision: ChronoUnit.DAYS.toString(),
+            end    : [
+                exists           : true,
+                precision        : ChronoUnit.DAYS.toString(),
                 validSearchFormat: true,
-                zoneSpecified: 'UNDEFINED',
+                zoneSpecified    : 'UNDEFINED',
                 utcDateTimeString: '2010-10-01T23:59:59Z'
             ],
             instant: [
-                exists: false,
-                precision: 'UNDEFINED',
+                exists           : false,
+                precision        : 'UNDEFINED',
                 validSearchFormat: 'UNDEFINED',
-                zoneSpecified: 'UNDEFINED',
+                zoneSpecified    : 'UNDEFINED',
                 utcDateTimeString: 'UNDEFINED'
             ],
-            range: [
-                descriptor: 'BOUNDED',
+            range  : [
+                descriptor : 'BOUNDED',
                 beginLTEEnd: true
             ]
         ],
@@ -141,12 +145,12 @@ class StreamManagerSpec extends Specification {
             exists: true
         ],
         titles          : [
-            title: [
-                exists: true,
+            title         : [
+                exists    : true,
                 characters: 63
             ],
             alternateTitle: [
-                exists: true,
+                exists    : true,
                 characters: 51
             ]
         ],
@@ -174,22 +178,20 @@ class StreamManagerSpec extends Specification {
     given:
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
     def smeKey = 'sme'
-    def smeValue = [
-        input: [
-            source: 'common-ingest',
-            contentType: 'application/xml',
-            content: xmlSME
-        ]
-    ]
+    def smeValue = buildInput(
+        source: 'common-ingest',
+        contentType: 'application/xml',
+        content: xmlSME
+    )
 
     when:
-    driver.pipeInput(consumerFactory.create(testChangelog, smeKey, smeValue))
+    driver.pipeInput(inputFactory.create(testChangelog, smeKey, smeValue))
 
     then:
     // The record is in the SME topic
     def smeOutput = driver.readOutput(Topics.smeTopic('granule'), DESERIALIZER, DESERIALIZER)
     smeOutput.key() == smeKey
-    smeOutput.value() == smeValue.input.content
+    smeOutput.value() == smeValue.content
 
     and:
     // There are no errors and nothing in the parsed topic
@@ -202,26 +204,23 @@ class StreamManagerSpec extends Specification {
     def xmlNonSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
     def nonSMEInputKey = 'notSME'
-    def nonSMEInputValue = [
-        input: [
-            source: null,
-            contentType: 'application/xml',
-            content: xmlNonSME
-        ]
-    ]
+    def nonSMEInputValue = buildInput(
+        contentType: 'application/xml',
+        content: xmlNonSME
+    )
     def unparsedKey = 'sme'
     def unparsedValue = [
-        source: 'common-ingest',
+        source     : 'common-ingest',
         contentType: 'application/xml',
-        content: xmlSME
+        content    : xmlSME
     ]
 
     when:
     inputSchema.validate(mapper.readTree(JsonOutput.toJson(xmlSME)))
     inputSchema.validate(mapper.readTree(JsonOutput.toJson(xmlNonSME)))
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
-    driver.pipeInput(consumerFactory.create(testChangelog, nonSMEInputKey, nonSMEInputValue))
-    driver.pipeInput(consumerFactory.create(Topics.unparsedTopic('granule'), unparsedKey, unparsedValue))
+    driver.pipeInput(inputFactory.create(testChangelog, nonSMEInputKey, nonSMEInputValue))
+    driver.pipeInput(jsonFactory.create(Topics.unparsedTopic('granule'), unparsedKey, unparsedValue))
 
     then:
     // Both records are in the parsed topic
@@ -254,16 +253,13 @@ class StreamManagerSpec extends Specification {
   def "Unparsable granule ends up on error-granule topic"() {
     given:
     def key = 'failure101'
-    def value = [
-        input: [
-            source: null,
-            contentType: 'text/csv',
-            content: 'it,does,not,parse'
-        ]
-    ]
+    def value = buildInput(
+        contentType: 'text/csv',
+        content: 'it,does,not,parse'
+    )
 
     when:
-    driver.pipeInput(consumerFactory.create(testChangelog, key, value))
+    driver.pipeInput(inputFactory.create(testChangelog, key, value))
 
     then:
     // Nothing in the parsed or sme topics
@@ -277,5 +273,17 @@ class StreamManagerSpec extends Specification {
     error.value() == JsonOutput.toJson([
         error: 'Unknown raw format of metadata'
     ])
+  }
+
+  private static inputDefaults = [
+      source    : 'test',
+      method    : Method.POST,
+      protocol  : 'http',
+      host      : 'localhost',
+      requestUrl: '/test'
+  ]
+
+  private static buildInput(Map values) {
+    new Input(inputDefaults + values)
   }
 }

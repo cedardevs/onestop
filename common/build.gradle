@@ -10,16 +10,20 @@ repositories {
 dependencies {
   compile('org.codehaus.groovy:groovy:2.4.13')
   compile('org.codehaus.groovy:groovy-json:2.4.13')
-  compile('org.apache.kafka:kafka-streams:2.0.0')
+  compile('org.apache.kafka:kafka-streams:2.0.1')
   compile('org.apache.avro:avro:1.8.2')
   compile('org.slf4j:slf4j-api:1.7.25')
   compile('ch.qos.logback:logback-classic:1.2.3')
 
   testCompile("org.spockframework:spock-core:${project.spockVersion}")
-  testCompile('org.apache.kafka:kafka-streams-test-utils:2.0.0')
-  testCompile('org.apache.kafka:kafka-clients:2.0.0:test')
-  testCompile('org.apache.kafka:kafka_2.12:2.0.0')
-  testCompile('org.apache.kafka:kafka_2.12:2.0.0:test')
+  testCompile('org.apache.kafka:kafka-streams-test-utils:2.0.1')
+  testCompile('org.apache.kafka:kafka-clients:2.0.1')
+  testCompile('org.apache.kafka:kafka-clients:2.0.1:test')
+  testCompile('org.apache.kafka:kafka_2.12:2.0.1')
+  testCompile('org.apache.kafka:kafka_2.12:2.0.1:test')
+  testCompile('io.confluent:kafka-schema-registry:5.0.1')
+  testCompile('io.confluent:kafka-schema-registry:5.0.1:tests')
+  testCompile('io.confluent:kafka-streams-avro-serde:5.0.1')
 }
 
 jar {
@@ -30,6 +34,20 @@ task sourceJar(type: Jar) {
   classifier = 'sources'
   baseName = "${rootProject.name}-${project.name}"
   from "${projectDir}/src"
+}
+
+task testArtifactsJar(type: Jar) {
+  classifier = 'test'
+  baseName = "${rootProject.name}-${project.name}"
+  from sourceSets.test.output
+}
+
+configurations {
+  testArtifacts
+}
+
+artifacts {
+  testArtifacts testArtifactsJar
 }
 
 avro {
