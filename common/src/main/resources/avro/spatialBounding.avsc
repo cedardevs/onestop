@@ -175,27 +175,33 @@
     "fields": [
       {
         "name": "point",
-        "type": "Point"
+        "type": "Point",
+        "default": null
       },
       {
         "name": "multiPoint",
-        "type": "MultiPoint"
+        "type": "MultiPoint",
+        "default": null
       },
       {
         "name": "lineString",
-        "type": "LineString"
+        "type": "LineString",
+        "default": null
       },
       {
         "name": "multiLineString",
-        "type": "MultiLineString"
+        "type": "MultiLineString",
+        "default": null
       },
       {
         "name": "polygon",
-        "type": "Polygon"
+        "type": "Polygon",
+        "default": null
       },
       {
         "name": "multiPolygon",
-        "type": "MultiPolygon"
+        "type": "MultiPolygon",
+        "default": null
       }
     ]
   }

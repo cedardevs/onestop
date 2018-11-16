@@ -14,6 +14,7 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.*
 import org.apache.kafka.streams.state.Stores
 import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.registry.stream.DelayedPublisherTransformer
 import org.cedar.psi.registry.stream.PublishingAwareTransformer
@@ -41,7 +42,6 @@ class MetadataStreamService {
   private final long publishInterval
   private final String stateDir
   private KafkaStreams streamsApp
-
 
   MetadataStreamService(
       @Autowired AdminClient adminClient,
@@ -154,11 +154,10 @@ class MetadataStreamService {
     }
 
     // build parsed table
-    KTable<String, Map> parsedTable = builder
-        .stream(parsedTopic(type), Consumed.with(Serdes.String(), JsonSerdes.Map()))
-        .mapValues(StreamFunctions.parsedInfoNormalizer)
+    KTable<String, ParsedRecord> parsedTable = builder
+        .stream(parsedTopic(type))
         .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(parsedStore(type)).withValueSerde(JsonSerdes.Map()))
+        .reduce(StreamFunctions.identityReducer, Materialized.as(parsedStore(type)))
 
     // add delayed publisher
     if (publishInterval) {
@@ -174,14 +173,14 @@ class MetadataStreamService {
       parsedTable
           .toStream()
           .transform({ -> publisher }, publishTimeStore(type), publishKeyStore(type), parsedStore(type))
-          .to(parsedTopic(type), Produced.with(Serdes.String(), JsonSerdes.Map()))
+          .to(parsedTopic(type))
     }
 
     // build published topic
     parsedTable
         .toStream()
-        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier<Map, Map>)
-        .to(publishedTopic(type), Produced.with(Serdes.String(), JsonSerdes.Map()))
+        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier<ParsedRecord, ParsedRecord>)
+        .to(publishedTopic(type))
 
     return builder
   }

@@ -86,7 +86,7 @@
       },
       {
         "name": "keywords",
-        "type":["null",
+        "type":
         {
           "type": "array",
           "items": {
@@ -110,16 +110,16 @@
               }
             ]
           }
-        }],
+        },
         "default": []
       },
       {
         "name": "topicCategories",
-        "type":["null",
+        "type":
         {
           "type": "array",
           "items": "string"
-        }],
+        },
         "default": []
       },
       {
@@ -139,7 +139,7 @@
       },
       {
         "name": "acquisitionInstruments",
-        "type":["null",
+        "type":
         {
           "type": "array",
           "items": {
@@ -172,12 +172,12 @@
               }
             ]
           }
-        }],
+        },
         "default": []
       },
       {
         "name": "acquisitionOperations",
-        "type":["null",
+        "type":
         {
           "type": "array",
           "items": {
@@ -218,12 +218,12 @@
               }
             ]
           }
-        }],
+        },
         "default": []
       },
       {
         "name": "acquisitionPlatforms",
-        "type":["null",
+        "type":
         {
           "type": "array",
           "items": {
@@ -257,12 +257,12 @@
               }
             ]
           }
-        }],
+        },
         "default": []
       },
       {
         "name": "dataFormats",
-        "type":["null",
+        "type":
         {
           "type": "array",
           "items": {
@@ -287,12 +287,12 @@
               }
             ]
           }
-        }],
+        },
         "default": []
       },
       {
         "name": "links",
-        "type": ["null", {
+        "type": {
           "type": "array",
           "items": {
             "name": "Link",
@@ -340,12 +340,12 @@
               }
             ]
           }
-        }],
+        },
         "default": []
       },
       {
         "name": "responsibleParties",
-        "type":["null", {
+        "type":{
           "type": "array",
           "items": {
             "name": "ResponsibleParty",
@@ -401,7 +401,7 @@
               }
             ]
           }
-        }],
+        },
         "default": []
       },
       {
@@ -446,15 +446,15 @@
       },
       {
         "name": "citeAsStatements",
-        "type": ["null", {
+        "type": {
           "type": "array",
           "items": "string"
-        }],
+        },
         "default": []
       },
       {
         "name": "largerWorks",
-        "type": ["null", {
+        "type": {
           "type": "array",
           "items": {
             "name": "Reference",
@@ -482,14 +482,10 @@
               }
             ]
           }
-        }],
+        },
         "default": []
       },
-      {
-        "name": "crossReferences",
-        "type": ["null","Reference"],
-        "default": []
-      },
+
       {
         "name": "useLimitation",
         "type": [
@@ -500,10 +496,10 @@
       },
       {
         "name": "legalConstraints",
-        "type": ["null", {
+        "type":  {
           "type": "array",
           "items": "string"
-        }],
+        },
         "default": []
       },
       {
@@ -532,82 +528,52 @@
       },
       {
         "name": "dsmmAccessibility",
-        "type": [
-          "null",
-          "int"
-        ],
+        "type": "int",
         "default": 0
       },
       {
         "name": "dsmmDataIntegrity",
-        "type": [
-          "null",
-          "int"
-        ],
+        "type": "int",
         "default": 0
       },
       {
         "name": "dsmmDataQualityAssessment",
-        "type": [
-          "null",
-          "int"
-        ],
+        "type": "int",
         "default": 0
       },
       {
         "name": "dsmmDataQualityAssurance",
-        "type": [
-          "null",
-          "int"
-        ],
+        "type": "int",
         "default": 0
       },
       {
         "name": "dsmmDataQualityControlMonitoring",
-        "type": [
-          "null",
-          "int"
-        ],
+        "type": "int",
         "default": 0
       },
       {
         "name": "dsmmPreservability",
-        "type": [
-          "null",
-          "int"
-        ],
+        "type": "int",
         "default": 0
       },
       {
         "name": "dsmmProductionSustainability",
-        "type": [
-          "null",
-          "int"
-        ],
+        "type": "int",
         "default": 0
       },
       {
         "name": "dsmmTransparencyTraceability",
-        "type": [
-          "null",
-          "int"
-        ],
+        "type": "int",
         "default": 0
       },
       {
         "name": "dsmmUsability",
-        "type": [
-          "null",
-          "int"
-        ],
+        "type": "int",
         "default": 0
       },
       {
         "name": "dsmmAverage",
-        "type": [
-          "null",
-          "float"
-        ],
+        "type": "float",
         "default": 0,
         "doc": "Calculated mean average of individual DSMM scores for Accessibility, Data Integrity, Data Quality Assessment, Data Quality Assurance, Data Quality Control Monitoring, Preservability, Production Sustainability, Transparency Traceability, and Usability."
       },
@@ -625,15 +591,15 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "services",
-        "type": ["null", {
+        "type": {
           "type": "array",
           "items": "string"
-        }],
-        "default": "",
+        },
+        "default": [],
         "doc": "List of objects that represent an SV_ServiceIdentification section, if any, of ISO 19115 XML metadata document. Empty if not present."
       }
     ]

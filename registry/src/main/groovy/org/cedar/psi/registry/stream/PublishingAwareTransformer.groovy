@@ -2,10 +2,9 @@ package org.cedar.psi.registry.stream
 
 import org.apache.kafka.streams.kstream.ValueTransformer
 import org.apache.kafka.streams.processor.ProcessorContext
-import org.cedar.psi.registry.util.TimeFormatUtils
+import org.cedar.psi.common.avro.ParsedRecord
 
-
-class PublishingAwareTransformer implements ValueTransformer<Map, Map> {
+class PublishingAwareTransformer implements ValueTransformer<ParsedRecord, ParsedRecord> {
 
   private ProcessorContext context
 
@@ -15,10 +14,10 @@ class PublishingAwareTransformer implements ValueTransformer<Map, Map> {
   }
 
   @Override
-  Map transform(Map value) {
+  ParsedRecord transform(ParsedRecord value) {
     if (!value) { return null }
-    def markedPrivate = value.publishing?.private as Boolean
-    def untilDate = TimeFormatUtils.parseTimestamp(value.publishing?.until as String)
+    def markedPrivate = value.publishing?.isPrivate
+    def untilDate = value.publishing?.until
     def untilDateHasPassed = untilDate && untilDate < context.timestamp()
     def isPrivate = (markedPrivate && !untilDateHasPassed) || (!markedPrivate && untilDateHasPassed)
     return isPrivate ? null : value

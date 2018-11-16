@@ -6,7 +6,6 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.kstream.Reducer
 import org.apache.kafka.streams.kstream.ValueJoiner
-import org.apache.kafka.streams.kstream.ValueMapperWithKey
 import org.cedar.psi.common.avro.Input
 
 @Slf4j
@@ -106,16 +105,4 @@ class StreamFunctions {
       }
     }
   }
-
-  static ValueMapperWithKey<String, Map, Map> parsedInfoNormalizer = new ValueMapperWithKey<String, Map, Map>() {
-    @Override
-    Map apply(String readOnlyKey, Map value) {
-      def result = value ?: [:]
-      if (!result.containsKey('publishing')) {
-        result.put('publishing', ['private': false])
-      }
-      return result
-    }
-  }
-
 }

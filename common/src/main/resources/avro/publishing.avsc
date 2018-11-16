@@ -13,7 +13,7 @@
         "name": "until",
         "type": "long",
         "logicalType": "timestamp-millis",
-        "default": null
+        "default": 0
       }
     ]
   }
