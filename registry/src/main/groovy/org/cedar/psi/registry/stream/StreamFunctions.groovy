@@ -20,6 +20,19 @@ class StreamFunctions {
     }
   }
 
+  static Reducer<Set> setReducer = new Reducer<Set>() {
+    @Override
+    Set apply(Set aggregate, Set nextValue) {
+      if (nextValue == null) {
+        return null // if we get a tombstone, tomestone the whole set
+      }
+      else {
+        aggregate.addAll(nextValue)
+        return aggregate
+      }
+    }
+  }
+
   static Reducer<Map> mergeContentMaps = new Reducer<Map>() {
     @Override
     Map apply(Map aggregate, Map nextValue) {

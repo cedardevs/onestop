@@ -13,8 +13,8 @@ import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.*
 import org.apache.kafka.streams.state.Stores
-import org.cedar.psi.common.avro.ErrorEvent
 import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.ErrorEvent
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.registry.stream.DelayedPublisherTransformer
 import org.cedar.psi.registry.stream.PublishingAwareTransformer
@@ -133,9 +133,10 @@ class MetadataStreamService {
 
     // TODO this table is unused, also it stores the most recent error per key forever... do we really want that?
     KStream<String, ErrorEvent> errorStream = builder.stream(errorTopic())
-    KTable<String, ErrorEvent> errorTable = errorStream
+    KTable<String, Set<ErrorEvent>> errorTable = errorStream
+        .mapValues({ it as Set } as ValueMapper<ErrorEvent, Set<ErrorEvent>>)
         .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(errorStore()))
+        .reduce(StreamFunctions.setReducer, Materialized.as(errorStore()))
 
     return builder.build()
   }
