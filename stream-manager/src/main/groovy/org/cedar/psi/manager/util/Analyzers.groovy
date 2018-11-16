@@ -22,6 +22,9 @@ class Analyzers {
   static final String UNDEFINED = 'UNDEFINED'
   static final String INVALID = 'INVALID'
   static final String VALID = 'VALID'
+  static final String BOUNDED = 'BOUNDED'
+  static final String ONGOING = 'ONGOING'
+  static final String INSTANT = 'INSTANT'
 
   static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
       .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
@@ -78,28 +81,14 @@ class Analyzers {
     def instantInfo = dateInfo(metadata?.temporalBounding?.instant, true)
 
     // Determine the descriptor of the given time range:
-    def descriptor
-    if (beginInfo.exists) {
-      // ( begin && end ) OR ( begin && !end )
-      descriptor = endInfo.exists ? 'BOUNDED' : 'ONGOING'
-    }
-    else {
-      // ( !begin && end ) OR ( !begin && !end )
-      descriptor = endInfo.exists ? INVALID : UNDEFINED
-    }
-
-    // Update descriptor if !begin and !end but instant exists
-    if (descriptor == UNDEFINED && instantInfo.exists) {
-      // Instant describes range, but its validity still needs to be validated
-      descriptor = (instantInfo.indexable || instantInfo.precision == ChronoUnit.YEARS.toString()) ? 'INSTANT' : INVALID
-    }
+    def descriptor = rangeDescriptor(beginInfo, endInfo, instantInfo)
 
     // Determine if the given time range is valid:
     def beginLTEEnd
     if (descriptor == INVALID || descriptor == UNDEFINED) {
       beginLTEEnd = UNDEFINED
     }
-    else if (descriptor == 'ONGOING' || descriptor == 'INSTANT') {
+    else if (descriptor == ONGOING || descriptor == INSTANT) {
       beginLTEEnd = true
     }
     else {
@@ -266,6 +255,30 @@ class Analyzers {
         zoneSpecified    : timezone ?: UNDEFINED,
         utcDateTimeString: utcDateTimeString as String
     ]
+  }
+
+  static String rangeDescriptor(Map beginInfo, Map endInfo, Map instantInfo) {
+    def hasBegin = beginInfo.exists
+    def hasEnd = endInfo.exists
+    def hasInstant = instantInfo.exists
+    def isValidInstant = instantInfo.with {
+      exists && (indexable || precision == ChronoUnit.YEARS.toString())
+    }
+
+    if (hasBegin && hasEnd) {
+      return BOUNDED
+    }
+    if (hasBegin && !hasEnd) {
+      return ONGOING
+    }
+    if (!hasBegin && !hasEnd && isValidInstant) {
+      return INSTANT
+    }
+    if (!hasBegin && !hasEnd && !hasInstant) {
+      return UNDEFINED
+    }
+
+    return INVALID
   }
 
   String isIndexable(String input) {
