@@ -12,6 +12,7 @@ import org.apache.kafka.streams.kstream.Predicate
 import org.apache.kafka.streams.kstream.Produced
 import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.common.util.AvroUtils
 import org.cedar.psi.manager.config.ManagerConfig
@@ -69,7 +70,7 @@ class StreamManager {
 
     // Send valid messages to analysis & send final output to topic
     goodParsedStream
-        .mapValues({ v -> AnalysisAndValidationService.analyzeParsedMetadata(v) } as ValueMapper<Map, Map>)
+        .mapValues(AnalysisAndValidationService.&addAnalysis as ValueMapper<ParsedRecord, ParsedRecord>)
         .to(parsedTopic('granule'), Produced.with(Serdes.String(), JsonSerdes.Map()))
 
     // parsing collection:
@@ -87,7 +88,7 @@ class StreamManager {
 
     // Send valid messages to analysis & send final output to topic
     goodParsedCollection
-        .mapValues({ v -> AnalysisAndValidationService.analyzeParsedMetadata(v) } as ValueMapper<Map, Map>)
+        .mapValues(AnalysisAndValidationService.&addAnalysis as ValueMapper<ParsedRecord, ParsedRecord>)
         .to(parsedTopic('collection'), Produced.with(Serdes.String(), JsonSerdes.Map()))
 
     return builder.build()

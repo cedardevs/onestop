@@ -17,7 +17,7 @@
           },
           {
             "name": "fileIdentifierString",
-            "type": "string"
+            "type": ["null", "string"]
           },
           {
             "name": "doiExists",
@@ -25,7 +25,7 @@
           },
           {
             "name": "doiString",
-            "type": "string"
+            "type": ["null", "string"]
           },
           {
             "name": "parentIdentifierExists",
@@ -33,7 +33,7 @@
           },
           {
             "name": "parentIdentifierString",
-            "type": "string"
+            "type": ["null", "string"]
           },
           {
             "name": "hierarchyLevelNameExists",

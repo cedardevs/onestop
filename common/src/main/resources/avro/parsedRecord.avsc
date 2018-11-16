@@ -6,11 +6,18 @@
   "fields": [
     {
       "name": "discovery",
-      "type": "Discovery"
+      "type": ["null", "Discovery"],
+      "default": null
+    },
+    {
+      "name": "analysis",
+      "type": ["null", "Analysis"],
+      "default": null
     },
     {
       "name": "publishing",
-      "type": "Publishing"
+      "type": ["null", "Publishing"],
+      "default": null
     }
   ]
 }

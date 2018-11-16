@@ -1,14 +1,15 @@
 package org.cedar.psi.manager.stream
 
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import org.apache.avro.AvroTypeException
 import org.apache.avro.Schema
 import org.apache.avro.io.DatumReader
 import org.apache.avro.io.Decoder
 import org.apache.avro.io.DecoderFactory
 import org.apache.avro.specific.SpecificDatumReader
-import org.cedar.psi.common.avro.Analysis
+import org.cedar.psi.common.avro.*
+import org.cedar.psi.common.util.AvroUtils
+import org.cedar.psi.manager.util.ISOParser
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -19,12 +20,47 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   final String analysisAvro = ClassLoader.systemClassLoader.getResourceAsStream('avro/analysis.avsc').text
 
+  def 'adds an analysis into a parsed record'() {
+    def record = ParsedRecord.newBuilder().setDiscovery(Discovery.newBuilder().build()).build()
+
+    when:
+    def result = AnalysisAndValidationService.addAnalysis(record)
+
+    then:
+    result instanceof ParsedRecord
+    result.analysis instanceof Analysis
+    result.discovery == record.discovery
+  }
+
+  def 'analyzing null discovery returns null'() {
+    expect:
+    AnalysisAndValidationService.analyze(null) == null
+  }
+
+  def 'analyzing a default discovery object returns all expected analysis'() {
+    def discovery = Discovery.newBuilder().build()
+
+    when:
+    def analysis = AnalysisAndValidationService.analyze(discovery)
+
+    then:
+    analysis instanceof Analysis
+    analysis.identification instanceof Identification
+    analysis.temporalBounding instanceof TemporalBoundingAnalysis
+    analysis.spatialBounding instanceof SpatialBounding
+    analysis.titles instanceof Titles
+    analysis.description instanceof Description
+    analysis.thumbnail instanceof Thumbnail
+    analysis.dataAccess instanceof DataAccess
+  }
+
+  // TODO - verify a real Discovery object once ISOParser can produce one
+  @spock.lang.Ignore
   def "All valid fields return expected response from service"() {
     given:
-    def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
+    def inputXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-metadata.xml').text
+    def discovery = ISOParser.parseXMLMetadataToMap(inputXml)
 
-    def inputMap = [:]
-    inputMap.put('discovery', new JsonSlurper().parseText(inputMsg))
     def expectedAnalysisMap = [
         identification  : [
             fileIdentifierExists    : true,
@@ -77,171 +113,240 @@ class AnalysisAndValidationServiceSpec extends Specification {
             dataAccessExists: true
         ]
     ]
-    inputMap.put('analysis', expectedAnalysisMap)
-    def expectedResponse = JsonOutput.toJson(inputMap)
 
     when:
-    def response = AnalysisAndValidationService.analyzeParsedMetadata(inputMap)
-    def responseJson = JsonOutput.toJson(AnalysisAndValidationService.analyzeParsedMetadata(inputMap))
-    def analysisJson = JsonOutput.toJson(response.analysis)
+    def response = AnalysisAndValidationService.analyze(inputMap)
+    def analysisJson = JsonOutput.toJson(response)
     Schema schema = new Schema.Parser().parse(analysisAvro)
 
     then:
     validateJson(analysisJson, schema)
-    responseJson == expectedResponse
+    AvroUtils.avroToMap(response) == expectedAnalysisMap
+  }
+
+  def 'extracts date info from date strings'() {
+    when:
+    def result = AnalysisAndValidationService.dateInfo(input, start)
+
+    then:
+    result.exists == exists
+    result.precision == precision
+    result.validSearchFormat == valid
+    result.zoneSpecified == zone
+    result.utcDateTimeString == string
+
+    where:
+    input                  | start || exists | precision   | valid       | zone        | string
+    '2042-04-02T00:42:42Z' | false || true   | 'Nanos'     | true        | 'Z'         | '2042-04-02T00:42:42Z'
+    '2042-04-02T00:42:42'  | false || true   | 'Nanos'     | true        | 'UNDEFINED' | '2042-04-02T00:42:42Z'
+    '2042-04-02'           | false || true   | 'Days'      | true        | 'UNDEFINED' | '2042-04-02T23:59:59Z'
+    '2042-04-02'           | true  || true   | 'Days'      | true        | 'UNDEFINED' | '2042-04-02T00:00:00Z'
+    '2042'                 | true  || true   | 'Years'     | true        | 'UNDEFINED' | '2042-01-01T00:00:00Z'
+    '-5000'                | true  || true   | 'Years'     | true        | 'UNDEFINED' | '-5000-01-01T00:00:00Z'
+    '-100000001'           | true  || true   | 'Years'     | false       | 'UNDEFINED' | '-100000001-01-01T00:00:00Z'
+    'ABC'                  | true  || true   | 'INVALID'   | false       | 'INVALID'   | 'INVALID'
+    ''                     | true  || false  | 'UNDEFINED' | 'UNDEFINED' | 'UNDEFINED' | 'UNDEFINED'
+    null                   | true  || false  | 'UNDEFINED' | 'UNDEFINED' | 'UNDEFINED' | 'UNDEFINED'
   }
 
   def "#descriptor date range correctly identified when #situation"() {
     given:
-    def timeMetadata = metadataMap
+    def bounding = TemporalBounding.newBuilder()
+        .setBeginDate(begin)
+        .setEndDate(end)
+        .setInstant(instant)
+        .build()
+    def discovery = Discovery.newBuilder().setTemporalBounding(bounding).build()
 
     when:
-    def timeAnalysis = AnalysisAndValidationService.analyzeTemporalBounding(timeMetadata)
+    def result = AnalysisAndValidationService.analyzeTemporalBounding(discovery)
 
     then:
-    timeAnalysis.rangedescriptor == descriptor
+    result.rangedescriptor == descriptor
 
     where:
-    descriptor  | situation                                                   | metadataMap
-    'ONGOING'   | 'start date exists but not end date'                        | [temporalBounding: [beginDate: '2010-01-01', endDate: '']]
-    'BOUNDED'   | 'start and end date exist and are valid'                    | [temporalBounding: [beginDate: '2000-01-01T00:00:00Z', endDate: '2001-01-01T00:00:00Z']]
-    'UNDEFINED' | 'neither start nor end date exist'                          | [temporalBounding: [beginDate: '', endDate: '']]
-    'INSTANT'   | 'neither start nor end date exist but valid instant does'   | [temporalBounding: [beginDate: '', endDate: '', instant: '2001-01-01']]
-    'INVALID'   | 'end date exists but not start date'                        | [temporalBounding: [beginDate: '', endDate: '2010']]
-    'INVALID'   | 'start and end date exist but start after end'              | [temporalBounding: [beginDate: '2100-01-01T00:00:00Z', endDate: '2002-01-01']]
-    'INVALID'   | 'neither start nor end date exist but invalid instant does' | [temporalBounding: [beginDate: '', endDate: '', instant: '2001-01-32']]
+    descriptor  | situation                                                   | begin                  | end                    | instant
+    'ONGOING'   | 'start date exists but not end date'                        | '2010-01-01'           | ''                     | null
+    'BOUNDED'   | 'start and end date exist and are valid'                    | '2000-01-01T00:00:00Z' | '2001-01-01T00:00:00Z' | null
+    'UNDEFINED' | 'neither start nor end date exist'                          | ''                     | ''                     | null
+    'INSTANT'   | 'neither start nor end date exist but valid instant does'   | ''                     | ''                     | '2001-01-01'
+    'INVALID'   | 'end date exists but not start date'                        | ''                     | '2010'                 | null
+    'INVALID'   | 'start and end date exist but start after end'              | '2100-01-01T00:00:00Z' | '2002-01-01'           | null
+    'INVALID'   | 'neither start nor end date exist but invalid instant does' | ''                     | ''                     | '2001-01-32'
   }
 
   def "Begin date LTE end date check is #value when #situation"() {
     given:
-    def timeMetadata = metadataMap
+    def bounding = TemporalBounding.newBuilder()
+        .setBeginDate(begin)
+        .setEndDate(end)
+        .build()
+    def discovery = Discovery.newBuilder().setTemporalBounding(bounding).build()
 
     when:
-    def timeAnalysis = AnalysisAndValidationService.analyzeTemporalBounding(timeMetadata)
+    def result = AnalysisAndValidationService.analyzeTemporalBounding(discovery)
 
     then:
-    timeAnalysis.rangebeginLTEEnd == value
+    result.rangebeginLTEEnd == value
 
     where:
-    value       | situation                                                       | metadataMap
-    true        | 'start is valid format and before valid format end'             | [temporalBounding: [beginDate: '2010-01-01', endDate: '2011-01-01']]
-    false       | 'start is valid format and after valid format end'              | [temporalBounding: [beginDate: '2011-01-01T00:00:00Z', endDate: '2001-01-01T00:00:00Z']]
-    true        | 'start is invalid format but paleo and before valid format end' | [temporalBounding: [beginDate: '-1000000000', endDate: '2015']]
-    true        | 'start and end both invalid but paleo and start before end'     | [temporalBounding: [beginDate: '-2000000000', endDate: '-1000000000']]
-    false       | 'start and end both invalid but paleo and start after end'      | [temporalBounding: [beginDate: '-1000000000', endDate: '-2000000000']]
-    true        | 'start and end both same instant'                               | [temporalBounding: [beginDate: '2000-01-01T00:00:00Z', endDate: '2000-01-01T00:00:00Z']]
-    true        | 'start exists but not end'                                      | [temporalBounding: [beginDate: '2000-01-01T00:00:00Z', endDate: '']]
-    'UNDEFINED' | 'start does not exist but end does'                             | [temporalBounding: [beginDate: '', endDate: '2000-01-01T00:00:00Z']]
-    'UNDEFINED' | 'neither start nor end exist'                                   | [temporalBounding: [beginDate: '', endDate: '']]
-    'UNDEFINED' | 'start is invalid format but paleo and end is fully invalid'    | [temporalBounding: [beginDate: '-1000000000', endDate: '1999-13-12']]
-    'UNDEFINED' | 'start is fully invalid and end is invalid format but paleo'    | [temporalBounding: [beginDate: '15mya', endDate: '-1000000000']]
-    'UNDEFINED' | 'start is valid and end is fully invalid'                       | [temporalBounding: [beginDate: '2000-01-01T00:00:00Z', endDate: '2000-12-31T25:00:00Z']]
-    'UNDEFINED' | 'start and end both fully invalid'                              | [temporalBounding: [beginDate: '2000-01-01T00:61:00Z', endDate: '2000-11-31T00:00:00Z']]
-    'UNDEFINED' | 'start is fully invalid but end is valid'                       | [temporalBounding: [beginDate: '2000-01-01T00:00:61Z', endDate: '2000-01-02T00:00:00Z']]
+    value       | situation                                                       | begin                  | end
+    true        | 'start is valid format and before valid format end'             | '2010-01-01'           | '2011-01-01'
+    false       | 'start is valid format and after valid format end'              | '2011-01-01T00:00:00Z' | '2001-01-01T00:00:00Z'
+    true        | 'start is invalid format but paleo and before valid format end' | '-1000000000'          | '2015'
+    true        | 'start and end both invalid but paleo and start before end'     | '-2000000000'          | '-1000000000'
+    false       | 'start and end both invalid but paleo and start after end'      | '-1000000000'          | '-2000000000'
+    true        | 'start and end both same instant'                               | '2000-01-01T00:00:00Z' | '2000-01-01T00:00:00Z'
+    true        | 'start exists but not end'                                      | '2000-01-01T00:00:00Z' | ''
+    'UNDEFINED' | 'start does not exist but end does'                             | ''                     | '2000-01-01T00:00:00Z'
+    'UNDEFINED' | 'neither start nor end exist'                                   | ''                     | ''
+    'UNDEFINED' | 'start is invalid format but paleo and end is fully invalid'    | '-1000000000'          | '1999-13-12'
+    'UNDEFINED' | 'start is fully invalid and end is invalid format but paleo'    | '15mya'                | '-1000000000'
+    'UNDEFINED' | 'start is valid and end is fully invalid'                       | '2000-01-01T00:00:00Z' | '2000-12-31T25:00:00Z'
+    'UNDEFINED' | 'start and end both fully invalid'                              | '2000-01-01T00:61:00Z' | '2000-11-31T00:00:00Z'
+    'UNDEFINED' | 'start is fully invalid but end is valid'                       | '2000-01-01T00:00:61Z' | '2000-01-02T00:00:00Z'
   }
 
-  def "Missing links detected"() {
+  def "analyzes when links are #testCase"() {
     given:
-    def metadata = [
-        links: []
-    ]
+    def record = Discovery.newBuilder().setLinks(testLinks).build()
 
     when:
-    def dataAccessAnalysis = AnalysisAndValidationService.analyzeDataAccess(metadata)
+    def dataAccessAnalysis = AnalysisAndValidationService.analyzeDataAccess(record)
 
     then:
-    dataAccessAnalysis == [
-        dataAccessExists: false
-    ]
+    dataAccessAnalysis instanceof DataAccess
+    dataAccessAnalysis.dataAccessExists == expected
+
+    where:
+    testCase  | testLinks                   | expected
+    'missing' | []                          | false
+    'present' | [Link.newBuilder().build()] | true
   }
 
-  def "Missing required identifiers detected"() {
+  def "analyzes required identifiers"() {
     given:
-    def metadata = [
-        fileIdentifier: 'xyz',
-    ]
+    def metadata = Discovery.newBuilder().setFileIdentifier('xyz').build()
 
     when:
-    def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(metadata)
+    def result = AnalysisAndValidationService.analyzeIdentifiers(metadata)
 
     then:
-    identifiersAnalysis == [
-        fileIdentifierExists    : true,
-        fileIdentifierString    : 'xyz',
-        doiExists               : false,
-        doiString               : null,
-        parentIdentifierExists  : false,
-        parentIdentifierString  : null,
-        hierarchyLevelNameExists: false,
-        matchesIdentifiers      : true
-    ]
+    result instanceof Identification
+    result.fileIdentifierExists == true
+    result.fileIdentifierString == 'xyz'
+    result.doiExists == false
+    result.doiString == null
+    result.parentIdentifierExists == false
+    result.parentIdentifierString == null
+    result.hierarchyLevelNameExists == false
+    result.matchesIdentifiers == true
   }
 
-  def "Mismatch between metadata type and corresponding identifiers detected"() {
+  def "detects mismatch between metadata type and corresponding identifiers"() {
     given:
-    def metadata = [
-        fileIdentifier    : 'xyz',
-        hierarchyLevelName: 'granule'
-    ]
+    def builder = Discovery.newBuilder()
+    builder.fileIdentifier = 'xyz'
+    builder.hierarchyLevelName = 'granule'
+    def metadata = builder.build()
 
     when:
-    def identifiersAnalysis = AnalysisAndValidationService.analyzeIdentifiers(metadata)
+    def result = AnalysisAndValidationService.analyzeIdentifiers(metadata)
 
     then:
-    identifiersAnalysis == [
-        fileIdentifierExists    : true,
-        fileIdentifierString    : 'xyz',
-        doiExists               : false,
-        doiString               : null,
-        parentIdentifierExists  : false,
-        parentIdentifierString  : null,
-        hierarchyLevelNameExists: true,
-        matchesIdentifiers      : false
-    ]
+    result instanceof Identification
+    result.fileIdentifierExists == true
+    result.fileIdentifierString == 'xyz'
+    result.doiExists == false
+    result.doiString == null
+    result.parentIdentifierExists == false
+    result.parentIdentifierString == null
+    result.hierarchyLevelNameExists == true
+    result.matchesIdentifiers == false
   }
 
-  def "Missing titles detected"() {
+  def 'analyzes #testCase strings'() {
+    when:
+    def result = AnalysisAndValidationService.stringInfo(value)
+
+    then:
+    result instanceof Map
+    result.exists == exists
+    result.characters == length
+
+    where:
+    testCase  | value  | exists | length
+    'missing' | null   | false  | 0
+    'empty'   | ''     | false  | 0
+    'present' | 'test' | true   | 4
+  }
+
+  def "analyzes when titles are missing"() {
     given:
-    def metadata = [title: '']
+    def metadata = Discovery.newBuilder().build()
 
     when:
     def titlesAnalysis = AnalysisAndValidationService.analyzeTitles(metadata)
 
     then:
-    then:
-    titlesAnalysis == [
-        titleExists             : false,
-        titleCharacters         : 0,
-        alternateTitleExists    : false,
-        alternateTitleCharacters: 0
-    ]
+    titlesAnalysis instanceof Titles
+    titlesAnalysis.titleExists == false
+    titlesAnalysis.titleCharacters == 0
+    titlesAnalysis.alternateTitleExists == false
+    titlesAnalysis.alternateTitleCharacters == 0
   }
 
-  def "Missing description detected"() {
+  def "analyses when description is missing"() {
     given:
-    def metadata = [description: '']
+    def metadata = Discovery.newBuilder().build()
 
     when:
     def descriptionAnalysis = AnalysisAndValidationService.analyzeDescription(metadata)
 
     then:
-    descriptionAnalysis == [
-        descriptionExists    : false,
-        descriptionCharacters: 0
-    ]
+    descriptionAnalysis instanceof Description
+    descriptionAnalysis.descriptionExists == false
+    descriptionAnalysis.descriptionCharacters == 0
   }
 
-  def "Missing thumbnail URL detected"() {
+  def "analyzes when thumbnail is #testCase"() {
     given:
-    def metadata = [:]
+    def metadata = Discovery.newBuilder().setThumbnail(value).build()
 
     when:
     def thumbnailAnalysis = AnalysisAndValidationService.analyzeThumbnail(metadata)
 
     then:
-    thumbnailAnalysis == [
-        thumbnailExists: false
-    ]
+    thumbnailAnalysis instanceof Thumbnail
+    thumbnailAnalysis.thumbnailExists == expected
+
+    where:
+    testCase  | value        | expected
+    'missing' | null         | false
+    'present' | 'thumbnail!' | true
+  }
+
+  def "analyzes when spatial boundings are #testCase"() {
+    given:
+    def metadata = Discovery.newBuilder().setSpatialBounding(value).build()
+
+    when:
+    def result = AnalysisAndValidationService.analyzeSpatialBounding(metadata)
+
+    then:
+    result instanceof SpatialBounding
+    result.spatialBoundingExists == expected
+
+    where:
+    testCase  | value        | expected
+    'missing' | null         | false
+    'present' | buildPoint() | true
+  }
+
+  static buildPoint() {
+    Point.newBuilder()
+        .setCoordinates(Position.newBuilder().setPosition([0, 0]).build())
+        .build()
   }
 
   static boolean validateJson(String json, Schema schema) throws Exception {

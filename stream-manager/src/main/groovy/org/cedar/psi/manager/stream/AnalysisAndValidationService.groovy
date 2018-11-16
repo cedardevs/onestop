@@ -1,6 +1,7 @@
 package org.cedar.psi.manager.stream
 
 import groovy.util.logging.Slf4j
+import org.cedar.psi.common.avro.*
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -22,126 +23,63 @@ class AnalysisAndValidationService {
   static final String INVALID = 'INVALID'
   static final String VALID = 'VALID'
 
-  static Map analyzeParsedMetadata(Map msgMap) {
-    log.info "Analyzing message}"
-    log.debug("Received $msgMap")
-    def parsedMetadata = msgMap.discovery
+  static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
+      .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
+      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
+      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
+      .toFormatter()
+      .withResolverStyle(ResolverStyle.STRICT)
 
-    def analysisMap = [
-        identification  : analyzeIdentifiers(parsedMetadata),
-        temporalBounding: analyzeTemporalBounding(parsedMetadata),
-        spatialBounding : analyzeSpatialBounding(parsedMetadata),
-        titles          : analyzeTitles(parsedMetadata),
-        description     : analyzeDescription(parsedMetadata),
-        thumbnail       : analyzeThumbnail(parsedMetadata),
-        dataAccess      : analyzeDataAccess(parsedMetadata)
-    ]
-
-    msgMap.put('analysis', analysisMap)
-    return msgMap
+  static ParsedRecord addAnalysis(ParsedRecord record) {
+    def builder = ParsedRecord.newBuilder(record)
+    builder.analysis = analyze(record?.discovery)
+    return builder.build()
   }
 
-  static Map analyzeIdentifiers(Map metadata) {
-    String fileIdentifier = metadata.fileIdentifier
-    String doi = metadata.doi
-    String parentIdentifier = metadata.parentIdentifier
-    String hierarchy = metadata.hierarchyLevelName
-
-    def matchesIdentifiers = (hierarchy == 'granule' && parentIdentifier) || (hierarchy == null)
-
-    return [
-        fileIdentifierExists: fileIdentifier ? true : false,
-        fileIdentifierString: fileIdentifier ?: null,
-        doiExists: doi ? true : false,
-        doiString: doi ?: null,
-        parentIdentifierExists: parentIdentifier ? true : false,
-        parentIdentifierString: parentIdentifier ?: null,
-        hierarchyLevelNameExists            : hierarchy ? true : false,
-        matchesIdentifiers: matchesIdentifiers
-    ]
+  static Analysis analyze(Discovery discovery) {
+    log.debug("Analyzing record: $discovery")
+    if (discovery == null) {
+      return null
+    }
+    def builder = Analysis.newBuilder()
+    builder.identification = analyzeIdentifiers(discovery)
+    builder.temporalBounding = analyzeTemporalBounding(discovery)
+    builder.spatialBounding = analyzeSpatialBounding(discovery)
+    builder.titles = analyzeTitles(discovery)
+    builder.description = analyzeDescription(discovery)
+    builder.thumbnail = analyzeThumbnail(discovery)
+    builder.dataAccess = analyzeDataAccess(discovery)
+    return builder.build()
   }
 
-  static Map dateInfo(String dateString, boolean start) {
+  static Identification analyzeIdentifiers(Discovery metadata) {
+    def fileIdInfo = stringInfo(metadata?.fileIdentifier)
+    def doiInfo = stringInfo(metadata?.doi)
+    def parentIdInfo = stringInfo(metadata?.parentIdentifier)
+    def hierarchyInfo = stringInfo(metadata?.hierarchyLevelName)
 
-    final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
-        .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
-        .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
-        .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
-        .toFormatter()
-        .withResolverStyle(ResolverStyle.STRICT)
-
-    def exists = dateString ? true : false
-    if(!exists) {
-      return [
-          exists: exists,
-          precision: UNDEFINED,
-          validSearchFormat: UNDEFINED,
-          zoneSpecified: UNDEFINED,
-          utcDateTimeString: UNDEFINED
-      ]
-    }
-
-    def yearOnly = dateString.isLong()
-
-    def utcDateTimeString, validSearchFormat, precision, timezone
-    if(yearOnly) {
-      def year = Long.parseLong(dateString)
-      // Year must be in the range [-292275055,292278994] in order to be parsed as a date by ES (Joda time magic number). However,
-      // this number is a bit arbitrary, and prone to change when ES switches to the Java time library (minimum supported year
-      // being -999999999). We will limit the year ourselves instead to -100,000,000 -- since this is a fairly safe bet for
-      // supportability across many date libraries if the utcDateTime ends up used as is by a downstream app.
-      validSearchFormat = year < -100000000L ? false : true
-      precision = ChronoUnit.YEARS.toString()
-      timezone = UNDEFINED
-      utcDateTimeString = "${year}-01-01T00:00:00Z"
-    }
-    else {
-      try{
-        def parsedDate = PARSE_DATE_FORMATTER.parseBest(dateString, ZonedDateTime.&from as TemporalQuery,
-            LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
-        validSearchFormat = true
-        precision = parsedDate.query(TemporalQueries.precision()).toString()
-        if(parsedDate instanceof LocalDate) {
-          parsedDate = start ? parsedDate.atTime(0, 0, 0) : parsedDate.atTime(23, 59, 59)
-          parsedDate = parsedDate.atZone(ZoneOffset.UTC)
-        }
-        else if(parsedDate instanceof LocalDateTime) {
-          parsedDate = parsedDate.atZone(ZoneOffset.UTC)
-        }
-        else if(parsedDate instanceof ZonedDateTime) {
-          timezone = parsedDate.offset.toString()
-          parsedDate = parsedDate.withZoneSameInstant(ZoneOffset.UTC).toInstant()
-        }
-        utcDateTimeString = parsedDate.toString()
-      }
-      catch(DateTimeParseException e) {
-        validSearchFormat = false
-        precision = INVALID
-        timezone = INVALID
-        utcDateTimeString = INVALID
-      }
-
-    }
-
-    return [
-        exists: exists,
-        precision: precision,
-        validSearchFormat: validSearchFormat,
-        zoneSpecified: timezone ?: UNDEFINED,
-        utcDateTimeString: utcDateTimeString as String
-    ]
+    def builder = Identification.newBuilder()
+    builder.fileIdentifierExists = fileIdInfo.exists
+    builder.fileIdentifierString = fileIdInfo.value
+    builder.doiExists = doiInfo.exists
+    builder.doiString = doiInfo.value
+    builder.parentIdentifierExists = parentIdInfo.exists
+    builder.parentIdentifierString = parentIdInfo.value
+    builder.hierarchyLevelNameExists = hierarchyInfo.exists
+    builder.matchesIdentifiers = (hierarchyInfo.value == 'granule' && parentIdInfo.exists) || !hierarchyInfo.exists
+    return builder.build()
   }
 
-  static Map analyzeTemporalBounding(Map metadata) {
+  static TemporalBoundingAnalysis analyzeTemporalBounding(Discovery metadata) {
 
     // Gather info on individual dates:
-    def beginInfo = dateInfo(metadata.temporalBounding.beginDate, true)
-    def endInfo = dateInfo(metadata.temporalBounding.endDate, false)
-    def instantInfo = dateInfo(metadata.temporalBounding.instant, true)
+    def beginInfo = dateInfo(metadata?.temporalBounding?.beginDate, true)
+    def endInfo = dateInfo(metadata?.temporalBounding?.endDate, false)
+    def instantInfo = dateInfo(metadata?.temporalBounding?.instant, true)
 
     // Determine the descriptor of the given time range:
     def descriptor
-    if(beginInfo.exists) {
+    if (beginInfo.exists) {
       // ( begin && end ) OR ( begin && !end )
       descriptor = endInfo.exists ? 'BOUNDED' : 'ONGOING'
     }
@@ -151,29 +89,29 @@ class AnalysisAndValidationService {
     }
 
     // Update descriptor if !begin and !end but instant exists
-    if(descriptor == UNDEFINED && instantInfo.exists) {
+    if (descriptor == UNDEFINED && instantInfo.exists) {
       // Instant describes range, but its validity still needs to be validated
       descriptor = (instantInfo.validSearchFormat || instantInfo.precision == ChronoUnit.YEARS.toString()) ? 'INSTANT' : INVALID
     }
 
     // Determine if the given time range is valid:
     def beginLTEEnd
-    if(descriptor == INVALID || descriptor == UNDEFINED) {
+    if (descriptor == INVALID || descriptor == UNDEFINED) {
       beginLTEEnd = UNDEFINED
     }
-    else if(descriptor == 'ONGOING' || descriptor == 'INSTANT') {
+    else if (descriptor == 'ONGOING' || descriptor == 'INSTANT') {
       beginLTEEnd = true
     }
     else {
-      if(beginInfo.validSearchFormat == true && endInfo.validSearchFormat == true) {
+      if (beginInfo.validSearchFormat == true && endInfo.validSearchFormat == true) {
         // Compare actual dates with UTC string
         def beginDate = ZonedDateTime.parse(beginInfo.utcDateTimeString)
         def endDate = ZonedDateTime.parse(endInfo.utcDateTimeString)
         beginLTEEnd = beginDate.isBefore(endDate) || beginDate.isEqual(endDate)
       }
-      else if( (beginInfo.precision == ChronoUnit.YEARS.toString() && endInfo.precision == ChronoUnit.YEARS.toString()) ||
+      else if ((beginInfo.precision == ChronoUnit.YEARS.toString() && endInfo.precision == ChronoUnit.YEARS.toString()) ||
           (beginInfo.precision == ChronoUnit.YEARS.toString() && endInfo.validSearchFormat == true) ||
-          (beginInfo.validSearchFormat == true && endInfo.precision == ChronoUnit.YEARS.toString()) ) {
+          (beginInfo.validSearchFormat == true && endInfo.precision == ChronoUnit.YEARS.toString())) {
         // Compare years only as longs; parse both as string objects since both may not be just a long.
         // Watch out for negative years...
         def beginYearText = beginInfo.utcDateTimeString.substring(0, beginInfo.utcDateTimeString.indexOf('-', 1))
@@ -188,74 +126,173 @@ class AnalysisAndValidationService {
       }
 
       // Update descriptor to INVALID if !beginLTEEnd since BOUNDED is no longer accurate
-      if(beginLTEEnd == false) {
+      if (beginLTEEnd == false) {
         descriptor = INVALID
       }
     }
 
-    def TemporalBoundingMap =  [
-        begin: beginInfo,
-        end: endInfo,
-        instant: instantInfo,
-        range: [
-            descriptor: descriptor,
-            beginLTEEnd: beginLTEEnd
-        ]
-    ]
+    def builder = TemporalBoundingAnalysis.newBuilder()
 
-    Map AnalysisMap = [:]
-    TemporalBoundingMap.each {
-      AnalysisMap.putAll(flattenMap(it))
+    builder.beginexists = beginInfo.exists
+    builder.beginprecision = beginInfo.precision
+    builder.beginvalidSearchFormat = beginInfo.validSearchFormat
+    builder.beginzoneSpecified = beginInfo.zoneSpecified
+    builder.beginutcDateTimeString = beginInfo.utcDateTimeString
+
+    builder.endexists = endInfo.exists
+    builder.endprecision = endInfo.precision
+    builder.endvalidSearchFormat = endInfo.validSearchFormat
+    builder.endzoneSpecified = endInfo.zoneSpecified
+    builder.endutcDateTimeString = endInfo.utcDateTimeString
+
+    builder.instantexists = instantInfo.exists
+    builder.instantprecision = instantInfo.precision
+    builder.instantvalidSearchFormat = instantInfo.validSearchFormat
+    builder.instantzoneSpecified = instantInfo.zoneSpecified
+    builder.instantutcDateTimeString = instantInfo.utcDateTimeString
+
+    builder.rangedescriptor = descriptor
+    builder.rangebeginLTEEnd = beginLTEEnd
+
+    return builder.build()
+  }
+
+  static SpatialBounding analyzeSpatialBounding(Discovery metadata) {
+    def builder = SpatialBounding.newBuilder()
+    builder.spatialBoundingExists = metadata?.spatialBounding != null
+    return builder.build()
+  }
+
+  static Titles analyzeTitles(Discovery metadata) {
+    def titleAnalysis = stringInfo(metadata?.title)
+    def altAnalysis = stringInfo(metadata?.alternateTitle)
+
+    def builder = Titles.newBuilder()
+    builder.titleExists = titleAnalysis.exists
+    builder.titleCharacters = titleAnalysis.characters
+    builder.alternateTitleExists = altAnalysis.exists
+    builder.alternateTitleCharacters = altAnalysis.characters
+    return builder.build()
+  }
+
+  static Description analyzeDescription(Discovery metadata) {
+    def analysis = stringInfo(metadata?.description)
+    def builder = Description.newBuilder()
+    builder.descriptionExists = analysis.exists
+    builder.descriptionCharacters = analysis.characters
+    return builder.build()
+  }
+
+  static Thumbnail analyzeThumbnail(Discovery metadata) {
+    def builder = Thumbnail.newBuilder()
+    builder.thumbnailExists = metadata?.thumbnail != null
+    return builder.build()
+  }
+
+  static DataAccess analyzeDataAccess(Discovery metadata) {
+    def builder = DataAccess.newBuilder()
+    builder.dataAccessExists = metadata?.links?.size() > 0
+    return builder.build()
+  }
+
+  //-- Helpers
+
+  static Map stringInfo(String input) {
+    return [
+        value     : input,
+        exists    : input != null && input.length() > 0,
+        characters: input?.length() ?: 0
+    ]
+  }
+
+  static Map dateInfo(String dateString, boolean start) {
+    def exists = dateString ? true : false
+    if (!exists) {
+      return [
+          exists           : exists,
+          precision        : UNDEFINED,
+          validSearchFormat: UNDEFINED,
+          zoneSpecified    : UNDEFINED,
+          utcDateTimeString: UNDEFINED
+      ]
     }
 
-    return AnalysisMap
-  }
+    def yearOnly = dateString.isLong()
 
-  static Map flattenMap(entry) {
-    def res = [:]
-    entry.value.each{ res[entry.key + it.key] = it.value  }
-    return res
-  }
+    def utcDateTimeString, validSearchFormat, precision, timezone
+    if (yearOnly) {
+      def year = Long.parseLong(dateString)
+      // Year must be in the range [-292275055,292278994] in order to be parsed as a date by ES (Joda time magic number). However,
+      // this number is a bit arbitrary, and prone to change when ES switches to the Java time library (minimum supported year
+      // being -999999999). We will limit the year ourselves instead to -100,000,000 -- since this is a fairly safe bet for
+      // supportability across many date libraries if the utcDateTime ends up used as is by a downstream app.
+      validSearchFormat = year < -100000000L ? false : true
+      precision = ChronoUnit.YEARS.toString()
+      timezone = UNDEFINED
+      utcDateTimeString = "${year}-01-01T00:00:00Z"
+    }
+    else {
+      try {
+        def parsedDate = PARSE_DATE_FORMATTER.parseBest(dateString, ZonedDateTime.&from as TemporalQuery,
+            LocalDateTime.&from as TemporalQuery, LocalDate.&from as TemporalQuery)
+        validSearchFormat = true
+        precision = parsedDate.query(TemporalQueries.precision()).toString()
+        if (parsedDate instanceof LocalDate) {
+          parsedDate = start ? parsedDate.atTime(0, 0, 0) : parsedDate.atTime(23, 59, 59)
+          parsedDate = parsedDate.atZone(ZoneOffset.UTC)
+        }
+        else if (parsedDate instanceof LocalDateTime) {
+          parsedDate = parsedDate.atZone(ZoneOffset.UTC)
+        }
+        else if (parsedDate instanceof ZonedDateTime) {
+          timezone = parsedDate.offset.toString()
+          parsedDate = parsedDate.withZoneSameInstant(ZoneOffset.UTC)
+        }
+        utcDateTimeString = DateTimeFormatter.ISO_ZONED_DATE_TIME.format(parsedDate)
+      }
+      catch (DateTimeParseException e) {
+        validSearchFormat = false
+        precision = INVALID
+        timezone = INVALID
+        utcDateTimeString = INVALID
+      }
 
-  static Map analyzeSpatialBounding(Map metadata) {
-    String spatialBounding = metadata.spatialBounding
+    }
+
     return [
-        spatialBoundingExists: spatialBounding ? true : false
+        exists           : exists,
+        precision        : precision,
+        validSearchFormat: validSearchFormat,
+        zoneSpecified    : timezone ?: UNDEFINED,
+        utcDateTimeString: utcDateTimeString as String
     ]
   }
 
-  static Map analyzeTitles(Map metadata) {
-    String title = metadata.title
-    String altTitle = metadata.alternateTitle
+  String isValidSearchFormat(String input) {
+    if (input.isLong()) {
+      // Year must be in the range [-292275055,292278994] in order to be parsed as a date by ES (Joda time magic number). However,
+      // this number is a bit arbitrary, and prone to change when ES switches to the Java time library (minimum supported year
+      // being -999999999). We will limit the year ourselves instead to -100,000,000 -- since this is a fairly safe bet for
+      // supportability across many date libraries if the utcDateTime ends up used as is by a downstream app.
+      return Long.parseLong(dateString) < -100000000L ? false : true
+    }
+    else {
 
-    return [
-        titleExists    : title ? true : false,
-        titleCharacters: title ? title.length() : 0,
-        alternateTitleExists    : altTitle ? true : false,
-        alternateTitleCharacters: altTitle ? altTitle.length() : 0
-    ]
+    }
   }
 
-  static Map analyzeDescription(Map metadata) {
-    String description = metadata.description
-
-    return [
-        descriptionExists    : description ? true : false,
-        descriptionCharacters: description ? description.length() : 0
-    ]
-  }
-
-  static Map analyzeThumbnail(Map metadata) {
-    String thumbnail = metadata.thumbnail
-
-    return [
-        thumbnailExists: thumbnail ? true : false,
-    ]
-  }
-
-  static Map analyzeDataAccess(Map metadata) {
-    return [
-        dataAccessExists: metadata.links ? true : false
-    ]
+  String utcString(String input) {
+    def utcDateTimeString, validSearchFormat, precision, timezone
+    if (dateString.isLong()) {
+      def year = Long.parseLong(dateString)
+      // Year must be in the range [-292275055,292278994] in order to be parsed as a date by ES (Joda time magic number). However,
+      // this number is a bit arbitrary, and prone to change when ES switches to the Java time library (minimum supported year
+      // being -999999999). We will limit the year ourselves instead to -100,000,000 -- since this is a fairly safe bet for
+      // supportability across many date libraries if the utcDateTime ends up used as is by a downstream app.
+      validSearchFormat = year < -100000000L ? false : true
+      precision = ChronoUnit.YEARS.toString()
+      timezone = UNDEFINED
+      utcDateTimeString = "${year}-01-01T00:00:00Z"
+    }
   }
 }

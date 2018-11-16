@@ -129,7 +129,7 @@
       },
       {
         "name": "spatialBounding",
-        "type": ["null", "Geometry"],
+        "type": ["null", "Point", "MultiPoint", "LineString", "MultiLineString", "Polygon", "MultiPolygon"],
         "default": null
       },
       {
