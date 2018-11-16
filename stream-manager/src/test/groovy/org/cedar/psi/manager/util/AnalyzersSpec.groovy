@@ -44,13 +44,13 @@ class AnalyzersSpec extends Specification {
 
     then:
     analysis instanceof Analysis
-    analysis.identification instanceof Identification
+    analysis.identification instanceof IdentificationAnalysis
     analysis.temporalBounding instanceof TemporalBoundingAnalysis
-    analysis.spatialBounding instanceof SpatialBounding
-    analysis.titles instanceof Titles
-    analysis.description instanceof Description
-    analysis.thumbnail instanceof Thumbnail
-    analysis.dataAccess instanceof DataAccess
+    analysis.spatialBounding instanceof SpatialBoundingAnalysis
+    analysis.titles instanceof TitleAnalysis
+    analysis.description instanceof DescriptionAnalysis
+    analysis.thumbnail instanceof ThumbnailAnalysis
+    analysis.dataAccess instanceof DataAccessAnalysis
   }
 
   // TODO - verify a real Discovery object once ISOParser can produce one
@@ -214,7 +214,7 @@ class AnalyzersSpec extends Specification {
     def dataAccessAnalysis = Analyzers.analyzeDataAccess(record)
 
     then:
-    dataAccessAnalysis instanceof DataAccess
+    dataAccessAnalysis instanceof DataAccessAnalysis
     dataAccessAnalysis.dataAccessExists == expected
 
     where:
@@ -231,7 +231,7 @@ class AnalyzersSpec extends Specification {
     def result = Analyzers.analyzeIdentifiers(metadata)
 
     then:
-    result instanceof Identification
+    result instanceof IdentificationAnalysis
     result.fileIdentifierExists == true
     result.fileIdentifierString == 'xyz'
     result.doiExists == false
@@ -253,7 +253,7 @@ class AnalyzersSpec extends Specification {
     def result = Analyzers.analyzeIdentifiers(metadata)
 
     then:
-    result instanceof Identification
+    result instanceof IdentificationAnalysis
     result.fileIdentifierExists == true
     result.fileIdentifierString == 'xyz'
     result.doiExists == false
@@ -288,7 +288,7 @@ class AnalyzersSpec extends Specification {
     def titlesAnalysis = Analyzers.analyzeTitles(metadata)
 
     then:
-    titlesAnalysis instanceof Titles
+    titlesAnalysis instanceof TitleAnalysis
     titlesAnalysis.titleExists == false
     titlesAnalysis.titleCharacters == 0
     titlesAnalysis.alternateTitleExists == false
@@ -303,7 +303,7 @@ class AnalyzersSpec extends Specification {
     def descriptionAnalysis = Analyzers.analyzeDescription(metadata)
 
     then:
-    descriptionAnalysis instanceof Description
+    descriptionAnalysis instanceof DescriptionAnalysis
     descriptionAnalysis.descriptionExists == false
     descriptionAnalysis.descriptionCharacters == 0
   }
@@ -316,13 +316,13 @@ class AnalyzersSpec extends Specification {
     def thumbnailAnalysis = Analyzers.analyzeThumbnail(metadata)
 
     then:
-    thumbnailAnalysis instanceof Thumbnail
+    thumbnailAnalysis instanceof ThumbnailAnalysis
     thumbnailAnalysis.thumbnailExists == expected
 
     where:
     testCase  | value        | expected
     'missing' | null         | false
-    'present' | 'thumbnail!' | true
+    'present' | 'thumbnailAnalysis!' | true
   }
 
   def "analyzes when spatial boundings are #testCase"() {
@@ -333,7 +333,7 @@ class AnalyzersSpec extends Specification {
     def result = Analyzers.analyzeSpatialBounding(metadata)
 
     then:
-    result instanceof SpatialBounding
+    result instanceof SpatialBoundingAnalysis
     result.spatialBoundingExists == expected
 
     where:

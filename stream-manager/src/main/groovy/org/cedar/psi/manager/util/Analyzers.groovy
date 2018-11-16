@@ -52,13 +52,13 @@ class Analyzers {
     return builder.build()
   }
 
-  static Identification analyzeIdentifiers(Discovery metadata) {
+  static IdentificationAnalysis analyzeIdentifiers(Discovery metadata) {
     def fileIdInfo = stringInfo(metadata?.fileIdentifier)
     def doiInfo = stringInfo(metadata?.doi)
     def parentIdInfo = stringInfo(metadata?.parentIdentifier)
     def hierarchyInfo = stringInfo(metadata?.hierarchyLevelName)
 
-    def builder = Identification.newBuilder()
+    def builder = IdentificationAnalysis.newBuilder()
     builder.fileIdentifierExists = fileIdInfo.exists
     builder.fileIdentifierString = fileIdInfo.value
     builder.doiExists = doiInfo.exists
@@ -157,17 +157,17 @@ class Analyzers {
     return builder.build()
   }
 
-  static SpatialBounding analyzeSpatialBounding(Discovery metadata) {
-    def builder = SpatialBounding.newBuilder()
+  static SpatialBoundingAnalysis analyzeSpatialBounding(Discovery metadata) {
+    def builder = SpatialBoundingAnalysis.newBuilder()
     builder.spatialBoundingExists = metadata?.spatialBounding != null
     return builder.build()
   }
 
-  static Titles analyzeTitles(Discovery metadata) {
+  static TitleAnalysis analyzeTitles(Discovery metadata) {
     def titleAnalysis = stringInfo(metadata?.title)
     def altAnalysis = stringInfo(metadata?.alternateTitle)
 
-    def builder = Titles.newBuilder()
+    def builder = TitleAnalysis.newBuilder()
     builder.titleExists = titleAnalysis.exists
     builder.titleCharacters = titleAnalysis.characters
     builder.alternateTitleExists = altAnalysis.exists
@@ -175,22 +175,22 @@ class Analyzers {
     return builder.build()
   }
 
-  static Description analyzeDescription(Discovery metadata) {
+  static DescriptionAnalysis analyzeDescription(Discovery metadata) {
     def analysis = stringInfo(metadata?.description)
-    def builder = Description.newBuilder()
+    def builder = DescriptionAnalysis.newBuilder()
     builder.descriptionExists = analysis.exists
     builder.descriptionCharacters = analysis.characters
     return builder.build()
   }
 
-  static Thumbnail analyzeThumbnail(Discovery metadata) {
-    def builder = Thumbnail.newBuilder()
+  static ThumbnailAnalysis analyzeThumbnail(Discovery metadata) {
+    def builder = ThumbnailAnalysis.newBuilder()
     builder.thumbnailExists = metadata?.thumbnail != null
     return builder.build()
   }
 
-  static DataAccess analyzeDataAccess(Discovery metadata) {
-    def builder = DataAccess.newBuilder()
+  static DataAccessAnalysis analyzeDataAccess(Discovery metadata) {
+    def builder = DataAccessAnalysis.newBuilder()
     builder.dataAccessExists = metadata?.links?.size() > 0
     return builder.build()
   }

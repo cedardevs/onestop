@@ -9,7 +9,7 @@
       "doc": "Assessment of the identifying elements of the metadata.",
       "type": {
         "type": "record",
-        "name": "Identification",
+        "name": "IdentificationAnalysis",
         "fields": [
           {
             "name": "fileIdentifierExists",
@@ -52,7 +52,7 @@
       "doc": "Assessment of the titles in the metadata.",
       "type": {
         "type": "record",
-        "name": "Titles",
+        "name": "TitleAnalysis",
         "fields": [
           {
             "name": "titleExists",
@@ -78,7 +78,7 @@
       "doc": "Assessment of the titles in the metadata.",
       "type": {
         "type": "record",
-        "name": "Description",
+        "name": "DescriptionAnalysis",
         "fields": [
           {
             "name": "descriptionExists",
@@ -95,7 +95,7 @@
       "name": "dataAccess",
       "type": {
         "type": "record",
-        "name": "DataAccess",
+        "name": "DataAccessAnalysis",
         "fields": [
           {
             "name": "dataAccessExists",
@@ -108,7 +108,7 @@
       "name": "thumbnail",
       "type": {
         "type": "record",
-        "name": "Thumbnail",
+        "name": "ThumbnailAnalysis",
         "fields": [
           {
             "name": "thumbnailExists",
@@ -198,7 +198,7 @@
       "name": "spatialBounding",
       "type": {
         "type": "record",
-        "name": "SpatialBounding",
+        "name": "SpatialBoundingAnalysis",
         "fields": [
           {
             "name": "spatialBoundingExists",
