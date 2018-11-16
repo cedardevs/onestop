@@ -16,6 +16,7 @@ import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.common.util.AvroUtils
 import org.cedar.psi.manager.config.ManagerConfig
+import org.cedar.psi.manager.util.Analyzers
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
@@ -70,7 +71,7 @@ class StreamManager {
 
     // Send valid messages to analysis & send final output to topic
     goodParsedStream
-        .mapValues(AnalysisAndValidationService.&addAnalysis as ValueMapper<ParsedRecord, ParsedRecord>)
+        .mapValues(Analyzers.&addAnalysis as ValueMapper<ParsedRecord, ParsedRecord>)
         .to(parsedTopic('granule'), Produced.with(Serdes.String(), JsonSerdes.Map()))
 
     // parsing collection:
@@ -88,7 +89,7 @@ class StreamManager {
 
     // Send valid messages to analysis & send final output to topic
     goodParsedCollection
-        .mapValues(AnalysisAndValidationService.&addAnalysis as ValueMapper<ParsedRecord, ParsedRecord>)
+        .mapValues(Analyzers.&addAnalysis as ValueMapper<ParsedRecord, ParsedRecord>)
         .to(parsedTopic('collection'), Produced.with(Serdes.String(), JsonSerdes.Map()))
 
     return builder.build()

@@ -1,4 +1,4 @@
-package org.cedar.psi.manager.stream
+package org.cedar.psi.manager.util
 
 import groovy.json.JsonOutput
 import org.apache.avro.AvroTypeException
@@ -9,14 +9,13 @@ import org.apache.avro.io.DecoderFactory
 import org.apache.avro.specific.SpecificDatumReader
 import org.cedar.psi.common.avro.*
 import org.cedar.psi.common.util.AvroUtils
-import org.cedar.psi.manager.util.ISOParser
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.time.temporal.ChronoUnit
 
 @Unroll
-class AnalysisAndValidationServiceSpec extends Specification {
+class AnalyzersSpec extends Specification {
 
   final String analysisAvro = ClassLoader.systemClassLoader.getResourceAsStream('avro/analysis.avsc').text
 
@@ -24,7 +23,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def record = ParsedRecord.newBuilder().setDiscovery(Discovery.newBuilder().build()).build()
 
     when:
-    def result = AnalysisAndValidationService.addAnalysis(record)
+    def result = Analyzers.addAnalysis(record)
 
     then:
     result instanceof ParsedRecord
@@ -34,14 +33,14 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def 'analyzing null discovery returns null'() {
     expect:
-    AnalysisAndValidationService.analyze(null) == null
+    Analyzers.analyze(null) == null
   }
 
   def 'analyzing a default discovery object returns all expected analysis'() {
     def discovery = Discovery.newBuilder().build()
 
     when:
-    def analysis = AnalysisAndValidationService.analyze(discovery)
+    def analysis = Analyzers.analyze(discovery)
 
     then:
     analysis instanceof Analysis
@@ -115,7 +114,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     ]
 
     when:
-    def response = AnalysisAndValidationService.analyze(inputMap)
+    def response = Analyzers.analyze(inputMap)
     def analysisJson = JsonOutput.toJson(response)
     Schema schema = new Schema.Parser().parse(analysisAvro)
 
@@ -126,7 +125,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def 'extracts date info from date strings'() {
     when:
-    def result = AnalysisAndValidationService.dateInfo(input, start)
+    def result = Analyzers.dateInfo(input, start)
 
     then:
     result.exists == exists
@@ -159,7 +158,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def discovery = Discovery.newBuilder().setTemporalBounding(bounding).build()
 
     when:
-    def result = AnalysisAndValidationService.analyzeTemporalBounding(discovery)
+    def result = Analyzers.analyzeTemporalBounding(discovery)
 
     then:
     result.rangedescriptor == descriptor
@@ -184,7 +183,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def discovery = Discovery.newBuilder().setTemporalBounding(bounding).build()
 
     when:
-    def result = AnalysisAndValidationService.analyzeTemporalBounding(discovery)
+    def result = Analyzers.analyzeTemporalBounding(discovery)
 
     then:
     result.rangebeginLTEEnd == value
@@ -212,7 +211,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def record = Discovery.newBuilder().setLinks(testLinks).build()
 
     when:
-    def dataAccessAnalysis = AnalysisAndValidationService.analyzeDataAccess(record)
+    def dataAccessAnalysis = Analyzers.analyzeDataAccess(record)
 
     then:
     dataAccessAnalysis instanceof DataAccess
@@ -229,7 +228,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def metadata = Discovery.newBuilder().setFileIdentifier('xyz').build()
 
     when:
-    def result = AnalysisAndValidationService.analyzeIdentifiers(metadata)
+    def result = Analyzers.analyzeIdentifiers(metadata)
 
     then:
     result instanceof Identification
@@ -251,7 +250,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def metadata = builder.build()
 
     when:
-    def result = AnalysisAndValidationService.analyzeIdentifiers(metadata)
+    def result = Analyzers.analyzeIdentifiers(metadata)
 
     then:
     result instanceof Identification
@@ -267,7 +266,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
 
   def 'analyzes #testCase strings'() {
     when:
-    def result = AnalysisAndValidationService.stringInfo(value)
+    def result = Analyzers.stringInfo(value)
 
     then:
     result instanceof Map
@@ -286,7 +285,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def metadata = Discovery.newBuilder().build()
 
     when:
-    def titlesAnalysis = AnalysisAndValidationService.analyzeTitles(metadata)
+    def titlesAnalysis = Analyzers.analyzeTitles(metadata)
 
     then:
     titlesAnalysis instanceof Titles
@@ -301,7 +300,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def metadata = Discovery.newBuilder().build()
 
     when:
-    def descriptionAnalysis = AnalysisAndValidationService.analyzeDescription(metadata)
+    def descriptionAnalysis = Analyzers.analyzeDescription(metadata)
 
     then:
     descriptionAnalysis instanceof Description
@@ -314,7 +313,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def metadata = Discovery.newBuilder().setThumbnail(value).build()
 
     when:
-    def thumbnailAnalysis = AnalysisAndValidationService.analyzeThumbnail(metadata)
+    def thumbnailAnalysis = Analyzers.analyzeThumbnail(metadata)
 
     then:
     thumbnailAnalysis instanceof Thumbnail
@@ -331,7 +330,7 @@ class AnalysisAndValidationServiceSpec extends Specification {
     def metadata = Discovery.newBuilder().setSpatialBounding(value).build()
 
     when:
-    def result = AnalysisAndValidationService.analyzeSpatialBounding(metadata)
+    def result = Analyzers.analyzeSpatialBounding(metadata)
 
     then:
     result instanceof SpatialBounding

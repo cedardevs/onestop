@@ -1,4 +1,4 @@
-package org.cedar.psi.manager.stream
+package org.cedar.psi.manager.util
 
 import groovy.util.logging.Slf4j
 import org.cedar.psi.common.avro.*
@@ -16,7 +16,7 @@ import java.time.temporal.TemporalQueries
 import java.time.temporal.TemporalQuery
 
 @Slf4j
-class AnalysisAndValidationService {
+class Analyzers {
 
   // Just to decrease chance of typos
   static final String UNDEFINED = 'UNDEFINED'
