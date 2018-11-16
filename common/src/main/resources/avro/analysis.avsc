@@ -124,71 +124,71 @@
         "name": "TemporalBoundingAnalysis",
         "fields": [
                 {
-                  "name": "beginexists",
+                  "name": "beginExists",
                   "type": "boolean"
                 },
                 {
-                  "name": "beginprecision",
+                  "name": "beginPrecision",
                   "type": "string"
                 },
                 {
-                  "name": "beginvalidSearchFormat",
-                  "type": ["string", "boolean"]
-                },
-                {
-                  "name": "beginzoneSpecified",
-                  "type": "string"
-                },
-                {
-                  "name": "beginutcDateTimeString",
-                  "type": "string"
-                },
-                {
-                  "name": "endexists",
+                  "name": "beginIndexable",
                   "type": "boolean"
                 },
                 {
-                  "name": "endprecision",
+                  "name": "beginZoneSpecified",
                   "type": "string"
                 },
                 {
-                  "name": "endvalidSearchFormat",
-                  "type": ["string", "boolean"]
-                },
-                {
-                  "name": "endzoneSpecified",
+                  "name": "beginUtcDateTimeString",
                   "type": "string"
                 },
                 {
-                  "name": "endutcDateTimeString",
-                  "type": "string"
-                },
-                {
-                  "name": "instantexists",
+                  "name": "endExists",
                   "type": "boolean"
                 },
                 {
-                  "name": "instantprecision",
+                  "name": "endPrecision",
                   "type": "string"
                 },
                 {
-                  "name": "instantvalidSearchFormat",
-                  "type": ["string", "boolean"]
+                  "name": "endIndexable",
+                  "type": "boolean"
                 },
                 {
-                  "name": "instantzoneSpecified",
+                  "name": "endZoneSpecified",
                   "type": "string"
                 },
                 {
-                  "name": "instantutcDateTimeString",
+                  "name": "endUtcDateTimeString",
                   "type": "string"
                 },
                 {
-                  "name": "rangedescriptor",
+                  "name": "instantExists",
+                  "type": "boolean"
+                },
+                {
+                  "name": "instantPrecision",
                   "type": "string"
                 },
                 {
-                  "name": "rangebeginLTEEnd",
+                  "name": "instantIndexable",
+                  "type": "boolean"
+                },
+                {
+                  "name": "instantZoneSpecified",
+                  "type": "string"
+                },
+                {
+                  "name": "instantUtcDateTimeString",
+                  "type": "string"
+                },
+                {
+                  "name": "rangeDescriptor",
+                  "type": "string"
+                },
+                {
+                  "name": "rangeBeginLTEEnd",
                   "type": ["string", "boolean"]
                 }
               ]

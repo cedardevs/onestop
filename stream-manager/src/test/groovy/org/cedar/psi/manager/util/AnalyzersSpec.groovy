@@ -76,17 +76,17 @@ class AnalyzersSpec extends Specification {
             // For why below value is not seconds, see:
             // https://docs.oracle.com/javase/8/docs/api/java/time/temporal/TemporalQueries.html#precision--
             beginPrecision          : ChronoUnit.NANOS.toString(),
-            beginValidSearchFormat  : true,
+            beginIndexable          : true,
             beginZoneSpecified      : '+01:00',
             beginUtcDateTimeString  : '2005-05-09T00:00:00Z',
             endExists               : true,
             endPrecision            : ChronoUnit.DAYS.toString(),
-            endValidSearchFormat    : true,
+            endIndexable            : true,
             endZoneSpecified        : 'UNDEFINED',
             endUtcDateTimeString    : '2010-10-01T23:59:59Z',
             instantExists           : false,
             instantPrecision        : 'UNDEFINED',
-            instantValidSearchFormat: 'UNDEFINED',
+            instantIndexable        : true,
             instantZoneSpecified    : 'UNDEFINED',
             instantUtcDateTimeString: 'UNDEFINED',
             rangeDescriptor         : 'BOUNDED',
@@ -130,22 +130,22 @@ class AnalyzersSpec extends Specification {
     then:
     result.exists == exists
     result.precision == precision
-    result.validSearchFormat == valid
+    result.indexable == valid
     result.zoneSpecified == zone
     result.utcDateTimeString == string
 
     where:
-    input                  | start || exists | precision   | valid       | zone        | string
-    '2042-04-02T00:42:42Z' | false || true   | 'Nanos'     | true        | 'Z'         | '2042-04-02T00:42:42Z'
-    '2042-04-02T00:42:42'  | false || true   | 'Nanos'     | true        | 'UNDEFINED' | '2042-04-02T00:42:42Z'
-    '2042-04-02'           | false || true   | 'Days'      | true        | 'UNDEFINED' | '2042-04-02T23:59:59Z'
-    '2042-04-02'           | true  || true   | 'Days'      | true        | 'UNDEFINED' | '2042-04-02T00:00:00Z'
-    '2042'                 | true  || true   | 'Years'     | true        | 'UNDEFINED' | '2042-01-01T00:00:00Z'
-    '-5000'                | true  || true   | 'Years'     | true        | 'UNDEFINED' | '-5000-01-01T00:00:00Z'
-    '-100000001'           | true  || true   | 'Years'     | false       | 'UNDEFINED' | '-100000001-01-01T00:00:00Z'
-    'ABC'                  | true  || true   | 'INVALID'   | false       | 'INVALID'   | 'INVALID'
-    ''                     | true  || false  | 'UNDEFINED' | 'UNDEFINED' | 'UNDEFINED' | 'UNDEFINED'
-    null                   | true  || false  | 'UNDEFINED' | 'UNDEFINED' | 'UNDEFINED' | 'UNDEFINED'
+    input                  | start || exists | precision   | valid | zone        | string
+    '2042-04-02T00:42:42Z' | false || true   | 'Nanos'     | true  | 'Z'         | '2042-04-02T00:42:42Z'
+    '2042-04-02T00:42:42'  | false || true   | 'Nanos'     | true  | 'UNDEFINED' | '2042-04-02T00:42:42Z'
+    '2042-04-02'           | false || true   | 'Days'      | true  | 'UNDEFINED' | '2042-04-02T23:59:59Z'
+    '2042-04-02'           | true  || true   | 'Days'      | true  | 'UNDEFINED' | '2042-04-02T00:00:00Z'
+    '2042'                 | true  || true   | 'Years'     | true  | 'UNDEFINED' | '2042-01-01T00:00:00Z'
+    '-5000'                | true  || true   | 'Years'     | true  | 'UNDEFINED' | '-5000-01-01T00:00:00Z'
+    '-100000001'           | true  || true   | 'Years'     | false | 'UNDEFINED' | '-100000001-01-01T00:00:00Z'
+    'ABC'                  | true  || true   | 'INVALID'   | false | 'INVALID'   | 'INVALID'
+    ''                     | true  || false  | 'UNDEFINED' | true  | 'UNDEFINED' | 'UNDEFINED'
+    null                   | true  || false  | 'UNDEFINED' | true  | 'UNDEFINED' | 'UNDEFINED'
   }
 
   def "#descriptor date range correctly identified when #situation"() {
@@ -161,7 +161,7 @@ class AnalyzersSpec extends Specification {
     def result = Analyzers.analyzeTemporalBounding(discovery)
 
     then:
-    result.rangedescriptor == descriptor
+    result.rangeDescriptor == descriptor
 
     where:
     descriptor  | situation                                                   | begin                  | end                    | instant
@@ -186,7 +186,7 @@ class AnalyzersSpec extends Specification {
     def result = Analyzers.analyzeTemporalBounding(discovery)
 
     then:
-    result.rangebeginLTEEnd == value
+    result.rangeBeginLTEEnd == value
 
     where:
     value       | situation                                                       | begin                  | end
