@@ -2,8 +2,8 @@ package org.cedar.psi.manager.util
 
 import groovy.transform.CompileStatic
 import org.apache.kafka.streams.kstream.Predicate
-import org.cedar.psi.common.avro.ErrorEvent
 import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.ParsedRecord
 
 
 @CompileStatic
@@ -25,9 +25,9 @@ class RoutingUtils {
     }
   }
 
-  static final Predicate<String, Object> isError = new Predicate<String, Object>() {
-    @Override boolean test(String key, Object value) {
-      value instanceof ErrorEvent
+  static final Predicate<String, ParsedRecord> hasErrors = new Predicate<String, ParsedRecord>() {
+    @Override boolean test(String key, ParsedRecord value) {
+      value?.errors?.size() > 0
     }
   }
 

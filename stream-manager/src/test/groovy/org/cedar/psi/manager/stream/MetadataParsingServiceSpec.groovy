@@ -1,6 +1,7 @@
 package org.cedar.psi.manager.stream
 
-import org.cedar.psi.common.avro.ErrorEvent
+import org.cedar.psi.common.avro.Discovery
+import org.cedar.psi.common.avro.ParsedRecord
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -19,13 +20,13 @@ class MetadataParsingServiceSpec extends Specification {
     def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
-    !response.containsKey("error")
-    response.containsKey("discovery")
+    response instanceof ParsedRecord
+    response.errors.size() == 0
+    response.discovery instanceof Discovery
 
     and:
     // Verify a field; in-depth validation in ISOParserSpec
-    def parsed = response.discovery
-    parsed.fileIdentifier == 'gov.super.important:FILE-ID'
+    response.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
   }
 
   def "#type ISO metadata in incoming message results in error"() {
@@ -39,8 +40,9 @@ class MetadataParsingServiceSpec extends Specification {
     def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
-    response instanceof ErrorEvent
-    response.title == 'No content provided'
+    response instanceof ParsedRecord
+    response.errors.size() == 1
+    response.errors[0].title == 'No content provided'
 
     where:
     type    | metadata
@@ -59,9 +61,10 @@ class MetadataParsingServiceSpec extends Specification {
     def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
-    response instanceof ErrorEvent
-    response.title == 'Unable to parse malformed content'
-    response.detail == 'SAXParseException: XML document structures must start and end within the same entity.'
+    response instanceof ParsedRecord
+    response.errors.size() == 1
+    response.errors[0].title == 'Unable to parse malformed content'
+    response.errors[0].detail == 'SAXParseException: XML document structures must start and end within the same entity.'
   }
 
   def "Unknown metadata type in incoming message results in error"() {
@@ -75,9 +78,10 @@ class MetadataParsingServiceSpec extends Specification {
     def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
-    response instanceof ErrorEvent
-    response.title == 'Unsupported content type'
-    response.detail == "Content type [${incomingMsg.contentType}] is not supported"
+    response instanceof ParsedRecord
+    response.errors.size() == 1
+    response.errors[0].title == 'Unsupported content type'
+    response.errors[0].detail == "Content type [${incomingMsg.contentType}] is not supported"
   }
 
 }
