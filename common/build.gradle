@@ -51,7 +51,8 @@ artifacts {
 }
 
 avro {
-  fieldVisibility = "PUBLIC"
+  fieldVisibility = "PRIVATE"
+  createSetters = false
 }
 
 generateAvroJava {
