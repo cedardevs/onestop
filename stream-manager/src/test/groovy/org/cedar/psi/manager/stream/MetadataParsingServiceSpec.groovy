@@ -1,103 +1,87 @@
 package org.cedar.psi.manager.stream
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.fge.jsonschema.main.JsonSchema
-import com.github.fge.jsonschema.main.JsonSchemaFactory
-import groovy.json.JsonOutput
+import org.cedar.psi.common.avro.Discovery
+import org.cedar.psi.common.avro.ParsedRecord
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
 class MetadataParsingServiceSpec extends Specification {
 
-  final String inputSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('input-schema.json').text
-
-  final ObjectMapper mapper = new ObjectMapper()
-  final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
-
-  final JsonNode inputSchemaNode = mapper.readTree(inputSchemaString)
-  final JsonSchema inputSchema = factory.getJsonSchema(inputSchemaNode)
-
-
   def "ISO metadata in incoming message parsed correctly"() {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def incomingMsg = [
-          contentType: 'application/xml',
-          content: xml
+        contentType: 'application/xml',
+        content    : xml
     ]
 
     when:
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(incomingMsg)))
     def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
-    !response.containsKey("error")
-    response.containsKey("discovery")
+    response instanceof ParsedRecord
+    response.errors.size() == 0
+    response.discovery instanceof Discovery
 
     and:
     // Verify a field; in-depth validation in ISOParserSpec
-    def parsed = response.discovery
-    parsed.fileIdentifier == 'gov.super.important:FILE-ID'
-    //internal format should match input schema
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(response)))
-
+    response.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
   }
 
   def "#type ISO metadata in incoming message results in error"() {
     given:
-    def rawMetadata = metadata
     def incomingMsg = [
-            contentType: 'application/xml',
-            content: rawMetadata
+        contentType: 'application/xml',
+        content    : metadata
     ]
 
     when:
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(incomingMsg)))
     def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
-    response.containsKey("error")
-    !response.containsKey("discovery")
-    response.error == errorMessage
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(response)))
+    response instanceof ParsedRecord
+    response.errors.size() == 1
+    response.errors[0].title == 'No content provided'
 
     where:
-    type    | metadata  | errorMessage
-    'Null'  | null      | 'Malformed data encountered; unable to parse. Root cause: NullPointerException:'
-    'Empty' | ''        | 'Malformed XML encountered; unable to parse. Root cause: SAXParseException: Premature end of file.'
+    type    | metadata
+    'Null'  | null
+    'Empty' | ''
+  }
+
+  def "malformed xml metadata in incoming message results in error"() {
+    given:
+    def incomingMsg = [
+        contentType: 'application/xml',
+        content    : '<xml>oh no look out for the'
+    ]
+
+    when:
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+
+    then:
+    response instanceof ParsedRecord
+    response.errors.size() == 1
+    response.errors[0].title == 'Unable to parse malformed content'
+    response.errors[0].detail == 'SAXParseException: XML document structures must start and end within the same entity.'
   }
 
   def "Unknown metadata type in incoming message results in error"() {
     given:
     def incomingMsg = [
-            contentType: 'Not supported',
-            content: "Won't be parsed"
+        contentType: 'Not supported',
+        content    : "Won't be parsed"
     ]
 
-
     when:
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(incomingMsg)))
     def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
 
     then:
-    response.containsKey("error")
-    !response.containsKey("discovery")
-    response.error == 'Unknown raw format of metadata'
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(response)))
-
+    response instanceof ParsedRecord
+    response.errors.size() == 1
+    response.errors[0].title == 'Unsupported content type'
+    response.errors[0].detail == "Content type [${incomingMsg.contentType}] is not supported"
   }
 
-  def "test stuff"() {
-    given:
-    def envMap = System.getenv()
-
-    when:
-    def output = JsonOutput.prettyPrint(JsonOutput.toJson(envMap))
-    println(output)
-
-    then:
-    1 == 1
-  }
 }

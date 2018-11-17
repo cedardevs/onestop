@@ -48,15 +48,16 @@ class Publisher {
   }
 
   Map buildInputTopicMessage(HttpServletRequest request, String data, String source, String id) {
-    def input = new Input([
-        method: Method.valueOf(request?.method?.toUpperCase()),
-        host: request?.remoteHost,
-        requestUrl: request?.requestURL as String,
-        protocol: request?.protocol,
-        content: data,
-        contentType: request?.contentType,
-        source: source
-    ])
+    def builder = Input.newBuilder()
+    builder.method = Method.valueOf(request?.method?.toUpperCase())
+    builder.host = request?.remoteHost
+    builder.requestUrl = request?.requestURL as String
+    builder.protocol = request?.protocol
+    builder.content = data
+    builder.contentType = request?.contentType
+    builder.source = source
+    def input = builder.build()
+
     return [input: input, identifiers: [(source): id]]
   }
 

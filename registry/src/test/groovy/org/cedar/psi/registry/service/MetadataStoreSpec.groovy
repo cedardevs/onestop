@@ -1,12 +1,14 @@
 package org.cedar.psi.registry.service
 
-import groovy.json.JsonSlurper
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.QueryableStoreType
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
+import org.cedar.psi.common.avro.ErrorEvent
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
+import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.util.AvroUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -92,9 +94,8 @@ class MetadataStoreSpec extends Specification {
     thrown(InvalidStateStoreException)
   }
 
-  def 'retrieves an unparsed object by type and id'() {
+  def 'retrieves a record by type and id'() {
     def testId = '123'
-    def slurper = new JsonSlurper()
 
     when:
     def result = metadataStore.retrieveEntity(testType, testSource, testId)
@@ -108,26 +109,52 @@ class MetadataStoreSpec extends Specification {
 
     and:
     result == [
-        id: testId,
-        type: testType,
-        attributes: combined
+        data: [
+            id        : testId,
+            type      : testType,
+            attributes: combined
+        ]
     ]
 
     where:
-    rawValue  | parsedValue    | combined
-    testInput | null           | ["input": testInput]
-    null      | ["answer": 42] | ["answer": 42]
-    testInput | ["answer": 42] | ["input": testInput, "answer": 42]
+    rawValue  | parsedValue | combined
+    testInput | null        | ["input": testInput]
+    null      | testParsed  | AvroUtils.avroToMap(testParsed)
+    testInput | testParsed  | ["input": testInput] + AvroUtils.avroToMap(testParsed)
   }
 
-  private static testInput = new Input(
-      content: '{"hello":"world"}',
-      method: Method.POST,
-      contentType: 'application/json',
-      host: 'localhost',
-      protocol: 'http',
-      requestUrl: '/test',
-      source: 'test'
-  )
+  def 'retrieves a record with errors'() {
+    def testId = '123'
+
+    when:
+    def result = metadataStore.retrieveEntity(testType, testSource, testId)
+
+    then:
+    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
+    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
+    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
+    1 * mockInputStore.get(testId) >> testInput
+    1 * mockParsedStore.get(testId) >> ParsedRecord.newBuilder().setErrors([testError]).build()
+
+    and:
+    result == [errors: [testError]]
+  }
+
+  private static testInput = Input.newBuilder()
+      .setContent('{"hello":"world"}')
+      .setMethod(Method.POST)
+      .setContentType('application/json')
+      .setHost('localhost')
+      .setProtocol('http')
+      .setRequestUrl('/test')
+      .setSource('test')
+      .build()
+
+  private static testParsed = ParsedRecord.newBuilder().build()
+
+  private static testError = ErrorEvent.newBuilder()
+      .setTitle('this is a test')
+      .setDetail('this is only a test')
+      .build()
 
 }
