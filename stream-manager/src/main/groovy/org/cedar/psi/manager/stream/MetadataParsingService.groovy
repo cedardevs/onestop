@@ -27,7 +27,7 @@ class MetadataParsingService {
       }
 
       return ParsedRecord.newBuilder()
-          .setDiscovery(ISOParser.parseXMLMetadataToMap(content))
+          .setDiscovery(ISOParser.parseXMLMetadataToDiscovery(content))
           .build()
     }
     catch (Exception e) {

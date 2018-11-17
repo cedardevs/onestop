@@ -29,10 +29,10 @@ class ISOParser {
   }
 
   static String parseXMLMetadata(String xml) {
-    return JsonOutput.toJson(parseXMLMetadataToMap(xml))
+    return JsonOutput.toJson(parseXMLMetadataToDiscovery(xml))
   }
 
-  static Discovery parseXMLMetadataToMap(String xml) {
+  static Discovery parseXMLMetadataToDiscovery(String xml) {
 
     def metadata = new XmlSlurper().parseText(xml)
 
@@ -56,27 +56,27 @@ class ISOParser {
     builder.title = citationInfo.title
     builder.alternateTitle = citationInfo.alternateTitle
     builder.description = citationInfo.description
-    builder.keywords = keywordsMap.keywords as ArrayList
-    builder.topicCategories = keywordsMap.topicCategories as ArrayList
+    builder.keywords = keywordsMap.keywords as List
+    builder.topicCategories = keywordsMap.topicCategories as List
     builder.temporalBounding = parseTemporalBounding(metadata)
     builder.spatialBounding = spatialMap.spatialBounding
     builder.isGlobal = spatialMap.isGlobal
-    builder.acquisitionInstruments = acquisitionInfo.acquisitionInstruments as ArrayList
-    builder.acquisitionOperations = acquisitionInfo.acquisitionOperations as ArrayList
-    builder.acquisitionPlatforms = acquisitionInfo.acquisitionPlatforms as ArrayList
-    builder.dataFormats = parseDataFormats(metadata) as ArrayList
+    builder.acquisitionInstruments = acquisitionInfo.acquisitionInstruments as List
+    builder.acquisitionOperations = acquisitionInfo.acquisitionOperations as List
+    builder.acquisitionPlatforms = acquisitionInfo.acquisitionPlatforms as List
+    builder.dataFormats = parseDataFormats(metadata) as List
     builder.links = parseLinks(metadata) as ArrayList
-    builder.responsibleParties = parseResponsibleParties(metadata) as ArrayList
+    builder.responsibleParties = parseResponsibleParties(metadata) as List
     builder.thumbnail = citationInfo.thumbnail
     builder.thumbnailDescription = citationInfo.thumbnailDescription
-    builder.creationDate = citationInfo.creationDate as ArrayList
-    builder.revisionDate = citationInfo.revisionDate
-    builder.publicationDate = citationInfo.publicationDate
-    builder.citeAsStatements = citationInfo.citeAsStatements as ArrayList
-    builder.crossReferences = citationInfo.crossReferences as ArrayList
-    builder.largerWorks = citationInfo.largerWorks as ArrayList
+    builder.creationDate = citationInfo.creationDate as String
+    builder.revisionDate = citationInfo.revisionDate as String
+    builder.publicationDate = citationInfo.publicationDate as String
+    builder.citeAsStatements = citationInfo.citeAsStatements as List
+    builder.crossReferences = citationInfo.crossReferences as List
+    builder.largerWorks = citationInfo.largerWorks as List
     builder.useLimitation = citationInfo.useLimitation
-    builder.legalConstraints = citationInfo.legalConstraints as ArrayList
+    builder.legalConstraints = citationInfo.legalConstraints as List
     builder.accessFeeStatement = citationInfo.accessFeeStatement
     builder.orderingInstructions = citationInfo.orderingInstructions
     builder.edition = citationInfo.edition
@@ -92,7 +92,7 @@ class ISOParser {
     builder.dsmmAverage = dsmmMap.average
     builder.updateFrequency = miscellaneous.updateFrequency
     builder.presentationForm = miscellaneous.presentationForm
-    builder.services = services as ArrayList
+    builder.services = services as List
 
     return builder.build()
   }
@@ -322,7 +322,7 @@ class ISOParser {
     return builder.build()
   }
 
-  static Map parseTemporalBounding(String xml) {
+  static TemporalBounding parseTemporalBounding(String xml) {
     return parseTemporalBounding(new XmlSlurper().parseText(xml))
   }
 

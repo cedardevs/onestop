@@ -1,6 +1,8 @@
 package org.cedar.psi.manager.util
 
 import groovy.json.JsonOutput
+import org.cedar.psi.common.avro.GeometryType
+import org.cedar.psi.common.avro.TemporalBounding
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -168,20 +170,21 @@ class ISOParserSpec extends Specification {
   def "Temporal bounding is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+    def output = TemporalBounding.newBuilder()
+        .setBeginDate('2005-05-09T00:00:00Z')
+        .setBeginIndeterminate(null)
+        .setEndDate('2010-10-01')
+        .setEndIndeterminate(null)
+        .setInstant(null)
+        .setInstantIndeterminate(null)
+        .setDescription(null)
+        .build()
 
     when:
     def temporalBounding = ISOParser.parseTemporalBounding(document)
 
     then:
-    temporalBounding == [
-        beginDate           : '2005-05-09T00:00:00Z',
-        beginIndeterminate  : null,
-        endDate             : '2010-10-01',
-        endIndeterminate    : null,
-        instant             : null,
-        instantIndeterminate: null,
-        description         : null
-    ]
+    temporalBounding == output
   }
 
   def "Polygon spatial bounding is correctly parsed"() {
@@ -192,15 +195,9 @@ class ISOParserSpec extends Specification {
     def result = ISOParser.parseSpatialInfo(document)
 
     then:
-    result == [
-        spatialBounding: [
-            type       : 'Polygon',
-            coordinates: [
-                [[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]
-            ]
-        ],
-        isGlobal       : true
-    ]
+    result.spatialBounding.coordinates == [[[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]]
+    result.spatialBounding.type == GeometryType.Polygon
+    !result.isGlobal
   }
 
   def "Point spatial bounding is correctly parsed"() {
@@ -211,13 +208,9 @@ class ISOParserSpec extends Specification {
     def spatialBounding = ISOParser.parseSpatialInfo(document)
 
     then:
-    spatialBounding == [
-        spatialBounding: [
-            type       : 'Point',
-            coordinates: [-105, 40]
-        ],
-        isGlobal       : false
-    ]
+    spatialBounding.spatialBounding.coordinates == [-105, 40]
+    spatialBounding.spatialBounding.type == GeometryType.Point
+    !spatialBounding.isGlobal
   }
 
   def "Null Spatial bounding is correctly parsed"() {
@@ -239,13 +232,9 @@ class ISOParserSpec extends Specification {
     def spatialBounding = ISOParser.parseSpatialInfo(document)
 
     then:
-    spatialBounding == [
-        spatialBounding: [
-            type       : 'LineString',
-            coordinates: [[-80, -10],[80, -10]]
-        ],
-        isGlobal       : false
-    ]
+    spatialBounding.spatialBounding.coordinates ==[[-80, -10],[80, -10]]
+    spatialBounding.spatialBounding.type == GeometryType.LineString
+    !spatialBounding.isGlobal
   }
 
   def "Acquisition info is correctly parsed"() {
