@@ -3,6 +3,9 @@ package org.cedar.psi.manager.util
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.text.StringEscapeUtils
+import org.cedar.psi.common.avro.Discovery
+import org.cedar.psi.common.avro.Geometry
+import org.cedar.psi.common.avro.TemporalBounding
 
 class ISOParser {
 
@@ -29,7 +32,7 @@ class ISOParser {
     return JsonOutput.toJson(parseXMLMetadataToMap(xml))
   }
 
-  static Map parseXMLMetadataToMap(String xml) {
+  static Discovery parseXMLMetadataToMap(String xml) {
 
     def metadata = new XmlSlurper().parseText(xml)
 
@@ -42,58 +45,56 @@ class ISOParser {
     def services = parseServices(metadata)
     def miscellaneous = parseMiscellaneous(metadata)
 
-    // Build JSON:
-    def json = [
-        fileIdentifier                  : citationInfo.fileIdentifier,
-        parentIdentifier                : citationInfo.parentIdentifier,
-        hierarchyLevelName              : citationInfo.hierarchyLevelName,
-        doi                             : citationInfo.doi,
-        purpose                         : citationInfo.purpose,
-        status                          : citationInfo.status,
-        credit                          : citationInfo.credit,
-        title                           : citationInfo.title,
-        alternateTitle                  : citationInfo.alternateTitle,
-        description                     : citationInfo.description,
-        keywords                        : keywordsMap.keywords,
-        topicCategories                 : keywordsMap.topicCategories,
-        temporalBounding                : parseTemporalBounding(metadata),
-        spatialBounding                 : spatialMap.spatialBounding,
-        isGlobal                        : spatialMap.isGlobal,
-        acquisitionInstruments          : acquisitionInfo.acquisitionInstruments,
-        acquisitionOperations           : acquisitionInfo.acquisitionOperations,
-        acquisitionPlatforms            : acquisitionInfo.acquisitionPlatforms,
-        dataFormats                     : parseDataFormats(metadata),
-        links                           : parseLinks(metadata),
-        responsibleParties              : parseResponsibleParties(metadata),
-        thumbnail                       : citationInfo.thumbnail,
-        thumbnailDescription            : citationInfo.thumbnailDescription,
-        creationDate                    : citationInfo.creationDate,
-        revisionDate                    : citationInfo.revisionDate,
-        publicationDate                 : citationInfo.publicationDate,
-        citeAsStatements                : citationInfo.citeAsStatements,
-        crossReferences                 : citationInfo.crossReferences,
-        largerWorks                     : citationInfo.largerWorks,
-        useLimitation                   : citationInfo.useLimitation,
-        legalConstraints                : citationInfo.legalConstraints,
-        accessFeeStatement              : citationInfo.accessFeeStatement,
-        orderingInstructions            : citationInfo.orderingInstructions,
-        edition                         : citationInfo.edition,
-        dsmmAccessibility               : dsmmMap.Accessibility,
-        dsmmDataIntegrity               : dsmmMap.DataIntegrity,
-        dsmmDataQualityAssessment       : dsmmMap.DataQualityAssessment,
-        dsmmDataQualityAssurance        : dsmmMap.DataQualityAssurance,
-        dsmmDataQualityControlMonitoring: dsmmMap.DataQualityControlMonitoring,
-        dsmmPreservability              : dsmmMap.Preservability,
-        dsmmProductionSustainability    : dsmmMap.ProductionSustainability,
-        dsmmTransparencyTraceability    : dsmmMap.TransparencyTraceability,
-        dsmmUsability                   : dsmmMap.Usability,
-        dsmmAverage                     : dsmmMap.average,
-        updateFrequency                 : miscellaneous.updateFrequency,
-        presentationForm                : miscellaneous.presentationForm,
-        services                        : services
-    ]
+    def builder = Discovery.newBuilder()
+    builder.fileIdentifier = citationInfo.fileIdentifier
+    builder.parentIdentifier = citationInfo.parentIdentifier
+    builder.hierarchyLevelName = citationInfo.hierarchyLevelName
+    builder.doi = citationInfo.doi
+    builder.purpose = citationInfo.purpose
+    builder.status = citationInfo.status
+    builder.credit = citationInfo.credit
+    builder.title = citationInfo.title
+    builder.alternateTitle = citationInfo.alternateTitle
+    builder.description = citationInfo.description
+    builder.keywords = keywordsMap.keywords as ArrayList
+    builder.topicCategories = keywordsMap.topicCategories as ArrayList
+    builder.temporalBounding = parseTemporalBounding(metadata)
+    builder.spatialBounding = spatialMap.spatialBounding
+    builder.isGlobal = spatialMap.isGlobal
+    builder.acquisitionInstruments = acquisitionInfo.acquisitionInstruments as ArrayList
+    builder.acquisitionOperations = acquisitionInfo.acquisitionOperations as ArrayList
+    builder.acquisitionPlatforms = acquisitionInfo.acquisitionPlatforms as ArrayList
+    builder.dataFormats = parseDataFormats(metadata) as ArrayList
+    builder.links = parseLinks(metadata) as ArrayList
+    builder.responsibleParties = parseResponsibleParties(metadata) as ArrayList
+    builder.thumbnail = citationInfo.thumbnail
+    builder.thumbnailDescription = citationInfo.thumbnailDescription
+    builder.creationDate = citationInfo.creationDate as ArrayList
+    builder.revisionDate = citationInfo.revisionDate
+    builder.publicationDate = citationInfo.publicationDate
+    builder.citeAsStatements = citationInfo.citeAsStatements as ArrayList
+    builder.crossReferences = citationInfo.crossReferences as ArrayList
+    builder.largerWorks = citationInfo.largerWorks as ArrayList
+    builder.useLimitation = citationInfo.useLimitation
+    builder.legalConstraints = citationInfo.legalConstraints as ArrayList
+    builder.accessFeeStatement = citationInfo.accessFeeStatement
+    builder.orderingInstructions = citationInfo.orderingInstructions
+    builder.edition = citationInfo.edition
+    builder.dsmmAccessibility = dsmmMap.Accessibility
+    builder.dsmmDataIntegrity = dsmmMap.DataIntegrity
+    builder.dsmmDataQualityAssessment = dsmmMap.DataQualityAssessment
+    builder.dsmmDataQualityAssurance = dsmmMap.DataQualityAssurance
+    builder.dsmmDataQualityControlMonitoring = dsmmMap.DataQualityControlMonitoring
+    builder.dsmmPreservability = dsmmMap.Preservability
+    builder.dsmmProductionSustainability = dsmmMap.ProductionSustainability
+    builder.dsmmTransparencyTraceability = dsmmMap.TransparencyTraceability
+    builder.dsmmUsability = dsmmMap.Usability
+    builder.dsmmAverage = dsmmMap.average
+    builder.updateFrequency = miscellaneous.updateFrequency
+    builder.presentationForm = miscellaneous.presentationForm
+    builder.services = services as ArrayList
 
-    return json
+    return builder.build()
   }
 
   static Map parseCitationInfo(GPathResult metadata) {
@@ -160,7 +161,9 @@ class ISOParser {
     }
 
     // Cite-As Statements
-    def otherConstraints = idInfo.resourceConstraints.MD_LegalConstraints.'**'.findAll { it.name() == 'otherConstraints' }
+    def otherConstraints = idInfo.resourceConstraints.MD_LegalConstraints.'**'.findAll {
+      it.name() == 'otherConstraints'
+    }
     def citationConstraints = otherConstraints.findAll { it.CharacterString.text().toLowerCase().contains('cite') }
     citeAsStatements = citationConstraints.collect { it.CharacterString.text() }.toSet()
 
@@ -183,17 +186,16 @@ class ISOParser {
           ])
         }
 
-        if(associationType == 'crossReference') {
+        if (associationType == 'crossReference') {
           crossReferences.add([
               title: citation.title.CharacterString.text() ?: null,
-              date: citation.date.CI_Date.date.Date.text() ?: null,
+              date : citation.date.CI_Date.date.Date.text() ?: null,
               links: links
           ])
-        }
-        else if(associationType == 'largerWorkCitation') {
+        } else if (associationType == 'largerWorkCitation') {
           largerWorks.add([
               title: citation.title.CharacterString.text() ?: null,
-              date: citation.date.CI_Date.date.Date.text() ?: null,
+              date : citation.date.CI_Date.date.Date.text() ?: null,
               links: links
           ])
         }
@@ -261,7 +263,7 @@ class ISOParser {
 
       keywordsInGroup.each { k ->
         def text = k.CharacterString.text() ?: k.Anchor.text()
-        if(text) {
+        if (text) {
           // Replace any non-trimmed whitespace with a single space character (e.g., in case of tabs or linefeeds)
           values.add(text.trim().replaceAll("\\s+", " "))
         }
@@ -269,15 +271,15 @@ class ISOParser {
 
       // Add whole group of keywords
       keywords.add([
-          values: values,
-          type: type,
+          values   : values,
+          type     : type,
           namespace: namespace
       ])
     }
 
     return [
-        keywords                : keywords,
-        topicCategories         : topicCategories
+        keywords       : keywords,
+        topicCategories: topicCategories
     ]
   }
 
@@ -285,15 +287,15 @@ class ISOParser {
     return parseKeywordsAndTopics(new XmlSlurper().parseText(xml))
   }
 
-  static Map parseTemporalBounding(GPathResult metadata) {
+  static TemporalBounding parseTemporalBounding(GPathResult metadata) {
 
     def boundingExtent = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent
 
     def description = boundingExtent[0].description.CharacterString.text() ?: null
-    def time = boundingExtent.temporalElement?.'**'?.find { it -> it.name() == 'EX_TemporalExtent'}?.extent
+    def time = boundingExtent.temporalElement?.'**'?.find { it -> it.name() == 'EX_TemporalExtent' }?.extent
 
     String beginText, beginIndeterminateText, endText, endIndeterminateText, instantText, instantIndeterminateText
-    if(time) {
+    if (time) {
       // parse potential date fields out of XML
       beginText = time.TimePeriod.beginPosition.text() ?:
           time.TimePeriod.begin.TimeInstant.timePosition.text() ?: null
@@ -307,15 +309,17 @@ class ISOParser {
       instantIndeterminateText = time.TimeInstant.timePosition.@indeterminatePosition.text() ?: null
     }
 
-    return [
-        beginDate           : beginText,
-        beginIndeterminate  : beginIndeterminateText,
-        endDate             : endText,
-        endIndeterminate    : endIndeterminateText,
-        instant             : instantText,
-        instantIndeterminate: instantIndeterminateText,
-        description         : description
-    ]
+    // returns avro TemporalBounding object
+    def builder = TemporalBounding.newBuilder()
+    builder.beginDate = beginText
+    builder.beginIndeterminate = beginIndeterminateText
+    builder.endDate   = endText
+    builder.endIndeterminate = endIndeterminateText
+    builder.instant          =instantText
+    builder.instantIndeterminate= instantIndeterminateText
+    builder.description         = description
+
+    return builder.build()
   }
 
   static Map parseTemporalBounding(String xml) {
@@ -336,37 +340,47 @@ class ISOParser {
     return parseSpatialInfo(new XmlSlurper().parseText(xml))
   }
 
-  static def parseBounding(def bbox) {
-    if (!bbox) { return null }
+  static Geometry parseBounding(def bbox) {
+    if (!bbox) {
+      return null
+    }
 
-    def west = (bbox.westBoundLongitude == "null" ||  bbox.westBoundLongitude == "") ? null : bbox.westBoundLongitude.Decimal.toFloat()
-    def east = (bbox.eastBoundLongitude == "null" ||  bbox.eastBoundLongitude == "") ? null : bbox.eastBoundLongitude.Decimal.toFloat()
-    def north = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "")  ? null : bbox.northBoundLatitude.Decimal.toFloat()
+    def west = (bbox.westBoundLongitude == "null" || bbox.westBoundLongitude == "") ? null : bbox.westBoundLongitude.Decimal.toFloat()
+    def east = (bbox.eastBoundLongitude == "null" || bbox.eastBoundLongitude == "") ? null : bbox.eastBoundLongitude.Decimal.toFloat()
+    def north = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "") ? null : bbox.northBoundLatitude.Decimal.toFloat()
     def south = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toFloat()
 
-    if (!west || !east || !north || !south) { return null }
+    if (!west || !east || !north || !south) {
+      return null
+    }
 
     def type, coordinates
     if (west == east && north == south) {
       type = 'Point'
       coordinates = [west, north]
-    }
-    else if (west == east || north == south) {
+    } else if (west == east || north == south) {
       // Note: Because we are parsing the 'Geographic Bounding Box' element, only horizontal or vertical lines can be
       //       determined. A diagonal line will be interpreted as a polygon.
       type = 'LineString'
       coordinates = [[west, south], [east, north]]
-    }
-    else {
+    } else {
       type = 'Polygon'
       coordinates = [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
     }
 
-    return [type: type, coordinates: coordinates]
+    // returns avro Geometry object
+    def builder = Geometry.newBuilder()
+    builder.coordinates = coordinates
+    builder.type = type
+
+    return builder.build()
+
   }
 
   static def checkIsGlobal(def bounds) {
-    if (bounds?.type != 'Polygon') { return false }
+    if (bounds?.type != 'Polygon') {
+      return false
+    }
 
     def coords = bounds.coordinates[0]
     def west = coords[0][0]
@@ -438,7 +452,7 @@ class ISOParser {
       def version = format.version.CharacterString.text() ?: null
 
       dataFormats.add([
-          name: name,
+          name   : name,
           version: version
       ])
     }
@@ -527,7 +541,7 @@ class ISOParser {
     def dsmm = metadata.dataQualityInfo.DQ_DataQuality.report.DQ_ConceptualConsistency.'**'.find {
       e -> e.nameOfMeasure.CharacterString.text() == 'Data Stewardship Maturity Assessment'
     }
-    if(dsmm) {
+    if (dsmm) {
       dsmmValues = dsmm.result.DQ_QuantitativeResult.'**'.findAll { it.name() == 'Record' }
     }
 
@@ -553,7 +567,7 @@ class ISOParser {
     def updateFrequency = dataId.resourceMaintenance.MD_MaintenanceInformation.maintenanceAndUpdateFrequency.MD_MaintenanceFrequencyCode.@codeListValue.text() ?: null
     def presentationForm = dataId.citation.CI_Citation.presentationForm.CI_PresentationFormCode.@codeListValue.text() ?: null
     return [
-        updateFrequency: updateFrequency,
+        updateFrequency : updateFrequency,
         presentationForm: presentationForm
     ]
   }
@@ -568,29 +582,29 @@ class ISOParser {
     }
     Set<Map> services = []
 
-    serviceIds.each{
+    serviceIds.each {
       Map service = [
-          title: (it?.citation?.CI_Citation?.title?.CharacterString as String).trim(),
+          title         : (it?.citation?.CI_Citation?.title?.CharacterString as String).trim(),
           alternateTitle: (it?.citation?.CI_Citation?.alternateTitle?.CharacterString as String).trim(),
-          abstract: (it?.abstract?.CharacterString as String).trim(),
-          date: it?.citation?.CI_Citation?.date?.Date as String,
-          dateType: it?.citation?.CI_Citation?.dateType?.CI_DateTypeCode as String,
+          abstract      : (it?.abstract?.CharacterString as String).trim(),
+          date          : it?.citation?.CI_Citation?.date?.Date as String,
+          dateType      : it?.citation?.CI_Citation?.dateType?.CI_DateTypeCode as String,
           pointOfContact: [
-              individualName: it?.pointOfContact?.CI_ResponsibleParty?.individualName?.CharacterString as String,
+              individualName  : it?.pointOfContact?.CI_ResponsibleParty?.individualName?.CharacterString as String,
               organizationName: it?.pointOfContact?.CI_ResponsibleParty?.organisationName?.CharacterString as String
           ],
-          operations:[]
+          operations    : []
       ]
       def operations = it.'**'.findAll {
         it.name() == 'containsOperations'
       }
-      operations.each{ o ->
-        service.operations.add( [
-            protocol: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.protocol?.CharacterString as String).trim(),
-            url: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.linkage?.URL as String).trim(),
+      operations.each { o ->
+        service.operations.add([
+            protocol          : (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.protocol?.CharacterString as String).trim(),
+            url               : (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.linkage?.URL as String).trim(),
             applicationProfile: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.applicationProfile?.CharacterString as String).trim(),
-            name: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.name?.CharacterString as String).trim(),
-            description: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.description?.CharacterString as String).trim(),
+            name              : (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.name?.CharacterString as String).trim(),
+            description       : (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.description?.CharacterString as String).trim(),
         ])
       }
       services.add(service)

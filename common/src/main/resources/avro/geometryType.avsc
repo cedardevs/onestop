@@ -1,0 +1,14 @@
+{
+  "type": "enum",
+  "namespace": "org.cedar.psi.common.avro",
+  "name": "GeometryType",
+  "doc": "An HTTP request method",
+  "symbols": [
+    "Point",
+    "MultiPoint",
+    "LineString",
+    "MultiLineString",
+    "Polygon",
+    "MultiPolygon"
+  ]
+}

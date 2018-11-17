@@ -73,10 +73,6 @@
     "namespace": "org.cedar.psi.common.avro",
     "fields": [
       {
-        "name": "type",
-        "type": "string"
-      },
-      {
         "name": "coordinates",
         "type": "Position"
       }
@@ -87,10 +83,6 @@
     "name": "MultiPoint",
     "namespace": "org.cedar.psi.common.avro",
     "fields": [
-      {
-        "name": "type",
-        "type": "string"
-      },
       {
         "name": "coordinates",
         "type": "PositionArray"
@@ -104,10 +96,6 @@
     "namespace": "org.cedar.psi.common.avro",
     "fields": [
       {
-        "name": "type",
-        "type": "string"
-      },
-      {
         "name": "coordinates",
         "type": "PositionArray"
       }
@@ -118,10 +106,6 @@
     "name": "MultiLineString",
     "namespace": "org.cedar.psi.common.avro",
     "fields": [
-      {
-        "name": "type",
-        "type": "string"
-      },
       {
         "name": "coordinates",
         "type": {
@@ -139,10 +123,6 @@
     "namespace": "org.cedar.psi.common.avro",
     "fields": [
       {
-        "name": "type",
-        "type": "string"
-      },
-      {
         "name": "coordinates",
         "type": "PolygonArray"
       }
@@ -153,10 +133,6 @@
     "name": "MultiPolygon",
     "namespace": "org.cedar.psi.common.avro",
     "fields": [
-      {
-        "name": "type",
-        "type": "string"
-      },
       {
         "name": "coordinates",
         "type": {
@@ -173,34 +149,16 @@
     "name": "Geometry",
     "namespace": "org.cedar.psi.common.avro",
     "fields": [
-      {
-        "name": "point",
-        "type": "Point",
+
+     {
+        "name": "type",
+        "type": "GeometryType",
         "default": null
-      },
+
+     },
       {
-        "name": "multiPoint",
-        "type": "MultiPoint",
-        "default": null
-      },
-      {
-        "name": "lineString",
-        "type": "LineString",
-        "default": null
-      },
-      {
-        "name": "multiLineString",
-        "type": "MultiLineString",
-        "default": null
-      },
-      {
-        "name": "polygon",
-        "type": "Polygon",
-        "default": null
-      },
-      {
-        "name": "multiPolygon",
-        "type": "MultiPolygon",
+        "name": "coordinates",
+        "type": ["Point", "MultiPoint", "LineString", "MultiLineString", "Polygon", "MultiPolygon"],
         "default": null
       }
     ]

@@ -26,9 +26,8 @@ class MetadataParsingService {
         return ParsedRecord.newBuilder().setErrors([error]).build()
       }
 
-      // TODO - add discovery info once parseXMLMetadataToMap returns a Discovery instance
       return ParsedRecord.newBuilder()
-//          .setDiscovery(ISOParser.parseXMLMetadataToMap())
+          .setDiscovery(ISOParser.parseXMLMetadataToMap(content))
           .build()
     }
     catch (Exception e) {

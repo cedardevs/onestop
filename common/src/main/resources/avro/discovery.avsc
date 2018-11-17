@@ -453,6 +453,14 @@
         "default": []
       },
       {
+        "name": "crossReferences",
+        "type": {
+          "type": "array",
+          "items": "string"
+        },
+        "default": []
+      },
+      {
         "name": "largerWorks",
         "type": {
           "type": "array",
