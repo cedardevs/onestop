@@ -21,7 +21,6 @@ class Analyzers {
   // Just to decrease chance of typos
   static final String UNDEFINED = 'UNDEFINED'
   static final String INVALID = 'INVALID'
-  static final String VALID = 'VALID'
   static final String BOUNDED = 'BOUNDED'
   static final String ONGOING = 'ONGOING'
   static final String INSTANT = 'INSTANT'

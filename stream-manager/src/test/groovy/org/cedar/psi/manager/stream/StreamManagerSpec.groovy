@@ -1,15 +1,11 @@
 package org.cedar.psi.manager.stream
 
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.fge.jsonschema.main.JsonSchema
-import com.github.fge.jsonschema.main.JsonSchemaFactory
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
+import org.cedar.psi.common.avro.Analysis
+import org.cedar.psi.common.avro.Discovery
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
 import org.cedar.psi.common.avro.ParsedRecord
@@ -20,9 +16,6 @@ import org.cedar.psi.common.util.AvroUtils
 import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import org.cedar.psi.manager.config.ManagerConfig
 import spock.lang.Specification
-
-import java.time.ZoneOffset
-import java.time.temporal.ChronoUnit
 
 class StreamManagerSpec extends Specification {
 
@@ -42,27 +35,6 @@ class StreamManagerSpec extends Specification {
   def testSource = Topics.DEFAULT_SOURCE
   def testChangelog = Topics.inputChangelogTopic(StreamsApps.REGISTRY_ID, testType, testSource)
 
-  final String analysisSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('analysis-schema.json').text
-  final String discoverySchemaString = ClassLoader.systemClassLoader.getResourceAsStream('discovery-schema.json').text
-  final String identifierSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('identifiers-schema.json').text
-  final String inputSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('input-schema.json').text
-  final String registryResponseSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('registryResponse-schema.json').text
-
-  final ObjectMapper mapper = new ObjectMapper()
-  final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
-
-  final JsonNode analysisSchemaNode = mapper.readTree(analysisSchemaString)
-  final JsonNode discoverySchemaNode = mapper.readTree(discoverySchemaString)
-  final JsonNode identifierSchemaNode = mapper.readTree(identifierSchemaString)
-  final JsonNode inputSchemaNode = mapper.readTree(inputSchemaString)
-  final JsonNode registryResponseSchemaNode = mapper.readTree(registryResponseSchemaString)
-
-  final JsonSchema analysisSchema = factory.getJsonSchema(analysisSchemaNode)
-  final JsonSchema discoverySchema = factory.getJsonSchema(discoverySchemaNode)
-  final JsonSchema identifierSchema = factory.getJsonSchema(identifierSchemaNode)
-  final JsonSchema inputSchema = factory.getJsonSchema(inputSchemaNode)
-  final JsonSchema registryResponseSchema = factory.getJsonSchema(registryResponseSchemaNode)
-
   def cleanup() {
     driver.close()
   }
@@ -74,7 +46,6 @@ class StreamManagerSpec extends Specification {
     def input = buildInput(contentType: 'application/xml', content: xml)
 
     when:
-//    inputSchema.validate(mapper.readTree(JsonOutput.toJson(input)))
     driver.pipeInput(inputFactory.create(testChangelog, key, input))
 
     then:
@@ -91,89 +62,16 @@ class StreamManagerSpec extends Specification {
     and:
     // Verify some fields
     finalOutput.key() == key
-    def output = AvroUtils.avroToMap(finalOutput.value())
-    !output.containsKey('error')
-    output.containsKey('discovery')
-    output.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
-    output.containsKey('analysis')
-    output.analysis == [
-        identification  : [
-            fileIdentifier    : [
-                exists              : true,
-                fileIdentifierString: 'gov.super.important:FILE-ID'
-            ],
-            doi               : [
-                exists   : true,
-                doiString: 'doi:10.5072/FK2TEST'
+    def result = finalOutput.value()
+    result instanceof ParsedRecord
+    result.discovery instanceof Discovery
+    result.analysis instanceof Analysis
+    result.errors  instanceof List
 
-            ],
-            parentIdentifier  : [
-                exists                : true,
-                parentIdentifierString: 'gov.super.important:PARENT-ID'
-            ],
-            hierarchyLevelName: [
-                exists            : true,
-                matchesIdentifiers: true
-            ]
-        ],
-        temporalBounding: [
-            begin  : [
-                exists           : true,
-                precision        : ChronoUnit.NANOS.toString(),
-                validSearchFormat: true,
-                zoneSpecified    : ZoneOffset.UTC.toString(),
-                utcDateTimeString: '2005-05-09T00:00:00Z'
-            ],
-            end    : [
-                exists           : true,
-                precision        : ChronoUnit.DAYS.toString(),
-                validSearchFormat: true,
-                zoneSpecified    : 'UNDEFINED',
-                utcDateTimeString: '2010-10-01T23:59:59Z'
-            ],
-            instant: [
-                exists           : false,
-                precision        : 'UNDEFINED',
-                validSearchFormat: 'UNDEFINED',
-                zoneSpecified    : 'UNDEFINED',
-                utcDateTimeString: 'UNDEFINED'
-            ],
-            range  : [
-                descriptor : 'BOUNDED',
-                beginLTEEnd: true
-            ]
-        ],
-        spatialBounding : [
-            exists: true
-        ],
-        titles          : [
-            title         : [
-                exists    : true,
-                characters: 63
-            ],
-            alternateTitle: [
-                exists    : true,
-                characters: 51
-            ]
-        ],
-        description     : [
-            exists    : true,
-            characters: 65
-        ],
-        thumbnail       : [
-            exists: true,
-        ],
-        dataAccess      : [
-            exists: true
-        ]
-    ]
-    //validate against schema
-    analysisSchema.validate(mapper.readTree(JsonOutput.toJson(output.analysis)))
-    discoverySchema.validate(mapper.readTree(JsonOutput.toJson(output.discovery)))
-    identifierSchema.validate(mapper.readTree(JsonOutput.toJson(output.discovery.identifiers)))
-    //this one effectively does all the others, but it is easier to debug when we do one at a time
-    registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(output)))
-
+    result.errors.size() == 0
+    result.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
+    result.analysis.identification.fileIdentifierExists
+    result.analysis.identification.fileIdentifierString == 'gov.super.important:FILE-ID'
   }
 
   def "SME granule ends up in SME topic"() {
@@ -263,7 +161,7 @@ class StreamManagerSpec extends Specification {
 
     then:
     // Nothing on the error or sme topics
-    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
+    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
     driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
 
     and:

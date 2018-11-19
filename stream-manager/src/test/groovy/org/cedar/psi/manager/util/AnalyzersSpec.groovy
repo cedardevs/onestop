@@ -53,12 +53,10 @@ class AnalyzersSpec extends Specification {
     analysis.dataAccess instanceof DataAccessAnalysis
   }
 
-  // TODO - verify a real Discovery object once ISOParser can produce one
-  @spock.lang.Ignore
   def "All valid fields return expected response from service"() {
     given:
     def inputXml = ClassLoader.systemClassLoader.getResourceAsStream('test-iso-metadata.xml').text
-    def discovery = ISOParser.parseXMLMetadataToMap(inputXml)
+    def discovery = ISOParser.parseXMLMetadataToDiscovery(inputXml)
 
     def expectedAnalysisMap = [
         identification  : [
@@ -77,7 +75,7 @@ class AnalyzersSpec extends Specification {
             // https://docs.oracle.com/javase/8/docs/api/java/time/temporal/TemporalQueries.html#precision--
             beginPrecision          : ChronoUnit.NANOS.toString(),
             beginIndexable          : true,
-            beginZoneSpecified      : '+01:00',
+            beginZoneSpecified      : 'Z',
             beginUtcDateTimeString  : '2005-05-09T00:00:00Z',
             endExists               : true,
             endPrecision            : ChronoUnit.DAYS.toString(),
@@ -114,13 +112,17 @@ class AnalyzersSpec extends Specification {
     ]
 
     when:
-    def response = Analyzers.analyze(inputMap)
-    def analysisJson = JsonOutput.toJson(response)
-    Schema schema = new Schema.Parser().parse(analysisAvro)
+    def analysisObj = Analyzers.analyze(discovery)
+    def analysisMap = AvroUtils.avroToMap(analysisObj)
 
     then:
-    validateJson(analysisJson, schema)
-    AvroUtils.avroToMap(response) == expectedAnalysisMap
+    AvroUtils.avroToMap(analysisMap.identification) == expectedAnalysisMap.identification
+    AvroUtils.avroToMap(analysisMap.titles) == expectedAnalysisMap.titles
+    AvroUtils.avroToMap(analysisMap.description) == expectedAnalysisMap.description
+    AvroUtils.avroToMap(analysisMap.dataAccess) == expectedAnalysisMap.dataAccess
+    AvroUtils.avroToMap(analysisMap.thumbnail) == expectedAnalysisMap.thumbnail
+    AvroUtils.avroToMap(analysisMap.temporalBounding) == expectedAnalysisMap.temporalBounding
+    AvroUtils.avroToMap(analysisMap.spatialBounding) == expectedAnalysisMap.spatialBounding
   }
 
   def 'extracts date info from date strings'() {
@@ -232,14 +234,14 @@ class AnalyzersSpec extends Specification {
 
     then:
     result instanceof IdentificationAnalysis
-    result.fileIdentifierExists == true
+    result.fileIdentifierExists
     result.fileIdentifierString == 'xyz'
-    result.doiExists == false
+    !result.doiExists
     result.doiString == null
-    result.parentIdentifierExists == false
+    !result.parentIdentifierExists
     result.parentIdentifierString == null
-    result.hierarchyLevelNameExists == false
-    result.matchesIdentifiers == true
+    !result.hierarchyLevelNameExists
+    result.matchesIdentifiers
   }
 
   def "detects mismatch between metadata type and corresponding identifiers"() {
@@ -254,14 +256,14 @@ class AnalyzersSpec extends Specification {
 
     then:
     result instanceof IdentificationAnalysis
-    result.fileIdentifierExists == true
+    result.fileIdentifierExists
     result.fileIdentifierString == 'xyz'
-    result.doiExists == false
+    !result.doiExists
     result.doiString == null
-    result.parentIdentifierExists == false
+    !result.parentIdentifierExists
     result.parentIdentifierString == null
-    result.hierarchyLevelNameExists == true
-    result.matchesIdentifiers == false
+    result.hierarchyLevelNameExists
+    !result.matchesIdentifiers
   }
 
   def 'analyzes #testCase strings'() {
@@ -289,9 +291,9 @@ class AnalyzersSpec extends Specification {
 
     then:
     titlesAnalysis instanceof TitleAnalysis
-    titlesAnalysis.titleExists == false
+    !titlesAnalysis.titleExists
     titlesAnalysis.titleCharacters == 0
-    titlesAnalysis.alternateTitleExists == false
+    !titlesAnalysis.alternateTitleExists
     titlesAnalysis.alternateTitleCharacters == 0
   }
 
@@ -304,7 +306,7 @@ class AnalyzersSpec extends Specification {
 
     then:
     descriptionAnalysis instanceof DescriptionAnalysis
-    descriptionAnalysis.descriptionExists == false
+    !descriptionAnalysis.descriptionExists
     descriptionAnalysis.descriptionCharacters == 0
   }
 
@@ -347,20 +349,5 @@ class AnalyzersSpec extends Specification {
         .setType(GeometryType.Point)
         .setCoordinates([1 as Double, 2 as Double])
         .build()
-  }
-
-  static boolean validateJson(String json, Schema schema) throws Exception {
-    InputStream input = new ByteArrayInputStream(json.getBytes())
-    DataInputStream din = new DataInputStream(input)
-
-    try {
-      DatumReader reader = new SpecificDatumReader(Analysis)
-      Decoder decoder = DecoderFactory.get().jsonDecoder(schema, din)
-      reader.read(null, decoder)
-      return true
-    } catch (AvroTypeException e) {
-      System.out.println(e.getMessage())
-      return false
-    }
   }
 }
