@@ -9,9 +9,7 @@
         "name": "position",
         "type": {
           "type": "array",
-          "items": [
-            "double"
-          ]
+          "items": "double"
         }
       }
     ]
@@ -26,9 +24,7 @@
         "name": "positionArray",
         "type": {
           "type": "array",
-          "items": [
-            "Position"
-          ]
+          "items": "Position"
         }
       }
     ]
@@ -43,9 +39,7 @@
         "name": "lineRing",
         "type": {
           "type": "array",
-          "items": [
-            "PositionArray"
-          ]
+          "items": "PositionArray"
         }
       }
     ]
@@ -60,9 +54,7 @@
         "name": "polygonArray",
         "type": {
           "type": "array",
-          "items": [
-            "LineRing"
-          ]
+          "items": "LineRing"
         }
       }
     ]
@@ -74,7 +66,8 @@
     "fields": [
       {
         "name": "coordinates",
-        "type": "Position"
+        "type": "Position",
+        "default": null
       }
     ]
   },
@@ -110,9 +103,7 @@
         "name": "coordinates",
         "type": {
           "type": "array",
-          "items": [
-            "PositionArray"
-          ]
+          "items": "PositionArray"
         }
       }
     ]
@@ -137,9 +128,7 @@
         "name": "coordinates",
         "type": {
           "type": "array",
-          "items": [
-            "PolygonArray"
-          ]
+          "items": "PolygonArray"
         }
       }
     ]

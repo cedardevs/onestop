@@ -10,6 +10,11 @@
       "default": null
     },
     {
+      "name": "analysis",
+      "type": ["null", "Analysis"],
+      "default": null
+    },
+    {
       "name": "publishing",
       "type": ["null", "Publishing"],
       "default": null
