@@ -218,8 +218,6 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(xmlSME)))
-    inputSchema.validate(mapper.readTree(JsonOutput.toJson(xmlNonSME)))
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
     driver.pipeInput(inputFactory.create(testChangelog, nonSMEInputKey, nonSMEInputValue))
     driver.pipeInput(jsonFactory.create(Topics.unparsedTopic('granule'), unparsedKey, unparsedValue))
@@ -228,7 +226,7 @@ class StreamManagerSpec extends Specification {
     // Both records are in the parsed topic
     def results = [:]
     2.times {
-      def record = driver.readOutput(Topics.parsedStore('granule'), STRING_DESERIALIZER, STRING_DESERIALIZER)
+      def record = driver.readOutput(Topics.parsedStore('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER)
       results[record.key()] = record.value()
     }
     results.containsKey(nonSMEInputKey)
@@ -236,20 +234,20 @@ class StreamManagerSpec extends Specification {
 
     // Verify some parsed fields:
     and:
-    def nonSMEResult = new JsonSlurper().parseText(results[nonSMEInputKey] as String) as Map
+    def nonSMEResult = AvroUtils.avroToMap(results[nonSMEInputKey])
     nonSMEResult.containsKey('discovery')
     !nonSMEResult.containsKey('error')
     nonSMEResult.discovery.fileIdentifier == 'gov.super.important:FILE-ID'
 
     and:
-    def smeResult = new JsonSlurper().parseText(results[unparsedKey] as String) as Map
+    def smeResult = AvroUtils.avroToMap(results[unparsedKey])
     smeResult.containsKey('discovery')
     !smeResult.containsKey('error')
     smeResult.discovery.fileIdentifier == 'dummy-file-identifier'
 
     and:
     // No errors
-    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
+    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
   }
 
   def "Unparsable granule produces record with errors"() {
