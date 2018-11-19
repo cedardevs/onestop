@@ -16,6 +16,7 @@ import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.constants.StreamsApps
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
+import org.cedar.psi.common.util.AvroUtils
 import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import org.cedar.psi.manager.config.ManagerConfig
 import spock.lang.Specification
@@ -90,9 +91,7 @@ class StreamManagerSpec extends Specification {
     and:
     // Verify some fields
     finalOutput.key() == key
-    ObjectMapper mapper = new ObjectMapper()
-//    def output = new JsonSlurper().parseText(finalOutput.value()) as Map
-    def output = mapper.writeValueAsString(finalOutput.value())
+    def output = AvroUtils.avroToMap(finalOutput.value())
     !output.containsKey('error')
     output.containsKey('discovery')
     output.discovery.fileIdentifier == 'gov.super.important:FILE-ID'

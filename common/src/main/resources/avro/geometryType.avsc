@@ -2,7 +2,7 @@
   "type": "enum",
   "namespace": "org.cedar.psi.common.avro",
   "name": "GeometryType",
-  "doc": "An HTTP request method",
+  "doc": "Indicates the type of a geometry object",
   "symbols": [
     "Point",
     "MultiPoint",

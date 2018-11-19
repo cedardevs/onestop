@@ -1,18 +1,25 @@
 package org.cedar.psi.manager.util
 
-import groovy.json.JsonOutput
+import org.cedar.psi.common.avro.DataFormat
 import org.cedar.psi.common.avro.GeometryType
+import org.cedar.psi.common.avro.Instruments
+import org.cedar.psi.common.avro.Link
+import org.cedar.psi.common.avro.Operation
+import org.cedar.psi.common.avro.Platform
+import org.cedar.psi.common.avro.Reference
+import org.cedar.psi.common.avro.ResponsibleParty
 import org.cedar.psi.common.avro.TemporalBounding
+import org.cedar.psi.common.util.AvroUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
 class ISOParserSpec extends Specification {
 
-  def "Identifier info is correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+  def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+  def metadata = new XmlSlurper().parseText(document)
 
+  def "Identifier info is correctly parsed"() {
     when:
     def idInfo = ISOParser.parseIdentifierInfo(document)
 
@@ -23,11 +30,8 @@ class ISOParserSpec extends Specification {
   }
 
   def "Citation info is correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-
     when:
-    def citationInfo = ISOParser.parseCitationInfo(document)
+    def citationInfo = ISOParser.parseCitationInfo(metadata)
 
     then:
     citationInfo.fileIdentifier == 'gov.super.important:FILE-ID'
@@ -46,27 +50,30 @@ class ISOParserSpec extends Specification {
     citationInfo.revisionDate == '2011-01-02'
     citationInfo.publicationDate == '2010-11-15'
     citationInfo.citeAsStatements == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
-    citationInfo.crossReferences == [
+
+    citationInfo.crossReferences.every { it instanceof Reference }
+    citationInfo.crossReferences.collect { AvroUtils.avroToMap(it) } == [
         [
             title: '[TITLE OF PUBLICATION]',
             date: '9999-01-01',
-            links: [[
+            links: [new Link(
                         linkName: null,
                         linkProtocol: null,
                         linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
                         linkDescription: '[DESCRIPTION OF URL]',
                         linkFunction: 'information'
-                    ]]
+            )]
         ]
-    ] as Set
+    ]
 
-    citationInfo.largerWorks == [
+    citationInfo.largerWorks.every { it instanceof Reference }
+    citationInfo.largerWorks.collect { AvroUtils.avroToMap(it) } == [
         [
             title: '[TITLE OF PROJECT]',
             date: '9999-10-10',
             links: []
         ]
-    ] as Set
+    ]
 
     citationInfo.useLimitation == '[NOAA LEGAL STATEMENT]'
     citationInfo.legalConstraints == ['[CITE AS STATEMENT 1]', '[CITE AS STATEMENT 2]'] as Set
@@ -76,15 +83,13 @@ class ISOParserSpec extends Specification {
   }
 
   def "Keywords and topics are correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-
     when:
-    def parsedXml = ISOParser.parseKeywordsAndTopics(document)
+    def parsedXml = ISOParser.parseKeywordsAndTopics(metadata)
 
     then:
     // Deep equality check
-    JsonOutput.toJson(parsedXml.keywords) == JsonOutput.toJson([
+    def keywordMaps = parsedXml.keywords.collect { AvroUtils.avroToMap(it) }
+    keywordMaps == [
         [
             "values": [
                 "SIO > Super Important Organization",
@@ -162,14 +167,13 @@ class ISOParserSpec extends Specification {
             "type": "dataResolution",
             "namespace": "GCMD Keywords - Vertical Data Resolution"
         ]
-    ] as Set)
-    parsedXml.topicCategories == ['environment', 'oceans'] as Set
+    ]
+    parsedXml.topicCategories == ['environment', 'oceans']
 
   }
 
   def "Temporal bounding is correctly parsed"() {
     given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def output = TemporalBounding.newBuilder()
         .setBeginDate('2005-05-09T00:00:00Z')
         .setBeginIndeterminate(null)
@@ -188,11 +192,8 @@ class ISOParserSpec extends Specification {
   }
 
   def "Polygon spatial bounding is correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-
     when:
-    def result = ISOParser.parseSpatialInfo(document)
+    def result = ISOParser.parseSpatialInfo(metadata)
 
     then:
     result.spatialBounding.coordinates == [[[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]]
@@ -203,9 +204,10 @@ class ISOParserSpec extends Specification {
   def "Point spatial bounding is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-point-cords-metadata.xml").text
+    def metadata = new XmlSlurper().parseText(document)
 
     when:
-    def spatialBounding = ISOParser.parseSpatialInfo(document)
+    def spatialBounding = ISOParser.parseSpatialInfo(metadata)
 
     then:
     spatialBounding.spatialBounding.coordinates == [-105, 40]
@@ -216,9 +218,10 @@ class ISOParserSpec extends Specification {
   def "Null Spatial bounding is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-null-cords-metadata.xml").text
+    def metadata = new XmlSlurper().parseText(document)
 
     when:
-    def spatialBounding = ISOParser.parseSpatialInfo(document)
+    def spatialBounding = ISOParser.parseSpatialInfo(metadata)
 
     then:
     spatialBounding == [spatialBounding: null, isGlobal: false]
@@ -227,9 +230,10 @@ class ISOParserSpec extends Specification {
   def "LineString spatial bounding is prevented"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-linestring-coords-metadata.xml").text
+    def metadata = new XmlSlurper().parseText(document)
 
     when:
-    def spatialBounding = ISOParser.parseSpatialInfo(document)
+    def spatialBounding = ISOParser.parseSpatialInfo(metadata)
 
     then:
     spatialBounding.spatialBounding.coordinates ==[[-80, -10],[80, -10]]
@@ -237,47 +241,55 @@ class ISOParserSpec extends Specification {
     !spatialBounding.isGlobal
   }
 
-  def "Acquisition info is correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-
+  def "AcquisitionInstruments info is correctly parsed"() {
     when:
-    def parsedXml = ISOParser.parseAcquisitionInfo(document)
+    def result = ISOParser.acquisitionInstruments(metadata)
 
     then:
-    parsedXml.acquisitionInstruments == [
-        [
-            instrumentIdentifier : 'SII > Super Important Instrument',
-            instrumentType       : 'sensor',
-            instrumentDescription: 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
-        ]
-    ] as Set
-    parsedXml.acquisitionOperations == [
-        [
-            operationDescription: null,
-            operationIdentifier : 'Super Important Project',
-            operationStatus     : null,
-            operationType       : null
-        ]
-    ] as Set
-    parsedXml.acquisitionPlatforms == [
-        [
-            platformIdentifier : 'TS-18 > TumbleSat-18',
-            platformDescription: 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.',
-            platformSponsor    : ['Super Important Organization', 'Other (Kind Of) Important Organization']
-        ]
-    ] as Set
+    result instanceof List
+    result.every { it instanceof Instruments }
+    result.size() == 1
+    result[0].instrumentIdentifier == 'SII > Super Important Instrument'
+    result[0].instrumentType == 'sensor'
+    result[0].instrumentDescription == 'The Super Important Organization\'s (SIO) Super Important Instrument (SII) is a really impressive sensor designed to provide really important information from the TumbleSat system.'
+  }
+
+  def "AcquisitionOperations info is correctly parsed"() {
+    when:
+    def result = ISOParser.acquisitionOperations(metadata)
+
+    then:
+    result instanceof List
+    result.every { it instanceof Operation }
+    result.size() == 1
+    result[0].operationDescription == null
+    result[0].operationIdentifier  == 'Super Important Project'
+    result[0].operationStatus      == null
+    result[0].operationType        == null
+  }
+
+  def "AcquisitionPlatforms info is correctly parsed"() {
+    when:
+    def result = ISOParser.acquisitionPlatforms(metadata)
+
+    then:
+    result instanceof List
+    result.every { it instanceof Platform }
+    result.size() == 1
+    result[0].platformIdentifier  == 'TS-18 > TumbleSat-18'
+    result[0].platformDescription == 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.'
+    result[0].platformSponsor     == ['Super Important Organization', 'Other (Kind Of) Important Organization']
   }
 
   def "Data formats are correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-
     when:
-    def dataFormats = ISOParser.parseDataFormats(document)
+    def dataFormats = ISOParser.parseDataFormats(metadata)
 
     then:
-    dataFormats == [
+    dataFormats instanceof List
+    dataFormats.every { it instanceof DataFormat }
+    def mapResults = dataFormats.collect({ AvroUtils.avroToMap(it) }) as Set
+    mapResults == [
         [name: 'NETCDF', version: 'classic'],
         [name: 'NETCDF', version: '4'],
         [name: 'ASCII', version: null],
@@ -286,32 +298,29 @@ class ISOParserSpec extends Specification {
   }
 
   def "Links are correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-
     when:
-    def links = ISOParser.parseLinks(document)
+    def links = ISOParser.parseLinks(metadata)
 
     then:
-    links == [[
-                  linkName       : 'Super Important Access Link',
-                  linkProtocol   : 'HTTP',
-                  linkUrl        : 'http://www.example.com',
-                  linkDescription: 'Everything Important, All In One Place',
-                  linkFunction   : 'search'
-              ]] as Set
+    links instanceof List
+    links.every { it instanceof Link }
+    links.size() == 1
+    links[0].linkName        == 'Super Important Access Link'
+    links[0].linkProtocol    == 'HTTP'
+    links[0].linkUrl         == 'http://www.example.com'
+    links[0].linkDescription == 'Everything Important, All In One Place'
+    links[0].linkFunction    == 'search'
   }
 
   def "Responsible parties are correctly parsed"() {
-    // FIXME
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-
     when:
-    def responsibleParties = ISOParser.parseResponsibleParties(document)
+    def responsibleParties = ISOParser.parseResponsibleParties(metadata)
 
     then:
-    responsibleParties == [
+    responsibleParties instanceof List
+    responsibleParties.every { it instanceof ResponsibleParty }
+    def mapResults = responsibleParties.collect { AvroUtils.avroToMap(it) }
+    mapResults == [
         [
             individualName  : null,
             organizationName: 'Super Important Organization',
@@ -384,15 +393,12 @@ class ISOParserSpec extends Specification {
             email: null,
             phone: null
         ]
-    ] as Set
+    ]
   }
 
   def "DSMM scores are correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-
     when:
-    def dsmm = ISOParser.parseDSMM(document)
+    def dsmm = ISOParser.parseDSMM(metadata)
 
     then:
     dsmm.Accessibility == 4
@@ -448,11 +454,8 @@ class ISOParserSpec extends Specification {
   }
 
   def "Miscellaneous items are correctly parsed"() {
-    given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
-
     when:
-    def miscellaneous = ISOParser.parseMiscellaneous(document)
+    def miscellaneous = ISOParser.parseMiscellaneous(metadata)
 
     then:
     miscellaneous.updateFrequency == 'asNeeded'

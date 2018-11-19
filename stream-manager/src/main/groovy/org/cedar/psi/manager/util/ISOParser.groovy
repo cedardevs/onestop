@@ -3,8 +3,16 @@ package org.cedar.psi.manager.util
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.text.StringEscapeUtils
+import org.cedar.psi.common.avro.DataFormat
 import org.cedar.psi.common.avro.Discovery
 import org.cedar.psi.common.avro.Geometry
+import org.cedar.psi.common.avro.Instruments
+import org.cedar.psi.common.avro.KeywordsElement
+import org.cedar.psi.common.avro.Link
+import org.cedar.psi.common.avro.Operation
+import org.cedar.psi.common.avro.Platform
+import org.cedar.psi.common.avro.Reference
+import org.cedar.psi.common.avro.ResponsibleParty
 import org.cedar.psi.common.avro.TemporalBounding
 
 class ISOParser {
@@ -39,7 +47,6 @@ class ISOParser {
     // Parse related data maps from the xml:
     def citationInfo = parseCitationInfo(metadata)
     def keywordsMap = parseKeywordsAndTopics(metadata)
-    def acquisitionInfo = parseAcquisitionInfo(metadata)
     def dsmmMap = parseDSMM(metadata)
     def spatialMap = parseSpatialInfo(metadata)
     def services = parseServices(metadata)
@@ -61,11 +68,11 @@ class ISOParser {
     builder.temporalBounding = parseTemporalBounding(metadata)
     builder.spatialBounding = spatialMap.spatialBounding
     builder.isGlobal = spatialMap.isGlobal
-    builder.acquisitionInstruments = acquisitionInfo.acquisitionInstruments as List
-    builder.acquisitionOperations = acquisitionInfo.acquisitionOperations as List
-    builder.acquisitionPlatforms = acquisitionInfo.acquisitionPlatforms as List
-    builder.dataFormats = parseDataFormats(metadata) as List
-    builder.links = parseLinks(metadata) as ArrayList
+    builder.acquisitionInstruments = acquisitionInstruments(metadata)
+    builder.acquisitionOperations = acquisitionOperations(metadata)
+    builder.acquisitionPlatforms = acquisitionPlatforms(metadata)
+    builder.dataFormats = parseDataFormats(metadata)
+    builder.links = parseLinks(metadata)
     builder.responsibleParties = parseResponsibleParties(metadata) as List
     builder.thumbnail = citationInfo.thumbnail
     builder.thumbnailDescription = citationInfo.thumbnailDescription
@@ -153,9 +160,11 @@ class ISOParser {
       def dateType = date.CI_Date.dateType.CI_DateTypeCode.@codeListValue.text()
       if (dateType == 'publication') {
         publicationDate = date.CI_Date.date.Date.text() ?: null
-      } else if (dateType == 'creation') {
+      }
+      else if (dateType == 'creation') {
         creationDate = date.CI_Date.date.Date.text() ?: null
-      } else if (dateType == 'revision') {
+      }
+      else if (dateType == 'revision') {
         revisionDate = date.CI_Date.date.Date.text() ?: null
       }
     }
@@ -175,29 +184,28 @@ class ISOParser {
       if (associationType == 'crossReference' || associationType == 'largerWorkCitation') {
         def citation = aggInfo.MD_AggregateInformation.aggregateDataSetName.CI_Citation
         def onlineResources = citation.'**'.findAll { it.name() == 'CI_OnlineResource' }
-        def links = []
-        onlineResources.each { resource ->
-          links.add([
-              linkName       : resource.name.CharacterString.text() ?: null,
-              linkProtocol   : resource.protocol.CharacterString.text() ?: null,
-              linkUrl        : resource.linkage.URL.text() ? StringEscapeUtils.unescapeXml(resource.linkage.URL.text()) : null,
-              linkDescription: resource.description.CharacterString.text() ?: null,
-              linkFunction   : resource.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
-          ])
+
+        def links = onlineResources.collect { resource ->
+          def linkBuilder = Link.newBuilder()
+          linkBuilder.linkName        = resource.name.CharacterString.text() ?: null
+          linkBuilder.linkProtocol    = resource.protocol.CharacterString.text() ?: null
+          linkBuilder.linkUrl         = resource.linkage.URL.text() ? StringEscapeUtils.unescapeXml(resource.linkage.URL.text()) : null
+          linkBuilder.linkDescription = resource.description.CharacterString.text() ?: null
+          linkBuilder.linkFunction    = resource.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
+          linkBuilder.build()
         }
 
+        def referenceBuilder = Reference.newBuilder()
+        referenceBuilder.title = citation.title.CharacterString.text() ?: null
+        referenceBuilder.date  = citation.date.CI_Date.date.Date.text() ?: null
+        referenceBuilder.links = links
+        def reference = referenceBuilder.build()
+
         if (associationType == 'crossReference') {
-          crossReferences.add([
-              title: citation.title.CharacterString.text() ?: null,
-              date : citation.date.CI_Date.date.Date.text() ?: null,
-              links: links
-          ])
-        } else if (associationType == 'largerWorkCitation') {
-          largerWorks.add([
-              title: citation.title.CharacterString.text() ?: null,
-              date : citation.date.CI_Date.date.Date.text() ?: null,
-              links: links
-          ])
+          crossReferences.add(reference)
+        }
+        else if (associationType == 'largerWorkCitation') {
+          largerWorks.add(reference)
         }
       }
     }
@@ -236,10 +244,6 @@ class ISOParser {
     ]
   }
 
-  static Map parseCitationInfo(String xml) {
-    return parseCitationInfo(new XmlSlurper().parseText(xml))
-  }
-
   static Map parseKeywordsAndTopics(GPathResult metadata) {
 
     def extractKnownText = { k ->
@@ -270,21 +274,17 @@ class ISOParser {
       }
 
       // Add whole group of keywords
-      keywords.add([
-          values   : values,
-          type     : type,
-          namespace: namespace
-      ])
+      def builder = KeywordsElement.newBuilder()
+      builder.values = values.toList()
+      builder.type = type
+      builder.namespace = namespace
+      keywords.add(builder.build())
     }
 
     return [
-        keywords       : keywords,
-        topicCategories: topicCategories
+        keywords       : keywords.toList(),
+        topicCategories: topicCategories.toList()
     ]
-  }
-
-  static Map parseKeywordsAndTopics(String xml) {
-    return parseKeywordsAndTopics(new XmlSlurper().parseText(xml))
   }
 
   static TemporalBounding parseTemporalBounding(GPathResult metadata) {
@@ -313,11 +313,11 @@ class ISOParser {
     def builder = TemporalBounding.newBuilder()
     builder.beginDate = beginText
     builder.beginIndeterminate = beginIndeterminateText
-    builder.endDate   = endText
+    builder.endDate = endText
     builder.endIndeterminate = endIndeterminateText
-    builder.instant          =instantText
-    builder.instantIndeterminate= instantIndeterminateText
-    builder.description         = description
+    builder.instant = instantText
+    builder.instantIndeterminate = instantIndeterminateText
+    builder.description = description
 
     return builder.build()
   }
@@ -336,19 +336,15 @@ class ISOParser {
     return ["spatialBounding": spatialBounding, "isGlobal": isGlobal]
   }
 
-  static Map parseSpatialInfo(String xml) {
-    return parseSpatialInfo(new XmlSlurper().parseText(xml))
-  }
-
   static Geometry parseBounding(def bbox) {
     if (!bbox) {
       return null
     }
 
-    def west = (bbox.westBoundLongitude == "null" || bbox.westBoundLongitude == "") ? null : bbox.westBoundLongitude.Decimal.toFloat()
-    def east = (bbox.eastBoundLongitude == "null" || bbox.eastBoundLongitude == "") ? null : bbox.eastBoundLongitude.Decimal.toFloat()
-    def north = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "") ? null : bbox.northBoundLatitude.Decimal.toFloat()
-    def south = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toFloat()
+    def west = (bbox.westBoundLongitude == "null" || bbox.westBoundLongitude == "") ? null : bbox.westBoundLongitude.Decimal.toDouble()
+    def east = (bbox.eastBoundLongitude == "null" || bbox.eastBoundLongitude == "") ? null : bbox.eastBoundLongitude.Decimal.toDouble()
+    def north = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "") ? null : bbox.northBoundLatitude.Decimal.toDouble()
+    def south = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toDouble()
 
     if (!west || !east || !north || !south) {
       return null
@@ -358,12 +354,14 @@ class ISOParser {
     if (west == east && north == south) {
       type = 'Point'
       coordinates = [west, north]
-    } else if (west == east || north == south) {
+    }
+    else if (west == east || north == south) {
       // Note: Because we are parsing the 'Geographic Bounding Box' element, only horizontal or vertical lines can be
       //       determined. A diagonal line will be interpreted as a polygon.
       type = 'LineString'
       coordinates = [[west, south], [east, north]]
-    } else {
+    }
+    else {
       type = 'Polygon'
       coordinates = [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
     }
@@ -391,116 +389,105 @@ class ISOParser {
     return west == -180 && east == 180 && north == 90 && south == -90
   }
 
-  static Map parseAcquisitionInfo(GPathResult metadata) {
-
+  static List<Instruments> acquisitionInstruments(GPathResult metadata) {
     def acquisitionInstruments = [] as Set
-    def acquisitionOperations = [] as Set
-    def acquisitionPlatforms = [] as Set
+    def instruments = metadata.acquisitionInformation.MI_AcquisitionInformation.'**'.findAll {
+      it.name() == 'MI_Instrument'
+    }
 
-    // Acquisition instrument:
-    def instruments = metadata.acquisitionInformation.MI_AcquisitionInformation
-        .'**'.findAll { it.name() == 'MI_Instrument' }
     instruments.each { e ->
-      acquisitionInstruments.add([
-          instrumentIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null,
-          instrumentType       : e.type.CharacterString.text() ?: e.type.Anchor.text() ?: null,
-          instrumentDescription: e.description.CharacterString.text() ?: null
-      ])
+      def builder = Instruments.newBuilder()
+      builder.instrumentIdentifier = e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null
+      builder.instrumentType = e.type.CharacterString.text() ?: e.type.Anchor.text() ?: null
+      builder.instrumentDescription = e.description.CharacterString.text() ?: null
+      acquisitionInstruments.add(builder.build())
     }
 
-    // Acquisition operation:
-    def operations = metadata.acquisitionInformation.MI_AcquisitionInformation
-        .'**'.findAll { it.name() == 'MI_Operation' }
+    return acquisitionInstruments.toList()
+  }
+
+  static List<Operation> acquisitionOperations(GPathResult metadata) {
+    def results = [] as Set
+    def operations = metadata.acquisitionInformation.MI_AcquisitionInformation.'**'.findAll {
+      it.name() == 'MI_Operation'
+    }
+
     operations.each { e ->
-      acquisitionOperations.add([
-          operationDescription: e.description.CharacterString.text() ?: null,
-          operationIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null,
-          operationStatus     : e.status.MD_ProgressCode.@codeListValue.text() ?: null,
-          operationType       : e.type.MI_OperationTypeCode.@codeListValue.text() ?: null // FIXME not sure on path
-      ])
+      def builder = Operation.newBuilder()
+      builder.operationDescription = e.description.CharacterString.text() ?: null
+      builder.operationIdentifier = e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null
+      builder.operationStatus = e.status.MD_ProgressCode.@codeListValue.text() ?: null
+      builder.operationType = e.type.MI_OperationTypeCode.@codeListValue.text() ?: null // FIXME not sure on path
+      results.add(builder.build())
+    }
+    return results.toList()
+  }
+
+  static List<Platform> acquisitionPlatforms(GPathResult metadata) {
+    def results = [] as Set
+    def platforms = metadata.acquisitionInformation.MI_AcquisitionInformation.'**'.findAll {
+      it.name() == 'MI_Platform'
     }
 
-    // Acquisition platform:
-    def platforms = metadata.acquisitionInformation.MI_AcquisitionInformation
-        .'**'.findAll { it.name() == 'MI_Platform' }
     platforms.each { e ->
-      acquisitionPlatforms.add([
-          platformIdentifier : e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null,
-          platformDescription: e.description.CharacterString.text() ?: null,
-          platformSponsor    : e.sponsor.CI_ResponsibleParty.organisationName
-              .'**'.findAll { it.name() == 'CharacterString' }*.text()
-      ])
+      def builder = Platform.newBuilder()
+      builder.platformIdentifier = e.identifier.MD_Identifier.code.CharacterString.text() ?: e.identifier.MD_Identifier.code.Anchor.text() ?: null
+      builder.platformDescription = e.description.CharacterString.text() ?: null
+      builder.platformSponsor = e.sponsor.CI_ResponsibleParty.organisationName.'**'.findAll {
+        it.name() == 'CharacterString'
+      }*.text()
+      results.add(builder.build())
     }
-
-    return [
-        acquisitionInstruments: acquisitionInstruments,
-        acquisitionOperations : acquisitionOperations,
-        acquisitionPlatforms  : acquisitionPlatforms
-    ]
+    return results.toList()
   }
 
-  static Map parseAcquisitionInfo(String xml) {
-    return parseAcquisitionInfo(new XmlSlurper().parseText(xml))
-  }
-
-  static Set parseDataFormats(GPathResult metadata) {
+  static List<DataFormat> parseDataFormats(GPathResult metadata) {
     def dataFormats = [] as Set
     def formats = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'MD_Format' }
     formats.each { format ->
-
       def name = format.name.CharacterString.text() ? (format.name.CharacterString.text() as String).toUpperCase() : null
       def version = format.version.CharacterString.text() ?: null
-
-      dataFormats.add([
-          name   : name,
-          version: version
-      ])
+      def builder = DataFormat.newBuilder()
+      builder.name    = name
+      builder.version = version
+      dataFormats.add(builder.build())
     }
-    return dataFormats
+    return dataFormats.toList()
   }
 
-  static Set parseDataFormats(String xml) {
-    return parseDataFormats(new XmlSlurper().parseText(xml))
-  }
-
-  static Set parseLinks(GPathResult metadata) {
-
+  static List<Link> parseLinks(GPathResult metadata) {
     def links = [] as Set
     def linkage = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'CI_OnlineResource' }
     linkage.each { e ->
-      links.add([
-          linkName       : e.name.CharacterString.text() ?: null,
-          linkProtocol   : e.protocol.CharacterString.text() ?: null,
-          linkUrl        : e.linkage.URL.text() ? StringEscapeUtils.unescapeXml(e.linkage.URL.text()) : null,
-          linkDescription: e.description.CharacterString.text() ?: null,
-          linkFunction   : e.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
-      ])
+      def builder = Link.newBuilder()
+      builder.linkName        = e.name.CharacterString.text() ?: null
+      builder.linkProtocol    = e.protocol.CharacterString.text() ?: null
+      builder.linkUrl         = e.linkage.URL.text() ? StringEscapeUtils.unescapeXml(e.linkage.URL.text()) : null
+      builder.linkDescription = e.description.CharacterString.text() ?: null
+      builder.linkFunction    = e.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
+      links.add(builder.build())
     }
-    return links
+    return links.toList()
   }
 
-  static Set parseLinks(String xml) {
-    return parseLinks(new XmlSlurper().parseText(xml))
-  }
-
-  static Map<String, String> parseParty(GPathResult party) {
+  static ResponsibleParty parseParty(GPathResult party) {
     String individualName = party.individualName.CharacterString.text() ?: party.individualName.Anchor.text() ?: null
     String organizationName = party.organisationName.CharacterString.text() ?: party.organisationName.Anchor.text() ?: null
     String positionName = party.positionName.CharacterString.text() ?: party.positionName.Anchor.text() ?: null
     String role = party.role.CI_RoleCode.@codeListValue.text() ?: null
     String email = party.contactInfo.CI_Contact.address.CI_Address.electronicMailAddress.CharacterString.text() ?: null
     String phone = party.contactInfo.CI_Contact.phone.CI_Telephone.voice.CharacterString.text() ?: null
-    return [
-        individualName  : individualName,
-        organizationName: organizationName,
-        positionName    : positionName,
-        role            : role,
-        email           : email,
-        phone           : phone
-    ]
+    def builder = ResponsibleParty.newBuilder()
+    builder.individualName  = individualName
+    builder.organizationName= organizationName
+    builder.positionName    = positionName
+    builder.role            = role
+    builder.email           = email
+    builder.phone           = phone
+    return builder.build()
   }
 
-  static Set parseResponsibleParties(GPathResult metadata) {
+  static List<ResponsibleParty> parseResponsibleParties(GPathResult metadata) {
     Set responsibleParties = []
     List<GPathResult> parties = metadata.identificationInfo.MD_DataIdentification.'**'.findAll {
       it.name() == 'CI_ResponsibleParty'
@@ -509,11 +496,7 @@ class ISOParser {
       def parsedParty = parseParty(party)
       responsibleParties.add(parsedParty)
     }
-    return responsibleParties
-  }
-
-  static Set parseResponsibleParties(String xml) {
-    return parseResponsibleParties(new XmlSlurper().parseText(xml))
+    return responsibleParties.toList()
   }
 
   static Map parseDSMM(GPathResult metadata) {
@@ -558,10 +541,6 @@ class ISOParser {
     return dsmmMap
   }
 
-  static Map parseDSMM(String xml) {
-    return parseDSMM(new XmlSlurper().parseText(xml))
-  }
-
   static Map parseMiscellaneous(GPathResult metadata) {
     def dataId = metadata.identificationInfo.MD_DataIdentification ?: null
     def updateFrequency = dataId.resourceMaintenance.MD_MaintenanceInformation.maintenanceAndUpdateFrequency.MD_MaintenanceFrequencyCode.@codeListValue.text() ?: null
@@ -570,10 +549,6 @@ class ISOParser {
         updateFrequency : updateFrequency,
         presentationForm: presentationForm
     ]
-  }
-
-  static Map parseMiscellaneous(String xml) {
-    return parseMiscellaneous(new XmlSlurper().parseText(xml))
   }
 
   static Set parseServices(GPathResult metadata) {

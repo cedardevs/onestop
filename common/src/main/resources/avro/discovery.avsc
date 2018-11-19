@@ -1,3 +1,82 @@
+[
+  {
+    "name": "Link",
+    "namespace": "org.cedar.psi.common.avro",
+    "type": "record",
+    "fields": [
+      {
+        "name": "linkName",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "linkProtocol",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "linkUrl",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "linkDescription",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "linkFunction",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      }
+    ]
+  },
+  {
+    "name": "Reference",
+    "namespace": "org.cedar.psi.common.avro",
+    "type": "record",
+    "fields": [
+      {
+        "name": "title",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "date",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "links",
+        "type": {
+          "type": "array",
+          "items": "Link"
+        },
+        "default": []
+      }
+    ]
+  },
   {
     "type": "record",
     "namespace": "org.cedar.psi.common.avro",
@@ -97,16 +176,19 @@
                 "name": "values",
                 "type": {
                   "type": "array",
-                  "items":  "string"
-                }
+                  "items": "string"
+                },
+                "default": []
               },
               {
                 "name": "type",
-                "type": "string"
+                "type": ["null", "string"],
+                "default": null
               },
               {
                 "name": "namespace",
-                "type": "string"
+                "type": ["null", "string"],
+                "default": null
               }
             ]
           }
@@ -129,7 +211,7 @@
       },
       {
         "name": "spatialBounding",
-        "type": ["null", "Point", "MultiPoint", "LineString", "MultiLineString", "Polygon", "MultiPolygon"],
+        "type": ["null", "Geometry"],
         "default": null
       },
       {
@@ -294,52 +376,7 @@
         "name": "links",
         "type": {
           "type": "array",
-          "items": {
-            "name": "Link",
-            "type": "record",
-            "fields": [
-              {
-                "name": "linkName",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "linkProtocol",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "linkUrl",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "linkDescription",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "linkFunction",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              }
-            ]
-          }
+          "items": "Link"
         },
         "default": []
       },
@@ -456,7 +493,7 @@
         "name": "crossReferences",
         "type": {
           "type": "array",
-          "items": "string"
+          "items": "Reference"
         },
         "default": []
       },
@@ -464,36 +501,10 @@
         "name": "largerWorks",
         "type": {
           "type": "array",
-          "items": {
-            "name": "Reference",
-            "type": "record",
-            "fields": [
-              {
-                "name": "title",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "date",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "links",
-                "type": "Link"
-              }
-            ]
-          }
+          "items": "Reference"
         },
         "default": []
       },
-
       {
         "name": "useLimitation",
         "type": [
@@ -615,4 +626,4 @@
       }
     ]
   }
-
+]
