@@ -11,10 +11,7 @@ dependencies {
   compile('org.codehaus.groovy:groovy:2.4.13')
   compile('org.codehaus.groovy:groovy-json:2.4.13')
   compile('org.apache.kafka:kafka-streams:2.0.1')
-  compile('org.apache.avro:avro:1.8.2'){
-    exclude group: 'com.google.guava', module: 'guava'
-  }
-  compile "com.google.guava:guava:27.0-jre"
+  compile('org.apache.avro:avro:1.8.2')
   compile('org.slf4j:slf4j-api:1.7.25')
   compile('ch.qos.logback:logback-classic:1.2.3')
 
