@@ -1,19 +1,19 @@
-  {
-    "type": "record",
-    "namespace": "org.cedar.psi.common.avro",
-    "name": "Publishing",
-    "doc": "TBD",
-    "fields": [
-      {
-        "name": "isPrivate",
-        "type": "boolean",
-        "default": false
-      },
-      {
-        "name": "until",
-        "type": "long",
-        "logicalType": "timestamp-millis",
-        "default": 0
-      }
-    ]
-  }
+{
+  "type": "record",
+  "namespace": "org.cedar.psi.common.avro",
+  "name": "Publishing",
+  "doc": "TBD",
+  "fields": [
+    {
+      "name": "isPrivate",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "name": "until",
+      "type": ["null", "long"],
+      "logicalType": "timestamp-millis",
+      "default": null
+    }
+  ]
+}

@@ -162,7 +162,7 @@ class StreamManagerSpec extends Specification {
     then:
     // Nothing on the error or sme topics
     driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
-    driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
+    driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     // An error has appeared

@@ -16,8 +16,11 @@
     },
     {
       "name": "publishing",
-      "type": ["null", "Publishing"],
-      "default": null
+      "type": "Publishing",
+      "default": {
+        "isPrivate": false,
+        "until": null
+      }
     },
     {
       "name": "errors",
