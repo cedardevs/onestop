@@ -280,31 +280,4 @@ class Analyzers {
     return INVALID
   }
 
-  String isIndexable(String input) {
-    if (input.isLong()) {
-      // Year must be in the range [-292275055,292278994] in order to be parsed as a date by ES (Joda time magic number). However,
-      // this number is a bit arbitrary, and prone to change when ES switches to the Java time library (minimum supported year
-      // being -999999999). We will limit the year ourselves instead to -100,000,000 -- since this is a fairly safe bet for
-      // supportability across many date libraries if the utcDateTime ends up used as is by a downstream app.
-      return Long.parseLong(dateString) < -100000000L ? false : true
-    }
-    else {
-
-    }
-  }
-
-  String utcString(String input) {
-    def utcDateTimeString, indexable, precision, timezone
-    if (dateString.isLong()) {
-      def year = Long.parseLong(dateString)
-      // Year must be in the range [-292275055,292278994] in order to be parsed as a date by ES (Joda time magic number). However,
-      // this number is a bit arbitrary, and prone to change when ES switches to the Java time library (minimum supported year
-      // being -999999999). We will limit the year ourselves instead to -100,000,000 -- since this is a fairly safe bet for
-      // supportability across many date libraries if the utcDateTime ends up used as is by a downstream app.
-      indexable = year < -100000000L ? false : true
-      precision = ChronoUnit.YEARS.toString()
-      timezone = UNDEFINED
-      utcDateTimeString = "${year}-01-01T00:00:00Z"
-    }
-  }
 }
