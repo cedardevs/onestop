@@ -6,10 +6,10 @@ import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
 import javax.servlet.http.HttpServletResponse
@@ -33,12 +33,14 @@ class SearchController {
   }
 
   // Get Collection Info
+  @CrossOrigin(origins = "*")
   @RequestMapping(path = "/collection", method = [GET, HEAD], produces = 'application/json')
   Map getCollectionInfo(HttpServletResponse response) {
     return elasticsearchService.totalCollections()
   }
 
   // GET Collection by ID
+  @CrossOrigin(origins = "*")
   @RequestMapping(path = "/collection/{id}", method = [GET, HEAD], produces = 'application/json')
   Map getCollection(@PathVariable String id, HttpServletResponse response, HttpServletRequest request) {
     def result = elasticsearchService.getCollectionById(id)
@@ -54,6 +56,7 @@ class SearchController {
   }
 
   // Search Collections
+  @CrossOrigin(origins = "*")
   @RequestMapping(path = "/search/collection", method = [POST, GET])
   Map searchCollections(@RequestBody Map params, HttpServletResponse response, HttpServletRequest request) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
@@ -67,12 +70,14 @@ class SearchController {
   }
 
   // Get Granule Info
+  @CrossOrigin(origins = "*")
   @RequestMapping(path = "/granule", method = [GET, HEAD], produces = 'application/json')
   Map getGranuleInfo(HttpServletResponse response) {
       return elasticsearchService.totalGranules()
   }
 
   // GET Granule by ID
+  @CrossOrigin(origins = "*")
   @RequestMapping(path = "/granule/{id}", method = [GET, HEAD], produces = 'application/json')
   Map getGranule(@PathVariable String id, HttpServletResponse response, HttpServletRequest request) {
     def result = elasticsearchService.getGranuleById(id)
@@ -88,6 +93,7 @@ class SearchController {
   }
 
   // Search Granules
+  @CrossOrigin(origins = "*")
   @RequestMapping(path = "/search/granule", method = [POST, GET])
   Map searchGranules(@RequestBody Map params, HttpServletResponse response, HttpServletRequest request) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
@@ -101,12 +107,14 @@ class SearchController {
   }
 
   // Get Flattened Granule Info
+  @CrossOrigin(origins = "*")
   @RequestMapping(path = "/flattened-granule", method = [GET, HEAD], produces = 'application/json')
   Map getFlattenedGranuleInfo(HttpServletResponse response) {
     return elasticsearchService.totalFlattenedGranules()
   }
 
   // GET Flattened Granule by ID
+  @CrossOrigin(origins = "*")
   @RequestMapping(path = "/flattened-granule/{id}", method = [GET, HEAD], produces = 'application/json')
   Map getFlattenedGranule(@PathVariable String id, HttpServletResponse response, HttpServletRequest request) {
     def result = elasticsearchService.getFlattenedGranuleById(id)
@@ -121,6 +129,7 @@ class SearchController {
   }
 
   // Search Flattened Granules
+  @CrossOrigin(origins = "*")
   @RequestMapping(path = "/search/flattened-granule", method = [POST, GET])
   Map searchFlattenedGranules(@RequestBody Map params, HttpServletResponse response, HttpServletRequest request) {
     Map validation = JsonValidator.validateSearchRequestSchema(params)
