@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.2.xsd">
 
   <suppress>
     <notes><![CDATA[
@@ -63,6 +63,16 @@
       xzgrep command line tool. That script is not included in this jar, which is used to compress avro messages.
     ]]></notes>
     <cve>CVE-2015-4035</cve>
+  </suppress>
+
+  <suppress until="2019-01-01Z" >
+   <notes><![CDATA[
+   file name: avro-1.8.2.jar (shaded: com.google.guava:guava:11.0.2)
+   We are anticipating a new release of Avro very soon in which the Guava dependency is removed entirely.
+   This CVE is suppressed with an until date so that this dependency/issue is monitored.
+   ]]></notes>
+   <gav regex="true">^com\.google\.guava:guava:.*$</gav>
+   <cve>CVE-2018-10237</cve>
   </suppress>
 
 </suppressions>
