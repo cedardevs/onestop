@@ -78,6 +78,61 @@
     ]
   },
   {
+    "name": "ResponsibleParty",
+    "namespace": "org.cedar.psi.common.avro",
+    "type": "record",
+    "fields": [
+      {
+        "name": "individualName",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "organizationName",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "positionName",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "role",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "email",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "phone",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      }
+    ]
+  },
+  {
     "type": "record",
     "namespace": "org.cedar.psi.common.avro",
     "name": "Discovery",
@@ -165,8 +220,7 @@
       },
       {
         "name": "keywords",
-        "type":
-        {
+        "type": {
           "type": "array",
           "items": {
             "name": "KeywordsElement",
@@ -182,12 +236,18 @@
               },
               {
                 "name": "type",
-                "type": ["null", "string"],
+                "type": [
+                  "null",
+                  "string"
+                ],
                 "default": null
               },
               {
                 "name": "namespace",
-                "type": ["null", "string"],
+                "type": [
+                  "null",
+                  "string"
+                ],
                 "default": null
               }
             ]
@@ -197,8 +257,7 @@
       },
       {
         "name": "topicCategories",
-        "type":
-        {
+        "type": {
           "type": "array",
           "items": "string"
         },
@@ -206,23 +265,31 @@
       },
       {
         "name": "temporalBounding",
-        "type": ["null", "TemporalBounding"],
+        "type": [
+          "null",
+          "TemporalBounding"
+        ],
         "default": null
       },
       {
         "name": "spatialBounding",
-        "type": ["null", "Geometry"],
+        "type": [
+          "null",
+          "Geometry"
+        ],
         "default": null
       },
       {
         "name": "isGlobal",
-        "type": ["null", "boolean"],
+        "type": [
+          "null",
+          "boolean"
+        ],
         "default": null
       },
       {
         "name": "acquisitionInstruments",
-        "type":
-        {
+        "type": {
           "type": "array",
           "items": {
             "name": "Instruments",
@@ -259,8 +326,7 @@
       },
       {
         "name": "acquisitionOperations",
-        "type":
-        {
+        "type": {
           "type": "array",
           "items": {
             "name": "Operation",
@@ -305,8 +371,7 @@
       },
       {
         "name": "acquisitionPlatforms",
-        "type":
-        {
+        "type": {
           "type": "array",
           "items": {
             "name": "Platform",
@@ -330,11 +395,10 @@
               },
               {
                 "name": "platformSponsor",
-                "type":
-                  {
-                    "type": "array",
-                    "items": "string"
-                  },
+                "type": {
+                  "type": "array",
+                  "items": "string"
+                },
                 "default": []
               }
             ]
@@ -344,8 +408,7 @@
       },
       {
         "name": "dataFormats",
-        "type":
-        {
+        "type": {
           "type": "array",
           "items": {
             "name": "DataFormat",
@@ -382,62 +445,9 @@
       },
       {
         "name": "responsibleParties",
-        "type":{
+        "type": {
           "type": "array",
-          "items": {
-            "name": "ResponsibleParty",
-            "type": "record",
-            "fields": [
-              {
-                "name": "individualName",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "organizationName",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "positionName",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "role",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "email",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              },
-              {
-                "name": "phone",
-                "type": [
-                  "null",
-                  "string"
-                ],
-                "default": null
-              }
-            ]
-          }
+          "items": "ResponsibleParty"
         },
         "default": []
       },
@@ -515,7 +525,7 @@
       },
       {
         "name": "legalConstraints",
-        "type":  {
+        "type": {
           "type": "array",
           "items": "string"
         },
@@ -616,10 +626,68 @@
         "name": "services",
         "type": {
           "type": "array",
-          "items":{
-            "type":"map",
-            "values":"string"
-            }
+          "items": {
+            "type": "record",
+            "name": "Service",
+            "fields": [
+              {
+                "name": "title",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "alternateTitle",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "description",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "date",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "dateType",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "pointOfContact",
+                "type": [
+                  "null",
+                  "ResponsibleParty"
+                ],
+                "default": null
+              },
+              {
+                "name": "operations",
+                "type": {
+                  "type": "array",
+                  "items": "Link"
+                },
+                "default": []
+              }
+            ]
+          }
         },
         "default": [],
         "doc": "List of objects that represent an SV_ServiceIdentification section, if any, of ISO 19115 XML metadata document. Empty if not present."

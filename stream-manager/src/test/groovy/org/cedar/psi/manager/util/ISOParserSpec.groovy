@@ -8,6 +8,7 @@ import org.cedar.psi.common.avro.Operation
 import org.cedar.psi.common.avro.Platform
 import org.cedar.psi.common.avro.Reference
 import org.cedar.psi.common.avro.ResponsibleParty
+import org.cedar.psi.common.avro.Service
 import org.cedar.psi.common.avro.TemporalBounding
 import org.cedar.psi.common.util.AvroUtils
 import spock.lang.Specification
@@ -18,16 +19,6 @@ class ISOParserSpec extends Specification {
 
   def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
   def metadata = new XmlSlurper().parseText(document)
-
-  def "Identifier info is correctly parsed"() {
-    when:
-    def idInfo = ISOParser.parseIdentifierInfo(document)
-
-    then:
-    idInfo.fileId == 'gov.super.important:FILE-ID'
-    idInfo.doi == 'doi:10.5072/FK2TEST'
-    idInfo.parentId == 'gov.super.important:PARENT-ID'
-  }
 
   def "Citation info is correctly parsed"() {
     when:
@@ -55,13 +46,13 @@ class ISOParserSpec extends Specification {
     citationInfo.crossReferences.collect { AvroUtils.avroToMap(it) } == [
         [
             title: '[TITLE OF PUBLICATION]',
-            date: '9999-01-01',
+            date : '9999-01-01',
             links: [new Link(
-                        linkName: null,
-                        linkProtocol: null,
-                        linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
-                        linkDescription: '[DESCRIPTION OF URL]',
-                        linkFunction: 'information'
+                linkName: null,
+                linkProtocol: null,
+                linkUrl: 'HTTPS://WWW.EXAMPLE.COM',
+                linkDescription: '[DESCRIPTION OF URL]',
+                linkFunction: 'information'
             )]
         ]
     ]
@@ -70,7 +61,7 @@ class ISOParserSpec extends Specification {
     citationInfo.largerWorks.collect { AvroUtils.avroToMap(it) } == [
         [
             title: '[TITLE OF PROJECT]',
-            date: '9999-10-10',
+            date : '9999-10-10',
             links: []
         ]
     ]
@@ -91,80 +82,80 @@ class ISOParserSpec extends Specification {
     def keywordMaps = parsedXml.keywords.collect { AvroUtils.avroToMap(it) }
     keywordMaps == [
         [
-            "values": [
+            "values"   : [
                 "SIO > Super Important Organization",
                 "OSIO > OTHER SUPER IMPORTANT ORGANIZATION",
                 "SSIO > Super SIO (Super Important Organization)"
             ],
-            "type": "dataCenter",
+            "type"     : "dataCenter",
             "namespace": "GCMD Keywords - Data Centers"
         ],
         [
-            "values": [
+            "values"   : [
                 "0038924",
                 "0038947",
                 "0038970"
             ],
-            "type": null,
+            "type"     : null,
             "namespace": "NCEI ACCESSION NUMBER"
         ],
         [
-            "values": [
+            "values"   : [
                 "EARTH SCIENCE SERVICES > ENVIRONMENTAL ADVISORIES > FIRE ADVISORIES > WILDFIRES",
                 "EARTH SCIENCE > This Keyword is > Misplaced and Invalid",
                 "This Keyword > Is Just > WRONG"
             ],
-            "type": "service",
+            "type"     : "service",
             "namespace": "Global Change Master Directory Science and Services Keywords"
         ],
         [
-            "values": [
+            "values"   : [
                 "Air temperature",
                 "Water temperature"
             ],
-            "type": "theme",
+            "type"     : "theme",
             "namespace": "Miscellaneous keyword type"
         ],
         [
-            "values": [
+            "values"   : [
                 "Wind speed",
                 "Wind direction"
             ],
-            "type": "theme",
+            "type"     : "theme",
             "namespace": "Miscellaneous keyword type"
         ],
         [
-            "values": [
+            "values"   : [
                 "EARTH SCIENCE > ATMOSPHERE > ATMOSPHERIC TEMPERATURE > SURFACE TEMPERATURE > DEW POINT TEMPERATURE",
                 "EARTH SCIENCE > OCEANS > SALINITY/DENSITY > SALINITY",
                 "EARTH SCIENCE > VOLCANOES > THIS KEYWORD > IS INVALID",
                 "Earth Science > Spectral/Engineering > microwave > Brightness Temperature",
                 "Earth Science > Spectral/Engineering > microwave > Temperature Anomalies"
             ],
-            "type": "theme",
+            "type"     : "theme",
             "namespace": "GCMD Keywords - Science Keywords"
         ],
         [
-            "values": [
+            "values"   : [
                 "GEOGRAPHIC REGION > ARCTIC",
                 "OCEAN > ATLANTIC OCEAN > NORTH ATLANTIC OCEAN > GULF OF MEXICO",
                 "LIQUID EARTH > THIS KEYWORD > IS INVALID"
             ],
-            "type": "place",
+            "type"     : "place",
             "namespace": "GCMD Keywords - Locations"
         ],
         [
-            "values": [
+            "values"   : [
                 "SEASONAL"
             ],
-            "type": "dataResolution",
+            "type"     : "dataResolution",
             "namespace": "Global Change Master Directory Keywords - Temporal Data Resolution"
         ],
         [
-            "values": [
+            "values"   : [
                 "> 1 km"
             ],
-            "type": "dataResolution",
+            "type"     : "dataResolution",
             "namespace": "GCMD Keywords - Vertical Data Resolution"
         ]
     ]
@@ -185,7 +176,7 @@ class ISOParserSpec extends Specification {
         .build()
 
     when:
-    def temporalBounding = ISOParser.parseTemporalBounding(document)
+    def temporalBounding = ISOParser.parseTemporalBounding(metadata)
 
     then:
     temporalBounding == output
@@ -236,7 +227,7 @@ class ISOParserSpec extends Specification {
     def spatialBounding = ISOParser.parseSpatialInfo(metadata)
 
     then:
-    spatialBounding.spatialBounding.coordinates ==[[-80, -10],[80, -10]]
+    spatialBounding.spatialBounding.coordinates == [[-80, -10], [80, -10]]
     spatialBounding.spatialBounding.type == GeometryType.LineString
     !spatialBounding.isGlobal
   }
@@ -263,9 +254,9 @@ class ISOParserSpec extends Specification {
     result.every { it instanceof Operation }
     result.size() == 1
     result[0].operationDescription == null
-    result[0].operationIdentifier  == 'Super Important Project'
-    result[0].operationStatus      == null
-    result[0].operationType        == null
+    result[0].operationIdentifier == 'Super Important Project'
+    result[0].operationStatus == null
+    result[0].operationType == null
   }
 
   def "AcquisitionPlatforms info is correctly parsed"() {
@@ -276,9 +267,9 @@ class ISOParserSpec extends Specification {
     result instanceof List
     result.every { it instanceof Platform }
     result.size() == 1
-    result[0].platformIdentifier  == 'TS-18 > TumbleSat-18'
+    result[0].platformIdentifier == 'TS-18 > TumbleSat-18'
     result[0].platformDescription == 'The TumbleSat satellite system offers the advantage of daily surprise coverage, with morning and afternoon orbits that collect and deliver data in every direction. The information received includes brief glimpses of earth, other satellites, and the universe beyond, as the system spirals out of control.'
-    result[0].platformSponsor     == ['Super Important Organization', 'Other (Kind Of) Important Organization']
+    result[0].platformSponsor == ['Super Important Organization', 'Other (Kind Of) Important Organization']
   }
 
   def "Data formats are correctly parsed"() {
@@ -305,11 +296,11 @@ class ISOParserSpec extends Specification {
     links instanceof List
     links.every { it instanceof Link }
     links.size() == 1
-    links[0].linkName        == 'Super Important Access Link'
-    links[0].linkProtocol    == 'HTTP'
-    links[0].linkUrl         == 'http://www.example.com'
+    links[0].linkName == 'Super Important Access Link'
+    links[0].linkProtocol == 'HTTP'
+    links[0].linkUrl == 'http://www.example.com'
     links[0].linkDescription == 'Everything Important, All In One Place'
-    links[0].linkFunction    == 'search'
+    links[0].linkFunction == 'search'
   }
 
   def "Responsible parties are correctly parsed"() {
@@ -386,12 +377,12 @@ class ISOParserSpec extends Specification {
             phone           : '555-555-5562'
         ],
         [
-            individualName: null,
+            individualName  : null,
             organizationName: 'Global Change Data Center, Science and Exploration Directorate, Goddard Space Flight Center (GSFC) National Aeronautics and Space Administration (NASA)',
-            positionName: null,
-            role: 'custodian',
-            email: null,
-            phone: null
+            positionName    : null,
+            role            : 'custodian',
+            email           : null,
+            phone           : null
         ]
     ]
   }
@@ -417,40 +408,46 @@ class ISOParserSpec extends Specification {
 
   def "Services are correctly parsed"() {
     given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     Map expectedResult = [
-        title:'Multibeam Bathymetric Surveys ArcGIS Map Service',
-        alternateTitle:'Alternate Title for Testing',
-        abstract: "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green.",
-        date: '2012-01-01',
-        dateType: 'creation',
+        title         : 'Multibeam Bathymetric Surveys ArcGIS Map Service',
+        alternateTitle: 'Alternate Title for Testing',
+        description   : "NOAA's National Centers for Environmental Information (NCEI) is the U.S. national archive for multibeam bathymetric data and presently holds over 2400 surveys received from sources worldwide, including the U.S. academic fleet via the Rolling Deck to Repository (R2R) program. In addition to deep-water data, the multibeam database also includes hydrographic multibeam survey data from the National Ocean Service (NOS). This map service shows navigation for multibeam bathymetric surveys in NCEI's archive. Older surveys are colored orange, and more recent recent surveys are green.",
+        date          : '2012-01-01',
+        dateType      : 'creation',
         pointOfContact: [
-            individualName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
-            organizationName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]'
+            individualName  : '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+            organizationName: '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+            positionName    : '[AT LEAST ONE OF ORGANISATION, INDIVIDUAL OR POSITION]',
+            role            : 'pointOfContact',
+            email           : 'TEMPLATE@EMAIL.GOV',
+            phone           : null
         ],
-        operations:[
+        operations    : [
             [
-                protocol:'http',
-                url:'https://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/multibeam/MapServer',
-                applicationProfile:'https://www.geoplatform.gov/spec/esri-map-rest',
-                name:'Multibeam Bathymetric Surveys ArcGIS Cached Map Service',
-                description: 'Capabilities document for Open Geospatial Consortium Web Map Service for Multibeam Bathymetric Surveys'
+                linkProtocol   : 'http',
+                linkUrl        : 'https://maps.ngdc.noaa.gov/arcgis/services/web_mercator/multibeam_dynamic/MapServer/WMSServer?request=GetCapabilities&service=WMS',
+                linkName       : 'Multibeam Bathymetric Surveys Web Map Service (WMS)',
+                linkDescription: 'The Multibeam Bathymetric Surveys ArcGIS cached map service provides rapid display of ship tracks from global scales down to zoom level 9 (approx. 1:1,200,000 scale).',
+                linkFunction   : 'search'
             ],
             [
-                protocol:'http',
-                url:'https://maps.ngdc.noaa.gov/arcgis/services/web_mercator/multibeam_dynamic/MapServer/WMSServer?request=GetCapabilities&service=WMS',
-                applicationProfile:'http://opengis.net/spec/wms',
-                name:'Multibeam Bathymetric Surveys Web Map Service (WMS)',
-                description: 'The Multibeam Bathymetric Surveys ArcGIS cached map service provides rapid display of ship tracks from global scales down to zoom level 9 (approx. 1:1,200,000 scale).'
+                linkProtocol   : 'http',
+                linkUrl        : 'https://maps.ngdc.noaa.gov/arcgis/rest/services/web_mercator/multibeam/MapServer',
+                linkName       : 'Multibeam Bathymetric Surveys ArcGIS Cached Map Service',
+                linkDescription: 'Capabilities document for Open Geospatial Consortium Web Map Service for Multibeam Bathymetric Surveys',
+                linkFunction   : 'search'
             ]
         ]
     ]
     when:
-    Set serviceTextBlobs = ISOParser.parseServices(document)
+    def result = ISOParser.parseServices(metadata)
 
     then:
-    notThrown(Exception)
-    serviceTextBlobs[0] as Map == expectedResult
+    noExceptionThrown()
+    result instanceof List
+    result.size() == 1
+    result[0] instanceof Service
+    AvroUtils.avroToMap(result[0], true) == expectedResult
   }
 
   def "Miscellaneous items are correctly parsed"() {

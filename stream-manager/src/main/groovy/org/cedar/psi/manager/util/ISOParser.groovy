@@ -13,28 +13,10 @@ import org.cedar.psi.common.avro.Operation
 import org.cedar.psi.common.avro.Platform
 import org.cedar.psi.common.avro.Reference
 import org.cedar.psi.common.avro.ResponsibleParty
+import org.cedar.psi.common.avro.Service
 import org.cedar.psi.common.avro.TemporalBounding
 
 class ISOParser {
-
-  static Map parseIdentifierInfo(String xml) {
-    def slurped = new XmlSlurper().parseText(xml)
-
-    def identifiers = slurped.identificationInfo.MD_DataIdentification.citation.CI_Citation.'**'.findAll {
-      it.name() == 'identifier'
-    }
-    String doi = identifiers.findResult(null, { identifier ->
-      if (identifier.MD_Identifier.authority.CI_Citation.title.CharacterString.text() == 'Digital Object Identifier (DOI)') {
-        return identifier.MD_Identifier.code.Anchor.text()
-      }
-    })
-
-    return [
-        fileId  : slurped.fileIdentifier.CharacterString.text() ?: null,
-        doi     : doi,
-        parentId: slurped.parentIdentifier.Anchor.text() ?: slurped.parentIdentifier.CharacterString.text() ?: null
-    ]
-  }
 
   static String parseXMLMetadata(String xml) {
     return JsonOutput.toJson(parseXMLMetadataToDiscovery(xml))
@@ -73,7 +55,7 @@ class ISOParser {
     builder.acquisitionPlatforms = acquisitionPlatforms(metadata)
     builder.dataFormats = parseDataFormats(metadata)
     builder.links = parseLinks(metadata)
-    builder.responsibleParties = parseResponsibleParties(metadata) as List
+    builder.responsibleParties = parseResponsibleParties(metadata)
     builder.thumbnail = citationInfo.thumbnail
     builder.thumbnailDescription = citationInfo.thumbnailDescription
     builder.creationDate = citationInfo.creationDate as String
@@ -185,15 +167,7 @@ class ISOParser {
         def citation = aggInfo.MD_AggregateInformation.aggregateDataSetName.CI_Citation
         def onlineResources = citation.'**'.findAll { it.name() == 'CI_OnlineResource' }
 
-        def links = onlineResources.collect { resource ->
-          def linkBuilder = Link.newBuilder()
-          linkBuilder.linkName        = resource.name.CharacterString.text() ?: null
-          linkBuilder.linkProtocol    = resource.protocol.CharacterString.text() ?: null
-          linkBuilder.linkUrl         = resource.linkage.URL.text() ? StringEscapeUtils.unescapeXml(resource.linkage.URL.text()) : null
-          linkBuilder.linkDescription = resource.description.CharacterString.text() ?: null
-          linkBuilder.linkFunction    = resource.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
-          linkBuilder.build()
-        }
+        def links = onlineResources.collect { parseLink(it) }
 
         def referenceBuilder = Reference.newBuilder()
         referenceBuilder.title = citation.title.CharacterString.text() ?: null
@@ -245,7 +219,6 @@ class ISOParser {
   }
 
   static Map parseKeywordsAndTopics(GPathResult metadata) {
-
     def extractKnownText = { k ->
       def text = k.CharacterString.text() ?: k.Anchor.text()
       return text.trim()
@@ -288,7 +261,6 @@ class ISOParser {
   }
 
   static TemporalBounding parseTemporalBounding(GPathResult metadata) {
-
     def boundingExtent = metadata.identificationInfo.MD_DataIdentification.extent.EX_Extent
 
     def description = boundingExtent[0].description.CharacterString.text() ?: null
@@ -320,10 +292,6 @@ class ISOParser {
     builder.description = description
 
     return builder.build()
-  }
-
-  static TemporalBounding parseTemporalBounding(String xml) {
-    return parseTemporalBounding(new XmlSlurper().parseText(xml))
   }
 
   static Map parseSpatialInfo(GPathResult metadata) {
@@ -442,41 +410,54 @@ class ISOParser {
   }
 
   static List<DataFormat> parseDataFormats(GPathResult metadata) {
-    def dataFormats = [] as Set
     def formats = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'MD_Format' }
-    formats.each { format ->
-      def name = format.name.CharacterString.text() ? (format.name.CharacterString.text() as String).toUpperCase() : null
-      def version = format.version.CharacterString.text() ?: null
-      def builder = DataFormat.newBuilder()
-      builder.name    = name
-      builder.version = version
-      dataFormats.add(builder.build())
-    }
-    return dataFormats.toList()
+    def uniqueFormat = formats.collect(ISOParser.&parseDataFormat).findAll() as Set
+    return uniqueFormat.toList()
+  }
+
+  static DataFormat parseDataFormat(GPathResult node) {
+    if (!node) { return null }
+    def builder = DataFormat.newBuilder()
+    builder.name    = node?.name?.CharacterString.text() ? (node.name.CharacterString.text() as String).toUpperCase() : null
+    builder.version = node.version.CharacterString.text() ?: null
+    return builder.build()
   }
 
   static List<Link> parseLinks(GPathResult metadata) {
-    def links = [] as Set
-    def linkage = metadata.distributionInfo.MD_Distribution.'**'.findAll { it.name() == 'CI_OnlineResource' }
-    linkage.each { e ->
-      def builder = Link.newBuilder()
-      builder.linkName        = e.name.CharacterString.text() ?: null
-      builder.linkProtocol    = e.protocol.CharacterString.text() ?: null
-      builder.linkUrl         = e.linkage.URL.text() ? StringEscapeUtils.unescapeXml(e.linkage.URL.text()) : null
-      builder.linkDescription = e.description.CharacterString.text() ?: null
-      builder.linkFunction    = e.function.CI_OnLineFunctionCode.@codeListValue.text() ?: null
-      links.add(builder.build())
+    def linkNodes = metadata.distributionInfo.MD_Distribution.'**'.findAll {
+      it.name() == 'CI_OnlineResource'
     }
-    return links.toList()
+    def uniqueLinks = linkNodes.collect(ISOParser.&parseLink).findAll() as Set
+    return uniqueLinks.toList()
   }
 
-  static ResponsibleParty parseParty(GPathResult party) {
-    String individualName = party.individualName.CharacterString.text() ?: party.individualName.Anchor.text() ?: null
-    String organizationName = party.organisationName.CharacterString.text() ?: party.organisationName.Anchor.text() ?: null
-    String positionName = party.positionName.CharacterString.text() ?: party.positionName.Anchor.text() ?: null
-    String role = party.role.CI_RoleCode.@codeListValue.text() ?: null
-    String email = party.contactInfo.CI_Contact.address.CI_Address.electronicMailAddress.CharacterString.text() ?: null
-    String phone = party.contactInfo.CI_Contact.phone.CI_Telephone.voice.CharacterString.text() ?: null
+  static Link parseLink(GPathResult node) {
+    if (!node) { return null }
+    def builder = Link.newBuilder()
+    builder.linkName        = node.name?.CharacterString?.text()?.trim() ?: null
+    builder.linkProtocol    = node.protocol?.CharacterString?.text()?.trim() ?: null
+    builder.linkUrl         = node.linkage?.URL?.text() ? StringEscapeUtils.unescapeXml(node.linkage.URL.text()) : null
+    builder.linkDescription = node.description?.CharacterString?.text()?.trim() ?: null
+    builder.linkFunction    = node.function?.CI_OnLineFunctionCode?.@codeListValue?.text()?.trim() ?: null
+    return builder.build()
+  }
+
+  static List<ResponsibleParty> parseResponsibleParties(GPathResult metadata) {
+    def partyNodes = metadata.identificationInfo.MD_DataIdentification.'**'.findAll {
+      it.name() == 'CI_ResponsibleParty'
+    }
+    def uniqueParties = partyNodes.collect(ISOParser.&parseParty).findAll() as Set
+    return uniqueParties.toList()
+  }
+
+  static ResponsibleParty parseParty(GPathResult node) {
+    if (!node) { return null }
+    String individualName = node.individualName.CharacterString.text() ?: node.individualName.Anchor.text() ?: null
+    String organizationName = node.organisationName.CharacterString.text() ?: node.organisationName.Anchor.text() ?: null
+    String positionName = node.positionName.CharacterString.text() ?: node.positionName.Anchor.text() ?: null
+    String role = node.role.CI_RoleCode.@codeListValue.text() ?: null
+    String email = node.contactInfo.CI_Contact.address.CI_Address.electronicMailAddress.CharacterString.text() ?: null
+    String phone = node.contactInfo.CI_Contact.phone.CI_Telephone.voice.CharacterString.text() ?: null
     def builder = ResponsibleParty.newBuilder()
     builder.individualName  = individualName
     builder.organizationName= organizationName
@@ -485,18 +466,6 @@ class ISOParser {
     builder.email           = email
     builder.phone           = phone
     return builder.build()
-  }
-
-  static List<ResponsibleParty> parseResponsibleParties(GPathResult metadata) {
-    Set responsibleParties = []
-    List<GPathResult> parties = metadata.identificationInfo.MD_DataIdentification.'**'.findAll {
-      it.name() == 'CI_ResponsibleParty'
-    }
-    parties.each { party ->
-      def parsedParty = parseParty(party)
-      responsibleParties.add(parsedParty)
-    }
-    return responsibleParties.toList()
   }
 
   static Map parseDSMM(GPathResult metadata) {
@@ -551,47 +520,29 @@ class ISOParser {
     ]
   }
 
-  static Set parseServices(GPathResult metadata) {
-    def serviceIds = metadata.identificationInfo.'**'.findAll {
+  static List<Service> parseServices(GPathResult metadata) {
+    def serviceNodes = metadata.identificationInfo.'**'.findAll {
       it.name() == 'SV_ServiceIdentification'
     }
-    Set<Map> services = []
+    def uniqueServices = serviceNodes.collect(ISOParser.&parseService).findAll().toSet()
+    return uniqueServices.toList()
+  }
 
-    serviceIds.each {
-      Map service = [
-          title         : (it?.citation?.CI_Citation?.title?.CharacterString as String).trim(),
-          alternateTitle: (it?.citation?.CI_Citation?.alternateTitle?.CharacterString as String).trim(),
-          abstract      : (it?.abstract?.CharacterString as String).trim(),
-          date          : it?.citation?.CI_Citation?.date?.Date as String,
-          dateType      : it?.citation?.CI_Citation?.dateType?.CI_DateTypeCode as String,
-          pointOfContact: [
-              individualName  : it?.pointOfContact?.CI_ResponsibleParty?.individualName?.CharacterString as String,
-              organizationName: it?.pointOfContact?.CI_ResponsibleParty?.organisationName?.CharacterString as String
-          ],
-          operations    : []
-      ]
-      def operations = it.'**'.findAll {
-        it.name() == 'containsOperations'
-      }
-      operations.each { o ->
-        service.operations.add([
-            protocol          : (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.protocol?.CharacterString as String).trim(),
-            url               : (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.linkage?.URL as String).trim(),
-            applicationProfile: (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.applicationProfile?.CharacterString as String).trim(),
-            name              : (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.name?.CharacterString as String).trim(),
-            description       : (o?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource?.description?.CharacterString as String).trim(),
-        ])
-      }
-      services.add(service)
+  static Service parseService(GPathResult node) {
+    if (!node) { return null }
+    def operationNodes = node.'**'.findAll {
+      it.name() == 'containsOperations'
     }
-    return services
+    def uniqueOperations = operationNodes.collect({parseLink(it?.SV_OperationMetadata?.connectPoint?.CI_OnlineResource)}).findAll().toSet()
+    def builder = Service.newBuilder()
+    builder.title          = (node?.citation?.CI_Citation?.title?.CharacterString as String).trim()
+    builder.alternateTitle = (node?.citation?.CI_Citation?.alternateTitle?.CharacterString as String).trim()
+    builder.description    = (node?.abstract?.CharacterString as String).trim()
+    builder.date           = node?.citation?.CI_Citation?.date?.Date as String
+    builder.dateType       = node?.citation?.CI_Citation?.dateType?.CI_DateTypeCode as String
+    builder.pointOfContact = parseParty(node?.pointOfContact?.CI_ResponsibleParty)
+    builder.operations     = uniqueOperations.toList()
+    return builder.build()
   }
 
-  static Set parseServices(String xml) {
-    return parseServices(new XmlSlurper().parseText(xml))
-  }
-
-  static Map mergeCollectionAndGranule(Map collection, Map granule) {
-    return collection + granule
-  }
 }
