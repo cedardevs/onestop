@@ -1,0 +1,17 @@
+{
+  "type": "enum",
+  "namespace": "org.cedar.psi.common.avro",
+  "name": "Method",
+  "doc": "An HTTP request method",
+  "symbols": [
+    "HEAD",
+    "OPTIONS",
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "TRACE",
+    "CONNECT"
+  ]
+}

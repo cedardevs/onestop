@@ -1,21 +1,26 @@
 package org.cedar.psi.registry.stream
 
-import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.Serdes
-import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
-import org.cedar.psi.common.serde.JsonSerdes
+import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.Method
 import org.cedar.psi.registry.service.MetadataStreamService
+import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import spock.lang.Specification
 
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
+import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
+import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
+import static org.apache.kafka.streams.StreamsConfig.*
 import static org.cedar.psi.common.constants.Topics.*
-import static org.cedar.psi.registry.util.StreamSpecUtils.*
+import static org.cedar.psi.common.util.StreamSpecUtils.JSON_SERIALIZER
+import static org.cedar.psi.common.util.StreamSpecUtils.STRING_SERIALIZER
+import static org.cedar.psi.common.util.StreamSpecUtils.readAllOutput
 
 
 class FullWorkflowSpec extends Specification {
@@ -23,15 +28,18 @@ class FullWorkflowSpec extends Specification {
   static final UTC_ID = ZoneId.of('UTC')
 
   def config = [
-      (StreamsConfig.APPLICATION_ID_CONFIG)           : 'delayed_publisher_spec',
-      (StreamsConfig.BOOTSTRAP_SERVERS_CONFIG)        : 'localhost:9092',
-      (StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
-      (StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG): JsonSerdes.Map() .class.name,
-      (ConsumerConfig.AUTO_OFFSET_RESET_CONFIG)       : 'earliest'
+      (APPLICATION_ID_CONFIG)           : 'delayed_publisher_spec',
+      (BOOTSTRAP_SERVERS_CONFIG)        : 'http://localhost:9092',
+      (SCHEMA_REGISTRY_URL_CONFIG)      : 'http://localhost:8081',
+      (DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
+      (DEFAULT_VALUE_SERDE_CLASS_CONFIG): MockSchemaRegistrySerde.class.name,
+      (AUTO_OFFSET_RESET_CONFIG)        : 'earliest'
   ]
+
   def topology = MetadataStreamService.buildTopology(5000)
   def driver = new TopologyTestDriver(topology, new Properties(config))
-  def consumerFactory = new ConsumerRecordFactory(STRING_SERIALIZER, JSON_SERIALIZER)
+  def inputFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
+  def jsonFactory = new ConsumerRecordFactory(STRING_SERIALIZER, JSON_SERIALIZER)
 
   def inputType = 'granule'
   def inputSource = DEFAULT_SOURCE
@@ -47,15 +55,15 @@ class FullWorkflowSpec extends Specification {
 
   def 'ingests and aggregates raw granule info'() {
     def key = 'A'
-    def value1 = ["id":"A","size":42]
-    def value2 = ["id":"A","links":[["linkUrl":"http://somewhere.com"]]]
+    def value1 = new Input(content: '{"size":42}', method: Method.POST, contentType: 'application/json', host: 'localhost', protocol: 'http', requestUrl: '/test', source: 'test')
+    def value2 = new Input(content: '{"name":"test"}', method: Method.POST, contentType: 'application/json', host: 'localhost', protocol: 'http', requestUrl: '/test', source: 'test')
 
     when:
-    driver.pipeInput(consumerFactory.create(inputTopic, key, value1))
-    driver.pipeInput(consumerFactory.create(inputTopic, key, value2))
+    driver.pipeInput(inputFactory.create(inputTopic, key, value1))
+    driver.pipeInput(inputFactory.create(inputTopic, key, value2))
 
     then:
-    inputStore.get('A') == ["id":"A", "size":42, "links":[["linkUrl":"http://somewhere.com"]]]
+    inputStore.get('A') == new Input(content: '{"size":42,"name":"test"}', method: Method.POST, contentType: 'application/json', host: 'localhost', protocol: 'http', requestUrl: '/test', source: 'test')
   }
 
   def 'saves and updates parsed granule info'() {
@@ -65,8 +73,8 @@ class FullWorkflowSpec extends Specification {
     def value2PlusPublishing = ["discovery":["title":"test"],"publishing":["private":false]]
 
     when:
-    driver.pipeInput(consumerFactory.create(parsedTopic, key, value1))
-    driver.pipeInput(consumerFactory.create(parsedTopic, key, value2))
+    driver.pipeInput(jsonFactory.create(parsedTopic, key, value1))
+    driver.pipeInput(jsonFactory.create(parsedTopic, key, value2))
 
     then:
     parsedStore.get(key) == value2PlusPublishing
@@ -81,7 +89,7 @@ class FullWorkflowSpec extends Specification {
     def value = ["discovery":["title":"secret"],"publishing":["private":true]]
 
     when:
-    driver.pipeInput(consumerFactory.create(parsedTopic, key, value))
+    driver.pipeInput(jsonFactory.create(parsedTopic, key, value))
 
     then:
     parsedStore.get(key) == value
@@ -97,7 +105,7 @@ class FullWorkflowSpec extends Specification {
     def plusFiveMessage = ["discovery":["metadata":"yes"],"publishing":["private":true,"until":plusFiveString]]
 
     when:
-    driver.pipeInput(consumerFactory.create(parsedTopic, key, plusFiveMessage))
+    driver.pipeInput(jsonFactory.create(parsedTopic, key, plusFiveMessage))
 
     then: // a tombstone is published
     parsedStore.get(key) == plusFiveMessage

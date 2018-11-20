@@ -1,0 +1,40 @@
+# Default values for psi.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+cp: # confluent platform
+  enabled: true
+
+# values used within cp-helm-charts
+cp-helm-charts:
+  cp-zookeeper:
+    servers: 1
+    jmx:
+      port:
+    prometheus:
+      jmx:
+        enabled:
+          false
+  cp-kafka:
+    brokers: 1
+    jmx:
+      port:
+    prometheus:
+      jmx:
+        enabled:
+          false
+  cp-schema-registry:
+    jmx:
+      port:
+    prometheus:
+      jmx:
+        enabled:
+          false
+
+# disables dependencies on unused subcharts from confluent platform
+cp-kafka-rest:
+  enabled: false
+cp-kafka-connect:
+  enabled: false
+cp-ksql-server:
+  enabled: false

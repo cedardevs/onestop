@@ -46,11 +46,11 @@ class DelayedPublisherTransformer implements Transformer<String, Map, KeyValue<S
   @Override
   KeyValue<String, Map> transform(String key, Map value) {
     log.debug("transforming value for key ${key}")
-    def now = context.timestamp()
-    def publishingInfo = value?.publishing as Map ?: [:]
-    def publishDate = publishingInfo.until ?: null
-    def incomingPublishTime = TimeFormatUtils.parseTimestamp(publishDate as String)
-    def storedPublishTime = triggerKeysStore.get(key)
+    Long now = context.timestamp()
+    Map publishingInfo = value?.publishing as Map ?: [:]
+    String publishDate = publishingInfo.until as String ?: null
+    Long incomingPublishTime = TimeFormatUtils.parseTimestamp(publishDate)
+    Long storedPublishTime = triggerKeysStore.get(key)
 
     log.debug("transforming value with private ${publishingInfo?.private} and publish date ${publishDate}")
     if (publishingInfo?.private == true) {
@@ -121,7 +121,7 @@ class DelayedPublisherTransformer implements Transformer<String, Map, KeyValue<S
    }
 
   void addTrigger(Long key, String value) {
-    def currentList = getTrigger(key) ?: []
+    def currentList = getTrigger(key) ?: [] as List<String>
     currentList.add(value)
     currentList.sort()
     def newString = JsonOutput.toJson(currentList)

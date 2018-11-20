@@ -5,6 +5,8 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.QueryableStoreType
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
+import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.Method
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -112,10 +114,20 @@ class MetadataStoreSpec extends Specification {
     ]
 
     where:
-    rawValue            | parsedValue   | combined
-    ["hello": "world"]  | null          | ["hello": "world"]
-    null                | ["answer": 42]| ["answer": 42]
-    ["hello": "world"]  | ["answer": 42]| ["hello": "world", "answer": 42]
+    rawValue  | parsedValue    | combined
+    testInput | null           | ["input": testInput]
+    null      | ["answer": 42] | ["answer": 42]
+    testInput | ["answer": 42] | ["input": testInput, "answer": 42]
   }
+
+  private static testInput = new Input(
+      content: '{"hello":"world"}',
+      method: Method.POST,
+      contentType: 'application/json',
+      host: 'localhost',
+      protocol: 'http',
+      requestUrl: '/test',
+      source: 'test'
+  )
 
 }

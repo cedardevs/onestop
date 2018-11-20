@@ -1,5 +1,7 @@
 package org.cedar.psi.registry.stream
 
+import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.Method
 import spock.lang.Specification
 
 
@@ -24,6 +26,43 @@ class StreamFunctionsSpec extends Specification {
 
     then:
     mergedMaps == mergedAggregate
+  }
+
+  def 'merge function merges inputs'() {
+    def currentAggregate = new Input([
+        method: Method.POST,
+        host: 'localhost',
+        requestUrl: '/test',
+        protocol: 'http',
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    def newValue = new Input([
+        method: Method.PUT,
+        host: 'localhost_number_2',
+        requestUrl: '/test/again',
+        protocol: 'https',
+        content: '{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    def mergedAggregate = new Input([
+        method: Method.PUT,
+        host: 'localhost_number_2',
+        requestUrl: '/test/again',
+        protocol: 'https',
+        content: '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+
+    when:
+    println mergedAggregate.properties
+    def mergedInputs = StreamFunctions.mergeInputs.apply(currentAggregate, newValue)
+
+    then:
+    mergedInputs == mergedAggregate
   }
 
 

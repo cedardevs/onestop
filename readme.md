@@ -1,4 +1,4 @@
-# Persistent Streaming Information: PSI
+# PSI: The Persistent Streaming Inventory 
 
 [![CircleCI](https://circleci.com/gh/cedardevs/psi.svg?style=svg)](https://circleci.com/gh/cedardevs/psi)
 [![codecov](https://codecov.io/gh/cedardevs/psi/branch/master/graph/badge.svg?token=mpaqa2QKdv)](https://codecov.io/gh/cedardevs/psi)

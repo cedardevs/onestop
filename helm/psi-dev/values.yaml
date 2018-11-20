@@ -1,0 +1,97 @@
+# values used within cp-helm-charts
+cp-helm-charts:
+  cp-kafka:
+    brokers: 1
+    configurationOverrides:
+      offsets.topic.replication.factor: 1
+    jmx:
+      port:
+    prometheus:
+      jmx:
+        enabled: false
+  cp-kafka-connect:
+    jmx:
+      port:
+    prometheus:
+      jmx:
+        enabled: false
+  cp-kafka-rest:
+    jmx:
+      port:
+    prometheus:
+      jmx:
+        enabled: false
+    external:
+      enabled: true
+      type: ClusterIP
+      externalTrafficPolicy:
+      annotations:
+        getambassador.io/config: "apiVersion: ambassador/v0\\nkind:  Mapping\\nname:  psi-dev-kafka-rest-mapping\\nprefix: /kafka-rest/\\nservice: psi-dev-cp-kafka-rest:8082"
+  cp-ksql-server:
+    jmx:
+      port:
+    prometheus:
+      jmx:
+        enabled: false
+  cp-schema-registry:
+    configurationOverrides:
+      kafkastore.topic.replication.factor: "\"1\""
+    jmx:
+      port:
+    prometheus:
+      jmx:
+        enabled: false
+  cp-zookeeper:
+    servers: 1
+    jmx:
+      port:
+    prometheus:
+      jmx:
+        enabled: false
+
+# enable/disable dependencies on cp subcharts
+cp-kafka:
+  enabled: true
+cp-kafka-connect:
+  enabled: false
+cp-kafka-rest:
+  enabled: true
+cp-ksql-server:
+  enabled: false
+cp-schema-registry:
+  enabled: true
+cp-zookeeper:
+  enabled: true
+
+# values used within ambassador chart
+ambassador:
+  adminService:
+    type: NodePort
+  service:
+    type: LoadBalancer
+    port: 8000
+
+# values used within kafka-manager chart
+kafka-manager:
+  replicaCount: 1
+  image:
+    repository: hlebalbau/kafka-manager
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 80
+
+# values used within kafka-ui chart
+kafka-ui:
+  replicaCount: 1
+  image:
+    repository: landoop/kafka-topics-ui
+    tag: latest
+    pullPolicy: Always
+  service:
+    type: ClusterIP
+    port: 80
+
+kafka-rest: {}
+zookeeper: {}

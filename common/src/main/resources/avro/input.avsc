@@ -1,0 +1,36 @@
+{
+  "type": "record",
+  "namespace": "org.cedar.psi.common.avro",
+  "name": "Input",
+  "doc": "This event records incoming request",
+  "fields": [
+    {
+      "name": "content",
+      "type": "string"
+    },
+    {
+     "name": "contentType",
+     "type": "string"
+    },
+    {
+      "name": "host",
+      "type": "string"
+    },
+    {
+      "name": "method",
+      "type": "Method"
+    },
+    {
+      "name": "protocol",
+      "type": "string"
+    },
+    {
+      "name": "requestUrl",
+      "type": "string"
+    },
+    {
+      "name": "source",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+# Default values for psi-registry.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: cedardevs/psi-registry
+  tag: 0.2.0-SNAPSHOT
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 80
+
+volume:
+  size: 1Gi
+  storageClass:
+
+kafka: {}
+#  override just the name of kafka's headless service:
+#  serviceNameOverride:
+#  override the full bootstrap servers string:
+#  bootstrapServers:
+
+cp-schema-registry: {}
+#  override just the name of schema registry's service:
+#  serviceNameOverride:
+#  override the full url of the schema registry:
+#  url:
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

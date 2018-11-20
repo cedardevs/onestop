@@ -7,6 +7,7 @@ import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.kstream.Reducer
 import org.apache.kafka.streams.kstream.ValueJoiner
 import org.apache.kafka.streams.kstream.ValueMapperWithKey
+import org.cedar.psi.common.avro.Input
 
 @Slf4j
 @CompileStatic
@@ -25,14 +26,39 @@ class StreamFunctions {
       log.debug("Merging new value $nextValue into existing aggregate ${aggregate}")
       def slurper = new JsonSlurper()
       def result = (aggregate ?: [:]) + (nextValue ?: [:])
-      if(aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json' ){
-        result.content = JsonOutput.toJson(
-            (slurper.parseText(aggregate.content as String) as Map ) +
-                (slurper.parseText(nextValue.content as String) as Map )
-        )
+      if (aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json' ) {
+        result.content = mergeJsonMapStrings(aggregate?.content as String, nextValue?.content as String)
       }
       return result
     }
+  }
+
+  static Reducer<Input> mergeInputs = new Reducer<Input>() {
+    @Override
+    Input apply(Input aggregate, Input nextValue) {
+      log.debug("Merging new input $nextValue into existing aggregate ${aggregate}")
+
+      def resultBuilder = Input.newBuilder(aggregate)
+      if (nextValue.contentType) { resultBuilder.contentType = nextValue.contentType }
+      if (nextValue.host) { resultBuilder.host = nextValue.host }
+      if (nextValue.method) { resultBuilder.method = nextValue.method }
+      if (nextValue.protocol) { resultBuilder.protocol = nextValue.protocol }
+      if (nextValue.requestUrl) { resultBuilder.requestUrl = nextValue.requestUrl }
+
+      if (aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json' ) {
+        resultBuilder.content = mergeJsonMapStrings(aggregate.content, nextValue.content)
+      }
+      else if (nextValue.content) {
+        resultBuilder.content = nextValue.content
+      }
+
+      return resultBuilder.build()
+    }
+  }
+
+  static String mergeJsonMapStrings(String a, String b) {
+    def slurper = new JsonSlurper()
+    return JsonOutput.toJson((slurper.parseText(a) as Map) + (slurper.parseText(b) as Map))
   }
 
   /**
