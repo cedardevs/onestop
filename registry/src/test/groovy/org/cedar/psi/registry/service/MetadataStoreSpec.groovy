@@ -134,10 +134,16 @@ class MetadataStoreSpec extends Specification {
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
     1 * mockInputStore.get(testId) >> testInput
-    1 * mockParsedStore.get(testId) >> ParsedRecord.newBuilder().setErrors([testError]).build()
+    1 * mockParsedStore.get(testId) >> testParsedRecord
 
     and:
-    result == [errors: [testError]]
+    result ==  [
+        data: [
+            id        : testId,
+            type      : testType,
+            attributes: ["input": testInput] + AvroUtils.avroToMap(testParsedRecord)
+        ]
+    ]
   }
 
   private static testInput = Input.newBuilder()
@@ -155,6 +161,13 @@ class MetadataStoreSpec extends Specification {
   private static testError = ErrorEvent.newBuilder()
       .setTitle('this is a test')
       .setDetail('this is only a test')
+      .build()
+
+  private static testParsedRecord = ParsedRecord.newBuilder()
+      .setPublishing()
+      .setDiscovery()
+      .setAnalysis()
+      .setErrors([testError])
       .build()
 
 }

@@ -37,12 +37,6 @@ class MetadataStore {
         return null
       }
 
-      if (parsedValue?.errors?.size() > 0) {
-        return [
-            errors: parsedValue.errors
-        ]
-      }
-
       def inputMap = inputValue ? [input: inputValue] : [:]
       def parsedMap = parsedValue ? AvroUtils.avroToMap(parsedValue) : [:]
       return [
