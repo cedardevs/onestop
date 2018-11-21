@@ -1,12 +1,5 @@
 package org.cedar.psi.manager.util
 
-import groovy.json.JsonOutput
-import org.apache.avro.AvroTypeException
-import org.apache.avro.Schema
-import org.apache.avro.io.DatumReader
-import org.apache.avro.io.Decoder
-import org.apache.avro.io.DecoderFactory
-import org.apache.avro.specific.SpecificDatumReader
 import org.cedar.psi.common.avro.*
 import org.cedar.psi.common.util.AvroUtils
 import spock.lang.Specification
