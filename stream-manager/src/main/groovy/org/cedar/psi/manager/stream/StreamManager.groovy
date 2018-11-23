@@ -89,9 +89,6 @@ class StreamManager {
     KStream badParsedCollection = parsedCollection[0]
     badParsedCollection.to(parsedTopic('collection'))
 
-    // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
-    //      parallelization, or at least compare with and without topic in load testing?
-
     // Analyze and send final output to parsed topic
     KStream goodParsedCollection = parsedCollection[1]
     goodParsedCollection
