@@ -121,12 +121,4 @@ class Topics {
     "$type-publish-keys"
   }
 
-  static String errorTopic() {
-    'error-events'
-  }
-
-  static String errorStore() {
-    'error-store'
-  }
-
 }

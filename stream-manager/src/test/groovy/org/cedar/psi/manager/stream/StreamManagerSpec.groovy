@@ -49,8 +49,7 @@ class StreamManagerSpec extends Specification {
     driver.pipeInput(inputFactory.create(testChangelog, key, input))
 
     then:
-    // Not found in error or SME topics
-    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    // Not found in SME topic
     driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
@@ -94,9 +93,8 @@ class StreamManagerSpec extends Specification {
     smeOutput.value() == smeValue.content
 
     and:
-    // There are no errors and nothing in the parsed topic
+    // Nothing in the parsed topic
     driver.readOutput(Topics.parsedTopic('granule'), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
-    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
   }
 
   def "Non-SME granule and SME granule end up in parsed-granule topic"() {
@@ -142,10 +140,6 @@ class StreamManagerSpec extends Specification {
     smeResult.containsKey('discovery')
     !smeResult.containsKey('error')
     smeResult.discovery.fileIdentifier == 'dummy-file-identifier'
-
-    and:
-    // No errors
-    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
   }
 
   def "Unparsable granule produces record with errors"() {
@@ -160,8 +154,7 @@ class StreamManagerSpec extends Specification {
     driver.pipeInput(inputFactory.create(testChangelog, key, value))
 
     then:
-    // Nothing on the error or sme topics
-    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    // Nothing on sme topic
     driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
