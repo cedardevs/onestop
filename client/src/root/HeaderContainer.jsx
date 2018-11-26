@@ -7,6 +7,7 @@ const mapStateToProps = state => {
   return {
     headerDropdownMenuFeatureAvailable:
       state.domain.config.headerDropdownMenuFeatureAvailable,
+    user: state.domain.user ? state.domain.user : null,
   }
 }
 

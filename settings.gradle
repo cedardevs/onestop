@@ -7,3 +7,5 @@ include 'e2e-tests'
 include 'etl'
 include 'geoportal-search'
 include 'index-configuration'
+include 'api-user'
+

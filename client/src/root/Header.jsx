@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import Logo from './Logo'
 import HeaderLink from './HeaderLink'
+
 import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 
@@ -36,6 +37,12 @@ const styleNav = {
   display: 'flex',
   justifyContent: 'flex-end',
   marginTop: '1em',
+}
+
+const styleUserWelcome = {
+    padding: 0,
+    margin: 0,
+    float: 'right'
 }
 
 const styleLinkList = {
@@ -123,9 +130,24 @@ class Header extends React.Component {
   }
 
   render() {
-    const {headerDropdownMenuFeatureAvailable} = this.props
+    const {headerDropdownMenuFeatureAvailable, user} = this.props
     const {focusingSkipLink} = this.state
+    const userEmail = user.info ? user.info.email : null;
 
+    const login =  !user.info ?
+      <HeaderLink title="login" to="/login">
+        Login
+      </HeaderLink>
+      :
+      <HeaderLink title="logout" to="/logout">
+        Logout
+      </HeaderLink>
+
+      const welcomeUser = (
+        userEmail ?
+            <div style={styleUserWelcome}>Logged in as {userEmail}</div>
+            : null
+      )
     const headerDropDownMenuListItem = headerDropdownMenuFeatureAvailable ? (
       <li style={styleLinkListItem(false, true)}>
         <HeaderDropdownMenuButtonContainer />
@@ -145,11 +167,14 @@ class Header extends React.Component {
           </HeaderLink>
         </li>
         <li
-          style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}
+          style={styleLinkListItem(false, false)}
         >
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
+        </li>
+        <li style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}>
+            {login}
         </li>
         {headerDropDownMenuListItem}
       </ul>
@@ -198,6 +223,7 @@ class Header extends React.Component {
     return (
       <div style={styleWrapper}>
         <div style={styleHeader}>
+            {welcomeUser}
           <FlexRow
             style={styleHeaderFlexRow}
             items={[

@@ -19,6 +19,8 @@ import {
   getCollectionIdFromGranuleListPath,
 } from '../utils/urlUtils'
 
+import {getUser} from './UserActions'
+
 // synchronous actions
 export const LOADING_SHOW = 'LOADING_SHOW'
 export const showLoading = () => {
@@ -137,5 +139,7 @@ export const initialize = () => {
     dispatch(fetchConfig())
     dispatch(fetchInfo())
     dispatch(fetchCounts())
+    dispatch(getUser())
+
   }
 }
