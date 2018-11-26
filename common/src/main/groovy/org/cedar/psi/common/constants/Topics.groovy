@@ -48,12 +48,12 @@ class Topics {
 
   static String inputTopic(String type, String source) {
     if (!isValidInput(type, source)) { return null }
-    "raw-${source}-${type}-events"
+    "psi-${type}-input-${source}"
   }
 
   static String inputStore(String type, String source) {
     if (!isValidInput(type, source)) { return null }
-    "raw-${source}-${type}s"
+    "${type}-input-${source}"
   }
 
   static List<String> inputChangelogTopics(String appName) {
@@ -76,30 +76,30 @@ class Topics {
 
   static String parsedTopic(String type) {
     if (!isValidInput(type)) { return null }
-    "parsed-${type}s"
+    "psi-${type}-parsed"
   }
 
   static String parsedStore(String type) {
     if (!isValidInput(type)) { return null }
-    "parsed-${type}s"
+    "${type}-parsed"
   }
 
-  static List<String> smeTopics() {
-    inputTypes().collect { type -> smeTopic(type) }
+  static List<String> toExtractorTopics() {
+    inputTypes().collect { type -> toExtractorTopic(type) }
   }
 
-  static String smeTopic(String type) {
+  static String toExtractorTopic(String type) {
     if (!isValidInput(type)) { return null }
-    "sme-${type}s"
+    "psi-${type}-extractor-to"
   }
 
-  static List<String> unparsedTopics() {
-    inputTypes().collect { type -> unparsedTopic(type) }
+  static List<String> fromExtractorTopics() {
+    inputTypes().collect { type -> fromExtractorTopic(type) }
   }
 
-  static String unparsedTopic(String type) {
+  static String fromExtractorTopic(String type) {
     if (!isValidInput(type)) { return null }
-    "unparsed-${type}s"
+    "psi-${type}-extractor-from"
   }
 
   static List<String> publishedTopics() {
@@ -108,7 +108,7 @@ class Topics {
 
   static String publishedTopic(String type) {
     if (!isValidInput(type)) { return null }
-    "combined-${type}s"
+    "psi-${type}-published"
   }
 
   static String publishTimeStore(String type) {

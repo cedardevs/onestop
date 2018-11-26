@@ -14,6 +14,7 @@ import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.common.util.AvroUtils
 import org.cedar.psi.common.util.MockSchemaRegistrySerde
+import org.cedar.psi.common.util.StreamSpecUtils
 import org.cedar.psi.manager.config.ManagerConfig
 import spock.lang.Specification
 
@@ -50,7 +51,7 @@ class StreamManagerSpec extends Specification {
 
     then:
     // Not found in SME topic
-    driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    driver.readOutput(Topics.toExtractorTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     // There is only 1 record in the PARSED_TOPIC
@@ -88,7 +89,7 @@ class StreamManagerSpec extends Specification {
 
     then:
     // The record is in the SME topic
-    def smeOutput = driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def smeOutput = driver.readOutput(Topics.toExtractorTopic('granule'), STRING_DESERIALIZER, STRING_DESERIALIZER)
     smeOutput.key() == smeKey
     smeOutput.value() == smeValue.content
 
@@ -116,15 +117,13 @@ class StreamManagerSpec extends Specification {
     when:
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
     driver.pipeInput(inputFactory.create(testChangelog, nonSMEInputKey, nonSMEInputValue))
-    driver.pipeInput(jsonFactory.create(Topics.unparsedTopic('granule'), unparsedKey, unparsedValue))
+    driver.pipeInput(jsonFactory.create(Topics.fromExtractorTopic('granule'), unparsedKey, unparsedValue))
 
     then:
     // Both records are in the parsed topic
-    def results = [:]
-    2.times {
-      def record = driver.readOutput(Topics.parsedStore('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER)
-      results[record.key()] = record.value()
-    }
+    def messages = StreamSpecUtils.readAllOutput(driver, Topics.parsedTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def results = messages.inject([:], { map, message -> map + [(message.key()): message.value()] })
+
     results.containsKey(nonSMEInputKey)
     results.containsKey(unparsedKey)
 
@@ -155,7 +154,7 @@ class StreamManagerSpec extends Specification {
 
     then:
     // Nothing on sme topic
-    driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    driver.readOutput(Topics.toExtractorTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     // An error has appeared

@@ -53,10 +53,10 @@ class StreamManager {
     // To SME functions:
     toSmeFunction
         .mapValues({ v -> v.content } as ValueMapper<Input, String>)
-        .to(smeTopic('granule'), Produced.with(Serdes.String(), Serdes.String()))
+        .to(toExtractorTopic('granule'), Produced.with(Serdes.String(), Serdes.String()))
 
     // Merge straight-to-parsing stream with topic SME granules write to:
-    KStream<String, Map> unparsedGranules = builder.stream(unparsedTopic('granule'), Consumed.with(Serdes.String(), JsonSerdes.Map()))
+    KStream<String, Map> unparsedGranules = builder.stream(fromExtractorTopic('granule'), Consumed.with(Serdes.String(), JsonSerdes.Map()))
     KStream<String, ParsedRecord> parsedNotAnalyzedGranules = toParsingFunction
         .mapValues(AvroUtils.&avroToMap as ValueMapper<Input, Map>)
         .merge(unparsedGranules)
