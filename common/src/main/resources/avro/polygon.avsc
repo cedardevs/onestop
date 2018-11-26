@@ -1,0 +1,34 @@
+{
+  "type": "record",
+  "name": "Polygon",
+  "doc": "An array of linear rings, which are linestrings of four or more positions that are CLOSED, meaning the first and last positions are identical. The first (required) linear ring describes the polygon's exterior boundary. Subsequent (optional) linear rings describe holes in the polygon. Point positions MUST follow the right-hand rule for order, i.e., exterior rings are counterclockwise and holes are clockwise. Each point must be described with two values: longitude then latitude. A third (optional) value for elevation is allowed per position.",
+  "namespace": "org.cedar.psi.common.avro",
+  "fields": [
+    {
+      "name": "type",
+      "type": {
+        "name": "PolygonType",
+        "type": "enum",
+        "symbols": ["Polygon"]
+      }
+    },
+    {
+      "name": "coordinates",
+      "type": {
+        "type": "array",
+        "items": [
+          {
+            "type": "array",
+            "items": [
+              {
+                "type": "array",
+                "items": "double"
+              }
+            ]
+          }
+        ]
+      },
+      "default": []
+    }
+  ]
+}
