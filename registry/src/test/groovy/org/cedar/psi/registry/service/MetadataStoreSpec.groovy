@@ -18,7 +18,6 @@ import static org.cedar.psi.common.constants.Topics.*
 @Unroll
 class MetadataStoreSpec extends Specification {
 
-  MetadataStreamService mockMetadataStreamService
   KafkaStreams mockStreamsApp
   ReadOnlyKeyValueStore mockInputStore
   ReadOnlyKeyValueStore mockParsedStore
@@ -31,9 +30,8 @@ class MetadataStoreSpec extends Specification {
     mockStreamsApp = Mock(KafkaStreams)
     mockInputStore = Mock(ReadOnlyKeyValueStore)
     mockParsedStore = Mock(ReadOnlyKeyValueStore)
-    mockMetadataStreamService = Mock(MetadataStreamService)
 
-    metadataStore = new MetadataStore(mockMetadataStreamService)
+    metadataStore = new MetadataStore(mockStreamsApp)
   }
 
   def 'returns null for unknown types'() {
@@ -48,7 +46,6 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveEntity(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> null
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> null
     0 * mockInputStore.get(testId)
@@ -65,7 +62,6 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveEntity(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
     1 * mockInputStore.get(testId) >> null
@@ -82,7 +78,6 @@ class MetadataStoreSpec extends Specification {
     metadataStore.retrieveEntity(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> {
       throw new InvalidStateStoreException('test')
@@ -101,7 +96,6 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveEntity(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
     1 * mockInputStore.get(testId) >> rawValue
@@ -130,7 +124,6 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveEntity(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
     1 * mockInputStore.get(testId) >> testInput

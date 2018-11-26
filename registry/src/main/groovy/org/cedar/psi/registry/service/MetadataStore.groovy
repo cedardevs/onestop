@@ -3,6 +3,7 @@ package org.cedar.psi.registry.service
 import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
 import org.cedar.psi.common.avro.Input
@@ -19,12 +20,12 @@ import static org.cedar.psi.common.constants.Topics.parsedStore
 @CompileStatic
 class MetadataStore {
 
-  private MetadataStreamService metadataStreamService
+  private KafkaStreams streamsApp
   private JsonSlurper slurper
 
   @Autowired
-  MetadataStore(MetadataStreamService metadataStreamService) {
-    this.metadataStreamService = metadataStreamService
+  MetadataStore(KafkaStreams streamsApp) {
+    this.streamsApp = streamsApp
     this.slurper = new JsonSlurper()
   }
 
@@ -54,11 +55,11 @@ class MetadataStore {
   }
 
   ReadOnlyKeyValueStore<String, Input> getInputStore(String type, String source) {
-    metadataStreamService?.streamsApp?.store(inputStore(type, source), QueryableStoreTypes.keyValueStore())
+    streamsApp?.store(inputStore(type, source), QueryableStoreTypes.keyValueStore())
   }
 
   ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(String type) {
-    metadataStreamService?.streamsApp?.store(parsedStore(type), QueryableStoreTypes.keyValueStore())
+    streamsApp?.store(parsedStore(type), QueryableStoreTypes.keyValueStore())
   }
 
   /**

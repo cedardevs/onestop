@@ -9,7 +9,6 @@ import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
 import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.avro.Publishing
-import org.cedar.psi.registry.service.MetadataStreamService
 import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import org.cedar.psi.registry.util.TimeFormatUtils
 import spock.lang.Specification
@@ -25,7 +24,7 @@ import static org.cedar.psi.common.constants.Topics.*
 import static org.cedar.psi.common.util.StreamSpecUtils.STRING_SERIALIZER
 import static org.cedar.psi.common.util.StreamSpecUtils.readAllOutput
 
-class FullWorkflowSpec extends Specification {
+class FullTopologySpec extends Specification {
 
   static final UTC_ID = ZoneId.of('UTC')
 
@@ -38,7 +37,7 @@ class FullWorkflowSpec extends Specification {
       (AUTO_OFFSET_RESET_CONFIG)        : 'earliest'
   ]
 
-  def topology = MetadataStreamService.buildTopology(5000)
+  def topology = TopologyBuilders.buildTopology(5000)
   def driver = new TopologyTestDriver(topology, new Properties(config))
   def inputFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
   def parsedFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
