@@ -35,19 +35,18 @@ class Publisher {
       ]
     }
     String key = id ?: UUID.randomUUID().toString()
-    Map messages = buildInputTopicMessage(request, data, source, key)
-    // TODO - decide on approach for hanlding identifiers
-    def record = new ProducerRecord<String, Input>(topic, key, messages.input as Input)
+    def message = buildInputTopicMessage(request, data, source, key)
+    def record = new ProducerRecord<String, Input>(topic, key, message)
     log.info ("Publishing $type with id: ${id} and source: $source")
     log.debug("Publishing: ${record}")
     kafkaProducer.send(record)?.get()
     return [
         status: 200,
-        content: [id: key, type: type, attributes: messages.subMap(['identifiers'])]
+        content: [id: key, type: type]
     ]
   }
 
-  Map buildInputTopicMessage(HttpServletRequest request, String data, String source, String id) {
+  Input buildInputTopicMessage(HttpServletRequest request, String data, String source, String id) {
     def builder = Input.newBuilder()
     builder.method = Method.valueOf(request?.method?.toUpperCase())
     builder.host = request?.remoteHost
@@ -56,9 +55,7 @@ class Publisher {
     builder.content = data
     builder.contentType = request?.contentType
     builder.source = source
-    def input = builder.build()
-
-    return [input: input, identifiers: [(source): id]]
+    return builder.build()
   }
 
 }

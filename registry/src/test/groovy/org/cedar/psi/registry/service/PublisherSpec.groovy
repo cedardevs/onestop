@@ -36,9 +36,7 @@ class PublisherSpec extends Specification {
           it.value().method == Method.valueOf(method)  &&
           it.value().content == data &&
           it.value().contentType == contentType &&
-          it.value().source == source //&&
-//          TODO - reinstate identifers?
-//          it.value().identifiers == [(source): id]
+          it.value().source == source
     }) >> Mock(Future)
 
     where:
@@ -67,9 +65,7 @@ class PublisherSpec extends Specification {
           it.value().contentType == contentType &&
           it.value().method == Method.valueOf(method) &&
           it.value().requestUrl == "http://localhost$requestUri" &&
-          it.value().content == data //&&
-//          TODO - reinstate identifers?
-//          it.value().identifiers == [(Topics.DEFAULT_SOURCE): id]
+          it.value().content == data
     }) >> Mock(Future)
 
     where:
@@ -98,9 +94,7 @@ class PublisherSpec extends Specification {
           it.value().contentType == contentType &&
           it.value().method == Method.valueOf(method) &&
           it.value().requestUrl == "http://localhost$requestUri" &&
-          it.value().content == data //&&
-//          TODO - reinstate identifers?
-//          it.value().identifiers[Topics.DEFAULT_SOURCE] instanceof String
+          it.value().content == data
     }) >> Mock(Future)
 
     where:
