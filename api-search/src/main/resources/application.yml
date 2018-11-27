@@ -8,6 +8,31 @@ spring:
     name: onestop-search-api
   jmx:
     default-domain: onestop-search-api
+  security:
+    oauth2:
+      client:
+        registration:
+          logingov:
+            client-id: urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_user_api_localhost
+            #client-secret: logingovsecret
+            authorization-grant-type: authorization_code
+            redirect-uri-template: "{baseUrl}/{action}/oauth2/code/{registrationId}"
+            scope: openid email
+        provider:
+          logingov:
+            authorization-uri: https://idp.int.identitysandbox.gov/openid_connect/authorize
+            token-uri: https://idp.int.identitysandbox.gov/api/openid_connect/token
+            user-info-uri: https://idp.int.identitysandbox.gov/api/openid_connect/userinfo
+            user-name-attribute: sub
+            jwk-set-uri: https://idp.int.identitysandbox.gov/api/openid_connect/certs
+
+logingov:
+  keystore:
+    alias: ${keystoreAlias}
+    file: ${keystorePath}/${keystoreFile}
+    password: ${keystorePassword}
+    #keyPassword: \${keyPassword}
+    type: JKS
 
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
