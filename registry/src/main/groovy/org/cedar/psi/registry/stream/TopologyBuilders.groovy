@@ -11,6 +11,7 @@ import org.apache.kafka.streams.kstream.ValueTransformerSupplier
 import org.apache.kafka.streams.state.Stores
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.constants.Topics
 
 
@@ -27,7 +28,7 @@ class TopologyBuilders {
     return builder.build()
   }
 
-  static StreamsBuilder addTopologyForType(StreamsBuilder builder, String type, Long publishInterval) {
+  static StreamsBuilder addTopologyForType(StreamsBuilder builder, RecordType type, Long publishInterval) {
     // build input table for each source
     Map<String, KTable> inputTables = Topics.inputSources(type).collectEntries { source ->
       KStream<String, Input> inputStream = builder.stream(Topics.inputTopic(type, source))

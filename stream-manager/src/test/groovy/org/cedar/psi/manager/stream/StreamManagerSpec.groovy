@@ -9,6 +9,7 @@ import org.cedar.psi.common.avro.Discovery
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
 import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.constants.StreamsApps
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
@@ -32,7 +33,7 @@ class StreamManagerSpec extends Specification {
   def inputFactory = new ConsumerRecordFactory(Serdes.String().serializer(), new MockSchemaRegistrySerde().serializer())
   def jsonFactory = new ConsumerRecordFactory(Serdes.String().serializer(), JsonSerdes.Map().serializer())
 
-  def testType = 'granule'
+  def testType = RecordType.granule
   def testSource = Topics.DEFAULT_SOURCE
   def testChangelog = Topics.inputChangelogTopic(StreamsApps.REGISTRY_ID, testType, testSource)
 
@@ -51,13 +52,13 @@ class StreamManagerSpec extends Specification {
 
     then:
     // Not found in SME topic
-    driver.readOutput(Topics.toExtractorTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     // There is only 1 record in the PARSED_TOPIC
-    def finalOutput = driver.readOutput(Topics.parsedTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def finalOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     finalOutput != null
-    driver.readOutput(Topics.parsedTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     // Verify some fields
@@ -89,13 +90,13 @@ class StreamManagerSpec extends Specification {
 
     then:
     // The record is in the SME topic
-    def smeOutput = driver.readOutput(Topics.toExtractorTopic('granule'), STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def smeOutput = driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, STRING_DESERIALIZER)
     smeOutput.key() == smeKey
     smeOutput.value() == smeValue.content
 
     and:
     // Nothing in the parsed topic
-    driver.readOutput(Topics.parsedTopic('granule'), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
+    driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
   }
 
   def "Non-SME granule and SME granule end up in parsed-granule topic"() {
@@ -117,11 +118,11 @@ class StreamManagerSpec extends Specification {
     when:
     // Simulate SME ending up in unparsed-granule since that's another app's responsibility
     driver.pipeInput(inputFactory.create(testChangelog, nonSMEInputKey, nonSMEInputValue))
-    driver.pipeInput(jsonFactory.create(Topics.fromExtractorTopic('granule'), unparsedKey, unparsedValue))
+    driver.pipeInput(jsonFactory.create(Topics.fromExtractorTopic(testType), unparsedKey, unparsedValue))
 
     then:
     // Both records are in the parsed topic
-    def messages = StreamSpecUtils.readAllOutput(driver, Topics.parsedTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def messages = StreamSpecUtils.readAllOutput(driver, Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     def results = messages.inject([:], { map, message -> map + [(message.key()): message.value()] })
 
     results.containsKey(nonSMEInputKey)
@@ -154,11 +155,11 @@ class StreamManagerSpec extends Specification {
 
     then:
     // Nothing on sme topic
-    driver.readOutput(Topics.toExtractorTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     // An error has appeared
-    def record = driver.readOutput(Topics.parsedTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def record = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     record.key() == key
     record.value() instanceof ParsedRecord
     record.value().errors.size() == 1

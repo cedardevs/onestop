@@ -2,6 +2,7 @@ package org.cedar.psi.manager.stream
 
 import org.cedar.psi.common.avro.Discovery
 import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.avro.RecordType
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -17,7 +18,7 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
@@ -37,7 +38,7 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
@@ -58,7 +59,7 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
@@ -75,7 +76,7 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = MetadataParsingService.parseToInternalFormat(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord

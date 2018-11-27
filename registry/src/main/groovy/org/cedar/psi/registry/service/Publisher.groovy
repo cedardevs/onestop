@@ -6,6 +6,7 @@ import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
+import org.cedar.psi.common.avro.RecordType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -26,7 +27,7 @@ class Publisher {
     this.kafkaProducer = kafkaProducer
   }
 
-  Map publishMetadata(HttpServletRequest request, String type, String data, String source, String id = null) {
+  Map publishMetadata(HttpServletRequest request, RecordType type, String data, String source, String id = null) {
     String topic = inputTopic(type, source)
     if (!topic) {
       return [

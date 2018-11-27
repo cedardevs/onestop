@@ -9,6 +9,7 @@ import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
 import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.avro.Publishing
+import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import org.cedar.psi.registry.util.TimeFormatUtils
 import spock.lang.Specification
@@ -42,7 +43,7 @@ class FullTopologySpec extends Specification {
   def inputFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
   def parsedFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
 
-  def inputType = 'granule'
+  def inputType = RecordType.granule
   def inputSource = DEFAULT_SOURCE
   def inputTopic = inputTopic(inputType, inputSource)
   def parsedTopic = parsedTopic(inputType)
@@ -76,6 +77,7 @@ class FullTopologySpec extends Specification {
         .build()
 
     def value1 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing)
         .build()
@@ -110,10 +112,12 @@ class FullTopologySpec extends Specification {
         .build()
 
     def value1 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing)
         .build()
     def value2 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery2)
         .setPublishing(publishing)
         .build()
@@ -141,6 +145,7 @@ class FullTopologySpec extends Specification {
         .build()
 
     def value = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(publishing)
         .build()
@@ -170,6 +175,7 @@ class FullTopologySpec extends Specification {
         .build()
 
     def plusFiveMessage = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(publishing)
         .build()

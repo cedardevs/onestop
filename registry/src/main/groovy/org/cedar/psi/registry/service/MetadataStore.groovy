@@ -8,6 +8,7 @@ import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.util.AvroUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -29,7 +30,7 @@ class MetadataStore {
     this.slurper = new JsonSlurper()
   }
 
-  Map retrieveEntity(String type, String source, String id) {
+  Map retrieveEntity(RecordType type, String source, String id) {
     try {
       def inputValue = getInputStore(type, source)?.get(id)
       def parsedValue = getParsedStore(type)?.get(id)
@@ -54,11 +55,11 @@ class MetadataStore {
     }
   }
 
-  ReadOnlyKeyValueStore<String, Input> getInputStore(String type, String source) {
+  ReadOnlyKeyValueStore<String, Input> getInputStore(RecordType type, String source) {
     streamsApp?.store(inputStore(type, source), QueryableStoreTypes.keyValueStore())
   }
 
-  ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(String type) {
+  ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(RecordType type) {
     streamsApp?.store(parsedStore(type), QueryableStoreTypes.keyValueStore())
   }
 

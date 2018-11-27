@@ -4,12 +4,14 @@ import groovy.transform.CompileStatic
 import org.apache.kafka.streams.kstream.Predicate
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.avro.RecordType
 
 
 @CompileStatic
 class RoutingUtils {
 
   // SME Splitting Info
+  static final List<RecordType> SPLIT_TYPES = [RecordType.granule]
   static final String SPLIT_FIELD = 'source'
   static final List<String> SPLIT_VALUES = ['common-ingest']
 

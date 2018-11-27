@@ -2,6 +2,7 @@ package org.cedar.psi.registry.api
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.Publisher
 
@@ -38,7 +39,8 @@ class PublisherController {
 
   @RequestMapping(value = "/{type}/{source}/{id}")
   Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type, @PathVariable String source, @PathVariable UUID id) throws Exception {
-    def result = publisher.publishMetadata(request, type, data, source, id as String)
+    RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
+    def result = publisher.publishMetadata(request, recordType, data, source, id as String)
     response.status = result.status as Integer
     return result.content as Map
   }

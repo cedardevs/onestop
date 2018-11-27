@@ -16,6 +16,7 @@ import org.apache.kafka.streams.test.OutputVerifier
 import org.cedar.psi.common.avro.Discovery
 import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.avro.Publishing
+import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -118,6 +119,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
 
     def value = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing)
         .build()
@@ -154,10 +156,12 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
 
     def value1 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing1)
         .build()
     def value2 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery2)
         .setPublishing(publishing2)
         .build()
@@ -191,6 +195,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
 
     def plusFiveValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(plusFiveMessage)
         .build()
@@ -204,6 +209,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setUntil(plusSixMillis)
         .build()
     def plusSixValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(plusSixMessage)
         .build()
@@ -217,6 +223,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setUntil(plusTenMillis)
         .build()
     def plusTenValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(plusTenMessage)
         .build()
@@ -270,6 +277,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setUntil(futureMillis)
         .build()
     def value1 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing1)
         .build()
@@ -278,6 +286,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setUntil(futureMillis)
         .build()
     def value2 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery2)
         .setPublishing(publishing2)
         .build()
@@ -313,6 +322,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
 
     def firstValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing1)
         .build()
@@ -324,6 +334,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setUntil(pastMillis)
         .build()
     def secondValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery2)
         .setPublishing(publishing2)
         .build()
@@ -363,10 +374,12 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
 
     def firstValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing1)
         .build()
     def secondValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery2)
         .setPublishing(publishing2)
         .build()
@@ -405,10 +418,12 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
 
     def firstValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing1)
         .build()
     def secondValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery2)
         .setPublishing(publishing2)
         .build()
@@ -443,6 +458,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .build()
 
     def firstValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing1)
         .build()
@@ -454,6 +470,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setUntil(secondMillis)
         .build()
     def secondValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery2)
         .setPublishing(publishing2)
         .build()
@@ -486,6 +503,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setUntil(firstMillis)
         .build()
     def firstValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing1)
         .build()
@@ -498,6 +516,7 @@ class DelayedPublisherTransformerSpec extends Specification {
         .setUntil(secondMillis)
         .build()
     def secondValue = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery2)
         .setPublishing(publishing2)
         .build()

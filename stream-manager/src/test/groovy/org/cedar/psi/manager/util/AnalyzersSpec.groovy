@@ -13,7 +13,7 @@ class AnalyzersSpec extends Specification {
   final String analysisAvro = ClassLoader.systemClassLoader.getResourceAsStream('avro/analysis.avsc').text
 
   def 'adds an analysis into a parsed record'() {
-    def record = ParsedRecord.newBuilder().setDiscovery(Discovery.newBuilder().build()).build()
+    def record = ParsedRecord.newBuilder().setType(RecordType.collection).setDiscovery(Discovery.newBuilder().build()).build()
 
     when:
     def result = Analyzers.addAnalysis(record)

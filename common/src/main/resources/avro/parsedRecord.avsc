@@ -5,6 +5,10 @@
   "doc": "",
   "fields": [
     {
+      "name": "type",
+      "type": "RecordType"
+    },
+    {
       "name": "discovery",
       "type": ["null", "Discovery"],
       "default": null

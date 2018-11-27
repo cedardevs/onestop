@@ -3,30 +3,32 @@ package org.cedar.psi.manager.stream
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
 import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.manager.util.ISOParser
 import org.cedar.psi.common.avro.ErrorEvent
+import org.cedar.psi.common.avro.RecordType
+import org.cedar.psi.manager.util.ISOParser
 
 @Slf4j
 class MetadataParsingService {
 
-  static ParsedRecord parseToInternalFormat(Map msgMap) {
+  static ParsedRecord parseToInternalFormat(Map msgMap, RecordType type) {
     String contentType = msgMap.contentType
     String content = msgMap.content
 
     try {
       if (!content) {
         def error = ErrorEvent.newBuilder().setTitle("No content provided").build()
-        return ParsedRecord.newBuilder().setErrors([error]).build()
+        return ParsedRecord.newBuilder().setType(type).setErrors([error]).build()
       }
       if (contentType != 'application/xml') {
         def error = ErrorEvent.newBuilder()
             .setTitle("Unsupported content type")
             .setDetail("Content type [${contentType}] is not supported")
             .build()
-        return ParsedRecord.newBuilder().setErrors([error]).build()
+        return ParsedRecord.newBuilder().setType(type).setErrors([error]).build()
       }
 
       return ParsedRecord.newBuilder()
+          .setType(type)
           .setDiscovery(ISOParser.parseXMLMetadataToDiscovery(content))
           .build()
     }
@@ -36,7 +38,7 @@ class MetadataParsingService {
           .setDetail(ExceptionUtils.getRootCauseMessage(e).trim())
           .build()
       log.error "${error.title}: ${error.detail}"
-      return ParsedRecord.newBuilder().setErrors([error]).build()
+      return ParsedRecord.newBuilder().setType(type).setErrors([error]).build()
     }
   }
 

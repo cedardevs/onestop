@@ -12,6 +12,7 @@ import org.apache.kafka.streams.kstream.Produced
 import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.common.util.AvroUtils
 import org.cedar.psi.manager.config.ManagerConfig
@@ -43,7 +44,7 @@ class StreamManager {
     //-- granules
 
     // Stream incoming granules
-    KStream<String, Input> granuleInputStream = builder.stream(inputChangelogTopics(REGISTRY_ID, 'granule'))
+    KStream<String, Input> granuleInputStream = builder.stream(inputChangelogTopics(REGISTRY_ID, RecordType.granule))
 
     // Split granules to those that need SME processing and those ready to parse
     KStream<String, Input>[] smeBranches = granuleInputStream.branch(isSME, not(isSME))
@@ -53,41 +54,41 @@ class StreamManager {
     // To SME functions:
     toSmeFunction
         .mapValues({ v -> v.content } as ValueMapper<Input, String>)
-        .to(toExtractorTopic('granule'), Produced.with(Serdes.String(), Serdes.String()))
+        .to(toExtractorTopic(RecordType.granule), Produced.with(Serdes.String(), Serdes.String()))
 
     // Merge straight-to-parsing stream with topic SME granules write to:
-    KStream<String, Map> unparsedGranules = builder.stream(fromExtractorTopic('granule'), Consumed.with(Serdes.String(), JsonSerdes.Map()))
+    KStream<String, Map> unparsedGranules = builder.stream(fromExtractorTopic(RecordType.granule), Consumed.with(Serdes.String(), JsonSerdes.Map()))
     KStream<String, ParsedRecord> parsedNotAnalyzedGranules = toParsingFunction
         .mapValues(AvroUtils.&avroToMap as ValueMapper<Input, Map>)
         .merge(unparsedGranules)
-        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v) } as ValueMapper<Map, ParsedRecord>)
+        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v, RecordType.granule) } as ValueMapper<Map, ParsedRecord>)
 
     // Short circuit records with errors back to registry
     KStream<String, ParsedRecord>[] parsedGranules = parsedNotAnalyzedGranules.branch(hasErrors, isDefault)
     KStream badParsedStream = parsedGranules[0]
-    badParsedStream.to(parsedTopic('granule'))
+    badParsedStream.to(parsedTopic(RecordType.granule))
 
     // Analyze and send final output to parsed topic
     KStream goodParsedStream = parsedGranules[1]
     goodParsedStream
         .mapValues(Analyzers.&addAnalysis as ValueMapper<ParsedRecord, ParsedRecord>)
-        .to(parsedTopic('granule'))
+        .to(parsedTopic(RecordType.granule))
 
 
     //-- collections
 
     // Stream incoming collections
-    KStream<String, Input> collectionInputStream = builder.stream(inputChangelogTopics(REGISTRY_ID, 'collection'))
+    KStream<String, Input> collectionInputStream = builder.stream(inputChangelogTopics(REGISTRY_ID, RecordType.collection))
 
     // parsing collection:
     KStream<String, ParsedRecord> parsedNotAnalyzedCollection = collectionInputStream
         .mapValues(AvroUtils.&avroToMap as ValueMapper<Input, Map>)
-        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v) } as ValueMapper<Map, ParsedRecord>)
+        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v, RecordType.collection) } as ValueMapper<Map, ParsedRecord>)
 
     // Short circuit records with errors back to registry
     KStream<String, Map>[] parsedCollection = parsedNotAnalyzedCollection.branch(hasErrors, isDefault)
     KStream badParsedCollection = parsedCollection[0]
-    badParsedCollection.to(parsedTopic('collection'))
+    badParsedCollection.to(parsedTopic(RecordType.collection))
 
     // TODO Create intermediary topic between parsing & analysis for KafkaStreams tasking
     //      parallelization, or at least compare with and without topic in load testing?
@@ -96,7 +97,7 @@ class StreamManager {
     KStream goodParsedCollection = parsedCollection[1]
     goodParsedCollection
         .mapValues(Analyzers.&addAnalysis as ValueMapper<ParsedRecord, ParsedRecord>)
-        .to(parsedTopic('collection'))
+        .to(parsedTopic(RecordType.collection))
 
     return builder.build()
   }
