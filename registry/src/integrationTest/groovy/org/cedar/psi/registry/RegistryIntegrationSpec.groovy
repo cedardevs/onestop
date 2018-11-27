@@ -62,7 +62,7 @@ class RegistryIntegrationSpec extends Specification {
 
   final ObjectMapper mapper = new ObjectMapper()
   final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
-  final String registryResponseSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('registryResponse-schema.json').text
+  final String registryResponseSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('jsonSchema/registryResponse-schema.json').text
   final JsonNode registryResponseSchemaNode = mapper.readTree(registryResponseSchemaString)
   final JsonSchema registryResponseSchema = factory.getJsonSchema(registryResponseSchemaNode)
 
