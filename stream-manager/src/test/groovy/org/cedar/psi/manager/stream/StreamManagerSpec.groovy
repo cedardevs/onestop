@@ -166,6 +166,7 @@ class StreamManagerSpec extends Specification {
   }
 
   private static inputDefaults = [
+      type      : RecordType.granule,
       source    : 'test',
       method    : Method.POST,
       protocol  : 'http',
@@ -173,7 +174,10 @@ class StreamManagerSpec extends Specification {
       requestUrl: '/test'
   ]
 
-  private static buildInput(Map values) {
-    new Input(inputDefaults + values)
+  private static buildInput(Map overrides) {
+    (inputDefaults + overrides).inject(Input.newBuilder(), { b, k, v ->
+      b[k] = v
+      b
+    }).build()
   }
 }

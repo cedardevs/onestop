@@ -123,7 +123,8 @@ class RegistryIntegrationSpec extends Specification {
                 "method": "POST",
                 "protocol": "HTTP/1.1",
                 "requestUrl": "${baseUrl}/metadata/granule/common-ingest/${granuleMap.trackingId}",
-                "source": "common-ingest"
+                "source": "common-ingest",
+                "type": "granule"
             ]
         ]
     ]

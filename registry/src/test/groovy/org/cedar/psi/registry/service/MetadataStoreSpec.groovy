@@ -141,6 +141,7 @@ class MetadataStoreSpec extends Specification {
   }
 
   private static testInput = Input.newBuilder()
+      .setType(RecordType.collection)
       .setContent('{"hello":"world"}')
       .setMethod(Method.POST)
       .setContentType('application/json')

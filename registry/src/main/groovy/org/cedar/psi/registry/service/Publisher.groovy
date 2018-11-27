@@ -36,7 +36,7 @@ class Publisher {
       ]
     }
     String key = id ?: UUID.randomUUID().toString()
-    def message = buildInputTopicMessage(request, data, source, key)
+    def message = buildInputTopicMessage(request, type, data, source, key)
     def record = new ProducerRecord<String, Input>(topic, key, message)
     log.info ("Publishing $type with id: ${id} and source: $source")
     log.debug("Publishing: ${record}")
@@ -47,8 +47,9 @@ class Publisher {
     ]
   }
 
-  Input buildInputTopicMessage(HttpServletRequest request, String data, String source, String id) {
+  Input buildInputTopicMessage(HttpServletRequest request, RecordType type, String data, String source, String id) {
     def builder = Input.newBuilder()
+    builder.type = type
     builder.method = Method.valueOf(request?.method?.toUpperCase())
     builder.host = request?.remoteHost
     builder.requestUrl = request?.requestURL as String

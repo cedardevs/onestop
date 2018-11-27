@@ -10,6 +10,7 @@ class AvroUtilsSpec extends Specification {
 
   def 'transforms an Input into a map'() {
     def builder = Input.newBuilder()
+    builder.type = RecordType.granule
     builder.method = Method.POST
     builder.protocol = 'http'
     builder.host = 'localhost'
@@ -21,6 +22,7 @@ class AvroUtilsSpec extends Specification {
 
     expect:
     AvroUtils.avroToMap(testInput) == [
+        type: RecordType.granule,
         method: Method.POST,
         protocol: 'http',
         host: 'localhost',

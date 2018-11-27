@@ -2,6 +2,7 @@ package org.cedar.psi.registry.stream
 
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
+import org.cedar.psi.common.avro.RecordType
 import spock.lang.Specification
 
 
@@ -54,6 +55,7 @@ class StreamFunctionsSpec extends Specification {
 
   def 'merge function merges inputs'() {
     def currentAggregate = new Input([
+        type: RecordType.granule,
         method: Method.POST,
         host: 'localhost',
         requestUrl: '/test',
@@ -63,6 +65,7 @@ class StreamFunctionsSpec extends Specification {
         source: 'test'
     ])
     def newValue = new Input([
+        type: RecordType.granule,
         method: Method.PUT,
         host: 'localhost_number_2',
         requestUrl: '/test/again',
@@ -72,6 +75,7 @@ class StreamFunctionsSpec extends Specification {
         source: 'test'
     ])
     def mergedAggregate = new Input([
+        type: RecordType.granule,
         method: Method.PUT,
         host: 'localhost_number_2',
         requestUrl: '/test/again',
@@ -82,7 +86,6 @@ class StreamFunctionsSpec extends Specification {
     ])
 
     when:
-    println mergedAggregate.properties
     def mergedInputs = StreamFunctions.mergeInputs.apply(currentAggregate, newValue)
 
     then:
