@@ -46,6 +46,19 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
         // login, login failure, and index are allowed by anyone
         .antMatchers(LOGIN_ENDPOINT, LOGIN_SUCCESS_ENDPOINT, LOGIN_FAILURE_ENDPOINT, "/")
             .permitAll()
+        // make sure our public search endpoints are still available and don't request authentication
+        .antMatchers(
+                "/collection/**",
+                "/search/collection/**",
+                "/granule/**",
+                "/search/granule/**",
+                "/flattened-granule/**",
+                "/search/flattened-granule/**",
+                "/uiConfig",
+                "/sitemap/**",
+                "/trending/**",
+        )
+            .permitAll()
         // any other requests are allowed by an authenticated user
         .anyRequest()
             .authenticated()
