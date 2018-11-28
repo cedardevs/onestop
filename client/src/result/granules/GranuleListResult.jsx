@@ -168,8 +168,11 @@ class ListResult extends React.Component {
       : // linkText is the same as protocol, so only include one of the two
         `protocol::legend::${protocol.id} ListResult::title::${itemId}`
     let focusRef = null
+    const allowVideo =
+      linkProtocol === 'video:youtube' ||
+      (url.includes('.mp4') && !isGovExternal(url))
     const videoPlay =
-      protocol.label === 'Video' ? (
+      protocol.label === 'Video' && allowVideo ? (
         <Button
           key={`video-play-button-${url}`}
           styleHover={styleHoverPlayButton}

@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-import {govExternalYouTubeMsg} from '../utils/urlUtils'
+import {govExternalYouTubeMsg, isGovExternal} from '../utils/urlUtils'
 
 const styleDisclaimer = {
   color: '#f9f9f9',
@@ -87,7 +87,7 @@ export default class Video extends React.Component {
     if (protocol === 'video:youtube') {
       return youtubeVideo
     }
-    else if (link.includes('.mp4')) {
+    else if (link.includes('.mp4') && !isGovExternal(link)) {
       return mp4Video
     }
     else {
