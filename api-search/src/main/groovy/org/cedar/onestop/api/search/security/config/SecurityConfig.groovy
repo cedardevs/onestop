@@ -85,8 +85,6 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
             .failureUrl(LOGIN_FAILURE_ENDPOINT)
             .successHandler(new LoginGovAuthenticationSuccessHandler()) // .defaultSuccessUrl() wasn't working
-            .and()
-            .oauth2Login()
     }
 
     @Bean
