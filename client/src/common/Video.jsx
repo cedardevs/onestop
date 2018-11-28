@@ -1,6 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+import {govExternalYouTubeMsg} from '../utils/urlUtils'
+
+const styleDisclaimer = {
+  color: '#f9f9f9',
+  backgroundColor: '#1a1a1a',
+  margin: 0,
+  fontStyle: 'italic',
+  padding: '.5em',
+}
+
 export default class Video extends React.Component {
   componentDidMount() {
     // need to set dimensions intially before resize events
@@ -48,15 +58,18 @@ export default class Video extends React.Component {
   render() {
     const {link, protocol} = this.props
     const youtubeVideo = (
-      <iframe
-        ref={iframeRef => {
-          this.iframeRef = iframeRef
-        }}
-        src={link}
-        frameBorder={0}
-        allowFullScreen={true}
-        style={{width: '100%'}}
-      />
+      <div>
+        <iframe
+          ref={iframeRef => {
+            this.iframeRef = iframeRef
+          }}
+          src={link}
+          frameBorder={0}
+          allowFullScreen={true}
+          style={{width: '100%'}}
+        />
+        <div style={styleDisclaimer}>Disclaimer: {govExternalYouTubeMsg}</div>
+      </div>
     )
     const mp4Video = (
       <video

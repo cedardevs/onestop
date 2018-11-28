@@ -160,7 +160,7 @@ class ListResult extends React.Component {
   }
 
   renderBadge = (link, itemId) => {
-    const {protocol, url, displayName} = link
+    const {protocol, url, displayName, linkProtocol} = link
     const linkText = displayName ? displayName : protocol.label
     const labelledBy = displayName
       ? // title the link with references to elements: linkText, protocolLegend, granuleTitle
@@ -169,7 +169,7 @@ class ListResult extends React.Component {
         `protocol::legend::${protocol.id} ListResult::title::${itemId}`
     let focusRef = null
     const videoPlay =
-      protocol.label === 'Video' && !isGovExternal(url) ? (
+      protocol.label === 'Video' ? (
         <Button
           key={`video-play-button-${url}`}
           styleHover={styleHoverPlayButton}
@@ -183,7 +183,7 @@ class ListResult extends React.Component {
               return {
                 ...prevState,
                 videoPlaying: {
-                  protocol: protocol,
+                  protocol: linkProtocol,
                   url: url,
                   returnFocusRef: focusRef,
                 },
@@ -234,6 +234,7 @@ class ListResult extends React.Component {
         displayName: link.linkName
           ? link.linkName
           : link.linkDescription ? link.linkDescription : null,
+        linkProtocol: link.linkProtocol, // needed to handle videos consistently
       }))
       .sortBy(info => info.protocol.id)
       .map(link => {
