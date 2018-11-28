@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '2.0.4.RELEASE'
+    springBootVersion = '2.1.0.RELEASE'
   }
   repositories {
     maven {
@@ -47,6 +47,7 @@ subprojects {
     logbackVersion = '1.2.3'
     javaxServletAPIVersion = '4.0.1'
     junitVersion = '4.12'
+    auth0JavaJWT = '3.4.1'
   }
 
   afterEvaluate {
