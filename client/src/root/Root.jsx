@@ -54,7 +54,6 @@ const styleClose = {}
 export default class Root extends Component {
   constructor(props) {
     super(props)
-
     this.hasUnsupportedFeatures = this.hasUnsupportedFeatures.bind(this)
     this.state = {
       leftVisible: true,
@@ -104,7 +103,13 @@ export default class Root extends Component {
   }
 
   render() {
-    const {showLeft, leftOpen, showRight, featuresEnabled} = this.props
+    const {
+      showLeft,
+      leftOpen,
+      showRight,
+      featuresEnabled,
+      authEnabled,
+    } = this.props
 
     const header = (
       <div>
@@ -122,6 +127,17 @@ export default class Root extends Component {
       <Route path="/cart">
         <CartContainer />
       </Route>
+    ) : null
+
+    const authRoutes = authEnabled ? (
+      <div>
+        <Route path="/login">
+          <LoginContainer />
+        </Route>
+        <Route path="/logout">
+          <LogoutContainer />
+        </Route>
+      </div>
     ) : null
 
     const middle = (
@@ -172,13 +188,7 @@ export default class Root extends Component {
             <Help />
           </Route>
 
-          <Route path="/login">
-            <LoginContainer />
-          </Route>
-
-          <Route path="/logout">
-            <LogoutContainer />
-          </Route>
+          {authRoutes}
 
           {cart}
 

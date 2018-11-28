@@ -2,18 +2,27 @@ import {connect} from 'react-redux'
 import Header from './Header'
 import {showHome} from '../actions/FlowActions'
 import {withRouter} from 'react-router'
+import {getUser} from '../actions/UserActions'
 
 const mapStateToProps = state => {
+  const authEnabled = !!state.domain.config.auth
   return {
     headerDropdownMenuFeatureAvailable:
       state.domain.config.headerDropdownMenuFeatureAvailable,
-    user: state.domain.user ? state.domain.user : null,
+    authEnabled: authEnabled,
+    user: authEnabled && state.domain.user ? state.domain.user : null,
+    userProfileEndpoint: authEnabled
+      ? state.domain.config.auth.userProfileEndpoint
+        ? state.domain.config.auth.userProfileEndpoint
+        : null
+      : null,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     goHome: () => dispatch(showHome(ownProps.history)),
+    getUser: () => dispatch(getUser(userProfileEndpoint)),
   }
 }
 
