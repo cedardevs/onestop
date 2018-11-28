@@ -346,7 +346,6 @@ class AnalyzersSpec extends Specification {
 
   static buildPoint() {
     Point.newBuilder()
-        .setType(PointType.Point)
         .setCoordinates([1 as Double, 2 as Double])
         .build()
   }

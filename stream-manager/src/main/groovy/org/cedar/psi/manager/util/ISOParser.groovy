@@ -322,26 +322,22 @@ class ISOParser {
 
     def type, coordinates, builder
     if (west == east && north == south) {
-      type = 'Point'
-      coordinates = [west, north]
       builder = Point.newBuilder()
+      coordinates = [west, north]
     }
     else if (west == east || north == south) {
       // Note: Because we are parsing the 'Geographic Bounding Box' element, only horizontal or vertical lines can be
       //       determined. A diagonal line will be interpreted as a polygon.
-      type = 'LineString'
-      coordinates = [[west, south], [east, north]]
       builder = LineString.newBuilder()
+      coordinates = [[west, south], [east, north]]
     }
     else {
-      type = 'Polygon'
-      coordinates = [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
       builder = Polygon.newBuilder()
+      coordinates = [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
     }
 
     // returns avro Geometry object
     builder.coordinates = coordinates
-    builder.type = type
 
     return builder.build()
 

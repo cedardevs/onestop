@@ -10,7 +10,8 @@
         "name": "LineStringType",
         "type": "enum",
         "symbols": ["LineString"]
-      }
+      },
+      "default": "LineString"
     },
     {
       "name": "coordinates",

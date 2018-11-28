@@ -10,7 +10,8 @@
         "name": "MultiPointType",
         "type": "enum",
         "symbols": ["MultiPoint"]
-      }
+      },
+      "default": "MultiPoint"
     },
     {
       "name": "coordinates",

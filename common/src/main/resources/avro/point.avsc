@@ -10,7 +10,8 @@
         "name": "PointType",
         "type": "enum",
         "symbols": ["Point"]
-      }
+      },
+      "default": "Point"
     },
     {
       "name": "coordinates",

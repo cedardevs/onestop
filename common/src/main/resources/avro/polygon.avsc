@@ -10,7 +10,8 @@
         "name": "PolygonType",
         "type": "enum",
         "symbols": ["Polygon"]
-      }
+      },
+      "default": "Polygon"
     },
     {
       "name": "coordinates",

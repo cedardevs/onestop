@@ -51,8 +51,7 @@ class GeoJSONAvroSpec extends Specification {
 
   def "#testType successfully serializes when coordinates true to type"() {
     when:
-    def builder = testBuilder
-    builder.type = testType
+    def builder = testType.newBuilder()
     builder.coordinates = testCoordinates
     def geometry = builder.build()
     testSerde.serializer().serialize('test', geometry)
@@ -61,21 +60,20 @@ class GeoJSONAvroSpec extends Specification {
     noExceptionThrown()
 
     where:
-    testType                            | testBuilder                  | testCoordinates
-    PointType.Point                     | Point.newBuilder()           | pointCoords
-    MultiPointType.MultiPoint           | MultiPoint.newBuilder()      | multiPointCoords
-    LineStringType.LineString           | LineString.newBuilder()      | lineStringCoords
-    MultiLineStringType.MultiLineString | MultiLineString.newBuilder() | multiLineStringCoords
-    PolygonType.Polygon                 | Polygon.newBuilder()         | polygonCoords
-    PolygonType.Polygon                 | Polygon.newBuilder()         | polygonWithHoleCoords
-    MultiPolygonType.MultiPolygon       | MultiPolygon.newBuilder()    | multiPolygonCoords
-    MultiPolygonType.MultiPolygon       | MultiPolygon.newBuilder()    | multiPolygonWithHolesCoords
+    testType        | testCoordinates
+    Point           | pointCoords
+    MultiPoint      | multiPointCoords
+    LineString      | lineStringCoords
+    MultiLineString | multiLineStringCoords
+    Polygon         | polygonCoords
+    Polygon         | polygonWithHoleCoords
+    MultiPolygon    | multiPolygonCoords
+    MultiPolygon    | multiPolygonWithHolesCoords
   }
 
   def "#testType won't serialize when coordinates not true to type"() {
     when:
-    def builder = testBuilder
-    builder.type = testType
+    def builder = testType.newBuilder()
     builder.coordinates = testCoordinates
     def geometry = builder.build()
     testSerde.serializer().serialize('test', geometry)
@@ -85,21 +83,21 @@ class GeoJSONAvroSpec extends Specification {
 
     where:
     // Coordinates formats same for LineString & MultiPoint and Polygon & MultiLineString types
-    testType                            | testBuilder                  | testCoordinates
-    PointType.Point                     | Point.newBuilder()           | multiPointCoords
-    PointType.Point                     | Point.newBuilder()           | polygonWithHoleCoords
-    PointType.Point                     | Point.newBuilder()           | multiPolygonCoords
-    MultiPointType.MultiPoint           | MultiPoint.newBuilder()      | multiLineStringCoords
-    MultiPointType.MultiPoint           | MultiPoint.newBuilder()      | multiPolygonCoords
-    LineStringType.LineString           | LineString.newBuilder()      | pointCoords
-    LineStringType.LineString           | LineString.newBuilder()      | polygonCoords
-    MultiLineStringType.MultiLineString | MultiLineString.newBuilder() | pointCoords
-    MultiLineStringType.MultiLineString | MultiLineString.newBuilder() | lineStringCoords
-    PolygonType.Polygon                 | Polygon.newBuilder()         | multiPointCoords
-    PolygonType.Polygon                 | Polygon.newBuilder()         | multiPolygonWithHolesCoords
-    MultiPolygonType.MultiPolygon       | MultiPolygon.newBuilder()    | pointCoords
-    MultiPolygonType.MultiPolygon       | MultiPolygon.newBuilder()    | multiPointCoords
-    MultiPolygonType.MultiPolygon       | MultiPolygon.newBuilder()    | polygonWithHoleCoords
+    testType        | testCoordinates
+    Point           | multiPointCoords
+    Point           | polygonWithHoleCoords
+    Point           | multiPolygonCoords
+    MultiPoint      | multiLineStringCoords
+    MultiPoint      | multiPolygonCoords
+    LineString      | pointCoords
+    LineString      | polygonCoords
+    MultiLineString | pointCoords
+    MultiLineString | lineStringCoords
+    Polygon         | multiPointCoords
+    Polygon         | multiPolygonWithHolesCoords
+    MultiPolygon    | pointCoords
+    MultiPolygon    | multiPointCoords
+    MultiPolygon    | polygonWithHoleCoords
   }
 
   def "#testType represents valid corresponding GeoJSON"() {
@@ -110,8 +108,7 @@ class GeoJSONAvroSpec extends Specification {
     def geoSchema = SchemaLoader.load(rawSchema)
 
     // Build geometry avro object
-    def builder = testBuilder
-    builder.type = testType
+    def builder = testType.newBuilder()
     builder.coordinates = testCoordinates
     def geometry = builder.build()
 
@@ -121,15 +118,15 @@ class GeoJSONAvroSpec extends Specification {
     noExceptionThrown()
 
     where:
-    testType                            | testBuilder                  | testCoordinates
-    PointType.Point                     | Point.newBuilder()           | pointCoords
-    MultiPointType.MultiPoint           | MultiPoint.newBuilder()      | multiPointCoords
-    LineStringType.LineString           | LineString.newBuilder()      | lineStringCoords
-    MultiLineStringType.MultiLineString | MultiLineString.newBuilder() | multiLineStringCoords
-    PolygonType.Polygon                 | Polygon.newBuilder()         | polygonCoords
-    PolygonType.Polygon                 | Polygon.newBuilder()         | polygonWithHoleCoords
-    MultiPolygonType.MultiPolygon       | MultiPolygon.newBuilder()    | multiPolygonCoords
-    MultiPolygonType.MultiPolygon       | MultiPolygon.newBuilder()    | multiPolygonWithHolesCoords
+    testType        | testCoordinates
+    Point           | pointCoords
+    MultiPoint      | multiPointCoords
+    LineString      | lineStringCoords
+    MultiLineString | multiLineStringCoords
+    Polygon         | polygonCoords
+    Polygon         | polygonWithHoleCoords
+    MultiPolygon    | multiPolygonCoords
+    MultiPolygon    | multiPolygonWithHolesCoords
   }
 
 }

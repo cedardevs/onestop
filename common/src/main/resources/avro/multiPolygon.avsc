@@ -10,7 +10,8 @@
         "name": "MultiPolygonType",
         "type": "enum",
         "symbols": ["MultiPolygon"]
-      }
+      },
+      "default": "MultiPolygon"
     },
     {
       "name": "coordinates",

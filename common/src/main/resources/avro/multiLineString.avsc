@@ -10,7 +10,8 @@
         "name": "MultiLineStringType",
         "type": "enum",
         "symbols": ["MultiLineString"]
-      }
+      },
+      "default": "MultiLineString"
     },
     {
       "name": "coordinates",
