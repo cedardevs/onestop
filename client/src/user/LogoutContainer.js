@@ -8,7 +8,6 @@ import {logoutUser} from '../actions/UserActions'
 const mapStateToProps = state => {
   return {
     user: state.domain.user,
-    logoutEndpoint: state.domain.config.auth.logoutEndpoint,
   }
 }
 

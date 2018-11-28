@@ -6,6 +6,7 @@ export const LOGOUT_USER = 'LOGOUT_USER'
 export const getUser = userEndpoint => {
   const requestOptions = {
     method: 'GET',
+    redirect: 'error',
     mode: 'cors',
     credentials: 'include',
     headers: {

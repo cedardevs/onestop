@@ -11,6 +11,16 @@ const mapStateToProps = state => {
       state.domain.config.headerDropdownMenuFeatureAvailable,
     authEnabled: authEnabled,
     user: authEnabled && state.domain.user ? state.domain.user : null,
+    loginEndpoint: authEnabled
+        ? state.domain.config.auth.loginEndpoint
+            ? state.domain.config.auth.loginEndpoint
+            : null
+        : null,
+    logoutEndpoint: authEnabled
+        ? state.domain.config.auth.logoutEndpoint
+            ? state.domain.config.auth.logoutEndpoint
+            : null
+        : null,
     userProfileEndpoint: authEnabled
       ? state.domain.config.auth.userProfileEndpoint
         ? state.domain.config.auth.userProfileEndpoint

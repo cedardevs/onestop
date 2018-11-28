@@ -138,18 +138,14 @@ class Header extends React.Component {
   }
 
   render() {
-    const {headerDropdownMenuFeatureAvailable, user, authEnabled} = this.props
+    const {headerDropdownMenuFeatureAvailable, user, authEnabled, loginEndpoint, logoutEndpoint} = this.props
     const {focusingSkipLink} = this.state
     const userEmail = user && user.info ? user.info.email : null
 
     const login = authEnabled ? !user.info ? (
-      <HeaderLink title="login" to="/login">
-        Login
-      </HeaderLink>
+    <a href={loginEndpoint}>Login</a>
     ) : (
-      <HeaderLink title="logout" to="/logout">
-        Logout
-      </HeaderLink>
+    <a href={logoutEndpoint}>Logout</a>
     ) : null
 
     const welcomeUser = userEmail ? (
