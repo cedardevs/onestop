@@ -71,9 +71,7 @@ class RegistryIntegrationSpec extends Specification {
     baseUrl = "http://localhost:${port}/${contextPath}"
   }
 
-
-//  @spock.lang.Ignore
-  def 'can post then retrieve granule info with source identifier'() {
+  def 'can post then retrieve input granule info'() {
     def restTemplate = new RestTemplate()
     def granuleText = ClassLoader.systemClassLoader.getResourceAsStream('test_granule.json').text
 
@@ -94,7 +92,7 @@ class RegistryIntegrationSpec extends Specification {
     when:
     sleep(200)
     def retrieveEntity = RequestEntity
-        .get("${baseUrl}/metadata/granule/common-ingest/${granuleId}".toURI())
+        .get("${baseUrl}/metadata/granule/common-ingest/${granuleId}/input".toURI())
         .build()
     def retrieveResponse = restTemplate.exchange(retrieveEntity, Map)
 
@@ -103,10 +101,10 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.data.id == granuleId
     retrieveResponse.body.data.type == 'granule'
+    retrieveResponse.body.links.ParsedRecord == "${baseUrl}metadata/granule/common-ingest/${granuleId}"
     retrieveResponse.body.data.attributes.input.content == granuleText
     retrieveResponse.body.data.attributes.input.contentType == "application/json"
     retrieveResponse.body.data.attributes.input.source == "common-ingest"
-//    retrieveResponse.body.data.attributes.identifiers.'common-ingest' == granuleMap.trackingId
 
     and: // let's verify the full response just this once
     retrieveResponse.body.data == [
@@ -121,10 +119,7 @@ class RegistryIntegrationSpec extends Specification {
                 "protocol": "HTTP/1.1",
                 "requestUrl": "${baseUrl}/metadata/granule/common-ingest/${granuleMap.trackingId}",
                 "source": "common-ingest"
-            ],
-//            identifiers: [
-//                'common-ingest': granuleMap.trackingId
-//            ]
+            ]
         ]
     ]
   }
@@ -148,7 +143,7 @@ class RegistryIntegrationSpec extends Specification {
     when:
     sleep(200)
     def retrieveEntity = RequestEntity
-        .get("${baseUrl}/metadata/granule/${granuleId}".toURI())
+        .get("${baseUrl}/metadata/granule/unknown/${granuleId}/input".toURI())
         .build()
     def retrieveResponse = restTemplate.exchange(retrieveEntity, Map)
 
@@ -157,13 +152,13 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.data.id == granuleId  as String
     retrieveResponse.body.data.type == 'granule'
+    retrieveResponse.body.links.ParsedRecord == "${baseUrl}metadata/granule/unknown/${granuleId}"
     retrieveResponse.body.data.attributes.input.content == granuleText
     retrieveResponse.body.data.attributes.input.contentType == "application/xml"
     retrieveResponse.body.data.attributes.input.source == Topics.DEFAULT_SOURCE
-//    retrieveResponse.body.data.attributes.identifiers == [(Topics.DEFAULT_SOURCE): granuleId.toString()]
   }
 
-  def 'can post then retrieve collection info with an existing key'() {
+  def 'can post then retrieve unparsed collection info '() {
     def restTemplate = new RestTemplate()
     def collectionText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
     def collectionId = UUID.randomUUID()
@@ -190,10 +185,8 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.data.id == collectionId as String
     retrieveResponse.body.data.type == 'collection'
-    retrieveResponse.body.data.attributes.input.content == collectionText
-    retrieveResponse.body.data.attributes.input.contentType == "application/xml"
-    retrieveResponse.body.data.attributes.input.source == Topics.DEFAULT_SOURCE
-//    retrieveResponse.body.data.attributes.identifiers == [(Topics.DEFAULT_SOURCE): collectionId.toString()]
+    retrieveResponse.body.links.InputRecord == "${baseUrl}metadata/collection/${collectionId}/input"
+    retrieveResponse.body.data.error == "Input record didn't get parsed"
   }
 
   def 'can post then retrieve collection info with no key'() {
@@ -223,10 +216,8 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.data.id == collectionId as String
     retrieveResponse.body.data.type == 'collection'
-    retrieveResponse.body.data.attributes.input.content == collectionText
-    retrieveResponse.body.data.attributes.input.contentType == "application/xml"
-    retrieveResponse.body.data.attributes.input.source == Topics.DEFAULT_SOURCE
-//    retrieveResponse.body.data.attributes.identifiers == [(Topics.DEFAULT_SOURCE): (collectionId as String)]
+    retrieveResponse.body.links.InputRecord == "${baseUrl}metadata/collection/${collectionId}/input"
+    retrieveResponse.body.data.error == "Input record didn't get parsed"
   }
 
   def 'returns 404 for unsupported type'() {

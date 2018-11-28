@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 import javax.servlet.http.HttpServletResponse
 
@@ -26,28 +27,58 @@ class MetadataRestController {
     this.metadataStore = metadataStore
   }
 
-
   @RequestMapping(path = '/metadata/{type}/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveJson(@PathVariable String type, @PathVariable String id, HttpServletResponse response) {
-    retrieveJson(type, Topics.DEFAULT_SOURCE, id, response)
+    retrieveParsedJson(type, Topics.DEFAULT_SOURCE, id, response)
   }
 
   @RequestMapping(path = '/metadata/{type}/{source}/{id}', method = [GET, HEAD], produces = 'application/json')
-  Map retrieveJson(@PathVariable String type, @PathVariable String source, @PathVariable String id, HttpServletResponse response) {
-    def result = metadataStore.retrieveEntity(type, source, id)
+  Map retrieveParsedJson(@PathVariable String type, @PathVariable String source, @PathVariable String id, HttpServletResponse response) {
+    def result = metadataStore.retrieveParsed(type, source, id)
+    def link  = metadataStore.constructUri(ServletUriComponentsBuilder.fromCurrentRequestUri())
+
     if (!result) {
       response.sendError(404, "No such ${type} with id ${id}")
+      return [
+          error  : "record does not exist"
+      ]
     }
-    return result
+
+    if (result.containsValue('error')) {
+        return [
+            "links": [
+                "InputRecord": link
+            ],
+            data  : result
+        ]
+    }
+
+    return [
+        "links": [
+            "InputRecord": link
+        ],
+        data   : result
+    ]
+
   }
 
+  @RequestMapping(path = '/metadata/{type}/{source}/{id}/input', method = [GET, HEAD], produces = 'application/json')
+  Map retrieveInputJson(@PathVariable String type, @PathVariable String source, @PathVariable String id, HttpServletResponse response) {
+    def result = metadataStore.retrieveInput(type, source, id)
+    def link  = metadataStore.constructUri(ServletUriComponentsBuilder.fromCurrentRequestUri())
 
-//  @RequestMapping(path='/metadata/rebuild', method = [PUT], produces = 'application/json')
-//  Map rebuild() {
-//    this.metadataStream.close()
-//    this.metadataStream.cleanUp()
-//    this.metadataStream.start()
-//    return ['acknowledged': true]
-//  }
+    if (!result) {
+      response.sendError(404, "No such ${type} with id ${id}")
+      return [
+          error  : "No such ${type} with id ${id}"
+      ]
+    }
 
+    return [
+        "links": [
+            "ParsedRecord": link
+        ],
+        data   : result
+    ]
+  }
 }

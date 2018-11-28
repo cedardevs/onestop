@@ -10,6 +10,9 @@ import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.util.AvroUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
+import org.springframework.web.util.UriComponents
+import org.springframework.web.util.UriComponentsBuilder
 
 import static org.cedar.psi.common.constants.Topics.inputStore
 import static org.cedar.psi.common.constants.Topics.parsedStore
@@ -28,24 +31,50 @@ class MetadataStore {
     this.slurper = new JsonSlurper()
   }
 
-  Map retrieveEntity(String type, String source, String id) {
+  Map retrieveParsed(String type, String source, String id) {
     try {
-      def inputValue = getInputStore(type, source)?.get(id)
       def parsedValue = getParsedStore(type)?.get(id)
+      def inputValue = getInputStore(type, source)?.get(id)
 
       if (!inputValue && !parsedValue) {
         return null
       }
 
-      def inputMap = inputValue ? [input: inputValue] : [:]
+      if (inputValue && !parsedValue) {
+        return [
+            id        : id,
+            type      : type,
+            error     : "Input record didn't get parsed"
+        ]
+      }
+
       def parsedMap = parsedValue ? AvroUtils.avroToMap(parsedValue) : [:]
+
       return [
-          data: [
               id        : id,
               type      : type,
-              attributes: mergeAttributes(inputMap, parsedMap)
+              attributes: parsedMap
           ]
-      ]
+    }
+    catch (Exception e) {
+      log.error("Failed to retrieve [${type}] value from source [${source}] with id [${id}]", e)
+      throw e
+    }
+  }
+
+  Map retrieveInput(String type, String source, String id) {
+    try {
+      def inputValue = getInputStore(type, source)?.get(id)
+      if (!inputValue) {
+        return null
+      }
+      def inputMap = inputValue ? [input: inputValue] : [:]
+
+      return [
+              id        : id,
+              type      : type,
+              attributes: inputMap
+          ]
     }
     catch (Exception e) {
       log.error("Failed to retrieve [${type}] value from source [${source}] with id [${id}]", e)
@@ -61,29 +90,22 @@ class MetadataStore {
     metadataStreamService?.streamsApp?.store(parsedStore(type), QueryableStoreTypes.keyValueStore())
   }
 
-  /**
-   * this is not a full recursive merge
-   * it combines maps and lists with the same key in each input map
-   */
-  private Map mergeAttributes(Map raw, Map parsed) {
-    def result = [:]
-    if (raw) {
-      result.putAll(raw)
+  static String constructUri(ServletUriComponentsBuilder servletComponentUri ) {
+    def servletComponent = servletComponentUri.build()
+    def host = servletComponent.host + ':' + servletComponent.port
+    def scheme = servletComponent.scheme
+    def path = servletComponent.path
+
+    if(!path.contains('input'))
+      path = path.concat('/input')
+    else{
+      path = path.minus("/input")
     }
-    if (parsed) {
-      parsed.each { k, v ->
-        if (result[k] instanceof Map && v instanceof Map) {
-          result[k] = (result[k] as Map) + (v as Map)
-        }
-        else if (result[k] instanceof List && v instanceof List) {
-          result[k] = (result[k] as List) + (v as List)
-        }
-        else {
-          result[k] = v
-        }
-      }
-    }
-    return result
+
+    UriComponents uriComponents = UriComponentsBuilder.newInstance()
+        .scheme(scheme).host(host).path(path).build()
+
+    return uriComponents.toUriString()
   }
 
 }
