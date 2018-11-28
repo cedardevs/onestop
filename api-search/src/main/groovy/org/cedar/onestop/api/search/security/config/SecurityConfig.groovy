@@ -60,6 +60,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/uiConfig",
                 "/sitemap/**",
                 "/trending/**",
+                "/actuator/info"
         )
             .permitAll()
         // any other requests are allowed by an authenticated user
