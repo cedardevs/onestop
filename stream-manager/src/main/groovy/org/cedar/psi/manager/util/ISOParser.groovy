@@ -5,12 +5,14 @@ import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.text.StringEscapeUtils
 import org.cedar.psi.common.avro.DataFormat
 import org.cedar.psi.common.avro.Discovery
-import org.cedar.psi.common.avro.Geometry
 import org.cedar.psi.common.avro.Instruments
 import org.cedar.psi.common.avro.KeywordsElement
+import org.cedar.psi.common.avro.LineString
 import org.cedar.psi.common.avro.Link
 import org.cedar.psi.common.avro.Operation
 import org.cedar.psi.common.avro.Platform
+import org.cedar.psi.common.avro.Point
+import org.cedar.psi.common.avro.Polygon
 import org.cedar.psi.common.avro.Reference
 import org.cedar.psi.common.avro.ResponsibleParty
 import org.cedar.psi.common.avro.Service
@@ -304,7 +306,7 @@ class ISOParser {
     return ["spatialBounding": spatialBounding, "isGlobal": isGlobal]
   }
 
-  static Geometry parseBounding(def bbox) {
+  static Object parseBounding(def bbox) {
     if (!bbox) {
       return null
     }
@@ -318,24 +320,26 @@ class ISOParser {
       return null
     }
 
-    def type, coordinates
+    def type, coordinates, builder
     if (west == east && north == south) {
       type = 'Point'
       coordinates = [west, north]
+      builder = Point.newBuilder()
     }
     else if (west == east || north == south) {
       // Note: Because we are parsing the 'Geographic Bounding Box' element, only horizontal or vertical lines can be
       //       determined. A diagonal line will be interpreted as a polygon.
       type = 'LineString'
       coordinates = [[west, south], [east, north]]
+      builder = LineString.newBuilder()
     }
     else {
       type = 'Polygon'
       coordinates = [[[west, south], [east, south], [east, north], [west, north], [west, south]]]
+      builder = Polygon.newBuilder()
     }
 
     // returns avro Geometry object
-    def builder = Geometry.newBuilder()
     builder.coordinates = coordinates
     builder.type = type
 

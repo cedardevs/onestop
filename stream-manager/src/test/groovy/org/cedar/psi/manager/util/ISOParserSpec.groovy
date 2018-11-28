@@ -1,11 +1,13 @@
 package org.cedar.psi.manager.util
 
 import org.cedar.psi.common.avro.DataFormat
-import org.cedar.psi.common.avro.GeometryType
 import org.cedar.psi.common.avro.Instruments
+import org.cedar.psi.common.avro.LineStringType
 import org.cedar.psi.common.avro.Link
 import org.cedar.psi.common.avro.Operation
 import org.cedar.psi.common.avro.Platform
+import org.cedar.psi.common.avro.PointType
+import org.cedar.psi.common.avro.PolygonType
 import org.cedar.psi.common.avro.Reference
 import org.cedar.psi.common.avro.ResponsibleParty
 import org.cedar.psi.common.avro.Service
@@ -188,7 +190,7 @@ class ISOParserSpec extends Specification {
 
     then:
     result.spatialBounding.coordinates == [[[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]]
-    result.spatialBounding.type == GeometryType.Polygon
+    result.spatialBounding.type == PolygonType.Polygon
     !result.isGlobal
   }
 
@@ -202,7 +204,7 @@ class ISOParserSpec extends Specification {
 
     then:
     spatialBounding.spatialBounding.coordinates == [-105, 40]
-    spatialBounding.spatialBounding.type == GeometryType.Point
+    spatialBounding.spatialBounding.type == PointType.Point
     !spatialBounding.isGlobal
   }
 
@@ -218,7 +220,7 @@ class ISOParserSpec extends Specification {
     spatialBounding == [spatialBounding: null, isGlobal: false]
   }
 
-  def "LineString spatial bounding is prevented"() {
+  def "LineString spatial bounding correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-linestring-coords-metadata.xml").text
     def metadata = new XmlSlurper().parseText(document)
@@ -228,7 +230,7 @@ class ISOParserSpec extends Specification {
 
     then:
     spatialBounding.spatialBounding.coordinates == [[-80, -10], [80, -10]]
-    spatialBounding.spatialBounding.type == GeometryType.LineString
+    spatialBounding.spatialBounding.type == LineStringType.LineString
     !spatialBounding.isGlobal
   }
 
