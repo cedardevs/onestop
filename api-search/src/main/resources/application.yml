@@ -27,6 +27,7 @@ spring:
             jwk-set-uri: https://idp.int.identitysandbox.gov/api/openid_connect/certs
 
 logingov:
+  success-redirect: ${loginSuccessRedirect}
   keystore:
     alias: ${keystoreAlias}
     file: ${keystorePath}/${keystoreFile}

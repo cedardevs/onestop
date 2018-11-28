@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
@@ -12,8 +13,11 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.stereotype.Controller
 import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.client.RestTemplate
+
+import javax.servlet.http.HttpServletResponse
 
 @Controller
 class LoginController {
@@ -21,9 +25,9 @@ class LoginController {
     @Autowired
     OAuth2AuthorizedClientService authorizedClientService
 
-    @GetMapping(SecurityConfig.LOGIN_SUCCESS_ENDPOINT)
+    @GetMapping(SecurityConfig.LOGIN_PROFILE_ENDPOINT)
     @ResponseBody
-    HashMap<String, Object> loginSuccess(OAuth2AuthenticationToken authentication) {
+    HashMap<String, Object> loginProfile(OAuth2AuthenticationToken authentication) {
         if(authentication == null) {
             return new HashMap<String, Object>()
         }
@@ -45,6 +49,11 @@ class LoginController {
             response.put("email", email)
             return response
         }
+    }
+
+    @RequestMapping(SecurityConfig.LOGIN_SUCCESS_ENDPOINT)
+    void loginSuccess(HttpServletResponse httpServletResponse) {
+        httpServletResponse.sendRedirect("http://localhost:30000/onestop")
     }
 
 }

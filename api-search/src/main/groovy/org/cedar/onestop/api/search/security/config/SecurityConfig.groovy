@@ -21,13 +21,15 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
     static final String LOGIN_ENDPOINT = DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL
     static final String LOGIN_SUCCESS_ENDPOINT = "/login_success"
     static final String LOGIN_FAILURE_ENDPOINT = "/login_failure"
+    static final String LOGIN_PROFILE_ENDPOINT = "/login_profile"
     static final String LOGOUT_ENDPOINT = "/logout"
     static final String LOGOUT_SUCCESS_ENDPOINT = "/"
 
     private KeystoreUtil keystoreUtil
+    private String successRedirect
 
     @Autowired
-    SecurityConfig(LoginGovKeystoreConfiguration keystoreConfig) {
+    SecurityConfig(LoginGovKeystoreConfiguration keystoreConfig, LoginGovSuccessRedirectConfiguration successRedirectConfiguration) {
         keystoreUtil = new KeystoreUtil(
                 keystoreConfig.file,
                 keystoreConfig.password,
@@ -35,6 +37,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 null,
                 keystoreConfig.type
         )
+        successRedirect = successRedirectConfiguration.successRedirect
     }
 
     @Autowired

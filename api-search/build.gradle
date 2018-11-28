@@ -57,6 +57,7 @@ dependencies {
 ext {
   fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
 
+  loginSuccessRedirect = "http://localhost:30000/onestop"
 
   // keystore file
   keystoreOutputDir = ".keystore"
