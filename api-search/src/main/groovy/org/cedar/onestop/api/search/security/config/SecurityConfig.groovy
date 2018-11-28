@@ -47,7 +47,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
         // login, login failure, and index are allowed by anyone
-        .antMatchers(LOGIN_ENDPOINT, LOGIN_SUCCESS_ENDPOINT, LOGIN_FAILURE_ENDPOINT, "/")
+        .antMatchers(LOGIN_ENDPOINT, LOGIN_SUCCESS_ENDPOINT, LOGIN_PROFILE_ENDPOINT, LOGIN_FAILURE_ENDPOINT, "/")
             .permitAll()
         // make sure our public search endpoints are still available and don't request authentication
         .antMatchers(
