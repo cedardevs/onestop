@@ -205,9 +205,6 @@ class FullTopologySpec extends Specification {
     builder.type = RecordType.granule
     builder.method = Method.POST
     builder.contentType = 'application/json'
-    builder.host = 'localhost'
-    builder.protocol = 'http'
-    builder.requestUrl = '/test'
     builder.source = 'test'
     builder.content = content
     return builder.build()

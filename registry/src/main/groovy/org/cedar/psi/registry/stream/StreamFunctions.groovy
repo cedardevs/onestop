@@ -52,10 +52,7 @@ class StreamFunctions {
 
       def resultBuilder = Input.newBuilder(aggregate)
       if (nextValue.contentType) { resultBuilder.contentType = nextValue.contentType }
-      if (nextValue.host) { resultBuilder.host = nextValue.host }
       if (nextValue.method) { resultBuilder.method = nextValue.method }
-      if (nextValue.protocol) { resultBuilder.protocol = nextValue.protocol }
-      if (nextValue.requestUrl) { resultBuilder.requestUrl = nextValue.requestUrl }
 
       if (aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json' ) {
         resultBuilder.content = mergeJsonMapStrings(aggregate.content, nextValue.content)

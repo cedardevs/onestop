@@ -17,27 +17,12 @@
     {
       "name": "contentType",
       "type": "string",
-      "doc" : "The MIME type of the content sent in this input"
-    },
-    {
-      "name": "host",
-      "type": "string",
-      "doc" : "The host from which the input was sent"
+      "doc" : "The MIME type associated with the value of the content field"
     },
     {
       "name": "method",
       "type": "Method",
-      "doc" : "The HTTP method used to sent the input"
-    },
-    {
-      "name": "protocol",
-      "type": "string",
-      "doc" : "The protocol used to send the input, e.g. 'HTTP'"
-    },
-    {
-      "name": "requestUrl",
-      "type": "string",
-      "doc" : "The URL the client used to send this input into the system"
+      "doc" : "The HTTP method used to send the input or which describes the verb associated with the input in general"
     },
     {
       "name": "source",

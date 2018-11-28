@@ -34,7 +34,6 @@ class PublisherSpec extends Specification {
       it instanceof ProducerRecord &&
           it.topic() == Topics.inputTopic(type, source) &&
           it.key() == id &&
-          it.value().requestUrl == "http://localhost$requestUri" &&
           it.value().method == Method.valueOf(method)  &&
           it.value().content == data &&
           it.value().contentType == contentType &&
@@ -66,7 +65,6 @@ class PublisherSpec extends Specification {
           it.key() == id &&
           it.value().contentType == contentType &&
           it.value().method == Method.valueOf(method) &&
-          it.value().requestUrl == "http://localhost$requestUri" &&
           it.value().content == data
     }) >> Mock(Future)
 
@@ -95,7 +93,6 @@ class PublisherSpec extends Specification {
           it.key() instanceof String &&
           it.value().contentType == contentType &&
           it.value().method == Method.valueOf(method) &&
-          it.value().requestUrl == "http://localhost$requestUri" &&
           it.value().content == data
     }) >> Mock(Future)
 

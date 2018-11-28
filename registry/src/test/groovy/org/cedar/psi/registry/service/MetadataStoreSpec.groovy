@@ -145,9 +145,6 @@ class MetadataStoreSpec extends Specification {
       .setContent('{"hello":"world"}')
       .setMethod(Method.POST)
       .setContentType('application/json')
-      .setHost('localhost')
-      .setProtocol('http')
-      .setRequestUrl('/test')
       .setSource('test')
       .build()
 

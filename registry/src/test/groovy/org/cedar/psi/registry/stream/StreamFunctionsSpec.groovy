@@ -57,9 +57,6 @@ class StreamFunctionsSpec extends Specification {
     def currentAggregate = new Input([
         type: RecordType.granule,
         method: Method.POST,
-        host: 'localhost',
-        requestUrl: '/test',
-        protocol: 'http',
         content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         contentType: 'application/json',
         source: 'test'
@@ -67,9 +64,6 @@ class StreamFunctionsSpec extends Specification {
     def newValue = new Input([
         type: RecordType.granule,
         method: Method.PUT,
-        host: 'localhost_number_2',
-        requestUrl: '/test/again',
-        protocol: 'https',
         content: '{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}',
         contentType: 'application/json',
         source: 'test'
@@ -77,9 +71,6 @@ class StreamFunctionsSpec extends Specification {
     def mergedAggregate = new Input([
         type: RecordType.granule,
         method: Method.PUT,
-        host: 'localhost_number_2',
-        requestUrl: '/test/again',
-        protocol: 'https',
         content: '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}',
         contentType: 'application/json',
         source: 'test'

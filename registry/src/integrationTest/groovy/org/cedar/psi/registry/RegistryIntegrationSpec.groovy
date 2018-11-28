@@ -119,10 +119,7 @@ class RegistryIntegrationSpec extends Specification {
             input: [
                 "content": granuleText,
                 "contentType": "application/json",
-                "host": "127.0.0.1",
                 "method": "POST",
-                "protocol": "HTTP/1.1",
-                "requestUrl": "${baseUrl}/metadata/granule/common-ingest/${granuleMap.trackingId}",
                 "source": "common-ingest",
                 "type": "granule"
             ]

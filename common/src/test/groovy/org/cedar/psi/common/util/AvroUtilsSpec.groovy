@@ -12,9 +12,6 @@ class AvroUtilsSpec extends Specification {
     def builder = Input.newBuilder()
     builder.type = RecordType.granule
     builder.method = Method.POST
-    builder.protocol = 'http'
-    builder.host = 'localhost'
-    builder.requestUrl = '/test'
     builder.source = 'test'
     builder.contentType = 'application/json'
     builder.content = '{"hello":"world"}'
@@ -24,9 +21,6 @@ class AvroUtilsSpec extends Specification {
     AvroUtils.avroToMap(testInput) == [
         type: RecordType.granule,
         method: Method.POST,
-        protocol: 'http',
-        host: 'localhost',
-        requestUrl: '/test',
         source: 'test',
         contentType: 'application/json',
         content: '{"hello":"world"}'

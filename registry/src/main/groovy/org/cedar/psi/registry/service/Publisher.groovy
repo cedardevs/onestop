@@ -51,9 +51,6 @@ class Publisher {
     def builder = Input.newBuilder()
     builder.type = type
     builder.method = Method.valueOf(request?.method?.toUpperCase())
-    builder.host = request?.remoteHost
-    builder.requestUrl = request?.requestURL as String
-    builder.protocol = request?.protocol
     builder.content = data
     builder.contentType = request?.contentType
     builder.source = source

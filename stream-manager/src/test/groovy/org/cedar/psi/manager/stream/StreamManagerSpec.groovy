@@ -169,9 +169,6 @@ class StreamManagerSpec extends Specification {
       type      : RecordType.granule,
       source    : 'test',
       method    : Method.POST,
-      protocol  : 'http',
-      host      : 'localhost',
-      requestUrl: '/test'
   ]
 
   private static buildInput(Map overrides) {
