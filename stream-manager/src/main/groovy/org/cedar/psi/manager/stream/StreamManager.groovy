@@ -7,7 +7,6 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.Consumed
-import org.apache.kafka.streams.kstream.KStream
 import org.apache.kafka.streams.kstream.Produced
 import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.common.avro.Input
@@ -25,10 +24,7 @@ import static org.apache.kafka.streams.StreamsConfig.*
 import static org.cedar.psi.common.constants.StreamsApps.MANAGER_ID
 import static org.cedar.psi.common.constants.StreamsApps.REGISTRY_ID
 import static org.cedar.psi.common.constants.Topics.*
-import static org.cedar.psi.manager.util.RoutingUtils.isDefault
-import static org.cedar.psi.manager.util.RoutingUtils.hasErrors
-import static org.cedar.psi.manager.util.RoutingUtils.isSME
-import static org.cedar.psi.manager.util.RoutingUtils.not
+import static org.cedar.psi.manager.util.RoutingUtils.requiresExtraction
 
 @Slf4j
 class StreamManager {
@@ -42,62 +38,31 @@ class StreamManager {
   static Topology buildTopology() {
     def builder = new StreamsBuilder()
 
-    //-- granules
-
-    // Stream incoming granules
-    KStream<String, Input> granuleInputStream = builder.stream(inputChangelogTopics(REGISTRY_ID, RecordType.granule))
-
-    // Split granules to those that need SME processing and those ready to parse
-    KStream<String, Input>[] smeBranches = granuleInputStream.branch(isSME, not(isSME))
-    KStream toSmeFunction = smeBranches[0]
-    KStream toParsingFunction = smeBranches[1]
-
-    // To SME functions:
-    toSmeFunction
-        .mapValues({ v -> v.content } as ValueMapper<Input, String>)
-        .to(toExtractorTopic(RecordType.granule), Produced.with(Serdes.String(), Serdes.String()))
-
-    // Merge straight-to-parsing stream with topic SME granules write to:
-    KStream<String, Map> unparsedGranules = builder.stream(fromExtractorTopic(RecordType.granule), Consumed.with(Serdes.String(), JsonSerdes.Map()))
-    KStream<String, ParsedRecord> parsedNotAnalyzedGranules = toParsingFunction
-        .mapValues(AvroUtils.&avroToMap as ValueMapper<Input, Map>)
-        .merge(unparsedGranules)
-        .mapValues({ v -> RecordParser.parse(v, RecordType.granule) } as ValueMapper<Map, ParsedRecord>)
-
-    // Short circuit records with errors back to registry
-    KStream<String, ParsedRecord>[] parsedGranules = parsedNotAnalyzedGranules.branch(hasErrors, isDefault)
-    KStream badParsedStream = parsedGranules[0]
-    badParsedStream.to(parsedTopic(RecordType.granule))
-
-    // Analyze and send final output to parsed topic
-    KStream goodParsedStream = parsedGranules[1]
-    goodParsedStream
-        .mapValues(Analyzers.&addAnalysis as ValueMapper<ParsedRecord, ParsedRecord>)
-        .to(parsedTopic(RecordType.granule))
-
-
-    //-- collections
-
-    // Stream incoming collections
-    KStream<String, Input> collectionInputStream = builder.stream(inputChangelogTopics(REGISTRY_ID, RecordType.collection))
-
-    // parsing collection:
-    KStream<String, ParsedRecord> parsedNotAnalyzedCollection = collectionInputStream
-        .mapValues(AvroUtils.&avroToMap as ValueMapper<Input, Map>)
-        .mapValues({ v -> RecordParser.parse(v, RecordType.collection) } as ValueMapper<Map, ParsedRecord>)
-
-    // Short circuit records with errors back to registry
-    KStream<String, Map>[] parsedCollection = parsedNotAnalyzedCollection.branch(hasErrors, isDefault)
-    KStream badParsedCollection = parsedCollection[0]
-    badParsedCollection.to(parsedTopic(RecordType.collection))
-
-    // Analyze and send final output to parsed topic
-    KStream goodParsedCollection = parsedCollection[1]
-    goodParsedCollection
-        .mapValues(Analyzers.&addAnalysis as ValueMapper<ParsedRecord, ParsedRecord>)
-        .to(parsedTopic(RecordType.collection))
+    RecordType.values().each {
+      addTopologyForType(builder, it)
+    }
 
     return builder.build()
+  }
+
+  static StreamsBuilder addTopologyForType(StreamsBuilder builder, RecordType type) {
+    def inputStream = builder.stream(inputChangelogTopics(REGISTRY_ID, type))
+    def fromExtractorsStream = builder.stream(fromExtractorTopic(type), Consumed.with(Serdes.String(), JsonSerdes.Map()))
+
+    inputStream
+        .filter(requiresExtraction)
+        .mapValues({ v -> v.content } as ValueMapper<Input, String>)
+        .to(toExtractorTopic(type), Produced.with(Serdes.String(), Serdes.String()))
+
+    inputStream
+        .filterNot(requiresExtraction)
+        .mapValues(AvroUtils.&avroToMap as ValueMapper<Input, Map>)
+        .merge(fromExtractorsStream)
+        .mapValues({ RecordParser.parse(it, type) } as ValueMapper<Map, ParsedRecord>)
+        .mapValues(Analyzers.&addAnalysis as ValueMapper)
+        .to(parsedTopic(type))
+
+    return builder
   }
 
   static Properties streamsConfig(String appId, ManagerConfig config) {

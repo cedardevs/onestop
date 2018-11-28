@@ -10,20 +10,20 @@ import org.cedar.psi.common.avro.RecordType
 @CompileStatic
 class RoutingUtils {
 
-  // SME Splitting Info
-  static final List<RecordType> SPLIT_TYPES = [RecordType.granule]
-  static final String SPLIT_FIELD = 'source'
-  static final List<String> SPLIT_VALUES = ['common-ingest']
+  // for each input type, a list of input sources which should be routed to the extractors
+  static final Map<RecordType, List<String>> extractableInputSources = [
+      (RecordType.granule): ['common-ingest']
+  ]
 
-  static final Predicate<String, Input> isSME = new Predicate<String, Input>() {
+  static final Predicate<String, Input> requiresExtraction = new Predicate<String, Input>() {
     @Override boolean test(String key, Input value) {
-      SPLIT_FIELD in value.schema.fields*.name() && value.get(SPLIT_FIELD) in SPLIT_VALUES
+      value.source in extractableInputSources[value.type] ?: []
     }
   }
 
   static final Predicate<String, Input> isNotSME = new Predicate<String, Input>() {
     @Override boolean test(String key, Input value) {
-      !isSME.test(key, value)
+      !requiresExtraction.test(key, value)
     }
   }
 
