@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 import javax.servlet.http.HttpServletResponse
 
@@ -35,7 +34,7 @@ class MetadataRestController {
   @RequestMapping(path = '/metadata/{type}/{source}/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveParsedJson(@PathVariable String type, @PathVariable String source, @PathVariable String id, HttpServletResponse response) {
     def result = metadataStore.retrieveParsed(type, source, id)
-    def link  = metadataStore.constructUri(ServletUriComponentsBuilder.fromCurrentRequestUri())
+    def link  = metadataStore.constructUri().toUriString()
 
     if (!result) {
       response.sendError(404, "No such ${type} with id ${id}")
@@ -65,7 +64,7 @@ class MetadataRestController {
   @RequestMapping(path = '/metadata/{type}/{source}/{id}/input', method = [GET, HEAD], produces = 'application/json')
   Map retrieveInputJson(@PathVariable String type, @PathVariable String source, @PathVariable String id, HttpServletResponse response) {
     def result = metadataStore.retrieveInput(type, source, id)
-    def link  = metadataStore.constructUri(ServletUriComponentsBuilder.fromCurrentRequestUri())
+    def link  = metadataStore.constructUri().toUriString()
 
     if (!result) {
       response.sendError(404, "No such ${type} with id ${id}")

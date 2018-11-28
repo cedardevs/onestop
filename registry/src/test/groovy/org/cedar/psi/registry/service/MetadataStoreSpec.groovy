@@ -192,14 +192,6 @@ class MetadataStoreSpec extends Specification {
     ]
   }
 
-  def 'construct uri'() {
-
-    when:
-    def result = metadataStore.constructUri(ServletUriComponentsBuilder.fromRequest(this.request))
-
-    then:
-    result == 'http://localhost:8080/mvc-showcase/input'
-  }
 
   private static testInput = Input.newBuilder()
       .setContent('{"hello":"world"}')

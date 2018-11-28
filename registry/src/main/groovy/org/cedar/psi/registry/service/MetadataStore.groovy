@@ -1,6 +1,5 @@
 package org.cedar.psi.registry.service
 
-import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.state.QueryableStoreTypes
@@ -23,12 +22,10 @@ import static org.cedar.psi.common.constants.Topics.parsedStore
 class MetadataStore {
 
   private MetadataStreamService metadataStreamService
-  private JsonSlurper slurper
 
   @Autowired
   MetadataStore(MetadataStreamService metadataStreamService) {
     this.metadataStreamService = metadataStreamService
-    this.slurper = new JsonSlurper()
   }
 
   Map retrieveParsed(String type, String source, String id) {
@@ -90,8 +87,8 @@ class MetadataStore {
     metadataStreamService?.streamsApp?.store(parsedStore(type), QueryableStoreTypes.keyValueStore())
   }
 
-  static String constructUri(ServletUriComponentsBuilder servletComponentUri ) {
-    def servletComponent = servletComponentUri.build()
+  UriComponents constructUri() {
+    def servletComponent = ServletUriComponentsBuilder.fromCurrentRequestUri().build()
     def host = servletComponent.host + ':' + servletComponent.port
     def scheme = servletComponent.scheme
     def path = servletComponent.path
@@ -105,7 +102,7 @@ class MetadataStore {
     UriComponents uriComponents = UriComponentsBuilder.newInstance()
         .scheme(scheme).host(host).path(path).build()
 
-    return uriComponents.toUriString()
+    return uriComponents
   }
 
 }
