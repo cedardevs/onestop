@@ -40,9 +40,9 @@ const styleNav = {
 }
 
 const styleUserWelcome = {
-    padding: 0,
-    margin: 0,
-    float: 'right'
+  padding: 0,
+  margin: 0,
+  float: 'right',
 }
 
 const styleLinkList = {
@@ -106,8 +106,16 @@ const styleSkipLinkHover = {
 class Header extends React.Component {
   constructor(props) {
     super(props)
+    this.props = props
     this.state = {
       focusingSkipLink: false,
+    }
+  }
+
+  componentDidMount() {
+    const {getUser, userProfileEndpoint, authEnabled} = this.props
+    if (authEnabled && userProfileEndpoint) {
+      getUser(userProfileEndpoint)
     }
   }
 
@@ -130,24 +138,24 @@ class Header extends React.Component {
   }
 
   render() {
-    const {headerDropdownMenuFeatureAvailable, user} = this.props
+    const {headerDropdownMenuFeatureAvailable, user, authEnabled} = this.props
     const {focusingSkipLink} = this.state
-    const userEmail = user.info ? user.info.email : null;
+    const userEmail = user && user.info ? user.info.email : null
 
-    const login =  !user.info ?
+    const login = authEnabled ? !user.info ? (
       <HeaderLink title="login" to="/login">
         Login
       </HeaderLink>
-      :
+    ) : (
       <HeaderLink title="logout" to="/logout">
         Logout
       </HeaderLink>
+    ) : null
 
-      const welcomeUser = (
-        userEmail ?
-            <div style={styleUserWelcome}>Logged in as {userEmail}</div>
-            : null
-      )
+    const welcomeUser = userEmail ? (
+      <div style={styleUserWelcome}>Logged in as {userEmail}</div>
+    ) : null
+
     const headerDropDownMenuListItem = headerDropdownMenuFeatureAvailable ? (
       <li style={styleLinkListItem(false, true)}>
         <HeaderDropdownMenuButtonContainer />
@@ -166,15 +174,15 @@ class Header extends React.Component {
             About Us
           </HeaderLink>
         </li>
-        <li
-          style={styleLinkListItem(false, false)}
-        >
+        <li style={styleLinkListItem(false, !authEnabled)}>
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}>
-            {login}
+        <li
+          style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}
+        >
+          {login}
         </li>
         {headerDropDownMenuListItem}
       </ul>
@@ -223,7 +231,7 @@ class Header extends React.Component {
     return (
       <div style={styleWrapper}>
         <div style={styleHeader}>
-            {welcomeUser}
+          {welcomeUser}
           <FlexRow
             style={styleHeaderFlexRow}
             items={[
