@@ -17,6 +17,7 @@ import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.common.util.AvroUtils
 import org.cedar.psi.manager.config.ManagerConfig
 import org.cedar.psi.manager.util.Analyzers
+import org.cedar.psi.manager.util.RecordParser
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
@@ -61,7 +62,7 @@ class StreamManager {
     KStream<String, ParsedRecord> parsedNotAnalyzedGranules = toParsingFunction
         .mapValues(AvroUtils.&avroToMap as ValueMapper<Input, Map>)
         .merge(unparsedGranules)
-        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v, RecordType.granule) } as ValueMapper<Map, ParsedRecord>)
+        .mapValues({ v -> RecordParser.parse(v, RecordType.granule) } as ValueMapper<Map, ParsedRecord>)
 
     // Short circuit records with errors back to registry
     KStream<String, ParsedRecord>[] parsedGranules = parsedNotAnalyzedGranules.branch(hasErrors, isDefault)
@@ -83,7 +84,7 @@ class StreamManager {
     // parsing collection:
     KStream<String, ParsedRecord> parsedNotAnalyzedCollection = collectionInputStream
         .mapValues(AvroUtils.&avroToMap as ValueMapper<Input, Map>)
-        .mapValues({ v -> MetadataParsingService.parseToInternalFormat(v, RecordType.collection) } as ValueMapper<Map, ParsedRecord>)
+        .mapValues({ v -> RecordParser.parse(v, RecordType.collection) } as ValueMapper<Map, ParsedRecord>)
 
     // Short circuit records with errors back to registry
     KStream<String, Map>[] parsedCollection = parsedNotAnalyzedCollection.branch(hasErrors, isDefault)
