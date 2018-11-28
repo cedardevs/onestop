@@ -139,7 +139,5 @@ export const initialize = () => {
     dispatch(fetchConfig())
     dispatch(fetchInfo())
     dispatch(fetchCounts())
-    dispatch(getUser())
-
   }
 }
