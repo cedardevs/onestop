@@ -2,8 +2,8 @@ package org.cedar.psi.common.util
 
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
+import org.cedar.psi.common.avro.ParsedRecord
 import spock.lang.Specification
-
 
 class AvroUtilsSpec extends Specification {
 
@@ -28,6 +28,14 @@ class AvroUtilsSpec extends Specification {
         contentType: 'application/json',
         content: '{"hello":"world"}'
     ]
+  }
+
+  def 'ParsedRecord has empty array of errors by default'() {
+    def record = ParsedRecord.newBuilder().build()
+
+    expect:
+    record.errors instanceof List
+    record.errors.size() == 0
   }
 
 

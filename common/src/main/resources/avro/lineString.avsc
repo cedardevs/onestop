@@ -1,0 +1,30 @@
+{
+  "type": "record",
+  "name": "LineString",
+  "doc": "An array of two or more CONNECTED positions, each described with two values: longitude then latitude. A third (optional) value for elevation is allowed per position. A LineString may self-cross.",
+  "namespace": "org.cedar.psi.common.avro",
+  "fields": [
+    {
+      "name": "type",
+      "type": {
+        "name": "LineStringType",
+        "type": "enum",
+        "symbols": ["LineString"]
+      },
+      "default": "LineString"
+    },
+    {
+      "name": "coordinates",
+      "type": {
+        "type": "array",
+        "items": [
+          {
+            "type": "array",
+            "items": ["double"]
+          }
+        ]
+      },
+      "default": []
+    }
+  ]
+}

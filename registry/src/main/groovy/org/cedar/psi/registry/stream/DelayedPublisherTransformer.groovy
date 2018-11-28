@@ -9,15 +9,16 @@ import org.apache.kafka.streams.kstream.Transformer
 import org.apache.kafka.streams.processor.ProcessorContext
 import org.apache.kafka.streams.processor.PunctuationType
 import org.apache.kafka.streams.state.KeyValueStore
-import org.cedar.psi.registry.util.TimeFormatUtils
+import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.avro.Publishing
 
 @Slf4j
 @CompileStatic
-class DelayedPublisherTransformer implements Transformer<String, Map, KeyValue<String, Map>> {
+class DelayedPublisherTransformer implements Transformer<String, ParsedRecord, KeyValue<String, ParsedRecord>> {
   private ProcessorContext context
   private KeyValueStore<Long, String> triggerTimesStore
   private KeyValueStore<String, Long> triggerKeysStore
-  private KeyValueStore<String, Map> lookupStore
+  private KeyValueStore<String, ParsedRecord> lookupStore
 
   private String triggerTimesStoreName
   private String triggerKeysStoreName
@@ -38,22 +39,21 @@ class DelayedPublisherTransformer implements Transformer<String, Map, KeyValue<S
 
     triggerTimesStore = (KeyValueStore<Long, String>) this.context.getStateStore(triggerTimesStoreName)
     triggerKeysStore = (KeyValueStore<String, Long>) this.context.getStateStore(triggerKeysStoreName)
-    lookupStore = (KeyValueStore<String, Map>) this.context.getStateStore(lookupStoreName)
+    lookupStore = (KeyValueStore<String, ParsedRecord>) this.context.getStateStore(lookupStoreName)
 
     this.context.schedule(interval, PunctuationType.WALL_CLOCK_TIME, this.&publishUpTo)
   }
 
   @Override
-  KeyValue<String, Map> transform(String key, Map value) {
+  KeyValue<String, ParsedRecord> transform(String key, ParsedRecord value) {
     log.debug("transforming value for key ${key}")
     Long now = context.timestamp()
-    Map publishingInfo = value?.publishing as Map ?: [:]
-    String publishDate = publishingInfo.until as String ?: null
-    Long incomingPublishTime = TimeFormatUtils.parseTimestamp(publishDate)
+    Publishing publishingInfo = value?.publishing
+    Long incomingPublishTime = publishingInfo.until
     Long storedPublishTime = triggerKeysStore.get(key)
 
-    log.debug("transforming value with private ${publishingInfo?.private} and publish date ${publishDate}")
-    if (publishingInfo?.private == true) {
+    log.debug("transforming value with private ${publishingInfo?.isPrivate} and publish date ${incomingPublishTime}")
+    if (publishingInfo?.isPrivate) {
       if (incomingPublishTime && incomingPublishTime > now) {
         log.debug("incoming publish time is in the future => store the publish time")
         addTrigger(incomingPublishTime, key)
@@ -95,9 +95,8 @@ class DelayedPublisherTransformer implements Transformer<String, Map, KeyValue<S
         def value = lookupStore.get(triggerKey)
         if (value) {
           log.debug("looked up existing state for ${triggerKey}: ${value}")
-          def publishingInfo = value?.publishing as Map ?: [:]
-          def publishDate = publishingInfo?.until ?: null
-          def publishTimestamp = TimeFormatUtils.parseTimestamp(publishDate as String)
+          def publishingInfo = value?.publishing
+          def publishTimestamp = publishingInfo?.until
           if (publishTimestamp && publishTimestamp <= timestamp) {
             log.debug("current publish date for ${triggerKey} has passed => publish")
             context.forward(triggerKey, value)

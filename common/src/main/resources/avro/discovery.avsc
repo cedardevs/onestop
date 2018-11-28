@@ -1,118 +1,134 @@
 [
   {
-    "type": "record",
-    "name": "Links",
+    "name": "Link",
     "namespace": "org.cedar.psi.common.avro",
+    "type": "record",
     "fields": [
       {
-        "name": "link",
-        "type": {
-          "type": "array",
-          "items": {
-            "name": "Link",
-            "type": "record",
-            "fields": [
-              {
-                "name": "linkName",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "linkProtocol",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "linkUrl",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "linkDescription",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "linkFunction",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              }
-            ]
-          }
-        }
+        "name": "linkName",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "linkProtocol",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "linkUrl",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "linkDescription",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
+      },
+      {
+        "name": "linkFunction",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
       }
     ]
   },
   {
-    "type": "record",
-    "name": "TemporalBounding",
+    "name": "Reference",
     "namespace": "org.cedar.psi.common.avro",
+    "type": "record",
     "fields": [
       {
-        "name": "beginDate",
+        "name": "title",
         "type": [
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
-        "name": "beginIndeterminate",
+        "name": "date",
         "type": [
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
-        "name": "endDate",
+        "name": "links",
+        "type": {
+          "type": "array",
+          "items": "Link"
+        },
+        "default": []
+      }
+    ]
+  },
+  {
+    "name": "ResponsibleParty",
+    "namespace": "org.cedar.psi.common.avro",
+    "type": "record",
+    "fields": [
+      {
+        "name": "individualName",
         "type": [
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
-        "name": "endIndeterminate",
+        "name": "organizationName",
         "type": [
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
-        "name": "instant",
+        "name": "positionName",
         "type": [
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
-        "name": "instantIndeterminate",
+        "name": "role",
         "type": [
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
-        "name": "description",
+        "name": "email",
         "type": [
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
+      },
+      {
+        "name": "phone",
+        "type": [
+          "null",
+          "string"
+        ],
+        "default": null
       }
     ]
   },
@@ -128,7 +144,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "parentIdentifier",
@@ -136,7 +152,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "hierarchyLevelName",
@@ -144,7 +160,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "doi",
@@ -152,7 +168,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "purpose",
@@ -160,7 +176,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "status",
@@ -168,7 +184,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "credit",
@@ -176,7 +192,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "title",
@@ -184,7 +200,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "alternateTitle",
@@ -192,7 +208,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "description",
@@ -200,7 +216,7 @@
           "null",
           "string"
         ],
-        "default": "null"
+        "default": null
       },
       {
         "name": "keywords",
@@ -214,11 +230,9 @@
                 "name": "values",
                 "type": {
                   "type": "array",
-                  "items": [
-                    "null",
-                    "string"
-                  ]
-                }
+                  "items": "string"
+                },
+                "default": []
               },
               {
                 "name": "type",
@@ -226,45 +240,57 @@
                   "null",
                   "string"
                 ],
-                "default": "null"
+                "default": null
               },
               {
                 "name": "namespace",
-                "type": "string"
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
               }
             ]
           }
-        }
+        },
+        "default": []
       },
       {
         "name": "topicCategories",
         "type": {
           "type": "array",
-          "items": [
-            "null",
-            "string"
-          ]
-        }
+          "items": "string"
+        },
+        "default": []
       },
       {
         "name": "temporalBounding",
-        "type": "TemporalBounding"
+        "type": [
+          "null",
+          "TemporalBounding"
+        ],
+        "default": null
       },
       {
         "name": "spatialBounding",
-        "type": {
-          "type": "array",
-          "items": {
-            "name": "Geometry",
-            "type": "record",
-            "doc": "One geometry as defined by GeoJSON",
-            "fields": []
-          }
-        }
+        "type": [
+          "null",
+          "Point",
+          "MultiPoint",
+          "LineString",
+          "MultiLineString",
+          "Polygon",
+          "MultiPolygon"
+        ],
+        "default": null
       },
       {
         "name": "isGlobal",
-        "type": "boolean"
+        "type": [
+          "null",
+          "boolean"
+        ],
+        "default": null
       },
       {
         "name": "acquisitionInstruments",
@@ -277,27 +303,31 @@
               {
                 "name": "instrumentIdentifier",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "instrumentType",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "instrumentDescription",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               }
             ]
           }
-        }
+        },
+        "default": []
       },
       {
         "name": "acquisitionOperations",
@@ -310,34 +340,39 @@
               {
                 "name": "operationDescription",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "operationIdentifier",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "operationStatus",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "operationType",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               }
             ]
           }
-        }
+        },
+        "default": []
       },
       {
         "name": "acquisitionPlatforms",
@@ -350,27 +385,31 @@
               {
                 "name": "platformIdentifier",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "platformDescription",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "platformSponsor",
                 "type": {
                   "type": "array",
                   "items": "string"
-                }
+                },
+                "default": []
               }
             ]
           }
-        }
+        },
+        "default": []
       },
       {
         "name": "dataFormats",
@@ -383,265 +422,193 @@
               {
                 "name": "name",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               },
               {
                 "name": "version",
                 "type": [
-                  "string",
-                  "null"
-                ]
+                  "null",
+                  "string"
+                ],
+                "default": null
               }
             ]
           }
-        }
+        },
+        "default": []
       },
       {
         "name": "links",
-        "type": "Links"
+        "type": {
+          "type": "array",
+          "items": "Link"
+        },
+        "default": []
       },
       {
         "name": "responsibleParties",
         "type": {
           "type": "array",
-          "items": {
-            "name": "ResponsibleParty",
-            "type": "record",
-            "fields": [
-              {
-                "name": "individualName",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "organizationName",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "positionName",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "role",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "email",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "phone",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              }
-            ]
-          }
-        }
+          "items": "ResponsibleParty"
+        },
+        "default": []
       },
       {
         "name": "thumbnail",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "thumbnailDescription",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "creationDate",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "revisionDate",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "publicationDate",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "citeAsStatements",
         "type": {
           "type": "array",
           "items": "string"
-        }
+        },
+        "default": []
       },
       {
         "name": "crossReferences",
         "type": {
           "type": "array",
-          "items": "string"
-        }
+          "items": "Reference"
+        },
+        "default": []
       },
       {
         "name": "largerWorks",
         "type": {
           "type": "array",
-          "items": {
-            "name": "Reference",
-            "type": "record",
-            "fields": [
-              {
-                "name": "title",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "date",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              {
-                "name": "links",
-                "type": "Links"
-              }
-            ]
-          }
-        }
+          "items": "Reference"
+        },
+        "default": []
       },
       {
         "name": "useLimitation",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "legalConstraints",
         "type": {
           "type": "array",
-          "items": [
-            "null",
-            "string"
-          ]
-        }
+          "items": "string"
+        },
+        "default": []
       },
       {
         "name": "accessFeeStatement",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "orderingInstructions",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "edition",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "dsmmAccessibility",
-        "type": [
-          "int",
-          "null"
-        ]
+        "type": "int",
+        "default": 0
       },
       {
         "name": "dsmmDataIntegrity",
-        "type": [
-          "int",
-          "null"
-        ]
+        "type": "int",
+        "default": 0
       },
       {
         "name": "dsmmDataQualityAssessment",
-        "type": [
-          "int",
-          "null"
-        ]
+        "type": "int",
+        "default": 0
       },
       {
         "name": "dsmmDataQualityAssurance",
-        "type": [
-          "int",
-          "null"
-        ]
+        "type": "int",
+        "default": 0
       },
       {
         "name": "dsmmDataQualityControlMonitoring",
-        "type": [
-          "int",
-          "null"
-        ]
+        "type": "int",
+        "default": 0
       },
       {
         "name": "dsmmPreservability",
-        "type": [
-          "int",
-          "null"
-        ]
+        "type": "int",
+        "default": 0
       },
       {
         "name": "dsmmProductionSustainability",
-        "type": [
-          "int",
-          "null"
-        ]
+        "type": "int",
+        "default": 0
       },
       {
         "name": "dsmmTransparencyTraceability",
-        "type": [
-          "int",
-          "null"
-        ]
+        "type": "int",
+        "default": 0
       },
       {
         "name": "dsmmUsability",
-        "type": [
-          "int",
-          "null"
-        ]
+        "type": "int",
+        "default": 0
       },
       {
         "name": "dsmmAverage",
-        "type": [
-          "int",
-          "null"
-        ],
+        "type": "float",
+        "default": 0,
         "doc": "Calculated mean average of individual DSMM scores for Accessibility, Data Integrity, Data Quality Assessment, Data Quality Assurance, Data Quality Control Monitoring, Preservability, Production Sustainability, Transparency Traceability, and Usability."
       },
       {
@@ -649,26 +616,86 @@
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "presentationForm",
         "type": [
           "null",
           "string"
-        ]
+        ],
+        "default": null
       },
       {
         "name": "services",
         "type": {
           "type": "array",
-          "items": [
-            "null",
-            "string"
-          ],
-          "default": "null",
-          "doc": "List of objects that represent an SV_ServiceIdentification section, if any, of ISO 19115 XML metadata document. Empty if not present."
-        }
+          "items": {
+            "type": "record",
+            "name": "Service",
+            "fields": [
+              {
+                "name": "title",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "alternateTitle",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "description",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "date",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "dateType",
+                "type": [
+                  "null",
+                  "string"
+                ],
+                "default": null
+              },
+              {
+                "name": "pointOfContact",
+                "type": [
+                  "null",
+                  "ResponsibleParty"
+                ],
+                "default": null
+              },
+              {
+                "name": "operations",
+                "type": {
+                  "type": "array",
+                  "items": "Link"
+                },
+                "default": []
+              }
+            ]
+          }
+        },
+        "default": [],
+        "doc": "List of objects that represent an SV_ServiceIdentification section, if any, of ISO 19115 XML metadata document. Empty if not present."
       }
     ]
   }

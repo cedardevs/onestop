@@ -2,15 +2,26 @@ package org.cedar.psi.registry.stream
 
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.processor.ProcessorContext
+import org.cedar.psi.common.avro.Discovery
+import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.avro.Publishing
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import java.time.Instant
 
 @Slf4j
 @Unroll
 class PublishingAwareTransformerSpec extends Specification {
 
-  static pastDate = '1000-01-01T00:00:00Z'
-  static futureDate = '3000-01-01T00:00:00Z'
+  static  pastDateString = '1000-01-01T00:00:00Z'
+  static long pastDateLong = Instant.parse( pastDateString).toEpochMilli()
+
+  static futureDateString = '3000-01-01T00:00:00Z'
+  static long futureDateLong = Instant.parse(futureDateString).toEpochMilli()
+
+  static discovery = Discovery.newBuilder()
+      .build()
 
   PublishingAwareTransformer transformer
   ProcessorContext mockContext
@@ -24,28 +35,65 @@ class PublishingAwareTransformerSpec extends Specification {
   }
 
   def 'sends tombstone when message is private'() {
-    expect:
-    transformer.transform(input) == null
+    def publishing1 = Publishing.newBuilder()
+        .setIsPrivate(true)
+        .build()
+    def value1 = ParsedRecord.newBuilder()
+        .setDiscovery(discovery)
+        .setPublishing(publishing1)
+        .build()
+    def publishing2 = Publishing.newBuilder()
+        .setIsPrivate(true)
+        .setUntil(futureDateLong)
+        .build()
+    def value2 = ParsedRecord.newBuilder()
+        .setDiscovery(discovery)
+        .setPublishing(publishing2)
+        .build()
+    def publishing3 = Publishing.newBuilder()
+        .setIsPrivate(false)
+        .setUntil(pastDateLong)
+        .build()
+    def value3 = ParsedRecord.newBuilder()
+        .setDiscovery(discovery)
+        .setPublishing(publishing3)
+        .build()
 
-    where:
-    input << [
-        ["publishing": ["private": true]],
-        ["publishing": ["private": true, "until":futureDate]],
-        ["publishing": ["private": false, "until":pastDate]],
-    ]
+    expect:
+    transformer.transform(value1) == null
+    transformer.transform(value2) == null
+    transformer.transform(value3) == null
+
   }
 
   def 'passes message through when not private'() {
+    def notPrivate1 = Publishing.newBuilder()
+        .setIsPrivate(false)
+        .build()
+    def notPrivate2 = Publishing.newBuilder()
+        .setIsPrivate(false)
+        .setUntil(futureDateLong)
+        .build()
+    def notPrivate3 = Publishing.newBuilder()
+        .setIsPrivate(true)
+        .setUntil(pastDateLong)
+        .build()
+    def value1 = ParsedRecord.newBuilder()
+        .setDiscovery(discovery)
+        .setPublishing(notPrivate1)
+        .build()
+    def value2 = ParsedRecord.newBuilder()
+        .setDiscovery(discovery)
+        .setPublishing(notPrivate2)
+        .build()
+    def value3 = ParsedRecord.newBuilder()
+        .setDiscovery(discovery)
+        .setPublishing(notPrivate3)
+        .build()
     expect:
-    transformer.transform(input) == input
-
-    where:
-    input << [
-        ["metadata": "there is no publishing info in this json"],
-        ["publishing": ["private": false]],
-        ["publishing": ["private": false, "until":futureDate]],
-        ["publishing": ["private": true, "until":pastDate]],
-    ]
+    transformer.transform(value1) == value1
+    transformer.transform(value2) == value2
+    transformer.transform(value3) == value3
   }
 
 }

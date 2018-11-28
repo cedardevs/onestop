@@ -62,7 +62,7 @@ class RegistryIntegrationSpec extends Specification {
 
   final ObjectMapper mapper = new ObjectMapper()
   final JsonSchemaFactory factory = JsonSchemaFactory.byDefault()
-  final String registryResponseSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('registryResponse-schema.json').text
+  final String registryResponseSchemaString = ClassLoader.systemClassLoader.getResourceAsStream('jsonSchema/registryResponse-schema.json').text
   final JsonNode registryResponseSchemaNode = mapper.readTree(registryResponseSchemaString)
   final JsonSchema registryResponseSchema = factory.getJsonSchema(registryResponseSchemaNode)
 
@@ -101,15 +101,15 @@ class RegistryIntegrationSpec extends Specification {
     then:
     registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(retrieveResponse.body)))
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body.id == granuleId
-    retrieveResponse.body.type == 'granule'
-    retrieveResponse.body.attributes.input.content == granuleText
-    retrieveResponse.body.attributes.input.contentType == "application/json"
-    retrieveResponse.body.attributes.input.source == "common-ingest"
-//    retrieveResponse.body.attributes.identifiers.'common-ingest' == granuleMap.trackingId
+    retrieveResponse.body.data.id == granuleId
+    retrieveResponse.body.data.type == 'granule'
+    retrieveResponse.body.data.attributes.input.content == granuleText
+    retrieveResponse.body.data.attributes.input.contentType == "application/json"
+    retrieveResponse.body.data.attributes.input.source == "common-ingest"
+//    retrieveResponse.body.data.attributes.identifiers.'common-ingest' == granuleMap.trackingId
 
     and: // let's verify the full response just this once
-    retrieveResponse.body == [
+    retrieveResponse.body.data == [
         id: granuleId,
         type: 'granule',
         attributes: [
@@ -129,7 +129,6 @@ class RegistryIntegrationSpec extends Specification {
     ]
   }
 
-//  @spock.lang.Ignore
   def 'can post then retrieve granule iso with an existing key'() {
     def restTemplate = new RestTemplate()
     def granuleText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
@@ -156,15 +155,14 @@ class RegistryIntegrationSpec extends Specification {
     then:
     registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(retrieveResponse.body)))
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body.id == granuleId  as String
-    retrieveResponse.body.type == 'granule'
-    retrieveResponse.body.attributes.input.content == granuleText
-    retrieveResponse.body.attributes.input.contentType == "application/xml"
-    retrieveResponse.body.attributes.input.source == Topics.DEFAULT_SOURCE
-//    retrieveResponse.body.attributes.identifiers == [(Topics.DEFAULT_SOURCE): granuleId.toString()]
+    retrieveResponse.body.data.id == granuleId  as String
+    retrieveResponse.body.data.type == 'granule'
+    retrieveResponse.body.data.attributes.input.content == granuleText
+    retrieveResponse.body.data.attributes.input.contentType == "application/xml"
+    retrieveResponse.body.data.attributes.input.source == Topics.DEFAULT_SOURCE
+//    retrieveResponse.body.data.attributes.identifiers == [(Topics.DEFAULT_SOURCE): granuleId.toString()]
   }
 
-//  @spock.lang.Ignore
   def 'can post then retrieve collection info with an existing key'() {
     def restTemplate = new RestTemplate()
     def collectionText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
@@ -190,15 +188,14 @@ class RegistryIntegrationSpec extends Specification {
     then:
     registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(retrieveResponse.body)))
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body.id == collectionId as String
-    retrieveResponse.body.type == 'collection'
-    retrieveResponse.body.attributes.input.content == collectionText
-    retrieveResponse.body.attributes.input.contentType == "application/xml"
-    retrieveResponse.body.attributes.input.source == Topics.DEFAULT_SOURCE
-//    retrieveResponse.body.attributes.identifiers == [(Topics.DEFAULT_SOURCE): collectionId.toString()]
+    retrieveResponse.body.data.id == collectionId as String
+    retrieveResponse.body.data.type == 'collection'
+    retrieveResponse.body.data.attributes.input.content == collectionText
+    retrieveResponse.body.data.attributes.input.contentType == "application/xml"
+    retrieveResponse.body.data.attributes.input.source == Topics.DEFAULT_SOURCE
+//    retrieveResponse.body.data.attributes.identifiers == [(Topics.DEFAULT_SOURCE): collectionId.toString()]
   }
 
-//  @spock.lang.Ignore
   def 'can post then retrieve collection info with no key'() {
     def restTemplate = new RestTemplate()
     def collectionText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text
@@ -224,15 +221,14 @@ class RegistryIntegrationSpec extends Specification {
 
     then:
     retrieveResponse.statusCode == HttpStatus.OK
-    retrieveResponse.body.id == collectionId as String
-    retrieveResponse.body.type == 'collection'
-    retrieveResponse.body.attributes.input.content == collectionText
-    retrieveResponse.body.attributes.input.contentType == "application/xml"
-    retrieveResponse.body.attributes.input.source == Topics.DEFAULT_SOURCE
-//    retrieveResponse.body.attributes.identifiers == [(Topics.DEFAULT_SOURCE): (collectionId as String)]
+    retrieveResponse.body.data.id == collectionId as String
+    retrieveResponse.body.data.type == 'collection'
+    retrieveResponse.body.data.attributes.input.content == collectionText
+    retrieveResponse.body.data.attributes.input.contentType == "application/xml"
+    retrieveResponse.body.data.attributes.input.source == Topics.DEFAULT_SOURCE
+//    retrieveResponse.body.data.attributes.identifiers == [(Topics.DEFAULT_SOURCE): (collectionId as String)]
   }
 
-//  @spock.lang.Ignore
   def 'returns 404 for unsupported type'() {
     def restTemplate = new RestTemplate()
     def collectionText = ClassLoader.systemClassLoader.getResourceAsStream('dscovr_fc1.xml').text

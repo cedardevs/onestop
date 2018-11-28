@@ -2,38 +2,42 @@ package org.cedar.psi.manager.stream
 
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.manager.util.ISOParser
-import org.xml.sax.SAXException
+import org.cedar.psi.common.avro.ErrorEvent
 
 @Slf4j
 class MetadataParsingService {
 
-  static Map parseToInternalFormat(Map msgMap) {
-    String format = msgMap.contentType
-    String rawMetadata = msgMap.content
-//    log.info "Parsing message with source and id: ${msgMap.identifiers} and conentType: $format "
-
-    Map result = [:]
+  static ParsedRecord parseToInternalFormat(Map msgMap) {
+    String contentType = msgMap.contentType
+    String content = msgMap.content
 
     try {
-      if (format == 'application/xml') {
-        result = [discovery: ISOParser.parseXMLMetadataToMap(rawMetadata)]
+      if (!content) {
+        def error = ErrorEvent.newBuilder().setTitle("No content provided").build()
+        return ParsedRecord.newBuilder().setErrors([error]).build()
       }
-      else {
-        result = [error: 'Unknown raw format of metadata']
+      if (contentType != 'application/xml') {
+        def error = ErrorEvent.newBuilder()
+            .setTitle("Unsupported content type")
+            .setDetail("Content type [${contentType}] is not supported")
+            .build()
+        return ParsedRecord.newBuilder().setErrors([error]).build()
       }
-    }
-    catch(SAXException e) {
-      result = [error: "Malformed XML encountered; unable to parse. " +
-          "Root cause: ${ExceptionUtils.getRootCauseMessage(e).trim()}"]
-    }
-    catch(Exception e) {      
-//      log.error "Unable to parse message with source and id: ${srcId}"
-      log.error "Caught exception: $e"
-      result = [error: "Malformed data encountered; unable to parse. " +
-          "Root cause: ${ExceptionUtils.getRootCauseMessage(e).trim()}"]
-    }
 
-    return result
+      return ParsedRecord.newBuilder()
+          .setDiscovery(ISOParser.parseXMLMetadataToDiscovery(content))
+          .build()
+    }
+    catch (Exception e) {
+      def error = ErrorEvent.newBuilder()
+          .setTitle("Unable to parse malformed content")
+          .setDetail(ExceptionUtils.getRootCauseMessage(e).trim())
+          .build()
+      log.error "${error.title}: ${error.detail}"
+      return ParsedRecord.newBuilder().setErrors([error]).build()
+    }
   }
+
 }

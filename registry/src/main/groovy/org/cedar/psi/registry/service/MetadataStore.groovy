@@ -4,11 +4,15 @@ import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.state.QueryableStoreTypes
+import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
+import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.util.AvroUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
-import static org.cedar.psi.common.constants.Topics.*
-
+import static org.cedar.psi.common.constants.Topics.inputStore
+import static org.cedar.psi.common.constants.Topics.parsedStore
 
 @Slf4j
 @Service
@@ -25,31 +29,36 @@ class MetadataStore {
   }
 
   Map retrieveEntity(String type, String source, String id) {
-    def inputStore = inputStore(type, source)
-    def parsedStore = parsedStore(type)
-    if (!inputStore && !parsedStore) { return null }
-    def inputValue = inputStore ? getFromStore(inputStore, id) : null
-    def parsedValue = parsedStore ? getFromStore(parsedStore, id) : null
-    if (!inputValue && !parsedValue) { return null }
-    def inputMap = inputValue ? [input: inputValue] : [:]
-    def parsedMap = parsedValue ? parsedValue as Map : [:]
-    return [
-        id: id,
-        type: type,
-        attributes: mergeAttributes(inputMap, parsedMap)
-    ]
-  }
-
-  private Object getFromStore(String storeName, String id) {
     try {
-      def store = metadataStreamService.streamsApp.store(storeName, QueryableStoreTypes.keyValueStore())
-      if (!store) { return null }
-      return store.get(id)
+      def inputValue = getInputStore(type, source)?.get(id)
+      def parsedValue = getParsedStore(type)?.get(id)
+
+      if (!inputValue && !parsedValue) {
+        return null
+      }
+
+      def inputMap = inputValue ? [input: inputValue] : [:]
+      def parsedMap = parsedValue ? AvroUtils.avroToMap(parsedValue) : [:]
+      return [
+          data: [
+              id        : id,
+              type      : type,
+              attributes: mergeAttributes(inputMap, parsedMap)
+          ]
+      ]
     }
     catch (Exception e) {
-      log.error("Failed to retrieve value with id [${id}] from state store [${storeName}]", e)
+      log.error("Failed to retrieve [${type}] value from source [${source}] with id [${id}]", e)
       throw e
     }
+  }
+
+  ReadOnlyKeyValueStore<String, Input> getInputStore(String type, String source) {
+    metadataStreamService?.streamsApp?.store(inputStore(type, source), QueryableStoreTypes.keyValueStore())
+  }
+
+  ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(String type) {
+    metadataStreamService?.streamsApp?.store(parsedStore(type), QueryableStoreTypes.keyValueStore())
   }
 
   /**

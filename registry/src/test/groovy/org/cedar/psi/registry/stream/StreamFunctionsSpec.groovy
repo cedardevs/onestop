@@ -7,6 +7,30 @@ import spock.lang.Specification
 
 class StreamFunctionsSpec extends Specification {
 
+  def 'identity reducer returns the next value'() {
+    def curr = 'A'
+    def next = 'B'
+
+    expect:
+    StreamFunctions.identityReducer.apply(curr, next) == next
+  }
+
+  def 'set reducer merges sets'() {
+    def curr = [1, 2, 3] as Set
+    def next = [3, 4, 5] as Set
+
+    expect:
+    StreamFunctions.setReducer.apply(curr, next) == [1, 2, 3, 4, 5] as Set
+  }
+
+  def 'set reducer supports tombstones'() {
+    def curr = [1, 2, 3] as Set
+    def next = null
+
+    expect:
+    StreamFunctions.setReducer.apply(curr, next) == null
+  }
+
   def 'merge function merges json strings'() {
     def currentAggregate = [
         contentType: 'application/json',

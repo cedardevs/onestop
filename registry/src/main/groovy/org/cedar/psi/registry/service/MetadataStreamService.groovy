@@ -14,6 +14,8 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.*
 import org.apache.kafka.streams.state.Stores
 import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.psi.common.avro.ErrorEvent
 import org.cedar.psi.common.serde.JsonSerdes
 import org.cedar.psi.registry.stream.DelayedPublisherTransformer
 import org.cedar.psi.registry.stream.PublishingAwareTransformer
@@ -41,7 +43,6 @@ class MetadataStreamService {
   private final long publishInterval
   private final String stateDir
   private KafkaStreams streamsApp
-
 
   MetadataStreamService(
       @Autowired AdminClient adminClient,
@@ -130,15 +131,12 @@ class MetadataStreamService {
       addTopologyForType(builder, type, publishInterval)
     }
 
-    // TODO this table is unused, plus should we really store every error forever?
-    KTable<String, Map> errorHandlerTable = builder.table(
-        errorTopic(),
-        Consumed.with(Serdes.String(), JsonSerdes.Map()),
-        Materialized.as(errorStore())
-            .withLoggingEnabled([:])
-            .withKeySerde(Serdes.String())
-            .withValueSerde(JsonSerdes.Map())
-    )
+    // TODO this table is unused, also it stores the most recent error per key forever... do we really want that?
+    KStream<String, ErrorEvent> errorStream = builder.stream(errorTopic())
+    KTable<String, Set<ErrorEvent>> errorTable = errorStream
+        .mapValues({ it as Set } as ValueMapper<ErrorEvent, Set<ErrorEvent>>)
+        .groupByKey()
+        .reduce(StreamFunctions.setReducer, Materialized.as(errorStore()))
 
     return builder.build()
   }
@@ -154,11 +152,10 @@ class MetadataStreamService {
     }
 
     // build parsed table
-    KTable<String, Map> parsedTable = builder
-        .stream(parsedTopic(type), Consumed.with(Serdes.String(), JsonSerdes.Map()))
-        .mapValues(StreamFunctions.parsedInfoNormalizer)
+    KTable<String, ParsedRecord> parsedTable = builder
+        .stream(parsedTopic(type))
         .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(parsedStore(type)).withValueSerde(JsonSerdes.Map()))
+        .reduce(StreamFunctions.identityReducer, Materialized.as(parsedStore(type)))
 
     // add delayed publisher
     if (publishInterval) {
@@ -174,14 +171,14 @@ class MetadataStreamService {
       parsedTable
           .toStream()
           .transform({ -> publisher }, publishTimeStore(type), publishKeyStore(type), parsedStore(type))
-          .to(parsedTopic(type), Produced.with(Serdes.String(), JsonSerdes.Map()))
+          .to(parsedTopic(type))
     }
 
     // build published topic
     parsedTable
         .toStream()
-        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier<Map, Map>)
-        .to(publishedTopic(type), Produced.with(Serdes.String(), JsonSerdes.Map()))
+        .transformValues({ -> new PublishingAwareTransformer() } as ValueTransformerSupplier<ParsedRecord, ParsedRecord>)
+        .to(publishedTopic(type))
 
     return builder
   }

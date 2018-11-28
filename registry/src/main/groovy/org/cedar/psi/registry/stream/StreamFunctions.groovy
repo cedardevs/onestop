@@ -6,7 +6,6 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.kstream.Reducer
 import org.apache.kafka.streams.kstream.ValueJoiner
-import org.apache.kafka.streams.kstream.ValueMapperWithKey
 import org.cedar.psi.common.avro.Input
 
 @Slf4j
@@ -17,6 +16,19 @@ class StreamFunctions {
     @Override
     Object apply(Object aggregate, Object nextValue) {
       nextValue
+    }
+  }
+
+  static Reducer<Set> setReducer = new Reducer<Set>() {
+    @Override
+    Set apply(Set aggregate, Set nextValue) {
+      if (nextValue == null) {
+        return null // if we get a tombstone, tomestone the whole set
+      }
+      else {
+        aggregate.addAll(nextValue)
+        return aggregate
+      }
     }
   }
 
@@ -106,16 +118,4 @@ class StreamFunctions {
       }
     }
   }
-
-  static ValueMapperWithKey<String, Map, Map> parsedInfoNormalizer = new ValueMapperWithKey<String, Map, Map>() {
-    @Override
-    Map apply(String readOnlyKey, Map value) {
-      def result = value ?: [:]
-      if (!result.containsKey('publishing')) {
-        result.put('publishing', ['private': false])
-      }
-      return result
-    }
-  }
-
 }
