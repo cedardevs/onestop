@@ -8,6 +8,7 @@ import VideoView from './VideoView'
 import Tabs from './Tabs'
 import {boxShadow} from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
+import {identifyProtocol} from '../utils/resultUtils'
 
 //-- Styles
 
@@ -153,7 +154,7 @@ class Detail extends Component {
     ]
 
     const videoLinks = item.links.filter(
-      link => link.linkProtocol === 'video:youtube'
+      link => identifyProtocol(link).label === 'Video'
     )
     const showVideoTab = videoLinks.length > 0
     if (showVideoTab) {
