@@ -16,6 +16,8 @@ class LoginGovLogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
 
         // call to https://idp.int.identitysandbox.gov/openid_connect/logout would probably go here...
 
-        super.onLogoutSuccess(request, response, authentication)
+        // super.onLogoutSuccess(request, response, authentication)
+
+        redirectStrategy.sendRedirect(request, response, SecurityConfig.LOGOUT_SUCCESS_ENDPOINT)
     }
 }

@@ -23,7 +23,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
     static final String LOGIN_FAILURE_ENDPOINT = "/login_failure"
     static final String LOGIN_PROFILE_ENDPOINT = "/login_profile"
     static final String LOGOUT_ENDPOINT = "/logout"
-    static final String LOGOUT_SUCCESS_ENDPOINT = "/"
+    static final String LOGOUT_SUCCESS_ENDPOINT = "/logout_success"
 
     private KeystoreUtil keystoreUtil
     private String successRedirect
@@ -70,7 +70,6 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
         // custom logout behavior
         .logout()
             .logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_ENDPOINT))
-            .logoutSuccessUrl(LOGOUT_SUCCESS_ENDPOINT)
             .deleteCookies("JSESSIONID")
             .invalidateHttpSession(true)
             .logoutSuccessHandler(new LoginGovLogoutSuccessHandler())
@@ -85,7 +84,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
             .accessTokenResponseClient(accessTokenResponseClient())
             .and()
             .failureUrl(LOGIN_FAILURE_ENDPOINT)
-            .successHandler(new LoginGovAuthenticationSuccessHandler()) // .defaultSuccessUrl() wasn't working
+            .successHandler(new LoginGovAuthenticationSuccessHandler())
     }
 
     @Bean

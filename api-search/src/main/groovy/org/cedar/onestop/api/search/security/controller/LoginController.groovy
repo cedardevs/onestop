@@ -52,7 +52,12 @@ class LoginController {
 
     @RequestMapping(SecurityConfig.LOGIN_SUCCESS_ENDPOINT)
     void loginSuccess(HttpServletResponse httpServletResponse) {
-        httpServletResponse.sendRedirect("http://localhost:30000/onestop")
+        httpServletResponse.sendRedirect("http://localhost:8080/onestop")
+    }
+
+    @RequestMapping(SecurityConfig.LOGOUT_SUCCESS_ENDPOINT)
+    void logoutSuccess(HttpServletResponse httpServletResponse) {
+        httpServletResponse.sendRedirect("http://localhost:8080/onestop")
     }
 
 }
