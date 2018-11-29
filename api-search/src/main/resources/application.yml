@@ -27,7 +27,9 @@ spring:
             jwk-set-uri: https://idp.int.identitysandbox.gov/api/openid_connect/certs
 
 logingov:
-  success-redirect: ${loginSuccessRedirect}
+  allowed-origin: ${allowedOrigin}
+  login-success-redirect: ${loginSuccessRedirect}
+  logout-success-redirect: ${logoutSuccessRedirect}
   keystore:
     alias: ${keystoreAlias}
     file: ${keystorePath}/${keystoreFile}
@@ -87,3 +89,9 @@ search:
 
 info.version: ${version}
 info.buildDate: ${buildDate}
+
+ui:
+  auth:
+    loginEndpoint: "http://localhost:8097/onestop/api/login"
+    logoutEndpoint: "http://localhost:8097/onestop/api/logout"
+    userProfileEndpoint: "http://localhost:8097/onestop/api/login_profile"

@@ -31,18 +31,28 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
     static final String LOGOUT_SUCCESS_ENDPOINT = "/logout_success"
 
     private KeystoreUtil keystoreUtil
-    private String successRedirect
+    private String allowedOrigin
+    private String loginSuccessRedirect
+    private String logoutSuccessRedirect
 
     @Autowired
-    SecurityConfig(LoginGovKeystoreConfiguration keystoreConfig, LoginGovSuccessRedirectConfiguration successRedirectConfiguration) {
+    SecurityConfig(LoginGovConfiguration loginGovConfiguration) {
+
+        LoginGovConfiguration.Keystore keystore = loginGovConfiguration.keystore
+
         keystoreUtil = new KeystoreUtil(
-                keystoreConfig.file,
-                keystoreConfig.password,
-                keystoreConfig.alias,
+                keystore.file,
+                keystore.password,
+                keystore.alias,
                 null,
-                keystoreConfig.type
+                keystore.type
         )
-        successRedirect = successRedirectConfiguration.successRedirect
+        allowedOrigin = loginGovConfiguration.allowedOrigin
+        loginSuccessRedirect = loginGovConfiguration.loginSuccessRedirect
+        logoutSuccessRedirect = loginGovConfiguration.logoutSuccessRedirect
+
+
+        System.out.println("okay")
     }
 
     @Autowired
@@ -94,17 +104,20 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     CorsFilter corsFilter() {
-        final String allowedOrigin = "http://localhost:8080"
-
-        // fix OPTIONS preflight login profile request failure with 403 Invalid CORS request
-        CorsConfiguration config = new CorsConfiguration()
-        config.addAllowedOrigin(allowedOrigin)
-        config.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"))
-        config.addAllowedMethod(HttpMethod.OPTIONS)
-        config.addAllowedMethod(HttpMethod.GET)
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource()
-        source.registerCorsConfiguration(LOGIN_PROFILE_ENDPOINT, config)
-        return new CorsFilter(source)
+        if(allowedOrigin) {
+            // fix OPTIONS preflight login profile request failure with 403 Invalid CORS request
+            CorsConfiguration config = new CorsConfiguration()
+            config.addAllowedOrigin(allowedOrigin)
+            config.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"))
+            config.addAllowedMethod(HttpMethod.OPTIONS)
+            config.addAllowedMethod(HttpMethod.GET)
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource()
+            source.registerCorsConfiguration(LOGIN_PROFILE_ENDPOINT, config)
+            return new CorsFilter(source)
+        }
+        else {
+            return new CorsFilter(new UrlBasedCorsConfigurationSource())
+        }
     }
 
     @Bean

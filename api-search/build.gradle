@@ -57,9 +57,12 @@ dependencies {
 ext {
   fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
 
-  loginSuccessRedirect = "http://localhost:30000/onestop"
-
-  // keystore file
+  // login.gov configurations
+  allowedOrigin = "http://localhost:8080"
+  loginSuccessRedirect = "http://localhost:8080/onestop"
+  logoutSuccessRedirect = "http://localhost:8080/onestop"
+  
+  // login.gov keystore configuration (for JWT signing on token request)
   keystoreOutputDir = ".keystore"
   keystoreFile = "keystore.jks"
   keystorePassword = "password"
