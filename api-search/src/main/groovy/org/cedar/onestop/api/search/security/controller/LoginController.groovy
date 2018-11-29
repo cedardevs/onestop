@@ -11,20 +11,29 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.stereotype.Controller
 import org.springframework.util.StringUtils
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.client.RestTemplate
 
 import javax.servlet.http.HttpServletResponse
 
+//@CrossOrigin(
+//    origins = '*',
+//    maxAge = 3600L,
+//    allowedHeaders = ["x-auth-token","Authorization","Access-Control-Allow-Origin","Access-Control-Allow-Credentials"],
+//    exposedHeaders = ["x-auth-token","Authorization","Access-Control-Allow-Origin","Access-Control-Allow-Credentials"],
+//    allowCredentials = "true"
+//)
 @Controller
 class LoginController {
 
     @Autowired
     OAuth2AuthorizedClientService authorizedClientService
 
-    @GetMapping(SecurityConfig.LOGIN_PROFILE_ENDPOINT)
+//    @CrossOrigin(origins = "*")
+    @RequestMapping(value = SecurityConfig.LOGIN_PROFILE_ENDPOINT, method = [RequestMethod.GET, RequestMethod.OPTIONS])
     @ResponseBody
     HashMap<String, Object> loginProfile(OAuth2AuthenticationToken authentication) {
         if(authentication == null) {
