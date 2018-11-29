@@ -22,7 +22,7 @@ export const info = (state = initialState, action) => {
 
     case GET_USER_FAILURE:
       const userFailState = state
-        .setIn([ 'error'], action.error )
+        .setIn([ 'error' ], action.error)
         .setIn([ 'isFetching' ], false)
       return userFailState
 

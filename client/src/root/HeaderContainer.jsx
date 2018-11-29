@@ -12,15 +12,15 @@ const mapStateToProps = state => {
     authEnabled: authEnabled,
     user: authEnabled && state.domain.user ? state.domain.user : null,
     loginEndpoint: authEnabled
+      ? state.domain.config.auth.loginEndpoint
         ? state.domain.config.auth.loginEndpoint
-            ? state.domain.config.auth.loginEndpoint
-            : null
-        : null,
+        : null
+      : null,
     logoutEndpoint: authEnabled
+      ? state.domain.config.auth.logoutEndpoint
         ? state.domain.config.auth.logoutEndpoint
-            ? state.domain.config.auth.logoutEndpoint
-            : null
-        : null,
+        : null
+      : null,
     userProfileEndpoint: authEnabled
       ? state.domain.config.auth.userProfileEndpoint
         ? state.domain.config.auth.userProfileEndpoint
@@ -32,7 +32,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     goHome: () => dispatch(showHome(ownProps.history)),
-    getUser: () => dispatch(getUser(userProfileEndpoint)),
+    getUser: userProfileEndpoint => dispatch(getUser(userProfileEndpoint)),
   }
 }
 

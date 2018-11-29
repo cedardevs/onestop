@@ -112,12 +112,18 @@ class Header extends React.Component {
     }
   }
 
-  componentDidMount() {
-    const {getUser, userProfileEndpoint, authEnabled} = this.props
-    if (authEnabled && userProfileEndpoint) {
-      getUser(userProfileEndpoint)
-    }
-  }
+  // componentDidMount() {
+  //   const {getUser, userProfileEndpoint, authEnabled} = this.props
+  //     console.log("HEADER MOUNT")
+  //     console.log(authEnabled)
+  //     console.log(userProfileEndpoint)
+  //     console.log(this.props)
+  //
+  //     if (authEnabled && userProfileEndpoint) {
+  //     console.log("FETCHING USER")
+  //     getUser(userProfileEndpoint)
+  //   }
+  // }
 
   handleFocusSkipLink = e => {
     this.setState(prevState => {
@@ -138,14 +144,33 @@ class Header extends React.Component {
   }
 
   render() {
-    const {headerDropdownMenuFeatureAvailable, user, authEnabled, loginEndpoint, logoutEndpoint} = this.props
+    const {
+      headerDropdownMenuFeatureAvailable,
+      user,
+      authEnabled,
+      loginEndpoint,
+      logoutEndpoint,
+      getUser,
+      userProfileEndpoint,
+    } = this.props
     const {focusingSkipLink} = this.state
     const userEmail = user && user.info ? user.info.email : null
+    if (
+      authEnabled &&
+      user &&
+      !user.isFetching &&
+      !user.error &&
+      !user.info &&
+      userProfileEndpoint
+    ) {
+      console.log('FETCHING USER')
+      getUser(userProfileEndpoint)
+    }
 
-    const login = authEnabled ? !user.info ? (
-    <a href={loginEndpoint}>Login</a>
+    const userActionButton = authEnabled ? !user.info ? (
+      <a href={loginEndpoint}>Login</a>
     ) : (
-    <a href={logoutEndpoint}>Logout</a>
+      <a href={logoutEndpoint}>Logout</a>
     ) : null
 
     const welcomeUser = userEmail ? (
@@ -178,7 +203,7 @@ class Header extends React.Component {
         <li
           style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}
         >
-          {login}
+          {userActionButton}
         </li>
         {headerDropDownMenuListItem}
       </ul>
