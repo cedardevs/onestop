@@ -1,7 +1,9 @@
 package org.cedar.onestop.api.search.security.config
 
+import com.google.common.collect.ImmutableList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
+import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -17,8 +19,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 @EnableWebSecurity
 class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -94,18 +94,16 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource()
+        final String allowedOrigin = "http://localhost:8080"
+
+        // fix OPTIONS preflight login profile request failure with 403 Invalid CORS request
         CorsConfiguration config = new CorsConfiguration()
-        // setAllowCredentials(true) is important, otherwise:
-        // The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' when the request's credentials mode is 'include'.
-        config.setAllowCredentials(true)
-        config.addAllowedOrigin("*")
-        // setAllowedHeaders is important! Without it, OPTIONS preflight request
-        // will fail with 403 Invalid CORS request
-//        config.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"))
-        config.addAllowedHeader("*")
-        config.addAllowedMethod("*")
-        source.registerCorsConfiguration("/**", config)
+        config.addAllowedOrigin(allowedOrigin)
+        config.setAllowedHeaders(ImmutableList.of("Authorization", "Cache-Control", "Content-Type"))
+        config.addAllowedMethod(HttpMethod.OPTIONS)
+        config.addAllowedMethod(HttpMethod.GET)
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration(LOGIN_PROFILE_ENDPOINT, config)
         return new CorsFilter(source)
     }
 
