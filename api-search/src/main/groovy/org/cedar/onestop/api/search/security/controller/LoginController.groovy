@@ -24,7 +24,6 @@ class LoginController {
     @Autowired
     OAuth2AuthorizedClientService authorizedClientService
 
-//    @CrossOrigin(origins = "*")
     @RequestMapping(value = SecurityConfig.LOGIN_PROFILE_ENDPOINT, method = [RequestMethod.GET, RequestMethod.OPTIONS])
     @ResponseBody
     HashMap<String, Object> loginProfile(OAuth2AuthenticationToken authentication) {
