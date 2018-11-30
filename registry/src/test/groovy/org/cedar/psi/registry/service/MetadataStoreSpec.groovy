@@ -10,9 +10,6 @@ import org.cedar.psi.common.avro.Method
 import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.util.AvroUtils
 import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.web.context.request.RequestAttributes
-import org.springframework.web.context.request.RequestContextHolder
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -46,8 +43,14 @@ class MetadataStoreSpec extends Specification {
   }
 
   def 'returns null for unknown types'() {
-    expect:
-    metadataStore.retrieveInput('notarealtype', 'notarealsource', 'notarealid') == null
+    def testId =  'notarealid'
+
+    when:
+    def result = metadataStore.retrieveInput(testType, testSource, testId)
+
+    then:
+    result == [error: "No such input record of ${testType} with id ${testId}"]
+
   }
 
   def 'returns null for a nonexistent store'() {
@@ -62,7 +65,7 @@ class MetadataStoreSpec extends Specification {
     0 * mockInputStore.get(testId)
 
     and:
-    result == null
+    result == [error: "No such input record of ${testType} with id ${testId}"]
   }
 
   def 'returns null for unknown id'() {
@@ -77,7 +80,7 @@ class MetadataStoreSpec extends Specification {
     1 * mockParsedStore.get(testId) >> null
 
     and:
-    result == null
+    result == [error: "No such parsed record of ${testType} with id ${testId}"]
   }
 
   def 'handles when a store is in a bad state'() {
@@ -138,6 +141,7 @@ class MetadataStoreSpec extends Specification {
     result == [
             id        : testId,
             type      : testType,
+            source    : testInput.source,
             attributes: testValue
     ]
 
@@ -163,6 +167,7 @@ class MetadataStoreSpec extends Specification {
     result == [
         id        : testId,
         type      : testType,
+        source    : testInput.source,
         attributes: testValue
     ]
 
@@ -188,6 +193,7 @@ class MetadataStoreSpec extends Specification {
     result ==  [
             id        : testId,
             type      : testType,
+            source    : testInput.source,
             attributes: AvroUtils.avroToMap(testParsedRecord)
     ]
   }

@@ -185,7 +185,7 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.data.id == collectionId as String
     retrieveResponse.body.data.type == 'collection'
-    retrieveResponse.body.links.InputRecord == "${baseUrl}metadata/collection/${collectionId}/input"
+    retrieveResponse.body.links.InputRecord == "${baseUrl}metadata/collection/unknown/${collectionId}/input"
     retrieveResponse.body.data.error == "Input record didn't get parsed"
   }
 
@@ -216,7 +216,7 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.statusCode == HttpStatus.OK
     retrieveResponse.body.data.id == collectionId as String
     retrieveResponse.body.data.type == 'collection'
-    retrieveResponse.body.links.InputRecord == "${baseUrl}metadata/collection/${collectionId}/input"
+    retrieveResponse.body.links.InputRecord == "${baseUrl}metadata/collection/unknown/${collectionId}/input"
     retrieveResponse.body.data.error == "Input record didn't get parsed"
   }
 

@@ -34,13 +34,16 @@ class MetadataStore {
       def inputValue = getInputStore(type, source)?.get(id)
 
       if (!inputValue && !parsedValue) {
-        return null
+        return [
+            error  : "No such parsed record of ${type} with id ${id}"
+        ]
       }
 
       if (inputValue && !parsedValue) {
         return [
             id        : id,
             type      : type,
+            source    : inputValue.source,
             error     : "Input record didn't get parsed"
         ]
       }
@@ -50,6 +53,7 @@ class MetadataStore {
       return [
               id        : id,
               type      : type,
+              source    : inputValue.source,
               attributes: parsedMap
           ]
     }
@@ -62,9 +66,13 @@ class MetadataStore {
   Map retrieveInput(String type, String source, String id) {
     try {
       def inputValue = getInputStore(type, source)?.get(id)
+
       if (!inputValue) {
-        return null
+        return [
+            error  : "No such input record of ${type} with id ${id}"
+        ]
       }
+
       def inputMap = inputValue ? [input: inputValue] : [:]
 
       return [
@@ -87,22 +95,20 @@ class MetadataStore {
     metadataStreamService?.streamsApp?.store(parsedStore(type), QueryableStoreTypes.keyValueStore())
   }
 
-  UriComponents constructUri() {
+  String constructUri(String path) {
     def servletComponent = ServletUriComponentsBuilder.fromCurrentRequestUri().build()
     def host = servletComponent.host + ':' + servletComponent.port
     def scheme = servletComponent.scheme
-    def path = servletComponent.path
 
-    if(!path.contains('input'))
-      path = path.concat('/input')
-    else{
-      path = path.minus("/input")
+    try{
+      UriComponents uriComponents = UriComponentsBuilder.newInstance()
+          .scheme(scheme).host(host).path(path).build()
+
+      return uriComponents.toUriString()
+    } catch (Exception e) {
+      log.error("Failed to construct uri for ${path}", e)
+      throw e
     }
-
-    UriComponents uriComponents = UriComponentsBuilder.newInstance()
-        .scheme(scheme).host(host).path(path).build()
-
-    return uriComponents
   }
 
 }

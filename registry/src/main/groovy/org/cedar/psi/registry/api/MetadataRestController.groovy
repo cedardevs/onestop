@@ -5,6 +5,7 @@ import groovy.util.logging.Slf4j
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -18,6 +19,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD
 @CompileStatic
 @RestController
 class MetadataRestController {
+
+  @Value('${server.servlet.context-path:}')
+  String contextPath
 
   private MetadataStore metadataStore
 
@@ -34,22 +38,11 @@ class MetadataRestController {
   @RequestMapping(path = '/metadata/{type}/{source}/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveParsedJson(@PathVariable String type, @PathVariable String source, @PathVariable String id, HttpServletResponse response) {
     def result = metadataStore.retrieveParsed(type, source, id)
-    def link  = metadataStore.constructUri().toUriString()
+    String path = "${contextPath}/metadata/${type}/${source}/${id}/input"
+    def link = metadataStore.constructUri(path)
 
     if (!result) {
       response.sendError(404, "No such ${type} with id ${id}")
-      return [
-          error  : "record does not exist"
-      ]
-    }
-
-    if (result.containsValue('error')) {
-        return [
-            "links": [
-                "InputRecord": link
-            ],
-            data  : result
-        ]
     }
 
     return [
@@ -64,13 +57,11 @@ class MetadataRestController {
   @RequestMapping(path = '/metadata/{type}/{source}/{id}/input', method = [GET, HEAD], produces = 'application/json')
   Map retrieveInputJson(@PathVariable String type, @PathVariable String source, @PathVariable String id, HttpServletResponse response) {
     def result = metadataStore.retrieveInput(type, source, id)
-    def link  = metadataStore.constructUri().toUriString()
+    String path = "${contextPath}/metadata/${type}/${source}/${id}"
+    def link  = metadataStore.constructUri(path)
 
     if (!result) {
       response.sendError(404, "No such ${type} with id ${id}")
-      return [
-          error  : "No such ${type} with id ${id}"
-      ]
     }
 
     return [
