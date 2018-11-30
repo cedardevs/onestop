@@ -23,7 +23,6 @@ import org.springframework.web.filter.CorsFilter
 @EnableWebSecurity
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    static final String LOGIN_ENDPOINT = DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL
     static final String LOGIN_SUCCESS_ENDPOINT = "/login_success"
     static final String LOGIN_FAILURE_ENDPOINT = "/login_failure"
     static final String LOGIN_PROFILE_ENDPOINT = "/login_profile"
@@ -59,7 +58,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
         // login, login failure, and index are allowed by anyone
-        .antMatchers(LOGIN_ENDPOINT, LOGIN_SUCCESS_ENDPOINT, LOGIN_PROFILE_ENDPOINT, LOGIN_FAILURE_ENDPOINT, LOGOUT_ENDPOINT, LOGOUT_SUCCESS_ENDPOINT, "/")
+        .antMatchers(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL, LOGIN_SUCCESS_ENDPOINT, LOGIN_PROFILE_ENDPOINT, LOGIN_FAILURE_ENDPOINT, LOGOUT_ENDPOINT, LOGOUT_SUCCESS_ENDPOINT, "/")
             .permitAll()
         // make sure our public search endpoints are still available and don't request authentication
         .antMatchers(
@@ -88,6 +87,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
         // configure authentication support using an OAuth 2.0 and/or OpenID Connect 1.0 Provider
         .oauth2Login()
+            .loginPage(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL)
             .authorizationEndpoint()
             .authorizationRequestResolver(new LoginGovAuthorizationRequestResolver(clientRegistrationRepository))
             .authorizationRequestRepository(authorizationRequestRepository())

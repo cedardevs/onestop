@@ -17,7 +17,7 @@ spring:
             #client-secret: logingovsecret
             authorization-grant-type: authorization_code
             redirect-uri-template: "{baseUrl}/{action}/oauth2/code/{registrationId}"
-            scope: openid email
+            scope: openid, email
         provider:
           logingov:
             authorization-uri: https://idp.int.identitysandbox.gov/openid_connect/authorize
@@ -92,6 +92,6 @@ info.buildDate: ${buildDate}
 
 ui:
   auth:
-    loginEndpoint: "http://localhost:8097/onestop/api/login"
-    logoutEndpoint: "http://localhost:8097/onestop/api/logout"
-    userProfileEndpoint: "http://localhost:8097/onestop/api/login_profile"
+    loginEndpoint: "http://localhost:8080/onestop/api/login"
+    logoutEndpoint: "http://localhost:8080/onestop/api/logout"
+    userProfileEndpoint: "http://localhost:8080/onestop/api/login_profile"
