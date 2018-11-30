@@ -105,14 +105,13 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
             // fix OPTIONS preflight login profile request failure with 403 Invalid CORS request
             CorsConfiguration config = new CorsConfiguration()
             config.addAllowedOrigin(allowedOrigin)
-            config.setAllowedHeaders(ImmutableList.of("x-auth-token", "Authorization", "Cache-Control", "Content-Type"))
-            config.setExposedHeaders(ImmutableList.of("x-auth-token", "Authorization", "Cache-Control", "Content-Type"))
+            config.setAllowCredentials(true)
+            config.setAllowedHeaders(ImmutableList.of("x-auth-token", "Authorization", "cache", "Content-Type"))
             config.addAllowedMethod(HttpMethod.OPTIONS)
             config.addAllowedMethod(HttpMethod.GET)
 
             UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource()
             source.registerCorsConfiguration(LOGIN_PROFILE_ENDPOINT, config)
-
             return new CorsFilter(source)
         }
         else {
