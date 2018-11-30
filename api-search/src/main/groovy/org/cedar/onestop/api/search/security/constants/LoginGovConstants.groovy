@@ -10,4 +10,10 @@ class LoginGovConstants {
     // in the user info response. The possible parameter values are:
     static final String LOGIN_GOV_LOA1 = "http://idmanagement.gov/ns/assurance/loa/1"
     static final String LOGIN_GOV_LOA3 = "http://idmanagement.gov/ns/assurance/loa/3"
+
+    // Logout Constants
+    static final String LOGIN_GOV_LOGOUT_ENDPOINT = "https://idp.int.identitysandbox.gov/openid_connect/logout"
+    static final String LOGIN_GOV_LOGOUT_PARAM_ID_TOKEN_HINT = "id_token_hint"
+    static final String LOGIN_GOV_LOGOUT_PARAM_POST_LOGOUT_REDIRECT_URI = "post_logout_redirect_uri"
+    static final String LOGIN_GOV_LOGOUT_PARAM_STATE = "state"
 }

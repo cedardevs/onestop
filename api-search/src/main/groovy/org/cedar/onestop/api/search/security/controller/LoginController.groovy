@@ -1,6 +1,7 @@
 package org.cedar.onestop.api.search.security.controller
 
 import org.cedar.onestop.api.search.security.config.LoginGovConfiguration
+import org.cedar.onestop.api.search.security.config.RequestUtil
 import org.cedar.onestop.api.search.security.config.SecurityConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.client.RestTemplate
 
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 @Controller
@@ -30,9 +32,11 @@ class LoginController {
 
     @RequestMapping(value = SecurityConfig.LOGIN_PROFILE_ENDPOINT, method = [RequestMethod.GET, RequestMethod.OPTIONS])
     @ResponseBody
-    HashMap<String, Object> loginProfile(OAuth2AuthenticationToken authentication) {
+    HashMap<String, Object> loginProfile(HttpServletRequest httpServletRequest, OAuth2AuthenticationToken authentication) {
         if(authentication == null) {
-            return new HashMap<String, Object>()
+            HashMap<String, Object> responseUnauthenticated = new HashMap<String, Object>()
+            responseUnauthenticated.put("login", RequestUtil.getURL(httpServletRequest, SecurityConfig.LOGIN_ENDPOINT))
+            return responseUnauthenticated
         }
         else {
             OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(authentication.authorizedClientRegistrationId, authentication.name)
@@ -48,9 +52,10 @@ class LoginController {
                 Map userAttributes = response.body
                 email = userAttributes.get("email")
             }
-            HashMap<String, Object> response = new HashMap<String, Object>()
-            response.put("email", email)
-            return response
+            HashMap<String, Object> responseAuthenticated = new HashMap<String, Object>()
+            responseAuthenticated.put("email", email)
+            responseAuthenticated.put("logout", RequestUtil.getURL(httpServletRequest, SecurityConfig.LOGOUT_ENDPOINT))
+            return responseAuthenticated
         }
     }
 
