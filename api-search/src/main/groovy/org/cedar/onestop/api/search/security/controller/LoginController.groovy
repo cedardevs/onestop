@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.search.security.controller
 
+import org.cedar.onestop.api.search.security.config.LoginGovConfiguration
 import org.cedar.onestop.api.search.security.config.SecurityConfig
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
@@ -20,6 +21,9 @@ import javax.servlet.http.HttpServletResponse
 
 @Controller
 class LoginController {
+
+    @Autowired
+    LoginGovConfiguration loginGovConfiguration
 
     @Autowired
     OAuth2AuthorizedClientService authorizedClientService
@@ -52,12 +56,12 @@ class LoginController {
 
     @RequestMapping(SecurityConfig.LOGIN_SUCCESS_ENDPOINT)
     void loginSuccess(HttpServletResponse httpServletResponse) {
-        httpServletResponse.sendRedirect("http://localhost:8080/onestop")
+        httpServletResponse.sendRedirect(loginGovConfiguration.loginSuccessRedirect)
     }
 
     @RequestMapping(SecurityConfig.LOGOUT_SUCCESS_ENDPOINT)
     void logoutSuccess(HttpServletResponse httpServletResponse) {
-        httpServletResponse.sendRedirect("http://localhost:8080/onestop")
+        httpServletResponse.sendRedirect(loginGovConfiguration.logoutSuccessRedirect)
     }
 
 }
