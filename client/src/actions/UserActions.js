@@ -7,7 +7,6 @@ export const getUser = userEndpoint => {
   const requestOptions = {
     method: 'GET',
     redirect: 'error',
-    mode: 'cors',
     credentials: 'include',
     headers: {
       Accept: 'application/json',

@@ -150,27 +150,21 @@ class Header extends React.Component {
       authEnabled,
       loginEndpoint,
       logoutEndpoint,
+      logoutUser,
       getUser,
       userProfileEndpoint,
     } = this.props
     const {focusingSkipLink} = this.state
     const userEmail = user && user.info ? user.info.email : null
-    if (
-      authEnabled &&
-      user &&
-      !user.isFetching &&
-      !user.error &&
-      !user.info &&
-      userProfileEndpoint
-    ) {
-      console.log('FETCHING USER')
+
+    if (user && !user.info && !user.expired) {
       getUser(userProfileEndpoint)
     }
 
-    const userActionButton = authEnabled ? !user.info ? (
+    const userActionButton = authEnabled ? !user.isAuthenticated ? (
       <a href={loginEndpoint}>Login</a>
     ) : (
-      <a href={logoutEndpoint}>Logout</a>
+      <a href={logoutEndpoint} onClick={()=> logoutUser(logoutUser)}>Logout</a>
     ) : null
 
     const welcomeUser = userEmail ? (

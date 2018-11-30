@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import Header from './Header'
 import {showHome} from '../actions/FlowActions'
 import {withRouter} from 'react-router'
-import {getUser} from '../actions/UserActions'
+import {getUser, logoutUser} from '../actions/UserActions'
 
 const mapStateToProps = state => {
   const authEnabled = !!state.domain.config.auth
@@ -33,6 +33,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     goHome: () => dispatch(showHome(ownProps.history)),
     getUser: userProfileEndpoint => dispatch(getUser(userProfileEndpoint)),
+    logoutUser: logoutEndpoint => dispatch(logoutUser(logoutEndpoint)),
+
   }
 }
 

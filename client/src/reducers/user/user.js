@@ -6,7 +6,7 @@ import {
   LOGOUT_USER,
 } from '../../actions/UserActions'
 
-export const initialState = Immutable({})
+export const initialState = Immutable({isAuthenticated: false, info: null, expired: false, isFetching:false})
 
 export const info = (state = initialState, action) => {
   switch (action.type) {
@@ -15,10 +15,16 @@ export const info = (state = initialState, action) => {
       return isFetchingState
 
     case GET_USER_SUCCESS:
-      const userState = state
-        .setIn([ 'info' ], action.payload)
-        .setIn([ 'isFetching' ], false)
-      return userState
+      if(action.payload.email){
+          const userState = state
+              .setIn([ 'info' ], action.payload)
+              .setIn([ 'isFetching' ], false)
+              .setIn([ 'isAuthenticated' ], true)
+              .setIn([ 'expired' ], false)
+          return userState
+      }else{
+        return state.setIn(['expired'], true)
+      }
 
     case GET_USER_FAILURE:
       const userFailState = state
@@ -28,9 +34,10 @@ export const info = (state = initialState, action) => {
 
     case LOGOUT_USER:
       const userLogoutState = state
-        .setIn([ 'info', {} ], action.item)
+        .setIn([ 'info' ], {})
         .setIn([ 'expired' ], true)
-      return userLogoutState
+        .setIn([ 'isAuthenticated' ], true)
+        return userLogoutState
     default:
       return state
   }
