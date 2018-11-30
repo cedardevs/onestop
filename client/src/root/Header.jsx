@@ -164,7 +164,9 @@ class Header extends React.Component {
     const userActionButton = authEnabled ? !user.isAuthenticated ? (
       <a href={loginEndpoint}>Login</a>
     ) : (
-      <a href={logoutEndpoint} onClick={()=> logoutUser(logoutUser)}>Logout</a>
+      <a href={logoutEndpoint} onClick={() => logoutUser(logoutUser)}>
+        Logout
+      </a>
     ) : null
 
     const welcomeUser = userEmail ? (

@@ -14,6 +14,7 @@ export const getUser = userEndpoint => {
       Cache: 'no-cache',
     },
   }
+
   return dispatch => {
     dispatch({type: GET_USER_REQUEST})
     return fetch(userEndpoint, requestOptions)
