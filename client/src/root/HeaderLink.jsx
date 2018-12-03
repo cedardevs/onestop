@@ -105,7 +105,7 @@ class HeaderLink extends React.Component {
   }
 
   render() {
-    const {to, isExternalLink} = this.props
+    const {to, isExternalLink, title} = this.props
 
     const styleLinkMerged = {
       ...styleLink,
@@ -125,7 +125,7 @@ class HeaderLink extends React.Component {
         onKeyDown={this.handleKeyDown}
         onKeyUp={this.handleKeyUp}
       >
-        Login
+        {title}
       </a>
     ) : (
       <Link
