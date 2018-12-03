@@ -96,7 +96,7 @@ class StreamManagerSpec extends Specification {
 
     and:
     // Nothing in the parsed topic
-    driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
+    driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
   }
 
   def "Non-SME granule and SME granule end up in parsed-granule topic"() {
@@ -116,7 +116,7 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    // Simulate SME ending up in unparsed-granule since that's another app's responsibility
+    // Simulate SME ending up in granule-extractor-to since that's another app's responsibility
     driver.pipeInput(inputFactory.create(testChangelog, nonSMEInputKey, nonSMEInputValue))
     driver.pipeInput(jsonFactory.create(Topics.fromExtractorTopic(testType), unparsedKey, unparsedValue))
 
