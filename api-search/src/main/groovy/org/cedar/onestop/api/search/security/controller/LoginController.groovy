@@ -3,6 +3,7 @@ package org.cedar.onestop.api.search.security.controller
 import org.cedar.onestop.api.search.security.config.LoginGovConfiguration
 import org.cedar.onestop.api.search.security.config.RequestUtil
 import org.cedar.onestop.api.search.security.config.SecurityConfig
+import org.cedar.onestop.api.search.security.constants.LoginGovConstants
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -11,6 +12,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter
+import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter
 import org.springframework.stereotype.Controller
 import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.RequestMapping
@@ -29,6 +33,9 @@ class LoginController {
 
     @Autowired
     OAuth2AuthorizedClientService authorizedClientService
+
+    @Autowired
+    ClientRegistrationRepository clientRegistrationRepository
 
     @RequestMapping(value = SecurityConfig.LOGIN_PROFILE_ENDPOINT, method = [RequestMethod.GET, RequestMethod.OPTIONS])
     @ResponseBody
@@ -67,6 +74,13 @@ class LoginController {
     @RequestMapping(SecurityConfig.LOGOUT_SUCCESS_ENDPOINT)
     void logoutSuccess(HttpServletResponse httpServletResponse) {
         httpServletResponse.sendRedirect(loginGovConfiguration.logoutSuccessRedirect)
+    }
+
+    @RequestMapping(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL)
+    String login() {
+        // bypass the default Spring login page and go straight to login.gov authorization
+        String authorizationRedirect = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI + "/" + LoginGovConstants.LOGIN_GOV_REGISTRATION_ID
+        return "redirect:" + authorizationRedirect
     }
 
 }
