@@ -40,9 +40,7 @@ const styleNav = {
 }
 
 const styleUserWelcome = {
-  padding: 0,
-  margin: 0,
-  float: 'right',
+  justifyContent: 'flex-end',
 }
 
 const styleLinkList = {
@@ -112,19 +110,6 @@ class Header extends React.Component {
     }
   }
 
-  // componentDidMount() {
-  //   const {getUser, userProfileEndpoint, authEnabled} = this.props
-  //     console.log("HEADER MOUNT")
-  //     console.log(authEnabled)
-  //     console.log(userProfileEndpoint)
-  //     console.log(this.props)
-  //
-  //     if (authEnabled && userProfileEndpoint) {
-  //     console.log("FETCHING USER")
-  //     getUser(userProfileEndpoint)
-  //   }
-  // }
-
   handleFocusSkipLink = e => {
     this.setState(prevState => {
       return {
@@ -162,17 +147,29 @@ class Header extends React.Component {
     }
 
     const userActionButton = authEnabled ? !user.isAuthenticated ? (
-      <HeaderLink title="login" to={loginEndpoint} isExternalLink={true}>
+      <HeaderLink
+        title="Login"
+        to={loginEndpoint}
+        isExternalLink={true}
+        onClick={() => getUser(userProfileEndpoint)}
+      >
         Login
       </HeaderLink>
     ) : (
-      <HeaderLink title="logout" to={logoutEndpoint} isExternalLink={true}>
+      <HeaderLink
+        title="Logout"
+        to={logoutEndpoint}
+        isExternalLink={true}
+        onClick={() => logoutUser()}
+      >
         Logout
       </HeaderLink>
     ) : null
 
     const welcomeUser = userEmail ? (
-      <div style={styleUserWelcome}>Logged in as {userEmail}</div>
+      <div style={styleUserWelcome} key="emailDisplay">
+        Logged in as {userEmail}
+      </div>
     ) : null
 
     const headerDropDownMenuListItem = headerDropdownMenuFeatureAvailable ? (
@@ -250,7 +247,11 @@ class Header extends React.Component {
     return (
       <div style={styleWrapper}>
         <div style={styleHeader}>
-          {welcomeUser}
+          <FlexRow
+            style={styleUserWelcome}
+            key="welcomeUser"
+            items={[ welcomeUser ]}
+          />
           <FlexRow
             style={styleHeaderFlexRow}
             items={[
