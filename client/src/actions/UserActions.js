@@ -7,6 +7,7 @@ export const getUser = userEndpoint => {
   const requestOptions = {
     method: 'GET',
     redirect: 'error',
+    mode: 'cors',
     credentials: 'include',
     headers: {
       Accept: 'application/json',
@@ -14,7 +15,6 @@ export const getUser = userEndpoint => {
       Cache: 'no-cache',
     },
   }
-
   return dispatch => {
     dispatch({type: GET_USER_REQUEST})
     return fetch(userEndpoint, requestOptions)
