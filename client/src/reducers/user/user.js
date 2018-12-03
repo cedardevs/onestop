@@ -42,7 +42,7 @@ export const info = (state = initialState, action) => {
       const userLogoutState = state
         .setIn([ 'info' ], {})
         .setIn([ 'expired' ], true)
-        .setIn([ 'isAuthenticated' ], true)
+        .setIn([ 'isAuthenticated' ], false)
       return userLogoutState
     default:
       return state
