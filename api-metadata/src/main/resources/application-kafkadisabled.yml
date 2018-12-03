@@ -1,1 +1,1 @@
-features.kafka.consumer: false
+features.kafka.consumer: falsefeatures.metadata.controllers: true

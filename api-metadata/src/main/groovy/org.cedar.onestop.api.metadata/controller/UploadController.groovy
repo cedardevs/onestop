@@ -19,7 +19,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import static org.springframework.web.bind.annotation.RequestMethod.POST
 
 @Slf4j
-@ConditionalOnProperty("features.secure.upload")
+@ConditionalOnProperty(["features.secure.upload", "features.metadata.controllers"])
 @Controller
 class UploadController {
 

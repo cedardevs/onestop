@@ -1,8 +1,11 @@
 package org.cedar.onestop.api.metadata.controller
 
 import groovy.util.logging.Slf4j
+import org.cedar.onestop.api.metadata.service.KafkaConsumerService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
@@ -17,6 +20,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*
 
 @Slf4j
 @RestController
+@ConditionalOnProperty("features.metadata.controllers")
 class MetadataController {
 
   private MetadataManagementService metadataService
