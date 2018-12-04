@@ -152,18 +152,14 @@ class Header extends React.Component {
         to={loginEndpoint}
         isExternalLink={true}
         onClick={() => getUser(userProfileEndpoint)}
-      >
-        Login
-      </HeaderLink>
+      />
     ) : (
       <HeaderLink
         title="Logout"
         to={logoutEndpoint}
         isExternalLink={true}
         onClick={() => logoutUser()}
-      >
-        Logout
-      </HeaderLink>
+      />
     ) : null
 
     const welcomeUser = userEmail ? (
