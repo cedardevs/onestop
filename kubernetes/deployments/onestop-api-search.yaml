@@ -11,9 +11,9 @@ spec:
   selector:
     app: onestop-api-search
   ports:
-    - name: http
-      port: 8097
-      nodePort: 30097
+  - name: http
+    port: 8097
+    nodePort: 30097
   type: NodePort
 
 ---
@@ -46,10 +46,38 @@ spec:
           value: DEBUG
         - name: SPRING.CONFIG.ADDITIONAL-LOCATION
           value: /deployments/config/application.yaml
+        - name: LOGIN_GOV_CLIENT_ID
+          value: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_30000"
+        - name: LOGIN_GOV_ALLOWED_ORIGIN
+          value: "http://localhost:30000"
+        - name: LOGIN_GOV_LOGIN_SUCCESS_REDIRECT
+          value: "http://localhost:30000/onestop"
+        - name: LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT
+          value: "http://localhost:30000/onestop"
+        - name: LOGIN_GOV_KEYSTORE_FILE
+          value: "/etc/api-search/logingov.jks"
+        - name: LOGIN_GOV_KEYSTORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: logingov
+              key: keystore_password
+        - name: LOGIN_GOV_KEYSTORE_ALIAS
+          valueFrom:
+            secretKeyRef:
+              name: logingov
+              key: keystore_alias
+        - name: LOGIN_GOV_KEY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: logingov
+              key: key_password
         volumeMounts:
         - name: application-config
           mountPath: "/deployments/config"
           readOnly: true
+        - name: keystore
+          mountPath: "/etc/api-search/logingov.jks"
+          subPath: keystore.jks
         ports:
         - containerPort: 8097
       volumes:
@@ -59,6 +87,12 @@ spec:
           items:
           - key: application.yaml
             path: application.yaml
+      - name: keystore
+        secret:
+          secretName: logingov
+          items:
+          - key: keystore.jks
+            path: keystore.jks
       restartPolicy: Always
 ---
 apiVersion: v1
@@ -73,6 +107,10 @@ data:
     spring.profiles.include:
       - feature-trending-search
     ui:
+      auth:
+        loginEndpoint: "http://localhost:30000/onestop/api/login"
+        logoutEndpoint: "http://localhost:30000/onestop/api/logout"
+        userProfileEndpoint: "http://localhost:30000/onestop/api/login_profile"
       # googleAnalytics:
        # profiles:
         #  - trackingId: 'UA-127993388-1'

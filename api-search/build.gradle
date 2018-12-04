@@ -57,20 +57,47 @@ dependencies {
 ext {
   fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")
 
-  // login.gov configurations
-  allowedOrigin = "http://localhost:8080"
-  loginSuccessRedirect = "http://localhost:8080/onestop"
-  logoutSuccessRedirect = "http://localhost:8080/onestop"
+  /*
+   * "bootrun" login.gov configurations
+   * -- IMPORTANT:
+   *    -> individual developers testing with bootrun w/out skaffold need to run the `./gradlew api-search:jks` task
+   *       to generate a working keystore to sign JWTs in the login process
+   *
+   *    -> this will require you to copy the contents of the generated `.keystore/logingov.crt` public key
+   *    into the login.gov Dashboard test app (matching the clientId being used below). This will break
+   *    other developer's workflow who are testing against the same clientId because the public key will no longer match
+   *    the private key they are using to sign their JWTs. If you wish to work in parallel, it is better to use a
+   *    constant configuration via skaffold or sciapps. Otherwise, you may wish to register your own test app with
+   *    login.gov. Just remember NOT to check in your custom clientId to this build file!
+   */
+  boolean testWithOneStop = false
+
+  envVars = [:] as Map<String, ?>
+
+  if(testWithOneStop) {
+    // local testing with frontend client proxying from 8080
+    // -- use these values if you want to test logging in via OneStop running on 8080
+    envVars.LOGIN_GOV_CLIENT_ID = "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8080"
+    envVars.LOGIN_GOV_ALLOWED_ORIGIN = "http://localhost:8080"
+    envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8080/onestop"
+    envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8080/onestop"
+  }
+  else {
+    // local testing with standalone search api on port 8097
+    // -- use these values if you want to test logging in directly against api-search on 8097
+    envVars.LOGIN_GOV_CLIENT_ID = "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8097"
+    envVars.LOGIN_GOV_ALLOWED_ORIGIN = "http://localhost:8097"
+    envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
+    envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
+  }
   
   // login.gov keystore configuration (for JWT signing on token request)
   keystoreOutputDir = ".keystore"
-  keystoreFile = "keystore.jks"
-  keystorePassword = "password"
-  keystoreAlias = "jetty"
+  keystoreFile = "logingov.jks"
 
-  // keystore path
-  // TODO: distinguish paths based on environment (test vs deploy)
-  keystorePath = project.keystoreOutputDir
+  envVars.LOGIN_GOV_KEYSTORE_FILE = "${keystoreOutputDir}/${keystoreFile}"
+  envVars.LOGIN_GOV_KEYSTORE_ALIAS = "logingov"
+  envVars.LOGIN_GOV_KEYSTORE_PASSWORD = "password"
 }
 
 // keystore plugin readme:
@@ -78,17 +105,29 @@ ext {
 keystore {
   outputDir = "${project.keystoreOutputDir}"
 
-  keyFile = "debug.key"
-  keyPassword = "${project.keystorePassword}"
+  keyFile = "logingov.key"
+  keyPassword = "${project.envVars.LOGIN_GOV_KEYSTORE_PASSWORD}"
 
-  certFile = "debug.crt"
+  certFile = "logingov.crt"
 
-  pkcs12File = "keystore.pkcs12"
-  pkcs12Password = "${project.keystorePassword}"
+  pkcs12File = "logingov.pkcs12"
+  pkcs12Password = "${project.envVars.LOGIN_GOV_KEYSTORE_PASSWORD}"
 
   jksFile = "${project.keystoreFile}"
-  jksPassword = "${project.keystorePassword}"
-  alias = "${project.keystoreAlias}"
+  jksPassword = "${project.envVars.LOGIN_GOV_KEYSTORE_PASSWORD}"
+  alias = "${project.envVars.LOGIN_GOV_KEYSTORE_ALIAS}"
+}
+
+// these environment variables would normally be set by kubernetes objects;
+// however, this is problematic running via gradle tasks (build, test, bootRun...) -- where these environment
+// variables are not set and can require different values (e.g. - keystore path/file)
+//task environmentVariables(type: Exec) {
+bootRun {
+  environment project.envVars as Map<String, ?>
+}
+
+test {
+  environment project.envVars as Map<String, ?>
 }
 
 war {
@@ -124,6 +163,7 @@ task integrationTest(type: Test, description: 'Runs the integration tests', grou
   classpath = sourceSets.integrationTest.runtimeClasspath
   reports.junitXml.destination = file("${buildDir}/integration-test-results")
   reports.html.destination =  file("${buildDir}/reports/integrationTests")
+  environment project.envVars as Map<String, ?>
 }
 
 check.dependsOn integrationTest
@@ -150,7 +190,11 @@ publishing {
 processResources {
   outputs.upToDateWhen { false }
   filesMatching("**/application.yml") {
-    expand( project.properties )
+    expand( [
+            esVersion: project.esVersion,
+            version: project.version,
+            buildDate: project.buildDate,
+    ] )
   }
 }
 

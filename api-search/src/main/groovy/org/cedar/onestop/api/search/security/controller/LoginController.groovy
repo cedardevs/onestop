@@ -42,7 +42,7 @@ class LoginController {
     HashMap<String, Object> loginProfile(HttpServletRequest httpServletRequest, OAuth2AuthenticationToken authentication) {
         if(authentication == null) {
             HashMap<String, Object> responseUnauthenticated = new HashMap<String, Object>()
-            responseUnauthenticated.put("login", RequestUtil.getURL(httpServletRequest, SecurityConfig.LOGIN_ENDPOINT))
+            responseUnauthenticated.put("login", RequestUtil.getURL(httpServletRequest, DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL))
             return responseUnauthenticated
         }
         else {

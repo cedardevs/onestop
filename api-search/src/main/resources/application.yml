@@ -13,7 +13,7 @@ spring:
       client:
         registration:
           logingov:
-            client-id: urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_user_api_localhost
+            client-id: \${LOGIN_GOV_CLIENT_ID}
             #client-secret: logingovsecret
             authorization-grant-type: authorization_code
             redirect-uri-template: "{baseUrl}/{action}/oauth2/code/{registrationId}"
@@ -27,14 +27,14 @@ spring:
             jwk-set-uri: https://idp.int.identitysandbox.gov/api/openid_connect/certs
 
 logingov:
-  allowed-origin: ${allowedOrigin}
-  login-success-redirect: ${loginSuccessRedirect}
-  logout-success-redirect: ${logoutSuccessRedirect}
+  allowed-origin: \${LOGIN_GOV_ALLOWED_ORIGIN}
+  login-success-redirect: \${LOGIN_GOV_LOGIN_SUCCESS_REDIRECT}
+  logout-success-redirect: \${LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT}
   keystore:
-    alias: ${keystoreAlias}
-    file: ${keystorePath}/${keystoreFile}
-    password: ${keystorePassword}
-    #keyPassword: \${keyPassword}
+    alias: \${LOGIN_GOV_KEYSTORE_ALIAS}
+    file: \${LOGIN_GOV_KEYSTORE_FILE}
+    password: \${LOGIN_GOV_KEYSTORE_PASSWORD}
+    #keyPassword: \${LOGIN_GOV_KEY_PASSWORD}
     type: JKS
 
 management.endpoints.enabled-by-default: false

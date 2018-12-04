@@ -3,6 +3,7 @@ package org.cedar.onestop.api.search.security.config
 import com.google.common.collect.ImmutableList
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
@@ -20,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 
+@Profile("!integration")
 @EnableWebSecurity
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 
