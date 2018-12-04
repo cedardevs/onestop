@@ -18,8 +18,6 @@ import ErrorContainer from '../error/ErrorContainer'
 import LandingContainer from '../landing/LandingContainer'
 import DetailContainer from '../detail/DetailContainer'
 import Help from '../common/info/Help'
-import LoginContainer from '../user/LoginContainer'
-import LogoutContainer from '../user/LogoutContainer'
 
 import AboutContainer from '../common/info/AboutContainer'
 import CartContainer from '../cart/CartContainer'
@@ -129,17 +127,6 @@ export default class Root extends Component {
       </Route>
     ) : null
 
-    const authRoutes = authEnabled ? (
-      <div>
-        <Route path="/login">
-          <LoginContainer />
-        </Route>
-        <Route path="/logout">
-          <LogoutContainer />
-        </Route>
-      </div>
-    ) : null
-
     const middle = (
       <div style={{width: '100%'}}>
         <Switch>
@@ -187,8 +174,6 @@ export default class Root extends Component {
           <Route path="/help">
             <Help />
           </Route>
-
-          {authRoutes}
 
           {cart}
 
