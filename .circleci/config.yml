@@ -30,8 +30,8 @@ jobs:
 
       # build it!
       - run:
-          name: Build
-          command: ./gradlew build
+          name: Generate Dummy Keystore and Build
+          command: ./gradlew jks && ./gradlew build
           no_output_timeout: 30m
 
       - run:
