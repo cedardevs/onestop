@@ -51,9 +51,9 @@ spec:
         - name: LOGIN_GOV_ALLOWED_ORIGIN
           value: "http://localhost:30000"
         - name: LOGIN_GOV_LOGIN_SUCCESS_REDIRECT
-          value: "http://localhost:30000/onestop"
+          value: "http://localhost:30000/onestop/"
         - name: LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT
-          value: "http://localhost:30000/onestop"
+          value: "http://localhost:30000/onestop/"
         - name: LOGIN_GOV_KEYSTORE_FILE
           value: "/etc/api-search/logingov.jks"
         - name: LOGIN_GOV_KEYSTORE_PASSWORD
