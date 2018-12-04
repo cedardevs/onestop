@@ -19,7 +19,6 @@ import {
   getCollectionIdFromGranuleListPath,
 } from '../utils/urlUtils'
 
-import {getUser} from './UserActions'
 
 // synchronous actions
 export const LOADING_SHOW = 'LOADING_SHOW'
