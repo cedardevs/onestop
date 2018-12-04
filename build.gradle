@@ -29,7 +29,7 @@ ext {
   esVersion = '5.5.3'
   // isRelease used by docker plugin as well
   isRelease = System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean
-  springCloudVersion = 'Finchley.SR1'
+  springCloudVersion = 'Greenwich.M3'
 }
 
 subprojects {
