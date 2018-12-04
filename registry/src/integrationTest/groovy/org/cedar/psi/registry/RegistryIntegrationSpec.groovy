@@ -9,6 +9,7 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import io.confluent.kafka.schemaregistry.RestApp
 import org.apache.kafka.clients.admin.AdminClient
+import org.apache.kafka.streams.KafkaStreams
 import org.cedar.psi.common.constants.Topics
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -50,6 +51,9 @@ class RegistryIntegrationSpec extends Specification {
 
   @Value('${server.servlet.context-path:}')
   String contextPath
+
+  @Autowired
+  KafkaStreams streamsApp
 
   @Autowired
   AdminClient adminClient
@@ -106,7 +110,6 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.data.attributes.input.content == granuleText
     retrieveResponse.body.data.attributes.input.contentType == "application/json"
     retrieveResponse.body.data.attributes.input.source == "common-ingest"
-//    retrieveResponse.body.data.attributes.identifiers.'common-ingest' == granuleMap.trackingId
 
     and: // let's verify the full response just this once
     retrieveResponse.body.data == [
@@ -116,15 +119,10 @@ class RegistryIntegrationSpec extends Specification {
             input: [
                 "content": granuleText,
                 "contentType": "application/json",
-                "host": "127.0.0.1",
                 "method": "POST",
-                "protocol": "HTTP/1.1",
-                "requestUrl": "${baseUrl}/metadata/granule/common-ingest/${granuleMap.trackingId}",
-                "source": "common-ingest"
-            ],
-//            identifiers: [
-//                'common-ingest': granuleMap.trackingId
-//            ]
+                "source": "common-ingest",
+                "type": "granule"
+            ]
         ]
     ]
   }
@@ -160,7 +158,6 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.data.attributes.input.content == granuleText
     retrieveResponse.body.data.attributes.input.contentType == "application/xml"
     retrieveResponse.body.data.attributes.input.source == Topics.DEFAULT_SOURCE
-//    retrieveResponse.body.data.attributes.identifiers == [(Topics.DEFAULT_SOURCE): granuleId.toString()]
   }
 
   def 'can post then retrieve collection info with an existing key'() {
@@ -193,7 +190,6 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.data.attributes.input.content == collectionText
     retrieveResponse.body.data.attributes.input.contentType == "application/xml"
     retrieveResponse.body.data.attributes.input.source == Topics.DEFAULT_SOURCE
-//    retrieveResponse.body.data.attributes.identifiers == [(Topics.DEFAULT_SOURCE): collectionId.toString()]
   }
 
   def 'can post then retrieve collection info with no key'() {
@@ -226,7 +222,6 @@ class RegistryIntegrationSpec extends Specification {
     retrieveResponse.body.data.attributes.input.content == collectionText
     retrieveResponse.body.data.attributes.input.contentType == "application/xml"
     retrieveResponse.body.data.attributes.input.source == Topics.DEFAULT_SOURCE
-//    retrieveResponse.body.data.attributes.identifiers == [(Topics.DEFAULT_SOURCE): (collectionId as String)]
   }
 
   def 'returns 404 for unsupported type'() {

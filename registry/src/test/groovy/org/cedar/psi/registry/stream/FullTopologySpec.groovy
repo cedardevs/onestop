@@ -9,7 +9,7 @@ import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
 import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.avro.Publishing
-import org.cedar.psi.registry.service.MetadataStreamService
+import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import org.cedar.psi.registry.util.TimeFormatUtils
 import spock.lang.Specification
@@ -25,7 +25,7 @@ import static org.cedar.psi.common.constants.Topics.*
 import static org.cedar.psi.common.util.StreamSpecUtils.STRING_SERIALIZER
 import static org.cedar.psi.common.util.StreamSpecUtils.readAllOutput
 
-class FullWorkflowSpec extends Specification {
+class FullTopologySpec extends Specification {
 
   static final UTC_ID = ZoneId.of('UTC')
 
@@ -38,12 +38,12 @@ class FullWorkflowSpec extends Specification {
       (AUTO_OFFSET_RESET_CONFIG)        : 'earliest'
   ]
 
-  def topology = MetadataStreamService.buildTopology(5000)
+  def topology = TopologyBuilders.buildTopology(5000)
   def driver = new TopologyTestDriver(topology, new Properties(config))
   def inputFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
   def parsedFactory = new ConsumerRecordFactory(STRING_SERIALIZER, new MockSchemaRegistrySerde().serializer())
 
-  def inputType = 'granule'
+  def inputType = RecordType.granule
   def inputSource = DEFAULT_SOURCE
   def inputTopic = inputTopic(inputType, inputSource)
   def parsedTopic = parsedTopic(inputType)
@@ -57,15 +57,15 @@ class FullWorkflowSpec extends Specification {
 
   def 'ingests and aggregates raw granule info'() {
     def key = 'A'
-    def value1 = new Input(content: '{"size":42}', method: Method.POST, contentType: 'application/json', host: 'localhost', protocol: 'http', requestUrl: '/test', source: 'test')
-    def value2 = new Input(content: '{"name":"test"}', method: Method.POST, contentType: 'application/json', host: 'localhost', protocol: 'http', requestUrl: '/test', source: 'test')
+    def value1 = buildTestGranule('{"size":42}')
+    def value2 = buildTestGranule('{"name":"test"}')
 
     when:
     driver.pipeInput(inputFactory.create(inputTopic, key, value1))
     driver.pipeInput(inputFactory.create(inputTopic, key, value2))
 
     then:
-    inputStore.get('A') == new Input(content: '{"size":42,"name":"test"}', method: Method.POST, contentType: 'application/json', host: 'localhost', protocol: 'http', requestUrl: '/test', source: 'test')
+    inputStore.get('A') == buildTestGranule('{"size":42,"name":"test"}')
   }
 
   def 'values for disvocery and publishing are set to the default values '() {
@@ -77,6 +77,7 @@ class FullWorkflowSpec extends Specification {
         .build()
 
     def value1 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing)
         .build()
@@ -111,10 +112,12 @@ class FullWorkflowSpec extends Specification {
         .build()
 
     def value1 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery1)
         .setPublishing(publishing)
         .build()
     def value2 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery2)
         .setPublishing(publishing)
         .build()
@@ -142,6 +145,7 @@ class FullWorkflowSpec extends Specification {
         .build()
 
     def value = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(publishing)
         .build()
@@ -171,6 +175,7 @@ class FullWorkflowSpec extends Specification {
         .build()
 
     def plusFiveMessage = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(publishing)
         .build()
@@ -192,6 +197,17 @@ class FullWorkflowSpec extends Specification {
     def output2 = readAllOutput(driver, publishedTopic)
     OutputVerifier.compareKeyValue(output2[0], key, plusFiveMessage)
     output2.size() == 1
+  }
+
+
+  private static buildTestGranule(String content) {
+    def builder = Input.newBuilder()
+    builder.type = RecordType.granule
+    builder.method = Method.POST
+    builder.contentType = 'application/json'
+    builder.source = 'test'
+    builder.content = content
+    return builder.build()
   }
 
 }

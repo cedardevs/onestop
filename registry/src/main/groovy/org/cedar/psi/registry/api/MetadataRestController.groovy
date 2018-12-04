@@ -2,6 +2,7 @@ package org.cedar.psi.registry.api
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,7 +35,8 @@ class MetadataRestController {
 
   @RequestMapping(path = '/metadata/{type}/{source}/{id}', method = [GET, HEAD], produces = 'application/json')
   Map retrieveJson(@PathVariable String type, @PathVariable String source, @PathVariable String id, HttpServletResponse response) {
-    def result = metadataStore.retrieveEntity(type, source, id)
+    RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
+    def result = metadataStore.retrieveEntity(recordType, source, id)
     if (!result) {
       response.sendError(404, "No such ${type} with id ${id}")
     }

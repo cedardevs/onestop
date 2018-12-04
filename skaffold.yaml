@@ -22,7 +22,7 @@ deploy:
   helm:
     releases:
     - name: psi-registry
-      chartPath: helm/psi/psi-registry
+      chartPath: helm/psi/charts/psi-registry
       values:
         image: cedardevs/psi-registry
       setValues:
@@ -31,7 +31,7 @@ deploy:
       imageStrategy:
         helm: {}
     - name: psi-manager
-      chartPath: helm/psi/psi-manager
+      chartPath: helm/psi/charts/psi-manager
       values:
         image: cedardevs/psi-stream-manager
       setValues:

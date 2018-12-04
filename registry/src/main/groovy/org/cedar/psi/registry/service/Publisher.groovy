@@ -6,6 +6,7 @@ import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.cedar.psi.common.avro.Input
 import org.cedar.psi.common.avro.Method
+import org.cedar.psi.common.avro.RecordType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -26,7 +27,7 @@ class Publisher {
     this.kafkaProducer = kafkaProducer
   }
 
-  Map publishMetadata(HttpServletRequest request, String type, String data, String source, String id = null) {
+  Map publishMetadata(HttpServletRequest request, RecordType type, String data, String source, String id = null) {
     String topic = inputTopic(type, source)
     if (!topic) {
       return [
@@ -35,30 +36,25 @@ class Publisher {
       ]
     }
     String key = id ?: UUID.randomUUID().toString()
-    Map messages = buildInputTopicMessage(request, data, source, key)
-    // TODO - decide on approach for hanlding identifiers
-    def record = new ProducerRecord<String, Input>(topic, key, messages.input as Input)
+    def message = buildInputTopicMessage(request, type, data, source, key)
+    def record = new ProducerRecord<String, Input>(topic, key, message)
     log.info ("Publishing $type with id: ${id} and source: $source")
     log.debug("Publishing: ${record}")
     kafkaProducer.send(record)?.get()
     return [
         status: 200,
-        content: [id: key, type: type, attributes: messages.subMap(['identifiers'])]
+        content: [id: key, type: type]
     ]
   }
 
-  Map buildInputTopicMessage(HttpServletRequest request, String data, String source, String id) {
+  Input buildInputTopicMessage(HttpServletRequest request, RecordType type, String data, String source, String id) {
     def builder = Input.newBuilder()
+    builder.type = type
     builder.method = Method.valueOf(request?.method?.toUpperCase())
-    builder.host = request?.remoteHost
-    builder.requestUrl = request?.requestURL as String
-    builder.protocol = request?.protocol
     builder.content = data
     builder.contentType = request?.contentType
     builder.source = source
-    def input = builder.build()
-
-    return [input: input, identifiers: [(source): id]]
+    return builder.build()
   }
 
 }

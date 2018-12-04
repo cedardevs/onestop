@@ -2,35 +2,32 @@
   "type": "record",
   "namespace": "org.cedar.psi.common.avro",
   "name": "Input",
-  "doc": "This event records incoming request",
+  "doc": "The raw input for a metadata record, plus information about how the input was sent",
   "fields": [
     {
+      "name": "type",
+      "type": "RecordType",
+      "doc" : "The type of record represented by this input"
+    },
+    {
       "name": "content",
-      "type": "string"
+      "type": "string",
+      "doc" : "The raw input content as a string"
     },
     {
-     "name": "contentType",
-     "type": "string"
-    },
-    {
-      "name": "host",
-      "type": "string"
+      "name": "contentType",
+      "type": "string",
+      "doc" : "The MIME type associated with the value of the content field"
     },
     {
       "name": "method",
-      "type": "Method"
-    },
-    {
-      "name": "protocol",
-      "type": "string"
-    },
-    {
-      "name": "requestUrl",
-      "type": "string"
+      "type": "Method",
+      "doc" : "The HTTP method used to send the input or which describes the verb associated with the input in general"
     },
     {
       "name": "source",
-      "type": "string"
+      "type": "string",
+      "doc" : "The source of the input, e.g. the name of an external system which produced this input record"
     }
   ]
 }

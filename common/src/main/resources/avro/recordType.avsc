@@ -1,0 +1,10 @@
+{
+  "name": "RecordType",
+  "namespace": "org.cedar.psi.common.avro",
+  "type": "enum",
+  "doc": "The types of metadata records which can be represented in the PSI system",
+  "symbols": [
+    "collection",
+    "granule"
+  ]
+}

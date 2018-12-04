@@ -1,12 +1,5 @@
 package org.cedar.psi.manager.util
 
-import groovy.json.JsonOutput
-import org.apache.avro.AvroTypeException
-import org.apache.avro.Schema
-import org.apache.avro.io.DatumReader
-import org.apache.avro.io.Decoder
-import org.apache.avro.io.DecoderFactory
-import org.apache.avro.specific.SpecificDatumReader
 import org.cedar.psi.common.avro.*
 import org.cedar.psi.common.util.AvroUtils
 import spock.lang.Specification
@@ -20,7 +13,7 @@ class AnalyzersSpec extends Specification {
   final String analysisAvro = ClassLoader.systemClassLoader.getResourceAsStream('avro/analysis.avsc').text
 
   def 'adds an analysis into a parsed record'() {
-    def record = ParsedRecord.newBuilder().setDiscovery(Discovery.newBuilder().build()).build()
+    def record = ParsedRecord.newBuilder().setType(RecordType.collection).setDiscovery(Discovery.newBuilder().build()).build()
 
     when:
     def result = Analyzers.addAnalysis(record)
