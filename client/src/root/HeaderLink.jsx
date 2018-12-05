@@ -105,7 +105,7 @@ class HeaderLink extends React.Component {
   }
 
   render() {
-    const {to} = this.props
+    const {to, isExternalLink, title} = this.props
 
     const styleLinkMerged = {
       ...styleLink,
@@ -114,7 +114,20 @@ class HeaderLink extends React.Component {
       ...(this.state.keying ? styleLinkKeying : {}),
     }
 
-    return (
+    const link = isExternalLink ? (
+      <a
+        href={to}
+        style={styleLinkMerged}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        onKeyDown={this.handleKeyDown}
+        onKeyUp={this.handleKeyUp}
+      >
+        {title}
+      </a>
+    ) : (
       <Link
         to={to}
         style={styleLinkMerged}
@@ -128,6 +141,8 @@ class HeaderLink extends React.Component {
         {this.props.children}
       </Link>
     )
+
+    return link
   }
 }
 

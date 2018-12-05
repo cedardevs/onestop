@@ -39,6 +39,13 @@ class UiConfig {
     Map reactGaOptions
   }
 
+  Auth auth
+  static class Auth{
+    String loginEndpoint
+    String logoutEndpoint
+    String userProfileEndpoint
+  }
+
 //  class ReactGAOptions {
 //    Boolean debug
 //    String titleCase

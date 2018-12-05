@@ -70,9 +70,9 @@ class GranuleSearchIntegrationTests extends IntegrationTest {
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    searchBaseUriString = "http://localhost:${port}/${contextPath}/search/"
-    searchGranuleUriString = "http://localhost:${port}/${contextPath}/search/granule"
-    granuleBaseUriString = "http://localhost:${port}/${contextPath}/granule/"
+    searchBaseUriString = "http://localhost:${port}${contextPath}/search/"
+    searchGranuleUriString = "http://localhost:${port}${contextPath}/search/granule"
+    granuleBaseUriString = "http://localhost:${port}${contextPath}/granule/"
   }
 
   def 'Granule endpoint reports count of granules'() {

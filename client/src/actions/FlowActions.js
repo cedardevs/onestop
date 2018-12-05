@@ -19,6 +19,7 @@ import {
   getCollectionIdFromGranuleListPath,
 } from '../utils/urlUtils'
 
+
 // synchronous actions
 export const LOADING_SHOW = 'LOADING_SHOW'
 export const showLoading = () => {

@@ -8,6 +8,7 @@ const mapStateToProps = state => {
     leftOpen: state.ui.layout.leftOpen,
     showRight: state.ui.layout.showRight,
     featuresEnabled: state.domain.config.featuresEnabled,
+    authEnabled: !!state.domain.config.auth,
   }
 }
 

@@ -70,9 +70,9 @@ class FlatGranuleSearchIntegrationTests extends IntegrationTest {
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    searchBaseUriString = "http://localhost:${port}/${contextPath}/search/"
-    searchFlattenedGranuleUriString = "http://localhost:${port}/${contextPath}/search/flattened-granule"
-    flatGranuleBaseUriString = "http://localhost:${port}/${contextPath}/flattened-granule/"
+    searchBaseUriString = "http://localhost:${port}${contextPath}/search/"
+    searchFlattenedGranuleUriString = "http://localhost:${port}${contextPath}/search/flattened-granule"
+    flatGranuleBaseUriString = "http://localhost:${port}${contextPath}/flattened-granule/"
   }
 
   def 'Flattened granule endpoint reports count of flattened granules'() {
