@@ -5,6 +5,8 @@ import routing from './behavior/routing'
 import errors from './behavior/error'
 import request from './behavior/request'
 
+import granules from './cart/granules'
+
 import config from './domain/config'
 import info from './domain/info'
 import results from './domain/results'
@@ -12,7 +14,7 @@ import results from './domain/results'
 import loading from './ui/loading'
 import layout from './ui/layout'
 
-import granules from './cart/granules'
+import user from './user/user'
 
 export const RESET_STORE = 'reset_store'
 
@@ -20,6 +22,7 @@ const domain = combineReducers({
   config,
   info,
   results,
+  user,
 })
 
 const ui = combineReducers({

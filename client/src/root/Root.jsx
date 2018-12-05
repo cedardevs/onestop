@@ -18,6 +18,7 @@ import ErrorContainer from '../error/ErrorContainer'
 import LandingContainer from '../landing/LandingContainer'
 import DetailContainer from '../detail/DetailContainer'
 import Help from '../common/info/Help'
+
 import AboutContainer from '../common/info/AboutContainer'
 import CartContainer from '../cart/CartContainer'
 
@@ -52,7 +53,6 @@ const styleClose = {}
 export default class Root extends Component {
   constructor(props) {
     super(props)
-
     this.hasUnsupportedFeatures = this.hasUnsupportedFeatures.bind(this)
     this.state = {
       leftVisible: true,
@@ -102,7 +102,13 @@ export default class Root extends Component {
   }
 
   render() {
-    const {showLeft, leftOpen, showRight, featuresEnabled} = this.props
+    const {
+      showLeft,
+      leftOpen,
+      showRight,
+      featuresEnabled,
+      authEnabled,
+    } = this.props
 
     const header = (
       <div>

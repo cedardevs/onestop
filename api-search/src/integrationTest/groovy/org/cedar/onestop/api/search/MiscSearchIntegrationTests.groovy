@@ -92,11 +92,11 @@ class MiscSearchIntegrationTests extends IntegrationTest {
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    searchBaseUriString = "http://localhost:${port}/${contextPath}/search/"
-    searchCollectionUriString = "http://localhost:${port}/${contextPath}/search/collection"
-    searchGranuleUriString = "http://localhost:${port}/${contextPath}/search/granule"
-    collectionBaseUriString = "http://localhost:${port}/${contextPath}/collection/"
-    granuleBaseUriString = "http://localhost:${port}/${contextPath}/granule/"
+    searchBaseUriString = "http://localhost:${port}${contextPath}/search/"
+    searchCollectionUriString = "http://localhost:${port}${contextPath}/search/collection"
+    searchGranuleUriString = "http://localhost:${port}${contextPath}/search/granule"
+    collectionBaseUriString = "http://localhost:${port}${contextPath}/collection/"
+    granuleBaseUriString = "http://localhost:${port}${contextPath}/granule/"
   }
 
   def 'Collection GET request returns expected record and count of granules in collection'() {

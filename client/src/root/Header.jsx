@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import Logo from './Logo'
 import HeaderLink from './HeaderLink'
+
 import Button from '../common/input/Button'
 import {boxShadow} from '../common/defaultStyles'
 
@@ -36,6 +37,10 @@ const styleNav = {
   display: 'flex',
   justifyContent: 'flex-end',
   marginTop: '1em',
+}
+
+const styleUserWelcome = {
+  justifyContent: 'flex-end',
 }
 
 const styleLinkList = {
@@ -99,6 +104,7 @@ const styleSkipLinkHover = {
 class Header extends React.Component {
   constructor(props) {
     super(props)
+    this.props = props
     this.state = {
       focusingSkipLink: false,
     }
@@ -123,8 +129,44 @@ class Header extends React.Component {
   }
 
   render() {
-    const {headerDropdownMenuFeatureAvailable} = this.props
+    const {
+      headerDropdownMenuFeatureAvailable,
+      user,
+      authEnabled,
+      loginEndpoint,
+      logoutEndpoint,
+      logoutUser,
+      getUser,
+      userProfileEndpoint,
+    } = this.props
     const {focusingSkipLink} = this.state
+    const userEmail = user && user.info ? user.info.email : null
+
+    if (user && !user.info && !user.expired) {
+      getUser(userProfileEndpoint)
+    }
+
+    const userActionButton = authEnabled ? !user.isAuthenticated ? (
+      <HeaderLink
+        title="Login"
+        to={loginEndpoint}
+        isExternalLink={true}
+        onClick={() => getUser(userProfileEndpoint)}
+      />
+    ) : (
+      <HeaderLink
+        title="Logout"
+        to={logoutEndpoint}
+        isExternalLink={true}
+        onClick={() => logoutUser()}
+      />
+    ) : null
+
+    const welcomeUser = userEmail ? (
+      <div style={styleUserWelcome} key="emailDisplay">
+        Logged in as {userEmail}
+      </div>
+    ) : null
 
     const headerDropDownMenuListItem = headerDropdownMenuFeatureAvailable ? (
       <li style={styleLinkListItem(false, true)}>
@@ -144,12 +186,15 @@ class Header extends React.Component {
             About Us
           </HeaderLink>
         </li>
-        <li
-          style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}
-        >
+        <li style={styleLinkListItem(false, !authEnabled)}>
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
+        </li>
+        <li
+          style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}
+        >
+          {userActionButton}
         </li>
         {headerDropDownMenuListItem}
       </ul>
@@ -198,6 +243,11 @@ class Header extends React.Component {
     return (
       <div style={styleWrapper}>
         <div style={styleHeader}>
+          <FlexRow
+            style={styleUserWelcome}
+            key="welcomeUser"
+            items={[ welcomeUser ]}
+          />
           <FlexRow
             style={styleHeaderFlexRow}
             items={[

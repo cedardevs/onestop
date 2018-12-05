@@ -1,6 +1,7 @@
 package org.cedar.onestop
 
 import org.junit.ClassRule
+import org.junit.Ignore
 import org.junit.Test
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
@@ -14,6 +15,7 @@ import spock.lang.Specification
 import spock.util.concurrent.PollingConditions
 import groovy.json.JsonSlurper
 
+@Ignore
 class LoadAndSearchTests extends Specification {
 
   @Shared
