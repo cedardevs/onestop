@@ -1,6 +1,5 @@
 package org.cedar.onestop.api.search.security.config
 
-import org.apache.commons.lang3.RandomStringUtils
 import org.cedar.onestop.api.search.security.constants.LoginGovConstants
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver
@@ -33,7 +32,7 @@ class LoginGovAuthorizationRequestResolver implements OAuth2AuthorizationRequest
             return null
         }
         else {
-            return customAuthorizationRequest(authorizationRequest)
+            return customAuthorizationRequest(authorizationRequest, request.session.id)
         }
     }
 
@@ -44,19 +43,17 @@ class LoginGovAuthorizationRequestResolver implements OAuth2AuthorizationRequest
             return null
         }
         else {
-            return customAuthorizationRequest(authorizationRequest)
+            return customAuthorizationRequest(authorizationRequest, request.session.id)
         }
     }
 
-    OAuth2AuthorizationRequest customAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest) {
+    OAuth2AuthorizationRequest customAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, String sessionId ) {
         String registrationId = resolveRegistrationId(authorizationRequest)
         LinkedHashMap additionalParameters = new LinkedHashMap(authorizationRequest.additionalParameters)
-
         // set login.gov specific params
         // https://developers.login.gov/oidc/#authorization
         if(registrationId == LoginGovConstants.LOGIN_GOV_REGISTRATION_ID) {
-            String charset = (('a'..'z') + ('A'..'Z') + ('0'..'9')).join()
-            String nonce = RandomStringUtils.random(32, charset.toCharArray())
+            String nonce = NonceUtil.generateNonce(sessionId)
             additionalParameters.put("acr_values", LoginGovConstants.LOGIN_GOV_LOA1)
             additionalParameters.put("nonce", nonce)
         }

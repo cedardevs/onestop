@@ -1,6 +1,7 @@
 package org.cedar.onestop.api.search.security.controller
 
 import org.cedar.onestop.api.search.security.config.LoginGovConfiguration
+import org.cedar.onestop.api.search.security.config.NonceUtil
 import org.cedar.onestop.api.search.security.config.RequestUtil
 import org.cedar.onestop.api.search.security.config.SecurityConfig
 import org.cedar.onestop.api.search.security.constants.LoginGovConstants
@@ -48,6 +49,14 @@ class LoginController {
         else {
             OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(authentication.authorizedClientRegistrationId, authentication.name)
             String userInfoEndpointUri = client.clientRegistration.providerDetails.userInfoEndpoint.uri
+
+            if(!NonceUtil.extractAndCheckNonce(authentication)){
+                HashMap<String, Object> responseUnauthenticated = new HashMap<String, Object>()
+                responseUnauthenticated.put("error", "Replay attack detected.")
+                responseUnauthenticated.put("login", RequestUtil.getURL(httpServletRequest, DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL))
+                return responseUnauthenticated
+            }
+
             String email = null
             if(!StringUtils.isEmpty(userInfoEndpointUri)) {
                 RestTemplate restTemplate = new RestTemplate()
