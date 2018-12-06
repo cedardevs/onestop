@@ -75,16 +75,6 @@ class LoginController {
         }
     }
 
-    @RequestMapping(SecurityConfig.LOGIN_SUCCESS_ENDPOINT)
-    void loginSuccess(HttpServletResponse httpServletResponse) {
-        httpServletResponse.sendRedirect(loginGovConfiguration.loginSuccessRedirect)
-    }
-
-    @RequestMapping(SecurityConfig.LOGOUT_SUCCESS_ENDPOINT)
-    void logoutSuccess(HttpServletResponse httpServletResponse) {
-        httpServletResponse.sendRedirect(loginGovConfiguration.logoutSuccessRedirect)
-    }
-
     @RequestMapping(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL)
     String login() {
         // bypass the default Spring login page and go straight to login.gov authorization
@@ -92,4 +82,18 @@ class LoginController {
         return "redirect:" + authorizationRedirect
     }
 
+    @RequestMapping(SecurityConfig.LOGIN_SUCCESS_ENDPOINT)
+    void loginSuccess(HttpServletResponse httpServletResponse) {
+        httpServletResponse.sendRedirect(loginGovConfiguration.loginSuccessRedirect)
+    }
+
+    @RequestMapping(SecurityConfig.LOGIN_FAILURE_ENDPOINT)
+    void loginFailure(HttpServletResponse httpServletResponse) {
+        httpServletResponse.sendRedirect(loginGovConfiguration.loginFailureRedirect)
+    }
+
+    @RequestMapping(SecurityConfig.LOGOUT_SUCCESS_ENDPOINT)
+    void logoutSuccess(HttpServletResponse httpServletResponse) {
+        httpServletResponse.sendRedirect(loginGovConfiguration.logoutSuccessRedirect)
+    }
 }
