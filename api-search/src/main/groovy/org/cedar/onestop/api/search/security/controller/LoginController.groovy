@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.client.RestTemplate
 
@@ -40,10 +41,13 @@ class LoginController {
 
     @RequestMapping(value = SecurityConfig.LOGIN_PROFILE_ENDPOINT, method = [RequestMethod.GET, RequestMethod.OPTIONS])
     @ResponseBody
-    HashMap<String, Object> loginProfile(HttpServletRequest httpServletRequest, OAuth2AuthenticationToken authentication) {
+    HashMap<String, Object> loginProfile(HttpServletRequest httpServletRequest, OAuth2AuthenticationToken authentication, @RequestParam(value = "failure", required = false, defaultValue = "false") boolean failure) {
         if(authentication == null) {
             HashMap<String, Object> responseUnauthenticated = new HashMap<String, Object>()
             responseUnauthenticated.put("login", RequestUtil.getURL(httpServletRequest, DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL))
+            if(failure) {
+                responseUnauthenticated.put("error", "Login was canceled or unsuccessful.")
+            }
             return responseUnauthenticated
         }
         else {
