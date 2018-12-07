@@ -105,4 +105,84 @@ class StreamFunctionsSpec extends Specification {
     mergedMaps == mergedAggregate
   }
 
+  def 'publish function with PATCH method'() {
+    def currentAggregate = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    def newValue = new Input([
+        type: RecordType.granule,
+        method: Method.PATCH,
+        content: '{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+
+    def expectedValue = new Input([
+        type: RecordType.granule,
+        method: Method.PATCH,
+        content: '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+
+    when:
+    def value = StreamFunctions.publishInputs.apply(currentAggregate, newValue)
+
+    then:
+    value == expectedValue
+  }
+
+  def 'publish function with PUT method'() {
+    def currentAggregate = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    def newValue = new Input([
+        type: RecordType.granule,
+        method: Method.PUT,
+        content: '{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+
+    when:
+    def value = StreamFunctions.publishInputs.apply(currentAggregate, newValue)
+
+    then:
+    value == newValue
+  }
+
+  def 'publish function with DELETE method'() {
+    def currentAggregate = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    def newValue = new Input([
+        method: Method.DELETE,
+    ])
+
+    def expected = new Input([
+        type: RecordType.granule,
+        method: Method.DELETE,
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    when:
+    def value = StreamFunctions.publishInputs.apply(currentAggregate, newValue)
+
+    then:
+    value == expected
+  }
+
 }

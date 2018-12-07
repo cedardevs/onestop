@@ -57,15 +57,15 @@ class FullTopologySpec extends Specification {
 
   def 'ingests and aggregates raw granule info'() {
     def key = 'A'
-    def value1 = buildTestGranule('{"size":42}')
-    def value2 = buildTestGranule('{"name":"test"}')
+    def value1 = buildTestGranule('{"size":42}',  Method.POST)
+    def value2 = buildTestGranule('{"name":"test"}', Method.PATCH)
 
     when:
     driver.pipeInput(inputFactory.create(inputTopic, key, value1))
     driver.pipeInput(inputFactory.create(inputTopic, key, value2))
 
     then:
-    inputStore.get('A') == buildTestGranule('{"size":42,"name":"test"}')
+    inputStore.get('A') == buildTestGranule('{"size":42,"name":"test"}', Method.PATCH)
   }
 
   def 'values for disvocery and publishing are set to the default values '() {
@@ -200,10 +200,10 @@ class FullTopologySpec extends Specification {
   }
 
 
-  private static buildTestGranule(String content) {
+  private static buildTestGranule(String content, Method method) {
     def builder = Input.newBuilder()
     builder.type = RecordType.granule
-    builder.method = Method.POST
+    builder.method = method
     builder.contentType = 'application/json'
     builder.source = 'test'
     builder.content = content

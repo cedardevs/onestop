@@ -6,7 +6,9 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.kstream.Reducer
 import org.apache.kafka.streams.kstream.ValueJoiner
+import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.common.avro.Input
+import org.cedar.psi.common.avro.ParsedRecord
 
 @Slf4j
 @CompileStatic
@@ -36,7 +38,6 @@ class StreamFunctions {
     @Override
     Map apply(Map aggregate, Map nextValue) {
       log.debug("Merging new value $nextValue into existing aggregate ${aggregate}")
-      def slurper = new JsonSlurper()
       def result = (aggregate ?: [:]) + (nextValue ?: [:])
       if (aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json' ) {
         result.content = mergeJsonMapStrings(aggregate?.content as String, nextValue?.content as String)
@@ -62,6 +63,27 @@ class StreamFunctions {
       }
 
       return resultBuilder.build()
+    }
+  }
+
+  static Reducer<Input> putReducer = new Reducer<Input>() {
+    @Override
+    Input apply(Input aggregate, Input nextValue) {
+      log.debug("publishing new input $nextValue")
+
+      def resultBuilder = Input.newBuilder(nextValue)
+      return resultBuilder.build()
+    }
+  }
+
+  static Reducer<Input> publishInputs = new Reducer<Input>() {
+    @Override
+    Input apply(Input aggregate, Input nextValue) {
+      log.debug("Published with method ${nextValue.method}")
+
+      String method = nextValue.method
+      if (method == 'PATCH'){return mergeInputs.apply(aggregate,nextValue)}
+      if (method == 'PUT' || method == 'POST'){return putReducer.apply(aggregate,nextValue)}
     }
   }
 

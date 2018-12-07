@@ -34,7 +34,7 @@ class TopologyBuilders {
       KStream<String, Input> inputStream = builder.stream(Topics.inputTopic(type, source))
       KTable<String, Input> inputTable = inputStream
           .groupByKey()
-          .reduce(StreamFunctions.mergeInputs, Materialized.as(Topics.inputStore(type, source)))
+          .reduce(StreamFunctions.publishInputs, Materialized.as(Topics.inputStore(type, source)))
       return [(source): inputTable]
     }
 
