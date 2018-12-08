@@ -2,17 +2,12 @@ buildscript {
   ext {
     spockVersion = '1.1-groovy-2.4'
   }
-  repositories {
-    maven { url "https://plugins.gradle.org/m2/" }
-  }
-  dependencies {
-    classpath 'com.gradle:build-scan-plugin:1.11'
-    classpath "gradle.plugin.org.cedar:dockerplugin:1.0.2"
-    classpath 'org.owasp:dependency-check-gradle:3.3.4'
-  }
 }
 
-apply plugin: 'org.owasp.dependencycheck'
+plugins {
+  id "org.owasp.dependencycheck" version "4.0.0.1"
+}
+
 dependencyCheck {
   skipConfigurations = ["providedRuntime"]
   suppressionFile = "${rootDir}/owasp-suppressions.xml"
@@ -45,23 +40,19 @@ subprojects {
         password = System.getenv('DOCKER_PASSWORD')
       }
     }
-  }
-}
 
-subprojects {
-  apply plugin: 'jacoco'
+    if (project.plugins.hasPlugin('jacoco')) {
+      jacocoTestReport {
+        executionData fileTree(projectDir).include("build/jacoco/*.exec")
 
-  afterEvaluate {
-    jacocoTestReport {
-      executionData fileTree(projectDir).include("build/jacoco/*.exec")
-
-      reports {
-        xml.enabled true
-        xml.destination = file("${buildDir}/reports/jacoco/report.xml")
-        html.enabled true
-        html.destination = file("${buildDir}/reports/jacoco/html")
+        reports {
+          xml.enabled true
+          xml.destination = file("${buildDir}/reports/jacoco/report.xml")
+          html.enabled true
+          html.destination = file("${buildDir}/reports/jacoco/html")
+        }
       }
+      check.dependsOn jacocoTestReport
     }
-    check.dependsOn jacocoTestReport
   }
 }
