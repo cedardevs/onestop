@@ -17,6 +17,7 @@ import org.cedar.psi.common.util.AvroUtils
 import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import org.cedar.psi.common.util.StreamSpecUtils
 import org.cedar.psi.manager.config.ManagerConfig
+import org.junit.Assert
 import spock.lang.Specification
 
 class StreamManagerSpec extends Specification {
@@ -45,7 +46,7 @@ class StreamManagerSpec extends Specification {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def key = 'A123'
-    def input = buildInput(contentType: 'application/xml', content: xml)
+    def input = buildInput(method: Method.POST, contentType: 'application/xml', content: xml)
 
     when:
     driver.pipeInput(inputFactory.create(testChangelog, key, input))
@@ -55,7 +56,6 @@ class StreamManagerSpec extends Specification {
     driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
-    // There is only 1 record in the PARSED_TOPIC
     def finalOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     finalOutput != null
     driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
@@ -75,6 +75,45 @@ class StreamManagerSpec extends Specification {
     result.analysis.identification.fileIdentifierString == 'gov.super.important:FILE-ID'
   }
 
+  def "deleted input record sets parsed record to default values"() {
+    given:
+    def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+    def key = 'A123'
+    def postInput = buildInput(method: Method.POST, contentType: 'application/xml', content: xml)
+    def deleteInput = buildInput(method: Method.DELETE, contentType: 'application/xml')
+
+    when:
+    driver.pipeInput(inputFactory.create(testChangelog, key, postInput))
+    driver.pipeInput(inputFactory.create(testChangelog, key, deleteInput))
+
+    then:
+    driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+
+    and:
+    def finalOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def updatedOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    finalOutput != null
+
+    and:
+    // Verify some fields
+    finalOutput.key() == key
+    def originalResult = finalOutput.value()
+
+    originalResult.discovery instanceof Discovery
+    originalResult.analysis instanceof Analysis
+    originalResult.errors  instanceof List
+
+    // Verify updated fields
+    updatedOutput.key() == key
+    def updatedResult = updatedOutput.value()
+    updatedResult instanceof ParsedRecord
+    Assert.assertNull("Verify discovery is set to default value", updatedResult.discovery)
+    Assert.assertNull("Verify analysis is set to default value", updatedResult.analysis)
+    updatedResult.errors  instanceof List
+
+    originalResult.errors.size() == 0
+  }
+
   def "SME granule ends up in SME topic"() {
     given:
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
@@ -82,7 +121,8 @@ class StreamManagerSpec extends Specification {
     def smeValue = buildInput(
         source: 'common-ingest',
         contentType: 'application/xml',
-        content: xmlSME
+        content: xmlSME,
+        method: Method.POST
     )
 
     when:
@@ -106,7 +146,8 @@ class StreamManagerSpec extends Specification {
     def nonSMEInputKey = 'notSME'
     def nonSMEInputValue = buildInput(
         contentType: 'application/xml',
-        content: xmlNonSME
+        content: xmlNonSME,
+        method: Method.POST
     )
     def unparsedKey = 'sme'
     def unparsedValue = [
@@ -147,7 +188,8 @@ class StreamManagerSpec extends Specification {
     def key = 'failure101'
     def value = buildInput(
         contentType: 'text/csv',
-        content: 'it,does,not,parse'
+        content: 'it,does,not,parse',
+        method: Method.POST
     )
 
     when:
@@ -167,8 +209,7 @@ class StreamManagerSpec extends Specification {
 
   private static inputDefaults = [
       type      : RecordType.granule,
-      source    : 'test',
-      method    : Method.POST,
+      source    : 'test'
   ]
 
   private static buildInput(Map overrides) {

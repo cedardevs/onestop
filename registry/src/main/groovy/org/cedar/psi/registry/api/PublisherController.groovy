@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE
 import static org.springframework.web.bind.annotation.RequestMethod.PATCH
 import static org.springframework.web.bind.annotation.RequestMethod.POST
 import static org.springframework.web.bind.annotation.RequestMethod.PUT
@@ -29,7 +30,7 @@ class PublisherController {
   @Autowired
   Publisher publisher
 
-  @RequestMapping(value = "/{type}", method = [POST, PUT])
+  @RequestMapping(value = "/{type}", method = [POST])
   Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type) throws Exception {
     receiveContent(request, response, data, type, Topics.DEFAULT_SOURCE, null)
   }
@@ -43,6 +44,14 @@ class PublisherController {
   Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type, @PathVariable String source, @PathVariable UUID id) throws Exception {
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def result = publisher.publishMetadata(request, recordType, data, source, id as String)
+    response.status = result.status as Integer
+    return result.content as Map
+  }
+
+  @RequestMapping(value = "/{type}/{source}/{id}", method = [DELETE])
+  Map removeContent(HttpServletRequest request, HttpServletResponse response, @PathVariable String type, @PathVariable String source, @PathVariable UUID id) throws Exception {
+    RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
+    def result = publisher.removeMetadata(request, recordType, source, id as String)
     response.status = result.status as Integer
     return result.content as Map
   }

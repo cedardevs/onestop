@@ -66,12 +66,22 @@ class StreamFunctions {
     }
   }
 
-  static Reducer<Input> putReducer = new Reducer<Input>() {
+//  static Reducer<Input> putReducer = new Reducer<Input>() {
+//    @Override
+//    Input apply(Input aggregate, Input nextValue) {
+//      log.debug("publishing new input $nextValue")
+//
+//      def resultBuilder = Input.newBuilder(nextValue)
+//      return resultBuilder.build()
+//    }
+//  }
+
+  static Reducer<Input> deleteReducer = new Reducer<Input>() {
     @Override
     Input apply(Input aggregate, Input nextValue) {
-      log.debug("publishing new input $nextValue")
+      def resultBuilder = Input.newBuilder(aggregate)
+      if (nextValue.method) { resultBuilder.method = nextValue.method }
 
-      def resultBuilder = Input.newBuilder(nextValue)
       return resultBuilder.build()
     }
   }
@@ -83,7 +93,8 @@ class StreamFunctions {
 
       String method = nextValue.method
       if (method == 'PATCH'){return mergeInputs.apply(aggregate,nextValue)}
-      if (method == 'PUT' || method == 'POST'){return putReducer.apply(aggregate,nextValue)}
+      if (method == 'PUT' || method == 'POST'){return nextValue}
+      if (method == 'DELETE'){return deleteReducer.apply(aggregate,nextValue)}
     }
   }
 

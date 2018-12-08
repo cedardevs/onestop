@@ -11,8 +11,9 @@
     },
     {
       "name": "content",
-      "type": "string",
-      "doc" : "The raw input content as a string"
+      "type": ["null", "string"],
+      "doc" : "The raw input content as a string",
+      "default": null
     },
     {
       "name": "contentType",

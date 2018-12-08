@@ -13,6 +13,11 @@ class RecordParser {
   static ParsedRecord parse(Map msgMap, RecordType type) {
     String contentType = msgMap.contentType
     String content = msgMap.content
+    String method = msgMap.method
+    // update parsed record to default values
+    if (method == 'DELETE'){
+      return ParsedRecord.newBuilder().setType(type).build()
+    }
 
     try {
       if (!content) {
