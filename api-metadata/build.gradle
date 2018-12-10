@@ -24,9 +24,9 @@ configurations {
 
 dependencies {
 
+  // Kafka dependencies for connecting with PSI
   compile('com.github.cedardevs:schemas:master-SNAPSHOT')
-    // groovy
-//    compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
+  compile "org.springframework.kafka:spring-kafka:2.1.10.RELEASE"
 
   // opensaml
   compile("org.opensaml:opensaml-core:${project.openSAMLVersion}")
@@ -36,7 +36,6 @@ dependencies {
   compile("org.opensaml:opensaml-messaging-impl:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-api:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-impl:${project.openSAMLVersion}")
-  compile "org.springframework.kafka:spring-kafka:2.1.10.RELEASE"
   
   // logback
   compile("ch.qos.logback:logback-core:${project.logbackVersion}")
@@ -48,7 +47,6 @@ dependencies {
   // junit
   testCompile("junit:junit:${project.junitVersion}")
   testCompile("org.springframework.security:spring-security-test")
-
 
 
   compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
@@ -82,7 +80,6 @@ dependencies {
   testCompile "org.testcontainers:elasticsearch:1.10.0"
   testCompile 'net.bytebuddy:byte-buddy:1.7.11'
   testCompile "org.springframework.kafka:spring-kafka-test:2.1.10.RELEASE"
-  
 }
 
 ext {

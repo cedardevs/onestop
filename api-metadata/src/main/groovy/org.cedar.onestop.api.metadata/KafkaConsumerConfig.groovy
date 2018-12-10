@@ -2,6 +2,9 @@ package org.cedar.onestop.api.metadata
 
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
+import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig // FIXME
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer // FIXME ?
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde // FIXME ?
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
@@ -32,8 +35,9 @@ class KafkaConsumerConfig {
   Map<String, Object> consumerConfigs() {
     Map<String, Object> configProps = new HashMap<>()
     configProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
+    configProps.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl)
     configProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
-    configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class)
+    configProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SpecificAvroDeserializer.class)
     configProps.put(ConsumerConfig.CLIENT_ID_CONFIG, 'api-Consumer')
     configProps.put(ConsumerConfig.GROUP_ID_CONFIG, 'api-metadata')
     configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
@@ -49,6 +53,7 @@ class KafkaConsumerConfig {
   }
   
   @Bean
+  // FIXME specific avro value type
   KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
     ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>()
     factory.setConsumerFactory(consumerFactory())

@@ -2,13 +2,20 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.util.logging.Slf4j
 import org.apache.commons.text.WordUtils
+import org.cedar.schemas.avro.psi.Analysis
+import org.cedar.schemas.avro.psi.Discovery
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.ResponsibleParty
+import org.cedar.schemas.avro.psi.TemporalBounding
+import org.cedar.schemas.avro.psi.TemporalBoundingAnalysis
+import org.cedar.schemas.util.AvroUtils
 
 import java.time.temporal.ChronoUnit
 
 @Slf4j
 class InventoryManagerToOneStopUtil {
 
-  static Boolean validateMessage(Map messageMap, String id) {
+  static Boolean validateMessage(String id, ParsedRecord messageMap) {
     def analysis = messageMap.analysis
     def title = analysis.titles['title'] as Map
     def fileIdentifier = analysis.identification['fileIdentifier'] as Map
@@ -50,27 +57,32 @@ class InventoryManagerToOneStopUtil {
     }
   }
 
-  static Map reformatMessageForSearch(Map discovery, Map analysis) {
+  static Map reformatMessageForSearch(ParsedRecord record) {
+    Discovery discovery = record.discovery
+    Analysis analysis = record.analysis
+
+    Map discoveryMap = AvroUtils.avroToMap(discovery, true)
+
     // create gcmdkeywords
     Map gcmdKeywords = createGcmdKeyword(discovery)
-    discovery.putAll(gcmdKeywords)
+    discoveryMap.putAll(gcmdKeywords)
     
     // create contacts ,creators and publishers
     Map<String, Set> partyData = parseDataResponsibleParties(discovery.responsibleParties)
-    discovery.putAll(partyData)
+    discoveryMap.putAll(partyData)
     
     // update temporal Bounding
     def temporalBounding = readyDatesForSearch(discovery.temporalBounding, analysis.temporalBounding)
-    discovery.temporalBounding.putAll(temporalBounding)
+    discoveryMap.temporalBounding.putAll(temporalBounding)
 
     // drop fields
-    discovery.remove("responsibleParties")
-    discovery.services = [] // FIXME this needs to be in place until we can use ES6 ignore_missing flags
+    discoveryMap.remove("responsibleParties")
+    discoveryMap.services = [] // FIXME this needs to be in place until we can use ES6 ignore_missing flags
     return discovery
   }
   
   //Create GCMD keyword lists
-  static Map createGcmdKeyword(Map record) {
+  static Map createGcmdKeyword(Discovery discovery) {
     def gcmdScience = [] as Set
     def gcmdScienceServices = [] as Set
     def gcmdLocations = [] as Set
@@ -83,7 +95,7 @@ class InventoryManagerToOneStopUtil {
     def gcmdDataCenters = [] as Set
     
     //remove and create new keywords with out accession values
-    def keywords = record.keywords.findAll { keys ->
+    def keywords = discovery.keywords.findAll { keys ->
       keys.namespace != 'NCEI ACCESSION NUMBER'
     }
     
@@ -179,7 +191,7 @@ class InventoryManagerToOneStopUtil {
   Create contacts, creators and publishers from responsibleParties
   */
   
-  static Map<String, String> parseParty(Map party) {
+  static Map<String, String> parseParty(ResponsibleParty party) {
     String individualName = party.individualName ?: null
     String organizationName = party.organizationName ?: null
     String positionName = party.positionName ?: null
@@ -196,7 +208,7 @@ class InventoryManagerToOneStopUtil {
     ]
   }
   
-  static Map<String, Set> parseDataResponsibleParties(List<Map> responsibleParties) {
+  static Map<String, Set> parseDataResponsibleParties(List<ResponsibleParty> responsibleParties) {
     Set contacts = []
     Set contactRoles = ['pointOfContact', 'distributor']
     Set creators = []
@@ -205,7 +217,7 @@ class InventoryManagerToOneStopUtil {
     Set publisherRoles = ['publisher']
     
     responsibleParties.each { party ->
-      def parsedParty = parseParty(party as Map)
+      def parsedParty = parseParty(party)
       log.info("parsedParty: $parsedParty")
       if (contactRoles.contains(parsedParty.role)) {
         contacts.add(parsedParty)
@@ -218,7 +230,7 @@ class InventoryManagerToOneStopUtil {
     return [contacts: contacts, creators: creators, publishers: publishers]
   }
   
-  static Map readyDatesForSearch(Map temporalBounding, Map temporalAnalysis) {
+  static Map readyDatesForSearch(TemporalBounding temporalBounding, TemporalBoundingAnalysis temporalAnalysis) {
 
     def newTemporalBounding = [:]
     newTemporalBounding.putAll(temporalBounding)
