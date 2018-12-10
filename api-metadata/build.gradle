@@ -13,13 +13,18 @@ repositories {
 
   // opensaml repo
   maven { url "https://build.shibboleth.net/nexus/content/repositories/releases" }
-}
+  maven { url "https://jitpack.io" }
+  }
+
+
 
 configurations {
   compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
 }
 
 dependencies {
+
+  compile('com.github.cedardevs:schemas:master-SNAPSHOT')
     // groovy
 //    compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
 
