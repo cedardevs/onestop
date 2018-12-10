@@ -47,6 +47,7 @@ ext {
 war {
   enabled = true
   baseName = "${rootProject.name}-${project.name}"
+  webXml = file('src/main/resources/web.xml') // copies a file to WEB-INF/web.xml
   finalizedBy bootWar
 }
 
