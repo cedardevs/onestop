@@ -20,6 +20,12 @@ kafka: {}
 #  override the full bootstrap servers string:
 #  bootstrapServers:
 
+cp-schema-registry: {}
+#  override just the name of schema registry's service:
+#  serviceNameOverride:
+#  override the full url of the schema registry:
+#  url:
+
 resources: {}
 
 nodeSelector: {}
