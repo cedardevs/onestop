@@ -16,7 +16,11 @@ class RecordParser {
     String method = msgMap.method
     // update parsed record to default values
     if (method == 'DELETE'){
-      return ParsedRecord.newBuilder().setType(type).build()
+      def error = ErrorEvent.newBuilder()
+          .setTitle("record deleted")
+          .setDetail("Record for this $type is Updated")
+          .build()
+      return ParsedRecord.newBuilder().setType(type).setErrors([error]).build()
     }
 
     try {

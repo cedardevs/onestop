@@ -6,9 +6,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.kstream.Reducer
 import org.apache.kafka.streams.kstream.ValueJoiner
-import org.apache.kafka.streams.kstream.ValueMapper
 import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.ParsedRecord
 
 @Slf4j
 @CompileStatic
@@ -66,19 +64,10 @@ class StreamFunctions {
     }
   }
 
-//  static Reducer<Input> putReducer = new Reducer<Input>() {
-//    @Override
-//    Input apply(Input aggregate, Input nextValue) {
-//      log.debug("publishing new input $nextValue")
-//
-//      def resultBuilder = Input.newBuilder(nextValue)
-//      return resultBuilder.build()
-//    }
-//  }
-
-  static Reducer<Input> deleteReducer = new Reducer<Input>() {
+  static Reducer<Input> updateInputs = new Reducer<Input>() {
     @Override
     Input apply(Input aggregate, Input nextValue) {
+      log.debug("Deleteing existing aggregate ${aggregate} with ${nextValue.method}")
       def resultBuilder = Input.newBuilder(aggregate)
       if (nextValue.method) { resultBuilder.method = nextValue.method }
 
@@ -94,7 +83,7 @@ class StreamFunctions {
       String method = nextValue.method
       if (method == 'PATCH'){return mergeInputs.apply(aggregate,nextValue)}
       if (method == 'PUT' || method == 'POST'){return nextValue}
-      if (method == 'DELETE'){return deleteReducer.apply(aggregate,nextValue)}
+      if (method == 'DELETE'){return updateInputs.apply(aggregate,nextValue)}
     }
   }
 

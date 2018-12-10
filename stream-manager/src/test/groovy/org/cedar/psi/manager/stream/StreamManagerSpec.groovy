@@ -112,6 +112,7 @@ class StreamManagerSpec extends Specification {
     updatedResult.errors  instanceof List
 
     originalResult.errors.size() == 0
+    updatedResult.errors.title == ["record deleted"]
   }
 
   def "SME granule ends up in SME topic"() {
