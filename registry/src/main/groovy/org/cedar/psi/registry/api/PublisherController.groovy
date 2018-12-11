@@ -30,7 +30,7 @@ class PublisherController {
   @Autowired
   Publisher publisher
 
-  @RequestMapping(value = "/{type}", method = [POST])
+  @RequestMapping(value = "/{type}", method = [POST, PUT])
   Map receiveContent(HttpServletRequest request, HttpServletResponse response, @RequestBody String data, @PathVariable String type) throws Exception {
     receiveContent(request, response, data, type, Topics.DEFAULT_SOURCE, null)
   }

@@ -14,16 +14,15 @@ class RecordParser {
     String contentType = msgMap.contentType
     String content = msgMap.content
     String method = msgMap.method
-    // update parsed record to default values
-    if (method == 'DELETE'){
-      def error = ErrorEvent.newBuilder()
-          .setTitle("record deleted")
-          .setDetail("Record for this $type is Updated")
-          .build()
-      return ParsedRecord.newBuilder().setType(type).setErrors([error]).build()
-    }
-
     try {
+      // update parsed record to default values
+      if (method == 'DELETE') {
+        def error = ErrorEvent.newBuilder()
+            .setTitle("record deleted")
+            .setDetail("Record for this $type is Updated")
+            .build()
+        return ParsedRecord.newBuilder().setType(type).setErrors([error]).build()
+      }
       if (!content) {
         def error = ErrorEvent.newBuilder().setTitle("No content provided").build()
         return ParsedRecord.newBuilder().setType(type).setErrors([error]).build()

@@ -69,7 +69,6 @@ class Publisher {
     def message = buildInputTopicMessage(request, type, data, source, id)
     def record = new ProducerRecord<String, Input>(topic, id, message)
     log.info ("Updating $type with id: ${id}, source: $source and method: $message.method")
-    log.debug("Updating: ${record}")
     kafkaProducer.send(record)?.get()
     return [
         status: 200,

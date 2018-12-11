@@ -92,49 +92,4 @@ class StreamFunctions {
     return JsonOutput.toJson((slurper.parseText(a) as Map) + (slurper.parseText(b) as Map))
   }
 
-  /**
-   * Returns a ValueJoiner which returns json with the left value under the given left key
-   * and the right value under the given right key. For example:
-   *
-   * def joiner = buildKeyedMapJoiner('left', 'right')
-   * joiner.apply(["hello": "world"[, ["answer": 42])
-   * >> ["left": ["hello": "world"], "right": ["answer": 42]]
-   *
-   * @param leftKey  The key to put the left value under
-   * @param rightKey The key to put the right value under
-   * @return         The combined result
-   */
-  static ValueJoiner<Map, Map, Map> buildKeyedMapJoiner(String leftKey, String rightKey) {
-    return new ValueJoiner<Map, Map, Map>() {
-      @Override
-      Map apply(Map leftValue, Map rightValue) {
-        log.debug("Joining left value ${leftValue} with right value ${rightValue}")
-        def result = [(leftKey): leftValue, (rightKey): rightValue]
-        return result
-      }
-    }
-  }
-
-  /**
-   * Returns a ValueJoiner which returns json with the left value under the given left key
-   * and merged into the right value.
-   *
-   * def joiner = buildKeyedMapJoiner('left')
-   * joiner.apply(["hello": "world"], ["answer": 42])
-   * >> '["left": ["hello": "world"], "answer": 42]
-   *
-   * @param leftKey  The key to put the left value under
-   * @param rightKey The key to put the right value under
-   * @return         The combined result
-   */
-  static ValueJoiner<Map, Map, Map> buildKeyedMapJoiner(String leftKey) {
-    return new ValueJoiner<Map, Map, Map>() {
-      @Override
-      Map apply(Map leftValue, Map rightValue) {
-        log.debug("Joining left value ${leftValue} with right value ${rightValue}")
-        Map result = [(leftKey): leftValue] + (rightValue ?: [:])
-        return result
-      }
-    }
-  }
 }
