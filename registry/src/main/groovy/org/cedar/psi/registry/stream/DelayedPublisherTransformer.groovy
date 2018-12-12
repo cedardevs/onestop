@@ -9,8 +9,8 @@ import org.apache.kafka.streams.kstream.Transformer
 import org.apache.kafka.streams.processor.ProcessorContext
 import org.apache.kafka.streams.processor.PunctuationType
 import org.apache.kafka.streams.state.KeyValueStore
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.Publishing
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.Publishing
 
 @Slf4j
 @CompileStatic

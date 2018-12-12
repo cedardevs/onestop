@@ -3,20 +3,10 @@ package org.cedar.psi.manager.util
 import groovy.json.JsonOutput
 import groovy.util.slurpersupport.GPathResult
 import org.apache.commons.text.StringEscapeUtils
-import org.cedar.psi.common.avro.DataFormat
-import org.cedar.psi.common.avro.Discovery
-import org.cedar.psi.common.avro.Instruments
-import org.cedar.psi.common.avro.KeywordsElement
-import org.cedar.psi.common.avro.LineString
-import org.cedar.psi.common.avro.Link
-import org.cedar.psi.common.avro.Operation
-import org.cedar.psi.common.avro.Platform
-import org.cedar.psi.common.avro.Point
-import org.cedar.psi.common.avro.Polygon
-import org.cedar.psi.common.avro.Reference
-import org.cedar.psi.common.avro.ResponsibleParty
-import org.cedar.psi.common.avro.Service
-import org.cedar.psi.common.avro.TemporalBounding
+import org.cedar.schemas.avro.geojson.LineString
+import org.cedar.schemas.avro.geojson.Point
+import org.cedar.schemas.avro.geojson.Polygon
+import org.cedar.schemas.avro.psi.*
 
 class ISOParser {
 

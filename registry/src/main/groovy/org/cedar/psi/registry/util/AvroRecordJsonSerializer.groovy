@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.apache.avro.generic.GenericRecord
-import org.cedar.psi.common.util.AvroUtils
+import org.cedar.schemas.avro.util.AvroUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

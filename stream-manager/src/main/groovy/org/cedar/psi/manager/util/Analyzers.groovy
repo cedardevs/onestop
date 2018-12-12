@@ -1,7 +1,7 @@
 package org.cedar.psi.manager.util
 
 import groovy.util.logging.Slf4j
-import org.cedar.psi.common.avro.*
+import org.cedar.schemas.avro.psi.*
 
 import java.time.LocalDate
 import java.time.LocalDateTime

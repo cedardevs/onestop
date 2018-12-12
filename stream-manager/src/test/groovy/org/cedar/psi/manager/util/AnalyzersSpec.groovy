@@ -1,7 +1,8 @@
 package org.cedar.psi.manager.util
 
-import org.cedar.psi.common.avro.*
-import org.cedar.psi.common.util.AvroUtils
+import org.cedar.schemas.avro.geojson.Point
+import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.AvroUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -10,7 +11,7 @@ import java.time.temporal.ChronoUnit
 @Unroll
 class AnalyzersSpec extends Specification {
 
-  final String analysisAvro = ClassLoader.systemClassLoader.getResourceAsStream('avro/analysis.avsc').text
+  final String analysisAvro = ClassLoader.systemClassLoader.getResourceAsStream('avro/psi/analysis.avsc').text
 
   def 'adds an analysis into a parsed record'() {
     def record = ParsedRecord.newBuilder().setType(RecordType.collection).setDiscovery(Discovery.newBuilder().build()).build()

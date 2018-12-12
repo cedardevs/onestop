@@ -14,19 +14,16 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.serialization.StringSerializer
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsConfig
-import org.cedar.psi.common.avro.Input
 import org.cedar.psi.registry.stream.TopicInitializer
 import org.cedar.psi.registry.stream.TopologyBuilders
+import org.cedar.schemas.avro.psi.Input
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
-import static org.apache.kafka.streams.StreamsConfig.APPLICATION_ID_CONFIG
-import static org.apache.kafka.streams.StreamsConfig.BOOTSTRAP_SERVERS_CONFIG
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG
-import static org.apache.kafka.streams.StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG
+import static org.apache.kafka.streams.StreamsConfig.*
 import static org.cedar.psi.common.constants.StreamsApps.getREGISTRY_ID
 
 @Slf4j

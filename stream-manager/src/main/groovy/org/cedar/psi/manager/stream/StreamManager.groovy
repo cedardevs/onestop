@@ -9,14 +9,14 @@ import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.Consumed
 import org.apache.kafka.streams.kstream.Produced
 import org.apache.kafka.streams.kstream.ValueMapper
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.serde.JsonSerdes
-import org.cedar.psi.common.util.AvroUtils
 import org.cedar.psi.manager.config.ManagerConfig
 import org.cedar.psi.manager.util.Analyzers
 import org.cedar.psi.manager.util.RecordParser
+import org.cedar.schemas.avro.psi.Input
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.RecordType
+import org.cedar.schemas.avro.util.AvroUtils
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG

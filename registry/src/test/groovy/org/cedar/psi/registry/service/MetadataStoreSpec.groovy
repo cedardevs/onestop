@@ -4,16 +4,13 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.QueryableStoreType
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
-import org.cedar.psi.common.avro.ErrorEvent
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.Method
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.RecordType
-import org.cedar.psi.common.util.AvroUtils
+import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.AvroUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static org.cedar.psi.common.constants.Topics.*
+import static org.cedar.psi.common.constants.Topics.inputStore
+import static org.cedar.psi.common.constants.Topics.parsedStore
 
 
 @Unroll

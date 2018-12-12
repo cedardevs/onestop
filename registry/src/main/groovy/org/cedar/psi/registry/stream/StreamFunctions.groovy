@@ -6,7 +6,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.kstream.Reducer
 import org.apache.kafka.streams.kstream.ValueJoiner
-import org.cedar.psi.common.avro.Input
+import org.cedar.schemas.avro.psi.Input
 
 @Slf4j
 @CompileStatic

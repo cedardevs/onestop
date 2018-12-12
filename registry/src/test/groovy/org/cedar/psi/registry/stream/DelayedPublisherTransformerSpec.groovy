@@ -13,11 +13,11 @@ import org.apache.kafka.streams.state.KeyValueStore
 import org.apache.kafka.streams.state.Stores
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
-import org.cedar.psi.common.avro.Discovery
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.Publishing
-import org.cedar.psi.common.avro.RecordType
-import org.cedar.psi.common.util.MockSchemaRegistrySerde
+import org.cedar.schemas.avro.psi.Discovery
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.Publishing
+import org.cedar.schemas.avro.psi.RecordType
+import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -27,8 +27,8 @@ import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
-import static org.cedar.psi.common.util.StreamSpecUtils.STRING_SERIALIZER
-import static org.cedar.psi.common.util.StreamSpecUtils.readAllOutput
+import static org.cedar.schemas.avro.util.StreamSpecUtils.STRING_SERIALIZER
+import static org.cedar.schemas.avro.util.StreamSpecUtils.readAllOutput
 
 @Slf4j
 @Unroll

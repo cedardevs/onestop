@@ -1,8 +1,8 @@
 package org.cedar.psi.registry.stream
 
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.Method
-import org.cedar.psi.common.avro.RecordType
+import org.cedar.schemas.avro.psi.Input
+import org.cedar.schemas.avro.psi.Method
+import org.cedar.schemas.avro.psi.RecordType
 import spock.lang.Specification
 
 

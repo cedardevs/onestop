@@ -1,7 +1,7 @@
 package org.cedar.psi.common.constants
 
 import groovy.transform.CompileStatic
-import org.cedar.psi.common.avro.RecordType
+import org.cedar.schemas.avro.psi.RecordType
 
 @CompileStatic
 class Topics {

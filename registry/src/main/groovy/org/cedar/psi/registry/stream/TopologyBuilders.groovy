@@ -9,10 +9,10 @@ import org.apache.kafka.streams.kstream.KTable
 import org.apache.kafka.streams.kstream.Materialized
 import org.apache.kafka.streams.kstream.ValueTransformerSupplier
 import org.apache.kafka.streams.state.Stores
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.constants.Topics
+import org.cedar.schemas.avro.psi.Input
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.RecordType
 
 
 @Slf4j
