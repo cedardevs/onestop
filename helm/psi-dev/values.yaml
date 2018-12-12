@@ -35,7 +35,7 @@ cp-helm-charts:
         enabled: false
   cp-schema-registry:
     configurationOverrides:
-      kafkastore.topic.replication.factor: "\"1\""
+      kafkastore.topic.replication.factor: 1
     jmx:
       port:
     prometheus:
