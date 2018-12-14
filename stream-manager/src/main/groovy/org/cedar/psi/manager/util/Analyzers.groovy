@@ -16,15 +16,10 @@ import java.time.temporal.TemporalAccessor
 import java.time.temporal.TemporalQueries
 import java.time.temporal.TemporalQuery
 
+import static org.cedar.schemas.avro.psi.TimeRangeDescriptor.*
+
 @Slf4j
 class Analyzers {
-
-  // Just to decrease chance of typos
-  static final String UNDEFINED = 'UNDEFINED'
-  static final String INVALID = 'INVALID'
-  static final String BOUNDED = 'BOUNDED'
-  static final String ONGOING = 'ONGOING'
-  static final String INSTANT = 'INSTANT'
 
   static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
       .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
@@ -269,11 +264,11 @@ class Analyzers {
     return INVALID
   }
 
-  static Object beginLTEEnd(String descriptor, Map beginInfo, Map endInfo) {
-    if (descriptor == INVALID || descriptor == UNDEFINED) {
-      return UNDEFINED
+  static Boolean beginLTEEnd(String descriptor, Map beginInfo, Map endInfo) {
+    if (descriptor in [INVALID, UNDEFINED, INSTANT]) {
+      return null
     }
-    else if (descriptor == ONGOING || descriptor == INSTANT) {
+    else if (descriptor == ONGOING) {
       return true
     }
 
@@ -299,7 +294,7 @@ class Analyzers {
     }
     else {
       // One or both has an INVALID search format that is not just due to a paleo year
-      return UNDEFINED
+      return null
     }
   }
 
