@@ -5,6 +5,9 @@ management.endpoints.enabled-by-default: false
 kafka:
   bootstrap:
     servers: localhost:9092
+schema:
+  registry:
+    url: localhost:8081
 
 logging:
   level:
