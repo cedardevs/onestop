@@ -17,9 +17,12 @@ import org.springframework.security.oauth2.client.web.HttpSessionOAuth2Authoriza
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
+import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
+
+import javax.servlet.http.HttpServletRequest
 
 @Profile("!integration")
 @EnableWebSecurity
@@ -58,7 +61,27 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+
+        RequestMatcher csrfRequestMatcher = new RequestMatcher() {
+
+            AntPathRequestMatcher[] requestMatchers = [
+                new AntPathRequestMatcher("/search/collection/**"),
+                new AntPathRequestMatcher("/search/granule/**"),
+                new AntPathRequestMatcher("/search/flattened-granule/**")
+            ]
+
+            @Override
+            boolean matches(HttpServletRequest request) {
+                requestMatchers.each{ matcher  ->
+                    if (matcher.matches(request)) { return true } //todo figure out why this seems backwards
+                }
+                return false
+            }
+
+        }
+
+        http.csrf().requireCsrfProtectionMatcher(csrfRequestMatcher).and()
+            .authorizeRequests()
         // login, login failure, and index are allowed by anyone
         .antMatchers(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL, LOGIN_SUCCESS_ENDPOINT, LOGIN_PROFILE_ENDPOINT, LOGIN_FAILURE_ENDPOINT, LOGOUT_ENDPOINT, LOGOUT_SUCCESS_ENDPOINT, "/")
             .permitAll()
