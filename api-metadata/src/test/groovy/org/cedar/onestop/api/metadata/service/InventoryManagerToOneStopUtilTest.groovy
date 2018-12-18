@@ -1,16 +1,18 @@
 package org.cedar.onestop.api.metadata.service
 
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
+import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.AvroUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import java.time.temporal.ChronoUnit
+import static org.cedar.schemas.avro.util.TemporalTestData.situtations
 
 @Unroll
 class InventoryManagerToOneStopUtilTest extends Specification {
-  def inputMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-iso.json').text
-  def inputMap = [discovery: new JsonSlurper().parseText(inputMsg)] as Map
+
+  def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
+  def inputRecord = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
+
   def expectedResponsibleParties = [
       contacts  : [
           [
@@ -20,7 +22,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
               role            : 'pointOfContact',
               email           : "NCEI.Info@noaa.gov",
               phone           : '555-555-5555'
-          ]],
+          ]] as Set,
       creators  : [
           [
               individualName  : 'Edward M. Armstrong',
@@ -37,7 +39,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
               role            : 'resourceProvider',
               email           : 'jw@mock-creator-email.org',
               phone           : '555-555-5558'
-          ]],
+          ]] as Set,
       publishers: [
           [
               individualName  : null,
@@ -47,66 +49,65 @@ class InventoryManagerToOneStopUtilTest extends Specification {
               email           : 'email@sio.co',
               phone           : '555-123-4567'
           ]
-      ]]
-  
+      ] as Set]
+
   def expectedKeywords = [
-      keywords: [
-          [
-              "values" : [
-                  "SIO > Super Important Organization",
-                  "OSIO > Other Super Important Organization",
-                  "SSIO > Super SIO (Super Important Organization)"
-              ],
-              type     : "dataCenter",
-              namespace: "Global Change Master Directory (GCMD) Data Center Keywords"
-          ], [
-              "values"   : [
-                  "EARTH SCIENCE > OCEANS > OCEAN TEMPERATURE > SEA SURFACE TEMPERATURE"
-              ],
-              "type"     : "theme",
-              "namespace": "Global Change Master Directory (GCMD) Science and Services Keywords"
-          ], [
-              "values"   : [
-                  "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
-                  "Oceans > Salinity/Density > Salinity",
-                  "Volcanoes > This Keyword > Is Invalid",
-                  "Spectral/Engineering > Microwave > Brightness Temperature",
-                  "Spectral/Engineering > Microwave > Temperature Anomalies"
-              ],
-              "type"     : "theme",
-              "namespace": "GCMD Keywords - Earth Science Keywords"
+      [
+          "values" : [
+              "SIO > Super Important Organization",
+              "OSIO > Other Super Important Organization",
+              "SSIO > Super SIO (Super Important Organization)"
           ],
-          [
-              "values"   : [
-                  "Geographic Region > Arctic",
-                  "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
-                  "Liquid Earth > This Keyword > Is Invalid"
-              ],
-              "type"     : "place",
-              "namespace": "GCMD Keywords - Locations"
+          type     : "dataCenter",
+          namespace: "Global Change Master Directory (GCMD) Data Center Keywords"
+      ], [
+          "values"   : [
+              "EARTH SCIENCE > OCEANS > OCEAN TEMPERATURE > SEA SURFACE TEMPERATURE"
           ],
-          [
-              "values"   : [
-                  "Seasonal"
-              ],
-              "type"     : "dataResolution",
-              "namespace": "Global Change Master Directory Keywords - Temporal Data Resolution"
+          "type"     : "theme",
+          "namespace": "GCMD Keywords - Earth science services Keywords"
+      ], [
+          "values"   : [
+              "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
+              "Oceans > Salinity/Density > Salinity",
+              "Volcanoes > This Keyword > Is Invalid",
+              "Spectral/Engineering > Microwave > Brightness Temperature",
+              "Spectral/Engineering > Microwave > Temperature Anomalies"
           ],
-          [
-              "values"   : [
-                  "> 1 Km"
-              ],
-              "type"     : "dataResolution",
-              "namespace": "GCMD Keywords - Vertical Data Resolution"
-          ]
-      ]]
-  
+          "type"     : "theme",
+          "namespace": "GCMD Keywords - Earth Science Keywords"
+      ],
+      [
+          "values"   : [
+              "Geographic Region > Arctic",
+              "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
+              "Liquid Earth > This Keyword > Is Invalid"
+          ],
+          "type"     : "place",
+          "namespace": "GCMD Keywords - Locations"
+      ],
+      [
+          "values"   : [
+              "Seasonal"
+          ],
+          "type"     : "dataResolution",
+          "namespace": "Global Change Master Directory Keywords - Temporal Data Resolution"
+      ],
+      [
+          "values"   : [
+              "> 1 Km"
+          ],
+          "type"     : "dataResolution",
+          "namespace": "GCMD Keywords - Vertical Data Resolution"
+      ]
+  ]
+
   def expectedGcmdKeywords = [
       gcmdScienceServices     : [
           'Oceans',
           'Oceans > Ocean Temperature',
           'Oceans > Ocean Temperature > Sea Surface Temperature'
-      ],
+      ] as Set,
       gcmdScience             : [
           'Atmosphere',
           'Atmosphere > Atmospheric Temperature',
@@ -122,7 +123,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
           'Volcanoes',
           'Volcanoes > This Keyword',
           'Volcanoes > This Keyword > Is Invalid'
-      ],
+      ] as Set,
       gcmdLocations           : [
           'Geographic Region',
           'Geographic Region > Arctic',
@@ -133,192 +134,134 @@ class InventoryManagerToOneStopUtilTest extends Specification {
           'Liquid Earth',
           'Liquid Earth > This Keyword',
           'Liquid Earth > This Keyword > Is Invalid'
-      ],
-      gcmdInstruments         : [],
-      gcmdPlatforms           : [],
-      gcmdProjects            : [],
+      ] as Set,
+      gcmdInstruments         : [] as Set,
+      gcmdPlatforms           : [] as Set,
+      gcmdProjects            : [] as Set,
       gcmdDataCenters         : [
           'SIO > Super Important Organization',
           'OSIO > Other Super Important Organization',
           'SSIO > Super SIO (Super Important Organization)'
-      ],
-      gcmdHorizontalResolution: [],
-      gcmdVerticalResolution  : ['> 1 Km'],
-      gcmdTemporalResolution  : ['Seasonal']
+      ] as Set,
+      gcmdHorizontalResolution: [] as Set,
+      gcmdVerticalResolution  : ['> 1 Km'] as Set,
+      gcmdTemporalResolution  : ['Seasonal'] as Set
   ]
-  
-  def "Create GCMD keyword lists" () {
-    given:
-    def gcmdKeywordMap = inputMap.discovery as Map
-  
+
+  def expectedTemporalBounding = [
+      beginDate: '2002-06-01T00:00:00Z',
+      beginYear: 2002,
+      endDate  : '2011-10-04T23:59:59Z',
+      endYear  : 2011
+  ]
+
+  def "Create GCMD keyword lists"() {
     when:
-    Map parsedKeywords = InventoryManagerToOneStopUtil.createGcmdKeyword(gcmdKeywordMap)
-    
+    Map parsedKeywords = InventoryManagerToOneStopUtil.createGcmdKeyword(inputRecord.discovery)
+
     then:
-    parsedKeywords.gcmdScienceServices == expectedGcmdKeywords.gcmdScienceServices as Set
-    parsedKeywords.gcmdScience == expectedGcmdKeywords.gcmdScience as Set
-    parsedKeywords.gcmdLocations == expectedGcmdKeywords.gcmdLocations  as Set
-    parsedKeywords.gcmdInstruments == expectedGcmdKeywords.gcmdInstruments  as Set
-    parsedKeywords.gcmdPlatforms == expectedGcmdKeywords.gcmdPlatforms  as Set
-    parsedKeywords.gcmdProjects == expectedGcmdKeywords.gcmdProjects  as Set
-    parsedKeywords.gcmdDataCenters == expectedGcmdKeywords.gcmdDataCenters  as Set
-    parsedKeywords.gcmdHorizontalResolution == expectedGcmdKeywords.gcmdHorizontalResolution  as Set
-    parsedKeywords.gcmdVerticalResolution == expectedGcmdKeywords.gcmdVerticalResolution  as Set
-    parsedKeywords.gcmdTemporalResolution == expectedGcmdKeywords.gcmdTemporalResolution  as Set
+    parsedKeywords.gcmdScienceServices == expectedGcmdKeywords.gcmdScienceServices
+    parsedKeywords.gcmdScience == expectedGcmdKeywords.gcmdScience
+    parsedKeywords.gcmdLocations == expectedGcmdKeywords.gcmdLocations
+    parsedKeywords.gcmdInstruments == expectedGcmdKeywords.gcmdInstruments
+    parsedKeywords.gcmdPlatforms == expectedGcmdKeywords.gcmdPlatforms
+    parsedKeywords.gcmdProjects == expectedGcmdKeywords.gcmdProjects
+    parsedKeywords.gcmdDataCenters == expectedGcmdKeywords.gcmdDataCenters
+    parsedKeywords.gcmdHorizontalResolution == expectedGcmdKeywords.gcmdHorizontalResolution
+    parsedKeywords.gcmdVerticalResolution == expectedGcmdKeywords.gcmdVerticalResolution
+    parsedKeywords.gcmdTemporalResolution == expectedGcmdKeywords.gcmdTemporalResolution
 
     and: "should recreate keywords with out accession values"
-    parsedKeywords.keywords.namespace != 'NCEI ACCESSION NUMBER'
-    parsedKeywords.keywords.size() == expectedKeywords.keywords.size()
-  }
-  
-  def "Create contacts, publishers and creators from responsibleParties" () {
-    given:
-    List<Map> partyMap = inputMap.discovery.responsibleParties
-    
-    when:
-    Map partiesMap = InventoryManagerToOneStopUtil.parseDataResponsibleParties(partyMap)
-    
-    then:
-    partiesMap.contacts == expectedResponsibleParties.contacts as Set
-    partiesMap.creators == expectedResponsibleParties.creators as Set
-    partiesMap.publishers == expectedResponsibleParties.publishers as Set
+    parsedKeywords.keywords.namespace.every { it != 'NCEI ACCESSION NUMBER' }
+    parsedKeywords.keywords.size() == expectedKeywords.size()
   }
 
-  def "When #situation, expected temporal bounding generated"() {
-    given:
-    def parsedTime = timeMetadata
-    def analyzedTime = timeAnalysis
-
+  def "Create contacts, publishers and creators from responsibleParties"() {
     when:
-    def newTimeMetadata = InventoryManagerToOneStopUtil.readyDatesForSearch(parsedTime, analyzedTime)
+    Map partiesMap = InventoryManagerToOneStopUtil.parseResponsibleParties(inputRecord.discovery.responsibleParties)
 
     then:
-    JsonOutput.toJson(newTimeMetadata) == JsonOutput.toJson(expectedResult)
+    partiesMap.contacts == expectedResponsibleParties.contacts
+    partiesMap.creators == expectedResponsibleParties.creators
+    partiesMap.publishers == expectedResponsibleParties.publishers
+  }
+
+  def "When #situation.description, expected temporal bounding generated"() {
+    when:
+    def newTimeMetadata = InventoryManagerToOneStopUtil.readyDatesForSearch(situation.bounding, situation.analysis)
+
+    then:
+    newTimeMetadata == expectedResult
 
     // Only include data that will be checked to cut down on size of below tables
     where:
-    situation                                | timeMetadata                                                  | timeAnalysis                                                                                                                                                                 | expectedResult
-    'instant with days precision'            | [beginDate: '', endDate: '', instant: '1999-12-31']           | [instant: [exists: true, precision: ChronoUnit.DAYS.toString(), validSearchFormat: true, utcDateTimeString: '1999-12-31T00:00:00Z'], range:[descriptor: 'INSTANT']]          | [beginDate: '1999-12-31T00:00:00Z', endDate: '1999-12-31T23:59:59Z', instant: '1999-12-31', beginYear: 1999, endYear: 1999]
-    'non-paleo instant with years precision' | [beginDate: '', endDate: '', instant: '2000']                 | [instant: [exists: true, precision: ChronoUnit.YEARS.toString(), validSearchFormat: true, utcDateTimeString: '2000-01-01T00:00:00Z'], range:[descriptor: 'INSTANT']]         | [beginDate: '2000-01-01T00:00:00Z', endDate: '2000-12-31T23:59:59Z', instant: '2000', beginYear: 2000, endYear: 2000]
-    'paleo instant'                          | [beginDate: '', endDate: '', instant: '-1000000000']          | [instant: [exists: true, precision: ChronoUnit.YEARS.toString(), validSearchFormat: false, utcDateTimeString: '-1000000000-01-01T00:00:00Z'], range:[descriptor: 'INSTANT']] | [beginDate: null, endDate: null, instant: '-1000000000', beginYear: -1000000000, endYear: -1000000000]
-    'instant with nanos precision'           | [beginDate: '', endDate: '', instant: '2008-04-01T00:00:00Z'] | [instant: [exists: true, precision: ChronoUnit.NANOS.toString(), validSearchFormat: true, utcDateTimeString: '2008-04-01T00:00:00Z'], range:[descriptor: 'INSTANT']]         | [beginDate: '2008-04-01T00:00:00Z', endDate: '2008-04-01T00:00:00Z', instant: '2008-04-01T00:00:00Z', beginYear: 2008, endYear: 2008]
-    'non-paleo bounded range'                | [beginDate: '1900-01-01', endDate: '2009']                    | [begin: [exists: true, precision: ChronoUnit.DAYS.toString(), validSearchFormat: true, utcDateTimeString: '1900-01-01T00:00:00Z'], end: [exists: true, precision: ChronoUnit.YEARS.toString(), validSearchFormat: true, utcDateTimeString: '2009-12-31T23:59:59Z'], range:[descriptor: 'BOUNDED']]                  | [beginDate: '1900-01-01T00:00:00Z', endDate: '2009-12-31T23:59:59Z', beginYear: 1900, endYear: 2009]
-    'paleo bounded range'                    | [beginDate: '-2000000000', endDate: '-1000000000']            | [begin: [exists: true, precision: ChronoUnit.YEARS.toString(), validSearchFormat: false, utcDateTimeString: '-2000000000-01-01T00:00:00Z'], end: [exists: true, precision: ChronoUnit.YEARS.toString(), validSearchFormat: false, utcDateTimeString: '-1000000000-12-31T23:59:59Z'], range:[descriptor: 'BOUNDED']] | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000]
-    'ongoing range'                          | [beginDate: '1975-06-15T12:30:00Z', endDate: '']              | [begin: [exists: true, precision: ChronoUnit.NANOS.toString(), validSearchFormat: true, utcDateTimeString: '1975-06-15T12:30:00Z'], end: [exists: false, precision: 'UNDEFINED', validSearchFormat: 'UNDEFINED', utcDateTimeString: 'UNDEFINED'], range:[descriptor: 'ONGOING']]                                    | [beginDate: '1975-06-15T12:30:00Z', endDate: null, beginYear: 1975, endYear: null]
-    'undefined range'                        | [beginDate: null, endDate: null]                              | [begin: [exists: false, validSearchFormat: 'UNDEFINED', utcDateTimeString: 'UNDEFINED'], end: [exists: false, validSearchFormat: 'UNDEFINED', utcDateTimeString: 'UNDEFINED'], range:[descriptor: 'UNDEFINED']]                                                                                                     | [beginDate: null, endDate: null, beginYear: null, endYear: null]
+    situation                | expectedResult
+    situtations.instantDay   | [beginDate: '1999-12-31T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
+    situtations.instantYear  | [beginDate: '1999-01-01T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
+    situtations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000]
+    situtations.instantNano  | [beginDate: '2008-04-01T00:00:00Z', endDate: '2008-04-01T00:00:00Z', beginYear: 2008, endYear: 2008]
+    situtations.bounded      | [beginDate: '1900-01-01T00:00:00Z', endDate: '2009-12-31T23:59:59Z', beginYear: 1900, endYear: 2009]
+    situtations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000]
+    situtations.ongoing      | [beginDate: '1975-06-15T12:30:00Z', endDate: null, beginYear: 1975, endYear: null]
+    situtations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null]
   }
-  
-  def "new record is ready for onestop" () {
-    given:
-    def analysisMsg = ClassLoader.systemClassLoader.getResourceAsStream('parsed-analysis.json').text
-    def analysisMap = new JsonSlurper().parseText(analysisMsg) as Map
-    Map discovery = inputMap.discovery
-    Map analysis = analysisMap
-    Map expectedMap = inputMap.discovery
-    
+
+  def "new record is ready for onestop"() {
     when:
-    def metadata = InventoryManagerToOneStopUtil.reformatMessageForSearch(discovery, analysis)
-    expectedMap.remove("keywords")
-    expectedMap.remove("services")
-    expectedMap.remove("responsibleParties")
-    expectedMap.putAll(expectedResponsibleParties)
-    expectedMap.putAll(expectedGcmdKeywords)
-    expectedMap.putAll(expectedKeywords)
-  
+    def result = InventoryManagerToOneStopUtil.reformatMessageForSearch(inputRecord)
+
     then:
-    metadata == expectedMap
-    
-    and: "drop service and responsibleParties"
-    metadata.services == null
-    metadata.responsibleParties == null
+    result.services == []
+    result.accessionValues == []
+
+    result.temporalBounding == null
+    expectedTemporalBounding.each { k, v ->
+      assert result[k] == v
+    }
+
+    result.keywords == expectedKeywords
+    expectedGcmdKeywords.each { k, v ->
+      assert result[k] == v
+    }
+
+    result.responsibleParties == null
+    expectedResponsibleParties.each { k, v ->
+      assert result[k] == v
+    }
   }
 
   def "valid message passes validation check"() {
-    given:
-    // Only populate fields to be checked
-    def messageMap = [
-        analysis: [
-            titles: [
-                title: [
-                    exists: true
-                ]
-            ],
-            identification: [
-                fileIdentifier: [
-                    exists: true
-                ],
-                parentIdentifier: [
-                    exists: false
-                ]
-            ],
-            temporalBounding: [
-                begin: [
-                    exists: true,
-                    utcDateTimeString: '1990-01-01'
-                ],
-                end: [
-                    exists: true,
-                    utcDateTimeString: '2000-01-01'
-                ],
-                instant: [
-                    exists: false,
-                    utcDateTimeString: 'UNDEFINED'
-                ]
-            ]
-        ],
-        discovery: [
-            hierarchyLevelName: null
-        ]
-    ]
-    when:
-    def isValid = InventoryManagerToOneStopUtil.validateMessage(messageMap, 'dummy id')
-
-    then:
-    isValid
+    expect:
+    InventoryManagerToOneStopUtil.validateMessage('dummy id', inputRecord)
   }
 
   def "invalid message fails validation check"() {
     given:
-    // Only populate fields to be checked
-    def messageMap = [
-        analysis: [
-            titles: [
-                title: [
-                    exists: false
-                ]
-            ],
-            identification: [
-                fileIdentifier: [
-                    exists: false
-                ],
-                parentIdentifier: [
-                    exists: false
-                ]
-            ],
-            temporalBounding: [
-                begin: [
-                    exists: true,
-                    utcDateTimeString: 'INVALID'
-                ],
-                end: [
-                    exists: true,
-                    utcDateTimeString: 'INVALID'
-                ],
-                instant: [
-                    exists: false,
-                    utcDateTimeString: 'UNDEFINED'
-                ]
-            ]
-        ],
-        discovery: [
-            hierarchyLevelName: 'granule'
-        ]
-    ]
+    def titleAnalysis = TitleAnalysis.newBuilder(inputRecord.analysis.titles)
+        .setTitleExists(false)
+        .build()
+    def idAnalysis = IdentificationAnalysis.newBuilder(inputRecord.analysis.identification)
+        .setFileIdentifierExists(false)
+        .setParentIdentifierExists(false)
+        .build()
+    def timeAnalysis = TemporalBoundingAnalysis.newBuilder(inputRecord.analysis.temporalBounding)
+        .setBeginExists(true)
+        .setBeginUtcDateTimeString('INVALID')
+        .setEndExists(true)
+        .setEndUtcDateTimeString('INVALID')
+        .setInstantExists(false)
+        .setInstantUtcDateTimeString('UNDEFINED')
+        .build()
+    def analysis = Analysis.newBuilder(inputRecord.analysis)
+        .setTitles(titleAnalysis)
+        .setIdentification(idAnalysis)
+        .setTemporalBounding(timeAnalysis)
+        .build()
+    def record = ParsedRecord.newBuilder(inputRecord)
+        .setAnalysis(analysis)
+        .build()
 
-    when:
-    def isValid = InventoryManagerToOneStopUtil.validateMessage(messageMap, 'dummy id')
-
-    then:
-    !isValid
+    expect:
+    !InventoryManagerToOneStopUtil.validateMessage('dummy id', record)
   }
 }

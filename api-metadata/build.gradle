@@ -13,20 +13,25 @@ repositories {
 
   // opensaml repo
   maven { url "https://build.shibboleth.net/nexus/content/repositories/releases" }
+  // avro serdes from confluent
+  maven { url 'https://packages.confluent.io/maven/' }
+  // for shared avro schemas from https://github.com/cedardevs/schemas
   maven { url "https://jitpack.io" }
-  }
-
+}
 
 
 configurations {
   compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+  compile.resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
+  testCompile.resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
 }
 
 dependencies {
-
   // Kafka dependencies for connecting with PSI
-  compile('com.github.cedardevs:schemas:master-SNAPSHOT')
-  compile "org.springframework.kafka:spring-kafka:2.1.10.RELEASE"
+  compile(group: 'com.github.cedardevs', name: 'schemas', version: 'master-SNAPSHOT', changing: true)
+  compile("org.springframework.kafka:spring-kafka:2.1.10.RELEASE")
+  compile("io.confluent:kafka-streams-avro-serde:5.0.1")
+  testCompile(group: 'com.github.cedardevs', name: 'schemas', version: 'master-SNAPSHOT', classifier: 'test', changing: true)
 
   // opensaml
   compile("org.opensaml:opensaml-core:${project.openSAMLVersion}")
