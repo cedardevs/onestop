@@ -110,6 +110,13 @@ class Header extends React.Component {
     }
   }
 
+  componentDidMount() {
+    const { user, userProfileEndpoint } = this.props
+    if (user && !user.info && !user.expired) {
+      getUser(userProfileEndpoint)
+    }
+  }
+
   handleFocusSkipLink = e => {
     this.setState(prevState => {
       return {
@@ -141,10 +148,6 @@ class Header extends React.Component {
     } = this.props
     const {focusingSkipLink} = this.state
     const userEmail = user && user.info ? user.info.email : null
-
-    if (user && !user.info && !user.expired) {
-      getUser(userProfileEndpoint)
-    }
 
     const userActionButton = authEnabled ? !user.isAuthenticated ? (
       <HeaderLink

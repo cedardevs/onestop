@@ -6,7 +6,6 @@ import {withRouter} from 'react-router'
 import {getUser} from '../actions/UserActions'
 
 const mapStateToProps = state => {
-  console.log(state.domain.config)
   return {
     user: state.domain.user,
     loginEndpoint: state.domain.config.auth.loginEndpoint,
