@@ -136,22 +136,15 @@ class Header extends React.Component {
       loginEndpoint,
       logoutEndpoint,
       logoutUser,
-      getUser,
-      userProfileEndpoint,
     } = this.props
     const {focusingSkipLink} = this.state
     const userEmail = user && user.info ? user.info.email : null
-
-    if (user && !user.info && !user.expired) {
-      getUser(userProfileEndpoint)
-    }
 
     const userActionButton = authEnabled ? !user.isAuthenticated ? (
       <HeaderLink
         title="Login"
         to={loginEndpoint}
         isExternalLink={true}
-        onClick={() => getUser(userProfileEndpoint)}
       />
     ) : (
       <HeaderLink
