@@ -62,26 +62,11 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        RequestMatcher csrfRequestMatcher = new RequestMatcher() {
-
-            AntPathRequestMatcher[] requestMatchers = [
-                new AntPathRequestMatcher("/search/collection/**"),
-                new AntPathRequestMatcher("/search/granule/**"),
-                new AntPathRequestMatcher("/search/flattened-granule/**")
-            ]
-
-            @Override
-            boolean matches(HttpServletRequest request) {
-                requestMatchers.each{ matcher  ->
-                    if (matcher.matches(request)) { return true } //todo figure out why this seems backwards
-                }
-                return false
-            }
-
-        }
-
-        http.csrf().requireCsrfProtectionMatcher(csrfRequestMatcher).and()
-            .authorizeRequests()
+        http
+        .csrf()
+            .ignoringAntMatchers("/search/collection/**", "/search/granule/**", "/search/flattened-granule/**")
+            .and()
+        .authorizeRequests()
         // login, login failure, and index are allowed by anyone
         .antMatchers(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL, LOGIN_SUCCESS_ENDPOINT, LOGIN_PROFILE_ENDPOINT, LOGIN_FAILURE_ENDPOINT, LOGOUT_ENDPOINT, LOGOUT_SUCCESS_ENDPOINT, "/")
             .permitAll()
