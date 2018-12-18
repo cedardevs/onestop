@@ -141,11 +141,7 @@ class Header extends React.Component {
     const userEmail = user && user.info ? user.info.email : null
 
     const userActionButton = authEnabled ? !user.isAuthenticated ? (
-      <HeaderLink
-        title="Login"
-        to={loginEndpoint}
-        isExternalLink={true}
-      />
+      <HeaderLink title="Login" to={loginEndpoint} isExternalLink={true} />
     ) : (
       <HeaderLink
         title="Logout"
