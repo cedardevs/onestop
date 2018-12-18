@@ -10,7 +10,7 @@ const mapStateToProps = state => {
   let logoutEndpoint = undefined
   let userProfileEndpoint = undefined
 
-  if(state.domain.config.auth) {
+  if (state.domain.config.auth) {
     authEnabled = !!state.domain.config.auth
     loginEndpoint = state.domain.config.auth.loginEndpoint
     logoutEndpoint = state.domain.config.auth.logoutEndpoint
@@ -18,15 +18,17 @@ const mapStateToProps = state => {
   }
 
   const user = state.domain.user
-  const dropdownAvailable = state.domain.config.headerDropdownMenuFeatureAvailable
+  const dropdownAvailable =
+    state.domain.config.headerDropdownMenuFeatureAvailable
 
   return {
     headerDropdownMenuFeatureAvailable: dropdownAvailable,
     authEnabled: authEnabled,
     user: authEnabled && user ? user : null,
-    loginEndpoint: (authEnabled && loginEndpoint) ? loginEndpoint : null,
-    logoutEndpoint: (authEnabled && logoutEndpoint) ? logoutEndpoint : null,
-    userProfileEndpoint: (authEnabled && userProfileEndpoint) ? userProfileEndpoint : null
+    loginEndpoint: authEnabled && loginEndpoint ? loginEndpoint : null,
+    logoutEndpoint: authEnabled && logoutEndpoint ? logoutEndpoint : null,
+    userProfileEndpoint:
+      authEnabled && userProfileEndpoint ? userProfileEndpoint : null,
   }
 }
 

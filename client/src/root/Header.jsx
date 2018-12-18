@@ -111,7 +111,7 @@ class Header extends React.Component {
   }
 
   componentDidMount() {
-    const { user, userProfileEndpoint } = this.props
+    const {user, userProfileEndpoint} = this.props
     if (user && !user.info && !user.expired) {
       getUser(userProfileEndpoint)
     }
