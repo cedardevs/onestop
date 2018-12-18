@@ -108,6 +108,7 @@ subprojects {
         }
       }
       check.dependsOn jacocoTestReport
+      check.finalizedBy 'dependencyCheckAnalyze'
     }
 
   }
