@@ -1,14 +1,14 @@
 package org.cedar.onestop.api.metadata
 
+import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
+import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer
+import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
-import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig // FIXME
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer // FIXME ?
-import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde // FIXME ?
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.kafka.annotation.EnableKafka
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
 import org.springframework.kafka.config.KafkaListenerContainerFactory
@@ -19,17 +19,20 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer
 
 @EnableKafka
 @Configuration
-@ConditionalOnProperty("features.kafka.consumer")
+@Profile("kafka-ingest")
 class KafkaConsumerConfig {
   
   @Value('${kafka.bootstrap.servers}')
   private String bootstrapServers
   
   @Value('${kafka.bootstrap.max_wait_ms}')
-  private String max_Wait_ms
+  private String maxWaitMs
   
   @Value('${kafka.bootstrap.max_poll_records}')
-  private String max_poll_records
+  private String maxPollRecords
+
+  @Value('${schema-registry.url}')
+  private String schemaRegistryUrl
   
   @Bean
   Map<String, Object> consumerConfigs() {
@@ -41,21 +44,20 @@ class KafkaConsumerConfig {
     configProps.put(ConsumerConfig.CLIENT_ID_CONFIG, 'api-Consumer')
     configProps.put(ConsumerConfig.GROUP_ID_CONFIG, 'api-metadata')
     configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
-    configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, max_Wait_ms)
-    configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, max_poll_records)
+    configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, maxWaitMs)
+    configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords)
     
     return configProps
   }
   
   @Bean
-  ConsumerFactory<String, String> consumerFactory() {
+  ConsumerFactory<String, SpecificRecord> consumerFactory() {
     return new DefaultKafkaConsumerFactory<>(consumerConfigs())
   }
   
   @Bean
-  // FIXME specific avro value type
-  KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactory() {
-    ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>()
+  KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, SpecificRecord>> kafkaListenerContainerFactory() {
+    ConcurrentKafkaListenerContainerFactory<String, SpecificRecord> factory = new ConcurrentKafkaListenerContainerFactory<>()
     factory.setConsumerFactory(consumerFactory())
     //set batch listener to true
     factory.setBatchListener(true)

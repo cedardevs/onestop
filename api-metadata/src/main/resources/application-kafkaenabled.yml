@@ -1,1 +1,0 @@
-features.kafka.consumer: truefeatures.metadata.controllers: falsekafka:  bootstrap:    servers: kafka:9092    max_poll_records: 20    max_wait_ms: 300000  # 5 min  topic:    PARSED_GRANULES_TOPIC: 'metadata-aggregator-parsed-granules-changelog'    PARSED_COLLECTIONS_TOPIC: 'metadata-aggregator-parsed-collections-changelog'

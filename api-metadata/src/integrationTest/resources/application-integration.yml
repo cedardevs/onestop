@@ -1,9 +1,7 @@
-
+---
 etl:
   sitemap:
     scroll-size: 2
     collections-per-submap: 5
 
 features.sitemap: true
-features.kafka.consumer: false
-features.metadata.controllers: true
