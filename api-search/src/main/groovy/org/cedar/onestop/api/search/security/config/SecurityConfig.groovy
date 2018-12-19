@@ -17,12 +17,9 @@ import org.springframework.security.oauth2.client.web.HttpSessionOAuth2Authoriza
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
-import org.springframework.security.web.util.matcher.RequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
-
-import javax.servlet.http.HttpServletRequest
 
 @Profile("!integration")
 @EnableWebSecurity
@@ -105,7 +102,8 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
             .tokenEndpoint()
             .accessTokenResponseClient(accessTokenResponseClient())
             .and()
-            .failureUrl(LOGIN_FAILURE_ENDPOINT)
+//            .failureUrl(LOGIN_FAILURE_ENDPOINT)
+            .failureHandler(new LoginGovAuthenticationFailureHandler())
             .successHandler(new LoginGovAuthenticationSuccessHandler())
     }
 
