@@ -214,10 +214,7 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     result.services == []
     result.accessionValues == []
 
-    result.temporalBounding == null
-    expectedTemporalBounding.each { k, v ->
-      assert result[k] == v
-    }
+    result.temporalBounding == expectedTemporalBounding
 
     result.keywords == expectedKeywords
     expectedGcmdKeywords.each { k, v ->

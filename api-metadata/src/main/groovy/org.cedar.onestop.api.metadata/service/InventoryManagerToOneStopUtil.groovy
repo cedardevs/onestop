@@ -2,13 +2,7 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.util.logging.Slf4j
 import org.apache.commons.text.WordUtils
-import org.cedar.schemas.avro.psi.Analysis
-import org.cedar.schemas.avro.psi.Discovery
-import org.cedar.schemas.avro.psi.ParsedRecord
-import org.cedar.schemas.avro.psi.ResponsibleParty
-import org.cedar.schemas.avro.psi.TemporalBounding
-import org.cedar.schemas.avro.psi.TemporalBoundingAnalysis
-import org.cedar.schemas.avro.psi.TimeRangeDescriptor
+import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
 
 import java.time.temporal.ChronoUnit
@@ -70,8 +64,7 @@ class InventoryManagerToOneStopUtil {
 
     // update temporal Bounding
     def temporalData = readyDatesForSearch(discovery.temporalBounding, analysis.temporalBounding)
-    discoveryMap.remove("temporalBounding")
-    discoveryMap.putAll(temporalData)
+    discoveryMap.temporalBounding = temporalData
 
     // drop fields
     discoveryMap.remove("responsibleParties")
@@ -216,7 +209,7 @@ class InventoryManagerToOneStopUtil {
 
     responsibleParties.each { party ->
       def parsedParty = parseParty(party)
-      log.info("parsedParty: $parsedParty")
+      log.debug("parsedParty: $parsedParty")
       if (contactRoles.contains(parsedParty.role)) {
         contacts.add(parsedParty)
       }
