@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 import org.springframework.core.io.ClassPathResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -40,8 +41,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class KafkaIngestIntegrationSpec extends Specification {
 
   @Configuration
+  @Profile('kafka-ingest')
   static class KafkaIntegrationConfig {
-    @Value('${spring.embedded.zookeeper.connect}')
+    @Value('${spring.embedded.zookeeper.connect:}')
     String zkConnect
 
     @Bean(initMethod = 'start')
