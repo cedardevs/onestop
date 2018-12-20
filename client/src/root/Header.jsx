@@ -110,13 +110,6 @@ class Header extends React.Component {
     }
   }
 
-  componentDidMount() {
-    const {user, userProfileEndpoint} = this.props
-    if (user && !user.info && !user.expired) {
-      getUser(userProfileEndpoint)
-    }
-  }
-
   handleFocusSkipLink = e => {
     this.setState(prevState => {
       return {
