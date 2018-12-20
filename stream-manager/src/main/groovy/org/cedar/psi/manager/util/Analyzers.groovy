@@ -212,7 +212,7 @@ class Analyzers {
     return date?.query(TemporalQueries.precision())?.toString()
   }
 
-  static String timezone(date) {
+  static timezone(date) {
     return date instanceof ZonedDateTime ? date.offset.toString() : UNDEFINED
   }
 
@@ -242,7 +242,7 @@ class Analyzers {
     return start ? "${year}-01-01T00:00:00Z" : "${year}-12-31T23:59:59Z"
   }
 
-  static String rangeDescriptor(Map beginInfo, Map endInfo, Map instantInfo) {
+  static rangeDescriptor(Map beginInfo, Map endInfo, Map instantInfo) {
     def hasBegin = beginInfo.exists
     def hasEnd = endInfo.exists
     def hasInstant = instantInfo.exists
@@ -266,7 +266,7 @@ class Analyzers {
     return INVALID
   }
 
-  static Boolean beginLTEEnd(String descriptor, Map beginInfo, Map endInfo) {
+  static beginLTEEnd(descriptor, Map beginInfo, Map endInfo) {
     if (descriptor in [INVALID, UNDEFINED, INSTANT]) {
       return UNDEFINED
     }

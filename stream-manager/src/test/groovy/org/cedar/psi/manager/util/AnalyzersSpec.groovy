@@ -8,6 +8,10 @@ import spock.lang.Unroll
 
 import java.time.temporal.ChronoUnit
 
+import static org.cedar.schemas.avro.psi.NullDescriptor.INVALID
+import static org.cedar.schemas.avro.psi.NullDescriptor.UNDEFINED
+import static org.cedar.schemas.avro.psi.TimeRangeDescriptor.*
+
 @Unroll
 class AnalyzersSpec extends Specification {
 
@@ -74,14 +78,14 @@ class AnalyzersSpec extends Specification {
             endExists               : true,
             endPrecision            : ChronoUnit.DAYS.toString(),
             endIndexable            : true,
-            endZoneSpecified        : 'UNDEFINED',
+            endZoneSpecified        : UNDEFINED,
             endUtcDateTimeString    : '2010-10-01T23:59:59Z',
             instantExists           : false,
-            instantPrecision        : 'UNDEFINED',
+            instantPrecision        : UNDEFINED,
             instantIndexable        : true,
-            instantZoneSpecified    : 'UNDEFINED',
-            instantUtcDateTimeString: 'UNDEFINED',
-            rangeDescriptor         : 'BOUNDED',
+            instantZoneSpecified    : UNDEFINED,
+            instantUtcDateTimeString: UNDEFINED,
+            rangeDescriptor         : BOUNDED,
             rangeBeginLTEEnd        : true
         ],
         spatialBounding : [
@@ -133,15 +137,15 @@ class AnalyzersSpec extends Specification {
     where:
     input                  | start || exists | precision   | valid | zone        | string
     '2042-04-02T00:42:42Z' | false || true   | 'Nanos'     | true  | 'Z'         | '2042-04-02T00:42:42Z'
-    '2042-04-02T00:42:42'  | false || true   | 'Nanos'     | true  | 'UNDEFINED' | '2042-04-02T00:42:42Z'
-    '2042-04-02'           | false || true   | 'Days'      | true  | 'UNDEFINED' | '2042-04-02T23:59:59Z'
-    '2042-04-02'           | true  || true   | 'Days'      | true  | 'UNDEFINED' | '2042-04-02T00:00:00Z'
-    '2042'                 | true  || true   | 'Years'     | true  | 'UNDEFINED' | '2042-01-01T00:00:00Z'
-    '-5000'                | true  || true   | 'Years'     | true  | 'UNDEFINED' | '-5000-01-01T00:00:00Z'
-    '-100000001'           | true  || true   | 'Years'     | false | 'UNDEFINED' | '-100000001-01-01T00:00:00Z'
-    'ABC'                  | true  || true   | 'INVALID'   | false | 'INVALID'   | 'INVALID'
-    ''                     | true  || false  | 'UNDEFINED' | true  | 'UNDEFINED' | 'UNDEFINED'
-    null                   | true  || false  | 'UNDEFINED' | true  | 'UNDEFINED' | 'UNDEFINED'
+    '2042-04-02T00:42:42'  | false || true   | 'Nanos'     | true  | UNDEFINED   | '2042-04-02T00:42:42Z'
+    '2042-04-02'           | false || true   | 'Days'      | true  | UNDEFINED   | '2042-04-02T23:59:59Z'
+    '2042-04-02'           | true  || true   | 'Days'      | true  | UNDEFINED   | '2042-04-02T00:00:00Z'
+    '2042'                 | true  || true   | 'Years'     | true  | UNDEFINED   | '2042-01-01T00:00:00Z'
+    '-5000'                | true  || true   | 'Years'     | true  | UNDEFINED   | '-5000-01-01T00:00:00Z'
+    '-100000001'           | true  || true   | 'Years'     | false | UNDEFINED   | '-100000001-01-01T00:00:00Z'
+    'ABC'                  | true  || true   | INVALID     | false | INVALID     | INVALID
+    ''                     | true  || false  | UNDEFINED   | true  | UNDEFINED   | UNDEFINED
+    null                   | true  || false  | UNDEFINED   | true  | UNDEFINED   | UNDEFINED
   }
 
   def "#descriptor date range correctly identified when #situation"() {
@@ -160,14 +164,14 @@ class AnalyzersSpec extends Specification {
     result.rangeDescriptor == descriptor
 
     where:
-    descriptor  | situation                                                   | begin                  | end                    | instant
-    'ONGOING'   | 'start date exists but not end date'                        | '2010-01-01'           | ''                     | null
-    'BOUNDED'   | 'start and end date exist and are valid'                    | '2000-01-01T00:00:00Z' | '2001-01-01T00:00:00Z' | null
-    'UNDEFINED' | 'neither start nor end date exist'                          | ''                     | ''                     | null
-    'INSTANT'   | 'neither start nor end date exist but valid instant does'   | ''                     | ''                     | '2001-01-01'
-    'INVALID'   | 'end date exists but not start date'                        | ''                     | '2010'                 | null
-    'INVALID'   | 'start and end date exist but start after end'              | '2100-01-01T00:00:00Z' | '2002-01-01'           | null
-    'INVALID'   | 'neither start nor end date exist but invalid instant does' | ''                     | ''                     | '2001-01-32'
+    descriptor| situation                                                   | begin                  | end                    | instant
+    ONGOING   | 'start date exists but not end date'                        | '2010-01-01'           | ''                     | null
+    BOUNDED   | 'start and end date exist and are valid'                    | '2000-01-01T00:00:00Z' | '2001-01-01T00:00:00Z' | null
+    UNDEFINED | 'neither start nor end date exist'                          | ''                     | ''                     | null
+    INSTANT   | 'neither start nor end date exist but valid instant does'   | ''                     | ''                     | '2001-01-01'
+    INVALID   | 'end date exists but not start date'                        | ''                     | '2010'                 | null
+    INVALID   | 'start and end date exist but start after end'              | '2100-01-01T00:00:00Z' | '2002-01-01'           | null
+    INVALID   | 'neither start nor end date exist but invalid instant does' | ''                     | ''                     | '2001-01-32'
   }
 
   def "Begin date LTE end date check is #value when #situation"() {
@@ -193,13 +197,13 @@ class AnalyzersSpec extends Specification {
     false       | 'start and end both invalid but paleo and start after end'      | '-1000000000'          | '-2000000000'
     true        | 'start and end both same instant'                               | '2000-01-01T00:00:00Z' | '2000-01-01T00:00:00Z'
     true        | 'start exists but not end'                                      | '2000-01-01T00:00:00Z' | ''
-    'UNDEFINED' | 'start does not exist but end does'                             | ''                     | '2000-01-01T00:00:00Z'
-    'UNDEFINED' | 'neither start nor end exist'                                   | ''                     | ''
-    'UNDEFINED' | 'start is invalid format but paleo and end is fully invalid'    | '-1000000000'          | '1999-13-12'
-    'UNDEFINED' | 'start is fully invalid and end is invalid format but paleo'    | '15mya'                | '-1000000000'
-    'UNDEFINED' | 'start is valid and end is fully invalid'                       | '2000-01-01T00:00:00Z' | '2000-12-31T25:00:00Z'
-    'UNDEFINED' | 'start and end both fully invalid'                              | '2000-01-01T00:61:00Z' | '2000-11-31T00:00:00Z'
-    'UNDEFINED' | 'start is fully invalid but end is valid'                       | '2000-01-01T00:00:61Z' | '2000-01-02T00:00:00Z'
+    UNDEFINED   | 'start does not exist but end does'                             | ''                     | '2000-01-01T00:00:00Z'
+    UNDEFINED   | 'neither start nor end exist'                                   | ''                     | ''
+    UNDEFINED   | 'start is invalid format but paleo and end is fully invalid'    | '-1000000000'          | '1999-13-12'
+    UNDEFINED   | 'start is fully invalid and end is invalid format but paleo'    | '15mya'                | '-1000000000'
+    UNDEFINED   | 'start is valid and end is fully invalid'                       | '2000-01-01T00:00:00Z' | '2000-12-31T25:00:00Z'
+    UNDEFINED   | 'start and end both fully invalid'                              | '2000-01-01T00:61:00Z' | '2000-11-31T00:00:00Z'
+    UNDEFINED   | 'start is fully invalid but end is valid'                       | '2000-01-01T00:00:61Z' | '2000-01-02T00:00:00Z'
   }
 
   def "analyzes when links are #testCase"() {
@@ -316,8 +320,8 @@ class AnalyzersSpec extends Specification {
     thumbnailAnalysis.thumbnailExists == expected
 
     where:
-    testCase  | value        | expected
-    'missing' | null         | false
+    testCase  | value                | expected
+    'missing' | null                 | false
     'present' | 'thumbnailAnalysis!' | true
   }
 
