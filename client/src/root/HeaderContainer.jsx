@@ -31,7 +31,6 @@ const mapStateToProps = state => {
       authEnabled && userProfileEndpoint ? userProfileEndpoint : null,
   }
 }
-
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     goHome: () => dispatch(showHome(ownProps.history)),
