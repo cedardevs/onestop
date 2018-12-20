@@ -16,6 +16,8 @@ import java.time.temporal.TemporalAccessor
 import java.time.temporal.TemporalQueries
 import java.time.temporal.TemporalQuery
 
+import static org.cedar.schemas.avro.psi.NullDescriptor.INVALID
+import static org.cedar.schemas.avro.psi.NullDescriptor.UNDEFINED
 import static org.cedar.schemas.avro.psi.TimeRangeDescriptor.*
 
 @Slf4j
@@ -266,7 +268,7 @@ class Analyzers {
 
   static Boolean beginLTEEnd(String descriptor, Map beginInfo, Map endInfo) {
     if (descriptor in [INVALID, UNDEFINED, INSTANT]) {
-      return null
+      return UNDEFINED
     }
     else if (descriptor == ONGOING) {
       return true
@@ -294,7 +296,7 @@ class Analyzers {
     }
     else {
       // One or both has an INVALID search format that is not just due to a paleo year
-      return null
+      return UNDEFINED
     }
   }
 
