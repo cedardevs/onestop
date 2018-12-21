@@ -61,7 +61,7 @@ class KafkaConsumerConfig {
     factory.setConsumerFactory(consumerFactory())
     //set batch listener to true
     factory.setBatchListener(true)
-    factory.getContainerProperties().setBatchErrorHandler(new BatchLoggingErrorHandler())
+    factory.setBatchErrorHandler(new BatchLoggingErrorHandler())
     
     return factory
   }
