@@ -19,7 +19,6 @@ repositories {
   maven { url "https://jitpack.io" }
 }
 
-
 configurations {
   compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
   compile.resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
@@ -31,7 +30,7 @@ configurations {
 dependencies {
   // Kafka dependencies for connecting with PSI
   compile(group: 'com.github.cedardevs', name: 'schemas', version: 'master-SNAPSHOT', changing: true)
-  compile("org.springframework.kafka:spring-kafka:2.1.10.RELEASE")
+  compile("org.springframework.kafka:spring-kafka:2.2.2.RELEASE")
   compile("io.confluent:kafka-streams-avro-serde:5.0.1")
   testCompile(group: 'com.github.cedardevs', name: 'schemas', version: 'master-SNAPSHOT', classifier: 'test', changing: true)
   testCompile('io.confluent:kafka-schema-registry:5.0.1')
@@ -88,7 +87,7 @@ dependencies {
   testCompile "org.testcontainers:testcontainers:1.10.0"
   testCompile "org.testcontainers:elasticsearch:1.10.0"
   testCompile 'net.bytebuddy:byte-buddy:1.7.11'
-  testCompile "org.springframework.kafka:spring-kafka-test:2.1.10.RELEASE"
+  testCompile "org.springframework.kafka:spring-kafka-test:2.2.2.RELEASE"
 }
 
 ext {

@@ -213,6 +213,7 @@ export default class HeaderDropdownMenuButton extends React.Component {
         style={styleWrapper}
       >
         <button
+          id="headerDropdownMenuButton"
           onClick={() => setOpen(!open)}
           onMouseOver={this.handleMouseOver}
           onMouseOut={this.handleMouseOut}

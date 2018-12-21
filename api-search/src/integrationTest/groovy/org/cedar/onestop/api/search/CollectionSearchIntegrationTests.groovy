@@ -71,9 +71,9 @@ class CollectionSearchIntegrationTests extends IntegrationTest {
 
     restTemplate = new RestTemplate()
     restTemplate.errorHandler = new TestResponseErrorHandler()
-    searchBaseUriString = "http://localhost:${port}/${contextPath}/search/"
-    searchCollectionUriString = "http://localhost:${port}/${contextPath}/search/collection"
-    collectionBaseUriString = "http://localhost:${port}/${contextPath}/collection/"
+    searchBaseUriString = "http://localhost:${port}${contextPath}/search/"
+    searchCollectionUriString = "http://localhost:${port}${contextPath}/search/collection"
+    collectionBaseUriString = "http://localhost:${port}${contextPath}/collection/"
   }
 
   def 'Collection endpoint reports count of collections'() {
