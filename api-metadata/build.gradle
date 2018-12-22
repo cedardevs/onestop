@@ -13,15 +13,28 @@ repositories {
 
   // opensaml repo
   maven { url "https://build.shibboleth.net/nexus/content/repositories/releases" }
+  // avro serdes from confluent
+  maven { url 'https://packages.confluent.io/maven/' }
+  // for shared avro schemas from https://github.com/cedardevs/schemas
+  maven { url "https://jitpack.io" }
 }
 
 configurations {
   compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
+  compile.resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
+  compile.resolutionStrategy.cacheDynamicVersionsFor(0, 'seconds')
+  testCompile.resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
+  testCompile.resolutionStrategy.cacheDynamicVersionsFor(0, 'seconds')
 }
 
 dependencies {
-    // groovy
-//    compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
+  // Kafka dependencies for connecting with PSI
+  compile(group: 'com.github.cedardevs', name: 'schemas', version: 'master-SNAPSHOT', changing: true)
+  compile("org.springframework.kafka:spring-kafka:2.2.2.RELEASE")
+  compile("io.confluent:kafka-streams-avro-serde:5.0.1")
+  testCompile(group: 'com.github.cedardevs', name: 'schemas', version: 'master-SNAPSHOT', classifier: 'test', changing: true)
+  testCompile('io.confluent:kafka-schema-registry:5.0.1')
+  testCompile('io.confluent:kafka-schema-registry:5.0.1:tests')
 
   // opensaml
   compile("org.opensaml:opensaml-core:${project.openSAMLVersion}")
@@ -31,7 +44,6 @@ dependencies {
   compile("org.opensaml:opensaml-messaging-impl:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-api:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-impl:${project.openSAMLVersion}")
-  compile "org.springframework.kafka:spring-kafka:2.2.2.RELEASE"
   
   // logback
   compile("ch.qos.logback:logback-core:${project.logbackVersion}")
@@ -43,7 +55,6 @@ dependencies {
   // junit
   testCompile("junit:junit:${project.junitVersion}")
   testCompile("org.springframework.security:spring-security-test")
-
 
 
   compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
@@ -77,7 +88,6 @@ dependencies {
   testCompile "org.testcontainers:elasticsearch:1.10.0"
   testCompile 'net.bytebuddy:byte-buddy:1.7.11'
   testCompile "org.springframework.kafka:spring-kafka-test:2.2.2.RELEASE"
-  
 }
 
 ext {

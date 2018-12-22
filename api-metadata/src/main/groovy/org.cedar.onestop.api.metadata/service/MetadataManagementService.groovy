@@ -3,6 +3,7 @@ package org.cedar.onestop.api.metadata.service
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
+import org.cedar.schemas.avro.psi.ParsedRecord
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -68,13 +69,12 @@ class MetadataManagementService {
     def results = []
     
     payload.eachWithIndex { record, i ->
-      def discovery = record.discovery as Map
-      def analysis = record.analysis as Map
-      def id = record.id
+      String id = record.id
+      ParsedRecord avroRecord = record.parsedRecord
   
       try {
-        def type = discovery.parentIdentifier ? 'granule' : 'collection'
-        def source = InventoryManagerToOneStopUtil.reformatMessageForSearch(discovery, analysis)
+        def source = InventoryManagerToOneStopUtil.reformatMessageForSearch(avroRecord)
+        def type = source.parentIdentifier ? 'granule' : 'collection'
         source.stagedDate = System.currentTimeMillis()
         def result = [
             id        : id,

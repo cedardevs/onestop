@@ -2,75 +2,78 @@ package org.cedar.onestop.api.metadata.service
 
 import groovy.util.logging.Slf4j
 import org.apache.commons.text.WordUtils
+import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.AvroUtils
 
 import java.time.temporal.ChronoUnit
 
 @Slf4j
 class InventoryManagerToOneStopUtil {
 
-  static Boolean validateMessage(Map messageMap, String id) {
+  static Boolean validateMessage(String id, ParsedRecord messageMap) {
+    def discovery = messageMap.discovery
     def analysis = messageMap.analysis
-    def title = analysis.titles['title'] as Map
-    def fileIdentifier = analysis.identification['fileIdentifier'] as Map
-    def parentIdentifier = analysis.identification['parentIdentifier'] as Map
-    def beginDate = analysis.temporalBounding['begin'] as Map
-    def endDate = analysis.temporalBounding['end'] as Map
-    def instant = analysis.temporalBounding['instant'] as Map
+    def titles = analysis.titles
+    def identification = analysis.identification
+    def temporal = analysis.temporalBounding
 
-    String failureMsg = "INVALID RECORD [ $id ]. VALIDATION FAILURES: "
     def failures = []
 
     // Validate record
-    if(!fileIdentifier.exists) {
+    if (!identification.fileIdentifierExists) {
       failures.add('Missing fileIdentifier')
     }
-    if(!title.exists) {
+    if (!titles.titleExists) {
       failures.add('Missing title')
     }
-    if(messageMap.discovery.hierarchyLevelName == 'granule' && !parentIdentifier.exists) {
+    if (discovery.hierarchyLevelName == 'granule' && !identification.parentIdentifierExists) {
       failures.add('Mismatch between metadata type and identifiers detected')
     }
-    if(beginDate.utcDateTimeString == 'INVALID') {
+    if (temporal.beginUtcDateTimeString == 'INVALID') {
       failures.add('Invalid beginDate')
     }
-    if(endDate.utcDateTimeString == 'INVALID') {
+    if (temporal.endUtcDateTimeString == 'INVALID') {
       failures.add('Invalid endDate')
     }
-    if(!beginDate.exists && !endDate.exists && instant.utcDateTimeString == 'INVALID') {
+    if (!temporal.beginExists && !temporal.endExists && temporal.instantUtcDateTimeString == 'INVALID') {
       failures.add('Invalid instant-only date')
     }
 
-    if(!failures) {
-      return true
-    }
-    else {
-      failureMsg += "[ ${failures.join(', ')} ]"
-      log.info(failureMsg)
+    if (failures) {
+      log.info("INVALID RECORD [ $id ]. VALIDATION FAILURES: [ ${failures.join(', ')} ]")
       return false
     }
+    else {
+      return true
+    }
   }
 
-  static Map reformatMessageForSearch(Map discovery, Map analysis) {
+  static Map reformatMessageForSearch(ParsedRecord record) {
+    Discovery discovery = record.discovery
+    Analysis analysis = record.analysis
+
+    Map discoveryMap = AvroUtils.avroToMap(discovery, true)
+
     // create gcmdkeywords
     Map gcmdKeywords = createGcmdKeyword(discovery)
-    discovery.putAll(gcmdKeywords)
-    
+    discoveryMap.putAll(gcmdKeywords)
+
     // create contacts ,creators and publishers
-    Map<String, Set> partyData = parseDataResponsibleParties(discovery.responsibleParties)
-    discovery.putAll(partyData)
-    
+    Map<String, Set> partyData = parseResponsibleParties(discovery.responsibleParties)
+    discoveryMap.putAll(partyData)
+
     // update temporal Bounding
-    def temporalBounding = readyDatesForSearch(discovery.temporalBounding, analysis.temporalBounding)
-    discovery.temporalBounding.putAll(temporalBounding)
+    def temporalData = readyDatesForSearch(discovery.temporalBounding, analysis.temporalBounding)
+    discoveryMap.temporalBounding = temporalData
 
     // drop fields
-    discovery.remove("responsibleParties")
-    discovery.services = [] // FIXME this needs to be in place until we can use ES6 ignore_missing flags
-    return discovery
+    discoveryMap.remove("responsibleParties")
+    discoveryMap.services = [] // FIXME this needs to be in place until we can use ES6 ignore_missing flags
+    return discoveryMap
   }
-  
+
   //Create GCMD keyword lists
-  static Map createGcmdKeyword(Map record) {
+  static Map createGcmdKeyword(Discovery discovery) {
     def gcmdScience = [] as Set
     def gcmdScienceServices = [] as Set
     def gcmdLocations = [] as Set
@@ -81,12 +84,12 @@ class InventoryManagerToOneStopUtil {
     def gcmdVerticalResolution = [] as Set
     def gcmdTemporalResolution = [] as Set
     def gcmdDataCenters = [] as Set
-    
+
     //remove and create new keywords with out accession values
-    def keywords = record.keywords.findAll { keys ->
+    def keywords = discovery.keywords.findAll({ keys ->
       keys.namespace != 'NCEI ACCESSION NUMBER'
-    }
-    
+    }).collect({AvroUtils.avroToMap(it, true)})
+
     keywords.each { group ->
       def it = group.namespace.toLowerCase() ?: null
       def keywordsInGroup = group.values ?: null
@@ -158,7 +161,7 @@ class InventoryManagerToOneStopUtil {
         }
       }
     }
-    
+
     return [
         keywords                : keywords,
         accessionValues         : [],  // FIXME this needs to be in place until we can use ES6 ignore_missing flags
@@ -174,12 +177,12 @@ class InventoryManagerToOneStopUtil {
         gcmdTemporalResolution  : gcmdTemporalResolution
     ]
   }
-  
+
   /*
   Create contacts, creators and publishers from responsibleParties
   */
-  
-  static Map<String, String> parseParty(Map party) {
+
+  static Map<String, String> parseParty(ResponsibleParty party) {
     String individualName = party.individualName ?: null
     String organizationName = party.organizationName ?: null
     String positionName = party.positionName ?: null
@@ -195,91 +198,83 @@ class InventoryManagerToOneStopUtil {
         phone           : phone
     ]
   }
-  
-  static Map<String, Set> parseDataResponsibleParties(List<Map> responsibleParties) {
+
+  static Map<String, Set> parseResponsibleParties(List<ResponsibleParty> responsibleParties) {
     Set contacts = []
     Set contactRoles = ['pointOfContact', 'distributor']
     Set creators = []
     Set creatorRoles = ['resourceProvider', 'originator', 'principalInvestigator', 'author', 'collaborator', 'coAuthor']
     Set publishers = []
     Set publisherRoles = ['publisher']
-    
+
     responsibleParties.each { party ->
-      def parsedParty = parseParty(party as Map)
-      log.info("parsedParty: $parsedParty")
+      def parsedParty = parseParty(party)
+      log.debug("parsedParty: $parsedParty")
       if (contactRoles.contains(parsedParty.role)) {
         contacts.add(parsedParty)
-      } else if (creatorRoles.contains(parsedParty.role)) {
+      }
+      else if (creatorRoles.contains(parsedParty.role)) {
         creators.add(parsedParty)
-      } else if (publisherRoles.contains(parsedParty.role)) {
+      }
+      else if (publisherRoles.contains(parsedParty.role)) {
         publishers.add(parsedParty)
       }
     }
     return [contacts: contacts, creators: creators, publishers: publishers]
   }
-  
-  static Map readyDatesForSearch(Map temporalBounding, Map temporalAnalysis) {
 
-    def newTemporalBounding = [:]
-    newTemporalBounding.putAll(temporalBounding)
-
+  static Map readyDatesForSearch(TemporalBounding bounding, TemporalBoundingAnalysis analysis) {
     def beginDate, beginYear, endDate, endYear
 
     // If bounding is actually an instant, set search fields accordingly
-    if(temporalAnalysis.range.descriptor == 'INSTANT') {
-      def instant = temporalAnalysis.instant
-      def year = parseYear(instant.utcDateTimeString)
-
-      // The following will all be the same regardless of precision:
-      beginDate = instant.utcDateTimeString // instants normalized to beginning of day
-      beginYear = year
-      endYear = year
+    if (analysis.rangeDescriptor == TimeRangeDescriptor.INSTANT) {
+      beginDate = analysis.instantUtcDateTimeString as String
+      def year = parseYear(beginDate)
 
       // Add time and/or date to endDate based on precision
-      switch(instant.precision) {
+      switch (analysis.instantPrecision) {
         case ChronoUnit.DAYS.toString():
           // End of day
-          endDate = "${temporalBounding.instant}T23:59:59Z" as String
+          endDate = "${bounding.instant}T23:59:59Z" as String
           break
         case ChronoUnit.YEARS.toString():
-          if(!instant.validSearchFormat) {
+          if (!analysis.instantIndexable) {
             // Paleo date, so only return year value (null out dates)
             beginDate = null
             endDate = null
           }
           else {
             // Last day of year + end of day
-            endDate = "${temporalBounding.instant}-12-31T23:59:59Z" as String
+            endDate = "${bounding.instant}-12-31T23:59:59Z" as String
           }
           break
         default:
           // Precision is NANOS so use instant value as-is
-          endDate = instant.utcDateTimeString
+          endDate = beginDate
           break
       }
+
+      return [
+          beginDate: beginDate,
+          beginYear: year,
+          endDate: endDate,
+          endYear: year
+      ]
     }
     else {
-      def begin = temporalAnalysis.begin
-      def end = temporalAnalysis.end
-
       // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
       // use value from analysis block where dates are UTC datetime normalized
-      beginDate = begin.exists && begin.validSearchFormat == true ? begin.utcDateTimeString : null
-      endDate = end.exists && end.validSearchFormat == true ? end.utcDateTimeString : null
-      beginYear = parseYear(begin.utcDateTimeString)
-      endYear = parseYear(end.utcDateTimeString)
+      return [
+          beginDate: analysis.beginExists && analysis.beginIndexable ? analysis.beginUtcDateTimeString as String : null,
+          endDate: analysis.endExists && analysis.endIndexable ? analysis.endUtcDateTimeString as String : null,
+          beginYear: parseYear(analysis.beginUtcDateTimeString as String),
+          endYear: parseYear(analysis.endUtcDateTimeString as String)
+      ]
     }
-
-    // Replace & add fields before returning
-    newTemporalBounding.put('beginDate', beginDate)
-    newTemporalBounding.put('beginYear', beginYear)
-    newTemporalBounding.put('endDate', endDate)
-    newTemporalBounding.put('endYear', endYear)
-    return newTemporalBounding
   }
 
   static Long parseYear(String utcDateTime) {
-    if(utcDateTime == 'UNDEFINED') {
+    if (utcDateTime == 'UNDEFINED') {
       return null
     }
     else {
@@ -288,14 +283,14 @@ class InventoryManagerToOneStopUtil {
     }
 
   }
-  
+
   // helper functions
   static String normalizeHierarchyKeyword(String text) {
     def cleanText = cleanInternalGCMDKeywordWhitespace(text)
     return WordUtils.capitalizeFully(cleanText, capitalizingDelimiters)
         .replace('Earth Science > ', '').replace('Earth Science Services > ', '')
   }
-  
+
   static String normalizeNonHierarchicalKeyword(String text) {
     // These are in the format 'Short Name > Long Name', where 'Short Name' is likely an acronym. This normalizing allows
     // for title casing the 'Long Name' if and only if it's given in all caps or all lowercase (so we don't title case an
@@ -309,14 +304,14 @@ class InventoryManagerToOneStopUtil {
     }
     return String.join(' > ', elements)
   }
-  
+
   static final char[] capitalizingDelimiters = [' ', '/', '.', '(', '-', '_'].collect({ it as char })
-  
+
   static String cleanInternalGCMDKeywordWhitespace(String text) {
     String cleanString = text.replaceAll("\\s+", " ")
     return cleanString
   }
-  
+
   static List<String> tokenizeHierarchyKeyword(String text) {
     def result = []
     def i = text.length()
