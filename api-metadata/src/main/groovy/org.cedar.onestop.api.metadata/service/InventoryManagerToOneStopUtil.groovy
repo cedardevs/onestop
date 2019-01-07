@@ -7,6 +7,8 @@ import org.cedar.schemas.avro.util.AvroUtils
 
 import java.time.temporal.ChronoUnit
 
+import static org.cedar.schemas.avro.psi.ValidDescriptor.*
+
 @Slf4j
 class InventoryManagerToOneStopUtil {
 
@@ -29,13 +31,13 @@ class InventoryManagerToOneStopUtil {
     if (discovery.hierarchyLevelName == 'granule' && !identification.parentIdentifierExists) {
       failures.add('Mismatch between metadata type and identifiers detected')
     }
-    if (temporal.beginUtcDateTimeString == 'INVALID') {
+    if (temporal.beginDescriptor == INVALID) {
       failures.add('Invalid beginDate')
     }
-    if (temporal.endUtcDateTimeString == 'INVALID') {
+    if (temporal.endDescriptor == INVALID) {
       failures.add('Invalid endDate')
     }
-    if (!temporal.beginExists && !temporal.endExists && temporal.instantUtcDateTimeString == 'INVALID') {
+    if (!temporal.beginDescriptor == UNDEFINED && !temporal.endDescriptor == UNDEFINED && temporal.instantDescriptor == INVALID) {
       failures.add('Invalid instant-only date')
     }
 
@@ -265,8 +267,8 @@ class InventoryManagerToOneStopUtil {
       // If dates exist and are validSearchFormat (only false here if paleo, since we filtered out bad data earlier),
       // use value from analysis block where dates are UTC datetime normalized
       return [
-          beginDate: analysis.beginExists && analysis.beginIndexable ? analysis.beginUtcDateTimeString as String : null,
-          endDate: analysis.endExists && analysis.endIndexable ? analysis.endUtcDateTimeString as String : null,
+          beginDate: analysis.beginDescriptor == VALID && analysis.beginIndexable ? analysis.beginUtcDateTimeString as String : null,
+          endDate: analysis.endDescriptor == VALID && analysis.endIndexable ? analysis.endUtcDateTimeString as String : null,
           beginYear: parseYear(analysis.beginUtcDateTimeString as String),
           endYear: parseYear(analysis.endUtcDateTimeString as String)
       ]
@@ -274,7 +276,7 @@ class InventoryManagerToOneStopUtil {
   }
 
   static Long parseYear(String utcDateTime) {
-    if (utcDateTime == 'UNDEFINED') {
+    if (!utcDateTime) {
       return null
     }
     else {
