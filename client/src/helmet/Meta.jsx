@@ -4,6 +4,8 @@ import PropTypes from 'prop-types'
 import _ from 'lodash'
 import {toJsonLd} from '../utils/jsonLdUtils'
 
+import {getBasePath} from '../utils/urlUtils'
+
 export default class Meta extends Component {
   formatTitle = title => {
     const words = _.words(title)
@@ -54,9 +56,15 @@ export default class Meta extends Component {
       </script>
     ) : null
 
+    var faviconPath = `${getBasePath()}/static/noaa-favicon.ico`.replace(
+      '//',
+      '/',
+      'g'
+    )
+
     return (
       <Helmet>
-        <link href="/onestop/static/noaa-favicon.ico" rel="shortcut icon" />
+        <link href={faviconPath} rel="shortcut icon" />
 
         <meta property="robots" content={robotsValue} />
 

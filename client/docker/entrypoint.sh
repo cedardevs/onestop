@@ -5,4 +5,9 @@ sed -i -e "s/ONESTOP_ADMIN_API_ENDPOINT/${ONESTOP_ADMIN_API_ENDPOINT:-onestop-ap
 sed -i -e "s/GEOPORTAL_ENDPOINT/${GEOPORTAL_ENDPOINT:-onestop-geoportal-search:8080}/" /etc/nginx/conf.d/default.conf
 sed -i -e "s/GOOGLE_VERIFY_OWNERSHIP_FILE/${GOOGLE_VERIFY_OWNERSHIP_FILE:-google-verify-ownership-file-not-set.html}/g" /etc/nginx/conf.d/default.conf
 
+if [[ -z "${1// }" ]] ; then
+  sed -i -e "s/ONESTOP_SUBPATH//g" /etc/nginx/conf.d/default.conf
+else
+  sed -i -e "s/ONESTOP_SUBPATH/\/${1}/g" /etc/nginx/conf.d/default.conf
+fi
 nginx -g 'daemon off;'

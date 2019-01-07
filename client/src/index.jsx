@@ -14,7 +14,7 @@ import './style/page.css' // high-level and global CSS rules (must be before med
 import './style/media.css' // @media CSS rules for base font-size based on screen width
 import './leaflet-init' // custom leaflet hooks
 import './init' // dispatch initial conditions on page refresh
-
+import {getBasePath} from './utils/urlUtils'
 // create root DOM element for application
 const appDiv = document.createElement('div')
 appDiv.id = 'app'
@@ -22,7 +22,7 @@ document.body.appendChild(appDiv)
 
 // specify the base URL for all relative URLs in the page
 const baseRef = document.createElement('base')
-baseRef.href = '/onestop/'
+baseRef.href = getBasePath()
 document.head.appendChild(baseRef)
 
 // render the app

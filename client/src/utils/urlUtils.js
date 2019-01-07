@@ -1,4 +1,13 @@
-export const API_PATH = '/onestop/api'
+import _ from 'lodash'
+
+export const getBasePath = () => {
+  const windowpath = window.location.pathname
+  return findRoute(windowpath) || windowpath
+}
+
+export const apiPath = () => {
+  return getBasePath() + 'api'
+}
 
 // makes urls protocol-relative and url-encodes quotes
 export const processUrl = url => {
@@ -41,6 +50,46 @@ export const buildGovExternalOnClick = (href, target, onClick) => {
         target ? window.open(href, target) : (window.location.href = href)
       }
     }
+  }
+}
+
+export const ROUTE = Object.freeze({
+  sitemap: {
+    path: '/sitemap.xml',
+    regex: /\/sitemap.xml/,
+  },
+  search: {
+    path: '/collections',
+    regex: /\/collections$/,
+  },
+  cart: {
+    path: '/cart',
+    regex: /\/cart/,
+  },
+  details: {
+    path: '/collections/details',
+    regex: /\/collections\/details\/([-\w]+)/,
+  },
+  granules: {
+    path: '/collections/granules',
+    regex: /\/granules\/([-\w]+)/,
+  },
+  about: {path: '/about', regex: /\/about/},
+  help: {path: '/help', regex: /\/help/},
+  error: {path: '/error', regex: /\/error/},
+})
+
+export const isRoute = (path, route) => {
+  return route.regex.exec(path)
+}
+
+export const findRoute = path => {
+  var findMatch = _.find(ROUTE, route => {
+    return isRoute(path, route)
+  })
+  if (findMatch) {
+    var re = new RegExp(findMatch.path + '.*')
+    return path.replace(re, '/')
   }
 }
 

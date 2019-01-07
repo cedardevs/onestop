@@ -3,6 +3,8 @@ ARG VCS_REF
 ARG VERSION
 ARG DATE
 ARG TAR_NAME
+ARG SUBPATH
+ENV ENV_SUBPATH=$SUBPATH
 
 # Install curl (debugging only; remove later)
 #RUN apt-get update && apt-get install -y --no-install-recommends curl \
@@ -22,4 +24,4 @@ ADD build/libs/${TAR_NAME} /usr/share/nginx/html
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 WORKDIR /usr/app
 COPY docker/entrypoint.sh /usr/app
-ENTRYPOINT ["sh", "/usr/app/entrypoint.sh"]
+ENTRYPOINT sh /usr/app/entrypoint.sh ${ENV_SUBPATH}
