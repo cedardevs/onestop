@@ -26,7 +26,7 @@ build:
         TAR_NAME: onestop-client-2.1.0.tar.gz
         VCS_REF: local
         VERSION: 2.1.0
-        SUBPATH: onestop
+        SUBPATH: ''
 deploy:
   kubectl:
     manifests:
