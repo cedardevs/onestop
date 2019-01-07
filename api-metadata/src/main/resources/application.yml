@@ -7,7 +7,7 @@ spring.profiles.active: "securitydisabled"
 server:
   port: 8098
   servlet:
-    context-path: /onestop/admin
+    context-path: /
 
 spring:
   application:

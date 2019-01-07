@@ -1,11 +1,11 @@
-FROM nginx:alpine
+FROM httpd:latest
+
 ARG VCS_REF
 ARG VERSION
 ARG DATE
 ARG TAR_NAME
 ARG SUBPATH
 ENV ENV_SUBPATH=$SUBPATH
-
 # Install curl (debugging only; remove later)
 #RUN apt-get update && apt-get install -y --no-install-recommends curl \
 #    && rm -rf /var/lib/apt/lists/*
@@ -20,8 +20,10 @@ LABEL org.label-schema.vcs-ref=${VCS_REF}
 
 EXPOSE 80
 
-ADD build/libs/${TAR_NAME} /usr/share/nginx/html
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+ADD build/libs/${TAR_NAME} /usr/local/apache2/htdocs/${SUBPATH}
+
+COPY docker/httpd.conf /usr/local/apache2/conf/httpd.conf
+
 WORKDIR /usr/app
 COPY docker/entrypoint.sh /usr/app
 ENTRYPOINT sh /usr/app/entrypoint.sh ${ENV_SUBPATH}
