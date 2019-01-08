@@ -6,4 +6,4 @@ dependencies:
   repository: https://www.getambassador.io
   version: 0.40.2
 digest: sha256:1cecf5c9bc97aaaea42a931b2030692ef2aec8c6861f234b3346cdcf6b525c84
-generated: 2018-12-07T18:50:12.113232537-07:00
+generated: 2018-12-11T16:34:25.009813-07:00

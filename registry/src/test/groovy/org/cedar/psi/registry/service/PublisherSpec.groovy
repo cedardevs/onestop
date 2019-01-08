@@ -3,14 +3,15 @@ package org.cedar.psi.registry.service
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.cedar.psi.common.constants.Topics
-import org.cedar.psi.common.avro.Method
+import org.cedar.schemas.avro.psi.Method
 import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.util.concurrent.Future
 
-import static org.cedar.psi.common.avro.RecordType.*
+import static org.cedar.schemas.avro.psi.RecordType.collection
+import static org.cedar.schemas.avro.psi.RecordType.granule
 
 
 @Unroll

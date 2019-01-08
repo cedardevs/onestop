@@ -1,7 +1,7 @@
 package org.cedar.psi.manager.util
 
 import groovy.util.logging.Slf4j
-import org.cedar.psi.common.avro.*
+import org.cedar.schemas.avro.psi.*
 
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -16,15 +16,10 @@ import java.time.temporal.TemporalAccessor
 import java.time.temporal.TemporalQueries
 import java.time.temporal.TemporalQuery
 
+import static org.cedar.schemas.avro.psi.TimeRangeDescriptor.*
+
 @Slf4j
 class Analyzers {
-
-  // Just to decrease chance of typos
-  static final String UNDEFINED = 'UNDEFINED'
-  static final String INVALID = 'INVALID'
-  static final String BOUNDED = 'BOUNDED'
-  static final String ONGOING = 'ONGOING'
-  static final String INSTANT = 'INSTANT'
 
   static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
       .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
@@ -74,37 +69,34 @@ class Analyzers {
   }
 
   static TemporalBoundingAnalysis analyzeTemporalBounding(Discovery metadata) {
-    // Gather info on individual dates:
+    // Gather info
     def beginInfo = dateInfo(metadata?.temporalBounding?.beginDate, true)
     def endInfo = dateInfo(metadata?.temporalBounding?.endDate, false)
     def instantInfo = dateInfo(metadata?.temporalBounding?.instant, true)
+    def rangeDescriptor = rangeDescriptor(beginInfo, endInfo, instantInfo)
 
-    // Gather range info
-    def descriptor = rangeDescriptor(beginInfo, endInfo, instantInfo)
-    def beginLTEEnd = beginLTEEnd(descriptor, beginInfo, endInfo)
-
+    // Build
     def builder = TemporalBoundingAnalysis.newBuilder()
 
-    builder.beginExists = beginInfo.exists
+    builder.beginDescriptor = beginInfo.descriptor
     builder.beginPrecision = beginInfo.precision
     builder.beginIndexable = beginInfo.indexable
     builder.beginZoneSpecified = beginInfo.zoneSpecified
     builder.beginUtcDateTimeString = beginInfo.utcDateTimeString
 
-    builder.endExists = endInfo.exists
+    builder.endDescriptor = endInfo.descriptor
     builder.endPrecision = endInfo.precision
     builder.endIndexable = endInfo.indexable
     builder.endZoneSpecified = endInfo.zoneSpecified
     builder.endUtcDateTimeString = endInfo.utcDateTimeString
 
-    builder.instantExists = instantInfo.exists
+    builder.instantDescriptor = instantInfo.descriptor
     builder.instantPrecision = instantInfo.precision
     builder.instantIndexable = instantInfo.indexable
     builder.instantZoneSpecified = instantInfo.zoneSpecified
     builder.instantUtcDateTimeString = instantInfo.utcDateTimeString
 
-    builder.rangeDescriptor = beginLTEEnd == false ? INVALID : descriptor
-    builder.rangeBeginLTEEnd = beginLTEEnd
+    builder.rangeDescriptor = rangeDescriptor
 
     return builder.build()
   }
@@ -160,11 +152,11 @@ class Analyzers {
   static Map dateInfo(String dateString, boolean start) {
     if (!dateString) {
       return [
-          exists           : false,
-          precision        : UNDEFINED,
+          descriptor       : ValidDescriptor.UNDEFINED,
+          precision        : null,
           indexable        : true,
-          zoneSpecified    : UNDEFINED,
-          utcDateTimeString: UNDEFINED
+          zoneSpecified    : null,
+          utcDateTimeString: null
       ]
     }
 
@@ -177,7 +169,7 @@ class Analyzers {
               LocalDate.&from as TemporalQuery)
 
       return [
-          exists           : true,
+          descriptor       : ValidDescriptor.VALID,
           precision        : precision(parsedDate),
           indexable        : indexable(parsedDate),
           zoneSpecified    : timezone(parsedDate),
@@ -186,11 +178,11 @@ class Analyzers {
     }
     catch (DateTimeParseException e) {
       return [
-          exists           : true,
-          precision        : INVALID,
+          descriptor       : ValidDescriptor.INVALID,
+          precision        : null,
           indexable        : false,
-          zoneSpecified    : INVALID,
-          utcDateTimeString: INVALID
+          zoneSpecified    : null,
+          utcDateTimeString: null
       ]
     }
   }
@@ -216,7 +208,7 @@ class Analyzers {
   }
 
   static String timezone(date) {
-    return date instanceof ZonedDateTime ? date.offset.toString() : UNDEFINED
+    return date instanceof ZonedDateTime ? date.offset.toString() : null
   }
 
   static String utcDateTimeString(TemporalAccessor parsedDate, boolean start) {
@@ -245,38 +237,43 @@ class Analyzers {
     return start ? "${year}-01-01T00:00:00Z" : "${year}-12-31T23:59:59Z"
   }
 
-  static String rangeDescriptor(Map beginInfo, Map endInfo, Map instantInfo) {
-    def hasBegin = beginInfo.exists
-    def hasEnd = endInfo.exists
-    def hasInstant = instantInfo.exists
-    def isValidInstant = instantInfo.with {
-      exists && (indexable || precision == ChronoUnit.YEARS.toString())
-    }
+  static TimeRangeDescriptor rangeDescriptor(Map beginInfo, Map endInfo, Map instantInfo) {
+    def begin = beginInfo.descriptor
+    def end = endInfo.descriptor
+    def instant = instantInfo.descriptor
 
-    if (hasBegin && hasEnd) {
-      return BOUNDED
+    if (begin == ValidDescriptor.VALID &&
+        end == ValidDescriptor.VALID &&
+        instant == ValidDescriptor.UNDEFINED) {
+      switch (beginLTEEnd(beginInfo, endInfo)) {
+        case true:
+          return BOUNDED
+        case false:
+          return BACKWARDS
+        case null:
+          return INVALID
+      }
     }
-    if (hasBegin && !hasEnd) {
+    if (begin == ValidDescriptor.VALID &&
+        end == ValidDescriptor.UNDEFINED &&
+        instant == ValidDescriptor.UNDEFINED  ) {
       return ONGOING
     }
-    if (!hasBegin && !hasEnd && isValidInstant) {
+    if (begin == ValidDescriptor.UNDEFINED &&
+        end == ValidDescriptor.UNDEFINED &&
+        instant == ValidDescriptor.VALID) {
       return INSTANT
     }
-    if (!hasBegin && !hasEnd && !hasInstant) {
+    if (begin == ValidDescriptor.UNDEFINED &&
+        end == ValidDescriptor.UNDEFINED &&
+        instant == ValidDescriptor.UNDEFINED) {
       return UNDEFINED
     }
 
     return INVALID
   }
 
-  static Object beginLTEEnd(String descriptor, Map beginInfo, Map endInfo) {
-    if (descriptor == INVALID || descriptor == UNDEFINED) {
-      return UNDEFINED
-    }
-    else if (descriptor == ONGOING || descriptor == INSTANT) {
-      return true
-    }
-
+  static Boolean beginLTEEnd(Map beginInfo, Map endInfo) {
     def beginIndexable = beginInfo.indexable == true
     def endIndexable = endInfo.indexable == true
     def beginIsYears = beginInfo.precision == ChronoUnit.YEARS.toString()
@@ -299,7 +296,7 @@ class Analyzers {
     }
     else {
       // One or both has an INVALID search format that is not just due to a paleo year
-      return UNDEFINED
+      return null
     }
   }
 

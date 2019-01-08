@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: {{ template "psi-registry.fullname" . }}-ingress
+spec:
+  rules:
+  - host: {{ .Values.ingress.host }}
+    http:
+      paths:
+      - path: /registry
+        backend:
+          serviceName: {{ template "psi-registry.fullname" . }}
+          servicePort: {{ .Values.service.port }}

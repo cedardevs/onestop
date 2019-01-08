@@ -80,4 +80,26 @@
     <cve>CVE-2018-10237</cve>
   </suppress>
 
+  <suppress>
+    <notes><![CDATA[ file name: slf4j-api-1.7.25.jar
+      The CVE (https://nvd.nist.gov/vuln/detail/CVE-2018-8088) explicitly states that it only applies to
+      org.slf4j.ext.EventData in the slf4j-ext module in QOS.CH SLF4J.
+
+      slf4j-ext is not used by this project. also this CVE does not apply to slf4j-api project.
+    ]]></notes>
+    <gav regex="true">^org\.slf4j:slf4j-api:.*$</gav>
+    <cve>CVE-2018-8088</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[ file name: jul-to-slf4j-1.7.25.jar
+      The CVE (https://nvd.nist.gov/vuln/detail/CVE-2018-8088) explicitly states that it only applies to
+      org.slf4j.ext.EventData in the slf4j-ext module in QOS.CH SLF4J, which is not used by this project.
+
+      this vulnerability does not apply to jul-to-slf4j projects.
+    ]]></notes>
+    <gav regex="true">^org\.slf4j:jul-to-slf4j:.*$</gav>
+    <cve>CVE-2018-8088</cve>
+  </suppress>
+
 </suppressions>

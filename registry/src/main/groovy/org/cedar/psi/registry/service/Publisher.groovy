@@ -4,9 +4,9 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.Method
-import org.cedar.psi.common.avro.RecordType
+import org.cedar.schemas.avro.psi.Input
+import org.cedar.schemas.avro.psi.Method
+import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 

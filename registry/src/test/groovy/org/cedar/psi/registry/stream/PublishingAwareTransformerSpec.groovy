@@ -2,10 +2,10 @@ package org.cedar.psi.registry.stream
 
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.processor.ProcessorContext
-import org.cedar.psi.common.avro.Discovery
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.Publishing
-import org.cedar.psi.common.avro.RecordType
+import org.cedar.schemas.avro.psi.Discovery
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.Publishing
+import org.cedar.schemas.avro.psi.RecordType
 import spock.lang.Specification
 import spock.lang.Unroll
 

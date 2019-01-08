@@ -2,9 +2,9 @@ package org.cedar.psi.registry.api
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
-import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
+import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping

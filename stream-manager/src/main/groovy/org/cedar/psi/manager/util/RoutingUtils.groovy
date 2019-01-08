@@ -2,8 +2,8 @@ package org.cedar.psi.manager.util
 
 import groovy.transform.CompileStatic
 import org.apache.kafka.streams.kstream.Predicate
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.RecordType
+import org.cedar.schemas.avro.psi.Input
+import org.cedar.schemas.avro.psi.RecordType
 
 
 @CompileStatic

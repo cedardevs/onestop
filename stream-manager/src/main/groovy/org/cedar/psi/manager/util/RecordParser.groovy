@@ -2,10 +2,10 @@ package org.cedar.psi.manager.util
 
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.exception.ExceptionUtils
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.ErrorEvent
-import org.cedar.psi.common.avro.Publishing
-import org.cedar.psi.common.avro.RecordType
+import org.cedar.schemas.avro.psi.ErrorEvent
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.Publishing
+import org.cedar.schemas.avro.psi.RecordType
 
 @Slf4j
 class RecordParser {

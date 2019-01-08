@@ -4,14 +4,9 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
 import org.apache.kafka.streams.test.OutputVerifier
-import org.cedar.psi.common.avro.Discovery
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.Method
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.Publishing
-import org.cedar.psi.common.avro.RecordType
-import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import org.cedar.psi.registry.util.TimeFormatUtils
+import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
 import spock.lang.Specification
 
 import java.time.ZoneId
@@ -22,8 +17,8 @@ import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
 import static org.apache.kafka.streams.StreamsConfig.*
 import static org.cedar.psi.common.constants.Topics.*
-import static org.cedar.psi.common.util.StreamSpecUtils.STRING_SERIALIZER
-import static org.cedar.psi.common.util.StreamSpecUtils.readAllOutput
+import static org.cedar.schemas.avro.util.StreamSpecUtils.STRING_SERIALIZER
+import static org.cedar.schemas.avro.util.StreamSpecUtils.readAllOutput
 
 class FullTopologySpec extends Specification {
 

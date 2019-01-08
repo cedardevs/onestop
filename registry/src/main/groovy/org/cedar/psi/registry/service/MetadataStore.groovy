@@ -6,10 +6,10 @@ import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.RecordType
-import org.cedar.psi.common.util.AvroUtils
+import org.cedar.schemas.avro.psi.Input
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.RecordType
+import org.cedar.schemas.avro.util.AvroUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 

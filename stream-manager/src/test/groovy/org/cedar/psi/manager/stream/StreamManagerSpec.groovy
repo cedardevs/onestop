@@ -4,20 +4,14 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
-import org.cedar.psi.common.avro.Analysis
-import org.cedar.psi.common.avro.Discovery
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.Method
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.RecordType
 import org.cedar.psi.common.constants.StreamsApps
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
-import org.cedar.psi.common.util.AvroUtils
-import org.cedar.psi.common.util.MockSchemaRegistrySerde
-import org.cedar.psi.common.util.StreamSpecUtils
 import org.cedar.psi.manager.config.ManagerConfig
-import org.junit.Assert
+import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.AvroUtils
+import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
+import org.cedar.schemas.avro.util.StreamSpecUtils
 import spock.lang.Specification
 
 class StreamManagerSpec extends Specification {
