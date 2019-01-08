@@ -21,18 +21,14 @@ repositories {
 
 configurations {
   compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
-  compile.resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
-  compile.resolutionStrategy.cacheDynamicVersionsFor(0, 'seconds')
-  testCompile.resolutionStrategy.cacheChangingModulesFor(0, 'seconds')
-  testCompile.resolutionStrategy.cacheDynamicVersionsFor(0, 'seconds')
 }
 
 dependencies {
   // Kafka dependencies for connecting with PSI
-  compile(group: 'com.github.cedardevs', name: 'schemas', version: 'master-SNAPSHOT', changing: true)
+  compile('com.github.cedardevs:schemas:0.1.0')
   compile("org.springframework.kafka:spring-kafka:2.2.2.RELEASE")
   compile("io.confluent:kafka-streams-avro-serde:5.0.1")
-  testCompile(group: 'com.github.cedardevs', name: 'schemas', version: 'master-SNAPSHOT', classifier: 'test', changing: true)
+  testCompile('com.github.cedardevs:schemas:0.1.0:test')
   testCompile('io.confluent:kafka-schema-registry:5.0.1')
   testCompile('io.confluent:kafka-schema-registry:5.0.1:tests')
 
