@@ -12,6 +12,6 @@ LABEL org.label-schema.vendor=CEDAR
 LABEL org.label-schema.vcs-url=https://github.com/cedardevs/onestop
 LABEL org.label-schema.vcs-ref=${VCS_REF}
 
-ADD build/libs/${WAR_NAME} /usr/local/tomcat/webapps/onestop-api-search.war
+ADD build/libs/${WAR_NAME} /usr/local/tomcat/webapps/onestop#api.war
 
 EXPOSE 8080
