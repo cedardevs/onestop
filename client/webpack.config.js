@@ -104,7 +104,8 @@ module.exports = env => {
           hot: true,
           proxy: {
             '/api/*': {
-              target: `${env.URL_API_SEARCH}/`,
+              target: `${env.URL_API_SEARCH}/onestop-api-search/`,
+              pathRewrite: {'^/api' : ''},
               secure: false,
             },
           },
