@@ -5,8 +5,8 @@ import groovy.json.JsonSlurper
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.kstream.Reducer
-import org.apache.kafka.streams.kstream.ValueJoiner
 import org.cedar.schemas.avro.psi.Input
+import org.cedar.schemas.avro.psi.Method
 
 @Slf4j
 @CompileStatic
@@ -32,28 +32,20 @@ class StreamFunctions {
     }
   }
 
-  static Reducer<Map> mergeContentMaps = new Reducer<Map>() {
-    @Override
-    Map apply(Map aggregate, Map nextValue) {
-      log.debug("Merging new value $nextValue into existing aggregate ${aggregate}")
-      def result = (aggregate ?: [:]) + (nextValue ?: [:])
-      if (aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json' ) {
-        result.content = mergeJsonMapStrings(aggregate?.content as String, nextValue?.content as String)
-      }
-      return result
-    }
-  }
-
-  static Reducer<Input> mergeInputs = new Reducer<Input>() {
+  static Reducer<Input> mergeInputContent = new Reducer<Input>() {
     @Override
     Input apply(Input aggregate, Input nextValue) {
       log.debug("Merging new input $nextValue into existing aggregate ${aggregate}")
 
       def resultBuilder = Input.newBuilder(aggregate)
-      if (nextValue.contentType) { resultBuilder.contentType = nextValue.contentType }
-      if (nextValue.method) { resultBuilder.method = nextValue.method }
+      if (nextValue.contentType) {
+        resultBuilder.contentType = nextValue.contentType
+      }
+      if (nextValue.method) {
+        resultBuilder.method = nextValue.method
+      }
 
-      if (aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json' ) {
+      if (aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json') {
         resultBuilder.content = mergeJsonMapStrings(aggregate.content, nextValue.content)
       }
       else if (nextValue.content) {
@@ -64,26 +56,36 @@ class StreamFunctions {
     }
   }
 
-  static Reducer<Input> updateInputs = new Reducer<Input>() {
+  static Reducer<Input> replaceInputMethod = new Reducer<Input>() {
     @Override
     Input apply(Input aggregate, Input nextValue) {
       log.debug("Deleteing existing aggregate ${aggregate} with ${nextValue.method}")
       def resultBuilder = Input.newBuilder(aggregate)
-      if (nextValue.method) { resultBuilder.method = nextValue.method }
+      if (nextValue.method) {
+        resultBuilder.method = nextValue.method
+      }
 
       return resultBuilder.build()
     }
   }
 
-  static Reducer<Input> publishInputs = new Reducer<Input>() {
+  static Reducer<Input> reduceInputs = new Reducer<Input>() {
     @Override
     Input apply(Input aggregate, Input nextValue) {
-      log.debug("Published with method ${nextValue.method}")
+      log.debug("Reducing inputs with method ${nextValue.method}")
 
-      String method = nextValue.method
-      if (method == 'PATCH'){return mergeInputs.apply(aggregate,nextValue)}
-      if (method == 'PUT' || method == 'POST'){return nextValue}
-      if (method == 'DELETE'){return updateInputs.apply(aggregate,nextValue)}
+      switch (nextValue.method) {
+        case Method.PATCH:
+          return mergeInputContent.apply(aggregate, nextValue)
+
+        case Method.DELETE:
+          return replaceInputMethod.apply(aggregate, nextValue)
+
+        case Method.PUT:
+        case Method.POST:
+        default:
+          return nextValue
+      }
     }
   }
 

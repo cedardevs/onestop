@@ -32,28 +32,7 @@ class StreamFunctionsSpec extends Specification {
     StreamFunctions.setReducer.apply(curr, next) == null
   }
 
-  def 'merge function merges json strings'() {
-    def currentAggregate = [
-        contentType: 'application/json',
-        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}'
-    ]
-    def newValue = [
-        contentType: 'application/json',
-        content: '{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}'
-    ]
-    def mergedAggregate = [
-        contentType: 'application/json',
-        content: '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}'
-    ]
-
-    when:
-    def mergedMaps = StreamFunctions.mergeContentMaps.apply(currentAggregate, newValue)
-
-    then:
-    mergedMaps == mergedAggregate
-  }
-
-  def 'merge function merges inputs'() {
+  def 'input merger merges json content'() {
     def currentAggregate = new Input([
         type: RecordType.granule,
         method: Method.POST,
@@ -77,35 +56,37 @@ class StreamFunctionsSpec extends Specification {
     ])
 
     when:
-    def mergedInputs = StreamFunctions.mergeInputs.apply(currentAggregate, newValue)
+    def mergedInputs = StreamFunctions.mergeInputContent.apply(currentAggregate, newValue)
 
     then:
     mergedInputs == mergedAggregate
   }
 
 
-  def 'merge function replaces xml strings'() {
-    def currentAggregate = [
+  def 'input merger replaces xml strings'() {
+    def currentAggregate = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
         contentType: 'application/xml',
-        content: '<text>xml wooooOne....</text>'
-    ]
-    def newValue = [
+        content: '<text>xml wooooOne....</text>',
+        source: 'test'
+    ])
+    def newInput = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
         contentType: 'application/xml',
-        content: '<text>xml wooooTwo....</text>'
-    ]
-    def mergedAggregate = [
-        contentType: 'application/xml',
-        content: '<text>xml wooooTwo....</text>'
-    ]
+        content: '<text>xml wooooTwo....</text>',
+        source: 'test'
+    ])
 
     when:
-    def mergedMaps = StreamFunctions.mergeContentMaps.apply(currentAggregate, newValue)
+    def mergedMaps = StreamFunctions.mergeInputContent.apply(currentAggregate, newInput)
 
     then:
-    mergedMaps == mergedAggregate
+    mergedMaps == newInput
   }
 
-  def 'publish function with PATCH method'() {
+  def 'reduce inputs with PATCH method'() {
     def currentAggregate = new Input([
         type: RecordType.granule,
         method: Method.POST,
@@ -130,7 +111,7 @@ class StreamFunctionsSpec extends Specification {
     ])
 
     when:
-    def value = StreamFunctions.publishInputs.apply(currentAggregate, newValue)
+    def value = StreamFunctions.reduceInputs.apply(currentAggregate, newValue)
 
     then:
     value == expectedValue
@@ -153,7 +134,7 @@ class StreamFunctionsSpec extends Specification {
     ])
 
     when:
-    def value = StreamFunctions.publishInputs.apply(currentAggregate, newValue)
+    def value = StreamFunctions.reduceInputs.apply(currentAggregate, newValue)
 
     then:
     value == newValue
@@ -179,7 +160,7 @@ class StreamFunctionsSpec extends Specification {
         source: 'test'
     ])
     when:
-    def value = StreamFunctions.publishInputs.apply(currentAggregate, newValue)
+    def value = StreamFunctions.reduceInputs.apply(currentAggregate, newValue)
 
     then:
     value == expected
