@@ -1,0 +1,24 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "psi-registry.fullname" . }}-ingress
+  labels:
+    app: {{ template "psi-registry.name" . }}
+    chart: {{ template "psi-registry.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: {{ .Values.ingress.path }}
+        backend:
+          serviceName: {{ template "psi-registry.fullname" . }}
+          servicePort: {{ .Values.service.port }}
+{{- if .Values.ingress.host }}
+    host: {{ .Values.ingress.host }}
+{{- end }}
+{{- end -}}

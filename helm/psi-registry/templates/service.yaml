@@ -8,14 +8,10 @@ metadata:
     chart: {{ template "psi-registry.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{- if .Values.service.annotations }}
   annotations:
-    getambassador.io/config: |
-      ---
-      apiVersion: ambassador/v0
-      kind:  Mapping
-      name:  {{ template "psi-registry.fullname" . }}-mapping
-      prefix: /registry/
-      service: {{ template "psi-registry.fullname" . }}:{{ .Values.service.port }}
+{{ toYaml .Values.service.annotations | indent 4 }}
+{{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
