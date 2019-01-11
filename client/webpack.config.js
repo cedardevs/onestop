@@ -87,7 +87,7 @@ module.exports = env => {
     output:
         {
           path: path.resolve(__dirname, 'build/dist'),
-          // publicPath: `/${rootPath}/`,
+          publicPath: '/',
           filename: '[name]-[hash].bundle.js',
         }
     ,
