@@ -35,7 +35,12 @@ class PublisherController {
     receiveContent(request, response, data, type, Topics.DEFAULT_SOURCE, id)
   }
 
-  @RequestMapping(value = "/{type}/{source}/{id}", method = [DELETE])
+  @RequestMapping(value = "/{type}/{id}", method = [DELETE], consumes = ['*'])
+  Map removeContent(HttpServletRequest request, HttpServletResponse response, @PathVariable String type, @PathVariable UUID id) throws Exception {
+    receiveContent(request, response, null, type, Topics.DEFAULT_SOURCE, id)
+  }
+
+  @RequestMapping(value = "/{type}/{source}/{id}", method = [DELETE], consumes = ['*'])
   Map removeContent(HttpServletRequest request, HttpServletResponse response, @PathVariable String type, @PathVariable String source, @PathVariable UUID id) throws Exception {
     receiveContent(request, response, null, type, source, id)
   }
