@@ -49,7 +49,7 @@ class DelayedPublisherTransformer implements Transformer<String, ParsedRecord, K
     log.debug("transforming value for key ${key}")
     Long now = context.timestamp()
     Publishing publishingInfo = value?.publishing
-    Long incomingPublishTime = publishingInfo.until
+    Long incomingPublishTime = publishingInfo?.until
     Long storedPublishTime = triggerKeysStore.get(key)
 
     log.debug("transforming value with private ${publishingInfo?.isPrivate} and publish date ${incomingPublishTime}")

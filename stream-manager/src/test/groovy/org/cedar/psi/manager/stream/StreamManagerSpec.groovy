@@ -69,7 +69,7 @@ class StreamManagerSpec extends Specification {
     result.analysis.identification.fileIdentifierString == 'gov.super.important:FILE-ID'
   }
 
-  def "deleted input record sets parsed record to default values"() {
+  def "deleted input record produces a tombstone"() {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def key = 'A123'
@@ -79,34 +79,23 @@ class StreamManagerSpec extends Specification {
     when:
     driver.pipeInput(inputFactory.create(testChangelog, key, postInput))
     driver.pipeInput(inputFactory.create(testChangelog, key, deleteInput))
-
-    then:
     driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
-
-    and:
-    def finalOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def originalOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     def updatedOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
-    finalOutput != null
 
-    and:
-    // Verify some fields
-    finalOutput.key() == key
-    def originalResult = finalOutput.value()
+    then: 'verify original fields'
+    originalOutput != null
+    originalOutput.key() == key
+    def originalValue = originalOutput.value()
 
-    originalResult.discovery instanceof Discovery
-    originalResult.analysis instanceof Analysis
-    originalResult.errors  instanceof List
+    originalValue.discovery instanceof Discovery
+    originalValue.analysis instanceof Analysis
+    originalValue.errors instanceof List
+    originalValue.errors.size() == 0
 
-    // Verify updated fields
+    and: 'verify updated record is a tombstone'
     updatedOutput.key() == key
-    def updatedResult = updatedOutput.value()
-    updatedResult instanceof ParsedRecord
-    updatedResult.discovery == null
-    updatedResult.analysis == null
-    updatedResult.errors  instanceof List
-
-    originalResult.errors.size() == 0
-    updatedResult.errors.title == ["record deleted"]
+    updatedOutput.value() == null
   }
 
   def "SME granule ends up in SME topic"() {

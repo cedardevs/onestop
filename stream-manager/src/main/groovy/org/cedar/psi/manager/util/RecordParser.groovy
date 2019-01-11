@@ -15,13 +15,9 @@ class RecordParser {
     String content = msgMap.content
     String method = msgMap.method
     try {
-      // update parsed record to default values
       if (method == 'DELETE') {
-        def error = ErrorEvent.newBuilder()
-            .setTitle("record deleted")
-            .setDetail("Record for this $type is Updated")
-            .build()
-        return ParsedRecord.newBuilder().setType(type).setErrors([error]).build()
+        // if the input is a deletion then tombstone the parsed info
+        return null
       }
       if (!content) {
         def error = ErrorEvent.newBuilder().setTitle("No content provided").build()

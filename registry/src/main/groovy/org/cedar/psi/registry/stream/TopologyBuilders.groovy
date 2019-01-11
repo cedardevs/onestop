@@ -40,9 +40,7 @@ class TopologyBuilders {
 
     // build parsed table
     KTable<String, ParsedRecord> parsedTable = builder
-        .stream(Topics.parsedTopic(type))
-        .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(Topics.parsedStore(type)))
+        .table(Topics.parsedTopic(type), Materialized.as(Topics.parsedStore(type)))
 
     // add delayed publisher
     if (publishInterval) {
