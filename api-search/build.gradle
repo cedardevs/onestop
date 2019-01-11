@@ -80,6 +80,7 @@ ext {
     envVars.LOGIN_GOV_CLIENT_ID = "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8080"
     envVars.LOGIN_GOV_ALLOWED_ORIGIN = "http://localhost:8080"
     envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8080/onestop"
+    envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8080/onestop"
     envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8080/onestop"
   }
   else {
@@ -88,6 +89,7 @@ ext {
     envVars.LOGIN_GOV_CLIENT_ID = "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8097"
     envVars.LOGIN_GOV_ALLOWED_ORIGIN = "http://localhost:8097"
     envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
+    envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8097/onestop/api/login_profile?failure=true"
     envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
   }
   

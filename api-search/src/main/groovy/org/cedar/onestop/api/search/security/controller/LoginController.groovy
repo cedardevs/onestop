@@ -1,6 +1,7 @@
 package org.cedar.onestop.api.search.security.controller
 
 import org.cedar.onestop.api.search.security.config.LoginGovConfiguration
+import org.cedar.onestop.api.search.security.config.NonceUtil
 import org.cedar.onestop.api.search.security.config.RequestUtil
 import org.cedar.onestop.api.search.security.config.SecurityConfig
 import org.cedar.onestop.api.search.security.constants.LoginGovConstants
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.client.RestTemplate
 
@@ -39,15 +41,26 @@ class LoginController {
 
     @RequestMapping(value = SecurityConfig.LOGIN_PROFILE_ENDPOINT, method = [RequestMethod.GET, RequestMethod.OPTIONS])
     @ResponseBody
-    HashMap<String, Object> loginProfile(HttpServletRequest httpServletRequest, OAuth2AuthenticationToken authentication) {
+    HashMap<String, Object> loginProfile(HttpServletRequest httpServletRequest, OAuth2AuthenticationToken authentication, @RequestParam(value = "failure", required = false, defaultValue = "false") boolean failure) {
         if(authentication == null) {
             HashMap<String, Object> responseUnauthenticated = new HashMap<String, Object>()
             responseUnauthenticated.put("login", RequestUtil.getURL(httpServletRequest, DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL))
+            if(failure) {
+                responseUnauthenticated.put("error", "Login was canceled or unsuccessful.")
+            }
             return responseUnauthenticated
         }
         else {
             OAuth2AuthorizedClient client = authorizedClientService.loadAuthorizedClient(authentication.authorizedClientRegistrationId, authentication.name)
             String userInfoEndpointUri = client.clientRegistration.providerDetails.userInfoEndpoint.uri
+
+            if(!NonceUtil.extractAndCheckNonce(authentication)){
+                HashMap<String, Object> responseUnauthenticated = new HashMap<String, Object>()
+                responseUnauthenticated.put("error", "Replay attack detected.")
+                responseUnauthenticated.put("login", RequestUtil.getURL(httpServletRequest, DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL))
+                return responseUnauthenticated
+            }
+
             String email = null
             if(!StringUtils.isEmpty(userInfoEndpointUri)) {
                 RestTemplate restTemplate = new RestTemplate()
@@ -66,16 +79,6 @@ class LoginController {
         }
     }
 
-    @RequestMapping(SecurityConfig.LOGIN_SUCCESS_ENDPOINT)
-    void loginSuccess(HttpServletResponse httpServletResponse) {
-        httpServletResponse.sendRedirect(loginGovConfiguration.loginSuccessRedirect)
-    }
-
-    @RequestMapping(SecurityConfig.LOGOUT_SUCCESS_ENDPOINT)
-    void logoutSuccess(HttpServletResponse httpServletResponse) {
-        httpServletResponse.sendRedirect(loginGovConfiguration.logoutSuccessRedirect)
-    }
-
     @RequestMapping(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL)
     String login() {
         // bypass the default Spring login page and go straight to login.gov authorization
@@ -83,4 +86,18 @@ class LoginController {
         return "redirect:" + authorizationRedirect
     }
 
+    @RequestMapping(SecurityConfig.LOGIN_SUCCESS_ENDPOINT)
+    void loginSuccess(HttpServletResponse httpServletResponse) {
+        httpServletResponse.sendRedirect(loginGovConfiguration.loginSuccessRedirect)
+    }
+
+    @RequestMapping(SecurityConfig.LOGIN_FAILURE_ENDPOINT)
+    void loginFailure(HttpServletResponse httpServletResponse) {
+        httpServletResponse.sendRedirect(loginGovConfiguration.loginFailureRedirect)
+    }
+
+    @RequestMapping(SecurityConfig.LOGOUT_SUCCESS_ENDPOINT)
+    void logoutSuccess(HttpServletResponse httpServletResponse) {
+        httpServletResponse.sendRedirect(loginGovConfiguration.logoutSuccessRedirect)
+    }
 }

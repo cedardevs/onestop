@@ -235,7 +235,7 @@ export default class MapFilter extends Component {
             aria-placeholder={placeholderValue}
             value={value}
             style={styleTextBox}
-            onChange={() => {}}
+            onChange={event => this.onChange(event)}
           />
         </div>
       </div>
@@ -250,10 +250,7 @@ export default class MapFilter extends Component {
           onKeyDown={this.handleKeyDown}
           aria-describedby="mapFilterInstructions"
         >
-          <Fieldset
-            onFieldsetChange={event => this.onChange(event)}
-            legendText="Bounding Box Coordinates:"
-          >
+          <Fieldset legendText="Bounding Box Coordinates:">
             {this.renderInputRow('west', '-180.0 to 180.0')}
             {this.renderInputRow('south', ' -90.0 to  90.0')}
             {this.renderInputRow('east', '-180.0 to 180.0')}
