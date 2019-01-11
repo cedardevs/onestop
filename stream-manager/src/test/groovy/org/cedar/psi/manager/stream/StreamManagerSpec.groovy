@@ -101,8 +101,8 @@ class StreamManagerSpec extends Specification {
     updatedOutput.key() == key
     def updatedResult = updatedOutput.value()
     updatedResult instanceof ParsedRecord
-    Assert.assertNull("Verify discovery is set to default value", updatedResult.discovery)
-    Assert.assertNull("Verify analysis is set to default value", updatedResult.analysis)
+    updatedResult.discovery == null
+    updatedResult.analysis == null
     updatedResult.errors  instanceof List
 
     originalResult.errors.size() == 0
