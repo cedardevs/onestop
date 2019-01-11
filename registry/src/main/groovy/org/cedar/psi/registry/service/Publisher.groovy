@@ -57,22 +57,4 @@ class Publisher {
     return builder.build()
   }
 
-  Map removeMetadata(HttpServletRequest request, RecordType type, String source, String id) {
-    String topic = inputTopic(type, source)
-    if (!topic) {
-      return [
-          status : 404,
-          content: [errors:[[title: "Unsupported entity type: ${type}"]]]
-      ]
-    }
-    String data = null
-    def message = buildInputTopicMessage(request, type, data, source, id)
-    def record = new ProducerRecord<String, Input>(topic, id, message)
-    log.info ("Updating $type with id: ${id}, source: $source and method: $message.method")
-    kafkaProducer.send(record)?.get()
-    return [
-        status: 200,
-        content: [id: id, type: type, data: null]
-    ]
-  }
 }
