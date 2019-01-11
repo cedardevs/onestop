@@ -2,9 +2,14 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
+  name: {{ template "psi-registry.fullname" . }}-ingress
+  labels:
+    app: {{ template "psi-registry.name" . }}
+    chart: {{ template "psi-registry.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-  name: {{ template "psi-registry.fullname" . }}-ingress
 spec:
   rules:
   - http:

@@ -13,6 +13,8 @@ image:
 service:
   type: ClusterIP
   port: 80
+#  annotations:
+#    key: value
 
 volume:
   size: 1Gi
