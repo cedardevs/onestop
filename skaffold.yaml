@@ -23,7 +23,7 @@ build:
     docker:
       buildArgs:
         DATE: now
-        SUBPATH: onestop # use values: onestop, '', or cedarsearch
+        PREFIX_PATH: onestop # use values: onestop, '', or cedarsearch
         TAR_NAME: onestop-client-2.1.0.tar.gz
         VCS_REF: local
         VERSION: 2.1.0
