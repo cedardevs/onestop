@@ -9,6 +9,7 @@ import cancel from 'fa/ban.svg'
 import {fontFamilySerif} from '../utils/styleUtils'
 import FlexColumn from '../common/FlexColumn'
 import ScriptDownloader from './ScriptDownloader'
+import FlexRow from '../common/FlexRow'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -148,27 +149,33 @@ export default class Cart extends React.Component {
         />
       ) : null
 
-    const cartActionButtons = [
-      <Button
-        key="clearCartButton"
-        style={styleClearCartButton}
-        title={'Clear cart'}
-        text={'Clear cart'}
-        icon={cancel}
-        styleIcon={styleClearCartIcon}
-        onClick={deselectAllGranules}
-      />,
+    const cartActions = [
       <ScriptDownloader
         key="scriptDownloaderButton"
         selectedGranules={selectedGranules}
       />,
+      <FlexRow
+        key={'cartActionButtons'}
+        style={{marginTop: '1em'}}
+        items={[
+          <Button
+            key={'clearCartButton'}
+            style={styleClearCartButton}
+            title={'Clear cart'}
+            text={'Clear cart'}
+            icon={cancel}
+            styleIcon={styleClearCartIcon}
+            onClick={deselectAllGranules}
+          />,
+        ]}
+      />,
     ]
 
-    const cartActions =
+    const cartActionsWrapper =
       selectedGranulesCount === 0 ? null : (
         <div style={styleCartActions}>
           <h1 style={styleCartActionsTitle}>Cart Actions</h1>
-          <FlexColumn style={styleActionButtons} items={cartActionButtons} />
+          <FlexColumn style={styleActionButtons} items={cartActions} />
         </div>
       )
 
@@ -177,7 +184,7 @@ export default class Cart extends React.Component {
         <Meta title="File Access Cart" robots="noindex" />
 
         <div style={styleCartListWrapper}>
-          {cartActions}
+          {cartActionsWrapper}
           <ListView
             items={selectedGranules}
             loading={!!loading}

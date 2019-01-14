@@ -136,6 +136,7 @@ export default class Button extends Component {
     const {
       id,
       text,
+      styleText,
       icon,
       iconAfter,
       iconPadding,
@@ -186,7 +187,9 @@ export default class Button extends Component {
         {icon && !iconAfter && !this.props.children ? (
           <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
         ) : null}
-        {text && !this.props.children ? <span>{text}</span> : null}
+        {text && !this.props.children ? (
+          <span style={styleText}>{text}</span>
+        ) : null}
         {icon && iconAfter && !this.props.children ? (
           <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />
         ) : null}

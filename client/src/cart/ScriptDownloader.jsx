@@ -1,16 +1,23 @@
 import React from 'react'
+import CartSelect from './CartSelect'
 import FileSaver from 'file-saver'
 import Button from '../common/input/Button'
 import download from 'fa/download.svg'
 import {COLOR_GREEN, COLOR_GREEN_LIGHT} from '../common/defaultStyles'
 import _ from 'lodash'
 import moment from 'moment/moment'
+import FlexRow from '../common/FlexRow'
 
 const styleWgetScriptButton = {
   fontSize: '1em',
   display: 'inline-flex',
   padding: '0.309em 0.618em 0.309em 0.309em',
+  marginLeft: '0.618em',
   background: `${COLOR_GREEN_LIGHT}`,
+}
+
+const styleWgetScriptButtonText = {
+  whiteSpace: 'nowrap',
 }
 
 const styleWgetScriptButtonHover = {
@@ -125,15 +132,15 @@ export default class ScriptDownloader extends React.Component {
     }
   }
 
-  handleProtocolSourceChange = event => {
-    const sourcesAndProtocolsIndex = event.target.value
+  handleProtocolSourceChange = option => {
+    const sourcesAndProtocolsIndex = option.value
     this.setState({
       selectedSourceAndProtocol: sourcesAndProtocolsIndex,
     })
   }
 
   render() {
-    const {sourcesAndProtocols, selectedSourceAndProtocol} = this.state
+    const {sourcesAndProtocols} = this.state
 
     const uniqueProtocols = _.uniq(
       sourcesAndProtocols.map(e => {
@@ -145,45 +152,43 @@ export default class ScriptDownloader extends React.Component {
       const protocolOptions = sourcesAndProtocols.reduce(
         (acc, curr, currIndex) => {
           if (curr.protocol === protocol) {
-            acc.push(
-              <option key={currIndex} value={currIndex}>
-                {`${curr.source} (${this.countLinks(
-                  curr.source,
-                  curr.protocol
-                )})`}
-              </option>
-            )
+            const count = this.countLinks(curr.source, curr.protocol)
+            const label = curr.source
+            acc.push({value: currIndex, label: label, count: count})
           }
           return acc
         },
         []
       )
-      return (
-        <optgroup key={protocol} label={`Protocol: ${protocol}`}>
-          {protocolOptions}
-        </optgroup>
-      )
+      return {
+        label: protocol,
+        options: protocolOptions,
+      }
     })
 
     return (
       <div>
-        <Button
-          key="wgetScriptButton"
-          style={styleWgetScriptButton}
-          styleHover={styleWgetScriptButtonHover}
-          title={'Download wget script'}
-          text={'Download wget script'}
-          icon={download}
-          styleIcon={styleWgetScriptIcon}
-          onClick={this.downloadScript}
+        <FlexRow
+          items={[
+            <CartSelect
+              key="wgetScriptSelect"
+              style={{width: '100%'}}
+              options={protocolOptGroups}
+              onChange={this.handleProtocolSourceChange}
+            />,
+            <Button
+              key="wgetScriptButton"
+              style={styleWgetScriptButton}
+              styleHover={styleWgetScriptButtonHover}
+              title={'Download wget script'}
+              text={'Download wget script'}
+              styleText={styleWgetScriptButtonText}
+              icon={download}
+              styleIcon={styleWgetScriptIcon}
+              onClick={this.downloadScript}
+            />,
+          ]}
         />
-        <select
-          key="protocolSourceSelect"
-          value={selectedSourceAndProtocol}
-          onChange={this.handleProtocolSourceChange}
-        >
-          {protocolOptGroups}
-        </select>
       </div>
     )
   }
