@@ -1,5 +1,6 @@
 package org.cedar.psi.registry.stream
 
+import org.apache.kafka.common.header.internals.RecordHeaders
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
@@ -52,18 +53,18 @@ class FullTopologySpec extends Specification {
 
   def 'ingests and aggregates raw granule info'() {
     def key = 'A'
-    def value1 = buildTestGranule('{"size":42}')
-    def value2 = buildTestGranule('{"name":"test"}')
+    def value1 = buildTestGranule('{"size":42}',  Method.POST)
+    def value2 = buildTestGranule('{"name":"test"}', Method.PATCH)
 
     when:
     driver.pipeInput(inputFactory.create(inputTopic, key, value1))
     driver.pipeInput(inputFactory.create(inputTopic, key, value2))
 
     then:
-    inputStore.get('A') == buildTestGranule('{"size":42,"name":"test"}')
+    inputStore.get('A') == buildTestGranule('{"size":42,"name":"test"}', Method.PATCH)
   }
 
-  def 'values for disvocery and publishing are set to the default values '() {
+  def 'values for discovery and publishing are set to the default values'() {
     def key = 'A'
     def discovery1 = Discovery.newBuilder()
         .build()
@@ -85,6 +86,28 @@ class FullTopologySpec extends Specification {
     def output = readAllOutput(driver, publishedTopic)
     OutputVerifier.compareKeyValue(output[0], key, value1)
     output.size() == 1
+  }
+
+  def 'handles tombstones for parsed information'() {
+    def key = 'tombstone'
+    def record = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
+        .setDiscovery(Discovery.newBuilder().setFileIdentifier('tombstone').build())
+        .setPublishing(Publishing.newBuilder().build())
+        .build()
+
+    when: 'publish a value, then a tombstone'
+    driver.pipeInput(parsedFactory.create(parsedTopic, key, record))
+    driver.pipeInput(parsedFactory.create(parsedTopic, key, null, new RecordHeaders()))
+
+    then:
+    parsedStore.get(key) == null
+
+    and:
+    def output = readAllOutput(driver, publishedTopic)
+    output.size() == 2
+    OutputVerifier.compareKeyValue(output[0], key, record)
+    OutputVerifier.compareKeyValue(output[1], key, null)
   }
 
   def 'saves and updates parsed granule values with  '() {
@@ -195,10 +218,10 @@ class FullTopologySpec extends Specification {
   }
 
 
-  private static buildTestGranule(String content) {
+  private static buildTestGranule(String content, Method method) {
     def builder = Input.newBuilder()
     builder.type = RecordType.granule
-    builder.method = Method.POST
+    builder.method = method
     builder.contentType = 'application/json'
     builder.source = 'test'
     builder.content = content

@@ -34,15 +34,13 @@ class TopologyBuilders {
       KStream<String, Input> inputStream = builder.stream(Topics.inputTopic(type, source))
       KTable<String, Input> inputTable = inputStream
           .groupByKey()
-          .reduce(StreamFunctions.mergeInputs, Materialized.as(Topics.inputStore(type, source)))
+          .reduce(StreamFunctions.reduceInputs, Materialized.as(Topics.inputStore(type, source)))
       return [(source): inputTable]
     }
 
     // build parsed table
     KTable<String, ParsedRecord> parsedTable = builder
-        .stream(Topics.parsedTopic(type))
-        .groupByKey()
-        .reduce(StreamFunctions.identityReducer, Materialized.as(Topics.parsedStore(type)))
+        .table(Topics.parsedTopic(type), Materialized.as(Topics.parsedStore(type)))
 
     // add delayed publisher
     if (publishInterval) {

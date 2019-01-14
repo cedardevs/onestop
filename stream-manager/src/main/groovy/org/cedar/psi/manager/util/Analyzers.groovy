@@ -29,6 +29,9 @@ class Analyzers {
       .withResolverStyle(ResolverStyle.STRICT)
 
   static ParsedRecord addAnalysis(ParsedRecord record) {
+    if (record == null) {
+      return null // pass through
+    }
     def builder = ParsedRecord.newBuilder(record)
     builder.analysis = analyze(record?.discovery)
     return builder.build()

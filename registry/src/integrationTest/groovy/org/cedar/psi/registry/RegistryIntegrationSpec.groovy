@@ -75,8 +75,6 @@ class RegistryIntegrationSpec extends Specification {
     baseUrl = "http://localhost:${port}/${contextPath}"
   }
 
-
-//  @spock.lang.Ignore
   def 'can post then retrieve granule info with source identifier'() {
     def restTemplate = new RestTemplate()
     def granuleText = ClassLoader.systemClassLoader.getResourceAsStream('test_granule.json').text
