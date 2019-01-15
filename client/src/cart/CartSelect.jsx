@@ -6,6 +6,22 @@ import {
   FilterColors,
 } from '../common/defaultStyles'
 
+const selectTheme = theme => {
+  return {
+    ...theme,
+    borderRadius: '0.309em',
+    colors: {
+      ...theme.colors,
+      primary: FilterColors.DARKEST,
+      primary75: FilterColors.DARK,
+      primary50: FilterColors.MEDIUM,
+      primary25: FilterColors.LIGHT,
+      danger: COLOR_GREEN,
+      dangerLight: COLOR_GREEN_LIGHT,
+    },
+  }
+}
+
 const cursorStyle = (styles, {isDisabled, isFocused, isSelected}) => {
   return {
     ...styles,
@@ -38,6 +54,8 @@ const optionBadgeStyle = {
   textAlign: 'center',
 }
 
+// customize replaceable option label component in select menu
+// this allows us to display the granule link count for each option
 const formatOptionLabel = data => {
   return (
     <div style={optionStyle}>
@@ -53,6 +71,9 @@ export default class CartSelect extends React.Component {
   render() {
     const {options, onChange, style} = this.props
 
+    // the `react-select` component is flexible to have grouped
+    // or ungrouped options, so we have to be careful to fallback
+    // to an appropriate object -- even if this component is always grouped
     const defaultValue = options
       ? options[0] ? options[0][0] : options[0]
       : {}
@@ -60,25 +81,13 @@ export default class CartSelect extends React.Component {
     return (
       <div style={style}>
         <Select
+          theme={selectTheme}
           styles={selectStyles}
           placeholder={`Select download protocol and source...`}
           defaultValue={defaultValue}
           options={options}
           formatOptionLabel={formatOptionLabel}
           onChange={onChange}
-          theme={theme => ({
-            ...theme,
-            borderRadius: '0.309em',
-            colors: {
-              ...theme.colors,
-              primary: FilterColors.DARKEST,
-              primary75: FilterColors.DARK,
-              primary50: FilterColors.MEDIUM,
-              primary25: FilterColors.LIGHT,
-              danger: COLOR_GREEN,
-              dangerLight: COLOR_GREEN_LIGHT,
-            },
-          })}
         />
       </div>
     )
