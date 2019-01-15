@@ -15,6 +15,7 @@ import {FEATURE_CART} from '../../utils/featureUtils'
 import {play_circle_o, SvgIcon} from '../../common/SvgIcon'
 import {identifyProtocol} from '../../utils/resultUtils'
 import VideoTray from './VideoTray'
+import {granuleDownloadableLinks} from '../../utils/cartUtils'
 
 const styleResult = {
   minHeight: '15.5em',
@@ -329,17 +330,19 @@ class ListResult extends React.Component {
       </h2>,
     ]
 
-    const selectGranuleCheckbox = featuresEnabled.includes(FEATURE_CART) ? (
-      <Checkbox
-        key={`checkbox-${itemId}`}
-        title={`Mark ${item.title} as file to download`}
-        label={`Mark as file to download`}
-        styleLabel={styleCheckboxLabel}
-        id={itemId}
-        checked={checkGranule}
-        onChange={handleCheckboxChange(itemId, item)}
-      />
-    ) : null
+    const granuleDownloadable = granuleDownloadableLinks([ item ])
+    const selectGranuleCheckbox =
+      featuresEnabled.includes(FEATURE_CART) && granuleDownloadable ? (
+        <Checkbox
+          key={`checkbox-${itemId}`}
+          title={`Mark ${item.title} as file to download`}
+          label={`Mark as file to download`}
+          styleLabel={styleCheckboxLabel}
+          id={itemId}
+          checked={checkGranule}
+          onChange={handleCheckboxChange(itemId, item)}
+        />
+      ) : null
 
     if (showLinks) {
       rightItems.push(this.renderLinks(item.links))

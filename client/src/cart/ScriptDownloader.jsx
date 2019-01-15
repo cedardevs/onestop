@@ -7,6 +7,7 @@ import {COLOR_GREEN, COLOR_GREEN_LIGHT} from '../common/defaultStyles'
 import _ from 'lodash'
 import moment from 'moment/moment'
 import FlexRow from '../common/FlexRow'
+import {granuleDownloadableLinks} from '../utils/cartUtils'
 
 const styleWgetScriptButton = {
   fontSize: '1em',
@@ -103,23 +104,8 @@ export default class ScriptDownloader extends React.Component {
   // if they have a url and download type.
   getLinks = (source, protocol) => {
     const {selectedGranules} = this.props
-    const selectedGranuleIds = Object.keys(selectedGranules)
-    let downloadLinks = []
-    selectedGranuleIds.forEach(granuleId => {
-      const selectedGranuleLinks = selectedGranules[granuleId].links
-      const matchingLink = selectedGranuleLinks.find(link => {
-        return (
-          link.linkProtocol === protocol &&
-          link.linkName === source && // linkName ~ "source"
-          link.linkFunction === 'download' &&
-          link.linkUrl
-        )
-      })
-      if (matchingLink) {
-        downloadLinks.push(matchingLink.linkUrl)
-      }
-    })
-    return _.uniq(downloadLinks)
+    const granules = Object.values(selectedGranules)
+    return granuleDownloadableLinks(granules, source, protocol)
   }
 
   // this method simply counts the number of valid links
