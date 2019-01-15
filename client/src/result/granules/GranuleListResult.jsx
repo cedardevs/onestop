@@ -330,7 +330,7 @@ class ListResult extends React.Component {
       </h2>,
     ]
 
-    const granuleDownloadable = granuleDownloadableLinks([ item ])
+    const granuleDownloadable = granuleDownloadableLinks([ item ]).length > 0
     const selectGranuleCheckbox =
       featuresEnabled.includes(FEATURE_CART) && granuleDownloadable ? (
         <Checkbox
