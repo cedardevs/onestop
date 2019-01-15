@@ -223,10 +223,6 @@ export default class ScriptDownloader extends React.Component {
       />
     )
 
-    return (
-      <div>
-        <FlexRow items={[ cartSelect, downloadButton ]} />
-      </div>
-    )
+    return <FlexRow items={[ cartSelect, downloadButton ]} />
   }
 }
