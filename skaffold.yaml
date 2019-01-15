@@ -23,7 +23,7 @@ build:
     docker:
       buildArgs:
         DATE: now
-        PREFIX_PATH: onestop # use values: onestop, '', or cedarsearch
+        #PREFIX_PATH: '' # use values: onestop, '', or cedarsearch
         TAR_NAME: onestop-client-2.1.0.tar.gz
         VCS_REF: local
         VERSION: 2.1.0
@@ -36,4 +36,4 @@ deploy:
     - ./kubernetes/deployments/onestop-client.yaml
 #    - ./kubernetes/deployments/onestop-logstash.yaml
 #    - ./kubernetes/deployments/filebeat-kubernetes.yaml
-#    - ./kubernetes/deployments/kibana.yaml
+    - ./kubernetes/deployments/kibana.yaml
