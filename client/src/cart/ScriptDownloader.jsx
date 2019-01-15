@@ -31,6 +31,13 @@ const styleWgetScriptIcon = {
 }
 
 export default class ScriptDownloader extends React.Component {
+  // Selected granules, whether retrieved from local storage or
+  // elsewhere, are stored in the form of a Map, where the keys
+  // are the granule ID, and the values are the full granule objects.
+  // If unavailable, selected granules should be an empty map `{}`.
+
+  // This method takes that map and re-organizes the data structure
+  // into an array of unique combinations of `[{source: _, protocol: _}, ...]`
   getSourcesAndProtocols = selectedGranules => {
     const downloadableSrcAndProto = Object.keys(
       selectedGranules
@@ -50,7 +57,6 @@ export default class ScriptDownloader extends React.Component {
           })
       )
     })
-    // merge into unique combinations of source + protocol
     const uniqueSourcesAndProtocols = downloadableSrcAndProto.reduce(
       (acc, curr) => {
         return _.unionWith(acc, curr, _.isEqual)
@@ -59,6 +65,42 @@ export default class ScriptDownloader extends React.Component {
     return uniqueSourcesAndProtocols
   }
 
+  // extract unique protocols from distinct list of sources + protocols
+  getUniqueProtocols = sourcesAndProtocols => {
+    return _.uniq(
+      sourcesAndProtocols.map(e => {
+        return e.protocol
+      })
+    )
+  }
+
+  // organize sources + protocols into a structure our select menu understands
+  getProtocolOptGroups = sourcesAndProtocols => {
+    // extract unique protocols
+    const uniqueProtocols = this.getUniqueProtocols(sourcesAndProtocols)
+
+    return uniqueProtocols.map(protocol => {
+      const protocolOptions = sourcesAndProtocols.reduce(
+        (acc, curr, currIndex) => {
+          if (curr.protocol === protocol) {
+            const count = this.countLinks(curr.source, curr.protocol)
+            const label = curr.source
+            acc.push({value: currIndex, label: label, count: count})
+          }
+          return acc
+        },
+        []
+      )
+      return {
+        label: protocol,
+        options: protocolOptions,
+      }
+    })
+  }
+
+  // This method takes a given source + protocol, iterates through selected granules,
+  // and extracts links from granules with matching source + protocol
+  // if they have a url and download type.
   getLinks = (source, protocol) => {
     const {selectedGranules} = this.props
     const selectedGranuleIds = Object.keys(selectedGranules)
@@ -68,7 +110,7 @@ export default class ScriptDownloader extends React.Component {
       const matchingLink = selectedGranuleLinks.find(link => {
         return (
           link.linkProtocol === protocol &&
-          link.linkName === source &&
+          link.linkName === source && // linkName ~ "source"
           link.linkFunction === 'download' &&
           link.linkUrl
         )
@@ -80,10 +122,16 @@ export default class ScriptDownloader extends React.Component {
     return _.uniq(downloadLinks)
   }
 
+  // this method simply counts the number of valid links
+  // associated with a source + protocol, by leveraging the `getLinks` method
   countLinks = (source, protocol) => {
     return this.getLinks(source, protocol).length
   }
 
+  // This method constructs a newline delimited file of links, given
+  // the available sources + protocols and the selected source and protocol
+  // from the select menu. A Blob is used along with the `file-saver` dependency
+  // which allows the file to be saved in an action from the browser.
   downloadScript = () => {
     const {sourcesAndProtocols, selectedSourceAndProtocol} = this.state
     const sourceAndProtocol = sourcesAndProtocols[selectedSourceAndProtocol]
@@ -106,6 +154,7 @@ export default class ScriptDownloader extends React.Component {
     FileSaver.saveAs(blob, fileName)
   }
 
+  // set appropriate initial conditions for internal state
   constructor(props) {
     super(props)
     this.state = {
@@ -114,6 +163,7 @@ export default class ScriptDownloader extends React.Component {
     }
   }
 
+  // initially set component state based on selected granules
   componentDidMount() {
     const {selectedGranules} = this.props
     const sourcesAndProtocols = this.getSourcesAndProtocols(selectedGranules)
@@ -122,6 +172,7 @@ export default class ScriptDownloader extends React.Component {
     })
   }
 
+  // update component state based on selected granules when selected granules change
   componentDidUpdate(prevProps) {
     const {selectedGranules} = this.props
     if (selectedGranules !== prevProps.selectedGranules) {
@@ -132,6 +183,7 @@ export default class ScriptDownloader extends React.Component {
     }
   }
 
+  // the user has selected another source + protocol combo from the select menu
   handleProtocolSourceChange = option => {
     const sourcesAndProtocolsIndex = option.value
     this.setState({
@@ -140,55 +192,40 @@ export default class ScriptDownloader extends React.Component {
   }
 
   render() {
+    // sources and protocol array is managed in React component state
     const {sourcesAndProtocols} = this.state
 
-    const uniqueProtocols = _.uniq(
-      sourcesAndProtocols.map(e => {
-        return e.protocol
-      })
+    // organize sources + protocols into groups
+    const protocolOptGroups = this.getProtocolOptGroups(sourcesAndProtocols)
+
+    // granule download select menu for cart
+    const cartSelect = (
+      <CartSelect
+        key="wgetScriptSelect"
+        style={{width: '100%'}}
+        options={protocolOptGroups}
+        onChange={this.handleProtocolSourceChange}
+      />
     )
 
-    let protocolOptGroups = uniqueProtocols.map(protocol => {
-      const protocolOptions = sourcesAndProtocols.reduce(
-        (acc, curr, currIndex) => {
-          if (curr.protocol === protocol) {
-            const count = this.countLinks(curr.source, curr.protocol)
-            const label = curr.source
-            acc.push({value: currIndex, label: label, count: count})
-          }
-          return acc
-        },
-        []
-      )
-      return {
-        label: protocol,
-        options: protocolOptions,
-      }
-    })
+    // granule download button
+    const downloadButton = (
+      <Button
+        key="wgetScriptButton"
+        style={styleWgetScriptButton}
+        styleHover={styleWgetScriptButtonHover}
+        title={'Download wget script'}
+        text={'Download wget script'}
+        styleText={styleWgetScriptButtonText}
+        icon={download}
+        styleIcon={styleWgetScriptIcon}
+        onClick={this.downloadScript}
+      />
+    )
 
     return (
       <div>
-        <FlexRow
-          items={[
-            <CartSelect
-              key="wgetScriptSelect"
-              style={{width: '100%'}}
-              options={protocolOptGroups}
-              onChange={this.handleProtocolSourceChange}
-            />,
-            <Button
-              key="wgetScriptButton"
-              style={styleWgetScriptButton}
-              styleHover={styleWgetScriptButtonHover}
-              title={'Download wget script'}
-              text={'Download wget script'}
-              styleText={styleWgetScriptButtonText}
-              icon={download}
-              styleIcon={styleWgetScriptIcon}
-              onClick={this.downloadScript}
-            />,
-          ]}
-        />
+        <FlexRow items={[ cartSelect, downloadButton ]} />
       </div>
     )
   }
