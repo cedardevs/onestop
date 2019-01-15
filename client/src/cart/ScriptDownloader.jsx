@@ -198,6 +198,12 @@ export default class ScriptDownloader extends React.Component {
     // organize sources + protocols into groups
     const protocolOptGroups = this.getProtocolOptGroups(sourcesAndProtocols)
 
+    // if there is nothing downloadable in the selected granules,
+    // this component should not be rendered
+    if (protocolOptGroups.length < 1) {
+      return null
+    }
+
     // granule download select menu for cart
     const cartSelect = (
       <CartSelect
@@ -222,7 +228,6 @@ export default class ScriptDownloader extends React.Component {
         onClick={this.downloadScript}
       />
     )
-
     return <FlexRow items={[ cartSelect, downloadButton ]} />
   }
 }
