@@ -25,6 +25,15 @@ const styleWgetScriptButtonHover = {
   background: `linear-gradient(${COLOR_GREEN_LIGHT}, ${COLOR_GREEN})`,
 }
 
+const styleWgetScriptButtonFocus = {
+  outline: '2px dashed #5C87AC',
+  outlineOffset: '.118em',
+}
+
+const styleWgetScriptButtonDisabled = {
+  fontStyle: 'italic',
+}
+
 const styleWgetScriptIcon = {
   width: '1.618em',
   height: '1.618em',
@@ -86,7 +95,9 @@ export default class ScriptDownloader extends React.Component {
           if (curr.protocol === protocol) {
             const count = this.countLinks(curr.source, curr.protocol)
             const label = curr.source
-            acc.push({value: currIndex, label: label, count: count})
+            if (count > 0) {
+              acc.push({value: currIndex, label: label, count: count})
+            }
           }
           return acc
         },
@@ -146,6 +157,8 @@ export default class ScriptDownloader extends React.Component {
     this.state = {
       sourcesAndProtocols: [],
       selectedSourceAndProtocol: 0,
+      menuOpen: false,
+      valueSelected: false,
     }
   }
 
@@ -174,12 +187,31 @@ export default class ScriptDownloader extends React.Component {
     const sourcesAndProtocolsIndex = option.value
     this.setState({
       selectedSourceAndProtocol: sourcesAndProtocolsIndex,
+      valueSelected: true,
+    })
+  }
+
+  handleOnMenuOpen = () => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        menuOpen: true,
+      }
+    })
+  }
+
+  handleOnMenuClose = () => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        menuOpen: false,
+      }
     })
   }
 
   render() {
     // sources and protocol array is managed in React component state
-    const {sourcesAndProtocols} = this.state
+    const {sourcesAndProtocols, valueSelected, menuOpen} = this.state
 
     // organize sources + protocols into groups
     const protocolOptGroups = this.getProtocolOptGroups(sourcesAndProtocols)
@@ -197,6 +229,9 @@ export default class ScriptDownloader extends React.Component {
         style={{width: '100%'}}
         options={protocolOptGroups}
         onChange={this.handleProtocolSourceChange}
+        onMenuOpen={this.handleOnMenuOpen}
+        onMenuClose={this.handleOnMenuClose}
+        isMenuOpen={menuOpen}
       />
     )
 
@@ -206,12 +241,15 @@ export default class ScriptDownloader extends React.Component {
         key="wgetScriptButton"
         style={styleWgetScriptButton}
         styleHover={styleWgetScriptButtonHover}
+        styleFocus={styleWgetScriptButtonFocus}
         title={'Download wget script'}
         text={'Download wget script'}
         styleText={styleWgetScriptButtonText}
         icon={download}
         styleIcon={styleWgetScriptIcon}
         onClick={this.downloadScript}
+        disabled={!!!valueSelected}
+        styleDisabled={styleWgetScriptButtonDisabled}
       />
     )
     return <FlexRow items={[ cartSelect, downloadButton ]} />

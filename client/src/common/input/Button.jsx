@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {FilterColors} from '../defaultStyles'
 
 const styleDefault = iconAndText => {
   return {
@@ -24,6 +25,10 @@ const stylePressDefault = {}
 
 const styleFocusDefault = {
   outline: '2px dashed white',
+}
+
+const styleDisabledDefault = {
+  background: FilterColors.DISABLED_BACKGROUND,
 }
 
 const styleIconPadding = {
@@ -149,6 +154,8 @@ export default class Button extends Component {
       title,
       ariaExpanded,
       ariaSelected,
+      disabled,
+      styleDisabled,
     } = this.props
 
     const iconAndText = icon && text
@@ -159,6 +166,7 @@ export default class Button extends Component {
       ...(this.state.hovering ? {...styleHoverDefault, ...styleHover} : {}),
       ...(this.state.pressing ? {...stylePressDefault, ...stylePress} : {}),
       ...(this.state.focusing ? {...styleFocusDefault, ...styleFocus} : {}),
+      ...(disabled ? {...styleDisabledDefault, ...styleDisabled} : {}),
       ...(icon && !text
         ? iconPadding ? {padding: iconPadding} : styleIconPadding
         : {}),
@@ -183,6 +191,7 @@ export default class Button extends Component {
         aria-expanded={ariaExpanded}
         aria-selected={ariaSelected}
         aria-label={title || text}
+        disabled={disabled}
       >
         {icon && !iconAfter && !this.props.children ? (
           <img src={icon} style={styleIconResolved} aria-hidden={true} alt="" />

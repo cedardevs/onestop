@@ -69,7 +69,14 @@ const formatOptionLabel = data => {
 
 export default class CartSelect extends React.Component {
   render() {
-    const {options, onChange, style} = this.props
+    const {
+      options,
+      onChange,
+      onMenuOpen,
+      onMenuClose,
+      isMenuOpen,
+      style,
+    } = this.props
 
     // the `react-select` component is flexible to have grouped
     // or ungrouped options, so we have to be careful to fallback
@@ -81,6 +88,7 @@ export default class CartSelect extends React.Component {
     return (
       <div style={style}>
         <Select
+          aria-expanded={isMenuOpen}
           theme={selectTheme}
           styles={selectStyles}
           placeholder={`Select download protocol and source...`}
@@ -88,6 +96,8 @@ export default class CartSelect extends React.Component {
           options={options}
           formatOptionLabel={formatOptionLabel}
           onChange={onChange}
+          onMenuOpen={onMenuOpen}
+          onMenuClose={onMenuClose}
         />
       </div>
     )

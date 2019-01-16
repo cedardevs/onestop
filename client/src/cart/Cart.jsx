@@ -52,6 +52,11 @@ const styleClearCartButton = {
   padding: '0.309em 0.618em 0.309em 0.309em',
 }
 
+const styleClearCartButtonFocus = {
+  outline: '2px dashed #5C87AC',
+  outlineOffset: '.118em',
+}
+
 const styleClearCartIcon = {
   width: '1.618em',
   height: '1.618em',
@@ -161,6 +166,7 @@ export default class Cart extends React.Component {
           <Button
             key={'clearCartButton'}
             style={styleClearCartButton}
+            styleFocus={styleClearCartButtonFocus}
             title={'Clear cart'}
             text={'Clear cart'}
             icon={cancel}
