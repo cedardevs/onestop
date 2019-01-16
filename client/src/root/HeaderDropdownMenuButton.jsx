@@ -1,12 +1,5 @@
 import React from 'react'
 import {SvgIcon, times, bars} from '../common/SvgIcon'
-import FocusManager from '../common/FocusManager'
-
-const styleWrapper = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}
 
 const styleButtonDefault = {
   display: 'flex',
@@ -147,13 +140,6 @@ export default class HeaderDropdownMenuButton extends React.Component {
     })
   }
 
-  handleTotalBlur = e => {
-    const {setOpen} = this.props
-    if (setOpen) {
-      setOpen(false)
-    }
-  }
-
   render() {
     const {
       open,
@@ -206,28 +192,23 @@ export default class HeaderDropdownMenuButton extends React.Component {
     )
 
     return (
-      <FocusManager
-        onBlur={this.handleTotalBlur}
-        blurOnEscape={true}
-        blurOnShiftTab={true}
-        style={styleWrapper}
+      <button
+        id="headerDropdownMenuButton"
+        aria-expanded={open}
+        onClick={() => {
+          setOpen(!open)
+        }}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+        onMouseDown={this.handleMouseDown}
+        onMouseUp={this.handleMouseUp}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        style={stylesButtonMerged}
+        title="Extra Menu"
       >
-        <button
-          id="headerDropdownMenuButton"
-          aria-expanded={open}
-          onClick={() => setOpen(!open)}
-          onMouseOver={this.handleMouseOver}
-          onMouseOut={this.handleMouseOut}
-          onMouseDown={this.handleMouseDown}
-          onMouseUp={this.handleMouseUp}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
-          style={stylesButtonMerged}
-          title="Extra Menu"
-        >
-          {icon}
-        </button>
-      </FocusManager>
+        {icon}
+      </button>
     )
   }
 }
