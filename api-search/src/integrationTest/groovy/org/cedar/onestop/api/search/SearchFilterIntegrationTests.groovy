@@ -8,7 +8,7 @@ import org.elasticsearch.client.Response
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 
-class FilteredSearchIntegrationTests extends IntegrationTest {
+class SearchFilterIntegrationTests extends IntegrationTest {
 
   private final String DATES_INDEX = 'dates_testing'
 
