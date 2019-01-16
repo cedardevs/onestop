@@ -100,7 +100,6 @@ class SearchRequestParserService {
       ]
     }
 
-    // FIXME returning as an array because our queries are arrays... ridiculous! #171 >:[
     return [[
         function_score: [
             query             : [
@@ -136,23 +135,146 @@ class SearchRequestParserService {
 
     // Temporal filters:
     groupedFilters.datetime.each {
-      if (it.before) {
-        allFilters.add([
-            range: [
-                'beginDate': [
-                    lte: it.before
+      def x = it.after
+      def y = it.before
+      def relation = it.relation
+
+      switch (relation) {
+        // Results contain query
+        case 'contains':
+          if (x || y) {
+            def beginVal = x ? x : y
+            def endVal = y ? y : x
+
+            allFilters.add([
+                bool: [
+                    must: [
+                        [ range: [ 'beginDate': [ lte: beginVal ]] ]
+                    ],
+                    should: [
+                        [ range: [ 'endDate': [ gte: endVal ]] ],
+                        [ bool: [
+                            must_not: [
+                                [ exists: [ field: 'endDate' ] ]
+                            ]
+                        ]]
+                    ]
                 ]
-            ]
-        ])
-      }
-      if (it.after) {
-        allFilters.add([
-            range: [
-                'endDate': [
-                    gte: it.after
+            ])
+          }
+        break
+
+        case 'within':
+          // Results within query
+          if (x) {
+            allFilters.add([
+                range: [
+                    'beginDate': [
+                        gte: x
+                    ]
                 ]
-            ]
-        ])
+            ])
+          }
+          if (y) {
+            allFilters.add([
+                range: [
+                    'endDate': [
+                        lte: y
+                    ]
+                ]
+            ])
+          }
+        break
+
+        case 'disjoint':
+          // Results have nothing in common with query
+          if (x && !y) {
+            allFilters.add([
+                range: [ 'endDate': [ lt: x ] ]
+            ])
+          }
+          else if (!x && y) {
+            allFilters.add([
+                range: [ 'beginDate': [ gt: y ] ]
+            ])
+          }
+          else if (x && y) {
+            allFilters.add([
+                bool: [
+                    should: [
+                        [ bool: [
+                            must: [
+                                [range: [ 'beginDate': [ lt: x ] ]],
+                                [range: [ 'endDate': [ lt: x ] ]]
+                            ]
+                        ]],
+                        [ bool: [
+                            must: [
+                                [range: [ 'beginDate': [ gt: y ] ]]
+                            ],
+                            should: [
+                                [range: [ 'endDate': [ gt: y ] ]],
+                                [ bool: [
+                                    must_not: [
+                                        [ exists: [ field: 'endDate' ] ]
+                                    ]
+                                ]]
+                            ]
+                        ]]
+                    ]
+                ]
+            ])
+          }
+          break
+
+        default:
+          // Null or 'intersects'
+          if (x && !y) {
+            // End date is greater than x; if endDate "ongoing" (null), make sure results actually have a beginDate
+            // (otherwise we'll match ones without a time bounding)
+            allFilters.add([
+                bool: [
+                    should: [
+                        [ range: [ 'endDate': [ gte: x ]] ],
+                        [ bool: [
+                            must: [
+                                [ exists: [ field: 'beginDate' ] ]
+                            ],
+                            must_not: [
+                                [ exists: [ field: 'endDate' ] ]
+                            ]
+                        ]]
+                    ]
+                ]
+            ])
+          }
+          else if (!x && y) {
+            allFilters.add([
+                range: [
+                    'beginDate': [
+                        lte: y
+                    ]
+                ]
+            ])
+          }
+          else if (x && y){
+            allFilters.add([
+                bool: [
+                    must: [
+                        [ range: [ 'beginDate': [ lte: y ]] ]
+                    ],
+                    should: [
+                        [ range: [ 'endDate': [ gte: x ]] ],
+                        [ bool: [
+                            must_not: [
+                                [ exists: [ field: 'endDate' ] ]
+                            ]
+                        ]]
+                    ]
+                ]
+            ])
+          }
+
       }
     }
 

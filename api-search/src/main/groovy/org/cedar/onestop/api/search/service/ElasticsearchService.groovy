@@ -177,7 +177,7 @@ class ElasticsearchService {
     return parseResponse(response)
   }
 
-  private Map searchFromRequest(Map params, String index) {
+  Map searchFromRequest(Map params, String index) {
     // TODO: does this parse step need to change based on new different endpoints?
     def query = searchRequestParserService.parseSearchQuery(params)
     def getFacets = params.facets as boolean
