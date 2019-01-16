@@ -9,12 +9,20 @@ import moment from 'moment/moment'
 import FlexRow from '../common/FlexRow'
 import {granuleDownloadableLinks} from '../utils/cartUtils'
 
+const styleDownloadLabel = {
+  fontSize: '1em',
+  display: 'inline-flex',
+  padding: '0.309em 0.618em 0.309em 0.309em',
+  marginLeft: '0.618em',
+  whiteSpace: 'nowrap',
+}
+
 const styleWgetScriptButton = {
   fontSize: '1em',
   display: 'inline-flex',
   padding: '0.309em 0.618em 0.309em 0.309em',
   marginLeft: '0.618em',
-  background: `${COLOR_GREEN_LIGHT}`,
+  background: '#2c833e',
 }
 
 const styleWgetScriptButtonText = {
@@ -22,7 +30,7 @@ const styleWgetScriptButtonText = {
 }
 
 const styleWgetScriptButtonHover = {
-  background: `linear-gradient(${COLOR_GREEN_LIGHT}, ${COLOR_GREEN})`,
+  background: `linear-gradient(#1e5b2b, #2c833e)`,
 }
 
 const styleWgetScriptIcon = {
@@ -214,6 +222,13 @@ export default class ScriptDownloader extends React.Component {
         onClick={this.downloadScript}
       />
     )
-    return <FlexRow items={[ cartSelect, downloadButton ]} />
+
+    const downloadLabel = (
+      <label id={`cartDownloadOptionsLabel`} style={styleDownloadLabel}>
+        Download Options:
+      </label>
+    )
+
+    return <FlexRow items={[ downloadLabel, cartSelect, downloadButton ]} />
   }
 }
