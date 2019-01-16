@@ -16,7 +16,7 @@ const selectTheme = theme => {
       primary75: FilterColors.DARK,
       primary50: FilterColors.MEDIUM,
       primary25: FilterColors.LIGHT,
-      danger: COLOR_GREEN,
+      danger: '#2c833e',
       dangerLight: COLOR_GREEN_LIGHT,
     },
   }
@@ -31,9 +31,17 @@ const cursorStyle = (styles, {isDisabled, isFocused, isSelected}) => {
   }
 }
 
+const placeholderStyle = styles => {
+  return {
+    ...styles,
+    color: '#767676',
+  }
+}
+
 const selectStyles = {
   control: cursorStyle,
   option: cursorStyle,
+  placeholder: placeholderStyle,
 }
 
 const optionStyle = {
@@ -42,7 +50,7 @@ const optionStyle = {
   justifyContent: 'space-between',
 }
 const optionBadgeStyle = {
-  backgroundColor: COLOR_GREEN,
+  backgroundColor: '#2c833e',
   borderRadius: '2em',
   color: '#F9F9F9',
   display: 'inline-block',
@@ -91,6 +99,7 @@ export default class CartSelect extends React.Component {
           aria-expanded={isMenuOpen}
           theme={selectTheme}
           styles={selectStyles}
+          aria-labelledby={`cartDownloadOptionsLabel`}
           placeholder={`Select download protocol and source...`}
           defaultValue={defaultValue}
           options={options}
