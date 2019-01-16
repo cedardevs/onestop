@@ -60,6 +60,7 @@ const optionBadgeStyle = {
   minWidth: 1,
   padding: '0.166em 0.618em',
   textAlign: 'center',
+  marginLeft: '1em',
 }
 
 // customize replaceable option label component in select menu
