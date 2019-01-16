@@ -262,7 +262,11 @@ export default class ScriptDownloader extends React.Component {
     )
 
     const downloadLabel = (
-      <label id={`cartDownloadOptionsLabel`} style={styleDownloadLabel}>
+      <label
+        id={`cartDownloadOptionsLabel`}
+        key={`cartDownloadOptionsLabel`}
+        style={styleDownloadLabel}
+      >
         Download Options:
       </label>
     )
