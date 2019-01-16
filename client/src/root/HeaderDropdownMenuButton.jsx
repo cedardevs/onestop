@@ -214,6 +214,7 @@ export default class HeaderDropdownMenuButton extends React.Component {
       >
         <button
           id="headerDropdownMenuButton"
+          aria-expanded={open}
           onClick={() => setOpen(!open)}
           onMouseOver={this.handleMouseOver}
           onMouseOut={this.handleMouseOut}
