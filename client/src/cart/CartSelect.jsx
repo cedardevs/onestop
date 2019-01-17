@@ -22,7 +22,7 @@ const selectTheme = theme => {
   }
 }
 
-const cursorStyle = (styles, {isDisabled, isFocused, isSelected}) => {
+const cursorStyle = (styles, {isDisabled}) => {
   return {
     ...styles,
     cursor: isDisabled ? 'not-allowed' : 'pointer',
