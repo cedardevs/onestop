@@ -103,11 +103,16 @@ class JsonValidatorSpec extends Specification {
     {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"}
   ]
 }""",
-
         """\
 {
   "filters": [
     {"type": "datetime", "relation": "within", "before": "2016-06-15T20:20:58Z"}
+  ]
+}""",
+        """\
+{
+  "filters": [
+    {"type": "paleoDate", "relation": "contains", "after": -5000000}
   ]
 }""",
         """\
@@ -240,11 +245,22 @@ class JsonValidatorSpec extends Specification {
     { "type": "datetime", "before": "2012-12-31", "after": "2012-01-01"}
   ]
 }""",
-
         """\
 {
   "filters": [
     {"type": "datetime", "relation": "outside", "before": "2016-06-15T20:20:58Z"}
+  ]
+}""",
+        """\
+{
+  "filters": [
+    {"type": "paleoDate", "before": -200.5}
+  ]
+}""",
+        """\
+{
+  "filters": [
+    {"type": "paleoDate", "after": "-100000"}
   ]
 }""",
         """\
