@@ -81,6 +81,9 @@
           "$ref": "#/definitions/dateTimeFilter"
         },
         {
+          "$ref": "#/definitions/paleoDateFilter"
+        },
+        {
           "$ref": "#/definitions/facetFilter"
         },
         {
@@ -128,6 +131,37 @@
         "after": {
           "type": "string",
           "format": "date-time"
+        },
+        "relation":  {
+          "description": "How the result time range relates to the query time range, e.g., return all datasets whose time range is within the given time range. Defaults to 'intersects'.",
+          "enum": [
+            "contains",
+            "disjoint",
+            "intersects",
+            "within"
+          ]
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "paleoDateFilter": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "paleoDate"
+          ]
+        },
+        "before": {
+          "type": "number",
+          "multipleOf": 1.0
+        },
+        "after": {
+          "type": "number",
+          "multipleOf": 1.0
         },
         "relation":  {
           "description": "How the result time range relates to the query time range, e.g., return all datasets whose time range is within the given time range. Defaults to 'intersects'.",
