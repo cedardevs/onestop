@@ -124,7 +124,7 @@ export default class ScriptDownloader extends React.Component {
   getLinks = (source, protocol) => {
     const {selectedGranules} = this.props
     const granules = Object.values(selectedGranules)
-    return granuleDownloadableLinks(granules, source, protocol)
+    return granuleDownloadableLinks(granules, protocol, source)
   }
 
   // this method simply counts the number of valid links
