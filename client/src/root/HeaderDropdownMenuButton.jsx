@@ -1,5 +1,6 @@
 import React from 'react'
 import {SvgIcon, times, bars} from '../common/SvgIcon'
+import {HEADER_LINK_CLASS} from './HeaderLink'
 
 const styleButtonDefault = {
   display: 'flex',
@@ -127,8 +128,22 @@ export default class HeaderDropdownMenuButton extends React.Component {
   }
 
   handleBlur = event => {
+    const {onBlur, setOpen, open} = this.props
+
+    // only allow the header menu button to close an already open menu
+    // if the focus is going from here (onBlur) to one of the previous
+    // focusable header links w/same class name (because those links
+    // are dynamic based on enabled features)
+    if (event.relatedTarget) {
+      if (
+        event.relatedTarget.className === HEADER_LINK_CLASS &&
+        setOpen &&
+        open
+      ) {
+        setOpen(!open)
+      }
+    }
     event.stopPropagation()
-    const {onBlur} = this.props
     if (onBlur) {
       onBlur(event)
     }
