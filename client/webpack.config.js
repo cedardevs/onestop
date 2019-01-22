@@ -10,7 +10,7 @@ require(modernizrrc)
 const nodeEnv = process.env.NODE_ENV || 'development'
 const isProd = nodeEnv === 'production'
 
-const rootPath = '/'
+const rootPath = 'onestop'
 const assetPath = 'static'
 
 const smp = new SpeedMeasurePlugin()
@@ -87,7 +87,7 @@ module.exports = env => {
     output:
         {
           path: path.resolve(__dirname, 'build/dist'),
-          publicPath: '/',
+          publicPath: `/${rootPath}/`,
           filename: '[name]-[hash].bundle.js',
         }
     ,
@@ -96,15 +96,15 @@ module.exports = env => {
         isProd ? false : 'cheap-module-eval-source-map',
     devServer:
         isProd ? {} : {
-          // publicPath: `/${rootPath}/`,
-          // historyApiFallback: {
-          //   index: `/${rootPath}/`,
-          // },
+          publicPath: `/${rootPath}/`,
+          historyApiFallback: {
+            index: `/${rootPath}/`,
+          },
           disableHostCheck: true,
           hot: true,
           proxy: {
-            '/api/*': {
-              target: `${env.URL_API_SEARCH}/onestop/`,
+            '/onestop/api/*': {
+              target: `${env.URL_API_SEARCH}/`,
               // pathRewrite: {'^/api' : ''},
               secure: false,
             },

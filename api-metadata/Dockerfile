@@ -12,6 +12,7 @@ LABEL org.label-schema.vendor=CEDAR
 LABEL org.label-schema.vcs-url=https://github.com/cedardevs/onestop
 LABEL org.label-schema.vcs-ref=${VCS_REF}
 
-ADD build/libs/${WAR_NAME} /usr/local/tomcat/webapps/onestop-admin-search.war
+# IMPORTANT NOTE: this cannot be deployed as onestop#admin.war, because this causes an unresolvable path for liquibase / H2. If it needs to be referenced with the context path /onestop/admin, an external proxy will be necessary
+ADD build/libs/${WAR_NAME} /usr/local/tomcat/webapps/onestop-admin.war
 
 EXPOSE 8080

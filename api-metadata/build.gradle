@@ -40,7 +40,7 @@ dependencies {
   compile("org.opensaml:opensaml-messaging-impl:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-api:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-impl:${project.openSAMLVersion}")
-  
+
   // logback
   compile("ch.qos.logback:logback-core:${project.logbackVersion}")
   compile("ch.qos.logback:logback-classic:${project.logbackVersion}")
@@ -92,6 +92,8 @@ ext {
 
 war {
   enabled = true
+  baseName = "${rootProject.name}-${project.name}"
+  finalizedBy bootWar
 }
 
 bootWar {
