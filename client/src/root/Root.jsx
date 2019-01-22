@@ -28,6 +28,7 @@ import FooterContainer from './FooterContainer'
 
 import {COLOR_SECONDARY_DARK} from '../common/defaultStyles'
 import {FEATURE_CART} from '../utils/featureUtils'
+import {ROUTE} from '../utils/urlUtils'
 
 const styleBrowserWarning = {
   background: COLOR_SECONDARY_DARK,
@@ -122,7 +123,7 @@ export default class Root extends Component {
     const left = leftOpen ? <FiltersContainer /> : <FiltersHiddenContainer />
     const leftWidth = leftOpen ? '20em' : '2em'
     const cart = featuresEnabled.includes(FEATURE_CART) ? (
-      <Route path="/cart">
+      <Route path={ROUTE.cart.path}>
         <CartContainer />
       </Route>
     ) : null
@@ -136,7 +137,7 @@ export default class Root extends Component {
           </Route>
         </Switch>
         <Switch>
-          <Route path="/collections" exact>
+          <Route path={ROUTE.search.path} exact>
             {/*TODO: replace this with ArcGIS map?*/}
             <MapContainer selection={true} features={false} />
           </Route>
@@ -148,36 +149,36 @@ export default class Root extends Component {
             <LandingContainer />
           </Route>
 
-          <Route path="/collections/details">
+          <Route path={ROUTE.details.path}>
             {/*TODO parameterize this path!*/}
             <DetailContainer />
           </Route>
 
-          <Route path="/collections">
+          <Route path={ROUTE.search.path}>
             <Switch>
-              <Route path="/collections" exact>
+              <Route path={ROUTE.search.path} exact>
                 <Result>
                   <CollectionsContainer />
                 </Result>
               </Route>
-              <Route path="/collections/granules/:id">
+              <Route path={ROUTE.granules.parameterized}>
                 {/*TODO parameterize this path!*/}
                 <GranuleListContainer />
               </Route>
             </Switch>
           </Route>
 
-          <Route path="/about">
+          <Route path={ROUTE.about.path}>
             <AboutContainer />
           </Route>
 
-          <Route path="/help">
+          <Route path={ROUTE.help.path}>
             <Help />
           </Route>
 
           {cart}
 
-          <Route path="/error">
+          <Route path={ROUTE.error.path}>
             <ErrorContainer />
           </Route>
         </Switch>

@@ -72,6 +72,7 @@ export const ROUTE = Object.freeze({
   },
   granules: {
     path: '/collections/granules',
+    parameterized: '/collections/granules/:id',
     regex: /\/granules\/([-\w]+)/,
   },
   about: {path: '/about', regex: /\/about/},
