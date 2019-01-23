@@ -1220,4 +1220,34 @@ describe('In the jsonLdUtils', function(){
       )
     })
   })
+
+  it('produces search action for the root page', function(){
+    const rootUrl = 'https://sciapps.colorado.edu/onestop/'
+
+    jsonEquals(
+      util.appJsonLd(rootUrl),
+      `{
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "@id": "https://sciapps.colorado.edu/onestop/",
+        "url": "https://sciapps.colorado.edu/onestop/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://sciapps.colorado.edu/onestop/#/collections?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "@id": "https://www.ncei.noaa.gov/",
+          "name": "National Centers for Environmental Information (NCEI)",
+          "logo": {
+              "@type": "ImageObject",
+              "url": "https://www.ncei.noaa.gov/sites/default/files/noaa_logo_circle_72x72.svg",
+              "width": "72",
+              "height": "72"
+          }
+        }
+      }`
+    )
+  })
 })
