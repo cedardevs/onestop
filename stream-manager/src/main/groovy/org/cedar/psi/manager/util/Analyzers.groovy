@@ -132,6 +132,8 @@ class Analyzers {
     def builder = DescriptionAnalysis.newBuilder()
     builder.descriptionExists = analysis.exists
     builder.descriptionCharacters = analysis.characters
+    builder.descriptionFleschReadingEaseScore = analysis.readingEase
+    builder.descriptionFleschKincaidReadingGradeLevel = analysis.gradeLevel
     return builder.build()
   }
 
