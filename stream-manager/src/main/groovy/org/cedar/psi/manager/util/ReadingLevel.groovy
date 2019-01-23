@@ -40,7 +40,7 @@ class ReadingLevel {
   }
   static Number totalSyllables(String text) {
     return words(text).collect({it ->
-        return Analyzers.findWordSyllables(it).s2
+        return ReadingLevel.findWordSyllables(it).s2
       }).sum()
   }
 
