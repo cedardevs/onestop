@@ -17,5 +17,6 @@ class LoginGovConfiguration {
     Keystore keystore
     String allowedOrigin
     String loginSuccessRedirect
+    String loginFailureRedirect
     String logoutSuccessRedirect
 }

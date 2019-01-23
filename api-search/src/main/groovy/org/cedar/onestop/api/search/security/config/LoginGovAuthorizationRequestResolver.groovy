@@ -32,7 +32,7 @@ class LoginGovAuthorizationRequestResolver implements OAuth2AuthorizationRequest
             return null
         }
         else {
-            return customAuthorizationRequest(authorizationRequest)
+            return customAuthorizationRequest(authorizationRequest, request.session.id)
         }
     }
 
@@ -43,19 +43,19 @@ class LoginGovAuthorizationRequestResolver implements OAuth2AuthorizationRequest
             return null
         }
         else {
-            return customAuthorizationRequest(authorizationRequest)
+            return customAuthorizationRequest(authorizationRequest, request.session.id)
         }
     }
 
-    OAuth2AuthorizationRequest customAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest) {
+    OAuth2AuthorizationRequest customAuthorizationRequest(OAuth2AuthorizationRequest authorizationRequest, String sessionId ) {
         String registrationId = resolveRegistrationId(authorizationRequest)
         LinkedHashMap additionalParameters = new LinkedHashMap(authorizationRequest.additionalParameters)
-
         // set login.gov specific params
         // https://developers.login.gov/oidc/#authorization
         if(registrationId == LoginGovConstants.LOGIN_GOV_REGISTRATION_ID) {
+            String nonce = NonceUtil.generateNonce(sessionId)
             additionalParameters.put("acr_values", LoginGovConstants.LOGIN_GOV_LOA1)
-            additionalParameters.put("nonce", "1234567890abcdefghijklmnopqrstuvwxyz")
+            additionalParameters.put("nonce", nonce)
         }
 
         return OAuth2AuthorizationRequest
