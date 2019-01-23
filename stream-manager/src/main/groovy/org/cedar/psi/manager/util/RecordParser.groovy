@@ -13,8 +13,12 @@ class RecordParser {
   static ParsedRecord parse(Map msgMap, RecordType type) {
     String contentType = msgMap.contentType
     String content = msgMap.content
-
+    String method = msgMap.method
     try {
+      if (method == 'DELETE') {
+        // if the input is a deletion then tombstone the parsed info
+        return null
+      }
       if (!content) {
         def error = ErrorEvent.newBuilder().setTitle("No content provided").build()
         return ParsedRecord.newBuilder().setType(type).setErrors([error]).build()

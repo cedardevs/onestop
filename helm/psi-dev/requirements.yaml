@@ -3,6 +3,6 @@ dependencies:
 - name: cp-helm-charts
   version: ~0.1.0
   repository: https://confluentinc.github.io/cp-helm-charts/
-- name: ambassador
-  version: ~0.40.0
-  repository: https://www.getambassador.io
+- name: nginx-ingress
+  version: ~1.1.4
+  repository: "@stable"

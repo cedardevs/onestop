@@ -40,7 +40,7 @@ class StreamManagerSpec extends Specification {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def key = 'A123'
-    def input = buildInput(contentType: 'application/xml', content: xml)
+    def input = buildInput(method: Method.POST, contentType: 'application/xml', content: xml)
 
     when:
     driver.pipeInput(inputFactory.create(testChangelog, key, input))
@@ -50,7 +50,6 @@ class StreamManagerSpec extends Specification {
     driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
-    // There is only 1 record in the PARSED_TOPIC
     def finalOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     finalOutput != null
     driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
@@ -70,6 +69,35 @@ class StreamManagerSpec extends Specification {
     result.analysis.identification.fileIdentifierString == 'gov.super.important:FILE-ID'
   }
 
+  def "deleted input record produces a tombstone"() {
+    given:
+    def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+    def key = 'A123'
+    def postInput = buildInput(method: Method.POST, contentType: 'application/xml', content: xml)
+    def deleteInput = buildInput(method: Method.DELETE, contentType: 'application/xml')
+
+    when:
+    driver.pipeInput(inputFactory.create(testChangelog, key, postInput))
+    driver.pipeInput(inputFactory.create(testChangelog, key, deleteInput))
+    driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    def originalOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def updatedOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+
+    then: 'verify original fields'
+    originalOutput != null
+    originalOutput.key() == key
+    def originalValue = originalOutput.value()
+
+    originalValue.discovery instanceof Discovery
+    originalValue.analysis instanceof Analysis
+    originalValue.errors instanceof List
+    originalValue.errors.size() == 0
+
+    and: 'verify updated record is a tombstone'
+    updatedOutput.key() == key
+    updatedOutput.value() == null
+  }
+
   def "SME granule ends up in SME topic"() {
     given:
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
@@ -77,7 +105,8 @@ class StreamManagerSpec extends Specification {
     def smeValue = buildInput(
         source: 'common-ingest',
         contentType: 'application/xml',
-        content: xmlSME
+        content: xmlSME,
+        method: Method.POST
     )
 
     when:
@@ -101,7 +130,8 @@ class StreamManagerSpec extends Specification {
     def nonSMEInputKey = 'notSME'
     def nonSMEInputValue = buildInput(
         contentType: 'application/xml',
-        content: xmlNonSME
+        content: xmlNonSME,
+        method: Method.POST
     )
     def unparsedKey = 'sme'
     def unparsedValue = [
@@ -142,7 +172,8 @@ class StreamManagerSpec extends Specification {
     def key = 'failure101'
     def value = buildInput(
         contentType: 'text/csv',
-        content: 'it,does,not,parse'
+        content: 'it,does,not,parse',
+        method: Method.POST
     )
 
     when:
@@ -162,8 +193,7 @@ class StreamManagerSpec extends Specification {
 
   private static inputDefaults = [
       type      : RecordType.granule,
-      source    : 'test',
-      method    : Method.POST,
+      source    : 'test'
   ]
 
   private static buildInput(Map overrides) {
