@@ -5,45 +5,6 @@ import spock.lang.Specification
 import static spock.util.matcher.HamcrestMatchers.closeTo
 
 class ReadingLevelSpec extends Specification {
-  def 'unknown word in dictionary'() {
-    when:
-    def word = ReadingLevel.findWordSyllables('foo')
-
-    then:
-    word instanceof Map
-    word.match == null
-    word.syllables == null
-  }
-
-  def 'short known word in dictionary'() {
-    when:
-    def word = ReadingLevel.findWordSyllables('cat')
-
-    then:
-    word instanceof Map
-    word.match == 'cat'
-    word.syllables == 1
-  }
-
-  def 'syllables care not for your captialization'() {
-    when:
-    def word = ReadingLevel.findWordSyllables('CaT')
-
-    then:
-    word instanceof Map
-    word.match == 'cat'
-    word.syllables == 1
-  }
-
-  def 'long word in dictionary'() {
-    when:
-    def word = ReadingLevel.findWordSyllables('simultaneously')
-
-    then:
-    word instanceof Map
-    word.match == 'si;mul;ta;ne;ous;ly'
-    word.syllables == 6
-  }
 
   def 'words in a few sentences'() {
     when:
@@ -58,7 +19,7 @@ class ReadingLevelSpec extends Specification {
     when:
     def syllables = words.collect({it ->
       println(it)
-      return ReadingLevel.findWordSyllables(it).s2
+      return ReadingLevel.findWordSyllables(it).syllables
     })//.sum()
 
     then:

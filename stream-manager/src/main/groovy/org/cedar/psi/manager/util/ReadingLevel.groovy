@@ -5,22 +5,13 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class ReadingLevel {
   static Map findWordSyllables(String originalWord) {
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("25K-syllabified-sorted-alphabetically.txt").text // TODO NUKE
-    // return [
-    //   match: document.split('\n')[0],
-    //   syllables: document.split('\n')[0].split(';').size()
-    // ]
     def word = originalWord.toLowerCase()
-    def wordsByFirstLetter = document.split('\n').findAll({it.substring(0,1) == word.substring(0,1)}) // TODO is this actually more efficient than just doing a find on the whole doc?
-    def match = wordsByFirstLetter.find({ it ->
-      return it.replaceAll(';','') == word
-    })
-    return [
-      match: match,
-      syllables: match? match.split(';').size(): null,
+    //source for syllables: https://codegolf.stackexchange.com/questions/47322/how-to-count-the-syllables-in-a-word
+    // note this is an estimate, and occasionally gets the answer wrong, but is generally close enough
 
-      //source: https://codegolf.stackexchange.com/questions/47322/how-to-count-the-syllables-in-a-word
-      s2: word.findAll(/[aiouy]+e*|e(?!d$|ly).|[td]ed|le$/).size(),
+    return [
+      word: originalWord,
+      syllables: word.findAll(/[aiouy]+e*|e(?!d$|ly).|[td]ed|le$/).size(),
     ]
   }
 
@@ -35,12 +26,14 @@ class ReadingLevel {
   static Number totalSentences(String text) {
     return splitIntoSentences(text).size()
   }
+
   static Number totalWords(String text) {
     return words(text).size()
   }
+
   static Number totalSyllables(String text) {
     return words(text).collect({it ->
-        return ReadingLevel.findWordSyllables(it).s2
+        return ReadingLevel.findWordSyllables(it).syllables
       }).sum()
   }
 
