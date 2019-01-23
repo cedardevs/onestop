@@ -8,7 +8,7 @@ class ReadingLevelSpec extends Specification {
 
   def 'words in a few sentences'() {
     when:
-    def words = ReadingLevel.words('A few separate. Sentences! And such?! That are not too confusing? Hopefully... Anyway.')
+    def words = ReadingLevel.splitIntoWords('A few separate. Sentences! And such?! That are not too confusing? Hopefully... Anyway.')
 
     then:
     words.size() == 13
@@ -19,7 +19,7 @@ class ReadingLevelSpec extends Specification {
     when:
     def syllables = words.collect({it ->
       println(it)
-      return ReadingLevel.findWordSyllables(it)
+      return ReadingLevel.findSyllablesInWord(it)
     })//.sum()
 
     then:

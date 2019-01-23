@@ -4,7 +4,7 @@ import groovy.util.logging.Slf4j
 
 @Slf4j
 class ReadingLevel {
-  static Number findWordSyllables(String originalWord) {
+  static Number findSyllablesInWord(String originalWord) {
     def word = originalWord.toLowerCase()
     //source for syllables: https://codegolf.stackexchange.com/questions/47322/how-to-count-the-syllables-in-a-word
     // note this is an estimate, and occasionally gets the answer wrong, but is generally close enough
@@ -15,7 +15,7 @@ class ReadingLevel {
     return text.split(/(\.|\?|\!)\s/)
   }
 
-  static List words(String text) { // TODO rename splitIntoWords?
+  static List splitIntoWords(String text) { // TODO rename splitIntoWords?
     return text.toLowerCase().replaceAll(/[^\w\a\s)]/, '').split(/\s/)
   }
 
@@ -24,12 +24,12 @@ class ReadingLevel {
   }
 
   static Number totalWords(String text) {
-    return words(text).size()
+    return splitIntoWords(text).size()
   }
 
   static Number totalSyllables(String text) {
-    return words(text).collect({it ->
-        return ReadingLevel.findWordSyllables(it)
+    return splitIntoWords(text).collect({it ->
+        return ReadingLevel.findSyllablesInWord(it)
       }).sum()
   }
 
