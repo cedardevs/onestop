@@ -92,7 +92,11 @@ class AnalyzersSpec extends Specification {
             titleExists             : true,
             titleCharacters         : 63,
             alternateTitleExists    : true,
-            alternateTitleCharacters: 51
+            alternateTitleCharacters: 51,
+            titleFleschReadingEaseScore:-41.98428571066,
+            alternateTitleFleschReadingEaseScore:42.61571428934,
+            titleFleschKincaidReadingGradeLevel:20,
+            alternateTitleFleschKincaidReadingGradeLevel:9,
         ],
         description     : [
             descriptionExists    : true,

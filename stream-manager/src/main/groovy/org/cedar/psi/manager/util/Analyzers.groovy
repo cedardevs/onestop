@@ -119,6 +119,11 @@ class Analyzers {
     builder.titleCharacters = titleAnalysis.characters
     builder.alternateTitleExists = altAnalysis.exists
     builder.alternateTitleCharacters = altAnalysis.characters
+    builder.titleFleschReadingEaseScore = titleAnalysis.readingEase
+    builder.titleFleschKincaidReadingGradeLevel = titleAnalysis.gradeLevel
+    builder.alternateTitleFleschReadingEaseScore = altAnalysis.readingEase
+    builder.alternateTitleFleschKincaidReadingGradeLevel = altAnalysis.gradeLevel
+
     return builder.build()
   }
 
@@ -148,7 +153,9 @@ class Analyzers {
     return [
         value     : input,
         exists    : input != null && input.length() > 0,
-        characters: input?.length() ?: 0
+        characters: input?.length() ?: 0,
+        readingEase: input? ReadingLevel.FleschReadingEaseScore(input):null,
+        gradeLevel: input? ReadingLevel.FleschKincaidReadingGradeLevel(input):null,
     ]
   }
 
