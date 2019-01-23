@@ -3,14 +3,14 @@ import * as urlUtils from '../../src/utils/urlUtils'
 describe('The URL Utils', function(){
   const pathTests = [
     {
-      path: 'collections/details/foobar',
-      isDetail: true,
+      path: '/collections/details/foobar',
+        isDetail: true,
       isGranuleList: false,
       collectionIdFromDetailPath: 'foobar',
     },
-    {path: 'collections?q=foobar', isDetail: false, isGranuleList: false},
+    {path: '/collections?q=foobar', isDetail: false, isGranuleList: false},
     {
-      path: 'collections/granules/foobar?q=test',
+      path: '/collections/granules/foobar?q=test',
       isDetail: false,
       isGranuleList: true,
       collectionIdFromGranuleListPath: 'foobar',
@@ -44,6 +44,65 @@ describe('The URL Utils', function(){
     urls.forEach(url => {
       it(`like ${url}`, function(){
         expect(urlUtils.isGovExternal(url)).toBeFalsy()
+      })
+    })
+  })
+
+  describe('extractBaseFromKnownRoutes returns undefined if it does not match any route', function(){
+    const routes = [ '/', '/onestop/' ]
+    routes.forEach(test => {
+      it(`knows ${test} does not explicitly match any routes`, function(){
+        expect(urlUtils.extractBaseFromKnownRoutes(test)).toBeUndefined()
+      })
+    })
+  })
+
+  describe('extractBaseFromKnownRoutes can identify the base path correctly', function(){
+    const routes = [
+      {
+        path: '/about',
+        base: '/',
+      },
+      {
+        path: '/onestop/help',
+        base: '/onestop/',
+      },
+      {
+        path: '/collections?q=foobar',
+        base: '/',
+      },
+      {
+        path: '/onestop/collections?q=foobar',
+        base: '/onestop/',
+      },
+      {
+        path: '/cedarsearch/collections',
+        base: '/cedarsearch/',
+      },
+      {
+        path: '/collections/granules/foobar',
+        base: '/',
+      },
+      {
+        path: '/onestop/collections/granules/foobar',
+        base: '/onestop/',
+      },
+      {
+        path: '/collections/details/foobar',
+        base: '/',
+      },
+      {
+        path: '/onestop/collections/details/foobar',
+        base: '/onestop/',
+      },
+      {
+        path: '/cedar-search/collections/details/foobar',
+        base: '/cedar-search/',
+      },
+    ]
+    routes.forEach(test => {
+      it(`knows ${test.path} has base route ${test.base}`, function(){
+        expect(urlUtils.extractBaseFromKnownRoutes(test.path)).toBe(test.base)
       })
     })
   })

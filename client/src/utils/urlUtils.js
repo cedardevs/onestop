@@ -2,7 +2,7 @@ import _ from 'lodash'
 
 export const getBasePath = () => {
   const windowpath = window.location.pathname
-  return findRoute(windowpath) || windowpath
+  return extractBaseFromKnownRoutes(windowpath) || windowpath
 }
 
 export const apiPath = () => {
@@ -60,7 +60,7 @@ export const ROUTE = Object.freeze({
   },
   search: {
     path: '/collections',
-    regex: /\/collections$/,
+    regex: /\/collections([^/])*$/,
   },
   cart: {
     path: '/cart',
@@ -73,7 +73,7 @@ export const ROUTE = Object.freeze({
   granules: {
     path: '/collections/granules',
     parameterized: '/collections/granules/:id',
-    regex: /\/granules\/([-\w]+)/,
+    regex: /\/collections\/granules\/([-\w]+)/,
   },
   about: {path: '/about', regex: /\/about/},
   help: {path: '/help', regex: /\/help/},
@@ -84,7 +84,7 @@ export const isRoute = (path, route) => {
   return route.regex.exec(path)
 }
 
-export const findRoute = path => {
+export const extractBaseFromKnownRoutes = path => {
   var findMatch = _.find(ROUTE, route => {
     return isRoute(path, route)
   })
@@ -95,38 +95,26 @@ export const findRoute = path => {
 }
 
 const sitemapMatch = path => {
-  const sitemapRegex = /\/sitemap.xml/
-  return sitemapRegex.exec(path)
+  return isRoute(path, ROUTE.sitemap)
 }
 
 export const isSitemap = path => {
   return sitemapMatch(path) ? true : false
 }
 
-const detailIdMatch = path => {
-  const detailIdRegex = /\/details\/([-\w]+)/
-  return detailIdRegex.exec(path)
-}
-
 export const isDetailPage = path => {
-  return detailIdMatch(path) ? true : false
-}
-
-// granule url matching is part of #445
-const granuleIdMatch = path => {
-  const granuleListRegex = /\/granules\/([-\w]+)/
-  return granuleListRegex.exec(path)
+  return isRoute(path, ROUTE.details) ? true : false
 }
 
 export const isGranuleListPage = path => {
-  return granuleIdMatch(path) ? true : false
+  return isRoute(path, ROUTE.granules) ? true : false
 }
 
 export const getCollectionIdFromDetailPath = path => {
   if (!isDetailPage(path)) {
     return null
   }
-  const match = detailIdMatch(path)
+  const match = isRoute(path, ROUTE.details)
   return match && match[1] ? match[1] : null
 }
 
@@ -134,6 +122,6 @@ export const getCollectionIdFromGranuleListPath = path => {
   if (!isGranuleListPage(path)) {
     return null
   }
-  const match = granuleIdMatch(path)
+  const match = isRoute(path, ROUTE.granules)
   return match && match[1] ? match[1] : null
 }
