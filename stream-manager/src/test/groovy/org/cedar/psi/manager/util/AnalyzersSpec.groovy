@@ -276,12 +276,14 @@ class AnalyzersSpec extends Specification {
     result instanceof Map
     result.exists == exists
     result.characters == length
+    result.readingEase == ease
+    result.gradeLevel == grade
 
     where:
-    testCase  | value  | exists | length
-    'missing' | null   | false  | 0
-    'empty'   | ''     | false  | 0
-    'present' | 'test' | true   | 4
+    testCase  | value  | exists | length | ease    | grade
+    'missing' | null   | false  | 0      | null    | null
+    'empty'   | ''     | false  | 0      | null    | null
+    'present' | 'test' | true   | 4      | 121.220 | -3.40
   }
 
   def "analyzes when titles are missing"() {
