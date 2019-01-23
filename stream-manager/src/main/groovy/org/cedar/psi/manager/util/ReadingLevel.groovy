@@ -4,15 +4,11 @@ import groovy.util.logging.Slf4j
 
 @Slf4j
 class ReadingLevel {
-  static Map findWordSyllables(String originalWord) {
+  static Number findWordSyllables(String originalWord) {
     def word = originalWord.toLowerCase()
     //source for syllables: https://codegolf.stackexchange.com/questions/47322/how-to-count-the-syllables-in-a-word
     // note this is an estimate, and occasionally gets the answer wrong, but is generally close enough
-
-    return [
-      word: originalWord,
-      syllables: word.findAll(/[aiouy]+e*|e(?!d$|ly).|[td]ed|le$/).size(),
-    ]
+    return word.findAll(/[aiouy]+e*|e(?!d$|ly).|[td]ed|le$/).size()
   }
 
   static List splitIntoSentences(String text) {
@@ -33,7 +29,7 @@ class ReadingLevel {
 
   static Number totalSyllables(String text) {
     return words(text).collect({it ->
-        return ReadingLevel.findWordSyllables(it).syllables
+        return ReadingLevel.findWordSyllables(it)
       }).sum()
   }
 

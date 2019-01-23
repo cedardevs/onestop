@@ -19,7 +19,7 @@ class ReadingLevelSpec extends Specification {
     when:
     def syllables = words.collect({it ->
       println(it)
-      return ReadingLevel.findWordSyllables(it).syllables
+      return ReadingLevel.findWordSyllables(it)
     })//.sum()
 
     then:
