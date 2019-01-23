@@ -38,15 +38,23 @@ class ReadingLevel {
   100 -> very easy to read
   0 -> readable only by college graduate (very difficult)
   */
-  static Number readabilityFleschKincaid(String text) {
+  static Number FleschReadingEaseScore(String text) {
     def words = totalWords(text)
     def sentences = totalSentences(text)
     def syllables = totalSyllables(text)
     return 206.835 - 1.015 * (words/sentences) - 84.6 * (syllables/words)
   }
 
-  static boolean passesReadabilityTest(String text) {
-    Number score =  readabilityFleschKincaid(text)
-    return score >= 60 // 9th grade reading level or easier, I *think* this correlates to 'lower secondary education level'
+  static Number FleschKincaidReadingGradeLevel(String text) {
+    def words = totalWords(text)
+    def sentences = totalSentences(text)
+    def syllables = totalSyllables(text)
+    return 0.39 * (words/sentences) + 11.8 * (syllables/words) - 15.59
+  }
+
+  static boolean wcagReadingLevelCriteria(String text) {
+    // Number score =  FleschReadingEaseScore(text)
+    // return score >= 60 // 9th grade reading level or easier, I *think* this correlates to 'lower secondary education level'
+    FleschKincaidReadingGradeLevel(text) <= 9
   }
 }
