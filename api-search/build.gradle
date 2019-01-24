@@ -43,6 +43,9 @@ dependencies {
   compile 'org.apache.commons:commons-lang3:3.7'
   compile 'org.apache.lucene:lucene-expressions:7.2.1'
 
+  // version to override another library's dependency to solve a CVE:
+  compile 'com.google.guava:guava:27.0.1-jre'
+
   runtime 'org.springframework.boot:spring-boot-devtools'
 
   providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
@@ -90,7 +93,7 @@ ext {
     envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
     envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
   }
-  
+
   // login.gov keystore configuration (for JWT signing on token request)
   keystoreOutputDir = ".keystore"
   keystoreFile = "logingov.jks"

@@ -3,6 +3,16 @@
 
   <suppress>
     <notes><![CDATA[
+      CVE lists versions of Spring Framework 5.0.x and below. We are using Spring Framework 5.1.2
+      ]]></notes>
+    <cve>CVE-2016-9878</cve>
+    <cve>CVE-2018-1270</cve>
+    <cve>CVE-2018-1271</cve>
+    <cve>CVE-2018-1272</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
       Refers to a Groovy LDAP class which is not in use in this application
       ]]></notes>
     <filePath regex="true">.*\bgroovy-.*\.jar</filePath>
