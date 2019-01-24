@@ -34,3 +34,11 @@ export const setHeaderMenuOpen = isOpen => {
     value: isOpen,
   }
 }
+
+export const SHOW_GRANULE_VIDEO = 'SHOW_GRANULE_VIDEO'
+export const showGranuleVideo = granuleId => {
+  return {
+    type: SHOW_GRANULE_VIDEO,
+    granuleVideo: granuleId,
+  }
+}

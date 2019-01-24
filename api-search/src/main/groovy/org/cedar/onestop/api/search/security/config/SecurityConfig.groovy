@@ -58,7 +58,12 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+
+        http
+        .csrf()
+            .ignoringAntMatchers("/search/collection/**", "/search/granule/**", "/search/flattened-granule/**")
+            .and()
+        .authorizeRequests()
         // login, login failure, and index are allowed by anyone
         .antMatchers(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL, LOGIN_SUCCESS_ENDPOINT, LOGIN_PROFILE_ENDPOINT, LOGIN_FAILURE_ENDPOINT, LOGOUT_ENDPOINT, LOGOUT_SUCCESS_ENDPOINT, "/")
             .permitAll()
@@ -97,7 +102,8 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
             .tokenEndpoint()
             .accessTokenResponseClient(accessTokenResponseClient())
             .and()
-            .failureUrl(LOGIN_FAILURE_ENDPOINT)
+//            .failureUrl(LOGIN_FAILURE_ENDPOINT)
+            .failureHandler(new LoginGovAuthenticationFailureHandler())
             .successHandler(new LoginGovAuthenticationSuccessHandler())
     }
 

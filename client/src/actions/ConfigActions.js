@@ -4,7 +4,7 @@ import {HEADER_DROPDOWN_FEATURES} from '../utils/featureUtils'
 
 import _ from 'lodash'
 import {API_PATH} from '../utils/urlUtils'
-
+import {getUser} from './UserActions'
 // synchronous actions
 export const SET_CONFIG = 'set_config'
 export const setConfig = config => {
@@ -44,6 +44,9 @@ export const fetchConfig = () => {
       .then(response => response.json())
       .then(json => {
         dispatch(setConfig(json))
+        if (json.auth) {
+          dispatch(getUser(json.auth.userProfileEndpoint))
+        }
         dispatch(toggleFeatures(json.enabledFeatureToggles))
       })
       .catch(error => console.debug('no config file available'))

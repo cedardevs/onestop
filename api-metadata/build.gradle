@@ -13,6 +13,10 @@ repositories {
 
   // opensaml repo
   maven { url "https://build.shibboleth.net/nexus/content/repositories/releases" }
+  // avro serdes from confluent
+  maven { url 'https://packages.confluent.io/maven/' }
+  // for shared avro schemas from https://github.com/cedardevs/schemas
+  maven { url "https://jitpack.io" }
 }
 
 configurations {
@@ -20,8 +24,13 @@ configurations {
 }
 
 dependencies {
-    // groovy
-//    compile("org.codehaus.groovy:groovy-all:${groovyVersion}")
+  // Kafka dependencies for connecting with PSI
+  compile('com.github.cedardevs:schemas:0.1.0')
+  compile("org.springframework.kafka:spring-kafka:2.2.2.RELEASE")
+  compile("io.confluent:kafka-streams-avro-serde:5.0.1")
+  testCompile('com.github.cedardevs:schemas:0.1.0:test')
+  testCompile('io.confluent:kafka-schema-registry:5.0.1')
+  testCompile('io.confluent:kafka-schema-registry:5.0.1:tests')
 
   // opensaml
   compile("org.opensaml:opensaml-core:${project.openSAMLVersion}")
@@ -31,7 +40,6 @@ dependencies {
   compile("org.opensaml:opensaml-messaging-impl:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-api:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-impl:${project.openSAMLVersion}")
-  compile "org.springframework.kafka:spring-kafka:2.2.3.RELEASE"
 
   // logback
   compile("ch.qos.logback:logback-core:${project.logbackVersion}")
@@ -43,7 +51,6 @@ dependencies {
   // junit
   testCompile("junit:junit:${project.junitVersion}")
   testCompile("org.springframework.security:spring-security-test")
-
 
 
   compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
@@ -80,8 +87,7 @@ dependencies {
   testCompile "org.testcontainers:testcontainers:1.10.0"
   testCompile "org.testcontainers:elasticsearch:1.10.0"
   testCompile 'net.bytebuddy:byte-buddy:1.7.11'
-  testCompile "org.springframework.kafka:spring-kafka-test:2.2.3.RELEASE"
-
+  testCompile "org.springframework.kafka:spring-kafka-test:2.2.2.RELEASE"
 }
 
 ext {

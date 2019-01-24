@@ -29,6 +29,7 @@ spring:
 logingov:
   allowed-origin: \${LOGIN_GOV_ALLOWED_ORIGIN}
   login-success-redirect: \${LOGIN_GOV_LOGIN_SUCCESS_REDIRECT}
+  login-failure-redirect: \${LOGIN_GOV_LOGIN_FAILURE_REDIRECT}
   logout-success-redirect: \${LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT}
   keystore:
     alias: \${LOGIN_GOV_KEYSTORE_ALIAS}
@@ -92,6 +93,6 @@ info.buildDate: ${buildDate}
 
 ui:
   auth:
-    loginEndpoint: "http://localhost:8080/onestop/api/login"
-    logoutEndpoint: "http://localhost:8080/onestop/api/logout"
-    userProfileEndpoint: "http://localhost:8080/onestop/api/login_profile"
+    loginEndpoint: "http://localhost:30000/onestop/api/login"
+    logoutEndpoint: "http://localhost:30000/onestop/api/logout"
+    userProfileEndpoint: "http://localhost:30000/onestop/api/login_profile"

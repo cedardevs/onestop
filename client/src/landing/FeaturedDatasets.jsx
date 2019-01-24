@@ -4,9 +4,7 @@ import FlexColumn from '../common/FlexColumn'
 import {processUrl} from '../utils/urlUtils'
 import {fontFamilySerif} from '../utils/styleUtils'
 import Button from '../common/input/Button'
-
-import pause from 'fa/pause-circle-o.svg'
-import play from 'fa/play-circle-o.svg'
+import {play_circle_o, pause_circle_o, SvgIcon} from '../common/SvgIcon'
 
 const styleFeaturedDatasetsWrapper = {
   marginTop: '2.618em',
@@ -114,6 +112,7 @@ const stylePlayPauseButton = collapseImage => {
     justifyContent: collapseImage ? 'center' : 'flex-end',
     padding: '.309em',
     margin: '.309em 0',
+    fill: 'white',
   }
 }
 
@@ -125,14 +124,6 @@ const stylePlayPauseFocus = {
 const stylePlayPauseHover = {
   outline: '2px dashed white',
   background: 'transparent',
-}
-
-const stylePlayPauseButtonIcon = {
-  width: '1.3em',
-  height: '1.3em',
-  paddingTop: '0.309em',
-  paddingBottom: '0.309em',
-  paddingRight: '0.309em',
 }
 
 const Timer = function(callback, delay){
@@ -330,14 +321,18 @@ class FeaturedDatasets extends React.Component {
       <Button
         title={manualPauseAriaLabel}
         text={manualPauseLabel}
-        icon={!manualPause ? pause : play}
         onClick={this.toggleManualPause}
         style={stylePlayPauseButton(collapseImage)}
         styleFocus={stylePlayPauseFocus}
         styleHover={stylePlayPauseHover}
-        styleIcon={stylePlayPauseButtonIcon}
         ariaSelected={!this.isPaused()}
-      />
+      >
+        <SvgIcon
+          size="1.3em"
+          path={!manualPause ? pause_circle_o : play_circle_o}
+        />{' '}
+        <span>{manualPauseLabel}</span>
+      </Button>
     )
 
     if (featured !== null && featured.length > 0) {

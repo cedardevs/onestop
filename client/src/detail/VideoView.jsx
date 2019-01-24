@@ -1,6 +1,5 @@
 import React from 'react'
 import Video from '../common/Video'
-import {govExternalYouTubeMsg} from '../utils/urlUtils'
 
 const styleVideoView = {
   display: 'flex',
@@ -39,16 +38,6 @@ const styleListElementSelected = {
   color: '#222',
 }
 
-const styleDisclaimer = {
-  color: '#f9f9f9',
-  border: '3px solid #3a3a3a',
-  borderCollapse: 'collapse',
-  backgroundColor: '#1a1a1a',
-  margin: 0,
-  padding: '1.618em',
-  fontStyle: 'italic',
-}
-
 export default class VideoView extends React.Component {
   constructor(props) {
     super(props)
@@ -84,10 +73,16 @@ export default class VideoView extends React.Component {
           url.indexOf('?') > 0 ? `${url}&rel=0` : `${url}?rel=0`
 
         embeddedVideos.push(
-          <Video key={index} link={linkWithOptions} aspectRatio={0.5625} />
+          <Video
+            key={index}
+            link={linkWithOptions}
+            protocol={link.linkProtocol}
+            aspectRatio={0.5625}
+          />
         )
       }
 
+      // TODO link name needs to not be blank for this to work!!!
       titleList.push(
         <li
           key={index}
@@ -112,7 +107,6 @@ export default class VideoView extends React.Component {
           <ul style={styleList}>{titleList}</ul>
           {embeddedVideos}
         </div>
-        <div style={styleDisclaimer}>Disclaimer: {govExternalYouTubeMsg}</div>
       </div>
     )
   }

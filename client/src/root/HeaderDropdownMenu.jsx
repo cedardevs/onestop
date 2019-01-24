@@ -102,7 +102,16 @@ class HeaderDropdownMenu extends React.Component {
 
   handleClickOutside = event => {
     const {setOpen} = this.props
-    setOpen(false)
+
+    // see where the click event was triggered
+    // the most deeply nested element that caused the event is `event.target`
+    const targetButton = event.target.closest('button#headerDropdownMenuButton')
+
+    // if the target wasn't the dropdown menu button, specifically,
+    // it's okay to trigger setOpen, otherwise we avoid redundantly calling it
+    if (targetButton == null) {
+      setOpen(false)
+    }
   }
 
   handleMouseDown = event => {
@@ -163,11 +172,7 @@ class HeaderDropdownMenu extends React.Component {
     )
 
     return (
-      <FocusManager
-        onBlur={this.handleTotalBlur}
-        blurOnEscape={true}
-        blurOnClickOutside={true}
-      >
+      <FocusManager onBlur={this.handleTotalBlur} blurOnEscape={true}>
         <AnimateHeight
           duration={ANIMATION_DURATION}
           height={open ? 'auto' : 0}

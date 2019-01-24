@@ -9,11 +9,6 @@ export const getUser = userEndpoint => {
     redirect: 'error',
     mode: 'cors',
     credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Cache: 'no-cache',
-    },
   }
   return dispatch => {
     dispatch({type: GET_USER_REQUEST})
