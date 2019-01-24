@@ -5,7 +5,7 @@ import org.cedar.schemas.avro.util.AvroUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static org.cedar.schemas.avro.util.TemporalTestData.situtations
+import static org.cedar.schemas.avro.util.TemporalTestData.situations
 
 @Unroll
 class InventoryManagerToOneStopUtilTest extends Specification {
@@ -196,14 +196,14 @@ class InventoryManagerToOneStopUtilTest extends Specification {
     // Only include data that will be checked to cut down on size of below tables
     where:
     situation                | expectedResult
-    situtations.instantDay   | [beginDate: '1999-12-31T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
-    situtations.instantYear  | [beginDate: '1999-01-01T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
-    situtations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000]
-    situtations.instantNano  | [beginDate: '2008-04-01T00:00:00Z', endDate: '2008-04-01T00:00:00Z', beginYear: 2008, endYear: 2008]
-    situtations.bounded      | [beginDate: '1900-01-01T00:00:00Z', endDate: '2009-12-31T23:59:59Z', beginYear: 1900, endYear: 2009]
-    situtations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000]
-    situtations.ongoing      | [beginDate: '1975-06-15T12:30:00Z', endDate: null, beginYear: 1975, endYear: null]
-    situtations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null]
+    situations.instantDay   | [beginDate: '1999-12-31T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
+    situations.instantYear  | [beginDate: '1999-01-01T00:00:00Z', endDate: '1999-12-31T23:59:59Z', beginYear: 1999, endYear: 1999]
+    situations.instantPaleo | [beginDate: null, endDate: null, beginYear: -1000000000, endYear: -1000000000]
+    situations.instantNano  | [beginDate: '2008-04-01T00:00:00Z', endDate: '2008-04-01T00:00:00Z', beginYear: 2008, endYear: 2008]
+    situations.bounded      | [beginDate: '1900-01-01T00:00:00Z', endDate: '2009-12-31T23:59:59Z', beginYear: 1900, endYear: 2009]
+    situations.paleoBounded | [beginDate: null, endDate: null, beginYear: -2000000000, endYear: -1000000000]
+    situations.ongoing      | [beginDate: '1975-06-15T12:30:00Z', endDate: null, beginYear: 1975, endYear: null]
+    situations.empty        | [beginDate: null, endDate: null, beginYear: null, endYear: null]
   }
 
   def "new record is ready for onestop"() {
@@ -242,12 +242,12 @@ class InventoryManagerToOneStopUtilTest extends Specification {
         .setParentIdentifierExists(false)
         .build()
     def timeAnalysis = TemporalBoundingAnalysis.newBuilder(inputRecord.analysis.temporalBounding)
-        .setBeginExists(true)
-        .setBeginUtcDateTimeString('INVALID')
-        .setEndExists(true)
-        .setEndUtcDateTimeString('INVALID')
-        .setInstantExists(false)
-        .setInstantUtcDateTimeString('UNDEFINED')
+        .setBeginDescriptor(ValidDescriptor.INVALID)
+        .setBeginUtcDateTimeString(null)
+        .setEndDescriptor(ValidDescriptor.INVALID)
+        .setEndUtcDateTimeString(null)
+        .setInstantDescriptor(ValidDescriptor.UNDEFINED)
+        .setInstantUtcDateTimeString(null)
         .build()
     def analysis = Analysis.newBuilder(inputRecord.analysis)
         .setTitles(titleAnalysis)

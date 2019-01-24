@@ -95,13 +95,13 @@ class KafkaIngestIntegrationSpec extends Specification {
 
     def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
     def inputRecord = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
-    def inputKey = 'ABC'
+    def inputKey = 'kafka_ingest_ABC'
 
     when:
     def record = new ProducerRecord(collectionTopic, inputKey, inputRecord)
     producer.send(record)
 
-    sleep(200)
+    sleep(1000)
 
     def request = RequestEntity.get("${baseUrl}/metadata/${inputKey}".toURI()).build()
     def result = restTemplate.exchange(request, Map)
