@@ -126,11 +126,9 @@ jobs:
 
 workflows:
   version: 2
-  build-deploy:
+  build:
     jobs:
-      - deploy-stage:
-          requires:
-            - build
+      - build
   nightly:
     triggers:
       - schedule:
