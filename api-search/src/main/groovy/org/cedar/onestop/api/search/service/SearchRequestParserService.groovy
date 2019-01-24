@@ -118,13 +118,6 @@ class SearchRequestParserService {
     ]]
   }
 
-  /* For filters:
-   *  - union: A | B | A & B; intersection: A & B
-   *  - union with bool > must > bool > should [] for multiple selections on same term
-   *  - union of multiple unions is  bool > must >> bool > should []
-   *    -- (does this mean a match must come from each nested filter?)
-   *  - intersection probably bool > must > bool > must (single term)
-   */
   private List<Map> assembleFilteringContext(List<Map> filters) {
     if (!filters) {
       return null
@@ -135,163 +128,26 @@ class SearchRequestParserService {
 
     // Temporal filters:
     groupedFilters.datetime.each {
-      def x = it.after
-      def y = it.before
-      def relation = it.relation
+      allFilters.add(constructDateTimeFilter(it))
+    }
 
-      switch (relation) {
-        // Results contain query
-        case 'contains':
-          if (x || y) {
-            def beginVal = x ? x : y
-            def endVal = y ? y : x
-
-            allFilters.add([
-                bool: [
-                    must: [
-                        [ range: [ 'beginDate': [ lte: beginVal ]] ]
-                    ],
-                    should: [
-                        [ range: [ 'endDate': [ gte: endVal ]] ],
-                        [ bool: [
-                            must_not: [
-                                [ exists: [ field: 'endDate' ] ]
-                            ]
-                        ]]
-                    ]
-                ]
-            ])
-          }
-        break
-
-        case 'within':
-          // Results within query
-          if (x) {
-            allFilters.add([
-                range: [
-                    'beginDate': [
-                        gte: x
-                    ]
-                ]
-            ])
-          }
-          if (y) {
-            allFilters.add([
-                range: [
-                    'endDate': [
-                        lte: y
-                    ]
-                ]
-            ])
-          }
-        break
-
-        case 'disjoint':
-          // Results have nothing in common with query
-          if (x && !y) {
-            allFilters.add([
-                range: [ 'endDate': [ lt: x ] ]
-            ])
-          }
-          else if (!x && y) {
-            allFilters.add([
-                range: [ 'beginDate': [ gt: y ] ]
-            ])
-          }
-          else if (x && y) {
-            allFilters.add([
-                bool: [
-                    should: [
-                        [ bool: [
-                            must: [
-                                [range: [ 'beginDate': [ lt: x ] ]],
-                                [range: [ 'endDate': [ lt: x ] ]]
-                            ]
-                        ]],
-                        [ bool: [
-                            must: [
-                                [range: [ 'beginDate': [ gt: y ] ]]
-                            ],
-                            should: [
-                                [range: [ 'endDate': [ gt: y ] ]],
-                                [ bool: [
-                                    must_not: [
-                                        [ exists: [ field: 'endDate' ] ]
-                                    ]
-                                ]]
-                            ]
-                        ]]
-                    ]
-                ]
-            ])
-          }
-          break
-
-        default:
-          // Null or 'intersects'
-          if (x && !y) {
-            // End date is greater than x; if endDate "ongoing" (null), make sure results actually have a beginDate
-            // (otherwise we'll match ones without a time bounding)
-            allFilters.add([
-                bool: [
-                    should: [
-                        [ range: [ 'endDate': [ gte: x ]] ],
-                        [ bool: [
-                            must: [
-                                [ exists: [ field: 'beginDate' ] ]
-                            ],
-                            must_not: [
-                                [ exists: [ field: 'endDate' ] ]
-                            ]
-                        ]]
-                    ]
-                ]
-            ])
-          }
-          else if (!x && y) {
-            allFilters.add([
-                range: [
-                    'beginDate': [
-                        lte: y
-                    ]
-                ]
-            ])
-          }
-          else if (x && y){
-            allFilters.add([
-                bool: [
-                    must: [
-                        [ range: [ 'beginDate': [ lte: y ]] ]
-                    ],
-                    should: [
-                        [ range: [ 'endDate': [ gte: x ]] ],
-                        [ bool: [
-                            must_not: [
-                                [ exists: [ field: 'endDate' ] ]
-                            ]
-                        ]]
-                    ]
-                ]
-            ])
-          }
-
-      }
+    groupedFilters.paleoDate.each {
+      allFilters.add(constructPaleoFilter(it))
     }
 
     // Spatial filters:
     groupedFilters.geometry.each {
-      allFilters.add([
-          geo_shape: [
-              spatialBounding: [
-                  shape   : it.geometry,
-                  relation: it.relation ?: 'intersects'
-              ]
-          ]
-      ])
+      allFilters.add(constructSpatialFilter(it))
+    }
+
+    // Facet filters:
+    groupedFilters.facet.each {
+      allFilters.add(constructFacetFilter(it))
     }
 
     // Exclude global results filter:
     if (groupedFilters.excludeGlobal) {
+      // FIXME test -- is ok w/ groupedFilters.excludeGlobal[0]?.value == true
       // Handling filter & null awkwardness of 'isGlobal' property -- passing false through excludes all non-global
       // and null records from results, which isn't exactly what this filter implies
       if (groupedFilters.excludeGlobal[0].value == true) {
@@ -301,16 +157,6 @@ class SearchRequestParserService {
             ]
         ])
       }
-    }
-
-    // Facet filters:
-    groupedFilters.facet.each {
-      def fieldName = facetNameMappings[it.name] ?: it.name
-      allFilters.add([
-          terms: [
-              (fieldName): it.values
-          ]
-      ])
     }
 
     // Collection filter -- force a union since an intersection on multiple parentIds will return nothing
@@ -327,4 +173,172 @@ class SearchRequestParserService {
     return allFilters
   }
 
+  private List<Map> constructDateTimeFilter(Map filterRequest) {
+    return constructTemporalFilter(filterRequest, 'beginDate', 'endDate')
+  }
+
+  private List<Map> constructPaleoFilter(Map filterRequest) {
+    return constructTemporalFilter(filterRequest, 'beginYear', 'endYear')
+  }
+
+  private List<Map> constructTemporalFilter(Map filterRequest, String beginField, String endField) {
+
+    def x = filterRequest.after
+    def y = filterRequest.before
+    def relation = filterRequest.relation
+
+    def esFilters = []
+
+    switch (relation) {
+    // Results contain query
+      case 'contains':
+        if (x || y) {
+          def beginVal = x ? x : y
+          def endVal = y ? y : x
+
+          esFilters.add([
+              bool: [
+                  must: [
+                      [ range: [ (beginField): [ lte: beginVal ]] ]
+                  ],
+                  should: [
+                      [ range: [ (endField): [ gte: endVal ]] ],
+                      [ bool: [
+                          must_not: [
+                              [ exists: [ field: endField ] ]
+                          ]
+                      ]]
+                  ]
+              ]
+          ])
+        }
+        break
+
+      case 'within':
+        // Results within query
+        if (x) {
+          esFilters.add([
+              range: [ (beginField): [ gte: x ] ]
+          ])
+        }
+        if (y) {
+          esFilters.add([
+              range: [ (endField): [ lte: y ] ]
+          ])
+        }
+        break
+
+      case 'disjoint':
+        // Results have nothing in common with query
+        if (x && !y) {
+          esFilters.add([
+              range: [ (endField): [ lt: x ] ]
+          ])
+        }
+        else if (!x && y) {
+          esFilters.add([
+              range: [ (beginField): [ gt: y ] ]
+          ])
+        }
+        else if (x && y) {
+          esFilters.add([
+              bool: [
+                  should: [
+                      [ bool: [
+                          must: [
+                              [range: [ (beginField): [ lt: x ] ]],
+                              [range: [ (endField): [ lt: x ] ]]
+                          ]
+                      ]],
+                      [ bool: [
+                          must: [
+                              [range: [ (beginField): [ gt: y ] ]]
+                          ],
+                          should: [
+                              [range: [ (endField): [ gt: y ] ]],
+                              [ bool: [
+                                  must_not: [
+                                      [ exists: [ field: endField ] ]
+                                  ]
+                              ]]
+                          ]
+                      ]]
+                  ]
+              ]
+          ])
+        }
+        break
+
+      default:
+        // Null or 'intersects'
+        if (x && !y) {
+          // End date is greater than x; if endDate "ongoing" (null), make sure results actually have a beginDate
+          // (otherwise we'll match ones without a time bounding)
+          esFilters.add([
+              bool: [
+                  should: [
+                      [ range: [ (endField): [ gte: x ]] ],
+                      [ bool: [
+                          must: [
+                              [ exists: [ field: beginField ] ]
+                          ],
+                          must_not: [
+                              [ exists: [ field: endField ] ]
+                          ]
+                      ]]
+                  ]
+              ]
+          ])
+        }
+        else if (!x && y) {
+          esFilters.add([
+              range: [
+                  (beginField): [
+                      lte: y
+                  ]
+              ]
+          ])
+        }
+        else if (x && y){
+          esFilters.add([
+              bool: [
+                  must: [
+                      [ range: [ (beginField): [ lte: y ]] ]
+                  ],
+                  should: [
+                      [ range: [ (endField): [ gte: x ]] ],
+                      [ bool: [
+                          must_not: [
+                              [ exists: [ field: endField ] ]
+                          ]
+                      ]]
+                  ]
+              ]
+          ])
+        }
+
+    }
+
+    return esFilters
+  }
+
+  private Map constructSpatialFilter(Map filterRequest) {
+    return [
+        geo_shape: [
+            spatialBounding: [
+                shape   : filterRequest.geometry,
+                relation: filterRequest.relation ?: 'intersects'
+            ]
+        ]
+    ]
+  }
+
+  private Map constructFacetFilter(Map filterRequest) {
+    def fieldName = facetNameMappings[filterRequest.name] ?: filterRequest.name
+    return [
+        terms: [
+            (fieldName): filterRequest.values
+        ]
+    ]
+  }
 }

@@ -133,13 +133,21 @@ class SearchRequestParserServiceTest extends Specification {
         bool: [
             must  : [:],
             filter: [
-                [range: [
-                    'beginDate': [lte: '2011-11-11']
-                ]],
-                [range: [
-                    'endDate': [gte: '2010-10-10']
-                ]]
-            ]]
+                [[bool: [
+                    must: [
+                        [ range: [ beginDate: [ lte: '2011-11-11' ]] ]
+                    ],
+                    should: [
+                        [ range: [ endDate: [ gte: '2010-10-10' ]] ],
+                        [ bool: [
+                            must_not: [
+                                [ exists: [ field: 'endDate' ] ]
+                            ]
+                        ]]
+                    ]
+                ]]]
+            ]
+        ]
     ]
 
     then:
