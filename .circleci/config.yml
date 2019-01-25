@@ -230,6 +230,7 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
+      - <<: *restoreCache
 
       - run:
           name: Api-Metadata Docker Image
@@ -244,6 +245,7 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
+      - <<: *restoreCache
 
       - run:
           name: Api-Search Docker Image
@@ -258,6 +260,7 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
+      - <<: *restoreCache
 
       - run:
           name: Client Docker Image
@@ -272,6 +275,7 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
+      - <<: *restoreCache
 
       - run:
           name: Client Check Formatting
@@ -286,6 +290,7 @@ jobs:
 
     steps:
       - <<: *attachWorkspace
+      - <<: *restoreCache
 
       - run:
           name: Api-Metadata Tests Report
@@ -319,127 +324,32 @@ jobs:
       - store_artifacts:
           path: ~/tests
 
-
-
-  build:
-    machine: true
-    working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
+  check-owasp-cve:
+    <<: *defaults
 
     steps:
-      - checkout
+      - <<: *attachWorkspace
+      - <<: *restoreCache
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - onestop-cache-v3-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - onestop-cache-v3-
-
-      # Virtual Memory for Elasticsearch:
-      # https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
       - run:
-          name: Increase Virtual Memory Limits for Elasticsearch
-          command: sudo sysctl -w vm.max_map_count=262144
-
-      # build it!
-      - run:
-          name: Generate Dummy Keystore and Build
-          command: ./gradlew jks && ./gradlew build
+          name: Run OWASP Check
+          command: ./gradlew dependencyCheckAnalyze
           no_output_timeout: 30m
-
-      - run:
-          name: Save test results
-          command: |
-            mkdir -p ~/tests/junit/
-            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex ".*/build/integration-test-results/.*xml" -exec cp {} ~/tests/junit/ \;
-            find . -type f -regex ".*/build/coverage/junit/.*xml" -exec cp {} ~/tests/junit/ \;
-          when: always
 
       - run:
           name: Save coverage results
           command: |
-            mkdir -p ~/tests/coverage/
-            find . -type d -regex ".*/build/reports/jacoco/" -exec cp -r {} ~/tests/coverage/ \;
-            find . -type d -regex ".*/build/coverage/lcov-report/" -exec cp -r {} ~/tests/coverage/ \;
+            mkdir -p ~/owasp/api-metadata/
+            find . -type d -regex "api-metadata/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/api-metadata/ \;
+            mkdir -p ~/owasp/api-search/
+            find . -type d -regex "api-search/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/api-search/ \;
           when: always
 
-      - run:
-          name: Post coverage results to codecov
-          command: |
-            bash <(curl -s https://codecov.io/bash)
-
       - store_test_results:
-          path: ~/tests
+          path: ~/owasp
 
       - store_artifacts:
-          path: ~/tests
-
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-            - ~/.gradle/wrapper/
-            - .gradle
-            - api-search/build
-            - api-search/dist
-            - api-metadata/build
-            - api-metadata/dist
-            - buildSrc/.gradle
-            - buildSrc/build
-            - client/.gradle
-            - client/node_modules
-            - client/build
-          key: onestop-cache-v3-{{ checksum "build.gradle" }}
-
-      - deploy:
-          name: Publish
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ] || [ "${CIRCLE_BRANCH}" == "release/*" ]; then
-              ./gradlew publish -x BuildDockerImage
-            fi
-  checkCVE:
-    machine: true
-    working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-
-    steps:
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - onestop-cache-v3-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - onestop-cache-v3-
-
-      # build it!
-      - run:
-          name: Generate Dummy Keystore and Build
-          command: ./gradlew dependencyCheckAnalyze
-          no_output_timeout: 30m
-
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-            - ~/.gradle/wrapper/
-            - .gradle
-            - api-search/build
-            - api-search/dist
-            - api-metadata/build
-            - api-metadata/dist
-            - buildSrc/.gradle
-            - buildSrc/build
-            - client/.gradle
-            - client/node_modules
-            - client/build
-          key: onestop-cache-v3-{{ checksum "build.gradle" }}
+          path: ~/owasp
 
 workflows:
   version: 2
@@ -514,9 +424,7 @@ workflows:
             - search-integration-test
             - client-test
             - e2e
-  # build:
-  #   jobs:
-  #     - build
+
   nightly:
     triggers:
       - schedule:
@@ -526,4 +434,7 @@ workflows:
               only:
                 - master
     jobs:
-      - checkCVE
+      - checkout
+      - check-owasp-cve:
+          requires:
+            - checkout
