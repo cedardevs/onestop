@@ -2,79 +2,84 @@
 #
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
+
+defaults: &defaults
+  machine: true
+  working_directory: ~/repo
+
+restoreCache: &restoreCache
+  # Download and cache dependencies
+  - restore_cache:
+      keys:
+      - onestop-cache-v3-{{ checksum "build.gradle" }}
+      # fallback to using the latest cache if no exact match is found
+      - onestop-cache-v3-
+
+saveCache: &saveCache
+  - save_cache:
+      paths:
+        - ~/.gradle/caches/
+        - ~/.gradle/wrapper/
+        - .gradle
+        - buildSrc/.gradle
+        - client/.gradle
+        - client/node_modules
+      key: onestop-cache-v3-{{ checksum "build.gradle" }}
+
+persistWorkspace: &persistWorkspace
+  - persist_to_workspace:
+      root: ~/repo
+      paths:
+        - .
+
+attachWorkspace: &attachWorkspace
+  - attach_workspace:
+      at: ~/repo
+
 version: 2
 jobs:
   meta-build:
-    machine: true
-    working_directory: ~/repo
+    <<: *defaults
     steps:
       - checkout
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - onestop-cache-v3-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - onestop-cache-v3-
+      <<: *restoreCache
 
       - run:
           name: Build Api-Metadata
           command: ./gradlew api-metadata:assemble
 
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-            - ~/.gradle/wrapper/
-            - .gradle
-            - buildSrc/.gradle
-            - client/.gradle
-            - client/node_modules
-          key: onestop-cache-v3-{{ checksum "build.gradle" }}
+      <<: *saveCache
 
-      - persist_to_workspace:
-          root: ~/repo
-          paths:
-            - .
+      <<: *persistWorkspace
 
   meta-test:
-    machine: true
-    working_directory: ~/repo
-    # requires:
-    #   - meta-build
+    <<: *defaults
     steps:
-      - attach_workspace:
-          at: ~/repo
+      <<: *attachWorkspace
 
       - run:
           name: Api-Metadata Unit Tests
           command: ./gradlew api-metadata:test
 
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-            - ~/.gradle/wrapper/
-            - .gradle
-            - buildSrc/.gradle
-            - client/.gradle
-            - client/node_modules
-          key: onestop-cache-v3-{{ checksum "build.gradle" }}
+      <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-metadata/build
+            - api-metadata/build/jacoco/test.exec
+            - api-metadata/build/test-results/test
+            - api-metadata/build/reports/test
 
   meta-integration-test:
-    machine: true
-    working_directory: ~/repo
+    <<: *defaults
     environment:
       # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
     # requires:
     #   - meta-build
     steps:
-      - attach_workspace:
-          at: ~/repo
+      <<: *attachWorkspace
 
       - run:
           name: Increase Virtual Memory Limits for Elasticsearch
@@ -88,36 +93,20 @@ jobs:
           name: Api-Metadata Integration Tests
           command: ./gradlew api-metadata:integrationTest
 
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-            - ~/.gradle/wrapper/
-            - .gradle
-            - buildSrc/.gradle
-            - client/.gradle
-            - client/node_modules
-          key: onestop-cache-v3-{{ checksum "build.gradle" }}
+      <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-metadata/build
+            - api-metadata/build/jacoco/integrationTest.exec
+            - api-metadata/build/test-results/integrationTest
+            - api-metadata/build/reports/integrationTest
 
   meta-publish:
-    # filters:  # using regex filters requires the entire branch to match
-    #   branches:
-    #     only:  # only branches matching the below regex filters will run
-    #       - master
-    #       - /release.*/
-    machine: true
-    working_directory: ~/repo
-    # requires:
-    #   - meta-test
-    #   - meta-integration-test
+    <<: *defaults
 
     steps:
-      - attach_workspace:
-          at: ~/repo
+      <<: *attachWorkspace
 
       - run:
           name: Api-Metadata Docker Image
@@ -128,15 +117,10 @@ jobs:
           command: ./gradlew publish -x BuildDockerImage
 
   meta-report-tests:
-    machine: true
-    working_directory: ~/repo
-    # requires:
-    #   - meta-test
-    #   - meta-integration-test
+    <<: *defaults
 
     steps:
-      - attach_workspace:
-          at: ~/repo
+      <<: *attachWorkspace
 
       - run:
           name: Api-Metadata Tests Report
