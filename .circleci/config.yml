@@ -20,10 +20,10 @@ saveCache: &saveCache
       paths:
         - ~/.gradle/caches/
         - ~/.gradle/wrapper/
-        - .gradle
-        - buildSrc/.gradle
-        - client/.gradle
-        - client/node_modules
+        # - .gradle
+        # - buildSrc/.gradle
+        # - client/.gradle
+        # - client/node_modules
       key: onestop-cache-v3-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
@@ -44,6 +44,7 @@ jobs:
   search-build:
     <<: *defaults
     steps:
+      - <<: *attachWorkspace
       - <<: *restoreCache
 
       - run:
@@ -60,6 +61,7 @@ jobs:
   client-build:
     <<: *defaults
     steps:
+      - <<: *attachWorkspace
       - <<: *restoreCache
 
       - run:
@@ -76,6 +78,7 @@ jobs:
   meta-build:
     <<: *defaults
     steps:
+      - <<: *attachWorkspace
       - <<: *restoreCache
 
       - run:
