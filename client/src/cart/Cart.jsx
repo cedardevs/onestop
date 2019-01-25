@@ -7,8 +7,9 @@ import {boxShadow} from '../common/defaultStyles'
 import {identifyProtocol} from '../utils/resultUtils'
 import cancel from 'fa/ban.svg'
 import {fontFamilySerif} from '../utils/styleUtils'
-
-// import mockCartItems from '../../test/cart/mockCartItems'
+import FlexColumn from '../common/FlexColumn'
+import ScriptDownloader from './ScriptDownloader'
+import FlexRow from '../common/FlexRow'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -40,10 +41,20 @@ const styleCartActionsTitle = {
   padding: 0,
 }
 
+const styleActionButtons = {
+  justifyContent: 'space-between',
+  marginRight: '1.618em',
+}
+
 const styleClearCartButton = {
   fontSize: '1em',
   display: 'inline-flex',
-  padding: '0.309em',
+  padding: '0.309em 0.618em 0.309em 0.309em',
+}
+
+const styleClearCartButtonFocus = {
+  outline: '2px dashed #5C87AC',
+  outlineOffset: '.118em',
 }
 
 const styleClearCartIcon = {
@@ -143,19 +154,34 @@ export default class Cart extends React.Component {
         />
       ) : null
 
-    const cartActions =
-      selectedGranulesCount === 0 ? null : (
-        <div style={styleCartActions}>
-          <h1 style={styleCartActionsTitle}>Cart Actions</h1>
+    const cartActions = [
+      <ScriptDownloader
+        key="scriptDownloaderButton"
+        selectedGranules={selectedGranules}
+      />,
+      <FlexRow
+        key={'cartActionButtons'}
+        style={{marginTop: '1em'}}
+        items={[
           <Button
-            key="clearCartButton"
+            key={'clearCartButton'}
             style={styleClearCartButton}
+            styleFocus={styleClearCartButtonFocus}
             title={'Clear cart'}
             text={'Clear cart'}
             icon={cancel}
             styleIcon={styleClearCartIcon}
             onClick={deselectAllGranules}
-          />
+          />,
+        ]}
+      />,
+    ]
+
+    const cartActionsWrapper =
+      selectedGranulesCount === 0 ? null : (
+        <div style={styleCartActions}>
+          <h1 style={styleCartActionsTitle}>Cart Actions</h1>
+          <FlexColumn style={styleActionButtons} items={cartActions} />
         </div>
       )
 
@@ -164,7 +190,7 @@ export default class Cart extends React.Component {
         <Meta title="File Access Cart" robots="noindex" />
 
         <div style={styleCartListWrapper}>
-          {cartActions}
+          {cartActionsWrapper}
           <ListView
             items={selectedGranules}
             loading={!!loading}

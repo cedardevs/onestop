@@ -11,6 +11,7 @@ import {
   removeSelectedGranule,
   removeAllSelectedGranule,
 } from '../actions/CartActions'
+import mockCartItems from '../../test/cart/mockCartItems'
 
 // const mapStateToProps = state => {
 //   const numberOfGranulesSelected = Object.keys(
@@ -29,6 +30,10 @@ const mapStateToProps = state => {
   const numberOfGranulesSelected = selectedGranules
     ? Object.keys(getSelectedGranulesFromStorage(state)).length
     : 0
+
+  // - these lines are ONLY for testing the cart
+  // const selectedGranules = mockCartItems
+  // const numberOfGranulesSelected = Object.keys(selectedGranules).length
 
   return {
     loading: state.ui.loading ? 1 : 0,

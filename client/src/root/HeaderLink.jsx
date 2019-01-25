@@ -2,6 +2,8 @@ import React from 'react'
 import {Link, withRouter} from 'react-router-dom'
 import {Key} from '../utils/keyboardUtils'
 
+export const HEADER_LINK_CLASS = 'headerLinkClass'
+
 const styleLink = {
   textDecoration: 'none',
   color: '#d7d7d7',
@@ -124,6 +126,7 @@ class HeaderLink extends React.Component {
         onBlur={this.handleBlur}
         onKeyDown={this.handleKeyDown}
         onKeyUp={this.handleKeyUp}
+        className={HEADER_LINK_CLASS}
       >
         {title}
       </a>
@@ -137,6 +140,7 @@ class HeaderLink extends React.Component {
         onBlur={this.handleBlur}
         onKeyDown={this.handleKeyDown}
         onKeyUp={this.handleKeyUp}
+        className={HEADER_LINK_CLASS}
       >
         {this.props.children}
       </Link>

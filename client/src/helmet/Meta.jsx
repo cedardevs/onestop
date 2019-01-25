@@ -64,6 +64,7 @@ export default class Meta extends Component {
 
     return (
       <Helmet>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link href={faviconPath} rel="shortcut icon" />
 
         <meta property="robots" content={robotsValue} />

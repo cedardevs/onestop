@@ -1,5 +1,7 @@
 package org.cedar.onestop.api.search.controller
 
+import java.time.Instant
+
 class SitemapGenerator {
 
   public static String getBaseUrl(String requestUrl) {
@@ -11,7 +13,7 @@ class SitemapGenerator {
     def data = sitemapData.collect({site -> """
     <sitemap>
       <loc>${baseUrl}/api/sitemap/${site.id}.txt</loc>
-      <lastmod>${new Date(site.attributes.lastUpdatedDate).format('yyyy-MM-dd')}</lastmod>
+      <lastmod>${Instant.ofEpochMilli(site.attributes.lastUpdatedDate).toString()}</lastmod>
     </sitemap>
     """}).join('\n')
 

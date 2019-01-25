@@ -29,6 +29,7 @@ import FooterContainer from './FooterContainer'
 import {COLOR_SECONDARY_DARK} from '../common/defaultStyles'
 import {FEATURE_CART} from '../utils/featureUtils'
 import {ROUTE} from '../utils/urlUtils'
+import NotFoundContainer from '../common/info/NotFoundContainer'
 
 const styleBrowserWarning = {
   background: COLOR_SECONDARY_DARK,
@@ -181,6 +182,9 @@ export default class Root extends Component {
           <Route path={ROUTE.error.path}>
             <ErrorContainer />
           </Route>
+
+          {/* 404 not found */}
+          <Route component={NotFoundContainer} />
         </Switch>
       </div>
     )

@@ -5,7 +5,6 @@ import cart from 'fa/cart-arrow-down.svg'
 
 import AnimateHeight from 'react-animate-height'
 import Button from '../common/input/Button'
-import FocusManager from '../common/FocusManager'
 import {FEATURE_CART, HEADER_DROPDOWN_FEATURES} from '../utils/featureUtils'
 const ANIMATION_DURATION = 200
 
@@ -63,14 +62,22 @@ class HeaderDropdownMenu extends React.Component {
   constructor(props) {
     super(props)
     this.insideRef = React.createRef()
+    this.menuListRef = React.createRef()
   }
 
-  componentWillMount() {
-    document.addEventListener('mousedown', this.handleMouseDown, false)
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('mousedown', this.handleMouseDown, false)
+  componentDidUpdate(prevProps, prevState) {
+    if (this.menuListRef && this.props.open) {
+      const menuListElement = this.menuListRef.current
+      if (menuListElement) {
+        const focusable = menuListElement.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )
+        if (focusable.length > 0) {
+          const firstFocusable = focusable[0]
+          firstFocusable.focus()
+        }
+      }
+    }
   }
 
   handleRedirectToCart = () => {
@@ -93,32 +100,17 @@ class HeaderDropdownMenu extends React.Component {
     }
   }
 
-  handleTotalBlur = e => {
+  handleOnBlur = event => {
     const {setOpen} = this.props
-    if (setOpen) {
+    let delegateSetOpen = false
+    if (event.relatedTarget) {
+      if (event.relatedTarget.id === 'headerDropdownMenuButton') {
+        delegateSetOpen = true
+      }
+    }
+    if (setOpen && !delegateSetOpen) {
       setOpen(false)
     }
-  }
-
-  handleClickOutside = event => {
-    const {setOpen} = this.props
-
-    // see where the click event was triggered
-    // the most deeply nested element that caused the event is `event.target`
-    const targetButton = event.target.closest('button#headerDropdownMenuButton')
-
-    // if the target wasn't the dropdown menu button, specifically,
-    // it's okay to trigger setOpen, otherwise we avoid redundantly calling it
-    if (targetButton == null) {
-      setOpen(false)
-    }
-  }
-
-  handleMouseDown = event => {
-    if (this.insideRef.current === event.target) {
-      return
-    }
-    this.handleClickOutside(event)
   }
 
   render() {
@@ -163,26 +155,30 @@ class HeaderDropdownMenu extends React.Component {
     })
 
     const extraMenuContent = (
-      <div style={styleExtraMenuContent} ref={this.insideRef}>
+      <div
+        style={styleExtraMenuContent}
+        ref={this.insideRef}
+        onBlur={this.handleOnBlur}
+      >
         <div style={styleSeparatorWrapper}>
           <div style={stylesSeparatorMerged} />
         </div>
-        <ul style={styleExtraMenuList}>{menuItems}</ul>
+        <ul style={styleExtraMenuList} ref={this.menuListRef}>
+          {menuItems}
+        </ul>
       </div>
     )
 
     return (
-      <FocusManager onBlur={this.handleTotalBlur} blurOnEscape={true}>
-        <AnimateHeight
-          duration={ANIMATION_DURATION}
-          height={open ? 'auto' : 0}
-          style={styleExtraMenu}
-          onAnimationStart={() => this.handleAnimationStart(open)}
-          onAnimationEnd={() => this.handleAnimationEnd(open)}
-        >
-          {extraMenuContent}
-        </AnimateHeight>
-      </FocusManager>
+      <AnimateHeight
+        duration={ANIMATION_DURATION}
+        height={open ? 'auto' : 0}
+        style={styleExtraMenu}
+        onAnimationStart={() => this.handleAnimationStart(open)}
+        onAnimationEnd={() => this.handleAnimationEnd(open)}
+      >
+        {extraMenuContent}
+      </AnimateHeight>
     )
   }
 }

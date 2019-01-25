@@ -37,7 +37,7 @@ class SitemapGeneratorSpec extends Specification {
 
       <sitemap>
         <loc>baseUrl/api/sitemap/AWUByPEUY2tHcYwYu62K.txt</loc>
-        <lastmod>2018-08-03</lastmod>
+        <lastmod>2018-08-03T21:54:29.487Z</lastmod>
       </sitemap>
 
       </sitemapindex>
@@ -62,19 +62,19 @@ class SitemapGeneratorSpec extends Specification {
 
       <sitemap>
         <loc>baseUrl/api/sitemap/AWUByPEUY2tHcYwYu62K.txt</loc>
-        <lastmod>2018-08-03</lastmod>
+        <lastmod>2018-08-03T21:54:29.487Z</lastmod>
       </sitemap>
 
 
       <sitemap>
         <loc>baseUrl/api/sitemap/XYZByPEUY2tHcYwYu62K.txt</loc>
-        <lastmod>2018-08-02</lastmod>
+        <lastmod>2018-08-02T18:07:49.487Z</lastmod>
       </sitemap>
 
 
       <sitemap>
         <loc>baseUrl/api/sitemap/123ByPEUY2tHcYwYu62K.txt</loc>
-        <lastmod>2018-08-01</lastmod>
+        <lastmod>2018-08-01T14:21:09.487Z</lastmod>
       </sitemap>
 
       </sitemapindex>
