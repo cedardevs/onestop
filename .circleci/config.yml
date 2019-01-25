@@ -4,7 +4,7 @@
 #
 version: 2
 jobs:
-  api_metadata_build:
+  api-metadata-build:
     machine: true
     working_directory: ~/repo
     steps:
@@ -36,11 +36,11 @@ jobs:
           paths:
             - api-metadata/build
 
-  api_metadata_test:
+  api-metadata-test:
     machine: true
     working_directory: ~/repo
     # requires:
-    #   - api_metadata_build
+    #   - api-metadata-build
     steps:
       - attach_workspace:
           at: ~/repo
@@ -64,14 +64,14 @@ jobs:
           paths:
             - api-metadata/build
 
-  api_metadata_integration_test:
+  api-metadata-integration-test:
     machine: true
     working_directory: ~/repo
     environment:
       # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
     # requires:
-    #   - api_metadata_build
+    #   - api-metadata-build
     steps:
       - attach_workspace:
           at: ~/repo
@@ -103,7 +103,7 @@ jobs:
           paths:
             - api-metadata/build
 
-  api_metadata_publish:
+  api-metadata-publish:
     # filters:  # using regex filters requires the entire branch to match
     #   branches:
     #     only:  # only branches matching the below regex filters will run
@@ -112,8 +112,8 @@ jobs:
     machine: true
     working_directory: ~/repo
     # requires:
-    #   - api_metadata_test
-    #   - api_metadata_integration_test
+    #   - api-metadata-test
+    #   - api-metadata-integration-test
 
     steps:
       - attach_workspace:
@@ -127,12 +127,12 @@ jobs:
           name: Publish Images
           command: ./gradlew publish -x BuildDockerImage
 
-  api_metadata_test_report:
+  api-metadata-test_report:
     machine: true
     working_directory: ~/repo
     # requires:
-    #   - api_metadata_test
-    #   - api_metadata_integration_test
+    #   - api-metadata-test
+    #   - api-metadata-integration-test
 
     steps:
       - attach_workspace:
@@ -296,26 +296,26 @@ workflows:
   version: 2
   build-api-metadata:
     jobs:
-      - api_metadata_build
-      - api_metadata_test:
+      - api-metadata-build
+      - api-metadata-test:
           requires:
-            - api_metadata_build
-      - api_metadata_integration_test:
+            - api-metadata-build
+      - api-metadata-integration-test:
           requires:
-            - api_metadata_build
-      - api_metadata_test_report:
+            - api-metadata-build
+      - api-metadata-test_report:
           requires:
-            - api_metadata_test
-            - api_metadata_integration_test
-      - api_metadata_publish:
+            - api-metadata-test
+            - api-metadata-integration-test
+      - api-metadata-publish:
           filters:  # using regex filters requires the entire branch to match
             branches:
               only:  # only branches matching the below regex filters will run
                 - master
                 - /release.*/
           requires:
-            - api_metadata_test
-            - api_metadata_integration_test
+            - api-metadata-test
+            - api-metadata-integration-test
   build:
     jobs:
       - build
