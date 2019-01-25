@@ -40,7 +40,7 @@ dependencies {
   compile("org.opensaml:opensaml-messaging-impl:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-api:${project.openSAMLVersion}")
   compile("org.opensaml:opensaml-soap-impl:${project.openSAMLVersion}")
-  
+
   // logback
   compile("ch.qos.logback:logback-core:${project.logbackVersion}")
   compile("ch.qos.logback:logback-classic:${project.logbackVersion}")
@@ -71,6 +71,10 @@ dependencies {
   compile "org.springframework.boot:spring-boot-starter-data-jpa"
   compile 'org.liquibase:liquibase-core'
   compile 'com.h2database:h2:1.4.197'
+
+  // version to override another library's dependency to solve a CVE:
+  compile 'com.google.guava:guava:27.0.1-jre'
+  compile 'commons-collections:commons-collections:3.2.2'
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
