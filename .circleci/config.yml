@@ -118,6 +118,10 @@ jobs:
       - <<: *restoreCache
 
       - run:
+          name: Generate Dummy Keystore
+          command: ./gradlew jks
+
+      - run:
           name: Api-Search Unit Tests
           command: ./gradlew api-search:test
 
