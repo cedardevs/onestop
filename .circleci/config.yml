@@ -7,6 +7,16 @@ defaults: &defaults
   machine: true
   working_directory: ~/repo
 
+env: &env
+  environment:
+    # Customize the JVM maximum heap limit
+    JVM_OPTS: -Xmx3200m
+
+esHeap: &esHeap
+  run:
+      name: Increase Virtual Memory Limits for Elasticsearch
+      command: sudo sysctl -w vm.max_map_count=262144
+
 restoreCache: &restoreCache
   # Download and cache dependencies
   restore_cache:
@@ -74,6 +84,7 @@ jobs:
           root: ~/repo
           paths:
             - client/build
+            - client/node_modules
 
   meta-build:
     <<: *defaults
@@ -153,22 +164,11 @@ jobs:
 
   meta-integration-test:
     <<: *defaults
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-    # requires:
-    #   - meta-build
+    <<: *env
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
-
-      - run:
-          name: Increase Virtual Memory Limits for Elasticsearch
-          command: sudo sysctl -w vm.max_map_count=262144
-      #
-      # - run:
-      #     name: Generate Dummy Keystore
-      #     command: ./gradlew jks
+      - <<: *esHeap
 
       - run:
           name: Api-Metadata Integration Tests
@@ -185,20 +185,12 @@ jobs:
 
   search-integration-test:
     <<: *defaults
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
+    <<: *env
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
-      - run:
-          name: Increase Virtual Memory Limits for Elasticsearch
-          command: sudo sysctl -w vm.max_map_count=262144
-
-      # - run:
-      #     name: Generate Dummy Keystore
-      #     command: ./gradlew jks
+      - <<: *esHeap
 
       - run:
           name: Api-Search Integration Tests
@@ -215,20 +207,16 @@ jobs:
 
   e2e:
     <<: *defaults
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
+    <<: *env
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
 
-      - run:
-          name: Increase Virtual Memory Limits for Elasticsearch
-          command: sudo sysctl -w vm.max_map_count=262144
+      - <<: *esHeap
 
       - run:
           name: E2E tests
-          command: ./gradlew e2e-tests
+          command: ./gradlew e2e-tests:test
 
       - <<: *saveCache
 
