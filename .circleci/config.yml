@@ -34,7 +34,7 @@ jobs:
       - persist_to_workspace:
           root: ~/repo
           paths:
-            - api-metadata/build
+            - .
 
   api-metadata-test:
     machine: true
@@ -316,9 +316,9 @@ workflows:
           requires:
             - api-metadata-test
             - api-metadata-integration-test
-  build:
-    jobs:
-      - build
+  # build:
+  #   jobs:
+  #     - build
   nightly:
     triggers:
       - schedule:
