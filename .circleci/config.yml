@@ -165,10 +165,10 @@ jobs:
       - run:
           name: Increase Virtual Memory Limits for Elasticsearch
           command: sudo sysctl -w vm.max_map_count=262144
-
-      - run:
-          name: Generate Dummy Keystore
-          command: ./gradlew jks
+      #
+      # - run:
+      #     name: Generate Dummy Keystore
+      #     command: ./gradlew jks
 
       - run:
           name: Api-Metadata Integration Tests
@@ -196,9 +196,9 @@ jobs:
           name: Increase Virtual Memory Limits for Elasticsearch
           command: sudo sysctl -w vm.max_map_count=262144
 
-      - run:
-          name: Generate Dummy Keystore
-          command: ./gradlew jks
+      # - run:
+      #     name: Generate Dummy Keystore
+      #     command: ./gradlew jks
 
       - run:
           name: Api-Search Integration Tests
