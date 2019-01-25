@@ -57,6 +57,7 @@ class MapThumbnail extends React.Component {
     }
 
     this.map = L.map(ReactDOM.findDOMNode(this), {
+      preferCanvas: true,
       layers: layers,
       maxZoom: this.props.interactive ? 10 : 3,
       zoomControl: this.props.interactive,
