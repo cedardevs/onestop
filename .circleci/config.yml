@@ -18,23 +18,23 @@ jobs:
           - onestop-cache-v3-
 
       - run:
-        name: Build Api-Metadata
-        command: ./gradlew api-metadata:assemble
+          name: Build Api-Metadata
+          command: ./gradlew api-metadata:assemble
 
       - save_cache:
-        paths:
-          - ~/.gradle/caches/
-          - ~/.gradle/wrapper/
-          - .gradle
-          - buildSrc/.gradle
-          - client/.gradle
-          - client/node_modules
-        key: onestop-cache-v3-{{ checksum "build.gradle" }}
+          paths:
+            - ~/.gradle/caches/
+            - ~/.gradle/wrapper/
+            - .gradle
+            - buildSrc/.gradle
+            - client/.gradle
+            - client/node_modules
+          key: onestop-cache-v3-{{ checksum "build.gradle" }}
 
       - persist_to_workspace:
-        root: ~/repo
-        paths:
-          - api-metadata/build
+          root: ~/repo
+          paths:
+            - api-metadata/build
 
   api_metadata_test:
     machine: true
@@ -43,26 +43,26 @@ jobs:
       - api_metadata_build
     steps:
       - attach_workspace:
-        at: ~/repo
+          at: ~/repo
 
       - run:
-        name: Api-Metadata Unit Tests
-        command: ./gradlew api-metadata:test
+          name: Api-Metadata Unit Tests
+          command: ./gradlew api-metadata:test
 
       - save_cache:
-        paths:
-          - ~/.gradle/caches/
-          - ~/.gradle/wrapper/
-          - .gradle
-          - buildSrc/.gradle
-          - client/.gradle
-          - client/node_modules
-        key: onestop-cache-v3-{{ checksum "build.gradle" }}
+          paths:
+            - ~/.gradle/caches/
+            - ~/.gradle/wrapper/
+            - .gradle
+            - buildSrc/.gradle
+            - client/.gradle
+            - client/node_modules
+          key: onestop-cache-v3-{{ checksum "build.gradle" }}
 
       - persist_to_workspace:
-        root: ~/repo
-        paths:
-          - api-metadata/build
+          root: ~/repo
+          paths:
+            - api-metadata/build
 
   api_metadata_integration_test:
     machine: true
@@ -74,34 +74,34 @@ jobs:
       - api_metadata_build
     steps:
       - attach_workspace:
-        at: ~/repo
+          at: ~/repo
 
       - run:
-        name: Increase Virtual Memory Limits for Elasticsearch
-        command: sudo sysctl -w vm.max_map_count=262144
+          name: Increase Virtual Memory Limits for Elasticsearch
+          command: sudo sysctl -w vm.max_map_count=262144
 
       - run:
-        name: Generate Dummy Keystore
-        command: ./gradlew jks
+          name: Generate Dummy Keystore
+          command: ./gradlew jks
 
       - run:
-        name: Api-Metadata Integration Tests
-        command: ./gradlew api-metadata:integrationTest
+          name: Api-Metadata Integration Tests
+          command: ./gradlew api-metadata:integrationTest
 
       - save_cache:
-        paths:
-          - ~/.gradle/caches/
-          - ~/.gradle/wrapper/
-          - .gradle
-          - buildSrc/.gradle
-          - client/.gradle
-          - client/node_modules
-        key: onestop-cache-v3-{{ checksum "build.gradle" }}
+          paths:
+            - ~/.gradle/caches/
+            - ~/.gradle/wrapper/
+            - .gradle
+            - buildSrc/.gradle
+            - client/.gradle
+            - client/node_modules
+          key: onestop-cache-v3-{{ checksum "build.gradle" }}
 
       - persist_to_workspace:
-        root: ~/repo
-        paths:
-          - api-metadata/build
+          root: ~/repo
+          paths:
+            - api-metadata/build
 
   api_metadata_publish:
     filters:  # using regex filters requires the entire branch to match
@@ -117,11 +117,11 @@ jobs:
 
     steps:
       - attach_workspace:
-        at: ~/repo
+          at: ~/repo
 
       - run:
-        name: Api-Metadata Docker Image
-        command: ./gradlew api-metadata:buildDockerImage
+          name: Api-Metadata Docker Image
+          command: ./gradlew api-metadata:buildDockerImage
 
       - deploy:
           name: Publish Images
@@ -136,11 +136,11 @@ jobs:
 
     steps:
       - attach_workspace:
-        at: ~/repo
+          at: ~/repo
 
       - run:
-        name: Api-Metadata Tests Report
-        command: ./gradlew api-metadata:jacocoTestReport
+          name: Api-Metadata Tests Report
+          command: ./gradlew api-metadata:jacocoTestReport
 
       - run:
           name: Save test results
