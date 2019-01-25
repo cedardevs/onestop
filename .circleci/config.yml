@@ -9,14 +9,14 @@ defaults: &defaults
 
 restoreCache: &restoreCache
   # Download and cache dependencies
-  - restore_cache:
+  restore_cache:
       keys:
       - onestop-cache-v3-{{ checksum "build.gradle" }}
       # fallback to using the latest cache if no exact match is found
       - onestop-cache-v3-
 
 saveCache: &saveCache
-  - save_cache:
+  save_cache:
       paths:
         - ~/.gradle/caches/
         - ~/.gradle/wrapper/
@@ -27,7 +27,7 @@ saveCache: &saveCache
       key: onestop-cache-v3-{{ checksum "build.gradle" }}
 
 persistWorkspace: &persistWorkspace
-  - persist_to_workspace:
+  persist_to_workspace:
       root: ~/repo
       paths:
         - .
@@ -43,26 +43,26 @@ jobs:
     steps:
       - checkout
 
-      <<: *restoreCache
+      - <<: *restoreCache
 
       - run:
           name: Build Api-Metadata
           command: ./gradlew api-metadata:assemble
 
-      <<: *saveCache
+      - <<: *saveCache
 
-      <<: *persistWorkspace
+      - <<: *persistWorkspace
 
   meta-test:
     <<: *defaults
     steps:
-      <<: *attachWorkspace
+      - <<: *attachWorkspace
 
       - run:
           name: Api-Metadata Unit Tests
           command: ./gradlew api-metadata:test
 
-      <<: *saveCache
+      - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
@@ -79,7 +79,7 @@ jobs:
     # requires:
     #   - meta-build
     steps:
-      <<: *attachWorkspace
+      - <<: *attachWorkspace
 
       - run:
           name: Increase Virtual Memory Limits for Elasticsearch
@@ -93,7 +93,7 @@ jobs:
           name: Api-Metadata Integration Tests
           command: ./gradlew api-metadata:integrationTest
 
-      <<: *saveCache
+      - <<: *saveCache
 
       - persist_to_workspace:
           root: ~/repo
@@ -106,7 +106,7 @@ jobs:
     <<: *defaults
 
     steps:
-      <<: *attachWorkspace
+      - <<: *attachWorkspace
 
       - run:
           name: Api-Metadata Docker Image
@@ -120,7 +120,7 @@ jobs:
     <<: *defaults
 
     steps:
-      <<: *attachWorkspace
+      - <<: *attachWorkspace
 
       - run:
           name: Api-Metadata Tests Report
