@@ -188,8 +188,6 @@ jobs:
     environment:
       # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
-    # requires:
-    #   - meta-build
     steps:
       - <<: *attachWorkspace
       - <<: *restoreCache
@@ -214,6 +212,30 @@ jobs:
             - api-search/build/jacoco/integrationTest.exec
             - api-search/build/test-results/integrationTest
             - api-search/build/reports/integrationTest
+
+  e2e:
+    <<: *defaults
+    environment:
+      # Customize the JVM maximum heap limit
+      JVM_OPTS: -Xmx3200m
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - run:
+          name: Increase Virtual Memory Limits for Elasticsearch
+          command: sudo sysctl -w vm.max_map_count=262144
+
+      - run:
+          name: E2E tests
+          command: ./gradlew e2e-tests
+
+      - <<: *saveCache
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - e2e-tests/build
 
   meta-publish:
     <<: *defaults
@@ -256,6 +278,20 @@ jobs:
       - deploy:
           name: Publish Images
           command: ./gradlew client:publish -x BuildDockerImage
+
+  client-checks:
+    <<: *defaults
+
+    steps:
+      - <<: *attachWorkspace
+
+      - run:
+          name: Client Check Formatting
+          command: ./gradlew client:formatCheck
+
+      - run:
+          name: Client RetireJS
+          command: ./gradlew client:retire
 
   report-tests:
     <<: *defaults
@@ -472,6 +508,15 @@ workflows:
                 - /release.*/
           requires:
             - client-test
+      - client-checks:
+          requires:
+            - client-build
+
+      - e2e:
+          requires:
+            - client-build
+            - meta-build
+            - search-build
 
       - report-tests:
           requires:
@@ -480,6 +525,7 @@ workflows:
             - search-test
             - search-integration-test
             - client-test
+            - e2e
   # build:
   #   jobs:
   #     - build
