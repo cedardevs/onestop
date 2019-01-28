@@ -30,13 +30,7 @@ const basePlugins = [
         content: 'website',
       },
     ],
-  }),
-  new webpack.optimize.CommonsChunkPlugin({
-    name: 'vendor',
-    minChunks: function (module) {
-      return module.context && module.context.indexOf('node_modules') !== -1
-    },
-  }),
+  })
 ]
 
 const devPlugins = [
