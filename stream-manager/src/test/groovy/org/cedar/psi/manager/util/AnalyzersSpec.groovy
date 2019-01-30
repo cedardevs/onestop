@@ -92,11 +92,17 @@ class AnalyzersSpec extends Specification {
             titleExists             : true,
             titleCharacters         : 63,
             alternateTitleExists    : true,
-            alternateTitleCharacters: 51
+            alternateTitleCharacters: 51,
+            titleFleschReadingEaseScore: -41.98428571066,
+            alternateTitleFleschReadingEaseScore: 42.61571428934,
+            titleFleschKincaidReadingGradeLevel: 20.85428571378,
+            alternateTitleFleschKincaidReadingGradeLevel: 9.05428571378
         ],
         description     : [
             descriptionExists    : true,
-            descriptionCharacters: 65
+            descriptionCharacters: 65,
+            descriptionFleschReadingEaseScore: 19.10000000094,
+            descriptionFleschKincaidReadingGradeLevel: 12.83111111098,
         ],
         thumbnail       : [
             thumbnailExists: true,
@@ -270,12 +276,14 @@ class AnalyzersSpec extends Specification {
     result instanceof Map
     result.exists == exists
     result.characters == length
+    result.readingEase == ease
+    result.gradeLevel == grade
 
     where:
-    testCase  | value  | exists | length
-    'missing' | null   | false  | 0
-    'empty'   | ''     | false  | 0
-    'present' | 'test' | true   | 4
+    testCase  | value  | exists | length | ease    | grade
+    'missing' | null   | false  | 0      | null    | null
+    'empty'   | ''     | false  | 0      | null    | null
+    'present' | 'test' | true   | 4      | 121.220 | -3.40
   }
 
   def "analyzes when titles are missing"() {
