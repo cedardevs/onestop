@@ -15,7 +15,7 @@ class ReadingLevel {
     return text.split(/(\.|\?|\!)\s/)
   }
 
-  static List splitIntoWords(String text) { // TODO rename splitIntoWords?
+  static List splitIntoWords(String text) {
     return text.toLowerCase().replaceAll(/[^\w\a\s)]/, '').split(/\s/)
   }
 
