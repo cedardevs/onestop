@@ -19,8 +19,8 @@ server:
 spring:
   servlet:
     multipart:
-      max-file-size: 500Mb
-      max-request-size: 500Mb
+      max-file-size: 500MB
+      max-request-size: 500MB
   h2.console.enabled: true
   h2.console.path: /h2-console
   datasource:
@@ -38,6 +38,7 @@ spring:
   liquibase:
     enabled: true # set to false if we don't want to run and check migrations on startup
     default-schema: PUBLIC # default schema for H2, here for documentation
+
 
 # SAML Identity Provider Configuration
 # Note: for cu-server-admin, this config will be replaced by the
