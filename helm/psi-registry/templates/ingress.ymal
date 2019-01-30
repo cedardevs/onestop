@@ -1,24 +1,40 @@
 {{- if .Values.ingress.enabled -}}
+{{- $fullName := include "psi-registry.fullname" . -}}
+{{- $ingressPaths := .Values.ingress.paths -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ template "psi-registry.fullname" . }}-ingress
+  name: {{ $fullName }}
   labels:
-    app: {{ template "psi-registry.name" . }}
-    chart: {{ template "psi-registry.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "psi-registry.name" . }}
+    helm.sh/chart: {{ include "psi-registry.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  rules:
-  - http:
-      paths:
-      - path: {{ .Values.ingress.path }}
-        backend:
-          serviceName: {{ template "psi-registry.fullname" . }}
-          servicePort: {{ .Values.service.port }}
-{{- if .Values.ingress.host }}
-    host: {{ .Values.ingress.host }}
+{{- if .Values.ingress.tls }}
+  tls:
+  {{- range .Values.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
 {{- end }}
-{{- end -}}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+	{{- range $ingressPaths }}
+          - path: {{ . }}
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: http
+	{{- end }}
+  {{- end }}
+{{- end }}

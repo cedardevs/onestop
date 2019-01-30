@@ -2,26 +2,26 @@
 apiVersion: apps/v1beta2
 kind: StatefulSet
 metadata:
-  name: {{ template "psi-registry.fullname" . }}
+  name: {{ include "psi-registry.fullname" . }}
   labels:
-    app: {{ template "psi-registry.name" . }}
-    chart: {{ template "psi-registry.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "psi-registry.name" . }}
+    helm.sh/chart: {{ include "psi-registry.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  serviceName: {{ template "psi-registry.fullname" . }}
+  serviceName: {{ include "psi-registry.fullname" . }}
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
   selector:
     matchLabels:
-      app: {{ template "psi-registry.name" . }}
+      app: {{ include "psi-registry.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "psi-registry.name" . }}
+        app: {{ include "psi-registry.name" . }}
         release: {{ .Release.Name }}
     spec:
       securityContext:
@@ -40,9 +40,9 @@ spec:
               protocol: TCP
           env:
             - name: KAFKA_BOOTSTRAP_SERVERS
-              value: "{{ template "psi-registry.kafka.bootstrapServers" . }}"
+              value: "{{ include "psi-registry.kafka.bootstrapServers" . }}"
             - name: SCHEMA_REGISTRY_URL
-              value: "{{ template "psi-registry.cp-schema-registry.url" . }}"
+              value: "{{ include "psi-registry.cp-schema-registry.url" . }}"
             - name: STATE_DIR
               value: "/var/lib/registry/data"
           volumeMounts:
@@ -68,7 +68,7 @@ spec:
                     - key: "app"
                       operator: In
                       values:
-                        - {{ template "psi-registry.name" . }}
+                        - {{ include "psi-registry.name" . }}
                 topologyKey: "kubernetes.io/hostname"
 {{- end }}
 {{- with .Values.tolerations }}
