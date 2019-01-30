@@ -4,6 +4,7 @@ databaseChangeLog:
     author: bnguyen
     changes:
     - createTable:
+        tableName: role
         columns:
         - column:
             autoIncrement: true
@@ -16,4 +17,3 @@ databaseChangeLog:
               nullable: false
             name: role_name
             type: VARCHAR(255)
-        tableName: role

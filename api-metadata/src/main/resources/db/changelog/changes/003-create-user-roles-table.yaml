@@ -4,6 +4,7 @@ databaseChangeLog:
     author: bnguyen
     changes:
     - createTable:
+        tableName: user_roles
         columns:
         - column:
             constraints:
@@ -15,7 +16,6 @@ databaseChangeLog:
                 nullable: false
             name: role_id
             type: BIGINT
-        tableName: user_roles
     - addForeignKeyConstraint:
         baseColumnNames: user_id
         baseTableName: user
