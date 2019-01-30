@@ -22,6 +22,8 @@ volume:
 
 ingress:
   enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
   paths:
   - "/registry"
   hosts:
