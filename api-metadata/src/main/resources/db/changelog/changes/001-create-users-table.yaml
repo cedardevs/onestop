@@ -4,6 +4,7 @@ databaseChangeLog:
     author: bnguyen
     changes:
     - createTable:
+        tableName: user
         columns:
         - column:
             autoIncrement: true
@@ -21,4 +22,3 @@ databaseChangeLog:
               nullable: false
             name: uuid
             type: VARCHAR(255)
-        tableName: user
