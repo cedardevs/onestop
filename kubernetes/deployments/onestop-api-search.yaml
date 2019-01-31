@@ -12,7 +12,7 @@ spec:
     app: onestop-api-search
   ports:
   - name: http
-    port: 8097
+    port: 8080
     nodePort: 30097
   type: NodePort
 
@@ -81,7 +81,7 @@ spec:
           mountPath: "/etc/api-search/logingov.jks"
           subPath: keystore.jks
         ports:
-        - containerPort: 8097
+        - containerPort: 8080
       volumes:
       - name: application-config
         configMap:

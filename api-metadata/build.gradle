@@ -96,6 +96,8 @@ ext {
 
 war {
   enabled = true
+  baseName = "${rootProject.name}-${project.name}"
+  finalizedBy bootWar
 }
 
 bootWar {

@@ -3,8 +3,9 @@ import 'isomorphic-fetch'
 import {HEADER_DROPDOWN_FEATURES} from '../utils/featureUtils'
 
 import _ from 'lodash'
-import {API_PATH} from '../utils/urlUtils'
+import {apiPath} from '../utils/urlUtils'
 import {getUser} from './UserActions'
+
 // synchronous actions
 export const SET_CONFIG = 'set_config'
 export const setConfig = config => {
@@ -38,7 +39,7 @@ export const toggleFeatures = featuresList => {
 // asynchronous actions
 export const fetchConfig = () => {
   return (dispatch, getState) => {
-    const url = API_PATH + '/uiConfig'
+    const url = apiPath() + '/uiConfig'
     const params = {headers: {Accept: 'application/json'}}
     return fetch(url, params)
       .then(response => response.json())

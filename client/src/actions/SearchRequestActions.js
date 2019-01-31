@@ -3,7 +3,7 @@ import _ from 'lodash'
 import {showLoading, hideLoading} from './FlowActions'
 import {showErrors} from './ErrorActions'
 import {assembleSearchRequest} from '../utils/queryUtils'
-import {API_PATH} from '../utils/urlUtils'
+import {apiPath} from '../utils/urlUtils'
 
 export const SEARCH = 'search'
 export const SEARCH_COMPLETE = 'search_complete'
@@ -154,7 +154,7 @@ const buildSearchAction = (
 
     prefetchHandler(dispatch)
 
-    const endpoint = API_PATH + '/search/' + endpointName
+    const endpoint = apiPath() + '/search/' + endpointName
 
     const fetchParams = {
       method: 'POST',
@@ -224,7 +224,7 @@ const buildGetAction = (
 ) => {
   return (dispatch, getState) => {
     prefetchHandler(dispatch)
-    const endpoint = API_PATH + '/' + endpointName + '/' + id
+    const endpoint = apiPath() + '/' + endpointName + '/' + id
     const fetchParams = {
       method: 'GET',
       headers: {
@@ -255,7 +255,7 @@ const buildSitemapAction = () => {
   return (dispatch, getState) => {
     let state = getState()
 
-    const endpoint = API_PATH + '/sitemap.xml'
+    const endpoint = apiPath() + '/sitemap.xml'
     const fetchParams = {
       method: 'GET',
     }
