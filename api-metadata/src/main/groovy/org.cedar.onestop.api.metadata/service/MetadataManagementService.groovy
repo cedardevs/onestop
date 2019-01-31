@@ -99,7 +99,7 @@ class MetadataManagementService {
     String bulkRequestBody = bulkRequest.toString()
     if (bulkRequestBody) { // Don't send a request if there is nothing to send
       def bulkResponse = esService.performRequest('POST', '_bulk', bulkRequestBody)
-      log.info("bulkResponse: ${bulkResponse} loadedIndices: ${loadedIndices} ")
+      log.debug("bulkResponse: ${bulkResponse} loadedIndices: ${loadedIndices} ")
     }
     
     return [data: results]
