@@ -2,37 +2,299 @@
 #
 # Check https://circleci.com/docs/2.0/language-java/ for more details
 #
+
+defaults: &defaults
+  machine: true
+  working_directory: ~/repo
+
+env: &env
+  environment:
+    # Customize the JVM maximum heap limit
+    JVM_OPTS: -Xmx3200m
+
+esHeap: &esHeap
+  run:
+      name: Increase Virtual Memory Limits for Elasticsearch
+      command: sudo sysctl -w vm.max_map_count=262144
+
+restoreCache: &restoreCache
+  # Download and cache dependencies
+  restore_cache:
+      keys:
+      - onestop-cache-v3-{{ checksum "build.gradle" }}
+      # fallback to using the latest cache if no exact match is found
+      - onestop-cache-v3-
+
+saveCache: &saveCache
+  save_cache:
+      paths:
+        - ~/.gradle/caches/
+        - ~/.gradle/wrapper/
+        # - .gradle
+        # - buildSrc/.gradle
+        # - client/.gradle
+        # - client/node_modules
+      key: onestop-cache-v3-{{ checksum "build.gradle" }}
+
+attachWorkspace: &attachWorkspace
+  - attach_workspace:
+      at: ~/repo
+
 version: 2
 jobs:
-  build:
-    machine: true
-    working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
-
+  checkout:
+    <<: *defaults
     steps:
       - checkout
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - .
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - onestop-cache-v3-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - onestop-cache-v3-
+  search-build:
+    <<: *defaults
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
 
-      # Virtual Memory for Elasticsearch:
-      # https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
       - run:
-          name: Increase Virtual Memory Limits for Elasticsearch
-          command: sudo sysctl -w vm.max_map_count=262144
+          name: Build Api-Search
+          command: ./gradlew api-search:assemble
 
-      # build it!
+      - <<: *saveCache
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - api-search/build
+
+  client-build:
+    <<: *defaults
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
       - run:
-          name: Generate Dummy Keystore and Build
-          command: ./gradlew jks && ./gradlew build
-          no_output_timeout: 30m
+          name: Build Client
+          command: ./gradlew client:assemble
+
+      - <<: *saveCache
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - client/build
+            - client/node_modules
+
+  meta-build:
+    <<: *defaults
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - run:
+          name: Build Api-Metadata
+          command: ./gradlew api-metadata:assemble
+
+      - <<: *saveCache
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - api-metadata/build
+
+  meta-test:
+    <<: *defaults
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - run:
+          name: Api-Metadata Unit Tests
+          command: ./gradlew api-metadata:test
+
+      - <<: *saveCache
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - api-metadata/build/jacoco/test.exec
+            - api-metadata/build/test-results/test
+            - api-metadata/build/reports/test
+
+  search-test:
+    <<: *defaults
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - run:
+          name: Generate Dummy Keystore
+          command: ./gradlew jks
+
+      - run:
+          name: Api-Search Unit Tests
+          command: ./gradlew api-search:test
+
+      - <<: *saveCache
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - api-search/build/jacoco/test.exec
+            - api-search/build/test-results/test
+            - api-search/build/reports/test
+
+  client-test:
+    <<: *defaults
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - run:
+          name: Client Unit Tests
+          command: ./gradlew client:test
+
+      - <<: *saveCache
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - client/build
+
+  meta-integration-test:
+    <<: *defaults
+    <<: *env
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+      - <<: *esHeap
+
+      - run:
+          name: Api-Metadata Integration Tests
+          command: ./gradlew api-metadata:integrationTest
+
+      - <<: *saveCache
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - api-metadata/build/jacoco/integrationTest.exec
+            - api-metadata/build/test-results/integrationTest
+            - api-metadata/build/reports/integrationTest
+
+  search-integration-test:
+    <<: *defaults
+    <<: *env
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - <<: *esHeap
+
+      - run:
+          name: Api-Search Integration Tests
+          command: ./gradlew api-search:integrationTest
+
+      - <<: *saveCache
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - api-search/build/jacoco/integrationTest.exec
+            - api-search/build/test-results/integrationTest
+            - api-search/build/reports/integrationTest
+
+  e2e:
+    <<: *defaults
+    <<: *env
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - <<: *esHeap
+
+      - run:
+          name: E2E tests
+          command: ./gradlew e2e-tests:test
+
+      - <<: *saveCache
+
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - e2e-tests/build
+
+  meta-publish:
+    <<: *defaults
+
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - run:
+          name: Api-Metadata Docker Image
+          command: ./gradlew api-metadata:buildDockerImage
+
+      - deploy:
+          name: Publish Images
+          command: ./gradlew api-metadata:publish -x BuildDockerImage
+
+  search-publish:
+    <<: *defaults
+
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - run:
+          name: Api-Search Docker Image
+          command: ./gradlew api-search:buildDockerImage
+
+      - deploy:
+          name: Publish Images
+          command: ./gradlew api-search:publish -x BuildDockerImage
+
+  client-publish:
+    <<: *defaults
+
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - run:
+          name: Client Docker Image
+          command: ./gradlew client:buildDockerImage
+
+      - deploy:
+          name: Publish Images
+          command: ./gradlew client:publish -x BuildDockerImage
+
+  client-checks:
+    <<: *defaults
+
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - run:
+          name: Client Check Formatting
+          command: ./gradlew client:formatCheck
+
+      - run:
+          name: Client RetireJS
+          command: ./gradlew client:retire
+
+  report-tests:
+    <<: *defaults
+
+    steps:
+      - <<: *attachWorkspace
+      - <<: *restoreCache
+
+      - run:
+          name: Test Reports
+          command: ./gradlew jacocoTestReport
 
       - run:
           name: Save test results
@@ -62,73 +324,107 @@ jobs:
       - store_artifacts:
           path: ~/tests
 
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-            - ~/.gradle/wrapper/
-            - .gradle
-            - api-search/build
-            - api-search/dist
-            - api-metadata/build
-            - api-metadata/dist
-            - buildSrc/.gradle
-            - buildSrc/build
-            - client/.gradle
-            - client/node_modules
-            - client/build
-          key: onestop-cache-v3-{{ checksum "build.gradle" }}
-
-      - deploy:
-          name: Publish
-          command: |
-            if [ "${CIRCLE_BRANCH}" == "master" ] || [ "${CIRCLE_BRANCH}" == "release/*" ]; then
-              ./gradlew publish -x BuildDockerImage
-            fi
-  checkCVE:
-    machine: true
-    working_directory: ~/repo
-
-    environment:
-      # Customize the JVM maximum heap limit
-      JVM_OPTS: -Xmx3200m
+  check-owasp-cve:
+    <<: *defaults
 
     steps:
-      - checkout
+      - <<: *attachWorkspace
+      - <<: *restoreCache
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - onestop-cache-v3-{{ checksum "build.gradle" }}
-          # fallback to using the latest cache if no exact match is found
-          - onestop-cache-v3-
-
-      # build it!
       - run:
-          name: Generate Dummy Keystore and Build
+          name: Run OWASP Check
           command: ./gradlew dependencyCheckAnalyze
           no_output_timeout: 30m
 
-      - save_cache:
-          paths:
-            - ~/.gradle/caches/
-            - ~/.gradle/wrapper/
-            - .gradle
-            - api-search/build
-            - api-search/dist
-            - api-metadata/build
-            - api-metadata/dist
-            - buildSrc/.gradle
-            - buildSrc/build
-            - client/.gradle
-            - client/node_modules
-            - client/build
-          key: onestop-cache-v3-{{ checksum "build.gradle" }}
+      - run:
+          name: Save coverage results
+          command: |
+            mkdir -p ~/owasp/api-metadata/
+            find . -type d -regex "api-metadata/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/api-metadata/ \;
+            mkdir -p ~/owasp/api-search/
+            find . -type d -regex "api-search/build/reports/dependency-check-report.html" -exec cp -r {} ~/tests/api-search/ \;
+          when: always
+
+      - store_test_results:
+          path: ~/owasp
+
+      - store_artifacts:
+          path: ~/owasp
 
 workflows:
   version: 2
   build:
     jobs:
-      - build
+      - checkout
+      - meta-build:
+          requires:
+            - checkout
+      - meta-test:
+          requires:
+            - meta-build
+      - meta-integration-test:
+          requires:
+            - meta-build
+      - meta-publish:
+          filters:  # using regex filters requires the entire branch to match
+            branches:
+              only:  # only branches matching the below regex filters will run
+                - master
+                - /release.*/
+          requires:
+            - meta-test
+            - meta-integration-test
+      - search-build:
+          requires:
+            - checkout
+      - search-test:
+          requires:
+            - search-build
+      - search-integration-test:
+          requires:
+            - search-build
+      - search-publish:
+          filters:  # using regex filters requires the entire branch to match
+            branches:
+              only:  # only branches matching the below regex filters will run
+                - master
+                - /release.*/
+          requires:
+            - search-test
+            - search-integration-test
+      - client-build:
+          requires:
+            - checkout
+      - client-test:
+          requires:
+            - client-build
+      - client-publish:
+          filters:  # using regex filters requires the entire branch to match
+            branches:
+              only:  # only branches matching the below regex filters will run
+                - master
+                - /release.*/
+          requires:
+            - client-test
+      - client-checks:
+          requires:
+            - client-build
+
+      - e2e:
+          requires:
+            - client-build
+            - meta-build
+            - search-build
+
+      - report-tests:
+          requires:
+            - meta-test
+            - meta-integration-test
+            - search-test
+            - search-integration-test
+            - client-test
+            - e2e
+
   nightly:
     triggers:
       - schedule:
@@ -138,4 +434,7 @@ workflows:
               only:
                 - master
     jobs:
-      - checkCVE
+      - checkout
+      - check-owasp-cve:
+          requires:
+            - checkout
