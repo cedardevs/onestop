@@ -293,7 +293,7 @@ jobs:
       - <<: *restoreCache
 
       - run:
-          name: Api-Metadata Tests Report
+          name: Test Reports
           command: ./gradlew jacocoTestReport
 
       - run:
