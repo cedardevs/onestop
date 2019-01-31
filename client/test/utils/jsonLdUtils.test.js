@@ -11,7 +11,7 @@ const jsonEquals = (expected, actual) => {
 describe('In the jsonLdUtils', function(){
   const uuid = 'aabbccdd-1234-5678-9009-87654312abcd'
   const pageUrl =
-    'https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd'
+    'https://sciapps.colorado.edu/onestop/collections/details/aabbccdd-1234-5678-9009-87654312abcd'
 
   describe('an empty map for input', function(){
     const input = {}
@@ -37,7 +37,7 @@ describe('In the jsonLdUtils', function(){
     it('generates the url block', function(){
       jsonEquals(
         util.urlField(pageUrl),
-        `"url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd"`
+        `"url": "https://sciapps.colorado.edu/onestop/collections/details/aabbccdd-1234-5678-9009-87654312abcd"`
       )
     })
 
@@ -62,7 +62,7 @@ describe('In the jsonLdUtils', function(){
               "@type": "PropertyValue"
             }
           ],
-          "url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd",
+          "url": "https://sciapps.colorado.edu/onestop/collections/details/aabbccdd-1234-5678-9009-87654312abcd",
           "sameAs": [
             "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
           ]
@@ -272,7 +272,7 @@ describe('In the jsonLdUtils', function(){
     it('generates the url block', function(){
       jsonEquals(
         util.urlField(pageUrl),
-        `"url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd"`
+        `"url": "https://sciapps.colorado.edu/onestop/collections/details/aabbccdd-1234-5678-9009-87654312abcd"`
       )
     })
 
@@ -301,7 +301,7 @@ describe('In the jsonLdUtils', function(){
               "@type": "PropertyValue"
             }
           ],
-          "url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd",
+          "url": "https://sciapps.colorado.edu/onestop/collections/details/aabbccdd-1234-5678-9009-87654312abcd",
           "sameAs": [
             "https://doi.org/doi:10.1234/ABCDEFGH",
             "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
@@ -1153,7 +1153,7 @@ describe('In the jsonLdUtils', function(){
               "@type": "PropertyValue"
             }
           ],
-          "url": "https://sciapps.colorado.edu/onestop/#/collections/details/aabbccdd-1234-5678-9009-87654312abcd",
+          "url": "https://sciapps.colorado.edu/onestop/collections/details/aabbccdd-1234-5678-9009-87654312abcd",
           "sameAs": [
             "https://doi.org/doi:10.1234/ABCDEFGH",
             "https://data.nodc.noaa.gov/cgi-bin/iso?id=gov.test.cires.example:abc"
@@ -1219,5 +1219,35 @@ describe('In the jsonLdUtils', function(){
         }`
       )
     })
+  })
+
+  it('produces search action for the root page', function(){
+    const rootUrl = 'https://sciapps.colorado.edu/onestop/'
+
+    jsonEquals(
+      util.appJsonLd(rootUrl),
+      `{
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "@id": "https://sciapps.colorado.edu/onestop/",
+        "url": "https://sciapps.colorado.edu/onestop/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://sciapps.colorado.edu/onestop/collections?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "@id": "https://www.ncei.noaa.gov/",
+          "name": "National Centers for Environmental Information (NCEI)",
+          "logo": {
+              "@type": "ImageObject",
+              "url": "https://www.ncei.noaa.gov/sites/default/files/noaa_logo_circle_72x72.svg",
+              "width": "72",
+              "height": "72"
+          }
+        }
+      }`
+    )
   })
 })

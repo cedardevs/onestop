@@ -4,7 +4,7 @@ describe('The URL Utils', function(){
   const pathTests = [
     {
       path: '/collections/details/foobar',
-        isDetail: true,
+      isDetail: true,
       isGranuleList: false,
       collectionIdFromDetailPath: 'foobar',
     },

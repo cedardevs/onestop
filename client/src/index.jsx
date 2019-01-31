@@ -5,8 +5,6 @@ import store from './store' // create Redux store with appropriate middleware
 import history from './history' // create history object based on environment
 
 import '../img/noaa-favicon.ico'
-import './jsonLd' // add json LD scripts
-import './meta' // add meta tag
 import './fonts' // include custom fonts in bundle
 import './style/fonts.css' // map custom fonts to CSS @font-face rules
 import './style/vendorStyles' // vendor CSS rules (e.g. - leaflet)
