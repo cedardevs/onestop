@@ -14,6 +14,8 @@ const isTest = process.env.NODE_ENV === 'test'
 const App = (store, history) => {
   const reload = () => window.location.reload()
   if (history.location.hash) {
+    // Redirect URL from old hash-based routing to new path
+    // This will preserve bookmarks and any external links that have been made
     const hash = history.location.hash.replace('#', '')
     const parts = _.split(hash, '?')
     const locationDescriptor = {
