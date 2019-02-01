@@ -12,7 +12,7 @@ const styleButtonDefault = {
   border: 'transparent',
   textAlign: 'center',
   margin: 0,
-  padding: '0.309em',
+  // padding: '0.309em',
 }
 
 const styleButtonHoverDefault = {}

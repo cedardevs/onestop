@@ -47,7 +47,7 @@ const styleLinkList = {
   padding: 0,
   margin: 0,
   listStyleType: 'none',
-  fontSize: '1.5em',
+  fontSize: '1em',
   display: 'inline-flex',
   justifyContent: 'center',
   flexWrap: 'wrap',
@@ -165,14 +165,9 @@ class Header extends React.Component {
 
     const menuContent = (
       <ul style={styleLinkList}>
-        <li style={styleLinkListItem(true, false)}>
-          <HeaderLink title="Home" to="/">
-            Home
-          </HeaderLink>
-        </li>
         <li style={styleLinkListItem(false, false)}>
-          <HeaderLink title="About Us" to="/about">
-            About Us
+          <HeaderLink title="About" to="/about">
+            About
           </HeaderLink>
         </li>
         <li style={styleLinkListItem(false, !authEnabled)}>
