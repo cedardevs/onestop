@@ -15,7 +15,6 @@ const styleActionPanel = {
 
 const styleButton = color => {
   return {
-    // boxShadow: boxShadow,
     padding: '0.309em',
     borderRadius: '0.309em',
     background: color,
@@ -41,11 +40,15 @@ const styleIcon = {
   height: '1.309em',
 }
 
-const styleEmailButton = {...styleButton('green'), margin: '0 0 0.309em 0'}
+const styleEmailButton = {
+  ...styleButton('green'),
+  margin: '0 0 0.309em 0',
+  fontSize: '1em',
+}
 const styleEmailButtonHover = styleButtonHover('green')
 const styleEmailButtonFocus = styleButtonFocus('green')
 
-const styleDeleteButton = styleButton('#851A11')
+const styleDeleteButton = {...styleButton('#851A11'), fontSize: '1em'}
 const styleDeleteButtonHover = styleButtonHover('#851A11')
 const styleDeleteButtonFocus = styleButtonFocus('#851A11')
 

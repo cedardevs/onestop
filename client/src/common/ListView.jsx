@@ -20,7 +20,6 @@ const styleListInfo = {
 
 const styleListControl = {
   display: 'flex',
-  margin: '0em 2em 1.618em 2em',
   padding: '0.618em',
   backgroundColor: 'rgba(0,0,0, 0.2)',
   borderRadius: '0.309em',
