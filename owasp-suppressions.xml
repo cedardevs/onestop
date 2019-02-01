@@ -65,14 +65,41 @@
     <cve>CVE-2015-4035</cve>
   </suppress>
 
-  <suppress until="2019-01-01Z" >
-   <notes><![CDATA[
-   file name: avro-1.8.2.jar (shaded: com.google.guava:guava:11.0.2)
-   We are anticipating a new release of Avro very soon in which the Guava dependency is removed entirely.
-   This CVE is suppressed with an until date so that this dependency/issue is monitored.
-   ]]></notes>
-   <gav regex="true">^com\.google\.guava:guava:.*$</gav>
-   <cve>CVE-2018-10237</cve>
+  <suppress>
+    <notes><![CDATA[
+      file name: avro-1.8.2.jar (shaded: com.google.guava:guava:11.0.2)
+      This vulnerability refers to an unbounded allocation that can occur during the deserialization of several specific
+      classes provided by the Guava library. Howver, the only usage of Guava in this project is as a shaded dependency
+      within the avro jar, and only the specific classes in use by avro have been shaded into it. Those shaded dependencies
+      include neither AtomicDoubleArray nor CompoundOrdering_CustomFieldSerializer, the two classes containing the
+      vulnerability (see the fix implemented later in Guava: https://github.com/google/guava/commit/7ec8718f1e6e2814dabaa4b9f96b6b33a813101c)
+
+      In short, this vulnerability *as flagged due to avro-1.8.2.jar* is not present in this project.
+    ]]></notes>
+    <sha1>906d56dcbd43343b6ca42188ae18ba98dc6c2fdf</sha1>
+    <cve>CVE-2018-10237</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[ file name: slf4j-api-1.7.25.jar
+      The CVE (https://nvd.nist.gov/vuln/detail/CVE-2018-8088) explicitly states that it only applies to
+      org.slf4j.ext.EventData in the slf4j-ext module in QOS.CH SLF4J.
+
+      slf4j-ext is not used by this project. also this CVE does not apply to slf4j-api project.
+    ]]></notes>
+    <gav regex="true">^org\.slf4j:slf4j-api:.*$</gav>
+    <cve>CVE-2018-8088</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[ file name: jul-to-slf4j-1.7.25.jar
+      The CVE (https://nvd.nist.gov/vuln/detail/CVE-2018-8088) explicitly states that it only applies to
+      org.slf4j.ext.EventData in the slf4j-ext module in QOS.CH SLF4J, which is not used by this project.
+
+      this vulnerability does not apply to jul-to-slf4j projects.
+    ]]></notes>
+    <gav regex="true">^org\.slf4j:jul-to-slf4j:.*$</gav>
+    <cve>CVE-2018-8088</cve>
   </suppress>
 
 </suppressions>

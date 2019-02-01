@@ -3,12 +3,15 @@ package org.cedar.psi.registry.service
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.cedar.psi.common.constants.Topics
-import org.cedar.psi.common.avro.Method
+import org.cedar.schemas.avro.psi.Method
 import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.util.concurrent.Future
+
+import static org.cedar.schemas.avro.psi.RecordType.collection
+import static org.cedar.schemas.avro.psi.RecordType.granule
 
 
 @Unroll
@@ -32,21 +35,18 @@ class PublisherSpec extends Specification {
       it instanceof ProducerRecord &&
           it.topic() == Topics.inputTopic(type, source) &&
           it.key() == id &&
-          it.value().requestUrl == "http://localhost$requestUri" &&
           it.value().method == Method.valueOf(method)  &&
           it.value().content == data &&
           it.value().contentType == contentType &&
-          it.value().source == source //&&
-//          TODO - reinstate identifers?
-//          it.value().identifiers == [(source): id]
+          it.value().source == source
     }) >> Mock(Future)
 
     where:
-    source          | type        | id    | contentType       | data
-    'common-ingest' | 'granule'   | 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
-    'common-ingest' | 'granule'   | 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
-    'comet'         | 'collection'| 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
-    'comet'         | 'collection'| 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    source          | type       | id    | contentType        | data
+    'common-ingest' | granule    | 'ABC' | 'application/xml'  | '<text>xml woooo....</text>'
+    'common-ingest' | granule    | 'ABC' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    'comet'         | collection | 'ABC' | 'application/xml'  | '<text>xml woooo....</text>'
+    'comet'         | collection | 'ABC' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
   }
 
   def 'publishes valid #type metadata as #contentType with existing id'() {
@@ -66,18 +66,15 @@ class PublisherSpec extends Specification {
           it.key() == id &&
           it.value().contentType == contentType &&
           it.value().method == Method.valueOf(method) &&
-          it.value().requestUrl == "http://localhost$requestUri" &&
-          it.value().content == data //&&
-//          TODO - reinstate identifers?
-//          it.value().identifiers == [(Topics.DEFAULT_SOURCE): id]
+          it.value().content == data
     }) >> Mock(Future)
 
     where:
-    type        | id    | contentType       | data
-    'granule'   | 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
-    'granule'   | 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
-    'collection'| 'ABC' | 'application/xml' | '<text>xml woooo....</text>'
-    'collection'| 'ABC' | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    type       | id    | contentType        | data
+    granule    | 'ABC' | 'application/xml'  | '<text>xml woooo....</text>'
+    granule    | 'ABC' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    collection | 'ABC' | 'application/xml'  | '<text>xml woooo....</text>'
+    collection | 'ABC' | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
   }
 
   def 'publishes valid #type metadata as #contentType with no id'() {
@@ -97,23 +94,20 @@ class PublisherSpec extends Specification {
           it.key() instanceof String &&
           it.value().contentType == contentType &&
           it.value().method == Method.valueOf(method) &&
-          it.value().requestUrl == "http://localhost$requestUri" &&
-          it.value().content == data //&&
-//          TODO - reinstate identifers?
-//          it.value().identifiers[Topics.DEFAULT_SOURCE] instanceof String
+          it.value().content == data
     }) >> Mock(Future)
 
     where:
-    type        |  contentType       | data
-    'granule'   | 'application/xml' | '<text>xml woooo....</text>'
-    'granule'   | 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
-    'collection'| 'application/xml' | '<text>xml woooo....</text>'
-    'collection'| 'application/json'| '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    type       |  contentType       | data
+    granule    | 'application/xml'  | '<text>xml woooo....</text>'
+    granule    | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
+    collection | 'application/xml'  | '<text>xml woooo....</text>'
+    collection | 'application/json' | '{"trackingId":"ABC", "path":"/test/file.txt"}'
   }
 
   def 'publishes nothing for invalid type'() {
     setup:
-    String type = 'notarealtype'
+    String type = null
     String data = '{"message":"I am incorrect"}'
     String requestUri = "/metadata/$type"
     String method = 'POST'

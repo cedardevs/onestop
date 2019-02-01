@@ -9,8 +9,8 @@ import org.apache.kafka.streams.kstream.Transformer
 import org.apache.kafka.streams.processor.ProcessorContext
 import org.apache.kafka.streams.processor.PunctuationType
 import org.apache.kafka.streams.state.KeyValueStore
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.Publishing
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.Publishing
 
 @Slf4j
 @CompileStatic
@@ -49,7 +49,7 @@ class DelayedPublisherTransformer implements Transformer<String, ParsedRecord, K
     log.debug("transforming value for key ${key}")
     Long now = context.timestamp()
     Publishing publishingInfo = value?.publishing
-    Long incomingPublishTime = publishingInfo.until
+    Long incomingPublishTime = publishingInfo?.until
     Long storedPublishTime = triggerKeysStore.get(key)
 
     log.debug("transforming value with private ${publishingInfo?.isPrivate} and publish date ${incomingPublishTime}")

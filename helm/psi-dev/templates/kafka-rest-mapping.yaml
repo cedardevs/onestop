@@ -1,6 +1,20 @@
-#---
-#apiVersion: ambassador/v0
-#kind:  Mapping
-#name:  {{ template "psi-dev.fullname" . }}-kafka-rest-mapping
-#prefix: /kafka-rest/
-#service: {{ template "psi-dev.cp-kafka-rest.fullname" . }}:8082
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "psi-dev.fullname" . }}-kafka-rest-ingress
+  labels:
+    app: {{ template "psi-dev.name" . }}-kafka-rest
+    chart: {{ template "psi-dev.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /kafka-rest/
+        backend:
+          serviceName: {{ template "psi-dev.cp-kafka-rest.fullname" . }}
+          servicePort: 8082

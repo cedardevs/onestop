@@ -2,11 +2,13 @@ package org.cedar.psi.registry.service
 
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.state.QueryableStoreTypes
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.util.AvroUtils
+import org.cedar.schemas.avro.psi.Input
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.RecordType
+import org.cedar.schemas.avro.util.AvroUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder
@@ -21,14 +23,14 @@ import static org.cedar.psi.common.constants.Topics.parsedStore
 @CompileStatic
 class MetadataStore {
 
-  private MetadataStreamService metadataStreamService
+  private KafkaStreams streamsApp
 
   @Autowired
-  MetadataStore(MetadataStreamService metadataStreamService) {
-    this.metadataStreamService = metadataStreamService
+  MetadataStore(KafkaStreams streamsApp) {
+    this.streamsApp = streamsApp
   }
 
-  Map retrieveParsed(String type, String source, String id) {
+  Map retrieveParsed(RecordType type, String source, String id) {
     try {
       def parsedValue = getParsedStore(type)?.get(id)
       def inputValue = getInputStore(type, source)?.get(id)
@@ -63,7 +65,7 @@ class MetadataStore {
     }
   }
 
-  Map retrieveInput(String type, String source, String id) {
+  Map retrieveInput(RecordType type, String source, String id) {
     try {
       def inputValue = getInputStore(type, source)?.get(id)
 
@@ -87,12 +89,12 @@ class MetadataStore {
     }
   }
 
-  ReadOnlyKeyValueStore<String, Input> getInputStore(String type, String source) {
-    metadataStreamService?.streamsApp?.store(inputStore(type, source), QueryableStoreTypes.keyValueStore())
+  ReadOnlyKeyValueStore<String, Input> getInputStore(RecordType type, String source) {
+    streamsApp?.store(inputStore(type, source), QueryableStoreTypes.keyValueStore())
   }
 
-  ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(String type) {
-    metadataStreamService?.streamsApp?.store(parsedStore(type), QueryableStoreTypes.keyValueStore())
+  ReadOnlyKeyValueStore<String, ParsedRecord> getParsedStore(RecordType type) {
+    streamsApp?.store(parsedStore(type), QueryableStoreTypes.keyValueStore())
   }
 
   String constructUri(String path) {

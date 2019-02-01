@@ -1,18 +1,10 @@
 package org.cedar.psi.manager.util
 
-import org.cedar.psi.common.avro.DataFormat
-import org.cedar.psi.common.avro.Instruments
-import org.cedar.psi.common.avro.LineStringType
-import org.cedar.psi.common.avro.Link
-import org.cedar.psi.common.avro.Operation
-import org.cedar.psi.common.avro.Platform
-import org.cedar.psi.common.avro.PointType
-import org.cedar.psi.common.avro.PolygonType
-import org.cedar.psi.common.avro.Reference
-import org.cedar.psi.common.avro.ResponsibleParty
-import org.cedar.psi.common.avro.Service
-import org.cedar.psi.common.avro.TemporalBounding
-import org.cedar.psi.common.util.AvroUtils
+import org.cedar.schemas.avro.geojson.LineStringType
+import org.cedar.schemas.avro.geojson.PointType
+import org.cedar.schemas.avro.geojson.PolygonType
+import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.AvroUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 

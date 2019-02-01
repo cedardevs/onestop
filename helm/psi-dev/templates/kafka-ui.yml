@@ -1,4 +1,25 @@
 ---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "psi-dev.fullname" . }}-kafka-ui-ingress
+  labels:
+    app: {{ template "psi-dev.name" . }}-kafka-ui
+    chart: {{ template "psi-dev.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /kafka-ui/
+        backend:
+          serviceName: {{ template "psi-dev.fullname" . }}-kafka-ui
+          servicePort: {{ index .Values "kafka-ui" "service" "port" }}
+
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -8,14 +29,6 @@ metadata:
     chart: {{ template "psi-dev.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  annotations:
-    getambassador.io/config: |
-      ---
-      apiVersion: ambassador/v0
-      kind:  Mapping
-      name:  {{ template "psi-dev.fullname" . }}-kafka-ui-mapping
-      prefix: /kafka-ui/
-      service: {{ template "psi-dev.fullname" . }}-kafka-ui:{{ index .Values "kafka-ui" "service" "port" }}
 spec:
   type: {{ index .Values "kafka-ui" "service" "type" }}
   ports:

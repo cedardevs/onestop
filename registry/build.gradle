@@ -1,22 +1,11 @@
-buildscript {
-  ext {
-    springBootVersion = '2.1.0.RELEASE'
-    springCloudVersion = 'Finchley.RC2'
-  }
-  repositories {
-    mavenCentral()
-    maven { url "https://repo.spring.io/milestone" }
-  }
-  dependencies {
-    classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-  }
+plugins {
+  id 'war'
+  id 'groovy'
+  id 'jacoco'
+  id "org.springframework.boot" version "2.1.1.RELEASE"
+  id "io.spring.dependency-management" version "1.0.6.RELEASE"
+  id 'org.cedar.dockerplugin' version '1.0.3'
 }
-
-apply plugin: 'war'
-apply plugin: 'groovy'
-apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.cedar.dockerplugin'
 
 configurations {
   compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
@@ -54,7 +43,7 @@ dependencies {
   testCompile('io.confluent:kafka-schema-registry:5.0.1')
   testCompile('io.confluent:kafka-schema-registry:5.0.1:tests')
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
-  testCompile(project(path: ':common', configuration: 'testArtifacts'))
+  testCompile('com.github.cedardevs:schemas:0.1.1:test')
 }
 
 sourceSets {
@@ -63,12 +52,6 @@ sourceSets {
 //    resources.srcDir file("src/main/resources")
     compileClasspath += main.output + test.output + configurations.testRuntime
     runtimeClasspath += output + compileClasspath
-  }
-}
-
-dependencyManagement {
-  imports {
-    mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
   }
 }
 

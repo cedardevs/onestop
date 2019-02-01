@@ -4,36 +4,33 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.QueryableStoreType
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
-import org.cedar.psi.common.avro.ErrorEvent
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.Method
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.util.AvroUtils
+import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.AvroUtils
 import org.springframework.mock.web.MockHttpServletRequest
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static org.cedar.psi.common.constants.Topics.*
+import static org.cedar.psi.common.constants.Topics.inputStore
+import static org.cedar.psi.common.constants.Topics.parsedStore
 
 
 @Unroll
 class MetadataStoreSpec extends Specification {
 
-  MetadataStreamService mockMetadataStreamService
   KafkaStreams mockStreamsApp
   ReadOnlyKeyValueStore mockInputStore
   ReadOnlyKeyValueStore mockParsedStore
   MetadataStore metadataStore
   private MockHttpServletRequest request
-  final testType = 'granule'
+  final testType = RecordType.granule
   final testSource = 'class'
 
   def setup() {
     mockStreamsApp = Mock(KafkaStreams)
     mockInputStore = Mock(ReadOnlyKeyValueStore)
     mockParsedStore = Mock(ReadOnlyKeyValueStore)
-    mockMetadataStreamService = Mock(MetadataStreamService)
-    metadataStore = new MetadataStore(mockMetadataStreamService)
+
+    metadataStore = new MetadataStore(mockStreamsApp)
     this.request = new MockHttpServletRequest()
     this.request.setScheme("http")
     this.request.setServerName("localhost")
@@ -43,14 +40,8 @@ class MetadataStoreSpec extends Specification {
   }
 
   def 'returns null for unknown types'() {
-    def testId =  'notarealid'
-
-    when:
-    def result = metadataStore.retrieveInput(testType, testSource, testId)
-
-    then:
-    result == [error: "No such input record of ${testType} with id ${testId}"]
-
+    expect:
+    metadataStore.retrieveInput(null, 'notarealsource', 'notarealid') == [error: "No such input record of null with id notarealid"]
   }
 
   def 'returns null for a nonexistent store'() {
@@ -60,7 +51,6 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveInput(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> null
     0 * mockInputStore.get(testId)
 
@@ -75,7 +65,6 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
     1 * mockParsedStore.get(testId) >> null
 
@@ -90,7 +79,6 @@ class MetadataStoreSpec extends Specification {
     metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> {
       throw new InvalidStateStoreException('test')
     }
@@ -108,7 +96,6 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveInput(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockInputStore.get(testId) >> rawValue
 
@@ -131,7 +118,6 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
     1 * mockInputStore.get(testId) >> testInput
@@ -157,7 +143,6 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
     1 * mockInputStore.get(testId) >> testInput
@@ -183,40 +168,38 @@ class MetadataStoreSpec extends Specification {
     def result = metadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    _ * mockMetadataStreamService.getStreamsApp() >> mockStreamsApp
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
     1 * mockInputStore.get(testId) >> testInput
-    1 * mockParsedStore.get(testId) >> testParsedRecord
+    1 * mockParsedStore.get(testId) >> testErrorRecord
 
     and:
     result ==  [
             id        : testId,
             type      : testType,
             source    : testInput.source,
-            attributes: AvroUtils.avroToMap(testParsedRecord)
+            attributes: AvroUtils.avroToMap(testErrorRecord)
     ]
   }
 
 
   private static testInput = Input.newBuilder()
+      .setType(RecordType.collection)
       .setContent('{"hello":"world"}')
       .setMethod(Method.POST)
       .setContentType('application/json')
-      .setHost('localhost')
-      .setProtocol('http')
-      .setRequestUrl('/test')
       .setSource('test')
       .build()
 
-  private static testParsed = ParsedRecord.newBuilder().build()
+  private static testParsed = ParsedRecord.newBuilder().setType(RecordType.collection).build()
 
   private static testError = ErrorEvent.newBuilder()
       .setTitle('this is a test')
       .setDetail('this is only a test')
       .build()
 
-  private static testParsedRecord = ParsedRecord.newBuilder()
+  private static testErrorRecord = ParsedRecord.newBuilder()
+      .setType(RecordType.collection)
       .setPublishing()
       .setDiscovery()
       .setAnalysis()

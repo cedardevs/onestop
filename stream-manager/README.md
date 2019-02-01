@@ -8,22 +8,9 @@ You must provide Spring configuration values for the app to connect to Kafka. e.
 directory with the following:
 
 ```
-kafka:
-  application:
-    id: stream-manager
-  bootstrap-servers: kafka:9092
-
-stream:
-  split-field: dataStream
-  split-values: dscovr
-  topics:
-    raw-granules: raw-granule
-    unparsed-granules: unparsed-granule
-    parsed-granules: parsed-granule
-    sme-granules: sme-granule
-    error-granules: error-granule
+configured via ManagerConfig class 
 ```
-input message: 
+granule input message: 
 ```json
 {
   "dataStream": "dscovr",

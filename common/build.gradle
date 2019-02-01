@@ -1,6 +1,6 @@
 plugins {
   id 'groovy'
-  id "com.commercehub.gradle.plugin.avro" version "0.9.1"
+  id 'jacoco'
 }
 
 repositories {
@@ -15,6 +15,7 @@ dependencies {
   compile('org.apache.avro:avro:1.8.2')
   compile('org.slf4j:slf4j-api:1.7.25')
   compile('ch.qos.logback:logback-classic:1.2.3')
+  compile('com.github.cedardevs:schemas:0.1.1')
 
   testCompile("org.spockframework:spock-core:${project.spockVersion}")
   testCompile('org.apache.kafka:kafka-streams-test-utils:2.0.1')
@@ -32,37 +33,3 @@ dependencies {
 jar {
   baseName = "${rootProject.name}-${project.name}"
 }
-
-task sourceJar(type: Jar) {
-  classifier = 'sources'
-  baseName = "${rootProject.name}-${project.name}"
-  from "${projectDir}/src"
-}
-
-task testArtifactsJar(type: Jar) {
-  classifier = 'test'
-  baseName = "${rootProject.name}-${project.name}"
-  from sourceSets.test.output
-}
-
-configurations {
-  testArtifacts
-}
-
-artifacts {
-  testArtifacts testArtifactsJar
-}
-
-avro {
-  fieldVisibility = "PRIVATE"
-  createSetters = false
-}
-
-generateAvroJava {
-  source("src/main/resources/avro")
-  outputDir = file("${buildDir}/generated/java")
-}
-
-sourceSets.main.java.srcDir(generateAvroJava.outputDir)
-
-assemble.dependsOn(sourceJar)

@@ -9,6 +9,7 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import io.confluent.kafka.schemaregistry.RestApp
 import org.apache.kafka.clients.admin.AdminClient
+import org.apache.kafka.streams.KafkaStreams
 import org.cedar.psi.common.constants.Topics
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -50,6 +51,9 @@ class RegistryIntegrationSpec extends Specification {
 
   @Value('${server.servlet.context-path:}')
   String contextPath
+
+  @Autowired
+  KafkaStreams streamsApp
 
   @Autowired
   AdminClient adminClient
@@ -114,11 +118,9 @@ class RegistryIntegrationSpec extends Specification {
             input: [
                 "content": granuleText,
                 "contentType": "application/json",
-                "host": "127.0.0.1",
                 "method": "POST",
-                "protocol": "HTTP/1.1",
-                "requestUrl": "${baseUrl}/metadata/granule/common-ingest/${granuleMap.trackingId}",
-                "source": "common-ingest"
+                "source": "common-ingest",
+                "type": "granule"
             ]
         ]
     ]

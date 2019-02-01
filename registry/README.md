@@ -13,7 +13,18 @@ Config can be provided to the app at runtime using any of the [Spring Externaliz
 techniques.
 
 See the embedded [application.yml](src/main/resources/application.yml) for the full set of default config values you can override. 
+```yaml
+server.port: ####
+management.endpoints.enabled-by-default: false
+kafka:
+  bootstrap:
+    servers: localhost:####
+logging:
+  level:
+    root: ####
+    org.springframework.web: ####
 
+```
 #### Example requests
 
 *Simulate a granule POST from CI:*
@@ -22,10 +33,24 @@ See the embedded [application.yml](src/main/resources/application.yml) for the f
 curl -X PUT -H "Content-Type: application/json" localhost:8080/metadata/granule --data-binary @src/test/resources/test_granule.json
 ```
 
+sample test_granule.json
+```json
+
+{
+ "dataStream": "dscover",
+  "trackingId": "3", 
+  "checksum": "1234", 
+  "relativePath": "test.nc.gz", 
+  "path": "/path/to/test.nc.gz", 
+  "fileSize": 6526, 
+  "lastUpdated":"2017124",
+}
+```
+
 *Get the saved metadata for the granule:*
 
 ```bash
-curl localhost:8080/metadata/granule/4d989197-d4a9-4a2b-a579-5eb67b44c3c5
+curl localhost:8080/registry/metadata/granule/1234
 ```
 
 *Simulate a collection POST from CoMET:*
@@ -39,4 +64,3 @@ curl -X PUT -H "Content-Type: application/xml" localhost:8080/metadata/collectio
 ```bash
 curl localhost:8080/metadata/collection/123
 ```
-curl -X PUT -H "Content-Type: application/json" http://localhost:8080/metadata/granule -d '{ "dataStream": "dscover", "trackingId": "3", "checksum": "fd297fcceb94fdbec5297938c99cc7b5", "relativePath": "oe_f1m_dscovr_s20180201000000_e20180201235959_p20180202024241_pub.nc.gz", "path": "/dscovr/valid/oe_f1m_dscovr_s20180201000000_e20180201235959_p20180202024241_pub.nc.gz", "fileSize": 6526, "lastUpdated":"2017124" }'

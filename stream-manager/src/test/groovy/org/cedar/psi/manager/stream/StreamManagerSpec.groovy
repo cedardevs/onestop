@@ -4,17 +4,14 @@ import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
-import org.cedar.psi.common.avro.Analysis
-import org.cedar.psi.common.avro.Discovery
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.Method
-import org.cedar.psi.common.avro.ParsedRecord
 import org.cedar.psi.common.constants.StreamsApps
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.common.serde.JsonSerdes
-import org.cedar.psi.common.util.AvroUtils
-import org.cedar.psi.common.util.MockSchemaRegistrySerde
 import org.cedar.psi.manager.config.ManagerConfig
+import org.cedar.schemas.avro.psi.*
+import org.cedar.schemas.avro.util.AvroUtils
+import org.cedar.schemas.avro.util.MockSchemaRegistrySerde
+import org.cedar.schemas.avro.util.StreamSpecUtils
 import spock.lang.Specification
 
 class StreamManagerSpec extends Specification {
@@ -31,7 +28,7 @@ class StreamManagerSpec extends Specification {
   def inputFactory = new ConsumerRecordFactory(Serdes.String().serializer(), new MockSchemaRegistrySerde().serializer())
   def jsonFactory = new ConsumerRecordFactory(Serdes.String().serializer(), JsonSerdes.Map().serializer())
 
-  def testType = 'granule'
+  def testType = RecordType.granule
   def testSource = Topics.DEFAULT_SOURCE
   def testChangelog = Topics.inputChangelogTopic(StreamsApps.REGISTRY_ID, testType, testSource)
 
@@ -43,21 +40,19 @@ class StreamManagerSpec extends Specification {
     given:
     def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
     def key = 'A123'
-    def input = buildInput(contentType: 'application/xml', content: xml)
+    def input = buildInput(method: Method.POST, contentType: 'application/xml', content: xml)
 
     when:
     driver.pipeInput(inputFactory.create(testChangelog, key, input))
 
     then:
-    // Not found in error or SME topics
-    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
-    driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    // Not found in SME topic
+    driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
-    // There is only 1 record in the PARSED_TOPIC
-    def finalOutput = driver.readOutput(Topics.parsedTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def finalOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     finalOutput != null
-    driver.readOutput(Topics.parsedTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     // Verify some fields
@@ -74,6 +69,35 @@ class StreamManagerSpec extends Specification {
     result.analysis.identification.fileIdentifierString == 'gov.super.important:FILE-ID'
   }
 
+  def "deleted input record produces a tombstone"() {
+    given:
+    def xml = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-metadata.xml").text
+    def key = 'A123'
+    def postInput = buildInput(method: Method.POST, contentType: 'application/xml', content: xml)
+    def deleteInput = buildInput(method: Method.DELETE, contentType: 'application/xml')
+
+    when:
+    driver.pipeInput(inputFactory.create(testChangelog, key, postInput))
+    driver.pipeInput(inputFactory.create(testChangelog, key, deleteInput))
+    driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    def originalOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def updatedOutput = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+
+    then: 'verify original fields'
+    originalOutput != null
+    originalOutput.key() == key
+    def originalValue = originalOutput.value()
+
+    originalValue.discovery instanceof Discovery
+    originalValue.analysis instanceof Analysis
+    originalValue.errors instanceof List
+    originalValue.errors.size() == 0
+
+    and: 'verify updated record is a tombstone'
+    updatedOutput.key() == key
+    updatedOutput.value() == null
+  }
+
   def "SME granule ends up in SME topic"() {
     given:
     def xmlSME = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-sme-dummy.xml").text
@@ -81,7 +105,8 @@ class StreamManagerSpec extends Specification {
     def smeValue = buildInput(
         source: 'common-ingest',
         contentType: 'application/xml',
-        content: xmlSME
+        content: xmlSME,
+        method: Method.POST
     )
 
     when:
@@ -89,14 +114,13 @@ class StreamManagerSpec extends Specification {
 
     then:
     // The record is in the SME topic
-    def smeOutput = driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, STRING_DESERIALIZER)
+    def smeOutput = driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, STRING_DESERIALIZER)
     smeOutput.key() == smeKey
     smeOutput.value() == smeValue.content
 
     and:
-    // There are no errors and nothing in the parsed topic
-    driver.readOutput(Topics.parsedTopic('granule'), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
-    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, STRING_DESERIALIZER) == null
+    // Nothing in the parsed topic
+    driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
   }
 
   def "Non-SME granule and SME granule end up in parsed-granule topic"() {
@@ -106,7 +130,8 @@ class StreamManagerSpec extends Specification {
     def nonSMEInputKey = 'notSME'
     def nonSMEInputValue = buildInput(
         contentType: 'application/xml',
-        content: xmlNonSME
+        content: xmlNonSME,
+        method: Method.POST
     )
     def unparsedKey = 'sme'
     def unparsedValue = [
@@ -116,17 +141,15 @@ class StreamManagerSpec extends Specification {
     ]
 
     when:
-    // Simulate SME ending up in unparsed-granule since that's another app's responsibility
+    // Simulate SME ending up in granule-extractor-to since that's another app's responsibility
     driver.pipeInput(inputFactory.create(testChangelog, nonSMEInputKey, nonSMEInputValue))
-    driver.pipeInput(jsonFactory.create(Topics.unparsedTopic('granule'), unparsedKey, unparsedValue))
+    driver.pipeInput(jsonFactory.create(Topics.fromExtractorTopic(testType), unparsedKey, unparsedValue))
 
     then:
     // Both records are in the parsed topic
-    def results = [:]
-    2.times {
-      def record = driver.readOutput(Topics.parsedStore('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER)
-      results[record.key()] = record.value()
-    }
+    def messages = StreamSpecUtils.readAllOutput(driver, Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def results = messages.inject([:], { map, message -> map + [(message.key()): message.value()] })
+
     results.containsKey(nonSMEInputKey)
     results.containsKey(unparsedKey)
 
@@ -142,10 +165,6 @@ class StreamManagerSpec extends Specification {
     smeResult.containsKey('discovery')
     !smeResult.containsKey('error')
     smeResult.discovery.fileIdentifier == 'dummy-file-identifier'
-
-    and:
-    // No errors
-    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
   }
 
   def "Unparsable granule produces record with errors"() {
@@ -153,34 +172,34 @@ class StreamManagerSpec extends Specification {
     def key = 'failure101'
     def value = buildInput(
         contentType: 'text/csv',
-        content: 'it,does,not,parse'
+        content: 'it,does,not,parse',
+        method: Method.POST
     )
 
     when:
     driver.pipeInput(inputFactory.create(testChangelog, key, value))
 
     then:
-    // Nothing on the error or sme topics
-    driver.readOutput(Topics.errorTopic(), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
-    driver.readOutput(Topics.smeTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
+    // Nothing on sme topic
+    driver.readOutput(Topics.toExtractorTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER) == null
 
     and:
     // An error has appeared
-    def record = driver.readOutput(Topics.parsedTopic('granule'), STRING_DESERIALIZER, AVRO_DESERIALIZER)
+    def record = driver.readOutput(Topics.parsedTopic(testType), STRING_DESERIALIZER, AVRO_DESERIALIZER)
     record.key() == key
     record.value() instanceof ParsedRecord
     record.value().errors.size() == 1
   }
 
   private static inputDefaults = [
-      source    : 'test',
-      method    : Method.POST,
-      protocol  : 'http',
-      host      : 'localhost',
-      requestUrl: '/test'
+      type      : RecordType.granule,
+      source    : 'test'
   ]
 
-  private static buildInput(Map values) {
-    new Input(inputDefaults + values)
+  private static buildInput(Map overrides) {
+    (inputDefaults + overrides).inject(Input.newBuilder(), { b, k, v ->
+      b[k] = v
+      b
+    }).build()
   }
 }

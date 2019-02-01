@@ -1,12 +1,14 @@
-package org.cedar.psi.manager.stream
+package org.cedar.psi.manager.util
 
-import org.cedar.psi.common.avro.Discovery
-import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.schemas.avro.psi.Discovery
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.Publishing
+import org.cedar.schemas.avro.psi.RecordType
 import spock.lang.Specification
 import spock.lang.Unroll
 
 @Unroll
-class MetadataParsingServiceSpec extends Specification {
+class RecordParserSpec extends Specification {
 
   def "ISO metadata in incoming message parsed correctly"() {
     given:
@@ -17,7 +19,7 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = RecordParser.parse(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
@@ -37,7 +39,7 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = RecordParser.parse(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
@@ -58,7 +60,7 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = RecordParser.parse(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
@@ -75,13 +77,30 @@ class MetadataParsingServiceSpec extends Specification {
     ]
 
     when:
-    def response = MetadataParsingService.parseToInternalFormat(incomingMsg)
+    def response = RecordParser.parse(incomingMsg, RecordType.collection)
 
     then:
     response instanceof ParsedRecord
     response.errors.size() == 1
     response.errors[0].title == 'Unsupported content type'
     response.errors[0].detail == "Content type [${incomingMsg.contentType}] is not supported"
+  }
+
+  def 'parses publishing info'() {
+    when:
+    def result = RecordParser.parsePublishing(input)
+
+    then:
+    result instanceof Publishing
+    result.isPrivate == isPrivate
+    result.until == until
+
+    where:
+    input                        | isPrivate | until
+    [:]                          | false     | null
+    [isPrivate: true]            | true      | null
+    [until: 42]                  | false     | 42
+    [isPrivate: true, until: 42] | true      | 42
   }
 
 }

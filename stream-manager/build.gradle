@@ -1,16 +1,10 @@
-buildscript {
-  repositories {
-    maven { url "https://plugins.gradle.org/m2/" }
-  }
-  dependencies {
-    classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
-  }
+plugins {
+  id 'groovy'
+  id 'application'
+  id 'jacoco'
+  id 'org.cedar.dockerplugin' version '1.0.3'
+  id "com.github.johnrengelman.shadow" version "4.0.3"
 }
-
-apply plugin: 'groovy'
-apply plugin: 'org.cedar.dockerplugin'
-apply plugin: 'application'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = 'org.cedar.psi.manager.StreamManagerMain'
 
@@ -42,7 +36,8 @@ dependencies {
   testCompile('io.confluent:kafka-schema-registry:5.0.1')
   testCompile('io.confluent:kafka-schema-registry:5.0.1:tests')
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
-  testCompile(project(path: ':common', configuration: 'testArtifacts'))
+  testCompile('com.github.cedardevs:schemas:0.1.1:test')
+  testCompile('com.github.cedardevs:schemas:0.1.1:sources')
 }
 
 //sourceSets {

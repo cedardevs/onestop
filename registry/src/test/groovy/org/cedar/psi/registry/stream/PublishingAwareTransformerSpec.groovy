@@ -2,9 +2,10 @@ package org.cedar.psi.registry.stream
 
 import groovy.util.logging.Slf4j
 import org.apache.kafka.streams.processor.ProcessorContext
-import org.cedar.psi.common.avro.Discovery
-import org.cedar.psi.common.avro.ParsedRecord
-import org.cedar.psi.common.avro.Publishing
+import org.cedar.schemas.avro.psi.Discovery
+import org.cedar.schemas.avro.psi.ParsedRecord
+import org.cedar.schemas.avro.psi.Publishing
+import org.cedar.schemas.avro.psi.RecordType
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -39,6 +40,7 @@ class PublishingAwareTransformerSpec extends Specification {
         .setIsPrivate(true)
         .build()
     def value1 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(publishing1)
         .build()
@@ -47,6 +49,7 @@ class PublishingAwareTransformerSpec extends Specification {
         .setUntil(futureDateLong)
         .build()
     def value2 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(publishing2)
         .build()
@@ -55,6 +58,7 @@ class PublishingAwareTransformerSpec extends Specification {
         .setUntil(pastDateLong)
         .build()
     def value3 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(publishing3)
         .build()
@@ -79,14 +83,17 @@ class PublishingAwareTransformerSpec extends Specification {
         .setUntil(pastDateLong)
         .build()
     def value1 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(notPrivate1)
         .build()
     def value2 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(notPrivate2)
         .build()
     def value3 = ParsedRecord.newBuilder()
+        .setType(RecordType.collection)
         .setDiscovery(discovery)
         .setPublishing(notPrivate3)
         .build()

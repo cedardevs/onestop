@@ -1,9 +1,9 @@
 dependencies:
 - name: cp-helm-charts
-  repository: https://raw.githubusercontent.com/confluentinc/cp-helm-charts/master
+  repository: https://confluentinc.github.io/cp-helm-charts/
   version: 0.1.0
-- name: ambassador
-  repository: https://www.getambassador.io
-  version: 0.40.0
-digest: sha256:713a9e8a41922179ab8ee16ff7b97cf5c9f9dc4325ecdf4bc6b8c509290e8274
-generated: 2018-10-26T16:57:28.340052-06:00
+- name: nginx-ingress
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 1.1.4
+digest: sha256:d22839113ed6c2793c71b379b0f368d683e7ab5db0d72c25396980fa358d7a02
+generated: 2019-01-11T11:36:03.003536-07:00

@@ -1,6 +1,7 @@
 package org.cedar.psi.common.constants
 
 import groovy.transform.CompileStatic
+import org.cedar.schemas.avro.psi.RecordType
 
 @CompileStatic
 class Topics {
@@ -10,12 +11,12 @@ class Topics {
 
   static final String DEFAULT_SOURCE = 'unknown'
 
-  static final Map<String, List<String>> INPUTS = [
-      'collection': ['comet', DEFAULT_SOURCE],
-      'granule'   : ['common-ingest', 'class', DEFAULT_SOURCE],
+  static final Map<RecordType, List<String>> INPUTS = [
+      (RecordType.collection): ['comet', DEFAULT_SOURCE],
+      (RecordType.granule)   : ['common-ingest', 'class', DEFAULT_SOURCE],
   ]
 
-  static Set<String> inputTypes() {
+  static Set<RecordType> inputTypes() {
     INPUTS.keySet()
   }
 
@@ -26,14 +27,14 @@ class Topics {
     }
     return uniqueSources as List
   }
-  static List<String> inputSources(String type) {
+  static List<String> inputSources(RecordType type) {
     return INPUTS[type] ?: Collections.<String>emptyList()
   }
 
-  static Boolean isValidInput(String type) {
+  static Boolean isValidInput(RecordType type) {
     INPUTS.containsKey(type)
   }
-  static Boolean isValidInput(String type, String source) {
+  static Boolean isValidInput(RecordType type, String source) {
     INPUTS[type]?.contains(source)
   }
 
@@ -41,31 +42,31 @@ class Topics {
     inputTypes().collect({ type -> inputTopics(type) }).flatten() as List<String>
   }
 
-  static List<String> inputTopics(String type) {
+  static List<String> inputTopics(RecordType type) {
     if (!isValidInput(type)) { return null }
     inputSources(type).collect { source -> inputTopic(type, source) }
   }
 
-  static String inputTopic(String type, String source) {
+  static String inputTopic(RecordType type, String source) {
     if (!isValidInput(type, source)) { return null }
-    "raw-${source}-${type}-events"
+    "psi-${type}-input-${source}"
   }
 
-  static String inputStore(String type, String source) {
+  static String inputStore(RecordType type, String source) {
     if (!isValidInput(type, source)) { return null }
-    "raw-${source}-${type}s"
+    "${type}-input-${source}"
   }
 
   static List<String> inputChangelogTopics(String appName) {
     inputTypes().collect({ type -> inputChangelogTopics(appName, type) }).flatten() as List<String>
   }
 
-  static List<String> inputChangelogTopics(String appName, String type) {
+  static List<String> inputChangelogTopics(String appName, RecordType type) {
     if (!isValidInput(type)) { return Collections.<String>emptyList() }
     inputSources(type).collect { source -> inputChangelogTopic(appName, type, source) }
   }
 
-  static String inputChangelogTopic(String appName, String type, String source) {
+  static String inputChangelogTopic(String appName, RecordType type, String source) {
     if (!isValidInput(type, source)) { return null }
     "$appName-${inputStore(type, source)}-changelog"
   }
@@ -74,59 +75,51 @@ class Topics {
     inputTypes().collect { type -> parsedTopic(type) }
   }
 
-  static String parsedTopic(String type) {
+  static String parsedTopic(RecordType type) {
     if (!isValidInput(type)) { return null }
-    "parsed-${type}s"
+    "psi-${type}-parsed"
   }
 
-  static String parsedStore(String type) {
+  static String parsedStore(RecordType type) {
     if (!isValidInput(type)) { return null }
-    "parsed-${type}s"
+    "${type}-parsed"
   }
 
-  static List<String> smeTopics() {
-    inputTypes().collect { type -> smeTopic(type) }
+  static List<String> toExtractorTopics() {
+    inputTypes().collect { type -> toExtractorTopic(type) }
   }
 
-  static String smeTopic(String type) {
+  static String toExtractorTopic(RecordType type) {
     if (!isValidInput(type)) { return null }
-    "sme-${type}s"
+    "psi-${type}-extractor-to"
   }
 
-  static List<String> unparsedTopics() {
-    inputTypes().collect { type -> unparsedTopic(type) }
+  static List<String> fromExtractorTopics() {
+    inputTypes().collect { type -> fromExtractorTopic(type) }
   }
 
-  static String unparsedTopic(String type) {
+  static String fromExtractorTopic(RecordType type) {
     if (!isValidInput(type)) { return null }
-    "unparsed-${type}s"
+    "psi-${type}-extractor-from"
   }
 
   static List<String> publishedTopics() {
     inputTypes().collect { type -> publishedTopic(type) }
   }
 
-  static String publishedTopic(String type) {
+  static String publishedTopic(RecordType type) {
     if (!isValidInput(type)) { return null }
-    "combined-${type}s"
+    "psi-${type}-published"
   }
 
-  static String publishTimeStore(String type) {
+  static String publishTimeStore(RecordType type) {
     if (!isValidInput(type)) { return null }
     "$type-publish-times"
   }
 
-  static String publishKeyStore(String type) {
+  static String publishKeyStore(RecordType type) {
     if (!isValidInput(type)) { return null }
     "$type-publish-keys"
-  }
-
-  static String errorTopic() {
-    'error-events'
-  }
-
-  static String errorStore() {
-    'error-store'
   }
 
 }

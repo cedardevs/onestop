@@ -1,7 +1,8 @@
 package org.cedar.psi.registry.stream
 
-import org.cedar.psi.common.avro.Input
-import org.cedar.psi.common.avro.Method
+import org.cedar.schemas.avro.psi.Input
+import org.cedar.schemas.avro.psi.Method
+import org.cedar.schemas.avro.psi.RecordType
 import spock.lang.Specification
 
 
@@ -31,84 +32,138 @@ class StreamFunctionsSpec extends Specification {
     StreamFunctions.setReducer.apply(curr, next) == null
   }
 
-  def 'merge function merges json strings'() {
-    def currentAggregate = [
-        contentType: 'application/json',
-        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}'
-    ]
-    def newValue = [
-        contentType: 'application/json',
-        content: '{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}'
-    ]
-    def mergedAggregate = [
-        contentType: 'application/json',
-        content: '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}'
-    ]
-
-    when:
-    def mergedMaps = StreamFunctions.mergeContentMaps.apply(currentAggregate, newValue)
-
-    then:
-    mergedMaps == mergedAggregate
-  }
-
-  def 'merge function merges inputs'() {
+  def 'input merger merges json content'() {
     def currentAggregate = new Input([
+        type: RecordType.granule,
         method: Method.POST,
-        host: 'localhost',
-        requestUrl: '/test',
-        protocol: 'http',
         content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
         contentType: 'application/json',
         source: 'test'
     ])
     def newValue = new Input([
+        type: RecordType.granule,
         method: Method.PUT,
-        host: 'localhost_number_2',
-        requestUrl: '/test/again',
-        protocol: 'https',
         content: '{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}',
         contentType: 'application/json',
         source: 'test'
     ])
     def mergedAggregate = new Input([
+        type: RecordType.granule,
         method: Method.PUT,
-        host: 'localhost_number_2',
-        requestUrl: '/test/again',
-        protocol: 'https',
         content: '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}',
         contentType: 'application/json',
         source: 'test'
     ])
 
     when:
-    println mergedAggregate.properties
-    def mergedInputs = StreamFunctions.mergeInputs.apply(currentAggregate, newValue)
+    def mergedInputs = StreamFunctions.mergeInputContent.apply(currentAggregate, newValue)
 
     then:
     mergedInputs == mergedAggregate
   }
 
 
-  def 'merge function replaces xml strings'() {
-    def currentAggregate = [
+  def 'input merger replaces xml strings'() {
+    def currentAggregate = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
         contentType: 'application/xml',
-        content: '<text>xml wooooOne....</text>'
-    ]
-    def newValue = [
+        content: '<text>xml wooooOne....</text>',
+        source: 'test'
+    ])
+    def newInput = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
         contentType: 'application/xml',
-        content: '<text>xml wooooTwo....</text>'
-    ]
-    def mergedAggregate = [
-        contentType: 'application/xml',
-        content: '<text>xml wooooTwo....</text>'
-    ]
+        content: '<text>xml wooooTwo....</text>',
+        source: 'test'
+    ])
 
     when:
-    def mergedMaps = StreamFunctions.mergeContentMaps.apply(currentAggregate, newValue)
+    def mergedMaps = StreamFunctions.mergeInputContent.apply(currentAggregate, newInput)
 
     then:
-    mergedMaps == mergedAggregate
+    mergedMaps == newInput
+  }
+
+  def 'reduce inputs with PATCH method'() {
+    def currentAggregate = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    def newValue = new Input([
+        type: RecordType.granule,
+        method: Method.PATCH,
+        content: '{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+
+    def expectedValue = new Input([
+        type: RecordType.granule,
+        method: Method.PATCH,
+        content: '{"trackingId":"ABC","message":"this is only a test","answer":42,"greeting":"hello, world!"}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+
+    when:
+    def value = StreamFunctions.reduceInputs.apply(currentAggregate, newValue)
+
+    then:
+    value == expectedValue
+  }
+
+  def 'publish function with PUT method'() {
+    def currentAggregate = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    def newValue = new Input([
+        type: RecordType.granule,
+        method: Method.PUT,
+        content: '{"trackingId":"ABC", "message":"this is only a test","greeting": "hello, world!"}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+
+    when:
+    def value = StreamFunctions.reduceInputs.apply(currentAggregate, newValue)
+
+    then:
+    value == newValue
+  }
+
+  def 'publish function with DELETE method'() {
+    def currentAggregate = new Input([
+        type: RecordType.granule,
+        method: Method.POST,
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    def newValue = new Input([
+        method: Method.DELETE,
+    ])
+
+    def expected = new Input([
+        type: RecordType.granule,
+        method: Method.DELETE,
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    when:
+    def value = StreamFunctions.reduceInputs.apply(currentAggregate, newValue)
+
+    then:
+    value == expected
   }
 
 }

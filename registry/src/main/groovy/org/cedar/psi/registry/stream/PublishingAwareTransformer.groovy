@@ -2,7 +2,7 @@ package org.cedar.psi.registry.stream
 
 import org.apache.kafka.streams.kstream.ValueTransformer
 import org.apache.kafka.streams.processor.ProcessorContext
-import org.cedar.psi.common.avro.ParsedRecord
+import org.cedar.schemas.avro.psi.ParsedRecord
 
 class PublishingAwareTransformer implements ValueTransformer<ParsedRecord, ParsedRecord> {
 
