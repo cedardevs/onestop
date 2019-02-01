@@ -3,7 +3,7 @@ apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 node {
-    version = '8.12.0'
+    version = '10.15.1'
     download = true
 }
 
