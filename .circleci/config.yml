@@ -294,7 +294,7 @@ jobs:
 
       - run:
           name: Test Reports
-          command: ./gradlew jacocoTestReport
+          command: ./gradlew jacocoTestReport -x text
 
       - run:
           name: Save test results
