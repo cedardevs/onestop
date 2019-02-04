@@ -96,7 +96,9 @@ ext {
 
 war {
   enabled = true
-  baseName = "${rootProject.name}-${project.name}"
+  // TODO disabled dynamic project-based name for #827, plan to re-enable in #828
+  // baseName = "${rootProject.name}-${project.name}"
+  baseName = "onestop-metadata"
   finalizedBy bootWar
 }
 

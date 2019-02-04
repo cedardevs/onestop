@@ -9,7 +9,7 @@ build:
         DATE: now
         VCS_REF: local
         VERSION: 2.1.0
-        WAR_NAME: onestop-api-metadata-2.1.0.war
+        WAR_NAME: onestop-metadata-2.1.0.war
   - image: cedardevs/onestop-api-search
     context: ./api-search
     docker:
