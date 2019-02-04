@@ -2,7 +2,7 @@
 # comma-delimited string (no spaces)
 # auth feature toggle: securityenabled | securitydisabled
 # other features: ...
-spring.profiles.active: "securitydisabled"
+spring.profiles.active: "securityenabled"
 
 server:
   port: 8098

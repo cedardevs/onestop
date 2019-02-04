@@ -208,7 +208,7 @@ task uploadTestData(description: 'Uploads test data to elasticsearch.', group: '
       ignoreExitValue = true
       workingDir 'upload'
       executable = 'bash'
-      args = ['-c', './uploadToOnestopApi.sh ./testData http://localhost:30098/onestop-admin/metadata']
+      args = ['-c', './uploadToOnestopApi.sh ./testData http://localhost:8098/onestop/admin/metadata']
       standardOutput = stdoutUpload
       errorOutput = stderrUpload
     }

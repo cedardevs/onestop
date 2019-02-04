@@ -21,17 +21,26 @@ spring:
     multipart:
       max-file-size: 500MB
       max-request-size: 500MB
-  h2.console.enabled: true
-  h2.console.path: /h2-console
+  # h2.console.enabled: true
+  # h2.console.path: /h2-console
   datasource:
     # url: jdbc:h2:mem:testdb;TRACE_LEVEL_FILE=4;DB_CLOSE_ON_EXIT=FALSE # pipes logging output for h2 to console
-    url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE
-    driverClassName: org.h2.Driver
+    # url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE
+    # driverClassName: org.h2.Driver
+    #  DERBY:
+    # url: jdbc:derby:memory:myDb;create=true
+    # driverClassName: org.apache.derby.jdbc.EmbeddedDriver
+    # hqsql
+    url: jdbc:hsqldb:mem:myDb
+    driverClassName: org.hsqldb.jdbc.JDBCDriver
+    # squlite
+    # driverClassName: org.sqlite.JDBC
+    # url: jdbc:sqlite:memory:myDb
     username: sa # default username
     password:
   jpa:
     hibernate.ddl-auto: none
-    database-platform: org.hibernate.dialect.H2Dialect
+    # database-platform: org.hibernate.dialect.H2Dialect
     properties:
       show_sql: true
       format_sql: true
