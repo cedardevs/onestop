@@ -147,7 +147,6 @@ class SearchRequestParserService {
 
     // Exclude global results filter:
     if (groupedFilters.excludeGlobal) {
-      // FIXME test -- is ok w/ groupedFilters.excludeGlobal[0]?.value == true
       // Handling filter & null awkwardness of 'isGlobal' property -- passing false through excludes all non-global
       // and null records from results, which isn't exactly what this filter implies
       if (groupedFilters.excludeGlobal[0].value == true) {

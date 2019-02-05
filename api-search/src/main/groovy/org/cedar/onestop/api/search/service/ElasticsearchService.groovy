@@ -172,9 +172,7 @@ class ElasticsearchService {
 
   Map queryElasticsearch(Map query, String index) {
     def headers = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
-    log.info(JsonOutput.prettyPrint(JsonOutput.toJson(query))) //fixme delete
     Response response = restClient.performRequest('GET', "${index}/_search", Collections.EMPTY_MAP, headers)
-
     return parseResponse(response)
   }
 

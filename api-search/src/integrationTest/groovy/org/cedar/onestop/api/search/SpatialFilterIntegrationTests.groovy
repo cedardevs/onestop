@@ -2,7 +2,6 @@ package org.cedar.onestop.api.search
 
 import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
-import spock.lang.Ignore
 import spock.lang.Unroll
 
 @Unroll
@@ -17,11 +16,9 @@ class SpatialFilterIntegrationTests extends IntegrationTest {
     refreshAndLoadGenericTestIndex(SPATIAL_INDEX)
   }
 
-  @Ignore
   def 'Spatial filter with #relation relation returns correct results'() {
     // This test is mostly just testing Elasticsearch, but at least gives piece of mind we're
     // generating the right request, regardless
-    // TODO
     given:
     def requestParams = [
         filters: [[
@@ -29,7 +26,7 @@ class SpatialFilterIntegrationTests extends IntegrationTest {
                       relation: relation,
                       geometry: [
                           type: 'Point',
-                          coordinates: [] //fixme
+                          coordinates: [-60, 47]
                       ]
                   ]],
         summary: false
@@ -47,13 +44,28 @@ class SpatialFilterIntegrationTests extends IntegrationTest {
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | []
-    'disjoint'   | []
-    'intersects' | []
+    'contains'   | ['1']
+    'disjoint'   | ['2', '3', '4']
+    'intersects' | ['1']
     'within'     | []
   }
 
   def 'Exclude global filter enabled excludes global records only'() {
     // Null spatial boundings should not be excluded
+    given:
+    def requestParams = [
+        filters: [[
+            type: 'excludeGlobal',
+            value: true
+        ]],
+        summary: false
+    ]
+
+    when:
+    def queryResponse = esService.searchFromRequest(requestParams, SPATIAL_INDEX)
+
+    then:
+    def actualMatchingIds = queryResponse.data.collect { it.id }
+    ['2', '3', '4', '5'].containsAll(actualMatchingIds)
   }
 }
