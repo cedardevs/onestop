@@ -1,8 +1,6 @@
 ---
 server:
   port: 8080
-  servlet:
-    context-path: "/registry"
 management.endpoints.enabled-by-default: false
 
 kafka:
