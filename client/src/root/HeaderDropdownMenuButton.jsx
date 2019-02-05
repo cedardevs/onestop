@@ -199,7 +199,7 @@ export default class HeaderDropdownMenuButton extends React.Component {
 
     const icon = (
       <SvgIcon
-        size="2em"
+        size="1em"
         verticalAlign={true}
         style={stylesIconMerged}
         path={open ? times : bars}

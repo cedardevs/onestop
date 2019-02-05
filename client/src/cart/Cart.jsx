@@ -167,8 +167,8 @@ export default class Cart extends React.Component {
             key={'clearCartButton'}
             style={styleClearCartButton}
             styleFocus={styleClearCartButtonFocus}
-            title={'Clear cart'}
-            text={'Clear cart'}
+            title={'Clear All'}
+            text={'Clear All'}
             icon={cancel}
             styleIcon={styleClearCartIcon}
             onClick={deselectAllGranules}

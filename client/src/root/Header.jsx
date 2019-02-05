@@ -14,6 +14,7 @@ import FlexRow from '../common/FlexRow'
 
 import HeaderDropdownMenuContainer from './HeaderDropdownMenuContainer'
 import HeaderDropdownMenuButtonContainer from './HeaderDropdownMenuButtonContainer'
+import HeaderCartLinkContainer from './HeaderCartLinkContainer'
 
 const styleWrapper = {
   position: 'relative',
@@ -47,7 +48,7 @@ const styleLinkList = {
   padding: 0,
   margin: 0,
   listStyleType: 'none',
-  fontSize: '1em',
+  fontSize: '1.2em',
   display: 'inline-flex',
   justifyContent: 'center',
   flexWrap: 'wrap',
@@ -174,6 +175,9 @@ class Header extends React.Component {
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
+        </li>
+        <li style={styleLinkListItem(false, false)}>
+          <HeaderCartLinkContainer />
         </li>
         <li
           style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}
