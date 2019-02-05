@@ -7,10 +7,12 @@ import org.cedar.psi.registry.service.MetadataStore
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET
@@ -32,45 +34,114 @@ class MetadataRestController {
   }
 
   @RequestMapping(path = '/metadata/{type}/{id}', method = [GET, HEAD], produces = 'application/json')
-  Map retrieveJson(@PathVariable String type, @PathVariable String id, HttpServletResponse response) {
-    retrieveParsedJson(type, Topics.DEFAULT_SOURCE, id, response)
+  Map retrieveInput(
+      @PathVariable String type,
+      @PathVariable String id,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+    retrieveInput(type, Topics.DEFAULT_SOURCE, id, request, response)
   }
 
   @RequestMapping(path = '/metadata/{type}/{source}/{id}', method = [GET, HEAD], produces = 'application/json')
-  Map retrieveParsedJson(@PathVariable String type, @PathVariable String source, @PathVariable String id, HttpServletResponse response) {
-    RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
-    def result = metadataStore.retrieveParsed(recordType, source, id)
-    String path = "${contextPath}/metadata/${type}/${source}/${id}/input"
-    def link = metadataStore.constructUri(path)
-
-    if (!result) {
-      response.sendError(404, "No such ${type} with id ${id}")
-    }
-
-    return [
-        "links": [
-            "InputRecord": link
-        ],
-        data   : result
-    ]
-  }
-
-  @RequestMapping(path = '/metadata/{type}/{source}/{id}/input', method = [GET, HEAD], produces = 'application/json')
-  Map retrieveInputJson(@PathVariable String type, @PathVariable String source, @PathVariable String id, HttpServletResponse response) {
+  Map retrieveInput(
+      @PathVariable String type,
+      @PathVariable String source,
+      @PathVariable String id,
+      HttpServletRequest request,
+      HttpServletResponse response) {
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def result = metadataStore.retrieveInput(recordType, source, id)
-    String path = "${contextPath}/metadata/${type}/${source}/${id}"
-    def link = metadataStore.constructUri(path)
+    def baseUrl = entityBaseUrl(request)
 
-    if (!result) {
-      response.sendError(404, "No such ${type} with id ${id}")
+    if (result) {
+      return [
+          "links": [
+              "self"  : baseUrl,
+              "parsed": baseUrl + '/parsed'
+          ],
+          data   : [
+              id        : id,
+              type      : type,
+              attributes: result
+          ]
+      ]
     }
+    else {
+      response.status = HttpStatus.NOT_FOUND.value()
+      return [
+          "links": [
+              "self"  : baseUrl,
+          ],
+          errors : [
+              [
+                  status: HttpStatus.NOT_FOUND.value(),
+                  title : HttpStatus.NOT_FOUND.toString(),
+                  detail: "No input exists for ${type} with id [${id}] from source [${source}]" as String
+              ]
+          ]
+      ]
+    }
+  }
 
-    return [
-        "links": [
-            "ParsedRecord": link
-        ],
-        data   : result
-    ]
+  @RequestMapping(path = '/metadata/{type}/{id}/parsed', method = [GET, HEAD], produces = 'application/json')
+  Map retrieveParsed(
+      @PathVariable String type,
+      @PathVariable String id,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+    retrieveParsed(type, Topics.DEFAULT_SOURCE, id, request, response)
+  }
+
+  @RequestMapping(path = '/metadata/{type}/{source}/{id}/parsed', method = [GET, HEAD], produces = 'application/json')
+  Map retrieveParsed(
+      @PathVariable String type,
+      @PathVariable String source,
+      @PathVariable String id,
+      HttpServletRequest request,
+      HttpServletResponse response) {
+
+    RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
+    def result = metadataStore.retrieveParsed(recordType, source, id)
+    def baseUrl = entityBaseUrl(request)
+
+    if (result) {
+      return [
+          "links": [
+              "self" : baseUrl,
+              "input": baseUrl.replaceAll('\\/parsed$', '')
+          ],
+          data   : [
+              id        : id,
+              type      : type,
+              attributes: result
+          ]
+      ]
+    }
+    else {
+      response.status = HttpStatus.NOT_FOUND.value()
+      return [
+          "links": [
+              "self" : baseUrl,
+              "input": baseUrl.replaceAll('\\/parsed$', '')
+          ],
+          errors : [
+              [
+                  status: HttpStatus.NOT_FOUND.value(),
+                  title : HttpStatus.NOT_FOUND.toString(),
+                  detail: "No parsed values exist for ${type} with id [${id}] from source [${source}]" as String
+              ]
+          ]
+      ]
+    }
+  }
+
+  private String entityBaseUrl(HttpServletRequest request) {
+    try {
+      return request.requestURL.toString()
+    }
+    catch (Exception e) {
+      log.error("Failed to construct uri for ${request}", e)
+      throw null
+    }
   }
 }
