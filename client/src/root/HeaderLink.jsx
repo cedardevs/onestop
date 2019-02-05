@@ -35,6 +35,10 @@ class HeaderLink extends React.Component {
   }
 
   handleMouseOver = event => {
+    const {onMouseOver} = this.props
+    if (onMouseOver) {
+      onMouseOver(event)
+    }
     this.setState(prevState => {
       return {
         ...prevState,
@@ -44,6 +48,10 @@ class HeaderLink extends React.Component {
   }
 
   handleMouseOut = event => {
+    const {onMouseOut} = this.props
+    if (onMouseOut) {
+      onMouseOut(event)
+    }
     this.setState(prevState => {
       return {
         ...prevState,

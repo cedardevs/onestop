@@ -107,7 +107,7 @@ export default class CartSelect extends React.Component {
           theme={selectTheme}
           styles={selectStyles}
           aria-labelledby={`cartDownloadOptionsLabel`}
-          placeholder={`Select download protocol and source...`}
+          placeholder={`Select download source...`}
           defaultValue={defaultValue}
           options={options}
           formatOptionLabel={formatOptionLabel}

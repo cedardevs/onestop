@@ -44,8 +44,6 @@ const styleWgetScriptIcon = {
   marginRight: '0.309em',
 }
 
-////
-
 const styleInfoButton = {
   marginLeft: '0.309em',
   padding: '0.309em 0.618em 0.309em 0.309em',
@@ -238,8 +236,6 @@ export default class ScriptDownloader extends React.Component {
     })
   }
 
-  ////
-
   componentWillMount() {
     this.setState({
       showInfo: false,
@@ -282,8 +278,6 @@ export default class ScriptDownloader extends React.Component {
       }
     })
   }
-
-  /////
 
   render() {
     // sources and protocol array is managed in React component state
@@ -328,18 +322,6 @@ export default class ScriptDownloader extends React.Component {
       />
     )
 
-    const downloadLabel = (
-      <label
-        id={`cartDownloadOptionsLabel`}
-        key={`cartDownloadOptionsLabel`}
-        style={styleDownloadLabel}
-      >
-        Download Options:
-      </label>
-    )
-
-    ///
-
     const styleInfoButtonMerged = {
       ...styleInfoButton,
       ...(this.state.focusingShowInfo ? styleInfoButtonFocused : {}),
@@ -365,9 +347,7 @@ export default class ScriptDownloader extends React.Component {
     )
     return (
       <div>
-        <FlexRow
-          items={[ downloadLabel, infoButton, cartSelect, downloadButton ]}
-        />
+        <FlexRow items={[ infoButton, cartSelect, downloadButton ]} />
         <ScriptDownloaderInfo show={this.state.showInfo} />
       </div>
     )

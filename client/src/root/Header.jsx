@@ -1,7 +1,6 @@
 import React from 'react'
 import {Route, Switch} from 'react-router'
 
-import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import Logo from './Logo'
 import HeaderLink from './HeaderLink'
@@ -12,8 +11,6 @@ import {boxShadow} from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
 import FlexRow from '../common/FlexRow'
 
-import HeaderDropdownMenuContainer from './HeaderDropdownMenuContainer'
-import HeaderDropdownMenuButtonContainer from './HeaderDropdownMenuButtonContainer'
 import HeaderCartLinkContainer from './HeaderCartLinkContainer'
 
 const styleWrapper = {
@@ -46,7 +43,7 @@ const styleUserWelcome = {
 
 const styleLinkList = {
   padding: 0,
-  margin: 0,
+  margin: '0 0.618em 0 0',
   listStyleType: 'none',
   fontSize: '1.2em',
   display: 'inline-flex',
@@ -131,7 +128,6 @@ class Header extends React.Component {
 
   render() {
     const {
-      headerDropdownMenuFeatureAvailable,
       user,
       authEnabled,
       loginEndpoint,
@@ -152,39 +148,32 @@ class Header extends React.Component {
       />
     ) : null
 
+    const userActionListItem = authEnabled ? (
+      <li style={styleLinkListItem(false, false)}>{userActionButton}</li>
+    ) : null
+
     const welcomeUser = userEmail ? (
       <div style={styleUserWelcome} key="emailDisplay">
         Logged in as {userEmail}
       </div>
     ) : null
 
-    const headerDropDownMenuListItem = headerDropdownMenuFeatureAvailable ? (
-      <li style={styleLinkListItem(false, true)}>
-        <HeaderDropdownMenuButtonContainer />
-      </li>
-    ) : null
-
     const menuContent = (
       <ul style={styleLinkList}>
-        <li style={styleLinkListItem(false, false)}>
+        <li style={styleLinkListItem(true, false)}>
           <HeaderLink title="About" to="/about">
             About
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, !authEnabled)}>
+        <li style={styleLinkListItem(false, false)}>
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, false)}>
+        {userActionListItem}
+        <li style={styleLinkListItem(false, true)}>
           <HeaderCartLinkContainer />
         </li>
-        <li
-          style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}
-        >
-          {userActionButton}
-        </li>
-        {headerDropDownMenuListItem}
       </ul>
     )
 
@@ -247,7 +236,6 @@ class Header extends React.Component {
             ]}
           />
         </div>
-        <HeaderDropdownMenuContainer />
       </div>
     )
   }
