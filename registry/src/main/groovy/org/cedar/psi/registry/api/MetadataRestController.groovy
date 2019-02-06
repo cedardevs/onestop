@@ -6,7 +6,6 @@ import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,14 +22,13 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD
 @RestController
 class MetadataRestController {
 
-  @Value('${server.servlet.context-path:}')
-  String contextPath
-
   private MetadataStore metadataStore
+  private ApiRootGenerator apiLinkGenerator
 
   @Autowired
-  MetadataRestController(MetadataStore metadataStore) {
+  MetadataRestController(MetadataStore metadataStore, ApiRootGenerator apiLinkGenerator) {
     this.metadataStore = metadataStore
+    this.apiLinkGenerator = apiLinkGenerator
   }
 
   @RequestMapping(path = '/metadata/{type}/{id}', method = [GET, HEAD], produces = 'application/json')
@@ -51,15 +49,13 @@ class MetadataRestController {
       HttpServletResponse response) {
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def result = metadataStore.retrieveInput(recordType, source, id)
-    def baseUrl = entityBaseUrl(request)
+    def links = buildLinks(request, type, source, id)
+    links.self = links.remove('input')
 
     if (result) {
       return [
-          "links": [
-              "self"  : baseUrl,
-              "parsed": baseUrl + '/parsed'
-          ],
-          data   : [
+          links: links,
+          data : [
               id        : id,
               type      : type,
               attributes: result
@@ -68,11 +64,10 @@ class MetadataRestController {
     }
     else {
       response.status = HttpStatus.NOT_FOUND.value()
+      links.remove('parsed')
       return [
-          "links": [
-              "self"  : baseUrl,
-          ],
-          errors : [
+          links : links,
+          errors: [
               [
                   status: HttpStatus.NOT_FOUND.value(),
                   title : HttpStatus.NOT_FOUND.toString(),
@@ -102,15 +97,13 @@ class MetadataRestController {
 
     RecordType recordType = type in RecordType.values()*.name() ? RecordType.valueOf(type) : null
     def result = metadataStore.retrieveParsed(recordType, source, id)
-    def baseUrl = entityBaseUrl(request)
+    def links = buildLinks(request, type, source, id)
+    links.self = links.remove('parsed')
 
     if (result) {
       return [
-          "links": [
-              "self" : baseUrl,
-              "input": baseUrl.replaceAll('\\/parsed$', '')
-          ],
-          data   : [
+          links: links,
+          data : [
               id        : id,
               type      : type,
               attributes: result
@@ -120,11 +113,8 @@ class MetadataRestController {
     else {
       response.status = HttpStatus.NOT_FOUND.value()
       return [
-          "links": [
-              "self" : baseUrl,
-              "input": baseUrl.replaceAll('\\/parsed$', '')
-          ],
-          errors : [
+          links : links,
+          errors: [
               [
                   status: HttpStatus.NOT_FOUND.value(),
                   title : HttpStatus.NOT_FOUND.toString(),
@@ -135,13 +125,12 @@ class MetadataRestController {
     }
   }
 
-  private String entityBaseUrl(HttpServletRequest request) {
-    try {
-      return request.requestURL.toString()
-    }
-    catch (Exception e) {
-      log.error("Failed to construct uri for ${request}", e)
-      throw null
-    }
+  private Map buildLinks(HttpServletRequest request, String type, String source, String id) {
+    def root = apiLinkGenerator.getApiRoot(request)
+    return [
+        input : "${root}/metadata/${type}/${source}/${id}" as String,
+        parsed: "${root}/metadata/${type}/${source}/${id}/parsed" as String
+    ]
   }
+
 }

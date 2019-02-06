@@ -13,7 +13,6 @@ import spock.lang.Specification
 
 import javax.servlet.http.HttpServletResponse
 
-
 class MetadataRestControllerSpec extends Specification {
 
   static final testId = 'abc'
@@ -29,7 +28,8 @@ class MetadataRestControllerSpec extends Specification {
   static final testParsed = ParsedRecord.newBuilder().setType(RecordType.collection).build()
 
   MetadataStore mockMetadataStore = Mock(MetadataStore)
-  MetadataRestController controller = new MetadataRestController(mockMetadataStore)
+  ApiRootGenerator mockApiRootGenerator = Mock(ApiRootGenerator)
+  MetadataRestController controller = new MetadataRestController(mockMetadataStore, mockApiRootGenerator)
   HttpServletResponse mockResponse = new MockHttpServletResponse()
 
 
@@ -41,11 +41,12 @@ class MetadataRestControllerSpec extends Specification {
     def result = controller.retrieveInput(testType.toString(), testId, request, mockResponse)
 
     then:
+    1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
     1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> AvroUtils.avroToMap(testInput)
 
     and:
-    result.links.self == request.requestURL as String
-    result.links.parsed == request.requestURL + '/parsed'
+    result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId"
+    result.links.parsed == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
     result.data.id == testId
     result.data.type == testType.toString()
     result.data.attributes == AvroUtils.avroToMap(testInput)
@@ -60,11 +61,12 @@ class MetadataRestControllerSpec extends Specification {
     def result = controller.retrieveInput(testType.toString(), testSource, testId, request, mockResponse)
 
     then:
+    1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
     1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> AvroUtils.avroToMap(testInput)
 
     and:
-    result.links.self == request.requestURL as String
-    result.links.parsed == request.requestURL + '/parsed'
+    result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId"
+    result.links.parsed == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
     result.data.id == testId
     result.data.type == testType.toString()
     result.data.attributes == AvroUtils.avroToMap(testInput)
@@ -79,11 +81,12 @@ class MetadataRestControllerSpec extends Specification {
     def result = controller.retrieveParsed(testType.toString(), testId, request, mockResponse)
 
     then:
+    1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
     1 * mockMetadataStore.retrieveParsed(testType, testSource, testId) >> AvroUtils.avroToMap(testParsed)
 
     and:
-    result.links.self == request.requestURL as String
-    result.links.input == request.requestURL - '/parsed'
+    result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
+    result.links.input == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.data.id == testId
     result.data.type == testType.toString()
     result.data.attributes == AvroUtils.avroToMap(testParsed)
@@ -98,11 +101,12 @@ class MetadataRestControllerSpec extends Specification {
     def result = controller.retrieveParsed(testType.toString(), testSource, testId, request, mockResponse)
 
     then:
+    1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
     1 * mockMetadataStore.retrieveParsed(testType, testSource, testId) >> AvroUtils.avroToMap(testParsed)
 
     and:
-    result.links.self == request.requestURL as String
-    result.links.input == request.requestURL - '/parsed'
+    result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
+    result.links.input == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.data.id == testId
     result.data.type == testType.toString()
     result.data.attributes == AvroUtils.avroToMap(testParsed)
@@ -117,10 +121,11 @@ class MetadataRestControllerSpec extends Specification {
     def result = controller.retrieveInput(testType.toString(), testId, request, mockResponse)
 
     then:
+    1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
     1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> null
 
     and:
-    result.links.self == request.requestURL as String
+    result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.links.parsed == null // <-- Does NOT have parsed link
     result.data == null
     result.errors instanceof List
@@ -139,11 +144,12 @@ class MetadataRestControllerSpec extends Specification {
     def result = controller.retrieveParsed(testType.toString(), testId, request, mockResponse)
 
     then:
+    1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
     1 * mockMetadataStore.retrieveParsed(testType, testSource, testId) >> null
 
     and:
-    result.links.self == request.requestURL as String
-    result.links.input == request.requestURL - '/parsed' // <-- DOES have input link
+    result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
+    result.links.input == "http://localhost:8080/metadata/$testType/$testSource/$testId" // <-- DOES have input link
     result.data == null
     result.errors instanceof List
     result.errors.size() == 1
