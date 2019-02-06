@@ -11,7 +11,7 @@ class ApiRootGenerator {
 
   private String apiRootUrl
 
-  ApiRootGenerator(@Value('api.root.url:') String apiRootUrl) {
+  ApiRootGenerator(@Value('${api.root.url:}') String apiRootUrl) {
     this.apiRootUrl = apiRootUrl
   }
 
