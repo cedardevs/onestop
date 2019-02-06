@@ -8,7 +8,6 @@ import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
 import org.cedar.schemas.avro.psi.Input
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
-import org.cedar.schemas.avro.util.AvroUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -27,15 +26,10 @@ class MetadataStore {
     this.streamsApp = streamsApp
   }
 
-  Map retrieveParsed(RecordType type, String source, String id) {
+  ParsedRecord retrieveParsed(RecordType type, String source, String id) {
     try {
       def parsedValue = getParsedStore(type)?.get(id)
-      if (parsedValue) {
-        return AvroUtils.avroToMap(parsedValue)
-      }
-      else {
-        return null
-      }
+      return parsedValue ?: null
     }
     catch (Exception e) {
       log.error("Failed to retrieve [${type}] parsed value from source [${source}] with id [${id}]", e)
@@ -43,15 +37,10 @@ class MetadataStore {
     }
   }
 
-  Map retrieveInput(RecordType type, String source, String id) {
+  Input retrieveInput(RecordType type, String source, String id) {
     try {
       def inputValue = getInputStore(type, source)?.get(id)
-      if (!inputValue) {
-        return null
-      }
-      else {
-        return AvroUtils.avroToMap(inputValue)
-      }
+      return inputValue ?: null
     }
     catch (Exception e) {
       log.error("Failed to retrieve [${type}] input value from source [${source}] with id [${id}]", e)

@@ -5,13 +5,11 @@ import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.QueryableStoreType
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
 import org.cedar.schemas.avro.psi.*
-import org.cedar.schemas.avro.util.AvroUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static org.cedar.psi.common.constants.Topics.inputStore
 import static org.cedar.psi.common.constants.Topics.parsedStore
-
 
 @Unroll
 class MetadataStoreSpec extends Specification {
@@ -92,7 +90,7 @@ class MetadataStoreSpec extends Specification {
     1 * mockInputStore.get(testId) >> testInput
 
     and:
-    result ==  AvroUtils.avroToMap(testInput)
+    result ==  testInput
   }
 
   def 'retrieves a parsed record by type and id'() {
@@ -106,7 +104,7 @@ class MetadataStoreSpec extends Specification {
     1 * mockParsedStore.get(testId) >> testParsed
 
     and:
-    result == AvroUtils.avroToMap(testParsed)
+    result == testParsed
   }
 
   def 'retrieves a record with errors'() {
@@ -120,7 +118,7 @@ class MetadataStoreSpec extends Specification {
     1 * mockParsedStore.get(testId) >> testErrorRecord
 
     and:
-    result == AvroUtils.avroToMap(testErrorRecord)
+    result == testErrorRecord
   }
 
 

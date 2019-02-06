@@ -3,7 +3,6 @@ package org.cedar.psi.registry.api
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
 import org.cedar.schemas.avro.psi.*
-import org.cedar.schemas.avro.util.AvroUtils
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import spock.lang.Specification
@@ -39,14 +38,14 @@ class MetadataRestControllerSpec extends Specification {
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
-    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> AvroUtils.avroToMap(testInput)
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testInput
 
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.links.parsed == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
     result.data.id == testId
     result.data.type == testType.toString()
-    result.data.attributes == AvroUtils.avroToMap(testInput)
+    result.data.attributes == testInput
     result.errors == null
   }
 
@@ -59,14 +58,14 @@ class MetadataRestControllerSpec extends Specification {
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
-    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> AvroUtils.avroToMap(testInput)
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> testInput
 
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.links.parsed == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
     result.data.id == testId
     result.data.type == testType.toString()
-    result.data.attributes == AvroUtils.avroToMap(testInput)
+    result.data.attributes == testInput
     result.errors == null
   }
 
@@ -79,14 +78,14 @@ class MetadataRestControllerSpec extends Specification {
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
-    1 * mockMetadataStore.retrieveParsed(testType, testSource, testId) >> AvroUtils.avroToMap(testParsed)
+    1 * mockMetadataStore.retrieveParsed(testType, testSource, testId) >> testParsed
 
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
     result.links.input == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.data.id == testId
     result.data.type == testType.toString()
-    result.data.attributes == AvroUtils.avroToMap(testParsed)
+    result.data.attributes == testParsed
     result.errors == null
   }
 
@@ -99,14 +98,14 @@ class MetadataRestControllerSpec extends Specification {
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
-    1 * mockMetadataStore.retrieveParsed(testType, testSource, testId) >> AvroUtils.avroToMap(testParsed)
+    1 * mockMetadataStore.retrieveParsed(testType, testSource, testId) >> testParsed
 
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
     result.links.input == "http://localhost:8080/metadata/$testType/$testSource/$testId"
     result.data.id == testId
     result.data.type == testType.toString()
-    result.data.attributes == AvroUtils.avroToMap(testParsed)
+    result.data.attributes == testParsed
     result.errors == null
   }
 
@@ -169,7 +168,7 @@ class MetadataRestControllerSpec extends Specification {
 
     then:
     1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
-    1 * mockMetadataStore.retrieveParsed(testType, testSource, testId) >> AvroUtils.avroToMap(parsed, true)
+    1 * mockMetadataStore.retrieveParsed(testType, testSource, testId) >> parsed
 
     and:
     result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
