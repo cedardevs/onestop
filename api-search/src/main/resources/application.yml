@@ -93,6 +93,6 @@ info.buildDate: ${buildDate}
 
 ui:
   auth:
-    loginEndpoint: "http://localhost:30000/onestop/api/login"
-    logoutEndpoint: "http://localhost:30000/onestop/api/logout"
-    userProfileEndpoint: "http://localhost:30000/onestop/api/login_profile"
+    loginEndpoint: "http://localhost:30000/onestop-search/login"
+    logoutEndpoint: "http://localhost:30000/onestop-search/logout"
+    userProfileEndpoint: "http://localhost:30000/onestop-search/login_profile"

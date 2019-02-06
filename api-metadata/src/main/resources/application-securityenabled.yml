@@ -58,8 +58,8 @@ identityprovider:
   authnContextRefs:
     - "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified"
   authnContextComparisonType: "minimum"
-  assertionConsumerServiceURL: "https://localhost:30098/onestop/admin/loginConsume"
-  assertionConsumerServiceLogoutURL: "https://localhost:30098/onestop/admin/logoutConsume"
+  assertionConsumerServiceURL: "https://localhost:30098/onestop-admin/loginConsume"
+  assertionConsumerServiceLogoutURL: "https://localhost:30098/onestop-admin/logoutConsume"
   nameIDPolicyFormat: "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
   signatureAlgorithm: "http://www.w3.org/2000/09/xmldsig#rsa-sha1"
   signatureCanonicalizationAlgorithm: "http://www.w3.org/2001/10/xml-exc-c14n#"
