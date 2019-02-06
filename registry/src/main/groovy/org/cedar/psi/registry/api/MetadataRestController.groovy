@@ -101,14 +101,23 @@ class MetadataRestController {
     links.self = links.remove('parsed')
 
     if (result) {
-      return [
-          links: links,
-          data : [
-              id        : id,
-              type      : type,
-              attributes: result
-          ]
-      ]
+      if (result.errors) {
+        response.status = result.errors.collect({ Map error -> error.status as int }).max()
+        return [
+            links : links,
+            errors: result.errors
+        ]
+      }
+      else {
+        return [
+            links: links,
+            data : [
+                id        : id,
+                type      : type,
+                attributes: result
+            ]
+        ]
+      }
     }
     else {
       response.status = HttpStatus.NOT_FOUND.value()

@@ -2,10 +2,7 @@ package org.cedar.psi.registry.api
 
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
-import org.cedar.schemas.avro.psi.Input
-import org.cedar.schemas.avro.psi.Method
-import org.cedar.schemas.avro.psi.ParsedRecord
-import org.cedar.schemas.avro.psi.RecordType
+import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
@@ -157,6 +154,30 @@ class MetadataRestControllerSpec extends Specification {
     result.errors[0].title instanceof String
     result.errors[0].detail instanceof String
     mockResponse.status == 404
+  }
+
+  def 'handles parsed with errors'() {
+    def error1 = ErrorEvent.newBuilder().setStatus(400).setTitle('client fail').build()
+    def error2 = ErrorEvent.newBuilder().setStatus(500).setTitle('server fail').build()
+    def parsed = ParsedRecord.newBuilder().setErrors([error1, error2]).build()
+
+    def path = "/metadata/${testType}/${testId}"
+    def request = buildMockRequest(path)
+
+    when:
+    def result = controller.retrieveParsed(testType.toString(), testId, request, mockResponse)
+
+    then:
+    1 * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
+    1 * mockMetadataStore.retrieveParsed(testType, testSource, testId) >> AvroUtils.avroToMap(parsed, true)
+
+    and:
+    result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId/parsed"
+    result.links.input == "http://localhost:8080/metadata/$testType/$testSource/$testId"
+    result.data == null
+    result.errors instanceof List
+    result.errors.size() == 2
+    mockResponse.status == 500
   }
 
 
