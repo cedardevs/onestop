@@ -130,10 +130,12 @@ class Header extends React.Component {
     const {
       user,
       authEnabled,
+      cartEnabled,
       loginEndpoint,
       logoutEndpoint,
       logoutUser,
     } = this.props
+
     const {focusingSkipLink} = this.state
     const userEmail = user && user.info ? user.info.email : null
 
@@ -148,8 +150,14 @@ class Header extends React.Component {
       />
     ) : null
 
-    const userActionListItem = authEnabled ? (
-      <li style={styleLinkListItem(false, false)}>{userActionButton}</li>
+    const userListItem = authEnabled ? (
+      <li style={styleLinkListItem(false, !cartEnabled)}>{userActionButton}</li>
+    ) : null
+
+    const cartListItem = cartEnabled ? (
+      <li style={styleLinkListItem(false, cartEnabled)}>
+        {cartEnabled ? <HeaderCartLinkContainer /> : null}
+      </li>
     ) : null
 
     const welcomeUser = userEmail ? (
@@ -165,15 +173,13 @@ class Header extends React.Component {
             About
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, false)}>
+        <li style={styleLinkListItem(false, !authEnabled && !cartEnabled)}>
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
         </li>
-        {userActionListItem}
-        <li style={styleLinkListItem(false, true)}>
-          <HeaderCartLinkContainer />
-        </li>
+        {userListItem}
+        {cartListItem}
       </ul>
     )
 

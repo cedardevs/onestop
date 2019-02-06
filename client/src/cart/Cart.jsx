@@ -7,9 +7,7 @@ import {boxShadow} from '../common/defaultStyles'
 import {identifyProtocol} from '../utils/resultUtils'
 import cancel from 'fa/ban.svg'
 import {fontFamilySerif} from '../utils/styleUtils'
-import FlexColumn from '../common/FlexColumn'
 import ScriptDownloader from './ScriptDownloader'
-import FlexRow from '../common/FlexRow'
 
 const SHOW_MORE_INCREMENT = 10
 
@@ -31,19 +29,14 @@ const styleCartListWrapper = {
 }
 
 const styleCartActions = {
-  margin: '0 0 1.618em 1.618em',
+  margin: '0 1.618em 1.618em 1.618em',
 }
 
 const styleCartActionsTitle = {
   fontFamily: fontFamilySerif(),
   fontSize: '1.2em',
-  margin: '0 1.618em 0.618em 0',
+  margin: '0 0 0.618em 0',
   padding: 0,
-}
-
-const styleActionButtons = {
-  justifyContent: 'space-between',
-  marginRight: '1.618em',
 }
 
 const styleClearCartButton = {
@@ -82,14 +75,6 @@ export default class Cart extends React.Component {
     }
     this.props = props
   }
-
-  // handleExpandableToggle = event => {
-  //   // prevent focus-change state from disrupting if each expandable is open
-  //   let toggledElement = event.value
-  //   this.setState({
-  //     [toggledElement]: event.open,
-  //   })
-  // }
 
   propsForResult = (item, itemId) => {
     const {deselectGranule} = this.props
@@ -154,36 +139,31 @@ export default class Cart extends React.Component {
         />
       ) : null
 
-    const cartActions = [
-      <ScriptDownloader
-        key="scriptDownloaderButton"
-        selectedGranules={selectedGranules}
-      />,
-      <FlexRow
-        key={'cartActionButtons'}
-        style={{marginTop: '1em'}}
-        items={[
-          <Button
-            key={'clearCartButton'}
-            style={styleClearCartButton}
-            styleFocus={styleClearCartButtonFocus}
-            title={'Clear All'}
-            text={'Clear All'}
-            icon={cancel}
-            styleIcon={styleClearCartIcon}
-            onClick={deselectAllGranules}
-          />,
-        ]}
-      />,
-    ]
-
     const cartActionsWrapper =
       selectedGranulesCount === 0 ? null : (
         <div style={styleCartActions}>
           <h1 style={styleCartActionsTitle}>Cart Actions</h1>
-          <FlexColumn style={styleActionButtons} items={cartActions} />
+          <ScriptDownloader
+            key="scriptDownloaderButton"
+            selectedGranules={selectedGranules}
+          />
         </div>
       )
+
+    const clearCartButton = (
+      <Button
+        key={'clearCartButton'}
+        style={styleClearCartButton}
+        styleFocus={styleClearCartButtonFocus}
+        title={'Clear All'}
+        text={'Clear All'}
+        icon={cancel}
+        styleIcon={styleClearCartIcon}
+        onClick={deselectAllGranules}
+      />
+    )
+
+    console.log('selectedGranules.length', selectedGranules.length)
 
     return (
       <div style={styleCenterContent}>
@@ -195,13 +175,14 @@ export default class Cart extends React.Component {
             items={selectedGranules}
             loading={!!loading}
             resultsMessage={'Files for download'}
+            resultsMessageEmpty={'No files selected for download'}
             shown={shownGranules}
             total={selectedGranulesCount}
-            // total={numberOfGranulesSelected}
             onItemSelect={this.handleSelectItem}
             ListItemComponent={CartItem}
             GridItemComponent={null}
             propsForItem={this.propsForResult}
+            customControl={selectedGranulesCount > 0 ? clearCartButton : null}
           />
           {showMoreButton}
         </div>

@@ -64,7 +64,11 @@ export default class HeaderCartLink extends React.Component {
   }
 
   render() {
-    const {featuresEnabled, abbreviatedNumberOfGranulesSelected} = this.props
+    const {
+      featuresEnabled,
+      numberOfGranulesSelected,
+      abbreviatedNumberOfGranulesSelected,
+    } = this.props
 
     const cartBadge = (
       <div style={styleCartBadge}>{abbreviatedNumberOfGranulesSelected}</div>
@@ -88,7 +92,7 @@ export default class HeaderCartLink extends React.Component {
     const cartMenuItem = (
       <div key="cartMenuItem" style={styleCartMenuItem}>
         {cartIcon}
-        {cartBadge}
+        {numberOfGranulesSelected > 0 ? cartBadge : null}
       </div>
     )
 

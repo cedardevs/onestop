@@ -10,35 +10,27 @@ import {granuleDownloadableLinks} from '../utils/cartUtils'
 import {info_circle, SvgIcon} from '../common/SvgIcon'
 import ScriptDownloaderInfo from './ScriptDownloaderInfo'
 
-const styleDownloadLabel = {
-  fontSize: '1em',
-  display: 'inline-flex',
-  padding: '0.309em 0.618em 0.309em 0.309em',
-  marginLeft: '0.618em',
-  whiteSpace: 'nowrap',
-}
-
-const styleWgetScriptButton = {
+const styleLinksButton = {
   fontSize: '1em',
   display: 'inline-flex',
   padding: '0.309em 0.618em 0.309em 0.309em',
   marginLeft: '0.618em',
 }
 
-const styleWgetScriptButtonText = {
+const styleLinksButtonText = {
   whiteSpace: 'nowrap',
 }
 
-const styleWgetScriptButtonFocus = {
+const styleLinksButtonFocus = {
   outline: '2px dashed #5C87AC',
   outlineOffset: '.118em',
 }
 
-const styleWgetScriptButtonDisabled = {
+const styleLinksButtonDisabled = {
   fontStyle: 'italic',
 }
 
-const styleWgetScriptIcon = {
+const styleLinksIcon = {
   width: '1.618em',
   height: '1.618em',
   marginRight: '0.309em',
@@ -292,10 +284,10 @@ export default class ScriptDownloader extends React.Component {
       return null
     }
 
-    // granule download select menu for cart
+    // select menu for downloadable links file for cart
     const cartSelect = (
       <CartSelect
-        key="wgetScriptSelect"
+        key="linksSourceSelect"
         style={{width: '100%', marginLeft: '0.309em'}}
         options={protocolOptGroups}
         onChange={this.handleProtocolSourceChange}
@@ -305,20 +297,20 @@ export default class ScriptDownloader extends React.Component {
       />
     )
 
-    // granule download button
+    // file of granule links: download button
     const downloadButton = (
       <Button
-        key="wgetScriptButton"
-        style={styleWgetScriptButton}
-        styleFocus={styleWgetScriptButtonFocus}
+        key="linksDownloadButton"
+        style={styleLinksButton}
+        styleFocus={styleLinksButtonFocus}
         title={'Links'}
         text={'Links'}
-        styleText={styleWgetScriptButtonText}
+        styleText={styleLinksButtonText}
         icon={download}
-        styleIcon={styleWgetScriptIcon}
+        styleIcon={styleLinksIcon}
         onClick={this.downloadScript}
         disabled={!!!valueSelected}
-        styleDisabled={styleWgetScriptButtonDisabled}
+        styleDisabled={styleLinksButtonDisabled}
       />
     )
 
