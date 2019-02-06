@@ -28,6 +28,9 @@ deploy:
       setValues:
         cp-schema-registry.url: http://psi-dev-cp-schema-registry:8081
         kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
+        config: |-
+          ---
+          server.servlet.context-path: /registry
       imageStrategy:
         helm: {}
     - name: psi-manager
