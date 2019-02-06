@@ -30,10 +30,10 @@ saveCache: &saveCache
       paths:
         - ~/.gradle/caches/
         - ~/.gradle/wrapper/
-        # - .gradle
+        - .gradle
         # - buildSrc/.gradle
-        # - client/.gradle
-        # - client/node_modules
+        - client/.gradle
+        - client/node_modules
       key: onestop-cache-v3-{{ checksum "build.gradle" }}
 
 attachWorkspace: &attachWorkspace
@@ -294,7 +294,7 @@ jobs:
 
       - run:
           name: Test Reports
-          command: ./gradlew jacocoTestReport
+          command: ./gradlew jacocoTestReport -x test
 
       - run:
           name: Save test results
