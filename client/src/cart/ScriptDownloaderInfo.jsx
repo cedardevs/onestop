@@ -1,17 +1,8 @@
 import React from 'react'
 import FlexRow from '../common/FlexRow'
 import dlStep1 from '../../img/dl-step1.png'
-import {arrow_right, SvgIcon} from '../common/SvgIcon'
 import {fontFamilyMonospace} from '../utils/styleUtils'
 import Expandable from '../common/Expandable'
-
-const styleArrowIconWrapper = {
-  padding: '1em',
-}
-
-const styleArrowIcon = {
-  fill: '#636363',
-}
 
 const styleExpandableInfoContent = {
   background: '#efefef',
@@ -26,6 +17,7 @@ const styleStep1Image = {
 }
 
 const styleFileExample = {
+  minWidth: '20em',
   fontFamily: fontFamilyMonospace(),
   fontSize: '0.618em',
   color: '#222',
@@ -36,6 +28,7 @@ const styleFileExample = {
 }
 
 const styleConsoleExample = {
+  minWidth: '20em',
   fontFamily: fontFamilyMonospace(),
   fontSize: '0.618em',
   color: '#F9F9F9',
@@ -48,6 +41,7 @@ const styleConsoleExample = {
 const styleDownloadSteps = {
   justifyContent: 'space-between',
   alignItems: 'center',
+  flexWrap: 'wrap',
 }
 
 const styleWarning = {
@@ -59,6 +53,7 @@ const styleStep = {
   display: 'flex',
   flexDirection: 'column',
   alignSelf: 'flex-start',
+  margin: '0 1em 1em 0',
 }
 
 const styleStepLabel = {
@@ -75,22 +70,9 @@ export default class ScriptDownloaderInfo extends React.Component {
       </div>
     )
 
-    const nextStep1 = (
-      <SvgIcon
-        key="links-downloader-info-nextstep1"
-        size="1.618em"
-        wrapperStyle={styleArrowIconWrapper}
-        style={styleArrowIcon}
-        path={arrow_right}
-        verticalAlign="initial"
-      />
-    )
-
     const step2 = (
       <div key="links-downloader-info-step2" style={styleStep}>
-        <div style={styleStepLabel}>
-          2. Obtain "Links" (e.g. - onestop_ftp.txt)
-        </div>
+        <div style={styleStepLabel}>2. Get links (e.g. - onestop_ftp.txt)</div>
         <div style={styleFileExample}>
           ftp://ftp.nodc.noaa.gov/.../1.nc<br />
           ftp://ftp.nodc.noaa.gov/.../2.nc<br />
@@ -100,17 +82,6 @@ export default class ScriptDownloaderInfo extends React.Component {
           <br />
         </div>
       </div>
-    )
-
-    const nextStep2 = (
-      <SvgIcon
-        key="links-downloader-info-nextstep2"
-        size="1.618em"
-        wrapperStyle={styleArrowIconWrapper}
-        style={styleArrowIcon}
-        path={arrow_right}
-        verticalAlign="initial"
-      />
     )
 
     const step3 = (
@@ -131,10 +102,7 @@ export default class ScriptDownloaderInfo extends React.Component {
     )
 
     const downloadSteps = (
-      <FlexRow
-        style={styleDownloadSteps}
-        items={[ step1, nextStep1, step2, nextStep2, step3 ]}
-      />
+      <FlexRow style={styleDownloadSteps} items={[ step1, step2, step3 ]} />
     )
 
     const expandableInfo = (
