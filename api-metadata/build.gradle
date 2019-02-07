@@ -56,7 +56,7 @@ dependencies {
   compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
-  compile "org.elasticsearch.client:rest:${project.esVersion}"
+  compile "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
   compile "org.springframework.boot:spring-boot-starter-web"
   compile "org.springframework.boot:spring-boot-starter-actuator"
   compile "org.springframework.boot:spring-boot-starter-security"
@@ -96,6 +96,8 @@ ext {
 
 war {
   enabled = true
+  baseName = "${rootProject.name}-${project.name}"
+  finalizedBy bootWar
 }
 
 bootWar {

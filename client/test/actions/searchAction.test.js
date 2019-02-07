@@ -25,7 +25,7 @@ const debugStore = (label, path) => {
 
 describe('The search action', () => {
   let url = '/'
-  let urlSearchCollection = '/onestop/api/search/collection'
+  let urlSearchCollection = '/api/search/collection'
   let component = null
   let stateBefore = null
   const resetStore = () => ({type: RESET_STORE})
@@ -204,7 +204,7 @@ describe('The search action', () => {
 
 describe('The granule actions', () => {
   let url = '/'
-  let urlSearchGranule = '/onestop/api/search/granule'
+  let urlSearchGranule = '/api/search/granule'
   let component = null
   let stateBefore = null
   const resetStore = () => ({type: RESET_STORE})

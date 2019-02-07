@@ -5,8 +5,7 @@ const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
 
 const path = require('path')
 require('babel-polyfill')
-const modernizrrc = path.resolve(__dirname, '.modernizrrc.json')
-require(modernizrrc)
+
 const nodeEnv = process.env.NODE_ENV || 'development'
 const isProd = nodeEnv === 'production'
 
@@ -18,18 +17,8 @@ const smp = new SpeedMeasurePlugin()
 const basePlugins = [
   new HtmlWebpackPlugin({
     inject: false,
-    title: 'NOAA OneStop',
     template: require('html-webpack-template'),
     lang: 'en-US',
-    meta: [
-      {
-        property: 'dcterms.format', content: 'text/html',
-      },
-      {
-        property: 'og:type',
-        content: 'website',
-      },
-    ],
   })
 ]
 
@@ -47,9 +36,6 @@ const prodPlugins = [
       'NODE_ENV': JSON.stringify('production'),
     },
   }),
-  new webpack.optimize.UglifyJsPlugin({
-    compress: {warnings: false},
-  }),
   new webpack.LoaderOptionsPlugin({
     minimize: true,
     debug: false,
@@ -58,7 +44,6 @@ const prodPlugins = [
 
 const devEntryPoints = [
   'babel-polyfill',
-  modernizrrc,
 
   // bundle the client for webpack-dev-server and connect to the provided endpoint
   'webpack-dev-server/client?http://localhost:8080',
@@ -71,7 +56,6 @@ const devEntryPoints = [
 
 const prodEntryPoints = [
   'babel-polyfill',
-  modernizrrc,
   './index.jsx',
 ]
 
@@ -106,9 +90,6 @@ module.exports = env => {
     module:
         {
           rules: [{
-            test: /\.modernizrrc.json/,
-            use: ['modernizr-loader', 'json-loader'],
-          }, {
             enforce: 'pre',
             test: /\.js$/,
             use: 'eslint-loader',
@@ -191,8 +172,6 @@ module.exports = env => {
           {
             'fa':
                 path.resolve(__dirname, 'img/font-awesome/white/svg/'),
-            modernizr$:
-                path.resolve(__dirname, '.modernizrrc.json'),
           },
     }
     ,
