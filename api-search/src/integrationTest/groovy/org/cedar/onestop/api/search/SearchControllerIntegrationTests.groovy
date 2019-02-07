@@ -6,9 +6,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.web.client.RestTemplate
-import spock.lang.Ignore
 import spock.lang.Unroll
-
 
 @Unroll
 class SearchControllerIntegrationTests extends IntegrationTest {
@@ -31,7 +29,6 @@ class SearchControllerIntegrationTests extends IntegrationTest {
     baseUri = "http://localhost:${port}${contextPath}"
   }
 
-  @Ignore
   def '#type info endpoint reports #type count'() {
     given:
     def endpointUri = "${baseUri}/${type}".toURI()
@@ -56,7 +53,7 @@ class SearchControllerIntegrationTests extends IntegrationTest {
     'granule'           | 2
     'flattened-granule' | 2
   }
-  @Ignore
+
   def 'Get existing collection by ID returns expected record and granule count'() {
     given:
     def endpointUri = "${baseUri}/collection/${testData.COOPS.C1.id}".toURI()
@@ -78,7 +75,7 @@ class SearchControllerIntegrationTests extends IntegrationTest {
     and: "Collection has 2 granules"
     result.body.meta.totalGranules == 2
   }
-  @Ignore
+
   def 'Get existing #type by ID returns expected record'() {
     given:
     def endpointUri = "${baseUri}/${type}/${idPath}".toURI()
@@ -102,7 +99,7 @@ class SearchControllerIntegrationTests extends IntegrationTest {
     'granule'           | testData.COOPS.C1.granules.G1.id           | 'CO-OPS.NOS_8638614_201602_D1_v00'
     'flattened-granule' | testData.COOPS.C1.flattenedGranules.FG2.id | 'CO-OPS.NOS_9410170_201503_D1_v00'
   }
-  @Ignore
+
   def 'Get nonexisting #type by ID returns NOT FOUND'() {
     given:
     def endpointUri = "${baseUri}/${type}/123-this-is-a-BAD-ID-456".toURI()
@@ -119,7 +116,7 @@ class SearchControllerIntegrationTests extends IntegrationTest {
     where:
     type << ['collection', 'granule', 'flattened-granule']
   }
-  @Ignore
+
   def 'Valid collection search request returns OK with expected results'() {
     given:
     def summaryFields = [
@@ -163,7 +160,7 @@ class SearchControllerIntegrationTests extends IntegrationTest {
       assert it.attributes.keySet().size() == summaryFields.size()
     }
   }
-  @Ignore
+
   def 'Valid #type search request returns OK with expected results'() {
     given:
     // Summary fields for granule types contain internalParentIdentifier field unlike collections
