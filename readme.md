@@ -21,7 +21,7 @@ For more details, see the [Kubernetes + Helm](#kubernetes-+-helm).
 
 The core of the PSI system is Apache Kafka. It provides a distributed, durable, ordered, streaming event platform
 which PSI leverages to store all its inputs as well as all derived metadata. It also utilizes the 
-[Confluent Schema Regsitry](https://docs.confluent.io/current/schema-registry/docs/index.html) to store 
+[Confluent Schema Registry](https://docs.confluent.io/current/schema-registry/docs/index.html) to store 
 [Avro](https://avro.apache.org/docs/current/) schemas defining the shapes of its messages and ensure that they evolve
 in a backward-compatible way.
 
@@ -38,7 +38,7 @@ These packages are free, open source, and actively developed and maintained by C
 
 [Zookeeper](http://zookeeper.apache.org/) is a distributed key-value store and is a requirement of Kafka.
 
-### Requirements
+#### Requirements
 
 - Java: 6+
 - Storage:
@@ -48,7 +48,7 @@ These packages are free, open source, and actively developed and maintained by C
     - Volume grows with the number of topics created in Kafka
 - Network Connectivity
     - Does not initiate connections
-    - Recieves connections from Kafka nodes
+    - Receives connections from Kafka nodes
 
 For more detailed information, see the [Confluent deployment guide](https://docs.confluent.io/current/zookeeper/deployment.html).
 
@@ -68,7 +68,7 @@ inputs are preserved indefinitely in Kafka topics, which is [perfectly okay](htt
     - Should *not* be shared between nodes
     - Volume grows linearly with the number of inventoried entities
 - Network Connectivity:
-    - Inititates requests to Zookeeper and other Kafka nodes
+    - Initiates requests to Zookeeper and other Kafka nodes
     - Receives requests from other Kafka nodes, PSI Registry, PSI Stream Manager, and any other downstream data consumers
     
 For **much** more information, see the [Confluent deployment guide](https://docs.confluent.io/current/kafka/deployment.html). 
@@ -312,7 +312,7 @@ Which will:
 1. Assemble the executable jar used in each component's docker image
 1. Set up a watch on the source code of each subproject which will rerun compilation and tests when they change
 
-Now, in a seperate shell, run:
+Now, in a separate shell, run:
 ```bash
 skaffold dev
 ```
