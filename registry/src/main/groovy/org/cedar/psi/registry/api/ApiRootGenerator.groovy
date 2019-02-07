@@ -24,7 +24,7 @@ class ApiRootGenerator {
     }
 
     def forwarded = parseForwardedHeader(request.getHeader('forwarded'))
-    def proto = forwarded?.proto ?: request.getHeader('x-forwarded-proto') ?: request.getProtocol()
+    def proto = forwarded?.proto ?: request.getHeader('x-forwarded-proto') ?: request.getScheme()
     def host = forwarded?.host ?: request.getHeader('x-forwarded-host') ?: request.getHeader('host')
     def context = request.getContextPath()
 

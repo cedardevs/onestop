@@ -10,6 +10,7 @@ import groovy.util.logging.Slf4j
 import io.confluent.kafka.schemaregistry.RestApp
 import org.apache.kafka.clients.admin.AdminClient
 import org.apache.kafka.streams.KafkaStreams
+import org.cedar.psi.common.constants.Topics
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
@@ -150,7 +151,7 @@ class RegistryIntegrationSpec extends Specification {
 
     e.statusCode == HttpStatus.NOT_FOUND
     registryResponseSchema.validate(mapper.readTree(JsonOutput.toJson(body)))
-    body.links.input == "${baseUrl}metadata/collection/${collectionId}"
+    body.links.input == "${baseUrl}metadata/collection/${Topics.DEFAULT_SOURCE}/${collectionId}"
     body.errors instanceof List
   }
 
