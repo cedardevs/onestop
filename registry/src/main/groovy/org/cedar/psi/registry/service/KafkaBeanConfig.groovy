@@ -10,6 +10,7 @@ import org.apache.kafka.clients.admin.AdminClientConfig
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.config.TopicConfig
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.common.serialization.StringSerializer
 import org.apache.kafka.streams.KafkaStreams
@@ -62,6 +63,7 @@ class KafkaBeanConfig {
     Map<String, Object> configProps = new HashMap<>()
     configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
     configProps.put(ProducerConfig.CLIENT_ID_CONFIG, 'api_publisher')
+    configProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, 'zstd')
     configProps.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl)
     configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
     configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class.getName())
@@ -71,12 +73,13 @@ class KafkaBeanConfig {
   @Bean
   StreamsConfig streamsConfig() {
     def props = [
-        (APPLICATION_ID_CONFIG)           : REGISTRY_ID,
-        (BOOTSTRAP_SERVERS_CONFIG)        : bootstrapServers,
-        (SCHEMA_REGISTRY_URL_CONFIG)      : schemaRegistryUrl,
-        (DEFAULT_KEY_SERDE_CLASS_CONFIG)  : Serdes.String().class.name,
-        (DEFAULT_VALUE_SERDE_CLASS_CONFIG): SpecificAvroSerde.class.name,
-        (AUTO_OFFSET_RESET_CONFIG)        : 'earliest'
+        (APPLICATION_ID_CONFIG)              : REGISTRY_ID,
+        (BOOTSTRAP_SERVERS_CONFIG)           : bootstrapServers,
+        (SCHEMA_REGISTRY_URL_CONFIG)         : schemaRegistryUrl,
+        (DEFAULT_KEY_SERDE_CLASS_CONFIG)     : Serdes.String().class.name,
+        (DEFAULT_VALUE_SERDE_CLASS_CONFIG)   : SpecificAvroSerde.class.name,
+        (AUTO_OFFSET_RESET_CONFIG)           : 'earliest',
+        (TopicConfig.COMPRESSION_TYPE_CONFIG): 'zstd'
     ]
     if (stateDir) {
       println stateDir

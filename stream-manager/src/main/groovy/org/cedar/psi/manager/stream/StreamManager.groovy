@@ -2,6 +2,7 @@ package org.cedar.psi.manager.stream
 
 import groovy.util.logging.Slf4j
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
+import org.apache.kafka.common.config.TopicConfig
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.StreamsBuilder
@@ -75,6 +76,7 @@ class StreamManager {
     streamsConfiguration.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.name)
     streamsConfiguration.put(COMMIT_INTERVAL_MS_CONFIG, 500)
     streamsConfiguration.put(AUTO_OFFSET_RESET_CONFIG, "earliest")
+    streamsConfiguration.put(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
     return streamsConfiguration
   }
 }
