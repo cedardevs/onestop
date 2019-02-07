@@ -54,7 +54,7 @@ class SearchRequestParserService {
             "score_agg": [
                 stats: [
                     script: [
-                        inline: "_score",
+                        source: "_score",
                         lang  : "expression"
                     ]
                 ]
