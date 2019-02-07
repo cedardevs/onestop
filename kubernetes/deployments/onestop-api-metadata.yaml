@@ -12,7 +12,7 @@ spec:
     app: onestop-api-metadata
   ports:
     - name: http
-      port: 8098
+      port: 8080
       nodePort: 30098
   type: NodePort
 
@@ -63,7 +63,7 @@ spec:
               name: keystore
               key: key_password
         ports:
-        - containerPort: 8098
+        - containerPort: 8080
         volumeMounts:
           - name: keystore
             mountPath: "/etc/api-metadata/keystore.jks"

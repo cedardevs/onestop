@@ -122,6 +122,7 @@ class Map extends React.Component {
     }
 
     let initialMapProperties = {
+      preferCanvas: true,
       maxBounds: BOUNDS,
       maxBoundsViscosity: 1.0,
       layers: [ E.basemapLayer('Imagery'), E.basemapLayer('ImageryLabels') ],

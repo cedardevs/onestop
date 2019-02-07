@@ -25,7 +25,7 @@ dependencies {
   compile "org.codehaus.groovy:groovy:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
-  compile "org.elasticsearch.client:rest:${project.esVersion}"
+  compile "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
   compile 'org.springframework.boot:spring-boot-starter-web'
   compile 'org.springframework.boot:spring-boot-starter-actuator'
   compile 'org.springframework.boot:spring-boot-devtools'
@@ -42,6 +42,9 @@ dependencies {
   compile 'com.github.java-json-tools:json-schema-validator:2.2.8'
   compile 'org.apache.commons:commons-lang3:3.7'
   compile 'org.apache.lucene:lucene-expressions:7.2.1'
+
+  // version to override another library's dependency to solve a CVE:
+  compile 'com.google.guava:guava:27.0.1-jre'
 
   runtime 'org.springframework.boot:spring-boot-devtools'
 
@@ -92,7 +95,7 @@ ext {
     envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8097/onestop/api/login_profile?failure=true"
     envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
   }
-  
+
   // login.gov keystore configuration (for JWT signing on token request)
   keystoreOutputDir = ".keystore"
   keystoreFile = "logingov.jks"

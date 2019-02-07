@@ -1,12 +1,6 @@
 import React from 'react'
 import {SvgIcon, times, bars} from '../common/SvgIcon'
-import FocusManager from '../common/FocusManager'
-
-const styleWrapper = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}
+import {HEADER_LINK_CLASS} from './HeaderLink'
 
 const styleButtonDefault = {
   display: 'flex',
@@ -134,8 +128,22 @@ export default class HeaderDropdownMenuButton extends React.Component {
   }
 
   handleBlur = event => {
+    const {onBlur, setOpen, open} = this.props
+
+    // only allow the header menu button to close an already open menu
+    // if the focus is going from here (onBlur) to one of the previous
+    // focusable header links w/same class name (because those links
+    // are dynamic based on enabled features)
+    if (event.relatedTarget) {
+      if (
+        event.relatedTarget.className === HEADER_LINK_CLASS &&
+        setOpen &&
+        open
+      ) {
+        setOpen(!open)
+      }
+    }
     event.stopPropagation()
-    const {onBlur} = this.props
     if (onBlur) {
       onBlur(event)
     }
@@ -145,13 +153,6 @@ export default class HeaderDropdownMenuButton extends React.Component {
         focusing: false,
       }
     })
-  }
-
-  handleTotalBlur = e => {
-    const {setOpen} = this.props
-    if (setOpen) {
-      setOpen(false)
-    }
   }
 
   render() {
@@ -206,27 +207,23 @@ export default class HeaderDropdownMenuButton extends React.Component {
     )
 
     return (
-      <FocusManager
-        onBlur={this.handleTotalBlur}
-        blurOnEscape={true}
-        blurOnShiftTab={true}
-        style={styleWrapper}
+      <button
+        id="headerDropdownMenuButton"
+        aria-expanded={open}
+        onClick={() => {
+          setOpen(!open)
+        }}
+        onMouseOver={this.handleMouseOver}
+        onMouseOut={this.handleMouseOut}
+        onMouseDown={this.handleMouseDown}
+        onMouseUp={this.handleMouseUp}
+        onFocus={this.handleFocus}
+        onBlur={this.handleBlur}
+        style={stylesButtonMerged}
+        title="Extra Menu"
       >
-        <button
-          id="headerDropdownMenuButton"
-          onClick={() => setOpen(!open)}
-          onMouseOver={this.handleMouseOver}
-          onMouseOut={this.handleMouseOut}
-          onMouseDown={this.handleMouseDown}
-          onMouseUp={this.handleMouseUp}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
-          style={stylesButtonMerged}
-          title="Extra Menu"
-        >
-          {icon}
-        </button>
-      </FocusManager>
+        {icon}
+      </button>
     )
   }
 }

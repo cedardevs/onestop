@@ -18,18 +18,8 @@ const smp = new SpeedMeasurePlugin()
 const basePlugins = [
   new HtmlWebpackPlugin({
     inject: false,
-    title: 'NOAA OneStop',
     template: require('html-webpack-template'),
     lang: 'en-US',
-    meta: [
-      {
-        property: 'dcterms.format', content: 'text/html',
-      },
-      {
-        property: 'og:type',
-        content: 'website',
-      },
-    ],
   }),
   new webpack.optimize.CommonsChunkPlugin({
     name: 'vendor',

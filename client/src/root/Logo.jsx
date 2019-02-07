@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import {fontFamilySerif} from '../utils/styleUtils'
 const noaaLogo = require('../../img/noaa_logo_circle_72x72.svg')
 import {stop_circle_o, SvgIcon} from '../common/SvgIcon'
+import {getBasePath} from '../utils/urlUtils'
 
 //-- Styles
 const styleLogoWrapper = {
@@ -225,7 +226,7 @@ export default class Logo extends Component {
         </div>
         <div style={styleTextWrapperMerged}>
           <a
-            href="/onestop"
+            href={getBasePath()}
             style={stylesOneStopLink}
             onClick={this.props.onClick}
             onFocus={this.handleTextFocus}

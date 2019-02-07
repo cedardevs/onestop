@@ -15,6 +15,39 @@
 //
 // // global define for leaflet-draw use of `L` in tests
 // global.L = require('leaflet')
+
+// when the leaflet map options have the `preferCanvas: true` option set,
+// this allows us to mock leaflet for our tests. Refer to:
+// https://github.com/Leaflet/Leaflet/issues/6297
+Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+  value: () => {
+    return {
+      fillRect: function() {},
+      clearRect: function(){},
+      putImageData: function() {},
+      createImageData: function(){ return []},
+      setTransform: function(){},
+      drawImage: function(){},
+      save: function(){},
+      fillText: function(){},
+      restore: function(){},
+      beginPath: function(){},
+      moveTo: function(){},
+      lineTo: function(){},
+      closePath: function(){},
+      stroke: function(){},
+      translate: function(){},
+      scale: function(){},
+      rotate: function(){},
+      arc: function(){},
+      fill: function(){},
+      transform: function(){},
+      rect: function(){},
+      clip: function(){},
+    }
+  }
+});
+
 //
 // global define of lodash for tests
 global._ = require('lodash')

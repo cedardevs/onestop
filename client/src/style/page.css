@@ -30,6 +30,10 @@ button:hover {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+}
+
 /* remove IE default input clear button since we handle this ourselves  */
 input::-ms-clear {
   display: none;

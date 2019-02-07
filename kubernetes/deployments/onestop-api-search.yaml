@@ -12,7 +12,7 @@ spec:
     app: onestop-api-search
   ports:
   - name: http
-    port: 8097
+    port: 8080
     nodePort: 30097
   type: NodePort
 
@@ -47,15 +47,15 @@ spec:
         - name: SPRING.CONFIG.ADDITIONAL-LOCATION
           value: /deployments/config/application.yaml
         - name: LOGIN_GOV_CLIENT_ID
-          value: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_30000"
+          value: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8080"
         - name: LOGIN_GOV_ALLOWED_ORIGIN
-          value: "http://localhost:30000"
+          value: "http://localhost:8080"
         - name: LOGIN_GOV_LOGIN_SUCCESS_REDIRECT
-          value: "http://localhost:30000/onestop/"
+          value: "http://localhost:8080/onestop/"
         - name: LOGIN_GOV_LOGIN_FAILURE_REDIRECT
-          value: "http://localhost:30000/onestop/"
+          value: "http://localhost:8080/onestop/"
         - name: LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT
-          value: "http://localhost:30000/onestop/"
+          value: "http://localhost:8080/onestop/"
         - name: LOGIN_GOV_KEYSTORE_FILE
           value: "/etc/api-search/logingov.jks"
         - name: LOGIN_GOV_KEYSTORE_PASSWORD
@@ -81,7 +81,7 @@ spec:
           mountPath: "/etc/api-search/logingov.jks"
           subPath: keystore.jks
         ports:
-        - containerPort: 8097
+        - containerPort: 8080
       volumes:
       - name: application-config
         configMap:
@@ -109,10 +109,10 @@ data:
     spring.profiles.include:
       - feature-trending-search
     ui:
-      auth:
-        loginEndpoint: "http://localhost:30000/onestop/api/login"
-        logoutEndpoint: "http://localhost:30000/onestop/api/logout"
-        userProfileEndpoint: "http://localhost:30000/onestop/api/login_profile"
+      # auth:
+       # loginEndpoint: "http://localhost:8080/onestop/api/login"
+       # logoutEndpoint: "http://localhost:8080/onestop/api/logout"
+       # userProfileEndpoint: "http://localhost:8080/onestop/api/login_profile"
       # googleAnalytics:
        # profiles:
         #  - trackingId: 'UA-127993388-1'
@@ -123,8 +123,8 @@ data:
          # alwaysSendToDefaultTracker: false
       banner:
         message: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
-      # enabledFeatureToggles:
-       # - featureName: cart
+      enabledFeatureToggles:
+        - featureName: cart
       featured:
           - title: GOES Data
             searchTerm: '"Gridded Satellite GOES"'

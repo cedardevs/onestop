@@ -67,3 +67,4 @@ elasticsearch:
         name: staging_granule
 
 info.version: ${version}
+info.buildDate: ${buildDate}

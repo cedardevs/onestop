@@ -5,8 +5,6 @@ import store from './store' // create Redux store with appropriate middleware
 import history from './history' // create history object based on environment
 
 import '../img/noaa-favicon.ico'
-import './jsonLd' // add json LD scripts
-import './meta' // add meta tag
 import './fonts' // include custom fonts in bundle
 import './style/fonts.css' // map custom fonts to CSS @font-face rules
 import './style/vendorStyles' // vendor CSS rules (e.g. - leaflet)
@@ -14,7 +12,7 @@ import './style/page.css' // high-level and global CSS rules (must be before med
 import './style/media.css' // @media CSS rules for base font-size based on screen width
 import './leaflet-init' // custom leaflet hooks
 import './init' // dispatch initial conditions on page refresh
-
+import {getBasePath} from './utils/urlUtils'
 // create root DOM element for application
 const appDiv = document.createElement('div')
 appDiv.id = 'app'
@@ -22,7 +20,7 @@ document.body.appendChild(appDiv)
 
 // specify the base URL for all relative URLs in the page
 const baseRef = document.createElement('base')
-baseRef.href = '/onestop/'
+baseRef.href = getBasePath()
 document.head.appendChild(baseRef)
 
 // render the app
