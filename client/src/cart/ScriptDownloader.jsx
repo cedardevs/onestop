@@ -59,6 +59,12 @@ const styleShowHideText = {
   textDecoration: 'underline',
 }
 
+const styleDownloadLabel = {
+  whiteSpace: 'nowrap',
+  alignSelf: 'center',
+  marginRight: '0.309em',
+}
+
 export default class ScriptDownloader extends React.Component {
   // Selected granules, whether retrieved from local storage or
   // elsewhere, are stored in the form of a Map, where the keys
@@ -284,6 +290,16 @@ export default class ScriptDownloader extends React.Component {
       return null
     }
 
+    const downloadLabel = (
+      <label
+        id="cartDownloadOptionsLabel"
+        key="cartDownloadOptionsLabel"
+        style={styleDownloadLabel}
+      >
+        Download Options:
+      </label>
+    )
+
     // select menu for downloadable links file for cart
     const cartSelect = (
       <CartSelect
@@ -303,7 +319,7 @@ export default class ScriptDownloader extends React.Component {
         key="linksDownloadButton"
         style={styleLinksButton}
         styleFocus={styleLinksButtonFocus}
-        title={'Links'}
+        title={'Download Links as Text File'}
         text={'Links'}
         styleText={styleLinksButtonText}
         icon={download}
@@ -322,7 +338,7 @@ export default class ScriptDownloader extends React.Component {
     const infoButton = (
       <button
         key="links-downloader-info-button"
-        aria-label="Links downloader info"
+        aria-label="Links download information"
         style={styleInfoButtonMerged}
         aria-expanded={this.state.showInfo}
         onClick={
@@ -337,9 +353,12 @@ export default class ScriptDownloader extends React.Component {
         </span>
       </button>
     )
+
     return (
       <div>
-        <FlexRow items={[ infoButton, cartSelect, downloadButton ]} />
+        <FlexRow
+          items={[ downloadLabel, cartSelect, downloadButton, infoButton ]}
+        />
         <ScriptDownloaderInfo show={this.state.showInfo} />
       </div>
     )

@@ -58,9 +58,9 @@ const optionStyle = {
 const optionBadgeStyle = {
   backgroundColor: '#277CB2',
   borderRadius: '2em',
-  color: '#F9F9F9',
+  color: 'white',
   display: 'inline-block',
-  fontSize: 12,
+  padding: '0.618em',
   fontWeight: 'normal',
   lineHeight: '1',
   minWidth: 1,
@@ -106,8 +106,8 @@ export default class CartSelect extends React.Component {
           aria-expanded={isMenuOpen}
           theme={selectTheme}
           styles={selectStyles}
-          aria-labelledby={`cartDownloadOptionsLabel`}
-          placeholder={`Select download source...`}
+          aria-labelledby="cartDownloadOptionsLabel"
+          placeholder="Select file link type"
           defaultValue={defaultValue}
           options={options}
           formatOptionLabel={formatOptionLabel}

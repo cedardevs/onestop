@@ -3,6 +3,7 @@ import FlexRow from '../common/FlexRow'
 import dlStep1 from '../../img/dl-step1.png'
 import {fontFamilyMonospace} from '../utils/styleUtils'
 import Expandable from '../common/Expandable'
+import {SiteColors} from '../common/defaultStyles'
 
 const styleExpandableInfoContent = {
   background: '#efefef',
@@ -27,6 +28,12 @@ const styleFileExample = {
   padding: '1em',
 }
 
+const styleInlineCode = {
+  fontFamily: fontFamilyMonospace(),
+  color: '#222',
+  background: '#F9F9F9',
+}
+
 const styleConsoleExample = {
   minWidth: '20em',
   fontFamily: fontFamilyMonospace(),
@@ -39,6 +46,10 @@ const styleConsoleExample = {
 }
 
 const styleDownloadSteps = {
+  display: 'flex',
+  flexFlow: 'row wrap',
+  justifyContent: 'space-between',
+  alignItems: 'center',
   justifyContent: 'space-between',
   alignItems: 'center',
   flexWrap: 'wrap',
@@ -46,7 +57,7 @@ const styleDownloadSteps = {
 
 const styleWarning = {
   fontWeight: 'bold',
-  color: 'red',
+  color: SiteColors.WARNING,
 }
 
 const styleStep = {
@@ -54,6 +65,7 @@ const styleStep = {
   flexDirection: 'column',
   alignSelf: 'flex-start',
   margin: '0 1em 1em 0',
+  width: '30%',
 }
 
 const styleStepLabel = {
@@ -64,45 +76,67 @@ const styleStepLabel = {
 export default class ScriptDownloaderInfo extends React.Component {
   render() {
     const step1 = (
-      <div key="links-downloader-info-step1" style={styleStep}>
-        <div style={styleStepLabel}>1. Choose source and protocol</div>
-        <img src={dlStep1} style={styleStep1Image} />
+      <div style={styleStep}>
+        <li key="links-downloader-info-step1">
+          <div style={styleStepLabel}>Choose link type</div>
+          <div>Link type is described by source and protocol.</div>
+          <img
+            src={dlStep1}
+            style={styleStep1Image}
+            alt="FTP link type selected with Links button enabled"
+          />
+        </li>
       </div>
     )
 
     const step2 = (
-      <div key="links-downloader-info-step2" style={styleStep}>
-        <div style={styleStepLabel}>2. Get links (e.g. - onestop_ftp.txt)</div>
-        <div style={styleFileExample}>
-          ftp://ftp.nodc.noaa.gov/.../1.nc<br />
-          ftp://ftp.nodc.noaa.gov/.../2.nc<br />
-          ftp://ftp.nodc.noaa.gov/.../3.nc<br />
-          <br />
-          <br />
-          <br />
-        </div>
+      <div style={styleStep}>
+        <li key="links-downloader-info-step2">
+          <div style={styleStepLabel}>Download text file</div>
+          <div>
+            Use the Links buttons to download the file (e.g. - onestop_ftp.txt)
+          </div>
+          <div style={styleFileExample}>
+            ftp://ftp.nodc.noaa.gov/.../1.nc<br />
+            ftp://ftp.nodc.noaa.gov/.../2.nc<br />
+            ftp://ftp.nodc.noaa.gov/.../3.nc<br />
+            <br />
+            <br />
+            <br />
+          </div>
+        </li>
       </div>
     )
 
     const step3 = (
-      <div key="links-downloader-info-step3" style={styleStep}>
-        <div style={styleStepLabel}>3. Use download utility</div>
-        <div style={styleConsoleExample}>
-          &gt; wget -i onestop_ftp.txt
-          <br />
-          <br />
-          ...
-          <br />
-          <br />
-          Downloaded: 3 files, 1.5M in 2.5s (600 KB/s)
-          <br />
-          &gt;
-        </div>
+      <div style={styleStep}>
+        <li key="links-downloader-info-step3">
+          <div style={styleStepLabel}>Use download utility</div>
+          <div>
+            For example, <span style={styleInlineCode}>wget</span> is a command
+            line utility for non-interactive download of files.
+          </div>
+          <div style={styleConsoleExample}>
+            &gt; wget -i onestop_ftp.txt
+            <br />
+            <br />
+            ...
+            <br />
+            <br />
+            Downloaded: 3 files, 1.5M in 2.5s (600 KB/s)
+            <br />
+            &gt;
+          </div>
+        </li>
       </div>
     )
 
     const downloadSteps = (
-      <FlexRow style={styleDownloadSteps} items={[ step1, step2, step3 ]} />
+      <ol style={styleDownloadSteps}>
+        {step1}
+        {step2}
+        {step3}
+      </ol>
     )
 
     const expandableInfo = (
