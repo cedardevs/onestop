@@ -6,8 +6,7 @@ import org.cedar.schemas.avro.psi.RecordType
 @CompileStatic
 class Topics {
 
-  static final int DEFAULT_NUM_PARTITIONS = 1
-  static final short DEFAULT_REPLICATION_FACTOR = 1
+  static final int DEFAULT_NUM_PARTITIONS = 20
 
   static final String DEFAULT_SOURCE = 'unknown'
 
