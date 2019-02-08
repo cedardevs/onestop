@@ -21,6 +21,7 @@ import org.cedar.schemas.avro.psi.Input
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Profile
 
 import static io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG
 import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
@@ -53,6 +54,7 @@ class KafkaBeanConfig {
     return AdminClient.create(config)
   }
 
+  @Profile('!integration')
   @Bean(initMethod = 'initialize')
   TopicInitializer topicInitializer(AdminClient adminClient) {
     new TopicInitializer(adminClient)
