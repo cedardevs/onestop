@@ -87,7 +87,7 @@ dependencies {
   testCompile "org.testcontainers:testcontainers:1.10.0"
   testCompile "org.testcontainers:elasticsearch:1.10.0"
   testCompile 'net.bytebuddy:byte-buddy:1.7.11'
-  testCompile "org.springframework.kafka:spring-kafka-test:2.2.2.RELEASE"
+  testCompile "org.springframework.kafka:spring-kafka-test:2.2.3.RELEASE"
 }
 
 ext {
