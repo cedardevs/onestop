@@ -26,11 +26,11 @@ configurations {
 dependencies {
   // Kafka dependencies for connecting with PSI
   compile('com.github.cedardevs:schemas:0.1.0')
-  compile("org.springframework.kafka:spring-kafka:2.2.2.RELEASE")
-  compile("io.confluent:kafka-streams-avro-serde:5.0.1")
+  compile("org.springframework.kafka:spring-kafka:2.2.3.RELEASE")
+  compile("io.confluent:kafka-streams-avro-serde:5.1.0")
   testCompile('com.github.cedardevs:schemas:0.1.0:test')
-  testCompile('io.confluent:kafka-schema-registry:5.0.1')
-  testCompile('io.confluent:kafka-schema-registry:5.0.1:tests')
+  testCompile('io.confluent:kafka-schema-registry:5.1.0')
+  testCompile('io.confluent:kafka-schema-registry:5.1.0:tests')
 
   // opensaml
   compile("org.opensaml:opensaml-core:${project.openSAMLVersion}")
