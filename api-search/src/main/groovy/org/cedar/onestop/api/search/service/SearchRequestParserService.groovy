@@ -131,8 +131,8 @@ class SearchRequestParserService {
       allFilters.add(constructDateTimeFilter(it))
     }
 
-    groupedFilters.paleoDate.each {
-      allFilters.add(constructPaleoFilter(it))
+    groupedFilters.year.each {
+      allFilters.add(constructYearFilter(it))
     }
 
     // Spatial filters:
@@ -176,7 +176,7 @@ class SearchRequestParserService {
     return constructTemporalFilter(filterRequest, 'beginDate', 'endDate')
   }
 
-  private List<Map> constructPaleoFilter(Map filterRequest) {
+  private List<Map> constructYearFilter(Map filterRequest) {
     return constructTemporalFilter(filterRequest, 'beginYear', 'endYear')
   }
 

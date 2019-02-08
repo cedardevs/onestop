@@ -112,7 +112,7 @@ class JsonValidatorSpec extends Specification {
         """\
 {
   "filters": [
-    {"type": "paleoDate", "relation": "contains", "after": -5000000}
+    {"type": "year", "relation": "contains", "after": -5000000}
   ]
 }""",
         """\
@@ -161,7 +161,7 @@ class JsonValidatorSpec extends Specification {
   ],
   "filters": [
     {"type": "facet", "name": "science", "values": ["Oceans"]},
-    {"type": "datetime", "before": "2016-06-15T20:20:58Z", "after": "2015-09-22T10:30:06.000Z"},
+    {"type": "year", "before": 1000, "after": -1234567890},
     {"type": "geometry", "relation": "contains", "geometry": {"type": "Point", "coordinates": [22.123, -45.245]}}
   ],
   "page": { "max": 100, "offset": 0 }
@@ -254,13 +254,13 @@ class JsonValidatorSpec extends Specification {
         """\
 {
   "filters": [
-    {"type": "paleoDate", "before": -200.5}
+    {"type": "year", "before": -200.5}
   ]
 }""",
         """\
 {
   "filters": [
-    {"type": "paleoDate", "after": "-100000"}
+    {"type": "year", "after": "-100000"}
   ]
 }""",
         """\

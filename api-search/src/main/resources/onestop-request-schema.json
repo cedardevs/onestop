@@ -81,7 +81,7 @@
           "$ref": "#/definitions/dateTimeFilter"
         },
         {
-          "$ref": "#/definitions/paleoDateFilter"
+          "$ref": "#/definitions/yearFilter"
         },
         {
           "$ref": "#/definitions/facetFilter"
@@ -147,12 +147,12 @@
       ],
       "additionalProperties": false
     },
-    "paleoDateFilter": {
+    "yearFilter": {
       "type": "object",
       "properties": {
         "type": {
           "enum": [
-            "paleoDate"
+            "year"
           ]
         },
         "before": {

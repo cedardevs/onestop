@@ -16,7 +16,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     refreshAndLoadGenericTestIndex(DATES_INDEX)
   }
 
-  def 'Time filter with begin date only and #relation relation returns correct results'() {
+  def 'Datetime filter with begin date only and #relation relation returns correct results'() {
     given:
     def requestParams = [
         filters: [[
@@ -45,7 +45,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     'within'     | ['2', '3', '6']
   }
 
-  def 'Time filter with end date only and #relation relation returns correct results'() {
+  def 'Datetime filter with end date only and #relation relation returns correct results'() {
     given:
     def requestParams = [
         filters: [[
@@ -74,7 +74,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     'within'     | ['5']
   }
 
-  def 'Time filter with begin and end dates and #relation relation returns correct results'() {
+  def 'Datetime filter with begin and end dates and #relation relation returns correct results'() {
     given:
     def requestParams = [
         filters: [[
@@ -104,11 +104,11 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     'within'     | []
   }
 
-  def 'Paleo filter with begin year only and #relation relation returns correct results'() {
+  def 'Year filter with begin year only and #relation relation returns correct results'() {
     given:
     def requestParams = [
         filters: [[
-                      type: "paleoDate",
+                      type: "year",
                       relation: relation,
                       after: -1000000000
                   ]],
@@ -133,11 +133,11 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     'within'     | ['2', '3', '5', '6', '7', '11', '12']
   }
 
-  def 'Paleo filter with end year only and #relation relation returns correct results'() {
+  def 'Year filter with end year only and #relation relation returns correct results'() {
     given:
     def requestParams = [
         filters: [[
-                      type: "paleoDate",
+                      type: "year",
                       relation: relation,
                       before: -1100000000
                   ]],
@@ -162,11 +162,11 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     'within'     | ['8', '10']
   }
 
-  def 'Paleo filter with begin and end years and #relation relation returns correct results'() {
+  def 'Year filter with begin and end years and #relation relation returns correct results'() {
     given:
     def requestParams = [
         filters: [[
-                      type: "paleoDate",
+                      type: "year",
                       relation: relation,
                       after: -1500000000,
                       before: -100000
