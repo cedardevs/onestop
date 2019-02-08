@@ -106,7 +106,7 @@ export class SvgIcon extends React.Component {
   }
 
   render() {
-    const {size, verticalAlign, style, wrapperStyle} = this.props
+    const {size, verticalAlign, style, wrapperStyle, label} = this.props
     const actualSize = sizeWithDefault(size)
     const appliedStyle = {...styleSvg(size), ...style}
     const appliedWrapperStyle = {
@@ -114,7 +114,7 @@ export class SvgIcon extends React.Component {
       ...wrapperStyle,
     }
     return (
-      <span style={appliedWrapperStyle}>
+      <span style={appliedWrapperStyle} aria-label={label}>
         <svg
           focusable="false"
           style={appliedStyle}

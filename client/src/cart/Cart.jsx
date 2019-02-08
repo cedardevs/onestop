@@ -155,15 +155,13 @@ export default class Cart extends React.Component {
         key={'clearCartButton'}
         style={styleClearCartButton}
         styleFocus={styleClearCartButtonFocus}
-        title={'Clear All'}
+        title={'Clear All Granules from Cart'}
         text={'Clear All'}
         icon={cancel}
         styleIcon={styleClearCartIcon}
         onClick={deselectAllGranules}
       />
     )
-
-    console.log('selectedGranules.length', selectedGranules.length)
 
     return (
       <div style={styleCenterContent}>

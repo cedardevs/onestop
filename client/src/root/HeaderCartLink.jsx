@@ -2,6 +2,7 @@ import React from 'react'
 import {FEATURE_CART} from '../utils/featureUtils'
 import {cart_arrow_down, SvgIcon} from '../common/SvgIcon'
 import HeaderLink from './HeaderLink'
+import {SiteColors} from '../common/defaultStyles'
 
 const styleCartMenuItem = {
   position: 'relative',
@@ -17,7 +18,7 @@ const styleCartBadge = {
   lineHeight: '1.5em',
   borderRadius: '1em',
   padding: '0.25em',
-  background: 'red',
+  background: SiteColors.WARNING,
   color: 'white',
   textAlign: 'center',
 }
@@ -71,7 +72,9 @@ export default class HeaderCartLink extends React.Component {
     } = this.props
 
     const cartBadge = (
-      <div style={styleCartBadge}>{abbreviatedNumberOfGranulesSelected}</div>
+      <div style={styleCartBadge} aria-hidden="true">
+        {abbreviatedNumberOfGranulesSelected}
+      </div>
     )
 
     const styleCartIconMerged = {
@@ -89,6 +92,11 @@ export default class HeaderCartLink extends React.Component {
       />
     )
 
+    const cartLabel =
+      numberOfGranulesSelected > 0
+        ? `Download Cart ${numberOfGranulesSelected} items`
+        : 'Download Cart empty'
+
     const cartMenuItem = (
       <div key="cartMenuItem" style={styleCartMenuItem}>
         {cartIcon}
@@ -99,7 +107,7 @@ export default class HeaderCartLink extends React.Component {
     if (featuresEnabled.includes(FEATURE_CART)) {
       return (
         <HeaderLink
-          title=""
+          title={cartLabel}
           to="/cart"
           onMouseOver={this.handleMouseOver}
           onMouseOut={this.handleMouseOut}

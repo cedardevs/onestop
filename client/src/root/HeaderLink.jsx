@@ -149,6 +149,7 @@ class HeaderLink extends React.Component {
         onKeyDown={this.handleKeyDown}
         onKeyUp={this.handleKeyUp}
         className={HEADER_LINK_CLASS}
+        title={title}
       >
         {this.props.children}
       </Link>
