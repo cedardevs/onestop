@@ -135,7 +135,7 @@ to support retrieval of all stored metadata via HTTP.
 
 ##### A Note On Proxies
 
-Some of the responses from the registy API include links to other relevant endpoints. For example the response when
+Some of the responses from the registry API include links to other relevant endpoints. For example the response when
 retrieving the raw input of a collection entity will include a link to its corresponding parsed values and vice versa.
 See the [JSON_API](https://jsonapi.org/) specification for more information about this pattern.
 
