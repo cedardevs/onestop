@@ -20,10 +20,11 @@ volume:
   size: 1Gi
   storageClass:
 
+config: # inline application config yaml
+
 ingress:
   enabled: true
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+  annotations: {}
   paths:
   - "/registry"
   hosts:

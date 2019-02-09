@@ -14,6 +14,8 @@ service:
   type: ClusterIP
   port: 80
 
+config: # inline application config yaml
+
 kafka: {}
 #  override just the name of kafka's headless service:
 #  serviceNameOverride:

@@ -124,13 +124,55 @@ to support retrieval of all stored metadata via HTTP.
     
 #### Config
 
-| Environment Variable    | Importance | Required? | Default            | Description |
-| ----------------------- | ---------- | --------- | ------------------ | ----------- |
-| KAFKA_BOOTSTRAP_SERVERS | High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
-| SCHEMA_REGISTRY_URL     | High       | No        | localhost:8081     | The URL of the Schema Registry |
-| STATE_DIR               | High       | No        | /tmp/kafka-streams | Path to the directory under which local state should be stored |
-| PUBLISHING_INTERVAL_MS  | Low        | No        | 300000 (5 minutes) | Frequency with which check for changes in entity publish status |
-  
+| Environment Variable        | Importance | Required? | Default            | Description |
+| --------------------------- | ---------- | --------- | ------------------ | ----------- |
+| KAFKA_BOOTSTRAP_SERVERS     | High       | No        | localhost:9092     | Comma-separated list of one or more kafka host:port combinations |
+| SCHEMA_REGISTRY_URL         | High       | No        | localhost:8081     | The URL of the Schema Registry |
+| STATE_DIR                   | High       | No        | /tmp/kafka-streams | Path to the directory under which local state should be stored |
+| API_ROOT_URL                | Medium     | No        | (none)             | The full, public-facing URL at which the root of this API will be exposed [[1]](#a-note-on-proxies) 
+| SERVER_SERVLET_CONTEXT-PATH | Medium     | No        | ''                 | The context path at which to run the root of this API [[1]](#a-note-on-proxies)
+| PUBLISHING_INTERVAL_MS      | Low        | No        | 300000 (5 minutes) | Frequency with which check for changes in entity publish status |
+
+##### A Note On Proxies
+
+Some of the responses from the registry API include links to other relevant endpoints. For example the response when
+retrieving the raw input of a collection entity will include a link to its corresponding parsed values and vice versa.
+See the [JSON_API](https://jsonapi.org/) specification for more information about this pattern.
+
+If you intend to host the registry API behind a reverse proxy, there are several configuration options to consider in 
+order for the API to correctly produce URLs which reflect the proxy through with the app is being hosted.
+
+*Proxy Request Headers* - A proxy server can apply additional headers to the internal requests it makes to the service 
+being proxied (in fact this is often the default behavior) to indicate where the original request came from as well as
+the host the request was sent to and the protocol it used. The Registry API can leverage either the 
+[`X-Forwarded-Host`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Host) and 
+[`X-Forwarded-Proto`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto) header combination 
+or their more modern replacement, the [`Forwarded`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Forwarded)
+header, in order to build URLs that reflect the external host and protocol that requests should be sent to.
+
+*Path-Based Routing* - If your proxy rules are based a path in addition to a host name, the Registry API needs to know
+that path as well. One way to do so is to set the servlet's context path with the `SERVER_SERVLET_CONTEXT-PATH` property.
+
+Example:
+```
+         [proxy server]                      [api server]
+  https://external.host/registry ---> http://internal.host:8080/registry
+   |                                   |
+   |                                   `--<has property>--> SERVER_SERVLET_CONTEXT-PATH="/registry"
+   |
+   `--<sets header>--> "Forwarded: proto=https;host=external.host"
+```
+
+*Static API Root Config* - As an alternative to proxy headers and context paths, you can also use the `API_ROOT_URL` 
+property to simply provide the full URL at which the API will be hosted.
+
+Example:
+```
+         [proxy server]                      [api server]
+  https://external.host/registry ---> http://internal.host:8080
+                                       |
+                                       `--<has property>--> API_ROOT_URL="https://external.host/registry"
+```
 
 ### Stream Manager
 

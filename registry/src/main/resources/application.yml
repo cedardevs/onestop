@@ -1,5 +1,6 @@
 ---
-server.port: 8080
+server:
+  port: 8080
 management.endpoints.enabled-by-default: false
 
 kafka:

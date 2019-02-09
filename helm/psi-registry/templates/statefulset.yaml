@@ -23,67 +23,84 @@ spec:
       labels:
         app: {{ include "psi-registry.name" . }}
         release: {{ .Release.Name }}
+      annotations:
+        {{- with .Values.config }}
+        checksum/config: {{ . | sha256sum }}
+        {{- end }}
     spec:
       securityContext:
         fsGroup: 102
-{{- if .Values.image.pullSecrets }}
+      {{- with .Values.image.pullSecrets }}
       imagePullSecrets:
-{{ toYaml .Values.image.pullSecrets | indent 8 }}
-{{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: 8080
-              protocol: TCP
-          env:
-            - name: KAFKA_BOOTSTRAP_SERVERS
-              value: "{{ include "psi-registry.kafka.bootstrapServers" . }}"
-            - name: SCHEMA_REGISTRY_URL
-              value: "{{ include "psi-registry.cp-schema-registry.url" . }}"
-            - name: STATE_DIR
-              value: "/var/lib/registry/data"
-          volumeMounts:
-            - name: data
-              mountPath: /var/lib/registry/data
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
-{{- with .Values.nodeSelector }}
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: "{{ include "psi-registry.kafka.bootstrapServers" . }}"
+        - name: SCHEMA_REGISTRY_URL
+          value: "{{ include "psi-registry.cp-schema-registry.url" . }}"
+        - name: STATE_DIR
+          value: "/var/lib/registry/data"
+        {{- if .Values.config }}
+        - name: spring.config.additional-location
+          value: /etc/conf/application.yaml
+        {{- end }}
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/registry/data
+        {{- if .Values.config }}
+        - name: config
+          mountPath: /etc/conf
+        {{- end }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      {{- if .Values.config }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "psi-registry.fullname" . }}-config
+      {{- end }}
+      {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
-{{- end }}
-{{- if .Values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       affinity:
-{{ toYaml .Values.affinity | indent 8 }}
-{{- else }}
-      affinity:
+      {{- with .Values.affinity }}
+        {{- toYaml . | nindent 8 }}
+      {{- else }}
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: "app"
-                      operator: In
-                      values:
-                        - {{ include "psi-registry.name" . }}
-                topologyKey: "kubernetes.io/hostname"
-{{- end }}
-{{- with .Values.tolerations }}
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - {{ include "psi-registry.name" . }}
+              topologyKey: "kubernetes.io/hostname"
+      {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml . | indent 8 }}
-{{- end }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
   volumeClaimTemplates:
     - metadata:
         name: data
       spec:
         accessModes:
           - ReadWriteOnce
-{{- if .Values.volume.storageClass }}
-        storageClassName: {{ .Values.volume.storageClass }}
-{{- end }}
+        {{- with .Values.volume.storageClass }}
+        storageClassName: {{ . }}
+        {{- end }}
         resources:
           requests:
             storage: {{ .Values.volume.size }}

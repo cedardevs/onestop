@@ -5,13 +5,11 @@ import org.apache.kafka.streams.errors.InvalidStateStoreException
 import org.apache.kafka.streams.state.QueryableStoreType
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore
 import org.cedar.schemas.avro.psi.*
-import org.cedar.schemas.avro.util.AvroUtils
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import static org.cedar.psi.common.constants.Topics.inputStore
 import static org.cedar.psi.common.constants.Topics.parsedStore
-
 
 @Unroll
 class MetadataStoreSpec extends Specification {
@@ -19,7 +17,7 @@ class MetadataStoreSpec extends Specification {
   KafkaStreams mockStreamsApp
   ReadOnlyKeyValueStore mockInputStore
   ReadOnlyKeyValueStore mockParsedStore
-  MetadataStore metadataStore
+  MetadataStore mockMetadataStore
 
   final testType = RecordType.granule
   final testSource = 'class'
@@ -28,26 +26,23 @@ class MetadataStoreSpec extends Specification {
     mockStreamsApp = Mock(KafkaStreams)
     mockInputStore = Mock(ReadOnlyKeyValueStore)
     mockParsedStore = Mock(ReadOnlyKeyValueStore)
-
-    metadataStore = new MetadataStore(mockStreamsApp)
+    mockMetadataStore = new MetadataStore(mockStreamsApp)
   }
 
   def 'returns null for unknown types'() {
     expect:
-    metadataStore.retrieveEntity(null, 'notarealsource', 'notarealid') == null
+    mockMetadataStore.retrieveInput(null, 'notarealsource', 'notarealid') == null
   }
 
   def 'returns null for a nonexistent store'() {
     def testId = 'notarealid'
 
     when:
-    def result = metadataStore.retrieveEntity(testType, testSource, testId)
+    def result = mockMetadataStore.retrieveInput(testType, testSource, testId)
 
     then:
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> null
-    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> null
     0 * mockInputStore.get(testId)
-    0 * mockParsedStore.get(testId)
 
     and:
     result == null
@@ -57,12 +52,10 @@ class MetadataStoreSpec extends Specification {
     def testId = 'notarealid'
 
     when:
-    def result = metadataStore.retrieveEntity(testType, testSource, testId)
+    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
-    1 * mockInputStore.get(testId) >> null
     1 * mockParsedStore.get(testId) >> null
 
     and:
@@ -73,69 +66,61 @@ class MetadataStoreSpec extends Specification {
     def testId = '123'
 
     when:
-    metadataStore.retrieveEntity(testType, testSource, testId)
+    mockMetadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> {
       throw new InvalidStateStoreException('test')
     }
-    1 * mockInputStore.get(testId)
+
     0 * mockParsedStore.get(testId)
 
     and:
     thrown(InvalidStateStoreException)
   }
 
-  def 'retrieves a record by type and id'() {
+  def 'retrieves an input record by type and id'() {
     def testId = '123'
 
     when:
-    def result = metadataStore.retrieveEntity(testType, testSource, testId)
+    def result = mockMetadataStore.retrieveInput(testType, testSource, testId)
 
     then:
     1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
-    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
-    1 * mockInputStore.get(testId) >> rawValue
-    1 * mockParsedStore.get(testId) >> parsedValue
+    1 * mockInputStore.get(testId) >> testInput
 
     and:
-    result == [
-        data: [
-            id        : testId,
-            type      : testType,
-            attributes: combined
-        ]
-    ]
+    result ==  testInput
+  }
 
-    where:
-    rawValue  | parsedValue | combined
-    testInput | null        | ["input": testInput]
-    null      | testParsed  | AvroUtils.avroToMap(testParsed)
-    testInput | testParsed  | ["input": testInput] + AvroUtils.avroToMap(testParsed)
+  def 'retrieves a parsed record by type and id'() {
+    def testId = '123'
+
+    when:
+    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
+
+    then:
+    1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
+    1 * mockParsedStore.get(testId) >> testParsed
+
+    and:
+    result == testParsed
   }
 
   def 'retrieves a record with errors'() {
     def testId = '123'
 
     when:
-    def result = metadataStore.retrieveEntity(testType, testSource, testId)
+    def result = mockMetadataStore.retrieveParsed(testType, testSource, testId)
 
     then:
-    1 * mockStreamsApp.store(inputStore(testType, testSource), _ as QueryableStoreType) >> mockInputStore
     1 * mockStreamsApp.store(parsedStore(testType), _ as QueryableStoreType) >> mockParsedStore
-    1 * mockInputStore.get(testId) >> testInput
     1 * mockParsedStore.get(testId) >> testErrorRecord
 
     and:
-    result ==  [
-        data: [
-            id        : testId,
-            type      : testType,
-            attributes: ["input": testInput] + AvroUtils.avroToMap(testErrorRecord)
-        ]
-    ]
+    result == testErrorRecord
   }
+
 
   private static testInput = Input.newBuilder()
       .setType(RecordType.collection)
