@@ -6,21 +6,26 @@ import Button from './input/Button'
 import gridIcon from 'fa/th.svg'
 import listIcon from 'fa/th-list.svg'
 import {fontFamilySerif} from '../utils/styleUtils'
+import FlexRow from './FlexRow'
 
 const styleListView = {
   marginLeft: '1.618em',
 }
 
+const styleTopRow = {
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  margin: '0 1.618em 0.618em 0',
+}
+
 const styleListInfo = {
   fontFamily: fontFamilySerif(),
   fontSize: '1.2em',
-  margin: '0 1.618em 0.618em 0',
   padding: 0,
 }
 
 const styleListControl = {
   display: 'flex',
-  margin: '0em 2em 1.618em 2em',
   padding: '0.618em',
   backgroundColor: 'rgba(0,0,0, 0.2)',
   borderRadius: '0.309em',
@@ -116,25 +121,27 @@ export default class ListView extends Component {
       loading,
       loadingMessage,
       resultsMessage,
+      resultsMessageEmpty,
       shown,
       total,
       onItemSelect,
       ListItemComponent,
       GridItemComponent,
       propsForItem,
+      customControl,
     } = this.props
 
+    let message = `${resultsMessage
+      ? resultsMessage
+      : 'Results'} (showing ${shown} of ${total})`
+
+    if (total === 0) {
+      message = resultsMessageEmpty ? resultsMessageEmpty : 'No Results'
+    }
+
     const listInfo = (
-      <h1 style={styleListInfo}>
-        {loading ? loadingMessage ? (
-          loadingMessage
-        ) : (
-          'Loading...'
-        ) : (
-          `${resultsMessage
-            ? resultsMessage
-            : 'Results'} (showing ${shown} of ${total})`
-        )}
+      <h1 style={styleListInfo} key="list-view-info">
+        {loading ? loadingMessage ? loadingMessage : 'Loading...' : message}
       </h1>
     )
 
@@ -216,7 +223,7 @@ export default class ListView extends Component {
 
     return (
       <div style={styleListView}>
-        {listInfo}
+        <FlexRow style={styleTopRow} items={[ listInfo, customControl ]} />
         {controlElement}
         <div style={this.state.showAsGrid ? styleGrid : styleList}>
           {itemElements}
