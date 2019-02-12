@@ -1,8 +1,23 @@
 # PSI: The Persistent Streaming Inventory
 
-[![CircleCI](https://circleci.com/gh/cedardevs/psi.svg?style=svg)](https://circleci.com/gh/cedardevs/psi)
-[![codecov](https://codecov.io/gh/cedardevs/psi/branch/master/graph/badge.svg?token=mpaqa2QKdv)](https://codecov.io/gh/cedardevs/psi)
+## Documentation Directory
 
+### Navigating The Docs
+The documentation for PSI is divided into four main categories:
+* [Deployment](/deployment/README.md)
+* [Usage](/usage/README.md)
+* [Design](/design/README.md)
+* [Development](/development/README.md)
+
+Information in **Deployment** covers [infrastructure requirements](/deployment/infrastructure-components.md), the [project artifacts](/deployment/project-artifacts.md), and how to [build and deploy](/deployment/system-build-and-deploy.md) the system.
+
+Once PSI is running for you, peruse the **Usage** subdirectory for details on how to [load metadata](/usage/loading-metadata.md) and [interact](/usage/registry-api.md) with the system.
+
+Meanwhile, if you're interested in a deep-dive into architectural and infrastructure decisions made in the creation of PSI, check out the **Design** subdirectory.
+
+Finally, if you're a Foam-Cat team member or otherwise interested in [making a contribution](/development/contribution-guidelines.md) to the code, head over to the **Development** subdirectory for tips on setting up your [local dev environment](/development/local-dev-environment.md).
+
+### What Is PSI?
 The Persistent Streaming Inventory is a distributed, scalable, event stream and database for the metadata associated
 with environmental data granules. It is designed to receive metadata both from automated systems and manual uploads
 of e.g. ISO-19115 XML metadata. It implements generic parsing and analysis of that metadata while also enabling arbitrary
