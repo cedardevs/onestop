@@ -87,12 +87,12 @@ class IntegrationTest extends Specification {
     println("DELETE _all: ${response}")
 
     def cl = ClassLoader.systemClassLoader
-    def datesIndexJson = cl.getResourceAsStream("testIndices/${index}.json").text
-    def datesIndexMapping = new NStringEntity(datesIndexJson, ContentType.APPLICATION_JSON)
-    def bulkRequests = cl.getResourceAsStream("data/GenericFilterData/${index}.txt").text
+    def genericIndexJson = cl.getResourceAsStream("generic/${index}/index.json").text
+    def genericIndexMapping = new NStringEntity(genericIndexJson, ContentType.APPLICATION_JSON)
+    def bulkRequests = cl.getResourceAsStream("generic/${index}/bulkData.txt").text
     def bulkRequestBody = new NStringEntity(bulkRequests, ContentType.APPLICATION_JSON)
 
-    def newIndexResponse = restClient.performRequest('PUT', index, Collections.EMPTY_MAP, datesIndexMapping)
+    def newIndexResponse = restClient.performRequest('PUT', index, Collections.EMPTY_MAP, genericIndexMapping)
     println("PUT new $index index: ${newIndexResponse}")
 
     def dataLoadResponse = restClient.performRequest('POST', '_bulk', Collections.EMPTY_MAP, bulkRequestBody)

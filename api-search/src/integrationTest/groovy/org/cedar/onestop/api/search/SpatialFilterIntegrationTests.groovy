@@ -7,7 +7,7 @@ import spock.lang.Unroll
 @Unroll
 class SpatialFilterIntegrationTests extends IntegrationTest {
 
-  private final String SPATIAL_INDEX = 'geometry_testing'
+  private final String SPATIAL_INDEX = 'spatial_filter'
 
   @Autowired
   ElasticsearchService esService
@@ -38,6 +38,7 @@ class SpatialFilterIntegrationTests extends IntegrationTest {
     then:
     def actualMatchingIds = queryResponse.data.collect { it.id }
     expectedMatchingIds.containsAll(actualMatchingIds)
+    println("???? ${queryResponse}")
 
     and:
     queryResponse.meta.total == expectedMatchingIds.size()

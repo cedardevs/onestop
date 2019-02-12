@@ -7,7 +7,7 @@ import spock.lang.Unroll
 @Unroll
 class TimeFilterIntegrationTests extends IntegrationTest {
 
-  private final String DATES_INDEX = 'dates_testing'
+  private final String DATES_INDEX = 'time_filter'
 
   @Autowired
   ElasticsearchService esService
