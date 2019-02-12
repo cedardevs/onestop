@@ -42,7 +42,7 @@ class JsonValidatorSpec extends Specification {
     }
 
     then: 'success is true'
-    println("validation:${validation}")
+    println("validation: ${validation}")
     validation.success
 
     and: 'no errors are returned'
