@@ -1,4 +1,11 @@
-# PSI: The Persistent Streaming Inventory Documentation Directory
+## PSI: The Persistent Streaming Inventory Documentation Directory
+
+### What Is PSI?
+The Persistent Streaming Inventory is a distributed, scalable, event stream and database for the metadata associated
+with environmental data granules. It is designed to receive metadata both from automated systems and manual uploads
+of e.g. ISO-19115 XML metadata. It implements generic parsing and analysis of that metadata while also enabling arbitrary
+processing flows on it. All metadata entities are retrievable via REST API and are also exposed as streaming events to
+support downstream client applications for search, analysis, etc.
 
 ### Navigating The Docs
 The documentation for PSI is divided into four main categories:
@@ -15,22 +22,7 @@ Meanwhile, if you're interested in a deep-dive into architectural and infrastruc
 
 Finally, if you're a Foam-Cat team member or otherwise interested in [making a contribution](/docs/development/contribution-guidelines.md) to the code, head over to the **Development** subdirectory for tips on setting up your [local dev environment](/docs/development/local-dev-environment.md).
 
-### What Is PSI?
-The Persistent Streaming Inventory is a distributed, scalable, event stream and database for the metadata associated
-with environmental data granules. It is designed to receive metadata both from automated systems and manual uploads
-of e.g. ISO-19115 XML metadata. It implements generic parsing and analysis of that metadata while also enabling arbitrary
-processing flows on it. All metadata entities are retrievable via REST API and are also exposed as streaming events to
-support downstream client applications for search, analysis, etc.
-
-## Quickstart w/ Kubernetes + Helm
-
-```bash
-helm install ./helm/psi
-```
-
-For more details, see the [Kubernetes + Helm](#kubernetes-+-helm).
-
-
+***
 
 ## Legal
 
