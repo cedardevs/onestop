@@ -1,4 +1,4 @@
-## PSI: The Persistent Streaming Inventory Documentation Directory
+## The PSI Documentation Directory
 
 ### What Is PSI?
 The Persistent Streaming Inventory is a distributed, scalable, event stream and database for the metadata associated
