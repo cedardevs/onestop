@@ -35,7 +35,6 @@ curl -X PUT -H "Content-Type: application/json" localhost:8080/metadata/granule 
 
 sample test_granule.json
 ```json
-
 {
  "dataStream": "dscover",
   "trackingId": "3", 
