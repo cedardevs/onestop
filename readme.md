@@ -5,18 +5,13 @@
 
 The Persistent Streaming Inventory is a distributed, scalable, event stream and database for the metadata associated
 with environmental data granules. It is designed to receive metadata both from automated systems and manual uploads
-of e.g. ISO-19115 XML metadata. It implements generic parsing and analysis of that metadata while also enabling arbitrary
+of ISO-19115 XML metadata. It implements generic parsing and analysis of that metadata while also enabling arbitrary
 processing flows on it. All metadata entities are retrievable via REST API and are also exposed as streaming events to
 support downstream client applications for search, analysis, etc.
 
-## Quickstart w/ Kubernetes + Helm
 
-```bash
-helm install ./helm/psi
-```
-
-For more details, see the [Kubernetes + Helm](#kubernetes-+-helm).
-
+## Documentation
+For more information about PSI -- including how to deploy and use it -- check out the [docs](/docs) folder. 
 
 
 ## Legal

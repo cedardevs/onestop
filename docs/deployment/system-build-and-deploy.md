@@ -12,8 +12,10 @@ The build produces the following artifacts for each component:
     - *N/A for stream-manager; it is not a web application*
 - sources jar
 
-In addition to these artifacts, there are also some example Kubernetes manifest files under [the kubernetes folder](kubernetes).
-These manifests can be used in development with skaffold and are a good starting point, but they **ARE NOT PRODUCTION-READY**.
+Note: To build only the jar and war artifacts, e.g. if docker is unavailable, use:
+
+ `./gradlew build -x BuildDockerImage`
+
 
 As a result of these various artifacts, there are a variety of ways to...
 
