@@ -1,0 +1,512 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "Prometheus",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "All the k8s stats!",
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": 3,
+  "iteration": 1550107230735,
+  "links": [],
+  "panels": [
+    {
+      "alert": {
+        "conditions": [
+          {
+            "evaluator": {
+              "params": [
+                4
+              ],
+              "type": "lt"
+            },
+            "operator": {
+              "type": "and"
+            },
+            "query": {
+              "params": [
+                "A",
+                "5m",
+                "now"
+              ]
+            },
+            "reducer": {
+              "params": [],
+              "type": "avg"
+            },
+            "type": "query"
+          }
+        ],
+        "executionErrorState": "alerting",
+        "for": "5m",
+        "frequency": "1m",
+        "handler": 1,
+        "name": "node alert",
+        "noDataState": "no_data",
+        "notifications": []
+      },
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 4,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": false,
+        "min": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": false,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "count(kube_node_info)",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": [
+        {
+          "colorMode": "critical",
+          "fill": true,
+          "line": true,
+          "op": "lt",
+          "value": 4
+        }
+      ],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "# of nodes",
+      "tooltip": {
+        "shared": false,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "series",
+        "name": null,
+        "show": true,
+        "values": [
+          "current"
+        ]
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": "5",
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorValue": true,
+      "colors": [
+        "#d44a3a",
+        "rgba(237, 129, 40, 0.89)",
+        "#299c46"
+      ],
+      "datasource": "Prometheus",
+      "format": "none",
+      "gauge": {
+        "maxValue": 4,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": false
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 4,
+        "y": 0
+      },
+      "id": 2,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "count(kube_node_info)",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "4,4",
+      "title": "Number of Nodes",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "format": "percentunit",
+      "gauge": {
+        "maxValue": 1,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 9,
+        "y": 0
+      },
+      "id": 6,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(kube_pod_info) / sum(kube_node_status_allocatable_pods)",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": ".8,.9",
+      "title": "Cluster Pod Usage",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": true,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 0,
+        "y": 8
+      },
+      "id": 8,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(kube_node_status_condition{condition=\"OutOfDisk\", status=\"true\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "1",
+      "title": "Nodes Out of Disk",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPrefix": false,
+      "colorValue": false,
+      "colors": [
+        "rgb(27, 11, 48)",
+        "#5195ce",
+        "#d44a3a"
+      ],
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 4,
+        "y": 8
+      },
+      "id": 10,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(kube_pod_status_phase{phase=\"Running\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Pods Running",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
+    }
+  ],
+  "schemaVersion": 16,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ],
+    "time_options": [
+      "5m",
+      "15m",
+      "1h",
+      "6h",
+      "12h",
+      "24h",
+      "2d",
+      "7d",
+      "30d"
+    ]
+  },
+  "timezone": "",
+  "title": "K8S Cluster",
+  "uid": "vJY4Fyumk",
+  "version": 10
+}
