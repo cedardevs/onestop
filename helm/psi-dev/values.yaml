@@ -80,7 +80,11 @@ prometheus:
     enabled: false
   server:
     ingress:
-      enabled: false
+      enabled: true
+      hosts:
+      - "localhost/prometheus"
+    baseURL: "http://localhost/prometheus"
+    prefixURL: "/prometheus"
 
 grafana:
   ingress:
