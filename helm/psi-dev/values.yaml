@@ -106,7 +106,7 @@ grafana:
       datasources:
         - name: prometheus
           type: prometheus
-          url: http://psi-dev-prometheus-server
+          url: http://psi-dev-prometheus-server/prometheus
           access: proxy
           isDefault: true
   dashboardProviders:
