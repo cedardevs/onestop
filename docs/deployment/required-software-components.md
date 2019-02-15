@@ -1,4 +1,4 @@
-## Infrastructure Components
+## Required Software Components
 
 The core of the PSI system is Apache Kafka. It provides a distributed, durable, ordered, streaming event platform
 which PSI leverages to store all its inputs as well as all derived metadata. It also utilizes the
