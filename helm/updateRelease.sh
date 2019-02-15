@@ -3,6 +3,7 @@
 BASEDIR=$(dirname "$0")
 
 pushd "$BASEDIR/psi" > /dev/null
+helm dependency update
 helm package .
 popd  > /dev/null
 
