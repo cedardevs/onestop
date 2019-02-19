@@ -1,17 +1,20 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Collection Filter",
-  "description": "Collections to filter results by (logical OR if multiple filters or multiple values in one filter). If any collection filters are provided, granules are returned.",
+  "description": "Filter granules by specific collection(s). If multiple collection filters are used, or multiple values in a single collection filter, then the search is performed with a logical OR.",
   "type": "object",
   "properties": {
     "type": {
+      "description": "Filter type.",
       "enum": [
         "collection"
       ]
     },
     "values": {
+      "description": "List of collection UUIDs.",
       "type": "array",
       "items": {
+        "description": "Collection UUID",
         "type": "string"
       }
     }

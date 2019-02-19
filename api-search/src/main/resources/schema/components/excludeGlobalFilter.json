@@ -5,12 +5,14 @@
   "type": "object",
   "properties": {
     "type": {
+      "description": "Filter type.",
       "enum": [
         "excludeGlobal"
       ]
     },
     "value": {
-      "type": "boolean"
+      "type": "boolean",
+      "default": false
     }
   },
   "required": [

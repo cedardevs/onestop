@@ -5,6 +5,7 @@
   "type": "object",
   "properties": {
     "type": {
+      "description": "Filter type.",
       "enum": [
         "facet"
       ]
@@ -15,9 +16,10 @@
       "enum": ["science", "services", "locations", "instruments", "platforms", "projects", "dataCenters", "horizontalResolution", "verticalResolution", "temporalResolution"]
     },
     "values": {
-      "description": "Exact match GCMD keyword(s), e.g., \"Atmosphere > Atmospheric Temperature > Surface Temperature\"",
+      "description": "List of GCMD keywords.",
       "type": "array",
       "items": {
+        "description": "Exact match GCMD keyword(s), e.g., \"Atmosphere > Atmospheric Temperature > Surface Temperature\"",
         "type": "string"
       }
     }

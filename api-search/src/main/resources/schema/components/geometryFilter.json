@@ -5,6 +5,7 @@
   "type": "object",
   "properties": {
     "type": {
+      "description": "Filter type.",
       "enum": [
         "geometry"
       ]
@@ -13,13 +14,14 @@
       "$ref": "file:src/main/resources/schema/components/geo.json#/Geometry"
     },
     "relation": {
-      "description": "How the result geometry relates to the query geometry, e.g., return all datasets whose geometry contains the given point. Defaults to 'intersects'.",
+      "description": "How the result geometry relates to the query geometry, e.g., return all datasets whose geometry contains the given point.",
       "enum": [
         "contains",
         "disjoint",
         "intersects",
         "within"
-      ]
+      ],
+      "default": "intersects"
     }
   },
   "required": [

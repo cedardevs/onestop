@@ -5,14 +5,16 @@
   "type": "object",
   "properties": {
     "max": {
-      "description": "Maximum number of results returned. If the page object is not provided, this defaults to 10.",
+      "description": "Maximum number of results returned.",
       "type": "integer",
       "minimum": 0,
-      "maximum": 1000
+      "maximum": 1000,
+      "default": 10
     },
     "offset": {
-      "description": "Number of records by which to offset results. If the page object is not provided, this defaults to 0.",
-      "type": "integer"
+      "description": "Number of records by which to offset results.",
+      "type": "integer",
+      "default": 0
     }
   },
   "required": [

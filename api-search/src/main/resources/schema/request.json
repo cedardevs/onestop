@@ -17,12 +17,14 @@
       }
     },
     "facets": {
-      "description": "Flag to request counts of results by GCMD keywords in addition to results. Defaults to false if not provided.",
-      "type": "boolean"
+      "description": "Flag to request counts of results by GCMD keywords in addition to results.",
+      "type": "boolean",
+      "default": false
     },
     "summary": {
-      "description": "Flag to request summary of search results instead of full set of attributes. Defaults to true if not provided.",
-      "type": "boolean"
+      "description": "Flag to request summary of search results instead of full set of attributes.",
+      "type": "boolean",
+      "default": true
     },
     "page": {
       "$ref": "file:src/main/resources/schema/components/page.json"
