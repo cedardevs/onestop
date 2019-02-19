@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Pagination",
+  "description": "Pagination of results",
+  "type": "object",
+  "properties": {
+    "max": {
+      "description": "Maximum number of results returned. If the page object is not provided, this defaults to 10.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000
+    },
+    "offset": {
+      "description": "Number of records by which to offset results. If the page object is not provided, this defaults to 0.",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "max",
+    "offset"
+  ],
+  "additionalProperties": false
+}
