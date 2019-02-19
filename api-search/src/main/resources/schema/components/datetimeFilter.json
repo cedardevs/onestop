@@ -1,19 +1,21 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Datetime Filter",
+  "description": "Filter results by before, after, or a date range.",
   "type": "object",
   "properties": {
     "type": {
       "enum": [
-        "year"
+        "datetime"
       ]
     },
     "before": {
-      "type": "number",
-      "multipleOf": 1.0
+      "type": "string",
+      "format": "date-time"
     },
     "after": {
-      "type": "number",
-      "multipleOf": 1
+      "type": "string",
+      "format": "date-time"
     },
     "relation":  {
       "description": "How the result time range relates to the query time range, e.g., return all datasets whose time range is within the given time range. Defaults to 'intersects'.",

@@ -1,0 +1,131 @@
+openapi: 3.0.0
+info:
+  title: Collection API
+  version: 2.0.0
+paths:
+  /collection:
+    head:
+      tags:
+        - collection
+      summary: Get Collection Info
+      responses:
+        '200':
+          description: Successful operation
+    get:
+      tags:
+        - collection
+      summary: Get Collection Info
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: 'schema/response.json#/infoResponse'
+  '/collection/{id}':
+    head:
+      tags:
+        - collection
+      summary: Collection by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: UUID of the collection
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Request Parsing Error
+    get:
+      tags:
+        - collection
+      summary: Collection by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: UUID of the collection
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fullCollectionResponse'
+        '404':
+          description: Request Parsing Error
+  /search/collection:
+    post:
+      tags:
+        - collection
+      summary: Retrieve collection metadata
+      description: 'Retrieve collection metadata records matching the text query string, spatial, and/or temporal filter.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'file:src/main/resources/schema/request.json'
+            examples:
+              payload0:
+                $ref: '#/components/examples/payload0'
+              payload1:
+                $ref: '#/components/examples/payload1'
+              payload2:
+                $ref: '#/components/examples/payload2'
+              payload3:
+                $ref: '#/components/examples/payload3'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: 'schema/response.json#/searchResponse'
+        '400':
+          description: Bad Request
+components:
+  schemas:
+    fullCollectionResponse:
+      description: Collection
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/collectionMetadataObject'
+        data:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/collectionDataObject'
+    collectionMetadataObject:
+      type: object
+      properties:
+        totalGranules:
+          type: integer
+    collectionDataObject:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - collection
+        id:
+          type: string
+  examples:
+    payload0:
+      value: {"queries":[{"type":"queryText","value":"climate"}],"filters":[],"facets":true,"page":{"max":20,"offset":0}}
+      summary: basic text query
+    payload1:
+      value: {"queries":[{"type":"queryText","value":"weather"}],"filters":[{"type":"facet","name":"science","values":["Agriculture","Atmosphere > Atmospheric Radiation > Incoming Solar Radiation"]}],"facets":true,"page":{"max":20,"offset":0}}
+      summary: multiple science theme filters selected
+    payload2:
+      value: {"queries":[{"type":"queryText","value":"weather"}],"filters":[{"type":"facet","name":"science","values":["Agriculture"]},{"type":"facet","name":"instruments","values":["ADCP > Acoustic Doppler Current Profiler"]}],"facets":true,"page":{"max":20,"offset":0}}
+      summary: multiple facets selected
+    payload3:
+      value: {"queries":[{"type":"queryText","value":"weather"}],"filters":[],"facets":false,"page":{"max":20,"offset":20}}
+      summary: Next Page request

@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Geometry Filter",
   "description": "Filter that returns results whose bounding geometry contains the specified geographical coordinate.",
   "type": "object",
   "properties": {
@@ -9,7 +10,7 @@
       ]
     },
     "geometry": {
-      "$ref": "file:src/main/resources/schemas/geo.json#/Geometry"
+      "$ref": "file:src/main/resources/schema/components/geo.json#/Geometry"
     },
     "relation": {
       "description": "How the result geometry relates to the query geometry, e.g., return all datasets whose geometry contains the given point. Defaults to 'intersects'.",

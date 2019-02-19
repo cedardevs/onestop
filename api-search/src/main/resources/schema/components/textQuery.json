@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Text Query",
   "type": "object",
   "description": "Text query to search with that is valid so long as it does not have a leading wildcard ('*' or '?')",
   "properties": {

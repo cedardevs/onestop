@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Query",
+  "oneOf": [
+    {
+      "$ref": "file:src/main/resources/schema/components/textQuery.json"
+    }
+  ]
+}

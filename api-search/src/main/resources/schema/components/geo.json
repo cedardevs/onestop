@@ -1,25 +1,27 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Geometry",
+  "description": "Schemas for GeoJson",
   "Geometry": {
     "description": "One geometry as defined by GeoJSON",
     "oneOf": [
       {
-        "$ref": "file:src/main/resources/schemas/geo.json#/definitions/Point"
+        "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/Point"
       },
       {
-        "$ref": "file:src/main/resources/schemas/geo.json#/definitions/MultiPoint"
+        "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/MultiPoint"
       },
       {
-        "$ref": "file:src/main/resources/schemas/geo.json#/definitions/LineString"
+        "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/LineString"
       },
       {
-        "$ref": "file:src/main/resources/schemas/geo.json#/definitions/MultiLineString"
+        "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/MultiLineString"
       },
       {
-        "$ref": "file:src/main/resources/schemas/geo.json#/definitions/Polygon"
+        "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/Polygon"
       },
       {
-        "$ref": "file:src/main/resources/schemas/geo.json#/definitions/MultiPolygon"
+        "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/MultiPolygon"
       }
     ]
   },
@@ -33,7 +35,7 @@
           ]
         },
         "coordinates": {
-          "$ref": "file:src/main/resources/schemas/geo.json#/definitions/position"
+          "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/position"
         }
       },
       "required": [
@@ -49,7 +51,7 @@
           ]
         },
         "coordinates": {
-          "$ref": "file:src/main/resources/schemas/geo.json#/definitions/positionArray"
+          "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/positionArray"
         }
       },
       "required": [
@@ -65,7 +67,7 @@
           ]
         },
         "coordinates": {
-          "$ref": "file:src/main/resources/schemas/geo.json#/definitions/lineString"
+          "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/lineString"
         }
       },
       "required": [
@@ -83,7 +85,7 @@
         "coordinates": {
           "type": "array",
           "items": {
-            "$ref": "file:src/main/resources/schemas/geo.json#/definitions/lineString"
+            "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/lineString"
           }
         }
       },
@@ -100,7 +102,7 @@
           ]
         },
         "coordinates": {
-          "$ref": "file:src/main/resources/schemas/geo.json#/definitions/polygon"
+          "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/polygon"
         }
       },
       "required": [
@@ -118,7 +120,7 @@
         "coordinates": {
           "type": "array",
           "items": {
-            "$ref": "file:src/main/resources/schemas/geo.json#/definitions/polygon"
+            "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/polygon"
           }
         }
       },
@@ -150,14 +152,14 @@
       "description": "An array of positions",
       "type": "array",
       "items": {
-        "$ref": "file:src/main/resources/schemas/geo.json#/definitions/position"
+        "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/position"
       }
     },
     "lineString": {
       "description": "An array of two or more positions",
       "allOf": [
         {
-          "$ref": "file:src/main/resources/schemas/geo.json#/definitions/positionArray"
+          "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/positionArray"
         },
         {
           "minItems": 2
@@ -168,7 +170,7 @@
       "description": "An array of four positions where the first equals the last",
       "allOf": [
         {
-          "$ref": "file:src/main/resources/schemas/geo.json#/definitions/positionArray"
+          "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/positionArray"
         },
         {
           "minItems": 4
@@ -179,7 +181,7 @@
       "description": "An array of linear rings",
       "type": "array",
       "items": {
-        "$ref": "file:src/main/resources/schemas/geo.json#/definitions/linearRing"
+        "$ref": "file:src/main/resources/schema/components/geo.json#/definitions/linearRing"
       }
     }
   }

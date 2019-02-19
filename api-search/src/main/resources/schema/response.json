@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Response",
+  "infoResponse": {
+    "description": "High-level information on a resource.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "data": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "count"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "enum": [
+                "collection",
+                "granule"
+              ]
+            },
+            "count": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  },
+  "searchResponse": {
+    "description": "Search Results",
+    "type": "object",
+    "properties": {
+      "meta": {
+        "$ref": "#/searchMetadataObject"
+      },
+      "data": {
+        "type": "array",
+        "items": {
+          "oneOf": [
+            {
+              "$ref": "#/searchDataObject"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "searchMetadataObject": {
+    "type": "object",
+    "properties": {
+      "took": {
+        "type": "integer"
+      },
+      "total": {
+        "description": "total number of results matching the search",
+        "type": "integer"
+      },
+      "facets": {
+        "description": "included if search request specified facets:true",
+        "type": "object"
+      }
+    }
+  },
+  "searchDataObject": {
+    "type": "object",
+    "properties": {
+      "type": {
+        "type": "string",
+        "enum": [
+          "collection",
+          "granule",
+          "flattened-granule"
+        ]
+      },
+      "id": {
+        "description": "internal uuid",
+        "type": "string"
+      },
+      "attributes": {
+        "description": "Summary of the result. If search specified summary:false, this could be the entire result instead.",
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "thumbnail": {
+            "type": "string",
+            "format": "uri"
+          },
+          "beginYear": {
+            "type": "string",
+            "format": "date"
+          },
+          "endYear": {
+            "type": "string",
+            "format": "date"
+          },
+          "spatialBounding": {
+            "$ref": "components/geo.json#/Geometry"
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/link"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "link": {
+    "type": "object",
+    "properties": {
+      "linkProtocol": {
+        "type": "string"
+      },
+      "linkFunction": {
+        "type": "string"
+      },
+      "linkDescription": {
+        "type": "string"
+      },
+      "linkUrl": {
+        "type": "string",
+        "format": "uri"
+      },
+      "linkName": {
+        "type": "string"
+      }
+    }
+  }
+}

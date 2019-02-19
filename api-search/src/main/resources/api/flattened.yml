@@ -1,0 +1,79 @@
+openapi: 3.0.0
+info:
+  title: Flattend Granule API
+  description: Flattened granules are a representation of the granules which inherit all the metadata from the parent collection.
+  version: 2.0.0
+paths:
+  /flattened-granule:
+    head:
+      tags:
+        - flattened-granule
+      summary: Get Flattened Granule Info
+      responses:
+        '200':
+          description: Successful operation
+    get:
+      tags:
+        - flattened-granule
+      summary: Get Flattened Granule Info
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: 'schema/response.json#/infoResponse'
+  '/flattened-granule/{id}':
+    head:
+      tags:
+        - flattened-granule
+      summary: Flattened Granule by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: UUID of the flattened granule
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Request Parsing Error
+    get:
+      tags:
+        - flattened-granule
+      summary: Flattened Granule by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: UUID of the flattened granule
+      responses:
+        '200':
+          description: Successful operation
+        '404':
+          description: Request Parsing Error
+  /search/flattened-granule:
+    post:
+      tags:
+        - flattened-granule
+      summary: Retrieve flattened granule metadata
+      description: 'Retrieve flattened granule metadata records matching the text query string, spatial, and/or temporal filter.'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: 'file:src/main/resources/schema/request.json'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: 'schema/response.json#/searchResponse'
+        '400':
+          description: Bad Request

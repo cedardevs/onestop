@@ -1,19 +1,19 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title": "OneStop Search Request Schema",
+  "title": "Search Request",
   "description": "The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata. Collections are returned by default unless a collection filter is included, resulting in granules being returned.",
   "type": "object",
   "properties": {
     "queries": {
       "type": "array",
       "items": {
-        "$ref": "file:src/main/resources/schemas/query.json"
+        "$ref": "file:src/main/resources/schema/components/query.json"
       }
     },
     "filters": {
       "type": "array",
       "items": {
-        "$ref": "file:src/main/resources/schemas/filter.json"
+        "$ref": "file:src/main/resources/schema/components/filter.json"
       }
     },
     "facets": {

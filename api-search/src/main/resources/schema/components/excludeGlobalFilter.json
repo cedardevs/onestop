@@ -1,5 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Exclude Global Filter",
   "description": "Flag to request that geospatially global results be excluded. Defaults to false if not provided.",
   "type": "object",
   "properties": {
