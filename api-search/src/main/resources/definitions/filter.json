@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "oneOf": [
+    {
+      "$ref": "file:src/main/resources/definitions/datetimeFilter.json"
+    },
+    {
+      "$ref": "file:src/main/resources/definitions/yearFilter.json"
+    },
+    {
+      "$ref": "file:src/main/resources/definitions/facetFilter.json"
+    },
+    {
+      "$ref": "file:src/main/resources/definitions/geometryFilter.json"
+    },
+    {
+      "$ref": "file:src/main/resources/definitions/collectionFilter.json"
+    },
+    {
+      "$ref": "file:src/main/resources/definitions/excludeGlobalFilter.json"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "title": "OneStop Search Request Schema",
+  "description": "The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata. Collections are returned by default unless a collection filter is included, resulting in granules being returned.",
+  "type": "object",
+  "properties": {
+    "queries": {
+      "type": "array",
+      "items": {
+        "$ref": "definitions/demo.json"
+      }
+    }
+  },
+  "additionalProperties": false
+}

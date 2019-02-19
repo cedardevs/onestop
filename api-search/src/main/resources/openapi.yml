@@ -83,7 +83,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/requestBody'
+              $ref: 'file:src/main/resources/onestop-request-schema.json'
             examples:
               payload0:
                 $ref: '#/components/examples/payload0'
@@ -165,7 +165,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/requestBody'
+              $ref: 'file:src/main/resources/onestop-request-schema.json'
       responses:
         '200':
           description: Successful operation
@@ -238,7 +238,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/requestBody'
+              $ref: 'file:src/main/resources/onestop-request-schema.json'
       responses:
         '200':
           description: Successful operation
@@ -346,8 +346,8 @@ components:
             endYear:
               type: string
               format: date
-            spatialBounding:
-              $ref: '#/components/schemas/Geometry'
+            # spatialBounding:
+            #   $ref: '#/components/schemas/Geometry'
             links:
               type: array
               items:
@@ -367,301 +367,7 @@ components:
           format: uri
         linkName:
           type: string
-    requestBody:
-      description: The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata.
-      type: object
-      additionalProperties: false
-      properties:
-        queries:
-          description: List of queries to search against.
-          type: array
-          items:
-            oneOf:
-              - $ref: '#/components/schemas/textQuery'
-        filters:
-          description: filters applied to the search
-          type: array
-          items:
-            oneOf:
-              - $ref: '#/components/schemas/dateTimeFilter'
-              - $ref: '#/components/schemas/facetFilter'
-              - $ref: '#/components/schemas/geometryFilter'
-              - $ref: '#/components/schemas/excludeGlobalFilter'
-              - $ref: '#/components/schemas/collectionFilter'
-        facets:
-          description: Flag to request counts of results by GCMD keywords in addition to results.
-          type: boolean
-          default: false
-        summary:
-          description: Flag to request summary of search results instead of full set of attributes.
-          type: boolean
-          default: true
-        page:
-          $ref: '#/components/schemas/page'
-    page:
-      description: Pagination of results
-      example: {"max":20,"offset":0}
-      type: object
-      properties:
-        max:
-          description: 'Maximum number of results returned. If the page object is not provided, this defaults to 10.'
-          type: integer
-          minimum: 0
-          maximum: 1000
-        offset:
-          description: 'Number of records by which to offset results. If the page object is not provided, this defaults to 0.'
-          type: integer
-      required:
-        - max
-        - offset
-      additionalProperties: false
-    textQuery:
-      type: object
-      description: Text query to search with that is valid so long as it does not have a leading wildcard ('*' or '?')
-      example: {"type":"queryText","value":"climate"}
-      properties:
-        type:
-          type: string
-          enum:
-            - queryText
-        value:
-          type: string
-          pattern: '^(?!\s*[\*\?]+).*'
-      required:
-        - type
-        - value
-      additionalProperties: false
-    excludeGlobalFilter:
-      description: Flag to request that geospatially global results be excluded. Defaults to false if not provided.
-      type: object
-      example: {"type":"excludeGlobal","value":true}
-      properties:
-        type:
-          type: string
-          enum:
-            - excludeGlobal
-        value:
-          type: boolean
-          default: false
-      required:
-        - type
-        - value
-      additionalProperties: false
-    dateTimeFilter:
-      description: 'Open-ended time ranges are allowed. Include either before, after, or both.'
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - datetime
-        before:
-          type: string
-          format: date-time
-          example: '2017-01-01T00:00:00Z'
-        after:
-          type: string
-          format: date-time
-          example: '2010-01-01T00:00:00Z'
-      required:
-        - type
-      additionalProperties: false
-    facetFilter:
-      description: Filters results based on given GCMD keywords where returned results MUST have the specified keyword. Multiple facetFilter objects will be combined with logical AND; multiple values in a single facetFilter object will be combined with the logical OR.
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - facet
-        name:
-          description: 'One of the GCMD keyword categories: science, services, locations, instruments, platforms, projects, dataCenters, horizontalResolution, verticalResolution, temporalResolution.'
-          type: string
-          enum:
-            - science
-            - services
-            - locations
-            - instruments
-            - platforms
-            - projects
-            - dataCenters
-            - horizontalResolution
-            - verticalResolution
-            - temporalResolution
-        values:
-          description: Exact match GCMD keyword(s)
-          type: array
-          items:
-            type: string
-            example: Atmosphere > Atmospheric Temperature > Surface Temperature
-      required:
-        - type
-        - name
-        - values
-      additionalProperties: false
-    geometryFilter:
-      description: Filter that returns results whose bounding geometry contains the specified geographical coordinate.
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - geometry
-        geometry:
-          $ref: '#/components/schemas/Geometry'
-        relation:
-          description: 'How the dataset geometry relates to the given geometry, e.g., return all datasets whose geometry contains the given point.'
-          type: string
-          default: intersects
-          enum:
-            - contains
-            - disjoint
-            - intersects
-            - within
-      required:
-        - type
-        - geometry
-      additionalProperties: false
-    collectionFilter:
-      description: 'Collections to filter results by (logical OR if multiple filters or multiple values in one filter). Only impacts granule searches.'
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - collection
-        values:
-          description: List of collection internal ids
-          type: array
-          items:
-            type: string
-      required:
-        - type
-        - values
-      additionalProperties: false
-    Geometry:
-      description: 'One geometry as defined by GeoJSON.  CAUTION: this model was converted from GeoJSON. If in doubt, refer to the GeoJSON spec.'
-      example: {"type":"Polygon","coordinates":[[[-128.144531,19.273176],[-58.471856,19.273176],[-58.471856,47.584291],[-128.144531,47.584291],[-128.144531,19.273176]]]}
-      oneOf:
-        - $ref: '#/components/schemas/Polygon'
-        - $ref: '#/components/schemas/Point'
-        - $ref: '#/components/schemas/MultiPoint'
-        - $ref: '#/components/schemas/LineString'
-        - $ref: '#/components/schemas/MultiLineString'
-        - $ref: '#/components/schemas/MultiPolygon'
-    Point:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - Point
-        coordinates:
-          $ref: '#/components/schemas/position'
-      required:
-        - type
-        - coordinates
-    MultiPoint:
-      properties:
-        type:
-          type: string
-          enum:
-            - MultiPoint
-        coordinates:
-          $ref: '#/components/schemas/positionArray'
-      required:
-        - type
-        - coordinates
-    LineString:
-      properties:
-        type:
-          enum:
-            - LineString
-        coordinates:
-          $ref: '#/components/schemas/lineString'
-      required:
-        - type
-        - coordinates
-    MultiLineString:
-      properties:
-        type:
-          enum:
-            - MultiLineString
-        coordinates:
-          type: array
-          items:
-            oneOf:
-              - $ref: '#/components/schemas/lineString'
-      required:
-        - type
-        - coordinates
-    Polygon:
-      type: object
-      properties:
-        type:
-          type: string
-          enum:
-            - Polygon
-        coordinates:
-          $ref: '#/components/schemas/polygon'
-      required:
-        - type
-        - coordinates
-    MultiPolygon:
-      properties:
-        type:
-          type: string
-          enum:
-            - MultiPolygon
-        coordinates:
-          type: array
-          items:
-            oneOf:
-              - $ref: '#/components/schemas/polygon'
-      required:
-        - type
-        - coordinates
-    lat:
-      description: a coordinate value
-      type: number
-      minimum: -360
-      maximum: 360
-    long:
-      description: a coordinate value
-      type: number
-      minimum: -90
-      maximum: 90
-    position:
-      description: 'A single position. The first two elements are longitude and latitude.'
-      type: array
-      minItems: 2
-      maxItems: 2
-      items:
-        oneOf:
-          - $ref: '#/components/schemas/lat'
-          - $ref: '#/components/schemas/long'
-    positionArray:
-      description: An array of positions
-      type: array
-      items:
-        oneOf:
-          - $ref: '#/components/schemas/position'
-    lineString:
-      description: An array of two or more positions
-      allOf:
-        - $ref: '#/components/schemas/positionArray'
-        - minItems: 2
-    linearRing:
-      description: An array of four positions where the first equals the last
-      allOf:
-        - $ref: '#/components/schemas/positionArray'
-        - minItems: 4
-    polygon:
-      description: An array of linear rings
-      type: array
-      items:
-        oneOf:
-          - $ref: '#/components/schemas/linearRing'
+
   examples:
     scienceFacet:
       value: {"type":"facet","name":"science","values":["Agriculture","Atmosphere > Atmospheric Radiation > Incoming Solar Radiation"]}

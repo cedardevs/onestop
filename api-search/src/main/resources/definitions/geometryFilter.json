@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Filter that returns results whose bounding geometry contains the specified geographical coordinate.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "enum": [
+        "geometry"
+      ]
+    },
+    "geometry": {
+      "$ref": "file:src/main/resources/definitions/geo.json#/Geometry"
+    },
+    "relation": {
+      "description": "How the result geometry relates to the query geometry, e.g., return all datasets whose geometry contains the given point. Defaults to 'intersects'.",
+      "enum": [
+        "contains",
+        "disjoint",
+        "intersects",
+        "within"
+      ]
+    }
+  },
+  "required": [
+    "type",
+    "geometry"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "Flag to request that geospatially global results be excluded. Defaults to false if not provided.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "enum": [
+        "excludeGlobal"
+      ]
+    },
+    "value": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "type",
+    "value"
+  ],
+  "additionalProperties": false
+}
