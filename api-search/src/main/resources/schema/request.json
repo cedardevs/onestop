@@ -7,13 +7,36 @@
     "queries": {
       "type": "array",
       "items": {
-        "$ref": "file:src/main/resources/schema/components/query.json"
+        "oneOf": [
+          {
+            "$ref": "file:src/main/resources/schema/components/textQuery.json"
+          }
+        ]
       }
     },
     "filters": {
       "type": "array",
       "items": {
-        "$ref": "file:src/main/resources/schema/components/filter.json"
+        "oneOf": [
+          {
+            "$ref": "file:src/main/resources/schema/components/datetimeFilter.json"
+          },
+          {
+            "$ref": "file:src/main/resources/schema/components/yearFilter.json"
+          },
+          {
+            "$ref": "file:src/main/resources/schema/components/facetFilter.json"
+          },
+          {
+            "$ref": "file:src/main/resources/schema/components/geometryFilter.json"
+          },
+          {
+            "$ref": "file:src/main/resources/schema/components/collectionFilter.json"
+          },
+          {
+            "$ref": "file:src/main/resources/schema/components/excludeGlobalFilter.json"
+          }
+        ]
       }
     },
     "facets": {

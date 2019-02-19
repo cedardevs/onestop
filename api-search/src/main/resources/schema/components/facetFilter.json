@@ -12,7 +12,6 @@
     },
     "name": {
       "description": "One of the GCMD keyword categories: science, services, locations, instruments, platforms, projects, dataCenters, horizontalResolution, verticalResolution, temporalResolution.",
-      "type": "string",
       "enum": ["science", "services", "locations", "instruments", "platforms", "projects", "dataCenters", "horizontalResolution", "verticalResolution", "temporalResolution"]
     },
     "values": {

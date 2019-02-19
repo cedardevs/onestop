@@ -103,7 +103,7 @@
             "format": "date"
           },
           "spatialBounding": {
-            "$ref": "components/geo.json#/Geometry"
+            "$ref": "components/geo.json"
           },
           "links": {
             "type": "array",

@@ -11,7 +11,7 @@
       ]
     },
     "geometry": {
-      "$ref": "file:src/main/resources/schema/components/geo.json#/Geometry"
+      "$ref": "file:src/main/resources/schema/components/geo.json"
     },
     "relation": {
       "description": "How the result geometry relates to the query geometry, e.g., return all datasets whose geometry contains the given point.",
