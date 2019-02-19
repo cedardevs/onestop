@@ -14,7 +14,3 @@ It publishes metadata updates to Kafka, then uses a Kafka Streams app to aggrega
 The registry is equipped with a RESTful interface that allows full CRUD control of metadata records stored by PSI.
 
 
-### Using Kafka Connect
-**TBD** 
-
-In the meantime, see Confluent's coverage of [Kafka Connect](https://docs.confluent.io/current/connect/index.html).
