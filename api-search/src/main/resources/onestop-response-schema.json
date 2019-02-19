@@ -6,7 +6,7 @@
     "queries": {
       "type": "array",
       "items": {
-        "$ref": "definitions/demo.json"
+        "$ref": "schemas/demo.json"
       }
     }
   },

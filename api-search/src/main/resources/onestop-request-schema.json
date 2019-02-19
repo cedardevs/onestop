@@ -7,13 +7,13 @@
     "queries": {
       "type": "array",
       "items": {
-        "$ref": "file:src/main/resources/definitions/query.json"
+        "$ref": "file:src/main/resources/schemas/query.json"
       }
     },
     "filters": {
       "type": "array",
       "items": {
-        "$ref": "file:src/main/resources/definitions/filter.json"
+        "$ref": "file:src/main/resources/schemas/filter.json"
       }
     },
     "facets": {
