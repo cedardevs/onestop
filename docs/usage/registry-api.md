@@ -34,15 +34,15 @@ Create and replace documents using `PUT` and `POST` requests.
 Successful operations will return a response body with the format:
 ```json
 {
-  id  : <idValue>,
-  type: <typeValue>
+  "id"  : "<idValue>",
+  "type": "<typeValue>"
 }
 ```
 
 Unsuccessful operations will return a response body with the format:
 ```json
 {
-  errors: [{...}]
+  "errors": []
 }
 ```
 
@@ -55,15 +55,15 @@ Retrieve stored documents using `GET` and `HEAD` requests. Requests sent to the 
 Found documents will return a response body with the format:
 ```json
 {
-  links: {
-    input     : <inputUrlValue>,
-    parsed    : <parsedUrlValue>,
-    self      : <selfReferencingUrlValue>
+  "links" : {
+    "input"     : "<inputUrlValue>",
+    "parsed"    : "<parsedUrlValue>",
+    "self"      : "<selfReferencingUrlValue>"
   },
-  data : {
-    id        : <idValue>,
-    type      : <typeValue>,
-    attributes: <resultObject>
+  "data" : {
+    "id"        : "<idValue>",
+    "type"      : "<typeValue>",
+    "attributes": "<resultObject>"
   }
 }
 ```
@@ -72,16 +72,16 @@ Found documents will return a response body with the format:
 If the document isn't found, a response body will be returned with the format:
 ```json
 {
-  links : {
-    input     : <inputUrlValue>,
-    parsed    : <parsedUrlValue>,
-    self      : <selfReferencingUrlValue>
+  "links" : {
+    "input"     : "<inputUrlValue>",
+    "parsed"    : "<parsedUrlValue>",
+    "self"      : "<selfReferencingUrlValue>"
   },
-  errors: [
+  "errors": [
     {
-      status: 404,
-      title: "NOT_FOUND",
-      detail: "No input exists for <typeValue> with id [<idValue>] from source [<sourceValue>]"
+      "status": 404,
+      "title": "NOT_FOUND",
+      "detail": "No input exists for <typeValue> with id [<idValue>] from source [<sourceValue>]"
     }
   ]
 }
