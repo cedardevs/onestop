@@ -5,9 +5,9 @@ import groovy.util.logging.Slf4j
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
 import org.cedar.schemas.avro.psi.ErrorEvent
+import org.cedar.schemas.avro.psi.Method
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -55,10 +55,10 @@ class MetadataRestController {
     links.self = links.remove('input')
 
     if (result) {
-      if (result.method == HttpMethod.DELETE.toString()) {
+      if (result.method == Method.DELETE) {
         response.status = HttpStatus.NOT_FOUND.value()
         links.remove('parsed')
-        links.resurrect = buildResurrectionLink(request, type, source, id)
+        links.resurrection = buildResurrectionLink(request, type, source, id)
         return [
             links : links,
             errors: [
