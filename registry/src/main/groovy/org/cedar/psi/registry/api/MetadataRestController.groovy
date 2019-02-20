@@ -7,6 +7,7 @@ import org.cedar.psi.registry.service.MetadataStore
 import org.cedar.schemas.avro.psi.ErrorEvent
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
@@ -54,14 +55,31 @@ class MetadataRestController {
     links.self = links.remove('input')
 
     if (result) {
-      return [
-          links: links,
-          data : [
-              id        : id,
-              type      : type,
-              attributes: result
-          ]
-      ]
+      if (result.method == HttpMethod.DELETE.toString()) {
+        response.status = HttpStatus.NOT_FOUND.value()
+        links.remove('parsed')
+        links.resurrect = buildResurrectionLink(request, type, source, id)
+        return [
+            links : links,
+            errors: [
+                [
+                    status: HttpStatus.NOT_FOUND.value(),
+                    title : HttpStatus.NOT_FOUND.toString(),
+                    detail: "DELETE processed for ${type} with id [${id}] from source [${source}]" as String
+                ]
+            ]
+        ]
+      }
+      else {
+        return [
+            links: links,
+            data : [
+                id        : id,
+                type      : type,
+                attributes: result
+            ]
+        ]
+      }
     }
     else {
       response.status = HttpStatus.NOT_FOUND.value()
@@ -141,6 +159,11 @@ class MetadataRestController {
         input : "${root}/metadata/${type}/${source}/${id}" as String,
         parsed: "${root}/metadata/${type}/${source}/${id}/parsed" as String
     ]
+  }
+
+  private String buildResurrectionLink(HttpServletRequest request, String type, String source, String id) {
+    def root = apiLinkGenerator.getApiRoot(request)
+    return "${root}/metadata/${type}/${source}/${id}/resurrection" as String
   }
 
 }
