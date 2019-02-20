@@ -25,7 +25,7 @@ Where:
 This API abides by [JSON API specifications](https://jsonapi.org/format/). 
 
 
-#### Creating And Replacing Documents
+### Creating And Replacing Documents
 Create and replace documents using `PUT` and `POST` requests. 
 * The `type` must be specified
 * Omitting the source will result in the source being set as `unknown`
@@ -46,7 +46,7 @@ Unsuccessful operations will return a response body with the format:
 }
 ```
 
-#### Retrieving Documents
+### Retrieving Documents
 Retrieve stored documents using `GET` and `HEAD` requests. Requests sent to the above base URL will return the original input metadata. Requests sent to `{baseURL}/parsed` will return the [ParsedRecord](https://github.com/cedardevs/schemas/blob/master/src/main/resources/avro/psi/parsedRecord.avsc).
 * The `type` must be specified
 * Omitting the source will result in the source being set as `unknown`
@@ -89,12 +89,12 @@ If the document isn't found, a response body will be returned with the format:
 **NOTE**: If the request is received at the `{baseURL}/parsed` endpoint, the `links` object will contain both `self` and `input` URLs, under the assumption the parsed record may not yet be available. However, a request received at the `{baseURL}` endpoint will only contain the `self` value.
 
 
-#### Updating Existing Documents -- Section WIP
+### Updating Existing Documents -- Section WIP
 If the original input metadata format is JSON, `PATCH` requests can be used to append or modify subsections of the record. However, XML `PATCH` requests will 
 * The `type` must be specified
 * Omitting the source will result in the source being set as `unknown`
 * The `id` must be specified
 
 
-#### Deleting Documents -- Section WIP
+### Deleting Documents -- Section WIP
 Removing a document requires a `DELETE` request, where the `type` and `id` parameters are required. If `source` is not specified, the record will be assumed as having the default source value ('unknown'). 
