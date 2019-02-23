@@ -142,4 +142,30 @@ class StreamFunctionsSpec extends Specification {
     value == expected
   }
 
+  def 'publish function with GET method'() {
+    def currentAggregate = new Input([
+        type: RecordType.granule,
+        method: Method.DELETE,
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    def newValue = new Input([
+        method: Method.GET,
+    ])
+
+    def expected = new Input([
+        type: RecordType.granule,
+        method: Method.GET,
+        content: '{"trackingId":"ABC","message":"this is a test","answer": 42}',
+        contentType: 'application/json',
+        source: 'test'
+    ])
+    when:
+    def value = StreamFunctions.reduceInputs.apply(currentAggregate, newValue)
+
+    then:
+    value == expected
+  }
+
 }
