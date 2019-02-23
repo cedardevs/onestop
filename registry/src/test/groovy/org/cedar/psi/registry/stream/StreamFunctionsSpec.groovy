@@ -62,30 +62,6 @@ class StreamFunctionsSpec extends Specification {
     mergedInputs == mergedAggregate
   }
 
-
-  def 'input merger replaces xml strings'() {
-    def currentAggregate = new Input([
-        type: RecordType.granule,
-        method: Method.POST,
-        contentType: 'application/xml',
-        content: '<text>xml wooooOne....</text>',
-        source: 'test'
-    ])
-    def newInput = new Input([
-        type: RecordType.granule,
-        method: Method.POST,
-        contentType: 'application/xml',
-        content: '<text>xml wooooTwo....</text>',
-        source: 'test'
-    ])
-
-    when:
-    def mergedMaps = StreamFunctions.mergeInputContent.apply(currentAggregate, newInput)
-
-    then:
-    mergedMaps == newInput
-  }
-
   def 'reduce inputs with PATCH method'() {
     def currentAggregate = new Input([
         type: RecordType.granule,

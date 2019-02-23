@@ -63,10 +63,16 @@ class PublisherController {
     receiveContent(request, response, null, type, source, id)
   }
 
-//  @RequestMapping(value = "/{type}/{source}/{id}/resurrection", method = GET, produces = 'application/json')
-//  Map resurrectContent(@PathVariable String type, @PathVariable String source, @PathVariable String id,
-//                       HttpServletRequest request, HttpServletResponse response) {
-//
-//  }
+  @RequestMapping(value = "/{type}/{id}/resurrection", method = GET, produces = 'application/json')
+  Map resurrectContent(@PathVariable String type, @PathVariable UUID id,
+                       HttpServletRequest request, HttpServletResponse response) {
+    receiveContent(request, response, null, type, Topics.DEFAULT_SOURCE, id)
+  }
+
+  @RequestMapping(value = "/{type}/{source}/{id}/resurrection", method = GET, produces = 'application/json')
+  Map resurrectContent(@PathVariable String type, @PathVariable String source, @PathVariable UUID id,
+                       HttpServletRequest request, HttpServletResponse response) {
+    receiveContent(request, response, null, type, source, id)
+  }
 
 }
