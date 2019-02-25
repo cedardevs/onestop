@@ -1,0 +1,9 @@
+{
+  "name": "onestop-doc-gen",
+  "scripts": {
+    "gen": "openapi3-generator -o ./build/docs/api/ --basedir  build/src/ build/src/api openapi2md && openapi3-generator -o ./build/docs/schema/ --basedir build/src/schema/ build/src/schema jsonschema2md"
+  },
+  "dependencies": {
+    "openapi3-generator": "git+https://github.com/cedardevs/openapi3-generator.git#customizations"
+  }
+}
