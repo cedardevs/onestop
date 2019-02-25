@@ -53,7 +53,7 @@ identityprovider:
   loginBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
   logoutEndpoint: "https://sso-dev.lb.csp.noaa.gov:443/openam/IDPSloRedirect/metaAlias/noaa-online/noaa-online-idp"
   logoutBinding: "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
-  issuerSP: "https://localhost:30098/onestop/admin/"
+  issuerSP: "https://localhost:30098/onestop-admin/"
   issuerIDP: "noaa-online-idp"
   authnContextRefs:
     - "urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified"
