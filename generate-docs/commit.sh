@@ -1,3 +1,5 @@
+set -e
+
 VERSION=$1
 DIR=../docs/api/$VERSION/
 git checkout gh-pages
