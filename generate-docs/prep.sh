@@ -4,9 +4,8 @@ mkdir -p build/src
 rsync -av ../api-search/src/main/resources/api/ build/src/api
 rsync -av ../api-search/src/main/resources/schema/ build/src/schema
 
-find build # debugging
-
-sed -i '' -e "s/file:.*geo.json#/#/g" build/src/schema/components/geo.json
+echo "Make geo.json relative internal to the schema file."
+find build -name "geo.json" | head -1 | xargs sed -i '' -e "s/file:.*geo.json#/#/g"
 
 find build -type f | while read file
 do
