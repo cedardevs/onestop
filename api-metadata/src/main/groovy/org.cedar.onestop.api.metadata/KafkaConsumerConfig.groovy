@@ -4,7 +4,6 @@ import io.confluent.kafka.serializers.AbstractKafkaAvroSerDeConfig
 import io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer
 import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.common.config.TopicConfig
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -45,7 +44,6 @@ class KafkaConsumerConfig {
     configProps.put(ConsumerConfig.CLIENT_ID_CONFIG, 'api-Consumer')
     configProps.put(ConsumerConfig.GROUP_ID_CONFIG, 'api-metadata')
     configProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
-    configProps.put(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
     configProps.put(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG, maxWaitMs)
     configProps.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, maxPollRecords)
     
