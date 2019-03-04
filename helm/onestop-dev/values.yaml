@@ -1,0 +1,16 @@
+onestop-api-admin:
+  keystore:
+    file: "/etc/api-metadata/keystore.jks"
+  spring:
+    profiles:
+      active: "securityenabled,kafkadisabled"
+
+onestop-api-search:
+  auth:
+    clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:SciAppsOneStop"
+    allowedOrigin: "https://sciapps.colorado.edu"
+    endpoints:
+      loginSuccessRedirect: "/"
+      loginFailureRedirect: "/"
+      logoutSuccessRedirect: "/"
+    keystoreFile: "/etc/api-search/logingov.jks"

@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "onestop-api-admin.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "onestop-api-admin.name" . }}
+    helm.sh/chart: {{ include "onestop-api-admin.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "onestop-api-admin.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "onestop-api-admin.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ include "onestop-api-admin.spring.profiles.active" . | quote }}
+            - name: ELASTICSEARCH_HOST
+              value: {{ include "onestop-api-admin.elasticsearch.host" . | quote }}
+            - name: ELASTICSEARCH_PORT
+              value: {{ include "onestop-api-admin.elasticsearch.port" . | quote }}
+            {{- if .Values.config }}
+            - name: spring.config.additional-location
+              value: /etc/conf/application.yml
+            {{- end }}
+            - name: LOGGING_LEVEL_ORG.CEDAR.ONESTOP.API
+              value: {{ include "onestop-api-admin.logging.level" . | quote }}
+            - name: ETL_SITEMAP_DELAY_INITIAL
+              value: {{ include "onestop-api-admin.etl.sitemap.delay.initial" . | quote }}
+            - name: KEYSTORE_FILE
+              value: {{ include "onestop-api-admin.keystore.file" . | quote }}
+            - name: KEYSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keystore
+                  key: KEYSTORE_PASSWORD
+            - name: KEYSTORE_ALIAS
+              valueFrom:
+                secretKeyRef:
+                  name: keystore
+                  key: KEYSTORE_ALIAS
+            - name: KEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keystore
+                  key: KEY_PASSWORD
+          volumeMounts:
+            - name: keystore-volume
+              mountPath: {{ include "onestop-api-admin.keystore.file" . | quote }}
+              subPath: keystore.jks
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: keystore-volume
+          secret:
+            secretName: keystore-sciapps
+            items:
+              - key: KEYSTORE_FILE
+                path: keystore.jks
+#      restartPolicy: Always
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
