@@ -1,6 +1,7 @@
 package org.cedar.psi.manager.util
 
 import groovy.util.logging.Slf4j
+import org.apache.commons.lang3.exception.ExceptionUtils
 import org.cedar.schemas.avro.psi.*
 
 import java.time.LocalDate
@@ -32,9 +33,21 @@ class Analyzers {
     if (record == null) {
       return null // pass through
     }
-    def builder = ParsedRecord.newBuilder(record)
-    builder.analysis = analyze(record?.discovery)
-    return builder.build()
+    try {
+      def builder = ParsedRecord.newBuilder(record)
+      builder.analysis = analyze(record?.discovery)
+      return builder.build()
+    }
+    catch (e) {
+      log.error("An error occurred during analysis", e)
+      def errors = record.errors ?: []
+      def error = ErrorEvent.newBuilder()
+          .setTitle("Analysis failed")
+          .setDetail(ExceptionUtils.getRootCauseMessage(e).trim())
+          .build()
+      errors.add(error)
+      return ParsedRecord.newBuilder(record).setErrors(errors).build()
+    }
   }
 
   static Analysis analyze(Discovery discovery) {
