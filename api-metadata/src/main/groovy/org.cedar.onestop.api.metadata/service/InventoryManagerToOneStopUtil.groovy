@@ -13,31 +13,46 @@ import static org.cedar.schemas.avro.psi.ValidDescriptor.*
 class InventoryManagerToOneStopUtil {
 
   static Boolean validateMessage(String id, ParsedRecord messageMap) {
-    def discovery = messageMap.discovery
-    def analysis = messageMap.analysis
-    def titles = analysis.titles
-    def identification = analysis.identification
-    def temporal = analysis.temporalBounding
+    def discovery = messageMap?.discovery
+    def analysis = messageMap?.analysis
+    def titles = analysis?.titles
+    def identification = analysis?.identification
+    def temporal = analysis?.temporalBounding
 
     def failures = []
 
     // Validate record
-    if (!identification.fileIdentifierExists) {
+    if (discovery == null) {
+      failures.add("Missing discovery metadata")
+    }
+    if (analysis == null) {
+      failures.add("Missing analysis")
+    }
+    if (titles == null) {
+      failures.add("Missing title analysis")
+    }
+    if (identification == null) {
+      failures.add("Missing identification analysis")
+    }
+    if (temporal == null) {
+      failures.add("Missing temporal analysis")
+    }
+    if (identification && !identification?.fileIdentifierExists) {
       failures.add('Missing fileIdentifier')
     }
-    if (!titles.titleExists) {
+    if (titles && !titles.titleExists) {
       failures.add('Missing title')
     }
-    if (discovery.hierarchyLevelName == 'granule' && !identification.parentIdentifierExists) {
+    if (discovery && identification && discovery.hierarchyLevelName == 'granule' && !identification.parentIdentifierExists) {
       failures.add('Mismatch between metadata type and identifiers detected')
     }
-    if (temporal.beginDescriptor == INVALID) {
+    if (temporal && temporal.beginDescriptor == INVALID) {
       failures.add('Invalid beginDate')
     }
-    if (temporal.endDescriptor == INVALID) {
+    if (temporal && temporal.endDescriptor == INVALID) {
       failures.add('Invalid endDate')
     }
-    if (!temporal.beginDescriptor == UNDEFINED && !temporal.endDescriptor == UNDEFINED && temporal.instantDescriptor == INVALID) {
+    if (temporal && temporal.beginDescriptor != UNDEFINED && temporal.endDescriptor != UNDEFINED && temporal.instantDescriptor == INVALID) {
       failures.add('Invalid instant-only date')
     }
 

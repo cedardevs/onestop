@@ -28,18 +28,14 @@ class KafkaConsumerService {
     // Update collections & granules
     log.info("consuming message from kafka topic")
     try {
-      List<Map> valuesIds = records.collect {
-        String id = it.key()
-        ParsedRecord record = it.value()
-        InventoryManagerToOneStopUtil.validateMessage(id, record) ?
-            [id: id, parsedRecord: record] as Map :
-            null
-        
-      }
-      valuesIds.removeAll(Collections.singleton(null))
-      metadataManagementService.loadParsedMetadata(valuesIds)
-      
-    } catch (Exception e) {
+      def validRecords = records.stream().filter({
+        it != null && InventoryManagerToOneStopUtil.validateMessage(it.key(), it.value())
+      }).map({
+        [id: it.key(), parsedRecord: it.value()]
+      }).toArray()
+      metadataManagementService.loadMetadata(validRecords)
+    }
+    catch (Exception e) {
       log.error("Unexpected error", e)
     }
     
