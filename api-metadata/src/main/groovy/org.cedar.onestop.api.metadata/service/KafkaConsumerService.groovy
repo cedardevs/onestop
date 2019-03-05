@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Profile
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
 
+import java.util.stream.Collectors
+
 @Slf4j
 @Service
 @Profile("kafka-ingest")
@@ -32,13 +34,14 @@ class KafkaConsumerService {
         it != null && InventoryManagerToOneStopUtil.validateMessage(it.key(), it.value())
       }).map({
         [id: it.key(), parsedRecord: it.value()]
-      }).toArray()
-      metadataManagementService.loadMetadata(validRecords)
+      }).collect(Collectors.toList())
+      if (validRecords.size() > 0) {
+        metadataManagementService.loadParsedMetadata(validRecords)
+      }
     }
     catch (Exception e) {
       log.error("Unexpected error", e)
     }
-    
   }
 
 }
