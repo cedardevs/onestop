@@ -102,8 +102,8 @@ class MetadataRestController {
     links.self = links.remove('parsed')
 
     if (result) {
-      if (result.errors) {
-        response.status = result.errors.collect({ ErrorEvent error -> error.status }).max()
+      if (result?.errors?.size() > 0) {
+        response.status = result.errors.collect({ ErrorEvent error -> error?.status ?: null }).max()
         return [
             links : links,
             errors: result.errors
