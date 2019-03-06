@@ -65,7 +65,7 @@ class KafkaBeanConfig {
     Map<String, Object> configProps = new HashMap<>()
     configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
     configProps.put(ProducerConfig.CLIENT_ID_CONFIG, 'api_publisher')
-    configProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, 'zstd')
+    configProps.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, 'gzip')
     configProps.put(AbstractKafkaAvroSerDeConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl)
     configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName())
     configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, SpecificAvroSerializer.class.getName())
@@ -81,7 +81,7 @@ class KafkaBeanConfig {
         (DEFAULT_KEY_SERDE_CLASS_CONFIG)     : Serdes.String().class.name,
         (DEFAULT_VALUE_SERDE_CLASS_CONFIG)   : SpecificAvroSerde.class.name,
         (AUTO_OFFSET_RESET_CONFIG)           : 'earliest',
-        (TopicConfig.COMPRESSION_TYPE_CONFIG): 'zstd'
+        (TopicConfig.COMPRESSION_TYPE_CONFIG): 'gzip'
     ]
     if (stateDir) {
       println stateDir
