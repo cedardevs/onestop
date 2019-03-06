@@ -198,6 +198,7 @@ class AnalyzersSpec extends Specification {
     BACKWARDS | 'start is valid format and after valid format end'              | '2011-01-01T00:00:00Z' | '2001-01-01T00:00:00Z'
     BOUNDED   | 'start is invalid format but paleo and before valid format end' | '-1000000000'          | '2015'
     BOUNDED   | 'start and end both invalid but paleo and start before end'     | '-2000000000'          | '-1000000000'
+    BOUNDED   | 'start valid LT end valid but years less than 4 digits'         | '-900'                 | '100-01-01'
     BACKWARDS | 'start and end both invalid but paleo and start after end'      | '-1000000000'          | '-2000000000'
     BOUNDED   | 'start and end both same instant'                               | '2000-01-01T00:00:00Z' | '2000-01-01T00:00:00Z'
     ONGOING   | 'start exists but not end'                                      | '2000-01-01T00:00:00Z' | ''

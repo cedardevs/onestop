@@ -5,12 +5,14 @@ import org.cedar.schemas.avro.psi.*
 
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.Year
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.DateTimeParseException
 import java.time.format.ResolverStyle
+import java.time.temporal.ChronoField
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAccessor
 import java.time.temporal.TemporalQueries
@@ -22,9 +24,14 @@ import static org.cedar.schemas.avro.psi.TimeRangeDescriptor.*
 class Analyzers {
 
   static final DateTimeFormatter PARSE_DATE_FORMATTER = new DateTimeFormatterBuilder()
-      .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g. - 2010-12-30T00:00:00Z
-      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g. - 2010-12-30T00:00:00
-      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g. - 2010-12-30
+      .appendOptional(DateTimeFormatter.ISO_ZONED_DATE_TIME)  // e.g.  2010-12-30T00:00:00Z
+      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE_TIME)  // e.g.  2010-12-30T00:00:00
+      .appendOptional(DateTimeFormatter.ISO_LOCAL_DATE)       // e.g.  2010-12-30
+      .appendOptional(new DateTimeFormatterBuilder()
+        .appendValue(ChronoField.YEAR)
+        .appendPattern("-MM-dd").toFormatter())        // e.g. -200-01-01
+      .appendOptional(new DateTimeFormatterBuilder()
+        .appendValue(ChronoField.YEAR).toFormatter())         // e.g. -200
       .toFormatter()
       .withResolverStyle(ResolverStyle.STRICT)
 
@@ -173,12 +180,13 @@ class Analyzers {
     }
 
     try {
-      def parsedDate = dateString.isLong() ? dateString.toLong() :
+      def parsedDate = dateString.isLong() && !indexable(dateString.toLong()) ? dateString.toLong() :
           PARSE_DATE_FORMATTER.parseBest(
               dateString,
               ZonedDateTime.&from as TemporalQuery,
               LocalDateTime.&from as TemporalQuery,
-              LocalDate.&from as TemporalQuery)
+              LocalDate.&from as TemporalQuery,
+              Year.&from as TemporalQuery)
 
       return [
           descriptor       : ValidDescriptor.VALID,
@@ -200,9 +208,9 @@ class Analyzers {
   }
 
   static boolean indexable(Long year) {
-    // Year must be in the range [-292275055,292278994] in order to be parsed as a date by ES (Joda time magic number). However,
+    // Year must be in the range [-292_275_055, 292_278_994] in order to be parsed as a date by ES (Joda time magic number). However,
     // this number is a bit arbitrary, and prone to change when ES switches to the Java time library (minimum supported year
-    // being -999999999). We will limit the year ourselves instead to -100,000,000 -- since this is a fairly safe bet for
+    // being -999,999,999). We will limit the year ourselves instead to -100,000,000 -- since this is a fairly safe bet for
     // supportability across many date libraries if the utcDateTime ends up used as is by a downstream app.
     return year >= -100_000_000L
   }
@@ -226,6 +234,11 @@ class Analyzers {
   static String utcDateTimeString(TemporalAccessor parsedDate, boolean start) {
     def modifiedDate
     switch (parsedDate) {
+      case Year:
+        modifiedDate = start ? parsedDate.atMonth(1).atDay(1).atTime(0, 0, 0) : parsedDate.atMonth(12).atEndOfMonth().atTime(23, 59, 59)
+        modifiedDate = modifiedDate.atZone(ZoneOffset.UTC)
+        break
+
       case LocalDate:
         modifiedDate = start ? parsedDate.atTime(0, 0, 0) : parsedDate.atTime(23, 59, 59)
         modifiedDate = modifiedDate.atZone(ZoneOffset.UTC)
