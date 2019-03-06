@@ -4,7 +4,6 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
-import org.cedar.schemas.avro.psi.ErrorEvent
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -103,7 +102,6 @@ class MetadataRestController {
 
     if (result) {
       if (result?.errors?.size() > 0) {
-        response.status = result.errors.collect({ ErrorEvent error -> error?.status ?: null }).max()
         return [
             links : links,
             errors: result.errors
