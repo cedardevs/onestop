@@ -34,7 +34,6 @@ paths:
       summary: "Create or replace a metadata record from an unspecified source"
       description: "Create a collection or granule record with unspecified source will be flag as `Unknow` source and also random UUID will be assign by the application. <br/><br/>**Note**: For your record make sure you hold on to the assign UUID."
       operationId: createRecord
-      externalDocs:
       requestBody:
         $ref: '#/components/requestBodies/postBody'
       responses:
@@ -48,7 +47,6 @@ paths:
       summary: "Create or replace a metadata record from an unspecified source"
       description: "Create a collection or granule record with unspecified source will be flag as `Unknow` source and also random UUID will be assign by the application. <br/><br/>**Note**: For your record make sure you hold on to the assign UUID."
       operationId: createReplaceRecord
-      externalDocs:
       requestBody:
         $ref: '#/components/requestBodies/postBody'
       responses:
@@ -66,7 +64,6 @@ paths:
       summary: "Create a metadata record from an unspecified source with provided id"
       description:  "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
       operationId: createRecordById
-      externalDocs:
       requestBody:
         $ref: '#/components/requestBodies/postBody'
       responses:
@@ -80,7 +77,6 @@ paths:
       summary: "Create or replace a metadata record from an unspecified source with provided id"
       description: "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
       operationId: createReplaceRecordById
-      externalDocs:
       requestBody:
         $ref: '#/components/requestBodies/postBody'
       responses:
@@ -94,7 +90,6 @@ paths:
       summary: "Create or modify a metadata record from an unspecified source with provided id"
       description: "Note: Creating a collection or granule record with unspecified source will be flag as `Unknow` source."
       operationId: createModifyRecordById
-      externalDocs:
       requestBody:
         $ref: '#/components/requestBodies/patchBody'
       responses:
@@ -108,7 +103,6 @@ paths:
       summary: "Request to remove record with unspecified source"
       description: "Note: Requesting a resource to be removed only removes the downstream processed/parsed data, but the actual input is flagged as `delete`"
       operationId: removedRecord
-      externalDocs:
       responses:
         '201':
           $ref: '#/components/responses/createItem'
@@ -124,8 +118,6 @@ paths:
           $ref: '#/components/responses/getRawItemById'
         '404':
           $ref: '#/components/responses/recordNotFound'
-        deletedItem:
-          $ref: '#/components/responses/deletedItem'
   /registry/metadata/{type}/{source}/{id}:
     parameters:
       - $ref: '#/components/parameters/metadataType'
@@ -137,7 +129,6 @@ paths:
       summary: "Create or replace a metadata record with specified source and provided id"
       description:  "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
       operationId: createRecordFromSourceWithUUID
-      externalDocs:
       requestBody:
         $ref: '#/components/requestBodies/postBody'
       responses:
@@ -151,7 +142,6 @@ paths:
       summary: "Create or replace a metadata record with specified source and provided id"
       description: "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
       operationId: createReplaceRecordFromSourceWithUUID
-      externalDocs:
       requestBody:
         $ref: '#/components/requestBodies/postBody'
       responses:
@@ -165,7 +155,6 @@ paths:
       summary: "Create or modify a metadata record with specified source and provided id"
       description: "Note: Creating a collection or granule record with unspecified source will be flag as `Unknow` source."
       operationId: createModifyRecordFromSourceWithUUID
-      externalDocs:
       requestBody:
         $ref: '#/components/requestBodies/patchBody'
       responses:
@@ -179,7 +168,6 @@ paths:
       summary: "Request that a resource be removed"
       description: "Note: Requesting a resource to be removed only removes the downstream processed/parsed data, but the actual input is flagged as `delete`"
       operationId: removedRecordFromSourceWithUUID
-      externalDocs:
       responses:
         '201':
           $ref: '#/components/responses/createItem'
@@ -195,8 +183,6 @@ paths:
           $ref: '#/components/responses/getRawItemById'
         '404':
           $ref: '#/components/responses/recordNotFound'
-        deletedItem:
-          $ref: '#/components/responses/deletedItem'
 
   /registry/metadata/{type}/{id}/parsed:
     parameters:
@@ -213,8 +199,6 @@ paths:
           $ref: '#/components/responses/getParsedItemById'
         '404':
           $ref: '#/components/responses/recordNotFound'
-        deletedItem:
-          $ref: '#/components/responses/deletedItem'
 
   /registry/metadata/{type}/{source}/{id}/parsed:
     parameters:
@@ -231,8 +215,6 @@ paths:
           $ref: '#/components/responses/getParsedItemById'
         '404':
           $ref: '#/components/responses/recordNotFound'
-        deletedItem:
-          $ref: '#/components/responses/deletedItem'
 
 components:
   securitySchemes:
@@ -262,6 +244,9 @@ components:
           - granule
           - collection
         type: string
+      examples:
+        deleted item:
+          summary: deleted ex - getRawItemById
     metadataUUID:
       description: The UUID associated with this record
       in: path
@@ -347,38 +332,7 @@ components:
                   detail:
                     type: string
                     example: "No input exists for collection with id [9a0fe560-f1f1-424d-ad9f-7b1e2b76514] from source [comet]"
-    deletedItem:
-      description: Successful operations but previously flagged as `delete` record will return a response body with
-      content:
-        application/json:
-          schema:
-            title: record found but flag as removed
-            type: object
-            properties:
-              links:
-                properties:
-                  self:
-                    format: uri
-                    type: string
-              data:
-                properties:
-                  attributes:
-                    properties:
-                      type:
-                        type: string
-                        example: "collection"
-                      content:
-                        type: string
-                        example: "<gmi:MI_Metadata xmlns:gmi>"
-                      contentType:
-                        type: string
-                        example: "application/xml"
-                      method:
-                        type: string
-                        example: "DELETE"
-                      sourtce:
-                        type: string
-                        example: "comet"
+
   schemas:
     parsedInventoryItem:
       properties:
@@ -399,7 +353,7 @@ components:
                 type:
                   $ref: '#/components/schemas/source'
                 analysis:
-                  $ref: '#/components/schemas/Analysis'
+                  $ref: 'schema-definitions.json'
                 discovery:
                   $ref: '#/components/schemas/Discovery'
                 publishing:
@@ -448,14 +402,14 @@ components:
                   type: string
                   example: "comet"
             id:
-              type: string
-              example: "1234"
+              $ref: '#/components/schemas/id'
             types:
               $ref: '#/components/schemas/source'
-            required:
-              - id
-              - type
-              - attributes
+          required:
+            - id
+            - type
+            - attributes
+          type: object
     source:
       enum:
         - granule
@@ -530,16 +484,6 @@ components:
                 - exists
               type: object
           type: object
-          identification: {
-            fileIdentifierExists: true,
-            fileIdentifierString: "gov.noaa.ngdc.mgg.dem:728",
-            doiExists: false,
-            doiString: null,
-            parentIdentifierExists: false,
-            parentIdentifierString: null,
-            hierarchyLevelNameExists: false,
-            matchesIdentifiers: true
-          }
         spatialBounding:
           additionalProperties: false
           description: Assessment of the spatial bounding in the metadata.
@@ -1190,6 +1134,3 @@ components:
         until:
           type: integer
           example: 9223372036854775807
-
-
-
