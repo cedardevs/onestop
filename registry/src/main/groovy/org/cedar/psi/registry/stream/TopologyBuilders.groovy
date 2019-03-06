@@ -4,16 +4,12 @@ import groovy.util.logging.Slf4j
 import org.apache.kafka.common.serialization.Serdes
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.Topology
-import org.apache.kafka.streams.kstream.KStream
-import org.apache.kafka.streams.kstream.KTable
-import org.apache.kafka.streams.kstream.Materialized
-import org.apache.kafka.streams.kstream.ValueTransformerSupplier
+import org.apache.kafka.streams.kstream.*
 import org.apache.kafka.streams.state.Stores
 import org.cedar.psi.common.constants.Topics
 import org.cedar.schemas.avro.psi.Input
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.psi.RecordType
-
 
 @Slf4j
 class TopologyBuilders {
@@ -52,10 +48,13 @@ class TopologyBuilders {
               Topics.publishKeyStore(type)), Serdes.String(), Serdes.Long()).withLoggingEnabled([:]))
 
       // re-published items go back through the parsed topic
-      def publisher = new DelayedPublisherTransformer(Topics.publishTimeStore(type), Topics.publishKeyStore(type), Topics.parsedStore(type), publishInterval)
+      def publisherSupplier = {
+        return new DelayedPublisherTransformer(Topics.publishTimeStore(type), Topics.publishKeyStore(type), Topics.parsedStore(type), publishInterval)
+      } as TransformerSupplier
+
       parsedTable
           .toStream()
-          .transform({ -> publisher }, Topics.publishTimeStore(type), Topics.publishKeyStore(type), Topics.parsedStore(type))
+          .transform(publisherSupplier, Topics.publishTimeStore(type), Topics.publishKeyStore(type), Topics.parsedStore(type))
           .to(Topics.parsedTopic(type))
     }
 
