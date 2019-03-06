@@ -1,0 +1,1195 @@
+openapi: "3.0.2"
+info:
+  title: "Inventory manager API"
+  description: "This file covers the `current` endpoint for the Inventory Manager API. <br/><br/> **Note**: For creating, modifing and removing a record, you must select at least one parameter. Calling the API by `ID` and `source` parameter will provide the most precise results."
+  version: "0.2.0"
+  termsOfService: ""
+  contact:
+    name: "Inventory manager API"
+    email: "cedar.cires@colorado.edu"
+  license:
+    name: GNU GPL
+    url: 'https://www.gnu.org/licenses/gpl-2.0.en.html'
+servers:
+  - url: http://localhost
+    description: local server
+  - url: https://sciapps.colorado.edu
+    description: development server
+  - url: https://not.deployed.yet
+    description: Production server (need to be updated to the fed prod server when available)
+  - url: https://not.inplace.yet
+    description: cloud server (need to be updated to the cloud server when available)
+security:
+  - app_id: []
+externalDocs:
+  description: API Documentation (add the uri for the docs)
+  url: https://sciapps.colorado.edu/registry/api
+paths:
+  /registry/metadata/{type}:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+    post:
+      tags:
+        - Create or Replace record
+      summary: "Create or replace a metadata record from an unspecified source"
+      description: "Create a collection or granule record with unspecified source will be flag as `Unknow` source and also random UUID will be assign by the application. <br/><br/>**Note**: For your record make sure you hold on to the assign UUID."
+      operationId: createRecord
+      externalDocs:
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    put:
+      tags:
+        - Create or Replace record
+      summary: "Create or replace a metadata record from an unspecified source"
+      description: "Create a collection or granule record with unspecified source will be flag as `Unknow` source and also random UUID will be assign by the application. <br/><br/>**Note**: For your record make sure you hold on to the assign UUID."
+      operationId: createReplaceRecord
+      externalDocs:
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+  /registry/metadata/{type}/{id}:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataUUID'
+    post:
+      tags:
+        - Create or Replace record
+      summary: "Create a metadata record from an unspecified source with provided id"
+      description:  "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      operationId: createRecordById
+      externalDocs:
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    put:
+      tags:
+        - Create or Replace record
+      summary: "Create or replace a metadata record from an unspecified source with provided id"
+      description: "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      operationId: createReplaceRecordById
+      externalDocs:
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    patch:
+      tags:
+        - Create or Modify record
+      summary: "Create or modify a metadata record from an unspecified source with provided id"
+      description: "Note: Creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      operationId: createModifyRecordById
+      externalDocs:
+      requestBody:
+        $ref: '#/components/requestBodies/patchBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    delete:
+      tags:
+        - Remove record
+      summary: "Request to remove record with unspecified source"
+      description: "Note: Requesting a resource to be removed only removes the downstream processed/parsed data, but the actual input is flagged as `delete`"
+      operationId: removedRecord
+      externalDocs:
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    get:
+      tags:
+        - Retrieve raw record
+      summary: "Retrieve raw metadata record by id"
+      operationId: showRecordByUUID
+      responses:
+        '200':
+          $ref: '#/components/responses/getRawItemById'
+        '404':
+          $ref: '#/components/responses/recordNotFound'
+        deletedItem:
+          $ref: '#/components/responses/deletedItem'
+  /registry/metadata/{type}/{source}/{id}:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataSource'
+      - $ref: '#/components/parameters/metadataUUID'
+    post:
+      tags:
+        - Create or Replace record
+      summary: "Create or replace a metadata record with specified source and provided id"
+      description:  "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      operationId: createRecordFromSourceWithUUID
+      externalDocs:
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    put:
+      tags:
+        - Create or Replace record
+      summary: "Create or replace a metadata record with specified source and provided id"
+      description: "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      operationId: createReplaceRecordFromSourceWithUUID
+      externalDocs:
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    patch:
+      tags:
+        - Create or Modify record
+      summary: "Create or modify a metadata record with specified source and provided id"
+      description: "Note: Creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      operationId: createModifyRecordFromSourceWithUUID
+      externalDocs:
+      requestBody:
+        $ref: '#/components/requestBodies/patchBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    delete:
+      tags:
+        - Remove record
+      summary: "Request that a resource be removed"
+      description: "Note: Requesting a resource to be removed only removes the downstream processed/parsed data, but the actual input is flagged as `delete`"
+      operationId: removedRecordFromSourceWithUUID
+      externalDocs:
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    get:
+      tags:
+        - Retrieve raw record
+      summary: "Retrieve raw metadata record by source and id"
+      operationId: showRecordByUUIDAndSource
+      responses:
+        '200':
+          $ref: '#/components/responses/getRawItemById'
+        '404':
+          $ref: '#/components/responses/recordNotFound'
+        deletedItem:
+          $ref: '#/components/responses/deletedItem'
+
+  /registry/metadata/{type}/{id}/parsed:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataSource'
+      - $ref: '#/components/parameters/metadataUUID'
+    get:
+      tags:
+        - Retrieve parsed record
+      summary: "Retrieve parsed metadata record by source and id"
+      operationId: showParsedRecordByUUID
+      responses:
+        '200':
+          $ref: '#/components/responses/getParsedItemById'
+        '404':
+          $ref: '#/components/responses/recordNotFound'
+        deletedItem:
+          $ref: '#/components/responses/deletedItem'
+
+  /registry/metadata/{type}/{source}/{id}/parsed:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataSource'
+      - $ref: '#/components/parameters/metadataUUID'
+    get:
+      tags:
+        - Retrieve parsed record
+      summary: "Retrieve parsed metadata record by source and id"
+      operationId: showParsedRecordByUUIDAndSource
+      responses:
+        '200':
+          $ref: '#/components/responses/getParsedItemById'
+        '404':
+          $ref: '#/components/responses/recordNotFound'
+        deletedItem:
+          $ref: '#/components/responses/deletedItem'
+
+components:
+  securitySchemes:
+    app_id:
+      type: apiKey
+      description: API key to authorize requests. If you don't have a key, use `foamcat4thewin!`.
+      name: admin
+      in: query
+  parameters:
+    metadataSource:
+      name: source
+      in: path
+      description: The source that generated this metadata record
+      required: true
+      schema:
+        enum:
+          - comet
+          - common-ingest
+        type: string
+    metadataType:
+      description: The type of metadata i.e. granule or collection.
+      in: path
+      name: type
+      required: true
+      schema:
+        enum:
+          - granule
+          - collection
+        type: string
+    metadataUUID:
+      description: The UUID associated with this record
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+  requestBodies:
+    postBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/defaultJsonPostBody'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/isoXmlDocument'
+      description: Either an ISO 19115 XML document or json
+      required: true
+    patchBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/defaultJsonPostBody'
+      description: Json
+      required: true
+  responses:
+    createItem:
+      description: Successful response contains metadata record id and type
+      content:
+        application/json:
+          schema:
+            title: record created
+            type: object
+            properties:
+              id:
+                type: string
+                description: Record uuid
+              type:
+                type: string
+                description: Type of record
+    error:
+      description: Unsuccessful operations will return a response body with
+      content:
+        text/plain:
+          schema:
+            title: Record not found
+            type: string
+            example: status 404 - Not found
+    getRawItemById:
+      description: Successful operations will return
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/rawInventoryItem'
+    getParsedItemById:
+      description: Successful operations will return
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/parsedInventoryItem'
+    recordNotFound:
+      description: Unsuccessful operations will return a response body with
+      content:
+        application/json:
+          schema:
+            title: record not found
+            type: object
+            properties:
+              link:
+                properties:
+                  self:
+                    format: uri
+                    type: string
+                    example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56"
+              errors:
+                properties:
+                  status:
+                    type: string
+                    example: "404"
+                  title:
+                    type: string
+                    example: "404 NOT_FOUND"
+                  detail:
+                    type: string
+                    example: "No input exists for collection with id [9a0fe560-f1f1-424d-ad9f-7b1e2b76514] from source [comet]"
+    deletedItem:
+      description: Successful operations but previously flagged as `delete` record will return a response body with
+      content:
+        application/json:
+          schema:
+            title: record found but flag as removed
+            type: object
+            properties:
+              links:
+                properties:
+                  self:
+                    format: uri
+                    type: string
+              data:
+                properties:
+                  attributes:
+                    properties:
+                      type:
+                        type: string
+                        example: "collection"
+                      content:
+                        type: string
+                        example: "<gmi:MI_Metadata xmlns:gmi>"
+                      contentType:
+                        type: string
+                        example: "application/xml"
+                      method:
+                        type: string
+                        example: "DELETE"
+                      sourtce:
+                        type: string
+                        example: "comet"
+  schemas:
+    parsedInventoryItem:
+      properties:
+        links:
+          properties:
+            parsed:
+              format: uri
+              type: string
+              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56/parsed"
+            self:
+              format: uri
+              type: string
+              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56"
+        data:
+          properties:
+            attributes:
+              properties:
+                type:
+                  $ref: '#/components/schemas/source'
+                analysis:
+                  $ref: '#/components/schemas/Analysis'
+                discovery:
+                  $ref: '#/components/schemas/Discovery'
+                publishing:
+                  $ref: '#/components/schemas/Publishing'
+                error:
+                  type: array
+                  example: []
+            id:
+              type: string
+              example: "1234"
+            type:
+              $ref: '#/components/schemas/source'
+          required:
+            - id
+            - type
+            - attributes
+          type: object
+    rawInventoryItem:
+      properties:
+        links:
+          properties:
+            parsed:
+              format: uri
+              type: string
+              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56/parsed"
+            self:
+              format: uri
+              type: string
+              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56"
+        data:
+          properties:
+            attributes:
+              properties:
+                type:
+                  $ref: '#/components/schemas/source'
+                content:
+                  type: string
+                  example: "<gmi:MI_Metadata xmlns:gmi ...>"
+                contentType:
+                  type: string
+                  example: "application/xml"
+                method:
+                  type: string
+                  example: "PUT"
+                source:
+                  type: string
+                  example: "comet"
+            id:
+              type: string
+              example: "1234"
+            types:
+              $ref: '#/components/schemas/source'
+            required:
+              - id
+              - type
+              - attributes
+    source:
+      enum:
+        - granule
+        - collection
+      type: string
+
+    Analysis:
+      additionalProperties: false
+      properties:
+        dataAccess:
+          additionalProperties: false
+          description: Assessment of the data access elements in the metadata.
+          properties:
+            exists:
+              type: boolean
+          required:
+            - exists
+          type: object
+        description:
+          additionalProperties: false
+          description: Assessment of the description in the metadata.
+          properties:
+            descriptioncharacters:
+              type: integer
+            exists:
+              type: boolean
+          required:
+            - exists
+            - characters
+          type: object
+        identification:
+          additionalProperties: false
+          description: Assessment of the identifying elements of the metadata.
+          properties:
+            doi:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+              required:
+                - exists
+              type: object
+            fileIdentifier:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+              required:
+                - exists
+              type: object
+            hierarchyLevelName:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+                matchesIdentifiers:
+                  description: >-
+                    Resolves to true if 'granule' specified as hierarchy level
+                    and both fileId & parentId provided OR if no hierarchy level
+                    specified.
+                  type: boolean
+              required:
+                - exists
+                - matchesIdentifiers
+              type: object
+            parentIdentifier:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+              required:
+                - exists
+              type: object
+          type: object
+          identification: {
+            fileIdentifierExists: true,
+            fileIdentifierString: "gov.noaa.ngdc.mgg.dem:728",
+            doiExists: false,
+            doiString: null,
+            parentIdentifierExists: false,
+            parentIdentifierString: null,
+            hierarchyLevelNameExists: false,
+            matchesIdentifiers: true
+          }
+        spatialBounding:
+          additionalProperties: false
+          description: Assessment of the spatial bounding in the metadata.
+          properties:
+            exists:
+              type: boolean
+          required:
+            - exists
+          type: object
+        temporalBounding:
+          additionalProperties: false
+          description: Assessment of the temporal bounding in the metadata.
+          properties:
+            beginDate:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+                valid:
+                  type: boolean
+              required:
+                - exists
+                - valid
+              type: object
+            endDate:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+                valid:
+                  type: boolean
+              required:
+                - exists
+                - valid
+              type: object
+            instant:
+              additionalProperties: false
+              properties:
+                exists:
+                  type: boolean
+                valid:
+                  type: boolean
+              required:
+                - exists
+                - valid
+              type: object
+          required:
+            - beginDate
+            - endDate
+            - instant
+          type: object
+        thumbnail:
+          additionalProperties: false
+          description: Assessment of the thumbnail information in the metadata.
+          properties:
+            exists:
+              type: boolean
+          required:
+            - exists
+          type: object
+        titles:
+          additionalProperties: false
+          description: Assessment of the titles in the metadata.
+          properties:
+            alternateTitle:
+              additionalProperties: false
+              properties:
+                characters:
+                  type: integer
+                exists:
+                  type: boolean
+              required:
+                - exists
+                - characters
+              type: object
+            title:
+              additionalProperties: false
+              properties:
+                characters:
+                  type: integer
+                exists:
+                  type: boolean
+              required:
+                - exists
+                - characters
+              type: object
+          required:
+            - title
+            - alternateTitle
+          type: object
+      type: object
+    Discovery:
+      additionalProperties: false
+      properties:
+        accessFeeStatement:
+          type: string
+        accessionValues:
+          items:
+            type: string
+          type: array
+        acquisitionInstruments:
+          items:
+            $ref: '#/components/schemas/instrument'
+          type: array
+        acquisitionOperations:
+          items:
+            $ref: '#/components/schemas/operation'
+          type: array
+        acquisitionPlatforms:
+          items:
+            $ref: '#/components/schemas/platform'
+          type: array
+        alternateTitle:
+          type: string
+        citeAsStatements:
+          items:
+            type: string
+          type: array
+        contacts:
+          items:
+            $ref: '#/components/schemas/responsibleParty'
+          type: array
+        creationDate:
+          type: string
+        creators:
+          items:
+            $ref: '#/components/schemas/responsibleParty'
+          type: array
+        credit:
+          type: string
+        crossReferences:
+          items:
+            $ref: '#/components/schemas/reference'
+          type: array
+        dataFormats:
+          items:
+            $ref: '#/components/schemas/dataFormat'
+          type: array
+        description:
+          type: string
+        doi:
+          type: string
+        dsmmAccessibility:
+          type: integer
+        dsmmAverage:
+          description: >-
+            Calculated mean average of individual DSMM scores for Accessibility,
+            Data Integrity, Data Quality Assessment, Data Quality Assurance,
+            Data Quality Control Monitoring, Preservability, Production
+            Sustainability, Transparency Traceability, and Usability.
+          type: number
+        dsmmDataIntegrity:
+          type: integer
+        dsmmDataQualityAssessment:
+          type: integer
+        dsmmDataQualityAssurance:
+          type: integer
+        dsmmDataQualityControlMonitoring:
+          type: integer
+        dsmmPreservability:
+          type: integer
+        dsmmProductionSustainability:
+          type: integer
+        dsmmTransparencyTraceability:
+          type: integer
+        dsmmUsability:
+          type: integer
+        edition:
+          type: string
+        fileIdentifier:
+          type: string
+        gcmdDataCenters:
+          items:
+            type: string
+          type: array
+        gcmdHorizontalResolution:
+          items:
+            type: string
+          type: array
+        gcmdInstruments:
+          items:
+            type: string
+          type: array
+        gcmdLocations:
+          items:
+            type: string
+          type: array
+        gcmdPlatforms:
+          items:
+            type: string
+          type: array
+        gcmdProjects:
+          items:
+            type: string
+          type: array
+        gcmdScience:
+          items:
+            type: string
+          type: array
+        gcmdScienceServices:
+          items:
+            type: string
+          type: array
+        gcmdTemporalResolution:
+          items:
+            type: string
+          type: array
+        gcmdVerticalResolution:
+          items:
+            type: string
+          type: array
+        hierarchyLevelName:
+          type: string
+        isGlobal:
+          type: boolean
+        keywords:
+          items:
+            $ref: '#/components/schemas/keywordsElement'
+          type: array
+        largerWorks:
+          items:
+            $ref: '#/components/schemas/reference'
+          type: array
+        legalConstraints:
+          items:
+            type: string
+          type: array
+        links:
+          items:
+            $ref: '#/components/schemas/link'
+          type: array
+        orderingInstructions:
+          type: string
+        parentIdentifier:
+          type: string
+        presentationForm:
+          type: string
+        publicationDate:
+          type: string
+        publishers:
+          items:
+            $ref: '#/components/schemas/responsibleParty'
+          type: array
+        purpose:
+          type: string
+        revisionDate:
+          type: string
+        services:
+          $ref: "#/components/schemas/services"
+        spatialBounding:
+          $ref: '#/components/schemas/Geometry'
+        status:
+          type: string
+        temporalBounding:
+          additionalProperties: false
+          properties:
+            beginDate:
+              type: string
+            beginIndeterminate:
+              type: string
+            beginYear:
+              type: integer
+            description:
+              type: string
+            endDate:
+              type: string
+            endIndeterminate:
+              type: string
+            endYear:
+              type: integer
+            instant:
+              type: string
+            instantIndeterminate:
+              type: string
+            invalidDates:
+              additionalProperties: false
+              properties:
+                begin:
+                  type: boolean
+                end:
+                  type: boolean
+                instant:
+                  type: boolean
+              required:
+                - begin
+                - end
+                - instant
+              type: object
+          required:
+            - beginDate
+            - beginIndeterminate
+            - beginYear
+            - endDate
+            - endIndeterminate
+            - endYear
+            - instant
+            - instantIndeterminate
+            - description
+          type: object
+        thumbnail:
+          type: string
+        thumbnailDescription:
+          type: string
+        title:
+          type: string
+        topicCategories:
+          items:
+            type: string
+          type: array
+        updateFrequency:
+          type: string
+        useLimitation:
+          type: string
+      type: object
+    Error:
+      properties:
+        link:
+          properties:
+            self:
+              format: uri
+              type: string
+        errors:
+          properties:
+            status:
+              type: string
+            title:
+              type: string
+            detail:
+              type: string
+    Geometry:
+      description: One geometry as defined by GeoJSON
+      oneOf:
+        - $ref: '#/components/schemas/Point'
+        - $ref: '#/components/schemas/MultiPoint'
+        - $ref: '#/components/schemas/LineString'
+        - $ref: '#/components/schemas/MultiLineString'
+        - $ref: '#/components/schemas/Polygon'
+        - $ref: '#/components/schemas/MultiPolygon'
+    Identifiers:
+      type: object
+    individualName:
+      type: string
+    Input:
+      additionalProperties: false
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+        type:
+          $ref: '#/components/schemas/source'
+        content:
+          type: string
+        contentType:
+          enum:
+            - application/xml
+            - application/json
+        method:
+          enum:
+            - POST
+            - PUT
+        source:
+          enum:
+            - class
+            - comet
+            - common-ingest
+      required:
+        - id
+        - type
+        - content
+        - contentType
+        - method
+        - source
+      type: object
+
+    LineString:
+      properties:
+        coordinates:
+          $ref: '#/components/schemas/lineString'
+        type:
+          enum:
+            - LineString
+      required:
+        - type
+        - coordinates
+    MultiLineString:
+      properties:
+        coordinates:
+          items:
+            $ref: '#/components/schemas/lineString'
+          type: array
+        type:
+          enum:
+            - MultiLineString
+      required:
+        - type
+        - coordinates
+    MultiPoint:
+      properties:
+        coordinates:
+          $ref: '#/components/schemas/positionArray'
+        type:
+          enum:
+            - MultiPoint
+      required:
+        - type
+        - coordinates
+    MultiPolygon:
+      properties:
+        coordinates:
+          items:
+            $ref: '#/components/schemas/polygon'
+          type: array
+        type:
+          enum:
+            - MultiPolygon
+      required:
+        - type
+        - coordinates
+    Point:
+      properties:
+        coordinates:
+          $ref: '#/components/schemas/position'
+        type:
+          enum:
+            - Point
+      required:
+        - type
+        - coordinates
+      type: object
+    Polygon:
+      properties:
+        coordinates:
+          $ref: '#/components/schemas/polygon'
+        type:
+          enum:
+            - Polygon
+      required:
+        - type
+        - coordinates
+    dataFormat:
+      additionalProperties: false
+      properties:
+        name:
+          type: string
+        version:
+          type: string
+      required:
+        - name
+        - version
+      type: object
+    defaultJsonPostBody:
+      type: object
+    id:
+      example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      format: uuid
+      type: string
+    instrument:
+      additionalProperties: false
+      properties:
+        instrumentDescription:
+          type: string
+        instrumentIdentifier:
+          type: string
+        instrumentType:
+          type: string
+      required:
+        - instrumentIdentifier
+        - instrumentType
+        - instrumentDescription
+      type: object
+    isoXmlDocument:
+      type: object
+    keywordsElement:
+      additionalProperties: false
+      properties:
+        namespace:
+          type: string
+        type:
+          type: string
+        values:
+          items:
+            type: string
+          type: array
+      required:
+        - values
+        - type
+        - namespace
+      type: object
+    latPos:
+      maximum: 90
+      minimum: -90
+      type: number
+    lineString:
+      allOf:
+        - $ref: '#/components/schemas/positionArray'
+        - minItems: 2
+      description: An array of two or more positions
+    linearRing:
+      allOf:
+        - $ref: '#/components/schemas/positionArray'
+        - minItems: 4
+      description: An array of four positions where the first equals the last
+    link:
+      additionalProperties: false
+      properties:
+        linkDescription:
+          type: string
+        linkFunction:
+          type: string
+        linkName:
+          type: string
+        linkProtocol:
+          type: string
+        linkUrl:
+          type: string
+      required:
+        - linkName
+        - linkProtocol
+        - linkUrl
+        - linkDescription
+        - linkFunction
+      type: object
+    longPos:
+      maximum: 360
+      minimum: -360
+      type: number
+    operation:
+      additionalProperties: false
+      properties:
+        operationDescription:
+          type: string
+        operationIdentifier:
+          type: string
+        operationStatus:
+          type: string
+        operationType:
+          type: string
+      required:
+        - operationDescription
+        - operationIdentifier
+        - operationStatus
+        - operationType
+      type: object
+    organizationName:
+      type: string
+    platform:
+      additionalProperties: false
+      properties:
+        platformDescription:
+          type: string
+        platformIdentifier:
+          type: string
+        platformSponsor:
+          items:
+            type: string
+          type: array
+      required:
+        - platformIdentifier
+        - platformDescription
+        - platformSponsor
+      type: object
+    polygon:
+      description: An array of linear rings
+      items:
+        $ref: '#/components/schemas/linearRing'
+      type: array
+    position:
+      description: A single position
+      items:
+        anyOf:
+          - $ref: '#/components/schemas/latPos'
+          - $ref: '#/components/schemas/longPos'
+      maxItems: 2
+      minItems: 2
+      type: array
+    positionArray:
+      description: An array of positions
+      items:
+        $ref: '#/components/schemas/position'
+      type: array
+    reference:
+      additionalProperties: false
+      properties:
+        date:
+          type: string
+        links:
+          items:
+            $ref: '#/components/schemas/link'
+          type: array
+        title:
+          type: string
+      required:
+        - title
+        - date
+        - links
+      type: object
+    responsibleParty:
+      additionalProperties: false
+      properties:
+        email:
+          type: string
+        individualName:
+          type: string
+        organizationName:
+          type: string
+        phone:
+          type: string
+        positionName:
+          type: string
+        role:
+          type: string
+      required:
+        - individualName
+        - organizationName
+        - positionName
+        - role
+        - email
+        - phone
+      type: object
+    services:
+      type: object
+      properties:
+        title:
+          type: string
+        alternateTitle:
+          type: string
+        abstract:
+          type: string
+        date:
+          type: string
+        dateType:
+          type: string
+        pointOfContact:
+          type: array
+          items:
+            anyOf:
+              - $ref: "#/components/schemas/individualName"
+              - $ref: "#/components/schemas/organizationName"
+        operations:
+          type: array
+          items:
+            type: object
+    Publishing:
+      type: object
+      properties:
+        isPrivate:
+          type: boolean
+          example: false,
+        until:
+          type: integer
+          example: 9223372036854775807
+
+
+
