@@ -248,12 +248,12 @@ class Analyzers {
     def modifiedDate
     switch (parsedDate) {
       case Year:
-        modifiedDate = start ? parsedDate.atMonth(1).atDay(1).atTime(0, 0, 0) : parsedDate.atMonth(12).atEndOfMonth().atTime(23, 59, 59)
+        modifiedDate = start ? parsedDate.atMonth(1).atDay(1).atStartOfDay() : parsedDate.atMonth(12).atEndOfMonth().atTime(23, 59, 59)
         modifiedDate = modifiedDate.atZone(ZoneOffset.UTC)
         break
 
       case LocalDate:
-        modifiedDate = start ? parsedDate.atTime(0, 0, 0) : parsedDate.atTime(23, 59, 59)
+        modifiedDate = start ? parsedDate.atStartOfDay() : parsedDate.atTime(23, 59, 59)
         modifiedDate = modifiedDate.atZone(ZoneOffset.UTC)
         break
 
