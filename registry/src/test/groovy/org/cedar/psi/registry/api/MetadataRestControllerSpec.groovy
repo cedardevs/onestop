@@ -176,7 +176,6 @@ class MetadataRestControllerSpec extends Specification {
     result.data == null
     result.errors instanceof List
     result.errors.size() == 2
-    mockResponse.status == 500
   }
 
 
