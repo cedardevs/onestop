@@ -108,7 +108,7 @@ class InventoryManagerToOneStopUtil {
     }).collect({AvroUtils.avroToMap(it, true)})
 
     keywords.each { group ->
-      def it = group.namespace.toLowerCase() ?: null
+      def it = group.namespace.toLowerCase() ?: ""
       def keywordsInGroup = group.values ?: null
       if (it.contains('gcmd') || it.contains('global change master directory')) {
         switch (it) {
