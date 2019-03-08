@@ -11,13 +11,17 @@ class ManagerConfig implements Map<String, String> {
   static final String SCHEMA_REGISTRY_URL_CONFIG = 'schema.registry.url'
   static final String SCHEMA_REGISTRY_URL_DEFAULT = 'http://localhost:8081'
 
+  static final String COMPRESSION_TYPE_CONFIG = 'kafka.compression.type'
+  static final String COMPRESSION_TYPE_DEFAULT = 'gzip'
+
   @Delegate
   private Map<String, String> internal
 
   ManagerConfig() {
     internal = [
         (BOOTSTRAP_SERVERS_CONFIG): BOOTSTRAP_SERVERS_DEFAULT,
-        (SCHEMA_REGISTRY_URL_CONFIG): SCHEMA_REGISTRY_URL_DEFAULT
+        (SCHEMA_REGISTRY_URL_CONFIG): SCHEMA_REGISTRY_URL_DEFAULT,
+        (COMPRESSION_TYPE_CONFIG): COMPRESSION_TYPE_DEFAULT
     ]
   }
 
@@ -31,5 +35,6 @@ class ManagerConfig implements Map<String, String> {
 
   String bootstrapServers() { internal[BOOTSTRAP_SERVERS_CONFIG] }
   String schemaRegistryUrl() { internal[SCHEMA_REGISTRY_URL_CONFIG] }
+  String compressionType() { internal[COMPRESSION_TYPE_CONFIG] }
 
 }

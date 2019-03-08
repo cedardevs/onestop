@@ -1,5 +1,9 @@
 # set by kafka-spring-test's @EmbeddedKafka
-kafka.bootstrap.servers: ${spring.embedded.kafka.brokers}
+kafka:
+  compression:
+    type: "gzip"
+  bootstrap:
+    servers: ${spring.embedded.kafka.brokers}
 
 schema.registry.url: http://localhost:8081
 
