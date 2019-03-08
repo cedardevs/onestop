@@ -1,10 +1,6 @@
 import React from 'react'
 import Select from 'react-select'
-import {
-  COLOR_GREEN,
-  COLOR_GREEN_LIGHT,
-  FilterColors,
-} from '../common/defaultStyles'
+import {FilterColors} from '../common/defaultStyles'
 
 const selectTheme = theme => {
   return {
@@ -16,8 +12,8 @@ const selectTheme = theme => {
       primary75: FilterColors.DARK,
       primary50: FilterColors.MEDIUM,
       primary25: FilterColors.LIGHT,
-      danger: '#2c833e',
-      dangerLight: COLOR_GREEN_LIGHT,
+      danger: '#277CB2',
+      dangerLight: '#277CB2',
     },
   }
 }
@@ -36,10 +32,22 @@ const placeholderStyle = styles => {
   }
 }
 
+const menuStyle = styles => {
+  return {
+    ...styles,
+    // node_modules/leaflet/dist/leaflet.css appears use a z-index as high as 1000,
+    // effectively, I've been able to overlap a map using zIndex > 400
+    // but there's a possibility that this wouldn't include all potential leaflet elements
+    // so I've opted for using 1000+1
+    zIndex: 1001,
+  }
+}
+
 const selectStyles = {
   control: cursorStyle,
   option: cursorStyle,
   placeholder: placeholderStyle,
+  menu: menuStyle,
 }
 
 const optionStyle = {
@@ -48,11 +56,11 @@ const optionStyle = {
   justifyContent: 'space-between',
 }
 const optionBadgeStyle = {
-  backgroundColor: '#2c833e',
+  backgroundColor: '#277CB2',
   borderRadius: '2em',
-  color: '#F9F9F9',
+  color: 'white',
   display: 'inline-block',
-  fontSize: 12,
+  padding: '0.618em',
   fontWeight: 'normal',
   lineHeight: '1',
   minWidth: 1,
@@ -98,8 +106,8 @@ export default class CartSelect extends React.Component {
           aria-expanded={isMenuOpen}
           theme={selectTheme}
           styles={selectStyles}
-          aria-labelledby={`cartDownloadOptionsLabel`}
-          placeholder={`Select download protocol and source...`}
+          aria-labelledby="cartDownloadOptionsLabel"
+          placeholder="Select file link type"
           defaultValue={defaultValue}
           options={options}
           formatOptionLabel={formatOptionLabel}

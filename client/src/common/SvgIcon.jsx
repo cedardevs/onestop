@@ -1,5 +1,10 @@
 import React from 'react'
 
+// from arrow-right.svg
+export const arrow_right = (
+  <path d="M1600 960q0 54-37 91l-651 651q-39 37-91 37-51 0-90-37l-75-75q-38-38-38-91t38-91l293-293h-704q-52 0-84.5-37.5t-32.5-90.5v-128q0-53 32.5-90.5t84.5-37.5h704l-293-294q-38-36-38-90t38-90l75-75q38-38 90-38 53 0 91 38l651 651q37 35 37 90z" />
+)
+
 // from video-camera.svg
 export const video_camera = (
   <path d="M1792 352v1088q0 42-39 59-13 5-25 5-27 0-45-19l-403-403v166q0 119-84.5 203.5t-203.5 84.5h-704q-119 0-203.5-84.5t-84.5-203.5v-704q0-119 84.5-203.5t203.5-84.5h704q119 0 203.5 84.5t84.5 203.5v165l403-402q18-19 45-19 12 0 25 5 39 17 39 59z" />
@@ -70,6 +75,11 @@ export const play_circle_o = (
   <path d="M1312 896q0 37-32 55l-544 320q-15 9-32 9-16 0-32-8-32-19-32-56v-640q0-37 32-56 33-18 64 1l544 320q32 18 32 55zm128 0q0-148-73-273t-198-198-273-73-273 73-198 198-73 273 73 273 198 198 273 73 273-73 198-198 73-273zm224 0q0 209-103 385.5t-279.5 279.5-385.5 103-385.5-103-279.5-279.5-103-385.5 103-385.5 279.5-279.5 385.5-103 385.5 103 279.5 279.5 103 385.5z" />
 )
 
+// from font-awesome cart-arrow-down.svg
+export const cart_arrow_down = (
+  <path d="M1344 704q0-26-19-45t-45-19-45 19l-147 146v-293q0-26-19-45t-45-19-45 19-19 45v293l-147-146q-19-19-45-19t-45 19-19 45 19 45l256 256q19 19 45 19t45-19l256-256q19-19 19-45zm-640 832q0 53-37.5 90.5t-90.5 37.5-90.5-37.5-37.5-90.5 37.5-90.5 90.5-37.5 90.5 37.5 37.5 90.5zm896 0q0 53-37.5 90.5t-90.5 37.5-90.5-37.5-37.5-90.5 37.5-90.5 90.5-37.5 90.5 37.5 37.5 90.5zm128-1088v512q0 24-16 42.5t-41 21.5l-1044 122q1 7 4.5 21.5t6 26.5 2.5 22q0 16-24 64h920q26 0 45 19t19 45-19 45-45 19h-1024q-26 0-45-19t-19-45q0-14 11-39.5t29.5-59.5 20.5-38l-177-823h-204q-26 0-45-19t-19-45 19-45 45-19h256q16 0 28.5 6.5t20 15.5 13 24.5 7.5 26.5 5.5 29.5 4.5 25.5h1201q26 0 45 19t19 45z" />
+)
+
 const sizeWithDefault = size => {
   return size ? size : '1em'
 }
@@ -96,7 +106,7 @@ export class SvgIcon extends React.Component {
   }
 
   render() {
-    const {size, verticalAlign, style, wrapperStyle} = this.props
+    const {size, verticalAlign, style, wrapperStyle, label} = this.props
     const actualSize = sizeWithDefault(size)
     const appliedStyle = {...styleSvg(size), ...style}
     const appliedWrapperStyle = {
@@ -104,7 +114,7 @@ export class SvgIcon extends React.Component {
       ...wrapperStyle,
     }
     return (
-      <span style={appliedWrapperStyle}>
+      <span style={appliedWrapperStyle} aria-label={label}>
         <svg
           focusable="false"
           style={appliedStyle}

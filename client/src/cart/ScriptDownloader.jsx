@@ -3,48 +3,65 @@ import CartSelect from './CartSelect'
 import FileSaver from 'file-saver'
 import Button from '../common/input/Button'
 import download from 'fa/download.svg'
-import {COLOR_GREEN, COLOR_GREEN_LIGHT} from '../common/defaultStyles'
 import _ from 'lodash'
 import moment from 'moment/moment'
 import FlexRow from '../common/FlexRow'
 import {granuleDownloadableLinks} from '../utils/cartUtils'
+import {info_circle, SvgIcon} from '../common/SvgIcon'
+import ScriptDownloaderInfo from './ScriptDownloaderInfo'
 
-const styleDownloadLabel = {
+const styleLinksButton = {
   fontSize: '1em',
   display: 'inline-flex',
   padding: '0.309em 0.618em 0.309em 0.309em',
   marginLeft: '0.618em',
+}
+
+const styleLinksButtonText = {
   whiteSpace: 'nowrap',
 }
 
-const styleWgetScriptButton = {
-  fontSize: '1em',
-  display: 'inline-flex',
-  padding: '0.309em 0.618em 0.309em 0.309em',
-  marginLeft: '0.618em',
-  background: '#2c833e',
-}
-
-const styleWgetScriptButtonText = {
-  whiteSpace: 'nowrap',
-}
-
-const styleWgetScriptButtonHover = {
-  background: `linear-gradient(#1e5b2b, #2c833e)`,
-}
-
-const styleWgetScriptButtonFocus = {
+const styleLinksButtonFocus = {
   outline: '2px dashed #5C87AC',
   outlineOffset: '.118em',
 }
 
-const styleWgetScriptButtonDisabled = {
+const styleLinksButtonDisabled = {
   fontStyle: 'italic',
 }
 
-const styleWgetScriptIcon = {
+const styleLinksIcon = {
   width: '1.618em',
   height: '1.618em',
+  marginRight: '0.309em',
+}
+
+const styleInfoButton = {
+  marginLeft: '0.309em',
+  padding: '0.309em 0.618em 0.309em 0.309em',
+  border: 0,
+  boxSizing: 'content-box',
+  background: 'none',
+  color: 'inherit',
+  font: 'inherit',
+  lineHeight: 'normal',
+  overflow: 'visible',
+  userSelect: 'none',
+  whiteSpace: 'nowrap',
+}
+
+const styleInfoButtonFocused = {
+  outline: '2px dashed #00002c',
+}
+
+const styleShowHideText = {
+  marginLeft: '0.309em',
+  textDecoration: 'underline',
+}
+
+const styleDownloadLabel = {
+  whiteSpace: 'nowrap',
+  alignSelf: 'center',
   marginRight: '0.309em',
 }
 
@@ -155,7 +172,7 @@ export default class ScriptDownloader extends React.Component {
       .replace(/[^a-z0-9_\-]/gi, '_')
       .toLowerCase()
     const fileDate = moment.utc().format('YYYY-MM-DDTHH-mm-ss[Z]')
-    const fileName = `onestop_wget_${fileLabelClean}_${fileDate}`
+    const fileName = `onestop_${fileLabelClean}_${fileDate}`
     FileSaver.saveAs(blob, fileName)
   }
 
@@ -217,6 +234,49 @@ export default class ScriptDownloader extends React.Component {
     })
   }
 
+  componentWillMount() {
+    this.setState({
+      showInfo: false,
+      focusingShowInfo: false,
+    })
+  }
+
+  handleShowInfo = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        showInfo: true,
+      }
+    })
+  }
+
+  handleHideInfo = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        showInfo: false,
+      }
+    })
+  }
+
+  handleShowInfoFocus = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingShowInfo: true,
+      }
+    })
+  }
+
+  handleShowInfoBlur = event => {
+    this.setState(prevState => {
+      return {
+        ...prevState,
+        focusingShowInfo: false,
+      }
+    })
+  }
+
   render() {
     // sources and protocol array is managed in React component state
     const {sourcesAndProtocols, valueSelected, menuOpen} = this.state
@@ -230,11 +290,21 @@ export default class ScriptDownloader extends React.Component {
       return null
     }
 
-    // granule download select menu for cart
+    const downloadLabel = (
+      <label
+        id="cartDownloadOptionsLabel"
+        key="cartDownloadOptionsLabel"
+        style={styleDownloadLabel}
+      >
+        Download Options:
+      </label>
+    )
+
+    // select menu for downloadable links file for cart
     const cartSelect = (
       <CartSelect
-        key="wgetScriptSelect"
-        style={{width: '100%'}}
+        key="linksSourceSelect"
+        style={{width: '100%', marginLeft: '0.309em'}}
         options={protocolOptGroups}
         onChange={this.handleProtocolSourceChange}
         onMenuOpen={this.handleOnMenuOpen}
@@ -243,34 +313,54 @@ export default class ScriptDownloader extends React.Component {
       />
     )
 
-    // granule download button
+    // file of granule links: download button
     const downloadButton = (
       <Button
-        key="wgetScriptButton"
-        style={styleWgetScriptButton}
-        styleHover={styleWgetScriptButtonHover}
-        styleFocus={styleWgetScriptButtonFocus}
-        title={'Download wget script'}
-        text={'Download wget script'}
-        styleText={styleWgetScriptButtonText}
+        key="linksDownloadButton"
+        style={styleLinksButton}
+        styleFocus={styleLinksButtonFocus}
+        title={'Download Links as Text File'}
+        text={'Links'}
+        styleText={styleLinksButtonText}
         icon={download}
-        styleIcon={styleWgetScriptIcon}
+        styleIcon={styleLinksIcon}
         onClick={this.downloadScript}
         disabled={!!!valueSelected}
-        styleDisabled={styleWgetScriptButtonDisabled}
+        styleDisabled={styleLinksButtonDisabled}
       />
     )
 
-    const downloadLabel = (
-      <label
-        id={`cartDownloadOptionsLabel`}
-        key={`cartDownloadOptionsLabel`}
-        style={styleDownloadLabel}
+    const styleInfoButtonMerged = {
+      ...styleInfoButton,
+      ...(this.state.focusingShowInfo ? styleInfoButtonFocused : {}),
+    }
+
+    const infoButton = (
+      <button
+        key="links-downloader-info-button"
+        aria-label="Links download information"
+        style={styleInfoButtonMerged}
+        aria-expanded={this.state.showInfo}
+        onClick={
+          this.state.showInfo ? this.handleHideInfo : this.handleShowInfo
+        }
+        onFocus={this.handleShowInfoFocus}
+        onBlur={this.handleShowInfoBlur}
       >
-        Download Options:
-      </label>
+        <SvgIcon path={info_circle} size="1em" />
+        <span style={styleShowHideText}>
+          {this.state.showInfo ? 'hide ' : 'show '}info
+        </span>
+      </button>
     )
 
-    return <FlexRow items={[ downloadLabel, cartSelect, downloadButton ]} />
+    return (
+      <div>
+        <FlexRow
+          items={[ downloadLabel, cartSelect, downloadButton, infoButton ]}
+        />
+        <ScriptDownloaderInfo show={this.state.showInfo} />
+      </div>
+    )
   }
 }

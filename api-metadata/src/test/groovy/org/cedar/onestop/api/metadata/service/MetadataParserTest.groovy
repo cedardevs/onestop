@@ -517,7 +517,7 @@ class MetadataParserTest extends Specification {
     temporalBounding == [
         beginDate           : null,
         beginIndeterminate  : null,
-        beginYear           : -617905000,
+        beginYear           : -100000001, // Edge case!
         endDate             : '-1601050',
         endIndeterminate    : null,
         endYear             : -1601050,
