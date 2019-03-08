@@ -76,6 +76,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/flattened-granule/**",
                 "/search/flattened-granule/**",
                 "/uiConfig",
+                "/sitemap.xml",
                 "/sitemap/**",
                 "/trending/**",
                 "/actuator/info"
