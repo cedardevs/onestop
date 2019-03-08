@@ -76,7 +76,7 @@ class StreamManager {
     streamsConfiguration.put(DEFAULT_VALUE_SERDE_CLASS_CONFIG, SpecificAvroSerde.class.name)
     streamsConfiguration.put(COMMIT_INTERVAL_MS_CONFIG, 500)
     streamsConfiguration.put(AUTO_OFFSET_RESET_CONFIG, "earliest")
-    streamsConfiguration.put(TopicConfig.COMPRESSION_TYPE_CONFIG, "zstd")
+    streamsConfiguration.put(TopicConfig.COMPRESSION_TYPE_CONFIG, "gzip")
     return streamsConfiguration
   }
 }
