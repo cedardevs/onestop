@@ -200,6 +200,20 @@ paths:
         '404':
           $ref: '#/components/responses/recordNotFound'
 
+  /registry/metadata/{type}/{id}/resurrection:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataSource'
+      - $ref: '#/components/parameters/metadataUUID'
+    get:
+      tags:
+        - Retrieve resurrection
+      summary: "Retrieve parsed metadata record by source and id"
+      operationId: showResurrectionByUUID
+      responses:
+        '200':
+          $ref: '#/components/responses/getResurrection'
+
   /registry/metadata/{type}/{source}/{id}/parsed:
     parameters:
       - $ref: '#/components/parameters/metadataType'
@@ -215,6 +229,19 @@ paths:
           $ref: '#/components/responses/getParsedItemById'
         '404':
           $ref: '#/components/responses/recordNotFound'
+  /registry/metadata/{type}/{source}/{id}/resurrection:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataSource'
+      - $ref: '#/components/parameters/metadataUUID'
+    get:
+      tags:
+        - Retrieve resurrection
+      summary: "Retrieve parsed metadata record by source and id"
+      operationId: showResurrectionByUUIDAndSource
+      responses:
+        '200':
+          $ref: '#/components/responses/getResurrection'
 
 components:
   securitySchemes:
@@ -307,6 +334,12 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/parsedInventoryItem'
+    getResurrection:
+      description: Successful operations will return
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/resurrectionItem'
     recordNotFound:
       description: Unsuccessful operations will return a response body with
       content:
@@ -353,7 +386,7 @@ components:
                 type:
                   $ref: '#/components/schemas/source'
                 analysis:
-                  $ref: 'schema-definitions.json'
+                  $ref: '#/components/schemas/Analysis'
                 discovery:
                   $ref: '#/components/schemas/Discovery'
                 publishing:
@@ -362,8 +395,7 @@ components:
                   type: array
                   example: []
             id:
-              type: string
-              example: "1234"
+              $ref: '#/components/schemas/id'
             type:
               $ref: '#/components/schemas/source'
           required:
@@ -410,6 +442,13 @@ components:
             - type
             - attributes
           type: object
+    resurrectionItem:
+      properties:
+        id:
+          $ref: '#/components/schemas/id'
+        types:
+          $ref: '#/components/schemas/source'
+      type: object
     source:
       enum:
         - granule
