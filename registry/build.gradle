@@ -13,6 +13,8 @@ configurations {
 
   integrationTestCompile.extendsFrom testCompile
   integrationTestRuntime.extendsFrom testRuntime
+  
+  schemaDefinitions
 }
 
 dependencies {
@@ -24,6 +26,8 @@ dependencies {
   compile('org.apache.kafka:kafka-clients:2.1.0')
   compile('io.confluent:kafka-streams-avro-serde:5.1.0')
   compile(project(':common'))
+  //configure  to unzip and copy schema definitions 
+  schemaDefinitions ('com.github.cedardevs:schemas:0.1.1')
 
   compileOnly('org.springframework.boot:spring-boot-starter-tomcat')
 
@@ -88,6 +92,21 @@ task sourceJar(type: Jar) {
   baseName = "${rootProject.name}-${project.name}"
   from "${projectDir}/src"
 }
+
+task extractSchemaDefinitions(type: Copy) {
+  dependsOn configurations.schemaDefinitions
+    from { // use of closure defers evaluation until execution time
+      configurations.schemaDefinitions.collect {
+        zipTree(it).matching{
+          include 'json/schema-definitions.json'
+        }
+      }
+    }
+
+  into "$buildDir/resources/main"
+}
+
+assemble.dependsOn(extractSchemaDefinitions)
 
 docker {
   additionalBuildArgs = [JAR_NAME: bootJar.outputs.files.singleFile.name]
