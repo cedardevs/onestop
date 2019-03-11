@@ -3,6 +3,7 @@ import Header from './Header'
 import {showHome} from '../actions/FlowActions'
 import {withRouter} from 'react-router'
 import {getUser, logoutUser} from '../actions/UserActions'
+import {FEATURE_CART} from '../utils/featureUtils'
 
 const mapStateToProps = state => {
   let authEnabled = false
@@ -20,9 +21,13 @@ const mapStateToProps = state => {
   const user = state.domain.user
   const dropdownAvailable =
     state.domain.config.headerDropdownMenuFeatureAvailable
+  const featuresEnabled = state.domain.config.featuresEnabled
+
+  const cartEnabled = featuresEnabled.includes(FEATURE_CART)
 
   return {
     headerDropdownMenuFeatureAvailable: dropdownAvailable,
+    cartEnabled: cartEnabled,
     authEnabled: authEnabled,
     user: authEnabled && user ? user : null,
     loginEndpoint: authEnabled && loginEndpoint ? loginEndpoint : null,

@@ -122,7 +122,7 @@ class SearchRequestParserServiceTest extends Specification {
     queryResult == expectedQuery
   }
 
-  def 'Datetime filter request generates expected elasticsearch query'() {
+  def 'Default datetime filter request generates expected elasticsearch query'() {
     given:
     def request = '{"filters":[{"type":"datetime","before":"2011-11-11", "after":"2010-10-10"}]}'
     def params = slurper.parseText(request)
@@ -133,13 +133,21 @@ class SearchRequestParserServiceTest extends Specification {
         bool: [
             must  : [:],
             filter: [
-                [range: [
-                    'beginDate': [lte: '2011-11-11']
-                ]],
-                [range: [
-                    'endDate': [gte: '2010-10-10']
-                ]]
-            ]]
+                [[bool: [
+                    must: [
+                        [ range: [ beginDate: [ lte: '2011-11-11' ]] ]
+                    ],
+                    should: [
+                        [ range: [ endDate: [ gte: '2010-10-10' ]] ],
+                        [ bool: [
+                            must_not: [
+                                [ exists: [ field: 'endDate' ] ]
+                            ]
+                        ]]
+                    ]
+                ]]]
+            ]
+        ]
     ]
 
     then:

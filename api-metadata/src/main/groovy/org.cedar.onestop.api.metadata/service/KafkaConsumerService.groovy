@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Profile
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
 
+import java.util.stream.Collectors
+
 @Slf4j
 @Service
 @Profile("kafka-ingest")
@@ -28,21 +30,18 @@ class KafkaConsumerService {
     // Update collections & granules
     log.info("consuming message from kafka topic")
     try {
-      List<Map> valuesIds = records.collect {
-        String id = it.key()
-        ParsedRecord record = it.value()
-        InventoryManagerToOneStopUtil.validateMessage(id, record) ?
-            [id: id, parsedRecord: record] as Map :
-            null
-        
+      def validRecords = records.stream().filter({
+        it != null && InventoryManagerToOneStopUtil.validateMessage(it.key(), it.value())
+      }).map({
+        [id: it.key(), parsedRecord: it.value()]
+      }).collect(Collectors.toList())
+      if (validRecords.size() > 0) {
+        metadataManagementService.loadParsedMetadata(validRecords)
       }
-      valuesIds.removeAll(Collections.singleton(null))
-      metadataManagementService.loadParsedMetadata(valuesIds)
-      
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       log.error("Unexpected error", e)
     }
-    
   }
 
 }

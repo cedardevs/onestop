@@ -1,7 +1,6 @@
 import React from 'react'
 import {Route, Switch} from 'react-router'
 
-import PropTypes from 'prop-types'
 import SearchFieldsContainer from '../search/SearchFieldsContainer'
 import Logo from './Logo'
 import HeaderLink from './HeaderLink'
@@ -12,8 +11,7 @@ import {boxShadow} from '../common/defaultStyles'
 import {fontFamilySerif} from '../utils/styleUtils'
 import FlexRow from '../common/FlexRow'
 
-import HeaderDropdownMenuContainer from './HeaderDropdownMenuContainer'
-import HeaderDropdownMenuButtonContainer from './HeaderDropdownMenuButtonContainer'
+import HeaderCartLinkContainer from './HeaderCartLinkContainer'
 
 const styleWrapper = {
   position: 'relative',
@@ -45,9 +43,9 @@ const styleUserWelcome = {
 
 const styleLinkList = {
   padding: 0,
-  margin: 0,
+  margin: '0 0.618em 0 0',
   listStyleType: 'none',
-  fontSize: '1.5em',
+  fontSize: '1.2em',
   display: 'inline-flex',
   justifyContent: 'center',
   flexWrap: 'wrap',
@@ -130,13 +128,14 @@ class Header extends React.Component {
 
   render() {
     const {
-      headerDropdownMenuFeatureAvailable,
       user,
       authEnabled,
+      cartEnabled,
       loginEndpoint,
       logoutEndpoint,
       logoutUser,
     } = this.props
+
     const {focusingSkipLink} = this.state
     const userEmail = user && user.info ? user.info.email : null
 
@@ -151,41 +150,36 @@ class Header extends React.Component {
       />
     ) : null
 
+    const userListItem = authEnabled ? (
+      <li style={styleLinkListItem(false, !cartEnabled)}>{userActionButton}</li>
+    ) : null
+
+    const cartListItem = cartEnabled ? (
+      <li style={styleLinkListItem(false, cartEnabled)}>
+        {cartEnabled ? <HeaderCartLinkContainer /> : null}
+      </li>
+    ) : null
+
     const welcomeUser = userEmail ? (
       <div style={styleUserWelcome} key="emailDisplay">
         Logged in as {userEmail}
       </div>
     ) : null
 
-    const headerDropDownMenuListItem = headerDropdownMenuFeatureAvailable ? (
-      <li style={styleLinkListItem(false, true)}>
-        <HeaderDropdownMenuButtonContainer />
-      </li>
-    ) : null
-
     const menuContent = (
       <ul style={styleLinkList}>
         <li style={styleLinkListItem(true, false)}>
-          <HeaderLink title="Home" to="/">
-            Home
+          <HeaderLink title="About" to="/about">
+            About
           </HeaderLink>
         </li>
-        <li style={styleLinkListItem(false, false)}>
-          <HeaderLink title="About Us" to="/about">
-            About Us
-          </HeaderLink>
-        </li>
-        <li style={styleLinkListItem(false, !authEnabled)}>
+        <li style={styleLinkListItem(false, !authEnabled && !cartEnabled)}>
           <HeaderLink title="Help" to="/help">
             Help
           </HeaderLink>
         </li>
-        <li
-          style={styleLinkListItem(false, !headerDropdownMenuFeatureAvailable)}
-        >
-          {userActionButton}
-        </li>
-        {headerDropDownMenuListItem}
+        {userListItem}
+        {cartListItem}
       </ul>
     )
 
@@ -248,7 +242,6 @@ class Header extends React.Component {
             ]}
           />
         </div>
-        <HeaderDropdownMenuContainer />
       </div>
     )
   }

@@ -92,7 +92,7 @@ class MetadataManagementService {
         loadedIndices << i
         
       } catch (Exception e) {
-        log.error("Load request failed: ${e}")
+        log.error("Load request failed: ${e}", e)
       }
     }
   

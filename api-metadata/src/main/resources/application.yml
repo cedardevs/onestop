@@ -7,7 +7,7 @@ spring.profiles.active: "securityenabled"
 server:
   port: 8098
   servlet:
-    context-path: /onestop/admin
+    context-path: /onestop-admin
 
 spring:
   application:
@@ -19,7 +19,7 @@ management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
 features.secure.upload: true
-features.sitemap: false
+features.sitemap: true
 
 etl:
   sitemap:

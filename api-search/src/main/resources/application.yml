@@ -1,7 +1,7 @@
 server:
   port: 8097
   servlet:
-    context-path: /onestop/api
+    context-path: /onestop-search
 
 spring:
   application:
@@ -41,7 +41,7 @@ logingov:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
-features.sitemap: false
+features.sitemap: true
 
 logging:
   level:
@@ -93,6 +93,6 @@ info.buildDate: ${buildDate}
 
 ui:
   auth:
-    loginEndpoint: "http://localhost:30000/onestop/api/login"
-    logoutEndpoint: "http://localhost:30000/onestop/api/logout"
-    userProfileEndpoint: "http://localhost:30000/onestop/api/login_profile"
+    loginEndpoint: "http://localhost:30000/onestop-search/login"
+    logoutEndpoint: "http://localhost:30000/onestop-search/logout"
+    userProfileEndpoint: "http://localhost:30000/onestop-search/login_profile"

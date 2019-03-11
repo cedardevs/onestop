@@ -26,26 +26,24 @@ const styleExpandableHeadingFocused = {
   outline: '2px dashed black',
 }
 
-const styleExpandableHeading = {
-  color: '#000',
-  justifyContent: 'space-between',
-  padding: '0.309em 0.618em',
+const styleExpandableHeading = open => {
+  return {
+    borderBottom: open ? '1px solid #EEE' : 'initial',
+    justifyContent: 'space-between',
+    padding: '0.618em',
+    color: 'black',
+  }
 }
 
-const styleTitle = {
-  fontFamily: fontFamilySerif(),
-  fontSize: '1.3em',
-  border: '.1em dashed transparent', // prevents resize when focus border is set
-  margin: '.259em',
-  padding: '.259em',
-  overflowWrap: 'break-word',
-  wordWrap: 'break-word',
-}
-
-const styleExpandableContent = {}
-
-const styleExpandableContentOpen = {
-  // borderTop: '2px dashed #222'
+const styleTitle = open => {
+  return {
+    fontFamily: fontFamilySerif(),
+    fontSize: '1em',
+    fontWeight: !open ? 'normal' : 'bold',
+    overflowWrap: 'break-word',
+    wordWrap: 'break-word',
+    margin: 0,
+  }
 }
 
 const styleSummary = {
@@ -53,7 +51,7 @@ const styleSummary = {
 }
 
 const styleDetail = {
-  padding: '1.618em',
+  padding: '0.618em',
 }
 
 const styleLeftRightFlexRow = {
@@ -73,7 +71,7 @@ const styleRight = {
 
 const styleSectionHeading = {
   fontFamily: fontFamilySerif(),
-  fontSize: '1.25em',
+  fontSize: '1em',
   marginTop: '1em',
   marginBottom: '0.25em',
   fontWeight: 'bold',
@@ -93,6 +91,7 @@ const stylePreviewMap = {
 const styleBadgeLink = {
   textDecoration: 'none',
   display: 'inline-flex',
+  paddingRight: '0.309em',
 }
 
 const styleBadgeLinkFocused = {
@@ -110,7 +109,6 @@ export default class CartItem extends React.Component {
     super(props)
     this.state = {expanded: false}
     this.props = props
-    const {deselectGranule} = this.props
   }
 
   handleExpandableToggle = event => {
@@ -178,7 +176,7 @@ export default class CartItem extends React.Component {
     const {itemId, item, handleExpandableToggle} = this.props
 
     const title = (
-      <h2 key={'cartItemTitle'} style={styleTitle}>
+      <h2 key={'cartItemTitle'} style={styleTitle(this.state.expanded)}>
         {item.title}
       </h2>
     )
@@ -191,7 +189,6 @@ export default class CartItem extends React.Component {
 
     const mapView = (
       <div aria-hidden={true}>
-        <h3 style={styleSectionHeadingTop}>Map:</h3>
         <div style={stylePreviewMap}>
           <MapThumbnail geometry={item.spatialBounding} interactive={true} />
         </div>
@@ -242,13 +239,12 @@ export default class CartItem extends React.Component {
         showArrow={true}
         arrowTextClosed={'show details'}
         arrowTextOpened={'hide details'}
+        styleArrowText={{fontSize: '0.8em'}}
         alignArrow={true}
         heading={summaryView}
         headingTitle={item.title}
-        styleHeading={styleExpandableHeading}
+        styleHeading={styleExpandableHeading(this.state.expanded)}
         content={detailView}
-        styleContent={styleExpandableContent}
-        styleContentOpen={styleExpandableContentOpen}
         value={itemId}
         onToggle={this.handleExpandableToggle}
         open={this.state.expanded}

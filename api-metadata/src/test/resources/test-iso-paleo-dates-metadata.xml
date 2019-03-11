@@ -28,7 +28,7 @@
             <gmd:EX_TemporalExtent id="boundingTemporalExtent">
               <gmd:extent>
                 <gml:TimePeriod gml:id="idm262720">
-                  <gml:beginPosition>-617905000</gml:beginPosition>
+                  <gml:beginPosition>-100000001</gml:beginPosition>
                   <gml:endPosition>-1601050</gml:endPosition>
                 </gml:TimePeriod>
               </gmd:extent>

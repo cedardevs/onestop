@@ -1,5 +1,6 @@
 package org.cedar.onestop.api.metadata.service
 
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.cedar.schemas.avro.psi.ParsedRecord
 import org.cedar.schemas.avro.util.AvroUtils
 import spock.lang.Specification
@@ -7,32 +8,60 @@ import spock.lang.Unroll
 
 @Unroll
 class LoadKafkaMsgServiceTest extends Specification {
-  def mockElasticsearchService = Mock(ElasticsearchService)
-  def metadataManagementService = new MetadataManagementService(mockElasticsearchService)
-  
+
+  static testCollectionTopic = 'test_collection_topic'
+  static testGranuleTopic = 'test_granule_topic'
+
+  def consumerService = new KafkaConsumerService()
+  def mockMetadataService = Mock(MetadataManagementService)
+
   def setup() {
-    metadataManagementService.PREFIX = 'prefix-'
-    metadataManagementService.COLLECTION_SEARCH_INDEX = 'search_collection'
-    metadataManagementService.COLLECTION_STAGING_INDEX = 'staging_collection'
-    metadataManagementService.GRANULE_SEARCH_INDEX = 'search_granule'
-    metadataManagementService.GRANULE_STAGING_INDEX = 'staging_granule'
-    metadataManagementService.FLAT_GRANULE_SEARCH_INDEX = 'search_flattened_granule'
+    consumerService.parsedCollectionTopic = testCollectionTopic
+    consumerService.parsedGranulesTopic = testGranuleTopic
+    consumerService.metadataManagementService = mockMetadataService
   }
   
-  def "Load valid metadata to a staging index" () {
+  def "loads a valid metadata record" () {
     given:
+    def inputKey = 'ABC'
     def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
-    def inputRecord = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
-
-    Map parsedMap = [id: '123', parsedRecord: inputRecord]
-    List<Map> parsedMapList = [parsedMap]
+    def inputValue = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
+    def inputRecord = new ConsumerRecord(testCollectionTopic, 0, 0, inputKey, inputValue)
    
     when:
-    def msgMap = metadataManagementService.loadParsedMetadata(parsedMapList)
+    consumerService.listen([inputRecord])
 
     then:
-    msgMap.data.id == ['123']
-    msgMap.data.type == ['collection']
-    msgMap.data.attributes.fileIdentifier == [inputRecord.discovery.fileIdentifier]
+    1 * mockMetadataService.loadParsedMetadata([[id: inputKey, parsedRecord: inputValue]])
   }
+
+  def "ignores invalid metadata record" () {
+    given:
+    def inputKey = 'ABC'
+    def inputValue = new ParsedRecord()
+    def inputRecord = new ConsumerRecord(testCollectionTopic, 0, 0, inputKey, inputValue)
+
+    when:
+    consumerService.listen([inputRecord])
+
+    then:
+    0 * mockMetadataService.loadParsedMetadata(_)
+  }
+
+  def "filters out invalid metadata records" () {
+    given:
+    def inputKey = 'ABC'
+    def inputStream = ClassLoader.systemClassLoader.getResourceAsStream('example-record-avro.json')
+    def validValue = AvroUtils.<ParsedRecord> jsonToAvro(inputStream, ParsedRecord.classSchema)
+    def validRecord = new ConsumerRecord(testCollectionTopic, 0, 0, inputKey, validValue)
+    def invalidValue = new ParsedRecord()
+    def invalidRecord = new ConsumerRecord(testCollectionTopic, 0, 0, inputKey, invalidValue)
+
+    when:
+    consumerService.listen([validRecord, invalidRecord])
+
+    then:
+    1 * mockMetadataService.loadParsedMetadata({ it.size() == 1 && it[0].parsedRecord == validRecord.value() })
+  }
+
 }
