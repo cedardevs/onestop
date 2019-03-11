@@ -4,6 +4,7 @@ import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.cedar.psi.common.constants.Topics
 import org.cedar.psi.registry.service.MetadataStore
+import org.cedar.schemas.avro.psi.Method
 import org.cedar.schemas.avro.psi.RecordType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -53,14 +54,31 @@ class MetadataRestController {
     links.self = links.remove('input')
 
     if (result) {
-      return [
-          links: links,
-          data : [
-              id        : id,
-              type      : type,
-              attributes: result
-          ]
-      ]
+      if (result.method == Method.DELETE) {
+        response.status = HttpStatus.NOT_FOUND.value()
+        links.remove('parsed')
+        links.resurrection = buildResurrectionLink(request, type, source, id)
+        return [
+            links : links,
+            errors: [
+                [
+                    status: HttpStatus.NOT_FOUND.value(),
+                    title : HttpStatus.NOT_FOUND.toString(),
+                    detail: "DELETE processed for ${type} with id [${id}] from source [${source}]" as String
+                ]
+            ]
+        ]
+      }
+      else {
+        return [
+            links: links,
+            data : [
+                id        : id,
+                type      : type,
+                attributes: result
+            ]
+        ]
+      }
     }
     else {
       response.status = HttpStatus.NOT_FOUND.value()
@@ -139,6 +157,11 @@ class MetadataRestController {
         input : "${root}/metadata/${type}/${source}/${id}" as String,
         parsed: "${root}/metadata/${type}/${source}/${id}/parsed" as String
     ]
+  }
+
+  private String buildResurrectionLink(HttpServletRequest request, String type, String source, String id) {
+    def root = apiLinkGenerator.getApiRoot(request)
+    return "${root}/metadata/${type}/${source}/${id}/resurrection" as String
   }
 
 }
