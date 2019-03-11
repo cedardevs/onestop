@@ -74,26 +74,8 @@ dependencies {
 
   // Authorization Services
   compile "org.springframework.boot:spring-boot-starter-data-jpa"
-  /*
-  // note: apparently i'm missing a depencancy from starter-data-jpa, because securityenabled is super messed up with this subset instead:
-  compile group: 'javax.transaction', name: 'javax.transaction-api', version: '1.3'
-  // provided group: 'javax.persistence', name: 'com.springsource.javax.persistence', version: '2.0.0'
-  //
-  compile 'javax.persistence:javax.persistence-api:2.2'
-  compile group: 'org.springframework.data', name: 'spring-data-commons', version: '2.1.4.RELEASE'
-  compile group: 'org.springframework', name: 'spring-jdbc', version: '5.1.4.RELEASE'
-  */
   compile 'org.liquibase:liquibase-core'
-  // compile 'com.h2database:h2:1.4.197'
-  // compile 'postgresql:postgresql:42.2.5'
-  // compile 'com.oracle.jdbc:ojdbc8:18.3.0.0'
-  // compile group: 'ojdbc', name: 'ojdbc', version: '14'
-  // compile group: 'oracle', name: 'ojdbc', version: '1.4'
-// compile group: 'OJDBC', name: 'ojdbc', version: '14'
-// compile group: 'com.oracle.jdbc', name: 'ojdbc8', version: '12.2.0.1'
-compile group: 'org.hsqldb', name:'hsqldb', version: '2.3.4' // TODO seems to work fine!
-// compile group: 'org.xerial', name: 'sqlite-jdbc', version: '3.25.2'
-// compile group: 'org.apache.derby', name: 'derby', version: '10.13.1.1'
+  compile group: 'org.hsqldb', name:'hsqldb', version: '2.3.4'
   // version to override another library's dependency to solve a CVE:
   compile 'com.google.guava:guava:27.0.1-jre'
   compile 'commons-collections:commons-collections:3.2.2'
