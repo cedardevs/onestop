@@ -16,11 +16,11 @@ class SitemapGeneratorSpec extends Specification {
     where:
     requestUrl | expectedUrl
     // what is (currently) sent by localhost client
-    "http://localhost/onestop/api/sitemap.xml" | "http://localhost/onestop"
+    "http://localhost/onestop/sitemap.xml" | "http://localhost/onestop"
     // local dev curl
-    "http://localhost:30097/onestop/api/sitemap.xml" | "http://localhost:30097/onestop"
+    "http://localhost:30097/onestop/sitemap.xml" | "http://localhost:30097/onestop"
     // sciapps
-    "https://sciapps/onestop/api/sitemap.xml" | "https://sciapps/onestop"
+    "https://sciapps/onestop/sitemap.xml" | "https://sciapps/onestop"
   }
 
   def 'Sitemap xml is correct with one submap'() {
@@ -36,7 +36,7 @@ class SitemapGeneratorSpec extends Specification {
         <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
       <sitemap>
-        <loc>baseUrl/api/sitemap/AWUByPEUY2tHcYwYu62K.txt</loc>
+        <loc>baseUrl/sitemap/AWUByPEUY2tHcYwYu62K.txt</loc>
         <lastmod>2018-08-03T21:54:29.487Z</lastmod>
       </sitemap>
 
@@ -61,19 +61,19 @@ class SitemapGeneratorSpec extends Specification {
         <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
       <sitemap>
-        <loc>baseUrl/api/sitemap/AWUByPEUY2tHcYwYu62K.txt</loc>
+        <loc>baseUrl/sitemap/AWUByPEUY2tHcYwYu62K.txt</loc>
         <lastmod>2018-08-03T21:54:29.487Z</lastmod>
       </sitemap>
 
 
       <sitemap>
-        <loc>baseUrl/api/sitemap/XYZByPEUY2tHcYwYu62K.txt</loc>
+        <loc>baseUrl/sitemap/XYZByPEUY2tHcYwYu62K.txt</loc>
         <lastmod>2018-08-02T18:07:49.487Z</lastmod>
       </sitemap>
 
 
       <sitemap>
-        <loc>baseUrl/api/sitemap/123ByPEUY2tHcYwYu62K.txt</loc>
+        <loc>baseUrl/sitemap/123ByPEUY2tHcYwYu62K.txt</loc>
         <lastmod>2018-08-01T14:21:09.487Z</lastmod>
       </sitemap>
 

@@ -78,7 +78,7 @@ class UploadIntegrationTests extends IntegrationTest {
         then: "Request returns 302 redirect to the expected response endpoint"
 
         multiResult.statusCode == HttpStatus.FOUND
-        redirectPath == "/onestop/admin/uploadResponse.html"
+        redirectPath == "/onestop-admin/uploadResponse.html"
     }
 
     private buildMultiLoadRequest(String[] paths) {
