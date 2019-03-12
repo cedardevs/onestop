@@ -17,16 +17,14 @@ class ManagerConfig implements Map<String, String> {
   @Delegate
   private Map<String, String> internal
 
-  ManagerConfig() {
-    internal = [
-        (BOOTSTRAP_SERVERS_CONFIG): BOOTSTRAP_SERVERS_DEFAULT,
-        (SCHEMA_REGISTRY_URL_CONFIG): SCHEMA_REGISTRY_URL_DEFAULT,
-        (COMPRESSION_TYPE_CONFIG): COMPRESSION_TYPE_DEFAULT
-    ]
-  }
+  private final Map defaults = [
+      (BOOTSTRAP_SERVERS_CONFIG): BOOTSTRAP_SERVERS_DEFAULT,
+      (SCHEMA_REGISTRY_URL_CONFIG): SCHEMA_REGISTRY_URL_DEFAULT,
+      (COMPRESSION_TYPE_CONFIG): COMPRESSION_TYPE_DEFAULT
+  ]
 
-  ManagerConfig(Map env) {
-    internal = env.inject([:], { result, k, v ->
+  ManagerConfig(Map env = [:]) {
+    internal = env.inject(defaults, { result, k, v ->
       def normalizedKey = k.toString().replaceAll('_', '.').toLowerCase()
       result[normalizedKey] = v.toString()
       result
