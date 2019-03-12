@@ -5,10 +5,12 @@ management.endpoints.enabled-by-default: false
 
 kafka:
   bootstrap:
-    servers: localhost:9092
+    servers: "localhost:9092"
+  compression:
+    type: "gzip"
 schema:
   registry:
-    url: localhost:8081
+    url: "localhost:8081"
 
 logging:
   level:
