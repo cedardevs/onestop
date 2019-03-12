@@ -5,6 +5,7 @@ plugins {
   id "org.springframework.boot" version "2.1.1.RELEASE"
   id "io.spring.dependency-management" version "1.0.6.RELEASE"
   id 'org.cedar.dockerplugin' version '1.0.3'
+  id "com.moowork.node"
 }
 
 configurations {
@@ -107,6 +108,28 @@ task extractSchemaDefinitions(type: Copy) {
 }
 
 assemble.dependsOn(extractSchemaDefinitions)
+
+// NOTE: there is a bug in speccy where it outputs an empty file with --output or -o flag 
+// (there is a pull request: https://github.com/wework/speccy/pull/270)
+task generateOpenApi(type: Exec) {
+  dependsOn 'npmInstall'
+  executable = "bash"
+  args = ["-c", "npm run build > $buildDir/tmp/openApi.yml"] // no need to pip once the pull request merge 
+}
+
+// once the speccy fix is merged, this task should be remove 
+task fixspeccy(type: Copy) {
+  dependsOn 'generateOpenApi'
+  from "$buildDir/tmp/"
+  include 'openApi.yml'
+  into "$buildDir/resources/main/static"
+
+  eachFile { file ->
+    file.file.text = file.file.readLines()[4..-1].join("\n")
+  }
+}
+
+assemble.dependsOn(fixspeccy)
 
 docker {
   additionalBuildArgs = [JAR_NAME: bootJar.outputs.files.singleFile.name]
