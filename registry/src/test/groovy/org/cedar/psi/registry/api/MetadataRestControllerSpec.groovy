@@ -178,6 +178,37 @@ class MetadataRestControllerSpec extends Specification {
     result.errors.size() == 2
   }
 
+  def 'handles deleted input'() {
+    def deletedInput = Input.newBuilder()
+        .setType(RecordType.collection)
+        .setContent('{"hola":"mundo"}')
+        .setMethod(Method.DELETE)
+        .setContentType('application/json')
+        .setSource('test')
+        .build()
+    def path = "/metadata/${testType}/${testSource}/${testId}"
+    def request = buildMockRequest(path)
+
+    when:
+    def result = controller.retrieveInput(testType.toString(), testSource, testId, request, mockResponse)
+
+    then:
+    _ * mockApiRootGenerator.getApiRoot(_) >> 'http://localhost:8080'
+    1 * mockMetadataStore.retrieveInput(testType, testSource, testId) >> deletedInput
+
+    and:
+    result.links.self == "http://localhost:8080/metadata/$testType/$testSource/$testId"
+    result.links.parsed == null // <-- Does NOT have parsed link
+    result.links.resurrection == "http://localhost:8080/metadata/$testType/$testSource/$testId/resurrection" // <-- Has special link to resurrect record
+    result.data == null
+    result.errors instanceof List
+    result.errors.size() == 1
+    result.errors[0].status == 404
+    result.errors[0].title instanceof String
+    result.errors[0].detail instanceof String
+    mockResponse.status == 404
+  }
+
 
   private MockHttpServletRequest buildMockRequest(String path) {
     def request = new MockHttpServletRequest()

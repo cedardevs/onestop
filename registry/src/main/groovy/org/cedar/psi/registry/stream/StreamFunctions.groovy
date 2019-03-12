@@ -45,11 +45,8 @@ class StreamFunctions {
         resultBuilder.method = nextValue.method
       }
 
-      if (aggregate?.contentType == 'application/json' && nextValue?.contentType == 'application/json') {
+      if (nextValue.content) {
         resultBuilder.content = mergeJsonMapStrings(aggregate.content, nextValue.content)
-      }
-      else if (nextValue.content) {
-        resultBuilder.content = nextValue.content
       }
 
       return resultBuilder.build()
@@ -59,7 +56,7 @@ class StreamFunctions {
   static Reducer<Input> replaceInputMethod = new Reducer<Input>() {
     @Override
     Input apply(Input aggregate, Input nextValue) {
-      log.debug("Deleteing existing aggregate ${aggregate} with ${nextValue.method}")
+      log.debug("${nextValue.method == Method.DELETE ? "Deleting" : "Resurrecting"} existing aggregate ${aggregate}")
       def resultBuilder = Input.newBuilder(aggregate)
       if (nextValue.method) {
         resultBuilder.method = nextValue.method
@@ -79,6 +76,7 @@ class StreamFunctions {
           return mergeInputContent.apply(aggregate, nextValue)
 
         case Method.DELETE:
+        case Method.GET:
           return replaceInputMethod.apply(aggregate, nextValue)
 
         case Method.PUT:
