@@ -8,6 +8,11 @@ plugins {
   id "com.moowork.node"
 }
 
+node {
+  version = '10.15.1'
+  download = true
+}
+
 configurations {
   compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
   testCompile.exclude(group: 'ch.qos.logback')
@@ -107,15 +112,14 @@ task extractSchemaDefinitions(type: Copy) {
   into "$buildDir/resources/main"
 }
 
-assemble.dependsOn(extractSchemaDefinitions)
-
 // NOTE: there is a bug in speccy where it outputs an empty file with --output or -o flag 
+// task generateOpenApi and cleanupOpenApiFile need to be revisited once the pull request is merged
 // (there is a pull request: https://github.com/wework/speccy/pull/270)
 task generateOpenApi(type: Exec) {
-  dependsOn 'nodeSetup'
+  dependsOn 'extractSchemaDefinitions'
   dependsOn 'npmInstall'
   executable = "bash"
-  args = ["-c", "npm run build > $buildDir/tmp/openApi.yml"] // no need to pip once the pull request merge 
+  args = ['-c', "npm run build > $buildDir/tmp/openApi.yml"]
 }
 
 // once the speccy fix is merged, this task should be remove 

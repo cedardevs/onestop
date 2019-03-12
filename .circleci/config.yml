@@ -70,6 +70,7 @@ jobs:
             - .gradle
             - common/build
             - registry/build
+            - registry/node_modules
             - stream-manager/build
           key: v2-dependencies-{{ checksum "build.gradle" }}
 
