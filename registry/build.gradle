@@ -28,7 +28,7 @@ dependencies {
   compile('io.confluent:kafka-streams-avro-serde:5.1.0')
   compile(project(':common'))
   //configure  to unzip and copy schema definitions 
-  schemaDefinitions ('com.github.cedardevs:schemas:0.1.1')
+  schemaDefinitions ('com.github.cedardevs:schemas:0.1.2')
 
   compileOnly('org.springframework.boot:spring-boot-starter-tomcat')
 
@@ -47,7 +47,7 @@ dependencies {
   testCompile('io.confluent:kafka-schema-registry:5.1.0')
   testCompile('io.confluent:kafka-schema-registry:5.1.0:tests')
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
-  testCompile('com.github.cedardevs:schemas:0.1.1:test')
+  testCompile('com.github.cedardevs:schemas:0.1.2:test')
 }
 
 sourceSets {
@@ -112,13 +112,14 @@ assemble.dependsOn(extractSchemaDefinitions)
 // NOTE: there is a bug in speccy where it outputs an empty file with --output or -o flag 
 // (there is a pull request: https://github.com/wework/speccy/pull/270)
 task generateOpenApi(type: Exec) {
+  dependsOn 'nodeSetup'
   dependsOn 'npmInstall'
   executable = "bash"
   args = ["-c", "npm run build > $buildDir/tmp/openApi.yml"] // no need to pip once the pull request merge 
 }
 
 // once the speccy fix is merged, this task should be remove 
-task fixspeccy(type: Copy) {
+task cleanupOpenApiFile(type: Copy) {
   dependsOn 'generateOpenApi'
   from "$buildDir/tmp/"
   include 'openApi.yml'
@@ -129,7 +130,7 @@ task fixspeccy(type: Copy) {
   }
 }
 
-assemble.dependsOn(fixspeccy)
+assemble.dependsOn(cleanupOpenApiFile)
 
 docker {
   additionalBuildArgs = [JAR_NAME: bootJar.outputs.files.singleFile.name]
