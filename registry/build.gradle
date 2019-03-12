@@ -8,11 +8,6 @@ plugins {
   id "com.moowork.node"
 }
 
-node {
-  version = '10.15.1'
-  download = true
-}
-
 configurations {
   compile.exclude module: 'tomcat-annotations-api', group: 'org.apache.tomcat'
   testCompile.exclude(group: 'ch.qos.logback')
@@ -75,8 +70,8 @@ task integrationTest(type: Test, description: 'Runs the integration tests', grou
 check.dependsOn integrationTest
 
 war {
-  // build a deployable war in addition to the executable one
-  enabled = true
+  dependsOn { 'generateOpenApi' }
+  enabled = true // build a deployable war in addition to the executable one
   classpath -= files(configurations.compileOnly)
   baseName = "${rootProject.name}-${project.name}"
 }
@@ -87,8 +82,8 @@ bootWar {
 }
 
 bootJar {
-  // add a classifier to distinguish the executable jar
-  classifier = 'all'
+  dependsOn { 'generateOpenApi' }
+  classifier = 'all' // add a classifier to distinguish the executable jar
   baseName = "${rootProject.name}-${project.name}"
   launchScript()
 }
@@ -101,30 +96,41 @@ task sourceJar(type: Jar) {
 
 task extractSchemaDefinitions(type: Copy) {
   dependsOn configurations.schemaDefinitions
-    from { // use of closure defers evaluation until execution time
-      configurations.schemaDefinitions.collect {
-        zipTree(it).matching{
-          include 'json/schema-definitions.json'
-        }
+  from { // use of closure defers evaluation until execution time
+    configurations.schemaDefinitions.collect {
+      zipTree(it).matching{
+        include 'json/schema-definitions.json'
       }
     }
+  }
 
   into "$buildDir/resources/main"
 }
 
-// NOTE: there is a bug in speccy where it outputs an empty file with --output or -o flag 
-// task generateOpenApi and cleanupOpenApiFile need to be revisited once the pull request is merged
-// (there is a pull request: https://github.com/wework/speccy/pull/270)
-task generateOpenApi(type: Exec) {
-  dependsOn 'extractSchemaDefinitions'
-  dependsOn 'npmInstall'
-  executable = "bash"
-  args = ['-c', "npm run build > $buildDir/tmp/openApi.yml"]
+node {
+  version = '10.15.3'
+  npmVersion = '6.1.0'
+  download = true
 }
 
-// once the speccy fix is merged, this task should be remove 
+// NOTE: there is a bug in speccy where it outputs an empty file with --output or -o flag
+// (there is a pull request: https://github.com/wework/speccy/pull/270)
+task generateOpenApi(type: NpmTask) {
+  dependsOn { ['extractSchemaDefinitions', 'processResources'] }
+  finalizedBy { 'cleanupOpenApiFile' }
+  // install the express package only
+  args = ['run', 'build']
+  execOverrides = {
+    def outputFile = new File("$buildDir/tmp/openApi.yml")
+    outputFile.parentFile.mkdirs()
+    outputFile.delete()
+    it.standardOutput = outputFile.newOutputStream()
+  }
+}
+
+// once the speccy fix is merged, this task should be removed and
+// generateOpenApi should pipe directly into $buildDir/resources/main/static
 task cleanupOpenApiFile(type: Copy) {
-  dependsOn 'generateOpenApi'
   from "$buildDir/tmp/"
   include 'openApi.yml'
   into "$buildDir/resources/main/static"
@@ -133,8 +139,6 @@ task cleanupOpenApiFile(type: Copy) {
     file.file.text = file.file.readLines()[4..-1].join("\n")
   }
 }
-
-assemble.dependsOn(cleanupOpenApiFile)
 
 docker {
   additionalBuildArgs = [JAR_NAME: bootJar.outputs.files.singleFile.name]
