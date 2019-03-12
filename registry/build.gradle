@@ -116,7 +116,7 @@ node {
 // NOTE: there is a bug in speccy where it outputs an empty file with --output or -o flag
 // (there is a pull request: https://github.com/wework/speccy/pull/270)
 task generateOpenApi(type: NpmTask) {
-  dependsOn { ['extractSchemaDefinitions', 'processResources'] }
+  dependsOn { ['npmInstall', 'extractSchemaDefinitions', 'processResources'] }
   finalizedBy { 'cleanupOpenApiFile' }
   // install the express package only
   args = ['run', 'build']
