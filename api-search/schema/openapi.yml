@@ -83,7 +83,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: request.yml
+              $ref: request.json
               externalDocs:
                 example.com
             examples:
@@ -167,7 +167,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: request.yml
+              $ref: request.json
       responses:
         '200':
           description: Successful operation
@@ -240,7 +240,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: request.yml
+              $ref: request.json
       responses:
         '200':
           description: Successful operation
