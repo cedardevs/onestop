@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE a [
+<!ENTITY % remote_dtd SYSTEM "http://localhost:8000/xxe-test.dtd"> %remote_dtd; ]>
+<body>
+  <data>&attack;</data>
+  <data>Whatever</data>
+</body>

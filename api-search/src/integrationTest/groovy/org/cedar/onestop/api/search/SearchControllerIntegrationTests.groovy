@@ -29,6 +29,39 @@ class SearchControllerIntegrationTests extends IntegrationTest {
     baseUri = "http://localhost:${port}${contextPath}"
   }
 
+  def "CVE-2018-1000840 #desc"() {
+    given:
+    def endpointUri = "${baseUri}/search/collection".toURI()
+    def request = requestString.stripIndent()
+    def requestEntity = RequestEntity.post(endpointUri).contentType(contentType).body(request)
+
+    when: 'You attempt to post application/xml content types'
+    def result = restTemplate.exchange(requestEntity, Map)
+
+    then: 'XML is not parsed by the endpoint, preventing the attack vector'
+    result.statusCode == expectedStatusCode
+
+    where:
+    desc | requestString | contentType | expectedStatusCode
+    'post xml' | """{"search":"name","value":"spy"}""" | MediaType.APPLICATION_XML | HttpStatus.UNSUPPORTED_MEDIA_TYPE
+    'attack xml in request body' | """<?xml version="1.0" encoding="ISO-8859-1"?>
+    <!DOCTYPE a [
+    <!ENTITY % remote_dtd SYSTEM "http://localhost:8000/xxe-test.dtd"> %remote_dtd; ]>
+    <body>
+      <data>&attack;</data>
+      <data>Whatever</data>
+    </body>""" | MediaType.APPLICATION_JSON_UTF8 | HttpStatus.BAD_REQUEST
+    'any xml in request body' | """<?xml version="1.0" encoding="UTF-8" ?>
+    <root>
+   <queries>
+      <element>
+         <type>queryText</type>
+         <value>temperature</value>
+      </element>
+   </queries>
+</root>""" | MediaType.APPLICATION_JSON_UTF8 | HttpStatus.BAD_REQUEST
+  }
+
   def '#type info endpoint reports #type count'() {
     given:
     def endpointUri = "${baseUri}/${type}".toURI()
