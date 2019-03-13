@@ -117,7 +117,7 @@ node {
 task generateOpenApi(type: NpmTask) {
   dependsOn { ['npmInstall', 'extractSchemaDefinitions', 'processResources'] }
   args = ['run', 'build']
-  outputs.file("$buildDir/resources/main/static/openApi.yml")
+  outputs.file("$buildDir/resources/main/static/openapi.yaml")
 }
 
 docker {
