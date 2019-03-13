@@ -1,38 +1,36 @@
 openapi: "3.0.2"
 info:
-  title: "Inventory manager API"
-  description: "This file covers the `current` endpoint for the Inventory Manager API. <br/><br/> **Note**: For creating, modifing and removing a record, you must select at least one parameter. Calling the API by `ID` and `source` parameter will provide the most precise results."
+  title: "Persistent Streaming Inventory API"
+  description: "This file covers the `current` endpoint for the Persistent Streaming Inventory API. <br/><br/> **Note**: For creating, modifying and removing a record, you must select at least one parameter. Calling the API by `id` and `source` parameter will provide the most precise results."
   version: "0.2.0"
   termsOfService: ""
   contact:
-    name: "Inventory manager API"
+    name: "Persistent Streaming Inventory API"
     email: "cedar.cires@colorado.edu"
   license:
     name: GNU GPL
     url: 'https://www.gnu.org/licenses/gpl-2.0.en.html'
 servers:
-  - url: https://sciapps.colorado.edu
+  - url: https://sciapps.colorado.edu/registry
     description: development server
-  - url: http://localhost
-    description: local server
-  - url: https://not.deployed.yet
-    description: Production server (need to be updated to the fed prod server when available)
-  - url: https://not.inplace.yet
-    description: cloud server (need to be updated to the cloud server when available)
+  - url: http://localhost:8080
+    description: local standalone
+  - url: http://localhost/registry
+    description: local w/ proxy
 security:
   - app_id: []
 externalDocs:
   description: API Documentation (add the uri for the docs)
   url: https://github.com/cedardevs/psi/tree/master/docs
 paths:
-  /registry/metadata/{type}:
+  /metadata/{type}:
     parameters:
       - $ref: '#/components/parameters/metadataType'
     post:
       tags:
         - Create or Replace a record
       summary: "Create or replace a metadata record from an unspecified source"
-      description: "Create a collection or granule record with unspecified source will be flag as `Unknow` source and also random UUID will be assign by the application. <br/><br/>**Note**: For your record make sure you hold on to the assign UUID."
+      description: "Create a collection or granule record with unspecified source will be flagged as `unknown` source and a also random UUID will be assigned by the application. <br/><br/>**Note**: Make sure you hold on to the assigned UUID if you want to update/delete the record later."
       operationId: createRecord
       requestBody:
         $ref: '#/components/requestBodies/postBody'
@@ -45,7 +43,7 @@ paths:
       tags:
         - Create or Replace a record
       summary: "Create or replace a metadata record from an unspecified source"
-      description: "Create a collection or granule record with unspecified source will be flag as `Unknow` source and also random UUID will be assign by the application. <br/><br/>**Note**: For your record make sure you hold on to the assign UUID."
+      description: "Create a collection or granule record with unspecified source will be flagged as `unknown` source and also a random UUID will be assigned by the application. <br/><br/>**Note**: Make sure you hold on to the assigned UUID if you want to update/delete the record later."
       operationId: createReplaceRecord
       requestBody:
         $ref: '#/components/requestBodies/postBody'
@@ -54,7 +52,7 @@ paths:
           $ref: '#/components/responses/createItem'
         404:
           $ref: '#/components/responses/error'
-  /registry/metadata/{type}/{id}:
+  /metadata/{type}/{id}:
     parameters:
       - $ref: '#/components/parameters/metadataType'
       - $ref: '#/components/parameters/metadataUUID'
@@ -62,7 +60,7 @@ paths:
       tags:
         - Create or Replace a record
       summary: "Create a metadata record from an unspecified source with provided id"
-      description:  "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      description:  "creating a collection or granule record with unspecified source will be flagged as `unknown` source."
       operationId: createRecordById
       requestBody:
         $ref: '#/components/requestBodies/postBody'
@@ -75,7 +73,7 @@ paths:
       tags:
         - Create or Replace a record
       summary: "Create or replace a metadata record from an unspecified source with provided id"
-      description: "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      description: "creating a collection or granule record with unspecified source will be flagged as `unknown` source."
       operationId: createReplaceRecordById
       requestBody:
         $ref: '#/components/requestBodies/postBody'
@@ -88,7 +86,7 @@ paths:
       tags:
         - Create or Modify a record
       summary: "Create or modify a metadata record from an unspecified source with provided id"
-      description: "Note: Creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      description: "Note: Creating a collection or granule record with unspecified source will be flagged as `unknown` source."
       operationId: createModifyRecordById
       requestBody:
         $ref: '#/components/requestBodies/patchBody'
@@ -118,7 +116,7 @@ paths:
           $ref: '#/components/responses/getRawItemById'
         '404':
           $ref: '#/components/responses/recordNotFound'
-  /registry/metadata/{type}/{source}/{id}:
+  /metadata/{type}/{source}/{id}:
     parameters:
       - $ref: '#/components/parameters/metadataType'
       - $ref: '#/components/parameters/metadataSource'
@@ -127,7 +125,7 @@ paths:
       tags:
         - Create or Replace a record
       summary: "Create or replace a metadata record with specified source and provided id"
-      description:  "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      description:  "creating a collection or granule record with unspecified source will be flagged as `unknown` source."
       operationId: createRecordFromSourceWithUUID
       requestBody:
         $ref: '#/components/requestBodies/postBody'
@@ -140,7 +138,7 @@ paths:
       tags:
         - Create or Replace a record
       summary: "Create or replace a metadata record with specified source and provided id"
-      description: "creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      description: "creating a collection or granule record with unspecified source will be flagged as `unknown` source."
       operationId: createReplaceRecordFromSourceWithUUID
       requestBody:
         $ref: '#/components/requestBodies/postBody'
@@ -153,7 +151,7 @@ paths:
       tags:
         - Create or Modify a record
       summary: "Create or modify a metadata record with specified source and provided id"
-      description: "Note: Creating a collection or granule record with unspecified source will be flag as `Unknow` source."
+      description: "Note: Creating a collection or granule record with unspecified source will be flagged as `unknown` source."
       operationId: createModifyRecordFromSourceWithUUID
       requestBody:
         $ref: '#/components/requestBodies/patchBody'
@@ -184,7 +182,7 @@ paths:
         '404':
           $ref: '#/components/responses/recordNotFound'
 
-  /registry/metadata/{type}/{id}/parsed:
+  /metadata/{type}/{id}/parsed:
     parameters:
       - $ref: '#/components/parameters/metadataType'
       - $ref: '#/components/parameters/metadataSource'
@@ -200,20 +198,20 @@ paths:
         '404':
           $ref: '#/components/responses/recordNotFound'
 
-  /registry/metadata/{type}/{id}/resurrection:
+  /metadata/{type}/{id}/resurrection:
     parameters:
       - $ref: '#/components/parameters/metadataType'
       - $ref: '#/components/parameters/metadataUUID'
     get:
       tags:
         - Restore parsed record
-      summary: "Recover parsed metadata record by id"
+      summary: "Retrieve parsed metadata record by id"
       operationId: showResurrectionByUUID
       responses:
         '200':
           $ref: '#/components/responses/getResurrection'
 
-  /registry/metadata/{type}/{source}/{id}/parsed:
+  /metadata/{type}/{source}/{id}/parsed:
     parameters:
       - $ref: '#/components/parameters/metadataType'
       - $ref: '#/components/parameters/metadataSource'
@@ -228,7 +226,7 @@ paths:
           $ref: '#/components/responses/getParsedItemById'
         '404':
           $ref: '#/components/responses/recordNotFound'
-  /registry/metadata/{type}/{source}/{id}/resurrection:
+  /metadata/{type}/{source}/{id}/resurrection:
     parameters:
       - $ref: '#/components/parameters/metadataType'
       - $ref: '#/components/parameters/metadataSource'
