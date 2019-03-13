@@ -217,9 +217,10 @@ task setupOpenapiGenPart2(type: Copy) {
 }
 
 task generateOpenapi(type: Exec) {
+  // TODO this doesn't keep old api version around at all!
   dependsOn 'npmInstall', 'assemble', "setupOpenapiGenPart2"
   executable = "bash"
-  args = ["-c", "mkdir -p build/tmp/speccy ; npm run buildOpenapi > build/tmp/speccy/onestop-api_v2.1.0.yml"]
+  args = ["-c", "mkdir -p build/tmp/speccy ; npm run buildOpenapi > build/tmp/speccy/onestop-api_v${project.version}.yml"]
 }
 
 task fixspeccy(type: Copy) {
