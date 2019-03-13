@@ -27,7 +27,7 @@ updateVersions() {
   sed -i -- "s/version=.*/version=$1/g" gradle.properties
   sed -i -- "s/\"version\":.*/\"version\": \"$1\",/g" client/package.json
   sed -i -- "s/${prevVersion}/$1/g" skaffold.yaml
-  sed -i -- "s/version: .*/version: $1/g" api-search/src/main/resources/api/*.yml
+  sed -i -- "s/version: .*/version: $1/g" api-search/schema/openapi.yml
 }
 
 # commit and push
@@ -36,7 +36,7 @@ updateAndCommit() {
   git add gradle.properties
   git add client/package.json
   git add skaffold.yaml
-  git add api-search/src/main/resources/api/*yml
+  git add api-search/schema/openapi.yml
   git commit -m "Updating version to $1"
   git push
 }

@@ -9,7 +9,7 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "file:src/main/resources/schema/components/textQuery.json"
+            "$ref": "components/textQuery.json"
           }
         ]
       }
@@ -19,22 +19,22 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "file:src/main/resources/schema/components/datetimeFilter.json"
+            "$ref": "components/datetimeFilter.json"
           },
           {
-            "$ref": "file:src/main/resources/schema/components/yearFilter.json"
+            "$ref": "components/yearFilter.json"
           },
           {
-            "$ref": "file:src/main/resources/schema/components/facetFilter.json"
+            "$ref": "components/facetFilter.json"
           },
           {
-            "$ref": "file:src/main/resources/schema/components/geometryFilter.json"
+            "$ref": "components/geometryFilter.json"
           },
           {
-            "$ref": "file:src/main/resources/schema/components/collectionFilter.json"
+            "$ref": "components/collectionFilter.json"
           },
           {
-            "$ref": "file:src/main/resources/schema/components/excludeGlobalFilter.json"
+            "$ref": "components/excludeGlobalFilter.json"
           }
         ]
       }
@@ -50,7 +50,7 @@
       "default": true
     },
     "page": {
-      "$ref": "file:src/main/resources/schema/components/page.json"
+      "$ref": "components/page.json"
     }
   },
   "additionalProperties": false

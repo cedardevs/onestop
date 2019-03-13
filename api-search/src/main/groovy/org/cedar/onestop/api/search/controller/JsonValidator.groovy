@@ -10,7 +10,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException
 class JsonValidator {
 
   public static Map validateSearchRequestSchema(Map request) {
-    validateSchema(request, 'schema/request.json')
+    validateSchema(request, 'onestop-request-schema.json')
   }
 
   public static Map validateSchema(Map params, String schemaName) {

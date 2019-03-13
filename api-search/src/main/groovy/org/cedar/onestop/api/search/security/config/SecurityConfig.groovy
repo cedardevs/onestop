@@ -76,9 +76,11 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/flattened-granule/**",
                 "/search/flattened-granule/**",
                 "/uiConfig",
+                "/sitemap.xml",
                 "/sitemap/**",
                 "/trending/**",
-                "/actuator/info"
+                "/actuator/info",
+                "/docs/**"
         )
             .permitAll()
         // any other requests are allowed by an authenticated user

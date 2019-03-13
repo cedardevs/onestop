@@ -9,6 +9,7 @@ apply plugin: 'org.springframework.boot' // version declared in top-level builds
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
+apply plugin: "com.moowork.node"
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -180,7 +181,76 @@ task sourceJar(type: Jar) {
   from "${projectDir}/src"
 }
 
+task copySchema(type: Copy) {
+  dependsOn 'generateSchema'
+  from "${buildDir}/resources/main/"
+  into "${buildDir}/resources/main/static/docs/"
+  include 'onestop-request-schema.json'
+}
+
+task staticDocs(type: Copy) {
+  dependsOn 'copySchema'
+  from "${buildDir}/resources/main/"
+  include 'openapi.json'
+  into "${buildDir}/resources/main/static/docs/"
+}
+
+task generateSchema(type: Exec) {
+  dependsOn 'npmInstall', 'assemble'
+  executable = "bash"
+  args = ["-c", "npm run buildRequest"]
+}
+
+task setupOpenapiGenPart1(type: Copy) {
+  from "schema"
+  into "build/tmp/schema"
+}
+
+task setupOpenapiGenPart2(type: Copy) {
+  dependsOn "setupOpenapiGenPart1"
+  from "schema/components"
+  include "override-geometry.json"
+  into "build/tmp/schema/components"
+    rename { filename ->
+      filename.replace 'override-geometry', 'geometry'
+    }
+}
+
+task generateOpenapi(type: Exec) {
+  dependsOn 'npmInstall', 'assemble', "setupOpenapiGenPart2"
+  executable = "bash"
+  args = ["-c", "mkdir -p build/tmp/speccy ; npm run buildOpenapi > build/tmp/speccy/onestop-api_v2.1.0.yml"]
+}
+
+task fixspeccy(type: Copy) {
+  dependsOn 'generateOpenapi'
+  from 'build/tmp/speccy'
+  into "build/resources/main/static/docs/"
+
+  eachFile { file ->
+    // speccy -o is currently broken - manually remove that nonsense
+    file.file.text = file.file.readLines()[4..-1].join("\n")
+  }
+}
+
+build.dependsOn staticDocs
 build.dependsOn sourceJar
+build.dependsOn generateSchema
+build.dependsOn fixspeccy
+
+task copyPartialSchemas(type: Copy) {
+  from 'schema/'
+  into "${buildDir}/resources/test/schema/"
+}
+
+task generateTestSchemas(type: Exec) {
+  dependsOn 'copyPartialSchemas', 'npmInstall'
+  executable = "bash"
+  args = ["-c", "npm run test"]
+}
+
+test.dependsOn generateSchema
+test.dependsOn generateTestSchemas
 
 publishing {
   publications {
