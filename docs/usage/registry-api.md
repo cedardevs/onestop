@@ -22,7 +22,7 @@ Where:
   * For `granule` types: `common-ingest`, `class`, or `unknown`
 * The `id` is a UUID value that can be either auto-generated or manually created.
 
-This API abides by [JSON API specifications](https://jsonapi.org/format/). 
+This API abides by [JSON API specifications](https://jsonapi.org/format/).
 
 Jump to...
 * [Create/Replace](#creating-and-replacing-documents)
@@ -30,6 +30,9 @@ Jump to...
 * [Update](#updating-existing-documents)
 * [Delete](#deleting-documents)
 * [Resurrect](#resurrecting-deleted-documents) 🧟‍♂️🧟‍♀️
+
+**NOTE:** In addition to these user docs about the API, there is also an [OpenAPI specification](https://github.com/OAI/OpenAPI-Specification)
+describing the details of all available endpoints. The specification is hosted by the API itself, at `{context-path}/openapi.yaml`.
 
 ---
 
