@@ -239,6 +239,7 @@ task fixspeccy(type: Copy) {
 build.dependsOn staticDocs
 build.dependsOn sourceJar
 build.dependsOn generateSchema
+integrationTest.dependsOn generateSchema
 build.dependsOn fixspeccy
 
 task copyPartialSchemas(type: Copy) {
