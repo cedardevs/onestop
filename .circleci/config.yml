@@ -225,17 +225,6 @@ jobs:
           paths:
             - e2e-tests/build
 
-  doc-publish:
-    <<: *defaults
-
-    steps:
-      - <<: *attachWorkspace
-      - <<: *restoreCache
-
-      - run:
-          name: Generate and publish API docs
-          command: ./gradlew generate-docs:clean generate-docs:publish
-
   meta-publish:
     <<: *defaults
 
@@ -388,13 +377,6 @@ workflows:
       - search-build:
           requires:
             - checkout
-      - doc-publish:
-          # filters:
-          #   branches:
-          #     only:
-          #       - master
-          requires:
-            - search-build
       - search-test:
           requires:
             - search-build
