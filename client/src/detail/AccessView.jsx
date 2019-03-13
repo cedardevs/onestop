@@ -113,6 +113,15 @@ export default class AccessView extends React.Component {
       'No information links in metadata.'
     )
 
+    const searchDataHeading = this.renderAccessHeading('Search Data')
+    const searchDataLinks = item.links.filter(
+      link => link.linkFunction === 'search'
+    )
+    const searchDataList = this.renderAccessLinkList(
+      searchDataLinks,
+      'No search data links in metadata'
+    )
+
     const downloadDataHeading = this.renderAccessHeading('Download Data')
     const downloadDataLinks = item.links.filter(
       link => link.linkFunction === 'download'
@@ -132,6 +141,7 @@ export default class AccessView extends React.Component {
 
     const accessGrid = [
       [ informationHeading, informationList ],
+      [ searchDataHeading, searchDataList ],
       [ downloadDataHeading, downloadDataList ],
       [ distributionFormatsHeading, distributionFormatsList ],
     ]
