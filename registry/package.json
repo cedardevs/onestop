@@ -1,7 +1,7 @@
 {
   "name": "psi-schema-deref",
   "scripts": {
-    "build": "speccy resolve build/resources/main/registry-api_v0.2.0.yml -j"
+    "build": "speccy resolve build/resources/main/registry-api_v0.2.0.yml --json-schema > build/resources/main/static/openApi.yml"
   },
   "dependencies": {
     "speccy": "^0.9.0"

@@ -113,31 +113,11 @@ node {
   download = true
 }
 
-// NOTE: there is a bug in speccy where it outputs an empty file with --output or -o flag
-// (there is a pull request: https://github.com/wework/speccy/pull/270)
+// NOTE: The 'build' task defined in package.json pipes the output directly to the output file
 task generateOpenApi(type: NpmTask) {
   dependsOn { ['npmInstall', 'extractSchemaDefinitions', 'processResources'] }
-  finalizedBy { 'cleanupOpenApiFile' }
-  // install the express package only
   args = ['run', 'build']
-  execOverrides = {
-    def outputFile = new File("$buildDir/tmp/openApi.yml")
-    outputFile.parentFile.mkdirs()
-    outputFile.delete()
-    it.standardOutput = outputFile.newOutputStream()
-  }
-}
-
-// once the speccy fix is merged, this task should be removed and
-// generateOpenApi should pipe directly into $buildDir/resources/main/static
-task cleanupOpenApiFile(type: Copy) {
-  from "$buildDir/tmp/"
-  include 'openApi.yml'
-  into "$buildDir/resources/main/static"
-
-  eachFile { file ->
-    file.file.text = file.file.readLines()[4..-1].join("\n")
-  }
+  outputs.file("$buildDir/resources/main/static/openApi.yml")
 }
 
 docker {
