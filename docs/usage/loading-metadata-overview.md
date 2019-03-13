@@ -13,4 +13,5 @@ It publishes metadata updates to Kafka, then uses a Kafka Streams app to aggrega
 ### Using HTTP
 The registry is equipped with a RESTful interface that allows full CRUD control of metadata records stored by PSI.
 
+See the [user docs about the REST API](registry-api.md) for more details.
 

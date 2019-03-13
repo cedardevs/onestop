@@ -1,3 +1,8 @@
+##########
+# NOTE: This spec is combined with the JSON Schemas produced by the github.com/cedardevs/schemas project.
+# The generation is orchestrated by the generateOpenApi gradle task. The output is available locally under
+# `build/resources/static`, and is hosted by the running registry application at `/openapi.yaml`.
+##########
 openapi: "3.0.2"
 info:
   title: "Persistent Streaming Inventory API"

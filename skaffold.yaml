@@ -1,4 +1,4 @@
-apiVersion: skaffold/v1beta2
+apiVersion: skaffold/v1beta6
 kind: Config
 build:
   artifacts:
@@ -26,11 +26,11 @@ deploy:
       values:
         image: cedardevs/psi-registry
       setValues:
-        cp-schema-registry.url: http://psi-dev-cp-schema-registry:8081
-        kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
         config: |-
           ---
           server.servlet.context-path: /registry
+        cp-schema-registry.url: http://psi-dev-cp-schema-registry:8081
+        kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
       imageStrategy:
         helm: {}
     - name: psi-manager

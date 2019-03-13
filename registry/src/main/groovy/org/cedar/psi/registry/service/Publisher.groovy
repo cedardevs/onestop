@@ -38,8 +38,7 @@ class Publisher {
     String key = id ?: UUID.randomUUID().toString()
     def message = buildInputTopicMessage(request, type, data, source, key)
     def record = new ProducerRecord<String, Input>(topic, key, message)
-    log.info ("Publishing $type with id: ${id}, source: $source and method: $message.method")
-    log.debug("Publishing: ${record}")
+    log.debug("Publishing $type with id: ${id} from source: $source and method: $message.method")
     kafkaProducer.send(record)?.get()
     return [
         status: 200,
