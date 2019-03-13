@@ -1,0 +1,440 @@
+openapi: "3.0.2"
+info:
+  title: "Persistent Streaming Inventory API"
+  description: "This file covers the `current` endpoint for the Persistent Streaming Inventory API. <br/><br/> **Note**: For creating, modifying and removing a record, you must select at least one parameter. Calling the API by `id` and `source` parameter will provide the most precise results."
+  version: "0.2.0"
+  termsOfService: ""
+  contact:
+    name: "Persistent Streaming Inventory API"
+    email: "cedar.cires@colorado.edu"
+  license:
+    name: GNU GPL
+    url: 'https://www.gnu.org/licenses/gpl-2.0.en.html'
+servers:
+  - url: https://sciapps.colorado.edu/registry
+    description: development server
+  - url: http://localhost:8080
+    description: local standalone
+  - url: http://localhost/registry
+    description: local w/ proxy
+security:
+  - app_id: []
+externalDocs:
+  description: API Documentation (add the uri for the docs)
+  url: https://github.com/cedardevs/psi/tree/master/docs
+paths:
+  /metadata/{type}:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+    post:
+      tags:
+        - Create or Replace a record
+      summary: "Create or replace a metadata record from an unspecified source"
+      description: "Create a collection or granule record with unspecified source will be flagged as `unknown` source and a also random UUID will be assigned by the application. <br/><br/>**Note**: Make sure you hold on to the assigned UUID if you want to update/delete the record later."
+      operationId: createRecord
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    put:
+      tags:
+        - Create or Replace a record
+      summary: "Create or replace a metadata record from an unspecified source"
+      description: "Create a collection or granule record with unspecified source will be flagged as `unknown` source and also a random UUID will be assigned by the application. <br/><br/>**Note**: Make sure you hold on to the assigned UUID if you want to update/delete the record later."
+      operationId: createReplaceRecord
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+  /metadata/{type}/{id}:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataUUID'
+    post:
+      tags:
+        - Create or Replace a record
+      summary: "Create a metadata record from an unspecified source with provided id"
+      description:  "creating a collection or granule record with unspecified source will be flagged as `unknown` source."
+      operationId: createRecordById
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    put:
+      tags:
+        - Create or Replace a record
+      summary: "Create or replace a metadata record from an unspecified source with provided id"
+      description: "creating a collection or granule record with unspecified source will be flagged as `unknown` source."
+      operationId: createReplaceRecordById
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    patch:
+      tags:
+        - Create or Modify a record
+      summary: "Create or modify a metadata record from an unspecified source with provided id"
+      description: "Note: Creating a collection or granule record with unspecified source will be flagged as `unknown` source."
+      operationId: createModifyRecordById
+      requestBody:
+        $ref: '#/components/requestBodies/patchBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    delete:
+      tags:
+        - Remove parsed record
+      summary: "Request to remove record with unspecified source"
+      description: "Note: Requesting a resource to be removed only removes the downstream processed/parsed data, but the actual input is flagged as `delete`"
+      operationId: removedRecord
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    get:
+      tags:
+        - Retrieve raw record
+      summary: "Retrieve raw metadata record by id"
+      operationId: showRecordByUUID
+      responses:
+        '200':
+          $ref: '#/components/responses/getRawItemById'
+        '404':
+          $ref: '#/components/responses/recordNotFound'
+  /metadata/{type}/{source}/{id}:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataSource'
+      - $ref: '#/components/parameters/metadataUUID'
+    post:
+      tags:
+        - Create or Replace a record
+      summary: "Create or replace a metadata record with specified source and provided id"
+      description:  "creating a collection or granule record with unspecified source will be flagged as `unknown` source."
+      operationId: createRecordFromSourceWithUUID
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    put:
+      tags:
+        - Create or Replace a record
+      summary: "Create or replace a metadata record with specified source and provided id"
+      description: "creating a collection or granule record with unspecified source will be flagged as `unknown` source."
+      operationId: createReplaceRecordFromSourceWithUUID
+      requestBody:
+        $ref: '#/components/requestBodies/postBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    patch:
+      tags:
+        - Create or Modify a record
+      summary: "Create or modify a metadata record with specified source and provided id"
+      description: "Note: Creating a collection or granule record with unspecified source will be flagged as `unknown` source."
+      operationId: createModifyRecordFromSourceWithUUID
+      requestBody:
+        $ref: '#/components/requestBodies/patchBody'
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    delete:
+      tags:
+        - Remove parsed record
+      summary: "Request that a resource be removed"
+      description: "Note: Requesting a resource to be removed only removes the downstream processed/parsed data, but the actual input is flagged as `delete`"
+      operationId: removedRecordFromSourceWithUUID
+      responses:
+        '201':
+          $ref: '#/components/responses/createItem'
+        404:
+          $ref: '#/components/responses/error'
+    get:
+      tags:
+        - Retrieve raw record
+      summary: "Retrieve raw metadata record by source and id"
+      operationId: showRecordByUUIDAndSource
+      responses:
+        '200':
+          $ref: '#/components/responses/getRawItemById'
+        '404':
+          $ref: '#/components/responses/recordNotFound'
+
+  /metadata/{type}/{id}/parsed:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataSource'
+      - $ref: '#/components/parameters/metadataUUID'
+    get:
+      tags:
+        - Retrieve parsed record
+      summary: "Retrieve parsed metadata record by source and id"
+      operationId: showParsedRecordByUUID
+      responses:
+        '200':
+          $ref: '#/components/responses/getParsedItemById'
+        '404':
+          $ref: '#/components/responses/recordNotFound'
+
+  /metadata/{type}/{id}/resurrection:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataUUID'
+    get:
+      tags:
+        - Restore parsed record
+      summary: "Retrieve parsed metadata record by id"
+      operationId: showResurrectionByUUID
+      responses:
+        '200':
+          $ref: '#/components/responses/getResurrection'
+
+  /metadata/{type}/{source}/{id}/parsed:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataSource'
+      - $ref: '#/components/parameters/metadataUUID'
+    get:
+      tags:
+        - Retrieve parsed record
+      summary: "Retrieve parsed metadata record by source and id"
+      operationId: showParsedRecordByUUIDAndSource
+      responses:
+        '200':
+          $ref: '#/components/responses/getParsedItemById'
+        '404':
+          $ref: '#/components/responses/recordNotFound'
+  /metadata/{type}/{source}/{id}/resurrection:
+    parameters:
+      - $ref: '#/components/parameters/metadataType'
+      - $ref: '#/components/parameters/metadataSource'
+      - $ref: '#/components/parameters/metadataUUID'
+    get:
+      tags:
+        - Restore parsed record
+      summary: "Recover parsed metadata record by source and id"
+      operationId: showResurrectionByUUIDAndSource
+      responses:
+        '200':
+          $ref: '#/components/responses/getResurrection'
+
+components:
+  securitySchemes:
+    app_id:
+      type: apiKey
+      description: API key to authorize requests. If you don't have a key, use `admin`.
+      name: admin
+      in: query
+  parameters:
+    metadataSource:
+      name: source
+      in: path
+      description: The source that generated this metadata record
+      required: true
+      schema:
+        enum:
+          - comet
+          - common-ingest
+          - unknown
+        type: string
+    metadataType:
+      description: The type of metadata i.e. granule or collection.
+      in: path
+      name: type
+      required: true
+      schema:
+        $ref: 'json/schema-definitions.json#/definitions/enum:org.cedar.schemas.avro.psi.RecordType'
+      examples:
+        deleted item:
+          summary: deleted ex - getRawItemById
+    metadataUUID:
+      description: The UUID associated with this record
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+
+  requestBodies:
+    postBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/defaultJsonPostBody'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/isoXmlDocument'
+      description: Either an ISO 19115 XML document or json
+      required: true
+    patchBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/defaultJsonPostBody'
+      description: Json
+      required: true
+
+  responses:
+    createItem:
+      description: Successful response contains metadata record id and type
+      content:
+        application/json:
+          schema:
+            title: record created
+            type: object
+            properties:
+              id:
+                $ref: '#/components/schemas/uuid'
+              types:
+                $ref: 'json/schema-definitions.json#/definitions/enum:org.cedar.schemas.avro.psi.RecordType'
+          example:
+            id: d290f1ee-6c54-4b01-90e6-d701748f0851
+            type: collection
+    error:
+      description: Unsuccessful operations will return a response body with
+      content:
+        text/plain:
+          schema:
+            title: Record not found
+            type: string
+            example: status 404 - Not found
+    getRawItemById:
+      description: Successful operations will return
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/rawInventoryItem'
+    getParsedItemById:
+      description: Successful operations will return
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/parsedInventoryItem'
+    getResurrection:
+      description: Successful operations will return
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/resurrectionInventoryItem'
+    recordNotFound:
+      description: Unsuccessful operations will return a response body with
+      content:
+        application/json:
+          schema:
+            title: record not found
+            type: object
+            properties:
+              link:
+                properties:
+                  self:
+                    format: uri
+                    type: string
+              errors:
+                $ref: 'json/schema-definitions.json#/definitions/record:org.cedar.schemas.avro.psi.ErrorEvent'
+            example:
+              link:  "http://localhost:8080/registry/metadata/collection/comet/9a0fe56"
+              error:
+                status: 404
+                title: 404 NOT_FOUND
+                detail: No parsed values exist ...
+
+  schemas:
+    rawInventoryItem:
+      properties:
+        links:
+          properties:
+            parsed:
+              format: uri
+              type: string
+              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56/parsed"
+            self:
+              format: uri
+              type: string
+              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56"
+        data:
+          properties:
+            attributes:
+              $ref: 'json/schema-definitions.json#/definitions/record:org.cedar.schemas.avro.psi.Input'
+            id:
+              $ref: '#/components/schemas/uuid'
+            type:
+              $ref: 'json/schema-definitions.json#/definitions/enum:org.cedar.schemas.avro.psi.RecordType'
+          example:
+            attributes:
+              type: collection
+              content: '<objects><object><id>1</id><name>new</name></object><object><id>2</id></object></objects>'
+              contentType: application/xml
+              method: POST
+              source: comet
+            id: d290f1ee-6c54-4b01-90e6-d701748f0851
+            type: collection
+
+    parsedInventoryItem:
+      properties:
+        links:
+          properties:
+            parsed:
+              format: uri
+              type: string
+              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56/parsed"
+            self:
+              format: uri
+              type: string
+              example: "http://localhost:8080/registry/metadata/collection/comet/9a0fe56"
+        data:
+          properties:
+            attributes:
+              $ref: 'json/schema-definitions.json#/definitions/record:org.cedar.schemas.avro.psi.ParsedRecord'
+            id:
+              $ref: '#/components/schemas/uuid'
+            type:
+              $ref: 'json/schema-definitions.json#/definitions/enum:org.cedar.schemas.avro.psi.RecordType'
+          example:
+            attributes:
+              type: collection
+              discovery: {}
+              analysis: {}
+              errors: [ ]
+            id: d290f1ee-6c54-4b01-90e6-d701748f0851
+            type: collection
+    resurrectionInventoryItem:
+      properties:
+        id:
+          $ref: '#/components/schemas/uuid'
+        type:
+          $ref: 'json/schema-definitions.json#/definitions/enum:org.cedar.schemas.avro.psi.RecordType'
+      example:
+        id: d290f1ee-6c54-4b01-90e6-d701748f0851
+        type: collection
+
+    isoXmlDocument:
+      type: object
+
+    defaultJsonPostBody:
+      type: object
+
+    uuid:
+      format: uuid
+      type: string

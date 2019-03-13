@@ -5,6 +5,7 @@ plugins {
   id "org.springframework.boot" version "2.1.1.RELEASE"
   id "io.spring.dependency-management" version "1.0.6.RELEASE"
   id 'org.cedar.dockerplugin' version '1.0.3'
+  id "com.moowork.node"
 }
 
 configurations {
@@ -13,6 +14,8 @@ configurations {
 
   integrationTestCompile.extendsFrom testCompile
   integrationTestRuntime.extendsFrom testRuntime
+  
+  schemaDefinitions
 }
 
 dependencies {
@@ -24,6 +27,8 @@ dependencies {
   compile('org.apache.kafka:kafka-clients:2.1.0')
   compile('io.confluent:kafka-streams-avro-serde:5.1.0')
   compile(project(':common'))
+  //configure  to unzip and copy schema definitions 
+  schemaDefinitions ('com.github.cedardevs:schemas:0.1.2')
 
   compileOnly('org.springframework.boot:spring-boot-starter-tomcat')
 
@@ -42,7 +47,7 @@ dependencies {
   testCompile('io.confluent:kafka-schema-registry:5.1.0')
   testCompile('io.confluent:kafka-schema-registry:5.1.0:tests')
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
-  testCompile('com.github.cedardevs:schemas:0.1.1:test')
+  testCompile('com.github.cedardevs:schemas:0.1.2:test')
 }
 
 sourceSets {
@@ -65,8 +70,8 @@ task integrationTest(type: Test, description: 'Runs the integration tests', grou
 check.dependsOn integrationTest
 
 war {
-  // build a deployable war in addition to the executable one
-  enabled = true
+  dependsOn { 'generateOpenApi' }
+  enabled = true // build a deployable war in addition to the executable one
   classpath -= files(configurations.compileOnly)
   baseName = "${rootProject.name}-${project.name}"
 }
@@ -77,8 +82,8 @@ bootWar {
 }
 
 bootJar {
-  // add a classifier to distinguish the executable jar
-  classifier = 'all'
+  dependsOn { 'generateOpenApi' }
+  classifier = 'all' // add a classifier to distinguish the executable jar
   baseName = "${rootProject.name}-${project.name}"
   launchScript()
 }
@@ -87,6 +92,32 @@ task sourceJar(type: Jar) {
   classifier = 'sources'
   baseName = "${rootProject.name}-${project.name}"
   from "${projectDir}/src"
+}
+
+task extractSchemaDefinitions(type: Copy) {
+  dependsOn configurations.schemaDefinitions
+  from { // use of closure defers evaluation until execution time
+    configurations.schemaDefinitions.collect {
+      zipTree(it).matching{
+        include 'json/schema-definitions.json'
+      }
+    }
+  }
+
+  into "$buildDir/resources/main"
+}
+
+node {
+  version = '10.15.3'
+  npmVersion = '6.1.0'
+  download = true
+}
+
+// NOTE: The 'build' task defined in package.json pipes the output directly to the output file
+task generateOpenApi(type: NpmTask) {
+  dependsOn { ['npmInstall', 'extractSchemaDefinitions', 'processResources'] }
+  args = ['run', 'build']
+  outputs.file("$buildDir/resources/main/static/openApi.yml")
 }
 
 docker {

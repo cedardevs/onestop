@@ -43,7 +43,7 @@ coverage
 build/Release
 
 # Dependency directories
-node_modules
+registry/node_modules
 jspm_packages
 
 # Optional npm cache directory
