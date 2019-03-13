@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: cedardevs/psi-registry
-  tag: 0.2.0
+  tag: 0.3.0-SNAPSHOT
   pullPolicy: IfNotPresent
   pullSecrets: []
 

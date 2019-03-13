@@ -5,10 +5,10 @@ dependencies:
   repository: https://confluentinc.github.io/cp-helm-charts/
   condition: cp.enabled,global.cp.enabled
 - name: psi-registry
-  version: ~0.2.0
+  version: ~0.3.0-SNAPSHOT
   repository: file://../psi-registry
   conditions: registry.enabled,global.registry.enabled
 - name: psi-manager
-  version: ~0.2.0
+  version: ~0.3.0-SNAPSHOT
   repository: file://../psi-manager
   conditions: manager.enabled,global.manager.enabled

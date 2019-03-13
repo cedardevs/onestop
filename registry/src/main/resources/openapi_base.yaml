@@ -7,7 +7,7 @@ openapi: "3.0.2"
 info:
   title: "Persistent Streaming Inventory API"
   description: "This file covers the `current` endpoint for the Persistent Streaming Inventory API. <br/><br/> **Note**: For creating, modifying and removing a record, you must select at least one parameter. Calling the API by `id` and `source` parameter will provide the most precise results."
-  version: "0.2.0"
+  version: "0.3.0-SNAPSHOT"
   termsOfService: ""
   contact:
     name: "Persistent Streaming Inventory API"

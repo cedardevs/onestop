@@ -7,17 +7,17 @@ build:
     docker:
       buildArgs:
         DATE: now
-        JAR_NAME: psi-registry-0.2.0-all.jar
+        JAR_NAME: psi-registry-0.3.0-SNAPSHOT-all.jar
         VCS_REF: local
-        VERSION: 0.2.0
+        VERSION: 0.3.0-SNAPSHOT
   - image: cedardevs/psi-stream-manager
     context: ./stream-manager
     docker:
       buildArgs:
         DATE: now
-        JAR_NAME: psi-stream-manager-0.2.0-all.jar
+        JAR_NAME: psi-stream-manager-0.3.0-SNAPSHOT-all.jar
         VCS_REF: local
-        VERSION: 0.2.0
+        VERSION: 0.3.0-SNAPSHOT
 deploy:
   helm:
     releases:
