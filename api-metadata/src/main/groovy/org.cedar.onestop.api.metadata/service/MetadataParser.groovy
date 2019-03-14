@@ -604,7 +604,8 @@ class MetadataParser {
     def north = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "")  ? null : bbox.northBoundLatitude.Decimal.toFloat()
     def south = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toFloat()
 
-    if (!west || !east || !north || !south) { return null }
+    // explicitly check for null-iness, since 0.0 will evaluate to false
+    if (west == null || east == null || north == null || south == null) { return null }
 
     def type, coordinates
     if (west == east && north == south) {
