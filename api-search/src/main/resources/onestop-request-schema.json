@@ -81,6 +81,9 @@
           "$ref": "#/definitions/dateTimeFilter"
         },
         {
+          "$ref": "#/definitions/yearFilter"
+        },
+        {
           "$ref": "#/definitions/facetFilter"
         },
         {
@@ -128,6 +131,46 @@
         "after": {
           "type": "string",
           "format": "date-time"
+        },
+        "relation":  {
+          "description": "How the result time range relates to the query time range, e.g., return all datasets whose time range is within the given time range. Defaults to 'intersects'.",
+          "enum": [
+            "contains",
+            "disjoint",
+            "intersects",
+            "within"
+          ]
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "yearFilter": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "year"
+          ]
+        },
+        "before": {
+          "type": "number",
+          "multipleOf": 1.0
+        },
+        "after": {
+          "type": "number",
+          "multipleOf": 1
+        },
+        "relation":  {
+          "description": "How the result time range relates to the query time range, e.g., return all datasets whose time range is within the given time range. Defaults to 'intersects'.",
+          "enum": [
+            "contains",
+            "disjoint",
+            "intersects",
+            "within"
+          ]
         }
       },
       "required": [
@@ -199,7 +242,7 @@
           "$ref": "#/definitions/Geometry"
         },
         "relation": {
-          "description": "How the dataset geometry relates to the given geometry, e.g., return all datasets whose geometry contains the given point. Defaults to 'intersects'.",
+          "description": "How the result geometry relates to the query geometry, e.g., return all datasets whose geometry contains the given point. Defaults to 'intersects'.",
           "enum": [
             "contains",
             "disjoint",

@@ -206,23 +206,12 @@ export default class Logo extends Component {
     return (
       <div style={styleLogoWrapper}>
         <div style={styleNoaaLogoWrapper}>
-          <a
-            href="http://www.noaa.gov"
-            title="NOAA"
-            aria-hidden={true}
-            onFocus={this.handleImageFocus}
-            onBlur={this.handleImageBlur}
-            onMouseOver={this.handleImageMouseOver}
-            onMouseOut={this.handleImageMouseOut}
-            style={{outline: 'none'}}
-          >
-            <img
-              style={styleNoaaLogoMerged}
-              id="logo"
-              alt="NOAA Logo"
-              src={noaaLogo}
-            />
-          </a>
+          <img
+            style={styleNoaaLogoMerged}
+            id="logo"
+            alt="NOAA Logo"
+            src={noaaLogo}
+          />
         </div>
         <div style={styleTextWrapperMerged}>
           <a
@@ -235,7 +224,7 @@ export default class Logo extends Component {
             onMouseOut={this.handleTextMouseOut}
           >
             <span style={stylesOneStopText} aria-label="One Stop">
-              <span style={styleOneStopOImageWrapper} aria-hidden="true">
+              <span style={styleOneStopOImageWrapper}>
                 <SvgIcon
                   size="1.1em"
                   verticalAlign="initial"

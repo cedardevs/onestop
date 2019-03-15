@@ -6,7 +6,7 @@ import {fontFamilySansSerif} from './styleUtils'
 
 export const styleProtocolListItem = {
   display: 'inline-flex',
-  marginLeft: '1em',
+  marginRight: '0.309em',
   alignSelf: 'center',
 }
 

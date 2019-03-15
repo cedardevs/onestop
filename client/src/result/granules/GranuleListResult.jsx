@@ -13,14 +13,15 @@ import {fontFamilySerif} from '../../utils/styleUtils'
 import Checkbox from '../../common/input/Checkbox'
 import {FEATURE_CART} from '../../utils/featureUtils'
 import {play_circle_o, SvgIcon} from '../../common/SvgIcon'
-import {identifyProtocol} from '../../utils/resultUtils'
 import VideoTray from './VideoTray'
 import {granuleDownloadableLinks} from '../../utils/cartUtils'
 
 const styleResult = {
   minHeight: '15.5em',
   margin: '0 1.618em 1.618em 0',
+  padding: '0.618em',
   boxShadow: boxShadow,
+  borderRadius: '0 0.309em 0.309em 0',
   backgroundColor: 'white',
   transition: '0.3s background-color ease',
 }
@@ -47,18 +48,16 @@ const styleMap = {
 
 const styleTitle = {
   fontFamily: fontFamilySerif(),
-  fontSize: '1.3em',
+  fontSize: '1em',
   color: 'rgb(0, 0, 50)',
-  border: '.1em dashed transparent', // prevents resize when focus border is set
-  margin: '.259em',
-  padding: '.259em',
   overflowWrap: 'break-word',
   wordWrap: 'break-word',
+  margin: '0 0 0.618em 0',
 }
 
 const styleSectionHeader = {
   fontFamily: fontFamilySerif(),
-  fontSize: '1.1em',
+  fontSize: '1em',
   margin: '0.618em 0 0 0',
 }
 
@@ -68,21 +67,19 @@ const styleSectionContent = {
 
 const styleFocusDefault = {
   outline: 'none',
-  border: '.1em dashed white',
+  // border: '.1em dashed white',
+  textDecoration: 'underline',
 }
 
 const styleBadgeLink = {
   textDecoration: 'none',
   display: 'inline-flex',
+  paddingRight: '0.309em',
 }
 
 const styleBadgeLinkFocused = {
   outline: '2px dashed white',
   outlineOffset: '0.105em',
-}
-
-const styleCheckboxLabel = {
-  width: '6em',
 }
 
 const stylePlayButton = {
@@ -96,6 +93,11 @@ const stylePlayButton = {
 const styleHoverPlayButton = {
   background: 'none',
   fill: 'blue',
+}
+
+const styleFlexRowR2L = {
+  flexDirection: 'row-reverse',
+  flexGrow: 1,
 }
 
 class ListResult extends React.Component {
@@ -314,7 +316,7 @@ class ListResult extends React.Component {
       ...styleFocused,
     }
 
-    const rightItems = [
+    const title = (
       <h2
         id={`ListResult::title::${itemId}`}
         key={`ListResult::title::${itemId}`}
@@ -327,8 +329,8 @@ class ListResult extends React.Component {
         style={styleOverallHeadingApplied}
       >
         {item.title}
-      </h2>,
-    ]
+      </h2>
+    )
 
     const granuleDownloadable = granuleDownloadableLinks([ item ]).length > 0
     const selectGranuleCheckbox =
@@ -337,13 +339,13 @@ class ListResult extends React.Component {
           key={`checkbox-${itemId}`}
           title={`Mark ${item.title} as file to download`}
           label={`Mark as file to download`}
-          styleLabel={styleCheckboxLabel}
           id={itemId}
           checked={checkGranule}
           onChange={handleCheckboxChange(itemId, item)}
         />
       ) : null
 
+    const rightItems = []
     if (showLinks) {
       rightItems.push(this.renderLinks(item.links))
     }
@@ -362,7 +364,7 @@ class ListResult extends React.Component {
     const left = (
       <FlexColumn
         key={'ListResult::leftColumn'}
-        style={{width: '32%'}}
+        style={{width: '50%'}}
         items={[
           this.renderDisplayImage(item.thumbnail, item.spatialBounding),
         ]}
@@ -372,7 +374,7 @@ class ListResult extends React.Component {
     const right = (
       <FlexColumn
         key={'ListResult::rightColumn'}
-        style={{marginLeft: '1.618em', width: '68%'}}
+        style={{marginLeft: '1.618em', width: '50%'}}
         items={rightItems}
       />
     )
@@ -399,17 +401,20 @@ class ListResult extends React.Component {
       />
     )
 
+    const flexRowR2L = (
+      <FlexRow style={styleFlexRowR2L} items={[ right, left ]} />
+    )
+
     return (
       <div
         style={styleResultMerged}
         onFocus={this.handleFocus}
         onBlur={this.handleBlur}
       >
-        <FlexRow
-          style={{padding: '1.618em', flexDirection: 'row-reverse'}}
-          items={[ selectGranuleCheckbox, right, left ]}
-        />
+        {title}
+        {flexRowR2L}
         {video}
+        <div style={{marginTop: '1em'}}>{selectGranuleCheckbox}</div>
       </div>
     )
   }

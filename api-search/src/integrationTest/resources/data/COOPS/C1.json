@@ -1,4 +1,9 @@
 {
+  "stagedDate": 1519338341272,
+  "fileIdentifier": "gov.noaa.nodc:NDBC-COOPS",
+  "doi": "doi:10.5072/FK2TEST",
+  "title": "Coastal meteorological and water temperature data from National Water Level Observation Network (NWLON) and Physical Oceanographic Real-Time System (PORTS) stations of the NOAA Center for Operational Oceanographic Products and Services (CO-OPS)",
+  "description": "The National Water Level Observation Network (NWLON) is a network of long-term water level stations operated and maintained by CO-OPS. NWLON stations are located on shore-based platforms, and primarily collect real-time water level measurements. As of January 2013, approximately 180 of 210 NWLON stations also collect real-time meteorological data. About 20 CO-OPS Physical Oceanographic Real-Time Systems (PORTS) comprise a group of water level stations, and 65 of these stations also collect real-time meteorological data. Data parameters include barometric pressure, wind direction, speed and gust, air temperature, and water temperature.",
   "keywords": [
     "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
     "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
@@ -361,24 +366,112 @@
     "Ocean > Pacific Ocean > North Pacific Ocean > Gulf Of Alaska",
     "Ocean > Pacific Ocean > South Pacific Ocean"
   ],
+  "gcmdScience": [
+    "Atmosphere > Atmospheric Pressure",
+    "Atmosphere",
+    "Atmosphere > Atmospheric Temperature",
+    "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
+    "Atmosphere > Atmospheric Temperature > Surface Temperature",
+    "Atmosphere > Atmospheric Water Vapor > Humidity",
+    "Atmosphere > Atmospheric Water Vapor",
+    "Atmosphere > Atmospheric Winds > Surface Winds > Wind Speed/Wind Direction",
+    "Atmosphere > Atmospheric Winds > Surface Winds",
+    "Atmosphere > Atmospheric Winds",
+    "Oceans > Ocean Optics",
+    "Oceans",
+    "Oceans > Ocean Temperature > Sea Surface Temperature",
+    "Oceans > Ocean Temperature"
+  ],
+  "gcmdScienceServices": [
+
+  ],
+  "gcmdLocations": [
+    "Continent > North America > Canada > Great Lakes, Canada",
+    "Continent > North America > Canada",
+    "Continent > North America",
+    "Continent",
+    "Continent > North America > United States Of America > Great Lakes",
+    "Continent > North America > United States Of America",
+    "Ocean > Arctic Ocean > Beaufort Sea",
+    "Ocean > Arctic Ocean",
+    "Ocean",
+    "Ocean > Atlantic Ocean > North Atlantic Ocean",
+    "Ocean > Atlantic Ocean",
+    "Ocean > Atlantic Ocean > North Atlantic Ocean > Bay Of Fundy",
+    "Ocean > Atlantic Ocean > North Atlantic Ocean > Caribbean Sea",
+    "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
+    "Ocean > Pacific Ocean > Central Pacific Ocean > Hawaiian Islands",
+    "Ocean > Pacific Ocean > Central Pacific Ocean",
+    "Ocean > Pacific Ocean",
+    "Ocean > Pacific Ocean > North Pacific Ocean",
+    "Ocean > Pacific Ocean > North Pacific Ocean > Bering Sea",
+    "Ocean > Pacific Ocean > North Pacific Ocean > Gulf Of Alaska",
+    "Ocean > Pacific Ocean > South Pacific Ocean"
+  ],
+  "gcmdInstruments": [
+    "In Situ/Laboratory Instruments > Current/Wind Meters > Anemometers",
+    "In Situ/Laboratory Instruments > Pressure/Height Meters > Barometers",
+    "In Situ/Laboratory Instruments > Temperature/Humidity Sensors > Thermistors > Thermistors"
+  ],
+  "gcmdPlatforms": [
+
+  ],
+  "gcmdProjects": [
+
+  ],
+  "gcmdDataCenters": [
+    "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "GOVERNMENT AGENCIES-U.S. FEDERAL AGENCIES > DOC > NOAA > DOC/NOAA/NOS/CO-OPS > Center for Operational Oceanographic Products and Services, National Ocean Service, NOAA, U.S. Department of Commerce > Http://Tidesandcurrents.Noaa.Gov/",
+    "GOVERNMENT AGENCIES-U.S. FEDERAL AGENCIES > DOC > NOAA > DOC/NOAA/NWS/NDBC > National Data Buoy Center, National Weather Service, NOAA, U.S. Department of Commerce > Http://Www.Ndbc.Noaa.Gov/"
+  ],
+  "gcmdHorizontalResolution": [
+
+  ],
+  "gcmdVerticalResolution": [
+
+  ],
+  "gcmdTemporalResolution": [
+
+  ],
+  "beginDate": "2013-03-01T00:00:00.000Z",
+  "beginYear": "2013",
+  "endDate": null,
+  "endYear": "",
+  "spatialBounding": {
+    "coordinates": [
+      [
+        [
+          144.657,
+          -14.28
+        ],
+        [
+          -61.821,
+          -14.28
+        ],
+        [
+          -61.821,
+          70.4
+        ],
+        [
+          144.657,
+          70.4
+        ],
+        [
+          144.657,
+          -14.28
+        ]
+      ]
+    ],
+    "type": "Polygon"
+  },
+  "isGlobal": false,
   "dataFormats": [
     {
       "name": "ORIGINATOR DATA FORMAT",
       "version": null
     }
   ],
-  "beginYear": "2013",
-  "endYear": "",
-  "organizationNames": [
-    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-    "US DOC; NOAA; NWS; National Data Buoy Center (NDBC)",
-    "US DOC; NOAA; NWS; National Data Buoy Center (NDBC)",
-    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-    "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce"
-  ],
-  "gcmdHorizontalResolution": [],
-  "largerWorks": [],
-  "useLimitation": "accessLevel: Public",
   "links": [
     {
       "linkFunction": "information",
@@ -423,9 +516,6 @@
       "linkProtocol": "FTP"
     }
   ],
-  "stagedDate": 1519338341272,
-  "gcmdVerticalResolution": [],
-  "thumbnail": "http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:NDBC-COOPS",
   "individualNames": [
     "",
     "Rex V Hervey",
@@ -433,103 +523,30 @@
     "",
     ""
   ],
+  "organizationNames": [
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "US DOC; NOAA; NWS; National Data Buoy Center (NDBC)",
+    "US DOC; NOAA; NWS; National Data Buoy Center (NDBC)",
+    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
+    "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce"
+  ],
+  "thumbnail": "http://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:NDBC-COOPS",
+  "citeAsStatements": [
+    "Cite as: Hervey, R. V. and US DOC; NOAA; NWS; National Data Buoy Center (2013). Coastal meteorological and water temperature data from National Water Level Observation Network (NWLON) and Physical Oceanographic Real-Time System (PORTS) stations of the NOAA Center for Operational Oceanographic Products and Services (CO-OPS). National Oceanographic Data Center, NOAA. Dataset. [access date]"
+  ],
+  "crossReferences": [
+
+  ],
+  "largerWorks": [
+
+  ],
+  "useLimitation": "accessLevel: Public",
   "legalConstraints": [
     "Cite as: Hervey, R. V. and US DOC; NOAA; NWS; National Data Buoy Center (2013). Coastal meteorological and water temperature data from National Water Level Observation Network (NWLON) and Physical Oceanographic Real-Time System (PORTS) stations of the NOAA Center for Operational Oceanographic Products and Services (CO-OPS). National Oceanographic Data Center, NOAA. Dataset. [access date]",
     "NOAA and NCEI cannot provide any warranty as to the accuracy, reliability, or completeness of furnished data. Users assume responsibility to determine the usability of these data. The user is responsible for the results of any application of this data for other than its intended purpose."
   ],
-  "gcmdProjects": [],
-  "gcmdLocations": [
-    "Continent > North America > Canada > Great Lakes, Canada",
-    "Continent > North America > Canada",
-    "Continent > North America",
-    "Continent",
-    "Continent > North America > United States Of America > Great Lakes",
-    "Continent > North America > United States Of America",
-    "Ocean > Arctic Ocean > Beaufort Sea",
-    "Ocean > Arctic Ocean",
-    "Ocean",
-    "Ocean > Atlantic Ocean > North Atlantic Ocean",
-    "Ocean > Atlantic Ocean",
-    "Ocean > Atlantic Ocean > North Atlantic Ocean > Bay Of Fundy",
-    "Ocean > Atlantic Ocean > North Atlantic Ocean > Caribbean Sea",
-    "Ocean > Atlantic Ocean > North Atlantic Ocean > Gulf Of Mexico",
-    "Ocean > Pacific Ocean > Central Pacific Ocean > Hawaiian Islands",
-    "Ocean > Pacific Ocean > Central Pacific Ocean",
-    "Ocean > Pacific Ocean",
-    "Ocean > Pacific Ocean > North Pacific Ocean",
-    "Ocean > Pacific Ocean > North Pacific Ocean > Bering Sea",
-    "Ocean > Pacific Ocean > North Pacific Ocean > Gulf Of Alaska",
-    "Ocean > Pacific Ocean > South Pacific Ocean"
-  ],
-  "crossReferences": [],
-  "doi": "doi:10.5072/FK2TEST",
-  "citeAsStatements": [
-    "Cite as: Hervey, R. V. and US DOC; NOAA; NWS; National Data Buoy Center (2013). Coastal meteorological and water temperature data from National Water Level Observation Network (NWLON) and Physical Oceanographic Real-Time System (PORTS) stations of the NOAA Center for Operational Oceanographic Products and Services (CO-OPS). National Oceanographic Data Center, NOAA. Dataset. [access date]"
-  ],
-  "dsmmAverage": 0,
-  "gcmdDataCenters": [
-    "DOC/NOAA/NESDIS/NODC > National Oceanographic Data Center, NESDIS, NOAA, U.S. Department of Commerce",
-    "DOC/NOAA/NESDIS/NCEI > National Centers for Environmental Information, NESDIS, NOAA, U.S. Department of Commerce",
-    "GOVERNMENT AGENCIES-U.S. FEDERAL AGENCIES > DOC > NOAA > DOC/NOAA/NOS/CO-OPS > Center for Operational Oceanographic Products and Services, National Ocean Service, NOAA, U.S. Department of Commerce > Http://Tidesandcurrents.Noaa.Gov/",
-    "GOVERNMENT AGENCIES-U.S. FEDERAL AGENCIES > DOC > NOAA > DOC/NOAA/NWS/NDBC > National Data Buoy Center, National Weather Service, NOAA, U.S. Department of Commerce > Http://Www.Ndbc.Noaa.Gov/"
-  ],
-  "description": "The National Water Level Observation Network (NWLON) is a network of long-term water level stations operated and maintained by CO-OPS. NWLON stations are located on shore-based platforms, and primarily collect real-time water level measurements. As of January 2013, approximately 180 of 210 NWLON stations also collect real-time meteorological data. About 20 CO-OPS Physical Oceanographic Real-Time Systems (PORTS) comprise a group of water level stations, and 65 of these stations also collect real-time meteorological data. Data parameters include barometric pressure, wind direction, speed and gust, air temperature, and water temperature.",
-  "edition": null,
-  "spatialBounding": {
-    "coordinates": [
-      [
-        [
-          144.657,
-          -14.28
-        ],
-        [
-          -61.821,
-          -14.28
-        ],
-        [
-          -61.821,
-          70.4
-        ],
-        [
-          144.657,
-          70.4
-        ],
-        [
-          144.657,
-          -14.28
-        ]
-      ]
-    ],
-    "type": "Polygon"
-  },
-  "title": "Coastal meteorological and water temperature data from National Water Level Observation Network (NWLON) and Physical Oceanographic Real-Time System (PORTS) stations of the NOAA Center for Operational Oceanographic Products and Services (CO-OPS)",
-  "gcmdScienceServices": [],
   "accessFeeStatement": null,
-  "gcmdInstruments": [
-    "In Situ/Laboratory Instruments > Current/Wind Meters > Anemometers",
-    "In Situ/Laboratory Instruments > Pressure/Height Meters > Barometers",
-    "In Situ/Laboratory Instruments > Temperature/Humidity Sensors > Thermistors > Thermistors"
-  ],
-  "fileIdentifier": "gov.noaa.nodc:NDBC-COOPS",
-  "gcmdTemporalResolution": [],
   "orderingInstructions": null,
-  "gcmdPlatforms": [],
-  "beginDate": "2013-03-01T00:00:00.000Z",
-  "isGlobal": false,
-  "gcmdScience": [
-    "Atmosphere > Atmospheric Pressure",
-    "Atmosphere",
-    "Atmosphere > Atmospheric Temperature",
-    "Atmosphere > Atmospheric Temperature > Surface Temperature > Dew Point Temperature",
-    "Atmosphere > Atmospheric Temperature > Surface Temperature",
-    "Atmosphere > Atmospheric Water Vapor > Humidity",
-    "Atmosphere > Atmospheric Water Vapor",
-    "Atmosphere > Atmospheric Winds > Surface Winds > Wind Speed/Wind Direction",
-    "Atmosphere > Atmospheric Winds > Surface Winds",
-    "Atmosphere > Atmospheric Winds",
-    "Oceans > Ocean Optics",
-    "Oceans",
-    "Oceans > Ocean Temperature > Sea Surface Temperature",
-    "Oceans > Ocean Temperature"
-  ]
+  "edition": null,
+  "dsmmAverage": 0
 }

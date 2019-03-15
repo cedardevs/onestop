@@ -173,11 +173,10 @@ class ElasticsearchService {
   Map queryElasticsearch(Map query, String index) {
     def headers = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
     Response response = restClient.performRequest('GET', "${index}/_search", Collections.EMPTY_MAP, headers)
-
     return parseResponse(response)
   }
 
-  private Map searchFromRequest(Map params, String index) {
+  Map searchFromRequest(Map params, String index) {
     // TODO: does this parse step need to change based on new different endpoints?
     def query = searchRequestParserService.parseSearchQuery(params)
     def getFacets = params.facets as boolean

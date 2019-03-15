@@ -82,14 +82,14 @@ describe('The home page', () => {
     })
 
     const expectedHrefs = [
-      '//www.ncdc.noaa.gov/about-ncdc/privacy',
-      'http://www.noaa.gov/foia-freedom-of-information-act',
-      'http://www.cio.noaa.gov/services_programs/info_quality.html',
-      'http://www.noaa.gov/disclaimer.html',
+      '//www.ncei.noaa.gov/privacy',
+      '//www.noaa.gov/foia-freedom-of-information-act',
+      '//www.cio.noaa.gov/services_programs/info_quality.html',
+      '//www.noaa.gov/disclaimer.html',
       '//www.ncdc.noaa.gov/survey',
       'mailto:noaa.data.catalog@noaa.gov?Subject=NOAA%20OneStop%20Feedback',
       '//www.commerce.gov/',
-      'http://www.noaa.gov/',
+      '//www.noaa.gov/',
       '//www.nesdis.noaa.gov/',
       'https://github.com/cedardevs/onestop/releases',
       undefined, // anchored link for image attribution (internal)

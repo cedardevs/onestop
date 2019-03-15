@@ -35,6 +35,10 @@ class HeaderLink extends React.Component {
   }
 
   handleMouseOver = event => {
+    const {onMouseOver} = this.props
+    if (onMouseOver) {
+      onMouseOver(event)
+    }
     this.setState(prevState => {
       return {
         ...prevState,
@@ -44,6 +48,10 @@ class HeaderLink extends React.Component {
   }
 
   handleMouseOut = event => {
+    const {onMouseOut} = this.props
+    if (onMouseOut) {
+      onMouseOut(event)
+    }
     this.setState(prevState => {
       return {
         ...prevState,
@@ -141,6 +149,7 @@ class HeaderLink extends React.Component {
         onKeyDown={this.handleKeyDown}
         onKeyUp={this.handleKeyUp}
         className={HEADER_LINK_CLASS}
+        title={title}
       >
         {this.props.children}
       </Link>

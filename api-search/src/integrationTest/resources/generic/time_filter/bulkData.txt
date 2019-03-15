@@ -1,0 +1,24 @@
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "1" } }
+{ "beginDate": null, "beginYear": null, "endDate": null, "endYear": null }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "2" } }
+{ "beginDate": "2000-01-01", "beginYear": 2000, "endDate": null, "endYear": null }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "3" } }
+{ "beginDate": "1995-01-01", "beginYear": 1995, "endDate": "2005-01-01", "endYear": 2005 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "4" } }
+{ "beginDate": null, "beginYear": null, "endDate": "2012-01-01", "endYear": 2012 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "5" } }
+{ "beginDate": "1980-01-01", "beginYear": 1980, "endDate": "1990-01-01", "endYear": 1990 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "6" } }
+{ "beginDate": "2013-01-01", "beginYear": 2013, "endDate": "2017-01-01", "endYear": 2017 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "7" } }
+{ "beginDate": null, "beginYear": -10000000, "endDate": null, "endYear": -5000000 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "8" } }
+{ "beginDate": null, "beginYear": null, "endDate": null, "endYear": -2000000000 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "9" } }
+{ "beginDate": null, "beginYear": -2000000000, "endDate": null, "endYear": -1000000000 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "10" } }
+{ "beginDate": null, "beginYear": -4543000000, "endDate": null, "endYear": -1500000000 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "11" } }
+{ "beginDate": null, "beginYear": -10000000, "endDate": null, "endYear": -1000000 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "12" } }
+{ "beginDate": null, "beginYear": -1500000, "endDate": null, "endYear": null }

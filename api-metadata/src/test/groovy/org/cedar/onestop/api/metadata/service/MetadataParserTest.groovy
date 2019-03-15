@@ -5,9 +5,21 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.time.format.DateTimeParseException
+import org.xml.sax.SAXParseException
 
 @Unroll
 class MetadataParserTest extends Specification {
+
+  def "CVE-2018-1000840 use external docs hack"() {
+    given: 'an xml which utilizes this vunerability'
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("attack.xml").text
+
+    when: 'you attempt to parse the xml'
+    def parsedXml = MetadataParser.parseXMLMetadataToMap(document)
+
+    then: 'we throw an exception instead of parsing attack-vector xml'
+    thrown(SAXParseException)
+  }
 
   def "XML metadata record is correctly parsed in full"() {
     given:
@@ -517,7 +529,7 @@ class MetadataParserTest extends Specification {
     temporalBounding == [
         beginDate           : null,
         beginIndeterminate  : null,
-        beginYear           : -617905000,
+        beginYear           : -100000001, // Edge case!
         endDate             : '-1601050',
         endIndeterminate    : null,
         endYear             : -1601050,

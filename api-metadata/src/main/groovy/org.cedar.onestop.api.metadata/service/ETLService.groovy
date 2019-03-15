@@ -425,7 +425,7 @@ class ETLService {
         ],
         script: [
             lang: "painless",
-            inline: reindexScript,
+            source: reindexScript,
             params: [internalParentId: internalParentId]
         ]
     ]
@@ -483,7 +483,7 @@ class ETLService {
           ],
           script: [
               lang: "painless",
-              inline: reindexScript,
+              source: reindexScript,
               params: [defaults: collectionBody, stagedDate: 'stagedDate']
           ]
       ]

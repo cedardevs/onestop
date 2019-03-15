@@ -1,9 +1,12 @@
 package org.cedar.onestop.api.search.controller
 
+import groovy.util.logging.Slf4j
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import org.springframework.http.converter.HttpMessageNotReadableException
 
+
+@Slf4j
 class JsonValidator {
 
   public static Map validateSearchRequestSchema(Map request) {
@@ -22,6 +25,7 @@ class JsonValidator {
     if (report.success) {
       return [success: true]
     } else {
+      log.debug("invalid schema ${schemaName}: ${report}")
       throw new HttpMessageNotReadableException("JSON body is well-formed, but not a valid request")
     }
   }

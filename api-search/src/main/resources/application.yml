@@ -41,7 +41,7 @@ logingov:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
-features.sitemap: false
+features.sitemap: true
 
 logging:
   level:

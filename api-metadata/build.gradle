@@ -25,12 +25,17 @@ configurations {
 
 dependencies {
   // Kafka dependencies for connecting with PSI
-  compile('com.github.cedardevs:schemas:0.1.0')
-  compile("org.springframework.kafka:spring-kafka:2.2.2.RELEASE")
-  compile("io.confluent:kafka-streams-avro-serde:5.0.1")
-  testCompile('com.github.cedardevs:schemas:0.1.0:test')
-  testCompile('io.confluent:kafka-schema-registry:5.0.1')
-  testCompile('io.confluent:kafka-schema-registry:5.0.1:tests')
+  compile('com.github.cedardevs:schemas:0.1.1')
+  compile("io.confluent:kafka-streams-avro-serde:5.1.0")
+  compile("org.apache.kafka:kafka-clients:2.1.1")
+  compile("org.springframework.kafka:spring-kafka:2.2.4.RELEASE")
+  testCompile("com.github.cedardevs:schemas:0.1.1:test")
+  testCompile("io.confluent:kafka-schema-registry:5.1.0")
+  testCompile("io.confluent:kafka-schema-registry:5.1.0:tests")
+  testCompile("org.apache.kafka:kafka_2.11:2.1.1")
+  testCompile("org.apache.kafka:kafka_2.11:2.1.1:test")
+  testCompile("org.apache.kafka:kafka-clients:2.1.1:test")
+  testCompile("org.springframework.kafka:spring-kafka-test:2.2.4.RELEASE")
 
   // opensaml
   compile("org.opensaml:opensaml-core:${project.openSAMLVersion}")
@@ -70,8 +75,7 @@ dependencies {
   // Authorization Services
   compile "org.springframework.boot:spring-boot-starter-data-jpa"
   compile 'org.liquibase:liquibase-core'
-  compile 'com.h2database:h2:1.4.197'
-
+  compile group: 'org.hsqldb', name:'hsqldb', version: '2.3.4'
   // version to override another library's dependency to solve a CVE:
   compile 'com.google.guava:guava:27.0.1-jre'
   compile 'commons-collections:commons-collections:3.2.2'
@@ -87,7 +91,6 @@ dependencies {
   testCompile "org.testcontainers:testcontainers:1.10.0"
   testCompile "org.testcontainers:elasticsearch:1.10.0"
   testCompile 'net.bytebuddy:byte-buddy:1.7.11'
-  testCompile "org.springframework.kafka:spring-kafka-test:2.2.2.RELEASE"
 }
 
 ext {
