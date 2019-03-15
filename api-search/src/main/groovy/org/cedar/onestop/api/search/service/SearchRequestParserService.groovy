@@ -182,8 +182,9 @@ class SearchRequestParserService {
 
   private List<Map> constructTemporalFilter(Map filterRequest, String beginField, String endField) {
 
-    def x = filterRequest.after
-    def y = filterRequest.before
+    def x = (filterRequest.after as String).isLong() ? filterRequest.after as Long : filterRequest.after as String
+    def y = (filterRequest.before as String).isLong() ? filterRequest.before as Long : filterRequest.before as String
+
     def relation = filterRequest.relation
 
     def esFilters = []
