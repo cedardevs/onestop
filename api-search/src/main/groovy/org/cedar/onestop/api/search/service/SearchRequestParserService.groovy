@@ -182,8 +182,8 @@ class SearchRequestParserService {
 
   private List<Map> constructTemporalFilter(Map filterRequest, String beginField, String endField) {
 
-    def x = (filterRequest.after as String).isLong() ? filterRequest.after as Long : filterRequest.after as String
-    def y = (filterRequest.before as String).isLong() ? filterRequest.before as Long : filterRequest.before as String
+    def x = filterRequest.after
+    def y = filterRequest.before
 
     def relation = filterRequest.relation
 
@@ -192,9 +192,9 @@ class SearchRequestParserService {
     switch (relation) {
     // Results contain query
       case 'contains':
-        if (x || y) {
-          def beginVal = x ? x : y
-          def endVal = y ? y : x
+        if (x != null || y != null) {
+          def beginVal = x != null ? x : y
+          def endVal = y != null ? y : x
 
           esFilters.add([
               bool: [
@@ -216,12 +216,12 @@ class SearchRequestParserService {
 
       case 'within':
         // Results within query
-        if (x) {
+        if (x != null) {
           esFilters.add([
               range: [ (beginField): [ gte: x ] ]
           ])
         }
-        if (y) {
+        if (y != null) {
           esFilters.add([
               range: [ (endField): [ lte: y ] ]
           ])
@@ -230,17 +230,17 @@ class SearchRequestParserService {
 
       case 'disjoint':
         // Results have nothing in common with query
-        if (x && !y) {
+        if (x != null && y == null) {
           esFilters.add([
               range: [ (endField): [ lt: x ] ]
           ])
         }
-        else if (!x && y) {
+        else if (x == null && y != null) {
           esFilters.add([
               range: [ (beginField): [ gt: y ] ]
           ])
         }
-        else if (x && y) {
+        else if (x != null && y != null) {
           esFilters.add([
               bool: [
                   should: [
@@ -271,7 +271,7 @@ class SearchRequestParserService {
 
       default:
         // Null or 'intersects'
-        if (x && !y) {
+        if (x != null && y == null) {
           // End date is greater than x; if endDate "ongoing" (null), make sure results actually have a beginDate
           // (otherwise we'll match ones without a time bounding)
           esFilters.add([
@@ -290,7 +290,7 @@ class SearchRequestParserService {
               ]
           ])
         }
-        else if (!x && y) {
+        else if (x == null && y != null) {
           esFilters.add([
               range: [
                   (beginField): [
@@ -299,7 +299,7 @@ class SearchRequestParserService {
               ]
           ])
         }
-        else if (x && y){
+        else if (x != null && y != null){
           esFilters.add([
               bool: [
                   must: [
