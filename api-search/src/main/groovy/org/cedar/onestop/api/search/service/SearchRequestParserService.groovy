@@ -190,22 +190,55 @@ class SearchRequestParserService {
     def esFilters = []
 
     switch (relation) {
-    // Results contain query
+    // Results contain query (aka query contained by results)
       case 'contains':
-        if (x != null || y != null) {
-          def beginVal = x != null ? x : y
-          def endVal = y != null ? y : x
-
+        if (x != null && y == null) {
           esFilters.add([
               bool: [
                   must: [
-                      [ range: [ (beginField): [ lte: beginVal ]] ]
+                      [ range: [ (beginField): [ lte: x ] ] ]
                   ],
+                  must_not: [
+                      [ exists: [ field: endField ] ]
+                  ]
+              ]
+          ])
+        }
+        else if (x == null && y != null) {
+          esFilters.add([
+              bool: [
+                  must: [
+                      [ range: [ (endField): [ gte: y ] ] ]
+                  ],
+                  must_not: [
+                      [ exists: [ field: beginField ] ]
+                  ]
+              ]
+          ])
+        }
+        else if (x != null && y != null) {
+          esFilters.add([
+              bool: [
                   should: [
-                      [ range: [ (endField): [ gte: endVal ]] ],
                       [ bool: [
+                          must: [
+                              [ range: [ (beginField): [ lte: x ] ] ]
+                          ],
                           must_not: [
                               [ exists: [ field: endField ] ]
+                          ]
+                      ]],
+                      [ bool: [
+                          must: [
+                              [ range: [ (endField): [ gte: y ] ] ]
+                          ],
+                          should: [
+                              [ range: [ (beginField): [ lte: x ]] ],
+                              [ bool: [
+                                  must_not: [
+                                      [ exists: [ field: beginField ] ]
+                                  ]
+                              ]]
                           ]
                       ]]
                   ]
@@ -215,7 +248,7 @@ class SearchRequestParserService {
         break
 
       case 'within':
-        // Results within query
+        // Results within query (aka results contained by query)
         if (x != null) {
           esFilters.add([
               range: [ (beginField): [ gte: x ] ]
@@ -226,6 +259,7 @@ class SearchRequestParserService {
               range: [ (endField): [ lte: y ] ]
           ])
         }
+        // If x != null && y != null then both statements must be true (elasticsearch AND created)
         break
 
       case 'disjoint':
@@ -244,25 +278,8 @@ class SearchRequestParserService {
           esFilters.add([
               bool: [
                   should: [
-                      [ bool: [
-                          must: [
-                              [range: [ (beginField): [ lt: x ] ]],
-                              [range: [ (endField): [ lt: x ] ]]
-                          ]
-                      ]],
-                      [ bool: [
-                          must: [
-                              [range: [ (beginField): [ gt: y ] ]]
-                          ],
-                          should: [
-                              [range: [ (endField): [ gt: y ] ]],
-                              [ bool: [
-                                  must_not: [
-                                      [ exists: [ field: endField ] ]
-                                  ]
-                              ]]
-                          ]
-                      ]]
+                      [ range: [ (beginField): [ gt: y ] ] ],
+                      [ range: [ (endField): [ lt: x ] ] ]
                   ]
               ]
           ])
@@ -292,9 +309,17 @@ class SearchRequestParserService {
         }
         else if (x == null && y != null) {
           esFilters.add([
-              range: [
-                  (beginField): [
-                      lte: y
+              bool: [
+                  should: [
+                      [ range: [ (beginField): [ lte: y ]] ],
+                      [ bool: [
+                          must: [
+                              [ exists: [ field: endField ] ]
+                          ],
+                          must_not: [
+                              [ exists: [ field: beginField ] ]
+                          ]
+                      ]]
                   ]
               ]
           ])
@@ -302,16 +327,9 @@ class SearchRequestParserService {
         else if (x != null && y != null){
           esFilters.add([
               bool: [
-                  must: [
-                      [ range: [ (beginField): [ lte: y ]] ]
-                  ],
                   should: [
-                      [ range: [ (endField): [ gte: x ]] ],
-                      [ bool: [
-                          must_not: [
-                              [ exists: [ field: endField ] ]
-                          ]
-                      ]]
+                      [ range: [ (beginField): [ lte: y ]] ],
+                      [ range: [ (endField): [ gte: x ]] ]
                   ]
               ]
           ])
