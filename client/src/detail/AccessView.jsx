@@ -55,7 +55,7 @@ export default class AccessView extends React.Component {
     )
   }
 
-  renderAccessLinkList = (links, notAvailable) => {
+  renderAccessLinkList = (links, showEmpty) => {
     let listItems = links.map((link, index) => {
       const {linkUrl, linkName, linkProtocol, linkDescription} = link
       const linkTitle = linkName ? linkName : linkProtocol
@@ -75,15 +75,20 @@ export default class AccessView extends React.Component {
         </li>
       )
     })
-    let list = <div style={styleContent}>{notAvailable}</div>
-    if (listItems.length > 0) {
-      list = (
+    const isEmpty = listItems.length < 1
+    if (isEmpty && showEmpty) {
+      return <div style={styleContent}>No links in metadata.</div>
+    }
+    else if (isEmpty && !showEmpty) {
+      return null
+    }
+    else {
+      return (
         <div style={styleContent}>
           <ul style={styleContentList(false)}>{listItems}</ul>
         </div>
       )
     }
-    return list
   }
 
   renderAccessList = (items, notAvailable) => {
@@ -104,23 +109,26 @@ export default class AccessView extends React.Component {
   render() {
     const {item} = this.props
 
-    const informationHeading = this.renderAccessHeading('Information')
-    const informationLinks = item.links.filter(
-      link => link.linkFunction === 'information'
-    )
-    const informationList = this.renderAccessLinkList(
-      informationLinks,
-      'No information links in metadata.'
-    )
+    const linkSections = [
+      {linkFunction: 'information', heading: 'Information', showEmpty: true},
+      {linkFunction: 'download', heading: 'Download Data', showEmpty: true},
+      {linkFunction: 'search', heading: 'Search Data'},
+      {linkFunction: 'order', heading: 'Order'},
+      {linkFunction: 'offlineAccess', heading: 'Offline Access'},
+    ]
 
-    const downloadDataHeading = this.renderAccessHeading('Download Data')
-    const downloadDataLinks = item.links.filter(
-      link => link.linkFunction === 'download'
-    )
-    const downloadDataList = this.renderAccessLinkList(
-      downloadDataLinks,
-      'No download links in metadata.'
-    )
+    let accessGrid = linkSections
+      .map(section => {
+        let heading = this.renderAccessHeading(section.heading)
+        let links = item.links.filter(
+          link => link.linkFunction === section.linkFunction
+        )
+        let list = this.renderAccessLinkList(links, !!section.showEmpty)
+        return list === null ? null : [ heading, list ]
+      })
+      .filter(section => {
+        return section !== null
+      })
 
     const distributionFormatsHeading = this.renderAccessHeading(
       'Distribution Formats'
@@ -129,12 +137,7 @@ export default class AccessView extends React.Component {
       item.dataFormats,
       'No formats in metadata.'
     )
-
-    const accessGrid = [
-      [ informationHeading, informationList ],
-      [ downloadDataHeading, downloadDataList ],
-      [ distributionFormatsHeading, distributionFormatsList ],
-    ]
+    accessGrid.push([ distributionFormatsHeading, distributionFormatsList ])
 
     return <DetailGrid grid={accessGrid} colWidths={[ {sm: 3}, {sm: 9} ]} />
   }
