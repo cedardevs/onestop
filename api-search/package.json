@@ -2,8 +2,8 @@
   "name": "onestop-schema-deref",
   "scripts": {
     "buildRequest": "json-dereference -s schema/request.json -o build/resources/main/onestop-request-schema.json",
-    "buildOpenapi": "speccy resolve build/tmp/schema/openapi.yml -j",
-    "test": "json-dereference -s schema/components/geometryFilter.json -o build/resources/test/schema/components/geometryFilter.json"
+    "build": "speccy resolve build/tmp/schema/openapi.yml  --json-schema > build/resources/main/static/docs/openapi.yaml",
+    "testSchemas": "json-dereference -s schema/components/geometryFilter.json -o build/resources/test/schema/components/geometryFilter.json"
   },
   "dependencies": {
     "json-dereference-cli": "^0.1.2",
