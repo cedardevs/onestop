@@ -14,7 +14,12 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
-  port: 9200
+  port: 9200 # fallback if not overriden or set in parent chart global
+
+  # The elasticsearch transport module is used for internal communication between nodes w/in the cluster
+  # https://www.elastic.co/guide/en/elasticsearch/reference/current/modules-transport.html
+  typeTransport: ClusterIP
+  portTransport: 9300 # fallback if not overriden or set in parent chart global
 
 enabled: true  # set to false to use external elasticsearch
 # serviceNameOverride:  # used to point to external elasticsearch service
@@ -25,7 +30,7 @@ cluster:
   heapMi: 512
   diskGi: 1
   storageClass:
-  cpu: 0.5
+  cpu: 1
   env:
 
 ingress:

@@ -1,15 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "elasticsearch.fullname" . }}-transport
+  name: {{ include "elasticsearch.fullname" . }}
   labels:
     app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
     helm.sh/chart: {{ include "elasticsearch.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  type: {{ .Values.service.typeTransport }}
-  clusterIP: None
+  type: {{ .Values.service.type }}
   ports:
     # Because knowledge of this port is shared between charts and should be aligned, parent chart globals take priority
     # If we simply wanted to change the default port of this chart, we could override the value, but this requires
@@ -17,15 +16,15 @@ spec:
     # Try to find a global elasticsearch port -- if set in parent chart such as `onestop-dev`, `onestop-sciapps`, etc...
     # Fallback to subchart values because subcharts cannot explicitly depend on parent chart.
     # See: https://github.com/helm/helm/blob/master/docs/chart_template_guide/subcharts_and_globals.md
-    - port: {{ .Values.global.elasticsearch.portTransport | default .Values.service.portTransport }}
-      targetPort: transport
+    - port: {{ .Values.global.elasticsearch.port | default .Values.service.port }}
+      targetPort: http
       protocol: TCP
-      name: transport
+      name: http
     # If the service type was overriden from the default ClusterIP to NodePort
     # (and we've also specified nodePort), nodePort will be exposed outside the cluster.
     # This is simple switch for non-production environments to allow for easier debugging.
-    {{- if (and (eq .Values.service.typeTransport "NodePort") (not (empty .Values.service.nodePortTransport))) }}
-      nodePort: {{ .Values.service.nodePortTransport }}
+    {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.nodePort))) }}
+      nodePort: {{ .Values.service.nodePort }}
     {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "elasticsearch.name" . }}

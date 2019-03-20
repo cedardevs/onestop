@@ -1,25 +1,25 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "elasticsearch.fullname" . }}
+  name: {{ include "elasticsearch.fullname" . }}
   labels:
-    app: {{ template "elasticsearch.name" . }}
-    chart: {{ template "elasticsearch.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
+    helm.sh/chart: {{ include "elasticsearch.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
-  serviceName: {{ template "elasticsearch.fullname" . }}-transport
+  serviceName: {{ include "elasticsearch.fullname" . }}-transport
   podManagementPolicy: Parallel
   selector:
     matchLabels:
-      app: {{ template "elasticsearch.name" . }}
-      release: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "elasticsearch.name" . }}
-        release: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ include "elasticsearch.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       securityContext:
         fsGroup: 102
@@ -32,19 +32,24 @@ spec:
         - name: init-volume
           image: busybox:1
           command: ["chgrp", "-v", "102", "/data" ]
+          # we had previously been using the following command for local dev
+          # keeping this commented until we determine it wasn't for any particular reason
+          # and confirm both the chgrp command above and this one perform the same effective fxn
+          # or find out that the chown command is preferred, etc...
+          # command: ["chown", "-v", "1000:1000", "/data" ]
           volumeMounts:
             - name: data
               mountPath: "/data"
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 9200
+              containerPort: {{ .Values.global.elasticsearch.port | default .Values.service.port }}
               protocol: TCP
             - name: transport
-              containerPort: 9300
+              containerPort: {{ .Values.global.elasticsearch.portTransport | default .Values.service.portTransport }}
               protocol: TCP
           volumeMounts:
             - name: data
@@ -53,7 +58,7 @@ spec:
             - name: cluster.name
               value: {{ .Values.cluster.name }}
             - name: discovery.zen.ping.unicast.hosts
-              value: "{{ template "elasticsearch.fullname" . }}-transport"
+              value: {{ include "elasticsearch.fullname" . }}-transport
             - name: discovery.zen.minimum_master_nodes
               value: "{{ div .Values.replicaCount 2 | add1 }}"
             - name: ES_JAVA_OPTS
@@ -88,33 +93,33 @@ spec:
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 1
-                podAffinityTerm:
-                  labelSelector:
-                    matchExpressions:
-                      - key: "app"
-                        operator: In
-                        values:
-                          - {{ template "elasticsearch.name" . }}
-                  topologyKey: "kubernetes.io/hostname"
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: "app"
+                  operator: In
+                  values:
+                  - {{ include "elasticsearch.name" . }}
+              topologyKey: "kubernetes.io/hostname"
     {{- with .Values.nodeSelector }}
-    nodeSelector:
-  {{ toYaml . | indent 8 }}
-  {{- end }}
+      nodeSelector:
+{{- toYaml . | nindent 8 }}
+    {{- end }}
 
-  {{- with .Values.tolerations }}
-tolerations:
-  {{ toYaml . | indent 8 }}
-  {{- end }}
-volumeClaimTemplates:
+    {{- with .Values.tolerations }}
+      tolerations:
+{{- toYaml . | nindent 8 }}
+    {{- end }}
+  volumeClaimTemplates:
   - metadata:
       name: data
     spec:
       accessModes:
-        - ReadWriteOnce
-  {{- if .Values.cluster.storageClass }}
-storageClassName: {{ .Values.cluster.storageClass }}
-  {{- end }}
-resources:
-  requests:
-    storage: {{ .Values.cluster.diskGi }}Gi
+      - ReadWriteOnce
+{{- if .Values.cluster.storageClass }}
+      storageClassName: {{ .Values.cluster.storageClass }}
+{{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.cluster.diskGi }}Gi

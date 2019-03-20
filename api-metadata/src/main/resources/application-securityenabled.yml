@@ -7,12 +7,12 @@ user.roles: elliott.richerson@noaa.gov:ADMIN;david.neufeld@noaa.gov:ADMIN
 
 server:
   ssl:
-    key-alias: ${KEYSTORE_ALIAS}
-    #key-password: ${KEY_PASSWORD}
+    key-alias: ${SCIAPPS_KEYSTORE_ALIAS}
+    #key-password: ${SCIAPPS_KEY_PASSWORD}
     enabled-protocols: TLSv1.2
     protocol: TLS
     enabled: true
-    key-store-password: ${KEYSTORE_PASSWORD}
+    key-store-password: ${SCIAPPS_KEYSTORE_PASSWORD}
     key-store: /etc/api-metadata/keystore.jks
     key-store-type: JKS
 
