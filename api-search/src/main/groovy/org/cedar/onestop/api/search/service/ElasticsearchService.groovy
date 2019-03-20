@@ -194,6 +194,9 @@ class ElasticsearchService {
     requestBody.from = pageParams?.offset ?: 0
     requestBody = pruneEmptyElements(requestBody)
 
+    // FIXME
+    log.error(JsonOutput.prettyPrint(JsonOutput.toJson(requestBody)))
+
     Map searchResponse = queryElasticsearch(requestBody, index)
 
     def result = [

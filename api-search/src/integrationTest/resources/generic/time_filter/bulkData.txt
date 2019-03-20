@@ -38,21 +38,21 @@
 { "beginDate": "2017-01-01", "beginYear": null, "endDate": null, "endYear": null }
 { "index": { "_index": "time_filter", "_type": "doc", "_id": "20" } }
 { "beginDate": null, "beginYear": null, "endDate": null, "endYear": null }
-{ "index": { "_index": "time_filter", "_type": "doc", "_id": "z1" } }
-{ "beginDate": null, "beginYear": 1990, "endDate": null, "endYear": null }
-{ "index": { "_index": "time_filter", "_type": "doc", "_id": "z2" } }
-{ "beginDate": null, "beginYear": null, "endDate": null, "endYear": 2000 }
-{ "index": { "_index": "time_filter", "_type": "doc", "_id": "z3" } }
-{ "beginDate": null, "beginYear": 1995, "endDate": null, "endYear": 2012 }
-{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p7" } }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p1" } }
 { "beginDate": null, "beginYear": -10000000, "endDate": null, "endYear": -5000000 }
-{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p8" } }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p2" } }
 { "beginDate": null, "beginYear": null, "endDate": null, "endYear": -2000000000 }
-{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p9" } }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p3" } }
 { "beginDate": null, "beginYear": -2000000000, "endDate": null, "endYear": -1000000000 }
-{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p10" } }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p4" } }
 { "beginDate": null, "beginYear": -4543000000, "endDate": null, "endYear": -1500000000 }
-{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p11" } }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p5" } }
 { "beginDate": null, "beginYear": -10000000, "endDate": null, "endYear": -1000000 }
-{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p12" } }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p6" } }
 { "beginDate": null, "beginYear": -1500000, "endDate": null, "endYear": null }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p7" } }
+{ "beginDate": null, "beginYear": -1000000, "endDate": null, "endYear": 1000 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p8" } }
+{ "beginDate": null, "beginYear": null, "endDate": null, "endYear": 1500 }
+{ "index": { "_index": "time_filter", "_type": "doc", "_id": "p9" } }
+{ "beginDate": null, "beginYear": 1500, "endDate": null, "endYear": 2000 }

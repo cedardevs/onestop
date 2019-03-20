@@ -16,7 +16,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     refreshAndLoadGenericTestIndex(DATES_INDEX)
   }
 
-  def 'Datetime filter after 1995 and `#relation` relation matches #expectedMatchingIds'() {
+  def 'Datetime filter q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -24,7 +24,11 @@ class TimeFilterIntegrationTests extends IntegrationTest {
             relation: relation,
             after: "1995-01-01"
         ]],
-        summary: false
+        summary: false,
+        page: [
+            max: 20,
+            offset: 0
+        ]
     ]
 
     when:
@@ -44,11 +48,11 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     relation     | expectedMatchingIds
     'contains'   | ['15','16']
     'disjoint'   | ['4','10']
-    'intersects' | ['1','2','3','5','6','7','8','9','11','12','13','14','15','16','17','19']
+    'intersects' | ['1','2','3','5','6','7','8','9','11','12','13','14','15','16','17', '18', '19']
     'within'     | ['1','3','7','8','9','16','17','18','19']
   }
 
-  def 'Datetime filter until 2012 and `#relation` relation matches #expectedMatchingIds'() {
+  def 'Datetime filter with q: (-∞, y) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -56,7 +60,11 @@ class TimeFilterIntegrationTests extends IntegrationTest {
             relation: relation,
             before: "2012-01-01"
         ]],
-        summary: false
+        summary: false,
+        page: [
+            max: 20,
+            offset: 0
+        ]
     ]
 
     when:
@@ -80,7 +88,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     'within'     | ['1','3','4','5','6','10','11','12','13']
   }
 
-  def 'Datetime filter from 1995 to 2012 and `#relation` relation matches #expectedMatchingIds'() {
+  def 'Datetime filter with q: (x, y) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -89,7 +97,11 @@ class TimeFilterIntegrationTests extends IntegrationTest {
             after: "1995-01-01",
             before: "2012-01-01"
         ]],
-        summary: false
+        summary: false,
+        page: [
+            max: 20,
+            offset: 0
+        ]
     ]
 
     when:
@@ -113,7 +125,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     'within'     | ['1','3']
   }
 
-  def 'Year filter after year 0'() {
+  def 'Year filter with q: (0, +∞)'() {
     given:
     def requestParams = [
         filters: [[
@@ -124,15 +136,23 @@ class TimeFilterIntegrationTests extends IntegrationTest {
         summary: false
     ]
 
+    def expectedMatchingIds = ['p6', 'p7', 'p8', 'p9']
+
     when:
     def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
-    queryResponse.meta.total > 0
+    expectedMatchingIds.containsAll(actualMatchingIds)
+
+    and:
+    actualMatchingIds.containsAll(expectedMatchingIds)
+
+    and:
+    queryResponse.meta.total == expectedMatchingIds.size()
   }
 
-
-  def 'Year filter until year 0'() {
+  def 'Year filter with q: (-∞, 0)'() {
     given:
     def requestParams = [
         filters: [[
@@ -143,32 +163,50 @@ class TimeFilterIntegrationTests extends IntegrationTest {
         summary: false
     ]
 
+    def expectedMatchingIds = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8']
+
     when:
     def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
-    queryResponse.meta.total > 0
+    expectedMatchingIds.containsAll(actualMatchingIds)
+
+    and:
+    actualMatchingIds.containsAll(expectedMatchingIds)
+
+    and:
+    queryResponse.meta.total == expectedMatchingIds.size()
   }
 
-  def 'Year filter around year 0'() {
+  def 'Year filter with query crossing year 0'() {
     def requestParams = [
         filters: [[
                       type: "year",
-                      relation: 'intersects',
+                      relation: "intersects",
                       after: -1000,
                       before: 1000
                   ]],
         summary: false
     ]
 
+    def expectedMatchingIds = ['p6', 'p7', 'p8']
+
     when:
     def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
-    queryResponse.meta.total > 0
+    expectedMatchingIds.containsAll(actualMatchingIds)
+
+    and:
+    actualMatchingIds.containsAll(expectedMatchingIds)
+
+    and:
+    queryResponse.meta.total == expectedMatchingIds.size()
   }
 
-  def 'Year filter after -1000000000 and `#relation` relation matches #expectedMatchingIds'() {
+  def 'Year filter with q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -194,13 +232,13 @@ class TimeFilterIntegrationTests extends IntegrationTest {
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | ['p9']
-    'disjoint'   | ['p8', 'p10']
-    'intersects' | ['z1', 'z2', 'p7', 'z3', 'p9', 'p12', 'p11']
-    'within'     | ['z1', 'p7', 'z3', 'p12', 'p11']
+    'contains'   | []
+    'disjoint'   | ['p2', 'p4']
+    'intersects' | ['p1', 'p3', 'p5', 'p6', 'p7', 'p8', 'p9']
+    'within'     | ['p1', 'p5', 'p6', 'p7', 'p9']
   }
 
-  def 'Year filter until -1100000000 and `#relation` relation matches #expectedMatchingIds'() {
+  def 'Year filter with q: (-∞, y) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -226,13 +264,13 @@ class TimeFilterIntegrationTests extends IntegrationTest {
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | ['p9']
-    'disjoint'   | ['z1', 'p7', 'z3', 'p12', 'p11']
-    'intersects' | ['p9', 'p10']
-    'within'     | ['p8', 'p10']
+    'contains'   | ['p8']
+    'disjoint'   | ['p1', 'p5', 'p6', 'p7', 'p9']
+    'intersects' | ['p2', 'p3', 'p4', 'p8']
+    'within'     | ['p2', 'p4']
   }
 
-  def 'Year filter from -1500000000 to -100000 and `#relation` relation matches #expectedMatchingIds'() {
+  def 'Year filter with q: (x, y) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -259,9 +297,9 @@ class TimeFilterIntegrationTests extends IntegrationTest {
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | ['p9']
-    'disjoint'   | ['z1', 'z3']
-    'intersects' | ['p7', 'p9', 'p12', 'p10', 'p11']
-    'within'     | ['p7', 'p11']
+    'contains'   | ['p8']
+    'disjoint'   | ['p2', 'p9']
+    'intersects' | ['p1', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8']
+    'within'     | ['p1', 'p5']
   }
 }

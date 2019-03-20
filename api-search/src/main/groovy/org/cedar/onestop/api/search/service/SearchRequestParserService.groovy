@@ -328,8 +328,28 @@ class SearchRequestParserService {
           esFilters.add([
               bool: [
                   should: [
-                      [ range: [ (beginField): [ lte: y ]] ],
-                      [ range: [ (endField): [ gte: x ]] ]
+                      [ bool: [
+                          must: [
+                              [ range: [ (beginField): [ lte: y ]] ],
+                              [ range: [ (endField): [ gte: x ]] ]
+                          ]
+                      ] ],
+                      [ bool: [
+                          must: [
+                              [ range: [ (endField): [ gte: x ]] ]
+                          ],
+                          must_not: [
+                              [ exists: [ field: beginField ] ]
+                          ]
+                      ] ],
+                      [ bool: [
+                          must: [
+                              [ range: [ (beginField): [ lte: y ]] ]
+                          ],
+                          must_not: [
+                              [ exists: [ field: endField ] ]
+                          ]
+                      ] ]
                   ]
               ]
           ])

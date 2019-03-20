@@ -1,16 +1,17 @@
 # Important ES Note
 
-bulkData.txt must end in a blank line, or the bulk load will skip the last result.
+- bulkData.txt must end in a blank line, or the bulk load will skip the last result.
+- For all queries, the full response is requested so we have access to all time fields.
+- Max result limit is explicitly declared (page object in query) since more than the default of 10 can be returned since our test data set is fairly large. 
 
 # Test cases:
 
-The ids of the testcases are indicative of what the result is intended to test.
+The ids of the test cases are indicative of what the result is intended to test.
 
 - 1-20: test edge cases of set logic for different types of date ranges combined with different query relations
-- z1, z2, etc: test queries that involve zeros
 - p1, p2, etc: test paleo dates.
 
-For simplicity, datetime records do not also have beginYear and endYear set, so that those test cases don't pollute year filter tests. In real records, if it has a beginDate, the beginYear should match (eg 2000-01-01 should also have a beginYear of 2000)
+For simplicity, datetime records do not also have beginYear and endYear set, so that those test cases don't pollute year filter tests. In real records, if it has a beginDate, the beginYear will match (e.g. 2000-01-01 will also have a beginYear of 2000)
 
 # Structure of query and results chosen:
 
@@ -50,7 +51,7 @@ id | x | y
 19 | I | -
 20 | - | -
 
-These points are chose to represent the various ways the query range and result range might overlap. For the ranges, points are chosen that both cross the query begin/end dates, and also some that match it exactly.
+These points are chosen to represent the various ways the query range and result range might overlap. For the ranges, points are chosen that both cross the query begin/end dates, and also some that match it exactly.
 
 then:
 
