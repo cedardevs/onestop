@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Search Request",
+  "description": "The shape of a search request body that can be sent to the OneStop API to execute a search against available metadata. Collections are returned by default unless a collection filter is included, resulting in granules being returned.",
+  "type": "object",
+  "properties": {
+    "queries": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "components/textQuery.json"
+          }
+        ]
+      }
+    },
+    "filters": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "components/datetimeFilter.json"
+          },
+          {
+            "$ref": "components/yearFilter.json"
+          },
+          {
+            "$ref": "components/facetFilter.json"
+          },
+          {
+            "$ref": "components/geometryFilter.json"
+          },
+          {
+            "$ref": "components/collectionFilter.json"
+          },
+          {
+            "$ref": "components/excludeGlobalFilter.json"
+          }
+        ]
+      }
+    },
+    "facets": {
+      "description": "Flag to request counts of results by GCMD keywords in addition to results.",
+      "type": "boolean",
+      "default": false
+    },
+    "summary": {
+      "description": "Flag to request summary of search results instead of full set of attributes.",
+      "type": "boolean",
+      "default": true
+    },
+    "page": {
+      "$ref": "components/page.json"
+    }
+  },
+  "additionalProperties": false
+}

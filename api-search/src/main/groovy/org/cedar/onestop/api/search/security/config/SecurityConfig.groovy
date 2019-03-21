@@ -79,7 +79,8 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/sitemap.xml",
                 "/sitemap/**",
                 "/trending/**",
-                "/actuator/info"
+                "/actuator/info",
+                "/docs/**"
         )
             .permitAll()
         // any other requests are allowed by an authenticated user
