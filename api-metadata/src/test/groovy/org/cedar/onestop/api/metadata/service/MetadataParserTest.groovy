@@ -590,6 +590,25 @@ class MetadataParserTest extends Specification {
     ]
   }
 
+  def "Spatial bounding is correctly parsed when it contains zeros"() {
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-zero-bounding-box-metadata.xml").text
+
+    when:
+    def result = MetadataParser.parseSpatialInfo(document)
+
+    then:
+    result == [
+        spatialBounding: [
+            type       : 'Polygon',
+            coordinates: [
+                [[-177, 0], [-66, 0], [-66, 61], [-177, 61], [-177, 0]]
+            ]
+        ],
+        isGlobal       : false
+    ]
+  }
+
   def "Point spatial bounding is correctly parsed"() {
     given:
     def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-point-cords-metadata.xml").text
