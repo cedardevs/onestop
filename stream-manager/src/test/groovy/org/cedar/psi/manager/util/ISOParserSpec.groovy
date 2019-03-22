@@ -186,9 +186,28 @@ class ISOParserSpec extends Specification {
     !result.isGlobal
   }
 
+
+  def "Spatial bounding is correctly parsed when it contains zeros"() {
+
+    given:
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-zero-coords-metadata.xml").text
+    def metadata = new XmlSlurper().parseText(document)
+    // given:
+    // def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-zero-coords-metadata.xml").text
+    // def metadata = new XmlSlurper().parseText(document)
+
+    when:
+    def result = ISOParser.parseSpatialInfo(metadata)
+
+    then:
+    result.spatialBounding.coordinates == [[[-177, 0], [-66, 0], [-66, 61], [-177, 61], [-177, 0]]]
+    result.spatialBounding.type == PolygonType.Polygon
+    !result.isGlobal
+  }
+
   def "Point spatial bounding is correctly parsed"() {
     given:
-    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-point-cords-metadata.xml").text
+    def document = ClassLoader.systemClassLoader.getResourceAsStream("test-iso-point-coords-metadata.xml").text
     def metadata = new XmlSlurper().parseText(document)
 
     when:
