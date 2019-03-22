@@ -306,7 +306,7 @@ class ISOParser {
     def north = (bbox.northBoundLatitude == "null" || bbox.northBoundLatitude == "") ? null : bbox.northBoundLatitude.Decimal.toDouble()
     def south = (bbox.southBoundLatitude == "null" || bbox.southBoundLatitude == "") ? null : bbox.southBoundLatitude.Decimal.toDouble()
 
-    // explicitly check for null-iness, since 0.0 will evaluate to false
+    // explicitly check for null values.
     if (west == null || east == null || north == null || south == null) {
       return null
     }
