@@ -10,13 +10,7 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    # Because knowledge of this port is shared between charts and should be aligned, parent chart globals take priority
-    # If we simply wanted to change the default port of this chart, we could override the value, but this requires
-    # making explicit code change in multiple places in the parent chart (defeating the purpose of templating).
-    # Try to find a global elasticsearch port -- if set in parent chart such as `onestop-dev`, `onestop-sciapps`, etc...
-    # Fallback to subchart values because subcharts cannot explicitly depend on parent chart.
-    # See: https://github.com/helm/helm/blob/master/docs/chart_template_guide/subcharts_and_globals.md
-    - port: {{ .Values.global.elasticsearch.port | default .Values.service.port }}
+    - port: {{ .Values.service.port }}
       targetPort: http
       protocol: TCP
       name: http

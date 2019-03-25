@@ -1,9 +1,0 @@
-dependencies:
-- name: elasticsearch
-  repository: file://../elasticsearch
-  version: 0.1.0
-- name: onestop-api-admin
-  repository: file://../onestop-api-admin
-  version: 0.1.0
-digest: sha256:fddc170861d9faa3eb122c475e45d1ba8a6bfb5a3c6b376ab9e319f6adfa4b71
-generated: 2019-03-19T23:21:09.429733-06:00

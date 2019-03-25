@@ -3,7 +3,6 @@ package org.cedar.onestop.api.metadata.controller
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
@@ -20,8 +19,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST
 
 @Slf4j
 @Controller
-@Profile("!kafka-ingest")
-@ConditionalOnProperty(["features.secure.upload"])
+@Profile(["security", "!kafka-ingest"])
 class UploadController {
 
   private MetadataManagementService metadataService

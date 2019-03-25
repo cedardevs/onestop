@@ -1,3 +1,7 @@
+plugins {
+  id "io.forgo.keystoreplugin" version "1.0"
+}
+
 apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
@@ -62,6 +66,7 @@ dependencies {
   compile "org.codehaus.groovy:groovy-json:${project.groovyVersion}"
   compile "org.codehaus.groovy:groovy-xml:${project.groovyVersion}"
   compile "org.elasticsearch.client:elasticsearch-rest-client:${project.esVersion}"
+  compile "org.elasticsearch.client:transport:${project.esVersion}"
   compile "org.springframework.boot:spring-boot-starter-web"
   compile "org.springframework.boot:spring-boot-starter-actuator"
   compile "org.springframework.boot:spring-boot-starter-security"
@@ -88,10 +93,40 @@ dependencies {
   testCompile "org.spockframework:spock-core:${project.spockVersion}"
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
-  testCompile "org.testcontainers:testcontainers:1.10.0"
-  testCompile "org.testcontainers:elasticsearch:1.10.0"
+  testCompile "org.testcontainers:testcontainers:1.10.7"
+  testCompile "org.testcontainers:elasticsearch:1.10.7"
   testCompile 'net.bytebuddy:byte-buddy:1.7.11'
 }
+
+keystore {
+  // resetOutputDir task defaults
+  outputDir = ".keystore"
+
+  // sslKey task defaults
+  keyFile = "debug.key"
+  keyPassword = "password"
+
+  // sslCert task defaults (depends on: sslKey)
+  certFile = "debug.crt"
+
+  // pkcs12 task defaults (depends on: sslCert)
+  pkcs12File = "debug.pkcs12"
+  pkcs12Password = "password"
+
+  // jks task defaults (depends on: pkcs12)
+  jksFile = "debug.jks"
+  jksPassword = "password"
+  alias = "debug"
+}
+
+// Example of running Bootrun with a debug keystore generated with `./gradlew api-metadata:jks`
+//export SPRING_PROFILES_ACTIVE="security" && \
+// export SCIAPPS_KEYSTORE_ALIAS="debug" && \
+// export SCIAPPS_KEYSTORE_PASSWORD="password" && \
+// export SCIAPPS_KEY_PASSWORD="password" && \
+// cp ~/Documents/GitHub/onestop/api-metadata/.keystore/debug.jks /etc/api-metadata/keystore.jks && \
+// ./gradlew api-metadata:bootrun
+
 
 ext {
   fatWarPath = file("${buildDir}/libs/${rootProject.name}-${project.name}-all-${project.version}.war")

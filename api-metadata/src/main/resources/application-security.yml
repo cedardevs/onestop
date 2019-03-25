@@ -1,7 +1,4 @@
-features.secure.upload: true
-features.secure.authorization: true
-features.basicAuth.disabled: false
-
+---
 roles.names: ADMIN;USER
 user.roles: elliott.richerson@noaa.gov:ADMIN;david.neufeld@noaa.gov:ADMIN
 

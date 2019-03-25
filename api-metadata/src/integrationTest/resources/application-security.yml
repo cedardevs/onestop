@@ -1,0 +1,12 @@
+---
+
+server:
+  ssl:
+    key-alias: debug
+    #key-password: password
+    enabled-protocols: TLSv1.2
+    protocol: TLS
+    enabled: true
+    key-store-password: password
+    key-store: debug.jks
+    key-store-type: JKS

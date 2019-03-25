@@ -1,15 +1,15 @@
 apiVersion: skaffold/v1beta7
 kind: Config
 build:
-  artifacts: []
-#  - image: cedardevs/onestop-api-metadata
-#    context: ./api-metadata
-#    docker:
-#      buildArgs:
-#        DATE: now
-#        VCS_REF: local
-#        VERSION: 2.1.0
-#        WAR_NAME: onestop-metadata-2.1.0.war
+  artifacts:
+  - image: cedardevs/onestop-api-metadata
+    context: ./api-metadata
+    docker:
+      buildArgs:
+        DATE: now
+        VCS_REF: local
+        VERSION: 2.1.0
+        WAR_NAME: onestop-metadata-2.1.0.war
 #  - image: cedardevs/onestop-api-search
 #    context: ./api-search
 #    docker:
@@ -30,5 +30,23 @@ build:
 deploy:
   helm:
     releases:
-    - name: onestop-dev
-      chartPath: helm/onestop-dev
+    - name: onestop-api-admin
+      chartPath: helm/onestop-api-admin
+      values:
+        image: cedardevs/onestop-api-metadata
+      setValues:
+        service.type: NodePort
+        service.nodePort: 30097
+        # features are directly tied to `export SPRING_ACTIVE_PROFILES='feat1,feat2,...'
+        # all features default to "false" in base chart, unless otherwise overridden
+        features.security: false
+        features.kafka: false
+        features.sitemap: false
+        config: |-
+          ---
+          logging.level.org.cedar.onestop.api: DEBUG
+      imageStrategy:
+        helm: {}
+
+    # - name: onestop-dev
+    #   chartPath: helm/onestop-dev

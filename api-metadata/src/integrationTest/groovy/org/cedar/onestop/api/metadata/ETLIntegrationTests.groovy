@@ -1,15 +1,13 @@
 package org.cedar.onestop.api.metadata
 
-
 import org.cedar.onestop.api.metadata.service.ETLService
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
-import spock.lang.Unroll
 
-@Unroll
 class ETLIntegrationTests extends IntegrationTest {
 
   @Autowired
@@ -47,6 +45,7 @@ class ETLIntegrationTests extends IntegrationTest {
   private final String FLAT_GRANULE_TYPE = 'flattenedGranule'
 
   @Autowired
+  @Qualifier("elasticsearchRestClient")
   RestClient restClient
 
   void setup() {

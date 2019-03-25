@@ -38,17 +38,17 @@ spec:
           # EXPORT ACTIVE SPRING PROFILES TO TELL SPRING WHICH FEATURES TO ENABLE
           # the loop is making a comma delimited list for multi-feature handling
             - name: SPRING_PROFILES_ACTIVE
-              value: "{{ range $feature, $enabled := .Values.features -}}
+              value: '{{ range $feature, $enabled := .Values.features -}}
                         {{- if $enabled -}}
                           {{ $feature }}, 
                         {{- end -}}
-                      {{- end }}"
+                      {{- end }}'
             - name: ETL_SITEMAP_DELAY_INITIAL
-              value: {{ .Values.sitemap.delay.initial }}
+              value: {{ .Values.sitemap.delay.initial | quote }}
             - name: ELASTICSEARCH_HOST
-              value: {{ .Values.global.elasticsearch.host | default .Values.elasticsearch.host }}
+              value: {{ .Values.elasticsearch.host }}
             - name: ELASTICSEARCH_PORT
-              value: {{ .Values.global.elasticsearch.port | default .Values.elasticsearch.port }}
+              value: {{ .Values.elasticsearch.port | quote }}
           # EXPORT PATH TO SCIAPPS KEYSTORE (if security feature enabled)
           # TODO: do this in a more streamline way (like with the other secrets)
           #       this still seems a tiny bit wonky

@@ -5,3 +5,5 @@ etl:
     collections-per-submap: 5
 
 features.sitemap: true
+
+logging.level.org.springframework.boot.autoconfigure: ERROR

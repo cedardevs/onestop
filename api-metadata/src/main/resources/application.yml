@@ -1,9 +1,4 @@
-# DEFAULTS
-# comma-delimited string (no spaces)
-# auth feature toggle: securityenabled | securitydisabled
-# other features: ...
-spring.profiles.active: "securitydisabled"
-
+---
 server:
   port: 8098
   servlet:
@@ -18,8 +13,7 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
-features.secure.upload: true
-features.sitemap: true
+features.sitemap: false
 
 etl:
   sitemap:

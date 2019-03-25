@@ -1,10 +1,11 @@
 package org.cedar.onestop.api.metadata.authorization.domain
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+
+import org.springframework.context.annotation.Profile
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
-@ConditionalOnProperty("features.secure.authorization")
+@Profile("security")
 class UserDetailsImpl implements UserDetails{
     String username
     String password
