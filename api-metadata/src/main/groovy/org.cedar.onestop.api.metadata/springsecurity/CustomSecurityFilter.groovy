@@ -1,13 +1,9 @@
 package org.cedar.onestop.api.metadata.springsecurity
 
 import org.cedar.onestop.api.metadata.authorization.service.UserDetailsServiceImpl
-import org.cedar.onestop.api.metadata.security.CredentialUtil
-import org.cedar.onestop.api.metadata.security.IdentityProvider
-import org.cedar.onestop.api.metadata.security.SAMLConsume
-import org.cedar.onestop.api.metadata.security.SAMLFilter
-import org.cedar.onestop.api.metadata.security.SAMLUtil
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.cedar.onestop.api.metadata.security.*
 import org.springframework.boot.autoconfigure.web.ServerProperties
+import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.Authentication
@@ -26,7 +22,7 @@ import javax.servlet.http.HttpServletResponse
 import java.nio.file.AccessDeniedException
 import java.security.Principal
 
-@ConditionalOnProperty("features.secure.authorization")
+@Profile("security")
 class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
     private final List<String> securedEndpointsRegex = [/\/metadata.*$/, /\/admin\/.+$/, /\/upload.html$/, /\/uploadResponse.html$/, /^.+\/userOnly$/]
