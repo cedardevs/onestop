@@ -1,0 +1,119 @@
+# Default values for api-admin.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: stable
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8080
+
+###############################################################################
+# FEATURE TOGGLES (SUBCHART DEFAULTS)
+###############################################################################
+# map of features to enable
+# if the features are not here, they will be disabled
+features:
+  security: false
+  kafka: false
+  sitemap: false
+
+###############################################################################
+# APPLICATION.YML ADDITIONAL SPRING CONFIG
+###############################################################################
+config:
+
+###############################################################################
+# ELASTICSEARCH ENVIRONMENT VARIABLES
+###############################################################################
+elasticsearch:
+  host: elasticsearch
+  port: 9200
+  portTransport: 9300
+
+###############################################################################
+# SECRET FILES AND ENVIRONMENT VARIABLES
+###############################################################################
+# The template can iterate through these secrets, intelligently mounting secret files
+# and assigning secret environment variables based on the `file` and `env` secret types below.
+# ---
+# `file` secret type => (e.g. - `kubectl create secret generic ${name} --from-file="/local/path/to/secret.txt"`)
+#     type:     file
+#     name:     [REQUIRED] k8s secret name (which contains this secret file as one of its keys)
+#     path:     [REQUIRED] where to mount secret in pod
+#     ---
+#     Result => Can handle _multiple_ secret file keys per secret.
+#               The secret key(s) == filename(s) when secret created (w/out the dir path)
+#               (e.g. - [secret] ${name}.'secret.txt' => [pod filesystem] ${path}/secret.txt
+#
+# `env` secret type => (e.g. - `kubectl create secret generic ${name} --from-literal=var-1="OurLittleSecret"`)
+#     type:     env
+#     name:     [REQUIRED] k8s secret name (which contains secret literals)
+#     prefix:   [OPTIONAL] prefix to apply to environment variables for uniqueness
+#     keys:     [REQUIRED] array of secret keys to be exported to env vars in pod
+#     ---            
+#     Result => template replaces '-' and '.' in the key with '_' in the env var
+#               (e.g. - [secret] ${name}.VAR_1 => [env] ${prefix}VAR_1="OurLittleSecret")
+#
+#     Note: This conversion is Spring compatible. See: `org.springframework.core.envSystemEnvironmentPropertySource`      
+secrets:
+- type: file
+  name: sciapps-keystore              # k8s secret name
+  path: "/etc/api-admin/"             # where to mount the secret's file(s)
+- type: env                
+  name: sciapps-keystore-credentials  # k8s secret name
+  prefix: SCIAPPS_                    # optional env var prefix to avoid collisions
+  keys:
+  - KEYSTORE_PASSWORD # [secret] sciapps-keystore-credentials.KEYSTORE_PASSWORD => [env] SCIAPPS_KEYSTORE_PASSWORD
+  - KEYSTORE_ALIAS    # [secret] sciapps-keystore-credentials.KEYSTORE_ALIAS    => [env] SCIAPPS_KEYSTORE_ALIAS
+  - KEY_PASSWORD      # [secret] sciapps-keystore-credentials.KEY_PASSWORD      => [env] SCIAPPS_KEY_PASSWORD
+
+keystoreFiles:
+  jks:
+    sciapps: "/etc/api-admin/sciapps-keystore.jks"
+
+###############################################################################
+# SITEMAP CONFIGS
+###############################################################################
+sitemap:
+  delay:
+    initial: "60000" # milliseconds -> 1 minute
+
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  paths: []
+  hosts:
+    - chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

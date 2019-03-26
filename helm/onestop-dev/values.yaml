@@ -1,50 +1,54 @@
-# global is 1st priority in subcharts
-#
-# This prevents possible deviation of shared, hardcoded values in subcharts.
-# For known shared values among subcharts, you must graceful fallback value.
-# (e.g. - `{{ .Values.global.? | default .Values.? }}
-# 
-# IMPORTANT: apply the pattern in all places the shared value occurs!
-#
-# These values could be overridden for each chart in this parent chart;
-# however, this also fails to prevent hardcoding redundant values -- it
-# simply isolates the redundancy to a single file. This `global` block
-# allows us to quickly do things like change the port `elasticsearch` runs
-# on in a 'dev' environment. The `onestop-api-admin` service relies on
-# an environment variable set to this same port, but it won't break in
-# this case as long as the global-plus-fallback value pattern shown
-# above is used in ALL subchart templates where this port is referenced.
-global:
-  elasticsearch:
-    enabled: true
-    host: elasticsearch
-    port: 9200
-    portTransport: 9300
-
+###############################################################################
+# ELASTICSEARCH
+###############################################################################
 elasticsearch:
   enabled: true
   # allows elasticsearch to be exposed outside the cluster in dev
   service.type: NodePort
   service.nodePort: 30092
 
-onestop-api-admin:
+###############################################################################
+# API ADMIN
+###############################################################################
+api-admin:
   enabled: true
-  # allows onestop-api-admin to be exposed outside the cluster in dev
+  # allows api-admin to be exposed outside the cluster in dev
   service.type: NodePort
-  service.nodePort: 30097
+  service.nodePort: 30098
+  # features are directly tied to `export SPRING_ACTIVE_PROFILES='feat1,feat2,...'
+  # all features default to "false" in base chart, unless otherwise overridden
   features:
     security: false
     kafka: false
+    sitemap: false
+  elasticsearch:
+    host: onestop-dev-elasticsearch
+    port: 9200
   config: |-
     ---
-    logging.level.org.cedar.onestop.api: DEBUG
+    logging.level.org.cedar.onestop.api.metadata: DEBUG
 
-# onestop-api-search:
-#   auth:
-#     clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:SciAppsOneStop"
-#     allowedOrigin: "https://sciapps.colorado.edu"
-#     endpoints:
-#       loginSuccessRedirect: "/"
-#       loginFailureRedirect: "/"
-#       logoutSuccessRedirect: "/"
-#     keystoreFile: "/etc/api-search/logingov.jks"
+###############################################################################
+# API SEARCH
+###############################################################################
+api-search:
+  enabled: true
+  # allows api-search to be exposed outside the cluster in dev
+  service.type: NodePort
+  service.nodePort: 30097
+  # features are directly tied to `export SPRING_ACTIVE_PROFILES='feat1,feat2,...'
+  # all features default to "false" in base chart, unless otherwise overridden
+  features:
+    security: false
+  # login.gov configuration that are later read as environment variables by Spring
+  # these values override the chart's default sciapps config in order to run locally for dev
+  loginGov:
+    clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8080"
+    allowedOrigin: "http://localhost:8080"
+    endpoints:
+      loginSuccessRedirect: "http://localhost:8080/onestop/"
+      loginFailureRedirect: "http://localhost:8080/onestop/"
+      logoutSuccessRedirect: "http://localhost:8080/onestop/"
+  config: |-
+      ---
+      logging.level.org.cedar.onestop.api.search: DEBUG

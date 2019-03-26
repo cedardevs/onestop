@@ -1,8 +1,0 @@
-dependencies:
-  - name: elasticsearch
-    version: ~0.1.0
-    repository: file://../elasticsearch
-    condition: elasticsearch.enabled,global.elasticsearch.enabled
-    tags:
-      - backend
-      - elasticsearch

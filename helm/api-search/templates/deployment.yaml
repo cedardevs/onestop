@@ -1,0 +1,146 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "api-search.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "api-search.name" . }}
+    helm.sh/chart: {{ include "api-search.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "api-search.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "api-search.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          env:
+          # EXPORT ADDITIONAL CONFIG LOCATION (if config provided)
+          {{- if .Values.config }}
+            # if Helm values have a config section, it will be mounted as a YML file
+            # this tells Spring where the additional config file is mounted
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: /etc/conf/application.yml
+          {{- end }}
+          # EXPORT ACTIVE SPRING PROFILES TO TELL SPRING WHICH FEATURES TO ENABLE
+          # the loop is making a comma delimited list for multi-feature handling
+            - name: SPRING_PROFILES_ACTIVE
+              value: '{{ range $feature, $enabled := .Values.features -}}
+                    {{- if $enabled -}}
+                      {{ $feature }},
+                    {{- end -}}
+                  {{- end }}'
+            - name: ELASTICSEARCH_HOST
+              value: {{ .Values.elasticsearch.host }}
+            - name: ELASTICSEARCH_PORT
+              value: {{ .Values.elasticsearch.port | quote}}
+            - name: LOGIN_GOV_CLIENT_ID
+              value: {{.Values.loginGov.clientId}}
+            - name: LOGIN_GOV_ALLOWED_ORIGIN
+              value: {{.Values.loginGov.allowedOrigin}}
+            - name: LOGIN_GOV_LOGIN_SUCCESS_REDIRECT
+              value: {{.Values.loginGov.endpoints.loginSuccessRedirect}}
+            - name: LOGIN_GOV_LOGIN_FAILURE_REDIRECT
+              value: {{.Values.loginGov.endpoints.loginFailureRedirect}}
+            - name: LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT
+              value: {{.Values.loginGov.endpoints.logoutSuccessRedirect}}
+          # EXPORT PATHS KEYSTORES (if security feature enabled)
+          {{- if .Values.features.security }}
+            - name: LOGIN_GOV_KEYSTORE_FILE
+              value: {{ .Values.keystoreFiles.jks.loginGov }}
+          {{- end }}
+          # EXPORT SECRET ENVIRONMENT VARIABLES IN THIS CONTAINER (if security feature enabled)
+          # the general utility here is taking "env" type secrets in our Helm values,
+          # mapping the keys directly to environment variables w/optional prefix,
+          # and uppercasing / replacing problematic '-' and '.' characters with '_'
+          {{- if .Values.features.security }}
+            {{- range $secret := .Values.secrets }}
+              {{- if eq $secret.type "env" }}
+                {{- range $key := $secret.keys }}
+                  {{- $envPrefix := $secret.prefix | default "" | upper }}
+                  {{- $envKey := $key | upper | replace "." "_" | replace "-" "_" }}
+            - name: {{ $envPrefix }}{{ $envKey }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $secret.name }}
+                  key: {{ $key }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
+          # TODO: how to make these probes work without restarting app indefinitely?
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          # MOUNT ADDITIONAL CONFIG IN THIS CONTAINER (if config provided)
+          # done via ConfigMap and associated volume
+          {{- if .Values.config }}
+            - name: config-volume
+              mountPath: /etc/conf/
+          {{- end }}
+          # MOUNT SECRET FILES IN THIS CONTAINER (if security feature enabled)
+          # if there are multiple containers in the pod,
+          # then each container needs its own volumeMounts block
+          {{- if .Values.features.security }}
+            {{- range $secret := .Values.secrets }}
+              {{- if eq $secret.type "file" }}
+            - name: {{ $secret.name }}-volume
+              mountPath: {{ $secret.path }}
+              readOnly: true
+              {{- end }}
+            {{- end }}
+          {{- end }}
+      volumes:
+        # CREATE VOLUME FOR ADDITIONAL CONFIG (if config provided)
+        # additional location for Spring config allows overriding defaults
+        {{- if .Values.config }}
+          - name: config-volume
+            configMap:
+              name: {{ include "api-search.fullname" . }}-config
+        {{- end }}
+        # CREATE VOLUME FOR SECRET FILES (if security feature enabled)
+        # secret must be created in the Kubernetes API before it can be used
+        # only 1 `spec.volumes` entry is needed per secret, even if it contains multiple keys
+        {{- if .Values.features.security }}
+          {{- range $secret := .Values.secrets }}
+            {{- if eq $secret.type "file" }}
+          - name: {{ $secret.name }}-volume
+            secret:
+              secretName: {{ $secret.name }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+#      restartPolicy: Always
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

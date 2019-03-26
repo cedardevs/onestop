@@ -1,4 +1,4 @@
-# ---
+---
 dependencies:
   - name: elasticsearch
     version: ~0.1.0
@@ -7,27 +7,31 @@ dependencies:
     tags:
       - backend
       - elasticsearch
-  - name: onestop-api-admin
+  - name: api-admin
     version: ~0.1.0
-    repository: file://../onestop-api-admin
-    conditions: onestop-api-admin.enabled,global.onestop-api-admin.enabled
+    repository: file://../api-admin
+    conditions: api-admin.enabled,global.api-admin.enabled
     tags:
       - backend
-      - oneestop-api-admin
-  # - name: onestop-api-search
+      - api-admin
+  - name: api-search
+    version: ~0.1.0
+    repository: file://../api-search
+    conditions: api-search.enabled,global.api-search.enabled
+    tags:
+      - backend
+      - api-search
+  # - name: api-user
   #   version: ~0.1.0
-  #   repository: file://../onestop-api-search
-  #   conditions: onestop-api-search.enabled,global.onestop-api-search.enabled
+  #   repository: file://../api-user
+  #   conditions: api-user.enabled,global.api-user.enabled
+  #   tags:
   #     - backend
-  #     - onestop-api-search
-  # - name: onestop-api-user
+  #     - api-user
+  # - name: client
   #   version: ~0.1.0
-  #   repository: file://../onestop-api-user
-  #   conditions: onestop-api-user.enabled,global.onestop-api-user.enabled
-  # - name: onestop-client
-  #   version: ~0.1.0
-  #   repository: file://../onestop-client
-  #   conditions: onestop-client.enabled,global.onestop-client.enabled
+  #   repository: file://../client
+  #   conditions: client.enabled,global.client.enabled
   #   tags:
   #     - frontend
-  #     - onestop-client
+  #     - client
