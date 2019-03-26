@@ -14,7 +14,7 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
-  port: 8080
+  port: 8098
 
 ###############################################################################
 # FEATURE TOGGLES (SUBCHART DEFAULTS)
