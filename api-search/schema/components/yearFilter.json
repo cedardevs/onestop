@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Year Filter",
+  "description": "Filter results by before, after, or a date range. Differs from the Datetime Filter in that it handles year values only.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "Filter type.",
+      "enum": [
+        "year"
+      ]
+    },
+    "before": {
+      "description": "End of the date range, e.g., look for all results *before* this year.",
+      "type": "number",
+      "multipleOf": 1.0
+    },
+    "after": {
+      "description": "Beginning of the date range, e.g., look for all results *after* this year.",
+      "type": "number",
+      "multipleOf": 1
+    },
+    "relation":  {
+      "description": "How the result time range relates to the query time range, e.g., return all datasets whose time range is within the given time range.",
+      "enum": [
+        "contains",
+        "disjoint",
+        "intersects",
+        "within"
+      ],
+      "default": "intersects"
+    }
+  },
+  "required": [
+    "type"
+  ],
+  "additionalProperties": false
+}
