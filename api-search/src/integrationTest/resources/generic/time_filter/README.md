@@ -2,7 +2,7 @@
 
 - bulkData.txt must end in a blank line, or the bulk load will skip the last result.
 - For all queries, the full response is requested so we have access to all time fields.
-- Max result limit is explicitly declared (page object in query) since more than the default of 10 can be returned since our test data set is fairly large. 
+- Max result limit is explicitly declared (page object in query) since more than the default of 10 can be returned since our test data set is fairly large.
 
 # Test cases:
 
@@ -66,7 +66,7 @@ Q2:
 
 contains: 15,16
 within: 1,3,7,8,9,16,17,18,19
-intersects: 1,2,3,5,6,7,8,9,11,12,13,14,15,16,17,19
+intersects: 1,2,3,5,6,7,8,9,11,12,13,14,15,16,17,18,19
 disjoint: 4, 10
 
 Q3:

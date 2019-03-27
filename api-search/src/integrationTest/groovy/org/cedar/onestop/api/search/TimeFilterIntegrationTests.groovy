@@ -125,88 +125,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     'within'     | ['1','3']
   }
 
-  def 'Year filter with q: (0, +∞)'() {
-    given:
-    def requestParams = [
-        filters: [[
-                      type: "year",
-                      relation: 'intersects',
-                      after: 0
-                  ]],
-        summary: false
-    ]
-
-    def expectedMatchingIds = ['p6', 'p7', 'p8', 'p9']
-
-    when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
-    def actualMatchingIds = queryResponse.data.collect { it.id }
-
-    then:
-    expectedMatchingIds.containsAll(actualMatchingIds)
-
-    and:
-    actualMatchingIds.containsAll(expectedMatchingIds)
-
-    and:
-    queryResponse.meta.total == expectedMatchingIds.size()
-  }
-
-  def 'Year filter with q: (-∞, 0)'() {
-    given:
-    def requestParams = [
-        filters: [[
-                      type: "year",
-                      relation: 'intersects',
-                      before: 0
-                  ]],
-        summary: false
-    ]
-
-    def expectedMatchingIds = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8']
-
-    when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
-    def actualMatchingIds = queryResponse.data.collect { it.id }
-
-    then:
-    expectedMatchingIds.containsAll(actualMatchingIds)
-
-    and:
-    actualMatchingIds.containsAll(expectedMatchingIds)
-
-    and:
-    queryResponse.meta.total == expectedMatchingIds.size()
-  }
-
-  def 'Year filter with query crossing year 0'() {
-    def requestParams = [
-        filters: [[
-                      type: "year",
-                      relation: "intersects",
-                      after: -1000,
-                      before: 1000
-                  ]],
-        summary: false
-    ]
-
-    def expectedMatchingIds = ['p6', 'p7', 'p8']
-
-    when:
-    def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
-    def actualMatchingIds = queryResponse.data.collect { it.id }
-
-    then:
-    expectedMatchingIds.containsAll(actualMatchingIds)
-
-    and:
-    actualMatchingIds.containsAll(expectedMatchingIds)
-
-    and:
-    queryResponse.meta.total == expectedMatchingIds.size()
-  }
-
-  def 'Year filter with q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {
+  def 'Year filter with q: (x, +∞) (with x in Paleo range) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -238,7 +157,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     'within'     | ['p1', 'p5', 'p6', 'p7', 'p9']
   }
 
-  def 'Year filter with q: (-∞, y) and `#relation` relation matches #expectedMatchingIds'() {
+  def 'Year filter with q: (-∞, y) (with y in Paleo range) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -270,7 +189,7 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     'within'     | ['p2', 'p4']
   }
 
-  def 'Year filter with q: (x, y) and `#relation` relation matches #expectedMatchingIds'() {
+  def 'Year filter with q: (x, y) (with x,y in Paleo range) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
