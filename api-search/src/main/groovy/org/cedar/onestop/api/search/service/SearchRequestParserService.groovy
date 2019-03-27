@@ -176,7 +176,7 @@ class SearchRequestParserService {
     return constructTemporalFilter(filterRequest, 'beginDate', 'endDate')
   }
 
-  private List<Map> constructYearFilter(Map filterRequest) {
+  protected List<Map> constructYearFilter(Map filterRequest) {
     return constructTemporalFilter(filterRequest, 'beginYear', 'endYear')
   }
 
