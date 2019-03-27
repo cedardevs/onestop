@@ -16,95 +16,116 @@ class TimeFilterIntegrationTests extends IntegrationTest {
     refreshAndLoadGenericTestIndex(DATES_INDEX)
   }
 
-  def 'Datetime filter with begin date only and #relation relation returns correct results'() {
+  def 'Datetime filter q: (x, +∞) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
             type: "datetime",
             relation: relation,
-            after: "1993-01-01"
+            after: "1995-01-01"
         ]],
-        summary: false
+        summary: false,
+        page: [
+            max: 20,
+            offset: 0
+        ]
     ]
 
     when:
     def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
-    def actualMatchingIds = queryResponse.data.collect { it.id }
     expectedMatchingIds.containsAll(actualMatchingIds)
+
+    and:
+    actualMatchingIds.containsAll(expectedMatchingIds)
 
     and:
     queryResponse.meta.total == expectedMatchingIds.size()
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | []
-    'disjoint'   | ['5']
-    'intersects' | ['2', '3', '4', '6']
-    'within'     | ['2', '3', '6']
+    'contains'   | ['15','16']
+    'disjoint'   | ['4','10']
+    'intersects' | ['1','2','3','5','6','7','8','9','11','12','13','14','15','16','17', '18', '19']
+    'within'     | ['1','3','7','8','9','16','17','18','19']
   }
 
-  def 'Datetime filter with end date only and #relation relation returns correct results'() {
+  def 'Datetime filter with q: (-∞, y) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
             type: "datetime",
             relation: relation,
-            before: "2001-01-01"
+            before: "2012-01-01"
         ]],
-        summary: false
+        summary: false,
+        page: [
+            max: 20,
+            offset: 0
+        ]
     ]
 
     when:
     def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
-    def actualMatchingIds = queryResponse.data.collect { it.id }
     expectedMatchingIds.containsAll(actualMatchingIds)
+
+    and:
+    actualMatchingIds.containsAll(expectedMatchingIds)
 
     and:
     queryResponse.meta.total == expectedMatchingIds.size()
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | ['2', '3']
-    'disjoint'   | ['6']
-    'intersects' | ['2', '3', '5']
-    'within'     | ['5']
+    'contains'   | ['13','14']
+    'disjoint'   | ['7','19']
+    'intersects' | ['1','2','3','4','5','6','8','9','10','11','12','13','14','15','16','17','18']
+    'within'     | ['1','3','4','5','6','10','11','12','13']
   }
 
-  def 'Datetime filter with begin and end dates and #relation relation returns correct results'() {
+  def 'Datetime filter with q: (x, y) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
             type: "datetime",
             relation: relation,
-            after: "1985-01-01",
-            before: "1998-01-01"
+            after: "1995-01-01",
+            before: "2012-01-01"
         ]],
-        summary: false
+        summary: false,
+        page: [
+            max: 20,
+            offset: 0
+        ]
     ]
 
     when:
     def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
-    def actualMatchingIds = queryResponse.data.collect { it.id }
     expectedMatchingIds.containsAll(actualMatchingIds)
+
+    and:
+    actualMatchingIds.containsAll(expectedMatchingIds)
 
     and:
     queryResponse.meta.total == expectedMatchingIds.size()
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | []
-    'disjoint'   | ['2', '6']
-    'intersects' | ['3', '5']
-    'within'     | []
+    'contains'   | ['2','3','13','14','15','16']
+    'disjoint'   | ['4','7','10','19']
+    'intersects' | ['1','2','3','5','6','8','9','11','12','13','14','15','16','17','18']
+    'within'     | ['1','3']
   }
 
-  def 'Year filter with begin year only and #relation relation returns correct results'() {
+  def 'Year filter with q: (x, +∞) (with x in Paleo range) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -117,23 +138,26 @@ class TimeFilterIntegrationTests extends IntegrationTest {
 
     when:
     def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
-    def actualMatchingIds = queryResponse.data.collect { it.id }
     expectedMatchingIds.containsAll(actualMatchingIds)
+
+    and:
+    actualMatchingIds.containsAll(expectedMatchingIds)
 
     and:
     queryResponse.meta.total == expectedMatchingIds.size()
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | ['9']
-    'disjoint'   | ['8', '10']
-    'intersects' | ['2', '3', '4', '5', '6', '7', '9', '11', '12']
-    'within'     | ['2', '3', '5', '6', '7', '11', '12']
+    'contains'   | []
+    'disjoint'   | ['p2', 'p4']
+    'intersects' | ['p1', 'p3', 'p5', 'p6', 'p7', 'p8', 'p9']
+    'within'     | ['p1', 'p5', 'p6', 'p7', 'p9']
   }
 
-  def 'Year filter with end year only and #relation relation returns correct results'() {
+  def 'Year filter with q: (-∞, y) (with y in Paleo range) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -146,23 +170,26 @@ class TimeFilterIntegrationTests extends IntegrationTest {
 
     when:
     def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
-    def actualMatchingIds = queryResponse.data.collect { it.id }
     expectedMatchingIds.containsAll(actualMatchingIds)
+
+    and:
+    actualMatchingIds.containsAll(expectedMatchingIds)
 
     and:
     queryResponse.meta.total == expectedMatchingIds.size()
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | ['9']
-    'disjoint'   | ['2', '3', '5', '6', '7', '11', '12']
-    'intersects' | ['9', '10']
-    'within'     | ['8', '10']
+    'contains'   | ['p8']
+    'disjoint'   | ['p1', 'p5', 'p6', 'p7', 'p9']
+    'intersects' | ['p2', 'p3', 'p4', 'p8']
+    'within'     | ['p2', 'p4']
   }
 
-  def 'Year filter with begin and end years and #relation relation returns correct results'() {
+  def 'Year filter with q: (x, y) (with x,y in Paleo range) and `#relation` relation matches #expectedMatchingIds'() {
     given:
     def requestParams = [
         filters: [[
@@ -176,19 +203,22 @@ class TimeFilterIntegrationTests extends IntegrationTest {
 
     when:
     def queryResponse = esService.searchFromRequest(requestParams, DATES_INDEX)
+    def actualMatchingIds = queryResponse.data.collect { it.id }
 
     then:
-    def actualMatchingIds = queryResponse.data.collect { it.id }
     expectedMatchingIds.containsAll(actualMatchingIds)
+
+    and:
+    actualMatchingIds.containsAll(expectedMatchingIds)
 
     and:
     queryResponse.meta.total == expectedMatchingIds.size()
 
     where:
     relation     | expectedMatchingIds
-    'contains'   | []
-    'disjoint'   | ['2', '3', '5', '6']
-    'intersects' | ['7', '9', '10', '11', '12']
-    'within'     | ['7', '11']
+    'contains'   | ['p8']
+    'disjoint'   | ['p2', 'p9']
+    'intersects' | ['p1', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8']
+    'within'     | ['p1', 'p5']
   }
 }

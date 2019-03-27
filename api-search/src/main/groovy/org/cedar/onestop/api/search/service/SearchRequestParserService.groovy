@@ -176,7 +176,7 @@ class SearchRequestParserService {
     return constructTemporalFilter(filterRequest, 'beginDate', 'endDate')
   }
 
-  private List<Map> constructYearFilter(Map filterRequest) {
+  protected List<Map> constructYearFilter(Map filterRequest) {
     return constructTemporalFilter(filterRequest, 'beginYear', 'endYear')
   }
 
@@ -184,80 +184,59 @@ class SearchRequestParserService {
 
     def x = filterRequest.after
     def y = filterRequest.before
+
     def relation = filterRequest.relation
 
     def esFilters = []
 
     switch (relation) {
-    // Results contain query
+    // Results contain query (aka query contained by results)
       case 'contains':
-        if (x || y) {
-          def beginVal = x ? x : y
-          def endVal = y ? y : x
-
+        if (x != null && y == null) {
           esFilters.add([
               bool: [
                   must: [
-                      [ range: [ (beginField): [ lte: beginVal ]] ]
+                      [ range: [ (beginField): [ lte: x ] ] ]
                   ],
-                  should: [
-                      [ range: [ (endField): [ gte: endVal ]] ],
-                      [ bool: [
-                          must_not: [
-                              [ exists: [ field: endField ] ]
-                          ]
-                      ]]
+                  must_not: [
+                      [ exists: [ field: endField ] ]
                   ]
               ]
           ])
         }
-        break
-
-      case 'within':
-        // Results within query
-        if (x) {
+        else if (x == null && y != null) {
           esFilters.add([
-              range: [ (beginField): [ gte: x ] ]
+              bool: [
+                  must: [
+                      [ range: [ (endField): [ gte: y ] ] ]
+                  ],
+                  must_not: [
+                      [ exists: [ field: beginField ] ]
+                  ]
+              ]
           ])
         }
-        if (y) {
-          esFilters.add([
-              range: [ (endField): [ lte: y ] ]
-          ])
-        }
-        break
-
-      case 'disjoint':
-        // Results have nothing in common with query
-        if (x && !y) {
-          esFilters.add([
-              range: [ (endField): [ lt: x ] ]
-          ])
-        }
-        else if (!x && y) {
-          esFilters.add([
-              range: [ (beginField): [ gt: y ] ]
-          ])
-        }
-        else if (x && y) {
+        else if (x != null && y != null) {
           esFilters.add([
               bool: [
                   should: [
                       [ bool: [
                           must: [
-                              [range: [ (beginField): [ lt: x ] ]],
-                              [range: [ (endField): [ lt: x ] ]]
+                              [ range: [ (beginField): [ lte: x ] ] ]
+                          ],
+                          must_not: [
+                              [ exists: [ field: endField ] ]
                           ]
                       ]],
                       [ bool: [
                           must: [
-                              [range: [ (beginField): [ gt: y ] ]]
+                              [ range: [ (endField): [ gte: y ] ] ]
                           ],
                           should: [
-                              [range: [ (endField): [ gt: y ] ]],
+                              [ range: [ (beginField): [ lte: x ]] ],
                               [ bool: [
                                   must_not: [
-                                      [ exists: [ field: endField ] ]
+                                      [ exists: [ field: beginField ] ]
                                   ]
                               ]]
                           ]
@@ -268,9 +247,48 @@ class SearchRequestParserService {
         }
         break
 
+      case 'within':
+        // Results within query (aka results contained by query)
+        if (x != null) {
+          esFilters.add([
+              range: [ (beginField): [ gte: x ] ]
+          ])
+        }
+        if (y != null) {
+          esFilters.add([
+              range: [ (endField): [ lte: y ] ]
+          ])
+        }
+        // If x != null && y != null then both statements must be true (elasticsearch AND created)
+        break
+
+      case 'disjoint':
+        // Results have nothing in common with query
+        if (x != null && y == null) {
+          esFilters.add([
+              range: [ (endField): [ lt: x ] ]
+          ])
+        }
+        else if (x == null && y != null) {
+          esFilters.add([
+              range: [ (beginField): [ gt: y ] ]
+          ])
+        }
+        else if (x != null && y != null) {
+          esFilters.add([
+              bool: [
+                  should: [
+                      [ range: [ (beginField): [ gt: y ] ] ],
+                      [ range: [ (endField): [ lt: x ] ] ]
+                  ]
+              ]
+          ])
+        }
+        break
+
       default:
         // Null or 'intersects'
-        if (x && !y) {
+        if (x != null && y == null) {
           // End date is greater than x; if endDate "ongoing" (null), make sure results actually have a beginDate
           // (otherwise we'll match ones without a time bounding)
           esFilters.add([
@@ -289,28 +307,49 @@ class SearchRequestParserService {
               ]
           ])
         }
-        else if (!x && y) {
+        else if (x == null && y != null) {
           esFilters.add([
-              range: [
-                  (beginField): [
-                      lte: y
+              bool: [
+                  should: [
+                      [ range: [ (beginField): [ lte: y ]] ],
+                      [ bool: [
+                          must: [
+                              [ exists: [ field: endField ] ]
+                          ],
+                          must_not: [
+                              [ exists: [ field: beginField ] ]
+                          ]
+                      ]]
                   ]
               ]
           ])
         }
-        else if (x && y){
+        else if (x != null && y != null){
           esFilters.add([
               bool: [
-                  must: [
-                      [ range: [ (beginField): [ lte: y ]] ]
-                  ],
                   should: [
-                      [ range: [ (endField): [ gte: x ]] ],
                       [ bool: [
+                          must: [
+                              [ range: [ (beginField): [ lte: y ]] ],
+                              [ range: [ (endField): [ gte: x ]] ]
+                          ]
+                      ] ],
+                      [ bool: [
+                          must: [
+                              [ range: [ (endField): [ gte: x ]] ]
+                          ],
+                          must_not: [
+                              [ exists: [ field: beginField ] ]
+                          ]
+                      ] ],
+                      [ bool: [
+                          must: [
+                              [ range: [ (beginField): [ lte: y ]] ]
+                          ],
                           must_not: [
                               [ exists: [ field: endField ] ]
                           ]
-                      ]]
+                      ] ]
                   ]
               ]
           ])
