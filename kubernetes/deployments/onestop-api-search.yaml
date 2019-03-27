@@ -107,7 +107,7 @@ metadata:
 data:
   application.yaml: |
     spring.profiles.include:
-      - feature-trending-search
+      - trending-search
     ui:
       # auth:
        # loginEndpoint: "http://localhost:8080/onestop/api/login"
@@ -140,7 +140,7 @@ data:
             imageUrl: "https://www.ncdc.noaa.gov/sites/default/files/styles/cdr-full-width/public/cdr/AVHRRSurfaceReflectance.png"
     ---
     spring:
-      profiles: feature-trending-search
+      profiles: trending-search
     trending:
       additionalBlacklistedSearchTerms:
       - +nwlon +ports

@@ -190,7 +190,7 @@ publishing {
 
 processResources {
   outputs.upToDateWhen { false }
-  filesMatching("**/application.yml") {
+  filesMatching("**/application*.yml") {
     expand( project.properties )
   }
 }

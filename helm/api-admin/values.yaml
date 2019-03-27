@@ -5,8 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: nginx
-  tag: stable
+  repository: cedardevs/onestop-api-metadata
+  tag: latest
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -14,7 +14,7 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
-  port: 8098
+  port: 8080
 
 ###############################################################################
 # FEATURE TOGGLES (SUBCHART DEFAULTS)

@@ -10,11 +10,13 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
 
 @ActiveProfiles("integration")
 @SpringBootTest(classes = [Application, IntegrationTestConfig], webEnvironment = RANDOM_PORT)
+@Unroll
 class IntegrationTest extends Specification {
 
   @Autowired

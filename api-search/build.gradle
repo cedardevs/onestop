@@ -55,6 +55,7 @@ dependencies {
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile "org.testcontainers:testcontainers:${project.testContainersVersion}"
+  testCompile "org.testcontainers:elasticsearch:${project.testContainersVersion}"
 }
 
 ext {
@@ -91,9 +92,9 @@ ext {
     // -- use these values if you want to test logging in directly against api-search on 8097
     envVars.LOGIN_GOV_CLIENT_ID = "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8097"
     envVars.LOGIN_GOV_ALLOWED_ORIGIN = "http://localhost:8097"
-    envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
-    envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8097/onestop/api/login_profile?failure=true"
-    envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
+    envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
+    envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
+    envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
   }
 
   // login.gov keystore configuration (for JWT signing on token request)
@@ -196,7 +197,7 @@ publishing {
 
 processResources {
   outputs.upToDateWhen { false }
-  filesMatching("**/application.yml") {
+  filesMatching("**/application*.yml") {
     expand( [
             esVersion: project.esVersion,
             version: project.version,

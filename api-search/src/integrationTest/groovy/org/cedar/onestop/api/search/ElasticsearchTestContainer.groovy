@@ -1,4 +1,4 @@
-package org.cedar.onestop.api.metadata
+package org.cedar.onestop.api.search
 
 import org.apache.http.HttpHost
 import org.elasticsearch.client.RestClient

@@ -1,8 +1,10 @@
 package org.cedar.onestop.api.search.security.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
+@Profile("security")
 @Component
 @ConfigurationProperties('logingov')
 class LoginGovConfiguration {

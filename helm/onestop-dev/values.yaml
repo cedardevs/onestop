@@ -17,7 +17,7 @@ api-admin:
   service:
     type: NodePort
     nodePort: 30098
-  # features are directly tied to `export SPRING_ACTIVE_PROFILES='feat1,feat2,...'
+  # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
   # all features default to "false" in base chart, unless otherwise overridden
   features:
     security: false
@@ -39,7 +39,7 @@ api-search:
   service:
     type: NodePort
     nodePort: 30097
-  # features are directly tied to `export SPRING_ACTIVE_PROFILES='feat1,feat2,...'
+  # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
   # all features default to "false" in base chart, unless otherwise overridden
   features:
     security: false

@@ -32,7 +32,3 @@ deploy:
     releases:
     - name: onestop-dev
       chartPath: helm/onestop-dev
-      setValues:
-        elasticsearch.enabled: true
-        api-admin.enabled: true
-        api-search.enabled: true
