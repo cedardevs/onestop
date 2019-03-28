@@ -18,14 +18,14 @@ build:
         VCS_REF: local
         VERSION: 2.1.0
         WAR_NAME: onestop-search-2.1.0.war
-#  - image: cedardevs/onestop-client
-#    context: ./client
-#    docker:
-#      buildArgs:
-#        DATE: now
-#        TAR_NAME: onestop-client-2.1.0.tar.gz
-#        VCS_REF: local
-#        VERSION: 2.1.0
+  - image: cedardevs/onestop-client
+    context: ./client
+    docker:
+      buildArgs:
+        DATE: now
+        VCS_REF: local
+        VERSION: 2.1.0
+        TAR_NAME: onestop-client-2.1.0.tar.gz
 
 deploy:
   helm:
@@ -65,21 +65,48 @@ deploy:
         config: |-
           ---
           logging.level.org.cedar.onestop.api.metadata: DEBUG
+    ###############################################################################
+    # API SEARCH
+    ###############################################################################
+    - name: api-search
+      chartPath: helm/api-search
+      values:
+        image: cedardevs/onestop-api-search
+      imageStrategy:
+        helm: {}
+      setValues:
+        enabled: true
+        # allows api-search to be exposed outside the cluster in dev
+        service.type: NodePort
+        service.nodePort: 30097
+        # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
+        # all features default to "false" in base chart, unless otherwise overridden
+        features.security: false
+        # login.gov configuration that are later read as environment variables by Spring
+        # these values override the chart's default sciapps config in order to run locally for dev
+        loginGov.clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8080"
+        loginGov.allowedOrigin: "http://localhost:8080"
+        loginGov.endpoints.loginSuccessRedirect: "http://localhost:8080/onestop/"
+        loginGov.endpoints.loginFailureRedirect: "http://localhost:8080/onestop/"
+        loginGov.endpoints.logoutSuccessRedirect: "http://localhost:8080/onestop/"
+        config: |-
+          ---
+          logging.level.org.cedar.onestop.api.search: DEBUG
+    ###############################################################################
+    # CLIENT
+    ###############################################################################
+    - name: client
+      chartPath: helm/client
+      values:
+        image: cedardevs/onestop-client
+      imageStrategy:
+        helm: {}
+      setValues:
+        enabled: true
+        # allows api-search to be exposed outside the cluster in dev
+        service.type: NodePort
+        service.nodePort: 30000
+        prefixPath: onestop
+        apiSearch.endpoint: api-search:8080/onestop-search
 
-#    - name: psi-registry
-#      chartPath: helm/psi-registry
-#      values:
-#        image: cedardevs/psi-registry
-#      setValues:
-#        cp-schema-registry.url: http://psi-dev-cp-schema-registry:8081
-#        kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
-#        config: |-
-#          ---
-#          server.servlet.context-path: /registry
-#      imageStrategy:
-#        helm: {}
 
-#    - name: onestop-dev
-#      chartPath: helm/onestop-dev
-#      imageStrategy:
-#        helm: {}

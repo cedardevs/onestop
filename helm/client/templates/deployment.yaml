@@ -21,12 +21,17 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: {{ printf "%s:%s" .Values.image.repository .Values.image.tag | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
+          env:
+            - name: ONESTOP_PREFIX_PATH
+              value: {{ .Values.prefixPath }}
+            - name: ONESTOP_SEARCH_API_ENDPOINT
+              value: {{ .Values.apiSearch.endpoint }}
           livenessProbe:
             httpGet:
               path: /

@@ -16,6 +16,18 @@ service:
   type: ClusterIP
   port: 80
 
+###############################################################################
+# PREFIX PATH (used to simplify web server config and SPA routing rules)
+# `http://<host>:<port>/<prefix>/<route>`
+###############################################################################
+prefixPath: onestop
+
+###############################################################################
+# SERVICE ENDPOINTS (tells client how to access in cluster)
+###############################################################################
+apiSearch:
+  endpoint: api-search:8080/onestop-search
+
 ingress:
   enabled: false
   annotations: {}

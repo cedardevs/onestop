@@ -14,6 +14,12 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    # If the service type was overriden from the default ClusterIP to NodePort
+    # (and we've also specified nodePort), nodePort will be exposed outside the cluster.
+    # This is simple switch for non-production environments to allow for easier debugging.
+    {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.nodePort))) }}
+      nodePort: {{ .Values.service.nodePort }}
+    {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "client.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
