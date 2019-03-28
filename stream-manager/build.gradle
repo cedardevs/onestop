@@ -39,26 +39,8 @@ dependencies {
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
   testCompile('com.github.cedardevs:schemas:0.1.2:test')
   testCompile('com.github.cedardevs:schemas:0.1.2:sources')
+  testCompile('org.locationtech.jts:jts-core:1.16.1')
 }
-
-//sourceSets {
-//  integrationTest {
-//    groovy.srcDir file('src/integrationTest/groovy')
-////    resources.srcDir file("src/main/resources")
-//    compileClasspath += main.output + test.output + configurations.testRuntime
-//    runtimeClasspath += output + compileClasspath
-//  }
-//}
-//
-//task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
-//  mustRunAfter 'test'
-//  testClassesDirs = sourceSets.integrationTest.output.classesDirs
-//  classpath = sourceSets.integrationTest.runtimeClasspath
-//  reports.junitXml.destination = file("${buildDir}/integration-test-results")
-//  reports.html.destination = file("${buildDir}/reports/integrationTests")
-//}
-//
-//check.dependsOn integrationTest
 
 jar {
   baseName = "${rootProject.name}-${project.name}"
