@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/java
+FROM gcr.io/distroless/java:11
 
 ARG JAR_NAME
 ARG VCS_REF
@@ -13,9 +13,6 @@ LABEL org.label-schema.vendor=CEDAR
 LABEL org.label-schema.vcs-url=https://github.com/cedardevs/psi
 LABEL org.label-schema.vcs-ref=${VCS_REF}
 
-# NOTE: adding java to the path prevents the container from defaulting to 1.7
-ENV PATH=$JAVA_HOME/bin:$PATH
-
 WORKDIR /usr/src/app
 COPY build/libs/${JAR_NAME} stream-manager.jar
-CMD ["/usr/src/app/stream-manager.jar"]
+CMD [ "stream-manager.jar" ]
