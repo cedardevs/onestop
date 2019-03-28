@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/java
+FROM gcr.io/distroless/java:11
 
 ARG JAR_NAME
 ARG VCS_REF
