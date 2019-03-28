@@ -1,3 +1,46 @@
+# Developer Guide
+## Quick Start
+### System Requirements
+- Java >= 8 (needed by Gradle 5 wrapper)
+- Docker (needed to run test containers in integration tests)
+- Elasticsearch 5.6.14 (running on port 9200)
+### Clone
+`git clone https://github.com/cedardevs/onestop.git`
+### Build
+<details>
+  <summary>
+    <code>./gradlew build</code>
+  </summary>
+  <br/>
+  <p>For individual components:</p>
+<pre>./gradlew build:api-metadata
+./gradlew build:api-search
+./gradlew build:client</pre>
+</details>
+### 
+
+
+`./gradlew uploadTestData`
+
+
+<details>
+<summary>Something is really messed up in my environment, what should I do?</summary>
+<p>
+If you find yourself in a weird state, even after freshly cloning the project, you might try some or all of the following techniques to reset your environment:
+
+```
+
+```
+</p>
+</details>
+
+# Quick Start (Kubernetes + Helm + Skaffold)
+```
+# System Requirements
+# kubernetes, helm, skaffold
+
+```
+
 # Local Development using Skaffold
 
 To run the k8s stack locally, use `skaffold dev -f skaffold.yaml`.
