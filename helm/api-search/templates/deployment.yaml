@@ -38,11 +38,13 @@ spec:
           # EXPORT ACTIVE SPRING PROFILES TO TELL SPRING WHICH FEATURES TO ENABLE
           # the loop is making a comma delimited list for multi-feature handling
             - name: SPRING_PROFILES_ACTIVE
-              value: '{{ range $feature, $enabled := .Values.features -}}
-                    {{- if $enabled -}}
-                      {{ $feature }},
-                    {{- end -}}
-                  {{- end }}'
+              value: '{{ $active := dict "profiles" (list) -}}
+                      {{- range $feature, $enabled := .Values.features -}}
+                        {{- if $enabled -}}
+                          {{- $noop := $feature | append $active.profiles | set $active "profiles" -}}
+                        {{- end -}}
+                      {{- end -}}
+                      {{- join "," $active.profiles }}'
             - name: ELASTICSEARCH_HOST
               value: {{ .Values.elasticsearch.host }}
             - name: ELASTICSEARCH_PORT

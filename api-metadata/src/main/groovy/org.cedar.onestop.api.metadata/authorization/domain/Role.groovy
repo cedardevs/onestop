@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Profile
 import javax.persistence.*
 import javax.validation.constraints.NotEmpty
 
-@Profile("security")
+@Profile("icam")
 @Entity
 @Table(name='role')
 class Role {

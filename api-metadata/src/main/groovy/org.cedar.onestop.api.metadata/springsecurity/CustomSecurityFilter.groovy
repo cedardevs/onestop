@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse
 import java.nio.file.AccessDeniedException
 import java.security.Principal
 
-@Profile("security")
+@Profile("icam")
 class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
     private final List<String> securedEndpointsRegex = [/\/metadata.*$/, /\/admin\/.+$/, /\/upload.html$/, /\/uploadResponse.html$/, /^.+\/userOnly$/]

@@ -8,5 +8,5 @@ server:
     protocol: TLS
     enabled: true
     key-store-password: password
-    key-store: debug.jks
+    key-store: build/resources/integrationTest/debug.jks
     key-store-type: JKS

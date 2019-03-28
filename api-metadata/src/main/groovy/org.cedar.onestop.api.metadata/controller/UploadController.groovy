@@ -19,7 +19,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST
 
 @Slf4j
 @Controller
-@Profile(["security", "!kafka-ingest"])
+@Profile("manual-upload")
 class UploadController {
 
   private MetadataManagementService metadataService

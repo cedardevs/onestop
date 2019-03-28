@@ -14,10 +14,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.ModelAndView
 
+@ActiveProfiles(["integration", "manual-upload"])
 class UploadIntegrationTests extends IntegrationTest {
 
     /**

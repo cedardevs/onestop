@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
 import javax.transaction.Transactional
 
-@Profile("security")
+@Profile("icam")
 @Component
 @Transactional
 class UserAndRoleLoader implements ApplicationRunner {

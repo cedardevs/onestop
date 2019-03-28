@@ -16,7 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 
 @Slf4j
-@Profile("security")
+@Profile("icam")
 @Configuration
 @EnableWebSecurity
 class SpringSecurityConfig extends WebSecurityConfigurerAdapter {

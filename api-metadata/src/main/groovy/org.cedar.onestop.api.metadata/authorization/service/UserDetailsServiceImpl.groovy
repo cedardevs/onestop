@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 
 import javax.transaction.Transactional
 
-@Profile("security")
+@Profile("icam")
 @Service
 class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired

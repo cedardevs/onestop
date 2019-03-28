@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: cedardevs/onestop-api-search
-  tag: latest
+  tag: 2.1.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""

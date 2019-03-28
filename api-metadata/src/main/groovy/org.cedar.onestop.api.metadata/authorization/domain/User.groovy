@@ -7,7 +7,7 @@ import javax.persistence.*
 import javax.validation.constraints.Email
 import javax.validation.constraints.NotEmpty
 
-@Profile("security")
+@Profile("icam")
 @Entity
 @Table(name='user')
 class User {

@@ -30,5 +30,56 @@ build:
 deploy:
   helm:
     releases:
-    - name: onestop-dev
-      chartPath: helm/onestop-dev
+    ###############################################################################
+    # ELASTICSEARCH
+    ###############################################################################
+    - name: elasticsearch
+      chartPath: helm/elasticsearch
+      setValues:
+        enabled: true
+        # allows elasticsearch to be exposed outside the cluster in dev
+        service.type: NodePort
+        service.nodePort: 30092
+    ###############################################################################
+    # API ADMIN
+    ###############################################################################
+    - name: api-admin
+      chartPath: helm/api-admin
+      values:
+        image: cedardevs/onestop-api-metadata
+      imageStrategy:
+        helm: {}
+      setValues:
+        enabled: true
+        # allows api-admin to be exposed outside the cluster in dev
+        service.type: NodePort
+        service.nodePort: 30098
+        # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
+        # all features default to "false" in base chart, unless otherwise overridden
+        features.icam: true
+        features.manual-upload: true
+        features.kafka-ingest: false
+        features.sitemap: false
+        elasticsearch.host: elasticsearch
+        elasticsearch.port: 9200
+        config: |-
+          ---
+          logging.level.org.cedar.onestop.api.metadata: DEBUG
+
+#    - name: psi-registry
+#      chartPath: helm/psi-registry
+#      values:
+#        image: cedardevs/psi-registry
+#      setValues:
+#        cp-schema-registry.url: http://psi-dev-cp-schema-registry:8081
+#        kafka.bootstrapServers: PLAINTEXT://psi-dev-cp-kafka:9092
+#        config: |-
+#          ---
+#          server.servlet.context-path: /registry
+#      imageStrategy:
+#        helm: {}
+
+#    - name: onestop-dev
+#      chartPath: helm/onestop-dev
+#      imageStrategy:
+#        helm: {}

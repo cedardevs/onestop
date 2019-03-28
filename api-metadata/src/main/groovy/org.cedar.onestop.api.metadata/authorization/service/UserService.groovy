@@ -10,7 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 
-@Profile("security")
+@Profile("icam")
 @Service
 class UserService {
     @Autowired

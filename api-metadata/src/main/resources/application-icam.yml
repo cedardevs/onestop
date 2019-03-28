@@ -4,27 +4,23 @@ user.roles: elliott.richerson@noaa.gov:ADMIN;david.neufeld@noaa.gov:ADMIN
 
 server:
   ssl:
-    key-alias: ${SCIAPPS_KEYSTORE_ALIAS}
-    #key-password: ${SCIAPPS_KEY_PASSWORD}
+    key-alias: \${SCIAPPS_KEYSTORE_ALIAS}
+    #key-password: \${SCIAPPS_KEY_PASSWORD}
     enabled-protocols: TLSv1.2
     protocol: TLS
     enabled: true
-    key-store-password: ${SCIAPPS_KEYSTORE_PASSWORD}
+    key-store-password: \${SCIAPPS_KEYSTORE_PASSWORD}
     key-store: /etc/api-metadata/keystore.jks
     key-store-type: JKS
 
 spring:
-  servlet:
-    multipart:
-      max-file-size: 500MB
-      max-request-size: 500MB
   datasource:
-    url: jdbc:hsqldb:mem:myDb
+    url: jdbc:hsqldb:mem:myDb;shutdown=false;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driverClassName: org.hsqldb.jdbc.JDBCDriver
     username: sa # default username
     password:
   jpa:
-    hibernate.ddl-auto: none
+    hibernate.ddl-auto: create-drop
     # database-platform: org.hibernate.dialect.H2Dialect
     properties:
       show_sql: true
