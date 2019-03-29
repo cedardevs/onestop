@@ -43,6 +43,22 @@ skaffold dev -f skaffold.yaml
 ./gradlew api-search:bootrun
 cd client && npm run dev
 ```
+
+##### Verify Endpoints (use `https` when enabling security features)
+```
+# Elasticsearch
+http://localhost:9200/
+
+# APIs
+http://localhost:8098/onestop-admin/actuator/info
+http://localhost:8097/onestop-search/actuator/info
+
+# Client
+# port here is automatically assigned when using webpack-dev-server
+# and seen in the output of `npm run dev`
+http://localhost:<port>/onestop
+```
+
 ### Upload Test Data
 ```
 ./gradlew uploadTestData
@@ -78,6 +94,21 @@ cd client && npm run kub
 
 # 3) run skaffold without automatic port forwarding
 skaffold dev --port-forward=false -f skaffold.yaml
+```
+
+##### Verify Endpoints (use `https` when enabling security features)
+```
+# Elasticsearch
+http://localhost:30092/
+
+# APIs
+http://localhost:30098/onestop-admin/actuator/info
+http://localhost:30097/onestop-search/actuator/info
+
+# Client
+# port here is automatically assigned when using webpack-dev-server
+# and seen in the output of `npm run dev`
+http://localhost:30000/onestop
 ```
 
 ### Troubleshooting
