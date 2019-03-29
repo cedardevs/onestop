@@ -51,16 +51,16 @@ spec:
               value: {{ .Values.elasticsearch.host }}
             - name: ELASTICSEARCH_PORT
               value: {{ .Values.elasticsearch.port | quote }}
-          # EXPORT PATHS TO KEYSTORES (if security feature enabled)
-          {{- if .Values.features.security }}
+          # EXPORT PATHS TO KEYSTORES (if icam feature enabled)
+          {{- if .Values.features.icam }}
             - name: SCIAPPS_KEYSTORE_FILE
               value: {{ .Values.keystoreFiles.jks.sciapps }}
           {{- end }}
-          # EXPORT SECRET ENVIRONMENT VARIABLES IN THIS CONTAINER (if security feature enabled)
+          # EXPORT SECRET ENVIRONMENT VARIABLES IN THIS CONTAINER (if icam feature enabled)
           # the general utility here is taking "env" type secrets in our Helm values,
           # mapping the keys directly to environment variables w/optional prefix,
           # and uppercasing / replacing problematic '-' and '.' characters with '_'
-          {{- if .Values.features.security }}
+          {{- if .Values.features.icam }}
             {{- range $secret := .Values.secrets }}
               {{- if eq $secret.type "env" }}
                 {{- range $key := $secret.keys }}
@@ -93,10 +93,10 @@ spec:
             - name: config-volume
               mountPath: /etc/conf/
           {{- end }}
-          # MOUNT SECRET FILES IN THIS CONTAINER (if security feature enabled)
+          # MOUNT SECRET FILES IN THIS CONTAINER (if icam feature enabled)
           # if there are multiple containers in the pod,
           # then each container needs its own volumeMounts block
-          {{- if .Values.features.security }}
+          {{- if .Values.features.icam }}
             {{- range $secret := .Values.secrets }}
               {{- if eq $secret.type "file" }}
             - name: {{ $secret.name }}-volume
@@ -113,10 +113,10 @@ spec:
           configMap:
             name: {{ include "api-admin.fullname" . }}-config
       {{- end }}
-      # CREATE VOLUME FOR SECRET FILES (if security feature enabled)
+      # CREATE VOLUME FOR SECRET FILES (if icam feature enabled)
       # secret must be created in the Kubernetes API before it can be used
       # only 1 `spec.volumes` entry is needed per secret, even if it contains multiple keys
-      {{- if .Values.features.security }}
+      {{- if .Values.features.icam }}
         {{- range $secret := .Values.secrets }}
           {{- if eq $secret.type "file" }}
         - name: {{ $secret.name }}-volume
