@@ -139,9 +139,16 @@ helm delete client --purge
 skaffold delete
 ```
 
-# Enabling security features
+# Enabling Security Features
 
-Turning on security-related features requires setting up the keystore as a secret. Due to the sensitive nature of certs, this is a one-time setup which is done separately. See [private instructions](https://github.com/cedardevs/help/wiki/local-secure-development-setup) for how to do this setup.
+Due to the static nature of registering public certificates to identity providers like ICAM and login.gov, we have opted not to publish public "debug" keystores and associated metadata with these providers, as those registrations could be clobbered by a variety of unknown, unrelated developers.
+
+It is up to the open source developer to register their own SP "Service Provider" metadata with these IdP "Identity Providers" and configure their applications accordingly, but we don't recommend this because it is probably a waste of your time. For obvious reasons, we don't accept pull requests associated with our authentication code or configuration. 
+
+If you wish to contribute to features of our project related to or obscured by security, it is better to simply toggle Spring Profile annotations to debug against those features. The specific profiles (feature toggles) used in our project are explained below.
+
+### Spring Profiles
+...
 
 By default, security is disabled locally. To turn it on, change onestop-api-metadata.yaml in the k8s deployments from
 ```
@@ -162,3 +169,13 @@ spring:
   user.roles: yourOfficalEmail:ADMIN
 ```
 This structure essentially provides a new application-securityenabled.yml to the application.
+
+### Kubernetes Secrets
+Turning on security-related features requires setting up JKS (Java Key Store) keystores as a Kubernetes secrets.
+
+Due to the sensitive nature of certs, this is a one-time setup which is done separately. See [private instructions](https://github.com/cedardevs/help/wiki/local-secure-development-setup) for how to do this setup.
+
+##### Keystore File
+
+
+##### Keystore Credentials
