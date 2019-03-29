@@ -56,8 +56,8 @@ deploy:
         service.nodePort: 30098
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
         # all features default to "false" in base chart, unless otherwise overridden
-        features.icam: true
-        features.manual-upload: true
+        features.icam: false
+        features.manual-upload: false
         features.kafka-ingest: false
         features.sitemap: false
         elasticsearch.host: elasticsearch
