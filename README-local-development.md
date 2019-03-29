@@ -15,12 +15,6 @@ brew install elasticsearch@5.6
 brew services start elasticsearch@5.6
 
 brew install node
-
-# install tiller onto the cluster (one-time deal, unless upgrading helm)
-helm init
-
-# run
-skaffold dev -f skaffold.yaml
 ```
 
 ### Clone
