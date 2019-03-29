@@ -1,14 +1,28 @@
 # Developer Guide
 ## Quick Start
 ### Basic System Requirements
-- Java >= 8
-  - needed by Gradle 5 wrapper
-- Docker
+- **Java >= 8** [JDK8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [JDK11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
+  - needed by Gradle 5 wrapper and... everything
+- **Docker** [Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Windows](https://hub.docker.com/editions/community/docker-ce-desktop-windows)
   - needed to run test containers in integration tests
-- Elasticsearch 5.6.14
+- **Elasticsearch 5.6.14**
   - running on port 9200
-- Node
-  - needed to hot-reload client via npm/webpack-dev-server  
+- **Node**
+  - needed to hot-reload client via npm/webpack-dev-server
+  
+```
+brew install elasticsearch@5.6
+brew services start elasticsearch@5.6
+
+brew install node
+
+# install tiller onto the cluster (one-time deal, unless upgrading helm)
+helm init
+
+# run
+skaffold dev -f skaffold.yaml
+```
+
 ### Clone
 `git clone https://github.com/cedardevs/onestop.git`
 ### Build
