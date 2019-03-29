@@ -1,4 +1,27 @@
 # Developer Guide
+
+Table of Contents
+=================
+ * [Quick Start](#quick-start)
+    * [Basic System Requirements](#basic-system-requirements)
+    * [Clone](#clone)
+    * [Build](#build)
+    * [Run](#run)
+    * [Verify Endpoints (use https when enabling security features)](#verify-endpoints-use-https-when-enabling-security-features)
+    * [Upload Test Data](#upload-test-data)
+ * [Quick Start (Kubernetes   Helm   Skaffold)](#quick-start-kubernetes--helm--skaffold)
+    * [System Requirements](#system-requirements)
+    * [If running client via Node](#if-running-client-via-node)
+    * [Verify Endpoints (use https when enabling security features)](#verify-endpoints-use-https-when-enabling-security-features-1)
+ * [Troubleshooting](#troubleshooting)
+    * [Clear Caches](#clear-caches)
+    * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
+ * [Enabling Security Features](#enabling-security-features)
+    * [Spring Profiles](#spring-profiles)
+    * [Kubernetes Secrets](#kubernetes-secrets)
+    * [Keystore File](#keystore-file)
+    * [Keystore Credentials](#keystore-credentials)
+
 ## Quick Start
 ### Basic System Requirements
 - **Java >= 8** [JDK8](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html), [JDK11](https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html)
