@@ -117,6 +117,7 @@ subprojects {
 }
 
 import java.time.*
+import java.util.function.Consumer
 
 gradle.taskGraph.beforeTask { Task task ->
     task.ext.setProperty("startTime", Instant.now())
@@ -178,46 +179,72 @@ task openDashboards(description: 'Opens Kibana and Kubernetes dashboards') {
     }
 }
 
-task uploadTestData(description: 'Uploads test data to elasticsearch.', group: 'upload') {
-    doLast {
+class UploadTestDataTask extends DefaultTask {
+    
+    @Input
+    String apiAdminPort
+
+    UploadTestDataTask() {
+        description = 'Uploads test data to OneStop api-admin.'
+        group = 'upload'
+        apiAdminPort = 30098
+    }
+
+    @Option(option = 'apiAdminPort', description = 'Set the port of api-admin to upload data to (default: 30098).')
+    void setApiAdminPort(final String apiAdminPort) {
+        this.apiAdminPort = apiAdminPort
+    }
+
+    @TaskAction
+    void uploadTestData() {
         // delete previously expanded testData directory, if it exists
-        delete 'upload/testData'
+        project.delete 'upload/testData'
 
         // expand the test data tar.gz into testData directory
         def testDataTGZ = 'testData_20180404.tar.gz'
         def stdoutExpand = new ByteArrayOutputStream()
         def stderrExpand = new ByteArrayOutputStream()
-        def resultExpand = exec {
-            ignoreExitValue = true
-            workingDir 'upload'
-            executable = 'bash'
-            args = ['-c', "tar -xvzf ${testDataTGZ}"]
-            standardOutput = stdoutExpand
-            errorOutput = stderrExpand
-        }
+        def resultExpand = project.exec(new Action<ExecSpec>() {
+            @Override
+            void execute(ExecSpec execSpec) {
+                execSpec.ignoreExitValue = true
+                execSpec.workingDir 'upload'
+                execSpec.executable = 'bash'
+                execSpec.args = ['-c', "tar -xvzf ${testDataTGZ}"]
+                execSpec.standardOutput = stdoutExpand
+                execSpec.errorOutput = stderrExpand
+            }
+        })
         if (resultExpand.getExitValue() == 0) {
             print stdoutExpand
         } else {
             print stderrExpand
-            throw new GradleException("failed to extract ${testDataTGZ}")
+            String message = "failed to extract ${testDataTGZ}"
+            throw new GradleException(message)
         }
 
         // run the upload script against the testData directory and api-metadata running locally
         def stdoutUpload = new ByteArrayOutputStream()
         def stderrUpload = new ByteArrayOutputStream()
-        def resultUpload = exec {
-            ignoreExitValue = true
-            workingDir 'upload'
-            executable = 'bash'
-            args = ['-c', './uploadToOnestopApi.sh ./testData http://localhost:30098/onestop-admin/metadata']
-            standardOutput = stdoutUpload
-            errorOutput = stderrUpload
-        }
+        def resultUpload = project.exec(new Action<ExecSpec>() {
+            @Override
+            void execute(ExecSpec execSpec) {
+                execSpec.ignoreExitValue = true
+                execSpec.workingDir 'upload'
+                execSpec.executable = 'bash'
+                execSpec.args = ['-c', "./uploadToOnestopApi.sh ./testData http://localhost:${this.apiAdminPort}/onestop-admin/metadata"]
+                execSpec.standardOutput = stdoutUpload
+                execSpec.errorOutput = stderrUpload
+            }
+        })
         if (resultUpload.getExitValue() == 0) {
             print stdoutUpload
         } else {
-            print stderrUpload
+            print stdoutUpload
+            //print stderrUpload
             throw new GradleException("failed to upload test data")
         }
     }
 }
+
+task uploadTestData(type: UploadTestDataTask)
