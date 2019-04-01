@@ -40,7 +40,7 @@ subprojects {
         testContainersVersion = '1.10.7'
 
         groovyVersion = '2.5.5'
-        openSAMLVersion = '3.4.2s'
+        openSAMLVersion = '3.4.2'
         logbackVersion = '1.2.3'
         javaxServletAPIVersion = '4.0.1'
         junitVersion = '4.12'
