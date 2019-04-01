@@ -49,6 +49,7 @@ fi;
 # this is a bit awkward but seems to work and is better than blindly
 # "succeeding" when curl came back with an exit status = 0 when the
 # response could potentially not be '{"acknowledged":true}'
+rm curl.output
 RETRIES=0
 MAX_RETRIES=10
 curl -sS ${UPDATE} > curl.output
@@ -74,7 +75,6 @@ else
     echo -e "${BLUE}===========================================${NC}"
 fi;
 
-rm curl.output
 
 if [[ "${SUCCESS_COUNT}" -ne "${FILE_COUNT}" ]] || [[ ${CURL_OUTPUT} != '{"acknowledged":true}' ]]; then
     exit 1
