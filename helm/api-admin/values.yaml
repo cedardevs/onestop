@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: cedardevs/onestop-api-metadata
-  tag: 2.1.0
+  tag: 2.1-SNAPSHOT
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -36,7 +36,7 @@ config:
 # ELASTICSEARCH ENVIRONMENT VARIABLES
 ###############################################################################
 elasticsearch:
-  host: elasticsearch
+  host: es-elasticsearch
   port: 9200
   portTransport: 9300
 
@@ -60,16 +60,16 @@ elasticsearch:
 #     name:     [REQUIRED] k8s secret name (which contains secret literals)
 #     prefix:   [OPTIONAL] prefix to apply to environment variables for uniqueness
 #     keys:     [REQUIRED] array of secret keys to be exported to env vars in pod
-#     ---            
+#     ---
 #     Result => template replaces '-' and '.' in the key with '_' in the env var
 #               (e.g. - [secret] ${name}.VAR_1 => [env] ${prefix}VAR_1="OurLittleSecret")
 #
-#     Note: This conversion is Spring compatible. See: `org.springframework.core.envSystemEnvironmentPropertySource`      
+#     Note: This conversion is Spring compatible. See: `org.springframework.core.envSystemEnvironmentPropertySource`
 secrets:
 - type: file
   name: sciapps-keystore              # k8s secret name
   path: "/etc/api-admin/"             # where to mount the secret's file(s)
-- type: env                
+- type: env
   name: sciapps-keystore-credentials  # k8s secret name
   prefix: SCIAPPS_                    # optional env var prefix to avoid collisions
   keys:

@@ -1,12 +1,6 @@
 dependencies:
-- name: elasticsearch
-  repository: file://../elasticsearch
-  version: 0.1.0
-- name: api-admin
-  repository: file://../api-admin
-  version: 0.1.0
-- name: api-search
-  repository: file://../api-search
-  version: 0.1.0
-digest: sha256:700e50fb589152b251ce8849bcdb8ff3e0e80cdea3a0b5062d020b37c09e5aa2
-generated: 2019-03-26T11:42:01.05472-06:00
+- name: nginx-ingress
+  repository: https://kubernetes-charts.storage.googleapis.com
+  version: 1.1.5
+digest: sha256:9958046d1580d3f0818f78e0cd1738b29667dfb623ea9ecc21153998a4da21a3
+generated: 2019-04-01T14:02:22.000692-06:00

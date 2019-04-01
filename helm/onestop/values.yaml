@@ -7,6 +7,9 @@ api-admin:
   logging.level: DEBUG
   etl.sitemap.delay.initial: "60000"
 
+elasticsearch:
+  enabled: false
+  
 api-search:
   auth:
     clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:SciAppsOneStop"
@@ -16,6 +19,6 @@ api-search:
       loginFailureRedirect: "/"
       logoutSuccessRedirect: "/"
     keystoreFile: "/etc/api-search/logingov.jks"
-  elasticsearch:
-    host: "elasticsearch"
-    port: "9200"
+  # elasticsearch:
+  #   host: "elasticsearch"
+  #   port: "9200"
