@@ -23,7 +23,10 @@ plugins {
     id "com.jfrog.bintray" version "1.8.0"
     id "com.jfrog.artifactory" version "4.7.0"
     id "io.spring.dependency-management" version "1.0.6.RELEASE"
+    id "jacoco"
 }
+
+apply plugin: 'groovy'
 
 ext {
     esVersion = '5.6.14'
@@ -109,7 +112,7 @@ subprojects {
                 jacocoTestReport.dependsOn test
                 check.dependsOn jacocoTestReport
             }
-            
+
         }
 
     }
@@ -180,7 +183,7 @@ task openDashboards(description: 'Opens Kibana and Kubernetes dashboards') {
 }
 
 class UploadTestDataTask extends DefaultTask {
-    
+
     @Input
     String apiAdminPort
 
