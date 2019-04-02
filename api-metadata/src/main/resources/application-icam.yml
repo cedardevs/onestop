@@ -10,7 +10,7 @@ server:
     protocol: TLS
     enabled: true
     key-store-password: \${SCIAPPS_KEYSTORE_PASSWORD}
-    key-store: /etc/api-metadata/keystore.jks
+    key-store: \${SCIAPPS_KEYSTORE_FILE}
     key-store-type: JKS
 
 spring:

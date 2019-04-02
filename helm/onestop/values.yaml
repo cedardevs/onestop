@@ -1,6 +1,6 @@
 api-admin:
   keystore:
-    file: "/etc/api-metadata/keystore.jks"
+    file: "/etc/api-admin/sciapps-keystore.jks"
   spring:
     profiles:
       active: "securityenabled,kafkadisabled"
