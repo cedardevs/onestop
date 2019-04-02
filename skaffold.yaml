@@ -61,7 +61,7 @@ deploy:
         features.kafka-ingest: false
         features.sitemap: false
         elasticsearch.host: elasticsearch
-        elasticsearch.port: 9200
+        # elasticsearch.port: 9200
         config: |-
           ---
           logging.level.org.cedar.onestop.api.metadata: DEBUG
@@ -89,9 +89,10 @@ deploy:
         loginGov.endpoints.loginSuccessRedirect: "http://localhost:8080/onestop/"
         loginGov.endpoints.loginFailureRedirect: "http://localhost:8080/onestop/"
         loginGov.endpoints.logoutSuccessRedirect: "http://localhost:8080/onestop/"
-        config: |-
-          ---
-          logging.level.org.cedar.onestop.api.search: DEBUG
+        elasticsearch.host: elasticsearch
+        # config: |-
+        #   ---
+        #   logging.level.org.cedar.onestop.api.search: DEBUG
     ###############################################################################
     # CLIENT
     ###############################################################################
@@ -108,5 +109,5 @@ deploy:
         service.nodePort: 30000
         prefixPath: onestop
         apiSearch.endpoint: api-search:8080/onestop-search
-
-
+    - name: onestop-dev
+      chartPath: helm/onestop-dev

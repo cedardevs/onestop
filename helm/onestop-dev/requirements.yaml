@@ -1,37 +1,5 @@
 ---
 dependencies:
-  - name: elasticsearch
-    version: ~0.1.0
-    repository: file://../elasticsearch
-    condition: elasticsearch.enabled,global.elasticsearch.enabled
-    tags:
-      - backend
-      - elasticsearch
-  - name: api-admin
-    version: ~0.1.0
-    repository: file://../api-admin
-    conditions: api-admin.enabled,global.api-admin.enabled
-    tags:
-      - backend
-      - api-admin
-  - name: api-search
-    version: ~0.1.0
-    repository: file://../api-search
-    conditions: api-search.enabled,global.api-search.enabled
-    tags:
-      - backend
-      - api-search
-  # - name: api-user
-  #   version: ~0.1.0
-  #   repository: file://../api-user
-  #   conditions: api-user.enabled,global.api-user.enabled
-  #   tags:
-  #     - backend
-  #     - api-user
-  # - name: client
-  #   version: ~0.1.0
-  #   repository: file://../client
-  #   conditions: client.enabled,global.client.enabled
-  #   tags:
-  #     - frontend
-  #     - client
+  - name: nginx-ingress
+    version: ~1.1.4
+    repository: "@stable"
