@@ -23,7 +23,7 @@ service:
 # map of features to enable
 # if the features are not here, they will be disabled
 features:
-  security: false
+  login-gov: false
 
 ###############################################################################
 # APPLICATION.YML ADDITIONAL SPRING CONFIG
@@ -65,9 +65,17 @@ config: |-
 # SPRING ENV OVERRIDES
 ###############################################################################
 env:
+  # elastic search env vars
   ELASTICSEARCH_HOST: es-elasticsearch
   ELASTICSEARCH_PORT: 9200
+  # sitemap env vars
   ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute
+  # ui auth endpoint
+  UI_AUTH_LOGIN_ENDPOINT:
+  UI_AUTH_LOGOUT_ENDPOINT:
+  UI_AUTH_USER_PROFILE_ENDPOINT:
+
+
 
 ###############################################################################
 # ELASTICSEARCH ENVIRONMENT VARIABLES

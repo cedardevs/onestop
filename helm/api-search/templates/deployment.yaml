@@ -63,7 +63,7 @@ spec:
             - name: LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT
               value: {{.Values.loginGov.endpoints.logoutSuccessRedirect}}
           # EXPORT PATHS KEYSTORES (if security feature enabled)
-          {{- if .Values.features.security }}
+          {{- if (index .Values "features" "login-gov") }}
             - name: LOGIN_GOV_KEYSTORE_FILE
               value: {{ .Values.keystoreFiles.jks.loginGov }}
           {{- end }}
@@ -71,7 +71,7 @@ spec:
           # the general utility here is taking "env" type secrets in our Helm values,
           # mapping the keys directly to environment variables w/optional prefix,
           # and uppercasing / replacing problematic '-' and '.' characters with '_'
-          {{- if .Values.features.security }}
+          {{- if (index .Values "features" "login-gov") }}
             {{- range $secret := .Values.secrets }}
               {{- if eq $secret.type "env" }}
                 {{- range $key := $secret.keys }}
@@ -107,7 +107,7 @@ spec:
           # MOUNT SECRET FILES IN THIS CONTAINER (if security feature enabled)
           # if there are multiple containers in the pod,
           # then each container needs its own volumeMounts block
-          {{- if .Values.features.security }}
+          {{- if (index .Values "features" "login-gov") }}
             {{- range $secret := .Values.secrets }}
               {{- if eq $secret.type "file" }}
             - name: {{ $secret.name }}-volume
@@ -127,7 +127,7 @@ spec:
         # CREATE VOLUME FOR SECRET FILES (if security feature enabled)
         # secret must be created in the Kubernetes API before it can be used
         # only 1 `spec.volumes` entry is needed per secret, even if it contains multiple keys
-        {{- if .Values.features.security }}
+        {{- if (index .Values "features" "login-gov") }}
           {{- range $secret := .Values.secrets }}
             {{- if eq $secret.type "file" }}
           - name: {{ $secret.name }}-volume
