@@ -41,15 +41,6 @@ env:
   ELASTICSEARCH_PORT: 9200
   ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute
 
-
-###############################################################################
-# ELASTICSEARCH ENVIRONMENT VARIABLES
-###############################################################################
-# elasticsearch:
-#   host: es-elasticsearch
-#   port: 9200
-#   portTransport: 9300 # TODO ???
-
 ###############################################################################
 # SECRET FILES AND ENVIRONMENT VARIABLES
 ###############################################################################
