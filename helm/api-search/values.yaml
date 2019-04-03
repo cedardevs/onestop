@@ -71,11 +71,9 @@ env:
   # sitemap env vars
   ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute
   # ui auth endpoint
-  UI_AUTH_LOGIN_ENDPOINT:
-  UI_AUTH_LOGOUT_ENDPOINT:
-  UI_AUTH_USER_PROFILE_ENDPOINT:
-
-
+#  UI_AUTH_LOGIN_ENDPOINT: "https://sciapps.colorado.edu/onestop/api/login"
+#  UI_AUTH_LOGOUT_ENDPOINT: "https://sciapps.colorado.edu/onestop/api/logout"
+#  UI_AUTH_USER_PROFILE_ENDPOINT: "https://sciapps.colorado.edu/onestop/api/login_profile"
 
 ###############################################################################
 # ELASTICSEARCH ENVIRONMENT VARIABLES

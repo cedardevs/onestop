@@ -55,6 +55,9 @@ deploy:
     ###############################################################################
     - name: api-admin
       chartPath: helm/api-admin
+      values:
+        # skaffold may not build/deploy w/the latest if this is not set here
+        image: cedardevs/onestop-api-metadata
       imageStrategy:
         helm: {}
       setValues:
@@ -66,8 +69,6 @@ deploy:
         features.kafka-ingest: false
         features.sitemap: false
         env.ELASTICSEARCH_HOST: elasticsearch
-        env.ELASTICSEARCH_INDEX_PREFIX: onestop-
-
         config: |-
           ---
           logging.level.org.cedar.onestop.api.metadata: DEBUG
@@ -76,6 +77,9 @@ deploy:
     ###############################################################################
     - name: api-search
       chartPath: helm/api-search
+      values:
+        # skaffold may not build/deploy w/the latest if this is not set here
+        image: cedardevs/onestop-api-search
       imageStrategy:
         helm: {}
       setValues:
@@ -91,7 +95,6 @@ deploy:
         loginGov.endpoints.loginFailureRedirect: "http://localhost:8080/onestop/"
         loginGov.endpoints.logoutSuccessRedirect: "http://localhost:8080/onestop/"
         env.ELASTICSEARCH_HOST: elasticsearch
-        env.ELASTICSEARCH_INDEX_PREFIX: onestop-
         # config: |-
         #   ---
         #   logging.level.org.cedar.onestop.api.search: DEBUG
@@ -100,6 +103,9 @@ deploy:
     ###############################################################################
     - name: client
       chartPath: helm/client
+      values:
+        # skaffold may not build/deploy w/the latest if this is not set here
+        image: cedardevs/onestop-client
       imageStrategy:
         helm: {}
       setValues:
