@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "kibana.fullname" . }}
+  name: {{ template "kibana.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "kibana.name" . }}
-    helm.sh/chart: {{ include "kibana.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app: {{ template "kibana.name" . }}
+    chart: {{ template "kibana.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -15,5 +15,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app.kubernetes.io/name: {{ include "kibana.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: {{ template "kibana.name" . }}
+    release: {{ .Release.Name }}

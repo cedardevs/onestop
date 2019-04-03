@@ -41,12 +41,20 @@ deploy:
         service.type: NodePort
         service.nodePort: 30092
     ###############################################################################
+    # KIBANA
+    ###############################################################################
+    # - name: kibana
+    #   chartPath: helm/kibana
+      # setValues:
+        # enabled: true
+        # allows kibana to be exposed outside the cluster in dev
+        # service.type: NodePort
+        # service.nodePort: 32001
+    ###############################################################################
     # API ADMIN
     ###############################################################################
     - name: api-admin
       chartPath: helm/api-admin
-      values:
-        image: cedardevs/onestop-api-metadata
       imageStrategy:
         helm: {}
       setValues:
@@ -57,7 +65,9 @@ deploy:
         features.manual-upload: false
         features.kafka-ingest: false
         features.sitemap: false
-        elasticsearch.host: elasticsearch
+        env.ELASTICSEARCH_HOST: elasticsearch
+        env.ELASTICSEARCH_INDEX_PREFIX: onestop-
+
         config: |-
           ---
           logging.level.org.cedar.onestop.api.metadata: DEBUG
@@ -66,8 +76,6 @@ deploy:
     ###############################################################################
     - name: api-search
       chartPath: helm/api-search
-      values:
-        image: cedardevs/onestop-api-search
       imageStrategy:
         helm: {}
       setValues:
@@ -91,13 +99,14 @@ deploy:
     ###############################################################################
     - name: client
       chartPath: helm/client
-      values:
-        image: cedardevs/onestop-client
       imageStrategy:
         helm: {}
       setValues:
         # allows api-search to be exposed outside the cluster in dev
         prefixPath: onestop
         apiSearch.endpoint: api-search:8080/onestop-search
+    ###############################################################################
+    # DEV DEPENDENCIES
+    ###############################################################################
     - name: onestop-dev
       chartPath: helm/onestop-dev
