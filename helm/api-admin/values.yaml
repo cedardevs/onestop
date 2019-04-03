@@ -68,19 +68,19 @@ elasticsearch:
 #     Note: This conversion is Spring compatible. See: `org.springframework.core.envSystemEnvironmentPropertySource`
 secrets:
 - type: file
-  name: sciapps-keystore              # k8s secret name
+  name: icam-keystore                 # k8s secret name
   path: "/etc/api-admin/"             # where to mount the secret's file(s)
 - type: env
-  name: sciapps-keystore-credentials  # k8s secret name
-  prefix: SCIAPPS_                    # optional env var prefix to avoid collisions
+  name: icam-keystore-credentials     # k8s secret name
+  prefix: ICAM_                       # optional env var prefix to avoid collisions
   keys:
-  - KEYSTORE_PASSWORD # [secret] sciapps-keystore-credentials.KEYSTORE_PASSWORD => [env] SCIAPPS_KEYSTORE_PASSWORD
-  - KEYSTORE_ALIAS    # [secret] sciapps-keystore-credentials.KEYSTORE_ALIAS    => [env] SCIAPPS_KEYSTORE_ALIAS
-  - KEY_PASSWORD      # [secret] sciapps-keystore-credentials.KEY_PASSWORD      => [env] SCIAPPS_KEY_PASSWORD
+  - KEYSTORE_PASSWORD # [secret] sciapps-keystore-credentials.KEYSTORE_PASSWORD => [env] ICAM_KEYSTORE_PASSWORD
+  - KEYSTORE_ALIAS    # [secret] sciapps-keystore-credentials.KEYSTORE_ALIAS    => [env] ICAM_KEYSTORE_ALIAS
+  - KEY_PASSWORD      # [secret] sciapps-keystore-credentials.KEY_PASSWORD      => [env] ICAM_KEY_PASSWORD
 
 keystoreFiles:
   jks:
-    sciapps: "/etc/api-admin/sciapps-keystore.jks"
+    icam: "/etc/api-admin/icam-keystore.jks"
 
 ###############################################################################
 # SITEMAP CONFIGS

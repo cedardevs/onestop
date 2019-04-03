@@ -21,7 +21,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 
-@Profile("security")
+@Profile("login-gov")
 @EnableWebSecurity
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 

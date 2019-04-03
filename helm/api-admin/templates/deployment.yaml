@@ -53,8 +53,8 @@ spec:
               value: {{ .Values.elasticsearch.port | quote }}
           # EXPORT PATHS TO KEYSTORES (if icam feature enabled)
           {{- if .Values.features.icam }}
-            - name: SCIAPPS_KEYSTORE_FILE
-              value: {{ .Values.keystoreFiles.jks.sciapps }}
+            - name: ICAM_KEYSTORE_FILE
+              value: {{ .Values.keystoreFiles.jks.icam }}
           {{- end }}
           # EXPORT SECRET ENVIRONMENT VARIABLES IN THIS CONTAINER (if icam feature enabled)
           # the general utility here is taking "env" type secrets in our Helm values,

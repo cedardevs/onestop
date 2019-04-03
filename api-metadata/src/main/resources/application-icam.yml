@@ -1,17 +1,14 @@
 ---
+icam:
+  keystore:
+    alias: \${ICAM_KEYSTORE_ALIAS}
+    file: \${ICAM_KEYSTORE_FILE}
+    password: \${ICAM_KEYSTORE_PASSWORD}
+    #keyPassword: \${ICAM_KEY_PASSWORD}
+    type: JKS
+
 roles.names: ADMIN;USER
 user.roles: elliott.richerson@noaa.gov:ADMIN;david.neufeld@noaa.gov:ADMIN
-
-server:
-  ssl:
-    key-alias: \${SCIAPPS_KEYSTORE_ALIAS}
-    #key-password: \${SCIAPPS_KEY_PASSWORD}
-    enabled-protocols: TLSv1.2
-    protocol: TLS
-    enabled: true
-    key-store-password: \${SCIAPPS_KEYSTORE_PASSWORD}
-    key-store: \${SCIAPPS_KEYSTORE_FILE}
-    key-store-type: JKS
 
 spring:
   datasource:
