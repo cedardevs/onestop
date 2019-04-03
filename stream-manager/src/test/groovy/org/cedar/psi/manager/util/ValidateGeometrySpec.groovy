@@ -7,65 +7,50 @@ import spock.lang.Unroll
 
 @Unroll
 class ValidateGeometrySpec extends Specification {
-  static final pointCoords = [30.0, 10.0]
-  static final multiPointCoords = [
-      [100.0, 0.0], [101.0, 1.0]
-  ]
-  static final lineStringCoords = [
-      [30.0, 10.0], [10.0, 30.0], [40.0, 40.0]
+  static final pointCoords = [30D, 10D]
+  static final multiPointCoords = [ [-105.01621, 39.57422], [-80.666513, 35.053994] ]
+  static final lineStringCoords = [ [30.0, 10.0], [10.0, 30.0], [40.0, 40.0]]
+  static final polygonCoords = [
+      [ [100, 0], [101, 0], [101, 1], [100, 1], [100, 0] ]
   ]
   static final multiLineStringCoords = [
       [
-          [1.0, 1.0], [3.0, 3.0]
+          [170.0, 45.0], [180.0, 45.0]
       ],
       [
-          [102.0, 2.0], [103.0, 3.0]
-      ]
-  ]
-  static final polygonCoords = [
-      [
-          [0.0, 0.0], [10.0, 10.0], [10.0, 0.0], [0.0, 0.0]
+          [-180.0, 45.0], [-170.0, 45.0]
       ]
   ]
   static final polygonWithHoleCoords = [
-      [
-          [[0.0, 0.0], [10.0, 10.0], [10.0, 0.0], [0.0, 0.0]]
-      ],
-      [
-          [[20.0, 30.0], [35.0, 35.0], [30.0, 20.0], [20.0, 30.0]]
-      ]
+      [ [0.0, 0.0], [10.0, 10.0], [10.0, 0.0], [0.0, 0.0] ],
+      [ [20.0, 30.0], [35.0, 35.0], [30.0, 20.0], [20.0, 30.0] ]
   ]
-
   static final multiPolygonCoords = [
       [
-          [[102.0, 2.0], [103.0, 2.0], [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]
+          [ [107, 7], [108, 7], [108, 8], [107, 8],[107, 7] ]
       ],
       [
-          [[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]],
-          [[100.2, 0.2], [100.8, 0.2], [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]
+          [ [100, 0], [101, 0], [101, 1], [100, 1],[100, 0] ]
       ]
   ]
   static final multiPolygonWithHolesCoords = [
       [
-          [[40.0, 40.0], [20.0, 45.0], [45.0, 30.0], [40.0, 40.0]]
+          [ [40.0, 40.0], [20.0, 45.0], [45.0, 30.0], [40.0, 40.0] ]
       ],
       [
-          [[20.0, 35.0], [10.0, 30.0], [10.0, 10.0], [30.0, 5.0], [45.0, 20.0], [20.0, 35.0]],
-          [[30.0, 20.0], [20.0, 15.0], [20.0, 25.0], [30.0, 20.0]]
+          [ [20.0, 35.0], [10.0, 30.0], [10.0, 10.0], [30.0, 5.0], [45.0, 20.0], [20.0, 35.0] ],
+          [ [30.0, 20.0], [20.0, 15.0], [20.0, 25.0], [30.0, 20.0] ]
       ]
   ]
-
-
   static final nestedShells = [
       [
-          [[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0]]
+          [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ]
       ],
       [
-          [[2.0, 2.0], [2.0, 8.0], [8.0, 8.0], [8.0, 2.0], [2.0, 2.0]],
-          [[3.0, 3.0], [3.0, 7.0], [7.0, 7.0], [7.0, 3.0], [3.0, 3.0]]
+          [ [2.0, 2.0], [2.0, 8.0], [8.0, 8.0], [8.0, 2.0], [2.0, 2.0] ],
+          [ [3.0, 3.0], [3.0, 7.0], [7.0, 7.0], [7.0, 3.0], [3.0, 3.0] ]
       ]
   ]
-
   static final ringNotClosed = [
       [
           [ [25.774, -80.190], [18.466, -66.118], [32.321, -64.757] ]
@@ -74,27 +59,39 @@ class ValidateGeometrySpec extends Specification {
           [ [28.745, -70.579], [29.570, -67.514], [27.339, -66.668] ]
       ]
   ]
-
   static final selfIntersection = [
-      [[-69.3, -33.6], [-69.5, -33.8], [-68.9, -33.7], [-69.1, -33.9], [-69.3, -33.6]]
+      [ [-69.3, -33.6], [-69.5, -33.8], [-68.9, -33.7], [-69.1, -33.9], [-69.3, -33.6] ]
   ]
-
-  static final duplicateRings =[
+  static final duplicateRings = [
       [
-          [[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0]]
+          [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ]
       ],
       [
-          [[0.0, 0.0], [10.0, 0.0], [10.0, 10.0],[0.0, 10.0], [0.0, 0.0]]
+          [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ]
+      ]
+  ]
+  static final holeOutsideShell = [
+      [
+          [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ]
+      ],
+      [
+          [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ]
+      ]
+  ]
+  static final disconnectedInterior = [
+      [
+          [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ]
+      ],
+      [
+          [ [15.0, 15.0], [15.0, 20.0], [20.0, 20.0], [20.0, 15.0], [15.0, 15.0] ]
       ]
   ]
 
-  static final holeOutsideShell =[
-      [
-          [[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0]]
-      ],
-      [
-          [[0.0, 0.0], [10.0, 0.0], [10.0, 10.0],[0.0, 10.0], [0.0, 0.0]]
-      ]
+  static final InvalidCoordinate = [Double.NaN, 3.0]
+  static final TooFewPoints = [[1.0, 3.0], [1.0, 3.0]]
+  static final holeLiesOutsideShell = [
+      [ [0.0, 0.0], [10.0, 10.0], [10.0, 0.0], [0.0, 0.0] ],
+      [ [20.0, 30.0], [35.0, 35.0], [30.0, 20.0], [20.0, 30.0] ]
   ]
 
   def "valid #testCase instance"() {
@@ -106,17 +103,17 @@ class ValidateGeometrySpec extends Specification {
 
     then:
     result == expected
-
+//TODO polygon with hole
     where:
-    testCase                | value                        | expected
-    'Point'                 | buildPoint()                 | 'validGeoJSON : true'
-    'MultiPoint'            | buildMultiPoint()            | 'validGeoJSON : true'
-    'LineString'            | buildLineString()            | 'validGeoJSON : true'
-    'MultiLineString'       | buildMultiLineString()       | 'validGeoJSON : true'
-    'Polygon'               | buildPolygon()               | 'validGeoJSON : true'
-    'MultiPolygon'          | buildMultiPolygon()          | 'validGeoJSON : true'
-    'PolygonWithHole'       | buildPolygonWithHole()       | 'validGeoJSON : true'
-    'MultiPolygonWithHoles' | buildMultiPolygonWithHoles() | 'validGeoJSON : true'
+    testCase                | value                                                   | expected
+    'Point'                 | buildGeoJson('Point', pointCoords)                        | 'validGeoJSON : true'
+    'MultiPoint'            | buildGeoJson('MultiPoint', multiPointCoords)              | 'validGeoJSON : true'
+    'LineString'            | buildGeoJson('LineString', lineStringCoords)              | 'validGeoJSON : true'
+    'MultiLineString'       | buildGeoJson('MultiLineString', multiLineStringCoords)    | 'validGeoJSON : true'
+    'Polygon'               | buildGeoJson('Polygon', polygonCoords)                    | 'validGeoJSON : true'
+    'MultiPolygon'          | buildGeoJson('MultiPolygon', multiPolygonCoords)          | 'validGeoJSON : true'
+//    'PolygonWithHole'       | buildGeoJson('Polygon', polygonWithHoleCoords)            | 'validGeoJSON : true'
+    'MultiPolygonWithHoles' | buildGeoJson('MultiPolygon', multiPolygonWithHolesCoords) | 'validGeoJSON : true'
   }
 
   def "#testCase"() {
@@ -128,92 +125,17 @@ class ValidateGeometrySpec extends Specification {
 
     then:
     result == expected
-
+//TODO disconnected Interior
     where:
-    testCase                     | value                      | expected
-    'Invalid Coordinate'    | buildInvalidCoordinate()    | "error : Invalid Coordinate"
-    'Duplicated Rings'      | buildDuplicatedRings()      | 'error : Duplicate Rings'
-    'Too Few Points'        | buildTooFewPoints()         | "error : Too few distinct points in geometry component"
-    'Nested Shells'         | buildNastedShells()         | 'error : Nested shells'
-    'Ring Not Closed'       | buildRingNotClosed()        | 'error : Points of LinearRing do not form a closed linestring'
-    'Self Intersection'     | buildSelfIntersection()     | 'error : Self-intersection'
-    //TODO
-//    'Hole Outside Shell'    | buildHoleOutsideShell()     | 'error : null'
-//    'Disconnected Interior' | buildHoleOutsideShell()     | 'error : null'
+    testCase                | value                                          | expected
+    'Invalid Coordinate'    | buildGeoJson('Point', InvalidCoordinate )     | "error : Invalid Coordinate"
+    'Duplicated Rings'      | buildGeoJson('MultiPolygon', duplicateRings)  | 'error : Duplicate Rings'
+    'Too Few Points'        | buildGeoJson('LineString', TooFewPoints)      | "error : Too few distinct points in geometry component"
+    'Nested Shells'         | buildGeoJson('MultiPolygon', nestedShells)    | 'error : Nested shells'
+    'Ring Not Closed'       | buildGeoJson('MultiPolygon', ringNotClosed)   | 'error : Points of LinearRing do not form a closed linestring'
+    'Self Intersection'     | buildGeoJson('Polygon', selfIntersection)     | 'error : Self-intersection'
+    'Hole outside shell'    | buildGeoJson('Polygon', holeLiesOutsideShell) | 'error : Hole lies outside shell'
 
-  }
-
-  // valid geometry
-  static buildPoint() {
-    Point.newBuilder()
-        .setCoordinates(pointCoords)
-        .build()
-  }
-
-  static buildMultiPoint() {
-    MultiPoint.newBuilder()
-        .setCoordinates(multiPointCoords)
-        .build()
-  }
-
-  static buildLineString() {
-    LineString.newBuilder()
-        .setCoordinates(lineStringCoords)
-        .build()
-  }
-
-  static buildMultiLineString() {
-    MultiLineString.newBuilder()
-        .setCoordinates(multiLineStringCoords)
-        .build()
-  }
-  static buildPolygon() {
-    Polygon.newBuilder()
-        .setCoordinates(polygonCoords)
-        .build()
-  }
-
-  static buildMultiPolygon() {
-    MultiPolygon.newBuilder()
-        .setCoordinates(multiPolygonCoords)
-        .build()
-  }
-
-  static buildPolygonWithHole() {
-    MultiPolygon.newBuilder()
-        .setCoordinates(polygonWithHoleCoords)
-        .build()
-  }
-
-  static buildMultiPolygonWithHoles() {
-    MultiPolygon.newBuilder()
-        .setCoordinates(multiPolygonWithHolesCoords)
-        .build()
-  }
-
-  // invalid geometry
-  static buildInvalidCoordinate() {
-    Point.newBuilder()
-        .setCoordinates([Double.NaN, 3.0])
-        .build()
-  }
-
-  static buildDuplicatedRings() {
-    MultiPolygon.newBuilder()
-        .setCoordinates(duplicateRings)
-        .build()
-  }
-
-  static buildTooFewPoints() {
-    Polygon.newBuilder()
-        .setCoordinates([[[0.0, 0.0], [10.0, 10.0], [10.0, 10.0], [0.0, 0.0]]])
-        .build()
-
-  }
-  static buildNastedShells() {
-    MultiPolygon.newBuilder()
-        .setCoordinates(nestedShells)
-        .build()
   }
 
   static buildHoleOutsideShell() {
@@ -223,17 +145,43 @@ class ValidateGeometrySpec extends Specification {
 
   }
 
-  static buildSelfIntersection() {
-    Polygon.newBuilder()
-        .setCoordinates(selfIntersection)
-        .build()
+  static buildGeoJson(String type, ArrayList coor) {
+    switch (type) {
+      case "Point":
+        Point.newBuilder()
+            .setCoordinates(coor)
+            .build()
+        break
+      case "MultiPoint":
+        MultiPoint.newBuilder()
+            .setCoordinates(coor)
+            .build()
+        break
+      case "LineString":
+        LineString.newBuilder()
+            .setCoordinates(coor)
+            .build()
+        break
+      case "MultiLineString":
+        MultiLineString.newBuilder()
+            .setCoordinates(coor)
+            .build()
+        break
+      case "Polygon":
+        Polygon.newBuilder()
+            .setCoordinates(coor)
+            .build()
+        break
+      case "MultiPolygon":
+        MultiPolygon.newBuilder()
+            .setCoordinates(coor)
+            .build()
+        break
 
-  }
-
-  static buildRingNotClosed() {
-    MultiPolygon.newBuilder()
-        .setCoordinates(ringNotClosed)
-        .build()
+      default:
+        "unknown type"
+        break
+    }
   }
 
 }
