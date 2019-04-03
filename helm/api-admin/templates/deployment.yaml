@@ -50,6 +50,7 @@ spec:
             - name: SCIAPPS_KEYSTORE_FILE
               value: {{ .Values.keystoreFiles.jks.sciapps }}
           {{- end }}
+          # generic env overrides, for spring properities, etc
           {{- if .Values.env }}
             {{- range $envName,$envVal := .Values.env }}
             - name: {{ $envName }}

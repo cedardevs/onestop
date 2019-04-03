@@ -61,7 +61,13 @@ config: |-
           searchTerm: '"NOAA Climate Data Record"'
           imageUrl: "https://www.ncdc.noaa.gov/sites/default/files/styles/cdr-full-width/public/cdr/AVHRRSurfaceReflectance.png"
 
-
+###############################################################################
+# SPRING ENV OVERRIDES
+###############################################################################
+env:
+  ELASTICSEARCH_HOST: es-elasticsearch
+  ELASTICSEARCH_PORT: 9200
+  ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute
 
 ###############################################################################
 # ELASTICSEARCH ENVIRONMENT VARIABLES

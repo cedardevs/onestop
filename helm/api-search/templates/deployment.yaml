@@ -45,10 +45,13 @@ spec:
                         {{- end -}}
                       {{- end -}}
                       {{- join "," $active.profiles }}'
-            - name: ELASTICSEARCH_HOST
-              value: {{ .Values.elasticsearch.host }}
-            - name: ELASTICSEARCH_PORT
-              value: {{ .Values.elasticsearch.port | quote}}
+          # generic env overrides, for spring properities, etc
+          {{- if .Values.env }}
+            {{- range $envName,$envVal := .Values.env }}
+            - name: {{ $envName }}
+              value: {{ $envVal | quote }}
+            {{- end }}
+          {{- end }}
             - name: LOGIN_GOV_CLIENT_ID
               value: {{.Values.loginGov.clientId}}
             - name: LOGIN_GOV_ALLOWED_ORIGIN

@@ -90,7 +90,8 @@ deploy:
         loginGov.endpoints.loginSuccessRedirect: "http://localhost:8080/onestop/"
         loginGov.endpoints.loginFailureRedirect: "http://localhost:8080/onestop/"
         loginGov.endpoints.logoutSuccessRedirect: "http://localhost:8080/onestop/"
-        elasticsearch.host: elasticsearch
+        env.ELASTICSEARCH_HOST: elasticsearch
+        env.ELASTICSEARCH_INDEX_PREFIX: onestop-
         # config: |-
         #   ---
         #   logging.level.org.cedar.onestop.api.search: DEBUG
