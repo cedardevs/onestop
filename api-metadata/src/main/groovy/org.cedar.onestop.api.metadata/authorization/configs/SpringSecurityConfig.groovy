@@ -3,9 +3,9 @@ package org.cedar.onestop.api.metadata.authorization.configs
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.metadata.authorization.service.UserDetailsServiceImpl
 import org.cedar.onestop.api.metadata.springsecurity.CustomSecurityFilter
+import org.cedar.onestop.api.metadata.springsecurity.ICAMConfiguration
 import org.cedar.onestop.api.metadata.springsecurity.IdentityProviderConfig
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.web.ServerProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private ServerProperties serverProperties
+    private ICAMConfiguration icamConfiguration
 
     @Autowired
     private IdentityProviderConfig idpConfig
@@ -50,7 +50,7 @@ class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             .anyRequest().authenticated()
             .and()
             .addFilterBefore(
-                new CustomSecurityFilter(authenticationManagerBean(), userDetailsServiceImpl, serverProperties, idpConfig),
+                new CustomSecurityFilter(authenticationManagerBean(), userDetailsServiceImpl, icamConfiguration, idpConfig),
                 UsernamePasswordAuthenticationFilter.class
             )
     }

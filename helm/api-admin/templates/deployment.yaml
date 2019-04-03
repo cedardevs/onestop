@@ -47,8 +47,8 @@ spec:
                       {{- join "," $active.profiles }}'
           # EXPORT PATHS TO KEYSTORES (if icam feature enabled)
           {{- if .Values.features.icam }}
-            - name: SCIAPPS_KEYSTORE_FILE
-              value: {{ .Values.keystoreFiles.jks.sciapps }}
+            - name: ICAM_KEYSTORE_FILE
+              value: {{ .Values.keystoreFiles.jks.icam }}
           {{- end }}
           # generic env overrides, for spring properities, etc
           {{- if .Values.env }}

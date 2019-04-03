@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse
 import java.nio.charset.StandardCharsets
 
 @Slf4j
-@Profile("security")
+@Profile("login-gov")
 @Controller
 class LoginController {
 
