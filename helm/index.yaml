@@ -3,11 +3,11 @@ entries:
   onestop:
   - apiVersion: v1
     appVersion: 2.1.0
-    created: 2019-04-02T14:30:12.168962-06:00
+    created: 2019-04-03T11:29:59.316724-06:00
     description: A Helm chart for the OneStop system
-    digest: 212d7509b03a96348b8840c03cf8ac2736acd2c0154160e6502cde51ee09d563
+    digest: a53607668e51ab2427cf1204213ff87d583e1e37f1646499256e3f2dd119a7a6
     name: onestop
     urls:
     - onestop/onestop-0.1.0.tgz
     version: 0.1.0
-generated: 2019-04-02T14:30:12.167109-06:00
+generated: 2019-04-03T11:29:59.314948-06:00

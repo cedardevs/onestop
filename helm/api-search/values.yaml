@@ -13,8 +13,9 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 8080
+  nodePort: 30097
 
 ###############################################################################
 # FEATURE TOGGLES (SUBCHART DEFAULTS)

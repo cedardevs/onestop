@@ -13,8 +13,9 @@ nameOverride: ""
 fullnameOverride: ""
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 80
+  service.nodePort: 30000
 
 ###############################################################################
 # PREFIX PATH (used to simplify web server config and SPA routing rules)
