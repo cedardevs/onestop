@@ -112,7 +112,7 @@ cd client && npm run kub
 skaffold dev --port-forward=false -f skaffold.yaml
 ```
 
-### Verify Kubernetes Endpoints
+### Verify Endpoints
 ```
 # Elasticsearch
 http://localhost:30092/
