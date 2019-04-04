@@ -7,7 +7,7 @@ Table of Contents
    * [Clone](#clone)
    * [Build](#build)
    * [Run](#run)
-   * [Verify Endpoints (use https when enabling security features)](#verify-endpoints-use-https-when-enabling-security-features)
+   * [Verify Endpoints](#verify-endpoints)
    * [Upload Test Data](#upload-test-data)
  * [Quick Start (Kubernetes   Helm   Skaffold)](#quick-start-kubernetes--helm--skaffold)
    * [System Requirements](#system-requirements)
