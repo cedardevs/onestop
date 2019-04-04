@@ -19,7 +19,7 @@ Table of Contents
  * [Feature Toggles](#feature-toggles)
    * [Keystores and Credentials](#keystores-and-credentials)
    * [Spring Profiles](#spring-profiles)
-     * [api-metadata](#api-metadata)
+     * [api-admin](#api-admin)
      * [api-search](#api-search)
    * [Changing &amp; Overriding Profiles](#changing--overriding-profiles)
 
@@ -50,14 +50,14 @@ brew install node
   </summary>
   <br/>
   <p>For individual components:</p>
-<pre>./gradlew api-metadata:build
+<pre>./gradlew api-admin:build
 ./gradlew api-search:build
 ./gradlew client:build</pre>
 </details>
 
 ### Run
 ```
-./gradlew api-metadata:bootrun
+./gradlew api-admin:bootrun
 ./gradlew api-search:bootrun
 cd client && npm run dev
 ```
@@ -188,7 +188,7 @@ OneStop APIs are written in Spring. Currently, the APIs utilize different authen
 
 OneStop leverages these profiles to enact certain feature toggles. The features available to the different APIs are documented below.
 
-##### api-metadata
+##### api-admin
 
 | Spring Profile | Feature Description | Default Value |
 | --- | --- | --- |
@@ -221,7 +221,7 @@ Otherwise, using Skaffold, these environment variables are managed for you. You 
   ...
 ```
 
-There is currently no configmap in the metadata deployment to make changes to the security configuration (such as adding yourself as an admin). If you need to add one, see the api-search config for how to add a configmap. The configuration needed is:
+There is currently no configmap in the `api-admin` deployment to make changes to the security configuration (such as adding yourself as an admin). If you need to add one, see the api-search config for how to add a configmap. The configuration needed is:
 ```
 ---
 spring:
