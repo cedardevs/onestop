@@ -10,9 +10,10 @@ image:
   pullPolicy: IfNotPresent
 
 service:
-  type: ClusterIP
+  type: NodePort
   port: 5601
   containerPort: 5601
+  nodePort: 35601
 
 elasticsearch:
   name: "elasticsearch"

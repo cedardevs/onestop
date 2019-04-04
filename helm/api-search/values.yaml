@@ -78,13 +78,6 @@ env:
   UI_AUTH_USER_PROFILE_ENDPOINT: "http://localhost:30000/onestop-search/login_profile"
 
 ###############################################################################
-# ELASTICSEARCH ENVIRONMENT VARIABLES
-###############################################################################
-elasticsearch:
-  host: es-elasticsearch
-  port: 9200
-
-###############################################################################
 # SECRET FILES AND ENVIRONMENT VARIABLES
 ###############################################################################
 # The template can iterate through these secrets, intelligently mounting secret files
