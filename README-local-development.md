@@ -170,24 +170,24 @@ If you have a need to work on features related to security or wish to toggle fea
 
 ### Spring Profiles
 
-OneStop APIs (`api-metadata` and `api-search`) are written in Spring. Each of these APIs uses different authentication and authorization mechanisms, but they utilize "Spring Profiles" to switch security-related code on and off during deployment.
+OneStop APIs are written in Spring. Currently, the APIs utilize different authentication and authorization mechanisms; nevertheless, they each utilize "Spring Profiles" to switch security-related code on and off during deployment.
 
 OneStop leverages these profiles to enact certain feature toggles. The features available to the different APIs are documented below.
 
 ##### api-metadata
 
-| Spring Profile | Feature Description |
-| ------- | --- |
-| <pre><code>icam</code></pre> | Enables a Spring security filter to require ICAM CAC authentication and authorization to hit particular endpoints. |
-| <pre><code>manual-upload</code></pre> | Enables the `UploadController` which opens browser endpoints for manual metadata upload. This feature should always be set with the `icam` profile in production to ensure manual upload is CAC secured. |
-| <pre><code>kafka-ingest</code></pre> | Enables the `KafkaConsumerService` to upload metadata via PSI. This feature should never be enabled at the same time as the `manual-upload` feature as they are mutually exclusive approaches to metadata upload.  |
-| <pre><code>sitemap</code></pre> | Enables the `SitemapETLService` to create the sitemap index and periodically refresh it. |
+| Spring Profile | Feature Description | Default Value |
+| --- | --- | --- |
+| <pre><code>icam</code></pre> | Enables a Spring security filter to require ICAM CAC authentication and authorization to hit particular endpoints. | *false* |
+| <pre><code>manual-upload</code></pre> | Enables the `UploadController` which opens browser endpoints for manual metadata upload. This feature should always be set with the `icam` profile in production to ensure manual upload is CAC secured. | *false* |
+| <pre><code>kafka-ingest</code></pre> | Enables the `KafkaConsumerService` to upload metadata via PSI. This feature should never be enabled at the same time as the `manual-upload` feature as they are mutually exclusive approaches to metadata upload.  | *false* |
+| <pre><code>sitemap</code></pre> | Enables the `SitemapETLService` to create the sitemap index and periodically refresh it. | *false* |
 
 ##### api-search
 
-| Spring Profile | Feature Description |
-| --- | --- |
-| <pre><code>login-gov</code></pre> | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `api-user` service with a PostgreSQL backing DB. |
+| Spring Profile | Feature Description | Default Value |
+| --- | --- | --- |
+| <pre><code>login-gov</code></pre> | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `api-user` service with a PostgreSQL backing DB. | *false* |
 
 To turn it on, change onestop-api-metadata.yaml in the k8s deployments from
 
@@ -201,20 +201,20 @@ To turn it on, change onestop-api-metadata.yaml in the k8s deployments from
    <p>If you wish to contribute to parts of our project toggled by security features, it is better to simply toggle Spring Profile annotations to debug against those features. Just remember to return those annotation to their original state before making a PR. The specific profiles (feature toggles) used in our project are explained below.</p>
 </details>
 
+### Changing & Overriding Profiles
 
+If you are deploying without Kubernetes, Helm, and Skaffold, and running an API directly with `./gradlew api-search:bootrun` (for example), then you can toggle active profiles with an environment variable:
 
-### Spring Profiles
-...
+`export SPRING_PROFILES_ACTIVE=login-gov`
 
-By default, security is disabled locally. To turn it on, change onestop-api-metadata.yaml in the k8s deployments from
+Otherwise, using Skaffold, these environment variables are managed for you. You simply need to toggle the features listed in the `skaffold.yaml` file under the `deploy.helm.releases` section where it applies. For example:
+
 ```
-- name: SPRING_PROFILES_ACTIVE
-  value: "securitydisabled"
-```
-to
-```
-- name: SPRING_PROFILES_ACTIVE
-  value: "securityenabled"
+- name: api-search
+  ...
+  setValues:
+    features.login-gov: true
+  ...
 ```
 
 There is currently no configmap in the metadata deployment to make changes to the security configuration (such as adding yourself as an admin). If you need to add one, see the api-search config for how to add a configmap. The configuration needed is:
