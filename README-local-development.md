@@ -207,6 +207,8 @@ If you are deploying without Kubernetes, Helm, and Skaffold, and running an API 
 
 `export SPRING_PROFILES_ACTIVE=login-gov`
 
+If there were any profiles defaulted to `true`, you would need to make sure they are listed in this env var unless you actually wanted that profile disabled. The envrionment variable expects a comma-delimited list when there are multiple active profiles.
+
 Otherwise, using Skaffold, these environment variables are managed for you. You simply need to toggle the features listed in the `skaffold.yaml` file under the `deploy.helm.releases` section where it applies. For example:
 
 ```
