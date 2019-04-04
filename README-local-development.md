@@ -12,7 +12,8 @@ Table of Contents
  * [Quick Start (Kubernetes   Helm   Skaffold)](#quick-start-kubernetes--helm--skaffold)
    * [System Requirements](#system-requirements)
    * [If running client via Node](#if-running-client-via-node)
-   * [Verify Endpoints (use https when enabling security features)](#verify-endpoints-use-https-when-enabling-security-features-1)
+   * [Verify Endpoints](#verify-endpoints-1)
+   * [Upload Test Data](#upload-test-data-1)
    * [Troubleshooting](#troubleshooting)
    * [Clear Caches](#clear-caches)
    * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
@@ -75,7 +76,8 @@ http://localhost:<port>/onestop
 
 ### Upload Test Data
 ```
-./gradlew uploadTestData
+# The default port is 30098 which is used for Kubernetes development
+./gradlew uploadTestData --apiAdminPort=8098
 ```
 
 # Quick Start (Kubernetes + Helm + Skaffold)
@@ -99,7 +101,7 @@ helm init
 skaffold dev -f skaffold.yaml
 ```
 
-##### If running client via Node
+### If running client via Node
 ```
 # 1) comment out client sections in skaffold.yaml
 
@@ -110,7 +112,7 @@ cd client && npm run kub
 skaffold dev --port-forward=false -f skaffold.yaml
 ```
 
-##### Verify Endpoints (use `https` when enabling security features)
+### Verify Kubernetes Endpoints
 ```
 # Elasticsearch
 http://localhost:30092/
@@ -123,6 +125,12 @@ http://localhost:30097/onestop-search/actuator/info
 # port here is automatically assigned when using webpack-dev-server
 # and seen in the output of `npm run dev`
 http://localhost:30000/onestop
+```
+
+### Upload Test Data
+```
+# The default port is 30098 which is used for Kubernetes development
+./gradlew uploadTestData --apiAdminPort=8098
 ```
 
 ### Troubleshooting
