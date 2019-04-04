@@ -62,7 +62,7 @@ brew install node
 cd client && npm run dev
 ```
 
-##### Verify Endpoints (use `https` when enabling security features)
+##### Verify Endpoints
 ```
 # Elasticsearch
 http://localhost:9200/
