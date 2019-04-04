@@ -162,9 +162,32 @@ helm delete client --purge
 skaffold delete
 ```
 
-# Enabling Security Features
+# Feature Toggles
 
-By default, security is disabled locally.
+By default, security-related features are disabled locally. This is to streamline development because security features require access to keystores with specific credentials needed for identity providers OneStop leverages.
+
+If you have a need to work on features related to security or wish to toggle features during development, continue reading...
+
+### Spring Profiles
+
+OneStop APIs (`api-metadata` and `api-search`) are written in Spring. Each of these APIs uses different authentication and authorization mechanisms, but they utilize "Spring Profiles" to switch security-related code on and off during deployment.
+
+OneStop leverages these profiles to enact certain feature toggles. The features available to the different APIs are documented below.
+
+##### api-metadata
+
+| Spring Profile | Feature Description |
+| --- | --- |
+| `icam` | Enables a Spring security filter to require ICAM CAC authentication and authorization to hit particular endpoints. |
+| `manual-upload` | Enables the `UploadController` which opens browser endpoints for manual metadata upload. This feature should always be set with the `icam` profile in production to ensure manual upload is CAC secured. |
+| `kafka-ingest` | Enables the `KafkaConsumerService` to upload metadata via PSI. This feature should never be enabled at the same time as the `manual-upload` feature as they are mutually exclusive approaches to metadata upload.  |
+| `sitemap` | Enables the `SitemapETLService` to create the sitemap index and periodically refresh it. |
+
+##### api-search
+
+| Spring Profile | Feature Description |
+| --- | --- |
+| `login-gov` | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `api-user` service with a PostgreSQL backing DB. |
 
 To turn it on, change onestop-api-metadata.yaml in the k8s deployments from
 
