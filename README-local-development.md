@@ -87,6 +87,7 @@ http://localhost:<port>/onestop
 - Kubernetes
   - our team enables Kubernetes with Docker Desktop (see: `Preferences...` > `Kubernetes`)
   - we highly recommend allocating >= 6.0 GiB to Docker (see: `Preferences...` > `Advanced`)
+  - some of us get even better performance by allocating even more memory and swap memory
 - Helm
 - Skaffold
 
