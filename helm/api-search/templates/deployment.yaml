@@ -52,16 +52,6 @@ spec:
               value: {{ $envVal | quote }}
             {{- end }}
           {{- end }}
-            - name: LOGIN_GOV_CLIENT_ID
-              value: {{.Values.loginGov.clientId}}
-            - name: LOGIN_GOV_ALLOWED_ORIGIN
-              value: {{.Values.loginGov.allowedOrigin}}
-            - name: LOGIN_GOV_LOGIN_SUCCESS_REDIRECT
-              value: {{.Values.loginGov.endpoints.loginSuccessRedirect}}
-            - name: LOGIN_GOV_LOGIN_FAILURE_REDIRECT
-              value: {{.Values.loginGov.endpoints.loginFailureRedirect}}
-            - name: LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT
-              value: {{.Values.loginGov.endpoints.logoutSuccessRedirect}}
           # EXPORT PATHS KEYSTORES (if security feature enabled)
           {{- if (index .Values "features" "login-gov") }}
             - name: LOGIN_GOV_KEYSTORE_FILE

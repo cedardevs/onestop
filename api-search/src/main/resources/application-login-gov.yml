@@ -30,8 +30,9 @@ login-gov:
     #keyPassword: \${LOGIN_GOV_KEY_PASSWORD}
     type: JKS
 
+# this section allows the client login features to activate
 ui:
   auth:
-    loginEndpoint: "http://localhost:30000/onestop-search/login"
-    logoutEndpoint: "http://localhost:30000/onestop-search/logout"
-    userProfileEndpoint: "http://localhost:30000/onestop-search/login_profile"
+    loginEndpoint: \${UI_AUTH_LOGIN_ENDPOINT}
+    logoutEndpoint: \${UI_AUTH_LOGOUT_ENDPOINT}
+    userProfileEndpoint: \${UI_AUTH_USER_PROFILE_ENDPOINT}

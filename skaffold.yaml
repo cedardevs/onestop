@@ -87,13 +87,6 @@ deploy:
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
         # all features default to "false" in base chart, unless otherwise overridden
         features.login-gov: false
-        # login.gov configuration that are later read as environment variables by Spring
-        # these values override the chart's default sciapps config in order to run locally for dev
-        loginGov.clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8080"
-        loginGov.allowedOrigin: "http://localhost:8080"
-        loginGov.endpoints.loginSuccessRedirect: "http://localhost:8080/onestop/"
-        loginGov.endpoints.loginFailureRedirect: "http://localhost:8080/onestop/"
-        loginGov.endpoints.logoutSuccessRedirect: "http://localhost:8080/onestop/"
         env.ELASTICSEARCH_HOST: elasticsearch
         # config: |-
         #   ---
