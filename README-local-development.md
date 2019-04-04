@@ -163,13 +163,16 @@ skaffold delete
 ```
 
 # Feature Toggles
-
 By default, security-related features are disabled locally. This is to streamline development because security features require access to keystores with specific credentials needed for identity providers OneStop leverages.
 
-If you have a need to work on features related to security or wish to toggle features during development, continue reading...
+### Keystores and Credentials
+Turning on security-related features (which use request signing) requires setting up JKS (Java Key Store) keystores and the associated credentials for applications at run time.
+
+If you are using Kubernetes, the keystores and their credentials need to be converted into Kubernetes secrets.
+
+Due to the sensitive nature of keystores, this is a one-time setup which is done separately by those who have the proper access. If you have access and need to work on features related to security or wish to toggle on security during development, see our [private instructions](https://github.com/cedardevs/help/wiki/local-secure-development-setup).
 
 ### Spring Profiles
-
 OneStop APIs are written in Spring. Currently, the APIs utilize different authentication and authorization mechanisms; nevertheless, they each utilize "Spring Profiles" to switch security-related code on and off during deployment.
 
 OneStop leverages these profiles to enact certain feature toggles. The features available to the different APIs are documented below.
@@ -223,17 +226,7 @@ There is currently no configmap in the metadata deployment to make changes to th
 ```
 ---
 spring:
-  profiles: securityenabled
+  profiles: icam
   user.roles: yourOfficalEmail:ADMIN
 ```
-This structure essentially provides a new application-securityenabled.yml to the application.
-
-### Kubernetes Secrets
-Turning on security-related features requires setting up JKS (Java Key Store) keystores as a Kubernetes secrets.
-
-Due to the sensitive nature of certs, this is a one-time setup which is done separately. See [private instructions](https://github.com/cedardevs/help/wiki/local-secure-development-setup) for how to do this setup.
-
-##### Keystore File
-
-
-##### Keystore Credentials
+This structure essentially provides a new application-icam.yml to the application.
