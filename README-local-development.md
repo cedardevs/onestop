@@ -31,13 +31,13 @@ Table of Contents
   - needed to run test containers in integration tests
 - **Elasticsearch 5.6.14**
   - running on port 9200
-- **Node**
-  - needed to hot-reload client via `npm` / `webpack-dev-server`
-  
 ```
 brew install elasticsearch@5.6
 brew services start elasticsearch@5.6
-
+```
+- **Node**
+  - needed to hot-reload client via `npm` / `webpack-dev-server`
+```
 brew install node
 ```
 
