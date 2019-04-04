@@ -82,7 +82,7 @@ http://localhost:<port>/onestop
 
 # Quick Start (Kubernetes + Helm + Skaffold)
 ### System Requirements
-- "Basic System Requirements" listed above
+- [Basic System Requirements](#basic-system-requirements) listed above
   - *excluding* local Elasticsearch installation
 - Kubernetes
   - our team enables Kubernetes with Docker Desktop (see: `Preferences...` > `Kubernetes`)
