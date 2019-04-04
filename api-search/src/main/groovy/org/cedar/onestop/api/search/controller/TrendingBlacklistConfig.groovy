@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
 
 @Configuration
-@Profile("feature-trending-search")
+@Profile("trending-search")
 @ConfigurationProperties('trending')
 class TrendingBlacklistConfig {
 

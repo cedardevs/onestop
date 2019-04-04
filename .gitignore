@@ -9,6 +9,7 @@ dist/
 
 ### Extracted testData directory
 upload/testData
+upload/testData/curl.output
 
 ### IntelliJ
 .idea/

@@ -38,7 +38,7 @@ spec:
         image: cedardevs/onestop-api-metadata
         env:
         - name: SPRING_PROFILES_ACTIVE
-          value: "securitydisabled,kafkadisabled"
+          value: "securityenabled,kafkadisabled"
         - name: ELASTICSEARCH_HOST
           value: elasticsearch
         - name: ELASTICSEARCH_PORT
@@ -47,6 +47,8 @@ spec:
           value: DEBUG
         - name: ETL_SITEMAP_DELAY_INITIAL
           value: "60000"
+        - name: KEYSTORE_FILE
+          value: "/etc/api-metadata/keystore.jks"
         - name: KEYSTORE_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -62,6 +64,8 @@ spec:
             secretKeyRef:
               name: keystore
               key: key_password
+        - name: CATALINA_OPTS
+          value: '-Djavax.net.ssl.keyStore=${KEYSTORE_FILE} -Djavax.net.ssl.keyStoreAlias=${KEYSTORE_ALIAS} -Djavax.net.ssl.keyStorePassword=${KEYSTORE_PASSWORD} -Dkeystore.file=${KEYSTORE_FILE} -Dkeystore.pass=${KEYSTORE_PASSWORD} -Dkeystore.alias=${KEYSTORE_ALIAS}'
         ports:
         - containerPort: 8080
         volumeMounts:

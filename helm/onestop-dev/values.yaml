@@ -1,0 +1,57 @@
+# ###############################################################################
+# # ELASTICSEARCH
+# ###############################################################################
+# elasticsearch:
+#   enabled: true
+#   # allows elasticsearch to be exposed outside the cluster in dev
+#   service:
+#     type: NodePort
+#     nodePort: 30092
+#
+# ###############################################################################
+# # API ADMIN
+# ###############################################################################
+# api-admin:
+#   enabled: true
+#   # allows api-admin to be exposed outside the cluster in dev
+#   service:
+#     type: NodePort
+#     nodePort: 30098
+#   # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
+#   # all features default to "false" in base chart, unless otherwise overridden
+#   features:
+#     security: false
+#     kafka: false
+#     sitemap: false
+#   elasticsearch:
+#     host: onestop-dev-elasticsearch
+#     port: 9200
+#   config: |-
+#     ---
+#     logging.level.org.cedar.onestop.api.metadata: DEBUG
+#
+# ###############################################################################
+# # API SEARCH
+# ###############################################################################
+# api-search:
+#   enabled: true
+#   # allows api-search to be exposed outside the cluster in dev
+#   service:
+#     type: NodePort
+#     nodePort: 30097
+#   # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
+#   # all features default to "false" in base chart, unless otherwise overridden
+#   features:
+#     security: false
+#   # login.gov configuration that are later read as environment variables by Spring
+#   # these values override the chart's default sciapps config in order to run locally for dev
+#   loginGov:
+#     clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8080"
+#     allowedOrigin: "http://localhost:8080"
+#     endpoints:
+#       loginSuccessRedirect: "http://localhost:8080/onestop/"
+#       loginFailureRedirect: "http://localhost:8080/onestop/"
+#       logoutSuccessRedirect: "http://localhost:8080/onestop/"
+#   config: |-
+#       ---
+#       logging.level.org.cedar.onestop.api.search: DEBUG

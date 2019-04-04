@@ -19,7 +19,7 @@ import org.opensaml.saml.saml2.binding.encoding.impl.HTTPRedirectDeflateEncoder
 import org.opensaml.saml.saml2.core.*
 import org.opensaml.security.credential.Credential
 import org.opensaml.xmlsec.SignatureSigningParameters
-import org.opensaml.xmlsec.config.JavaCryptoValidationInitializer
+import org.opensaml.xmlsec.config.impl.JavaCryptoValidationInitializer
 import org.opensaml.xmlsec.context.SecurityParametersContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

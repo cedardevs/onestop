@@ -12,7 +12,7 @@ const styleButtonDefault = {
   border: 'transparent',
   textAlign: 'center',
   margin: 0,
-  padding: '0.309em',
+  // padding: '0.309em',
 }
 
 const styleButtonHoverDefault = {}
@@ -199,7 +199,7 @@ export default class HeaderDropdownMenuButton extends React.Component {
 
     const icon = (
       <SvgIcon
-        size="2em"
+        size="1em"
         verticalAlign={true}
         style={stylesIconMerged}
         path={open ? times : bars}

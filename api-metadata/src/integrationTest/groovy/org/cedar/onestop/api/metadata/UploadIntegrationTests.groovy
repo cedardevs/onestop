@@ -6,6 +6,7 @@ import org.apache.http.impl.client.LaxRedirectStrategy
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.core.io.ClassPathResource
@@ -13,12 +14,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.servlet.ModelAndView
-import spock.lang.Unroll
 
-@Unroll
+@ActiveProfiles(["integration", "manual-upload"])
 class UploadIntegrationTests extends IntegrationTest {
 
     /**
@@ -39,6 +40,7 @@ class UploadIntegrationTests extends IntegrationTest {
     private String contextPath
 
     @Autowired
+    @Qualifier("elasticsearchRestClient")
     RestClient restClient
 
     @Autowired
@@ -58,8 +60,12 @@ class UploadIntegrationTests extends IntegrationTest {
     }
 
     void setup() {
+
         restTemplate = new RestTemplate()
         restTemplate.errorHandler = new TestResponseErrorHandler()
+
+        // TODO: if we ever figure out how to actually use HTTPS in a test,
+        // remember to change this to `https` instead of `http`
         metadataFormURI = "http://localhost:${port}${contextPath}/metadata-form"
         elasticsearchService.dropSearchIndices()
         elasticsearchService.dropStagingIndices()
@@ -78,7 +84,7 @@ class UploadIntegrationTests extends IntegrationTest {
         then: "Request returns 302 redirect to the expected response endpoint"
 
         multiResult.statusCode == HttpStatus.FOUND
-        redirectPath == "/onestop/admin/uploadResponse.html"
+        redirectPath == "/onestop-admin/uploadResponse.html"
     }
 
     private buildMultiLoadRequest(String[] paths) {
@@ -86,7 +92,6 @@ class UploadIntegrationTests extends IntegrationTest {
         paths.each { multipartMap.add("files", new ClassPathResource(it)) }
         RequestEntity.post(metadataFormURI.toURI()).contentType(MediaType.MULTIPART_FORM_DATA).body(multipartMap)
     }
-
 
     private refreshIndices() {
         restClient.performRequest('POST', '_refresh')

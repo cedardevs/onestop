@@ -39,11 +39,11 @@ spec:
         image: cedardevs/onestop-client
         env:
         - name: ONESTOP_SEARCH_API_ENDPOINT
-          value: onestop-api-search:8097
-        - name: GEOPORTAL_ENDPOINT
-          value: onestop-geoportal-search:8080
-        - name: ONESTOP_ADMIN_API_ENDPOINT
-          value: onestop-api-metadata:8098
+          value: onestop-api-search:8080
+        # - name: GEOPORTAL_ENDPOINT
+        #   value: onestop-geoportal-search:8080
+        # - name: ONESTOP_ADMIN_API_ENDPOINT
+        #   value: onestop-api-metadata:8098
         - name: ONESTOP_PREFIX_PATH
           value: 'onestop'
         ports:

@@ -156,6 +156,7 @@ export default class Expandable extends React.Component {
       showArrow,
       arrowTextClosed,
       arrowTextOpened,
+      styleArrowText,
       styleFocus,
       styleHeadingFocus,
       styleWrapper,
@@ -175,9 +176,9 @@ export default class Expandable extends React.Component {
       <span>{open ? arrowTextOpened : arrowTextClosed}&nbsp;</span>
     )
     const arrow = showArrow ? open ? (
-      <span>&nbsp;{arrowText}&#9660;&nbsp;</span>
+      <span style={styleArrowText}>&nbsp;{arrowText}&#9660;&nbsp;</span>
     ) : (
-      <span>&nbsp;{arrowText}&#9654;&nbsp;</span>
+      <span style={styleArrowText}>&nbsp;{arrowText}&#9654;&nbsp;</span>
     ) : null
 
     const ariaHidden = display === 'none'

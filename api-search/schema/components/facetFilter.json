@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Facet Filter",
+  "description": "Filters results based on given GCMD keywords where returned results MUST have the specified keyword. Multiple facetFilter objects will be combined with logical AND; multiple values in a single facetFilter object will be combined with the logical OR.",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "Filter type.",
+      "enum": [
+        "facet"
+      ]
+    },
+    "name": {
+      "description": "One of the GCMD keyword categories: science, services, locations, instruments, platforms, projects, dataCenters, horizontalResolution, verticalResolution, temporalResolution.",
+      "enum": ["science", "services", "locations", "instruments", "platforms", "projects", "dataCenters", "horizontalResolution", "verticalResolution", "temporalResolution"]
+    },
+    "values": {
+      "description": "List of GCMD keywords.",
+      "type": "array",
+      "items": {
+        "description": "Exact match GCMD keyword(s), e.g., \"Atmosphere > Atmospheric Temperature > Surface Temperature\"",
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "type",
+    "name",
+    "values"
+  ],
+  "additionalProperties": false
+}

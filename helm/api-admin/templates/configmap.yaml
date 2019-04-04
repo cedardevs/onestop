@@ -1,0 +1,14 @@
+{{- if .Values.config }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "api-admin.fullname" . }}-config
+  labels:
+    app.kubernetes.io/name: {{ include "api-admin.name" . }}
+    helm.sh/chart: {{ include "api-admin.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  application.yml: {{ .Values.config | toYaml | indent 4 }}
+{{- end }}

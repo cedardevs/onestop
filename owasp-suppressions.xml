@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
+  <suppress>
+     <notes><![CDATA[
+     file name: json-schema-core-1.2.8.jar
+     Tests have been added to confirm that XML parsing has DTD disabled, and endpoints accepting application/json data reject all xml.
+     ]]></notes>
+     <gav regex="true">^com\.github\.java-json-tools:json-schema-core:.*$</gav>
+     <cve>CVE-2018-1000840</cve>
+  </suppress>
 
   <suppress>
     <notes><![CDATA[

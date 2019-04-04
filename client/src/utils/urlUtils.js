@@ -6,7 +6,7 @@ export const getBasePath = () => {
 }
 
 export const apiPath = () => {
-  return getBasePath() + 'api'
+  return getBasePath().replace(/\/$/, '') + '-search'
 }
 
 // makes urls protocol-relative and url-encodes quotes

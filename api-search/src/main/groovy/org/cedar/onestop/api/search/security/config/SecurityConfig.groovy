@@ -21,7 +21,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import org.springframework.web.filter.CorsFilter
 
-@Profile("!integration")
+@Profile("login-gov")
 @EnableWebSecurity
 class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -58,14 +58,13 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http
         .csrf()
             .ignoringAntMatchers("/search/collection/**", "/search/granule/**", "/search/flattened-granule/**")
             .and()
         .authorizeRequests()
         // login, login failure, and index are allowed by anyone
-        .antMatchers(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL, LOGIN_SUCCESS_ENDPOINT, LOGIN_PROFILE_ENDPOINT, LOGIN_FAILURE_ENDPOINT, LOGOUT_ENDPOINT, LOGOUT_SUCCESS_ENDPOINT, "/")
+        .antMatchers(DefaultLoginPageGeneratingFilter.DEFAULT_LOGIN_PAGE_URL, LOGIN_SUCCESS_ENDPOINT, LOGIN_FAILURE_ENDPOINT, LOGIN_PROFILE_ENDPOINT, LOGOUT_ENDPOINT, LOGOUT_SUCCESS_ENDPOINT, "/")
             .permitAll()
         // make sure our public search endpoints are still available and don't request authentication
         .antMatchers(
@@ -76,9 +75,11 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/flattened-granule/**",
                 "/search/flattened-granule/**",
                 "/uiConfig",
+                "/sitemap.xml",
                 "/sitemap/**",
                 "/trending/**",
-                "/actuator/info"
+                "/actuator/info",
+                "/docs/**"
         )
             .permitAll()
         // any other requests are allowed by an authenticated user
@@ -102,7 +103,6 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
             .tokenEndpoint()
             .accessTokenResponseClient(accessTokenResponseClient())
             .and()
-//            .failureUrl(LOGIN_FAILURE_ENDPOINT)
             .failureHandler(new LoginGovAuthenticationFailureHandler())
             .successHandler(new LoginGovAuthenticationSuccessHandler())
     }

@@ -1,13 +1,14 @@
 plugins {
   // https://plugins.gradle.org/plugin/io.forgo.keystoreplugin
   id "io.forgo.keystoreplugin" version "1.0"
+  id 'war'
+  id 'groovy'
+  id 'org.springframework.boot' // version declared in top-level buildscript
+  id 'io.spring.dependency-management'
+  id 'org.cedar.dockerplugin'
+  id "com.moowork.node"
 }
 
-apply plugin: 'war'
-apply plugin: 'groovy'
-apply plugin: 'org.springframework.boot' // version declared in top-level buildscript
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.cedar.dockerplugin'
 apply from: "${rootDir}/gradle/publishing.gradle"
 
 sourceCompatibility = 1.8
@@ -55,6 +56,7 @@ dependencies {
   testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
   testCompile 'org.springframework.boot:spring-boot-starter-test'
   testCompile "org.testcontainers:testcontainers:${project.testContainersVersion}"
+  testCompile "org.testcontainers:elasticsearch:${project.testContainersVersion}"
 }
 
 ext {
@@ -91,9 +93,9 @@ ext {
     // -- use these values if you want to test logging in directly against api-search on 8097
     envVars.LOGIN_GOV_CLIENT_ID = "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_8097"
     envVars.LOGIN_GOV_ALLOWED_ORIGIN = "http://localhost:8097"
-    envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
-    envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8097/onestop/api/login_profile?failure=true"
-    envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8097/onestop/api/login_profile"
+    envVars.LOGIN_GOV_LOGIN_SUCCESS_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
+    envVars.LOGIN_GOV_LOGIN_FAILURE_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
+    envVars.LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT = "http://localhost:8097/onestop-search/login_profile"
   }
 
   // login.gov keystore configuration (for JWT signing on token request)
@@ -123,21 +125,21 @@ keystore {
   alias = "${project.envVars.LOGIN_GOV_KEYSTORE_ALIAS}"
 }
 
-// these environment variables would normally be set by kubernetes objects;
-// however, this is problematic running via gradle tasks (build, test, bootRun...) -- where these environment
-// variables are not set and can require different values (e.g. - keystore path/file)
-//task environmentVariables(type: Exec) {
-bootRun {
-  environment project.envVars as Map<String, ?>
-}
-
-test {
-  environment project.envVars as Map<String, ?>
+sourceSets {
+  integrationTest {
+    groovy.srcDir file('src/integrationTest/groovy')
+    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
+    compileClasspath += main.output + test.output + configurations.testRuntime
+    runtimeClasspath += output + compileClasspath
+  }
 }
 
 war {
+  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
   enabled = true
-  baseName = "${rootProject.name}-${project.name}"
+  // TODO disabled dynamic project-based name for #827, plan to re-enable in #828
+  // baseName = "${rootProject.name}-${project.name}"
+  baseName = "onestop-search"
   finalizedBy bootWar
 }
 
@@ -148,21 +150,32 @@ bootWar {
   onlyIf { !tasks.getByName('war').state.upToDate }
 }
 
+task sourceJar(type: Jar) {
+  classifier "sources"
+  baseName = "${rootProject.name}-${project.name}"
+  from "${projectDir}/src"
+}
+
+// these environment variables would normally be set by kubernetes objects;
+// however, this is problematic running via gradle tasks (build, test, bootRun...) -- where these environment
+// variables are not set and can require different values (e.g. - keystore path/file)
+//task environmentVariables(type: Exec) {
+bootRun {
+  dependsOn { ['generateOpenApi', 'generateJsonSchema'] }
+  environment project.envVars as Map<String, ?>
+}
+
+test {
+  environment project.envVars as Map<String, ?>
+}
+
 configurations.configure {
   integrationTestCompile.extendsFrom testCompile
   integrationTestRuntime.extendsFrom testRuntime
 }
 
-sourceSets {
-  integrationTest {
-    groovy.srcDir file('src/integrationTest/groovy')
-    resources.srcDir file("${project(':index-configuration').projectDir}/src/main/resources")
-    compileClasspath += main.output + test.output + configurations.testRuntime
-    runtimeClasspath += output + compileClasspath
-  }
-}
-
 task integrationTest(type: Test, description: 'Runs the integration tests', group: 'verification') {
+  dependsOn 'generateJsonSchema'
   mustRunAfter 'test'
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
@@ -173,14 +186,59 @@ task integrationTest(type: Test, description: 'Runs the integration tests', grou
 
 check.dependsOn integrationTest
 
-task sourceJar(type: Jar) {
-  classifier "sources"
+build.dependsOn sourceJar
 
-  baseName = "${rootProject.name}-${project.name}"
-  from "${projectDir}/src"
+// copy schema dir to tmp
+task setupOpenapiGenPart1(type: Copy) {
+  from "schema"
+  into "${buildDir}/tmp/schema"
 }
 
-build.dependsOn sourceJar
+// override the actual geometry so that the openApi is valid 
+task setupOpenapiGenPart2(type: Copy) {
+  dependsOn "setupOpenapiGenPart1"
+  from "schema/components"
+  include "override-geometry.json"
+  into "${buildDir}/tmp/schema/components"
+    rename { filename ->
+      filename.replace 'override-geometry', 'geometry'
+    }
+}
+
+node {
+  version = '10.15.3'
+  npmVersion = '6.1.0'
+  download = true
+}
+
+// NOTE: The 'buildRequest' task defined in package.json generates json dereference
+task generateJsonSchema(type: NpmTask) {
+  outputs.upToDateWhen { false }
+  dependsOn 'npmInstall'
+  args = ['run', 'buildRequest']
+}
+
+// NOTE: The 'build' task defined in package.json pipes the output directly to the output file
+task generateOpenApi(type: NpmTask) {
+  outputs.upToDateWhen { false }
+  dependsOn { ['npmInstall','processResources', 'setupOpenapiGenPart2'] }
+  args = ['run', 'build']
+  outputs.file("$buildDir/resources/main/static/docs/openapi.yaml")
+}
+
+// NOTE: The 'testSchemas' task defined in package.json generates json dereference for test
+task generateTestSchemas(type: NpmTask) {
+  dependsOn {['copyPartialSchemas', 'npmInstall']}
+  args = ['run', 'testSchemas']
+}
+
+// copy schemas for testing
+task copyPartialSchemas(type: Copy) {
+  from 'schema/'
+  into "${buildDir}/resources/test/schema/"
+}
+
+test.dependsOn 'generateTestSchemas', 'generateJsonSchema'
 
 publishing {
   publications {
@@ -194,7 +252,7 @@ publishing {
 
 processResources {
   outputs.upToDateWhen { false }
-  filesMatching("**/application.yml") {
+  filesMatching("**/application*.yml") {
     expand( [
             esVersion: project.esVersion,
             version: project.version,

@@ -1,0 +1,19 @@
+---
+trending:
+  numResults: 10
+  numDays: 1
+  defaultBlacklistedSearchTerms:
+    - weather
+    - climate
+    - satellites
+    - fisheries
+    - coasts
+    - oceans
+  additionalBlacklistedSearchTerms:
+  blacklistedCollections:
+
+elasticsearch:
+  index:
+    trending:
+      name:
+        logstash-
