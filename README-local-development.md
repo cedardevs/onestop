@@ -31,7 +31,7 @@ Table of Contents
 - **Elasticsearch 5.6.14**
   - running on port 9200
 - **Node**
-  - needed to hot-reload client via npm/webpack-dev-server
+  - needed to hot-reload client via `npm` / `webpack-dev-server`
   
 ```
 brew install elasticsearch@5.6
@@ -177,17 +177,17 @@ OneStop leverages these profiles to enact certain feature toggles. The features 
 ##### api-metadata
 
 | Spring Profile | Feature Description |
-| --- | --- |
-| `icam` | Enables a Spring security filter to require ICAM CAC authentication and authorization to hit particular endpoints. |
-| `manual-upload` | Enables the `UploadController` which opens browser endpoints for manual metadata upload. This feature should always be set with the `icam` profile in production to ensure manual upload is CAC secured. |
-| `kafka-ingest` | Enables the `KafkaConsumerService` to upload metadata via PSI. This feature should never be enabled at the same time as the `manual-upload` feature as they are mutually exclusive approaches to metadata upload.  |
-| `sitemap` | Enables the `SitemapETLService` to create the sitemap index and periodically refresh it. |
+| ------- | --- |
+| <pre><code>icam</code></pre> | Enables a Spring security filter to require ICAM CAC authentication and authorization to hit particular endpoints. |
+| <pre><code>manual-upload</code></pre> | Enables the `UploadController` which opens browser endpoints for manual metadata upload. This feature should always be set with the `icam` profile in production to ensure manual upload is CAC secured. |
+| <pre><code>kafka-ingest</code></pre> | Enables the `KafkaConsumerService` to upload metadata via PSI. This feature should never be enabled at the same time as the `manual-upload` feature as they are mutually exclusive approaches to metadata upload.  |
+| <pre><code>sitemap</code></pre> | Enables the `SitemapETLService` to create the sitemap index and periodically refresh it. |
 
 ##### api-search
 
 | Spring Profile | Feature Description |
 | --- | --- |
-| `login-gov` | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `api-user` service with a PostgreSQL backing DB. |
+| <pre><code>login-gov</code></pre> | Enables a Spring security filter to enable OpenId authentication via `login.gov`. This also triggers the `uiConfig` endpoint to show an `auth` section which indicates to the client to show a login link. Note: This feature will eventually migrate to a new `api-user` service with a PostgreSQL backing DB. |
 
 To turn it on, change onestop-api-metadata.yaml in the k8s deployments from
 
