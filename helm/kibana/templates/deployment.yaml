@@ -1,58 +1,29 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "kibana.fullname" . }}
+  name: kibana
   labels:
-    app: {{ template "kibana.name" . }}
-    chart: {{ template "kibana.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    tier: "frontend"
+    devmode: "true"
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
-      app: {{ template "kibana.name" . }}
-      release: {{ .Release.Name }}
+      app: kibana
   template:
     metadata:
       labels:
-        app: {{ template "kibana.name" . }}
-        release: {{ .Release.Name }}
+        app: kibana
     spec:
+      restartPolicy: Always
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: 5601
-              protocol: TCP
-          volumeMounts:
-            - name: configmap
-              mountPath: /usr/share/kibana/config/
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: http
-          resources:
-{{ toYaml .Values.resources | indent 12 }}
-      volumes:
-        - name: configmap
-          configMap:
-            name: {{ template "kibana.fullname" . }}-config
-    {{- with .Values.nodeSelector }}
-      nodeSelector:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.affinity }}
-      affinity:
-{{ toYaml . | indent 8 }}
-    {{- end }}
-    {{- with .Values.tolerations }}
-      tolerations:
-{{ toYaml . | indent 8 }}
-    {{- end }}
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:5.5.3
+        env:
+        - name: CLUSTER_NAME
+          value: elasticsearch # default; should be variable value in prod version
+#        - name: SERVER_BASEPATH
+#          value: /api/v1/namespaces/default/services/kibana:http:proxy
+        ports:
+        - containerPort: 5601
+          name: http
