@@ -83,6 +83,8 @@ deploy:
       imageStrategy:
         helm: {}
       setValues:
+        service.type: NodePort
+        service.nodePort: 30097
         # allows api-search to be exposed outside the cluster in dev
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
         # all features default to "false" in base chart, unless otherwise overridden
