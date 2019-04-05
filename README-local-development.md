@@ -141,6 +141,16 @@ http://localhost:30000/onestop
 ./gradlew uploadTestData --apiAdminPort=8098
 ```
 
+### Making Helm Chart Changes
+```
+# Helm helper script for updates
+./helm/updateRelease.sh
+```
+
+When do I need to run this script?
+- Any time a change is made to a `requirements.yaml` file
+- Any time a change is made to one of the OneStop sub charts that needs to be deployed. Make sure to update the chart version appropriately in `helm/onestop/Chart.yaml` before running this script.
+
 ### Troubleshooting
 Something is really messed up in my environment, what should I do?
 
