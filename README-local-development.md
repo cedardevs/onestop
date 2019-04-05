@@ -98,7 +98,7 @@ brew install skaffold
 # install tiller onto the cluster (one-time deal, unless upgrading helm)
 helm init
 
-# run
+# run (requires having run a `./gradlew build` for the Docker images referenced in skaffold)
 skaffold dev -f skaffold.yaml
 ```
 
