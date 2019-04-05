@@ -15,6 +15,10 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
+      {{- with .Values.config }}
+      annotations:
+        checksum/config: {{ . | sha256sum }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "api-search.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}

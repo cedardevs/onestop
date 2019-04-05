@@ -14,6 +14,10 @@ spec:
       app.kubernetes.io/name: {{ include "api-admin.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
+    {{- with .Values.config }}
+    annotations:
+      checksum/config: {{ . | sha256sum }}
+    {{- end }}
     metadata:
       labels:
         app.kubernetes.io/name: {{ include "api-admin.name" . }}
