@@ -102,6 +102,13 @@ helm init
 skaffold dev -f skaffold.yaml
 ```
 
+**WARNING**: there's a good chance the `integrationTask` gradle task will fail with less powerful machines
+due to elasticsearch being a memory hog. This can often manifest in the build reporting (e.g. - `build/reports/integrationTests/index.html`) misleading errors like this:
+
+`java.lang.NullPointerException: Cannot get property 'took' on null object`
+
+If this resource issue is getting in your way, you can always skip tasks in gradle using the `-x integrationTest` option. Of course, this is only a quick fix, and is not acceptable for validating the success of our continuous integration builds.
+
 ### If running client via Node
 ```
 # 1) comment out client sections in skaffold.yaml
