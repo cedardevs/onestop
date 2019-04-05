@@ -126,7 +126,12 @@ class Analyzers {
 
   static SpatialBoundingAnalysis analyzeSpatialBounding(Discovery metadata) {
     def builder = SpatialBoundingAnalysis.newBuilder()
+    def validateGeometry = ValidateGeometry.validateGeometry(metadata)
+
     builder.spatialBoundingExists = metadata?.spatialBounding != null
+    builder.isValid  = validateGeometry.isValid
+    builder.validationError = validateGeometry.error
+
     return builder.build()
   }
 

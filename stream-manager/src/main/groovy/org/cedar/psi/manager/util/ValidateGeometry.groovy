@@ -9,7 +9,7 @@ import org.wololo.jts2geojson.GeoJSONReader
 
 @Slf4j
 class ValidateGeometry {
-  static String validateGeometry(Discovery metadata) {
+  static Map validateGeometry(Discovery metadata) {
     String geoJson = metadata?.spatialBounding
     GeoJSONReader reader = new GeoJSONReader()
 
@@ -22,11 +22,11 @@ class ValidateGeometry {
         throw new IllegalStateException(err.getMessage())
       }
 
-      return "validGeoJSON : true"
+      return ["isValid": true, "error": " "]
 
     } catch (Exception e) {
-      log.error "error : " + e.getMessage()
-      return "error : " + e.getMessage()
+
+      return ["isValid": false, "error": e.getMessage()]
     }
   }
 }

@@ -22,7 +22,7 @@ class ValidateGeometrySpec extends Specification {
       ]
   ]
   static final polygonWithHoleCoords = [
-      [ [0.0, 0.0], [10.0, 10.0], [10.0, 0.0], [0.0, 0.0] ],
+      [ [35.0, 10.0], [45.0, 45.0], [15.0, 40.0], [10.0, 20.0], [35.0, 10.0] ],
       [ [20.0, 30.0], [35.0, 35.0], [30.0, 20.0], [20.0, 30.0] ]
   ]
   static final multiPolygonCoords = [
@@ -70,23 +70,10 @@ class ValidateGeometrySpec extends Specification {
           [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ]
       ]
   ]
-  static final holeOutsideShell = [
-      [
-          [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ]
-      ],
-      [
-          [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ]
-      ]
-  ]
   static final disconnectedInterior = [
-      [
-          [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ]
-      ],
-      [
-          [ [15.0, 15.0], [15.0, 20.0], [20.0, 20.0], [20.0, 15.0], [15.0, 15.0] ]
-      ]
+      [ [0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0], [0.0, 0.0] ],
+      [ [5.0, 0.0], [10.0, 5.0], [5.0, 10.0], [0.0, 5.0], [5.0, 0.0] ]
   ]
-
   static final InvalidCoordinate = [Double.NaN, 3.0]
   static final TooFewPoints = [[1.0, 3.0], [1.0, 3.0]]
   static final holeLiesOutsideShell = [
@@ -102,18 +89,19 @@ class ValidateGeometrySpec extends Specification {
     def result = ValidateGeometry.validateGeometry(metadata)
 
     then:
-    result == expected
-//TODO polygon with hole
+    result.isValid == expected
+
     where:
-    testCase                | value                                                   | expected
-    'Point'                 | buildGeoJson('Point', pointCoords)                        | 'validGeoJSON : true'
-    'MultiPoint'            | buildGeoJson('MultiPoint', multiPointCoords)              | 'validGeoJSON : true'
-    'LineString'            | buildGeoJson('LineString', lineStringCoords)              | 'validGeoJSON : true'
-    'MultiLineString'       | buildGeoJson('MultiLineString', multiLineStringCoords)    | 'validGeoJSON : true'
-    'Polygon'               | buildGeoJson('Polygon', polygonCoords)                    | 'validGeoJSON : true'
-    'MultiPolygon'          | buildGeoJson('MultiPolygon', multiPolygonCoords)          | 'validGeoJSON : true'
-//    'PolygonWithHole'       | buildGeoJson('Polygon', polygonWithHoleCoords)            | 'validGeoJSON : true'
-    'MultiPolygonWithHoles' | buildGeoJson('MultiPolygon', multiPolygonWithHolesCoords) | 'validGeoJSON : true'
+    testCase                | value                                                     | expected
+    'Point'                 | buildGeoJson('Point', pointCoords)                        | true
+    'MultiPoint'            | buildGeoJson('MultiPoint', multiPointCoords)              | true
+    'LineString'            | buildGeoJson('LineString', lineStringCoords)              | true
+    'MultiLineString'       | buildGeoJson('MultiLineString', multiLineStringCoords)    | true
+    'Polygon'               | buildGeoJson('Polygon', polygonCoords)                    | true
+    'MultiPolygon'          | buildGeoJson('MultiPolygon', multiPolygonCoords)          | true
+    'PolygonWithHole'       | buildGeoJson('Polygon', polygonWithHoleCoords)            | true
+    'MultiPolygonWithHoles' | buildGeoJson('MultiPolygon', multiPolygonWithHolesCoords) | true
+    'MultiPolygonWithHoles' | buildGeoJson('MultiPolygon', multiPolygonWithHolesCoords) | true
   }
 
   def "#testCase"() {
@@ -124,25 +112,18 @@ class ValidateGeometrySpec extends Specification {
     def result = ValidateGeometry.validateGeometry(metadata)
 
     then:
-    result == expected
-//TODO disconnected Interior
+    result.error == expected
+
     where:
-    testCase                | value                                          | expected
-    'Invalid Coordinate'    | buildGeoJson('Point', InvalidCoordinate )     | "error : Invalid Coordinate"
-    'Duplicated Rings'      | buildGeoJson('MultiPolygon', duplicateRings)  | 'error : Duplicate Rings'
-    'Too Few Points'        | buildGeoJson('LineString', TooFewPoints)      | "error : Too few distinct points in geometry component"
-    'Nested Shells'         | buildGeoJson('MultiPolygon', nestedShells)    | 'error : Nested shells'
-    'Ring Not Closed'       | buildGeoJson('MultiPolygon', ringNotClosed)   | 'error : Points of LinearRing do not form a closed linestring'
-    'Self Intersection'     | buildGeoJson('Polygon', selfIntersection)     | 'error : Self-intersection'
-    'Hole outside shell'    | buildGeoJson('Polygon', holeLiesOutsideShell) | 'error : Hole lies outside shell'
-
-  }
-
-  static buildHoleOutsideShell() {
-    MultiPolygon.newBuilder()
-        .setCoordinates(holeOutsideShell)
-        .build()
-
+    testCase                | value                                           | expected
+    'Invalid Coordinate'    | buildGeoJson('Point', InvalidCoordinate )       | "Invalid Coordinate"
+    'Duplicated Rings'      | buildGeoJson('MultiPolygon', duplicateRings)    | 'Duplicate Rings'
+    'Too Few Points'        | buildGeoJson('LineString', TooFewPoints)        | "Too few distinct points in geometry component"
+    'Nested Shells'         | buildGeoJson('MultiPolygon', nestedShells)      | 'Nested shells'
+    'Ring Not Closed'       | buildGeoJson('MultiPolygon', ringNotClosed)     | 'Points of LinearRing do not form a closed linestring'
+    'Self Intersection'     | buildGeoJson('Polygon', selfIntersection)       | 'Self-intersection'
+    'disconnected Interior' | buildGeoJson('Polygon', disconnectedInterior)   | 'Interior is disconnected'
+    'hole Lies Outside Shell' | buildGeoJson('Polygon', holeLiesOutsideShell) | 'Hole lies outside shell'
   }
 
   static buildGeoJson(String type, ArrayList coor) {
@@ -177,7 +158,6 @@ class ValidateGeometrySpec extends Specification {
             .setCoordinates(coor)
             .build()
         break
-
       default:
         "unknown type"
         break
