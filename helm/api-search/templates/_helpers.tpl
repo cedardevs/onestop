@@ -25,6 +25,13 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 
 {{/*
+Use a common config name variable, rather than appending -config in several places.
+*/}}
+{{- define "api-search.configname" -}}
+{{ template "api-search.fullname" . }}-config
+{{- end -}}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "api-search.chart" -}}

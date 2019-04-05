@@ -116,7 +116,7 @@ spec:
         {{- if .Values.config }}
           - name: config-volume
             configMap:
-              name: {{ include "api-search.fullname" . }}-config
+              name: {{ include "api-search.configname" . }}
         {{- end }}
         # CREATE VOLUME FOR SECRET FILES (if security feature enabled)
         # secret must be created in the Kubernetes API before it can be used
