@@ -14,6 +14,7 @@ Table of Contents
    * [If running client via Node](#if-running-client-via-node)
    * [Verify Endpoints](#verify-endpoints-1)
    * [Upload Test Data](#upload-test-data-1)
+   * [Making Helm Chart Changes](#making-helm-chart-changes)
    * [Troubleshooting](#troubleshooting)
    * [Clear Caches](#clear-caches)
    * [Resetting Kubernetes Tools](#resetting-kubernetes-tools)
@@ -133,6 +134,8 @@ http://localhost:30097/onestop-search/actuator/info
 # port here is automatically assigned when using webpack-dev-server
 # and seen in the output of `npm run dev`
 http://localhost:30000/onestop
+# Client Ingress enabled by default, so you can also access the client at:
+http://localhost/onestop
 ```
 
 ### Upload Test Data
