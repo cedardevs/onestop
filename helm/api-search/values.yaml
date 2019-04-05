@@ -61,7 +61,7 @@ config: |-
 ###############################################################################
 env:
   # elastic search env vars
-  ELASTICSEARCH_HOST: es-elasticsearch
+  ELASTICSEARCH_HOST: elasticsearch
   ELASTICSEARCH_PORT: 9200
   # sitemap env vars
   ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute

@@ -37,7 +37,7 @@ config:
 # SPRING ENV OVERRIDES
 ###############################################################################
 env:
-  ELASTICSEARCH_HOST: es-elasticsearch
+  ELASTICSEARCH_HOST: elasticsearch
   ELASTICSEARCH_PORT: 9200
   ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute
 
