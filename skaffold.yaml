@@ -43,8 +43,8 @@ deploy:
     ###############################################################################
     # KIBANA
     ###############################################################################
-    - name: kibana
-      chartPath: helm/kibana
+    # - name: kibana
+    #   chartPath: helm/kibana
       # setValues:
         # enabled: true
         # allows kibana to be exposed outside the cluster in dev
