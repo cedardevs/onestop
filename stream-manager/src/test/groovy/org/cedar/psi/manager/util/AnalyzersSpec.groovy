@@ -1,5 +1,6 @@
 package org.cedar.psi.manager.util
 
+import org.cedar.schemas.avro.geojson.LineString
 import org.cedar.schemas.avro.geojson.Point
 import org.cedar.schemas.avro.psi.*
 import org.cedar.schemas.avro.util.AvroUtils
@@ -86,7 +87,9 @@ class AnalyzersSpec extends Specification {
             rangeDescriptor         : BOUNDED,
         ],
         spatialBounding : [
-            spatialBoundingExists: true
+            spatialBoundingExists: true,
+            isValid: true,
+            validationError: " "
         ],
         titles          : [
             titleExists             : true,
@@ -342,16 +345,26 @@ class AnalyzersSpec extends Specification {
     then:
     result instanceof SpatialBoundingAnalysis
     result.spatialBoundingExists == expected
+    result.isValid == expectedValidation
+    result.validationError == expectedError
+
 
     where:
-    testCase  | value        | expected
-    'missing' | null         | false
-    'present' | buildPoint() | true
+    testCase      | value                 | expected   | expectedValidation  | expectedError
+    'missing'     | null                  | false      | false               | "Missing geographic bounding box"
+    'present'     | buildPoint()          | true       | true                | " "
+    'null values' | buildMissingCorners() | true       | false               | "Invalid number of points in LineString (found 1 - must be 0 or >= 2)"
   }
 
   static buildPoint() {
     Point.newBuilder()
         .setCoordinates([1 as Double, 2 as Double])
+        .build()
+  }
+
+  static buildMissingCorners() {
+    LineString.newBuilder()
+        .setCoordinates([[10.0, 40.0]])
         .build()
   }
 }

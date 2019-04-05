@@ -126,11 +126,16 @@ class Analyzers {
 
   static SpatialBoundingAnalysis analyzeSpatialBounding(Discovery metadata) {
     def builder = SpatialBoundingAnalysis.newBuilder()
-    def validateGeometry = ValidateGeometry.validateGeometry(metadata)
 
     builder.spatialBoundingExists = metadata?.spatialBounding != null
-    builder.isValid  = validateGeometry.isValid
-    builder.validationError = validateGeometry.error
+    if (builder.spatialBoundingExists){
+      def validateGeometry = ValidateGeometry.validateGeometry(metadata)
+      builder.isValid  = validateGeometry.isValid
+      builder.validationError = validateGeometry.error
+    } else {
+      builder.isValid  = false
+      builder.validationError = "Missing geographic bounding box"
+    }
 
     return builder.build()
   }
