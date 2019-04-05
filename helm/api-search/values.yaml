@@ -32,10 +32,6 @@ config: |-
   features:
     sitemap: true
   ui:
-    auth:
-      loginEndpoint: "https://sciapps.colorado.edu/onestop/api/login"
-      logoutEndpoint: "https://sciapps.colorado.edu/onestop/api/logout"
-      userProfileEndpoint: "https://sciapps.colorado.edu/onestop/api/login_profile"
     googleAnalytics:
       profiles:
         - trackingId: 'UA-127993388-1'
@@ -48,18 +44,18 @@ config: |-
     banner:
       message: DEMO - This site is not running on NCEI hardware, does not contain NCEI's full data holdings, and contains a limited set of its intended functionality.
     featured:
-        - title: GOES Data
-          searchTerm: '"Gridded Satellite GOES"'
-          imageUrl: "https://www.ncdc.noaa.gov/gridsat/images/sample.png"
-        - title: Digital Elevation Models
-          searchTerm: '"digital elevation"'
-          imageUrl: "https://gis.ngdc.noaa.gov/arcgis/rest/services/DEM_global_mosaic_hillshade/ImageServer/exportImage?bbox=-170.95,-14.40,-170.45,-14.18&size=500,500&format=png32&interpolation=%20RSP_BilinearInterpolation&renderingRule=%7B%22rasterFunction%22:%22ColorHillshade%22%7D&f=image"
-        - title: NWLON and PORTS
-          searchTerm: +nwlon +ports
-          imageUrl: "https://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:NDBC-COOPS"
-        - title: Climate Data Record (CDR)
-          searchTerm: '"NOAA Climate Data Record"'
-          imageUrl: "https://www.ncdc.noaa.gov/sites/default/files/styles/cdr-full-width/public/cdr/AVHRRSurfaceReflectance.png"
+      - title: GOES Data
+        searchTerm: '"Gridded Satellite GOES"'
+        imageUrl: "https://www.ncdc.noaa.gov/gridsat/images/sample.png"
+      - title: Digital Elevation Models
+        searchTerm: '"digital elevation"'
+        imageUrl: "https://gis.ngdc.noaa.gov/arcgis/rest/services/DEM_global_mosaic_hillshade/ImageServer/exportImage?bbox=-170.95,-14.40,-170.45,-14.18&size=500,500&format=png32&interpolation=%20RSP_BilinearInterpolation&renderingRule=%7B%22rasterFunction%22:%22ColorHillshade%22%7D&f=image"
+      - title: NWLON and PORTS
+        searchTerm: +nwlon +ports
+        imageUrl: "https://data.nodc.noaa.gov/cgi-bin/gfx?id=gov.noaa.nodc:NDBC-COOPS"
+      - title: Climate Data Record (CDR)
+        searchTerm: '"NOAA Climate Data Record"'
+        imageUrl: "https://www.ncdc.noaa.gov/sites/default/files/styles/cdr-full-width/public/cdr/AVHRRSurfaceReflectance.png"
 
 ###############################################################################
 # SPRING ENV OVERRIDES
@@ -68,10 +64,18 @@ env:
   # elastic search env vars
   ELASTICSEARCH_HOST: es-elasticsearch
   ELASTICSEARCH_PORT: 9200
-  # ui auth endpoint
-#  UI_AUTH_LOGIN_ENDPOINT: "https://sciapps.colorado.edu/onestop/api/login"
-#  UI_AUTH_LOGOUT_ENDPOINT: "https://sciapps.colorado.edu/onestop/api/logout"
-#  UI_AUTH_USER_PROFILE_ENDPOINT: "https://sciapps.colorado.edu/onestop/api/login_profile"
+  # sitemap env vars
+  ETL_SITEMAP_DELAY_INITIAL: 60000 # milliseconds -> 1 minute
+  # login gov env vars
+  LOGIN_GOV_CLIENT_ID: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:onestop_api_search_localhost_30000"
+  LOGIN_GOV_ALLOWED_ORIGIN: "http://localhost:30000"
+  LOGIN_GOV_LOGIN_SUCCESS_REDIRECT: "http://localhost:30000/onestop/"
+  LOGIN_GOV_LOGIN_FAILURE_REDIRECT: "http://localhost:30000/onestop/"
+  LOGIN_GOV_LOGOUT_SUCCESS_REDIRECT: "http://localhost:30000/onestop/"
+  # ui auth endpoint env vars
+  UI_AUTH_LOGIN_ENDPOINT: "http://localhost:30000/onestop-search/login"
+  UI_AUTH_LOGOUT_ENDPOINT: "http://localhost:30000/onestop-search/logout"
+  UI_AUTH_USER_PROFILE_ENDPOINT: "http://localhost:30000/onestop-search/login_profile"
 
 ###############################################################################
 # SECRET FILES AND ENVIRONMENT VARIABLES
@@ -113,17 +117,6 @@ secrets:
 keystoreFiles:
   jks:
     loginGov: "/etc/api-search/login-gov-keystore.jks"
-
-###############################################################################
-# LOGIN.GOV SPECIFIC ENVIRONMENT VARIABLES (CHART DEFAULTS TO SCIAPPS CONFIG)
-###############################################################################
-loginGov:
-  clientId: "urn:gov:gsa:openidconnect.profiles:sp:sso:NOAA:SciAppsOneStop"
-  allowedOrigin: "https://sciapps.colorado.edu"
-  endpoints:
-    loginSuccessRedirect: "/"
-    loginFailureRedirect: "/"
-    logoutSuccessRedirect: "/"
 
 ingress:
   enabled: false
