@@ -1,5 +1,10 @@
 ---
 etl:
   sitemap:
+    # this delay section is needed for the feature to turn on,
+    # but the values are not strictly used in the integration tests currently
+    delay:
+      initial: 600000
+      fixed: 604800000
     scroll-size: 2
     collections-per-submap: 5
