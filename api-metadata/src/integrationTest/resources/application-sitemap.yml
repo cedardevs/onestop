@@ -1,0 +1,5 @@
+---
+etl:
+  sitemap:
+    scroll-size: 2
+    collections-per-submap: 5

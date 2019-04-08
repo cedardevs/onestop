@@ -1,6 +1,6 @@
 buildscript {
   ext {
-    springBootVersion = '2.1.3.RELEASE'
+    springBootVersion = '2.1.4.RELEASE'
   }
   repositories {
     maven {
@@ -8,13 +8,11 @@ buildscript {
     }
   }
   dependencies {
-    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.7.0"
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.9.5"
     classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-    classpath 'com.wiredforcode:gradle-spawn-plugin:0.8.0'
     classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
-    classpath 'org.owasp:dependency-check-gradle:4.0.2'
+    classpath 'org.owasp:dependency-check-gradle:5.0.0-M2'
     classpath "gradle.plugin.org.cedar:dockerplugin:1.0.3"
-    // classpath 'org.codehaus.groovy:groovy-dateutil:2.5.2'
   }
 }
 
@@ -32,7 +30,6 @@ ext {
   esVersion = '5.6.14'
   // isRelease used by docker plugin as well
   isRelease = System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean // TODO REMOVE THIS GARBAGE
-  springCloudVersion = 'Greenwich.M3'
 }
 
 subprojects {
@@ -65,12 +62,6 @@ subprojects {
             details.because 'fixes vulnerability in 2.9.x before 2.9.8'
           }
         }
-      }
-    }
-
-    dependencyManagement {
-      imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
       }
     }
 

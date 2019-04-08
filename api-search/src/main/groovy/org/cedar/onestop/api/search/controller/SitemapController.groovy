@@ -1,28 +1,23 @@
 package org.cedar.onestop.api.search.controller
 
-import groovy.json.JsonOutput
-
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 
-import javax.servlet.http.HttpServletResponse
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD
-import static org.springframework.web.bind.annotation.RequestMethod.POST
 
 @Slf4j
 @RestController
-@ConditionalOnProperty("features.sitemap")
+@Profile("sitemap")
 class SitemapController {
 
   private UiConfig uiConfig

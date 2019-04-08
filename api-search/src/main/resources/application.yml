@@ -13,8 +13,6 @@ spring:
 management.endpoints.enabled-by-default: false
 management.endpoint.info.enabled: true
 
-features.sitemap: true
-
 logging:
   level:
       org.cedar.onestop.api.search: INFO

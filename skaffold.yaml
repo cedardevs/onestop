@@ -47,7 +47,7 @@ deploy:
         features.icam: false
         features.manual-upload: false
         features.kafka-ingest: false
-        features.sitemap: false
+        features.sitemap: true
         env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
         config: |-
           ---
@@ -69,6 +69,7 @@ deploy:
         # features are directly tied to `export SPRING_PROFILES_ACTIVE='feat1,feat2,...'
         # all features default to "false" in base chart, unless otherwise overridden
         features.login-gov: false
+        features.sitemap: true
         env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
         # config: |-
         #   ---

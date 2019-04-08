@@ -39,7 +39,6 @@ dependencies {
 
   compile "com.auth0:java-jwt:${project.auth0JavaJWT}"
 
-  compile 'org.springframework.cloud:spring-cloud-context'
   compile 'com.github.java-json-tools:json-schema-validator:2.2.8'
   compile 'org.apache.commons:commons-lang3:3.7'
   compile 'org.apache.lucene:lucene-expressions:7.2.1'
