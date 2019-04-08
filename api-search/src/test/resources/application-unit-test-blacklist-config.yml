@@ -1,6 +1,6 @@
 
 spring.profiles.include:
-  - feature-trending-search
+  - trending-search
   - unit-test-blacklist
 
 ---

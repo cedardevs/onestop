@@ -1,13 +1,8 @@
 package org.cedar.onestop.api.metadata.springsecurity
 
 import org.cedar.onestop.api.metadata.authorization.service.UserDetailsServiceImpl
-import org.cedar.onestop.api.metadata.security.CredentialUtil
-import org.cedar.onestop.api.metadata.security.IdentityProvider
-import org.cedar.onestop.api.metadata.security.SAMLConsume
-import org.cedar.onestop.api.metadata.security.SAMLFilter
-import org.cedar.onestop.api.metadata.security.SAMLUtil
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
-import org.springframework.boot.autoconfigure.web.ServerProperties
+import org.cedar.onestop.api.metadata.security.*
+import org.springframework.context.annotation.Profile
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.Authentication
@@ -26,7 +21,7 @@ import javax.servlet.http.HttpServletResponse
 import java.nio.file.AccessDeniedException
 import java.security.Principal
 
-@ConditionalOnProperty("features.secure.authorization")
+@Profile("icam")
 class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
     private final List<String> securedEndpointsRegex = [/\/metadata.*$/, /\/admin\/.+$/, /\/upload.html$/, /\/uploadResponse.html$/, /^.+\/userOnly$/]
@@ -36,7 +31,7 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
 
     UserDetailsServiceImpl userDetailsServiceImpl
 
-    CustomSecurityFilter(AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailsServiceImpl, ServerProperties serverProperties, IdentityProviderConfig idpConfig) {
+    CustomSecurityFilter(AuthenticationManager authenticationManager, UserDetailsServiceImpl userDetailsServiceImpl, ICAMConfiguration icamConfiguration, IdentityProviderConfig idpConfig) {
         super("/")
         this.setAuthenticationManager(authenticationManager)
         this.userDetailsServiceImpl = userDetailsServiceImpl
@@ -68,10 +63,10 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
         )
 
         // set keystore values to be used in custom SAML filter via the SecurityProperties known by Spring config
-        CredentialUtil.setKeyStorePath(serverProperties.ssl.keyStore)
-        CredentialUtil.setKeyStorePassword(serverProperties.ssl.keyStorePassword)
-        CredentialUtil.setAlias(serverProperties.ssl.keyAlias)
-        CredentialUtil.setKeyPassword(serverProperties.ssl.keyPassword)
+        CredentialUtil.setKeyStorePath(icamConfiguration.keystore.file)
+        CredentialUtil.setKeyStorePassword(icamConfiguration.keystore.password)
+        CredentialUtil.setAlias(icamConfiguration.keystore.alias)
+        CredentialUtil.setKeyPassword(icamConfiguration.keystore.keyPassword)
 
         logger.debug(CredentialUtil.info())
 

@@ -1,9 +1,11 @@
 package org.cedar.onestop.api.search.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,6 +21,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.*
 @Slf4j
 @RestController
 class SearchController {
+
+  @Autowired
+  private Environment environment
 
   private UiConfig uiConfig
   private ElasticsearchService elasticsearchService
@@ -140,8 +145,20 @@ class SearchController {
   }
 
   @RequestMapping(path = '/uiConfig', method = GET)
-  UiConfig uiConfig() {
-    return uiConfig
+  Map uiConfig() {
+    // casting as Map seems not to work, so we use Jackson directly
+    // to get our UiConfig properties as a Map
+    ObjectMapper converter = new ObjectMapper()
+    Map uiConfigMap = converter.convertValue(uiConfig, Map.class)
+
+    // if our 'login-gov' profile is not active,
+    // we should NOT include the 'auth' section of the config,
+    // as the client will think it needs to show a login link, etc.
+    if(!environment.activeProfiles.contains('login-gov')) {
+      uiConfigMap.remove('auth')
+    }
+
+    return uiConfigMap
   }
 
 }

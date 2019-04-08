@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile
 
 @Slf4j
 @Service
-@Profile("feature-trending-search")
+@Profile("trending-search")
 class TrendingSearchService {
   private final ElasticsearchService elasticsearchService
   private final TrendingBlacklistConfig blacklistConfig

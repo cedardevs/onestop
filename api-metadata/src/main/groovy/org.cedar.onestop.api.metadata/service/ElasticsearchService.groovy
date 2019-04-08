@@ -10,11 +10,15 @@ import org.elasticsearch.client.ResponseException
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.env.Environment
 import org.springframework.stereotype.Service
 
 @Slf4j
 @Service
 class ElasticsearchService {
+
+  @Autowired
+  private Environment environment
 
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.collection.name}')
   String COLLECTION_SEARCH_INDEX
@@ -31,9 +35,6 @@ class ElasticsearchService {
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.search.flattened-granule.name}')
   private String FLAT_GRANULE_SEARCH_INDEX
 
-  @Value('${features.sitemap}')
-  private Boolean SITEMAP_ENABLED
-
   @Value('${elasticsearch.index.prefix:}${elasticsearch.index.sitemap.name}')
   private String SITEMAP_INDEX
 
@@ -48,6 +49,10 @@ class ElasticsearchService {
 
 
   private RestClient restClient
+
+  private Boolean sitemapEnabled() {
+    return environment.activeProfiles.contains('sitemap')
+  }
 
   @Autowired
   ElasticsearchService(RestClient restClient) {
@@ -68,7 +73,7 @@ class ElasticsearchService {
     ensureIndex(COLLECTION_SEARCH_INDEX)
     ensureIndex(GRANULE_SEARCH_INDEX)
     ensureIndex(FLAT_GRANULE_SEARCH_INDEX)
-    if(SITEMAP_ENABLED) {
+    if(sitemapEnabled()) {
       ensureIndex(SITEMAP_INDEX)
     }
   }
@@ -123,7 +128,7 @@ class ElasticsearchService {
     drop(COLLECTION_SEARCH_INDEX)
     drop(GRANULE_SEARCH_INDEX)
     drop(FLAT_GRANULE_SEARCH_INDEX)
-    if(SITEMAP_ENABLED) {
+    if(sitemapEnabled()) {
       drop(SITEMAP_INDEX)
     }
   }

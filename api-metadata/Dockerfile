@@ -1,4 +1,5 @@
 FROM tomcat:latest
+
 ARG WAR_NAME
 ARG VCS_REF
 ARG VERSION

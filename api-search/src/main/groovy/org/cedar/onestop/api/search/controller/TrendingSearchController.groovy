@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Profile
 
 @Slf4j
-@Profile("feature-trending-search")
+@Profile("trending-search")
 @RestController
 class TrendingSearchController {
 

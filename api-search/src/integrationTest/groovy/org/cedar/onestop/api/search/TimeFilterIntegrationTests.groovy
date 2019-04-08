@@ -4,7 +4,6 @@ import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Unroll
 
-@Unroll
 class TimeFilterIntegrationTests extends IntegrationTest {
 
   private final String DATES_INDEX = 'time_filter'

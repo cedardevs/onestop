@@ -18,7 +18,7 @@ task npm_clean(type: Exec) {
   args = ["-c", "npm run clean"]
 }
 
-def sourceDirs = ['node_modules', 'img', 'src', 'style']
+def sourceDirs = ['node_modules', 'img', 'src']
 
 task compile(type: NodeTask) {
     dependsOn 'npmInstall'

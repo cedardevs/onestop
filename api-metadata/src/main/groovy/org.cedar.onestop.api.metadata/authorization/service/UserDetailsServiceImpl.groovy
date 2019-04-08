@@ -3,7 +3,7 @@ package org.cedar.onestop.api.metadata.authorization.service
 import org.cedar.onestop.api.metadata.authorization.domain.Role
 import org.cedar.onestop.api.metadata.authorization.domain.User
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Profile
 import org.springframework.dao.DataAccessException
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 
 import javax.transaction.Transactional
 
-@ConditionalOnProperty("features.secure.authorization")
+@Profile("icam")
 @Service
 class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired

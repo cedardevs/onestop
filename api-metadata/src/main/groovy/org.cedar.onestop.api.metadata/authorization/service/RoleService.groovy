@@ -3,10 +3,10 @@ package org.cedar.onestop.api.metadata.authorization.service
 import org.cedar.onestop.api.metadata.authorization.domain.Role
 import org.cedar.onestop.api.metadata.authorization.repository.RoleRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 
-@ConditionalOnProperty("features.secure.authorization")
+@Profile("icam")
 @Service
 class RoleService {
     @Autowired
