@@ -28,6 +28,8 @@ updateVersions() {
   sed -i -- "s/\"version\":.*/\"version\": \"$1\",/g" client/package.json
   sed -i -- "s/${prevVersion}/$1/g" skaffold.yaml
   sed -i -- "s/version: .*/version: $1/g" api-search/schema/openapi.yml
+  sed -i -- "s/appVersion:.*/appVersion: \"$1\"/" helm/onestop/Chart.yaml
+  sed -i -- "s/  tag: ${prevVersion}/  tag: $1/" helm/*/values.yaml # CAUTION: this will not work if the chart values to not exactly match the previous version
 }
 
 # commit and push
@@ -37,6 +39,7 @@ updateAndCommit() {
   git add client/package.json
   git add skaffold.yaml
   git add api-search/schema/openapi.yml
+  git add helm
   git commit -m "Updating version to $1"
   git push
 }

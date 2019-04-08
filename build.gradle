@@ -1,244 +1,244 @@
 buildscript {
-    ext {
-        springBootVersion = '2.1.4.RELEASE'
+  ext {
+    springBootVersion = '2.1.4.RELEASE'
+  }
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
     }
-    repositories {
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.9.5"
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
-        classpath 'org.owasp:dependency-check-gradle:5.0.0-M2'
-        classpath "gradle.plugin.org.cedar:dockerplugin:1.0.3"
-    }
+  }
+  dependencies {
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.9.5"
+    classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
+    classpath 'org.owasp:dependency-check-gradle:5.0.0-M2'
+    classpath "gradle.plugin.org.cedar:dockerplugin:1.0.3"
+  }
 }
 
 plugins {
-    id 'com.gradle.build-scan' version '2.2.1'
-    id "com.jfrog.bintray" version "1.8.0"
-    id "com.jfrog.artifactory" version "4.7.0"
-    id "io.spring.dependency-management" version "1.0.6.RELEASE"
-    id "jacoco"
+  id 'com.gradle.build-scan' version '2.2.1'
+  id "com.jfrog.bintray" version "1.8.0"
+  id "com.jfrog.artifactory" version "4.7.0"
+  id "io.spring.dependency-management" version "1.0.6.RELEASE"
+  id "jacoco"
 }
 
 apply plugin: 'groovy'
 
 ext {
-    esVersion = '5.6.14'
-    // isRelease used by docker plugin as well
-    isRelease = System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean
-    springCloudVersion = 'Greenwich.RELEASE'
+  esVersion = '5.6.14'
+  // isRelease used by docker plugin as well
+  isRelease = System.getenv('TRAVIS_TAG')?.startsWith('v') as Boolean // TODO REMOVE THIS GARBAGE
 }
 
 subprojects {
 
-    project.ext {
-        esVersion = "${project.esVersion}"
-        spockVersion = '1.2-groovy-2.5'
-        testContainersVersion = '1.10.7'
+  project.ext {
+    esVersion = "${project.esVersion}"
+    spockVersion = '1.2-groovy-2.5'
+    testContainersVersion = '1.10.7'
 
-        groovyVersion = '2.5.5'
-        openSAMLVersion = '3.4.2'
-        logbackVersion = '1.2.3'
-        javaxServletAPIVersion = '4.0.1'
-        junitVersion = '4.12'
-        auth0JavaJWT = '3.4.1'
+    groovyVersion = '2.5.5'
+    openSAMLVersion = '3.4.2'
+    logbackVersion = '1.2.3'
+    javaxServletAPIVersion = '4.0.1'
+    junitVersion = '4.12'
+    auth0JavaJWT = '3.4.1'
+  }
+
+  afterEvaluate {
+    repositories {
+      mavenCentral()
+      maven { url "https://repo.spring.io/milestone" }
     }
 
-    afterEvaluate {
-        repositories {
-            mavenCentral()
-            maven { url "https://repo.spring.io/milestone" }
+    // override versions of dependencies with vulnerabilities
+    configurations.all {
+      resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
+          if (details.requested.version.startsWith('2.9') && details.requested.version <= '2.9.8') {
+            details.useVersion '2.9.8'
+            details.because 'fixes vulnerability in 2.9.x before 2.9.8'
+          }
         }
+      }
+    }
 
-        // override versions of dependencies with vulnerabilities
-        configurations.all {
-            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-                if (details.requested.group == 'com.fasterxml.jackson.core' && details.requested.name == 'jackson-databind') {
-                    if (details.requested.version.startsWith('2.9') && details.requested.version <= '2.9.8') {
-                        details.useVersion '2.9.8'
-                        details.because 'fixes vulnerability in 2.9.x before 2.9.8'
-                    }
-                }
-            }
-        }
+    if (project.plugins.hasPlugin('org.cedar.dockerplugin')) {
+      docker {
+        username = System.getenv('DOCKER_USER')
+        password = System.getenv('DOCKER_PASSWORD')
+      }
+    }
 
-        if (project.plugins.hasPlugin('org.cedar.dockerplugin')) {
-            docker {
-                username = System.getenv('DOCKER_USER')
-                password = System.getenv('DOCKER_PASSWORD')
-            }
-        }
-
-        if (project.plugins.hasPlugin('java')) {
-            project.apply plugin: 'org.owasp.dependencycheck'
+    if (project.plugins.hasPlugin('java')) {
+        project.apply plugin: 'org.owasp.dependencycheck'
 
 //      Not functioning in travis, disconnecting temporarily to move forward
 //      project.tasks.findByName('check').dependsOn('dependencyCheck')
 
-            dependencyCheck {
-                skipConfigurations = ["providedRuntime"]
-                suppressionFile = "${rootDir}/owasp-suppressions.xml"
-                failBuildOnCVSS = 4
+        dependencyCheck {
+          skipConfigurations = ["providedRuntime"]
+          suppressionFile = "${rootDir}/owasp-suppressions.xml"
+          failBuildOnCVSS = 4
 
-                // One of our dependencies has an un-parsable pom which causes dependency-checker
-                // to throw an exception. However, the checks still run and it still generates a
-                // report, so I think it's safe(ish) to ignore the error.
-                failOnError = false
-            }
-
-            if(project.plugins.hasPlugin('jacoco')) {
-                jacocoTestReport {
-                    executionData fileTree(projectDir).include("build/jacoco/*.exec")
-                    reports {
-                        xml.enabled true
-                        xml.destination "${buildDir}/reports/jacoco/report.xml"
-                        html.enabled true
-                        html.destination "${buildDir}/reports/jacoco/html"
-                    }
-                }
-
-                jacocoTestReport.dependsOn test
-                check.dependsOn jacocoTestReport
-            }
-
+          // One of our dependencies has an un-parsable pom which causes dependency-checker
+          // to throw an exception. However, the checks still run and it still generates a
+          // report, so I think it's safe(ish) to ignore the error.
+          failOnError = false
         }
+
+        if(project.plugins.hasPlugin('jacoco')) {
+          jacocoTestReport {
+            executionData fileTree(projectDir).include("build/jacoco/*.exec")
+            reports {
+              xml.enabled true
+              xml.destination "${buildDir}/reports/jacoco/report.xml"
+              html.enabled true
+              html.destination "${buildDir}/reports/jacoco/html"
+            }
+          }
+
+          jacocoTestReport.dependsOn test
+          check.dependsOn jacocoTestReport
+        }
+
+      }
 
     }
 
 }
 
 import java.time.*
+import java.util.function.Consumer
 
 gradle.taskGraph.beforeTask { Task task ->
-    task.ext.setProperty("startTime", Instant.now())
+  task.ext.setProperty("startTime", Instant.now())
 }
 
 gradle.taskGraph.afterTask { Task task, TaskState state ->
-    println task.name + " took " + Duration.between(task.ext.startTime, Instant.now()).toSeconds() + " seconds"
+  println task.name + " took " + Duration.between(task.ext.startTime, Instant.now()).toSeconds() + " seconds"
 }
 
 task publish(type: Exec, description: 'Promotes artifactory snapshot', group: 'publish') {
-    onlyIf { isRelease }
-    executable = "bash"
-    args = ["-c", "curl -X POST -u \"\$BINTRAY_USER:\$BINTRAY_KEY\" -H \"Content-Length: 0\"" +
-            " http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version"]
+  onlyIf { isRelease }
+  executable = "bash"
+  args = ["-c", "curl -X POST -u \"\$BINTRAY_USER:\$BINTRAY_KEY\" -H \"Content-Length: 0\"" +
+        " http://oss.jfrog.org/api/plugins/build/promote/snapshotsToBintray/${rootProject.name}/\$TRAVIS_BUILD_NUMBER?params=releaseVersion=$version"]
 }
 
 group = 'org.cedar.onestop'
 
 subprojects.each {
-    it.group = group
-    it.version = version
-    it.ext.buildDate = "${new Date().format("YYYY-MM-dd", TimeZone.getTimeZone('UTC'))}"
+  it.group = group
+  it.version = version
+  it.ext.buildDate = "${new Date().format("YYYY-MM-dd", TimeZone.getTimeZone('UTC'))}"
 }
 
 buildScan {
-    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-    termsOfServiceAgree = 'yes'
+  termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+  termsOfServiceAgree = 'yes'
 }
 
 task startBackend(type: Exec, description: 'Starts minikube if not already running and sets docker env') {
-    executable = 'bash'
-    workingDir 'kubernetes'
-    args = ['-c', './startMinikube.sh']
+  executable = 'bash'
+  workingDir 'kubernetes'
+  args = ['-c', './startMinikube.sh']
 }
 
 task deployBackend(type: Exec, description: 'Deploys Elasticsearch, both APIs, and Kibana on local minikube') {
-    dependsOn "startBackend", ":api-search:build", ":api-metadata:build"
-    executable = 'bash'
-    workingDir 'kubernetes'
-    args = ['-c', './deployBackend.sh']
+  dependsOn "startBackend", ":api-search:build", ":api-metadata:build"
+  executable = 'bash'
+  workingDir 'kubernetes'
+  args = ['-c', './deployBackend.sh']
 }
 
 
 task stopAndCleanBackend(type: Exec, description: 'Deletes all deployments and stops minikube') {
-    workingDir 'kubernetes'
-    executable = 'bash'
-    args = ['-c', "./stopAndCleanBackend.sh"]
+  workingDir 'kubernetes'
+  executable = 'bash'
+  args = ['-c', "./stopAndCleanBackend.sh"]
 }
 
 task openDashboards(description: 'Opens Kibana and Kubernetes dashboards') {
-    doLast {
-        exec {
-            commandLine 'minikube', 'dashboard'
-        }
-        println "Opening Kibana dashboard in default browser..."
-        exec {
-            commandLine 'open', 'http://localhost:5601/app/kibana#/dev_tools/console?_g=()'
-        }
+  doLast {
+    exec {
+      commandLine 'minikube', 'dashboard'
     }
+    println "Opening Kibana dashboard in default browser..."
+    exec {
+      commandLine 'open', 'http://localhost:5601/app/kibana#/dev_tools/console?_g=()'
+    }
+  }
 }
 
 class UploadTestDataTask extends DefaultTask {
 
-    @Input
-    String apiAdminPort
+  @Input
+  String apiAdminPort
 
-    UploadTestDataTask() {
-        description = 'Uploads test data to OneStop api-admin.'
-        group = 'upload'
-        apiAdminPort = 30098
+  UploadTestDataTask() {
+    description = 'Uploads test data to OneStop api-admin.'
+    group = 'upload'
+    apiAdminPort = 30098
+  }
+
+  @Option(option = 'apiAdminPort', description = 'Set the port of api-admin to upload data to (default: 30098).')
+  void setApiAdminPort(final String apiAdminPort) {
+    this.apiAdminPort = apiAdminPort
+  }
+
+  @TaskAction
+  void uploadTestData() {
+    // delete previously expanded testData directory, if it exists
+    project.delete 'upload/testData'
+
+    // expand the test data tar.gz into testData directory
+    def testDataTGZ = 'testData_20180404.tar.gz'
+    def stdoutExpand = new ByteArrayOutputStream()
+    def stderrExpand = new ByteArrayOutputStream()
+    def resultExpand = project.exec(new Action<ExecSpec>() {
+      @Override
+      void execute(ExecSpec execSpec) {
+        execSpec.ignoreExitValue = true
+        execSpec.workingDir 'upload'
+        execSpec.executable = 'bash'
+        execSpec.args = ['-c', "tar -xvzf ${testDataTGZ}"]
+        execSpec.standardOutput = stdoutExpand
+        execSpec.errorOutput = stderrExpand
+      }
+    })
+    if (resultExpand.getExitValue() == 0) {
+      print stdoutExpand
+    } else {
+      print stderrExpand
+      String message = "failed to extract ${testDataTGZ}"
+      throw new GradleException(message)
     }
 
-    @Option(option = 'apiAdminPort', description = 'Set the port of api-admin to upload data to (default: 30098).')
-    void setApiAdminPort(final String apiAdminPort) {
-        this.apiAdminPort = apiAdminPort
+    // run the upload script against the testData directory and api-metadata running locally
+    def stdoutUpload = new ByteArrayOutputStream()
+    def stderrUpload = new ByteArrayOutputStream()
+    def resultUpload = project.exec(new Action<ExecSpec>() {
+      @Override
+      void execute(ExecSpec execSpec) {
+        execSpec.ignoreExitValue = true
+        execSpec.workingDir 'upload'
+        execSpec.executable = 'bash'
+        execSpec.args = ['-c', "./uploadToOnestopApi.sh ./testData http://localhost:${this.apiAdminPort}/onestop-admin/metadata"]
+        execSpec.standardOutput = stdoutUpload
+        execSpec.errorOutput = stderrUpload
+      }
+    })
+    if (resultUpload.getExitValue() == 0) {
+      print stdoutUpload
+    } else {
+      print stdoutUpload
+      //print stderrUpload
+      throw new GradleException("failed to upload test data")
     }
-
-    @TaskAction
-    void uploadTestData() {
-        // delete previously expanded testData directory, if it exists
-        project.delete 'upload/testData'
-
-        // expand the test data tar.gz into testData directory
-        def testDataTGZ = 'testData_20180404.tar.gz'
-        def stdoutExpand = new ByteArrayOutputStream()
-        def stderrExpand = new ByteArrayOutputStream()
-        def resultExpand = project.exec(new Action<ExecSpec>() {
-            @Override
-            void execute(ExecSpec execSpec) {
-                execSpec.ignoreExitValue = true
-                execSpec.workingDir 'upload'
-                execSpec.executable = 'bash'
-                execSpec.args = ['-c', "tar -xvzf ${testDataTGZ}"]
-                execSpec.standardOutput = stdoutExpand
-                execSpec.errorOutput = stderrExpand
-            }
-        })
-        if (resultExpand.getExitValue() == 0) {
-            print stdoutExpand
-        } else {
-            print stderrExpand
-            String message = "failed to extract ${testDataTGZ}"
-            throw new GradleException(message)
-        }
-
-        // run the upload script against the testData directory and api-metadata running locally
-        def stdoutUpload = new ByteArrayOutputStream()
-        def stderrUpload = new ByteArrayOutputStream()
-        def resultUpload = project.exec(new Action<ExecSpec>() {
-            @Override
-            void execute(ExecSpec execSpec) {
-                execSpec.ignoreExitValue = true
-                execSpec.workingDir 'upload'
-                execSpec.executable = 'bash'
-                execSpec.args = ['-c', "./uploadToOnestopApi.sh ./testData http://localhost:${this.apiAdminPort}/onestop-admin/metadata"]
-                execSpec.standardOutput = stdoutUpload
-                execSpec.errorOutput = stderrUpload
-            }
-        })
-        if (resultUpload.getExitValue() == 0) {
-            print stdoutUpload
-        } else {
-            print stdoutUpload
-            //print stderrUpload
-            throw new GradleException("failed to upload test data")
-        }
-    }
+  }
 }
 
 task uploadTestData(type: UploadTestDataTask)

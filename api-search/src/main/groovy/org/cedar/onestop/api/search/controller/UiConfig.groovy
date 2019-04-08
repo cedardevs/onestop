@@ -39,8 +39,7 @@ class UiConfig {
     Map reactGaOptions
   }
 
-// * This is simply a reference to the kinds of properties that could be under reactGaOptions,
-// * but may
+// * This is simply a reference to the kinds of properties that could be proviced under reactGaOptions
 //  class ReactGAOptions {
 //    Boolean debug
 //    String titleCase

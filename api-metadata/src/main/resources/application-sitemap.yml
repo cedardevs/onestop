@@ -1,2 +1,8 @@
 ---
-features.sitemap: true
+etl:
+  sitemap:
+    delay:
+      initial: 600000
+      fixed: 604800000
+    scroll-size: 10000
+    collections-per-submap: 40000

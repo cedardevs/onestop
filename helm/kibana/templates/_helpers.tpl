@@ -30,11 +30,3 @@ Create chart name and version as used by the chart label.
 {{- define "kibana.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
-
-{{- define "elasticsearch.serviceName" }}
-{{- if .Values.elasticsearch.serviceNameOverride -}}
-{{- .Values.elasticsearch.serviceNameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name .Values.elasticsearch.name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}

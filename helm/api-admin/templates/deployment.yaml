@@ -15,6 +15,10 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
+      {{- with .Values.config }}
+      annotations:
+        checksum/config: {{ . | sha256sum }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "api-admin.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -112,7 +116,7 @@ spec:
       {{- if .Values.config }}
         - name: config-volume
           configMap:
-            name: {{ include "api-admin.fullname" . }}-config
+            name: {{ include "api-admin.configname" . }}
       {{- end }}
       # CREATE VOLUME FOR SECRET FILES (if icam feature enabled)
       # secret must be created in the Kubernetes API before it can be used

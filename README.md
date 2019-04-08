@@ -8,7 +8,9 @@ National Oceanic and Atmospheric Administration’s publicly available
 data holdings. It is being developed on a grant by a team of researchers
 from the University of Colorado (more legal info below).
 
-For Overview, Usage, Deployment, and Development information about this project, please see our [Wiki](https://github.com/cedardevs/onestop/wiki).
+For Overview, Usage, Deployment, and Development information about this project:
+  - [Quickstart](/docs)
+  - [Wiki](https://github.com/cedardevs/onestop/wiki)
 
 ## Legal
 
