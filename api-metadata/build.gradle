@@ -32,14 +32,14 @@ dependencies {
   compile('com.github.cedardevs:schemas:0.1.2')
   compile("io.confluent:kafka-streams-avro-serde:5.1.0")
   compile("org.apache.kafka:kafka-clients:2.1.1")
-  compile("org.springframework.kafka:spring-kafka:2.2.4.RELEASE")
+  compile("org.springframework.kafka:spring-kafka:2.2.5.RELEASE")
   testCompile("com.github.cedardevs:schemas:0.1.2:test")
   testCompile("io.confluent:kafka-schema-registry:5.1.0")
   testCompile("io.confluent:kafka-schema-registry:5.1.0:tests")
   testCompile("org.apache.kafka:kafka_2.11:2.1.1")
   testCompile("org.apache.kafka:kafka_2.11:2.1.1:test")
   testCompile("org.apache.kafka:kafka-clients:2.1.1:test")
-  testCompile("org.springframework.kafka:spring-kafka-test:2.2.4.RELEASE")
+  testCompile("org.springframework.kafka:spring-kafka-test:2.2.5.RELEASE")
 
   // opensaml
   compile("org.opensaml:opensaml-core:${project.openSAMLVersion}")

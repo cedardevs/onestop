@@ -46,7 +46,10 @@ const devEntryPoints = [
   'babel-polyfill',
 
   // bundle the client for webpack-dev-server and connect to the provided endpoint
-  'webpack-dev-server/client?http://localhost:8080',
+  // ensure host and port here matches the host and port specified in the `devServer` section
+  // otherwise, you may see console warnings like: `sockjs-node ERR_CONNECTION_REFUSED`
+  // see: https://github.com/webpack/webpack-dev-server/issues/416#issuecomment-287797086
+  'webpack-dev-server/client?http://localhost:9090',
 
   // bundle the client for hot reloading hot reload for successful updates
   'webpack/hot/only-dev-server',
@@ -78,6 +81,11 @@ module.exports = env => {
           historyApiFallback: {
             index: `/${rootPath}/`,
           },
+          // ensure host and port here matches the host and port specified in the `devEntryPoints` above
+          // otherwise, you may see console warnings like: `sockjs-node ERR_CONNECTION_REFUSED`
+          // see: https://github.com/webpack/webpack-dev-server/issues/416#issuecomment-287797086
+          host: 'localhost',
+          port: 9090,
           disableHostCheck: true,
           hot: true,
           proxy: {
