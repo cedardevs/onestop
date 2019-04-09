@@ -1,5 +1,5 @@
 // -- setupTests.js --
-// Called as `setupTestFrameworkScriptFile` from `jest.config.js`
+// Called as item in `setupFilesAfterEnv` from `jest.config.js`
 // See: https://jestjs.io/docs/en/configuration.html#setuptestframeworkscriptfile-string
 
 // const jsdom = require('jsdom').jsdom
