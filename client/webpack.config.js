@@ -5,8 +5,7 @@ const SpeedMeasurePlugin = require("speed-measure-webpack-plugin")
 
 const path = require('path')
 require('babel-polyfill')
-const modernizrrc = path.resolve(__dirname, '.modernizrrc.json')
-require(modernizrrc)
+
 const nodeEnv = process.env.NODE_ENV || 'development'
 const isProd = nodeEnv === 'production'
 
@@ -20,13 +19,7 @@ const basePlugins = [
     inject: false,
     template: require('html-webpack-template'),
     lang: 'en-US',
-  }),
-  new webpack.optimize.CommonsChunkPlugin({
-    name: 'vendor',
-    minChunks: function (module) {
-      return module.context && module.context.indexOf('node_modules') !== -1
-    },
-  }),
+  })
 ]
 
 const devPlugins = [
@@ -43,9 +36,6 @@ const prodPlugins = [
       'NODE_ENV': JSON.stringify('production'),
     },
   }),
-  new webpack.optimize.UglifyJsPlugin({
-    compress: {warnings: false},
-  }),
   new webpack.LoaderOptionsPlugin({
     minimize: true,
     debug: false,
@@ -54,10 +44,12 @@ const prodPlugins = [
 
 const devEntryPoints = [
   'babel-polyfill',
-  modernizrrc,
 
   // bundle the client for webpack-dev-server and connect to the provided endpoint
-  'webpack-dev-server/client?http://localhost:8080',
+  // ensure host and port here matches the host and port specified in the `devServer` section
+  // otherwise, you may see console warnings like: `sockjs-node ERR_CONNECTION_REFUSED`
+  // see: https://github.com/webpack/webpack-dev-server/issues/416#issuecomment-287797086
+  'webpack-dev-server/client?http://localhost:9090',
 
   // bundle the client for hot reloading hot reload for successful updates
   'webpack/hot/only-dev-server',
@@ -67,7 +59,6 @@ const devEntryPoints = [
 
 const prodEntryPoints = [
   'babel-polyfill',
-  modernizrrc,
   './index.jsx',
 ]
 
@@ -90,6 +81,11 @@ module.exports = env => {
           historyApiFallback: {
             index: `/${rootPath}/`,
           },
+          // ensure host and port here matches the host and port specified in the `devEntryPoints` above
+          // otherwise, you may see console warnings like: `sockjs-node ERR_CONNECTION_REFUSED`
+          // see: https://github.com/webpack/webpack-dev-server/issues/416#issuecomment-287797086
+          host: 'localhost',
+          port: 9090,
           disableHostCheck: true,
           hot: true,
           proxy: {
@@ -102,9 +98,6 @@ module.exports = env => {
     module:
         {
           rules: [{
-            test: /\.modernizrrc.json/,
-            use: ['modernizr-loader', 'json-loader'],
-          }, {
             enforce: 'pre',
             test: /\.js$/,
             use: 'eslint-loader',
@@ -187,8 +180,6 @@ module.exports = env => {
           {
             'fa':
                 path.resolve(__dirname, 'img/font-awesome/white/svg/'),
-            modernizr$:
-                path.resolve(__dirname, '.modernizrrc.json'),
           },
     }
     ,

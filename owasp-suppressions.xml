@@ -71,4 +71,40 @@
     <cve>CVE-2018-8014</cve>
   </suppress>
 
+  <suppress>
+    <notes><![CDATA[
+      This vulnerability is marked as only present in Spring Framework 5.0.5.RELEASE. Because we are using Spring Boot
+      2.1.4.RELEASE as of this suppression, this corresponds to Spring Framework 5.1.6.RELEASE which does not have this
+      vulnerability, and it is coming up as a false positive. See the DependencyCheck GitHub issue comment here:
+      https://github.com/jeremylong/DependencyCheck/issues/1827#issuecomment-479649131
+    ]]></notes>
+    <cve>CVE-2018-1258</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      These CVE vulnerabilities are all described in relation to Spring Framework versions <= 4. Because the dependency
+      triggering these (spring-retry-1.2.4.RELEASE.jar) is coming from 'org.springframework.kafka:spring-kafka' and --
+      as of this suppression -- the version of spring-kafka is 2.2.5.RELEASE, we know that the corresponding Spring
+      version is 5.1.6.RELEASE. This can be confirmed by reviewing the `build.gradle` file for the 'spring-kafka' project
+      under the v.2.2.5 tag. See: https://github.com/spring-projects/spring-kafka/blob/v2.2.5.RELEASE/build.gradle
+    ]]></notes>
+    <cve>CVE-2011-2730</cve>
+    <cve>CVE-2013-4152</cve>
+    <cve>CVE-2013-6429</cve>
+    <cve>CVE-2013-7315</cve>
+    <cve>CVE-2014-0054</cve>
+  </suppress>
+
+  <suppress>
+    <notes><![CDATA[
+      We are supressing this CVE for two reasons. First, it is triggered by our dependency on 'org.testcontainers:testcontainers:1.10.7'
+      which has a subdependency of 'org.apache.commons:commons-compress:1.18'. According to the official CVE description, this
+      vulnerability applies to versions 1.7 to 1.17 of commons-compress (specifically using ZipArchiveInputStream). Our
+      dependency graph indicates we are using a newer version. Second, this dependency is strictly used for testing and not production
+      artifacts.
+    ]]></notes>
+    <cve>CVE-2018-11771</cve>
+  </suppress>
+
 </suppressions>

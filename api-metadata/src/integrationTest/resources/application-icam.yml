@@ -11,21 +11,12 @@ roles.names: ADMIN;USER
 user.roles: elliott.richerson@noaa.gov:ADMIN;david.neufeld@noaa.gov:ADMIN
 
 spring:
-  datasource:
-    url: jdbc:hsqldb:mem:myDb;shutdown=false;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driverClassName: org.hsqldb.jdbc.JDBCDriver
-    username: sa # default username
-    password:
   jpa:
-    hibernate.ddl-auto: create-drop
-    # database-platform: org.hibernate.dialect.H2Dialect
-    properties:
-      show_sql: true
-      format_sql: true
-  liquibase:
-    enabled: true # set to false if we don't want to run and check migrations on startup
-    default-schema: PUBLIC # default schema for H2, here for documentation
-
+    database: HSQL
+    show-sql: true
+    hibernate:
+      dialect: org.hibernate.dialect.HSQLDialect
+      ddl-auto: update
 
 # SAML Identity Provider Configuration
 # Note: for cu-server-admin, this config will be replaced by the

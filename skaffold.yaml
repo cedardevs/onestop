@@ -46,7 +46,7 @@ deploy:
         # all features default to "false" in base chart, unless otherwise overridden
         features.icam: false
         features.manual-upload: false
-        features.kafka-ingest: false
+        features.kafka-ingest: true
         features.sitemap: true
         env.ELASTICSEARCH_HOST: onestop-dev-elasticsearch
         config: |-

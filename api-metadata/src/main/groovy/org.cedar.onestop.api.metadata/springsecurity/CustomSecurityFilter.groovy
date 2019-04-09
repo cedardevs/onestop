@@ -68,8 +68,6 @@ class CustomSecurityFilter extends AbstractAuthenticationProcessingFilter {
         CredentialUtil.setAlias(icamConfiguration.keystore.alias)
         CredentialUtil.setKeyPassword(icamConfiguration.keystore.keyPassword)
 
-        logger.debug(CredentialUtil.info())
-
         // initialize custom SAML filter
         samlFilter.init()
     }
