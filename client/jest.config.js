@@ -40,5 +40,7 @@ module.exports = {
     "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/fileMock.js",
     "\\.(css|less)$": "<rootDir>/styleMock.js"
   },
-  setupTestFrameworkScriptFile: "<rootDir>/setupTests.js"
+  // fixes 'regeneratorRuntime is not defined' errors for async tests
+  setupFiles: ["<rootDir>/node_modules/regenerator-runtime/runtime"],
+  setupFilesAfterEnv: ["<rootDir>/setupTests.js"]
 };

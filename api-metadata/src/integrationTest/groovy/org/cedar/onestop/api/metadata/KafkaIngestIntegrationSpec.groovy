@@ -7,7 +7,6 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
-import org.cedar.onestop.api.metadata.authorization.configs.SpringSecurityDisabled
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.cedar.onestop.api.metadata.service.MetadataManagementService
 import org.cedar.schemas.avro.psi.ParsedRecord
@@ -35,9 +34,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @DirtiesContext
 @EmbeddedKafka
-@ActiveProfiles(["integration", "kafka-ingest", "securitydisabled"])
-@SpringBootTest(classes = [Application, IntegrationTestConfig, SpringSecurityDisabled, KafkaConsumerConfig], webEnvironment = RANDOM_PORT)
-@TestPropertySource(properties = ['features.secure.upload=true', 'kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
+@ActiveProfiles(["integration", "kafka-ingest"])
+@SpringBootTest(classes = [Application, IntegrationTestConfig, KafkaConsumerConfig], webEnvironment = RANDOM_PORT)
+@TestPropertySource(properties = ['kafka.bootstrap.servers=${spring.embedded.kafka.brokers}'])
 class KafkaIngestIntegrationSpec extends Specification {
 
   @Configuration

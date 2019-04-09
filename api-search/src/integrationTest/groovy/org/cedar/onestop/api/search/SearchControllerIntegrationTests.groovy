@@ -8,7 +8,6 @@ import org.springframework.http.RequestEntity
 import org.springframework.web.client.RestTemplate
 import spock.lang.Unroll
 
-@Unroll
 class SearchControllerIntegrationTests extends IntegrationTest {
 
   @LocalServerPort

@@ -1,13 +1,11 @@
 package org.cedar.onestop.api.search.service
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.cloud.context.config.annotation.RefreshScope
 import org.springframework.stereotype.Component
 
 import javax.annotation.PostConstruct
 
 @Component
-@RefreshScope
 @ConfigurationProperties('search')
 class SearchConfig {
 

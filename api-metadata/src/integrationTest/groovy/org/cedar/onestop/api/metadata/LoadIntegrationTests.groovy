@@ -1,19 +1,18 @@
 package org.cedar.onestop.api.metadata
 
-
 import org.cedar.onestop.api.metadata.service.ElasticsearchService
 import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.web.server.LocalServerPort
 import org.springframework.core.io.ClassPathResource
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.RequestEntity
 import org.springframework.web.client.RestTemplate
-import spock.lang.Unroll
 
-@Unroll
 class LoadIntegrationTests extends IntegrationTest {
 
   /**
@@ -34,6 +33,7 @@ class LoadIntegrationTests extends IntegrationTest {
   private String contextPath
 
   @Autowired
+  @Qualifier("elasticsearchRestClient")
   RestClient restClient
 
   @Autowired
@@ -47,6 +47,7 @@ class LoadIntegrationTests extends IntegrationTest {
 
   void setup() {
     restTemplate = new RestTemplate()
+
     restTemplate.errorHandler = new TestResponseErrorHandler()
     metadataURI = "http://localhost:${port}${contextPath}/metadata"
     elasticsearchService.dropSearchIndices()
@@ -202,7 +203,10 @@ class LoadIntegrationTests extends IntegrationTest {
   }
 
   private buildLoadRequest(String content) {
-    RequestEntity.post(metadataURI.toURI()).contentType(MediaType.APPLICATION_XML).body(new ClassPathResource(content))
+    RequestEntity.post(metadataURI.toURI())
+            .contentType(MediaType.APPLICATION_XML)
+            .header(HttpHeaders.USER_AGENT, "Spring's RestTemplate") // value can be whatever
+            .body(new ClassPathResource(content))
   }
 
   private refreshIndices() {

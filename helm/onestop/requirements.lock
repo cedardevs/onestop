@@ -1,0 +1,15 @@
+dependencies:
+- name: api-admin
+  repository: file://../api-admin
+  version: 0.1.0
+- name: api-search
+  repository: file://../api-search
+  version: 0.1.0
+- name: api-user
+  repository: file://../api-user
+  version: 0.1.0
+- name: client
+  repository: file://../client
+  version: 0.1.0
+digest: sha256:be576535a3009bcec42545e730fade56d4b3da8adb1b8d7bfd7e0a104a6e9e81
+generated: 2019-03-29T12:26:43.84707-06:00

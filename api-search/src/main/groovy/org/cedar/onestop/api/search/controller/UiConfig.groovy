@@ -39,13 +39,7 @@ class UiConfig {
     Map reactGaOptions
   }
 
-  Auth auth
-  static class Auth{
-    String loginEndpoint
-    String logoutEndpoint
-    String userProfileEndpoint
-  }
-
+// * This is simply a reference to the kinds of properties that could be proviced under reactGaOptions
 //  class ReactGAOptions {
 //    Boolean debug
 //    String titleCase
@@ -53,5 +47,12 @@ class UiConfig {
 //    String gaAddress
 //    Boolean alwaysSendToDefaultTracker
 //  }
+
+  Auth auth
+  static class Auth{
+    String loginEndpoint
+    String logoutEndpoint
+    String userProfileEndpoint
+  }
 
 }

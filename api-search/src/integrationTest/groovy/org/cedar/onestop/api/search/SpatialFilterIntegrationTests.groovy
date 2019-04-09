@@ -4,7 +4,6 @@ import org.cedar.onestop.api.search.service.ElasticsearchService
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Unroll
 
-@Unroll
 class SpatialFilterIntegrationTests extends IntegrationTest {
 
   private final String SPATIAL_INDEX = 'spatial_filter'

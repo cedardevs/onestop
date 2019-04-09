@@ -4,13 +4,13 @@ import org.cedar.onestop.api.metadata.authorization.domain.User
 import org.cedar.onestop.api.metadata.authorization.domain.UserDetailsImpl
 import org.cedar.onestop.api.metadata.authorization.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.context.annotation.Profile
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Service
 
-@ConditionalOnProperty("features.secure.authorization")
+@Profile("icam")
 @Service
 class UserService {
     @Autowired
