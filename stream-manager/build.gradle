@@ -38,8 +38,8 @@ dependencies {
   testCompile('io.confluent:kafka-schema-registry:5.1.0')
   testCompile('io.confluent:kafka-schema-registry:5.1.0:tests')
   testCompile('com.github.java-json-tools:json-schema-validator:2.2.10')
-  testCompile('com.github.cedardevs:schemas:0.1.2:test')
-  testCompile('com.github.cedardevs:schemas:0.1.2:sources')
+  testCompile("com.github.cedardevs:schemas:${project.schemasVersion}:test")
+  testCompile("com.github.cedardevs:schemas:${project.schemasVersion}:sources")
   testCompile('org.wololo:jts2geojson:0.3.1')
 }
 
