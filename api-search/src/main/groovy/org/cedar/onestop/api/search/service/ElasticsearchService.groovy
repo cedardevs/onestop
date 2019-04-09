@@ -6,8 +6,8 @@ import groovy.util.logging.Slf4j
 import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.nio.entity.NStringEntity
-import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.Response
+import org.elasticsearch.client.RestClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -171,8 +171,8 @@ class ElasticsearchService {
   }
 
   Map queryElasticsearch(Map query, String index) {
-    def headers = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
-    Response response = restClient.performRequest('GET', "${index}/_search", Collections.EMPTY_MAP, headers)
+    def searchEntity = new NStringEntity(JsonOutput.toJson(query), ContentType.APPLICATION_JSON)
+    Response response = restClient.performRequest('GET', "${index}/_search", Collections.EMPTY_MAP, searchEntity)
     return parseResponse(response)
   }
 
@@ -180,22 +180,20 @@ class ElasticsearchService {
     // TODO: does this parse step need to change based on new different endpoints?
     def query = searchRequestParserService.parseSearchQuery(params)
     def getFacets = params.facets as boolean
-    def pageParams = params.page as Map
 
     Map requestBody = addAggregations(query, getFacets)
 
     // default summary to true
     def summary = params.summary == null ? true : params.summary as boolean
-    if(summary) {
+    if (summary) {
       requestBody = addSourceFilter(requestBody)
     }
-
-    requestBody.size = pageParams?.max ?: 10
-    requestBody.from = pageParams?.offset ?: 0
+    if (params.containsKey('page')) {
+      requestBody = addPagination(requestBody, params.page as Map)
+    }
     requestBody = pruneEmptyElements(requestBody)
 
     Map searchResponse = queryElasticsearch(requestBody, index)
-
     def result = [
         data: searchResponse.hits.hits.collect {
           [id: it._id, type: determineType(it._index), attributes: it._source]
@@ -227,7 +225,7 @@ class ElasticsearchService {
     return requestBody
   }
 
-  private Map addSourceFilter(Map requestBody) {
+  private static Map addSourceFilter(Map requestBody) {
     def sourceFilter = [
         "internalParentIdentifier",
         "title",
@@ -241,6 +239,12 @@ class ElasticsearchService {
         "citeAsStatements"
     ]
     requestBody._source = sourceFilter
+    return requestBody
+  }
+
+  private static Map addPagination(Map requestBody, Map pageParams) {
+    requestBody.size = pageParams?.max != null ? pageParams.max : 10
+    requestBody.from = pageParams?.offset ?: 0
     return requestBody
   }
 
