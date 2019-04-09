@@ -78,8 +78,7 @@ dependencies {
 
   // Authorization Services
   compile "org.springframework.boot:spring-boot-starter-data-jpa"
-  compile 'org.liquibase:liquibase-core'
-  compile group: 'org.hsqldb', name:'hsqldb', version: '2.4.1'
+  runtime group: 'org.hsqldb', name:'hsqldb', version: '2.4.1'
   // version to override another library's dependency to solve a CVE:
   compile 'com.google.guava:guava:27.0.1-jre'
   compile 'commons-collections:commons-collections:3.2.2'
